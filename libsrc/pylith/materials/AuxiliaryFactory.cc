@@ -325,7 +325,7 @@ pylith::materials::AuxiliaryFactory::viscousStrain(const char* identifier)
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
+    description.label = fieldNameFull;
     description.vectorFieldType = pylith::topology::Field::OTHER;
     description.numComponents = strainSize;
     description.componentNames.resize(strainSize);
