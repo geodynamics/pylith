@@ -33,7 +33,8 @@
  */
 
 // ----------------------------------------------------------------------
-// g0 function for isotropic linear Maxwell viscoelastic plane strain with both gravity and body forces.
+// g0 function for isotropic linear Maxwell viscoelastic plane strain with both gravity
+// and body forces.
 void
 pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g0v_gravbodyforce(const PylithInt dim,
                                                     const PylithInt numS,
@@ -134,7 +135,8 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g0v_grav(const PylithInt d
 
 
 // ----------------------------------------------------------------------
-// g0 function for isotropic linear Maxwell viscoelastic plane strain with only body forces.
+// g0 function for isotropic linear Maxwell viscoelastic plane strain with only body
+// forces.
 void
 pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g0v_bodyforce(const PylithInt dim,
                                                         const PylithInt numS,
@@ -251,7 +253,8 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v(const PylithInt dim,
 
 
 // ----------------------------------------------------------------------
-// g1 function for isotropic linear Maxwell viscoelastic plane strain with reference stress and strain.
+// g1 function for isotropic linear Maxwell viscoelastic plane strain with reference
+// stress and strain.
 void
 pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v_refstate(const PylithInt dim,
                                                        const PylithInt numS,
@@ -423,7 +426,7 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::Jg3vu(const PylithInt dim,
 
 // ----------------------------------------------------------------------
 /* Calculate deviatoric stress for 2-D plane strain isotropic linear
- * elasticity WITHOUT reference stress and strain.
+ * Maxwell viscoelastic WITHOUT reference stress and strain.
  *
  * devStress_ij = stress_ij - meanStress*delta_ij
  *
@@ -475,13 +478,15 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::deviatoricStress(const Pyl
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
 
     const PylithInt numAVis = 3; // Number passed on to visStrain kernel.
-    const PylithInt aOffVis[3] = { aOff[i_maxwellTime], aOff[i_totalStrain], aOff[i_viscousStrain] };
+    const PylithInt aOffVis[3] = { aOff[i_maxwellTime], aOff[i_totalStrain],
+								   aOff[i_viscousStrain] };
     const PylithInt aOffVis_x[3] = { aOff_x[i_maxwellTime], aOff_x[i_totalStrain],
                                      aOff_x[i_viscousStrain] };
 
     PylithScalar visStrainTpdt[4] = {0.0, 0.0, 0.0, 0.0}; // Viscous strain tensor.
 
-    computeViscousStrain(_dim, _numS, numAVis, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffVis, aOffVis_x, a, a_t, a_x,
+    computeViscousStrain(_dim, _numS, numAVis, sOffDisp, sOffDisp_x, s, s_t, s_x,
+						 aOffVis, aOffVis_x, a, a_t, a_x,
                          t, x, numConstants, constants, visStrainTpdt);
 
     stress[0] += 2.0 * shearModulus * visStrainTpdt[0]; // sigma_11
@@ -494,7 +499,7 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::deviatoricStress(const Pyl
 
 // ----------------------------------------------------------------------
 /* Calculate deviatoric stress for 2-D plane strain isotropic linear
- * elasticity WITH reference stress and reference strain.
+ * Maxwell viscoelastic WITH reference stress and reference strain.
  *
  * devStress_ij = stress_ij - meanStress*delta_ij
  *
@@ -557,7 +562,8 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::deviatoricStress_refstate(
     PylithScalar visStrainTpdt[4] = {0.0, 0.0, 0.0, 0.0}; // Viscous strain tensor.
 
     // Compute viscous strain for current time step.
-    computeViscousStrain(_dim, _numS, numAVis, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffVis, aOffVis_x, a, a_t, a_x,
+    computeViscousStrain(_dim, _numS, numAVis, sOffDisp, sOffDisp_x, s, s_t, s_x,
+						 aOffVis, aOffVis_x, a, a_t, a_x,
                          t, x, numConstants, constants, visStrainTpdt);
 
     // Compute reference deviatoric values.
@@ -572,8 +578,8 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::deviatoricStress_refstate(
                                           refstress[2] - meanRefStress,
                                           refstress[3]};
 
-    // Compute stress components -- note that we are including reference deviatoric stress for now.
-    // This may need to be removed after testing.
+    // Compute stress components -- note that we are including reference deviatoric
+	// stress for now. This may need to be removed after testing.
     const PylithReal twomu = 2.0*shearModulus;
 
     const PylithScalar sigma_11 = devRefStress[0] + twomu * (visStrainTpdt[0] - devRefStrain[0]);
@@ -681,18 +687,18 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::computeViscousStrain(const
  */
 void
 pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain(const PylithInt dim,
-                                                        const PylithInt numS,
                                                         const PylithInt numA,
-                                                        const PylithInt sOff[],
-                                                        const PylithInt sOff_x[],
-                                                        const PylithScalar s[],
-                                                        const PylithScalar s_t[],
-                                                        const PylithScalar s_x[],
+                                                        const PylithInt numS,
                                                         const PylithInt aOff[],
                                                         const PylithInt aOff_x[],
                                                         const PylithScalar a[],
                                                         const PylithScalar a_t[],
                                                         const PylithScalar a_x[],
+                                                        const PylithInt sOff[],
+                                                        const PylithInt sOff_x[],
+                                                        const PylithScalar s[],
+                                                        const PylithScalar s_t[],
+                                                        const PylithScalar s_x[],
                                                         const PylithReal t,
                                                         const PylithScalar x[],
                                                         const PylithInt numConstants,
@@ -703,7 +709,7 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain(const Py
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
     std::cout << "dim:  " << dim << std::endl;
     std::cout << "numS:  " << numS << std::endl;
     std::cout << "numA:  " << numA << std::endl;
@@ -719,15 +725,15 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain(const Py
 #endif
 
     assert(_dim == dim);
-    assert(1 == numA || 2 == numA);
-    assert(6 <= numS && 10 >= numS);
-    assert(aOff);
+    assert(1 == numS || 2 == numS);
+    assert(6 <= numA && 10 >= numA);
     assert(sOff);
-    assert(a_x);
-    assert(s);
+    assert(aOff);
+    assert(s_x);
+    assert(a);
     assert(totalStrainTpdt);
 
-    const PylithScalar* disp_x = &a_x[aOff[i_disp]];
+    const PylithScalar* disp_x = &s_x[sOff[i_disp]];
 
     totalStrainTpdt[0] = disp_x[0*_dim+0];
     totalStrainTpdt[1] = disp_x[1*_dim+1];
@@ -743,18 +749,18 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain(const Py
  */
 void
 pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain(const PylithInt dim,
-                                                          const PylithInt numS,
                                                           const PylithInt numA,
-                                                          const PylithInt sOff[],
-                                                          const PylithInt sOff_x[],
-                                                          const PylithScalar s[],
-                                                          const PylithScalar s_t[],
-                                                          const PylithScalar s_x[],
+                                                          const PylithInt numS,
                                                           const PylithInt aOff[],
                                                           const PylithInt aOff_x[],
                                                           const PylithScalar a[],
                                                           const PylithScalar a_t[],
                                                           const PylithScalar a_x[],
+                                                          const PylithInt sOff[],
+                                                          const PylithInt sOff_x[],
+                                                          const PylithScalar s[],
+                                                          const PylithScalar s_t[],
+                                                          const PylithScalar s_x[],
                                                           const PylithReal t,
                                                           const PylithScalar x[],
                                                           const PylithInt numConstants,
@@ -786,24 +792,26 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain(const 
 #endif
 
     assert(_dim == dim);
-    assert(1 == numA || 2 == numA);
-    assert(numS >= 6);
-    assert(aOff);
+    assert(1 == numS || 2 == numS);
+    assert(numA >= 6);
     assert(sOff);
-    assert(a_x);
-    assert(s);
+    assert(aOff);
+    assert(s_x);
+    assert(a);
     assert(visStrainTpdt);
 
-    const PylithInt _numA = 1; // Number passed on to statevars kernel.
-    const PylithInt aOffDisp[1] = { aOff[i_disp] };
-    const PylithInt aOffDisp_x[1] = { aOff_x[i_disp] };
+    const PylithInt _numS = 1; // Number passed on to statevars kernel.
+    const PylithInt sOffDisp[1] = { sOff[i_disp] };
+    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
 
-    const PylithInt numSVis = 3; // Number passed on to viscous strain kernel.
-    const PylithInt sOffVis[3] = { sOff[i_maxwellTime], sOff[i_totalStrain], sOff[i_viscousStrain] };
-    const PylithInt sOffVis_x[3] = { sOff_x[i_maxwellTime], sOff_x[i_totalStrain],
-                                     sOff_x[i_viscousStrain] };
+    const PylithInt numAVis = 3; // Number passed on to viscous strain kernel.
+    const PylithInt aOffVis[3] = { aOff[i_maxwellTime], aOff[i_totalStrain],
+								   aOff[i_viscousStrain] };
+    const PylithInt aOffVis_x[3] = { aOff_x[i_maxwellTime], aOff_x[i_totalStrain],
+                                     aOff_x[i_viscousStrain] };
 
-    computeViscousStrain(_dim, _numA, numSVis, aOffDisp, aOffDisp_x, a, a_t, a_x, sOffVis, sOffVis_x, s, s_t, s_x,
+    computeViscousStrain(_dim, _numS, numAVis, sOffDisp, sOffDisp_x, s, s_t, s_x,
+						 aOffVis, aOffVis_x, a, a_t, a_x,
                          t, x, numConstants, constants, visStrainTpdt);
 
 
