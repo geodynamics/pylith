@@ -53,15 +53,6 @@ extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(PetscDM dm,
                                                          PetscMat Jac,
                                                          PetscMat JacP,
                                                          void *user);
-extern "C" PetscErrorCode DMPlexComputeJacobianAction_Internal(PetscDM dm,
-                                                               IS cellIS,
-                                                               PetscReal t,
-                                                               PetscReal X_tShift,
-                                                               PetscVec X,
-                                                               PetscVec X_t,
-                                                               PetscVec Y,
-                                                               PetscVec z,
-                                                               void *user);
 
 
 // ----------------------------------------------------------------------
@@ -300,9 +291,7 @@ pylith::materials::Material::computeLHSJacobianLumpedInv(pylith::topology::Field
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cells); PYLITH_CHECK_ERROR(err);
 
-#if 0
-    err = DMPlexComputeJacobianAction_Internal(dmSoln, cells, t, tshift, vecRowSum, NULL, vecRowSum, jacobianInv->localVector(), NULL); PYLITH_CHECK_ERROR(err);
-#endif
+    err = DMPlexComputeJacobianAction(dmSoln, cells, t, tshift, vecRowSum, NULL, vecRowSum, jacobianInv->localVector(), NULL); PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&cells); PYLITH_CHECK_ERROR(err);
 
     // Compute the Jacobian inverse.
