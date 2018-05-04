@@ -69,35 +69,17 @@ public:
     /// Add reference strain subfield to auxiliary fields.
     void referenceStrain(void);
 
-  /** Add Maxwell time subfield to auxiliary fields.
-   *
-   * The identifier is used to distinguish among multiple subfields of
-   * the same parameters for cases like a generalized Maxwell model.
-   *
-   * @param[in] identifier Identifier appended to field name.
-   */
-    void maxwellTime(const char* identifier =NULL);
+    /// Add Maxwell time subfield to auxiliary fields.
+    void maxwellTime(void);
 
     /// Add total strain subfield to auxiliary fields.
     void totalStrain(void);
 
-  /** Add viscous strain subfield to auxiliary fields.
-   *
-   * The identifier is used to distinguish among multiple subfields of
-   * the same parameters for cases like a generalized Maxwell model.
-   *
-   * @param[in] identifier Identifier appended to field name.
-   */
-    void viscousStrain(const char* identigier =NULL);
+    /// Add viscous strain subfield to auxiliary fields.
+    void viscousStrain(void);
 
-  /** Add shear modulus ratio subfield to auxliary fields.
-   *
-   * The identifier is used to distinguish among multiple subfields of
-   * the same parameters for cases like a generalized Maxwell model.
-   *
-   * @param[in] identifier Identifier appended to field name.
-   */
-  void shearModulusRatio(const char* identifier =NULL);
+    /// Add shear modulus ratio subfield to auxliary fields.
+    void shearModulusRatio(void);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:

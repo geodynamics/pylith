@@ -257,21 +257,20 @@ pylith::materials::AuxiliaryFactory::referenceStrain(void)
 // ----------------------------------------------------------------------
 // Add Maxwell time subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::maxwellTime(const char* identifier)
+pylith::materials::AuxiliaryFactory::maxwellTime(void)
 { // maxwellTime
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("maxwellTime(identifier)");
+    PYLITH_JOURNAL_DEBUG("maxwellTime()");
 
     const char* fieldName = "maxwell_time";
-    const std::string& fieldNameFull = (identifier) ? std::string(fieldName) + std::string("_") + std::string(identifier) : fieldName;
     const PylithReal timeScale = _normalizer->timeScale();
 
     pylith::topology::Field::Description description;
-    description.label = fieldNameFull;
+    description.label = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
-    description.componentNames[0] = fieldNameFull;
+    description.componentNames[0] = fieldName;
     description.scale = timeScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
@@ -313,24 +312,22 @@ pylith::materials::AuxiliaryFactory::totalStrain(void)
 // ----------------------------------------------------------------------
 // Add viscous strain subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::viscousStrain(const char* identifier)
+pylith::materials::AuxiliaryFactory::viscousStrain(void)
 { // viscousStrain
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("viscousStrain(identifier)");
+    PYLITH_JOURNAL_DEBUG("viscousStrain()");
 
     const char* fieldName = "viscous_strain";
     const char* componentSuffixes[6] = { "_xx", "_yy", "_zz", "_xy", "_yz", "_xz" };
-    const std::string& fieldNameFull = (identifier) ? std::string(fieldName) + std::string("_") + std::string(identifier) : fieldName;
-
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
 
     pylith::topology::Field::Description description;
-    description.label = fieldNameFull;
+    description.label = fieldName;
     description.vectorFieldType = pylith::topology::Field::OTHER;
     description.numComponents = strainSize;
     description.componentNames.resize(strainSize);
     for (int i = 0; i < strainSize; ++i) {
-      description.componentNames[i] = std::string(fieldNameFull) + std::string(componentSuffixes[i]);
+        description.componentNames[i] = std::string(fieldName) + std::string(componentSuffixes[i]);
     } // for
     description.scale = 1.0;
     description.validator = NULL;
@@ -344,20 +341,19 @@ pylith::materials::AuxiliaryFactory::viscousStrain(const char* identifier)
 // ----------------------------------------------------------------------
 // Add shear modulus ratio subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::shearModulusRatio(const char* identifier)
+pylith::materials::AuxiliaryFactory::shearModulusRatio(void)
 { // shearModulusRatio
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("shearModulusRatio(identifier)");
+    PYLITH_JOURNAL_DEBUG("shearModulusRatio()");
 
     const char* fieldName = "shear_modulus_ratio";
-    const std::string& fieldNameFull = (identifier) ? std::string(fieldName) + std::string("_") + std::string(identifier) : fieldName;
 
     pylith::topology::Field::Description description;
-    description.label = fieldNameFull;
+    description.label = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
-    description.componentNames[0] = fieldNameFull;
+    description.componentNames[0] = fieldName;
     description.scale = 1.0;
     description.validator = NULL;
 

@@ -152,16 +152,10 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_auxFieldSetup(void) {
     _auxMaterialFactory->density(); // 0
     _auxMaterialFactory->shearModulus(); // 1
     _auxMaterialFactory->bulkModulus(); // 2
-    _auxMaterialFactory->maxwellTime("1"); // 3
-    _auxMaterialFactory->maxwellTime("2"); // 4
-    _auxMaterialFactory->maxwellTime("3"); // 5
-    _auxMaterialFactory->shearModulusRatio("1"); // 6
-    _auxMaterialFactory->shearModulusRatio("2"); // 7
-    _auxMaterialFactory->shearModulusRatio("3"); // 8
-    _auxMaterialFactory->totalStrain(); // 9
-    _auxMaterialFactory->viscousStrain("1"); // 10
-    _auxMaterialFactory->viscousStrain("2"); // 11
-    _auxMaterialFactory->viscousStrain("3"); // 12
+    _auxMaterialFactory->maxwellTime(); // 3   @charles :TODO: Update this to multi-component maxwellTime subfield.
+    _auxMaterialFactory->shearModulusRatio(); // 4   @charles :TODO: This function needs updating.
+    _auxMaterialFactory->totalStrain(); // 5
+    _auxMaterialFactory->viscousStrain(); // 6   @charles :TODO: Update this for bundling of Maxwell elements.
     if (_gravityField) {
         _auxMaterialFactory->gravityField(_gravityField);
     } // if
@@ -174,9 +168,9 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_auxFieldSetup(void) {
     } // if
 
     _updateStateVarsKernels["total_strain"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateTotalStrain;
-    _updateStateVarsKernels["viscous_strain_1"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain_1;
-    _updateStateVarsKernels["viscous_strain_2"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain_2;
-    _updateStateVarsKernels["viscous_strain_3"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain_3;
+
+    // :TODO: @charles Update kernel for bundling.
+    //_updateStateVarsKernels["viscous_strain"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain;
 
     PYLITH_METHOD_END;
 } // _auxFieldSetup
