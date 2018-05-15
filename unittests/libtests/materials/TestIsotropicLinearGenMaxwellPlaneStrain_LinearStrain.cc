@@ -414,8 +414,8 @@ protected:
 		_mydata->normalizer->densityScale(3.0e+3);
 		_mydata->normalizer->pressureScale(2.25e+10);
 		
-		_mydata->t = constants.t;
-		_mydata->dt = constants.dt;
+		_mydata->t = constants.t/_mydata->normalizer->lengthScale();
+		_mydata->dt = constants.dt/_mydata->normalizer->lengthScale();
 		_mydata->tshift = 1.0 / _mydata->dt;
 		
 		// solnDiscretizations set in derived class.
