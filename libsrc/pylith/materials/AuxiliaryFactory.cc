@@ -280,6 +280,67 @@ pylith::materials::AuxiliaryFactory::maxwellTime(void)
     PYLITH_METHOD_END;
 } // maxwellTime
 
+
+// ----------------------------------------------------------------------
+// Add Maxwell time subfield for Generalized Maxwell model to auxiliary fields.
+void
+pylith::materials::AuxiliaryFactory::maxwellTimeGeneralizedMaxwell(void)
+{ // maxwellTimeGeneralizedMaxwell
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("maxwellTimeGeneralizedMaxwell()");
+
+    const char* fieldName = "maxwell_time";
+    const char* componentNames[3] = { "maxwell_time_1", "maxwell_time_2",
+									  "maxwell_time_3" };
+    const PylithReal timeScale = _normalizer->timeScale();
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.vectorFieldType = pylith::topology::Field::OTHER;
+    description.numComponents = 3;
+    description.componentNames.resize(3);
+    for (int i = 0; i < 3; ++i) {
+        description.componentNames[i] = componentNames[i];
+	}
+    description.scale = timeScale;
+    description.validator = pylith::topology::FieldQuery::validatorPositive;
+
+    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
+    _subfieldQueryFn(fieldName,
+					 pylith::materials::Query::dbQueryMaxwellTimeGeneralizedMaxwell);
+
+    PYLITH_METHOD_END;
+} // maxwellTimeGeneralizedMaxwell
+
+// ----------------------------------------------------------------------
+// Add shear modulus ratio subfield for generalized Maxwell model to auxiliary fields.
+void
+pylith::materials::AuxiliaryFactory::shearModulusRatioGeneralizedMaxwell(void)
+{ // shearModulusRatioGeneralizedMaxwell
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("shearModulusRatioGeneralizedMaxwell()");
+
+    const char* fieldName = "shear_modulus_ratio";
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.vectorFieldType = pylith::topology::Field::OTHER;
+    description.numComponents = 3;
+    description.componentNames.resize(3);
+    const char* componentNames[3] = { "shear_modulus_ratio_1", "shear_modulus_ratio_2",
+									  "shear_modulus_ratio_3" };
+    for (int i = 0; i < 3; ++i) {
+        description.componentNames[i] = componentNames[i];
+	}
+    description.scale = 1.0;
+    description.validator = NULL;
+
+    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
+    _subfieldQueryFn(fieldName, pylith::materials::Query::dbQueryShearModulusRatioGeneralizedMaxwell);
+
+    PYLITH_METHOD_END;
+} // shearModulusRatioGeneralizedMaxwell
+
 // ----------------------------------------------------------------------
 // Add total strain subfield to auxiliary fields.
 void
@@ -339,21 +400,28 @@ pylith::materials::AuxiliaryFactory::viscousStrain(void)
 } // viscousStrain
 
 // ----------------------------------------------------------------------
-// Add shear modulus ratio subfield to auxiliary fields.
+// Add Generalized Maxwell viscous strain subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::shearModulusRatio(void)
-{ // shearModulusRatio
+pylith::materials::AuxiliaryFactory::viscousStrainGeneralizedMaxwell(void)
+{ // viscousStrainGeneralizedMaxwell
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("shearModulusRatio()");
+    PYLITH_JOURNAL_DEBUG("viscousStrainGeneralizedMaxwell()");
 
-    const char* fieldName = "shear_modulus_ratio";
+    const char* fieldName = "viscous_strain";
+    const char* componentElementNumbers[3] = { "_1", "_2", "_3" };
+    const char* componentSuffixes[6] = { "_xx", "_yy", "_zz", "_xy", "_yz", "_xz" };
+    const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
-    description.vectorFieldType = pylith::topology::Field::SCALAR;
-    description.numComponents = 1;
-    description.componentNames.resize(1);
-    description.componentNames[0] = fieldName;
+    description.vectorFieldType = pylith::topology::Field::OTHER;
+    description.numComponents = 3 * strainSize;
+    description.componentNames.resize(3 * strainSize);
+	for (int j = 0; j < 3; ++j) {
+		for (int i = 0; i < strainSize; ++i) {
+			description.componentNames[i] = std::string(fieldName) + std::string(componentElementNumbers[j]) + std::string(componentSuffixes[i]);
+		} // for i
+	} // for j
     description.scale = 1.0;
     description.validator = NULL;
 
@@ -361,6 +429,6 @@ pylith::materials::AuxiliaryFactory::shearModulusRatio(void)
     _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
-} // shearModulusRatio
+} // viscousStrainGeneralizedMaxwell
 
 // End of file

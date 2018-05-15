@@ -72,14 +72,21 @@ public:
     /// Add Maxwell time subfield to auxiliary fields.
     void maxwellTime(void);
 
+    /// Add Maxwell time subfield for Generalized Maxwell to auxiliary fields.
+    void maxwellTimeGeneralizedMaxwell(void);
+
+    /// Add shear modulus ratio subfield for Generalized Maxwell to auxiliary fields.
+    void shearModulusRatioGeneralizedMaxwell(void);
+
     /// Add total strain subfield to auxiliary fields.
     void totalStrain(void);
 
     /// Add viscous strain subfield to auxiliary fields.
     void viscousStrain(void);
 
-    /// Add shear modulus ratio subfield to auxliary fields.
-    void shearModulusRatio(void);
+    /// Add viscous strain subfield for Generalized Maxwell to auxiliary fields.
+    void viscousStrainGeneralizedMaxwell(void);
+
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
