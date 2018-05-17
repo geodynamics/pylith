@@ -152,10 +152,10 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_auxFieldSetup(void) {
     _auxMaterialFactory->density(); // 0
     _auxMaterialFactory->shearModulus(); // 1
     _auxMaterialFactory->bulkModulus(); // 2
-    _auxMaterialFactory->maxwellTimeGeneralizedMaxwell(); // 3   @charles :TODO: Update this to multi-component maxwellTime subfield.
-    _auxMaterialFactory->shearModulusRatioGeneralizedMaxwell(); // 4   @charles :TODO: This function needs updating.
+    _auxMaterialFactory->maxwellTimeGeneralizedMaxwell(); // 3
+    _auxMaterialFactory->shearModulusRatioGeneralizedMaxwell(); // 4
     _auxMaterialFactory->totalStrain(); // 5
-    _auxMaterialFactory->viscousStrainGeneralizedMaxwell(); // 6   @charles :TODO: Update this for bundling of Maxwell elements.
+    _auxMaterialFactory->viscousStrainGeneralizedMaxwell(); // 6
     if (_gravityField) {
         _auxMaterialFactory->gravityField(_gravityField);
     } // if
@@ -169,8 +169,7 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_auxFieldSetup(void) {
 
     _updateStateVarsKernels["total_strain"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateTotalStrain;
 
-    // :TODO: @charles Update kernel for bundling.
-    //_updateStateVarsKernels["viscous_strain"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain;
+    _updateStateVarsKernels["viscous_strain"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain;
 
     PYLITH_METHOD_END;
 } // _auxFieldSetup
