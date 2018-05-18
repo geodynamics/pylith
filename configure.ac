@@ -213,7 +213,7 @@ AC_REQUIRE_CPP
 AC_LANG(C++)
 CIT_SPATIALDATA_HEADER
 CIT_SPATIALDATA_LIB
-CIT_PYTHON_MODULE([spatialdata],[1.9.9])
+CIT_PYTHON_MODULE([spatialdata],[1.10.0])
 
 # DOXYGEN
 if test "$enable_documentation" = "yes" ; then
