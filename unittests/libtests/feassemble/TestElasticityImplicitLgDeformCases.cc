@@ -168,7 +168,7 @@ pylith::feassemble::TestElasticityImplicitLgDeformGrav2DLinear::setUp(void)
   const PylithScalar accScale = _data->lengthScale / (_data->timeScale * _data->timeScale);
   const PylithScalar g = 1.0e8 / accScale;
   const PylithScalar gravityDir[3] = { 0.0, -1.0, 0.0 };
-  _gravityField->gravAcceleration(g);
+  _gravityField->gravityAcc(g);
   _gravityField->gravityDir(gravityDir[0], gravityDir[1], gravityDir[2]);
 
   _material = new materials::ElasticPlaneStrain;
@@ -204,7 +204,7 @@ pylith::feassemble::TestElasticityImplicitLgDeformGrav2DQuadratic::setUp(void)
   const PylithScalar accScale = _data->lengthScale / (_data->timeScale * _data->timeScale);
   const PylithScalar g = 1.0e8 / accScale;
   const PylithScalar gravityDir[3] = { 0.0, -1.0, 0.0 };
-  _gravityField->gravAcceleration(g);
+  _gravityField->gravityAcc(g);
   _gravityField->gravityDir(gravityDir[0], gravityDir[1], gravityDir[2]);
 
   _material = new materials::ElasticPlaneStrain;
@@ -238,7 +238,7 @@ pylith::feassemble::TestElasticityImplicitLgDeformGrav3DLinear::setUp(void)
 
   const PylithScalar accScale = _data->lengthScale / (_data->timeScale * _data->timeScale);
   const PylithScalar g = 1.0e8 / accScale;
-  _gravityField->gravAcceleration(g);
+  _gravityField->gravityAcc(g);
 
   _material = new materials::ElasticIsotropic3D;
   CPPUNIT_ASSERT(_material);
@@ -272,7 +272,7 @@ pylith::feassemble::TestElasticityImplicitLgDeformGrav3DQuadratic::setUp(void)
 
   const PylithScalar accScale = _data->lengthScale / (_data->timeScale * _data->timeScale);
   const PylithScalar g = 1.0e8 / accScale;
-  _gravityField->gravAcceleration(g);
+  _gravityField->gravityAcc(g);
 
   _material = new materials::ElasticIsotropic3D;
   CPPUNIT_ASSERT(_material);
