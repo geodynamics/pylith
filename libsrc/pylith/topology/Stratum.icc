@@ -116,6 +116,7 @@ pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
       } // for
       err = ISCreateGeneral(PETSC_COMM_SELF, count, cells, PETSC_COPY_VALUES, &_indexSet);PYLITH_CHECK_ERROR(err);
       delete[] cells; cells = 0;
+      err = ISRestoreIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);_points=NULL;
       err = ISDestroy(&pointsIS);PYLITH_CHECK_ERROR(err);assert(!pointsIS);
     } // if
   } // if/else
