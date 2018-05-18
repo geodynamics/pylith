@@ -197,6 +197,8 @@ class EqInfoApp(Application):
         # Get slip at snapshot
         istep = self._findTimeStep(snapshot, timestamps)
         slip = h5['vertex_fields/slip'][istep,:,:]
+        if len(slip.shape) > 2:
+          slip = slip.squeeze(axis=0)
         
         cellsSlip = self._ptsToCells(slip, cells)
         cellsSlipMag = self._vectorMag(cellsSlip)
