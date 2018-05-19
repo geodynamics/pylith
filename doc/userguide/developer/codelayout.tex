@@ -1,0 +1,24 @@
+\chapter{Code Layout}
+\label{cha:code:layout}
+
+\section{Directory Structure}
+
+
+\begin{description}
+\item[\filename{applications}] Top-level application drivers (Python).
+\item[\filename{libsrc}] C++ source for PyLith library.
+\item[\filename{modulesrc}] SWIG interface files for C++ Python bindings.
+\item[\filename{pylith}] Python source code for PyLith Python modules.
+\item{\filename{doc}] Documentation.
+\item[\filename{examples}] PyLith example suite.
+\item{\filename{share}] Useful settings and configuration files.
+\item[\filename{unittests}] Python and C++ unit tests source files. Run using \filename{make check}.
+\item[\filename{tests_auto}] Full-scale tests. Run using \filename{make check}.
+\item{\filename{tests}] Full-scale tests that require manual checking of results.
+\item{\filename{travis}] Helper scripts for building PyLith in Travis-CI.
+\item{\filename{playpen}] Scratch area (obsolete). Use branches for scratch work.
+\end{description}
+  
+\section{Flow}
+
+

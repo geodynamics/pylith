@@ -1,0 +1,983 @@
+\chapter{Multiphysics Finite-Element Formulation}
+\label{cha:multiphysics:formulation}
+
+\section{General Finite-Element Formulation}
+
+We want to solve an equation in which the strong form of a partial
+differential equation can be expressed as $F(t,s,\dot{s}) = G(t,s)$,
+$s(t_0) = s_0$, where $F$ and $G$ are vector functions, $t$ is time,
+and $s$ is the solution vector.
+
+Using the finite-element method we manipulate the weak form of a
+governing equation involving a vector field $\vec{u}$ into integrals
+over the domain $\Omega$ with the form,
+\begin{equation}
+  \label{eqn:problem:form}
+  \int_\Omega \trialvec[u] \cdot \vec{f}_0(t,s,\dot{s}) + \nabla \trialvec[u] : \tensor{f}
+_1(t,s,\dot{s}) \, 
+d\Omega =
+  \int_\Omega \trialvec[u] \cdot \vec{g}_0(t,s) + \nabla \trialvec[u] : \tensor{g}_1(t,s) \, 
+d\Omega,
+\end{equation}
+where $\trialvec[u]$ is the trial function for field $\vec{u}$,
+$\vec{f}_0$ and $\vec{g}_0$ are vectors, and $\tensor{f}_1$ and
+$\tensor{g}_1$ are tensors. With multiple governing equations we will
+have multiple equations of this form, and the solution vector $s$,
+which we usually write as $\vec{s}$, will be composed of several
+different fields, such as displacement $\vec{u}$, velocity $\vec{v}$,
+pressure $p$, and temperature $T$.
+
+For consistency with the PETSc time stepping formulation, we call
+$G(t,s)$ the RHS function and call $F(t,s,\dot{s})$ the LHS (or I)
+function. Likewise, the Jacobian of $G(t,s)$ is the RHS Jacobian and
+the Jacobian of $F(t,s,\dot{s})$ is the LHS Jacobian. In most cases, we
+can take $F(t,s,\dot{s}) = \dot{s}$, or as close to this as
+possible. This results in miminal changes to the formulation to
+accommodate both implicit and explicit time stepping algorithms.
+
+Using a finite-element discretization we break up the domain and
+boundary integrals into sums over the cells and boundary faces,
+respectively. Using numerical quadrature those sums in turn involve
+sums over the values at the quadrature points with appropriate
+weights. Thus, computation of the RHS function boils down to
+point-wise evaluation of $\vec{g}_0(t,s)$ and $\tensor{g}_1(t,s)$, and
+computation of the LHS function boils down to point-wise evaluation of
+$\vec{f}_0(t,s,\dot{s})$ and $\tensor{f}_1(t,s,\dot{s})$.
+
+\subsection{Jacobian}
+
+The LHS Jacobian $J_F$ is $\frac{\partial F}{\partial s} + t_\mathit{shift}
+\frac{\partial F}{\partial \dot{s}}$ and the RHS Jacobian $J_G$ is
+$\frac{\partial G}{\partial s}$. We put the Jacobians for each equation in the form:
+\begin{align}
+  \label{eqn:jacobian:form}
+  J_F &= \int_\Omega \trialvec \cdot \tensor{J}_{f0}(t,s,\dot{s}) \cdot \basisvec
+  + \trialvec \cdot \tensor{J}_{f1}(t,s,\dot{s}) : \nabla \basisvec
+  + \nabla \trialvec : \tensor{J}_{f2}(t,s,\dot{s}) \cdot \basisvec
+  + \nabla \trialvec : \tensor{J}_{f3}(t,s,\dot{s}) : \nabla \basisvec \, d\Omega \\
+%
+  J_G &= \quad \int_\Omega \trialvec \cdot \tensor{J}_{g0}(t,s) \cdot \basisvec
+  + \trialvec \cdot \tensor{J}_{g1}(t,s) : \nabla \basisvec
+  + \nabla \trialvec : \tensor{J}_{g2}(t,s) \cdot \basisvec
+  + \nabla \trialvec : \tensor{J}_{g3}(t,s) : \nabla \basisvec \, d\Omega,
+\end{align}
+where $\basisvec$ is a basis function.  Expressed in index notation
+the Jacobian coupling solution field components $s_i$ and $s_j$ is
+\begin{equation}
+\label{eqn:jacobian:index:form}
+J^{s_is_j} = \int_\Omega \trialscalar_i J_0^{s_is_j} \basisscalar_j + \trialscalar_i 
+J_1^{s_js_jl} 
+\basisscalar_{j,l} + \trialscalar_{i,k} J_2^{s_is_jk} \basisscalar_j + \trialscalar_{i,k} 
+J_3^{s_is_jkl} 
+\basisscalar_{j,l} \, d\Omega, 
+\end{equation}
+It is clear that the tensors $J_0$, $J_1$, $J_2$, and $J_3$ have
+various sizes: $J_0(n_i,n_j)$, $J_1(n_i,n_j,d)$, $J_2(n_i,n_j,d)$,
+$J_3(n_i,n_j,d,d)$, where $n_i$ is the number of components in
+solution field $s_i$, $n_j$ is the number of components in solution
+field $s_j$, and $d$ is the spatial dimension.  Alternatively,
+expressed in discrete form, the Jacobian for the coupling between
+solution fields $s_i$ and $s_j$ is
+\begin{equation}
+  \label{eqn:jacobian:discrete:form}
+  J^{s_is_j} = J_{0}^{s_is_j} + J_{1}^{s_is_j} B + B^T J_{2}^{s_is_j} + B^T J_{3}^{s_is_j} B,
+\end{equation}
+where $B$ is a matrix of the derivatives of the basis functions and $B^T$
+is a matrix of the derivatives of the trial functions. 
+
+\subsection{PETSc TS Notes}
+
+\begin{itemize}
+\item If no LHS (or I) function is given, then the PETSc TS assumes $F(t,s,\dot{s}) = \dot{s}
+$.
+\item If no RHS function is given, then the PETSc TS assumes $G(t,s) = 0$.
+\item Explicit time stepping with the PETSc TS requires
+  $F(t,s,\dot{s}) = \dot{s}$.
+  \begin{itemize}
+  \item Because $F(t,s,\dot{s}) = \dot{s}$, we do not specify the
+    functions $\vec{f}_0(t,s,\dot{s})$ and $\tensor{f}_1(t,s,\dot{s})$
+    because the PETSc TS will assume this is the case if no LHS (or I)
+    function is given.
+  \item We also do not specify $J_F$ or $J_G$.
+  \item This leaves us with only needing to specify $\vec{g}_0(t,s)$
+    and $\tensor{g}_1(t,s)$.
+  \item The PETSc TS will verify that the LHS (or I) function is null.
+  \end{itemize}
+\end{itemize}
+
+\subsection{Explicit Time Stepping}
+
+For explicit time stepping with the PETSc TS, we need $F(t,s,\dot{s})
+= \dot{s}$. Using a finite-element formulation, $F(t,s,\dot{s})$
+generally involves integrals of the inertia over the domain. It is
+tempting to simply move these terms to the RHS, but that introduces
+inertial terms into the boundary conditions, which makes them less
+intuitive. Instead, we transform our equation into the form
+$F^*(t,s,\dot{s}) = \dot{s} = G^*(t,s)$ by writing $F(t,s,\dot{s}) = M
+\dot{s}$, so that $\dot{s} = M^{-1} G(t,s) = G^*(t,s)$. We take $M$ to
+be a lumped (diagonal) matrix, so that $M^{-1}$ is trivial to
+compute. In computing the RHS function, $G^*(t,s)$, we compute
+$G(t,s)$, then compute $M$ and $M^{-1}$, and then $M^{-1}G(t,s)$. For
+the elasticity equation with inertial terms, $M$ contains the mass
+matrix.
+
+\matt{(Comment from Brad) We need a mechanism to formulate this
+  diagonal mass matrix without allocating the sparse matrix. In other
+  words, we need a lumping version of DMPlexComputeJacobian\_Internal().}
+
+
+\matt{(Comment from Brad) Additionally, I think it is very important
+  that we have a way to control allocation of the sparse matrix. We do
+  not want to allocate portions that are not coupled, because it is
+  way too much memory. A simple way to do this would be to create an
+  array that is \#fields x \#fields and have the materials populate it
+  with values to indicate whether they couple those fields or not. We
+  could use a value to indicate if the Jacobian was diagonal or not as
+  well.}
+
+% ----------------------------------------------------------------------
+\section{Elasticity With Infinitesimal Strain and No Faults}
+
+We begin with the elasticity equation including the inertial term,
+\begin{gather}
+  \label{eqn:elasticity:strong:form}
+  \rho \frac{\partial^2\vec{u}}{\partial t^2} - \vec{f}(\vec{x},t) - \tensor{\nabla} \cdot 
+\tensor{\sigma}
+(\vec{u}) = \vec{0} \text{ in }\Omega, \\
+%
+  \label{eqn:bc:Neumann}
+  \tensor{\sigma} \cdot \vec{n} = \vec{\tau}(\vec{x},t) \text{ on }\Gamma_\tau, \\
+%
+  \label{eqn:bc:Dirichlet}
+  \vec{u} = \vec{u}_0(\vec{x},t) \text{ on }\Gamma_u,
+\end{gather}
+where $\vec{u}$ is the displacement vector, $\rho$ is the mass
+density, $\vec{f}$ is the body force vector, $\tensor{\sigma}$ is the
+Cauchy stress tensor, $\vec{x}$ is the spatial coordinate, and $t$ is
+time. We specify tractions $\vec{\tau}$ on boundary $\Gamma_\tau$, and
+displacements $\vec{u}_0$ on boundary $\Gamma_u$. Because both $\vec{\tau}$
+and $\vec{u}$ are vector quantities, there can be some spatial overlap
+of boundaries $\Gamma_\tau$ and $\Gamma_u$; however, a degree of freedom at
+any location cannot be associated with both prescribed displacements
+(Dirichlet) and traction (Neumann) boundary conditions simultaneously.
+
+\subsection{Notation}
+\begin{itemize}
+\item Unknowns
+  \begin{description}
+  \item[$\vec{u}$] Displacement field
+  \item[$\vec{v}$] Velocity field (if including inertial term)
+  \end{description}
+\item Derived quantities
+  \begin{description}
+    \item[$\tensor{\sigma}$] Stress tensor
+    \item[$\tensor{\epsilon}$] Strain tensor
+  \end{description}
+\item Constitutive parameters
+  \begin{description}
+  \item[$\mu$] Shear modulus
+  \item[$K$] Bulk modulus
+  \item[$\rho$] Density
+  \end{description}
+\item Source terms
+  \begin{description}
+    \item[$\vec{f}$] Body force per unit volume, for example $\rho \vec{g}$
+  \end{description}
+\end{itemize}
+
+\subsection{Neglecting Inertia}
+
+If we neglect the intertial term, then time dependence only arises
+from history-dependent constitutive equations. Considering the
+displacement $\vec{u}$ as the unknown, we have
+\begin{align}
+  \vec{s}^T &= (\vec{u})^T, \\
+%
+  \vec{0} &= \vec{f}(\vec{x},t) + \tensor{\nabla} \cdot \tensor{\sigma}(\vec{u}) \text{ in }
+\Omega, \\
+% Neumann
+  \tensor{\sigma} \cdot \vec{n} &= \vec{\tau}(\vec{x},t) \text{ on }\Gamma_\tau, \\
+% Dirichlet
+  \vec{u} &= \vec{u}_0(\vec{x},t) \text{ on }\Gamma_u.
+\end{align}
+We create the weak form by taking the dot product with the trial
+function $\trialvec[u]$ and integrating over the domain:
+\begin{equation}
+  0 = \int_\Omega \trialvec[u] \cdot \left( \vec{f}(t) + \tensor{\nabla} \cdot \tensor{\sigma}
+(\vec{u})  \right) 
+\, d\Omega.
+\end{equation}
+Using the divergence theorem and incorporating the Neumann bounday
+condition yields
+\begin{equation}
+  0 = \int_\Omega \trialvec[u] \cdot \vec{f}(t) + \nabla \trialvec[u] : -\tensor{\sigma}
+(\vec{u}) \, d\Omega + 
+\int_{\Gamma_\tau} \trialvec[u] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma.
+\end{equation}
+
+Identifying $F(t,s,\dot{s})$ and $G(t,s)$, we have
+\begin{alignat}{2}
+  F^u(t,s,\dot{s}) &= \vec{0},
+  & \qquad
+  G^u(t,s) &= \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{g_0^u} + \nabla 
+\trialvec[u] : 
+\eqnannotate{-\tensor{\sigma}(\vec{u})}{g_1^u} \, d\Omega + \int_{\Gamma_\tau} \trialvec[u] 
+\cdot 
+\eqnannotate{\vec{\tau}(\vec{x},t)}{g_0^u} \, d\Gamma.
+\end{alignat}
+
+
+\subsubsection{Jacobians}
+
+With the solution composed of the displacement field and no LHS function, we only have 
+Jacobians for the RHS,
+\begin{align}
+  J_G^{uu} &= \frac{\partial G^u}{\partial u} = \int_\Omega \nabla \trialvec[u] : 
+\frac{\partial}{\partial u}(-
+\tensor{\sigma}) \, d\Omega 
+  = \int_\Omega \nabla \trialvec[u] : -\tensor{C} : \frac{1}{2}(\nabla + \nabla^T)\basisvec[u] 
+\, d\Omega 
+  = \int_\Omega \trialscalar[v]_{i,k} \, \eqnannotate{\left( -C_{ikjl} \right)}{J_{g3}^{uu}}  
+\, 
+\basisscalar[u]_{j,l}\, d\Omega
+\end{align}
+
+\subsection{Including Inertia}
+
+For convenience we cast the elasticity equation in the form of a first order
+equation by considering both the displacement $\vec{u}$ and velocity $\vec{v}$
+as unknowns,
+\begin{align}
+  \vec{s}^T &= (\vec{u} \quad \vec{v})^T, \\
+%
+  \label{eqn:velocity:strong:form}
+  \frac{\partial\vec{u}}{\partial t} &= \vec{v}, \\
+%
+  \label{eqn:elasticity:order1:strong:form}
+  \rho \frac{\partial\vec{v}}{\partial t} &= \vec{f}(\vec{x},t) + \tensor{\nabla} \cdot 
+\tensor{\sigma}(\vec{u}) 
+\text{ in }\Omega, \\
+% Neumann
+  \tensor{\sigma} \cdot \vec{n} &= \vec{\tau}(\vec{x},t) \text{ on }\Gamma_\tau, \\
+% Dirichlet
+  \vec{u} &= \vec{u}_0(\vec{x},t) \text{ on }\Gamma_u.
+\end{align}
+
+For trial functions $\trialvec[u]$ and $\trialvec[v]$ we write the weak form as
+\begin{align}
+  \int_\Omega \trialvec[u] \cdot \left( \frac{\partial \vec{u}}{\partial t} \right) \, d\Omega 
+&= 
+  \int_\Omega \trialvec[u] \cdot \vec{v} \, d\Omega, \\
+%
+  \int_\Omega \trialvec[v] \cdot \left( \rho \frac{\partial \vec{v}}{\partial t} \right) \, 
+d\Omega &= 
+  \int_\Omega \trialvec[v] \cdot \left( \vec{f}(\vec{x},t) + \tensor{\nabla} \cdot 
+\tensor{\sigma}(\vec{u})  
+\right) \, d\Omega.
+%
+\end{align}
+Using the divergence theorem and incorporating the Neumann boundary
+conditions, we can rewrite the second equation as
+\begin{equation}
+  \label{eqn:elasticity:displacement}
+  \int_\Omega \trialvec[v] \cdot \left( \rho \frac{\partial \vec{v}}{\partial t} \right) \, 
+d\Omega =
+  \int_\Omega \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}
+(\vec{u}) \, d\Omega + 
+\int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma.
+\end{equation}
+
+% ----------------------------------------------------------------------
+\subsubsection{Implicit Time Stepping}
+The resulting system of equations to solve  is
+\begin{align}
+  \label{eqn:elasticity:velocity:implicit}
+  \int_\Omega \trialvec[u] \cdot \left( \frac{\partial \vec{u}}{\partial t} \right) \, d\Omega 
+&= 
+  \int_\Omega \trialvec[u] \cdot \vec{v} \, d\Omega, \\
+%
+  \label{eqn:elasticity:displacement:implicit}
+  \int_\Omega \trialvec[v] \cdot \left( \rho \frac{\partial \vec{v}}{\partial t} \right) \, 
+d\Omega &=
+  \int_\Omega \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}
+(\vec{u}) \, d\Omega + 
+\int_{\Gamma_\tau} \trialvec[u] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma.
+\end{align}
+Identifying $F(t,s,\dot{s})$ and $G(t,s)$, we have
+\begin{alignat}{2}
+  F^u(t,s,\dot{s}) &= \int_\Omega \trialvec[u] \cdot \eqnannotate{\left( \frac{\partial 
+\vec{u}}{\partial t} 
+\right)}{f_0^u} \, d\Omega,
+  & \qquad
+  G^u(t,s) &= \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{v}}{g_0^u} \, d\Omega, \\
+  %  
+  F^v(t,s,\dot{s}) &= \int_\Omega \trialvec[v] \cdot \eqnannotate{\left( \rho \frac{\partial 
+\vec{v}}{\partial t} 
+\right)}{f_0^v} \, d\Omega,
+  & \qquad
+  G^v(t,s) &= \int_\Omega \trialvec[v] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{g_0^v} + \nabla 
+\trialvec[v] : 
+\eqnannotate{-\tensor{\sigma}(\vec{u})}{g_1^v} \, d\Omega + \int_{\Gamma_\tau} \trialvec[u] 
+\cdot 
+\eqnannotate{\vec{\tau}(\vec{x},t)}{g_0^v} \, d\Gamma.
+\end{alignat}
+
+
+\subsubsection{Jacobians}
+
+With two fields we have four Jacobians for each side of the equation associated with the 
+coupling of the two 
+fields,
+\begin{align}
+  J_F^{uu} &= \frac{\partial F^u}{\partial u} + t_{shift} \frac{\partial F^u}{\partial 
+\dot{u}} = \int_\Omega 
+\trialvec[u] \cdot t_\mathit{shift}\,\basisvec[u] \, d\Omega = \int_\Omega \trialscalar[u]_i 
+\, 
+\eqnannotate{t_\mathit{shift} \delta_{ij}}{J_{f0}^{uu}} \, \basisscalar[u]_j \, d\Omega \\
+  J_F^{uv} &= \frac{\partial F^u}{\partial v} + t_{shift} \frac{\partial F^u}{\partial 
+\dot{v}} = \tensor{0} \\
+  J_F^{vu} &= \frac{\partial F^v}{\partial u} + t_{shift} \frac{\partial F^v}{\partial 
+\dot{u}} = \tensor{0} \\
+  J_F^{vv} &= \frac{\partial F^v}{\partial v} + t_{shift} \frac{\partial F^v}{\partial 
+\dot{v}} = \int_\Omega 
+\trialvec[v] \cdot t_\mathit{shift}\,\rho\,\basisvec[v] \, d\Omega = \int_\Omega 
+\trialscalar[v]_i \, 
+\eqnannotate{t_\mathit{shift} \, \rho \, \delta_{ij}}{J_{f0}^{vv}} \, \basisscalar[v]_j \, 
+d\Omega \\
+  J_G^{uu} &= \frac{\partial G^u}{\partial u} = \tensor{0} \\
+  J_G^{uv} &= \frac{\partial G^u}{\partial v} = \int_\Omega \trialvec[u] \cdot \basisvec[v] \, 
+d\Omega = 
+\int_\Omega \trialscalar[u]_i \, \eqnannotate{\delta_{ij}}{J_{g0}^{uv}} \, \basisscalar[v]_j 
+\, d\Omega \\
+  J_G^{vu} &= \frac{\partial G^v}{\partial u} = \int_\Omega \nabla \trialvec[v] : 
+\frac{\partial}{\partial u}(-
+\tensor{\sigma}) \, d\Omega 
+  = \int_\Omega \nabla \trialvec[v] : -\tensor{C} : \frac{1}{2}(\nabla + \nabla^T)\basisvec[u] 
+\, d\Omega 
+  = \int_\Omega \trialscalar[v]_{i,k} \, \eqnannotate{\left( -C_{ikjl} \right)}{J_{g3}^{vu}}  
+\, 
+\basisscalar[u]_{j,l}\, d\Omega \\
+  J_G^{vv} &= \frac{\partial G^v}{\partial v} = \tensor{0}
+\end{align}
+
+% ----------------------------------------------------------------------
+\subsection{Explicit Time Stepping}
+Recall that explicit time stepping requires $F(t,s,\dot{s})=\dot{s}$. We write $F^*(t,s,
+\dot{s}) = \dot{s}$ and
+$G^*(t,s) = J_F^{-1}G(t,s)$ and we do not provide functions for $f_0$ and $f_1$. Thus, our 
+system of equations to 
+solve is
+\begin{align}
+  \label{eqn:elasticity:velocity:explicit}
+  \int_\Omega \trialvec[u] \cdot \frac{\partial \vec{u}}{\partial t} \, d\Omega &= 
+  \int_\Omega \trialvec[u] \cdot \vec{v} \, d\Omega, \\
+%
+  \label{eqn:elasticity:displacement:explicit}
+  \int_\Omega \trialvec[v] \cdot \frac{\partial \vec{v}}{\partial t} \, d\Omega &=
+  \frac{1}{\int_\Omega \trialvec[v] \cdot \rho\,\basisvec[v] \, d\Omega} \left( \int_\Omega 
+\trialvec[v] \cdot 
+\vec{f}(\vec{x},t) + \nabla \trialvec[u] : -\tensor{\sigma}(\vec{u}) \, d\Omega + 
+\int_{\Gamma_\tau} \trialvec[u] 
+\cdot \vec{\tau}(\vec{x},t) \, d\Gamma \right).
+\end{align}
+Identifying $F(t,s,\dot{s})$ and $G(t,s)$, we have
+\begin{align}
+  F^u(t,s,\dot{s}) &= \int_\Omega \trialvec[u] \cdot \frac{\partial \vec{u}}{\partial t} \, 
+d\Omega, \\
+%
+  G^u(t,s) &= \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{v}}{g_0^u} \, d\Omega, \\
+  %  
+  F^v(t,s,\dot{s}) &= \int_\Omega \trialvec[v] \cdot \frac{\partial \vec{v}}{\partial t}  \, 
+d\Omega, \\
+%
+  G^v(t,s) &= \frac{1}{\int_\Omega \trialvec[v] \cdot {\eqnannotate{\rho}{J_{f0}^{vv}}}
+\basisvec[v] \, d\Omega} 
+\left( \int_\Omega \trialvec[v] \cdot \eqnannotate{\vec{f}(t)}{g_0^v} + \nabla \trialvec[v] : 
+\eqnannotate{-
+\tensor{\sigma}(\vec{u})}{g_1^v} \, d\Omega + \int_{\Gamma_\tau} \trialvec[v] \cdot 
+\eqnannotate{\vec{\tau}
+(\vec{x},t)}{g_0^v} \, d\Gamma \right).
+\end{align}
+where $J_{f0}^{uu} = \tensor{I}$, and we refer to $J_F$ as the LHS
+(or I) Jacobian for explicit time stepping.
+
+% ----------------------------------------------------------------------
+\subsection{Elasticity Constitutive Models}
+
+The Jacobian for the elasticity equation is
+\begin{equation}
+J_{G}^{vu} = \frac{\partial G^{v_i}}{\partial u_j}.
+\end{equation}
+In computing the derivative, we consider the linearized form:
+\begin{align}
+  \sigma_{ik} &= C_{ikjl} \epsilon_{jl} \\
+  \sigma_{ik} &= C_{ikjl} \frac{1}{2} ( u_{j,l} + u_{l,j} ) \\
+  \sigma_{ik} &= \frac{1}{2} ( C_{ikjl} + C_{iklj} ) u_{j,l} \\
+  \sigma_{ik} &= C_{ikjl} u_{j,l} \\
+\end{align}
+In computing the Jacobian, we take the derivative of the stress tensor with respect to the 
+displacement field,
+\begin{equation}
+  \frac{\partial}{\partial u_j} \sigma_{ik} = C_{ikjl} \basisscalar[u]_{j,l},
+\end{equation}
+so we have
+\begin{equation}
+\boxed{
+  J_{g3}^{vu}(i,j,k,l) = -C_{ikjl}
+}
+\end{equation}
+For many elasticity constitutive models we prefer to separate the
+stress into the mean stress and deviatoric stress:
+\begin{gather}
+  \tensor{\sigma} = \sigma^\mathit{mean} \tensor{I} + \tensor{\sigma}^\mathit{dev} \text{, 
+where}\\
+  \sigma^\mathit{mean} = \frac{1}{3} \Tr(\tensor{\sigma}) = \frac{1}{3} (\sigma_{11} + 
+\sigma_{22} + \sigma_{33}).
+\end{gather}
+Sometimes it is convenient to use pressure (positive pressure corresponds to compression) 
+instead of the mean 
+stress:
+\begin{gather}
+  \tensor{\sigma} = -p \tensor{I} + \tensor{\sigma}^\mathit{dev} \text{, where}\\
+  p = -\frac{1}{3} \Tr(\tensor{\sigma}).
+\end{gather}
+
+The Jacobian with respect to the deviatoric stress is
+\begin{align}
+  \frac{\partial \sigma^\mathit{dev}_{ik}}{\partial u_j}  &= \frac{\partial}{\partial u_j} 
+\left(\sigma_{ik} - 
+\frac{1}{3} \sigma_{mm} \delta_{ik} \right) \\
+  \frac{\partial \sigma^\mathit{dev}_{ik}}{\partial u_j}  &= C_{ikjl} \basisscalar[u]_{j,l} - 
+\frac{1}{3} C_{mmjl} 
+\delta_{ik} \basisscalar[u]_{j,l}.
+\end{align}
+We call these modified elastic constantas $C^\mathit{dev}_{ikjl}$, so that we have
+\begin{equation}
+\boxed{
+  C^\mathit{dev}_{ikjl} = C_{ikjl} - \frac{1}{3} C_{mmjl} \delta_{ik}.
+}
+\end{equation}.
+
+% ----------------------------------------------------------------------
+\subsubsection{Isotropic Linear Elasticity}
+
+We implement isotropic linear elasticity both with and without a
+reference stress-strain state. With a linear elastic material it is
+often convenient to compute the deformation relative to an unknown
+initial stress-strain state. Furthermore, when we use an initial
+undeformed configuration with zero stress and strain, the reference
+stress and strain are zero, so this presents a simplifcation of the
+more general case of the stress-strain state relative to the reference
+stress-strain state.
+
+Without a reference stress-strain state, we have
+\begin{equation}
+  \sigma_{ij} = \lambda \epsilon_{kk} \delta_{ij} + 2\mu\epsilon_{ij},
+\end{equation}
+and with a reference stress-strain state, we have
+\begin{equation}
+  \sigma_{ij} = \sigma_{ij}^\mathit{ref} + \lambda \left(\epsilon_{kk} - \epsilon_{kk}
+^\mathit{ref}\right)
+\delta_{ij} + 2\mu\left(\epsilon_{ij}-\epsilon_{ij}^\mathit{ref}\right).
+\end{equation}
+The mean stress is
+\begin{align}
+  \sigma^\mathit{mean} &= \frac{1}{3} \sigma_{kk}, \\
+  \sigma^\mathit{mean} &= \frac{1}{3} \sigma_{kk}^\mathit{ref} + \left(\lambda+\frac{2}
+{3}\mu\right)
+\left(\epsilon_{kk}-\epsilon_{kk}^\mathit{ref}\right),
+\end{align}
+\begin{equation}
+  \boxed{
+  \sigma^\mathit{mean} = \frac{1}{3} \sigma_{kk}^\mathit{ref} + K \left(\epsilon_{kk}-
+\epsilon_{kk}^\mathit{ref}
+\right),
+}%boxed
+\end{equation}
+where $K=\lambda+2\mu/3$ is the bulk modulus. 
+If the reference stress and reference strain are both zero, then this reduces to
+\begin{equation}
+  \boxed{
+  \sigma^\mathit{mean} = K \epsilon_{kk}.
+}%boxed
+\end{equation}
+The deviatoric stress is
+\begin{align}
+  \sigma_{ij}^\mathit{dev} &= \sigma_{ij} - \sigma^\mathit{mean}\delta_{ij}, \\
+  \sigma_{ij}^\mathit{dev} &= \sigma_{ij}^\mathit{ref} + \lambda\left(\epsilon_{kk}-
+\epsilon_{kk}^\mathit{ref}
+\right)\delta_{ij} + 2\mu\left(\epsilon_{ij}-\epsilon_{ij}^\mathit{ref}\right) - 
+\left(\frac{1}{3}\sigma_{kk}
+^\mathit{ref} + \left(\lambda+\frac{2}{3}\mu\right)\left(\epsilon_{kk}-\epsilon_{kk}
+^\mathit{ref}\right)\right)
+\delta_{ij}, \\
+  \sigma_{ij}^\mathit{dev} &= \sigma_{ij}^\mathit{ref} -\frac{1}{3}\sigma_{kk}^\mathit{ref}
+\delta_{ij} + 
+2\mu\left(\epsilon_{ij}-\epsilon_{ij}^\mathit{ref}\right) - \frac{2}{3}\mu\left(\epsilon_{kk}-
+\epsilon_{kk}
+^\mathit{ref}\right)\delta_{ij},
+\end{align}
+\begin{equation}
+  \boxed{
+  \sigma_{ij}^\mathit{dev} = \left\{ \begin{array}{lcr}
+      \sigma_{ii}^\mathit{ref} -\frac{1}{3}\sigma_{kk}^\mathit{ref} + 2\mu\left(\epsilon_{ii}-
+\epsilon_{ii}
+^\mathit{ref}\right) - \frac{2}{3}\mu\left(\epsilon_{kk}-\epsilon_{kk}^\mathit{ref}\right) & 
+\text{if} & i = j, \\
+      \sigma_{ij}^\mathit{ref} + 2\mu\left(\epsilon_{ij}-\epsilon_{ij}^\mathit{ref}\right) & 
+\text{if} & i \neq j.
+    \end{array} \right.
+}%boxed
+\end{equation}
+If the reference stress and reference strain are both zero, then this reduces to
+\begin{equation}
+  \boxed{
+  \sigma_{ij}^\mathit{dev} = \left\{ \begin{array}{lcr}
+      2\mu\epsilon_{ii} - \frac{2}{3}\mu\epsilon_{kk} & \text{if} & i = j, \\
+      2\mu\epsilon_{ij} & \text{if} & i \neq j.
+    \end{array} \right.
+  }%boxed
+\end{equation}
+
+For isotropic linear elasticity
+\begin{align}
+  C_{1112} &= C_{1113} = C_{1113} = C_{1121} = C_{1123} = C_{1131} = C_{1132} = 0\\
+  C_{1211} &= C_{1213} = C_{1222} = C_{1223} = C_{1231} = C_{1232} = C_{1233} = 0,
+\end{align}
+and
+\begin{align}
+  C_{1111} = C_{2222} = C_{3333} &= \lambda + 2 \mu, \\
+  C_{1122} = C_{1133} = C_{2233} &= \lambda, \\
+  C_{1212} = C_{2323} = C_{1313} &= \mu.
+\end{align}
+The deviatoric elastic constants are:
+\begin{align}
+  C^\mathit{dev}_{1111} = C^\mathit{dev}_{2222} = C^\mathit{dev}_{3333} &= \frac{4}{3}\mu, \\
+  C^\mathit{dev}_{1122} = C^\mathit{dev}_{1133} = C^\mathit{dev}_{2233} &= -\frac{2}{3}\mu, \\
+  C^\mathit{dev}_{1212} = C^\mathit{dev}_{2323} = C^\mathit{dev}_{1313} &= \mu.
+\end{align}
+
+\subsubsection{Isotropic Generalized Maxwell Viscoelasticity}
+
+We use the same general formulation for both the simple Maxwell
+viscoelastic model and the generalized Maxwell model (several Maxwell
+models in parallel). We implement the Maxwell models both with and
+without a reference stress-strain state. Note that it is also possible
+to specify an initial state variable value (viscous strain). Viscous
+flow is completely deviatoric, so we split the stress into volumetric
+and deviatoric parts, as described above.  The volumetric part is
+identical to that of an isotropic elastic material. The deviatoric
+part is given by:
+\begin{equation}
+  \sigma^\mathit{dev}_{ij}\left(t\right)=2\mu_{tot}\left(\mu_{0}\epsilon^\mathit{dev}_{ij}
+    \left(t\right)+\sum_{m=1}^{N}\mu_{m}h^{m}_{ij}\left(t\right)-\epsilon^\mathit{refdev}_{ij}
+    \right)+\sigma^\mathit{refdev}_{ij},
+\end{equation}
+where $\mu_{tot}$ is the total shear modulus of the model, $\mu_{0}$
+is the fraction of the shear modulus accommodated by the elastic
+spring in parallel with the Maxwell models, the $\mu_{m}$ are the
+fraction of the shear modulus accommodated by each Maxwell model
+spring, and $\epsilon^{\mathit{refdev}}_{ij}$ and
+$\sigma^{\mathit{refdev}}_{ij}$ are the reference deviatioric strain
+and stress, respectively. The viscous strain is:
+\begin{equation}
+h^{m}_{ij}\left(t\right)=\exp\frac{-\Delta
+  t}{\tau_{m}}h^{m}_{ij}\left(t_{n}\right)+\Delta h^{m}_{ij},
+\end{equation}
+where $t_{n}$ is a time between $t=0$ and $t=t$, $\Delta
+h^{m}_{ij}$ is the viscous strain between $t=t_{n}$ and
+$t=t$, and $\tau_{m}$ is the Maxwell time:
+\begin{equation}
+  \tau_{m}=\frac{\eta_{m}}{\mu_{tot}\mu_{m}}.
+\end{equation}
+Approximating the strain rate as constant over each time step,
+this is given as:
+\begin{equation}
+\Delta h^{m}_{ij}=\frac{\tau_{m}}{\Delta t}\left(1-\exp\frac{-\Delta
+  t}{\tau_{m}}\right)\left(\epsilon^{\mathit{dev}}_{ij}\left(t\right)-\epsilon^{\mathit{dev}}_{ij}\left(t_{n}\right)\right)=\Delta
+h^{m}\left(\epsilon^{\mathit{dev}}_{ij}\left(t\right)-\epsilon^{\mathit{dev}}_{ij}\left(t_n\right)\right).
+\end{equation}
+The approximation is singular for zero time steps, but a series
+expansion may be used for small time-step sizes:
+\begin{equation}
+  \Delta h^{m}\approx1-\frac{1}{2}\left(\frac{\Delta
+    t}{\tau_{m}}\right)+\frac{1}{3!}\left(\frac{\Delta
+    t}{\tau_{m}}\right)^{2}-\frac{1}{4!}\left(\frac{\Delta
+    t}{\tau_{m}}\right)^{3}+\cdots\,.
+\end{equation}
+This converges with only a few terms.
+
+
+% ----------------------------------------------------------------------
+\section{Incompressible Isotropic Elasticity with Infinitesimal Strain (Bathe) and No Faults}
+
+Building from the elasticity equation
+(equations~\ref{eqn:velocity:strong:form}
+and~\ref{eqn:elasticity:order1:strong:form}), we consider an
+incompressible material. As the bulk modulus ($K$) approaches
+infinity, the volumetric strain ($\Tr(\epsilon)$) approaches zero and
+the pressure remains finite, $p = -K \Tr(\epsilon)$. We consider
+pressure $p$ as an independent variable and decompose the stress into the
+pressure and deviatoric components. This leads to the following set of
+governing equations:
+\begin{gather}
+  % Solution
+  \vec{s}^T = \left( \vec{u} \ \vec{v} \ p \right)^T, \\
+  % Displacement
+  \frac{\partial\vec{u}(t)}{\partial t} = \vec{v}(t), \\
+  % Velocity
+  \rho \frac{\partial\vec{v}(t)}{\partial t} = \vec{f}(t) + \tensor{\nabla} \cdot 
+\tensor{\sigma}(\vec{u}) 
+\text{ in }\Omega, \\
+  % Pressure
+  0 = \vec{\nabla} \cdot \vec{u} + \frac{p}{K}, \\
+  % Neumann
+  \tensor{\sigma} \cdot \vec{n} = \vec{\tau} \text{ on }\Gamma_\tau, \\
+  % Dirichlet
+  \vec{u} = \vec{u}_0 \text{ on }\Gamma_u.
+\end{gather}
+
+Using trial functions $\trialvec[u]$, $\trialvec[v]$, and $\trialscalar[p]$ and
+incorporating the Neumann boundary conditions, we write the weak form
+as
+\begin{gather}
+  % Displacement
+  \int_\Omega \trialvec[u] \cdot \left( \frac{\partial \vec{u}(t)}{\partial t} \right) \, 
+d\Omega = 
+  \int_\Omega \trialvec[u] \cdot \vec{v}(t) \, d\Omega, \\
+  % Velocity
+  \int_\Omega \trialvec[v] \cdot \left( \rho \frac{\partial \vec{v}(t)}{\partial t} \right) \, 
+d\Omega = 
+  \int_\Omega \trialvec[v] \cdot \vec{f}(t) + \nabla \trialvec[v] : \left(p\tensor{I}-
+\tensor{\sigma}^\mathit{dev}
+(\vec{u})\right)\, d\Omega + \int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(t) \, d\Gamma, \
+\
+  % Pressure
+  0 = \int_\Omega \trialscalar[p] \cdot \left(\vec{\nabla} \cdot \vec{u} + \frac{p}{K} \right) 
+\, d\Omega.
+\end{gather}
+
+\subsection{Implicit Time Stepping}
+The resulting system of equations to solve  is
+\begin{gather}
+  \label{eqn:imcompressible:elasticity:velocity}
+  \int_\Omega \trialvec[u] \cdot \eqnannotate{\left( \frac{\partial \vec{u}(t)}{\partial t} 
+\right)}{f_0^u} \, 
+d\Omega = 
+  \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{v}(t)}{g_0^u} \, d\Omega, \\
+%
+  \label{eqn:incompressible:elasticity:displacement:implicit}
+  \int_\Omega \trialvec[v] \cdot \eqnannotate{\left( \rho \frac{\partial \vec{v}(t)}{\partial 
+t} \right)}{f_0^v} 
+\, d\Omega =
+  \int_\Omega \trialvec[v] \cdot \eqnannotate{\vec{f}(t)}{g_0^v} + \nabla \trialvec[v] : 
+\eqnannotate{p\tensor{I}-
+\tensor{\sigma}^\mathit{dev}(\vec{u})}{g_1^v} \, d\Omega + \int_{\Gamma_\tau} \trialvec[v] 
+\cdot 
+\eqnannotate{\vec{\tau}(t)}{g_0^v} \, d\Gamma, \\
+%
+  \label{eqn:incompressible:elasticity:pressure:implicit}
+  0 = \int_\Omega \trialscalar[p] \cdot \eqnannotate{\left(\vec{\nabla} \cdot \vec{u} + 
+\frac{p}{K} \right)}
+{g_0^p} \, d\Omega.
+\end{gather}
+
+
+\subsubsection{Jacobians}
+
+With three fields we have nine Jacobians for the LHS and RHS associated with the coupling of 
+the three fields.
+\begin{align}
+% J_F  
+  J_F^{uu} &= \frac{\partial F^u}{\partial u} + t_{shift} \frac{\partial F^u}{\partial 
+\dot{u}} = \int_\Omega 
+\trialvec[u] \cdot t_\mathit{shift}\,\basisvec[u] \, d\Omega = \int_\Omega \trialscalar[u]_i 
+\, 
+\eqnannotate{t_\mathit{shift} \delta_{ij}}{J_{f0}^{uu}} \, \basisscalar[u]_j \, d\Omega \\
+  J_F^{uv} &= \frac{\partial F^u}{\partial v} + t_{shift} \frac{\partial F^u}{\partial 
+\dot{v}} = \tensor{0} \\
+  J_F^{up} &= \frac{\partial F^u}{\partial p} + t_{shift} \frac{\partial F^u}{\partial 
+\dot{p}} = \tensor{0} \\
+%
+  J_F^{vu} &= \frac{\partial F^v}{\partial u} + t_{shift} \frac{\partial F^v}{\partial 
+\dot{u}} = \tensor{0} \\
+  J_F^{vv} &= \frac{\partial F^v}{\partial v} + t_{shift} \frac{\partial F^v}{\partial 
+\dot{v}} = \int_\Omega 
+\trialvec[v] \cdot t_\mathit{shift}\,\rho\,\basisvec[v] \, d\Omega = \int_\Omega 
+\trialscalar[v]_i \, 
+\eqnannotate{t_\mathit{shift} \, \rho \, \delta_{ij}}{J_{f0}^{vv}} \, \basisscalar[v]_j \, 
+d\Omega \\
+  J_F^{vp} &= \frac{\partial F^v}{\partial p} + t_{shift} \frac{\partial F^v}{\partial 
+\dot{p}} = \tensor{0} \\
+%
+  J_F^{pu} &= \frac{\partial F^p}{\partial u} + t_{shift} \frac{\partial F^p}{\partial 
+\dot{u}} = \tensor{0} \\
+  J_F^{pv} &= \frac{\partial F^p}{\partial v} + t_{shift} \frac{\partial F^p}{\partial 
+\dot{v}} = \tensor{0} \\
+  J_F^{pp} &= \frac{\partial F^p}{\partial p} + t_{shift} \frac{\partial F^p}{\partial 
+\dot{p}} = \tensor{0} \\
+%
+% J_G
+  J_G^{uu} &= \frac{\partial G^u}{\partial u} = \tensor{0} \\
+  J_G^{uv} &= \frac{\partial G^u}{\partial v} = \int_\Omega \trialvec[u] \cdot \basisvec[v] \, 
+d\Omega = 
+\int_\Omega \trialscalar[u]_i \, \eqnannotate{\delta_{ij}}{J_{g0}^{uv}} \, \basisscalar[v]_j 
+\, d\Omega \\
+  J_G^{up} &= \frac{\partial G^u}{\partial p} = \tensor{0} \\
+%
+  J_G^{vu} &= \frac{\partial G^v}{\partial u} = \int_\Omega \nabla \trialvec[u] : 
+\frac{\partial}{\partial u}(-
+\tensor{\sigma}^\mathit{dev}) \, d\Omega 
+  = \int_\Omega \nabla \trialvec[u] : -\tensor{C} : \frac{1}{2}(\nabla + \nabla^T)\basisvec[u] 
+\, d\Omega 
+  = \int_\Omega \trialscalar[v]_{i,k} \, \eqnannotate{\left(-C^\mathit{dev}_{ikjl}\right)}
+{J_{g3}^{vu}}  \, 
+\basisscalar[u]_{j,l}\, d\Omega \\
+  J_G^{vv} &= \frac{\partial G^v}{\partial v} = \tensor{0} \\
+  J_G^{vp} &= \frac{\partial G^v}{\partial p} = \int_\Omega \nabla\trialvec[v] : \tensor{I} 
+\basisscalar[p] \, 
+d\Omega = \int_\Omega \trialscalar[v]_{i,j} : \eqnannotate{\delta_{ij}}{J_{g2}^{vp}} \, 
+\basisscalar[p] \, d\Omega 
+\\
+%
+  J_G^{pu} &= \frac{\partial G^p}{\partial u} = \int_\Omega \trialscalar[p] (\vec{\nabla} 
+\cdot \basisvec[u]) \, 
+d\Omega = \int_\Omega \trialscalar[p] \eqnannotate{\delta_{ij}}{J_{g1}^{pu}} 
+\basisscalar[u]_{i,j}) \, d\Omega\\
+  J_G^{pv} &= \frac{\partial G^p}{\partial v} = \tensor{0} \\
+  J_G^{pp} &= \frac{\partial G^p}{\partial p} = \int_v \trialscalar[p] \eqnannotate{\frac{1}
+{K}}{J_{g1}^{pu}} 
+\basisscalar[p] \, d\Omega
+\end{align}
+
+
+\subsection{Explicit Time Stepping}
+Recall that explicit time stepping requires
+$F(t,s,\dot{s})=\dot{s}$. As a result, we use the time derivative of
+the pressure equation. We write $F^*(t,s,\dot{s}) = \dot{s}$ and
+$G^*(t,s) = M^{-1}G(t,s)$ and we do not provide functions for $f_0$
+and $f_1$. Thus, we our system of equations to solve is
+\begin{gather}
+  \label{eqn:incompressibe:elasticity:velocity:explicit}
+  \int_\Omega \trialvec[u] \cdot \left( \frac{\partial \vec{u}(t)}{\partial t} \right) \, 
+d\Omega = 
+  (M^{uu})^{-1} \left( \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{v}(t)}{g_0^u} \, 
+d\Omega \right), \\
+%
+  \label{eqn:impcompressibe:elasticity:displacement:explicit}
+  \int_\Omega \trialvec[v] \cdot \left( \frac{\partial \vec{v}(t)}{\partial t} \right) \, 
+d\Omega =
+  (M^{vv})^{-1} \left( \int_\Omega \trialvec[v] \cdot \eqnannotate{\vec{f}(t)}{g_0^v} + \nabla 
+\trialvec[u] : 
+\eqnannotate{p\tensor{I}-\tensor{\sigma}^\mathit{dev}(\vec{u})}{g_1^v} \, d\Omega + 
+\int_{\Gamma_\tau} 
+\trialvec[u] \cdot \eqnannotate{\vec{\tau}(t)}{g_0^v} \, d\Gamma \right), \\
+%
+  \label{eqn:incompressible:elasticity:pressure:explicit}
+  \int_\Omega \trialscalar[p] \cdot \frac{\partial p}{\partial t} \, d\Omega = (M^{pp})^{-1} 
+\left( \int_\Omega 
+\trialscalar[p] \cdot \eqnannotate{\vec{\nabla} \cdot -\vec{v}}{g_0^p} \, d\Omega \right),
+\end{gather}
+where 
+\begin{gather}
+  M^{uu} = I, \\
+  M^{vv} = \mathit{Lump}(\int_\Omega \trialvec[v] \cdot J_{f0}^{vv} \cdot \basisvec[v] \, 
+d\Omega), \quad J_{f0}
+^{vv} = \rho, \\
+  M^{pp} = \int_\Omega \trialscalar[p] \cdot J_{f0}^{pp} \cdot \basisscalar[p] \, d\Omega, 
+\quad J_{f0}^{pp} = 
+\frac{1}{K}, \\
+\end{gather}
+and we refer to $M$ as the LHS (or I) Jacobian for explicit time stepping.
+
+
+% ----------------------------------------------------------------------
+\section{Poroelasticity with Infinitesimal Strain and No Faults or Inertia}
+
+Formulation based on Zheng et al. and Detournay and Cheng (1993).
+
+In this poroelasticity formulation we assume a compressible fluid
+completely saturates a porous solid undergoing infinitesimal
+strain. We neglect the inertial effects and do not consider faults.
+
+We begin with the elasticity equilibrium equation neglecting the inertial term,
+\begin{gather}
+  - \vec{f}(\vec{x},t) - \tensor{\nabla} \cdot \tensor{\sigma}(\vec{u},p_f) = \vec{0} 
+\text{ in }\Omega, \\
+%
+  \tensor{\sigma} \cdot \vec{n} = \vec{\tau}(\vec{x},t) \text{ on }\Gamma_\tau, \\
+%
+  \vec{u} = \vec{u}_0(\vec{x},t) \text{ on }\Gamma_u,
+\end{gather}
+where $\vec{u}$ is the displacement vector, $\vec{f}$ is the body
+force vector, $\tensor{\sigma}$ is the Cauchy stress tensor, and $t$
+is time. We specify tractions $\vec{\tau}$ on boundary $\Gamma_\tau$, and
+displacements $\vec{u}_0$ on boundary $\Gamma_u$. If gravity is included in
+the problem, then usually $\vec{f} = \rho \vec{g}$, where $\rho$ is
+the average density $\rho = (1-\phi)\rho_s + \phi \rho_f$, $\phi$ is
+the porosity of the solid, $\rho_s$ is the density of the solid, and
+$\rho_f$ is the density of the fluid.
+
+Enforcing mass balance of the fluid gives
+\begin{gather}
+  \frac{\partial \zeta(\vec{u},p_f)}{\partial t} + \nabla \cdot \vec{q}(p_f) = 
+\gamma(\vec{x},t) \text{ in }
+\Omega, \\
+%
+  \vec{q} \cdot \vec{n} = q_0(\vec{x},t) \text{ on }\Gamma_q, \\
+%
+  p_f = p_0(\vec{x},t) \text{ on }\Gamma_p,
+\end{gather}
+where $\zeta$ is the variation in fluid content, $\vec{q}$ is the rate
+of fluid volume crossing a unit area of the porous solid, $\gamma$ is
+the rate of injected fluid per unit volume of the porous solid, $q_0$
+is the outward fluid velocity normal to the boundary $\Gamma_q$, and
+$p_0$ is the fluid pressure on boundary $\Gamma_p$.
+
+We require the fluid flow to follow Darcy's law (Navier-Stokes equation neglecting inertial 
+effects),
+\begin{gather}
+  \vec{q}(p_f) = -\kappa (\nabla p_f - \vec{f}_f), \\
+%
+  \kappa = \frac{k}{\eta_f}
+\end{gather}
+where $\kappa$ is the permeability coefficient (Darcy conductivity),
+$k$ is the intrinsic permeability, $\eta_f$ is the viscosity of the
+fluid, $p_f$ is the fluid pressure, and $\vec{f}_f$ is the body force
+in the fluid. If gravity is included in a problem, then usually
+$\vec{f}_f = \rho_f \vec{g}$, where $\rho_f$ is the density of the
+fluid and $\vec{g}$ is the gravitational acceleration vector.
+
+We assume linear elasticity for the solid phase, so the constitutive behavior can be expressed 
+as
+\begin{gather}
+  \tensor{\sigma}(\vec{u},p_f) = \tensor{C} : \tensor{\epsilon} - \alpha p_f \tensor{I},
+\end{gather}
+where $\tensor{\sigma}$ is the stress tensor, $\tensor{C}$ is the
+tensor of elasticity constants, $\alpha$ is the Biot coefficient
+(effective stress coefficient), $\tensor{\epsilon}$ is the strain
+tensor, and $\tensor{I}$ is the identity tensor.
+
+For the constitutive behavior of the fluid, we use the volumetric strain to couple the fluid-
+solid behavior,
+\begin{gather}
+  \zeta(\vec{u},p_f) = \alpha \Tr({\tensor{\epsilon}}) + \frac{p_f}{M}, \\
+%
+  \frac{1}{M} = \frac{\alpha-\phi}{K_s} + \frac{\phi}{K_f},
+\end{gather}
+where $1/M$ is the specific storage coefficient at constant strain,
+$K_s$ is the bulk modulus of the solid, and $K_f$ is the bulk modulus
+of the fluid. We can write the trace of the strain tensor as the dot product of the gradient 
+and displacement 
+field, so we have
+\begin{gather}
+  \zeta(\vec{u},p_f) = \alpha (\nabla \cdot \vec{u}) + \frac{p_f}{M}.
+\end{gather}
+
+\subsection{Notation}
+\begin{itemize}
+\item Unknowns
+  \begin{description}
+  \item[$\vec{u}$] Displacement field
+  \item[$p_f$] Fluid pressure
+  \end{description}
+\item Derived quantities
+  \begin{description}
+    \item[$\tensor{\sigma}$] Stress tensor
+    \item[$\tensor{\epsilon}$] Strain tensor
+    \item[$\zeta$] Variation of fluid content; variation of fluid volumer per unit volume of 
+porous material
+    \item[$q$] rate of fluid volume crossing a unit area of the porous
+      solid; fluid flux
+    \item[$1/M$] Specific storage coefficient at constant strain
+    \item[$\kappa$] permability coefficient; Darcy conductivity; $\kappa = k/\eta_f$
+    \item[$\rho$] Average density; $\rho = (1-\phi)\rho_s + \phi \rho_f$
+  \end{description}
+\item Constitutive parameters
+  \begin{description}
+  \item[$\mu$] Shear modulus of solid
+  \item[$K_s$] Bulk modulus of solid
+  \item[$K_f$] Bulk modulus of fluid
+  \item[$\alpha$] Biot coefficient; effective stress coefficient
+  \item[$k$] Intrinsic permeability
+  \item[$\eta_f$] Fluid viscosity
+  \item[$\rho_s$] Density of solid
+  \item[$\rho_f$] Density of fluid
+  \item[$\phi$] Porosity; $\frac{V_p}{V}$ ($V_p$ is the volume of the pore space)
+  \end{description}
+\item Source terms
+  \begin{description}
+    \item[$\vec{f}$] Body force, for example $\rho \vec{g} = (1-\phi)\rho_s + \phi \rho_f$
+    \item[$\vec{f}_f$] Body force in fluid, for example $\rho_f \vec{g}$
+    \item[$\gamma$] Source density; rate of injected fluid per unit volume of the porous solid
+  \end{description}
+\end{itemize}
+
+We consider the displacement $\vec{u}$ and fluid pressure $p_f$ as unknowns,
+\begin{align}
+  \vec{s}^T &= (\vec{u} \quad p_f)^T, \\
+%
+% elasticity equilibrium equation
+  \vec{0} &= \vec{f}(\vec{x},t) + \tensor{\nabla} \cdot \tensor{\sigma}(\vec{u},p_f) 
+\text{ in }\Omega, \\
+%
+% fluid mass balance
+  \frac{\partial \zeta(\vec{u},p_f)}{\partial t} &= \gamma(\vec{x},t) - \nabla \cdot \vec{q}
+(p_f) \text{ in }
+\Omega, \\
+%
+% Darcy's law
+  \vec{q}(p_f) &= -\kappa (\nabla p_f - \vec{f}_f), \\
+%
+  \tensor{\sigma} \cdot \vec{n} &= \vec{\tau}(\vec{x},t) \text{ on }\Gamma_\tau, \\
+%
+  \zeta(\vec{u},p_f) &= \alpha (\nabla \cdot \vec{u}) + \frac{p_f}{M}, \\
+%
+  \vec{u} &= \vec{u}_0(\vec{x},t) \text{ on }\Gamma_u, \\
+%
+  \vec{q} \cdot \vec{n} &= q_0(\vec{x},t) \text{ on }\Gamma_q, \\
+%
+  p_f &= p_0(\vec{x},t) \text{ on }\Gamma_p.
+\end{align}
+For trial functions $\trialvec[u]$ and $\trialscalar[p]$ we write the weak form
+using the elasticity equilibrium and the fluid mass balance equations,
+\begin{align}
+  0 &= \int_\Omega \trialvec[u] \cdot \left( \vec{f}(\vec{x},t) + \tensor{\nabla} \cdot 
+\tensor{\sigma}
+(\vec{u},p_f) \right) \, d\Omega, \\
+%
+ \int_\Omega  \trialscalar[p] \frac{\partial \zeta(\vec{u},p_f)}{\partial t} \, d\Omega &= 
+\int_\Omega 
+\trialscalar[p] \left(\gamma(\vec{x},t) - \nabla \cdot \vec{q}(p_f)\right) \, d\Omega.
+\end{align}
+Applying the divergence theorem to each of these two equations and incorporating the Neumann 
+boundary conditions 
+yields
+\begin{align}
+  0 &= \int_\Omega \trialvec[u] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[u] : -
+\tensor{\sigma}(\vec{u},p_f) \, 
+d\Omega + \int_{\Gamma_\tau} \trialvec[u] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma, \\
+%
+ \int_\Omega  \trialscalar[p] \frac{\partial \zeta(\vec{u},p_f)}{\partial t} \, d\Omega &= 
+ \int_\Omega \trialscalar[p] \gamma(\vec{x},t) + \nabla \trialscalar[p] \cdot \vec{q}(p_f) \, 
+d\Omega
+ + \int_{\Gamma_q} \trialscalar[p] (-q_0(\vec{x},t)) \, d\Gamma.
+\end{align}
+Identifying $F(t,s,\dot{s})$ and $G(t,s)$ we have
+\begin{alignat}{2}
+  F^u(t,s,\dot{s}) &= \vec{0},
+  & \quad
+  G^u(t,s) &= \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{g^u_0} + \nabla 
+\trialvec[u] : 
+\eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{g^u_1} \, d\Omega + \int_{\Gamma_\tau} 
+\trialvec[u] \cdot 
+\eqnannotate{\vec{\tau}(\vec{x},t)}{g^u_0} \, d\Gamma, \\
+  F^p(t,s,\dot{s}) &= \int_\Omega  \trialscalar[p] \eqnannotate{\frac{\partial 
+\zeta(\vec{u},p_f)}{\partial t}}
+{f^p_0} \, d\Omega
+  & \quad
+  G^p(t,s) &= \int_\Omega \trialscalar[p] \eqnannotate{\gamma(\vec{x},t)}{g^p_0} + \nabla 
+\trialscalar[p] \cdot 
+\eqnannotate{\vec{q}(p_f)}{g^p_1} \, d\Omega
+ + \int_{\Gamma_q} \trialscalar[p] (\eqnannotate{-q_0(\vec{x},t)}{g^p_0}) \, d\Gamma
+\end{alignat}
