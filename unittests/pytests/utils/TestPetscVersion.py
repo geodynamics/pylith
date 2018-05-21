@@ -76,7 +76,7 @@ class TestPetscVersion(unittest.TestCase):
 
   def test_petscArch(self):
     arch = PetscVersion.petscArch()
-    self.failIf(len(arch) == 0)
+    # Prefix builds set PETSC_ARCH to empty string, so no verification of string length.
     return
 
 
