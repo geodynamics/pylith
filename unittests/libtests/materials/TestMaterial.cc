@@ -591,10 +591,15 @@ pylith::materials::TestMaterial::testUpdateStateVars(void)
     // Call initialize()
     _initializeFull(); // includes setting up auxField
 
+    // We test updating the state variables in the auxiliary field by
+    // passing the perturbation as the "new" solution and the existing
+    // auxiliary field. We test whether the "updated" auxiliary field
+    // matches the database with the updated auxiliary field.
+
     Material* material = _material(); CPPUNIT_ASSERT(material);
     CPPUNIT_ASSERT(_solutionFields);
-    pylith::topology::Field& solution = _solutionFields->get("solution");
-    material->updateStateVars(data->t, data->dt, solution);
+    pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
+    material->updateStateVars(data->t, data->dt, perturbation);
 
     const pylith::topology::Field& auxField = material->auxField();
     //material->_auxField->view("AUX FIELDS"); // :DEBUGGING:
