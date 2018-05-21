@@ -1,24 +1,240 @@
-\chapter{Code Layout}
-\label{cha:code:layout}
+\section{Code Layout}
+\label{sec:code:layout}
 
-\section{Directory Structure}
+The PyLith software suite is composed of a C++ library, Python
+modules, a Python application, and a few Python preprocessing and
+post-processing utilities.
 
+\subsection{Directory Structure}
 
 \begin{description}
-\item[\filename{applications}] Top-level application drivers (Python).
+\item[\filename{applications}] Top-level Python application and
+  utility drivers.
 \item[\filename{libsrc}] C++ source for PyLith library.
-\item[\filename{modulesrc}] SWIG interface files for C++ Python bindings.
+\item[\filename{modulesrc}] SWIG interface files for C++ Python
+  bindings.
 \item[\filename{pylith}] Python source code for PyLith Python modules.
-\item{\filename{doc}] Documentation.
+\item[\filename{doc}] Documentation.
 \item[\filename{examples}] PyLith example suite.
-\item{\filename{share}] Useful settings and configuration files.
-\item[\filename{unittests}] Python and C++ unit tests source files. Run using \filename{make check}.
-\item[\filename{tests_auto}] Full-scale tests. Run using \filename{make check}.
-\item{\filename{tests}] Full-scale tests that require manual checking of results.
-\item{\filename{travis}] Helper scripts for building PyLith in Travis-CI.
-\item{\filename{playpen}] Scratch area (obsolete). Use branches for scratch work.
+\item[\filename{share}] Useful settings and configuration files.
+\item[\filename{unittests}] Python and C++ unit tests source
+  files. Run using \filename{make check}.
+\item[\filename{tests\_auto}] Full-scale tests. Run using
+  \filename{make check}.
+\item[\filename{tests}] Full-scale tests that require manual checking
+  of results.
+\item[\filename{travis}] Helper scripts for building PyLith in
+  Travis-CI.
+\item[\filename{m4}] Autoconf macros (link to
+  geodynamics/autoconfig Git repository).
+\item[\filename{playpen}] Scratch area (obsolete). Use branches for
+  scratch work instead.
 \end{description}
+
+We use the Pyre Python framework to collect all user parameters and to
+launch the MPI application. As a result, the top-level code is written
+in Python. In most cases there is a low-level C++ object of the same
+name with the low-level implementation of the object. We limit the
+Python code to collection of the user parameters, some simple
+checking of the parameters, and passing the parameters to the
+corresponding C++ objects.
+
+\subsection{Build}
+
+We strongly recommend using the PyLith Installer utility (see Section
+\vref{sec:pylith:installer}) to build PyLith and its dependencies from
+source.
+
+\todo{Hackathon}{Hackathon participants should {\em first} build using
+  the PyLith master branch. This corresponds to PyLith v2.2.1 with
+  some very minor updates to keep the code in sync with
+  PETSc. Configure the installer with
+  \commandline{-{}-with-pylith-git=master}. See the \filename{INSTALL}
+  file in the PyLith Installer source directory for additional
+  instructions, including how to build in a separate directory from
+  the source code. Those working on poroelasticity and infinite medium
+  boundary condition (BIEM/FEM coupling) will be using different
+  branches at the hackathon.}
+
+\warning{The PyLith Installer utility has the configure option
+  \commandline{-{}-with-pylith-git=BRANCH} to specify which branch to
+  use in the main Git repository, but it does not have a configure
+  option to specify a different Git repository (e.g., a user
+  fork). When using a fork, we recommend using the PyLith Installer
+  utility to build the dependencies, and then configuring and building
+  the PyLith fork manually.}
+
+\subsubsection{Overview}
+
+Pylith uses the GNU Build System (autotools: autoconf, automake,
+libtool) to configure and build. The configure settings are defined in
+\filename{configure.ac} with additional macros in the \filename{m4}
+directory. Note that the \filename{m4} directory is Git submodule
+corresponding to the \filename{geodynamics/autoconf} Git repository.
+
+\subsubsection{Makefiles}
+
+The PyLith \filename{configure} script uses automake to convert each
+\filename{Makefile.am} file into a \filename{Makefile}. The
+organization and content of the \filename{Makefile.am} file depends on
+whether it is related to the C++ library, SWIG interface files, Python
+modules, C++ unit tests, Python unit tests, or examples.
+
+For the C++ library files within the \filename{libsrc} directory, the
+\filename{libsrc/Makefile.am} contains the implementation files while
+the header files are listed in the \filename{Makefile.am} file within
+the underlying directories.
+
+For the SWIG interface files within the \filename{modulesrc}
+directory, the \filename{Makefile.am} file contains information on how
+to build the SWIG Python module.
+
+The Python modules use a single \filename{Makefile.am} file in
+the \filename{pylith} directory.
+
+The C++ unit tests for each 
+
+Each suite of examples contains a \filename{Makefile.am} that defines
+the files that are to be included in the source distribution. It also
+defines which files are created and should be deleted upon
+\commandline{make clean}.
+
+\subsubsection{Build Targets}
+
+Several build targets are defined to make it easy to rebuild/reinstall
+PyLith rerun tests whenever the source code changes. Each target can
+be run using \commandline{make TARGET} where \commandline{TARGET} is
+one of the following:
+
+\begin{description}
+\item[all] Build.
+\item[install] Build and install.
+\item[check] Run all unit tests and full-scale automated tests.
+\end{description}
+
+\tip{On a machine with multiple cores, faster builds of the C++ code
+(library and C++ unit tests) are available using the \commandline{-j
+  NTHREADS} command line argument, where \commandline{NTHREADS} is the
+number of cores to use.}
+
+\subsection{PyLith Application Flow}
+
+The PyLith application driver performs two main functions. First, it
+collects all user parameters from input files (e.g., \filename{.cfg}
+files) and the command line and performs from simple checks on the
+parameters. Second, it launches the MPI job.
+
+Once the job starts, the application flow is:
+\begin{enumerate}
+\item Read the finite-element mesh; \object{pylith/meshio/MeshImporter}.
+  \begin{enumerate}
+  \item Read the mesh (serial); \object{libsrc/meshio/MeshIO}.
+  \item Reorder the mesh; \object{libsrc/topology/ReverseCuthillMcKee}.
+  \item Insert cohesive cells as necessary (serial); \object{libsrc/topology/FaultCohesive}.
+  \item Distribute the mesh across processes (parallel); \object{libsrc/topology/Distributor}.
+  \item Refine the mesh if desired (parallel); \object{libsrc/topology/RefineUniform}.
+  \end{enumerate}
+\item Setup the problem.
+  \begin{enumerate}
+  \item Preinitialize the problem by passing information from Python
+    to C++ and doing minimal setup; \object{pylith.Problem.preinitialize()}.
+  \item Perform consistency checks and additional checks of user
+    parameters; \object{pylith.Problem.verifyConfiguration()}.
+  \item Complete initialization of the problem;
+    \object{pylith::problems::Problem::initialize()}.
+  \end{enumerate}
+\item Run the problem; \object{pylith.problems.Problem.run()}.
+\item Cleanup; \object{pylith.problems.Problem.finalize()}.
+  \begin{enumerate}
+  \item Close output files.
+  \item Deallocate memory.
+  \item Output PETSc log summary if desired.
+  \end{enumerate}
+\end{enumerate}
+
+In the first step, we list the object performing the work, whereas in
+subsequent steps we list the top-level object method responsible for
+the work. Note that a child class may redefine or perform additional
+work compared to what is listed in the parent class method.
+
+\subsubsection{Time-Dependent Problem}
+
+In a time-dependent problem, the PETSc \object{TS} object (relabeled
+\object{PetscTS} within PyLith) controls the time stepping. At the
+beginning of each time step, the \object{PetscTS} object calls
+\object{problems::TimeDependent::prestep()}, and at the end of each
+time step, it calls \object{problems::TimeDependent::poststep()}.
+
+Within each time step, the \object{PetscTS} object calls the PETSc
+linear and nonlinear solvers as needed, which call the following
+methods of the C++ \object{pylith::problems::TimeDependent} object as
+needed
+\object{computeRHSResidual()},
+\object{computeRHSJacobian()},
+\object{computeLHSResidual()}, and
+\object{computeLHSJacobian()}.
+
+\section{Adding New Governing Equations and/or Materials}
+
+\todo{brad}{Complete this section before the hackathon.}
+
+\begin{itemize}
+\item Pointwise functions
+\item Solution subfields
+\item Auxiliary subfields
+\end{itemize}
+
+\subsection{Python}
+
+\begin{itemize}
+\item Define solution subfields
+\item Define auxiliary subfields
+\item Flags to turn on/off terms in governing equation.
+\end{itemize}
+
+\subsection{C++}
+
+\begin{itemize}
+\item IntegratorPointwise methods
+\item Setting pointwise functions for residual, Jacobian, updating
+  state variables, and calculating derived fields.
+\item Setting up auxiliary subfields.
+\end{itemize}
   
-\section{Flow}
+\subsection{C++ Unit Tests}
+
+\subsection{Python Unit Tests}
+
+\section{Adding New Boundary Conditions}
+
+\todo{brad}{Complete this section before the hackathon.}
+
+\begin{itemize}
+\item Pointwise functions
+\item Auxiliary subfields
+\end{itemize}
+
+\subsection{Python}
+
+\begin{itemize}
+\item Define auxiliary subfields
+\item Flags to turn on/off terms.
+\end{itemize}
+
+\subsection{C++}
+
+\begin{itemize}
+\item IntegratorPointwise or ConstraintPointwise methods
+\item Setting pointwise functions for residual, Jacobian, updating
+  state variables, and calculating derived fields.
+\item Setting up auxiliary subfields.
+\end{itemize}
+
+\subsection{C++ Unit Tests}
+
+\subsection{Python Unit Tests}
 
 
+\section{Adding Support for New Mesh File Formats}
+
+\brad{Future: Add stuff here.}

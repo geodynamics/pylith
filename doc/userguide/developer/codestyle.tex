@@ -1,7 +1,71 @@
 \chapter{Coding Style}
 \label{cha:code:style}
 
+This chapter will be an appendix to the PyLith Manual.
+
+There are a number of standard coding styles for programming
+languages, notable PEP8 for Python. For PyLith we try to be consistent
+in naming conventions across Python and C++ while following a subset
+of the used in PETSc and PEP8 with documentation styles consistent
+with Doxygen.
+
+The principal guidelines include:
+\begin{itemize}
+\item Class names use upper camel case, e.g., \object{TimeDependent}.
+\item Public method names use camel case, e.g.,
+  \object{computeRHSResidual()}.
+\item Protected and private method names use camel case preceded by an
+  underscore, e.g., \object{\_setFEKernelsRHSResidual}.
+\item In C++ data members are private and use camel case preceded by
+  an underscore, e.g., \object{\_gravityField}.
+\item In Python data members are public and use camel case, e.g., \object{gravityField}.
+\item Local variables use camel case, e.g., \object{numIntegrators}.
+\end{itemize}
+
 \section{C/C++}
+
+\subsection{Object Definition Files}
+
+Object definition (header) files use the \filename{.hh} suffix. C
+header files use the \filename{.h} suffix.
+
+\todo{brad}{Insert example here}
+
+\subsection{Object Implementation Files}
+
+Object implementation files use the \filename{.cc} suffix. Inline
+implementation files use the \filename{icc} suffix and are included
+from the definition files. C implementation files use the \object{.c}
+suffix.
+
+To facilitate debugging and error messages, we use the following
+macros:
+\begin{description}
+\item[PYLITH\_METHOD\_BEGIN] Use this macro at the beginning of all
+  but methods using any PETSc routines and most other methods except
+  trivial or inline methods.
+\item[PYLITH\_METHOD\_END] Use thie macro at the end of all methods
+  using PYLITH\_METHOD\_BEGIN that return void.
+\item[PYLITH\_RETURN\_END] Use thie macro at the end of all methods
+  using PYLITH\_METHOD\_BEGIN that return non-void values.
+\item[PYLITH\_JOURNAL\_DEBUG] Use this macro immediate after
+  PYLITH\_METHOD\_BEGIN in all methods for objects that {\em do not} have a corresponding
+  Pyre component.
+\item[PYLITH\_CHECK\_ERROR] after {\em every} call to a PETSc function
+  to check the return value.
+\item[PYLITH\_COMPONENT\_DEBUG] Use this macro immediate after
+  PYLITH\_METHOD\_BEGIN in all methods for objects that {\em do} have
+  a corresponding Pyre component. The class {\em must} inherit from
+  \object{pylith::utils::PyreComponent} and non-abstract classes
+  should call \object{PyreComponent::name()} in the constructor. We
+  recommend using a static data member for the name with the lowercase
+  name matching the Pyre component, e.g., timedependent.
+\end{description}
+
+\todo{brad}{Insert example here}
+
 
 
 \section{Python}
+
+\todo{brad}{Insert example here}
