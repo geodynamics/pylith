@@ -9,16 +9,19 @@ in naming conventions across Python and C++ while following a subset
 of the used in PETSc and PEP8 with documentation styles consistent
 with Doxygen.
 
+\important{We use 4 spaces for indentation. Configure your editor to
+  use spaces instead of tabs.}
+
 The principal guidelines include:
 \begin{itemize}
 \item Class names use upper camel case, e.g., \object{TimeDependent}.
 \item Public method names use camel case, e.g.,
   \object{computeRHSResidual()}.
 \item Protected and private method names use camel case preceded by an
-  underscore, e.g., \object{\_setFEKernelsRHSResidual}.
+  underscore, e.g., \object{\_setFEKernelsRHSResidual()}.
 \item In C++ data members are private and use camel case preceded by
   an underscore, e.g., \object{\_gravityField}.
-\item In Python data members are public and use camel case, e.g., \object{gravityField}.
+\item In Python data members are public and use camel case, e.g., \object{self.gravityField}.
 \item Local variables use camel case, e.g., \object{numIntegrators}.
 \end{itemize}
 
@@ -28,6 +31,10 @@ The principal guidelines include:
 
 Object definition (header) files use the \filename{.hh} suffix. C
 header files use the \filename{.h} suffix.
+
+\important{{\em All} class methods must include a description of what
+  the method does and a description of each argument and the return
+  value if it is not void.}
 
 \todo{brad}{Insert example here}
 
@@ -68,4 +75,203 @@ macros:
 
 \section{Python}
 
-\todo{brad}{Insert example here}
+Example of Python source code using our preferred coding style:
+
+\begin{python}
+# List authors, copyright, and license info at the very beginning of the file.
+#
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2015 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+# 
+# Next list the name with the relative path of the file along with a
+# brief description.
+#  
+# @file pylith/problems/Problem.py
+#
+# @brief Python abstract base class for crustal dynamics problems.
+#
+# Factory: problem.
+
+# Order of imports should be
+# 1. standard modules
+# 2. other modules
+# 3. PyLith modules (parent classes first).
+#
+# Prefix imports from this directory with . for clarity.
+#  
+# The SWIG interface to the C++ object is imported as ModuleProblem in
+# order to avoid clashing with the Python Problem class.
+
+from pylith.utils.PetscComponent import PetscComponent
+from .problems import Problem as ModuleProblem
+
+# ITEM FACTORIES ///////////////////////////////////////////////////////
+
+# Define any factory methods needed in the Inventory class.
+def materialFactory(name):
+    """
+    Factory for material items.
+    """
+    from pyre.inventory import facility
+    from pylith.materials.ElasticityPlaneStrain import ElasticityPlaneStrain
+    return facility(name, family="material", factory=IsotropicLinearElasticityPlaneStrain)
+
+class Problem(PetscComponent, ModuleProblem):
+    """Python abstract base class for crustal dynamics problems.
+
+    Factory: problem. List the factory if one exists.
+    """
+
+    # INVENTORY //////////////////////////////////////////////////////////
+
+    # Define the Pyre facilities and properties. We list the
+    # facilities first and then the properties. For each facility or
+    # property, we list the description in the meta attribute. This is
+    # the information that is displayed in the --help and PyLith
+    # parameters application.
+    class Inventory(PetscComponent.Inventory):
+        """Python object for managing Problem facilities and properties.
+        """
+
+        import pyre.inventory
+
+        # Usually, we put all arguments on a single line. If the
+        # function call is really long, break the arguments into
+        # logical pieces, usually one argument per line.
+        solverType = pyre.inventory.str(
+            "solver",
+            default="linear",
+            validator=pyre.inventory.choice(["linear", "nonlinear"])
+        )
+        solverType.meta['tip'] = "Type of solver to use ['linear', 'nonlinear']."
+
+        from Solution import Solution
+        solution = pyre.inventory.facility("solution", family="solution", factory=Solution)
+        solution.meta['tip'] = "Solution field for problem."
+
+        from pylith.materials.Homogeneous import Homogeneous
+        materials = pyre.inventory.facilityArray(
+            "materials",
+            itemFactory=materialFactory,
+            factory=Homogeneous
+        )
+        materials.meta['tip'] = "Materials in problem."
+
+        
+    # PUBLIC METHODS /////////////////////////////////////////////////////
+
+    def __init__(self, name="problem"):
+        """Constructor.
+        """
+        PetscComponent.__init__(self, name, facility="problem")
+
+        # Initialize all data members not in the inventory.
+        self.mesh = None
+        return
+
+    def preinitialize(self, mesh):
+        """Do minimal initialization.
+        """
+        # On process 0 only, print progress information to info journal.
+        from pylith.mpi.Communicator import mpi_comm_world
+        comm = mpi_comm_world()
+        if 0 == comm.rank:
+            self._info.log("Performing minimal initialization before verifying configuration.")
+
+        # Pass information to corresponding C++ object.
+        #
+        # For all calls to the C++ interaface, call using the
+        # class name and pass self as an argument to make it clear
+        # that this is calling a C++ method and not a Python method.
+        ModuleProblem.identifier(self, self.aliases[-1])
+        ModuleProblem.solverType(self, self.solverType)
+
+        # Do minimal setup of solution.
+        self.solution.preinitialize(mesh, self.normalizer)
+        ModuleProblem.solution(self, self.solution.field)
+
+        # Preinitialize materials
+        for material in self.materials.components():
+            material.preinitialize(mesh)
+
+        ModuleProblem.preinitialize(self, mesh)
+        return
+
+    def initialize(self):
+        """Initialize integrators and constraints.
+        """
+        # On process 0 only, print progress information to info journal.
+        from pylith.mpi.Communicator import mpi_comm_world
+        comm = mpi_comm_world()
+        if 0 == comm.rank:
+            self._info.log("Initializing problem.")
+
+        ModuleProblem.initialize(self)
+        return
+
+    def run(self, app):
+        """Solve the problem.
+        """
+        # Generate error if method is not implemented in child class.
+        raise NotImplementedError("run() not implemented.")
+        return
+
+    # PRIVATE METHODS ////////////////////////////////////////////////////
+
+    def _configure(self):
+        """Set data members based using inventory.
+        """
+        PetscComponent._configure(self)
+
+        if self.inventory.solverType == "linear":
+            self.solverType = ModuleProblem.LINEAR
+        elif self.inventory.solverType == "nonlinear":
+            self.solverType = ModuleProblem.NONLINEAR
+        else:
+            raise ValueError("Unknown solver type '%s'." % self.solverType)
+
+        self.solution = self.inventory.solution
+        self.materials = self.inventory.materials
+
+        return
+
+    def _setupLogging(self):
+        """
+        Setup event logging.
+        """
+        if not "_loggingPrefix" in dir(self):
+            self._loggingPrefix = ""
+
+        from pylith.utils.EventLogger import EventLogger
+        logger = EventLogger()
+        logger.className("Problem")
+        logger.initialize()
+
+        self._eventLogger = logger
+        return
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+# Define any facility factories.
+def problem():
+    """
+    Factory associated with Problem.
+    """
+    return Problem()
+
+
+# End of file
+\end{python}

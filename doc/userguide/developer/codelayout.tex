@@ -64,6 +64,11 @@ source.
   utility to build the dependencies, and then configuring and building
   the PyLith fork manually.}
 
+\tip{For all development, we build with debugging turned on. By
+  building in directories separate from the source code, we can build
+  an optimized version for production runs in a different directory and
+  use environment variables to select the desired build.}
+
 \subsubsection{Overview}
 
 Pylith uses the GNU Build System (autotools: autoconf, automake,
@@ -71,6 +76,11 @@ libtool) to configure and build. The configure settings are defined in
 \filename{configure.ac} with additional macros in the \filename{m4}
 directory. Note that the \filename{m4} directory is Git submodule
 corresponding to the \filename{geodynamics/autoconf} Git repository.
+
+The principal developers of PyLith use platform independent tools when
+developing PyLith. The tools include Emacs and Atom.io for editing
+source code, gdb and lldb for debugging, valgrind for checking for
+memory errors, and gcov for examining code coverage of tests.
 
 \subsubsection{Makefiles}
 
@@ -182,6 +192,7 @@ needed
 \item Pointwise functions
 \item Solution subfields
 \item Auxiliary subfields
+\item Constants
 \end{itemize}
 
 \subsection{Python}
