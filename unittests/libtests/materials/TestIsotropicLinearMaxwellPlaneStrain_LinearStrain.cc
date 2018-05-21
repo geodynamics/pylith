@@ -229,15 +229,16 @@ protected:
         _mydata->normalizer->densityScale(4.0e+3);
         _mydata->normalizer->pressureScale(2.5e+11);
 
-        _mydata->t = constants.t/_mydata->normalizer->lengthScale();
-        _mydata->dt = constants.dt/_mydata->normalizer->lengthScale();
+        _mydata->t = constants.t/_mydata->normalizer->timeScale();
+        _mydata->dt = constants.dt/_mydata->normalizer->timeScale();
         _mydata->tshift = 1.0 / _mydata->dt;
 
         // solnDiscretizations set in derived class.
 
         _mydata->numAuxSubfields = 7;
-        static const char* _auxSubfields[7] = {"density", "shear_modulus", "bulk_modulus", "maxwell_time",
-                                               "total_strain", "viscous_strain", "body_force"};
+        static const char* _auxSubfields[7] =
+			{"density", "shear_modulus", "bulk_modulus", "maxwell_time",
+			 "total_strain", "viscous_strain", "body_force"};
         _mydata->auxSubfields = _auxSubfields;
         static const pylith::topology::Field::Discretization _auxDiscretizations[7] = {
             {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density

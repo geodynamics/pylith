@@ -365,6 +365,30 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting reference stress subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting reference_stress field
 
+    if (_mymaterial->_useReferenceState) { // Test getting reference_strain field.
+        pylith::topology::Field referenceStrain(*_mesh);
+        referenceStrain.copySubfield(auxField, "reference_strain");
+
+        //referenceStrain.view("REFERENCE STRAIN"); // DEBUGGING
+
+        // Check result
+        CPPUNIT_ASSERT_EQUAL(std::string("reference_strain"), std::string(referenceStrain.label()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, referenceStrain.spaceDim());
+
+        pylith::topology::FieldQuery queryRefStrain(referenceStrain);
+        queryRefStrain.initializeWithDefaultQueryFns();
+        queryRefStrain.openDB(_mydata->auxDB, lengthScale);
+
+        PylithReal norm = 0.0;
+        const PylithReal t = _mydata->t;
+        const PetscDM dm = referenceStrain.dmMesh(); CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStrain.functions(), (void**)queryRefStrain.contextPtrs(), referenceStrain.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        queryRefStrain.closeDB(_mydata->auxDB);
+
+        const PylithReal tolerance = 1.0e-6;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting reference strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting reference_strain field
+
 
     PYLITH_METHOD_END;
 } // testGetAuxField

@@ -160,83 +160,31 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::test_auxFieldSetup(
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // bulk modulus
 
-    { // Maxwell time 1
-        const char* label = "maxwell_time_1";
+    { // Maxwell time
+        const char* label = "maxwell_time";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(size_t(3), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(timeScale, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
-    } // Maxwell time 1
+    } // Maxwell time
 
-    { // Maxwell time 2
-        const char* label = "maxwell_time_2";
+    { // Shear modulus ratio
+        const char* label = "shear_modulus_ratio";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(size_t(3), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(timeScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
-    } // Maxwell time 2
-
-    { // Maxwell time 3
-        const char* label = "maxwell_time_3";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(timeScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
-    } // Maxwell time 3
-
-    { // Shear modulus ratio 1
-        const char* label = "shear_modulus_ratio_1";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
-    } // Shear modulus ratio 1
-
-    { // Shear modulus ratio 2
-        const char* label = "shear_modulus_ratio_2";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
-    } // Shear modulus ratio 2
-
-    { // Shear modulus ratio 3
-        const char* label = "shear_modulus_ratio_3";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
-    } // Shear modulus ratio 3
+    } // Shear modulus ratio
 
     { // Total strain
         const char* label = "total_strain";
@@ -251,10 +199,10 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::test_auxFieldSetup(
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // Total strain
 
-    { // Viscous strain 1
-        const char* label = "viscous_strain_1";
+    { // Viscous strain
+        const char* label = "viscous_strain";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(size_t(12), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
@@ -262,33 +210,7 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::test_auxFieldSetup(
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
-    } // Viscous strain 1
-
-    { // Viscous strain 2
-        const char* label = "viscous_strain_2";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
-    } // Viscous strain 2
-
-    { // Viscous strain 3
-        const char* label = "viscous_strain_3";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
-    } // Viscous strain 3
+    } // Viscous strain
 
     if (_mymaterial->_gravityField) { // gravity field
         const char* label = "gravity_field";
@@ -406,151 +328,103 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
 
         const PylithReal tolerance = 1.0e-6;
 		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting bulk modulus subfield from auxiliary field failed.", 0.0, norm, tolerance);
-    } // Test getting bulkModulus field
+    } // Test getting bulk_modulus field
 
-    { // Test getting maxwellTime1 field.
-        pylith::topology::Field maxwellTime1(*_mesh);
-        maxwellTime1.copySubfield(auxField, "maxwell_time_1");
+    { // Test getting maxwell_time field.
+        pylith::topology::Field maxwellTime(*_mesh);
+        maxwellTime.copySubfield(auxField, "maxwell_time");
 
-        //maxwellTime1.view("MAXWELL TIME 1"); // DEBUGGING
+        //maxwellTime.view("MAXWELL TIME"); // DEBUGGING
 
         // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("maxwell_time_1"), std::string(maxwellTime1.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, maxwellTime1.spaceDim());
+        CPPUNIT_ASSERT_EQUAL(std::string("maxwell_time"), std::string(maxwellTime.label()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, maxwellTime.spaceDim());
 
-        pylith::topology::FieldQuery queryMaxwellTime1(maxwellTime1);
-        queryMaxwellTime1.initializeWithDefaultQueryFns();
-        queryMaxwellTime1.openDB(_mydata->auxDB, lengthScale);
+        pylith::topology::FieldQuery queryMaxwellTime(maxwellTime);
+        queryMaxwellTime.initializeWithDefaultQueryFns();
+        queryMaxwellTime.openDB(_mydata->auxDB, lengthScale);
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = maxwellTime1.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryMaxwellTime1.functions(), (void**)queryMaxwellTime1.contextPtrs(), maxwellTime1.localVector(), &norm); CPPUNIT_ASSERT(!err);
-        queryMaxwellTime1.closeDB(_mydata->auxDB);
+        const PetscDM dm = maxwellTime.dmMesh(); CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryMaxwellTime.functions(), (void**)queryMaxwellTime.contextPtrs(), maxwellTime.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        queryMaxwellTime.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting Maxwell time 1 subfield from auxiliary field failed.", 0.0, norm, tolerance);
-    } // Test getting maxwellTime1 field
+		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting Maxwell time subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting maxwell_time field
 
-    { // Test getting maxwellTime2 field.
-        pylith::topology::Field maxwellTime2(*_mesh);
-        maxwellTime2.copySubfield(auxField, "maxwell_time_2");
+    { // Test getting shear_modulus_ratio field.
+        pylith::topology::Field shearModulusRatio(*_mesh);
+        shearModulusRatio.copySubfield(auxField, "shear_modulus_ratio");
 
-        //maxwellTime2.view("MAXWELL TIME 2"); // DEBUGGING
+        //shearModulusRatio.view("SHEAR MODULUS RATIO"); // DEBUGGING
 
         // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("maxwell_time_2"), std::string(maxwellTime2.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, maxwellTime2.spaceDim());
+        CPPUNIT_ASSERT_EQUAL(std::string("shear_modulus_ratio"), std::string(shearModulusRatio.label()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, shearModulusRatio.spaceDim());
 
-        pylith::topology::FieldQuery queryMaxwellTime2(maxwellTime2);
-        queryMaxwellTime2.initializeWithDefaultQueryFns();
-        queryMaxwellTime2.openDB(_mydata->auxDB, lengthScale);
+        pylith::topology::FieldQuery queryShearModulusRatio(shearModulusRatio);
+        queryShearModulusRatio.initializeWithDefaultQueryFns();
+        queryShearModulusRatio.openDB(_mydata->auxDB, lengthScale);
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = maxwellTime2.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryMaxwellTime2.functions(), (void**)queryMaxwellTime2.contextPtrs(), maxwellTime2.localVector(), &norm); CPPUNIT_ASSERT(!err);
-        queryMaxwellTime2.closeDB(_mydata->auxDB);
+        const PetscDM dm = shearModulusRatio.dmMesh(); CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryShearModulusRatio.functions(), (void**)queryShearModulusRatio.contextPtrs(), shearModulusRatio.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        queryShearModulusRatio.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting Maxwell time 2 subfield from auxiliary field failed.", 0.0, norm, tolerance);
-    } // Test getting maxwellTime2 field
+		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting shear modulus ratio subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting shear_modulus_ratio field
 
-    { // Test getting maxwellTime3 field.
-        pylith::topology::Field maxwellTime3(*_mesh);
-        maxwellTime3.copySubfield(auxField, "maxwell_time_3");
+    { // Test getting total_strain field.
+        pylith::topology::Field totalStrain(*_mesh);
+        totalStrain.copySubfield(auxField, "total_strain");
 
-        //maxwellTime3.view("MAXWELL TIME 3"); // DEBUGGING
+        //totalStrain.view("TOTAL STRAIN"); // DEBUGGING
 
         // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("maxwell_time_3"), std::string(maxwellTime3.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, maxwellTime3.spaceDim());
+        CPPUNIT_ASSERT_EQUAL(std::string("total_strain"), std::string(totalStrain.label()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, totalStrain.spaceDim());
 
-        pylith::topology::FieldQuery queryMaxwellTime3(maxwellTime3);
-        queryMaxwellTime3.initializeWithDefaultQueryFns();
-        queryMaxwellTime3.openDB(_mydata->auxDB, lengthScale);
+        pylith::topology::FieldQuery queryTotalStrain(totalStrain);
+        queryTotalStrain.initializeWithDefaultQueryFns();
+        queryTotalStrain.openDB(_mydata->auxDB, lengthScale);
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = maxwellTime3.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryMaxwellTime3.functions(), (void**)queryMaxwellTime3.contextPtrs(), maxwellTime3.localVector(), &norm); CPPUNIT_ASSERT(!err);
-        queryMaxwellTime3.closeDB(_mydata->auxDB);
+        const PetscDM dm = totalStrain.dmMesh(); CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryTotalStrain.functions(), (void**)queryTotalStrain.contextPtrs(), totalStrain.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        queryTotalStrain.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting Maxwell time 3 subfield from auxiliary field failed.", 0.0, norm, tolerance);
-    } // Test getting maxwellTime3 field
+		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting total strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting total_strain field
 
-    { // Test getting shearModulusRatio1 field.
-        pylith::topology::Field shearModulusRatio1(*_mesh);
-        shearModulusRatio1.copySubfield(auxField, "shear_modulus_ratio_1");
+    { // Test getting viscous_strain field.
+        pylith::topology::Field viscousStrain(*_mesh);
+        viscousStrain.copySubfield(auxField, "viscous_strain");
 
-        //shearModulusRatio1.view("SHEAR MODULUS RATIO 1"); // DEBUGGING
+        //viscousStrain.view("VISCOUS STRAIN"); // DEBUGGING
 
         // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("shear_modulus_ratio_1"), std::string(shearModulusRatio1.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, shearModulusRatio1.spaceDim());
+        CPPUNIT_ASSERT_EQUAL(std::string("viscous_strain"), std::string(viscousStrain.label()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, viscousStrain.spaceDim());
 
-        pylith::topology::FieldQuery queryShearModulusRatio1(shearModulusRatio1);
-        queryShearModulusRatio1.initializeWithDefaultQueryFns();
-        queryShearModulusRatio1.openDB(_mydata->auxDB, lengthScale);
+        pylith::topology::FieldQuery queryViscousStrain(viscousStrain);
+        queryViscousStrain.initializeWithDefaultQueryFns();
+        queryViscousStrain.openDB(_mydata->auxDB, lengthScale);
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = shearModulusRatio1.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryShearModulusRatio1.functions(), (void**)queryShearModulusRatio1.contextPtrs(), shearModulusRatio1.localVector(), &norm); CPPUNIT_ASSERT(!err);
-        queryShearModulusRatio1.closeDB(_mydata->auxDB);
+        const PetscDM dm = viscousStrain.dmMesh(); CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryViscousStrain.functions(), (void**)queryViscousStrain.contextPtrs(), viscousStrain.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        queryViscousStrain.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting shear modulus ratio 1 subfield from auxiliary field failed.", 0.0, norm, tolerance);
-    } // Test getting shearModulusRatio1 field
-
-    { // Test getting shearModulusRatio2 field.
-        pylith::topology::Field shearModulusRatio2(*_mesh);
-        shearModulusRatio2.copySubfield(auxField, "shear_modulus_ratio_2");
-
-        //shearModulusRatio2.view("SHEAR MODULUS RATIO 2"); // DEBUGGING
-
-        // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("shear_modulus_ratio_2"), std::string(shearModulusRatio2.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, shearModulusRatio2.spaceDim());
-
-        pylith::topology::FieldQuery queryShearModulusRatio2(shearModulusRatio2);
-        queryShearModulusRatio2.initializeWithDefaultQueryFns();
-        queryShearModulusRatio2.openDB(_mydata->auxDB, lengthScale);
-
-        PylithReal norm = 0.0;
-        const PylithReal t = _mydata->t;
-        const PetscDM dm = shearModulusRatio2.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryShearModulusRatio2.functions(), (void**)queryShearModulusRatio2.contextPtrs(), shearModulusRatio2.localVector(), &norm); CPPUNIT_ASSERT(!err);
-        queryShearModulusRatio2.closeDB(_mydata->auxDB);
-
-        const PylithReal tolerance = 1.0e-6;
-		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting shear modulus ratio 2 subfield from auxiliary field failed.", 0.0, norm, tolerance);
-    } // Test getting shearModulusRatio2 field
-
-    { // Test getting shearModulusRatio3 field.
-        pylith::topology::Field shearModulusRatio3(*_mesh);
-        shearModulusRatio3.copySubfield(auxField, "shear_modulus_ratio_3");
-
-        //shearModulusRatio3.view("SHEAR MODULUS RATIO 3"); // DEBUGGING
-
-        // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("shear_modulus_ratio_3"), std::string(shearModulusRatio3.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, shearModulusRatio3.spaceDim());
-
-        pylith::topology::FieldQuery queryShearModulusRatio3(shearModulusRatio3);
-        queryShearModulusRatio3.initializeWithDefaultQueryFns();
-        queryShearModulusRatio3.openDB(_mydata->auxDB, lengthScale);
-
-        PylithReal norm = 0.0;
-        const PylithReal t = _mydata->t;
-        const PetscDM dm = shearModulusRatio3.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryShearModulusRatio3.functions(), (void**)queryShearModulusRatio3.contextPtrs(), shearModulusRatio3.localVector(), &norm); CPPUNIT_ASSERT(!err);
-        queryShearModulusRatio3.closeDB(_mydata->auxDB);
-
-        const PylithReal tolerance = 1.0e-6;
-		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting shear modulus ratio 3 subfield from auxiliary field failed.", 0.0, norm, tolerance);
-    } // Test getting shearModulusRatio3 field
+		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting total strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting viscous_strain field
 
 	if (_mymaterial->_useReferenceState) { // Test getting reference_stress field.
         pylith::topology::Field referenceStress(*_mesh);
@@ -576,7 +450,29 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting reference stress subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting reference_stress field
 
-    // PYLITH_JOURNAL_WARNING(":TODO: @charles Add test for getting reference stress/strain.");
+	if (_mymaterial->_useReferenceState) { // Test getting reference_strain field.
+        pylith::topology::Field referenceStrain(*_mesh);
+        referenceStrain.copySubfield(auxField, "reference_strain");
+
+        //referenceStrain.view("REFERENCE STRAIN"); // DEBUGGING
+
+        // Check result
+        CPPUNIT_ASSERT_EQUAL(std::string("reference_strain"), std::string(referenceStrain.label()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, referenceStrain.spaceDim());
+
+        pylith::topology::FieldQuery queryRefStrain(referenceStrain);
+        queryRefStrain.initializeWithDefaultQueryFns();
+        queryRefStrain.openDB(_mydata->auxDB, lengthScale);
+
+        PylithReal norm = 0.0;
+        const PylithReal t = _mydata->t;
+        const PetscDM dm = referenceStrain.dmMesh(); CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStrain.functions(), (void**)queryRefStrain.contextPtrs(), referenceStrain.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        queryRefStrain.closeDB(_mydata->auxDB);
+
+        const PylithReal tolerance = 1.0e-6;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting reference strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting reference_strain field
 
     PYLITH_METHOD_END;
 } // testGetAuxField
