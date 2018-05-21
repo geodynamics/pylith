@@ -1,15 +1,18 @@
 \chapter{Multiphysics Finite-Element Formulation}
 \label{cha:multiphysics:formulation}
 
+This chapter will become part of the governing equations chapter in
+the PyLith user manual.
+
 \section{General Finite-Element Formulation}
 
-We want to solve an equation in which the strong form of a partial
-differential equation can be expressed as $F(t,s,\dot{s}) = G(t,s)$,
-$s(t_0) = s_0$, where $F$ and $G$ are vector functions, $t$ is time,
-and $s$ is the solution vector.
+Within the PETSc solver framework, we want to solve a system of
+partial differential equations in which the strong form can be
+expressed as $F(t,s,\dot{s}) = G(t,s)$, $s(t_0) = s_0$, where $F$ and
+$G$ are vector functions, $t$ is time, and $s$ is the solution vector.
 
-Using the finite-element method we manipulate the weak form of a
-governing equation involving a vector field $\vec{u}$ into integrals
+Using the finite-element method we manipulate the weak form of the
+system of equations involving a vector field $\vec{u}$ into integrals
 over the domain $\Omega$ with the form,
 \begin{equation}
   \label{eqn:problem:form}
@@ -21,19 +24,19 @@ d\Omega,
 \end{equation}
 where $\trialvec[u]$ is the trial function for field $\vec{u}$,
 $\vec{f}_0$ and $\vec{g}_0$ are vectors, and $\tensor{f}_1$ and
-$\tensor{g}_1$ are tensors. With multiple governing equations we will
-have multiple equations of this form, and the solution vector $s$,
-which we usually write as $\vec{s}$, will be composed of several
-different fields, such as displacement $\vec{u}$, velocity $\vec{v}$,
-pressure $p$, and temperature $T$.
+$\tensor{g}_1$ are tensors. With multiple partial differential
+equations we will have multiple equations of this form, and the
+solution vector $s$, which we usually write as $\vec{s}$, will be
+composed of several different fields, such as displacement $\vec{u}$,
+velocity $\vec{v}$, pressure $p$, and temperature $T$.
 
 For consistency with the PETSc time stepping formulation, we call
 $G(t,s)$ the RHS function and call $F(t,s,\dot{s})$ the LHS (or I)
 function. Likewise, the Jacobian of $G(t,s)$ is the RHS Jacobian and
-the Jacobian of $F(t,s,\dot{s})$ is the LHS Jacobian. In most cases, we
-can take $F(t,s,\dot{s}) = \dot{s}$, or as close to this as
-possible. This results in miminal changes to the formulation to
-accommodate both implicit and explicit time stepping algorithms.
+the Jacobian of $F(t,s,\dot{s})$ is the LHS Jacobian. In most cases,
+we can take $F(t,s,\dot{s}) = \dot{s}$, or as close to this as
+possible. This results in miminal changes to the formulation in order
+to accommodate both implicit and explicit time stepping algorithms.
 
 Using a finite-element discretization we break up the domain and
 boundary integrals into sums over the cells and boundary faces,
@@ -46,9 +49,11 @@ $\vec{f}_0(t,s,\dot{s})$ and $\tensor{f}_1(t,s,\dot{s})$.
 
 \subsection{Jacobian}
 
-The LHS Jacobian $J_F$ is $\frac{\partial F}{\partial s} + t_\mathit{shift}
-\frac{\partial F}{\partial \dot{s}}$ and the RHS Jacobian $J_G$ is
-$\frac{\partial G}{\partial s}$. We put the Jacobians for each equation in the form:
+The LHS Jacobian $J_F$ is $\frac{\partial F}{\partial s} +
+t_\mathit{shift} \frac{\partial F}{\partial \dot{s}}$ and the RHS
+Jacobian $J_G$ is $\frac{\partial G}{\partial s}$, where
+$t_\mathit{shift}$ arises from the temporal discretization . We put
+the Jacobians for each equation in the form:
 \begin{align}
   \label{eqn:jacobian:form}
   J_F &= \int_\Omega \trialvec \cdot \tensor{J}_{f0}(t,s,\dot{s}) \cdot \basisvec
@@ -100,7 +105,7 @@ $.
     function is given.
   \item We also do not specify $J_F$ or $J_G$.
   \item This leaves us with only needing to specify $\vec{g}_0(t,s)$
-    and $\tensor{g}_1(t,s)$.
+    and $\tensor{g}_1(t,s)$. 
   \item The PETSc TS will verify that the LHS (or I) function is null.
   \end{itemize}
 \end{itemize}
@@ -120,11 +125,6 @@ compute. In computing the RHS function, $G^*(t,s)$, we compute
 $G(t,s)$, then compute $M$ and $M^{-1}$, and then $M^{-1}G(t,s)$. For
 the elasticity equation with inertial terms, $M$ contains the mass
 matrix.
-
-\matt{(Comment from Brad) We need a mechanism to formulate this
-  diagonal mass matrix without allocating the sparse matrix. In other
-  words, we need a lumping version of DMPlexComputeJacobian\_Internal().}
-
 
 \matt{(Comment from Brad) Additionally, I think it is very important
   that we have a way to control allocation of the sparse matrix. We do
@@ -188,8 +188,9 @@ any location cannot be associated with both prescribed displacements
 \subsection{Neglecting Inertia}
 
 If we neglect the intertial term, then time dependence only arises
-from history-dependent constitutive equations. Considering the
-displacement $\vec{u}$ as the unknown, we have
+from history-dependent constitutive equations and boundary
+conditions. Considering the displacement $\vec{u}$ as the unknown, we
+have
 \begin{align}
   \vec{s}^T &= (\vec{u})^T, \\
 %
@@ -611,6 +612,8 @@ This converges with only a few terms.
 % ----------------------------------------------------------------------
 \section{Incompressible Isotropic Elasticity with Infinitesimal Strain (Bathe) and No Faults}
 
+\todo{charles}{This section needs to be updated. Break up formulation into cases without inertial terms (solution includes displacement and pressure fields) and with inertial terms (solution includes displacement, velocity, and pressure fields).}
+
 Building from the elasticity equation
 (equations~\ref{eqn:velocity:strong:form}
 and~\ref{eqn:elasticity:order1:strong:form}), we consider an
@@ -793,6 +796,13 @@ and we refer to $M$ as the LHS (or I) Jacobian for explicit time stepping.
 
 % ----------------------------------------------------------------------
 \section{Poroelasticity with Infinitesimal Strain and No Faults or Inertia}
+
+\todo{Hackathon}{Before the hackathon, please finish filling in the
+  details of this formulation. Write out the point-wise functions for
+  the residual. Derive the point-wise functions for the Jacobian. If
+  you want to use different equations and/or assumptions, please
+  complete this formulation first, and then derive the other
+  formulation with alternative assumptions and/or different physics.}
 
 Formulation based on Zheng et al. and Detournay and Cheng (1993).
 
