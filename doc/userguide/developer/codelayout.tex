@@ -74,7 +74,7 @@ source.
 Pylith uses the GNU Build System (autotools: autoconf, automake,
 libtool) to configure and build. The configure settings are defined in
 \filename{configure.ac} with additional macros in the \filename{m4}
-directory. Note that the \filename{m4} directory is Git submodule
+directory. Note that the \filename{m4} directory is a Git submodule
 corresponding to the \filename{geodynamics/autoconf} Git repository.
 
 The principal developers of PyLith use platform independent tools when
@@ -140,13 +140,13 @@ parameters. Second, it launches the MPI job.
 
 Once the job starts, the application flow is:
 \begin{enumerate}
-\item Read the finite-element mesh; \object{pylith/meshio/MeshImporter}.
+\item Read the finite-element mesh; \object{pylith.meshio.MeshImporter}.
   \begin{enumerate}
-  \item Read the mesh (serial); \object{libsrc/meshio/MeshIO}.
-  \item Reorder the mesh; \object{libsrc/topology/ReverseCuthillMcKee}.
-  \item Insert cohesive cells as necessary (serial); \object{libsrc/topology/FaultCohesive}.
-  \item Distribute the mesh across processes (parallel); \object{libsrc/topology/Distributor}.
-  \item Refine the mesh if desired (parallel); \object{libsrc/topology/RefineUniform}.
+  \item Read the mesh (serial); \object{pylith::meshio::MeshIO}.
+  \item Reorder the mesh; \object{pylith::topology::ReverseCuthillMcKee}.
+  \item Insert cohesive cells as necessary (serial); \object{pylith::faults::FaultCohesive}.
+  \item Distribute the mesh across processes (parallel); \object{pylith::topology::Distributor}.
+  \item Refine the mesh if desired (parallel); \object{pylith::topology::RefineUniform}.
   \end{enumerate}
 \item Setup the problem.
   \begin{enumerate}
@@ -168,7 +168,9 @@ Once the job starts, the application flow is:
 
 In the first step, we list the object performing the work, whereas in
 subsequent steps we list the top-level object method responsible for
-the work. Note that a child class may redefine or perform additional
+the work. Python objects are listed using the \object{path.class}
+syntax while C++ objects are listed using \object{namespace::class}
+syntax. Note that a child class may redefine or perform additional
 work compared to what is listed in the parent class method.
 
 \subsubsection{Time-Dependent Problem}

@@ -1,7 +1,7 @@
 \chapter{Coding Style}
 \label{cha:code:style}
 
-This chapter will be an appendix to the PyLith Manual.
+This chapter will be an appendix in the PyLith Manual.
 
 There are a number of standard coding styles for programming
 languages, notable PEP8 for Python. For PyLith we try to be consistent
@@ -14,17 +14,42 @@ with Doxygen.
 
 The principal guidelines include:
 \begin{itemize}
-\item Class names use upper camel case, e.g., \object{TimeDependent}.
-\item Public method names use camel case, e.g.,
-  \object{computeRHSResidual()}.
-\item Protected and private method names use camel case preceded by an
-  underscore, e.g., \object{\_setFEKernelsRHSResidual()}.
-\item In C++ data members are private and use camel case preceded by
-  an underscore, e.g., \object{\_gravityField}.
-\item In Python data members are public and use camel case, e.g., \object{self.gravityField}.
-\item Local variables use camel case, e.g., \object{numIntegrators}.
-\item List authors, copyright, and license info at the very beginning of
-  each file.
+  \item Naming conventions
+    \begin{itemize}
+    \item Class names use upper camel case, e.g., \object{TimeDependent}.
+    \item Public method names use camel case, e.g.,
+      \object{computeRHSResidual()}.
+    \item Protected and private method names use camel case preceded by an
+      underscore, e.g., \object{\_setFEKernelsRHSResidual()}.
+    \item In C++ data members are private and use camel case preceded by
+      an underscore, e.g., \object{\_gravityField}.
+    \item In Python data members are public and use camel case, e.g., \object{self.gravityField}.
+    \item Local variables use camel case, e.g., \object{numIntegrators}.
+    \end{itemize}
+  \item Comments
+    \begin{itemize}
+    \item List authors, copyright, and license info at the very
+      beginning of every file.
+    \item For every class method, describe its function and include a
+      description for each argument.
+    \item Document nontrivial algorithms and any assumptions.
+    \end{itemize}
+  \item Error checking
+    \begin{itemize}
+    \item PyLith should never crash.
+    \item All user errors should be trapped as early as possible and
+      reported with an informative error message.
+    \item Messages for internal errors should indicate the location in
+      the code where the error was trapped.
+    \item All pointers should be checked for null values before use.
+    \item Return values for all calls to functions in external
+      libraries are checked.
+    \end{itemize}
+  \item Testing
+    \begin{itemize}
+    \item All methods should be covered by unit tests.
+    \item All functionality should be covered by full-scale tests.
+    \end{itemize}
 \end{itemize}
 
 \section{Error Checking}
@@ -58,7 +83,7 @@ call to a PETSc function.
 
 In combination with the above procedures, we also make use of the Pyre
 journals to display warnings and errors to facilitate debugging. The
-journals provide the filename and line number along with the message.
+journals provide the file name and line number along with the message.
 
 \begin{cplusplus}[Example of using Pyre journals and standard exceptions]
     switch (bitUse) {
@@ -110,7 +135,7 @@ header files use the \filename{.h} suffix.
 // ======================================================================
 //
 
-/* Next list the filename with the relative path of the file along with a
+/* Next list the file name with the relative path of the file along with a
  * brief description.
  */  
 
@@ -156,7 +181,7 @@ header files use the \filename{.h} suffix.
  *
  */
 class pylith::problems::Problem : public pylith::utils::PyreComponent {
-  /* Order of declarations is:
+  /- Order of declarations is:
   *
   * 1. Friend classes.
   * 2. Public enums
@@ -169,7 +194,7 @@ class pylith::problems::Problem : public pylith::utils::PyreComponent {
   * 9. Methods not implemented.
   *
   * Within each group, we generally order the methods by:
-  * 1. Constructor/desctructors.
+  * 1. Constructor/destructors.
   * 2. Accessors.
   * 3. Other methods.
   *
@@ -336,9 +361,9 @@ macros:
 \item[PYLITH\_METHOD\_BEGIN] Use this macro at the beginning of all
   but methods using any PETSc routines and most other methods except
   trivial or inline methods.
-\item[PYLITH\_METHOD\_END] Use thie macro at the end of all methods
+\item[PYLITH\_METHOD\_END] Use the macro at the end of all methods
   using PYLITH\_METHOD\_BEGIN that return void.
-\item[PYLITH\_RETURN\_END] Use thie macro at the end of all methods
+\item[PYLITH\_RETURN\_END] Use Thieu macro at the end of all methods
   using PYLITH\_METHOD\_BEGIN that return non-void values.
 \item[PYLITH\_JOURNAL\_DEBUG] Use this macro immediate after
   PYLITH\_METHOD\_BEGIN in all methods for objects that {\em do not} have a corresponding
