@@ -270,6 +270,21 @@
     backgroundcolor=\color{\captioncolor!10},
     rulecolor=\color{\captioncolor},
 }}{}
+%
+% python
+%
+\lstnewenvironment{cplusplus}[1][\@empty]{%
+  \def\captioncolor{ltgreen}
+  \def\@makecaption{\lst@makecaption}
+  \lstset{%
+    language=c++,%
+    frame=tb,%
+    basicstyle=\small\ttfamily,%
+    commentstyle=\itshape\color{orange},
+    title={#1},
+    backgroundcolor=\color{\captioncolor!10},
+    rulecolor=\color{\captioncolor},
+}}{}
 
 % ------------------------------------------------------------------
 % Lists

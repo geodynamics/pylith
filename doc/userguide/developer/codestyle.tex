@@ -23,7 +23,64 @@ The principal guidelines include:
   an underscore, e.g., \object{\_gravityField}.
 \item In Python data members are public and use camel case, e.g., \object{self.gravityField}.
 \item Local variables use camel case, e.g., \object{numIntegrators}.
+\item List authors, copyright, and license info at the very beginning of
+  each file.
 \end{itemize}
+
+\section{Error Checking}
+
+Our philosophy is that PyLith should never crash. If it encounters a
+fatal error, then it should generate an appropriate error message and
+abort. In C++ we throw \object{std::runtime\_error} exceptions for
+errors resulting from user errors and \object{std::logic\_error}
+exceptions for internal coding errors. In Python we use standard
+exception objects.
+
+Additional protections against crashing include: using asserts to
+verify pointers are non-null before using them and using the
+PYLITH\_CHECK\_ERROR macro to check the return value after {\em every}
+call to a PETSc function.
+
+\begin{cplusplus}[Example of using assert()]
+    assert(_solution);
+
+    // Initialize integrators.
+    const size_t numIntegrators = _integrators.size();
+    for (size_t i = 0; i < numIntegrators; ++i) {
+        assert(_integrators[i]);
+        _integrators[i]->initialize(*_solution);
+    } // for  
+\end{cplusplus}
+
+\begin{cplusplus}[Example of using PYLITH\_CHECK\_ERROR macro]
+  PetscErrorCode err = TSGetTimeStep(ts, &dt); PYLITH_CHECK_ERROR(err);
+\end{cplusplus}
+
+In combination with the above procedures, we also make use of the Pyre
+journals to display warnings and errors to facilitate debugging. The
+journals provide the filename and line number along with the message.
+
+\begin{cplusplus}[Example of using Pyre journals and standard exceptions]
+    switch (bitUse) {
+    case 0x1:
+        _bcKernel = pylith::fekernels::TimeDependentFn::initial_scalar;
+        break;
+    case 0x2:
+        _bcKernel = pylith::fekernels::TimeDependentFn::rate_scalar;
+        break;
+    case 0x0:
+        PYLITH_COMPONENT_WARNING("Dirichlet BC provides no constraints.");
+        break;
+    default:
+        PYLITH_COMPONENT_ERROR("Unknown combination of flags for Dirichlet BC terms "
+            << "(useInitial="<<_useInitial<<", useRate="<<_useRate<<").");
+        throw std::logic_error("Unknown combination of flags for Dirichlet BC terms.");
+    } // switch
+\end{cplusplus}
+
+
+\tip{For production runs only, we often build with -DNDEBUG to remove
+  assert() calls.}
 
 \section{C/C++}
 
@@ -36,7 +93,235 @@ header files use the \filename{.h} suffix.
   the method does and a description of each argument and the return
   value if it is not void.}
 
-\todo{brad}{Insert example here}
+\begin{cplusplus}[Sample C++ definition (header) file]
+// ======================================================================
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2015 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ======================================================================
+//
+
+/* Next list the filename with the relative path of the file along with a
+ * brief description.
+ */  
+
+/**
+ * @file libsrc/problems/Problem.hh
+ *
+ * @brief C++ object that manages formulating the equations.
+ */
+
+// Use full namespace in header guard.
+#if !defined(pylith_problems_problem_hh)
+#define pylith_problems_problem_hh
+
+// Include directives ---------------------------------------------------
+/* Order is local forward declarations, then local header files,
+ * before other header files, and then system header files.
+ */
+#include "problemsfwd.hh" // forward declarations
+
+#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
+
+#include "pylith/feassemble/feassemblefwd.hh" // HASA IntegratorPointwise
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
+#include "pylith/meshio/meshiofwd.hh" // HASA OutputManager
+#include "spatialdata/units/unitsfwd.hh" // HASA Nondimensional
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA GravityField
+
+#include "pylith/utils/petscfwd.h" // USES PetscVec, PetscMat
+
+#include "pylith/utils/array.hh" // HASA std::vector
+
+
+// Problem ----------------------------------------------------------
+/* Provide description of class.
+ */
+ 
+/** Reform the Jacobian and residual for the problem.
+ *
+ * We cast the problem in terms of F(t,s,\dot{s}) = G(t,s), s(t0) = s0.
+ *
+ * In PETSc time stepping (TS) notation, G is the RHS, and F is the I
+ * function (which we call the LHS).
+ *
+ */
+class pylith::problems::Problem : public pylith::utils::PyreComponent {
+  /* Order of declarations is:
+  *
+  * 1. Friend classes.
+  * 2. Public enums
+  * 3. Public structs
+  * 4. Public methods.
+  * 5. Protected methods.
+  * 6. Private methods
+  * 7. Protected members.
+  * 8. Private members.
+  * 9. Methods not implemented.
+  *
+  * Within each group, we generally order the methods by:
+  * 1. Constructor/desctructors.
+  * 2. Accessors.
+  * 3. Other methods.
+  *
+  * Use the full namespace when declaring data members and method
+  * arguments to avoid ambiguity.
+  *
+  * Method arguments are listed one per line.
+  *
+  * Include opening braces at the end of a line. Use a comment to
+  * document all closing braces.
+  *
+  * Before every member method, describe what the method does and
+  * include a description for every argument. We use Doxygen
+  * syntax.
+  */
+
+  friend class TestProblem;   // unit testing
+
+    // PUBLIC ENUM //////////////////////////////////////////////////////////
+public:
+
+    enum SolverTypeEnum {
+        LINEAR, // Linear solver.
+        NONLINEAR, // Nonlinear solver.
+    };   // SolverType
+
+
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+public:
+
+    // Constructor
+    Problem(void);
+
+    /// Destructor
+    virtual ~Problem(void);
+
+    /* We call the deallocate method before calling PetscFinalize() to
+     * deallocate any memory allocated using PETSc. In general, the
+     * destructor will simply call deallocate().
+     */
+    
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
+
+    /** Set solver type.
+     *
+     * @param[in] value Solver type.
+     */
+    void solverType(const SolverTypeEnum value);
+
+    /** Get solver type.
+     *
+     * @returns Solver type.
+     */
+    SolverTypeEnum solverType(void) const;
+
+    /** Set manager of scales used to nondimensionalize problem.
+     *
+     * @param[in] dim Nondimensionalizer.
+     */
+    void normalizer(const spatialdata::units::Nondimensional& dim);
+
+    /** Set gravity field.
+     *
+     * @param[in] g Gravity field.
+     */
+    void gravityField(spatialdata::spatialdb::GravityField* const g);
+
+    /** Set solution field.
+     *
+     * @param[in] field Solution field.
+     */
+    void solution(pylith::topology::Field* field);
+
+    /** Set handles to integrators.
+     *
+     * @param[in] integratorArray Array of integrators.
+     * @param[in] numIntegrators Number of integrators.
+     */
+    void integrators(pylith::feassemble::IntegratorPointwise* integratorArray[],
+                     const int numIntegrators);
+
+    /** Do minimal initialization.
+     *
+     * @param mesh Finite-element mesh.
+     */
+    virtual
+    void preinitialize(const pylith::topology::Mesh& mesh);
+
+    /** Verify configuration.
+     *
+     * @param[in] materialIds Array of material ids.
+     * @param[in] numMaterials Size of array (number of materials).
+     *
+     */
+    virtual
+    void verifyConfiguration(int* const materialIds,
+                             const int numMaterials) const;
+
+    /** Set solution values according to constraints (Dirichlet BC).
+     *
+     * @param[in] t Current time.
+     * @param[in] solutionVec PETSc Vec with current global view of solution.
+     * @param[in] solutionDotVec PETSc Vec with current global view of time derivative of solution.
+     */
+    void setSolutionLocal(const PylithReal t,
+                          PetscVec solutionVec,
+                          PetscVec solutionDotVec);
+
+    /** Compute RHS residual, G(t,s) and assemble into global vector.
+     *
+     * @param[out] residualVec PETSc Vec for residual.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solutionVec PETSc Vec with current trial solution.
+     */
+    void computeRHSResidual(PetscVec residualVec,
+                            const PetscReal t,
+                            const PetscReal dt,
+                            PetscVec solutionVec);
+
+    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected:
+
+    /* Use pointers to hide implementation details and speed up compilation.
+     */
+
+    pylith::topology::Field* _solution;   ///< Handle to solution field.
+    pylith::topology::Field* _residual; ///< Handle to residual field.
+
+    spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalization of scales.
+    spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
+    std::vector<pylith::feassemble::IntegratorPointwise*> _integrators;   ///< Array of integrators.
+    SolverTypeEnum _solverType;   ///< Problem (solver) type.
+
+    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+private:
+
+    /* Declare expensive/fragile copy methods private, so using them
+     * fails in an error at compile time.
+     */
+
+    Problem(const Problem&);   ///< Not implemented
+    const Problem& operator=(const Problem&);   ///< Not implemented
+
+}; // Problem
+
+#endif // pylith_problems_problem_hh
+
+
+// End of file
+\end{cplusplus}
 
 \subsection{Object Implementation Files}
 
@@ -69,17 +354,271 @@ macros:
   name matching the Pyre component, e.g., timedependent.
 \end{description}
 
-\todo{brad}{Insert example here}
+\begin{cplusplus}[Sample C++ implementation file]
+// ======================================================================
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2015 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ======================================================================
+//
 
+/* Order of including header files is:
+ * 1. portinfo: (stuff from configure)
+ * 2. Header file for this class.
+ * 3. Header files for local classes.
+ * 4. Header files for classes in other libraries.
+ * 5. Standard header files.
+ *
+ * List why each header file is included (USES/HASA/HOLDSA).
+ *
+ * Order of method implementations should match header file.
+ *
+ * For each method:
+ *   1. Return values should go on previous line.
+ *   2. Put each method argument on a separate line.
+ */
+#include <portinfo>
+
+#include "Problem.hh" // implementation of class methods
+
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field
+
+#include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
+
+#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+
+#include <cassert> // USES assert()
+#include <typeinfo> // USES typeid()
+
+// ----------------------------------------------------------------------
+// Constructor
+pylith::problems::Problem::Problem() :
+    _solution(NULL),
+    _solutionDot(NULL),
+    _residual(NULL),
+    _jacobianLHSLumpedInv(NULL),
+    _normalizer(NULL),
+    _gravityField(NULL),
+    _integrators(0),
+    _constraints(0),
+    _outputs(0),
+    _solverType(LINEAR)
+{ // constructor
+} // constructor
+
+// ----------------------------------------------------------------------
+// Destructor
+pylith::problems::Problem::~Problem(void)
+{ // destructor
+    deallocate();
+} // destructor
+
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::problems::Problem::deallocate(void) {
+    PYLITH_METHOD_BEGIN;
+
+    _solution = NULL; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
+    delete _solutionDot; _solutionDot = NULL;
+    delete _residual; _residual = NULL;
+    delete _jacobianLHSLumpedInv; _jacobianLHSLumpedInv = NULL;
+    delete _normalizer; _normalizer = NULL;
+    _gravityField = NULL; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
+
+    PYLITH_METHOD_END;
+} // deallocate
+
+// ----------------------------------------------------------------------
+// Set problem type.
+void
+pylith::problems::Problem::solverType(const SolverTypeEnum value) {
+    PYLITH_COMPONENT_DEBUG("Problem::solverType(value="<<value<<")");
+
+    _solverType = value;
+} // solverType
+
+// ----------------------------------------------------------------------
+// Get problem type.
+pylith::problems::Problem::SolverTypeEnum
+pylith::problems::Problem::solverType(void) const {
+    return _solverType;
+} // solverType
+
+// ----------------------------------------------------------------------
+// Set manager of scales used to nondimensionalize problem.
+void
+pylith::problems::Problem::normalizer(const spatialdata::units::Nondimensional& dim) {
+    PYLITH_COMPONENT_DEBUG("Problem::normalizer(dim="<<typeid(dim).name()<<")");
+
+    if (!_normalizer) {
+        _normalizer = new spatialdata::units::Nondimensional(dim);
+    } else {
+        *_normalizer = dim;
+    } // if/else
+} // normalizer
+
+// ----------------------------------------------------------------------
+// Set gravity field.
+void
+pylith::problems::Problem::gravityField(spatialdata::spatialdb::GravityField* const g) {
+    PYLITH_COMPONENT_DEBUG("Problem::gravityField(g="<<typeid(*g).name()<<")");
+
+    _gravityField = g;
+} // gravityField
+
+// ----------------------------------------------------------------------
+// Set solution field.
+void
+pylith::problems::Problem::solution(pylith::topology::Field* field)
+{ // solution
+    PYLITH_COMPONENT_DEBUG("Problem::solution(field="<<typeid(*field).name()<<")");
+
+    _solution = field;
+} // solution
+
+// ----------------------------------------------------------------------
+// Set integrators over the mesh.
+void
+pylith::problems::Problem::integrators(pylith::feassemble::IntegratorPointwise* integratorArray[],
+                                       const int numIntegrators) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("Problem::integrators("<<integratorArray<<", numIntegrators="<<numIntegrators<<")");
+
+    assert( (!integratorArray && 0 == numIntegrators) || (integratorArray && 0 < numIntegrators) );
+
+    _integrators.resize(numIntegrators);
+    /* Declare loop variables inline. Always use braces at begin/end
+     * of if and for statements.
+     */
+    for (int i = 0; i < numIntegrators; ++i) {
+        _integrators[i] = integratorArray[i];
+    } // for
+
+    PYLITH_METHOD_END;
+} // integrators
+
+// ----------------------------------------------------------------------
+// Do minimal initialization.
+void
+pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("Problem::preinitialzie(mesh="<<typeid(mesh).name()<<")");
+
+    assert(_normalizer);
+
+    const size_t numIntegrators = _integrators.size();
+    for (size_t i = 0; i < numIntegrators; ++i) {
+        assert(_integrators[i]);
+        _integrators[i]->normalizer(*_normalizer);
+        _integrators[i]->gravityField(_gravityField);
+    } // for
+
+    PYLITH_METHOD_END;
+} // preinitialize
+
+// ----------------------------------------------------------------------
+// Verify configuration.
+void
+pylith::problems::Problem::verifyConfiguration(int* const materialIds,
+                                               const int numMaterials) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("Problem::verifyConfiguration(materialIds="<<materialIds<<", numMaterials="<<numMaterials<<")");
+
+    assert(_solution);
+
+    // Check to make sure material-id for each cell matches the id of a material.
+    pylith::topology::MeshOps::checkMaterialIds(_solution->mesh(), materialIds, numMaterials);
+
+    // Check to make sure integrators are compatible with the solution.
+    const size_t numIntegrators = _integrators.size();
+    for (size_t i = 0; i < numIntegrators; ++i) {
+        assert(_integrators[i]);
+        _integrators[i]->verifyConfiguration(*_solution);
+    } // for
+
+    PYLITH_METHOD_END;
+}  // verifyConfiguration
+
+// ----------------------------------------------------------------------
+// Set solution values according to constraints (Dirichlet BC).
+void
+pylith::problems::Problem::setSolutionLocal(const PylithReal t,
+                                            PetscVec solutionVec,
+                                            PetscVec solutionDotVec) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("setSolutionLocal(t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<")");
+
+    // Update PyLith view of the solution.
+    assert(_solution);
+    _solution->scatterVectorToLocal(solutionVec);
+
+    if (solutionDotVec) {
+        if (!_solutionDot) {
+            _solutionDot = new pylith::topology::Field(_solution->mesh());
+            _solutionDot->cloneSection(*_solution);
+            _solutionDot->label("solutionDot");
+        } // if
+        _solutionDot->scatterVectorToLocal(solutionDotVec);
+    } // if
+
+    PYLITH_METHOD_END;
+} // setSolutionLocal
+
+// ----------------------------------------------------------------------
+// Compute RHS residual for G(t,s).
+void
+pylith::problems::Problem::computeRHSResidual(PetscVec residualVec,
+                                              const PylithReal t,
+                                              const PylithReal dt,
+                                              PetscVec solutionVec) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("Problem::computeRHSResidual(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", residualVec="<<residualVec<<")");
+
+    assert(residualVec);
+    assert(solutionVec);
+    assert(_solution);
+
+    // Update PyLith view of the solution.
+    PetscVec solutionDotVec = NULL;
+    setSolutionLocal(t, solutionVec, solutionDotVec);
+
+    // Sum residual contributions across integrators.
+    _residual->zeroLocal();
+    const size_t numIntegrators = _integrators.size();
+    assert(numIntegrators > 0); // must have at least 1 integrator
+    for (size_t i = 0; i < numIntegrators; ++i) {
+        _integrators[i]->computeRHSResidual(_residual, t, dt, *_solution);
+    } // for
+
+    // Assemble residual values across processes.
+    PetscErrorCode err = VecSet(residualVec, 0.0); PYLITH_CHECK_ERROR(err); // Move to TSComputeIFunction()?
+    _residual->scatterLocalToVector(residualVec, ADD_VALUES);
+
+    PYLITH_METHOD_END;
+} // computeRHSResidual
+
+// End of file
+  
+\end{cplusplus}
 
 
 \section{Python}
 
 Example of Python source code using our preferred coding style:
 
-\begin{python}
-# List authors, copyright, and license info at the very beginning of the file.
-#
+\begin{python}[Sample Python source code]
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -95,7 +634,7 @@ Example of Python source code using our preferred coding style:
 #
 # ----------------------------------------------------------------------
 # 
-# Next list the name with the relative path of the file along with a
+# Next list the filename with the relative path of the file along with a
 # brief description.
 #  
 # @file pylith/problems/Problem.py

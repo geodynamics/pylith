@@ -102,7 +102,11 @@ to build the SWIG Python module.
 The Python modules use a single \filename{Makefile.am} file in
 the \filename{pylith} directory.
 
-The C++ unit tests for each 
+Each test suite (C++ unit tests for each subpackage, Python unit tests
+for each subpackage, and each suite of full-scale tests) use a single
+\filename{Makefile.am}. These files define how the tests are built,
+additional input files that should be included in the source
+distribution, and temporary files that should be deleted.
 
 Each suite of examples contains a \filename{Makefile.am} that defines
 the files that are to be included in the source distribution. It also
