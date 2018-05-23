@@ -39,6 +39,22 @@ Python code to collection of the user parameters, some simple
 checking of the parameters, and passing the parameters to the
 corresponding C++ objects.
 
+The C++ library and Python modules are organized into several
+subpackages.
+
+\begin{description}
+\item[\filename{bc}] Boundary conditions.
+\item[\filename{faults}] Faults.
+\item[\filename{feassemble}] General finite-element formulation.
+\item[\filename{fekernels}] Finite-element point-wise functions (kernels).
+\item[\filename{friction}] Fault constitutive models.
+\item[\filename{materials}] Material behavior, including bulk constitutive models.
+\item[\filename{meshio}] Input and output.
+\item[\filename{problems}] General problem formulation.
+\item[\filename{topology}] Finite-element mesh topology.
+\item[\filename{utils}] General utilities.
+\end{description}
+
 \subsection{Build}
 
 We strongly recommend using the PyLith Installer utility (see Section
@@ -173,6 +189,12 @@ syntax while C++ objects are listed using \object{namespace::class}
 syntax. Note that a child class may redefine or perform additional
 work compared to what is listed in the parent class method.
 
+Reading the mesh through the first two steps of the problem setup are
+controlled from Python. That is, at each step Python calls the
+corresponding C++ methods using SWIG. Starting with the complete
+initialization of the problem, the flow is controlled at the C++
+level.
+
 \subsubsection{Time-Dependent Problem}
 
 In a time-dependent problem, the PETSc \object{TS} object (relabeled
@@ -192,16 +214,26 @@ needed
 
 \section{Adding New Governing Equations and/or Materials}
 
-\todo{brad}{Complete this section before the hackathon.}
-
-\begin{itemize}
-\item Pointwise functions
-\item Solution subfields
-\item Auxiliary subfields
-\item Constants
-\end{itemize}
+There are four basic pieces to adding new physics in the form of a
+governing equation or material:
+\begin{enumerate}
+\item Select the fields for the solution. This will control the form
+  of the partial differential equation and the terms in the residuals
+  and Jacobians.
+\item Derive the point-wise functions for the residuals and
+  Jacobians. Determine what flags will be used to indicate which terms
+  to include.
+\item Determine which parameters in the point-wise functions could
+  vary in space as well as any state variables. We bundle all state variables
+  and spatially varying parameters into a field called the auxiliary
+  field. Each material has a separate auxiliary field.
+\item Parameters that are spatially uniform and constant in time
+  are treated separaterly from the parameters in the auxliary field.
+\end{enumerate}
 
 \subsection{Python}
+
+\todo{brad}{ADD STUFF HERE}
 
 \begin{itemize}
 \item Define solution subfields
