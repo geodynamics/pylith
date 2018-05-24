@@ -20,6 +20,8 @@
 
 #include "FaultCohesive.hh" // implementation of object methods
 
+#include "pylith/faults/AuxiliaryFactory.hh" // USES AuxiliaryFactory
+
 #include "TopologyOps.hh" // USES TopologyOps
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
@@ -236,6 +238,14 @@ pylith::faults::FaultCohesive::initialize(const pylith::topology::Field& solutio
 
     PYLITH_METHOD_END;
 } // initialize
+
+
+// ----------------------------------------------------------------------
+// Get factory for setting up auxliary fields.
+pylith::feassemble::AuxiliaryFactory*
+pylith::faults::FaultCohesive::_auxFactory(void) {
+    return _auxFaultFactory;
+} // _auxFactory
 
 
 // End of file

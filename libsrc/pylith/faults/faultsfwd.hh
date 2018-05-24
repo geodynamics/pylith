@@ -32,6 +32,14 @@ namespace pylith {
 
         class FaultCohesive;
         class FaultCohesiveStub;
+        class FaultCohesiveKin;
+        class AuxiliaryFactory;
+        class KinSrc;
+        class KinSrcConstRate;
+        class KinSrcStep;
+        class KinSrcBrune;
+        class KinSrcLiuCos;
+        class KinSrcAuxiliaryFactory;
 
         class TopologyOps;
     } // faults

@@ -19,6 +19,7 @@
 SUBDIRS = \
 	include \
 	bc \
+	faults \
 	feassemble \
 	materials \
 	meshio \
@@ -27,7 +28,6 @@ SUBDIRS = \
 	topology \
 	utils
 
-#	faults 
 #	friction 
 
 # End of file 

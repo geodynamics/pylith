@@ -22,6 +22,10 @@
 // Header files for module C++ code
 %{
 #include "pylith/faults/FaultCohesive.hh"
+#include "pylith/faults/FaultCohesiveKin.hh"
+#include "pylith/faults/KinSrc.hh"
+#include "pylith/faults/KinSrcStep.hh"
+#include "pylith/faults/KinSrcConstRate.hh"
 %}
 
 %include "exception.i"
@@ -36,7 +40,7 @@
 %include "typemaps.i"
 %include "../include/scalartypemaps.i"
 %include "../include/chararray.i"
-%include "../include/eqkinsrcarray.i"
+%include "../include/kinsrcarray.i"
 
 // Numpy interface stuff
 %{
@@ -48,9 +52,14 @@ import_array();
 %}
 
 // Interfaces
-//%include "../feassemble/Integrator.i" // ISA Integrator
+%include "../utils/PyreComponent.i"
+%include "../feassemble/IntegratorPointwise.i" // ISA IntegratorPointwise
 
-//%include "FaultCohesive.i"
+%include "FaultCohesive.i"
+%include "FaultCohesiveKin.i"
+%include "KinSrc.i"
+%include "KinSrcStep.i"
+%include "KinSrcConstRate.i"
 
 // End of file
 

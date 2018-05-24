@@ -23,7 +23,7 @@ dist_subpkgdata_DATA = \
 	numpy.i \
 	chararray.i \
 	scalartypemaps.i \
-	eqkinsrcarray.i \
+	kinsrcarray.i \
 	integratorarray.i
 
 

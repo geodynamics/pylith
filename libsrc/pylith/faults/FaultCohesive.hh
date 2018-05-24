@@ -90,19 +90,19 @@ public:
      *
      * @param vec Reference direction unit vector.
      */
-    void refDir1(const double vec[3]);
+    void refDir1(const PylithReal vec[3]);
 
     /** Set second choice for reference direction to discriminate among tangential directions in 3-D.
      *
      * @param vec Reference direction unit vector.
      */
-    void refDir2(const double vec[3]);
+    void refDir2(const PylithReal vec[3]);
 
     /** Adjust mesh topology for fault implementation.
      *
      * @param mesh[in] PETSc mesh.
      */
-    void adjustTopology(topology::Mesh* const mesh);
+    void adjustTopology(pylith::topology::Mesh* const mesh);
 
     /** Verify configuration is acceptable.
      *
@@ -111,7 +111,7 @@ public:
     virtual
     void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-    /** Initialize integrator.
+    /** Initialize fault.
      *
      * Create fault mesh from cohesive cells and cohesive point map.
      *
@@ -126,12 +126,25 @@ public:
     void initialize(const pylith::topology::Field& solution);
 
 
+    // PROTECTED NETHODS //////////////////////////////////////////////////
+protected:
+
+    /** Get factory for setting up auxliary fields.
+     *
+     * @returns Factor for auxiliary fields.
+     */
+    pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
+
+
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
 
     pylith::topology::Mesh* _faultMesh; ///< Mesh over fault surface.
 
     PetscIS _cohesivePointMap; ///< Map from fault point to higher dimension point in cohesive cell.
+
+    pylith::faults::AuxiliaryFactory* _auxFaultFactory; ///< Factory for auxiliary subfields.
+
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:

@@ -18,22 +18,22 @@
 
 // ----------------------------------------------------------------------
 // List of earthquake sources.
-%typemap(in) (pylith::faults::EqKinSrc** sources,
+%typemap(in) (pylith::faults::KinSrc** sources,
 	      const int numSources)
 {
   // Check to make sure input is a list.
   if (PyList_Check($input)) {
     const int size = PyList_Size($input);
     $2 = size;
-    $1 = (size > 0) ? new pylith::faults::EqKinSrc*[size] : 0;
+    $1 = (size > 0) ? new pylith::faults::KinSrc*[size] : 0;
     for (int i = 0; i < size; i++) {
       PyObject* s = PyList_GetItem($input,i);
-      pylith::faults::EqKinSrc** src = 0;
+      pylith::faults::KinSrc** src = 0;
       int err = SWIG_ConvertPtr(s, (void**) &src, 
-				$descriptor(pylith::faults::EqKinSrc*),
+				$descriptor(pylith::faults::KinSrc*),
 				0);
       if (SWIG_IsOK(err))
-	$1[i] = (pylith::faults::EqKinSrc*) src;
+	$1[i] = (pylith::faults::KinSrc*) src;
       else {
 	PyErr_SetString(PyExc_TypeError, 
 			"List must contain kinematic earthquake sources.");
@@ -49,7 +49,7 @@
 } // typemap(in) [List of kinematic earthquake sources.]
 
 // This cleans up the array we malloc'd before the function call
-%typemap(freearg) (pylith::faults::EqKinSrc** sources, 
+%typemap(freearg) (pylith::faults::KinSrc** sources, 
 		   const int numSources) {
   delete[] $1;
 }

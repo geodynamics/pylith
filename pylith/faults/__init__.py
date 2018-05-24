@@ -20,17 +20,14 @@
 ##
 ## @brief Python PyLith faults module initialization
 
-__all__ = ['BruneSlipFn',
-           'ConstRateSlipFn',
-           'EqKinSrc',
-           'Fault',
-           'FaultCohesive',
-           'FaultCohesiveKin',
-           'FaultCohesiveDyn',
-           'SlipTimeFn',
-           'SingleRupture',
-           'StepSlipFn',
-           ]
+__all__ = [
+    "FaultCohesive",
+    "FaultCohesiveKin",
+    "KinSrc",
+    "KinSrcStep",
+    "KinSrcConstRate",
+    "SingleRupture",
+    ]
 
 
 # End of file

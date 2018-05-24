@@ -25,7 +25,12 @@ subpkgpyexec_LTLIBRARIES = _faultsmodule.la
 subpkgpyexec_PYTHON = faults.py
 
 swig_sources = \
-	faults.i 
+	faults.i \
+	FaultCohesive.i \
+	FaultCohesiveKin.i \
+	KinSrc.i \
+	KinSrcStep.i \
+	KinSrcConstRate.i
 
 swig_generated = \
 	faults_wrap.cxx \

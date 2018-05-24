@@ -42,6 +42,12 @@ libpylith_la_SOURCES = \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveStub.cc \
+	faults/FaultCohesiveKin.cc \
+	faults/AuxiliaryFactory.cc \
+	faults/KinSrc.cc \
+	faults/KinSrcStep.cc \
+	faults/KinSrcConstRate.cc \
+	faults/KinSrcAuxiliaryFactory.cc \
 	faults/TopologyOps.cc \
 	feassemble/IntegratorPointwise.cc \
 	feassemble/ConstraintPointwise.cc \

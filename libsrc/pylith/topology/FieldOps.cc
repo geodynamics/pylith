@@ -20,6 +20,7 @@
 
 #include "FieldOps.hh" // implementation of class methods
 
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
 #include "petscdm.h" // USES PetscDM
@@ -111,6 +112,66 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
 
     PYLITH_METHOD_RETURN(fe);
 } // createFE
+
+
+// ----------------------------------------------------------------------
+// Check compatibility of discretization of subfields in the auxiliary field and target field.
+void
+pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& target,
+                                                const pylith::topology::Field& auxiliary) {
+    PYLITH_METHOD_BEGIN;
+    //PYLITH_JOURNAL_DEBUG("checkDiscretization(target="<<target.label()<<", auxiliary="<<auxiliary.label()<<")");
+
+    // Verify that the quadrature order of the target subfields all
+    // match and that they match the quadrature order of the auxiliary
+    // subfields, because this is assumed by DMPlex integration
+    // routines.
+
+    // Get quadrature order in target subfields.
+    PetscInt quadOrder = -1;
+    { // target subfields
+        const pylith::string_vector& subfieldNames = target.subfieldNames();
+        const size_t numSubfields = subfieldNames.size();
+        for (size_t i = 0; i < numSubfields; ++i) {
+            const pylith::topology::Field::SubfieldInfo& sinfo = target.subfieldInfo(subfieldNames[i].c_str());
+            if (quadOrder > 0) {
+                if (quadOrder != sinfo.fe.quadOrder) {
+                    std::ostringstream msg;
+                    msg << "Quadrature order of subfields in target field '" << target.label()
+                        << "' must all be the same. Expected quadrature order of " << quadOrder << ", but subfield '"
+                        << subfieldNames[i] << "' has a quadrature order of " << sinfo.fe.quadOrder << ".";
+                    throw std::runtime_error(msg.str());
+                } // if
+            } else {
+                quadOrder = sinfo.fe.quadOrder;
+            } // else
+        } // for
+    } // target subfields
+
+    // Check quadrature order in auxiliary subfields.
+    { // auxiliary subfields
+        const pylith::string_vector& subfieldNames = auxiliary.subfieldNames();
+        const size_t numSubfields = subfieldNames.size();
+        for (size_t i = 0; i < numSubfields; ++i) {
+            const pylith::topology::Field::SubfieldInfo& sinfo = auxiliary.subfieldInfo(subfieldNames[i].c_str());
+            if (quadOrder > 0) {
+                if (quadOrder != sinfo.fe.quadOrder) {
+                    std::ostringstream msg;
+                    msg << "Quadrature order of subfields in auxiliary field '" << auxiliary.label()
+                        << "' must all match the quadrature order in the target subfields '" << target.label()
+                        << "'. Expected quadrature order of " << quadOrder << ", but subfield '" << subfieldNames[i]
+                        << "' has a quadrature order of " << sinfo.fe.quadOrder << ".";
+                    throw std::runtime_error(msg.str());
+                } // if
+            } else {
+                quadOrder = sinfo.fe.quadOrder;
+            } // else
+        } // for
+    } // auxiliary subfields
+
+    PYLITH_METHOD_END;
+
+} // checkDiscretization
 
 
 // End of file

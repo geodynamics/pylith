@@ -31,6 +31,13 @@ nobase_pkgpyexec_PYTHON = \
 	bc/AuxFieldsTimeDependent.py \
 	bc/AbsorbingDampers.py \
 	bc/ZeroDB.py \
+	faults/__init__.py \
+	faults/FaultCohesive.py \
+	faults/FaultCohesiveKin.py \
+	faults/KinSrc.py \
+	faults/KinSrcStep.py \
+	faults/KinSrcConstRate.py \
+	faults/SingleRupture.py \
 	feassemble/__init__.py \
 	feassemble/IntegratorPointwise.py \
 	feassemble/ConstraintPointwise.py \

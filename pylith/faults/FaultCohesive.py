@@ -15,178 +15,124 @@
 #
 # ----------------------------------------------------------------------
 #
+# @file pylith/faults/FaultCohesive.py
+#
+# @brief Python abstract base class for a fault surface implemented
+# with cohesive elements.
+#
+# Factory: fault
 
-## @file pylith/faults/FaultCohesive.py
-##
+from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
+from .faults import FaultCohesive as ModuleFaultCohesive
 
-## @brief Python abstract base class for a fault surface implemented
-## with cohesive elements.
-##
-## Factory: fault
 
-from pylith.utils.PetscComponent import PetscComponent
-from faults import FaultCohesive as ModuleFaultCohesive
-
-# Validator for label
 def validateLabel(value):
-  """
-  Validate label for group/nodeset/pset.
-  """
-  if 0 == len(value):
-    raise ValueError("Label for group/nodeset/pset in mesh not specified.")
-  return value
+    """
+    Validate label for group/nodeset/pset.
+    """
+    if 0 == len(value):
+        raise ValueError("Label for fault group/nodeset/pset in mesh not specified.")
+    return value
 
 
-# Validator for direction
 def validateDir(value):
-  """
-  Validate direction.
-  """
-  msg = "Direction must be a 3 component vector (list)."
-  if not isinstance(value, list):
-    raise ValueError(msg)
-  if 3 != len(value):
-    raise ValueError(msg)
-  try:
-    nums = map(float, value)
-  except:
-    raise ValueError(msg)
-  return nums
-
-
-# FaultCohesive class
-class FaultCohesive(Fault, ModuleFaultCohesive):
-  """
-  Python abstract base class for a fault surface implemeted with
-  cohesive elements.
-
-  Inventory
-
-  @class Inventory
-  Python object for managing FaultCohesive facilities and properties.
-
-  \b Properties
-  @li \b id Fault identifier
-  @li \b label Label identifier for fault.
-  @li \b edge Label identifier for buried fault edges.
-  @li \b up_dir Up-dip or up direction
-    (perpendicular to along-strike and not collinear with fault normal;
-    applies to fault surfaces in 2-D and 3-D).
-
-  \b Facilities
-
-  Factory: fault
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  import pyre.inventory
-
-  matId = pyre.inventory.int("id", default=100)
-  matId.meta['tip'] = "Fault identifier (must be unique across all faults " \
-      "and materials)."
-
-  faultLabel = pyre.inventory.str("label", default="", validator=validateLabel)
-  faultLabel.meta['tip'] = "Label identifier for fault."
-
-  faultEdge = pyre.inventory.str("edge", default="")
-  faultEdge.meta['tip'] = "Label identifier for buried fault edges."
-
-  upDir = pyre.inventory.list("up_dir", default=[0.0, 0.0, 1.0], validator=validateDir)
-  upDir.meta['tip'] = "Up-dip or up direction " \
-      "(perpendicular to along-strike and not collinear " \
-      "with fault normal; applies to fault surfaces " \
-      "in 2-D and 3-D)."
-
-
-        # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="fault"):
     """
-    Constructor.
+    Validate direction.
     """
-    PetscComponent.__init__(self, name, facility="fault")
-    self._createModuleObj()
-    self.mesh = None
-    self.output = None
-    return
+    msg = "Direction must be a 3 component vector (list)."
+    if not isinstance(value, list):
+        raise ValueError(msg)
+    if 3 != len(value):
+        raise ValueError(msg)
+    try:
+        nums = map(float, value)
+    except:
+        raise ValueError(msg)
+    return nums
 
 
-  def preinitialize(self, mesh):
+class FaultCohesive(IntegratorPointwise, ModuleFaultCohesive):
     """
-    Setup fault.
+    Python abstract base class for a fault surface implemeted with
+    cohesive elements.
+
+    Inventory
+
+    @class Inventory
+    Python object for managing FaultCohesive facilities and properties.
+
+    \b Properties
+    @li \b id Fault identifier
+    @li \b label Label identifier for fault.
+    @li \b edge Label identifier for buried fault edges.
+    @li \b up_dir Up-dip or up direction
+      (perpendicular to along-strike and not collinear with fault normal;
+      applies to fault surfaces in 2-D and 3-D).
+
+    \b Facilities
+
+    Factory: fault
     """
-    import weakref
-    self.mesh = weakref.ref(mesh)
 
-    self.faultQuadrature.preinitialize(mesh.coordsys().spaceDim())
+    # INVENTORY //////////////////////////////////////////////////////////
 
-    if None != self.output:
-      self.output.preinitialize(self)
+    import pyre.inventory
 
-    return
+    matId = pyre.inventory.int("id", default=100)
+    matId.meta['tip'] = "Fault identifier (must be unique across all faults and materials)."
 
+    faultLabel = pyre.inventory.str("label", default="", validator=validateLabel)
+    faultLabel.meta['tip'] = "Label identifier for fault."
 
-  def verifyConfiguration(self):
-    """
-    Verify compatibility of configuration.
-    """
-    logEvent = "%sverify" % self._loggingPrefix
-    self._eventLogger.eventBegin(logEvent)
+    faultEdge = pyre.inventory.str("edge", default="")
+    faultEdge.meta['tip'] = "Label identifier for buried fault edges."
 
-    faultDim = self.mesh().dimension() - 1
-    if faultDim != self.faultQuadrature.cell.cellDim:
-      raise ValueError, \
-            "Quadrature is incompatible with fault surface.\n" \
-            "Dimensions for quadrature: %d, dimensions of fault: %d" % \
-            (self.faultQuadrature.cell.cellDim, faultDim)
+    refDir1 = pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
+    refDir1.meta['tip'] = "Set first choice for reference direction to discriminate among tangential directions in 3-D."
 
-    if None != self.output:
-      self.output.verifyConfiguration(self.mesh())
+    refDir2 = pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
+    refDir2.meta['tip'] = "Set first choice for reference direction to discriminate among tangential directions in 3-D."
 
-    self._eventLogger.eventEnd(logEvent)
-    return
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
+    def __init__(self, name="fault"):
+        """
+        Constructor.
+        """
+        IntegratorPointwise.__init__(self, name)
+        return
 
-  def initialize(self, totalTime, numTimeSteps, normalizer):
-    """
-    Initialize fault.
-    """
-    logEvent = "%sinit" % self._loggingPrefix
-    self._eventLogger.eventBegin(logEvent)
+    def preinitialize(self, mesh):
+        """
+        Setup fault.
+        """
+        ModuleFaultCohesive.id(self, self.inventory.matId)
+        ModuleFaultCohesive.label(self, self.inventory.faultLabel)
+        ModuleFaultCohesive.edge(self, self.inventory.faultEdge)
+        ModuleFaultCohesive.refDir1(self, self.inventory.refDir1)
+        ModuleFaultCohesive.refDir2(self, self.inventory.refDir2)
+        return
 
-    self.faultQuadrature.initialize()
-    ModuleFault.initialize(self, self.mesh(), self.upDir)
+    def verifyConfiguration(self):
+        """
+        Verify compatibility of configuration.
+        """
+        return
 
-    if None != self.output:
-      self.output.initialize(normalizer, self.faultQuadrature)
-      self.output.writeInfo()
-      self.output.open(totalTime, numTimeSteps)
+    # PRIVATE METHODS ////////////////////////////////////////////////////
 
-    self._eventLogger.eventEnd(logEvent)
-    return
+    def _configure(self):
+        """
+        Setup members using inventory.
+        """
+        IntegratorPointwise._configure(self)
+        return
 
-
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _configure(self):
-    """
-    Setup members using inventory.
-    """
-    PetscComponent._configure(self)
-    self.faultQuadrature = self.inventory.faultQuadrature
-    self.upDir = map(float, self.inventory.upDir)
-    ModuleFault.id(self, self.inventory.matId)
-    ModuleFault.label(self, self.inventory.faultLabel)
-    ModuleFault.edge(self, self.inventory.faultEdge)
-    return
-
-
-  def _createModuleObj(self):
-    """
-    Create handle to corresponding C++ object.
-    """
-    raise NotImplementedError("Please implement _createModuleObj() in derived class.")
+    def _createModuleObj(self):
+        """
+        Create handle to corresponding C++ object.
+        """
+        raise NotImplementedError("Please implement _createModuleObj() in derived class.")
 
 
 # End of file

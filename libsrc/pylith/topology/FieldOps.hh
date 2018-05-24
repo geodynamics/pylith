@@ -65,6 +65,14 @@ public:
                      const bool isSimplex,
                      const int numComponents);
 
+    /** Check compatibility of discretization of subfields in the auxiliary field and target field.
+     *
+     * @param[in] target Field with subfields set from auxiliary field.
+     * @param[in] auxliary Auxiliary field.
+     */
+    static
+    void checkDiscretization(const pylith::topology::Field& target,
+                             const pylith::topology::Field& auxiliary);
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:

@@ -22,6 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldOps.hh" // USES FieldOps::checkDisretization()
 #include "pylith/materials/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/Stratum.hh" // USES StratumIS
@@ -143,7 +144,7 @@ pylith::materials::Material::initialize(const pylith::topology::Field& solution)
     _auxField->label("auxiliary subfields");
     _auxFieldSetup();
     _auxField->subfieldsSetup();
-    _checkDiscretization(solution);
+    pylith::topology::FieldOps::checkDiscretization(solution, *_auxField);
     _auxField->allocate();
     _auxField->zeroLocal();
 
