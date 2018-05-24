@@ -22,29 +22,33 @@
 # Lagrange multiplier subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
+from .Solution import Solution as SolutionBase
 
 
 class SolnDispLagrange(PetscComponent):
     """
     Python subfields container with displacement and fault Lagrange multiplier subfields.
-    """
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li None
-    #
-    # \b Facilities
-    # @li \b displacement Displacement subfield.
-    # @li \b lagrange_fault Fault Lagrange multiplier subfield.
+    IMPORTANT: Use the Solution class (below) to set this object as the default facilities array for the solution
+    subfields.
+
+    INVENTORY
+
+    Properties
+      - None
+
+    Facilities
+      - *displacement* Displacement subfield.
+      - *lagrange_fault* Fault Lagrange multiplier subfield.
+    """
 
     import pyre.inventory
 
-    from SubfieldDisplacement import SubfieldDisplacement
+    from .SubfieldDisplacement import SubfieldDisplacement
     displacement = pyre.inventory.facility("displacement", family="soln_subfield", factory=SubfieldDisplacement)
     displacement.meta['tip'] = "Displacement subfield."
 
-    from SubfieldLagrangeFault import SubfieldLagrangeFault
+    from .SubfieldLagrangeFault import SubfieldLagrangeFault
     lagrangeFault = pyre.inventory.facility("lagrange_fault", family="soln_subfield", factory=SubfieldLagrangeFault)
     lagrangeFault.meta['tip'] = "Fault Lagrange multiplier subfield."
 
@@ -67,7 +71,26 @@ class SolnDispLagrange(PetscComponent):
         components() to insure order is [displacement, lagrange_fault].
 
         """
-        return [self.inventory.displacement, self.inventory.lagrangeFault]
+        return [self.displacement, self.lagrangeFault]
+
+
+class Solution(SolutionBase):
+    """Python solution field with displacement and Lagrange multiplier subfields.
+    """
+
+    import pyre.inventory
+
+    from .SolutionSubfield import subfieldFactory
+    subfields = pyre.inventory.facilityArray("subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispLagrange)
+    subfields.meta['tip'] = "Subfields in solution."
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+def solution():
+    """
+    Factory associated with Solution.
+    """
+    return Solution()
 
 
 # End of file

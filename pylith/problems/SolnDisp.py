@@ -38,7 +38,7 @@ class SolnDisp(PetscComponent):
 
     import pyre.inventory
 
-    from SubfieldDisplacement import SubfieldDisplacement
+    from .SubfieldDisplacement import SubfieldDisplacement
     displacement = pyre.inventory.facility("displacement", family="soln_subfield", factory=SubfieldDisplacement)
     displacement.meta['tip'] = "Displacement subfield."
 
@@ -54,6 +54,14 @@ class SolnDisp(PetscComponent):
     def _configure(self):
         PetscComponent._configure(self)
         return
+
+    def components(self):
+        """
+        Order of facilities in Inventory is ambiguous, so overwrite
+        components() to insure order is [displacement, lagrange_fault].
+
+        """
+        return [self.displacement]
 
 
 # End of file

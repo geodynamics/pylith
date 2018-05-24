@@ -21,29 +21,33 @@
 # @brief Python subfields container with displacement and velocity subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
+from .Solution import Solution as SolutionBase
 
 
 class SolnDispVel(PetscComponent):
     """
     Python subfields container with displacement and velocity subfields.
-    """
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li None
-    #
-    # \b Facilities
-    # @li \b displacement Displacement subfield.
-    # @li \b velocity Velocity subfield.
+    IMPORTANT: Use the Solution class (below) to set this object as the default facilities array for the solution
+    subfields.
+
+    INVENTORY
+
+    Properties
+      - None
+
+    Facilities
+      - *displacement* Displacement subfield.
+      - *velocity* Velocity subfield.
+    """
 
     import pyre.inventory
 
-    from SubfieldDisplacement import SubfieldDisplacement
+    from .SubfieldDisplacement import SubfieldDisplacement
     displacement = pyre.inventory.facility("displacement", family="soln_subfield", factory=SubfieldDisplacement)
     displacement.meta['tip'] = "Displacement subfield."
 
-    from SubfieldVelocity import SubfieldVelocity
+    from .SubfieldVelocity import SubfieldVelocity
     velocity = pyre.inventory.facility("velocity", family="soln_subfield", factory=SubfieldVelocity)
     velocity.meta['tip'] = "Velocity subfield."
 
@@ -66,7 +70,26 @@ class SolnDispVel(PetscComponent):
         components() to insure order is [displacement, velocity].
 
         """
-        return [self.inventory.displacement, self.inventory.velocity]
+        return [self.displacement, self.velocity]
+
+
+class Solution(SolutionBase):
+    """Python solution field with displacement and velocity subfields.
+    """
+
+    import pyre.inventory
+
+    from .SolutionSubfield import subfieldFactory
+    subfields = pyre.inventory.facilityArray("subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispVel)
+    subfields.meta['tip'] = "Subfields in solution."
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+def solution():
+    """
+    Factory associated with Solution.
+    """
+    return Solution()
 
 
 # End of file
