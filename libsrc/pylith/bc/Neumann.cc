@@ -99,7 +99,7 @@ pylith::bc::Neumann::scaleName(const char* value) {
 // ----------------------------------------------------------------------
 // Set first choice for reference direction to discriminate among tangential directions in 3-D.
 void
-pylith::bc::Neumann::refDir1(const double vec[3]) {
+pylith::bc::Neumann::refDir1(const PylithReal vec[3]) {
     // Set reference direction, insuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
@@ -116,7 +116,7 @@ pylith::bc::Neumann::refDir1(const double vec[3]) {
 // ----------------------------------------------------------------------
 // Set second choice for reference direction to discriminate among tangential directions in 3-D.
 void
-pylith::bc::Neumann::refDir2(const double vec[3]) {
+pylith::bc::Neumann::refDir2(const PylithReal vec[3]) {
     // Set reference direction, insuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {

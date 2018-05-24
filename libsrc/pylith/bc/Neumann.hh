@@ -66,13 +66,13 @@ public:
      *
      * @param vec Reference direction unit vector.
      */
-    void refDir1(const double vec[3]);
+    void refDir1(const PylithReal vec[3]);
 
     /** Set second choice for reference direction to discriminate among tangential directions in 3-D.
      *
      * @param vec Reference direction unit vector.
      */
-    void refDir2(const double vec[3]);
+    void refDir2(const PylithReal vec[3]);
 
     /** Verify configuration is acceptable.
      *
@@ -158,7 +158,6 @@ public:
                                      const PylithReal dt,
                                      const PylithReal tshift,
                                      const pylith::topology::Field& solution);
-
 
 
     // PROTECTED METHODS //////////////////////////////////////////////////
