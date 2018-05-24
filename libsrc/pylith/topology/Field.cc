@@ -903,6 +903,7 @@ pylith::topology::Field::_getScatter(const char* context) const
 // Add subfield to current field (inteface to use from SWIG).
 void
 pylith::topology::Field::subfieldAdd(const char *name,
+                                     const char* alias,
                                      const VectorFieldEnum fieldType,
                                      const char* components[],
                                      const int numComponents,
@@ -916,6 +917,7 @@ pylith::topology::Field::subfieldAdd(const char *name,
 
     Description description;
     description.label = name;
+    description.alias = alias;
     description.vectorFieldType = fieldType;
     description.numComponents = numComponents;
     description.componentNames.resize(numComponents);

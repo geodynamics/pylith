@@ -29,22 +29,24 @@ class SubfieldPressure(SolutionSubfield):
     """
     Python object for pressure subfield.
 
-    Factory: subfield.
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li \b name Name for subfield.
-    #
-    # \b Facilities
-    # @li None
+    Properties
+      - *alias* User-specified name for subfield.
+
+    Facilities
+      - None
+
+    FACTORY: subfield
+    """
 
     import pyre.inventory
 
-    from .SolutionSubfield import validateName
-    fieldName = pyre.inventory.str("name", default="pressure", validator=validateName)
-    fieldName.meta['tip'] = "Name for subfield."
+    from .SolutionSubfield import validateAlias
+    userAlias = pyre.inventory.str("name", default="pressure", validator=validateAlias)
+    userAlias.meta['tip'] = "Name for subfield."
+
+    fieldName = "pressure"
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

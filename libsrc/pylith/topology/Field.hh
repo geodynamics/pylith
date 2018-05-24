@@ -197,7 +197,8 @@ public:
      *
      * Should be followed by calls to subfieldsSetup() and allocate().
      *
-     * @param[in] name Name of subfield.
+     * @param[in] name Programatic name of subfield.
+     * @param[in] alias User-specified alias for subfield.
      * @param[in] fieldType Type of vector field.
      * @param[in] components Array of names of field components.
      * @param[in] numComponents Size of array.
@@ -208,6 +209,7 @@ public:
      * @param[in] feSpace Finite-element space (POLYNOMIAL_SPACE or POINT_SPACE).
      */
     void subfieldAdd(const char *name,
+                     const char* alias,
                      const VectorFieldEnum fieldType,
                      const char* components[],
                      const int numComponents,

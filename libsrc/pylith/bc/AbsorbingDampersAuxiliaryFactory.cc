@@ -55,6 +55,7 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::density(void) {
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
@@ -81,6 +82,7 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::vs(void) {
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
@@ -107,6 +109,7 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::vp(void) {
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);

@@ -34,7 +34,7 @@
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA Nondimensional
 
 // SolutionFactory-----------------------------------------------
-/// @brief C++ helper class for setting up auxiliary fields for materials.
+/// @brief C++ helper class for setting up solution subfields for unit tests.
 class pylith::problems::SolutionFactory : public pylith::utils::GenericComponent {
     friend class TestSolutionFactory;   // unit testing
 

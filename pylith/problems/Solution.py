@@ -44,7 +44,7 @@ class Solution(PetscComponent):
 
     from .SolnDisp import SolnDisp
     from .SolutionSubfield import subfieldFactory
-    subfields = pyre.inventory.facilityArray("subfields", itemFactory=subfieldFactory, factory=SolnDisp)
+    subfields = pyre.inventory.facilityArray("subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDisp)
     subfields.meta['tip'] = "Subfields in solution."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -68,14 +68,14 @@ class Solution(PetscComponent):
 
         from pylith.topology.Field import Field
         self.field = Field(mesh)
+        self.field.label("solution")
         spaceDim = mesh.coordsys().spaceDim()
         for subfield in self.subfields.components():
             subfield.initialize(normalizer, spaceDim)
             ncomponents = len(subfield.componentNames)
-            fieldName = subfield.aliases[-1]
             if 0 == comm.rank:
                 self._debug.log("Adding subfield '%s' as '%s' with components %s to solution." % (fieldName, subfield.fieldName, subfield.componentNames))
-            self.field.subfieldAdd(fieldName, subfield.vectorFieldType, subfield.componentNames, subfield.scale.value, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
+            self.field.subfieldAdd(subfield.fieldName, subfield.userAlias, subfield.vectorFieldType, subfield.componentNames, subfield.scale.value, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
         self.field.subfieldsSetup()
         return
 

@@ -31,22 +31,24 @@ class SubfieldTemperature(SolutionSubfield):
     """
     Python object for temperature subfield.
 
-    Factory: subfield.
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li \b name Name for subfield.
-    #
-    # \b Facilities
-    # @li None
+    Properties
+      - *alias* User-specified name for subfield.
+
+    Facilities
+      - None
+
+    FACTORY: subfield
+    """
 
     import pyre.inventory
 
-    from .SolutionSubfield import validateName
-    fieldName = pyre.inventory.str("name", default="temperature", validator=validateName)
-    fieldName.meta['tip'] = "Name for subfield."
+    from .SolutionSubfield import validateAlias
+    userAlias = pyre.inventory.str("name", default="temperature", validator=validateAlias)
+    userAlias.meta['tip'] = "Name for subfield."
+
+    fieldName = "temperature"
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

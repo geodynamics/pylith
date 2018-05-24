@@ -77,6 +77,7 @@ public:
 
     struct Description {
         std::string label; ///< Label for field.
+        std::string alias; ///< User-defined alias for field.
         VectorFieldEnum vectorFieldType; ///< Type of vector field.
         pylith::string_vector componentNames; ///< Names of components.
         size_t numComponents; ///< Number of components.

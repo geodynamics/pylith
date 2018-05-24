@@ -55,7 +55,7 @@ pylith::problems::SolutionFactory::~SolutionFactory(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Add time derivative of displacement field to solution field.
+// Add displacement field to solution field.
 void
 pylith::problems::SolutionFactory::displacement(const pylith::topology::Field::Discretization& discretization)
 { // displacement
@@ -67,6 +67,7 @@ pylith::problems::SolutionFactory::displacement(const pylith::topology::Field::D
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
@@ -95,6 +96,7 @@ pylith::problems::SolutionFactory::velocity(const pylith::topology::Field::Discr
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
@@ -123,6 +125,7 @@ pylith::problems::SolutionFactory::pressure(const pylith::topology::Field::Discr
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
@@ -149,6 +152,7 @@ pylith::problems::SolutionFactory::fluidPressure(const pylith::topology::Field::
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
@@ -175,6 +179,7 @@ pylith::problems::SolutionFactory::temperature(const pylith::topology::Field::Di
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
@@ -201,6 +206,7 @@ pylith::problems::SolutionFactory::displacementDot(const pylith::topology::Field
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
@@ -229,6 +235,7 @@ pylith::problems::SolutionFactory::velocityDot(const pylith::topology::Field::Di
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
@@ -257,6 +264,7 @@ pylith::problems::SolutionFactory::pressureDot(const pylith::topology::Field::Di
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
@@ -283,6 +291,7 @@ pylith::problems::SolutionFactory::fluidPressureDot(const pylith::topology::Fiel
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
@@ -309,6 +318,7 @@ pylith::problems::SolutionFactory::temperatureDot(const pylith::topology::Field:
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);

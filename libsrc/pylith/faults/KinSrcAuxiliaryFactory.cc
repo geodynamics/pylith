@@ -55,6 +55,7 @@ pylith::faults::KinSrcAuxiliaryFactory::initiationTime(void) {
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
@@ -81,6 +82,7 @@ pylith::faults::KinSrcAuxiliaryFactory::riseTime(void) {
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
@@ -111,6 +113,7 @@ pylith::faults::KinSrcAuxiliaryFactory::finalSlip(void) {
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
@@ -155,6 +158,7 @@ pylith::faults::KinSrcAuxiliaryFactory::slipRate(void) {
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);

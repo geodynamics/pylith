@@ -26,15 +26,15 @@
 from pylith.utils.PetscComponent import PetscComponent
 
 
-def validateName(value):
+def validateAlias(value):
     """
-    Validate name of subfield.
+    Validate user alias for subfield.
     """
     if 0 == len(value):
-        raise ValueError("Name of subfield not specified.")
+        raise ValueError("User-specified alias for subfield not specified.")
     import re
     if re.search(r"\s", value):
-        raise ValueError("Name of subfield cannot contain whitespace.")
+        raise ValueError("User-specified alias for subfield cannot contain whitespace.")
     return value
 
 
@@ -42,26 +42,26 @@ class SolutionSubfield(PetscComponent):
     """
     Python object for defining attributes of a subfield within a field.
 
-    Factory: subfield.
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li \b name Name for subfield.
-    # @li \b basis_order Order of basis functions.
-    # @li \b quadrature_order Order of numerical quadrature.
-    # @li \b is_basis_continuous Is basis continuous?
-    # @li \b feSpace Finite-element space [polynomial, point).
-    #
-    # \b Facilities
-    # @li None
+    Properties
+      - *name* Name for subfield.
+      - *basis_order* Order of basis functions.
+      - *quadrature_order* Order of numerical quadrature.
+      - *is_basis_continuous* Is basis continuous?
+      - *feSpace* Finite-element space [polynomial, point).
+
+    Facilities
+      - None
+
+    FACTORY: soln_subfield
+    """
 
     import pyre.inventory
 
-    # Override in derived class with appropriate default.
-    fieldName = pyre.inventory.str("name", default="", validator=validateName)
-    fieldName.meta['tip'] = "Name for subfield."
+    # Override userAlias in derived class with appropriate default.
+    userAlias = pyre.inventory.str("name", default="", validator=validateAlias)
+    userAlias.meta['tip'] = "Name for subfield."
 
     basisOrder = pyre.inventory.int("basis_order", default=1)
     basisOrder.meta['tip'] = "Order of basis functions."
@@ -119,8 +119,7 @@ class SolutionSubfield(PetscComponent):
             self.componentNames = self.fieldName
         elif self.vectorFieldType == Field.VECTOR:
             labels = ["x", "y", "z"]
-            for iDim in xrange(spaceDim):
-                self.componentNames.append("%s_%s" % (self.fieldName, labels[iDim]))
+            self.componentNames = ["{}_{}".format(self.userAlias, label) for label in labels]
         else:
             raise NotImplementedError("Not implemented for vector field type %d" % self.vectorFieldType)
         return

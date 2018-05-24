@@ -107,7 +107,7 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
     const int basisOrder = 0;
     const int quadOrder = 0;
     const double scale = 1.0;
-    partition.subfieldAdd("partition", pylith::topology::Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder, true, pylith::topology::Field::POLYNOMIAL_SPACE);
+    partition.subfieldAdd("partition", "partition", pylith::topology::Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder, true, pylith::topology::Field::POLYNOMIAL_SPACE);
     partition.subfieldsSetup();
     partition.allocate();
     partition.label("partition");

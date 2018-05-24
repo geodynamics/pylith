@@ -62,6 +62,7 @@ pylith::materials::AuxiliaryFactory::density(void)
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
@@ -89,6 +90,7 @@ pylith::materials::AuxiliaryFactory::shearModulus(void)
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
@@ -116,6 +118,7 @@ pylith::materials::AuxiliaryFactory::bulkModulus(void)
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
@@ -147,6 +150,7 @@ pylith::materials::AuxiliaryFactory::gravityField(spatialdata::spatialdb::Gravit
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
@@ -177,6 +181,7 @@ pylith::materials::AuxiliaryFactory::bodyForce(void)
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
@@ -208,6 +213,7 @@ pylith::materials::AuxiliaryFactory::referenceStress(void)
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::OTHER;
     description.numComponents = stressSize;
     description.componentNames.resize(stressSize);
@@ -238,6 +244,7 @@ pylith::materials::AuxiliaryFactory::referenceStrain(void)
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::OTHER;
     description.numComponents = strainSize;
     description.componentNames.resize(strainSize);
@@ -267,6 +274,7 @@ pylith::materials::AuxiliaryFactory::maxwellTime(void)
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
@@ -291,23 +299,24 @@ pylith::materials::AuxiliaryFactory::maxwellTimeGeneralizedMaxwell(void)
 
     const char* fieldName = "maxwell_time";
     const char* componentNames[3] = { "maxwell_time_1", "maxwell_time_2",
-									  "maxwell_time_3" };
+                                      "maxwell_time_3" };
     const PylithReal timeScale = _normalizer->timeScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::OTHER;
     description.numComponents = 3;
     description.componentNames.resize(3);
     for (int i = 0; i < 3; ++i) {
         description.componentNames[i] = componentNames[i];
-	}
+    }
     description.scale = timeScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
     _field->subfieldAdd(description, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName,
-					 pylith::materials::Query::dbQueryMaxwellTimeGeneralizedMaxwell);
+                     pylith::materials::Query::dbQueryMaxwellTimeGeneralizedMaxwell);
 
     PYLITH_METHOD_END;
 } // maxwellTimeGeneralizedMaxwell
@@ -324,14 +333,15 @@ pylith::materials::AuxiliaryFactory::shearModulusRatioGeneralizedMaxwell(void)
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::OTHER;
     description.numComponents = 3;
     description.componentNames.resize(3);
     const char* componentNames[3] = { "shear_modulus_ratio_1", "shear_modulus_ratio_2",
-									  "shear_modulus_ratio_3" };
+                                      "shear_modulus_ratio_3" };
     for (int i = 0; i < 3; ++i) {
         description.componentNames[i] = componentNames[i];
-	}
+    }
     description.scale = 1.0;
     description.validator = NULL;
 
@@ -355,6 +365,7 @@ pylith::materials::AuxiliaryFactory::totalStrain(void)
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::OTHER;
     description.numComponents = strainSize;
     description.componentNames.resize(strainSize);
@@ -384,6 +395,7 @@ pylith::materials::AuxiliaryFactory::viscousStrain(void)
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::OTHER;
     description.numComponents = strainSize;
     description.componentNames.resize(strainSize);
@@ -414,14 +426,15 @@ pylith::materials::AuxiliaryFactory::viscousStrainGeneralizedMaxwell(void)
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::OTHER;
     description.numComponents = 3 * strainSize;
     description.componentNames.resize(3 * strainSize);
-	for (int j = 0, iname=0; j < 3; ++j) {
-		for (int i = 0; i < strainSize; ++i, ++iname) {
-			description.componentNames[iname] = std::string(fieldName) + std::string(componentElementNumbers[j]) + std::string(componentSuffixes[i]);
-		} // for i
-	} // for j
+    for (int j = 0, iname = 0; j < 3; ++j) {
+        for (int i = 0; i < strainSize; ++i, ++iname) {
+            description.componentNames[iname] = std::string(fieldName) + std::string(componentElementNumbers[j]) + std::string(componentSuffixes[i]);
+        } // for i
+    } // for j
     description.scale = 1.0;
     description.validator = NULL;
 

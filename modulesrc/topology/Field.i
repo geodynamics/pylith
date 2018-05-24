@@ -110,7 +110,8 @@ void cloneSection(const Field& src);
  *
  * Should be followed by calls to subfieldsSetup() and allocate().
  *
- * @param[in] name Name of subfield.
+ * @param[in] name Programatic name for subfield.
+ * @param[in] alias User-specified name for subfield.
  * @param[in] fieldType Type of vector field.
  * @param[in] components Names of components in subfield.
  * @param[in] numComponents Number of components in subfield.
@@ -124,6 +125,7 @@ void cloneSection(const Field& src);
     (const char* components[], const int numComponents)
 };
 void subfieldAdd(const char *name,
+		 const char* alias,
                  const VectorFieldEnum fieldType,
                  const char* components[],
                  const int numComponents,

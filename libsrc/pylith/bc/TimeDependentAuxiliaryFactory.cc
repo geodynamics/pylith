@@ -97,6 +97,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::initialAmplitude(void)
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
 
     subfieldDescription.label = fieldName;
+    subfieldDescription.alias = fieldName;
     subfieldDescription.validator = NULL;
     switch (subfieldDescription.vectorFieldType) {
     case pylith::topology::FieldBase::SCALAR: {
@@ -135,6 +136,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::rateAmplitude(void)
     assert(_defaultDescription);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
     subfieldDescription.label = fieldName;
+    subfieldDescription.alias = fieldName;
     subfieldDescription.validator = NULL;
     switch (subfieldDescription.vectorFieldType) {
     case pylith::topology::FieldBase::SCALAR: {
@@ -174,6 +176,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::rateStartTime(void)
     assert(_normalizer);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
     subfieldDescription.label = fieldName;
+    subfieldDescription.alias = fieldName;
     subfieldDescription.vectorFieldType = pylith::topology::FieldBase::SCALAR;
     subfieldDescription.numComponents = 1;
     subfieldDescription.componentNames.resize(1);
@@ -202,6 +205,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryAmplitude(void)
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
 
     subfieldDescription.label = fieldName;
+    subfieldDescription.alias = fieldName;
     switch (subfieldDescription.vectorFieldType) {
     case pylith::topology::FieldBase::SCALAR: {
         const size_t numComponents = 1;
@@ -240,6 +244,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryStartTime(void)
     assert(_normalizer);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
     subfieldDescription.label = fieldName;
+    subfieldDescription.alias = fieldName;
     subfieldDescription.vectorFieldType = pylith::topology::FieldBase::SCALAR;
     subfieldDescription.numComponents = 1;
     subfieldDescription.componentNames.resize(1);
@@ -268,6 +273,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryValue(void)
     assert(_normalizer);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
     subfieldDescription.label = fieldName;
+    subfieldDescription.alias = fieldName;
     subfieldDescription.vectorFieldType = pylith::topology::FieldBase::SCALAR;
     subfieldDescription.numComponents = 1;
     subfieldDescription.componentNames.resize(1);

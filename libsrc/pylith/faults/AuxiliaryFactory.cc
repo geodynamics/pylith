@@ -55,6 +55,7 @@ pylith::faults::AuxiliaryFactory::strikeDir(void) {
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
@@ -82,6 +83,7 @@ pylith::faults::AuxiliaryFactory::upDipDir(void) {
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
@@ -109,6 +111,7 @@ pylith::faults::AuxiliaryFactory::normalDir(void) {
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
@@ -138,6 +141,7 @@ pylith::faults::AuxiliaryFactory::slip(void) {
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
+    description.alias = fieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
