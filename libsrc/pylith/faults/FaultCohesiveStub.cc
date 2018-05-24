@@ -86,4 +86,11 @@ pylith::faults::FaultCohesiveStub::_auxFactory(void) {
     return NULL;
 } // _auxFactory
 
+
+// ----------------------------------------------------------------------
+// Setup auxiliary subfields (discretization and query fns).
+void
+pylith::faults::FaultCohesiveKin::_auxFieldSetup(void) {}
+
+
 // End of file

@@ -249,4 +249,5 @@ pylith::faults::FaultCohesiveKin::_auxFieldSetup(void) {
     PYLITH_METHOD_END;
 } // _auxFieldSetup
 
+
 // End of file
