@@ -74,7 +74,6 @@ pylith::topology::FieldQuery::queryFn(const char* subfield,
     PYLITH_METHOD_BEGIN;
 
     assert(subfield);
-    assert(fn);
 
     _queryFns[subfield] = fn;
     _queryDBs[subfield] = db;
