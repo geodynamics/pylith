@@ -32,45 +32,36 @@ class PyLithApp(PetscApplication):
 
     # INVENTORY //////////////////////////////////////////////////////////
 
-    class Inventory(PetscApplication.Inventory):
-        """
-        Python object for managing PyLithApp facilities and properties.
-        """
+    # \b Properties
+    # @li \b initialize-only Stop simulation after initializing problem.
+    #
+    # \b Facilities
+    # @li \b mesher Generates or imports the computational mesh.
+    # @li \b problem Computational problem to solve
+    # @li \b petsc Manager for PETSc options
 
-        # @class Inventory
-        # Python object for managing PyLithApp facilities and properties.
-        ##
-        # \b Properties
-        # @li \b initialize-only Stop simulation after initializing problem.
-        ##
-        # \b Facilities
-        # @li \b mesher Generates or imports the computational mesh.
-        # @li \b problem Computational problem to solve
-        # @li \b petsc Manager for PETSc options
+    import pyre.inventory
 
-        import pyre.inventory
+    pdbOn = pyre.inventory.bool("start-python-debugger", default=False)
+    pdbOn.meta['tip'] = "Start python debugger at beginning of main()."
 
-        pdbOn = pyre.inventory.bool("start-python-debugger", default=False)
-        pdbOn.meta['tip'] = "Start python debugger at beginning of main()."
+    typos = pyre.inventory.str("typos", default="pedantic", validator=pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
+    typos.meta['tip'] = "Specifies the handling of unknown properties and facilities"
 
-        typos = pyre.inventory.str("typos", default="pedantic", validator=pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
-        typos.meta['tip'] = "Specifies the handling of unknown properties and facilities"
+    initializeOnly = pyre.inventory.bool("initialize-only", default=False)
+    initializeOnly.meta['tip'] = "Stop simulation after initializing problem."
 
-        initializeOnly = pyre.inventory.bool("initialize-only", default=False)
-        initializeOnly.meta['tip'] = "Stop simulation after initializing problem."
+    from pylith.utils.DumpParametersJson import DumpParametersJson
+    parameters = pyre.inventory.facility("dump_parameters", family="dump_parameters", factory=DumpParametersJson)
+    parameters.meta['tip'] = "Dump parameters used and version information to file."
 
-        from pylith.utils.DumpParametersJson import DumpParametersJson
-        parameters = pyre.inventory.facility("dump_parameters", family="dump_parameters", factory=DumpParametersJson)
-        parameters.meta['tip'] = "Dump parameters used and version information to file."
+    from pylith.topology.MeshImporter import MeshImporter
+    mesher = pyre.inventory.facility("mesh_generator", family="mesh_generator", factory=MeshImporter)
+    mesher.meta['tip'] = "Generates or imports the computational mesh."
 
-        from pylith.topology.MeshImporter import MeshImporter
-        mesher = pyre.inventory.facility("mesh_generator", family="mesh_generator", factory=MeshImporter)
-        mesher.meta['tip'] = "Generates or imports the computational mesh."
-
-        from pylith.problems.TimeDependent import TimeDependent
-        problem = pyre.inventory.facility("problem", family="problem", factory=TimeDependent)
-        problem.meta['tip'] = "Computational problem to solve."
-
+    from pylith.problems.TimeDependent import TimeDependent
+    problem = pyre.inventory.facility("problem", family="problem", factory=TimeDependent)
+    problem.meta['tip'] = "Computational problem to solve."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -110,7 +101,7 @@ class PyLithApp(PetscApplication):
             interfaces = self.problem.interfaces.components()
         mesh = self.mesher.create(self.problem.normalizer, interfaces)
         del interfaces
-        del self.mesher
+        self.mesher = None
         self._debug.log(resourceUsageString())
         self._eventLogger.stagePop()
 
@@ -163,14 +154,14 @@ class PyLithApp(PetscApplication):
         verDOI = v.doi()
 
         software = ("@Manual{PyLith:software,\n"
-                  "  title        = {PyLith v%s},\n"
-                  "  author       = {Aagaard, B. and Knepley, M. and Williams, C.},\n"
-                  "  organization = {Computational Infrastructure for Geodynamics (CIG)},\n"
-                  "  address      = {University of California, Davis},\n"
-                  "  year         = {%d},\n"
-                  "  doi         = {http://doi.org/%s}\n"
-                  "}\n" % (verNum, verYear, verDOI)
-                  )
+                    "  title        = {PyLith v%s},\n"
+                    "  author       = {Aagaard, B. and Knepley, M. and Williams, C.},\n"
+                    "  organization = {Computational Infrastructure for Geodynamics (CIG)},\n"
+                    "  address      = {University of California, Davis},\n"
+                    "  year         = {%d},\n"
+                    "  doi         = {http://doi.org/%s}\n"
+                    "}\n" % (verNum, verYear, verDOI)
+                    )
 
         manual = ("@Manual{PyLith:manual,\n"
                   "  title        = {PyLith User Manual, Version %s},\n"
@@ -255,12 +246,6 @@ class PyLithApp(PetscApplication):
         Setup members using inventory.
         """
         PetscApplication._configure(self)
-        self.typos = self.inventory.typos
-        self.pdbOn = self.inventory.pdbOn
-        self.initializeOnly = self.inventory.initializeOnly
-        self.parameters = self.inventory.parameters
-        self.mesher = self.inventory.mesher
-        self.problem = self.inventory.problem
 
         import journal
         self._debug = journal.debug(self.name)

@@ -25,8 +25,6 @@
 from .Material import Material
 from .materials import IsotropicLinearMaxwellPlaneStrain as ModuleMaterial
 
-# IsotropicLinearMaxwellPlaneStrain class
-
 
 class IsotropicLinearMaxwellPlaneStrain(Material, ModuleMaterial):
     """
@@ -36,39 +34,31 @@ class IsotropicLinearMaxwellPlaneStrain(Material, ModuleMaterial):
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
+    #
+    # \b Properties
+    # @li \b id Material identifier (from mesh generator)
+    # @li \b label Descriptive label for material.
+    #
+    # \b Facilities
+    # @li \b db_properties Database of material property parameters
+    # @li \b quadrature Quadrature object for numerical integration
+    # @li \b db_initial_state Database for initial state.
 
-    class Inventory(Material.Inventory):
-        """
-        Python object for managing IsotropicLinearMaxwellPlaneStrain facilities and properties.
-        """
+    import pyre.inventory
 
-        # @class Inventory
-        # Python object for managing Material facilities and properties.
-        ##
-        # \b Properties
-        # @li \b id Material identifier (from mesh generator)
-        # @li \b label Descriptive label for material.
-        ##
-        # \b Facilities
-        # @li \b db_properties Database of material property parameters
-        # @li \b quadrature Quadrature object for numerical integration
-        # @li \b db_initial_state Database for initial state.
+    useInertia = pyre.inventory.bool("use_inertia", default=False)
+    useInertia.meta['tip'] = "Include inertial term in elasticity equation."
 
-        import pyre.inventory
+    useBodyForce = pyre.inventory.bool("use_body_force", default=False)
+    useBodyForce.meta['tip'] = "Include body force term in elasticity equation."
 
-        useInertia = pyre.inventory.bool("use_inertia", default=False)
-        useInertia.meta['tip'] = "Include inertial term in elasticity equation."
+    useReferenceState = pyre.inventory.bool("use_reference_state", default=False)
+    useReferenceState.meta['tip'] = "Use reference stress/strain state."
 
-        useBodyForce = pyre.inventory.bool("use_body_force", default=False)
-        useBodyForce.meta['tip'] = "Include body force term in elasticity equation."
-
-        useReferenceState = pyre.inventory.bool("use_reference_state", default=False)
-        useReferenceState.meta['tip'] = "Use reference stress/strain state."
-
-        from .AuxFieldsIsotropicLinearMaxwell import AuxFieldsIsotropicLinearMaxwell
-        from pylith.topology.AuxSubfield import subfieldFactory
-        auxSubfields = pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsIsotropicLinearMaxwell)
-        auxSubfields.meta['tip'] = "Discretization of physical properties and state variables."
+    from .AuxFieldsIsotropicLinearMaxwell import AuxFieldsIsotropicLinearMaxwell
+    from pylith.topology.AuxSubfield import subfieldFactory
+    auxSubfields = pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsIsotropicLinearMaxwell)
+    auxSubfields.meta['tip'] = "Discretization of physical properties and state variables."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -99,15 +89,7 @@ class IsotropicLinearMaxwellPlaneStrain(Material, ModuleMaterial):
         """
         Setup members using inventory.
         """
-        try:
-            Material._configure(self)
-            self.useInertia = self.inventory.useInertia
-            self.useBodyForce = self.inventory.useBodyForce
-            self.useReferenceState = self.inventory.useReferenceState
-
-        except ValueError, err:
-            aliases = ", ".join(self.aliases)
-            raise ValueError("Error while configuring material (%s):\n%s" % (aliases, err.message))
+        Material._configure(self)
         return
 
     def _createModuleObj(self):

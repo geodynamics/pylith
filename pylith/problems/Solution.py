@@ -24,8 +24,6 @@
 
 from pylith.utils.PetscComponent import PetscComponent
 
-# Solution class =======================================================
-
 
 class Solution(PetscComponent):
     """
@@ -35,27 +33,19 @@ class Solution(PetscComponent):
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
+    #
+    # \b Properties
+    # @li None
+    #
+    # \b Facilities
+    # @li \b subfields Subfields in solution.
 
-    class Inventory(PetscComponent.Inventory):
-        """
-        Python object for managing Solution facilities and properties.
-        """
+    import pyre.inventory
 
-        # @class Inventory
-        # Python object for managing Solution facilities and properties.
-        ##
-        # \b Properties
-        # @li None
-        ##
-        # \b Facilities
-        # @li \b subfields Subfields in solution.
-
-        import pyre.inventory
-
-        from .SolnDisp import SolnDisp
-        from .SolutionSubfield import subfieldFactory
-        subfields = pyre.inventory.facilityArray("subfields", itemFactory=subfieldFactory, factory=SolnDisp)
-        subfields.meta['tip'] = "Subfields in solution."
+    from .SolnDisp import SolnDisp
+    from .SolutionSubfield import subfieldFactory
+    subfields = pyre.inventory.facilityArray("subfields", itemFactory=subfieldFactory, factory=SolnDisp)
+    subfields.meta['tip'] = "Subfields in solution."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -96,7 +86,6 @@ class Solution(PetscComponent):
         Set members based using inventory.
         """
         PetscComponent._configure(self)
-        self.subfields = self.inventory.subfields
         return
 
     def _cleanup(self):
@@ -105,6 +94,7 @@ class Solution(PetscComponent):
         return
 
 # FACTORIES ////////////////////////////////////////////////////////////
+
 
 def solution():
     """

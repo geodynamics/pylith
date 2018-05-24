@@ -36,37 +36,29 @@ class AuxSubfield(Component):
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
+    #
+    # \b Properties
+    # @li \b basis_order Order of basis functions.
+    # @li \b quadrature_order Order of numerical quadrature.
+    # @li \b basis_continuous Is basis continuous?
+    # @li \b feSpace Finite-element space [polynomial, point).
+    #
+    # \b Facilities
+    # @li None
 
-    class Inventory(Component.Inventory):
-        """
-        Python object for managing AuxSubfield facilities and properties.
-        """
+    import pyre.inventory
 
-        # @class Inventory
-        # Python object for managing AuxSubfield facilities and properties.
-        ##
-        # \b Properties
-        # @li \b basis_order Order of basis functions.
-        # @li \b quadrature_order Order of numerical quadrature.
-        # @li \b basis_continuous Is basis continuous?
-        # @li \b feSpace Finite-element space [polynomial, point).
-        ##
-        # \b Facilities
-        # @li None
+    basisOrder = pyre.inventory.int("basis_order", default=1)
+    basisOrder.meta['tip'] = "Order of basis functions."
 
-        import pyre.inventory
+    quadOrder = pyre.inventory.int("quadrature_order", default=1)
+    quadOrder.meta['tip'] = "Order of numerical quadrature."
 
-        basisOrder = pyre.inventory.int("basis_order", default=1)
-        basisOrder.meta['tip'] = "Order of basis functions."
+    isBasisContinuous = pyre.inventory.bool("is_basis_continous", default=True)
+    isBasisContinuous.meta['tip'] = "Is basis continuous?"
 
-        quadOrder = pyre.inventory.int("quadrature_order", default=1)
-        quadOrder.meta['tip'] = "Order of numerical quadrature."
-
-        isBasisContinuous = pyre.inventory.bool("is_basis_continous", default=True)
-        isBasisContinuous.meta['tip'] = "Is basis continuous?"
-
-        feSpaceStr = pyre.inventory.str("finite_element_space", default="polynomial", validator=pyre.inventory.choice(["polynomial", "point"]))
-        feSpaceStr.meta['tip'] = "Finite-element space (polynomial or point). Point space corresponds to delta functions at quadrature points."
+    feSpaceStr = pyre.inventory.str("finite_element_space", default="polynomial", validator=pyre.inventory.choice(["polynomial", "point"]))
+    feSpaceStr.meta['tip'] = "Finite-element space (polynomial or point). Point space corresponds to delta functions at quadrature points."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -87,9 +79,6 @@ class AuxSubfield(Component):
         from pylith.topology.topology import FieldBase
 
         Component._configure(self)
-        self.basisOrder = self.inventory.basisOrder
-        self.quadOrder = self.inventory.quadOrder
-        self.isBasisContinuous = self.inventory.isBasisContinuous
         spaceMapping = {
             "polynomial": FieldBase.POLYNOMIAL_SPACE,
             "point": FieldBase.POINT_SPACE,

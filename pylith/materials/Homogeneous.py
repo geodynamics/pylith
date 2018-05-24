@@ -16,33 +16,27 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/materials/Homogeneous.py
+# @file pylith/materials/Homogeneous.py
 ##
-## @brief Python materials container with one material.
+# @brief Python materials container with one material.
 
 from pylith.utils.PetscComponent import PetscComponent
 
 # Homogeneous class
+
+
 class Homogeneous(PetscComponent):
-  """
-  Python materials container with one material.
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(PetscComponent.Inventory):
     """
-    Python object for managing Homogeneous facilities and properties.
+    Python materials container with one material.
     """
 
-    ## @class Inventory
-    ## Python object for managing Homogeneous facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li \b material Material in problem
+    # INVENTORY //////////////////////////////////////////////////////////
+    #
+    # \b Properties
+    # @li None
+    #
+    # \b Facilities
+    # @li \b material Material in problem
 
     import pyre.inventory
 
@@ -50,15 +44,14 @@ class Homogeneous(PetscComponent):
     material = pyre.inventory.facility("material", family="material", factory=IsotropicLinearElasticityPlaneStrain)
     material.meta['tip'] = "Material in problem."
 
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="homogeneous"):
-    """
-    Constructor.
-    """
-    PetscComponent.__init__(self, name, facility="material")
-    return
+    def __init__(self, name="homogeneous"):
+        """
+        Constructor.
+        """
+        PetscComponent.__init__(self, name, facility="material")
+        return
 
 
 # End of file

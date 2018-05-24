@@ -26,8 +26,6 @@
 from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
 from .materials import Material as ModuleMaterial
 
-# Validator for label
-
 
 def validateLabel(value):
     """
@@ -38,7 +36,6 @@ def validateLabel(value):
     return value
 
 
-# Material class
 class Material(IntegratorPointwise, ModuleMaterial):
     """
     Python material property manager.
@@ -47,33 +44,28 @@ class Material(IntegratorPointwise, ModuleMaterial):
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
+    #
+    # @class Inventory
+    # Python object for managing Material facilities and properties.
+    #
+    # \b Properties
+    # @li \b id Material identifier (from mesh generator)
+    # @li \b label Descriptive label for material.
+    #
+    # \b Facilities
+    # @li None
 
-    class Inventory(IntegratorPointwise.Inventory):
-        """
-        Python object for managing Material facilities and properties.
-        """
+    import pyre.inventory
 
-        # @class Inventory
-        # Python object for managing Material facilities and properties.
-        ##
-        # \b Properties
-        # @li \b id Material identifier (from mesh generator)
-        # @li \b label Descriptive label for material.
-        ##
-        # \b Facilities
-        # @li None
+    materialId = pyre.inventory.int("id", default=0)
+    materialId.meta['tip'] = "Material identifier (from mesh generator)."
 
-        import pyre.inventory
+    label = pyre.inventory.str("label", default="", validator=validateLabel)
+    label.meta['tip'] = "Descriptive label for material."
 
-        materialId = pyre.inventory.int("id", default=0)
-        materialId.meta['tip'] = "Material identifier (from mesh generator)."
-
-        label = pyre.inventory.str("label", default="", validator=validateLabel)
-        label.meta['tip'] = "Descriptive label for material."
-
-        from pylith.meshio.OutputMaterial import OutputMaterial
-        outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputMaterial)
-        outputManager.meta['tip'] = "Output manager for material information."
+    from pylith.meshio.OutputMaterial import OutputMaterial
+    outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputMaterial)
+    outputManager.meta['tip'] = "Output manager for material information."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -101,10 +93,6 @@ class Material(IntegratorPointwise, ModuleMaterial):
         Setup members using inventory.
         """
         IntegratorPointwise._configure(self)
-        self.materialId = self.inventory.materialId
-        self.label = self.inventory.label
-        self.outputManager = self.inventory.outputManager
-
         return
 
 # End of file

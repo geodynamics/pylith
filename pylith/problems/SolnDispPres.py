@@ -16,34 +16,26 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/SolnDispPres.py
+# @file pylith/problems/SolnDispPres.py
 ##
-## @brief Python subfields container with displacement and pressure subfields.
+# @brief Python subfields container with displacement and pressure subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
 
-# SolnDispPres class
+
 class SolnDispPres(PetscComponent):
-  """
-  Python subfields container with displacement and pressure subfields.
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(PetscComponent.Inventory):
     """
-    Python object for managing SolnDispPres facilities and properties.
+    Python subfields container with displacement and pressure subfields.
     """
-    
-    ## @class Inventory
-    ## Python object for managing Homogeneous facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li \b displacement Displacement subfield.
-    ## @li \b pressure Pressure subfield.
+
+    # INVENTORY //////////////////////////////////////////////////////////
+    #
+    # \b Properties
+    # @li None
+    #
+    # \b Facilities
+    # @li \b displacement Displacement subfield.
+    # @li \b pressure Pressure subfield.
 
     import pyre.inventory
 
@@ -55,31 +47,26 @@ class SolnDispPres(PetscComponent):
     pressure = pyre.inventory.facility("pressure", family="soln_subfield", factory=SubfieldPressure)
     pressure.meta['tip'] = "Pressure subfield."
 
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  # PUBLIC METHODS /////////////////////////////////////////////////////
+    def __init__(self, name="solndisppres"):
+        """
+        Constructor.
+        """
+        PetscComponent.__init__(self, name, facility="soln_subfields")
+        return
 
-  def __init__(self, name="solndisppres"):
-    """
-    Constructor.
-    """
-    PetscComponent.__init__(self, name, facility="soln_subfields")
-    return
+    def _configure(self):
+        PetscComponent._configure(self)
+        return
 
+    def components(self):
+        """
+        Order of facilities in Inventory is ambiguous, so overwrite
+        components() to insure order is [displacement, pressure].
 
-  def _configure(self):
-    PetscComponent._configure(self)
-    self.displacement = self.inventory.displacement
-    self.pressure = self.inventory.pressure
-    return
-
-
-  def components(self):
-    """
-    Order of facilities in Inventory is ambiguous, so overwrite
-    components() to insure order is [displacement, pressure].
-
-    """
-    return [self.inventory.displacement, self.inventory.pressure]
+        """
+        return [self.inventory.displacement, self.inventory.pressure]
 
 
-# End of file 
+# End of file

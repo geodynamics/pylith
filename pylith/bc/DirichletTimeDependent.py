@@ -40,41 +40,33 @@ class DirichletTimeDependent(Dirichlet,
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
+    #
+    # \b Properties
+    # @li \b use_initial Use initial term in time-dependent expression.
+    # @li \b use_rate Use rate term in time-dependent expression.
+    # @li \b use_time_history Use time history term in time-dependent expression.
+    #
+    # \b Facilities
+    # @li None
 
-    class Inventory(Dirichlet.Inventory):
-        """
-        Python object for managing DirichletTimeDependent facilities and properties.
-        """
+    import pyre.inventory
 
-        # @class Inventory
-        # Python object for managing ConstraintPointwise facilities and properties.
-        ##
-        # \b Properties
-        # @li \b use_initial Use initial term in time-dependent expression.
-        # @li \b use_rate Use rate term in time-dependent expression.
-        # @li \b use_time_history Use time history term in time-dependent expression.
-        ##
-        # \b Facilities
-        # @li None
+    useInitial = pyre.inventory.bool("use_initial", default=True)
+    useInitial.meta['tip'] = "Use initial term in time-dependent expression."
 
-        import pyre.inventory
+    useRate = pyre.inventory.bool("use_rate", default=False)
+    useRate.meta['tip'] = "Use rate term in time-dependent expression."
 
-        useInitial = pyre.inventory.bool("use_initial", default=True)
-        useInitial.meta['tip'] = "Use initial term in time-dependent expression."
+    useTimeHistory = pyre.inventory.bool("use_time_history", default=False)
+    useTimeHistory.meta['tip'] = "Use time history term in time-dependent expression."
 
-        useRate = pyre.inventory.bool("use_rate", default=False)
-        useRate.meta['tip'] = "Use rate term in time-dependent expression."
+    dbTimeHistory = pyre.inventory.facility("time_history", factory=NullComponent, family="temporal_database")
+    dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
 
-        useTimeHistory = pyre.inventory.bool("use_time_history", default=False)
-        useTimeHistory.meta['tip'] = "Use time history term in time-dependent expression."
-
-        dbTimeHistory = pyre.inventory.facility("time_history", factory=NullComponent, family="temporal_database")
-        dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
-
-        from .AuxFieldsTimeDependent import AuxFieldsTimeDependent
-        from pylith.topology.AuxSubfield import subfieldFactory
-        auxSubfields = pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsTimeDependent)
-        auxSubfields.meta['tip'] = "Discretization of constraint parameters."
+    from .AuxFieldsTimeDependent import AuxFieldsTimeDependent
+    from pylith.topology.AuxSubfield import subfieldFactory
+    auxSubfields = pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsTimeDependent)
+    auxSubfields.meta['tip'] = "Discretization of constraint parameters."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -126,21 +118,12 @@ class DirichletTimeDependent(Dirichlet,
         """
         Setup members using inventory.
         """
-        try:
-            if self.inventory.useTimeHistory and isinstance(self.inventory.dbTimeHistory, NullComponent):
-                raise ValueError("Missing time history database for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
-            if not self.inventory.useTimeHistory and not isinstance(self.inventory.dbTimeHistory, NullComponent):
-                self._warning.log("Ignoring time history database setting for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
+        if self.inventory.useTimeHistory and isinstance(self.inventory.dbTimeHistory, NullComponent):
+            raise ValueError("Missing time history database for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
+        if not self.inventory.useTimeHistory and not isinstance(self.inventory.dbTimeHistory, NullComponent):
+            self._warning.log("Ignoring time history database setting for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
 
-            Dirichlet._configure(self)
-            self.useInitial = self.inventory.useInitial
-            self.useRate = self.inventory.useRate
-            self.useTimeHistory = self.inventory.useTimeHistory
-            self.dbTimeHistory = self.inventory.dbTimeHistory
-        except ValueError, err:
-            aliases = ", ".join(self.aliases)
-            raise ValueError("Error while configuring time-dependent Dirichlet boundary condition "
-                             "(%s):\n%s" % (aliases, err.message))
+        Dirichlet._configure(self)
         return
 
     def _createModuleObj(self):

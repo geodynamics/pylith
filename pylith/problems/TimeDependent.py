@@ -37,43 +37,35 @@ class TimeDependent(Problem, ModuleTimeDependent):
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
+    #
+    # \b Properties
+    # @li \b initial_dt Initial time step.
+    # @li \b start_time Start time for problem.
+    # @li \b total_time Time duration of problem.
+    # @li \b max_timesteps Maximum number of time steps.
+    #
+    # \b Facilities
+    # @li \b initializer Problem initializer.
+    # @li \b progress_monitor Simple progress monitor via text file.
 
-    class Inventory(Problem.Inventory):
-        """
-        Python object for managing TimeDependent facilities and properties.
-        """
+    import pyre.inventory
+    from pyre.units.time import year
 
-        # @class Inventory
-        # Python object for managing TimeDependent facilities and properties.
-        ##
-        # \b Properties
-        # @li \b initial_dt Initial time step.
-        # @li \b start_time Start time for problem.
-        # @li \b total_time Time duration of problem.
-        # @li \b max_timesteps Maximum number of time steps.
-        ##
-        # \b Facilities
-        # @li \b initializer Problem initializer.
-        # @li \b progress_monitor Simple progress monitor via text file.
+    dtInitial = pyre.inventory.dimensional("initial_dt", default=1.0 * year, validator=pyre.inventory.greater(0.0 * year))
+    dtInitial.meta['tip'] = "Initial time step."
 
-        import pyre.inventory
-        from pyre.units.time import year
+    startTime = pyre.inventory.dimensional("start_time", default=0.0 * year)
+    startTime.meta['tip'] = "Start time for problem."
 
-        dtInitial = pyre.inventory.dimensional("initial_dt", default=1.0 * year, validator=pyre.inventory.greater(0.0 * year))
-        dtInitial.meta['tip'] = "Initial time step."
+    totalTime = pyre.inventory.dimensional("total_time", default=0.1 * year, validator=pyre.inventory.greaterEqual(0.0 * year))
+    totalTime.meta['tip'] = "Time duration of problem."
 
-        startTime = pyre.inventory.dimensional("start_time", default=0.0 * year)
-        startTime.meta['tip'] = "Start time for problem."
+    maxTimeSteps = pyre.inventory.int("max_timesteps", default=20000, validator=pyre.inventory.greater(0))
+    maxTimeSteps.meta['tip'] = "Maximum number of time steps."
 
-        totalTime = pyre.inventory.dimensional("total_time", default=0.1 * year, validator=pyre.inventory.greaterEqual(0.0 * year))
-        totalTime.meta['tip'] = "Time duration of problem."
-
-        maxTimeSteps = pyre.inventory.int("max_timesteps", default=20000, validator=pyre.inventory.greater(0))
-        maxTimeSteps.meta['tip'] = "Maximum number of time steps."
-
-        #from ProgressMonitorTime import ProgressMonitorTime
-        #progressMonitor = pyre.inventory.facility("progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
-        #progressMonitor.meta['tip'] = "Simple progress monitor via text file."
+    #from ProgressMonitorTime import ProgressMonitorTime
+    #progressMonitor = pyre.inventory.facility("progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
+    #progressMonitor.meta['tip'] = "Simple progress monitor via text file."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -101,10 +93,10 @@ class TimeDependent(Problem, ModuleTimeDependent):
         self.mesh = weakref.ref(mesh)
 
         ModuleTimeDependent.identifier(self, self.aliases[-1])
-        ModuleTimeDependent.startTime(self, self.inventory.startTime.value)
-        ModuleTimeDependent.dtInitial(self, self.inventory.dtInitial.value)
-        ModuleTimeDependent.totalTime(self, self.inventory.totalTime.value)
-        ModuleTimeDependent.maxTimeSteps(self, self.inventory.maxTimeSteps)
+        ModuleTimeDependent.startTime(self, self.startTime.value)
+        ModuleTimeDependent.dtInitial(self, self.dtInitial.value)
+        ModuleTimeDependent.totalTime(self, self.totalTime.value)
+        ModuleTimeDependent.maxTimeSteps(self, self.maxTimeSteps)
 
         Problem.preinitialize(self, mesh)
         return
@@ -129,10 +121,6 @@ class TimeDependent(Problem, ModuleTimeDependent):
         Set members based using inventory.
         """
         Problem._configure(self)
-        self.startTime = self.inventory.startTime
-        self.dtInitial = self.inventory.dtInitial
-        self.totalTime = self.inventory.totalTime
-        self.maxTimeSteps = self.inventory.maxTimeSteps
         return
 
 

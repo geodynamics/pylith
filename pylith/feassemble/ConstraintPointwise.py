@@ -54,39 +54,31 @@ class ConstraintPointwise(PetscComponent,
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
+    #
+    # \b Properties
+    # @li None
+    #
+    # \b Facilities
+    # @li \b auxiliary_fields Discretization of auxiliary fields associated with material.
+    # @li \b db_auxiliary_fields Database for auxiliary fields associated with material.
 
-    class Inventory(PetscComponent.Inventory):
-        """
-        Python object for managing ConstraintPointwise facilities and properties.
-        """
+    import pyre.inventory
 
-        # @class Inventory
-        # Python object for managing ConstraintPointwise facilities and properties.
-        ##
-        # \b Properties
-        # @li None
-        ##
-        # \b Facilities
-        # @li \b auxiliary_fields Discretization of auxiliary fields associated with material.
-        # @li \b db_auxiliary_fields Database for auxiliary fields associated with material.
+    constrainedDOF = pyre.inventory.list("constrained_dof", default=[], validator=validateDOF)
+    constrainedDOF.meta['tip'] = "Constrained degrees of freedom (0=1st DOF, 1=2nd DOF, etc)."
 
-        import pyre.inventory
+    from pylith.topology.AuxSubfield import subfieldFactory
+    from pylith.utils.EmptyBin import EmptyBin
+    auxSubfields = pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin)
+    auxSubfields.meta['tip'] = "Discretization of constraint parameters."
 
-        constrainedDOF = pyre.inventory.list("constrained_dof", default=[], validator=validateDOF)
-        constrainedDOF.meta['tip'] = "Constrained degrees of freedom (0=1st DOF, 1=2nd DOF, etc)."
+    from spatialdata.spatialdb.SimpleDB import SimpleDB
+    auxFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
+    auxFieldDB.meta['tip'] = "Database for constraint parameters."
 
-        from pylith.topology.AuxSubfield import subfieldFactory
-        from pylith.utils.EmptyBin import EmptyBin
-        auxSubfields = pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin)
-        auxSubfields.meta['tip'] = "Discretization of constraint parameters."
-
-        from spatialdata.spatialdb.SimpleDB import SimpleDB
-        auxFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
-        auxFieldDB.meta['tip'] = "Database for constraint parameters."
-
-        from pylith.meshio.OutputManager import OutputManager
-        outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputManager)
-        outputManager.meta['tip'] = "Output manager."
+    from pylith.meshio.OutputManager import OutputManager
+    outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputManager)
+    outputManager.meta['tip'] = "Output manager."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -104,7 +96,7 @@ class ConstraintPointwise(PetscComponent,
         """
         ModuleConstraint.identifier(self, self.aliases[-1])
         ModuleConstraint.constrainedDOF(self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
-        ModuleConstraint.auxFieldDB(self, self.inventory.auxFieldDB)
+        ModuleConstraint.auxFieldDB(self, self.auxFieldDB)
         ModuleConstraint.output(self, self.outputManager)
 
         for subfield in self.auxSubfields.components():
@@ -121,10 +113,6 @@ class ConstraintPointwise(PetscComponent,
         Setup members using inventory.
         """
         PetscComponent._configure(self)
-        self.constrainedDOF = self.inventory.constrainedDOF
-        self.auxSubfields = self.inventory.auxSubfields
-        self.auxFieldDB = self.inventory.auxFieldDB
-        self.outputManager = self.inventory.outputManager
         return
 
     def _createModuleObj(self):

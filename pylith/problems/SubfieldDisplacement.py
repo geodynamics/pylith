@@ -24,8 +24,6 @@
 
 from .SolutionSubfield import SolutionSubfield
 
-# SubfieldDisplacement class
-
 
 class SubfieldDisplacement(SolutionSubfield):
     """
@@ -35,26 +33,18 @@ class SubfieldDisplacement(SolutionSubfield):
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
+    #
+    # \b Properties
+    # @li \b name Name for subfield.
+    #
+    # \b Facilities
+    # @li None
 
-    class Inventory(SolutionSubfield.Inventory):
-        """
-        Python object for managing SubfieldDisplacement facilities and properties.
-        """
+    import pyre.inventory
 
-        # @class Inventory
-        # Python object for managing SubfieldDisplacement facilities and properties.
-        ##
-        # \b Properties
-        # @li \b name Name for subfield.
-        ##
-        # \b Facilities
-        # @li None
-
-        import pyre.inventory
-
-        from .SolutionSubfield import validateName
-        fieldName = pyre.inventory.str("name", default="displacement", validator=validateName)
-        fieldName.meta['tip'] = "Name for subfield."
+    from .SolutionSubfield import validateName
+    fieldName = pyre.inventory.str("name", default="displacement", validator=validateName)
+    fieldName.meta['tip'] = "Name for subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

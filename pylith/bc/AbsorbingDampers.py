@@ -58,13 +58,8 @@ class AbsorbingDampers(BoundaryCondition,
         """
         Setup members using inventory.
         """
-        try:
-            BoundaryCondition._configure(self)
-            IntegratorPointwise._configure(self)
-        except ValueError as err:
-            aliases = ", ".join(self.aliases)
-            raise ValueError("Error while configuring AbsorbingDampers boundary condition "
-                             "(%s):\n%s" % (aliases, err.message))
+        BoundaryCondition._configure(self)
+        IntegratorPointwise._configure(self)
         return
 
 # End of file

@@ -54,27 +54,22 @@ class BoundaryCondition(PetscComponent,
 
     # INVENTORY //////////////////////////////////////////////////////////
 
-    class Inventory(PetscComponent.Inventory):
-        """
-        Python object for managing BoundaryCondition facilities and properties.
-        """
+    # @class Inventory
+    # Python object for managing BoundaryCondition facilities and properties.
+    #
+    # \b Properties
+    # @li \b label Label identifier for boundary.
+    # @li \b field Field in solution to constrain.
+    #
+    # \b Facilities
 
-        # @class Inventory
-        # Python object for managing BoundaryCondition facilities and properties.
-        #
-        # \b Properties
-        # @li \b label Label identifier for boundary.
-        # @li \b field Field in solution to constrain.
-        #
-        # \b Facilities
+    import pyre.inventory
 
-        import pyre.inventory
+    field = pyre.inventory.str("field", default="displacement")
+    field.meta['tip'] = "Solution field associated with boundary condition."
 
-        field = pyre.inventory.str("field", default="displacement")
-        field.meta['tip'] = "Solution field associated with boundary condition."
-
-        label = pyre.inventory.str("label", default="", validator=validateLabel)
-        label.meta['tip'] = "Label identifier for boundary."
+    label = pyre.inventory.str("label", default="", validator=validateLabel)
+    label.meta['tip'] = "Label identifier for boundary."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -101,8 +96,6 @@ class BoundaryCondition(PetscComponent,
         Setup members using inventory.
         """
         PetscComponent._configure(self)
-        self.label = self.inventory.label
-        self.field = self.inventory.field
         return
 
     def _createModuleObj(self):

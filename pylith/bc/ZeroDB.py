@@ -16,76 +16,68 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/bc/ZeroDB.py
+# @file pylith/bc/ZeroDB.py
 ##
-## @brief Python object for spatial database with uniform zero initial
-## amplitude values for degrees of freedom.
+# @brief Python object for spatial database with uniform zero initial
+# amplitude values for degrees of freedom.
 ##
-## Factory: spatial_database
+# Factory: spatial_database
 
 from spatialdata.spatialdb.UniformDB import UniformDB
 
 # ZeroDB class
+
+
 class ZeroDB(UniformDB):
-  """
-  Python object for spatial database with uniform zero initial amplitude values
-  for degrees of freedom.
-
-  Factory: spatial_database
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(UniformDB.Inventory):
     """
-    Python object for managing ZeroDB facilities and properties.
+    Python object for spatial database with uniform zero initial amplitude values
+    for degrees of freedom.
+
+    Factory: spatial_database
     """
 
-    ## @class Inventory
-    ## Python object for managing ZeroDB facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li none
+    # INVENTORY //////////////////////////////////////////////////////////
+    #
+    # \b Properties
+    # @li None
+    #
+    # \b Facilities
+    # @li none
 
     import pyre.inventory
 
     from pyre.units.length import m
     values = ["initial_amplitude_x", "initial_amplitude_y", "initial_amplitude_z"]
-    data = [0.0*m, 0.0*m, 0.0*m]
+    data = [0.0 * m, 0.0 * m, 0.0 * m]
 
     label = pyre.inventory.str("label", default="Zero initial amplitude spatial database.")
 
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  # PUBLIC METHODS /////////////////////////////////////////////////////
+    def __init__(self, name="zerodb"):
+        """
+        Constructor.
+        """
+        UniformDB.__init__(self, name)
+        return
 
-  def __init__(self, name="zerodb"):
-    """
-    Constructor.
-    """
-    UniformDB.__init__(self, name)
-    return
+    # PRIVATE METHODS ////////////////////////////////////////////////////
 
-
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _configure(self):
-    """
-    Set members based on inventory.
-    """
-    UniformDB._configure(self)
-    return
+    def _configure(self):
+        """
+        Set members based on inventory.
+        """
+        UniformDB._configure(self)
+        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def spatial_database():
-  """
-  Factory associated with ZeroDB.
-  """
-  return ZeroDB()
+    """
+    Factory associated with ZeroDB.
+    """
+    return ZeroDB()
 
 
-# End of file 
+# End of file

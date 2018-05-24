@@ -40,44 +40,35 @@ class AuxFieldsTimeDependent(PetscComponent):
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
+    #
+    # \b Properties
+    # @li None
+    #
+    # \b Facilities
+    # @li \b initial_amplitude Initial amplitude, f_0(x), subfield.
+    # @li \b rate_amplitude Rate amplitude, \dot{f}_1(x), subfield.
+    # @li \b rate_start Rate start time, t_1(x), subfield.
+    # @li \b time_history_amplitude Time history amplitude, f_2(x), subfield.
+    # @li \b time_history_start Time history start time, t_2(s), subfield.
 
-    class Inventory(PetscComponent.Inventory):
-        """Python object for managing AuxFieldsTimeDependent
-        facilities and properties.
+    import pyre.inventory
 
-        """
+    from pylith.topology.AuxSubfield import AuxSubfield
 
-        # @class Inventory
-        # Python object for managing AuxFieldsTimeDependent facilities and properties.
-        ##
-        # \b Properties
-        # @li None
-        ##
-        # \b Facilities
-        # @li \b initial_amplitude Initial amplitude, f_0(x), subfield.
-        # @li \b rate_amplitude Rate amplitude, \dot{f}_1(x), subfield.
-        # @li \b rate_start Rate start time, t_1(x), subfield.
-        # @li \b time_history_amplitude Time history amplitude, f_2(x), subfield.
-        # @li \b time_history_start Time history start time, t_2(s), subfield.
+    initialAmplitude = pyre.inventory.facility("initial_amplitude", family="auxiliary_subfield", factory=AuxSubfield)
+    initialAmplitude.meta['tip'] = "Initial amplitude, f_0(x), subfield."
 
-        import pyre.inventory
+    rateAmplitude = pyre.inventory.facility("rate_amplitude", family="auxiliary_subfield", factory=AuxSubfield)
+    rateAmplitude.meta['tip'] = "Rate amplitude, \dot{f}_1(x), subfield."
 
-        from pylith.topology.AuxSubfield import AuxSubfield
+    rateStart = pyre.inventory.facility("rate_start", family="auxiliary_subfield", factory=AuxSubfield)
+    rateStart.meta['tip'] = "Rate starting time, t_1(x), subfield."
 
-        initialAmplitude = pyre.inventory.facility("initial_amplitude", family="auxiliary_subfield", factory=AuxSubfield)
-        initialAmplitude.meta['tip'] = "Initial amplitude, f_0(x), subfield."
+    timeHistoryAmplitude = pyre.inventory.facility("time_history_amplitude", family="auxiliary_subfield", factory=AuxSubfield)
+    timeHistoryAmplitude.meta['tip'] = "Time history amplitude, f_2(x). subfield"
 
-        rateAmplitude = pyre.inventory.facility("rate_amplitude", family="auxiliary_subfield", factory=AuxSubfield)
-        rateAmplitude.meta['tip'] = "Rate amplitude, \dot{f}_1(x), subfield."
-
-        rateStart = pyre.inventory.facility("rate_start", family="auxiliary_subfield", factory=AuxSubfield)
-        rateStart.meta['tip'] = "Rate starting time, t_1(x), subfield."
-
-        timeHistoryAmplitude = pyre.inventory.facility("time_history_amplitude", family="auxiliary_subfield", factory=AuxSubfield)
-        timeHistoryAmplitude.meta['tip'] = "Time history amplitude, f_2(x). subfield"
-
-        timeHistoryStart = pyre.inventory.facility("time_history_start", family="auxiliary_subfield", factory=AuxSubfield)
-        timeHistoryStart.meta['tip'] = "Time history starting time, t_2(s), subfield."
+    timeHistoryStart = pyre.inventory.facility("time_history_start", family="auxiliary_subfield", factory=AuxSubfield)
+    timeHistoryStart.meta['tip'] = "Time history starting time, t_2(s), subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

@@ -32,64 +32,55 @@ class AuxFieldsIsotropicLinearMaxwell(PetscComponent):
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
+    #
+    # \b Properties
+    # @li None
+    #
+    # \b Facilities
+    # @li \b density Density subfield.
+    # @li \b shear_modulus Shear modulus subfield.
+    # @li \b bulk_modulus Bulk modulus subfield.
+    # @li \b maxwell_time Maxwell time subfield.
+    # @li \b total_strain Total strain subfield.
+    # @li \b viscous_strain Viscous strain subfield.
+    # @li \b body_force Body force.
+    # @li \b reference_stress Reference stress subfield.
+    # @li \b reference_strain Reference strain.
+    # @li \b gravitational_acceleration Gravitational acceleration subfield.
 
-    class Inventory(PetscComponent.Inventory):
-        """Python object for managing AuxFieldsIsotropicLinearMaxwell
-        facilities and properties.
+    import pyre.inventory
 
-        """
+    from pylith.topology.AuxSubfield import AuxSubfield
 
-        # @class Inventory
-        # Python object for managing AuxFieldsIsotropicLinearMaxwell facilities and properties.
-        ##
-        # \b Properties
-        # @li None
-        ##
-        # \b Facilities
-        # @li \b density Density subfield.
-        # @li \b shear_modulus Shear modulus subfield.
-        # @li \b bulk_modulus Bulk modulus subfield.
-        # @li \b maxwell_time Maxwell time subfield.
-        # @li \b total_strain Total strain subfield.
-        # @li \b viscous_strain Viscous strain subfield.
-        # @li \b body_force Body force.
-        # @li \b reference_stress Reference stress subfield.
-        # @li \b reference_strain Reference strain.
-        # @li \b gravitational_acceleration Gravitational acceleration subfield.
+    density = pyre.inventory.facility("density", family="auxiliary_subfield", factory=AuxSubfield)
+    density.meta['tip'] = "Density subfield."
 
-        import pyre.inventory
+    shearModulus = pyre.inventory.facility("shear_modulus", family="auxiliary_subfield", factory=AuxSubfield)
+    shearModulus.meta['tip'] = "Shear modulus subfield."
 
-        from pylith.topology.AuxSubfield import AuxSubfield
+    bulkModulus = pyre.inventory.facility("bulk_modulus", family="auxiliary_subfield", factory=AuxSubfield)
+    bulkModulus.meta['tip'] = "Bulk modulus subfield."
 
-        density = pyre.inventory.facility("density", family="auxiliary_subfield", factory=AuxSubfield)
-        density.meta['tip'] = "Density subfield."
+    maxwellTime = pyre.inventory.facility("maxwell_time", family="auxiliary_subfield", factory=AuxSubfield)
+    maxwellTime.meta['tip'] = "Maxwell time subfield."
 
-        shearModulus = pyre.inventory.facility("shear_modulus", family="auxiliary_subfield", factory=AuxSubfield)
-        shearModulus.meta['tip'] = "Shear modulus subfield."
+    totalStrain = pyre.inventory.facility("total_strain", family="auxiliary_subfield", factory=AuxSubfield)
+    totalStrain.meta['tip'] = "Total strain subfield."
 
-        bulkModulus = pyre.inventory.facility("bulk_modulus", family="auxiliary_subfield", factory=AuxSubfield)
-        bulkModulus.meta['tip'] = "Bulk modulus subfield."
+    viscousStrain = pyre.inventory.facility("viscous_strain", family="auxiliary_subfield", factory=AuxSubfield)
+    viscousStrain.meta['tip'] = "Viscous strain subfield."
 
-        maxwellTime = pyre.inventory.facility("maxwell_time", family="auxiliary_subfield", factory=AuxSubfield)
-        maxwellTime.meta['tip'] = "Maxwell time subfield."
+    bodyForce = pyre.inventory.facility("body_force", family="auxiliary_subfield", factory=AuxSubfield)
+    bodyForce.meta['tip'] = "Body force subfield."
 
-        totalStrain = pyre.inventory.facility("total_strain", family="auxiliary_subfield", factory=AuxSubfield)
-        totalStrain.meta['tip'] = "Total strain subfield."
+    referenceStress = pyre.inventory.facility("reference_stress", family="auxiliary_subfield", factory=AuxSubfield)
+    referenceStress.meta['tip'] = "Reference stress subfield."
 
-        viscousStrain = pyre.inventory.facility("viscous_strain", family="auxiliary_subfield", factory=AuxSubfield)
-        viscousStrain.meta['tip'] = "Viscous strain subfield."
+    referenceStrain = pyre.inventory.facility("reference_strain", family="auxiliary_subfield", factory=AuxSubfield)
+    referenceStrain.meta['tip'] = "Reference strain subfield."
 
-        bodyForce = pyre.inventory.facility("body_force", family="auxiliary_subfield", factory=AuxSubfield)
-        bodyForce.meta['tip'] = "Body force subfield."
-
-        referenceStress = pyre.inventory.facility("reference_stress", family="auxiliary_subfield", factory=AuxSubfield)
-        referenceStress.meta['tip'] = "Reference stress subfield."
-
-        referenceStrain = pyre.inventory.facility("reference_strain", family="auxiliary_subfield", factory=AuxSubfield)
-        referenceStrain.meta['tip'] = "Reference strain subfield."
-
-        gravitationalAcceleration = pyre.inventory.facility("gravitational_acceleration", family="auxiliary_subfield", factory=AuxSubfield)
-        gravitationalAcceleration.meta['tip'] = "Gravitational acceleration subfield."
+    gravitationalAcceleration = pyre.inventory.facility("gravitational_acceleration", family="auxiliary_subfield", factory=AuxSubfield)
+    gravitationalAcceleration.meta['tip'] = "Gravitational acceleration subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

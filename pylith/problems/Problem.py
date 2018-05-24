@@ -56,8 +56,8 @@ def faultFactory(name):
     Factory for fault items.
     """
     from pyre.inventory import facility
-    from pylith.faults.FaultCohesiveStub import FaultCohesiveStub
-    return facility(name, family="fault", factory=FaultCohesiveStub)
+    from pylith.faults.FaultCohesiveKin import FaultCohesiveKin
+    return facility(name, family="fault", factory=FaultCohesiveKin)
 
 
 def outputFactory(name):
@@ -68,7 +68,6 @@ def outputFactory(name):
     return facility(name, family="output_manager", factory=OutputSoln)
 
 
-# Problem class
 class Problem(PetscComponent, ModuleProblem):
     """
     Python abstract base class for crustal dynamics problems.
@@ -77,58 +76,53 @@ class Problem(PetscComponent, ModuleProblem):
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
+    #
+    # @class Inventory
+    # Python object for managing Problem facilities and properties.
+    #
+    # \b Properties
+    # @li \b dimension Spatial dimension of problem space.
+    # @li \b solver Type of solver to use.
+    #
+    # \b Facilities
+    # @li \b solution Solution field.
+    # @li \b normalizer Nondimensionalizer for problem.
+    # @li \b materials Array of materials (governing equations) in the problem.
+    # @li \b bc Array of boundary conditions.
+    # @li \b interfaces Array of interior surfaces with relative displacement constraints or constitutive models.
+    # @li \b solution_outputs Array of output managers for solution.
+    # @li \b gravityField Gravity field for problem (SpatialDB).
 
-    class Inventory(PetscComponent.Inventory):
-        """
-        Python object for managing Problem facilities and properties.
-        """
+    import pyre.inventory
+    from pylith.utils.EmptyBin import EmptyBin
 
-        # @class Inventory
-        # Python object for managing Problem facilities and properties.
-        ##
-        # \b Properties
-        # @li \b dimension Spatial dimension of problem space.
-        # @li \b solver Type of solver to use.
-        ##
-        # \b Facilities
-        # @li \b solution Solution field.
-        # @li \b normalizer Nondimensionalizer for problem.
-        # @li \b materials Array of materials (governing equations) in the problem.
-        # @li \b bc Array of boundary conditions.
-        # @li \b interfaces Array of interior surfaces with relative displacement constraints or constitutive models.
-        # @li \b solution_outputs Array of output managers for solution.
-        # @li \b gravityField Gravity field for problem (SpatialDB).
+    solverChoice = pyre.inventory.str("solver", default="linear", validator=pyre.inventory.choice(["linear", "nonlinear"]))
+    solverChoice.meta['tip'] = "Type of solver to use ['linear', 'nonlinear']."
 
-        import pyre.inventory
-        from pylith.utils.EmptyBin import EmptyBin
+    from Solution import Solution
+    solution = pyre.inventory.facility("solution", family="solution", factory=Solution)
+    solution.meta['tip'] = "Solution field for problem."
 
-        solverType = pyre.inventory.str("solver", default="linear", validator=pyre.inventory.choice(["linear", "nonlinear"]))
-        solverType.meta['tip'] = "Type of solver to use ['linear', 'nonlinear']."
+    from spatialdata.units.NondimElasticQuasistatic import NondimElasticQuasistatic
+    normalizer = pyre.inventory.facility("normalizer", family="nondimensional", factory=NondimElasticQuasistatic)
+    normalizer.meta['tip'] = "Nondimensionalizer for problem."
 
-        from Solution import Solution
-        solution = pyre.inventory.facility("solution", family="solution", factory=Solution)
-        solution.meta['tip'] = "Solution field for problem."
+    from pylith.materials.Homogeneous import Homogeneous
+    materials = pyre.inventory.facilityArray("materials", itemFactory=materialFactory, factory=Homogeneous)
+    materials.meta['tip'] = "Materials in problem."
 
-        from spatialdata.units.NondimElasticQuasistatic import NondimElasticQuasistatic
-        normalizer = pyre.inventory.facility("normalizer", family="nondimensional", factory=NondimElasticQuasistatic)
-        normalizer.meta['tip'] = "Nondimensionalizer for problem."
+    bc = pyre.inventory.facilityArray("bc", itemFactory=bcFactory, factory=EmptyBin)
+    bc.meta['tip'] = "Boundary conditions."
 
-        from pylith.materials.Homogeneous import Homogeneous
-        materials = pyre.inventory.facilityArray("materials", itemFactory=materialFactory, factory=Homogeneous)
-        materials.meta['tip'] = "Materials in problem."
+    interfaces = pyre.inventory.facilityArray("interfaces", itemFactory=faultFactory, factory=EmptyBin)
+    interfaces.meta['tip'] = "Interior surfaces with constraints or constitutive models."
 
-        bc = pyre.inventory.facilityArray("bc", itemFactory=bcFactory, factory=EmptyBin)
-        bc.meta['tip'] = "Boundary conditions."
+    from pylith.meshio.SingleOutput import SingleOutput
+    outputs = pyre.inventory.facilityArray("solution_outputs", itemFactory=outputFactory, factory=SingleOutput)
+    outputs.meta['tip'] = "Output managers for solution."
 
-        interfaces = pyre.inventory.facilityArray("interfaces", itemFactory=faultFactory, factory=EmptyBin)
-        interfaces.meta['tip'] = "Interior surfaces with constraints or constitutive models."
-
-        from pylith.meshio.SingleOutput import SingleOutput
-        outputs = pyre.inventory.facilityArray("solution_outputs", itemFactory=outputFactory, factory=SingleOutput)
-        outputs.meta['tip'] = "Output managers for solution."
-
-        gravityField = pyre.inventory.facility("gravity_field", family="spatial_database", factory=NullComponent)
-        gravityField.meta['tip'] = "Database used for gravity field."
+    gravityField = pyre.inventory.facility("gravity_field", family="spatial_database", factory=NullComponent)
+    gravityField.meta['tip'] = "Database used for gravity field."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -152,7 +146,7 @@ class Problem(PetscComponent, ModuleProblem):
         ModuleProblem.identifier(self, self.aliases[-1])
         ModuleProblem.solverType(self, self.solverType)
         ModuleProblem.normalizer(self, self.normalizer)
-        if not self.gravityField is None:
+        if not isinstance(self.gravityField, NullComponent):
             ModuleProblem.gravityField(self, self.gravityField)
 
         # Do minimal setup of solution.
@@ -263,23 +257,12 @@ class Problem(PetscComponent, ModuleProblem):
         """
         PetscComponent._configure(self)
 
-        if self.inventory.solverType == "linear":
+        if self.solverChoice == "linear":
             self.solverType = ModuleProblem.LINEAR
-        elif self.inventory.solverType == "nonlinear":
+        elif self.solverChoice == "nonlinear":
             self.solverType = ModuleProblem.NONLINEAR
         else:
-            raise ValueError("Unknown solver type '%s'." % self.solverType)
-
-        self.solution = self.inventory.solution
-        self.normalizer = self.inventory.normalizer
-        self.materials = self.inventory.materials
-        self.bc = self.inventory.bc
-        self.outputs = self.inventory.outputs
-        self.interfaces = self.inventory.interfaces
-        if isinstance(self.inventory.gravityField, NullComponent):
-            self.gravityField = None
-        else:
-            self.gravityField = self.inventory.gravityField
+            raise ValueError("Unknown solver choice '%s'." % self.solverChoice)
 
         return
 

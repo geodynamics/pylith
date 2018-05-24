@@ -16,93 +16,90 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/topology/RefineUniform.py
+# @file pylith/topology/RefineUniform.py
 ##
-## @brief Python manager for uniform global refinement of mesh in
-## parallel.
+# @brief Python manager for uniform global refinement of mesh in
+# parallel.
 ##
-## Factory: mesh_refiner.
+# Factory: mesh_refiner.
 
 from MeshRefiner import MeshRefiner
 from topology import RefineUniform as ModuleRefineUniform
 
 # RefineUniform class
+
+
 class RefineUniform(MeshRefiner, ModuleRefineUniform):
-  """
-  Python manager for uniform global refinement of mesh in parallel.
-
-  Factory: mesh_refiner
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  import pyre.inventory
-
-  levels = pyre.inventory.int("levels", default=1, validator=pyre.inventory.greaterEqual(1))
-  levels.meta['tip'] = "Number of refinement levels."
-
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="refineuniform"):
     """
-    Constructor.
+    Python manager for uniform global refinement of mesh in parallel.
+
+    Factory: mesh_refiner
     """
-    MeshRefiner.__init__(self, name)
-    self._createModuleObj()
-    return
 
+    # INVENTORY //////////////////////////////////////////////////////////
 
-  def refine(self, mesh):
-    """
-    Refine mesh.
-    """
-    self._setupLogging()
-    logEvent = "%srefine" % self._loggingPrefix
-    self._eventLogger.eventBegin(logEvent)
+    import pyre.inventory
 
-    from pylith.mpi.Communicator import petsc_comm_world
-    comm = petsc_comm_world()
-    if 0 == comm.rank:
-      self._info.log("Refining mesh using uniform refinement.")
+    levels = pyre.inventory.int("levels", default=1, validator=pyre.inventory.greaterEqual(1))
+    levels.meta['tip'] = "Number of refinement levels."
 
-    from Mesh import Mesh
-    newMesh = Mesh()
-    newMesh.debug(mesh.debug())
-    newMesh.coordsys(mesh.coordsys())
-    ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)
-    mesh.cleanup()
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    self._eventLogger.eventEnd(logEvent)
-    return newMesh
+    def __init__(self, name="refineuniform"):
+        """
+        Constructor.
+        """
+        MeshRefiner.__init__(self, name)
+        self._createModuleObj()
+        return
 
+    def refine(self, mesh):
+        """
+        Refine mesh.
+        """
+        self._setupLogging()
+        logEvent = "%srefine" % self._loggingPrefix
+        self._eventLogger.eventBegin(logEvent)
 
-  # PRIVATE METHODS ////////////////////////////////////////////////////
+        from pylith.mpi.Communicator import petsc_comm_world
+        comm = petsc_comm_world()
+        if 0 == comm.rank:
+            self._info.log("Refining mesh using uniform refinement.")
 
-  def _configure(self):
-    """
-    Set members based using inventory.
-    """
-    MeshRefiner._configure(self)
-    self.levels = self.inventory.levels
-    return
+        from Mesh import Mesh
+        newMesh = Mesh()
+        newMesh.debug(mesh.debug())
+        newMesh.coordsys(mesh.coordsys())
+        ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)
+        mesh.cleanup()
 
+        self._eventLogger.eventEnd(logEvent)
+        return newMesh
 
-  def _createModuleObj(self):
-    """
-    Create handle to C++ object.
-    """
-    ModuleRefineUniform.__init__(self)
-    return
-  
+    # PRIVATE METHODS ////////////////////////////////////////////////////
+
+    def _configure(self):
+        """
+        Set members based using inventory.
+        """
+        MeshRefiner._configure(self)
+        return
+
+    def _createModuleObj(self):
+        """
+        Create handle to C++ object.
+        """
+        ModuleRefineUniform.__init__(self)
+        return
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def mesh_refiner():
-  """
-  Factory associated with RefineUniform.
-  """
-  return RefineUniform()
+    """
+    Factory associated with RefineUniform.
+    """
+    return RefineUniform()
 
 
-# End of file 
+# End of file
