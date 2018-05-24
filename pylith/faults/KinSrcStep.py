@@ -46,6 +46,7 @@ class KinSrcStep(KinSrc, ModuleKinSrc):
         Call constructor for module object for access to C++ object.
         """
         ModuleKinSrc.__init__(self)
+        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

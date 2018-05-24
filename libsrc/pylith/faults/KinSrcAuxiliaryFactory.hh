@@ -42,8 +42,8 @@ public:
     /// Destructor.
     ~KinSrcAuxiliaryFactory(void);
 
-    /// Add slip time subfield to auxiliary fields.
-    void slipTime(void);
+    /// Add slip initiation time (relative to origin time) subfield to auxiliary fields.
+    void initiationTime(void);
 
     /// Add rise time subfield to auxiliary fields.
     void riseTime(void);

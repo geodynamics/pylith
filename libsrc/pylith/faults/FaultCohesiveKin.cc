@@ -21,6 +21,7 @@
 #include "FaultCohesiveKin.hh" // implementation of object methods
 
 #include "pylith/faults/KinSrc.hh" // USES KinSrc
+#include "pylith/faults/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
@@ -102,6 +103,7 @@ pylith::faults::FaultCohesiveKin::initialize(const pylith::topology::Field& solu
 
     FaultCohesive::initialize(solution);
 
+    assert(_auxField);
     const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
     for (srcs_type::iterator s_iter = _eqSrcs.begin(); s_iter != srcsEnd; ++s_iter) {
         KinSrc* src = s_iter->second;
@@ -219,5 +221,32 @@ pylith::faults::FaultCohesiveKin::computeLHSJacobianLumpedInv(pylith::topology::
     PYLITH_METHOD_END;
 } // computeLHSJacobianLumpedInv
 
+
+// ----------------------------------------------------------------------
+// Setup auxiliary subfields (discretization and query fns).
+void
+pylith::faults::FaultCohesiveKin::_auxFieldSetup(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_auxFieldSetup()");
+
+    assert(_auxFaultFactory);
+    assert(_normalizer);
+    assert(_faultMesh);
+
+    const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();assert(cs);
+    const int spaceDim = cs->spaceDim();
+    _auxFaultFactory->initialize(_auxField, *_normalizer, spaceDim);
+
+    // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
+
+    _auxFaultFactory->strikeDir(); // 0
+    if (3 == spaceDim) {
+        _auxFaultFactory->upDipDir(); // 1
+    } // if
+    _auxFaultFactory->normalDir(); // numA-2
+    _auxFaultFactory->slip(); // numA-1
+
+    PYLITH_METHOD_END;
+} // _auxFieldSetup
 
 // End of file

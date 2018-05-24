@@ -44,13 +44,13 @@ pylith::faults::KinSrcAuxiliaryFactory::KinSrcAuxiliaryFactory(void)
 pylith::faults::KinSrcAuxiliaryFactory::~KinSrcAuxiliaryFactory(void) {}
 
 // ----------------------------------------------------------------------
-// Add slipTime subfield to auxiliary fields.
+// Add slip initiation time (relative to origin time) subfield to auxiliary fields.
 void
-pylith::faults::KinSrcAuxiliaryFactory::slipTime(void) {
+pylith::faults::KinSrcAuxiliaryFactory::initiationTime(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("slipTime(void)");
+    PYLITH_JOURNAL_DEBUG("initiationTime(void)");
 
-    const char* fieldName = "slip_time";
+    const char* fieldName = "initiation_time";
     const PylithReal timeScale = _normalizer->timeScale();
 
     pylith::topology::Field::Description description;
@@ -66,7 +66,7 @@ pylith::faults::KinSrcAuxiliaryFactory::slipTime(void) {
     _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
-} // slipTime
+} // initiationTime
 
 
 // ----------------------------------------------------------------------

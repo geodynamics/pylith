@@ -21,11 +21,13 @@
 #include "FaultCohesive.hh" // implementation of object methods
 
 #include "pylith/faults/AuxiliaryFactory.hh" // USES AuxiliaryFactory
+#include "pylith/faults/TopologyOps.hh" // USES TopologyOps
 
 #include "TopologyOps.hh" // USES TopologyOps
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/FieldOps.hh" // USES FieldOps::checkDiscretization
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
@@ -39,11 +41,11 @@
 pylith::faults::FaultCohesive::FaultCohesive(void) :
     _faultMesh(NULL),
     _cohesivePointMap(NULL),
-    _id(100)
+    _auxFaultFactory(new pylith::faults::AuxiliaryFactory),
+    _id(100),
+    _label(""),
+    _edge("")
 { // constructor
-    _label = "";
-    _edge = "";
-
     _refDir1[0] = 0.0;
     _refDir1[1] = 0.0;
     _refDir1[2] = 1.0;
@@ -68,6 +70,7 @@ pylith::faults::FaultCohesive::deallocate(void) {
     pylith::feassemble::IntegratorPointwise::deallocate();
     ISDestroy(&_cohesivePointMap);
     delete _faultMesh; _faultMesh = NULL;
+    delete _auxFaultFactory; _auxFaultFactory = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -213,7 +216,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh)
         msg << "Error occurred while adjusting topology to create cohesive cells for fault '" << label() << "'.\n"
             << err.what();
         throw std::runtime_error(msg.str());
-    }
+    } // try/catch
 
     PYLITH_METHOD_END;
 } // adjustTopology
@@ -235,6 +238,33 @@ void
 pylith::faults::FaultCohesive::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("initialize(solution="<<solution.label()<<")");
+
+    const bool isSubMesh = true;
+    delete _faultMesh; _faultMesh = new pylith::topology::Mesh(isSubMesh); assert(_faultMesh);
+    pylith::faults::TopologyOps::createFaultParallel(_faultMesh, solution.mesh(), id(), label());
+    pylith::topology::MeshOps::checkTopology(*_faultMesh);
+
+    // Optimize closure for coordinates.
+    PetscDM dmFault = _faultMesh->dmMesh(); assert(dmFault);
+    pylith::topology::CoordsVisitor::optimizeClosure(dmFault);
+
+    // Set default discretization of auxiliary subfields to match lagrange_multiplier_fault subfield in solution.
+    assert(_auxFaultFactory);
+    const pylith::topology::FieldBase::Discretization& discretization = solution.subfieldInfo("lagrange_fault").fe;
+    _auxFaultFactory->subfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder,
+                                             discretization.isBasisContinuous, discretization.feSpace);
+
+    delete _auxField; _auxField = new pylith::topology::Field(*_faultMesh); assert(_auxField);
+    _auxField->label("fault auxiliary");
+    _auxFieldSetup();
+    _auxField->subfieldsSetup();
+    pylith::topology::FieldOps::checkDiscretization(solution, *_auxField);
+    _auxField->allocate();
+    _auxField->zeroLocal();
+
+    assert(_normalizer);
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
+    factory->initializeSubfields();
 
     PYLITH_METHOD_END;
 } // initialize

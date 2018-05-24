@@ -100,19 +100,22 @@ class MeshGenerator(PetscComponent):
             firstFaultCell = 0
             for interface in interfaces:
                 if 0 == comm.rank:
-                    self._info.log("Counting vertices for fault '%s'." % interface.label())
-                nvertices = interface.numVerticesNoMesh(mesh)
-                firstLagrangeVertex += nvertices
-                firstFaultCell += nvertices
-                if interface.useLagrangeConstraints():
-                    firstFaultCell += nvertices
+                    self._info.log("Counting vertices for fault '%s'." % interface.label)
+                #nvertices = interface.numVerticesNoMesh(mesh)
+                #firstLagrangeVertex += nvertices
+                #firstFaultCell += nvertices
+                # if interface.useLagrangeConstraints():
+                #    firstFaultCell += nvertices
             for interface in interfaces:
-                nvertices = interface.numVerticesNoMesh(mesh)
+                #nvertices = interface.numVerticesNoMesh(mesh)
                 if 0 == comm.rank:
-                    self._info.log("Adjusting topology for fault '%s' with %d vertices." %
-                                   (interface.label(), nvertices))
-                firstFaultVertex, firstLagrangeVertex, firstFaultCell = \
-                    interface.adjustTopology(mesh, firstFaultVertex, firstLagrangeVertex, firstFaultCell)
+                    # self._info.log("Adjusting topology for fault '%s' with %d vertices." %
+                    #               (interface.label(), nvertices))
+                    self._info.log("Adjusting topology for fault '%s'." % interface.label)
+                # firstFaultVertex, firstLagrangeVertex, firstFaultCell = \
+                #    interface.adjustTopology(mesh, firstFaultVertex, firstLagrangeVertex, firstFaultCell)
+                interface.preinitialize(mesh)
+                interface.adjustTopology(mesh)
 
         #mesh.view("===== MESH AFTER ADJUSTING TOPOLOGY =====")
         # self._info.deactivate()

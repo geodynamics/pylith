@@ -135,14 +135,24 @@ protected:
      */
     pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
 
+    /** Setup auxiliary subfields (discretization and query fns).
+     *
+     * Create subfields in auxiliary fields (includes name of the field,
+     * vector field type, discretization, and scale for
+     * nondimensionalization) and set query functions for filling them
+     * from a spatial database.
+     *
+     * @attention The order of the calls to subfieldAdd() must match the
+     * order of the auxiliary fields in the FE kernels.
+     */
+    virtual
+    void _auxFieldSetup(void) = 0;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
 
     pylith::topology::Mesh* _faultMesh; ///< Mesh over fault surface.
-
     PetscIS _cohesivePointMap; ///< Map from fault point to higher dimension point in cohesive cell.
-
     pylith::faults::AuxiliaryFactory* _auxFaultFactory; ///< Factory for auxiliary subfields.
 
 

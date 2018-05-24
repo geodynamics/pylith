@@ -89,6 +89,7 @@ class KinSrc(PetscComponent, ModuleKinSrc):
         Call constructor for module object for access to C++ object.
         """
         raise NotImplementedError("Please implement _createModuleOb() in derived class.")
+        return
 
 
 # End of file

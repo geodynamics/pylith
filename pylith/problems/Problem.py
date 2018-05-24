@@ -196,10 +196,10 @@ class Problem(PetscComponent, ModuleProblem):
             materialIds[material.materialId] = material.label
 
         for interface in self.interfaces.components():
-            if interface.id() in materialIds.keys():
+            if interface.matId in materialIds.keys():
                 raise ValueError("ID values for material '%s' and interface '%s' are both '%d'. Material and interface id values must be unique." %
-                                 (materialIds[interface.id()], interface.label(), interface.id()))
-            materialIds[interface.id()] = interface.label()
+                                 (materialIds[interface.matId], interface.label, interface.matId))
+            materialIds[interface.matId] = interface.label
 
         # Check to make sure material-id for each cell matches the id of a material
         import numpy

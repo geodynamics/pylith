@@ -73,14 +73,14 @@ pylith::faults::KinSrcStep::slipFn(const PylithInt dim,
     assert(a);
     assert(slip);
 
-    const PylithInt i_slipTime = 0;
+    const PylithInt i_initiationTime = 0;
     const PylithInt i_finalSlip = 1;
-    const PylithScalar slipTime = a[aOff[i_slipTime]];
+    const PylithScalar initiationTime = a[aOff[i_initiationTime]];
     const PylithScalar* finalSlip = &a[aOff[i_finalSlip]];
 
     const PylithInt i_originTime = 0;
     const PylithScalar originTime = constants[i_originTime];
-    const PylithScalar t0 = originTime + slipTime;
+    const PylithScalar t0 = originTime + initiationTime;
 
     if (t >= t0) {
         for (PylithInt i = 0; i < dim; ++i) {
@@ -104,7 +104,7 @@ pylith::faults::KinSrcStep::_auxFieldSetup(const spatialdata::units::Nondimensio
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the slip time function kernel.
 
-    _auxFactory->slipTime(); // 0
+    _auxFactory->initiationTime(); // 0
     _auxFactory->finalSlip(); // 1
 
     _slipFnKernel = pylith::faults::KinSrcStep::slipFn;

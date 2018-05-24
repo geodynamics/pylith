@@ -81,11 +81,11 @@ class FaultCohesive(IntegratorPointwise, ModuleFaultCohesive):
     matId = pyre.inventory.int("id", default=100)
     matId.meta['tip'] = "Fault identifier (must be unique across all faults and materials)."
 
-    faultLabel = pyre.inventory.str("label", default="", validator=validateLabel)
-    faultLabel.meta['tip'] = "Label identifier for fault."
+    label = pyre.inventory.str("label", default="", validator=validateLabel)
+    label.meta['tip'] = "Label identifier for fault."
 
-    faultEdge = pyre.inventory.str("edge", default="")
-    faultEdge.meta['tip'] = "Label identifier for buried fault edges."
+    edge = pyre.inventory.str("edge", default="")
+    edge.meta['tip'] = "Label identifier for buried fault edges."
 
     refDir1 = pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
     refDir1.meta['tip'] = "Set first choice for reference direction to discriminate among tangential directions in 3-D."
@@ -106,11 +106,11 @@ class FaultCohesive(IntegratorPointwise, ModuleFaultCohesive):
         """
         Setup fault.
         """
-        ModuleFaultCohesive.id(self, self.inventory.matId)
-        ModuleFaultCohesive.label(self, self.inventory.faultLabel)
-        ModuleFaultCohesive.edge(self, self.inventory.faultEdge)
-        ModuleFaultCohesive.refDir1(self, self.inventory.refDir1)
-        ModuleFaultCohesive.refDir2(self, self.inventory.refDir2)
+        ModuleFaultCohesive.id(self, self.matId)
+        ModuleFaultCohesive.label(self, self.label)
+        ModuleFaultCohesive.edge(self, self.edge)
+        ModuleFaultCohesive.refDir1(self, self.refDir1)
+        ModuleFaultCohesive.refDir2(self, self.refDir2)
         return
 
     def verifyConfiguration(self):

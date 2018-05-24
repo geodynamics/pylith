@@ -36,8 +36,8 @@ def eqsrcFactory(name):
     Factory for earthquake source items.
     """
     from pyre.inventory import facility
-    from .KinSrc import KinSrc
-    return facility(name, family="eq_kinematic_src", factory=KinSrc)
+    from .KinSrcStep import KinSrcStep
+    return facility(name, family="eq_kinematic_src", factory=KinSrcStep)
 
 
 # FaultCohesiveKin class
@@ -90,9 +90,9 @@ class FaultCohesiveKin(FaultCohesive, IntegratorPointwise, ModuleFaultCohesiveKi
         comm = mpi_comm_world()
 
         if 0 == comm.rank:
-            self._info.log("Pre-initializing fault '%s'." % self.label())
+            self._info.log("Pre-initializing fault '%s'." % self.label)
         FaultCohesive.preinitialize(self, mesh)
-        Integratorpointwise.preinitialize(self, mesh)
+        IntegratorPointwise.preinitialize(self, mesh)
 
         for eqsrc in self.eqsrcs.components():
             eqsrc.preinitialize()

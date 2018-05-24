@@ -43,13 +43,13 @@ namespace pylith {
 	     *
 	     * @param value Origin time for earthquake source.
 	     */
-	    void originTime(const PylithScalar value);
+	    void originTime(const PylithReal value);
 	    
 	    /** Get origin time for earthquake source.
 	     *
 	     * @returns Origin time for earthquake source.
 	     */
-	    PylithScalar originTime(void) const;
+	    PylithReal originTime(void) const;
 	    
 	    /** Get auxiliary field associated with the kinematic source.
 	     *
