@@ -99,26 +99,26 @@ protected:
      *
      * @param[in] solution Solution field.
      */
-    void _setFEKernelsRHSResidual(const topology::Field& solution) const;
+    void _setFEKernelsRHSResidual(const pylith::topology::Field& solution) const;
 
     /** Set kernels for RHS Jacobian G(t,u).
      *
      * @param[in] solution Solution field.
      */
-    void _setFEKernelsRHSJacobian(const topology::Field& solution) const;
+    void _setFEKernelsRHSJacobian(const pylith::topology::Field& solution) const;
 
     /** Set kernels for LHS residual F(t,u,\dot{u}).
      *
      * @param[in] solution Solution field.
      */
-    void _setFEKernelsLHSResidual(const topology::Field& solution) const;
+    void _setFEKernelsLHSResidual(const pylith::topology::Field& solution) const;
 
 
     /** Set kernels for LHS Jacobian F(t,u,\dot{u}).
      *
      * @param[in] solution Solution field.
      */
-    void _setFEKernelsLHSJacobian(const topology::Field& solution) const;
+    void _setFEKernelsLHSJacobian(const pylith::topology::Field& solution) const;
 
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////

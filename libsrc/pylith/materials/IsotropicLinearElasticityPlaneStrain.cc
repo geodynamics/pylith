@@ -21,10 +21,8 @@
 #include "pylith/materials/IsotropicLinearElasticityPlaneStrain.hh" // implementation of object methods
 
 #include "pylith/materials/AuxiliaryFactory.hh" // USES AuxiliaryFactory
-#include "pylith/materials/Query.hh" // USES Query
 
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
-#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/ElasticityPlaneStrain.hh" // USES ElasticityPlaneStrain kernels
@@ -134,7 +132,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::verifyConfiguration(con
 
 
 // ----------------------------------------------------------------------
-// Preinitialize material. Set names/sizes of auxiliary fields.
+// Preinitialize material. Set names/sizes of auxiliary subfields.
 void
 pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldSetup(void) {
     PYLITH_METHOD_BEGIN;

@@ -50,7 +50,7 @@
  * function (which we call the LHS).
  *
  */
-class pylith::problems::Problem : public pylith::utils::PyreComponent { // Problem
+class pylith::problems::Problem : public pylith::utils::PyreComponent {
     friend class TestProblem;   // unit testing
 
     // PUBLIC ENUM //////////////////////////////////////////////////////////

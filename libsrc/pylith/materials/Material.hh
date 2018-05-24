@@ -301,7 +301,7 @@ protected:
 protected:
 
     pylith::topology::StratumIS* _materialIS;   ///< Index set for material cells.
-    pylith::materials::AuxiliaryFactory* _auxMaterialFactory; ///< Factory for auxiliary fields.
+    pylith::materials::AuxiliaryFactory* _auxMaterialFactory; ///< Factory for auxiliary subfields.
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:

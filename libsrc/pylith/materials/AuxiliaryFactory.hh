@@ -28,7 +28,6 @@
 #include "materialsfwd.hh" // forward declarations
 #include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
 
-#include "spatialdata/units/unitsfwd.hh" // HASA Nondimensional
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
 
 // AuxiliaryFactory-----------------------------------------------
