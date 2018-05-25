@@ -135,7 +135,7 @@ pylith::faults::AuxiliaryFactory::slip(void) {
     PYLITH_JOURNAL_DEBUG("slip(void)");
 
     const char* fieldName = "slip";
-    const char* componentNames[3] = { "slip_left_lateral", "slip_reverse", "slip_opening" };
+    const char* componentNames[3] = { "slip_opening", "slip_left_lateral", "slip_reverse" };
 
     const PylithReal lengthScale = _normalizer->lengthScale();
 

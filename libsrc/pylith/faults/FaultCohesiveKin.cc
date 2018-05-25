@@ -239,11 +239,11 @@ pylith::faults::FaultCohesiveKin::_auxFieldSetup(void) {
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
-    _auxFaultFactory->strikeDir(); // 0
+    _auxFaultFactory->normalDir(); // 0
+    _auxFaultFactory->strikeDir(); // 1
     if (3 == spaceDim) {
-        _auxFaultFactory->upDipDir(); // 1
+        _auxFaultFactory->upDipDir(); // 2
     } // if
-    _auxFaultFactory->normalDir(); // numA-2
     _auxFaultFactory->slip(); // numA-1
 
     PYLITH_METHOD_END;

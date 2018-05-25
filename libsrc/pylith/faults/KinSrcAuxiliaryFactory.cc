@@ -105,8 +105,7 @@ pylith::faults::KinSrcAuxiliaryFactory::finalSlip(void) {
     PYLITH_JOURNAL_DEBUG("finalSlip(void)");
 
     const char* fieldName = "final_slip";
-    const char* componentNames2D[2] = { "final_slip_left_lateral", "final_slip_opening" };
-    const char* componentNames3D[3] = { "final_slip_left_lateral", "final_slip_reverse", "final_slip_opening" };
+    const char* componentNames[3] = { "final_slip_opening", "final_slip_left_lateral", "final_slip_opening" };
 
 
     const PylithReal lengthScale = _normalizer->lengthScale();
@@ -117,21 +116,9 @@ pylith::faults::KinSrcAuxiliaryFactory::finalSlip(void) {
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
-    switch (_spaceDim) {
-    case 2:
-        for (int i = 0; i < 2; ++i) {
-            description.componentNames[i] = componentNames2D[i];
-        } // for
-        break;
-    case 3:
-        for (int i = 0; i < 3; ++i) {
-            description.componentNames[i] = componentNames3D[i];
-        } // for
-        break;
-    default:
-        PYLITH_JOURNAL_ERROR("Unknown spatial dimension ("<<_spaceDim<<") in setting up final_slip auxiliary subfield.");
-        throw std::logic_error("Unknown spatial dimension in setting up final_slip auxiliary subfield.");
-    } // switch
+    for (int i = 0; i < _spaceDim; ++i) {
+        description.componentNames[i] = componentNames[i];
+    } // for
     description.scale = lengthScale;
     description.validator = NULL;
 
@@ -150,8 +137,7 @@ pylith::faults::KinSrcAuxiliaryFactory::slipRate(void) {
     PYLITH_JOURNAL_DEBUG("slipRate(void)");
 
     const char* fieldName = "slip_rate";
-    const char* componentNames2D[2] = { "slip_rate_left_lateral", "slip_rate_opening" };
-    const char* componentNames3D[3] = { "slip_rate_left_lateral", "slip_rate_reverse", "slip_rate_opening" };
+    const char* componentNames[3] = { "slip_rate_opening", "slip_rate_left_lateral", "slip_rate_reverse" };
 
     const PylithReal lengthScale = _normalizer->lengthScale();
     const PylithReal timeScale = _normalizer->timeScale();
@@ -162,21 +148,9 @@ pylith::faults::KinSrcAuxiliaryFactory::slipRate(void) {
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
-    switch (_spaceDim) {
-    case 2:
-        for (int i = 0; i < 2; ++i) {
-            description.componentNames[i] = componentNames2D[i];
-        } // for
-        break;
-    case 3:
-        for (int i = 0; i < 3; ++i) {
-            description.componentNames[i] = componentNames3D[i];
-        } // for
-        break;
-    default:
-        PYLITH_JOURNAL_ERROR("Unknown spatial dimension ("<<_spaceDim<<") in setting up slip_rate auxiliary subfield.");
-        throw std::logic_error("Unknown spatial dimension in setting up slip_rate auxiliary subfield.");
-    } // switch
+    for (int i = 0; i < _spaceDim; ++i) {
+        description.componentNames[i] = componentNames[i];
+    } // for
     description.scale = lengthScale / timeScale;
     description.validator = NULL;
 
