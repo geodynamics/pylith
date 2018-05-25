@@ -119,7 +119,7 @@ class SolutionSubfield(PetscComponent):
             self.componentNames = self.fieldName
         elif self.vectorFieldType == Field.VECTOR:
             labels = ["x", "y", "z"]
-            self.componentNames = ["{}_{}".format(self.userAlias, label) for label in labels]
+            self.componentNames = ["{}_{}".format(self.userAlias, label) for label in labels[:spaceDim]]
         else:
             raise NotImplementedError("Not implemented for vector field type %d" % self.vectorFieldType)
         return
