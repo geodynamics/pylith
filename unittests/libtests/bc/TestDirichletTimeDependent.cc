@@ -290,13 +290,19 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void)
 
     _bc->initialize(*_solution);
 
-    //_bc->auxField().view("AUXILIARY FIELD"); // DEBUGGING
+#if 1 // :DEBUG:
+    _bc->_boundaryMesh->view("::ascii_info_detail"); // :DEBUG:
+    _bc->auxField().view("AUXILIARY FIELD"); // :DEBUG:
+
+    PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "1"); // :DEBUG:
+    DMSetFromOptions(_bc->auxField().dmMesh()); // :DEBUG:
+#endif // :DEBUG:
 
     // Verify auxiliary field.
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_mesh);
     const pylith::topology::Field& auxField = _bc->auxField();
-    CPPUNIT_ASSERT_EQUAL(std::string("auxiliary subfields"), std::string(auxField.label()));
+    CPPUNIT_ASSERT_EQUAL(std::string("Dirichlet auxiliary"), std::string(auxField.label()));
     CPPUNIT_ASSERT_EQUAL(_mesh->dimension(), auxField.spaceDim());
 
     PylithReal norm = 0.0;
