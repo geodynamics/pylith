@@ -250,7 +250,7 @@ pylith::faults::FaultCohesive::initialize(const pylith::topology::Field& solutio
 
     // Set default discretization of auxiliary subfields to match lagrange_multiplier_fault subfield in solution.
     assert(_auxFaultFactory);
-    const pylith::topology::FieldBase::Discretization& discretization = solution.subfieldInfo("lagrange_fault").fe;
+    const pylith::topology::FieldBase::Discretization& discretization = solution.subfieldInfo("lagrange_multiplier_fault").fe;
     _auxFaultFactory->subfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder,
                                              discretization.isBasisContinuous, discretization.feSpace);
 

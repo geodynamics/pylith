@@ -45,7 +45,7 @@ class SubfieldTemperature(SolutionSubfield):
     import pyre.inventory
 
     from .SolutionSubfield import validateAlias
-    userAlias = pyre.inventory.str("name", default="temperature", validator=validateAlias)
+    userAlias = pyre.inventory.str("alias", default="temperature", validator=validateAlias)
     userAlias.meta['tip'] = "Name for subfield."
 
     fieldName = "temperature"

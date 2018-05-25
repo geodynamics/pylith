@@ -74,7 +74,7 @@ class Solution(PetscComponent):
             subfield.initialize(normalizer, spaceDim)
             ncomponents = len(subfield.componentNames)
             if 0 == comm.rank:
-                self._debug.log("Adding subfield '%s' as '%s' with components %s to solution." % (fieldName, subfield.fieldName, subfield.componentNames))
+                self._debug.log("Adding subfield '%s' as '%s' with components %s to solution." % (subfield.fieldName, subfield.userAlias, subfield.componentNames))
             self.field.subfieldAdd(subfield.fieldName, subfield.userAlias, subfield.vectorFieldType, subfield.componentNames, subfield.scale.value, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
         self.field.subfieldsSetup()
         return

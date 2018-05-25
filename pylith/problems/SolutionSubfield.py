@@ -60,7 +60,7 @@ class SolutionSubfield(PetscComponent):
     import pyre.inventory
 
     # Override userAlias in derived class with appropriate default.
-    userAlias = pyre.inventory.str("name", default="", validator=validateAlias)
+    userAlias = pyre.inventory.str("alias", default="", validator=validateAlias)
     userAlias.meta['tip'] = "Name for subfield."
 
     basisOrder = pyre.inventory.int("basis_order", default=1)

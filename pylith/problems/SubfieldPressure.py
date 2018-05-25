@@ -43,7 +43,7 @@ class SubfieldPressure(SolutionSubfield):
     import pyre.inventory
 
     from .SolutionSubfield import validateAlias
-    userAlias = pyre.inventory.str("name", default="pressure", validator=validateAlias)
+    userAlias = pyre.inventory.str("alias", default="pressure", validator=validateAlias)
     userAlias.meta['tip'] = "Name for subfield."
 
     fieldName = "pressure"
