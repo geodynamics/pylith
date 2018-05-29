@@ -123,19 +123,19 @@ class pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain_LinearStrain :
 	// Maxwell time_1
 	static double maxwellTime_1(const double x,
 								const double y) {
-		return viscosity_1(x,y) / (shearModulusRatio_1(x,y)*shearModulus(x,y));
+		return viscosity_1(x,y) / shearModulus(x,y);
 	} // maxwellTime_1
 	
 	// Maxwell time_2
 	static double maxwellTime_2(const double x,
 								const double y) {
-		return viscosity_2(x,y) / (shearModulusRatio_2(x,y)*shearModulus(x,y));
+		return viscosity_2(x,y) / shearModulus(x,y);
 	} // maxwellTime_2
 	
 	// Maxwell time_3
 	static double maxwellTime_3(const double x,
 								const double y) {
-		return viscosity_3(x,y) / (shearModulusRatio_3(x,y)*shearModulus(x,y));
+		return viscosity_3(x,y) / shearModulus(x,y);
 	} // maxwellTime_3
 	
 	static const char* maxwellTime_units(void) {
