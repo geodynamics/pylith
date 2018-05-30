@@ -16,48 +16,41 @@
  * ----------------------------------------------------------------------
  */
 
-/** @file libsrc/fekernels/DispVel.hh
+/** @file libsrc/fekernels/FaultCohesiveKin.hh
  *
- * Kernels for time evolution equation with displacement and velocity
- * solution fields.
+ * Kernels for faults with prescribed slip.
  *
- * Solution fields: [disp(dim), vel(dim, optional)]
+ * Solution fields: [disp(dim), vel(dim, optional), lagrange(dim)]
  *
  * Auxiliary fields: [...] (not used)
  *
- * \int_V \vec{\phi}_v \cdot \left( \frac{\partial \vec{u}(t)}{\partial t} \right) \, dV =
- *   \int_V \vec{\phi}_v \cdot \vec{v}(t) \, dV.
- *
- * LHS Residual
- *
- * f0_DispVel: \vec{f0} = \frac{\partial \vec{u}(t)}{\partial t}
+ * LHS Residual: no contribution
  *
  * RHS Residual
  *
- * g0_DispVel: \vec{g0} = \vec{v}(t)
+ *  - g0u^+ = -\lambda
+ *  - g0u^- = +\lambda
+ *  - g0\lambda = d - u^+ + u^-
  *
- * LHS Jacobian
- *
- * Jf0_veldisp_DispVelImplicit: tshift
- *
- * Jf0_veldisp_DispVelExplicit: 0
+ * LHS Jacobian: no contribution
  *
  * RHS Jacobian
  *
- * Jg0_velvel_DispVel: +1.0
+ *  - Jg0^{u \lambda} = -1 for u^+, +1 for u^-
+ *  - Jg0^{\lambda u} = -1 for u^+, +1 for u^-
  *
  * ======================================================================
  */
 
-#if !defined(pylith_fekernels_DispVel_hh)
-#define pylith_fekernels_DispVel_hh
+#if !defined(pylith_fekernels_FaultCohesiveKin_hh)
+#define pylith_fekernels_FaultCohesiveKin_hh
 
 // Include directives ---------------------------------------------------
 #include "fekernelsfwd.hh" // forward declarations
 
 #include "pylith/utils/types.hh"
 
-class pylith::fekernels::DispVel {
+class pylith::fekernels::FaultCohesiveKin {
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
@@ -85,59 +78,9 @@ public:
      */
 
 
-    /** f0 function for displacement equation: f0u = \dot{u}.
+    /** g0 function for elasticity equation: g0u = +-\lambda.
      *
-     * Solution fields: [disp(dim), vel(dim)]
-     */
-    static
-    void f0u(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar f0[]);
-
-
-    /** f0 function for velocity equation: f0u = \dot{v}.
-     *
-     * Solution fields: [disp(dim), vel(dim)]
-     */
-    static
-    void f0v(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar f0[]);
-
-
-    /** g0 function for displacement equation: g0u = v.
-     *
-     * Solution fields: [disp(dim), vel(dim)]
+     * Solution fields: [disp(dim), ..., lagrange(dim)]
      */
     static
     void g0u(const PylithInt dim,
@@ -160,64 +103,37 @@ public:
              PylithScalar g0[]);
 
 
-    /** Jf0 function for displacement equation with zero values on diagonal.
+    /** g0 function for slip constraint equation: g0\lambda = d - u^+ + u^-.
      *
-     * This is associated with the elasticity equation without intertia.
-     *
-     * Solution fields: [...]
+     * Solution fields: [disp(dim), ..., lagrange(dim)]
      */
     static
-    void Jf0uu_zero(const PylithInt dim,
-                    const PylithInt numS,
-                    const PylithInt numA,
-                    const PylithInt sOff[],
-                    const PylithInt sOff_x[],
-                    const PylithScalar s[],
-                    const PylithScalar s_t[],
-                    const PylithScalar s_x[],
-                    const PylithInt aOff[],
-                    const PylithInt aOff_x[],
-                    const PylithScalar a[],
-                    const PylithScalar a_t[],
-                    const PylithScalar a_x[],
-                    const PylithReal t,
-                    const PylithReal utshift,
-                    const PylithScalar x[],
-                    const PylithInt numConstants,
-                    const PylithScalar constants[],
-                    PylithScalar Jf0[]);
+    void g0l(const PylithInt dim,
+             const PylithInt numS,
+             const PylithInt numA,
+             const PylithInt sOff[],
+             const PylithInt sOff_x[],
+             const PylithScalar s[],
+             const PylithScalar s_t[],
+             const PylithScalar s_x[],
+             const PylithInt aOff[],
+             const PylithInt aOff_x[],
+             const PylithScalar a[],
+             const PylithScalar a_t[],
+             const PylithScalar a_x[],
+             const PylithReal t,
+             const PylithScalar x[],
+             const PylithInt numConstants,
+             const PylithScalar constants[],
+             PylithScalar g0[]);
 
-    /** Jf0 function for displacement equation: Jf0uu = utshift.
-     *
-     * Solution fields: [disp(dim), vel(dim)]
-     */
-    static
-    void Jf0uu_utshift(const PylithInt dim,
-                       const PylithInt numS,
-                       const PylithInt numA,
-                       const PylithInt sOff[],
-                       const PylithInt sOff_x[],
-                       const PylithScalar s[],
-                       const PylithScalar s_t[],
-                       const PylithScalar s_x[],
-                       const PylithInt aOff[],
-                       const PylithInt aOff_x[],
-                       const PylithScalar a[],
-                       const PylithScalar a_t[],
-                       const PylithScalar a_x[],
-                       const PylithReal t,
-                       const PylithReal utshift,
-                       const PylithScalar x[],
-                       const PylithInt numConstants,
-                       const PylithScalar constants[],
-                       PylithScalar Jf0[]);
 
-    /** Jg0 function for displacement equation: 1.0.
+    /** Jg0 function for displacement equation: -+\lambda.
      *
-     * Solution fields: [disp(dim), vel(dim)]
+     * Solution fields: [disp(dim), ..., lagrange(dim)]
      */
     static
-    void Jg0uv(const PylithInt dim,
+    void Jg0ul(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
                const PylithInt sOff[],
@@ -238,9 +154,35 @@ public:
                PylithScalar Jg0[]);
 
 
-}; // DispVel
+    /** Jg0 function for slip constraint equation: -+\lambda.
+     *
+     * Solution fields: [disp(dim), ..., lagrange(dim)]
+     */
+    static
+    void Jg0lu(const PylithInt dim,
+               const PylithInt numS,
+               const PylithInt numA,
+               const PylithInt sOff[],
+               const PylithInt sOff_x[],
+               const PylithScalar s[],
+               const PylithScalar s_t[],
+               const PylithScalar s_x[],
+               const PylithInt aOff[],
+               const PylithInt aOff_x[],
+               const PylithScalar a[],
+               const PylithScalar a_t[],
+               const PylithScalar a_x[],
+               const PylithReal t,
+               const PylithReal utshift,
+               const PylithScalar x[],
+               const PylithInt numConstants,
+               const PylithScalar constants[],
+               PylithScalar Jg0[]);
 
-#endif /* pylith_fekernels_DispVel_hh */
+
+}; // FaultCohesiveKin
+
+#endif /* pylith_fekernels_FaultCohesiveKin_hh */
 
 
 /* End of file */

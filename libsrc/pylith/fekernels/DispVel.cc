@@ -26,7 +26,7 @@
  * Kernels for time evolution equation with displacement and velocity
  * solution fields.
  *
- * Solution fields = [disp(dim), vel(dim, optional)]
+ * Solution fields = [disp(dim), vel(dim), ...]
  * Auxiliary fields = None
  *
  * \int_V \vec{\phi}_v \cdot \left( \frac{\partial \vec{u}(t)}{\partial t} \right) \, dV =
@@ -36,7 +36,7 @@
  */
 
 // ----------------------------------------------------------------------
-// f0 entry function for disp/velocity equation.
+// f0 entry function for displacement equation: f0u = \dot{u}.
 void
 pylith::fekernels::DispVel::f0u(const PylithInt dim,
                                 const PylithInt numS,
@@ -56,26 +56,65 @@ pylith::fekernels::DispVel::f0u(const PylithInt dim,
                                 const PylithInt numConstants,
                                 const PylithScalar constants[],
                                 PylithScalar f0[]) {
-    const PylithInt _numS = 2;
-    const PylithInt i_disp = 0;
-    const PylithScalar* disp_t = &s_t[sOff[i_disp]];
-
-    PylithInt i;
-
-    assert(_numS == numS);
     assert(sOff);
     assert(s);
     assert(s_t);
     assert(f0);
 
-    for (i = 0; i < dim; ++i) {
+    const PylithInt _numS = 2;
+    assert(_numS == numS);
+
+    const PylithInt i_disp = 0;
+    const PylithScalar* disp_t = &s_t[sOff[i_disp]];
+
+
+    for (PylithInt i = 0; i < dim; ++i) {
         f0[i] += disp_t[i];
     } // for
 } // f0u
 
 
 // ----------------------------------------------------------------------
-// g0 function for disp/velocity equation.
+// f0 entry function for displacement equation: f0u = \dot{v}.
+void
+pylith::fekernels::DispVel::f0v(const PylithInt dim,
+                                const PylithInt numS,
+                                const PylithInt numA,
+                                const PylithInt sOff[],
+                                const PylithInt sOff_x[],
+                                const PylithScalar s[],
+                                const PylithScalar s_t[],
+                                const PylithScalar s_x[],
+                                const PylithInt aOff[],
+                                const PylithInt aOff_x[],
+                                const PylithScalar a[],
+                                const PylithScalar a_t[],
+                                const PylithScalar a_x[],
+                                const PylithReal t,
+                                const PylithScalar x[],
+                                const PylithInt numConstants,
+                                const PylithScalar constants[],
+                                PylithScalar f0[]) {
+    assert(sOff);
+    assert(s);
+    assert(s_t);
+    assert(f0);
+
+    const PylithInt _numS = 2;
+    assert(_numS == numS);
+
+    const PylithInt i_vel = 1;
+    const PylithScalar* vel_t = &s_t[sOff[i_vel]];
+
+
+    for (PylithInt i = 0; i < dim; ++i) {
+        f0[i] += vel_t[i];
+    } // for
+} // f0v
+
+
+// ----------------------------------------------------------------------
+// g0 function for displacement equation: g0u = v.
 void
 pylith::fekernels::DispVel::g0u(const PylithInt dim,
                                 const PylithInt numS,
@@ -95,25 +134,24 @@ pylith::fekernels::DispVel::g0u(const PylithInt dim,
                                 const PylithInt numConstants,
                                 const PylithScalar constants[],
                                 PylithScalar g0[]) {
-    const PylithInt _numS = 2;
-    const PylithInt i_vel = 1;
-    const PylithScalar* vel = &s[sOff[i_vel]];
-
-    PylithInt i;
-
-    assert(_numS == numS);
     assert(sOff);
     assert(s);
     assert(g0);
 
-    for (i = 0; i < dim; ++i) {
+    const PylithInt _numS = 2;
+    assert(_numS == numS);
+
+    const PylithInt i_vel = 1;
+    const PylithScalar* vel = &s[sOff[i_vel]];
+
+    for (PylithInt i = 0; i < dim; ++i) {
         g0[i] += vel[i];
     } // for
 } // g0u
 
 
 // ----------------------------------------------------------------------
-// Jf0 function for disp/velocity equation with zero values on diagonal.
+// Jf0 function for displacement equation with zero values on diagonal.
 void
 pylith::fekernels::DispVel::Jf0uu_zero(const PylithInt dim,
                                        const PylithInt numS,
@@ -139,34 +177,31 @@ pylith::fekernels::DispVel::Jf0uu_zero(const PylithInt dim,
 
 
 // ----------------------------------------------------------------------
-// Jf0 function for disp/velocity equation with implicit time-stepping.
+// Jf0 function for displacement equation: Jf0uu = utshift.
 void
-pylith::fekernels::DispVel::Jf0uu(const PylithInt dim,
-                                  const PylithInt numS,
-                                  const PylithInt numA,
-                                  const PylithInt sOff[],
-                                  const PylithInt sOff_x[],
-                                  const PylithScalar s[],
-                                  const PylithScalar s_t[],
-                                  const PylithScalar s_x[],
-                                  const PylithInt aOff[],
-                                  const PylithInt aOff_x[],
-                                  const PylithScalar a[],
-                                  const PylithScalar a_t[],
-                                  const PylithScalar a_x[],
-                                  const PylithReal t,
-                                  const PylithReal utshift,
-                                  const PylithScalar x[],
-                                  const PylithInt numConstants,
-                                  const PylithScalar constants[],
-                                  PylithScalar Jf0[]) {
+pylith::fekernels::DispVel::Jf0uu_utshift(const PylithInt dim,
+                                          const PylithInt numS,
+                                          const PylithInt numA,
+                                          const PylithInt sOff[],
+                                          const PylithInt sOff_x[],
+                                          const PylithScalar s[],
+                                          const PylithScalar s_t[],
+                                          const PylithScalar s_x[],
+                                          const PylithInt aOff[],
+                                          const PylithInt aOff_x[],
+                                          const PylithScalar a[],
+                                          const PylithScalar a_t[],
+                                          const PylithScalar a_x[],
+                                          const PylithReal t,
+                                          const PylithReal utshift,
+                                          const PylithScalar x[],
+                                          const PylithInt numConstants,
+                                          const PylithScalar constants[],
+                                          PylithScalar Jf0[]) {
     const PylithInt _numS = 2;
-
-    PylithInt i;
-
     assert(_numS == numS);
 
-    for (i = 0; i < dim; ++i) {
+    for (PylithInt i = 0; i < dim; ++i) {
         Jf0[i*dim+i] += utshift;
     } // for
 } // Jf0uu
@@ -199,12 +234,9 @@ pylith::fekernels::DispVel::Jg0uv(const PylithInt dim,
                                   const PylithScalar constants[],
                                   PylithScalar Jg0[]) {
     const PylithInt _numS = 2;
-
-    PylithInt i;
-
     assert(_numS == numS);
 
-    for (i = 0; i < dim; ++i) {
+    for (PylithInt i = 0; i < dim; ++i) {
         Jg0[i*dim+i] += 1.0;
     } // for
 } // Jg0uv

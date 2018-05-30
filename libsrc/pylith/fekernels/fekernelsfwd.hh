@@ -30,23 +30,24 @@
 namespace pylith {
     namespace fekernels {
 
+        class DispVel;
+
         class Elasticity;
         class ElasticityPlaneStrain;
         class IsotropicLinearElasticityPlaneStrain;
 
         class Viscoelastic;
         class IsotropicLinearMaxwellPlaneStrain;
-
         class IsotropicLinearGenMaxwellPlaneStrain;
 
         class IncompressibleElasticity;
         class IsotropicLinearIncompElasticityPlaneStrain;
 
-        class DispVel;
-
         class TimeDependentFn;
         class NeumannTimeDependent;
-	class AbsorbingDampers;
+        class AbsorbingDampers;
+
+        class FaultCohesiveKin;
 
     } // fekernels
 } // pylith

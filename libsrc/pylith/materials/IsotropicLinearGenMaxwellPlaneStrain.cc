@@ -317,7 +317,7 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_setFEKernelsLHSResidua
         const PetscPointFunc f1u = NULL;
 
         // Velocity
-        const PetscPointFunc f0v = (_useInertia) ? pylith::fekernels::ElasticityPlaneStrain::f0v : NULL;
+        const PetscPointFunc f0v = (_useInertia) ? pylith::fekernels::DispVel::f0v : NULL;
         const PetscPointFunc f1v = NULL;
 
         err = PetscDSSetResidual(prob, i_disp, f0u, f1u); PYLITH_CHECK_ERROR(err);
@@ -353,7 +353,7 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_setFEKernelsLHSJacobia
         const PetscInt i_vel = solution.subfieldInfo("velocity").index;
 
         // Jacobian kernels
-        const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu;
+        const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_utshift;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
         const PetscPointJac Jf3uu = NULL;
@@ -368,7 +368,7 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_setFEKernelsLHSJacobia
         const PetscPointJac Jf2vu = NULL;
         const PetscPointJac Jf3vu = NULL;
 
-        const PetscPointJac Jf0vv = (_useInertia) ? pylith::fekernels::ElasticityPlaneStrain::Jf0vv : NULL;
+        const PetscPointJac Jf0vv = (_useInertia) ? pylith::fekernels::DispVel::Jf0uu_utshift : NULL;
         const PetscPointJac Jf1vv = NULL;
         const PetscPointJac Jf2vv = NULL;
         const PetscPointJac Jf3vv = NULL;

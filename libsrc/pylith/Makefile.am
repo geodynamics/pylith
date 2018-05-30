@@ -64,6 +64,7 @@ libpylith_la_SOURCES = \
 	fekernels/TimeDependentFn.cc \
 	fekernels/NeumannTimeDependent.cc \
 	fekernels/AbsorbingDampers.cc \
+	fekernels/FaultCohesiveKin.cc \
 	materials/Material.cc \
 	materials/AuxiliaryFactory.cc \
 	materials/IsotropicLinearElasticityPlaneStrain.cc \

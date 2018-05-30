@@ -31,7 +31,8 @@ subpkginclude_HEADERS = \
 	DispVel.hh \
 	TimeDependentFn.hh \
 	NeumannTimeDependent.hh \
-	AbsorbingDampers.hh
+	AbsorbingDampers.hh \
+	FaultCohesiveKin.hh
 
 noinst_HEADERS =
 
