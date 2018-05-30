@@ -211,7 +211,7 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void)
     const int basisOrder = 1;
     const int quadOrder = 1;
     const double scale = 1.2;
-    fieldA.subfieldAdd("displacement", Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder, true, Field::POLYNOMIAL_SPACE);
+    fieldA.subfieldAdd("displacement", "displacement", Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder, true, Field::POLYNOMIAL_SPACE);
     fieldA.subfieldsSetup();
     fieldA.allocate();
 

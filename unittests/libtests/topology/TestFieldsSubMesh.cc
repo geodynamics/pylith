@@ -206,7 +206,7 @@ pylith::topology::TestFieldsSubMesh::testCopyLayout(void)
     const int basisOrder = 1;
     const int quadOrder = 1;
     const double scale = 1.2;
-    fieldA.subfieldAdd("velocity", Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder, true, Field::POLYNOMIAL_SPACE);
+    fieldA.subfieldAdd("velocity", "velocity", Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder, true, Field::POLYNOMIAL_SPACE);
     fieldA.subfieldsSetup();
     fieldA.allocate();
 
