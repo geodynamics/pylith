@@ -517,7 +517,10 @@ pylith::topology::Field::view(const char* label) const
                     std::cout << " " << sinfo.description.componentNames[i];
                 } // for
             } // if
-            std::cout << ", scale: " << sinfo.description.scale << "\n";
+            std::cout << ", scale: " << sinfo.description.scale
+                      << ", basisOrder: " << sinfo.fe.basisOrder
+                      << ", quadOrder: " << sinfo.fe.quadOrder
+                      << "\n";
         } // for
     } // if
 
