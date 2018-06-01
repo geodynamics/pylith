@@ -164,8 +164,6 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
 { // openDB
     PYLITH_METHOD_BEGIN;
 
-    assert(db);
-
     // Create contexts and funcs. Need to put contexts into an array of
     // pointers, since Petsc function doesn't know the size of the
     // context.
@@ -187,7 +185,7 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
         const PylithInt index = iter->second.index;
         assert(size_t(index) < subfields.size());
 
-        _functions[index] = _queryFns[name];
+        _functions[index] = (db || _queryDBs[name]) ? _queryFns[name] : NULL;
 
         _contexts[index].db = (_queryDBs[name]) ? _queryDBs[name] : db;
         _contexts[index].cs = _field.mesh().coordsys();
@@ -203,7 +201,9 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
     } // for
 
     // Open spatial database.
-    db->open();
+    if (db) {
+        db->open();
+    } // if
 
     PYLITH_METHOD_END;
 } // openDB
@@ -232,14 +232,14 @@ pylith::topology::FieldQuery::closeDB(spatialdata::spatialdb::SpatialDB* db)
 { // queryDB
     PYLITH_METHOD_BEGIN;
 
-    assert(db);
-
     delete[] _functions; _functions = NULL;
     delete[] _contexts; _contexts = NULL;
     delete[] _contextPtrs; _contextPtrs = NULL;
 
     // Close spatial database.
-    db->close();
+    if (db) {
+        db->close();
+    } // if
 
     PYLITH_METHOD_END;
 } // queryDB
@@ -262,6 +262,9 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
     assert(context);
 
     const pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context; assert(queryctx);
+    if (!queryctx->db) {
+        PYLITH_METHOD_RETURN(0);
+    } // if
 
     const int numQueryValues = queryctx->componentNames.size();
     assert(numQueryValues == nvalues);

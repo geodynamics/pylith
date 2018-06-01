@@ -23,20 +23,20 @@
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/MeshOps.hh" // USES MeshOps::createDMMesh()
-#include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "pylith/meshio/MeshBuilder.hh" // Uses MeshBuilder
-#include "pylith/utils/array.hh" // USES scalar_array
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
+
+const double pylith::topology::TestFieldQuery::FILL_VALUE = -999.0;
 
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::topology::TestFieldQuery::setUp(void)
-{ // setUp
+pylith::topology::TestFieldQuery::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
     _data = new TestFieldQuery_Data; CPPUNIT_ASSERT(_data);
@@ -50,8 +50,7 @@ pylith::topology::TestFieldQuery::setUp(void)
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::topology::TestFieldQuery::tearDown(void)
-{ // tearDown
+pylith::topology::TestFieldQuery::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
     delete _data; _data = NULL;
@@ -65,13 +64,12 @@ pylith::topology::TestFieldQuery::tearDown(void)
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::topology::TestFieldQuery::testConstructor(void)
-{ // testConstructor
+pylith::topology::TestFieldQuery::testConstructor(void) {
     PYLITH_METHOD_BEGIN;
 
-    Mesh mesh;
-    Field field(mesh);
-    FieldQuery query(field);
+    pylith::topology::Mesh mesh;
+    pylith::topology::Field field(mesh);
+    pylith::topology::FieldQuery query(field);
     CPPUNIT_ASSERT(!query._functions);
     CPPUNIT_ASSERT(!query._contexts);
     CPPUNIT_ASSERT(!query._contextPtrs);
@@ -82,21 +80,31 @@ pylith::topology::TestFieldQuery::testConstructor(void)
 // ----------------------------------------------------------------------
 // Test queryFn().
 void
-pylith::topology::TestFieldQuery::testQueryFn(void)
-{ // testQueryFn
+pylith::topology::TestFieldQuery::testQueryFn(void) {
     PYLITH_METHOD_BEGIN;
 
-#if 0
-    Mesh mesh;
-    Field field(mesh);
-    FieldQuery query(field);
-    query.queryFn(_data->subfieldAName, _data->queryFnA);
-    query.queryFn(_data->subfieldBName, _data->queryFnB);
-    CPPUNIT_ASSERT(_data->queryFnB == query.queryFn(_data->subfieldBName));
-    CPPUNIT_ASSERT(_data->queryFnA == query.queryFn(_data->subfieldAName));
-#else
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Test not implemented.", false);
-#endif
+    _initialize();
+    CPPUNIT_ASSERT(_query);
+
+    const char* name = "abc";
+
+    // Test with non-null query functions and database.
+    pylith::topology::FieldQuery::queryfn_type fnA;
+    spatialdata::spatialdb::UserFunctionDB dbA;
+    _query->queryFn(name, fnA, &dbA);
+    CPPUNIT_ASSERT_EQUAL(fnA, _query->queryFn(name));
+    CPPUNIT_ASSERT_EQUAL((const spatialdata::spatialdb::SpatialDB*)&dbA, _query->queryDB(name));
+
+    // Test with non-null query function but NULL database.
+    pylith::topology::FieldQuery::queryfn_type fnB;
+    _query->queryFn(name, fnB);
+    CPPUNIT_ASSERT_EQUAL(fnB, _query->queryFn(name));
+    CPPUNIT_ASSERT(!_query->queryDB(name));
+
+    // Test with NULL query function and database.
+    _query->queryFn(name, NULL);
+    CPPUNIT_ASSERT(!_query->queryFn(name));
+    CPPUNIT_ASSERT(!_query->queryDB(name));
 
     PYLITH_METHOD_END;
 } // testQueryFn
@@ -104,11 +112,23 @@ pylith::topology::TestFieldQuery::testQueryFn(void)
 // ----------------------------------------------------------------------
 // Test openDB(), closeDB()..
 void
-pylith::topology::TestFieldQuery::testOpenClose(void)
-{ // testOpenClose
+pylith::topology::TestFieldQuery::testOpenClose(void) {
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Test not implemented.", false);
+    _initialize();
+    CPPUNIT_ASSERT(_query);
+
+    _query->initializeWithDefaultQueryFns();
+
+    // Test with non-NULL database.
+    _query->openDB(_data->auxDB, _data->normalizer->lengthScale());
+    _query->closeDB(_data->auxDB);
+    // Nothing to verify.
+
+    // Test with NULL database (should be okay).
+    _query->openDB(NULL, 1.0);
+    _query->closeDB(NULL);
+    // Nothing to verify.
 
     PYLITH_METHOD_END;
 } // testOpenClose
@@ -116,8 +136,7 @@ pylith::topology::TestFieldQuery::testOpenClose(void)
 // ----------------------------------------------------------------------
 // Test queryDB().
 void
-pylith::topology::TestFieldQuery::testQuery(void)
-{ // testQuery
+pylith::topology::TestFieldQuery::testQuery(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Test not implemented.", false);
@@ -126,33 +145,53 @@ pylith::topology::TestFieldQuery::testQuery(void)
 } // testQuery
 
 // ----------------------------------------------------------------------
-// Test dbQueryGeneric.
+// Test queryDB() with NULL database.
 void
-pylith::topology::TestFieldQuery::testDBQueryGeneric(void)
-{ // testDBQueryGeneric
+pylith::topology::TestFieldQuery::testQueryNull(void) {
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Test not implemented.", false);
+    _initialize();
+    CPPUNIT_ASSERT(_query);
+
+    _query->initializeWithDefaultQueryFns();
+
+    _query->openDB(NULL, 1.0);
+    _query->queryDB();
+    _query->closeDB(NULL);
+
+    _field->view("FIELD");
+
+    // Expect auxfield to still contain FILL_VALUE values.
+    PetscErrorCode err;
+    const PylithReal tolerance = 1.0e-6;
+
+    PylithReal min = 0;
+    err = VecMin(_field->localVector(), NULL, &min);CPPUNIT_ASSERT(!err);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Auxiliary field values don't match FILL_VALUE value.", FILL_VALUE, min, abs(FILL_VALUE*tolerance));
+
+    PylithReal max = 0.0;
+    err = VecMax(_field->localVector(), NULL, &max);CPPUNIT_ASSERT(!err);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Auxiliary field values don't match FILL_VALUE value.", FILL_VALUE, max, abs(FILL_VALUE*tolerance));
 
     PYLITH_METHOD_END;
-} // testDBQueryGeneric
+} // testQuery
 
 // ----------------------------------------------------------------------
 // Test validatorPositive().
 void
-pylith::topology::TestFieldQuery::testValidatorPositive(void)
-{ // testValidatorPositive
+pylith::topology::TestFieldQuery::testValidatorPositive(void) {
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Test not implemented.", false);
+    CPPUNIT_ASSERT(0 < strlen(pylith::topology::FieldQuery::validatorPositive(-1.0)));
+    CPPUNIT_ASSERT(0 < strlen(pylith::topology::FieldQuery::validatorPositive(0.0)));
+    CPPUNIT_ASSERT(0 == strlen(pylith::topology::FieldQuery::validatorPositive(1.0)));
 
     PYLITH_METHOD_END;
 } // testValidatorPositive
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::TestFieldQuery::_initialize(void)
-{ // _initialize
+pylith::topology::TestFieldQuery::_initialize(void) {
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_data);
 
@@ -175,46 +214,25 @@ pylith::topology::TestFieldQuery::_initialize(void)
     }   // for
 
     delete _mesh; _mesh = new Mesh; CPPUNIT_ASSERT(_mesh);
-    pylith::meshio::MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners,
-                                           cellDim);
+    pylith::meshio::MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, cellDim);
 
-    spatialdata::geocoords::CSCart cs;
-    cs.setSpaceDim(spaceDim);
-    cs.initialize();
-    _mesh->coordsys(&cs);
+    CPPUNIT_ASSERT(_data->cs);
+    _mesh->coordsys(_data->cs);
 
     // Setup field
-    delete _field; _field = new Field(*_mesh);
-    _field->label("solution");
-    _field->subfieldAdd(_data->descriptionA, _data->discretizationA);
-    _field->subfieldAdd(_data->descriptionB, _data->discretizationB);
-    _field->subfieldsSetup();
-
-    // Allocate field.
-    _field->allocate();
-
-    // Populate with values.
-    PetscDM dmMesh = _mesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
-    Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
-    const PylithInt vStart = depthStratum.begin();
-    const PylithInt vEnd = depthStratum.end();
-
-    VecVisitorMesh fieldVisitor(*_field);
-    const PylithInt fiberDim = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
-    PetscScalar* fieldArray = fieldVisitor.localArray();
-    for (PylithInt v = vStart, indexA = 0, indexB = 0; v < vEnd; ++v) {
-        // Set values for field A
-        const PylithInt offA = fieldVisitor.sectionOffset(v);
-        CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
-        for (size_t d = 0; d < _data->descriptionA.numComponents; ++d) {
-            fieldArray[offA+d] = _data->subfieldAValues[indexA++];
-        } // for
-          // Set values for field B
-        const PylithInt offB = offA + _data->descriptionA.numComponents;
-        for (size_t d = 0; d < _data->descriptionB.numComponents; ++d) {
-            fieldArray[offB+d] = _data->subfieldBValues[indexB++];
-        } // for
+    delete _field; _field = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_field);
+    _field->label("auxiliary test field");
+    for (int i = 0; i < _data->numAuxSubfields; ++i) {
+        CPPUNIT_ASSERT(_data->auxDescriptions);
+        CPPUNIT_ASSERT(_data->auxDiscretizations);
+        _field->subfieldAdd(_data->auxDescriptions[i], _data->auxDiscretizations[i]);
     } // for
+    _field->subfieldsSetup();
+    _field->allocate();
+    PetscErrorCode err;
+    err = VecSet(_field->localVector(), FILL_VALUE); CPPUNIT_ASSERT(!err);
+
+    delete _query; _query = new pylith::topology::FieldQuery(*_field);
 
     PYLITH_METHOD_END;
 } // _initialize
@@ -228,17 +246,30 @@ pylith::topology::TestFieldQuery_Data::TestFieldQuery_Data(void) :
     numCorners(0),
     cells(NULL),
     coordinates(NULL),
-
-    subfieldAValues(NULL),
-    subfieldBValues(NULL)
+    cs(new spatialdata::geocoords::CSCart),
+    normalizer(new spatialdata::units::Nondimensional),
+    numAuxSubfields(0),
+    auxSubfields(NULL),
+    auxDescriptions(NULL),
+    auxDiscretizations(NULL),
+    auxDB(new spatialdata::spatialdb::UserFunctionDB)
 {   // constructor
 }   // constructor
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::topology::TestFieldQuery_Data::~TestFieldQuery_Data(void)
-{   // destructor
+pylith::topology::TestFieldQuery_Data::~TestFieldQuery_Data(void) {
+    cells = NULL; // Assigned from const.
+    coordinates = NULL; // Assigned from const.
+
+    delete cs; cs = NULL;
+    delete normalizer; normalizer = NULL;
+
+    auxSubfields = NULL; // Assigned from const.
+    auxDescriptions = NULL; // Assigned from const.
+    auxDiscretizations = NULL; // Assigned from const.
+    delete auxDB; auxDB = NULL;
 }   // destructor
 
 

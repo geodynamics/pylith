@@ -20,86 +20,137 @@
 
 #include "TestFieldQuery.hh" // Implementation of class methods
 
+#include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 // -----------------------------------------------------------------------------
 namespace pylith {
     namespace topology {
+        class TestFieldQuery_DispTemp;
 
-        // ---------------------------------------------------------------------
-        class TestFieldQuery_Quad : public TestFieldQuery {
-
-            CPPUNIT_TEST_SUB_SUITE(TestFieldQuery_Quad, TestFieldQuery);
-            CPPUNIT_TEST_SUITE_END();
-
-            void setUp(void) {
-                TestFieldQuery::setUp();
-
-                // Mesh information.
-                _data->cellDim = 2;
-                _data->numVertices = 4;
-                _data->numCells = 1;
-                _data->numCorners = 4;
-                static const int _cells[1*4] = {
-                    0, 1, 2, 3,
-                };
-                _data->cells = const_cast<int*>(_cells);
-                static const PylithScalar _coordinates[4*2] = {
-                    0.0, 0.0,
-                    1.0, 0.0,
-                    0.0, 1.0,
-                    1.0, 1.0,
-                };
-                _data->coordinates = const_cast<PylithScalar*>(_coordinates);
-
-                // Subfield A
-                _data->descriptionA.label = "displacement";
-                _data->descriptionA.vectorFieldType = FieldBase::VECTOR;
-                _data->descriptionA.scale = 2.0;
-                _data->descriptionA.numComponents = 2;
-                _data->descriptionA.componentNames.resize(2);
-                _data->descriptionA.componentNames[0] = "displacement_x";
-                _data->descriptionA.componentNames[1] = "displacement_y";
-                _data->descriptionA.validator = NULL;
-
-                _data->discretizationA.basisOrder = 1;
-                _data->discretizationA.quadOrder = 1;
-                _data->discretizationA.isBasisContinuous = true;
-                _data->discretizationA.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
-                static const PylithScalar _subfieldAValues[4*2] = {
-                    1.1, 1.2,
-                    2.1, 2.2,
-                    3.1, 3.2,
-                    4.1, 4.2,
-                };
-                _data->subfieldAValues = const_cast<PylithScalar*>(_subfieldAValues);
-
-                // Subfield B
-                _data->descriptionB.label = "fluid_pressure";
-                _data->descriptionB.vectorFieldType = FieldBase::SCALAR;
-                _data->descriptionB.scale = 0.1;
-                _data->descriptionB.numComponents = 1;
-                _data->descriptionB.componentNames.resize(1);
-                _data->descriptionB.componentNames[0] = "fluid_pressure";
-                _data->descriptionB.validator = NULL;
-
-                _data->discretizationB.basisOrder = 1;
-                _data->discretizationB.quadOrder = 1;
-                _data->discretizationB.isBasisContinuous = true;
-                _data->discretizationB.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
-                static const PylithScalar _subfieldBValues[4*1] = {
-                    1.3,
-                    2.3,
-                    3.3,
-                    4.3,
-                };
-                _data->subfieldBValues = const_cast<PylithScalar*>(_subfieldBValues);
-            }   // setUp
+        class TestFieldQuery_Quad;
+    } // topologyfwd
+} // pylith
 
 
-        };  // TestFieldQuery_Quad
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestFieldQuery_Quad);
+// ---------------------------------------------------------------------
+class pylith::topology::TestFieldQuery_DispTemp : public pylith::topology::TestFieldQuery {
 
-    }   // topology
-}   // pylith
+    // Spatial database user functions for auxiliary subfields.
+    static const char* disp_units(void) {
+        return "m";
+    }
+    static const char* temp_units(void) {
+        return "K";
+    }
+
+    static double disp_x(const double x,
+                         const double y) {
+        return 1.0 + 2.4*x + 3.2*y;
+    } // disp_x
+    static double disp_y(const double x,
+                         const double y) {
+        return 0.4 - 0.1*x + 0.6*y;
+    } // disp_y
+    static double temp(const double x,
+                       const double y) {
+        return 20.0 + 0.1*x*x + 0.3*x*y -0.2*y*y;
+    } // temp
+
+
+protected:
+
+    void setUp(void) {
+        TestFieldQuery::setUp();
+
+        CPPUNIT_ASSERT(_data->normalizer);
+        _data->normalizer->lengthScale(1000.0);
+        _data->normalizer->timeScale(10.0);
+        _data->normalizer->pressureScale(0.1);
+        _data->normalizer->densityScale(2.0);
+
+        _data->numAuxSubfields = 2;
+        static const char* auxSubfields[2] = { "displacement", "temperature" };
+        _data->auxSubfields = const_cast<const char**>(auxSubfields);
+        static const char* displacementComponents[2] = { "displacement_x", "displacement_y" };
+        static const char* temperatureComponents[1] = {"temperature"};
+        static const pylith::topology::Field::Description auxDescriptions[2] = {
+            { // displacement
+                "displacement", // label
+                "displacement", // alias
+                pylith::topology::Field::VECTOR, // vectorFieldType
+                pylith::string_vector(displacementComponents, displacementComponents+2),
+                2,
+                1000.0,
+                NULL,
+            }, // displacement
+            { // temperature
+                "temperature", // label
+                "temperature", // alias
+                pylith::topology::Field::SCALAR, // vectorFieldType
+                pylith::string_vector(temperatureComponents, temperatureComponents+1),
+                1,
+                1.0,
+                NULL,
+            }, // temperature
+        };
+        _data->auxDescriptions = const_cast<pylith::topology::Field::Description*>(auxDescriptions);
+
+        static const pylith::topology::Field::Discretization auxDiscretizations[2] = {
+            {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // displacement
+            {2, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // temperature
+        };
+        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(auxDiscretizations);
+
+        CPPUNIT_ASSERT(_data->auxDB);
+        _data->auxDB->addValue("displacement_x", disp_x, disp_units());
+        _data->auxDB->addValue("displacement_y", disp_x, disp_units());
+        _data->auxDB->addValue("temperature", temp, temp_units());
+    }   // setUp
+
+}; // TestFieldQuery_DispTemp
+
+// ---------------------------------------------------------------------
+class pylith::topology::TestFieldQuery_Quad : public pylith::topology::TestFieldQuery_DispTemp {
+
+    // Spatial database user functions for auxiliary subfields.
+
+protected:
+    CPPUNIT_TEST_SUB_SUITE(TestFieldQuery_Quad, TestFieldQuery);
+    CPPUNIT_TEST_SUITE_END();
+
+    void setUp(void) {
+        TestFieldQuery_DispTemp::setUp();
+
+        // Mesh information.
+        _data->cellDim = 2;
+        _data->numVertices = 4;
+        _data->numCells = 1;
+        _data->numCorners = 4;
+        static const int _cells[1*4] = {
+            0, 1, 2, 3,
+        };
+        _data->cells = const_cast<int*>(_cells);
+        static const PylithScalar _coordinates[4*2] = {
+            0.0, 0.0,
+            1.0, 0.0,
+            0.0, 1.0,
+            1.0, 1.0,
+        };
+        _data->coordinates = const_cast<PylithScalar*>(_coordinates);
+
+        CPPUNIT_ASSERT(_data->cs);
+        _data->cs->setSpaceDim(2);
+        _data->cs->initialize();
+
+        _data->auxDB->coordsys(*_data->cs);
+    }   // setUp
+
+
+};  // TestFieldQuery_Quad
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestFieldQuery_Quad);
 
 
 // End of file

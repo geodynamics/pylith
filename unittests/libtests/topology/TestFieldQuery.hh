@@ -27,10 +27,15 @@
 
 // Include directives ---------------------------------------------------
 #include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::VectorFieldType
+
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
+#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
+#include "spatialdata/units/unitsfwd.hh" // HOLDSA Nondimensional
 
 // Forward declarations -------------------------------------------------
 /// Namespace for pylith package
@@ -43,7 +48,7 @@ namespace pylith {
 
 // TestFieldQuery -------------------------------------------------------------
 /// C++ unit testing for Field.
-class pylith::topology::TestFieldQuery : public CppUnit::TestFixture {
+class pylith::topology::TestFieldQuery : public CppUnit::TestFixture, public pylith::utils::GenericComponent {
 
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestFieldQuery);
@@ -52,7 +57,7 @@ class pylith::topology::TestFieldQuery : public CppUnit::TestFixture {
     CPPUNIT_TEST(testQueryFn);
     CPPUNIT_TEST(testOpenClose);
     CPPUNIT_TEST(testQuery);
-    CPPUNIT_TEST(testDBQueryGeneric);
+    CPPUNIT_TEST(testQueryNull);
     CPPUNIT_TEST(testValidatorPositive);
 
     CPPUNIT_TEST_SUITE_END();
@@ -72,14 +77,14 @@ public:
     /// Test queryFn().
     void testQueryFn(void);
 
-    /// Test openDB(), closeDB()..
+    /// Test openDB(), closeDB().
     void testOpenClose(void);
 
     /// Test queryDB().
     void testQuery(void);
 
-    /// Test dbQueryGeneric.
-    void testDBQueryGeneric(void);
+    /// Test queryDB() with NULL database.
+    void testQueryNull(void);
 
     /// Test validatorPositive().
     void testValidatorPositive(void);
@@ -94,9 +99,11 @@ private:
 protected:
 
     TestFieldQuery_Data* _data; ///< Data for testing.
-    Mesh* _mesh; ///< Finite-element mesh.
-    Field* _field; ///< Field associated with mesh.
-    FieldQuery* _query; ///< Test field query associated with field.
+    pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
+    pylith::topology::Field* _field; ///< Field associated with mesh.
+    pylith::topology::FieldQuery* _query; ///< Test field query associated with field.
+
+    static const double FILL_VALUE; ///< Fill value for auxiliary field.
 
 }; // class TestFieldQuery
 
@@ -121,40 +128,19 @@ public:
     int numVertices; ///< Number of vertices.
     int numCells;   ///< Number of cells.
     int numCorners; ///< Number of vertices per cell.
-    int* cells; ///< Array of vertices in cells [numCells*numCorners].
-    PylithScalar* coordinates;  ///< Coordinates of vertices [numVertices*cellDim].
+    const int* cells; ///< Array of vertices in cells [numCells*numCorners].
+    const PylithScalar* coordinates;  ///< Coordinates of vertices [numVertices*cellDim].
+    spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
+    spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
     /// @}
 
-    /// @defgroup Subfield A information.
+    /// @defgroup SUbfield discretization information
     /// @{
-    pylith::topology::FieldBase::Description descriptionA; ///< Description of subfield A.
-    pylith::topology::FieldBase::Discretization discretizationA; ///< Discretization of subfield A.
-    PylithScalar* subfieldAValues; ///< Array of values to for subfield A.
-
-#if 0 // Not used
-    const char* bcALabel; ///< Label for boundary condition.
-    int bcALabelId; ///< Label id for boundary condition.
-    int bcANumConstrainedDOF; ///< Number of constrained DOF for boundary condition.
-    int* bcAConstrainedDOF; ///< Array of constrained DOF.
-    int bcANumVertices; ///< Number of vertices assocaited with boundary condition.
-    int* bcAVertices; ///< Array of vertex indices.
-#endif
-    /// @}
-
-    /// @defgroup Subfield B information.
-    /// @{
-    pylith::topology::FieldBase::Description descriptionB; ///< Description of subfield B.
-    pylith::topology::FieldBase::Discretization discretizationB; ///< Discretization of subfield B.
-    PylithScalar* subfieldBValues; ///< Array of values for subfield B.
-
-#if 0 // Not used
-    const char* bcBLabel; ///< Label for boundary condition.
-    int bcBLabelId; ///< Label id for boundary condition.
-    int bcBNumConstrainedDOF; ///< Number of constrained DOF for boundary condition.
-    int* bcBConstrainedDOF; ///< Array of constrained DOF.
-    int bcBNumVertices; ///< Number of vertices assocaited with boundary condition.
-    int* bcBVertices; ///< Array of vertex indices.
-#endif
+    int numAuxSubfields; ///< Number of auxiliary subfields.
+    const char** auxSubfields; ///< Names of auxiliary subfields.
+    pylith::topology::FieldBase::Description* auxDescriptions; ///< Descriptions for auxiliary subfields.
+    pylith::topology::FieldBase::Discretization* auxDiscretizations; ///< Discretizations for auxiliary subfields.
+    spatialdata::spatialdb::UserFunctionDB* auxDB; ///< Spatial database with auxiliary field.
     /// @}
 
 };  // TestFieldQuery_Data
