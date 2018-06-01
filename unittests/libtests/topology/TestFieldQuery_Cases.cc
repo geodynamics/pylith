@@ -77,7 +77,7 @@ protected:
         static const char* displacementComponents[2] = { "displacement_x", "displacement_y" };
         static const char* temperatureComponents[1] = {"temperature"};
         static const pylith::topology::Field::Description auxDescriptions[2] = {
-            { // displacement
+            {
                 "displacement", // label
                 "displacement", // alias
                 pylith::topology::Field::VECTOR, // vectorFieldType
@@ -85,8 +85,7 @@ protected:
                 2,
                 1000.0,
                 NULL,
-            }, // displacement
-            { // temperature
+            },{
                 "temperature", // label
                 "temperature", // alias
                 pylith::topology::Field::SCALAR, // vectorFieldType
@@ -94,7 +93,7 @@ protected:
                 1,
                 1.0,
                 NULL,
-            }, // temperature
+            },
         };
         _data->auxDescriptions = const_cast<pylith::topology::Field::Description*>(auxDescriptions);
 
@@ -106,7 +105,7 @@ protected:
 
         CPPUNIT_ASSERT(_data->auxDB);
         _data->auxDB->addValue("displacement_x", disp_x, disp_units());
-        _data->auxDB->addValue("displacement_y", disp_x, disp_units());
+        _data->auxDB->addValue("displacement_y", disp_y, disp_units());
         _data->auxDB->addValue("temperature", temp, temp_units());
     }   // setUp
 
@@ -126,18 +125,21 @@ protected:
 
         // Mesh information.
         _data->cellDim = 2;
-        _data->numVertices = 4;
-        _data->numCells = 1;
+        _data->numVertices = 6;
+        _data->numCells = 2;
         _data->numCorners = 4;
-        static const int _cells[1*4] = {
-            0, 1, 2, 3,
+        static const int _cells[2*4] = {
+            0, 1, 3, 2,
+            5, 3, 1, 4,
         };
         _data->cells = const_cast<int*>(_cells);
-        static const PylithScalar _coordinates[4*2] = {
+        static const PylithScalar _coordinates[6*2] = {
             0.0, 0.0,
             1.0, 0.0,
             0.0, 1.0,
             1.0, 1.0,
+            1.8, 0.4,
+            1.9, 1.5,
         };
         _data->coordinates = const_cast<PylithScalar*>(_coordinates);
 

@@ -25,6 +25,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "pylith/meshio/MeshBuilder.hh" // Uses MeshBuilder
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
@@ -139,7 +140,31 @@ void
 pylith::topology::TestFieldQuery::testQuery(void) {
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Test not implemented.", false);
+    _initialize();
+    CPPUNIT_ASSERT(_query);
+    CPPUNIT_ASSERT(_field);
+
+    _query->initializeWithDefaultQueryFns();
+
+    CPPUNIT_ASSERT(_data);
+    CPPUNIT_ASSERT(_data->normalizer);
+    _query->openDB(_data->auxDB, _data->normalizer->lengthScale());
+    _query->queryDB();
+    _query->closeDB(_data->auxDB);
+
+    _field->view("FIELD"); // :DEBUG:
+
+    // Compute difference with respect to direct queries to database.
+    // Unfortunately, this also uses a FieldQuery object.
+    PylithReal norm = 0.0;
+    const PylithReal t = 0.0;
+    pylith::topology::FieldQuery query(*_field);
+    query.initializeWithDefaultQueryFns();
+    query.openDB(_data->auxDB, _data->normalizer->lengthScale());
+    PetscErrorCode err = DMPlexComputeL2DiffLocal(_field->dmMesh(), t, query.functions(), (void**)query.contextPtrs(), _field->localVector(), &norm); CPPUNIT_ASSERT(!err);
+    query.closeDB(_data->auxDB);
+    const PylithReal tolerance = 1.0e-6;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
 
     PYLITH_METHOD_END;
 } // testQuery
@@ -159,7 +184,7 @@ pylith::topology::TestFieldQuery::testQueryNull(void) {
     _query->queryDB();
     _query->closeDB(NULL);
 
-    _field->view("FIELD");
+    //_field->view("FIELD"); // :DEBUG:
 
     // Expect auxfield to still contain FILL_VALUE values.
     PetscErrorCode err;
@@ -218,6 +243,8 @@ pylith::topology::TestFieldQuery::_initialize(void) {
 
     CPPUNIT_ASSERT(_data->cs);
     _mesh->coordsys(_data->cs);
+    CPPUNIT_ASSERT(_data->normalizer);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
     // Setup field
     delete _field; _field = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_field);

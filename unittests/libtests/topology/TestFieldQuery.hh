@@ -130,6 +130,7 @@ public:
     int numCorners; ///< Number of vertices per cell.
     const int* cells; ///< Array of vertices in cells [numCells*numCorners].
     const PylithScalar* coordinates;  ///< Coordinates of vertices [numVertices*cellDim].
+
     spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
     spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
     /// @}
