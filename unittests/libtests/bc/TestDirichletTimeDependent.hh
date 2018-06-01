@@ -33,7 +33,7 @@
 #include "pylith/bc/bcfwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
-#include "pylith/topology/Field.hh" // HOLDSA Discretization
+#include "pylith/topology/Field.hh" // HOLDSA Field
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
 #include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
@@ -44,7 +44,6 @@
 namespace pylith {
     namespace bc {
         class TestDirichletTimeDependent;
-
         class TestDirichletTimeDependent_Data;
     } // bc
 } // pylith

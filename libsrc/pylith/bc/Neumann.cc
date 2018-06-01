@@ -175,23 +175,10 @@ pylith::bc::Neumann::initialize(const pylith::topology::Field& solution) {
     pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
     factory->initializeSubfields();
 
-    _auxField->view("AUXILIARY FIELD"); // :DEBUG:
+    //_auxField->view("AUXILIARY FIELD"); // :DEBUG:
     if (_output) {
         _output->writeInfo(*_auxField);
     } // if
-
-#if 0 // Use low-level function to set kernels
-    const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
-    PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
-
-    // :TODO: @brad @matt Expect this to need updating once we associate point functions with a domain.
-    void* context = NULL;
-    const int labelId = 1;
-    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
-    err = PetscDSAddBoundary(prob, DM_BC_NATURAL, label(), label(), info.index, 0, NULL,
-                             NULL, 1, &labelId, context); PYLITH_CHECK_ERROR(err);
-#endif
 
     PYLITH_METHOD_END;
 } // initialize
@@ -236,7 +223,7 @@ pylith::bc::Neumann::computeRHSResidual(pylith::topology::Field* residual,
     const int labelId = 1;
     const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
 
-    solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
+    //solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
 
     PYLITH_COMPONENT_DEBUG("DMPlexComputeBdResidualSingle() for boundary '"<<label()<<"')");
     err = DMPlexComputeBdResidualSingle(dmSoln, t, dmLabel, 1, &labelId, info.index, solution.localVector(), solutionDot.localVector(), residual->localVector()); PYLITH_CHECK_ERROR(err);

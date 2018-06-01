@@ -290,7 +290,7 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void)
 
     _bc->initialize(*_solution);
 
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
     _bc->_boundaryMesh->view("::ascii_info_detail"); // :DEBUG:
     _bc->auxField().view("AUXILIARY FIELD"); // :DEBUG:
 
@@ -413,7 +413,13 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void)
     query.closeDB(_data->solnDB);
     _solution->scatterContextToLocal("global", INSERT_VALUES);
 
-    //_solution->view("SOLUTION ALL"); // :DEBUG:
+#if 0 // :DEBUG:
+    _bc->_boundaryMesh->view("::ascii_info_detail"); // :DEBUG:
+    _solution->view("SOLUTION ALL"); // :DEBUG:
+
+    PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "1"); // :DEBUG:
+    DMSetFromOptions(_solution->dmMesh()); // :DEBUG:
+#endif // :DEBUG:
 
     PylithReal norm = 0.0;
     query.openDB(_data->solnDB, _data->normalizer->lengthScale());
