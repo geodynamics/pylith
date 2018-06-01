@@ -152,7 +152,7 @@ pylith::topology::TestFieldQuery::testQuery(void) {
     _query->queryDB();
     _query->closeDB(_data->auxDB);
 
-    _field->view("FIELD"); // :DEBUG:
+    //_field->view("FIELD"); // :DEBUG:
 
     // Compute difference with respect to direct queries to database.
     // Unfortunately, this also uses a FieldQuery object.
