@@ -204,7 +204,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
     err = DMPlexGetScale(dm, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMPlexSetScale(sdm, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
     mesh->dmMesh(sdm);
-} // createInterpolated
+} // create
 
 // ----------------------------------------------------------------------
 // Form a parallel fault mesh using the cohesive cell information

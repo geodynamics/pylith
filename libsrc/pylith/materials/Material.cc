@@ -356,13 +356,13 @@ pylith::materials::Material::_computeResidual(pylith::topology::Field* residual,
     assert(_auxField);
 
     PetscDS prob = NULL;
-    IS cells;
+    PetscIS cells = NULL;
     PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
 
     PetscDM dmSoln = solution.dmMesh();
     PetscDM dmAux = _auxField->dmMesh();
-    PetscDMLabel dmLabel;
+    PetscDMLabel dmLabel = NULL;
 
     // Pointwise function have been set in DS
     err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
@@ -377,7 +377,7 @@ pylith::materials::Material::_computeResidual(pylith::topology::Field* residual,
     err = DMGetLabel(dmSoln, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
 
-    PYLITH_COMPONENT_DEBUG("DMPlexComputeResidual_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<<","<<cEnd<<")");
+    PYLITH_COMPONENT_DEBUG("DMPlexComputeResidual_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<<","<<cEnd<<".");
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cells); PYLITH_CHECK_ERROR(err);
     err = DMPlexComputeResidual_Internal(dmSoln, cells, PETSC_MIN_REAL, solution.localVector(), solutionDot.localVector(), residual->localVector(), NULL); PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&cells); PYLITH_CHECK_ERROR(err);
@@ -402,14 +402,15 @@ pylith::materials::Material::_computeJacobian(PetscMat jacobianMat,
 
     assert(jacobianMat);
     assert(precondMat);
+    assert(_auxField);
 
     PetscDS prob = NULL;
-    IS cells;
+    PetscIS cells = NULL;
     PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
     PetscDM dmMesh = solution.dmMesh();
     PetscDM dmAux = _auxField->dmMesh();
-    PetscDMLabel dmLabel;
+    PetscDMLabel dmLabel = NULL;
 
     // Pointwise function have been set in DS
     err = DMGetDS(dmMesh, &prob); PYLITH_CHECK_ERROR(err);
@@ -423,7 +424,7 @@ pylith::materials::Material::_computeJacobian(PetscMat jacobianMat,
     err = DMGetLabel(dmMesh, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
 
-    PYLITH_COMPONENT_DEBUG("DMPlexComputeJacobian_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<< ","<<cEnd<<")");
+    PYLITH_COMPONENT_DEBUG("DMPlexComputeJacobian_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<< ","<<cEnd<<".");
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cells); PYLITH_CHECK_ERROR(err);
     err = DMPlexComputeJacobian_Internal(dmMesh, cells, t, tshift, solution.localVector(), solutionDot.localVector(), jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&cells); PYLITH_CHECK_ERROR(err);
