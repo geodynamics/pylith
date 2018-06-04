@@ -20,7 +20,6 @@
 
 #include "pylith/fekernels/FaultCohesiveKin.hh"
 
-#include <stdexcept> // USES std::logic_error
 #include <cassert> // USES assert()
 
 /* ======================================================================
@@ -37,26 +36,26 @@
  */
 
 // ----------------------------------------------------------------------
-// g0 function for elasticity equation: g0u = +-\lambda.
+// g0 function for integration of the elasticity equation on positive side of the fault: g0u = -\lambda.
 void
-pylith::fekernels::FaultCohesiveKin::g0u(const PylithInt dim,
-                                         const PylithInt numS,
-                                         const PylithInt numA,
-                                         const PylithInt sOff[],
-                                         const PylithInt sOff_x[],
-                                         const PylithScalar s[],
-                                         const PylithScalar s_t[],
-                                         const PylithScalar s_x[],
-                                         const PylithInt aOff[],
-                                         const PylithInt aOff_x[],
-                                         const PylithScalar a[],
-                                         const PylithScalar a_t[],
-                                         const PylithScalar a_x[],
-                                         const PylithReal t,
-                                         const PylithScalar x[],
-                                         const PylithInt numConstants,
-                                         const PylithScalar constants[],
-                                         PylithScalar g0[]) {
+pylith::fekernels::FaultCohesiveKin::g0u_pos(const PylithInt dim,
+                                             const PylithInt numS,
+                                             const PylithInt numA,
+                                             const PylithInt sOff[],
+                                             const PylithInt sOff_x[],
+                                             const PylithScalar s[],
+                                             const PylithScalar s_t[],
+                                             const PylithScalar s_x[],
+                                             const PylithInt aOff[],
+                                             const PylithInt aOff_x[],
+                                             const PylithScalar a[],
+                                             const PylithScalar a_t[],
+                                             const PylithScalar a_x[],
+                                             const PylithReal t,
+                                             const PylithScalar x[],
+                                             const PylithInt numConstants,
+                                             const PylithScalar constants[],
+                                             PylithScalar g0[]) {
     assert(sOff);
     assert(s);
     assert(g0);
@@ -66,35 +65,70 @@ pylith::fekernels::FaultCohesiveKin::g0u(const PylithInt dim,
     const PylithInt i_lagrange = numS-1;
     const PylithScalar* lagrange = &s[sOff[i_lagrange]];
 
-    throw std::logic_error(":TODO: @matt @brad How to assemble for each side of the fault? -lambda for u+, +lambda for u-");
-
     for (PylithInt i = 0; i < dim; ++i) {
-        g0[i] += lagrange[i];
+        g0[i] += -lagrange[i];
     } // for
-} // f0u
+} // g0u_pos
 
 
 // ----------------------------------------------------------------------
-// g0 function for slip constraint equation: g0\lambda = d - u^+ + u^-.
+// g0 function for integration of the elasticity equation on the negative side of the fault: g0u = +\lambda.
 void
-pylith::fekernels::FaultCohesiveKin::g0l(const PylithInt dim,
-                                         const PylithInt numS,
-                                         const PylithInt numA,
-                                         const PylithInt sOff[],
-                                         const PylithInt sOff_x[],
-                                         const PylithScalar s[],
-                                         const PylithScalar s_t[],
-                                         const PylithScalar s_x[],
-                                         const PylithInt aOff[],
-                                         const PylithInt aOff_x[],
-                                         const PylithScalar a[],
-                                         const PylithScalar a_t[],
-                                         const PylithScalar a_x[],
-                                         const PylithReal t,
-                                         const PylithScalar x[],
-                                         const PylithInt numConstants,
-                                         const PylithScalar constants[],
-                                         PylithScalar g0[]) {
+pylith::fekernels::FaultCohesiveKin::g0u_neg(const PylithInt dim,
+                                             const PylithInt numS,
+                                             const PylithInt numA,
+                                             const PylithInt sOff[],
+                                             const PylithInt sOff_x[],
+                                             const PylithScalar s[],
+                                             const PylithScalar s_t[],
+                                             const PylithScalar s_x[],
+                                             const PylithInt aOff[],
+                                             const PylithInt aOff_x[],
+                                             const PylithScalar a[],
+                                             const PylithScalar a_t[],
+                                             const PylithScalar a_x[],
+                                             const PylithReal t,
+                                             const PylithScalar x[],
+                                             const PylithInt numConstants,
+                                             const PylithScalar constants[],
+                                             PylithScalar g0[]) {
+    assert(sOff);
+    assert(s);
+    assert(g0);
+
+    assert(numS >= 2);
+
+    const PylithInt i_lagrange = numS-1;
+    const PylithScalar* lagrange = &s[sOff[i_lagrange]];
+
+    for (PylithInt i = 0; i < dim; ++i) {
+        g0[i] += +lagrange[i];
+    } // for
+} // g0u_neg
+
+
+// ----------------------------------------------------------------------
+// g0 function for integration of the slip constraint equation on the positive side of the fault:
+// g0\lambda = 0.5*d - u^+.
+void
+pylith::fekernels::FaultCohesiveKin::g0l_pos(const PylithInt dim,
+                                             const PylithInt numS,
+                                             const PylithInt numA,
+                                             const PylithInt sOff[],
+                                             const PylithInt sOff_x[],
+                                             const PylithScalar s[],
+                                             const PylithScalar s_t[],
+                                             const PylithScalar s_x[],
+                                             const PylithInt aOff[],
+                                             const PylithInt aOff_x[],
+                                             const PylithScalar a[],
+                                             const PylithScalar a_t[],
+                                             const PylithScalar a_x[],
+                                             const PylithReal t,
+                                             const PylithScalar x[],
+                                             const PylithInt numConstants,
+                                             const PylithScalar constants[],
+                                             PylithScalar g0[]) {
     assert(sOff);
     assert(aOff);
     assert(s);
@@ -108,87 +142,191 @@ pylith::fekernels::FaultCohesiveKin::g0l(const PylithInt dim,
     const PylithScalar* slip = &a[aOff[i_slip]];
 
     const PylithInt i_disp = 0;
-    const PylithScalar* dispPos = &s[sOff[i_disp]];
-    const PylithScalar* dispNeg = dispPos;
-
-    throw std::logic_error(":TODO: @matt @brad How to get displacements for each side of the fault?");
+    const PylithScalar* disp = &s[sOff[i_disp]];
 
     for (PylithInt i = 0; i < dim; ++i) {
-        g0[i] += slip[i] - dispPos[i] + dispNeg[i];
+        g0[i] += 0.5*slip[i] - disp[i];
     } // for
-} // f0v
+} // g0v_pos
 
 
 // ----------------------------------------------------------------------
-/* Jg0 function for displacement equation.
+// g0 function for integration of the slip constraint equation on the positive side of the fault:
+// g0\lambda = 0.5*d+- u^-.
+void
+pylith::fekernels::FaultCohesiveKin::g0l_neg(const PylithInt dim,
+                                             const PylithInt numS,
+                                             const PylithInt numA,
+                                             const PylithInt sOff[],
+                                             const PylithInt sOff_x[],
+                                             const PylithScalar s[],
+                                             const PylithScalar s_t[],
+                                             const PylithScalar s_x[],
+                                             const PylithInt aOff[],
+                                             const PylithInt aOff_x[],
+                                             const PylithScalar a[],
+                                             const PylithScalar a_t[],
+                                             const PylithScalar a_x[],
+                                             const PylithReal t,
+                                             const PylithScalar x[],
+                                             const PylithInt numConstants,
+                                             const PylithScalar constants[],
+                                             PylithScalar g0[]) {
+    assert(sOff);
+    assert(aOff);
+    assert(s);
+    assert(a);
+    assert(g0);
+
+    assert(numS >= 2);
+
+    assert(numA >= 1);
+    const PylithInt i_slip = numA-1;
+    const PylithScalar* slip = &a[aOff[i_slip]];
+
+    const PylithInt i_disp = 0;
+    const PylithScalar* disp = &s[sOff[i_disp]];
+
+    for (PylithInt i = 0; i < dim; ++i) {
+        g0[i] += 0.5*slip[i] + disp[i];
+    } // for
+} // g0v_neg
+
+
+// ----------------------------------------------------------------------
+/* Jg0 function for integration of the displacement equation on the positive side of the fault.
  *
  * Solution fields = [disp(dim), ..., lagrange(dim)]
  * Auxiliary fields = None
  */
 void
-pylith::fekernels::FaultCohesiveKin::Jg0ul(const PylithInt dim,
-                                           const PylithInt numS,
-                                           const PylithInt numA,
-                                           const PylithInt sOff[],
-                                           const PylithInt sOff_x[],
-                                           const PylithScalar s[],
-                                           const PylithScalar s_t[],
-                                           const PylithScalar s_x[],
-                                           const PylithInt aOff[],
-                                           const PylithInt aOff_x[],
-                                           const PylithScalar a[],
-                                           const PylithScalar a_t[],
-                                           const PylithScalar a_x[],
-                                           const PylithReal t,
-                                           const PylithReal utshift,
-                                           const PylithScalar x[],
-                                           const PylithInt numConstants,
-                                           const PylithScalar constants[],
-                                           PylithScalar Jg0[]) {
+pylith::fekernels::FaultCohesiveKin::Jg0ul_pos(const PylithInt dim,
+                                               const PylithInt numS,
+                                               const PylithInt numA,
+                                               const PylithInt sOff[],
+                                               const PylithInt sOff_x[],
+                                               const PylithScalar s[],
+                                               const PylithScalar s_t[],
+                                               const PylithScalar s_x[],
+                                               const PylithInt aOff[],
+                                               const PylithInt aOff_x[],
+                                               const PylithScalar a[],
+                                               const PylithScalar a_t[],
+                                               const PylithScalar a_x[],
+                                               const PylithReal t,
+                                               const PylithReal utshift,
+                                               const PylithScalar x[],
+                                               const PylithInt numConstants,
+                                               const PylithScalar constants[],
+                                               PylithScalar Jg0[]) {
     assert(numS >= 2);
 
-    throw std::logic_error(":TODO: @matt @brad How to assemble for each side of the fault? -1 for u+, +1 for u-");
-
     for (PylithInt i = 0; i < dim; ++i) {
-        Jg0[i*dim+i] += 1.0;
+        Jg0[i*dim+i] += -1.0;
     } // for
-} // Jg0ul
+} // Jg0ul_pos
 
 
 // ----------------------------------------------------------------------
-/* Jg0 function for slip constraint equation.
+/* Jg0 function for integration of the displacement equation on the negative side of the fault.
  *
  * Solution fields = [disp(dim), ..., lagrange(dim)]
  * Auxiliary fields = None
  */
 void
-pylith::fekernels::FaultCohesiveKin::Jg0lu(const PylithInt dim,
-                                           const PylithInt numS,
-                                           const PylithInt numA,
-                                           const PylithInt sOff[],
-                                           const PylithInt sOff_x[],
-                                           const PylithScalar s[],
-                                           const PylithScalar s_t[],
-                                           const PylithScalar s_x[],
-                                           const PylithInt aOff[],
-                                           const PylithInt aOff_x[],
-                                           const PylithScalar a[],
-                                           const PylithScalar a_t[],
-                                           const PylithScalar a_x[],
-                                           const PylithReal t,
-                                           const PylithReal utshift,
-                                           const PylithScalar x[],
-                                           const PylithInt numConstants,
-                                           const PylithScalar constants[],
-                                           PylithScalar Jg0[]) {
+pylith::fekernels::FaultCohesiveKin::Jg0ul_neg(const PylithInt dim,
+                                               const PylithInt numS,
+                                               const PylithInt numA,
+                                               const PylithInt sOff[],
+                                               const PylithInt sOff_x[],
+                                               const PylithScalar s[],
+                                               const PylithScalar s_t[],
+                                               const PylithScalar s_x[],
+                                               const PylithInt aOff[],
+                                               const PylithInt aOff_x[],
+                                               const PylithScalar a[],
+                                               const PylithScalar a_t[],
+                                               const PylithScalar a_x[],
+                                               const PylithReal t,
+                                               const PylithReal utshift,
+                                               const PylithScalar x[],
+                                               const PylithInt numConstants,
+                                               const PylithScalar constants[],
+                                               PylithScalar Jg0[]) {
     assert(numS >= 2);
 
-    throw std::logic_error(":TODO: @matt @brad How to assemble for each side of the fault? -1 for u+, +1 for u-");
+    for (PylithInt i = 0; i < dim; ++i) {
+        Jg0[i*dim+i] += +1.0;
+    } // for
+} // Jg0ul_neg
+
+
+// ----------------------------------------------------------------------
+/* Jg0 function for integration of the slip constraint equation on the positive side of the fault.
+ *
+ * Solution fields = [disp(dim), ..., lagrange(dim)]
+ * Auxiliary fields = None
+ */
+void
+pylith::fekernels::FaultCohesiveKin::Jg0lu_pos(const PylithInt dim,
+                                               const PylithInt numS,
+                                               const PylithInt numA,
+                                               const PylithInt sOff[],
+                                               const PylithInt sOff_x[],
+                                               const PylithScalar s[],
+                                               const PylithScalar s_t[],
+                                               const PylithScalar s_x[],
+                                               const PylithInt aOff[],
+                                               const PylithInt aOff_x[],
+                                               const PylithScalar a[],
+                                               const PylithScalar a_t[],
+                                               const PylithScalar a_x[],
+                                               const PylithReal t,
+                                               const PylithReal utshift,
+                                               const PylithScalar x[],
+                                               const PylithInt numConstants,
+                                               const PylithScalar constants[],
+                                               PylithScalar Jg0[]) {
+    assert(numS >= 2);
 
     for (PylithInt i = 0; i < dim; ++i) {
-        Jg0[i*dim+i] += 1.0;
+        Jg0[i*dim+i] += -1.0;
     } // for
-} // Jg0ul
+} // Jg0lu_pos
+
+
+// ----------------------------------------------------------------------
+/* Jg0 function for integration of the slip constraint equation on the negative side of the fault.
+ *
+ * Solution fields = [disp(dim), ..., lagrange(dim)]
+ * Auxiliary fields = None
+ */
+void
+pylith::fekernels::FaultCohesiveKin::Jg0lu_neg(const PylithInt dim,
+                                               const PylithInt numS,
+                                               const PylithInt numA,
+                                               const PylithInt sOff[],
+                                               const PylithInt sOff_x[],
+                                               const PylithScalar s[],
+                                               const PylithScalar s_t[],
+                                               const PylithScalar s_x[],
+                                               const PylithInt aOff[],
+                                               const PylithInt aOff_x[],
+                                               const PylithScalar a[],
+                                               const PylithScalar a_t[],
+                                               const PylithScalar a_x[],
+                                               const PylithReal t,
+                                               const PylithReal utshift,
+                                               const PylithScalar x[],
+                                               const PylithInt numConstants,
+                                               const PylithScalar constants[],
+                                               PylithScalar Jg0[]) {
+    assert(numS >= 2);
+
+    for (PylithInt i = 0; i < dim; ++i) {
+        Jg0[i*dim+i] += +1.0;
+    } // for
+} // Jg0lu_neg
 
 
 // End of file

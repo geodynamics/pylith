@@ -166,6 +166,33 @@ protected:
      */
     void _auxFieldSetup(void);
 
+    /** Set pointwise functions for computing contributions of the positive
+     * side of the fault to the RHS residual.
+     *
+     * @param[in] solution Solution field.
+     */
+    void _setFEKernelsRHSResidualFaultPositive(const pylith::topology::Field& solution);
+
+    /** Set pointwise functions for computing contributions of the positive
+     * side of the fault to the RHS residual.
+     *
+     * @param[in] solution Solution field.
+     */
+    void _setFEKernelsRHSResidualFaultNegative(const pylith::topology::Field& solution);
+
+    /** Set pointwise functions for computing contributions of the positive
+     * side of the fault to the RHS Jacobian.
+     *
+     * @param[in] solution Solution field.
+     */
+    void _setFEKernelsRHSJacobianFaultPositive(const pylith::topology::Field& solution);
+
+    /** Set pointwise functions for computing contributions of the positive
+     * side of the fault to the RHS Jacobian.
+     *
+     * @param[in] solution Solution field.
+     */
+    void _setFEKernelsRHSJacobianFaultNegative(const pylith::topology::Field& solution);
 
     // PRIVATE TYPEDEFS ///////////////////////////////////////////////////
 private:
