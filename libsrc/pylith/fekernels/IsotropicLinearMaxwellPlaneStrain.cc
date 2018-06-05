@@ -668,8 +668,8 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::computeViscousStrain(const
     const PylithScalar devStrainT[4] = {
         totalStrain[0] - meanStrainT,
         totalStrain[1] - meanStrainT,
-        totalStrain[3] - meanStrainT,
-        totalStrain[2]
+        totalStrain[2] - meanStrainT,
+        totalStrain[3]
     };
 
     for (int iComp = 0; iComp < 4; ++iComp) {
