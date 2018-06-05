@@ -184,23 +184,72 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
         return (constants.b*(x+y) + constants.c*(x+y))*exp(-constants.t/maxwellTime(x,y)) + constants.d;
     } // totalStrainUpdate_xy
 
+    // Values needed to compute viscous strain for perturbed solution.
+	static double meanStrainT(const double x,
+							  const double y) {
+		return (totalStrain_xx(x,y) + totalStrain_yy(x,y))/3.0;
+	}
+
+	static double devStrainT_xx(const double x,
+								const double y) {
+		return totalStrain_xx(x,y) - meanStrainT(x,y);
+	}
+
+	static double devStrainT_yy(const double x,
+								const double y) {
+		return totalStrain_yy(x,y) - meanStrainT(x,y);
+	}
+
+	static double devStrainT_zz(const double x,
+								const double y) {
+		return totalStrain_zz(x,y) - meanStrainT(x,y);
+	}
+
+	static double meanStrainTplusDt(const double x,
+									const double y) {
+		return (totalStrainUpdate_xx(x,y) + totalStrainUpdate_yy(x,y))/3.0;
+	}
+
+	static double devStrainTplusDt_xx(const double x,
+									  const double y) {
+		return totalStrainUpdate_xx(x,y) - meanStrainTplusDt(x,y);
+	}
+
+	static double devStrainTplusDt_yy(const double x,
+									  const double y) {
+		return totalStrainUpdate_yy(x,y) - meanStrainTplusDt(x,y);
+	}
+
+	static double devStrainTplusDt_zz(const double x,
+									  const double y) {
+		return totalStrainUpdate_zz(x,y) - meanStrainTplusDt(x,y);
+	}
+
+	static double dq(const double x,
+					 const double y) {
+		return maxwellTime(x,y) * (1.0 - exp(-constants.dt/maxwellTime(x,y)))/constants.dt;
+	}
+	
     // Viscous strain for perturbed solution.
 
     static double viscousStrainUpdate_xx(const double x,
 										 const double y) {
-        return 2.0*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(2.0*x-y) - constants.b*(x-2.0*y) + constants.d * exp(constants.t/maxwellTime(x,y))) * exp(-2.0*constants.t/maxwellTime(x,y))/3.0;
+		return exp(-constants.dt/maxwellTime(x,y)) * viscousStrain_xx(x,y) + dq(x,y) * (devStrainTplusDt_xx(x,y) - devStrainT_xx(x,y));
     } // viscousStrainUpdate_xx
+
     static double viscousStrainUpdate_yy(const double x,
 										 const double y) {
-        return -(exp(constants.t/maxwellTime(x,y)) - 1.0)*(2.0*constants.a*(x-2.0*y) - 2.0*constants.b*(2.0*x-y) + constants.d*exp(constants.t/maxwellTime(x,y))) * exp(-2.0*constants.t/maxwellTime(x,y))/3.0;
+		return exp(-constants.dt/maxwellTime(x,y)) * viscousStrain_yy(x,y) + dq(x,y) * (devStrainTplusDt_yy(x,y) - devStrainT_yy(x,y));
     } // viscousStrainUpdate_yy
+
     static double viscousStrainUpdate_zz(const double x,
 										 const double y) {
-        return -(exp(constants.t/maxwellTime(x,y)) - 1.0)*(2.0*constants.a*(x+y) + 2.0*constants.b*(x+y) + constants.d*exp(constants.t/maxwellTime(x,y))) * exp(-2.0*constants.t/maxwellTime(x,y))/3.0;
+		return exp(-constants.dt/maxwellTime(x,y)) * viscousStrain_zz(x,y) + dq(x,y) * (devStrainTplusDt_zz(x,y) - devStrainT_zz(x,y));
     } // viscousStrainUpdate_zz
+
     static double viscousStrainUpdate_xy(const double x,
 										 const double y) {
-        return (exp(constants.t/maxwellTime(x,y)) - 1.0)*(2.0*constants.b*(x+y) + 2.0*constants.c*(x+y) + constants.d*exp(constants.t/maxwellTime(x,y))) * exp(-2.0*constants.t/maxwellTime(x,y))/2.0;
+		return exp(-constants.dt/maxwellTime(x,y)) * viscousStrain_xy(x,y) + dq(x,y) * (totalStrainUpdate_xy(x,y) - totalStrain_xy(x,y));
     } // viscousStrainUpdate_xy
 
     // Body force
@@ -354,11 +403,11 @@ protected:
 const double pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::SMALL = 1.0e-5;
 
 const pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::AuxConstants pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::constants = {
-    1.0e-4, // a
-    2.5e-4, // b
-    3.0e-4, // c
-    3.0e-5, // d
-    5.0e+7, // t
+    1.0e-7, // a
+    2.5e-7, // b
+    3.0e-7, // c
+    3.0e-8, // d
+    0.0e+0, // t
     5.0e+7  // dt
 };
 

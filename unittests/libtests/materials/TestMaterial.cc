@@ -599,10 +599,11 @@ pylith::materials::TestMaterial::testUpdateStateVars(void)
     Material* material = _material(); CPPUNIT_ASSERT(material);
     CPPUNIT_ASSERT(_solutionFields);
     pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
+    material->_auxField->view("INITIAL_AUX FIELDS"); // :DEBUGGING:
     material->updateStateVars(data->t, data->dt, perturbation);
 
     const pylith::topology::Field& auxField = material->auxField();
-    //material->_auxField->view("AUX FIELDS"); // :DEBUGGING:
+    material->_auxField->view("UPDATED_AUX FIELDS"); // :DEBUGGING:
 
     // Check updated auxiliary field.
     PylithReal norm = 0.0;
@@ -612,6 +613,10 @@ pylith::materials::TestMaterial::testUpdateStateVars(void)
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->normalizer);
     query.openDB(data->auxUpdateDB, data->normalizer->lengthScale());
+#if 1 // :DEBUG:
+    PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "1"); // :DEBUG:
+    DMSetFromOptions(dm); // :DEBUG:
+#endif
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
     query.closeDB(data->auxUpdateDB);
     const PylithReal tolerance = 1.0e-6;
