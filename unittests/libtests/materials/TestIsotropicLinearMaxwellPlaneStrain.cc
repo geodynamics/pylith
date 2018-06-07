@@ -173,19 +173,6 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // Maxwell time
 
-    { // Total strain
-        const char* label = "total_strain";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
-    } // Total strain
-
     { // Viscous strain
         const char* label = "viscous_strain";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
@@ -198,6 +185,19 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // Viscous strain
+
+    { // Total strain
+        const char* label = "total_strain";
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
+        CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
+        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+    } // Total strain
 
     if (_mymaterial->_gravityField) { // gravity field
         const char* label = "gravity_field";

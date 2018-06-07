@@ -69,6 +69,7 @@ print "Defining basis, solution, and constants:"
 from sympy.abc import x, y, z, t
 u1, u2, u3 = sympy.symbols('u1 u2 u3', type="Function")
 X = sympy.tensor.array.Array([x, y, z])
+dt = sympy.symbols('dt')
 
 # Material constants.
 (bulkModulus, shearModulus,
@@ -118,11 +119,14 @@ devStrainRatePert = devStrainPert.diff(t)
 
 # Assumed viscous strain.
 print "Computing viscous strains:"
-visStrain = devStrain * (one - sympy.exp(-t/maxwellTime))
+dq = maxwellTime * (one - sympy.exp(-t/maxwellTime))/t
+visStrain = devStrain * dq
 
 # Assumed viscous strain for perturbed solution.
 print "Computing viscous strains for perturbed solution:"
-visStrainPert = devStrainPert * (one - sympy.exp(-t/maxwellTime))
+expFac = sympy.exp(-dt/maxwellTime)
+dqPert = maxwellTime * (one - sympy.exp(-dt/maxwellTime))/dt
+visStrainPert = expFac * visStrain + dq * (devStrainPert - devStrain)
 
 # Define viscous strain rate and stress function.
 visStrainRate = visStrain.diff(t)

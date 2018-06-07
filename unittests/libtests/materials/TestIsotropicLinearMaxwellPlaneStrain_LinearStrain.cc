@@ -150,19 +150,19 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
 
     static double viscousStrain_xx(const double x,
                                    const double y) {
-        return 2.0*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(2.0*x-y) - constants.b*(x-2.0*y)) * exp(-2.0*constants.t/maxwellTime(x,y))/3.0;
+        return 2.0*maxwellTime(x,y)*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(2.0*x-y) - constants.b*(x-2.0*y)) * exp(-2.0*constants.t/maxwellTime(x,y))/(3.0*constants.t);
     } // viscousStrain_xx
     static double viscousStrain_yy(const double x,
                                    const double y) {
-        return -2.0*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(x-2.0*y) - constants.b*(2.0*x-y)) * exp(-2.0*constants.t/maxwellTime(x,y))/3.0;
+        return -2.0*maxwellTime(x,y)*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(x-2.0*y) - constants.b*(2.0*x-y)) * exp(-2.0*constants.t/maxwellTime(x,y))/(3.0*constants.t);
     } // viscousStrain_yy
     static double viscousStrain_zz(const double x,
                                    const double y) {
-        return -2.0*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(x+y) + constants.b*(x+y)) * exp(-2.0*constants.t/maxwellTime(x,y))/3.0;
+        return -2.0*maxwellTime(x,y)*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(x+y) + constants.b*(x+y)) * exp(-2.0*constants.t/maxwellTime(x,y))/(3.0*constants.t);
     } // viscousStrain_zz
     static double viscousStrain_xy(const double x,
                                    const double y) {
-        return (exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.b*(x+y) + constants.c*(x+y)) * exp(-2.0*constants.t/maxwellTime(x,y));
+        return maxwellTime(x,y)*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.b*(x+y) + constants.c*(x+y)) * exp(-2.0*constants.t/maxwellTime(x,y))/constants.t;
     } // viscousStrain_xy
 
     // Total strain for perturbed solution.
@@ -173,7 +173,7 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
     } // totalStrainUpdate_xx
     static double totalStrainUpdate_yy(const double x,
 									   const double y) {
-        return (2.0*constants.b*x + 2.0*constants.a*y) * exp(-constants.t/maxwellTime(x,y)) + constants.d;
+        return (2.0*constants.b*x + 2.0*constants.a*y) * exp(-constants.t/maxwellTime(x,y));
     } // totalStrainUpdate_yy
     static double totalStrainUpdate_zz(const double x,
 									   const double y) {
@@ -181,7 +181,7 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
     } // totalStrainUpdate_zz
     static double totalStrainUpdate_xy(const double x,
 									   const double y) {
-        return (constants.b*(x+y) + constants.c*(x+y))*exp(-constants.t/maxwellTime(x,y)) + constants.d;
+        return (constants.b*(x+y) + constants.c*(x+y))*exp(-constants.t/maxwellTime(x,y)) + constants.d/2.0;
     } // totalStrainUpdate_xy
 
     // Values needed to compute viscous strain for perturbed solution.
@@ -333,8 +333,8 @@ protected:
             {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
             {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
             {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // maxwell_time
-            {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // viscous_strain
+            {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -347,14 +347,14 @@ protected:
         _mydata->auxDB->addValue("bulk_modulus", bulkModulus, bulkModulus_units());
         _mydata->auxDB->addValue("viscosity", viscosity, viscosity_units());
         _mydata->auxDB->addValue("maxwell_time", maxwellTime, maxwellTime_units());
-        _mydata->auxDB->addValue("total_strain_xx", totalStrain_xx, "none");
-        _mydata->auxDB->addValue("total_strain_yy", totalStrain_yy, "none");
-        _mydata->auxDB->addValue("total_strain_zz", totalStrain_zz, "none");
-        _mydata->auxDB->addValue("total_strain_xy", totalStrain_xy, "none");
         _mydata->auxDB->addValue("viscous_strain_xx", viscousStrain_xx, "none");
         _mydata->auxDB->addValue("viscous_strain_yy", viscousStrain_yy, "none");
         _mydata->auxDB->addValue("viscous_strain_zz", viscousStrain_zz, "none");
         _mydata->auxDB->addValue("viscous_strain_xy", viscousStrain_xy, "none");
+        _mydata->auxDB->addValue("total_strain_xx", totalStrain_xx, "none");
+        _mydata->auxDB->addValue("total_strain_yy", totalStrain_yy, "none");
+        _mydata->auxDB->addValue("total_strain_zz", totalStrain_zz, "none");
+        _mydata->auxDB->addValue("total_strain_xy", totalStrain_xy, "none");
         _mydata->auxDB->addValue("body_force_x", bodyforce_x, bodyforce_units());
         _mydata->auxDB->addValue("body_force_y", bodyforce_y, bodyforce_units());
 
@@ -366,14 +366,14 @@ protected:
         _mydata->auxUpdateDB->addValue("bulk_modulus", bulkModulus, bulkModulus_units());
         _mydata->auxUpdateDB->addValue("viscosity", viscosity, viscosity_units());
         _mydata->auxUpdateDB->addValue("maxwell_time", maxwellTime, maxwellTime_units());
-        _mydata->auxUpdateDB->addValue("total_strain_xx", totalStrainUpdate_xx, "none");
-        _mydata->auxUpdateDB->addValue("total_strain_yy", totalStrainUpdate_yy, "none");
-        _mydata->auxUpdateDB->addValue("total_strain_zz", totalStrainUpdate_zz, "none");
-        _mydata->auxUpdateDB->addValue("total_strain_xy", totalStrainUpdate_xy, "none");
         _mydata->auxUpdateDB->addValue("viscous_strain_xx", viscousStrainUpdate_xx, "none");
         _mydata->auxUpdateDB->addValue("viscous_strain_yy", viscousStrainUpdate_yy, "none");
         _mydata->auxUpdateDB->addValue("viscous_strain_zz", viscousStrainUpdate_zz, "none");
         _mydata->auxUpdateDB->addValue("viscous_strain_xy", viscousStrainUpdate_xy, "none");
+        _mydata->auxUpdateDB->addValue("total_strain_xx", totalStrainUpdate_xx, "none");
+        _mydata->auxUpdateDB->addValue("total_strain_yy", totalStrainUpdate_yy, "none");
+        _mydata->auxUpdateDB->addValue("total_strain_zz", totalStrainUpdate_zz, "none");
+        _mydata->auxUpdateDB->addValue("total_strain_xy", totalStrainUpdate_xy, "none");
         _mydata->auxUpdateDB->addValue("body_force_x", bodyforce_x, bodyforce_units());
         _mydata->auxUpdateDB->addValue("body_force_y", bodyforce_y, bodyforce_units());
 
@@ -406,8 +406,8 @@ const pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::Aux
     1.0e-7, // a
     2.5e-7, // b
     3.0e-7, // c
-    3.0e-8, // d
-    0.0e+0, // t
+    9.0e-8, // d
+    5.0e+7, // t
     5.0e+7  // dt
 };
 
@@ -465,8 +465,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP
             {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
             {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
             {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // maxwell_time
-            {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // viscous_strain
+            {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -503,8 +503,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP
             {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
             {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
             {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // maxwell_time
-            {1, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {1, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // viscous_strain
+            {1, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -540,8 +540,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP
             {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
             {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
             {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // maxwell_time
-            {1, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {1, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // viscous_strain
+            {1, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -577,8 +577,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
             {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
             {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
             {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // maxwell_time
-            {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // viscous_strain
+            {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -616,8 +616,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
             {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
             {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
             {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // maxwell_time
-            {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // viscous_strain
+            {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -654,8 +654,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
             {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
             {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
             {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // maxwell_time
-            {1, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {1, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // viscous_strain
+            {1, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -692,8 +692,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
             {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
             {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
             {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // maxwell_time
-            {1, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {1, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // viscous_strain
+            {1, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
             {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
