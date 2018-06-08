@@ -35,9 +35,9 @@ subpkginclude_HEADERS = \
 	OutputSoln.hh \
 	OutputSolnSubset.hh \
 	OutputSolnPoints.hh \
-	CellFilter.hh \
-	VertexFilter.hh \
-	VertexFilterDecimateP1.hh \
+	FieldFilter.hh \
+	FieldFilterNone.hh \
+	FieldFilterProject.hh \
 	meshiofwd.hh
 
 if ENABLE_HDF5

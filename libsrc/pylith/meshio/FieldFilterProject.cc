@@ -18,114 +18,166 @@
 
 #include <portinfo>
 
-#include "VertexFilterDecimateP1.hh" // Implementation of class methods
+#include "FieldFilterProject.hh" // Implementation of class methods
 
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/topology/VisitorMesh.hh" \
-    // USES VecVisitorMesh
+#include "pylith/topology/FieldOps.hh" // USES FieldOps::layoutsMatch()
+
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+
+// ----------------------------------------------------------------------
+const char* pylith::meshio::FieldFilterProject::_pyreComponent = "fieldfilterproject";
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshio::VertexFilterDecimateP1::VertexFilterDecimateP1(void) :
-    _fieldP1(0)
-{ // constructor
+pylith::meshio::FieldFilterProject::FieldFilterProject(void) :
+    _fieldP1(NULL) {
+    PyreComponent::name(_pyreComponent);
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::VertexFilterDecimateP1::~VertexFilterDecimateP1(void)
-{ // destructor
+pylith::meshio::FieldFilterProject::~FieldFilterProject(void) {
     deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::VertexFilterDecimateP1::deallocate(void)
-{ // deallocate
+pylith::meshio::FieldFilterProject::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    VertexFilter::deallocate();
+    FieldFilter::deallocate();
 
-    delete _fieldP1; _fieldP1 = 0;
+    delete _fieldP1; _fieldP1 = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
 
 // ----------------------------------------------------------------------
 // Copy constructor.
-pylith::meshio::VertexFilterDecimateP1::VertexFilterDecimateP1(const VertexFilterDecimateP1& f) :
-    VertexFilter(f),
-    _fieldP1(0)
-{ // copy constructor
-} // copy constructor
+pylith::meshio::FieldFilterProject::FieldFilterProject(const FieldFilterProject& f) :
+    FieldFilter(f),
+    _fieldP1(NULL)
+{}
 
 // ----------------------------------------------------------------------
 // Create copy of filter.
-pylith::meshio::VertexFilter*
-pylith::meshio::VertexFilterDecimateP1::clone(void) const
-{ // clone
-    return new VertexFilterDecimateP1(*this);
+pylith::meshio::FieldFilter*
+pylith::meshio::FieldFilterProject::clone(void) const {
+    return new FieldFilterProject(*this);
 } // clone
 
 // ----------------------------------------------------------------------
-// Filter field.
-pylith::topology::Field&
-pylith::meshio::VertexFilterDecimateP1::filter(const topology::Field& fieldIn)
-{ // filter
+// Set basis order for projected field.
+void
+pylith::meshio::FieldFilterProject::basisOrder(const int value) {
     PYLITH_METHOD_BEGIN;
 
-    PetscDM dmMesh = fieldIn.mesh().dmMesh();assert(dmMesh);
-    pylith::topology::Stratum verticesStratum(dmMesh, pylith::topology::Stratum::DEPTH, 0);
-    const PylithInt vStart = verticesStratum.begin();
-    const PylithInt vEnd = verticesStratum.end();
+    if (value < 0) {
+        std::ostringstream msg;
+        msg << "Basis order (" << value << ") for field filter must be nonnegative.";
+        throw std::runtime_error(msg.str());
+    } // if
 
-    pylith::topology::VecVisitorMesh fieldInVisitor(fieldIn);
+    _basisOrder = value;
 
-    // Allocate field if necessary
+    PYLITH_METHOD_END;
+} // basisOrder
+
+// ----------------------------------------------------------------------
+// Filter field.
+pylith::topology::Field*
+pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
+    PYLITH_METHOD_BEGIN;
+
+    if (!fieldIn) {
+        PYLITH_METHOD_RETURN(NULL);
+    } // if
+
+    assert(fieldIn);
+    if (_fieldP1 && !pylith::topology::FieldOps::layoutsMatch(*fieldIn, *_fieldP1)) {
+        delete _fieldP1; _fieldP1 = NULL;
+        delete _passThruFns; _passThruFns = NULL;
+    } // if
     if (!_fieldP1) {
-        _fieldP1 = new pylith::topology::Field(fieldIn.mesh());
-        _fieldP1->label(fieldIn.label());
-        _fieldP1->dimensionalizeOkay(true);
+        _fieldP1 = new pylith::topology::Field(fieldIn->mesh()); assert(_fieldP1);
 
-        const pylith::string_vector& subfieldNames = fieldIn.subfieldNames();
-        assert(1 == subfieldNames.size());
-        const pylith::topology::Field::SubfieldInfo& info = fieldIn.subfieldInfo(subfieldNames[0].c_str());
-        assert(0 == info.index);
-
-        // Set discretization to P1
+        // Set discretization of all subfields to basis order.
         pylith::topology::Field::Discretization feP1;
-        feP1.basisOrder = 1;
-        feP1.quadOrder = 1;
-        feP1.isBasisContinuous = info.fe.isBasisContinuous;
-        feP1.feSpace = info.fe.feSpace;
+        feP1.basisOrder = _basisOrder;
 
-        _fieldP1->subfieldAdd(info.description, feP1);
+        const pylith::string_vector& subfieldNames = fieldIn->subfieldNames();
+        const size_t numSubfields = subfieldNames.size();
+        for (size_t i = 0; i < numSubfields; ++i) {
+            const pylith::topology::Field::SubfieldInfo& info = fieldIn->subfieldInfo(subfieldNames[i].c_str());
+            feP1.isBasisContinuous = info.fe.isBasisContinuous;
+            feP1.feSpace = info.fe.feSpace;
+            feP1.quadOrder = info.fe.quadOrder;
+
+            if (info.fe.quadOrder < _basisOrder) {
+                PYLITH_COMPONENT_WARNING(
+                    "Projecting subfield '"
+                    << info.description.label << "' in field ''" << fieldIn->label() << "'' from basis order "
+                    << info.fe.basisOrder << " to basis order " << _basisOrder
+                    << " with quadrature order " << info.fe.quadOrder << " will result in under integration of the "
+                    << "subfield. Accurate projection requires a quadrature order of at least " << _basisOrder << "."
+                    );
+            } // if
+
+            _fieldP1->subfieldAdd(info.description, feP1);
+        } // for
         _fieldP1->subfieldsSetup();
         _fieldP1->allocate();
     } // if
+    _fieldP1->label(fieldIn->label());
+    _fieldP1->dimensionalizeOkay(true);
 
-    const PetscScalar* fieldInArray = fieldInVisitor.localArray();
-
-    pylith::topology::VecVisitorMesh fieldP1Visitor(*_fieldP1);
-    PetscScalar* fieldP1Array = fieldP1Visitor.localArray();
-
-    // Loop over vertices
-    for (PylithInt v = vStart; v < vEnd; ++v) {
-        const PylithInt offIn = fieldInVisitor.sectionOffset(v);
-        const PylithInt ndof = fieldInVisitor.sectionDof(v);
-        assert(fieldP1Visitor.sectionDof(v) == ndof);
-
-        const PylithInt offP1 = fieldP1Visitor.sectionOffset(v);
-
-        for (PylithInt d = 0; d < ndof; ++d) {
-            fieldP1Array[offP1+d] = fieldInArray[offIn+d];
+    if (!_passThruFns) {
+        const size_t numSubfields = _fieldP1->subfieldNames().size();
+        _passThruFns = (numSubfields > 0) ? new PetscPointFunc[numSubfields] : NULL;
+        for (size_t i = 0; i < numSubfields; ++i) {
+            _passThruFns[i] = passThruSoln;
         } // for
-    } // for
+    } // if
 
-    PYLITH_METHOD_RETURN(*_fieldP1);
+    const PylithReal t = 0.0;
+    PetscDM dmFieldP1 = _fieldP1->dmMesh();
+    PetscErrorCode err = DMProjectFieldLocal(dmFieldP1, t, _fieldP1->localVector(), _passThruFns, INSERT_VALUES, _fieldP1->localVector());PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_RETURN(_fieldP1);
 } // filter
+
+
+// ----------------------------------------------------------------------
+// Identify function kernel.
+void
+pylith::meshio::FieldFilterProject::passThruSoln(const PylithInt dim,
+                                                 const PylithInt numS,
+                                                 const PylithInt numA,
+                                                 const PylithInt sOff[],
+                                                 const PylithInt sOff_x[],
+                                                 const PylithScalar s[],
+                                                 const PylithScalar s_t[],
+                                                 const PylithScalar s_x[],
+                                                 const PylithInt aOff[],
+                                                 const PylithInt aOff_x[],
+                                                 const PylithScalar a[],
+                                                 const PylithScalar a_t[],
+                                                 const PylithScalar a_x[],
+                                                 const PylithReal t,
+                                                 const PylithScalar x[],
+                                                 const PylithInt numConstants,
+                                                 const PylithScalar constants[],
+                                                 PylithScalar field[]) {
+    assert(s);
+    assert(field);
+
+    const PylithInt sEnd = sOff[numS];
+    for (PylithInt i = 0; i < sEnd; ++i) {
+        field[i] = s[i];
+    } // for
+} // passThruSoln
 
 
 // End of file

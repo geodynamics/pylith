@@ -86,9 +86,9 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileBinary.cc \
 	meshio/OutputSolnSubset.cc \
 	meshio/OutputSolnPoints.cc \
-	meshio/CellFilter.cc \
-	meshio/VertexFilter.cc \
-	meshio/VertexFilterDecimateP1.cc \
+	meshio/FieldFilter.cc \
+	meshio/FieldFilterNone.cc \
+	meshio/FieldFilterProject.cc \
 	meshio/DataWriter.cc \
 	meshio/DataWriterVTK.cc \
 	meshio/OutputManager.cc \

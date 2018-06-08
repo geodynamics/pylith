@@ -17,46 +17,96 @@
 //
 
 /**
- * @file libsrc/meshio/VertexFilterDecimateP1.hh
+ * @file libsrc/meshio/FieldFilterProject.hh
  *
- * @brief C++ object for decimating a vertex field to P1.
+ * @brief C++ object for projecting a field to another basis.
  */
 
-#if !defined(pylith_meshio_vertexfilterdecimatep1_hh)
-#define pylith_meshio_vertexfilterdecimatep1_hh
+#if !defined(pylith_meshio_fieldfilterproject_hh)
+#define pylith_meshio_fieldfilterproject_hh
 
 // Include directives ---------------------------------------------------
-#include "VertexFilter.hh" // ISA VertexFilter
+#include "FieldFilter.hh" // ISA FieldFilter
 
-// VertexFilterDecimateP1 --------------------------------------------------
-/** @brief C++ object for computing vector norms for fields over
- * vertices when outputing finite-element data.
+// FieldFilterProject --------------------------------------------------
+/** @brief C++ object for projecting a field to another basis.
  */
-class pylith::meshio::VertexFilterDecimateP1 : public VertexFilter { // VertexFilterDecimateP1
+class pylith::meshio::FieldFilterProject : public FieldFilter {
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    VertexFilterDecimateP1(void);
+    FieldFilterProject(void);
 
     /// Destructor
-    ~VertexFilterDecimateP1(void);
+    ~FieldFilterProject(void);
 
     /** Create copy of filter.
      *
      * @returns Copy of filter.
      */
-    VertexFilter* clone(void) const;
+    FieldFilter* clone(void) const;
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
+    /** Set basis order for projected field.
+     *
+     * @param[in] value Basis order.
+     */
+    void basisOrder(const int value);
+
     /** Filter vertex field.
      *
+     * @returns Field after applying filter.
      * @param fieldIn Field to filter.
      */
-    topology::Field& filter(const topology::Field& fieldIn);
+    pylith::topology::Field* filter(pylith::topology::Field* fieldIn);
+
+    /** Pass thru solution in pointwise function.
+     *
+     * We pass through the solution to the resulting field. The auxiliary field is ignored.
+     *
+     * @param[in] dim Spatial dimension.
+     * @param[in] numS Number of registered subfields in solution field.
+     * @param[in] numA Number of registered subfields in auxiliary field.
+     * @param[in] sOff Offset of registered subfields in solution field [numS].
+     * @param[in] sOff_x Offset of registered subfields in gradient of the solution field [numS].
+     * @param[in] s Solution field with all subfields.
+     * @param[in] s_t Time derivative of solution field.
+     * @param[in] s_x Gradient of solution field.
+     * @param[in] aOff Offset of registered subfields in auxiliary field [numA]
+     * @param[in] aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
+     * @param[in] a Auxiliary field with all subfields.
+     * @param[in] a_t Time derivative of auxiliary field.
+     * @param[in] a_x Gradient of auxiliary field.
+     * @param[in] t Time for residual evaluation.
+     * @param[in] x Coordinates of point evaluation.
+     * @param[in] numConstants Number of registered constants.
+     * @param[in] constants Array of registered constants.
+     * @param[out] field [dim].
+     */
+    static
+    void passThruSoln(const PylithInt dim,
+                      const PylithInt numS,
+                      const PylithInt numA,
+                      const PylithInt sOff[],
+                      const PylithInt sOff_x[],
+                      const PylithScalar s[],
+                      const PylithScalar s_t[],
+                      const PylithScalar s_x[],
+                      const PylithInt aOff[],
+                      const PylithInt aOff_x[],
+                      const PylithScalar a[],
+                      const PylithScalar a_t[],
+                      const PylithScalar a_x[],
+                      const PylithReal t,
+                      const PylithScalar x[],
+                      const PylithInt numConstants,
+                      const PylithScalar constants[],
+                      PylithScalar field[]);
+
 
     // PROTECTED METHODS ////////////////////////////////////////////////////
 protected:
@@ -66,22 +116,26 @@ protected:
      * @param f Filter to copy.
      * @returns Pointer to this.
      */
-    VertexFilterDecimateP1(const VertexFilterDecimateP1& f);
+    FieldFilterProject(const FieldFilterProject& f);
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
     /// Not implemented.
-    const VertexFilterDecimateP1& operator=(const VertexFilterDecimateP1&);
+    const FieldFilterProject& operator=(const FieldFilterProject&);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-    topology::Field* _fieldP1; ///< Filtered vertex field
+    pylith::topology::Field* _fieldP1; ///< Filtered field.
+    PetscPointFunc* _passThruFns; ///< Pass through point functions.
+    int _basisOrder; ///< Basis order for projected field.
 
-}; // VertexFilterDecimateP1
+    static const char* _pyreComponent; ///< Name of Pyre component.
 
-#endif // pylith_meshio_vertexfilterdecimatep1_hh
+}; // FieldFilterProject
+
+#endif // pylith_meshio_fieldfilterproject_hh
 
 
 // End of file
