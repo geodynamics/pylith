@@ -24,68 +24,73 @@
 namespace pylith {
     namespace feassemble {
 
-        class IntegratorPointwise : public pylith::utils::PyreComponent
-        { // IntegratorPointwise
+        class IntegratorPointwise : public pylith::utils::PyreComponent {
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public:
+	public:
 
-        /// Constructor
-        IntegratorPointwise(void);
+	    /// Constructor
+	    IntegratorPointwise(void);
 
-        /// Destructor
-        virtual
-        ~IntegratorPointwise(void);
+	    /// Destructor
+	    virtual
+	    ~IntegratorPointwise(void);
 
-        /// Deallocate PETSc and local data structures.
-        virtual
-        void deallocate(void);
+	    /// Deallocate PETSc and local data structures.
+	    virtual
+	    void deallocate(void);
 
-        /** Get auxiliary field.
-         *
-         * @return field Field over integrator domain.
-         */
-        const pylith::topology::Field& auxField(void) const;
+	    /** Get auxiliary field.
+	     *
+	     * @return field Field over integrator domain.
+	     */
+	    const pylith::topology::Field* auxField(void) const;
 
-        /** Set spatial database for filling auxiliary subfields.
-         *
-         * @param[in] value Pointer to database.
-         */
-        void auxFieldDB(spatialdata::spatialdb::SpatialDB* value);
+	    /** Get derived field.
+	     *
+	     * @return field Field over integrator domain.
+	     */
+	    const pylith::topology::Field* derivedField(void) const;
 
-        /** Set discretization information for auxiliary subfield.
-         *
-         * @param[in] name Name of auxiliary subfield.
-         * @param[in] basisOrder Polynomial order for basis.
-         * @param[in] quadOrder Order of quadrature rule.
-         * @param[in] isBasisContinuous True if basis is continuous.
-         * @param[in] feSpace Finite-element space.
-         */
-        void auxSubfieldDiscretization(const char* name,
-				       const int basisOrder,
-				       const int quadOrder,
-				       const bool isBasisContinuous,
-				       const pylith::topology::FieldBase::SpaceEnum feSpace);
+	    /** Set spatial database for filling auxiliary subfields.
+	     *
+	     * @param[in] value Pointer to database.
+	     */
+	    void auxFieldDB(spatialdata::spatialdb::SpatialDB* value);
 
-        /** Check whether RHS Jacobian needs to be recomputed.
-         *
-         * @returns True if Jacobian needs to be recomputed, false otherwise.
-         */
-        virtual
-        bool needNewRHSJacobian(void) const;
+	    /** Set discretization information for auxiliary subfield.
+	     *
+	     * @param[in] name Name of auxiliary subfield.
+	     * @param[in] basisOrder Polynomial order for basis.
+	     * @param[in] quadOrder Order of quadrature rule.
+	     * @param[in] isBasisContinuous True if basis is continuous.
+	     * @param[in] feSpace Finite-element space.
+	     */
+	    void auxSubfieldDiscretization(const char* name,
+					   const int basisOrder,
+					   const int quadOrder,
+					   const bool isBasisContinuous,
+					   const pylith::topology::FieldBase::SpaceEnum feSpace);
 
-        /** Check whether LHS Jacobian needs to be recomputed.
-         *
-         * @returns True if Jacobian needs to be recomputed, false otherwise.
-         */
-        virtual
-        bool needNewLHSJacobian(void) const;
+	    /** Check whether RHS Jacobian needs to be recomputed.
+	     *
+	     * @returns True if Jacobian needs to be recomputed, false otherwise.
+	     */
+	    virtual
+	    bool needNewRHSJacobian(void) const;
 
-        /** Set manager of scales used to nondimensionalize problem.
-         *
-         * @param dim Nondimensionalizer.
-         */
-        void normalizer(const spatialdata::units::Nondimensional& dim);
+	    /** Check whether LHS Jacobian needs to be recomputed.
+	     *
+	     * @returns True if Jacobian needs to be recomputed, false otherwise.
+	     */
+	    virtual
+	    bool needNewLHSJacobian(void) const;
+
+	    /** Set manager of scales used to nondimensionalize problem.
+	     *
+	     * @param dim Nondimensionalizer.
+	     */
+	    void normalizer(const spatialdata::units::Nondimensional& dim);
 
 	    /** Set gravity field.
 	     *
@@ -93,139 +98,142 @@ public:
 	     */
 	    void gravityField(spatialdata::spatialdb::GravityField* const g);
 
-	/** Set output manager.
-	 *
-	 * @param[in] manager Output manager for integrator.
-	 */
-	void output(pylith::meshio::OutputManager* manager);
-
-	/** Verify configuration is acceptable.
-         *
-         * @param[in] solution Solution field.
-         */
-        virtual
-        void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
-
-        /** Initialize integrator.
-         *
-         * @param[in] solution Solution field (layout).
-         */
-        virtual
-        void initialize(const pylith::topology::Field& solution) = 0;
-
-        /** Update auxiliary fields at beginning of time step.
-         *
-         * @param[in] t Current time.
-         * @param[in] dt Current time step.
-         */
-        virtual
-        void prestep(const double t,
-                     const double dt);
-
-        /** Compute RHS residual for G(t,s).
-         *
-	 * @param[out] residual Field for residual.
-         * @param[in] t Current time.
-         * @param[in] dt Current time step.
-         * @param[in] solution Field with current trial solution.
-         */
-        virtual
-        void computeRHSResidual(pylith::topology::Field* residual,
-                                const PylithReal t,
-                                const PylithReal dt,
-                                const pylith::topology::Field& solution) = 0;
-
-        /** Compute RHS Jacobian and preconditioner for G(t,s).
-         *
-         * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
-         * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
-         * @param[in] t Current time.
-         * @param[in] dt Current time step.
-         * @param[in] solution Field with current trial solution.
-         */
-        virtual
-        void computeRHSJacobian(PetscMat jacobianMat,
-                                PetscMat preconMat,
-                                const PylithReal t,
-                                const PylithReal dt,
-                                const pylith::topology::Field& solution) = 0;
-
-        /** Compute LHS residual for F(t,s,\dot{s}).
-         *
-	 * @param[out] residual Field for residual.
-         * @param[in] t Current time.
-         * @param[in] dt Current time step.
-         * @param[in] solution Field with current trial solution.
-	 * @param[in] solutionDot Field with time derivative of current trial solution.
-         */
-        virtual
-        void computeLHSResidual(pylith::topology::Field* residual,
-                                const PylithReal t,
-                                const PylithReal dt,
-                                const pylith::topology::Field& solution,
-                                const pylith::topology::Field& solutionDot) = 0;
-
-        /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
-         *
-         * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
-         * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
-         * @param[in] t Current time.
-         * @param[in] dt Current time step.
-         * @param[in] tshift Scale for time derivative.
-         * @param[in] solution Field with current trial solution.
-	 * @param[in] solutionDot Field with time derivative of current trial solution.
-         */
-        virtual
-        void computeLHSJacobianImplicit(PetscMat jacobianMat,
-                                        PetscMat precondMat,
-                                        const PylithReal t,
-                                        const PylithReal dt,
-                                        const PylithReal tshift,
-                                        const pylith::topology::Field& solution,
-                                        const pylith::topology::Field& solutionDot) = 0;
-
-
-        /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
-         *
-         * @param[out] jacobianInv Inverse of lumped Jacobian as a field.
-         * @param[in] t Current time.
-         * @param[in] dt Current time step.
-         * @param[in] tshift Scale for time derivative.
-         * @param[in] solution Field with current trial solution.
-         */
-        virtual
-        void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                         const PylithReal t,
-                                         const PylithReal dt,
-					 const PylithReal tshift,
-                                         const pylith::topology::Field& solution) = 0;
-
-
-        /** Update state variables as needed.
-         *
-         * @param[in] t Current time.
-         * @param[in] dt Current time step.
-         * @param[in] solution Field with current trial solution.
-         */
-        virtual
-        void updateStateVars(const PylithReal t,
-			     const PylithReal dt,
-			     const pylith::topology::Field& solution);
-
-	    // Write information (auxiliary field) output.
+	    /** Verify configuration is acceptable.
+	     *
+	     * @param[in] solution Solution field.
+	     */
 	    virtual
-	    void writeInfo(void);
+	    void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
 
-	    /** Write solution related output.
+	    /** Initialize integrator.
+	     *
+	     * @param[in] solution Solution field (layout).
+	     */
+	    virtual
+	    void initialize(const pylith::topology::Field& solution) = 0;
+
+	    /** Update auxiliary fields at beginning of time step.
+	     *
+	     * @param[in] t Current time.
+	     * @param[in] dt Current time step.
+	     */
+	    virtual
+	    void prestep(const double t,
+			 const double dt);
+
+	    /** Compute RHS residual for G(t,s).
+	     *
+	     * @param[out] residual Field for residual.
+	     * @param[in] t Current time.
+	     * @param[in] dt Current time step.
+	     * @param[in] solution Field with current trial solution.
+	     */
+	    virtual
+	    void computeRHSResidual(pylith::topology::Field* residual,
+				    const PylithReal t,
+				    const PylithReal dt,
+				    const pylith::topology::Field& solution) = 0;
+
+	    /** Compute RHS Jacobian and preconditioner for G(t,s).
+	     *
+	     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
+	     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
+	     * @param[in] t Current time.
+	     * @param[in] dt Current time step.
+	     * @param[in] solution Field with current trial solution.
+	     */
+	    virtual
+	    void computeRHSJacobian(PetscMat jacobianMat,
+				    PetscMat preconMat,
+				    const PylithReal t,
+				    const PylithReal dt,
+				    const pylith::topology::Field& solution) = 0;
+
+	    /** Compute LHS residual for F(t,s,\dot{s}).
+	     *
+	     * @param[out] residual Field for residual.
+	     * @param[in] t Current time.
+	     * @param[in] dt Current time step.
+	     * @param[in] solution Field with current trial solution.
+	     * @param[in] solutionDot Field with time derivative of current trial solution.
+	     */
+	    virtual
+	    void computeLHSResidual(pylith::topology::Field* residual,
+				    const PylithReal t,
+				    const PylithReal dt,
+				    const pylith::topology::Field& solution,
+				    const pylith::topology::Field& solutionDot) = 0;
+
+	    /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
+	     *
+	     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
+	     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
+	     * @param[in] t Current time.
+	     * @param[in] dt Current time step.
+	     * @param[in] tshift Scale for time derivative.
+	     * @param[in] solution Field with current trial solution.
+	     * @param[in] solutionDot Field with time derivative of current trial solution.
+	     */
+	    virtual
+	    void computeLHSJacobianImplicit(PetscMat jacobianMat,
+					    PetscMat precondMat,
+					    const PylithReal t,
+					    const PylithReal dt,
+					    const PylithReal tshift,
+					    const pylith::topology::Field& solution,
+					    const pylith::topology::Field& solutionDot) = 0;
+
+
+	    /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
+	     *
+	     * @param[out] jacobianInv Inverse of lumped Jacobian as a field.
+	     * @param[in] t Current time.
+	     * @param[in] dt Current time step.
+	     * @param[in] tshift Scale for time derivative.
+	     * @param[in] solution Field with current trial solution.
+	     */
+	    virtual
+	    void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
+					     const PylithReal t,
+					     const PylithReal dt,
+					     const PylithReal tshift,
+					     const pylith::topology::Field& solution) = 0;
+
+
+	    /** Update state variables as needed.
+	     *
+	     * @param[in] t Current time.
+	     * @param[in] dt Current time step.
+	     * @param[in] solution Field with current trial solution.
+	     */
+	    virtual
+	    void updateStateVars(const PylithReal t,
+				 const PylithReal dt,
+				 const pylith::topology::Field& solution);
+
+	    /** Register observer to receive notifications.
+	     *
+	     * Observers are used for output.
+	     *
+	     * @param[in] observer Observer to receive notifications.
+	     */
+	    void registerObserver(pylith::feassemble::IntegratorObserver* observer);
+
+	    /** Remove observer from receiving notifications.
+	     *
+	     * @param[in] observer Observer to remove.
+	     */
+	    void removeObserver(pylith::feassemble::IntegratorObserver* observer);
+
+	    /** Notify observers.
 	     *
 	     * @param[in] t Current time.
 	     * @param[in] tindex Current time step.
-	     * @param[in] solution Field with solution at current time.
+	     * @param[in] solution Solution at time t.
 	     */
-	    virtual
-	    void writeTimeStep(const PylithReal t,
-			       const PylithInt tindex,
-			       const pylith::topology::Field& solution);
+	    void notifyObservers(const PylithReal t,
+				 const PylithInt tindex,
+				 const pylith::topology::Field& solution);
 
         }; // IntegratorPointwise
 
