@@ -132,6 +132,19 @@ protected:
     /// Write diagnostic information.
     void _writeInfo(void);
 
+    /** Prepare for output at this solution step.
+     *
+     * @param[in] t Time associated with field.
+     * @param[in] mesh Mesh for output.
+     */
+    virtual
+    void _openDataStep(const PylithReal t,
+                       const pylith::topology::Mesh& mesh);
+
+    /// Finalize output at this solution step.
+    virtual
+    void _closeDataStep(void);
+
     /** Write output for step in solution.
      *
      * @param[in] t Current time.
@@ -154,19 +167,6 @@ protected:
     /// Close output files.
     virtual
     void _close(void);
-
-    /** Prepare for output at this solution step.
-     *
-     * @param[in] t Time associated with field.
-     * @param[in] mesh Mesh for output.
-     */
-    virtual
-    void _openDataStep(const PylithReal t,
-                       const pylith::topology::Mesh& mesh);
-
-    /// Finalize output at this solution step.
-    virtual
-    void _closeDataStep(void);
 
     /** Append finite-element vertex field to file.
      *

@@ -78,7 +78,7 @@ public:
     virtual
     void open(const pylith::topology::Mesh& mesh,
               const bool isInfo,
-              const char* label=0,
+              const char* label=NULL,
               const int labelId=0);
 
     /// Close output files.
@@ -96,7 +96,7 @@ public:
     virtual
     void openTimeStep(const PylithScalar t,
                       const topology::Mesh& mesh,
-                      const char* label=0,
+                      const char* label=NULL,
                       const int labelId=0);
 
     /// Cleanup after writing data for a time step.
@@ -125,7 +125,7 @@ public:
     virtual
     void writeCellField(const PylithScalar t,
                         pylith::topology::Field& field,
-                        const char* label=0,
+                        const char* label=NULL,
                         const int labelId=0) = 0;
 
     /** Write dataset with names of points to file.

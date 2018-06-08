@@ -263,6 +263,30 @@ pylith::meshio::OutputManager::_writeInfo(void) {
 
 
 // ----------------------------------------------------------------------
+// Prepare for output at this solution step.
+void
+pylith::meshio::OutputManager::_openDataStep(const PylithReal t,
+                                             const pylith::topology::Mesh& mesh) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("OutputManager::_openDataStep(t="<<t<<", mesh="<<typeid(mesh).name()<<")");
+
+    assert(_writer);
+    _writer->openTimeStep(t, mesh, _label.length() ? _label.c_str() : NULL, _labelId);
+
+    PYLITH_METHOD_END;
+} // _openDataStep
+
+// ----------------------------------------------------------------------
+// Finalize output at this solution step.
+void
+pylith::meshio::OutputManager::_closeDataStep(void) {
+
+    assert(_writer);
+    _writer->closeTimeStep();
+
+} // _closeDataStep
+
+// ----------------------------------------------------------------------
 // Write data for step in solution.
 void
 pylith::meshio::OutputManager::_writeDataStep(const PylithReal t,
@@ -343,7 +367,7 @@ pylith::meshio::OutputManager::_appendField(const PylithReal t,
     } // switch
 
     PYLITH_METHOD_END;
-} // appendField
+} // _appendField
 
 // ----------------------------------------------------------------------
 /** Get buffer for field.
