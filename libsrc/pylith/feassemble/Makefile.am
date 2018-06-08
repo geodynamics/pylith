@@ -22,6 +22,7 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	IntegratorPointwise.hh \
 	ConstraintPointwise.hh \
+	IntegratorObserver.hh \
 	AuxiliaryFactory.hh \
 	feassemblefwd.hh
 

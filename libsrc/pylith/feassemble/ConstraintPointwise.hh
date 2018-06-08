@@ -29,9 +29,9 @@
 #include "pylith/feassemble/feassemblefwd.hh"
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
+#include "pylith/problems/ObservedSubject.hh" // ISA ObservedSubject
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::discretizations_map
-#include "pylith/meshio/meshiofwd.hh" // HOLDSA OutputManager
 #include "pylith/utils/array.hh" // HASA int_array
 #include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
 
@@ -41,7 +41,9 @@
 // ConstraintPointwise---------------------------------------------------
 /** @brief Abstract base class for defining constraints on boundaries.
  */
-class pylith::feassemble::ConstraintPointwise : public pylith::utils::PyreComponent {
+class pylith::feassemble::ConstraintPointwise :
+    public pylith::utils::PyreComponent,
+    public pylith::problems::ObservedSubject {
     friend class TestConstraintPointwise;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -106,12 +108,6 @@ public:
      */
     void normalizer(const spatialdata::units::Nondimensional& dim);
 
-    /** Set output manager.
-     *
-     * @param[in] manager Output manager for integrator.
-     */
-    void output(pylith::meshio::OutputManager* manager);
-
     /** Verify configuration is acceptable.
      *
      * @param[in] solution Solution field.
@@ -125,10 +121,6 @@ public:
      */
     virtual
     void initialize(const pylith::topology::Field& solution) = 0;
-
-    // Write information (auxiliary field) output.
-    virtual
-    void writeInfo(void);
 
     /** Update auxiliary fields at beginning of time step.
      *
@@ -165,18 +157,14 @@ protected:
     int_array _constrainedDOF; ///< List of constrained degrees of freedom at each location.
 
     pylith::topology::Field *_auxField; ///< Auxiliary field for this constraint.
-    pylith::meshio::OutputManager* _output; ///< Output manager for integrator.
 
     pylith::utils::EventLogger* _logger;   ///< Event logger.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
 
-    /// Not implemented
-    ConstraintPointwise(const ConstraintPointwise &m);
-
-    /// Not implemented
-    const ConstraintPointwise& operator=(const ConstraintPointwise& m);
+    ConstraintPointwise(const ConstraintPointwise &m); ///< Not implemented
+    const ConstraintPointwise& operator=(const ConstraintPointwise& m); ///< Not implemented
 
 }; // class Constraint
 

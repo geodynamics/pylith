@@ -34,6 +34,10 @@ namespace pylith {
         class TimeDependent;
         class SolutionFactory;
 
+	class Observer;
+	class ProblemObserver;
+	class ObservedSubject;
+	
     } // problems
 } // pylith
 

@@ -30,9 +30,9 @@
 #include "feassemblefwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
+#include "pylith/problems/ObservedSubject.hh" // ISA ObservedSubject
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase
-#include "pylith/meshio/meshiofwd.hh" // HOLDSA OutputManager
 #include "pylith/utils/petscfwd.h" // USES PetscMat, PetscVec
 #include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
 
@@ -43,7 +43,9 @@
 /** @brief General operations for implicit and explicit
  * time integration of equations defined by pointwise functions.
  */
-class pylith::feassemble::IntegratorPointwise : public pylith::utils::PyreComponent {
+class pylith::feassemble::IntegratorPointwise :
+    public pylith::utils::PyreComponent,
+    public pylith::problems::ObservedSubject {
     friend class TestIntegratorPointwise;   // unit testing
 
     // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
@@ -66,7 +68,13 @@ public:
      *
      * @return field Field over integrator domain.
      */
-    const pylith::topology::Field& auxField(void) const;
+    const pylith::topology::Field* auxField(void) const;
+
+    /** Get derived field.
+     *
+     * @return field Field over integrator domain.
+     */
+    const pylith::topology::Field* derivedField(void) const;
 
     /** Set spatial database for filling auxiliary subfields.
      *
@@ -114,12 +122,6 @@ public:
      */
     void gravityField(spatialdata::spatialdb::GravityField* const g);
 
-    /** Set output manager.
-     *
-     * @param[in] manager Output manager for integrator.
-     */
-    void output(pylith::meshio::OutputManager* manager);
-
     /** Verify configuration is acceptable.
      *
      * @param[in] solution Solution field.
@@ -134,14 +136,28 @@ public:
     virtual
     void initialize(const pylith::topology::Field& solution) = 0;
 
-    /** Update auxiliary fields at beginning of time step.
+    /** Update at beginning of time step.
      *
      * @param[in] t Current time.
      * @param[in] dt Current time step.
      */
     virtual
-    void prestep(const double t,
-                 const double dt);
+    void prestep(const PylithReal t,
+                 const PylithReal dt);
+
+    /** Update at end of time step.
+     *
+     * @param[in] t Current time.
+     * @param[in] tindex Current time step.
+     * @param[in] dt Current time step.
+     * @param[in] solution Solution at time t.
+     */
+    virtual
+    void poststep(const PylithReal t,
+                  const PylithReal dt,
+                  const PylithInt tindex,
+                  const pylith::topology::Field& solution);
+
 
     /** Compute RHS residual for G(t,s).
      *
@@ -222,32 +238,6 @@ public:
                                      const pylith::topology::Field& solution) = 0;
 
 
-    /** Update state variables as needed.
-     *
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
-     */
-    virtual
-    void updateStateVars(const PylithReal t,
-                         const PylithReal dt,
-                         const pylith::topology::Field& solution);
-
-    // Write information (auxiliary field) output.
-    virtual
-    void writeInfo(void);
-
-    /** Write solution related output.
-     *
-     * @param[in] t Current time.
-     * @param[in] tindex Current time step.
-     * @param[in] solution Field with solution at current time.
-     */
-    virtual
-    void writeTimeStep(const PylithReal t,
-                       const PylithInt tindex,
-                       const pylith::topology::Field& solution);
-
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
@@ -267,6 +257,28 @@ protected:
     void _setFEConstants(const pylith::topology::Field& solution,
                          const PylithReal dt) const;
 
+    /** Update state variables as needed.
+     *
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    virtual
+    void _updateStateVars(const PylithReal t,
+                          const PylithReal dt,
+                          const pylith::topology::Field& solution);
+
+    /** Compute fields derived from solution and auxiliary field.
+     *
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    virtual
+    void _computeDerivedFields(const PylithReal t,
+                               const PylithReal dt,
+                               const pylith::topology::Field& solution);
+
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
 
@@ -274,7 +286,7 @@ protected:
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
     pylith::topology::Field* _auxField; ///< Auxiliary field for this integrator.
-    pylith::meshio::OutputManager* _output; ///< Output manager for integrator.
+    pylith::topology::Field* _derivedField; ///< Derived field for this integrator.
 
     pylith::utils::EventLogger* _logger;   ///< Event logger.
 
@@ -290,11 +302,8 @@ protected:
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    /// Not implemented.
-    IntegratorPointwise(const IntegratorPointwise&);
-
-    /// Not implemented
-    const IntegratorPointwise& operator=(const IntegratorPointwise&);
+    IntegratorPointwise(const IntegratorPointwise&); ///< Not implemented.
+    const IntegratorPointwise& operator=(const IntegratorPointwise&); ///< Not implemented.
 
 }; // IntegratorPointwise
 

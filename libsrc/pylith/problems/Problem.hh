@@ -19,9 +19,8 @@
 /**
  * @file libsrc/problems/Problem.hh
  *
- * @brief C++ object that manages formulating the equations.
+ * @brief C++ object that manages the solution of a problem.formulating the equations.
  */
-
 #if !defined(pylith_problems_problem_hh)
 #define pylith_problems_problem_hh
 
@@ -29,10 +28,10 @@
 #include "problemsfwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
+#include "pylith/problems/ObservedSubject.hh" // ISA ObservedSubject
 
 #include "pylith/feassemble/feassemblefwd.hh" // HASA IntegratorPointwise, ConstraintPointwise
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
-#include "pylith/meshio/meshiofwd.hh" // HASA OutputManager
 #include "spatialdata/units/unitsfwd.hh" // HASA Nondimensional
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA GravityField
 
@@ -42,15 +41,16 @@
 
 
 // Problem ----------------------------------------------------------
-/** Reform the Jacobian and residual for the problem.
+/** C++ object that manages the solution of a problem.
  *
  * We cast the problem in terms of F(t,s,\dot{s}) = G(t,s), s(t0) = s0.
  *
  * In PETSc time stepping (TS) notation, G is the RHS, and F is the I
  * function (which we call the LHS).
- *
  */
-class pylith::problems::Problem : public pylith::utils::PyreComponent {
+class pylith::problems::Problem :
+    public pylith::utils::PyreComponent,
+    public pylith::problems::ObservedSubject {
     friend class TestProblem;   // unit testing
 
     // PUBLIC ENUM //////////////////////////////////////////////////////////
@@ -119,14 +119,6 @@ public:
      */
     void constraints(pylith::feassemble::ConstraintPointwise* constraintArray[],
                      const int numConstraints);
-
-    /** Set handles to solution outputs.
-     *
-     * @param[in] outputArray Array of solution outputs.
-     * @param[in] numOutputs Number of solution outputs.
-     */
-    void outputs(pylith::meshio::OutputSoln* outputArray[],
-                 const int numOutputs);
 
     /** Do minimal initialization.
      *
@@ -243,7 +235,6 @@ protected:
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
     std::vector<pylith::feassemble::IntegratorPointwise*> _integrators;   ///< Array of integrators.
     std::vector<pylith::feassemble::ConstraintPointwise*> _constraints;   ///< Array of constraints.
-    std::vector<pylith::meshio::OutputSoln*> _outputs; ///< Array of solution output managers.
     SolverTypeEnum _solverType;   ///< Problem (solver) type.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////

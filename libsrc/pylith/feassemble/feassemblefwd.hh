@@ -30,44 +30,13 @@
 namespace pylith {
     namespace feassemble {
 
-        class CellGeometry;
-        class GeometryLine2D;
-        class GeometryLine3D;
-        class GeometryTri2D;
-        class GeometryTri3D;
-        class GeometryQuad2D;
-        class GeometryQuad3D;
-        class GeometryTet3D;
-        class GeometryHex3D;
+        class IntegratorPointwise; ///< Integration of terms in governing equation.
 
-        class Quadrature;
-        class QuadratureRefCell;
-        class QuadratureEngine;
-        class Quadrature1Din2D;
-        class Quadrature1Din3D;
-        class Quadrature2D;
-        class Quadrature2Din3D;
-        class Quadrature3D;
+        class ConstraintPointwise; ///< Constrained degrees of freedom.
 
-        class Constraint;
-        class Integrator;
+        class IntegratorObserver; //< Observes integrator.
 
-        class IntegratorElasticity;
-        class ElasticityImplicit;
-        class ElasticityExplicit;
-
-        class ElasticityExplicitTet4;
-        class ElasticityExplicitTri3;
-
-        class IntegratorElasticityLgDeform;
-        class ElasticityImplicitLgDeform;
-        class ElasticityExplicitLgDeform;
-
-        class ElasticityImplicitCUDA;
-
-        class IntegratorPointwise;
-        class ConstraintPointwise;
-        class AuxiliaryFactory;
+        class AuxiliaryFactory; ///< Creates auxiliary subfields.
 
     } // feassemble
 } // pylith

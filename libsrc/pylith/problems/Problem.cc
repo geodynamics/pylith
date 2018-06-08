@@ -25,7 +25,6 @@
 
 #include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
 #include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
-#include "pylith/meshio/OutputSoln.hh" // USES OutputSoln
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -49,7 +48,6 @@ pylith::problems::Problem::Problem() :
     _gravityField(NULL),
     _integrators(0),
     _constraints(0),
-    _outputs(0),
     _solverType(LINEAR)
 { // constructor
 } // constructor
@@ -168,26 +166,6 @@ pylith::problems::Problem::constraints(pylith::feassemble::ConstraintPointwise* 
     PYLITH_METHOD_END;
 } // constraints
 
-// ----------------------------------------------------------------------
-// Set constraints over the mesh.
-void
-pylith::problems::Problem::outputs(pylith::meshio::OutputSoln* outputArray[],
-                                   const int numOutputs)
-{ // outputs
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::output("<<outputArray<<", numOutputs="<<numOutputs<<")");
-
-    assert( (!outputArray && 0 == numOutputs) || (outputArray && 0 < numOutputs) );
-
-    _outputs.resize(numOutputs);
-    for (int i = 0; i < numOutputs; ++i) {
-        assert(outputArray[i]);
-        _outputs[i] = outputArray[i];
-    } // for
-
-    PYLITH_METHOD_END;
-} // outputs
-
 
 // ----------------------------------------------------------------------
 // Do minimal initialization.
@@ -274,14 +252,6 @@ pylith::problems::Problem::initialize(void)
     _solution->allocate();
     _solution->zeroLocal();
     _solution->createScatter(_solution->mesh(), "global");
-
-    // Initialize output.
-    const size_t numOutput = _outputs.size();
-    for (size_t i = 0; i < numOutput; ++i) {
-        assert(_outputs[i]);
-        const bool isInfo = false;
-        _outputs[i]->open(_solution->mesh(), isInfo);
-    } // for
 
     // Initialize residual.
     delete _residual; _residual = new pylith::topology::Field(_solution->mesh()); assert(_residual);
