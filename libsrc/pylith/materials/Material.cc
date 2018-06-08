@@ -24,6 +24,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::checkDisretization()
 #include "pylith/materials/AuxiliaryFactory.hh" // USES AuxiliaryFactory
+#include "pylith/feassemble/IntegratorObserver.hh" // USES IntegratorObserver
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/Stratum.hh" // USES StratumIS
 #include "pylith/meshio/OutputManager.hh" // USES OutputManager
@@ -153,7 +154,8 @@ pylith::materials::Material::initialize(const pylith::topology::Field& solution)
     factory->initializeSubfields();
 
     //_auxField->view("MATERIAL AUXILIARY FIELD"); // :DEBUG: TEMPORARY
-    writeInfo();
+    const bool infoOnly = true;
+    notifyObservers(0.0, 0, solution, infoOnly);
 
     PYLITH_METHOD_END;
 } // initialize
@@ -278,7 +280,7 @@ pylith::materials::Material::computeLHSJacobianLumpedInv(pylith::topology::Field
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxField().localVector()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxField()->localVector()); PYLITH_CHECK_ERROR(err);
 
     PetscVec vecRowSum = NULL;
     err = DMGetGlobalVector(dmSoln, &vecRowSum); PYLITH_CHECK_ERROR(err);
@@ -302,42 +304,6 @@ pylith::materials::Material::computeLHSJacobianLumpedInv(pylith::topology::Field
 
     PYLITH_METHOD_END;
 } // computeLHSJacobianInverseExplicit
-
-
-// ----------------------------------------------------------------------
-// Write information (auxiliary field) output.
-void
-pylith::materials::Material::writeInfo(void) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("writeInfo(void)");
-
-    if (_output) {
-        assert(_auxField);
-        _output->writeInfo(*_auxField, "material-id", _id);
-    } // if
-
-    PYLITH_METHOD_END;
-
-} // writeInfo
-
-
-// ----------------------------------------------------------------------
-// Write solution related output.
-void
-pylith::materials::Material::writeTimeStep(const PylithReal t,
-                                           const PylithInt tindex,
-                                           const pylith::topology::Field& solution) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
-
-    if (_output) {
-        assert(_auxField);
-        _output->writeTimeStep(t, tindex, solution, *_auxField);
-    } // if
-
-    PYLITH_METHOD_END;
-
-} // writeTimeStep
 
 
 // ----------------------------------------------------------------------
@@ -417,7 +383,7 @@ pylith::materials::Material::_computeJacobian(PetscMat jacobianMat,
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmMesh, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxField().localVector()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxField()->localVector()); PYLITH_CHECK_ERROR(err);
 
     // Compute the local Jacobian
     assert(solution.localVector());

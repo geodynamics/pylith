@@ -23,10 +23,11 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
+#include "pylith/feassemble/IntegratorObserver.hh" // USES IntegratorObserver
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
-#include "pylith/meshio/OutputManager.hh" // USES OutputManager
+
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -176,9 +177,8 @@ pylith::bc::Neumann::initialize(const pylith::topology::Field& solution) {
     factory->initializeSubfields();
 
     //_auxField->view("AUXILIARY FIELD"); // :DEBUG:
-    if (_output) {
-        _output->writeInfo(*_auxField);
-    } // if
+    const bool infoOnly = true;
+    notifyObservers(0.0, 0, solution, infoOnly);
 
     PYLITH_METHOD_END;
 } // initialize

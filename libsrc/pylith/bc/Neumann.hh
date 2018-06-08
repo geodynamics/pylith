@@ -34,7 +34,7 @@
 /// @brief Neumann (e.g., traction) boundary conditions.
 class pylith::bc::Neumann :
     public pylith::bc::BoundaryCondition,
-    public pylith::feassemble::IntegratorPointwise { // class Neumann
+    public pylith::feassemble::IntegratorPointwise {
     friend class TestNeumann;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////

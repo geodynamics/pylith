@@ -74,6 +74,16 @@ public:
     void checkDiscretization(const pylith::topology::Field& target,
                              const pylith::topology::Field& auxiliary);
 
+    /** Check to see if fields have the same subfields and match in size.
+     *
+     * @param[in] fieldA Field to check.
+     * @param[in] fieldB Field to check.
+     * @returns true if fields have the same subfields and match in size; otherwise false.
+     */
+    static
+    bool layoutsMatch(const pylith::topology::Field& fieldA,
+                      const pylith::topology::Field& fieldB);
+
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 

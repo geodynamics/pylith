@@ -40,112 +40,76 @@
 /** @brief C++ object for managing output of finite-element data over
  * a subdomain.
  */
-class pylith::meshio::OutputSolnPoints : public OutputManager
-{ // OutputSolnPoints
-friend class TestOutputSolnPoints;   // unit testing
+class pylith::meshio::OutputSolnPoints : public OutputManager {
+    friend class TestOutputSolnPoints;   // unit testing
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
-/// Constructor
-OutputSolnPoints(void);
+    /// Constructor
+    OutputSolnPoints(void);
 
-/// Destructor
-~OutputSolnPoints(void);
+    /// Destructor
+    ~OutputSolnPoints(void);
 
-/// Deallocate PETSc and local data structures.
-void deallocate(void);
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
 
-/** Get mesh associated with points.
- *
- * @returns Mesh associated with points.
- */
-const pylith::topology::Mesh& pointsMesh(void);
+    /** Setup interpolator.
+     *
+     * @param mesh Domain mesh.
+     * @param points Array of dimensioned coordinates for points [numPoints*spaceDim].
+     * @param numPoints Number of points.
+     * @param spaceDim Spatial dimension for coordinates.
+     * @param names Array with name for each point, e.g., station name.
+     * @param nunNames Number of names in array.
+     * @param normalizer Nondimensionalizer.
+     */
+    void setupInterpolator(pylith::topology::Mesh* mesh,
+                           const PylithScalar* points,
+                           const int numPoints,
+                           const int spaceDim,
+                           const char* const* names,
+                           const int numNames,
+                           const spatialdata::units::Nondimensional& normalizer);
 
-/** Setup interpolator.
- *
- * @param mesh Domain mesh.
- * @param points Array of dimensioned coordinates for points [numPoints*spaceDim].
- * @param numPoints Number of points.
- * @param spaceDim Spatial dimension for coordinates.
- * @param names Array with name for each point, e.g., station name.
- * @param nunNames Number of names in array.
- * @param normalizer Nondimensionalizer.
- */
-void setupInterpolator(pylith::topology::Mesh* mesh,
-                       const PylithScalar* points,
-                       const int numPoints,
-                       const int spaceDim,
-                       const char* const* names,
-                       const int numNames,
-                       const spatialdata::units::Nondimensional& normalizer);
+    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected:
 
-/** Prepare for output.
- *
- * @param mesh Finite-element mesh object.
- * @param numTimeSteps Expected number of time steps.
- * @param label Name of label defining cells to include in output
- *   (=0 means use all cells in mesh).
- * @param labelId Value of label defining which cells to include.
- */
-void open(const pylith::topology::Mesh& mesh,
-          const int numTimeSteps,
-          const char* label =0,
-          const int labelId =0);
+    /** Prepare for output.
+     *
+     * @param[in] mesh Finite-element mesh object.
+     * @param[in] isInfo True if only writing info values.
+     */
+    void _open(const pylith::topology::Mesh& mesh,
+               const bool isInfo);
 
-/** Setup file for writing fields at time step.
- *
- * @param t Time of time step.
- * @param mesh Finite-element mesh object.
- * @param label Name of label defining cells to include in output
- *   (=0 means use all cells in mesh).
- * @param labelId Value of label defining which cells to include.
- */
-void openTimeStep(const PylithScalar t,
-                  const pylith::topology::Mesh& mesh,
-                  const char* label =0,
-                  const int labelId =0);
+    /** Append finite-element vertex field to file.
+     *
+     * @param t Time associated with field.
+     * @param field Vertex field.
+     * @param mesh Mesh for output.
+     */
+    void _appendField(const PylithReal t,
+                      pylith::topology::Field& field,
+                      const topology::Mesh& mesh);
 
-/** Append finite-element vertex field to file.
- *
- * @param t Time associated with field.
- * @param field Vertex field.
- * @param mesh Mesh for output.
- */
-void appendVertexField(const PylithScalar t,
-                       pylith::topology::Field& field,
-                       const topology::Mesh& mesh);
+    /// Write dataset with names of points to file.
+    void _writePointNames(void);
 
-/** Append finite-element cell field to file.
- *
- * @param t Time associated with field.
- * @param field Cell field.
- * @param label Name of label defining cells to include in output
- *   (=0 means use all cells in mesh).
- * @param labelId Value of label defining which cells to include.
- */
-void appendCellField(const PylithScalar t,
-                     pylith::topology::Field& field,
-                     const char* label =0,
-                     const int labelId =0);
-
-/** Write dataset with names of points to file.
- */
-void writePointNames(void);
-
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-OutputSolnPoints(const OutputSolnPoints&);   ///< Not implemented.
-const OutputSolnPoints& operator=(const OutputSolnPoints&);   ///< Not implemented
+    OutputSolnPoints(const OutputSolnPoints&);   ///< Not implemented.
+    const OutputSolnPoints& operator=(const OutputSolnPoints&);   ///< Not implemented
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-pylith::topology::Mesh* _mesh;   ///< Domain mesh.
-pylith::topology::Mesh* _pointsMesh;   ///< Mesh for points (no cells).
-DMInterpolationInfo _interpolator;   ///< Field interpolator.
-pylith::string_vector _stations; ///< Array of station names.
+    pylith::topology::Mesh* _mesh;   ///< Domain mesh.
+    pylith::topology::Mesh* _pointsMesh;   ///< Mesh for points (no cells).
+    DMInterpolationInfo _interpolator;   ///< Field interpolator.
+    pylith::string_vector _stations; ///< Array of station names.
 
 }; // OutputSolnPoints
 

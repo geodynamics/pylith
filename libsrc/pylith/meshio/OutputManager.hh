@@ -28,6 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
+#include "pylith/problems/Observer.hh" // ISA Observer
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
@@ -35,16 +36,10 @@
 
 // OutputManager --------------------------------------------------------
 /// Manager for output of finite-element data.
-class pylith::meshio::OutputManager : public pylith::utils::PyreComponent { // OutputManager
+class pylith::meshio::OutputManager :
+    public pylith::utils::PyreComponent,
+    public pylith::problems::Observer {
     friend class TestOutputManager;   // unit testing
-
-    // PUBLIC ENUMS /////////////////////////////////////////////////////////
-public:
-
-    enum TriggerEnum {
-        SKIP_TIMESTEPS=0, ///< Skip X time steps between writes.
-        ELAPSED_TIME=1, ///< Skip x time between writes.
-    }; // TriggerEnum
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
@@ -59,215 +54,130 @@ public:
     virtual
     void deallocate(void);
 
-    /** Set trigger for how often to write output.
+    /** Set output trigger for how often to write output.
      *
-     * @param[in] flag Flag indicating which method to use for determining how often to write output.
+     * @param[in] otrigger Output trigger.
      */
-    void trigger(TriggerEnum flag);
+    void trigger(pylith::meshio::OutputTrigger* const otrigger);
 
     /** Get trigger for how often to write otuput.
      *
-     * @returns Flag indicating which method to use for determining how often to write output.
+     * @returns Output trigger.
      */
-    TriggerEnum trigger(void) const;
-
-    /** Set number of time steps to skip between writes.
-     *
-     * @param[in] Number of time steps to skip between writes.
-     */
-    void numTimeStepsSkip(const int value);
-
-    /** Get number of time steps to skip between writes.
-     *
-     * @returns Number of time steps to skip between writes.
-     */
-    int numTimeStepsSkip(void) const;
-
-    /** Set elapsed time between writes.
-     *
-     * @param[in] Elapsed time between writes.
-     */
-    void timeSkip(const double value);
-
-    /** Get elapsed time between writes.
-     *
-     * @returns Elapsed time between writes.
-     */
-    double timeSkip(void) const;
+    const pylith::meshio::OutputTrigger* trigger(void) const;
 
     /** Set writer to write data to file.
      *
      * @param[in] datawriter Writer for data.
      */
-    void writer(DataWriter* const datawriter);
+    void writer(pylith::meshio::DataWriter* const datawriter);
 
     /** Set filter for vertex data.
      *
      * @param[in] filter Filter to apply to vertex data before writing.
      */
-    void vertexFilter(VertexFilter* const filter);
+    void fieldFilter(pylith::meshio::FieldFilter* const filter);
 
-    /** Set filter for cell data.
-     *
-     * @param[in] filter Filter to apply to cell data before writing.
-     */
-    void cellFilter(CellFilter* const filter);
-
-    /** Set names of vertex information related fields to output.
+    /** Set names of information fields requested for output.
      *
      * @param[in] names Array of field names.
      * @param[in] numNames Length of array.
      */
-    void vertexInfoFields(const char* names[],
-                          const int numNames);
+    void infoFields(const char* names[],
+                    const int numNames);
 
-    /** Get names of vertex information fields requested for output.
+    /** Get names of information fields requested for output.
      *
      * @returns Array of field names.
      */
-    const pylith::string_vector& vertexInfoFields(void) const;
+    const pylith::string_vector& infoFields(void) const;
 
-    /** Set names of vertex data related fields to output.
+    /** Set names of data fields requested for output.
      *
      * @param[in] names Array of field names.
      * @param[in] numNames Length of array.
      */
-    void vertexDataFields(const char* names[],
-                          const int numNames);
+    void dataFields(const char* names[],
+                    const int numNames);
 
-    /** Get names of vertex data fields requested for output.
+    /** Get names of data fields requested for output.
      *
      * @returns Array of field names.
      */
-    const pylith::string_vector& vertexDataFields(void) const;
-
-    /** Set names of cell information related fields to output.
-     *
-     * @param[in] names Array of field names.
-     * @param[in] numNames Length of array.
-     */
-    void cellInfoFields(const char* names[],
-                        const int numNames);
-
-    /** Get names of cell information fields requested for output.
-     *
-     * @returns Array of field names.
-     */
-    const pylith::string_vector& cellInfoFields(void) const;
-
-    /** Set names of cell data related fields to output.
-     *
-     * @param[in] names Array of field names.
-     * @param[in] numNames Length of array.
-     */
-    void cellDataFields(const char* names[],
-                        const int numNames);
-
-    /** Get names of cell data fields requested for output.
-     *
-     * @returns Array of field names.
-     */
-    const pylith::string_vector& cellDataFields(void) const;
+    const pylith::string_vector& dataFields(void) const;
 
     /** Verify configuration.
      *
      * @param[in] solution Solution field.
-     * @param[in] auxField Auxiliary field.
      */
     virtual
-    void verifyConfiguration(const pylith::topology::Field& solution,
-                             const pylith::topology::Field& auxField) const;
+    void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
 
-    /** Write information.
-     *
-     * @param[in] auxField Auxiliary field.
-     * @param[in] label Name of label defining cells to include in output (=0 means use all cells in mesh).
-     * @param[in] labelId Value of label defining which cells to include.
-     */
-    virtual
-    void writeInfo(const pylith::topology::Field& auxField,
-                   const char* label=NULL,
-                   const int labelId=0);
-
-    /** Write solution at time step.
+    /** Receive update from subject.
      *
      * @param[in] t Current time.
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
-     * @param[in] auxField Auxiliary field.
+     * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after initialization).
      */
     virtual
-    void writeTimeStep(const PylithReal t,
-                       const PylithInt tindex,
-                       const pylith::topology::Field& solution,
-                       const pylith::topology::Field& auxField);
+    void update(const PylithReal t,
+                const PylithInt tindex,
+                const pylith::topology::Field& solution,
+                const bool infoOnly=false);
+
+    // PROTECTED METHODS ////////////////////////////////////////////////////
+protected:
+
+    /// Write diagnostic information.
+    void _writeInfo(void);
+
+    /** Write output for step in solution.
+     *
+     * @param[in] t Current time.
+     * @param[in] tindex Current time step.
+     * @param[in] solution Solution at time t.
+     */
+    void _writeDataStep(const PylithReal t,
+                        const PylithInt tindex,
+                        const pylith::topology::Field& solution);
 
     /** Prepare for output.
      *
      * @param[in] mesh Finite-element mesh object.
      * @param[in] isInfo True if only writing info values.
-     * @param[in] label Name of label defining cells to include in output (=0 means use all cells in mesh).
-     * @param[in] labelId Value of label defining which cells to include.
      */
     virtual
-    void open(const topology::Mesh& mesh,
-              const bool isInfo,
-              const char* label=NULL,
-              const int labelId=0);
+    void _open(const pylith::topology::Mesh& mesh,
+               const bool isInfo);
 
     /// Close output files.
     virtual
-    void close(void);
+    void _close(void);
 
-    /** Setup file for writing fields at time step.
+    /** Prepare for output at this solution step.
      *
-     * @param[in] t Time of time step.
-     * @param[in] mesh Finite-element mesh object.
-     * @param[in] label Name of label defining cells to include in output (=0 means use all cells in mesh).
-     * @param[in] labelId Value of label defining which cells to include.
+     * @param[in] t Time associated with field.
+     * @param[in] mesh Mesh for output.
      */
     virtual
-    void openTimeStep(const PylithReal t,
-                      const topology::Mesh& mesh,
-                      const char* label=NULL,
-                      const int labelId=0);
+    void _openDataStep(const PylithReal t,
+                       const pylith::topology::Mesh& mesh);
 
-    /// End writing fields at time step.
+    /// Finalize output at this solution step.
     virtual
-    void closeTimeStep(void);
+    void _closeDataStep(void);
 
     /** Append finite-element vertex field to file.
      *
      * @param[in] t Time associated with field.
-     * @param[in] field Vertex field.
+     * @param[in] field Field to output.
      * @param[in] mesh Mesh for output.
      */
     virtual
-    void appendVertexField(const PylithReal t,
-                           topology::Field& field,
-                           const topology::Mesh& mesh);
-
-    /** Append finite-element cell field to file.
-     *
-     * @param[in] t Time associated with field.
-     * @param[in] field Cell field.
-     * @param[in] label Name of label defining cells to include in output (=0 means use all cells in mesh).
-     * @param[in] labelId Value of label defining which cells to include.
-     */
-    virtual
-    void appendCellField(const PylithReal t,
-                         topology::Field& field,
-                         const char* label=NULL,
-                         const int labelId=0);
-
-    /** Check whether we want to write output at time t.
-     *
-     * @param[in] t Time of proposed write.
-     * @param[in] tindex Inxex of current time step.
-     * @returns True if output should be written at time t, false otherwise.
-     */
-    bool shouldWrite(const PylithReal t,
-                     const PylithInt tindex);
+    void _appendField(const PylithReal t,
+                      pylith::topology::Field& field,
+                      const pylith::topology::Mesh& mesh);
 
     /** Get buffer for field.
      *
@@ -277,36 +187,37 @@ public:
      * @param[in] name Name of subfield (optional).
      * @returns Field to use as buffer for outputting field.
      */
-    pylith::topology::Field& getBuffer(const pylith::topology::Field& fieldIn,
-                                       const char* name=NULL);
-
-    // PROTECTED METHODS ////////////////////////////////////////////////////
-protected:
+    pylith::topology::Field* _getBuffer(const pylith::topology::Field& fieldIn,
+                                        const char* name=NULL);
 
     /** Dimension field.
      *
      * @param[in] fieldIn Field to dimensionalize.
      */
-    topology::Field& _dimension(topology::Field& fieldIn);
+    pylith::topology::Field* _dimension(pylith::topology::Field* fieldIn);
+
+    /** Get basis order of field.
+     *
+     * @param[in] field Field with one subfield for output.
+     *
+     * @returns Basis order if field contains single subfield, otherwise -1;
+     */
+    int _basisOrder(const pylith::topology::Field& field);
 
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
 
-    pylith::topology::Fields* _fields;   ///< Container with fields used for output.
+    pylith::topology::Fields* _fields;   ///< Container with field buffers used for output.
     DataWriter* _writer;   ///< Writer for data.
-    VertexFilter* _vertexFilter;   ///< Filter applied to vertex data.
-    CellFilter* _cellFilter;   ///< Filter applied to cell data.
+    FieldFilter* _fieldFilter;   ///< Filter applied to fields.
+    OutputTrigger* _trigger; ///< Trigger for deciding how often to write output.
 
-    pylith::string_vector _vertexInfoFields;
-    pylith::string_vector _vertexDataFields;
-    pylith::string_vector _cellInfoFields;
-    pylith::string_vector _cellDataFields;
+    // :TODO: Remove _label and _labelId once materials use their own PetscDM.
+    std::string _label; ///< Name of label defining cells to include in output (=0 means use all cells in mesh).
+    PylithInt _labelId; ///< Value of label defining which cells to include.
 
-    PylithReal _timeSkip; ///< Elapsed time between writes.
-    PylithReal _timeWrote; ///< Time when data was previously writtern.
-    PylithInt _numTimeStepsSkip; ///< Number of time steps to skip between writes.
-    PylithInt _timeStepWrote; ///< Time step when data was previously written.
-    TriggerEnum _trigger; ///< Flag indicating whether to use elapsed time or number of time steps when deciding when to write.
+    pylith::string_vector _infoFields;
+    pylith::string_vector _dataFields;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:

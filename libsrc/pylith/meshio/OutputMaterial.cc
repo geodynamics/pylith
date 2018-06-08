@@ -32,8 +32,7 @@ const char* pylith::meshio::OutputMaterial::_pyreComponent = "outputmaterial";
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshio::OutputMaterial::OutputMaterial(void)
-{ // constructor
+pylith::meshio::OutputMaterial::OutputMaterial(void) {
     PyreComponent::name(_pyreComponent);
 } // constructor
 
@@ -57,12 +56,9 @@ pylith::meshio::OutputMaterial::deallocate(void) {
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::meshio::OutputMaterial::verifyConfiguration(const pylith::topology::Field& solution,
-                                                    const pylith::topology::Field& auxField) const {
+pylith::meshio::OutputMaterial::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::verifyConfiguration(auxField="<<auxField.label()<<")");
-
-    OutputManager::verifyConfiguration(solution, auxField);
+    PYLITH_COMPONENT_DEBUG("OutputManager::verifyConfiguration(solution="<<solution.label()<<")");
 
     PYLITH_COMPONENT_ERROR("@brad :TODO: Implement verifyConfiguration().");
 
@@ -70,20 +66,15 @@ pylith::meshio::OutputMaterial::verifyConfiguration(const pylith::topology::Fiel
 } // verifyConfiguration
 
 // ----------------------------------------------------------------------
-// Write solution at time step.
+// Write output for step in solution.
 void
-pylith::meshio::OutputMaterial::writeTimeStep(const PylithReal t,
-                                              const PylithInt tindex,
-                                              const pylith::topology::Field& solution,
-                                              const pylith::topology::Field& auxField) {
+pylith::meshio::OutputMaterial::_writeDataStep(const PylithReal t,
+                                               const PylithInt tindex,
+                                               const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputMaterial::writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<", auxField="<<auxField.label()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputMaterial::_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
-    if (!this->shouldWrite(t, tindex)) {
-        PYLITH_METHOD_END;
-    } // if
-
-    const pylith::string_vector& subfieldNames = (1 == _vertexDataFields.size() && std::string("all") == _vertexDataFields[0]) ? solution.subfieldNames() : _vertexDataFields;
+    const pylith::string_vector& subfieldNames = (1 == _dataFields.size() && std::string("all") == _dataFields[0]) ? solution.subfieldNames() : _dataFields;
 
 #if 0
     this->openTimeStep(t, solution.mesh());
@@ -96,11 +87,11 @@ pylith::meshio::OutputMaterial::writeTimeStep(const PylithReal t,
     } // for
     this->closeTimeStep();
 #else
-    PYLITH_COMPONENT_ERROR("@brad :TODO: Implemenet writeTimeStep().");
+    PYLITH_COMPONENT_ERROR("@brad :TODO: Implemenet _writeDataStep().");
 #endif
 
     PYLITH_METHOD_END;
-} // writeTimeStep
+} // _writeDataStep
 
 
 // End of file

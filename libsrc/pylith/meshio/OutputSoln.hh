@@ -50,38 +50,27 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Set names of solution fields to output.
-     *
-     * @param[in] names Array of names of fields to output.
-     * @param[in] numNames Length of array.
-     */
-    void vertexDataFields(const char* names[],
-                          const int numNames);
-
     /** Verify configuration.
      *
      * @param[in] solution Solution field.
-     * @param[in] auxField Auxiliary field.
      */
-    void verifyConfiguration(const pylith::topology::Field& solution,
-                             const pylith::topology::Field& auxField) const;
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
+
+    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected:
 
     /** Write solution at time step.
      *
      * @param[in] t Current time.
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
-     * @param[in] auxField Auxiliary field.
      */
-    void writeTimeStep(const PylithReal t,
-                       const PylithInt tindex,
-                       const pylith::topology::Field& solution,
-                       const pylith::topology::Field& auxField);
+    void _writeDataStep(const PylithReal t,
+                        const PylithInt tindex,
+                        const pylith::topology::Field& solution);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
-
-    pylith::string_vector _vertexDataFields; ///< Names of solution fields to output.
 
     static const char* _pyreComponent; ///< Name of Pyre component.
 

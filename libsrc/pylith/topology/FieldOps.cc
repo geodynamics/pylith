@@ -170,8 +170,40 @@ pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& t
     } // auxiliary subfields
 
     PYLITH_METHOD_END;
-
 } // checkDiscretization
+
+// ----------------------------------------------------------------------
+// Check to see if fields have the same subfields and match in size.
+bool
+pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
+                                         const pylith::topology::Field& fieldB) {
+    PYLITH_METHOD_BEGIN;
+    //PYLITH_JOURNAL_DEBUG("layoutsMatch(fieldA="<<fieldA.label()<<", fieldB="<<fieldB.label()<<")");
+
+    bool isMatch = true;
+
+    // Check to see if fields have same chart and section sizes.
+    if (fieldA.chartSize() != fieldB.chartSize()) { isMatch = false; }
+    if (fieldA.sectionSize() != fieldB.sectionSize()) { isMatch = false; }
+
+    // Check to see if number of subfields match.
+    const pylith::string_vector& subfieldNamesA = fieldA.subfieldNames();
+    const pylith::string_vector& subfieldNamesB = fieldB.subfieldNames();
+    if (subfieldNamesA.size() != subfieldNamesB.size()) { isMatch = false; }
+
+    // Check to see if subfields have same number of components and discretizations.
+    const size_t numSubfields = subfieldNamesA.size();
+    for (size_t i = 0; i < numSubfields; ++i) {
+        const pylith::topology::Field::SubfieldInfo& infoA = fieldA.subfieldInfo(subfieldNamesA[i].c_str());
+        const pylith::topology::Field::SubfieldInfo& infoB = fieldB.subfieldInfo(subfieldNamesB[i].c_str());
+
+        if (infoA.description.numComponents != infoB.description.numComponents) { isMatch = false; }
+        if (infoA.fe.basisOrder != infoB.fe.basisOrder) { isMatch = false; }
+    } // for
+
+    //PYLITH_JOURNAL_DEBUG("layoutsMatch return value="<<isMatch<<".");
+    PYLITH_METHOD_RETURN(isMatch);
+} // layoutsMatch
 
 
 // End of file

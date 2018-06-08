@@ -53,22 +53,21 @@ public:
     /** Verify configuration.
      *
      * @param[in] solution Solution field.
-     * @param[in] auxField AUxiliary field.
      */
-    void verifyConfiguration(const pylith::topology::Field& solution,
-                             const pylith::topology::Field& auxField) const;
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
+
+    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected:
 
     /** Write solution at time step.
      *
      * @param[in] t Current time.
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
-     * @param[in] auxField Auxiliary field.
      */
-    void writeTimeStep(const PylithReal t,
-                       const PylithInt tindex,
-                       const pylith::topology::Field& solution,
-                       const pylith::topology::Field& auxField);
+    void _writeDataStep(const PylithReal t,
+                        const PylithInt tindex,
+                        const pylith::topology::Field& solution);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:

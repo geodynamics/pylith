@@ -25,7 +25,6 @@
 
 #include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
 #include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
-#include "pylith/meshio/OutputSoln.hh" // USES OutputSoln
 
 #include "petscts.h" // USES PetscTS
 
@@ -374,21 +373,14 @@ pylith::problems::TimeDependent::poststep(void)
     assert(_solution);
     _solution->scatterVectorToLocal(solutionVec);
 
-    // Output solution.
-    pylith::topology::Field nullField(_solution->mesh());
-    const size_t numOutput = _outputs.size();
-    for (size_t i = 0; i < numOutput; ++i) {
-        assert(_outputs[i]);
-        _outputs[i]->writeTimeStep(t, tindex, *_solution, nullField);
-    } // for
-
-    // Update state variables
+    // Update integrators.
     const size_t numIntegrators = _integrators.size();
-    assert(numIntegrators > 0); // must have at least 1 integrator
     for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->updateStateVars(t, dt, *_solution);
-        _integrators[i]->writeTimeStep(t, tindex, *_solution);
+        _integrators[i]->poststep(t, tindex, dt, *_solution);
     }  // for
+
+    // Send problem observers updated solution.
+    notifyObservers(t, tindex, *_solution);
 
     PYLITH_METHOD_END;
 } // poststep

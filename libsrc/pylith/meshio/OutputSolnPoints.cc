@@ -29,6 +29,8 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" \
     // USES Nondimensional
@@ -67,18 +69,6 @@ pylith::meshio::OutputSolnPoints::deallocate(void)
 
     PYLITH_METHOD_END;
 } // deallocate
-
-// ----------------------------------------------------------------------
-// Get mesh associated with points.
-const pylith::topology::Mesh&
-pylith::meshio::OutputSolnPoints::pointsMesh(void)
-{ // pointsMesh
-    PYLITH_METHOD_BEGIN;
-
-    assert(_pointsMesh);
-    PYLITH_METHOD_RETURN(*_pointsMesh);
-} // pointsMesh
-
 
 // ----------------------------------------------------------------------
 // Setup interpolator.
@@ -190,52 +180,30 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
 // ----------------------------------------------------------------------
 // Prepare for output.
 void
-pylith::meshio::OutputSolnPoints::open(const topology::Mesh& mesh,
-                                       const int numTimeSteps,
-                                       const char* label,
-                                       const int labelId)
-{ // open
+pylith::meshio::OutputSolnPoints::_open(const topology::Mesh& mesh,
+                                        const bool isInfo) {
     PYLITH_METHOD_BEGIN;
 
-    assert(!label);
-    assert(!labelId);
-
     assert(_pointsMesh);
-    OutputManager::open(*_pointsMesh, numTimeSteps, label, labelId);
+    assert(_writer);
+    _writer->open(*_pointsMesh, isInfo, _label.length() ? _label.c_str() : NULL, _labelId);
 
     PYLITH_METHOD_END;
 } // open
 
 
 // ----------------------------------------------------------------------
-// Setup file for writing fields at time step.
+// Append finite-element field to file.
 void
-pylith::meshio::OutputSolnPoints::openTimeStep(const PylithScalar t,
-                                               const topology::Mesh& mesh,
-                                               const char* label,
-                                               const int labelId)
-{ // openTimeStep
+pylith::meshio::OutputSolnPoints::_appendField(const PylithReal t,
+                                               topology::Field& field,
+                                               const topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
 
-    assert(!label);
-    assert(!labelId);
-
-    assert(_pointsMesh);
-    OutputManager::openTimeStep(t, *_pointsMesh, label, labelId);
-
-    PYLITH_METHOD_END;
-} // openTimeStep
-
-
-// ----------------------------------------------------------------------
-// Append finite-element vertex field to file.
-void
-pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
-                                                    topology::Field& field,
-                                                    const topology::Mesh& mesh)
-{ // appendVertexField
-    PYLITH_METHOD_BEGIN;
-
+#if 1
+    PYLITH_COMPONENT_ERROR(":TODO: Implement OutputSolnPoints::appendField().");
+    throw std::logic_error(":TODO: Implement OutputSolnPoints::appendField().");
+#else
     assert(_mesh);
     assert(_fields);
 
@@ -291,27 +259,16 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
     err = DMInterpolationEvaluate(_interpolator, dmMesh, field.localVector(), fieldInterp.localVector()); PYLITH_CHECK_ERROR(err);
 
     OutputManager::appendVertexField(t, fieldInterp, *_pointsMesh);
+#endif
 
     PYLITH_METHOD_END;
 } // appendVertexField
 
 
 // ----------------------------------------------------------------------
-// Append finite-element cell field to file.
-void
-pylith::meshio::OutputSolnPoints::appendCellField(const PylithScalar t,
-                                                  topology::Field& field,
-                                                  const char* label,
-                                                  const int labelId)
-{ // appendCellField
-    throw std::logic_error("OutputSolnPoints::appendCellField() not implemented.");
-} // appendCellField
-
-// ----------------------------------------------------------------------
 // Write dataset with names of points to file.
 void
-pylith::meshio::OutputSolnPoints::writePointNames(void)
-{ // writePointNames
+pylith::meshio::OutputSolnPoints::_writePointNames(void) {
     PYLITH_METHOD_BEGIN;
 
     assert(_writer);
