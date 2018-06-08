@@ -268,10 +268,10 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
     CPPUNIT_ASSERT(_mydata->normalizer);
     const PylithReal lengthScale = _mydata->normalizer->lengthScale();
 
-    const pylith::topology::Field& auxField = _mymaterial->auxField();
+    const pylith::topology::Field* auxField = _mymaterial->auxField(); assert(auxField);
     { // Test getting density field.
         pylith::topology::Field density(*_mesh);
-        density.copySubfield(auxField, "density");
+        density.copySubfield(*auxField, "density");
 
         //density.view("DENSITY"); // DEBUGGING
 
@@ -295,7 +295,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
 
     { // Test getting bulk_modulus field.
         pylith::topology::Field bulkModulus(*_mesh);
-        bulkModulus.copySubfield(auxField, "bulk_modulus");
+        bulkModulus.copySubfield(*auxField, "bulk_modulus");
 
         //bulkModulus.view("BULK MODULUS"); // DEBUGGING
 
@@ -319,7 +319,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
 
     { // Test getting maxwell_time field.
         pylith::topology::Field maxwellTime(*_mesh);
-        maxwellTime.copySubfield(auxField, "maxwell_time");
+        maxwellTime.copySubfield(*auxField, "maxwell_time");
 
         //maxwellTime.view("MAXWELL TIME"); // DEBUGGING
 
@@ -343,7 +343,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
 
     if (_mymaterial->_useReferenceState) { // Test getting reference_stress field.
         pylith::topology::Field referenceStress(*_mesh);
-        referenceStress.copySubfield(auxField, "reference_stress");
+        referenceStress.copySubfield(*auxField, "reference_stress");
 
         //referenceStress.view("REFERENCE STRESS"); // DEBUGGING
 
@@ -367,7 +367,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
 
     if (_mymaterial->_useReferenceState) { // Test getting reference_strain field.
         pylith::topology::Field referenceStrain(*_mesh);
-        referenceStrain.copySubfield(auxField, "reference_strain");
+        referenceStrain.copySubfield(*auxField, "reference_strain");
 
         //referenceStrain.view("REFERENCE STRAIN"); // DEBUGGING
 

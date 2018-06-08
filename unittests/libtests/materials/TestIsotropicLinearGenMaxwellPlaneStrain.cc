@@ -79,7 +79,7 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testAccessors(void)
     const bool flag = false;
 
     _mymaterial->useInertia(flag);
-	CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of useInertia() failed.", flag, _mymaterial->_useInertia);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of useInertia() failed.", flag, _mymaterial->_useInertia);
 
     _mymaterial->useInertia(!flag);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of useInertia() failed.", !flag, _mymaterial->_useInertia);
@@ -281,10 +281,10 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
     CPPUNIT_ASSERT(_mydata->normalizer);
     const PylithReal lengthScale = _mydata->normalizer->lengthScale();
 
-    const pylith::topology::Field& auxField = _mymaterial->auxField();
+    const pylith::topology::Field* auxField = _mymaterial->auxField(); assert(auxField);
     { // Test getting density field.
         pylith::topology::Field density(*_mesh);
-        density.copySubfield(auxField, "density");
+        density.copySubfield(*auxField, "density");
 
         //density.view("DENSITY"); // DEBUGGING
 
@@ -303,12 +303,12 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         queryDensity.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting density subfield from auxiliary field failed.", 0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting density subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting density field
 
     { // Test getting bulk_modulus field.
         pylith::topology::Field bulkModulus(*_mesh);
-        bulkModulus.copySubfield(auxField, "bulk_modulus");
+        bulkModulus.copySubfield(*auxField, "bulk_modulus");
 
         //bulkModulus.view("BULK MODULUS"); // DEBUGGING
 
@@ -327,12 +327,12 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         queryBulkModulus.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting bulk modulus subfield from auxiliary field failed.", 0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting bulk modulus subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting bulk_modulus field
 
     { // Test getting maxwell_time field.
         pylith::topology::Field maxwellTime(*_mesh);
-        maxwellTime.copySubfield(auxField, "maxwell_time");
+        maxwellTime.copySubfield(*auxField, "maxwell_time");
 
         //maxwellTime.view("MAXWELL TIME"); // DEBUGGING
 
@@ -351,12 +351,12 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         queryMaxwellTime.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting Maxwell time subfield from auxiliary field failed.", 0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting Maxwell time subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting maxwell_time field
 
     { // Test getting shear_modulus_ratio field.
         pylith::topology::Field shearModulusRatio(*_mesh);
-        shearModulusRatio.copySubfield(auxField, "shear_modulus_ratio");
+        shearModulusRatio.copySubfield(*auxField, "shear_modulus_ratio");
 
         //shearModulusRatio.view("SHEAR MODULUS RATIO"); // DEBUGGING
 
@@ -375,12 +375,12 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         queryShearModulusRatio.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting shear modulus ratio subfield from auxiliary field failed.", 0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting shear modulus ratio subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting shear_modulus_ratio field
 
     { // Test getting total_strain field.
         pylith::topology::Field totalStrain(*_mesh);
-        totalStrain.copySubfield(auxField, "total_strain");
+        totalStrain.copySubfield(*auxField, "total_strain");
 
         //totalStrain.view("TOTAL STRAIN"); // DEBUGGING
 
@@ -399,12 +399,12 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         queryTotalStrain.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting total strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting total strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting total_strain field
 
     { // Test getting viscous_strain field.
         pylith::topology::Field viscousStrain(*_mesh);
-        viscousStrain.copySubfield(auxField, "viscous_strain");
+        viscousStrain.copySubfield(*auxField, "viscous_strain");
 
         //viscousStrain.view("VISCOUS STRAIN"); // DEBUGGING
 
@@ -423,12 +423,12 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         queryViscousStrain.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting total strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting total strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting viscous_strain field
 
-	if (_mymaterial->_useReferenceState) { // Test getting reference_stress field.
+    if (_mymaterial->_useReferenceState) { // Test getting reference_stress field.
         pylith::topology::Field referenceStress(*_mesh);
-        referenceStress.copySubfield(auxField, "reference_stress");
+        referenceStress.copySubfield(*auxField, "reference_stress");
 
         //referenceStress.view("REFERENCE STRESS"); // DEBUGGING
 
@@ -450,9 +450,9 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting reference stress subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting reference_stress field
 
-	if (_mymaterial->_useReferenceState) { // Test getting reference_strain field.
+    if (_mymaterial->_useReferenceState) { // Test getting reference_strain field.
         pylith::topology::Field referenceStrain(*_mesh);
-        referenceStrain.copySubfield(auxField, "reference_strain");
+        referenceStrain.copySubfield(*auxField, "reference_strain");
 
         //referenceStrain.view("REFERENCE STRAIN"); // DEBUGGING
 
@@ -540,7 +540,7 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::_setupSolutionField
         perturbation.cloneSection(solution);
         perturbation.allocate();
         perturbation.zeroLocal();
-		pylith::problems::SolutionFactory factory(perturbation, *_mydata->normalizer);
+        pylith::problems::SolutionFactory factory(perturbation, *_mydata->normalizer);
         factory.setValues(_mydata->perturbDB);
     } // Perturbation @ t2
 
@@ -550,7 +550,7 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::_setupSolutionField
         perturbationDot.cloneSection(solutionDot);
         perturbationDot.allocate();
         perturbationDot.zeroLocal();
-		pylith::problems::SolutionFactory factory(perturbationDot, *_mydata->normalizer);
+        pylith::problems::SolutionFactory factory(perturbationDot, *_mydata->normalizer);
         factory.setValues(_mydata->perturbDB);
     } // Time derivative of solution @ t2
 
@@ -570,7 +570,7 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain_Data::TestIsotropicL
     cs->setSpaceDim(dimension);
     cs->initialize();
 
-	// Some auxiliary subfields get updated in updateStateVars().
+    // Some auxiliary subfields get updated in updateStateVars().
     auxUpdateDB = new spatialdata::spatialdb::UserFunctionDB; CPPUNIT_ASSERT(auxUpdateDB);
 
     solnDB->coordsys(*cs);

@@ -72,12 +72,12 @@ pylith::materials::TestMaterial::testAuxField(void)
     Material* material = _material(); CPPUNIT_ASSERT(material);
     TestMaterial_Data* data = _data(); CPPUNIT_ASSERT(data);
 
-    const pylith::topology::Field& auxField = material->auxField();
+    const pylith::topology::Field* auxField = material->auxField(); CPPUNIT_ASSERT(auxField);
     for (int i = 0; i < data->numAuxSubfields; ++i) {
-        CPPUNIT_ASSERT(auxField.hasSubfield(data->auxSubfields[i]));
+        CPPUNIT_ASSERT(auxField->hasSubfield(data->auxSubfields[i]));
     } // for
 
-    CPPUNIT_ASSERT(!auxField.hasSubfield("abc4598245"));
+    CPPUNIT_ASSERT(!auxField->hasSubfield("abc4598245"));
 
     PYLITH_METHOD_END;
 } // testAuxField
@@ -229,23 +229,23 @@ pylith::materials::TestMaterial::testInitialize(void)
     _initializeFull(); // includes setting up auxField
 
     Material* material = _material(); CPPUNIT_ASSERT(material);
-    const pylith::topology::Field& auxField = material->auxField();
+    const pylith::topology::Field* auxField = material->auxField();CPPUNIT_ASSERT(auxField);
 
     //material->_auxField->view("AUX FIELDS"); // :DEBUGGING:
 
     // Check result
     TestMaterial_Data* data = _data(); CPPUNIT_ASSERT(data);
-    CPPUNIT_ASSERT_EQUAL(std::string("auxiliary subfields"), std::string(auxField.label()));
-    CPPUNIT_ASSERT_EQUAL(data->dimension, auxField.spaceDim());
+    CPPUNIT_ASSERT_EQUAL(std::string("auxiliary subfields"), std::string(auxField->label()));
+    CPPUNIT_ASSERT_EQUAL(data->dimension, auxField->spaceDim());
 
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
-    const PetscDM dm = auxField.dmMesh(); CPPUNIT_ASSERT(dm);
-    pylith::topology::FieldQuery query(auxField);
+    const PetscDM dm = auxField->dmMesh(); CPPUNIT_ASSERT(dm);
+    pylith::topology::FieldQuery query(*auxField);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->normalizer);
     query.openDB(data->auxDB, data->normalizer->lengthScale());
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm); CPPUNIT_ASSERT(!err);
     query.closeDB(data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of auxiliary field values failed.", 0.0, norm, tolerance);
@@ -602,14 +602,14 @@ pylith::materials::TestMaterial::testUpdateStateVars(void)
     material->_auxField->view("INITIAL_AUX FIELDS"); // :DEBUGGING:
     material->updateStateVars(data->t, data->dt, perturbation);
 
-    const pylith::topology::Field& auxField = material->auxField();
+    const pylith::topology::Field* auxField = material->auxField(); CPPUNIT_ASSERT(auxField);
     material->_auxField->view("UPDATED_AUX FIELDS"); // :DEBUGGING:
 
     // Check updated auxiliary field.
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
-    const PetscDM dm = auxField.dmMesh(); CPPUNIT_ASSERT(dm);
-    pylith::topology::FieldQuery query(auxField);
+    const PetscDM dm = auxField->dmMesh(); CPPUNIT_ASSERT(dm);
+    pylith::topology::FieldQuery query(*auxField);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->normalizer);
     query.openDB(data->auxUpdateDB, data->normalizer->lengthScale());
@@ -617,7 +617,7 @@ pylith::materials::TestMaterial::testUpdateStateVars(void)
     PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "1"); // :DEBUG:
     DMSetFromOptions(dm); // :DEBUG:
 #endif
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm); CPPUNIT_ASSERT(!err);
     query.closeDB(data->auxUpdateDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Check of updated auxiliary field values failed.", 0.0, norm, tolerance);
