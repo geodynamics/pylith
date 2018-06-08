@@ -386,10 +386,16 @@ pylith::meshio::OutputManager::_getBuffer(const pylith::topology::Field& fieldIn
 
     pylith::topology::FieldBase::VectorFieldEnum fieldType = pylith::topology::FieldBase::MULTI_OTHER;
     if (name) {
-        const pylith::topology::Field::SubfieldInfo& info = fieldIn.subfieldInfo(name);
-        fieldType = info.description.vectorFieldType;
+        fieldType = fieldIn.subfieldInfo(name).description.vectorFieldType;
     } else {
-        //fieldType = fieldIn.vectorFieldType();
+        // Get vector field type for subfield if only one subfield in field.
+        const pylith::string_vector& subfieldNames = fieldIn.subfieldNames();
+        if (size_t(1) == subfieldNames.size()) {
+            fieldType = fieldIn.subfieldInfo(subfieldNames[0].c_str()).description.vectorFieldType;
+        } else {
+            PYLITH_COMPONENT_ERROR("No subfield specified for field '"<<fieldIn.label() <<"' with multiple subfields.");
+            throw std::runtime_error("No subfield specified for field with multiple fields.");
+        } // if/else
     } // if/else
 
     std::string fieldName = "buffer (other)";
