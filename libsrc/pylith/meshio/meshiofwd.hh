@@ -60,6 +60,10 @@ namespace pylith {
         class OutputSolnSubset;
         class OutputSolnPoints;
 
+        class OutputTrigger;
+        class OutputTriggerStep;
+        class OutputTriggerTime;
+
         class HDF5;
         class Xdmf;
 

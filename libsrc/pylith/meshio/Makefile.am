@@ -38,6 +38,9 @@ subpkginclude_HEADERS = \
 	FieldFilter.hh \
 	FieldFilterNone.hh \
 	FieldFilterProject.hh \
+	OutputTrigger.hh \
+	OutputTriggerStep.hh \
+	OutputTriggerTime.hh \
 	meshiofwd.hh
 
 if ENABLE_HDF5
