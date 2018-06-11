@@ -32,6 +32,8 @@ testmaterials_SOURCES = \
 	TestIsotropicLinearElasticityPlaneStrain.cc \
 	TestIsotropicLinearElasticityPlaneStrain_UniformStrain.cc \
 	TestIsotropicLinearElasticityPlaneStrain_GravityRefState.cc \
+	TestIsotropicLinearElasticity3D.cc \
+	TestIsotropicLinearElasticity3D_UniformStrain.cc \
 	TestIsotropicLinearMaxwellPlaneStrain.cc \
 	TestIsotropicLinearGenMaxwellPlaneStrain.cc \
 	TestIsotropicLinearMaxwellPlaneStrain_LinearStrain.cc \
@@ -42,6 +44,7 @@ testmaterials_SOURCES = \
 noinst_HEADERS = \
 	TestMaterial.hh \
 	TestIsotropicLinearElasticityPlaneStrain.hh \
+	TestIsotropicLinearElasticity3D.hh \
 	TestIsotropicLinearMaxwellPlaneStrain.hh \
 	TestIsotropicLinearGenMaxwellPlaneStrain.hh
 
