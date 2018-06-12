@@ -16,35 +16,30 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/meshio/VertexFilter.py
-##
-## @brief Python abstract base class for filtering vertex fields when
-## writing finite-element data.
-##
-## Factory: output_vertex_filter
+# @file pyre/meshio/FieldFilter.py
+#
+# @brief Python abstract base class for filtering vertex fields when
+# writing finite-element data.
+#
+# Factory: output_vertex_filter
 
 from pylith.utils.PetscComponent import PetscComponent
 
-# VertexFilter class
-class VertexFilter(PetscComponent):
+class FieldFilter(PetscComponent):
   """
-  Python abstract base class for filtering cell fields when writing
+  Python abstract base class for filtering fields when writing
   finite-element data.
 
-  Factory: output_vertex_filter
+  Factory: output_field_filter
   """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  # None
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="vertexfilter"):
+  def __init__(self, name="fieldfilter"):
     """
     Constructor.
     """
-    PetscComponent.__init__(self, name, facility="vertexfilter")
+    PetscComponent.__init__(self, name, facility="fieldfilter")
     return
 
 
@@ -62,14 +57,4 @@ class VertexFilter(PetscComponent):
     return
 
 
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def output_vertex_filter():
-  """
-  Factory associated with VertexFilter.
-  """
-  # Abstract object (so return None).
-  return None
-
-
-# End of file 
+# End of file

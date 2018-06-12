@@ -28,9 +28,12 @@
 #include "pylith/meshio/MeshIOCubit.hh"
 #endif
 
-#include "pylith/meshio/VertexFilter.hh"
-#include "pylith/meshio/VertexFilterDecimateP1.hh"
-#include "pylith/meshio/CellFilter.hh"
+#include "pylith/meshio/FieldFilter.hh"
+#include "pylith/meshio/FieldFilterNone.hh"
+#include "pylith/meshio/FieldFilterProject.hh"
+#include "pylith/meshio/OutputTrigger.hh"
+#include "pylith/meshio/OutputTriggerStep.hh"
+#include "pylith/meshio/OutputTriggerTime.hh"
 #include "pylith/meshio/DataWriter.hh"
 #include "pylith/meshio/DataWriterVTK.hh"
 #if defined(ENABLE_HDF5)
@@ -38,10 +41,10 @@
 #include "pylith/meshio/DataWriterHDF5Ext.hh"
 #endif
 #include "pylith/meshio/OutputManager.hh"
-#include "pylith/meshio/OutputSoln.hh"
-#include "pylith/meshio/OutputSolnSubset.hh"
-#include "pylith/meshio/OutputSolnPoints.hh"
-#include "pylith/meshio/OutputMaterial.hh"
+  //#include "pylith/meshio/OutputSoln.hh"
+  //#include "pylith/meshio/OutputSolnSubset.hh"
+  //#include "pylith/meshio/OutputSolnPoints.hh"
+  //#include "pylith/meshio/OutputMaterial.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -70,6 +73,7 @@ import_array();
 %}
 
 // Interfaces
+%include "../utils/PyreComponent.i"
 %include "MeshIOObj.i"
 %include "MeshIOAscii.i"
 %include "MeshIOLagrit.i"
@@ -77,21 +81,23 @@ import_array();
 %include "MeshIOCubit.i"
 #endif
 
-%include "VertexFilter.i"
-%include "VertexFilterDecimateP1.i"
-%include "CellFilter.i"
+%include "FieldFilter.i"
+%include "FieldFilterNone.i"
+%include "FieldFilterProject.i"
+%include "OutputTrigger.i"
+%include "OutputTriggerStep.i"
+%include "OutputTriggerTime.i"
 %include "DataWriter.i"
 %include "DataWriterVTK.i"
 #if defined(ENABLE_HDF5)
 %include "DataWriterHDF5.i"
 %include "DataWriterHDF5Ext.i"
 #endif
-%include "../utils/PyreComponent.i"
-%include "OutputManager.i"
-%include "OutputSoln.i"
-%include "OutputSolnSubset.i"
-%include "OutputSolnPoints.i"
-%include "OutputMaterial.i"
+ //%include "OutputManager.i"
+ //%include "OutputSoln.i"
+ //%include "OutputSolnSubset.i"
+ //%include "OutputSolnPoints.i"
+ //%include "OutputMaterial.i"
 
 
 // End of file

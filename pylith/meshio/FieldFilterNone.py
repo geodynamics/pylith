@@ -16,44 +16,41 @@
 # ----------------------------------------------------------------------
 #
 
-# @file pyre/meshio/VertexFilterDecimateP1.py
+# @file pyre/meshio/FieldFilterNone.py
 ##
-# @brief Python class for decimating vertex field to P1.
+# @brief Python class for null field filter.
 ##
-# Factory: output_vertex_filter
+# Factory: output_field_filter
 
-from VertexFilter import VertexFilter
-from meshio import VertexFilterDecimateP1 as ModuleVertexFilterDecimateP1
-
-# VertexFilterDecimateP1 class
+from .FieldFilter import FieldFilter
+from meshio import FieldFilterNone as ModuleFieldFilterNone
 
 
-class VertexFilterDecimateP1(VertexFilter, ModuleVertexFilterDecimateP1):
+class FieldFilterNone(FieldFilter, ModuleFieldFilterNone):
     """
-    Python class for decimating vertex field to P1.
+    Python class for null field filter.
 
-    Factory: output_vertex_filter
+    Factory: output_field_filter
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="vertexfilterdecimatep1"):
+    def __init__(self, name="fieldfilternone"):
         """
         Constructor.
         """
-        VertexFilter.__init__(self, name)
-        ModuleVertexFilterDecimateP1.__init__(self)
-        self.filter = True
+        FieldFilter.__init__(self, name)
+        ModuleFieldFilterNone.__init__(self)
         return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def output_vertex_filter():
+def output_field_filter():
     """
-    Factory associated with VertexFilter.
+    Factory associated with FieldFilter.
     """
-    return VertexFilterDecimateP1()
+    return FieldFilterNone()
 
 
 # End of file

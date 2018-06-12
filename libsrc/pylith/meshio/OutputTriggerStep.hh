@@ -19,7 +19,7 @@
 /**
  * @file libsrc/meshio/OutputTriggerStep.hh
  *
- * @brief Base decision on whether to write output based on number of time steps since more recent write.
+ * @brief Base decision on whether to write output based on number of steps since more recent write.
  */
 
 #if !defined(pylith_meshio_outputtriggerstep_hh)
@@ -42,7 +42,7 @@ public:
     OutputTriggerStep(void);
 
     /// Destructor
-    virtual ~OutputTriggerStep(void);
+    ~OutputTriggerStep(void);
 
     /** Check whether we want to write output at time t.
      *
@@ -53,24 +53,24 @@ public:
     bool shouldWrite(const PylithReal t,
                      const PylithInt tindex);
 
-    /** Set number of time steps to skip between writes.
+    /** Set number of steps to skip between writes.
      *
-     * @param[in] Number of time steps to skip between writes.
+     * @param[in] Number of steps to skip between writes.
      */
-    void numTimeStepsSkip(const int value);
+    void numStepsSkip(const int value);
 
-    /** Get number of time steps to skip between writes.
+    /** Get number of steps to skip between writes.
      *
-     * @returns Number of time steps to skip between writes.
+     * @returns Number of steps to skip between writes.
      */
-    int numTimeStepsSkip(void) const;
+    int numStepsSkip(void) const;
 
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-    PylithInt _numTimeStepsSkip; ///< Number of time steps to skip between writes.
-    PylithInt _timeStepWrote; ///< Time step when data was previously written.
+    PylithInt _numStepsSkip; ///< Number of steps to skip between writes.
+    PylithInt _stepWrote; ///< Step when data was previously written.
 
     static const char* _pyreComponent; ///< Name of Pyre component.
 

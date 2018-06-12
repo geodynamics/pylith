@@ -30,9 +30,12 @@ swig_sources = \
 	MeshIOAscii.i \
 	MeshIOLagrit.i \
 	MeshIOCubit.i \
-	VertexFilter.i \
-	VertexFilterDecimateP1.i \
-	CellFilter.i \
+	FieldFilter.i \
+	FieldFilterNone.i \
+	FieldFilterProject.i \
+	OutputTrigger.i \
+	OutputTriggerStep.i \
+	OutputTriggerTime.i \
 	DataWriter.i \
 	DataWriterVTK.i \
 	OutputManager.i \

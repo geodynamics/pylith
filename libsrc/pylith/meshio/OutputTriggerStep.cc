@@ -30,8 +30,8 @@ const char* pylith::meshio::OutputTriggerStep::_pyreComponent = "outputtriggerst
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputTriggerStep::OutputTriggerStep(void) :
-    _numTimeStepsSkip(0),
-    _timeStepWrote(PYLITH_MININT+10)
+    _numStepsSkip(0),
+    _stepWrote(PYLITH_MININT+10)
 { // constructor
     PyreComponent::name(_pyreComponent);
 } // constructor
@@ -41,33 +41,33 @@ pylith::meshio::OutputTriggerStep::OutputTriggerStep(void) :
 pylith::meshio::OutputTriggerStep::~OutputTriggerStep(void) {}
 
 // ----------------------------------------------------------------------
-// Set number of time steps to skip between writes.
+// Set number of steps to skip between writes.
 void
-pylith::meshio::OutputTriggerStep::numTimeStepsSkip(const int value) {
-    PYLITH_COMPONENT_DEBUG("OutputTriggerStep::numTimeStepsSkip(value="<<value<<")");
+pylith::meshio::OutputTriggerStep::numStepsSkip(const int value) {
+    PYLITH_COMPONENT_DEBUG("OutputTriggerStep::numStepsSkip(value="<<value<<")");
 
-    _numTimeStepsSkip = (value >= 0) ? value : 0;
-} // numTimeStepsSkip
+    _numStepsSkip = (value >= 0) ? value : 0;
+} // numStepsSkip
 
 // ----------------------------------------------------------------------
-// Get number of time steps to skip between writes.
+// Get number of steps to skip between writes.
 int
-pylith::meshio::OutputTriggerStep::numTimeStepsSkip(void) const {
-    return _numTimeStepsSkip;
-} // numTimeStepsSkip
+pylith::meshio::OutputTriggerStep::numStepsSkip(void) const {
+    return _numStepsSkip;
+} // numStepsSkip
 
 // ----------------------------------------------------------------------
 // Check whether we want to write output at time t.
 bool
 pylith::meshio::OutputTriggerStep::shouldWrite(const PylithReal t,
-                                               const PylithInt timeStep) {
+                                               const PylithInt tindex) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputTriggerStep::shouldWrite(t="<<t<<", timeStep="<<timeStep<<")");
+    PYLITH_COMPONENT_DEBUG("OutputTriggerStep::shouldWrite(t="<<t<<", tindex="<<tindex<<")");
 
     bool shouldWrite = false;
-    if (timeStep - _timeStepWrote > _numTimeStepsSkip) {
+    if (tindex - _stepWrote > _numStepsSkip) {
         shouldWrite = true;
-        _timeStepWrote = timeStep;
+        _stepWrote = tindex;
     } // if
 
     PYLITH_METHOD_RETURN(shouldWrite);
