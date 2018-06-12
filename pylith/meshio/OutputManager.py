@@ -77,17 +77,21 @@ class OutputManager(Observer, ModuleOutputManager):
         Setup output manager.
         """
         self._createModuleObj(observedSubject)
-        observedSubject.registerObserver(self)
 
         ModuleOutputManager.identifier(self, self.aliases[-1])
-        ModuleOutputManager.trigger(self, self.trigger)
-        ModuleOutputManager.fieldFilter(self, self.fielFilter)
-
         ModuleOutputManager.infoFields(self, self.infoFields)
         ModuleOutputManager.dataFields(self, self.dataFields)
 
+        self.trigger.preinitialize()
+        ModuleOutputManager.trigger(self, self.trigger)
+
+        self.fieldFilter.preinitialize()
+        ModuleOutputManager.fieldFilter(self, self.fieldFilter)
+
         self.writer.preinitialize()
         ModuleOutputManager.writer(self, self.writer)
+
+        observedSubject.registerObserver(self)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

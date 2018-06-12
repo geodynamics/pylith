@@ -32,11 +32,11 @@ class ObservedSubject(PetscComponent, ModuleObservedSubject):
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="observedsubject"):
+    def __init__(self, name, facility):
         """
         Constructor.
         """
-        PetscComponent.__init__(self, name, facility="observedsubject")
+        PetscComponent.__init__(self, name, facility)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

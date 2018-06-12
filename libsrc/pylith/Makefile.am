@@ -102,7 +102,6 @@ libpylith_la_SOURCES = \
 	problems/Problem.cc \
 	problems/TimeDependent.cc \
 	problems/SolutionFactory.cc \
-	problems/ProblemObserver.hh \
 	topology/FieldBase.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \

@@ -19,7 +19,7 @@
 #
 # Factory: problem.
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.feassemble.ObservedSubject import ObservedSubject
 from .problems import Problem as ModuleProblem
 
 from pylith.utils.NullComponent import NullComponent
@@ -65,7 +65,7 @@ def observerFactory(name):
     return facility(name, family="output_manager", factory=OutputSoln)
 
 
-class Problem(PetscComponent, ModuleProblem):
+class Problem(ObservedSubject, ModuleProblem):
     """
     Python abstract base class for crustal dynamics problems.
 
@@ -122,9 +122,8 @@ class Problem(PetscComponent, ModuleProblem):
         """
         Constructor.
         """
-        PetscComponent.__init__(self, name, facility="problem")
+        ObservedSubject.__init__(self, name, facility="problem")
         self.mesh = None
-        self._createModuleObj()
         return
 
     def preinitialize(self, mesh):
@@ -136,6 +135,7 @@ class Problem(PetscComponent, ModuleProblem):
         if 0 == comm.rank:
             self._info.log("Performing minimal initialization before verifying configuration.")
 
+        self._createModuleObj()
         ModuleProblem.identifier(self, self.aliases[-1])
 
         if self.solverChoice == "linear":
@@ -156,7 +156,7 @@ class Problem(PetscComponent, ModuleProblem):
         for material in self.materials.components():
             material.preinitialize(mesh)
 
-        # Preinitialize BC
+        # Preinitialize boundary conditions.
         for bc in self.bc.components():
             bc.preinitialize(mesh)
 
@@ -247,7 +247,7 @@ class Problem(PetscComponent, ModuleProblem):
         """
         Set members based using inventory.
         """
-        PetscComponent._configure(self)
+        ObservedSubject._configure(self)
         return
 
     def _setIntegratorsConstraints(self):

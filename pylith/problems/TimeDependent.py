@@ -81,21 +81,17 @@ class TimeDependent(Problem, ModuleTimeDependent):
         bc/quadrature, etc.).
         """
         self._setupLogging()
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
-            self._info.log("Performing minimal initialization before verifying configuration.")
 
         import weakref
         self.mesh = weakref.ref(mesh)
 
-        ModuleTimeDependent.identifier(self, self.aliases[-1])
+        Problem.preinitialize(self, mesh)
+
         ModuleTimeDependent.startTime(self, self.startTime.value)
         ModuleTimeDependent.dtInitial(self, self.dtInitial.value)
         ModuleTimeDependent.totalTime(self, self.totalTime.value)
         ModuleTimeDependent.maxTimeSteps(self, self.maxTimeSteps)
 
-        Problem.preinitialize(self, mesh)
         return
 
     def run(self, app):

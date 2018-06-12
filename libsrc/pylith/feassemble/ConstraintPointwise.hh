@@ -28,6 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "pylith/feassemble/feassemblefwd.hh"
 
+#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 #include "pylith/feassemble/ObservedSubject.hh" // ISA ObservedSubject
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::discretizations_map

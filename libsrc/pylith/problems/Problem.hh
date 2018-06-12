@@ -27,6 +27,7 @@
 // Include directives ---------------------------------------------------
 #include "problemsfwd.hh" // forward declarations
 
+#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 #include "pylith/feassemble/ObservedSubject.hh" // ISA ObservedSubject
 
 #include "pylith/feassemble/feassemblefwd.hh" // HASA IntegratorPointwise, ConstraintPointwise

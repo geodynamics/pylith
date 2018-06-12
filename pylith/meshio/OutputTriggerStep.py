@@ -20,10 +20,10 @@
 # Factory: output_trigger
 
 from .OutputTrigger import OutputTrigger
-from .meshio import OutputTriggerStep as ModuleOutpuTriggerStep
+from .meshio import OutputTriggerStep as ModuleOutputTriggerStep
 
 
-class OutputTriggerStep(OutputTrigger, ModuleOutpuTriggerStep):
+class OutputTriggerStep(OutputTrigger, ModuleOutputTriggerStep):
     """
     Python class defining how often output is writtern in terms of solution steps.
 
@@ -57,8 +57,8 @@ class OutputTriggerStep(OutputTrigger, ModuleOutpuTriggerStep):
         Setup output trigger.
         """
         ModuleOutputTriggerStep.__init__(self)
-        ModuleOutpuTriggerStep.identifier(self, self.aliases[-1])
-        ModuleOutpuTriggerStep.numStepsSkip(self, self.numStepsSkip)
+        ModuleOutputTriggerStep.identifier(self, self.aliases[-1])
+        ModuleOutputTriggerStep.numStepsSkip(self, self.numSkip)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

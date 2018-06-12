@@ -17,9 +17,9 @@
 //
 
 /**
- * @file modulesrc/feassemble/Observer.i
+ * @file modulesrc/feassemble/ObservedSubject.i
  *
- * @brief Python interface to C++ Observer object.
+ * @brief Python interface to C++ ObservedSubject object.
  */
 
 namespace pylith {
@@ -27,6 +27,8 @@ namespace pylith {
 
         class ObservedSubject {
 	    
+	    // PUBLIC METHODS ///////////////////////////////////////////////////////
+	public:
 	    /// Constructor.
 	    ObservedSubject(void);
 	    
@@ -63,7 +65,7 @@ namespace pylith {
 				 const pylith::topology::Field& solution,
 				 const bool infoOnly=false);
 	    
-	}; // Observer
+	}; // ObservedSubject
 
     } // feassemble
 } // pylith

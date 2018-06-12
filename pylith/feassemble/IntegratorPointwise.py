@@ -18,11 +18,11 @@
 #
 # @brief Python abstract base class for pointwise integrators.
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.feassemble.ObservedSubject import ObservedSubject
 from .feassemble import IntegratorPointwise as ModuleIntegrator
 
 
-class IntegratorPointwise(PetscComponent, ModuleIntegrator):
+class IntegratorPointwise(ObservedSubject, ModuleIntegrator):
     """
     Python abstract base class for pointwise integrators.
 
@@ -59,7 +59,7 @@ class IntegratorPointwise(PetscComponent, ModuleIntegrator):
         """
         Constructor.
         """
-        PetscComponent.__init__(self, name, facility="integrator")
+        ObservedSubject.__init__(self, name, facility="integrator")
         return
 
     def preinitialize(self, mesh):
@@ -84,7 +84,7 @@ class IntegratorPointwise(PetscComponent, ModuleIntegrator):
         """
         Setup members using inventory.
         """
-        PetscComponent._configure(self)
+        ObservedSubject._configure(self)
         return
 
     def _createModuleObj(self):

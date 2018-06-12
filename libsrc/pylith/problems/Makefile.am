@@ -23,7 +23,6 @@ subpkginclude_HEADERS = \
 	Problem.hh \
 	TimeDependent.hh \
 	SolutionFactory.hh \
-	ProblemObserver.hh \
 	problemsfwd.hh
 
 noinst_HEADERS =

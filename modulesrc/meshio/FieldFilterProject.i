@@ -36,21 +36,28 @@ namespace pylith {
 	  /// Destructor
 	  ~FieldFilterProject(void);
 	  
-	  /** Create copy of filter.
-	   *
-	   * @returns Copy of filter.
-	   */
-	  FieldFilter* clone(void) const;
-	  
-	  /// Deallocate PETSc and local data structures.
-	  void deallocate(void);
-	  
-	  /** Filter vertex field.
-	   *
-	   * @param fieldIn Field to filter.
-	   */
-	  const pylith::topology::Field* filter(pylith::topology::Field* fieldIn);
-	  
+	    /** Create copy of filter.
+	     *
+	     * @returns Copy of filter.
+	     */
+	    FieldFilter* clone(void) const;
+	    
+	    /// Deallocate PETSc and local data structures.
+	    void deallocate(void);
+	    
+	    /** Set basis order for projected field.
+	     *
+	     * @param[in] value Basis order.
+	     */
+	    void basisOrder(const int value);
+	    
+	    /** Filter vertex field.
+	     *
+	     * @returns Field after applying filter.
+	     * @param fieldIn Field to filter.
+	     */
+	    pylith::topology::Field* filter(pylith::topology::Field* fieldIn);
+	    
 	}; // FieldFilterProject
       
     } // meshio
