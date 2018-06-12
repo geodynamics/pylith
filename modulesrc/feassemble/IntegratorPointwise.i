@@ -24,7 +24,8 @@
 namespace pylith {
     namespace feassemble {
 
-        class IntegratorPointwise : public pylith::utils::PyreComponent {
+        class IntegratorPointwise : public pylith::utils::PyreComponent,
+				    public pylith::feassemble::ObservedSubject {
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 	public:
@@ -121,6 +122,19 @@ namespace pylith {
 	    void prestep(const double t,
 			 const double dt);
 
+	    /** Update at end of time step.
+	     *
+	     * @param[in] t Current time.
+	     * @param[in] tindex Current time step.
+	     * @param[in] dt Current time step.
+	     * @param[in] solution Solution at time t.
+	     */
+	    virtual
+	    void poststep(const PylithReal t,
+			  const PylithReal dt,
+			  const PylithInt tindex,
+			  const pylith::topology::Field& solution);
+	    
 	    /** Compute RHS residual for G(t,s).
 	     *
 	     * @param[out] residual Field for residual.
@@ -199,41 +213,6 @@ namespace pylith {
 					     const PylithReal tshift,
 					     const pylith::topology::Field& solution) = 0;
 
-
-	    /** Update state variables as needed.
-	     *
-	     * @param[in] t Current time.
-	     * @param[in] dt Current time step.
-	     * @param[in] solution Field with current trial solution.
-	     */
-	    virtual
-	    void updateStateVars(const PylithReal t,
-				 const PylithReal dt,
-				 const pylith::topology::Field& solution);
-
-	    /** Register observer to receive notifications.
-	     *
-	     * Observers are used for output.
-	     *
-	     * @param[in] observer Observer to receive notifications.
-	     */
-	    void registerObserver(pylith::feassemble::IntegratorObserver* observer);
-
-	    /** Remove observer from receiving notifications.
-	     *
-	     * @param[in] observer Observer to remove.
-	     */
-	    void removeObserver(pylith::feassemble::IntegratorObserver* observer);
-
-	    /** Notify observers.
-	     *
-	     * @param[in] t Current time.
-	     * @param[in] tindex Current time step.
-	     * @param[in] solution Solution at time t.
-	     */
-	    void notifyObservers(const PylithReal t,
-				 const PylithInt tindex,
-				 const pylith::topology::Field& solution);
 
         }; // IntegratorPointwise
 

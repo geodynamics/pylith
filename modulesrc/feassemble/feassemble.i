@@ -21,6 +21,8 @@
 %{
 #include "pylith/feassemble/IntegratorPointwise.hh"
 #include "pylith/feassemble/ConstraintPointwise.hh"
+#include "pylith/feassemble/Observer.hh"
+#include "pylith/feassemble/ObservedSubject.hh"    
 %}
 
 %include "exception.i"
@@ -46,6 +48,8 @@ import_array();
 
 %include "../utils/PyreComponent.i"
 %include "../topology/FieldBase.i"
+%include "Observer.i"
+%include "ObservedSubject.i"
 %include "IntegratorPointwise.i"
 %include "ConstraintPointwise.i"
 
