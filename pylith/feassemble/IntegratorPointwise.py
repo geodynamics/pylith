@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -17,31 +15,28 @@
 #
 
 # @file pylith/feassemble/IntegratorPointwise.py
-##
+#
 # @brief Python abstract base class for pointwise integrators.
 
 from pylith.utils.PetscComponent import PetscComponent
 from .feassemble import IntegratorPointwise as ModuleIntegrator
 
-# IntegratorPointwise class
 
-
-class IntegratorPointwise(PetscComponent,
-                          ModuleIntegrator):
+class IntegratorPointwise(PetscComponent, ModuleIntegrator):
     """
     Python abstract base class for pointwise integrators.
 
+    INVENTORY
+
+    Properties
+      - None
+
+    Facilities
+      - *auxiliary_subfields* Discretization of physical properties and state variables.
+      - *db_auxiliary_field* Database for physical property parameters.
+
     Factory: material
     """
-
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li None
-    #
-    # \b Facilities
-    # @li \b auxiliary_fields Discretization of auxiliary fields associated with material.
-    # @li \b db_auxiliary_fields Database for auxiliary fields associated with material.
 
     import pyre.inventory
 
@@ -54,9 +49,9 @@ class IntegratorPointwise(PetscComponent,
     auxFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
     auxFieldDB.meta['tip'] = "Database for physical property parameters."
 
-    from pylith.meshio.OutputManager import OutputManager
-    outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputManager)
-    outputManager.meta['tip'] = "Output manager."
+    #from pylith.meshio.OutputManager import OutputManager
+    #outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputManager)
+    #outputManager.meta['tip'] = "Output manager."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -65,22 +60,22 @@ class IntegratorPointwise(PetscComponent,
         Constructor.
         """
         PetscComponent.__init__(self, name, facility="integrator")
-        self._createModuleObj()
         return
 
     def preinitialize(self, mesh):
         """
         Do pre-initialization setup.
         """
+        self._createModuleObj()
         ModuleIntegrator.identifier(self, self.aliases[-1])
         ModuleIntegrator.auxFieldDB(self, self.auxFieldDB)
-        ModuleIntegrator.output(self, self.outputManager)
+        #ModuleIntegrator.output(self, self.outputManager)
 
         for subfield in self.auxSubfields.components():
             fieldName = subfield.aliases[-1]
             ModuleIntegrator.auxSubfieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
 
-        self.outputManager.preinitialize()
+        # self.outputManager.preinitialize()
         return
 
 # PRIVATE METHODS ////////////////////////////////////////////////////

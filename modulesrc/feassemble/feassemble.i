@@ -19,10 +19,11 @@
 
 // Header files for module C++ code
 %{
-#include "pylith/feassemble/IntegratorPointwise.hh"
-#include "pylith/feassemble/ConstraintPointwise.hh"
 #include "pylith/feassemble/Observer.hh"
 #include "pylith/feassemble/ObservedSubject.hh"    
+#include "pylith/feassemble/IntegratorPointwise.hh"
+#include "pylith/feassemble/ConstraintPointwise.hh"
+#include "pylith/feassemble/IntegratorObserver.hh"
 %}
 
 %include "exception.i"
@@ -52,5 +53,6 @@ import_array();
 %include "ObservedSubject.i"
 %include "IntegratorPointwise.i"
 %include "ConstraintPointwise.i"
+%include "IntegratorObserver.i"
 
 // End of file

@@ -115,7 +115,7 @@ public:
     /// Test computeLHSJacobianInverseExplicit().
     void testComputeLHSJacobianInverseExplicit(void);
 
-    /// Test updateStateVars().
+    /// Test _updateStateVars().
     void testUpdateStateVars(void);
 
     // PROTECTED METHODS //////////////////////////////////////////////////

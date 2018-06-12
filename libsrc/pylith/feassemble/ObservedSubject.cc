@@ -24,7 +24,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_DEBUG
+//#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_DEBUG
 
 #include <typeinfo> \
     // USES typeid()
@@ -53,7 +53,7 @@ pylith::feassemble::ObservedSubject::deallocate(void) {
 void
 pylith::feassemble::ObservedSubject::registerObserver(pylith::feassemble::Observer* observer) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("registerObserver(observer="<<typeid(observer).name()<<")");
+    //PYLITH_COMPONENT_DEBUG("registerObserver(observer="<<typeid(observer).name()<<")");
 
     if (observer) {
         _observers.insert(observer);
@@ -68,7 +68,7 @@ pylith::feassemble::ObservedSubject::registerObserver(pylith::feassemble::Observ
 void
 pylith::feassemble::ObservedSubject::removeObserver(pylith::feassemble::Observer* observer) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("removeObserver(observer="<<typeid(observer).name()<<")");
+    //PYLITH_COMPONENT_DEBUG("removeObserver(observer="<<typeid(observer).name()<<")");
 
     if (observer) {
         _observers.erase(observer);
@@ -86,7 +86,7 @@ pylith::feassemble::ObservedSubject::notifyObservers(const PylithReal t,
                                                      const pylith::topology::Field& solution,
                                                      const bool infoOnly) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("notifyObservers(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
+    //PYLITH_COMPONENT_DEBUG("notifyObservers(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
     typedef std::set<Observer*>::iterator observers_iter;
     for (observers_iter iter = _observers.begin(); iter != _observers.end(); ++iter) {

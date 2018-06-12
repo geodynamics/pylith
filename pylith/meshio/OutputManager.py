@@ -52,7 +52,7 @@ class OutputManager(Observer, ModuleOutputManager):
     dataFields.meta['tip'] = "Names of data fields to output."
 
     from .OutputTriggerStep import OutputTriggerStep
-    trigger = pyre.inventory.str("trigger", family="output_trigger", factory=OutputTriggerStep)
+    trigger = pyre.inventory.facility("trigger", family="output_trigger", factory=OutputTriggerStep)
     trigger.meta['tip'] = "Trigger defining how often output is written."
 
     from .DataWriterHDF5 import DataWriterHDF5
@@ -70,13 +70,15 @@ class OutputManager(Observer, ModuleOutputManager):
         Constructor.
         """
         Observer.__init__(self, name)
-        self._createModuleObj()
         return
 
-    def preinitialize(self):
+    def preinitialize(self, observedSubject):
         """
         Setup output manager.
         """
+        self._createModuleObj(observedSubject)
+        observedSubject.registerObserver(self)
+
         ModuleOutputManager.identifier(self, self.aliases[-1])
         ModuleOutputManager.trigger(self, self.trigger)
         ModuleOutputManager.fieldFilter(self, self.fielFilter)
@@ -97,7 +99,7 @@ class OutputManager(Observer, ModuleOutputManager):
         Observer._configure(self)
         return
 
-    def _createModuleObj(self):
+    def _createModuleObj(self, observedSubject):
         """
         Create handle to C++ object.
         """

@@ -31,7 +31,7 @@ namespace pylith {
 	public :
 	    
 	    /// Constructor
-	    OutputSoln(void);
+	    OutputSoln(pylith::problems::Problem* const problem);
 	    
 	    /// Destructor
 	    ~OutputSoln(void);

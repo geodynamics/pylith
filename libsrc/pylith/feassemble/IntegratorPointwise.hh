@@ -29,7 +29,6 @@
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
 
-#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 #include "pylith/feassemble/ObservedSubject.hh" // ISA ObservedSubject
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase
@@ -47,9 +46,6 @@ class pylith::feassemble::IntegratorPointwise :
     public pylith::utils::PyreComponent,
     public pylith::feassemble::ObservedSubject {
     friend class TestIntegratorPointwise;   // unit testing
-
-    // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
-public:
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:

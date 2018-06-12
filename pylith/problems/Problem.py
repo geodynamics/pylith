@@ -109,9 +109,9 @@ class Problem(PetscComponent, ModuleProblem):
     interfaces = pyre.inventory.facilityArray("interfaces", itemFactory=faultFactory, factory=EmptyBin)
     interfaces.meta['tip'] = "Interior surfaces with constraints or constitutive models."
 
-    from pylith.meshio.SingleObserver import SingleObserver
-    outputs = pyre.inventory.facilityArray("solution_observers", itemFactory=observerFactory, factory=SingleObserver)
-    outputs.meta['tip'] = "Observers (e.g., output) for solution."
+    from pylith.feassemble.SingleObserver import SingleObserver
+    observers = pyre.inventory.facilityArray("solution_observers", itemFactory=observerFactory, factory=SingleObserver)
+    observers.meta['tip'] = "Observers (e.g., output) for solution."
 
     gravityField = pyre.inventory.facility("gravity_field", family="spatial_database", factory=NullComponent)
     gravityField.meta['tip'] = "Database used for gravity field."
@@ -164,15 +164,12 @@ class Problem(PetscComponent, ModuleProblem):
         for interface in self.interfaces.components():
             interface.preinitialize(mesh)
 
-        # Preinitialize solution output.
-        for output in self.outputs.components():
-            output.preinitialize()
+        # Preinitialize observers.
+        for observer in self.observers.components():
+            observer.preinitialize(self)
 
         # Set integrators and constraints.
         self._setIntegratorsConstraints()
-
-        # Set solution outputs.
-        self._setSolutionOutputs()
 
         ModuleProblem.preinitialize(self, mesh)
         return
@@ -235,10 +232,6 @@ class Problem(PetscComponent, ModuleProblem):
         comm = mpi_comm_world()
         if 0 == comm.rank:
             self._info.log("Finalizing problem.")
-
-        # Close solution output.
-        for output in self.outputs.components():
-            output.close()
         return
 
     def checkpoint(self):
@@ -281,10 +274,6 @@ class Problem(PetscComponent, ModuleProblem):
 
         ModuleProblem.integrators(self, integrators)
         ModuleProblem.constraints(self, constraints)
-        return
-
-    def _setSolutionOutputs(self):
-        ModuleProblem.outputs(self, self.outputs.components())
         return
 
     def _printInfo(self):

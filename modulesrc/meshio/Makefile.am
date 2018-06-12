@@ -42,6 +42,7 @@ swig_sources = \
 	OutputSolnSubset.i \
 	OutputSolnPoints.i \
 	../utils/PyreComponent.i \
+	../feassemble/Observer.i \
 	OutputManager.i \
 	OutputSoln.i \
 	OutputMaterial.i

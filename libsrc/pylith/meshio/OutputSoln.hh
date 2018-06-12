@@ -29,20 +29,21 @@
 #include "meshiofwd.hh" // forward declarations
 
 #include "OutputManager.hh" // ISA OutputManager
+#include "pylith/problems/ProblemObserver.hh" // ISA ProblemObserver
 
 #include "pylith/utils/array.hh" // HASA string_vector
 
 // OutputSoln -----------------------------------------------------
 /** @brief C++ object for managing output of the solution over the domain.
  */
-class pylith::meshio::OutputSoln : public OutputManager {
+class pylith::meshio::OutputSoln : public pylith::meshio::OutputManager {
     friend class TestOutputSoln;   // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    OutputSoln(void);
+    OutputSoln(pylith::problems::Problem* const problem);
 
     /// Destructor
     ~OutputSoln(void);
@@ -56,7 +57,7 @@ public:
      */
     void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+    // PROTECTED METHODS ////////////////////////////////////////////////////
 protected:
 
     /** Write solution at time step.
@@ -68,6 +69,11 @@ protected:
     void _writeDataStep(const PylithReal t,
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
+
+    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected:
+
+    pylith::problems::Problem* const _problem;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:

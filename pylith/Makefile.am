@@ -42,6 +42,7 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/IntegratorPointwise.py \
 	feassemble/ConstraintPointwise.py \
 	feassemble/Observer.py \
+	feassemble/SingleObserver.py \
 	feassemble/ObservedSubject.py \
 	friction/__init__.py \
 	materials/__init__.py \
@@ -53,19 +54,21 @@ nobase_pkgpyexec_PYTHON = \
 	materials/AuxFieldsIsotropicLinearElasticity.py \
 	materials/AuxFieldsIsotropicLinearMaxwell.py \
 	meshio/__init__.py \
-	meshio/CellFilter.py \
 	meshio/DataWriter.py \
 	meshio/DataWriterVTK.py \
 	meshio/MeshIOObj.py \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOLagrit.py \
 	meshio/PointsList.py \
-	meshio/SingleOutput.py \
-	meshio/VertexFilter.py \
-	meshio/VertexFilterDecimateP1.py \
+	meshio/FieldFilter.py \
+	meshio/FieldFilterNone.py \
+	meshio/FieldFilterProject.py \
 	meshio/OutputManager.py \
 	meshio/OutputSoln.py \
 	meshio/OutputMaterial.py \
+	meshio/OutputTrigger.py \
+	meshio/OutputTriggerStep.py \
+	meshio/OutputTriggerTime.py \
 	mpi/__init__.py \
 	mpi/Communicator.py \
 	problems/__init__.py \

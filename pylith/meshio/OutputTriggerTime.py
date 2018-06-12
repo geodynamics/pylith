@@ -48,14 +48,14 @@ class OutputTriggerTime(OutputTrigger, ModuleOutputTriggerTime):
         """
         Constructor.
         """
-        OutputTrigger.__init__(self, name, facility="outputtriggertime")
-        ModuleOutputTrigger.__init__(self)
+        OutputTrigger.__init__(self, name)
         return
 
     def preinitialize(self):
         """
         Setup output trigger.
         """
+        ModuleOutputTriggerTime.__init__(self)
         ModuleOutputTriggerTime.identifier(self, self.aliases[-1])
         ModuleOutputTriggerTime.timeSkip(self, self.timeSkip)
         return
@@ -70,6 +70,7 @@ class OutputTriggerTime(OutputTrigger, ModuleOutputTriggerTime):
         return
 
 # FACTORIES ////////////////////////////////////////////////////////////
+
 
 def output_trigger():
     """

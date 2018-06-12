@@ -33,9 +33,7 @@
  *
  * TimeDependent uses the PETSc TS object for time stepping.
  */
-
-class pylith::problems::TimeDependent : public Problem
-{ // TimeDependent
+class pylith::problems::TimeDependent : public pylith::problems::Problem {
     friend class TestTimeDependent;   // unit testing
 
     // PUBLIC ENUM //////////////////////////////////////////////////////////
@@ -220,7 +218,6 @@ private:
 
     TimeDependent(const TimeDependent&);   ///< Not implemented
     const TimeDependent& operator=(const TimeDependent&);   ///< Not implemented
-
 }; // TimeDependent
 
 #endif // pylith_problems_timedependent_hh

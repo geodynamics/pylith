@@ -25,7 +25,7 @@
 namespace pylith {
     namespace feassemble {
 
-        class Observer : public pylith::utils::PyreComponent {
+        class Observer {
 	    
 	    // PUBLIC METHODS ///////////////////////////////////////////////////////
 	public:

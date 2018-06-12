@@ -25,7 +25,9 @@
 namespace pylith {
     namespace problems {
 
-        class Problem : public pylith::utils::PyreComponent
+        class Problem :
+	    public pylith::utils::PyreComponent,
+	    public pylith::feassemble::ObservedComponent
          { // Problem
 
 // PUBLIC ENUM ////////////////////////////////////////////////////
@@ -95,14 +97,6 @@ public:
          */
         void constraints(pylith::feassemble::ConstraintPointwise* constraintArray[],
                          const int numConstraints);
-
-        /** Set handles to solution outputs.
-         *
-         * @param[in] outputArray Array of solution outputs.
-         * @param[in] numOutputs Number of solution outputs.
-         */
-        void outputs(pylith::meshio::OutputSoln* outputArray[],
-                     const int numOutputs);
 
         /** Do minimal initialization.
          *

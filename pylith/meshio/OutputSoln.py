@@ -21,7 +21,7 @@
 # @brief Python object for managing output of finite-element
 # solution information.
 #
-# Factory: output_manager
+# Factory: observer
 
 from .OutputManager import OutputManager
 from .meshio import OutputSoln as ModuleOutputSoln
@@ -40,7 +40,7 @@ class OutputSoln(OutputManager, ModuleOutputSoln):
     Facilities
       - None
 
-    FACTORY: output_manager
+    FACTORY: observer
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -52,11 +52,11 @@ class OutputSoln(OutputManager, ModuleOutputSoln):
         OutputManager.__init__(self, name)
         return
 
-    def preinitialize(self):
+    def preinitialize(self, problem):
         """
-        Do
+        Do mimimal initialization.
         """
-        OutputManager.preinitialize(self)
+        OutputManager.preinitialize(self, problem)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -68,19 +68,19 @@ class OutputSoln(OutputManager, ModuleOutputSoln):
         OutputManager._configure(self)
         return
 
-    def _createModuleObj(self):
+    def _createModuleObj(self, problem):
         """
         Create handle to C++ object.
         """
-        ModuleOutputSoln.__init__(self)
+        ModuleOutputSoln.__init__(self, problem)
         return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def output_manager():
+def observer():
     """
-    Factory associated with OutputManager.
+    Factory associated with OutputSoln.
     """
     return OutputSoln()
 

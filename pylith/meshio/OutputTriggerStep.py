@@ -49,14 +49,14 @@ class OutputTriggerStep(OutputTrigger, ModuleOutpuTriggerStep):
         """
         Constructor.
         """
-        OutputTrigger.__init__(self, name, facility="outputtrigger")
-        OutputTriggerStep.__init__(self)
+        OutputTrigger.__init__(self, name)
         return
 
     def preinitialize(self):
         """
         Setup output trigger.
         """
+        ModuleOutputTriggerStep.__init__(self)
         ModuleOutpuTriggerStep.identifier(self, self.aliases[-1])
         ModuleOutpuTriggerStep.numStepsSkip(self, self.numStepsSkip)
         return
@@ -71,6 +71,7 @@ class OutputTriggerStep(OutputTrigger, ModuleOutpuTriggerStep):
         return
 
 # FACTORIES ////////////////////////////////////////////////////////////
+
 
 def output_trigger():
     """

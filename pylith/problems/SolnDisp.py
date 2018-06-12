@@ -15,14 +15,14 @@
 #
 # @file pylith/problems/SolnDisp.py
 #
-# @brief Python subfields container with displacement subfield.
+# @brief Python solution container with displacement subfield.
 
 from pylith.utils.PetscComponent import PetscComponent
 
 
 class SolnDisp(PetscComponent):
     """
-    Python subfields container with displacement subfield.
+    Python solution container with displacement subfield.
 
     INVENTORY
 

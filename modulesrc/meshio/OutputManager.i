@@ -75,7 +75,7 @@ namespace pylith {
 			(const char* names[], const int numNames)
 	    };
 	    void infoFields(const char* names[],
-				  const int numNames);
+			    const int numNames);
 	    %clear(const char* const* names, const int numNames);
 
 	    /** Set names of data fields to output.
@@ -87,7 +87,7 @@ namespace pylith {
 			(const char* names[], const int numNames)
 	    };
 	    void dataFields(const char* names[],
-				  const int numNames);
+			    const int numNames);
 	    %clear(const char* const* names, const int numNames);
 
 	    /** Verify configuration.

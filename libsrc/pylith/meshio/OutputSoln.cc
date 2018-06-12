@@ -32,7 +32,9 @@ const char* pylith::meshio::OutputSoln::_pyreComponent = "outputsoln";
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshio::OutputSoln::OutputSoln(void) {
+pylith::meshio::OutputSoln::OutputSoln(pylith::problems::Problem* const problem) :
+    _problem(problem)
+{ // constructor
     PyreComponent::name(_pyreComponent);
 } // constructor
 
@@ -73,6 +75,7 @@ pylith::meshio::OutputSoln::verifyConfiguration(const pylith::topology::Field& s
 
     PYLITH_METHOD_END;
 } // verifyConfiguration
+
 
 // ----------------------------------------------------------------------
 // Write data for step in solution.

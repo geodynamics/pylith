@@ -28,7 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
 
-#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
+#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/types.hh" // USES PylithReal, PylithInt
@@ -37,7 +37,7 @@
 
 // ObservedSubject --------------------------------------------------------
 /// Subject of observer.
-class pylith::feassemble::ObservedSubject : public pylith::utils::GenericComponent {
+class pylith::feassemble::ObservedSubject {
     friend class TestObservedSubject;   // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////

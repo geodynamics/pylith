@@ -25,7 +25,7 @@
 namespace pylith {
     namespace feassemble {
 
-        class ObservedSubject : public pylith::utils::PyreComponent {
+        class ObservedSubject {
 	    
 	    /// Constructor.
 	    ObservedSubject(void);

@@ -63,9 +63,9 @@ class Material(IntegratorPointwise, ModuleMaterial):
     label = pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Descriptive label for material."
 
-    from pylith.meshio.OutputMaterial import OutputMaterial
-    outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputMaterial)
-    outputManager.meta['tip'] = "Output manager for material information."
+    #from pylith.meshio.OutputMaterial import OutputMaterial
+    #outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputMaterial)
+    #outputManager.meta['tip'] = "Output manager for material information."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

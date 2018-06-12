@@ -91,12 +91,6 @@ int chartSize(void) const;
  */
 int sectionSize(void) const;
 
-/** Has section been setup?
- *
- * @returns True if section has been setup.
- */
-bool hasSection(void) const;
-
 /** Create section with same layout (fiber dimension and
  * constraints) as another section. This allows the layout data
  * structures to be reused across multiple fields, reducing memory

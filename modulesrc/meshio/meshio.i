@@ -74,6 +74,7 @@ import_array();
 
 // Interfaces
 %include "../utils/PyreComponent.i"
+%include "../feassemble/Observer.i"
 %include "MeshIOObj.i"
 %include "MeshIOAscii.i"
 %include "MeshIOLagrit.i"

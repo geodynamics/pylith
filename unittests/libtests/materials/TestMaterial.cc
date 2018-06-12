@@ -43,8 +43,7 @@
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::materials::TestMaterial::setUp(void)
-{ // setUp
+pylith::materials::TestMaterial::setUp(void) {
     _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
     _solutionFields = NULL;
 } // setUp
@@ -53,8 +52,7 @@ pylith::materials::TestMaterial::setUp(void)
 // ----------------------------------------------------------------------
 // Deallocate testing data.
 void
-pylith::materials::TestMaterial::tearDown(void)
-{ // tearDown
+pylith::materials::TestMaterial::tearDown(void) {
     delete _solutionFields; _solutionFields = NULL;
     delete _mesh; _mesh = NULL;
 } // tearDown
@@ -63,8 +61,7 @@ pylith::materials::TestMaterial::tearDown(void)
 // ----------------------------------------------------------------------
 // Test auxField().
 void
-pylith::materials::TestMaterial::testAuxField(void)
-{ // testAuxField
+pylith::materials::TestMaterial::testAuxField(void) {
     PYLITH_METHOD_BEGIN;
 
     _initializeFull();
@@ -86,8 +83,7 @@ pylith::materials::TestMaterial::testAuxField(void)
 // ----------------------------------------------------------------------
 // Test auxSubfieldDiscretization().
 void
-pylith::materials::TestMaterial::testAuxSubfieldDiscretization(void)
-{ // testAuxSubfieldDiscretization
+pylith::materials::TestMaterial::testAuxSubfieldDiscretization(void) {
     PYLITH_METHOD_BEGIN;
 
     const topology::FieldBase::Discretization infoDefault = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
@@ -138,8 +134,7 @@ pylith::materials::TestMaterial::testAuxSubfieldDiscretization(void)
 // ----------------------------------------------------------------------
 // Test auxFieldDB().
 void
-pylith::materials::TestMaterial::testAuxFieldDB(void)
-{ // testAuxFieldDB
+pylith::materials::TestMaterial::testAuxFieldDB(void) {
     PYLITH_METHOD_BEGIN;
 
     const std::string label = "test db";
@@ -160,8 +155,7 @@ pylith::materials::TestMaterial::testAuxFieldDB(void)
 // ----------------------------------------------------------------------
 // Test normalizer().
 void
-pylith::materials::TestMaterial::testNormalizer(void)
-{ // testNormalizer
+pylith::materials::TestMaterial::testNormalizer(void) {
     PYLITH_METHOD_BEGIN;
 
     spatialdata::units::Nondimensional normalizer;
@@ -179,8 +173,7 @@ pylith::materials::TestMaterial::testNormalizer(void)
 // ----------------------------------------------------------------------
 // Test verifyConfiguration().
 void
-pylith::materials::TestMaterial::testVerifyConfiguration(void)
-{ // testVerifyConfiguration
+pylith::materials::TestMaterial::testVerifyConfiguration(void) {
     PYLITH_METHOD_BEGIN;
 
     // Call verifyConfiguration()
@@ -197,8 +190,7 @@ pylith::materials::TestMaterial::testVerifyConfiguration(void)
 // ----------------------------------------------------------------------
 // Test dimension(), id(), and label().
 void
-pylith::materials::TestMaterial::testAccessors(void)
-{ // testAccessors
+pylith::materials::TestMaterial::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
 
     Material* material = _material(); CPPUNIT_ASSERT(material);
@@ -221,8 +213,7 @@ pylith::materials::TestMaterial::testAccessors(void)
 // ----------------------------------------------------------------------
 // Test initialize().
 void
-pylith::materials::TestMaterial::testInitialize(void)
-{ // testInitialize
+pylith::materials::TestMaterial::testInitialize(void) {
     PYLITH_METHOD_BEGIN;
 
     // Call initialize()
@@ -285,8 +276,7 @@ pylith::materials::TestMaterial::testInitialize(void)
 // ----------------------------------------------------------------------
 // Test computeResidual().
 void
-pylith::materials::TestMaterial::testComputeResidual(void)
-{ // testComputeResidual
+pylith::materials::TestMaterial::testComputeResidual(void) {
     PYLITH_METHOD_BEGIN;
 
     // Call initialize()
@@ -354,8 +344,7 @@ pylith::materials::TestMaterial::testComputeResidual(void)
 // ----------------------------------------------------------------------
 // Test computeRHSJacobian().
 void
-pylith::materials::TestMaterial::testComputeRHSJacobian(void)
-{ // testComputeRHSJacobian
+pylith::materials::TestMaterial::testComputeRHSJacobian(void) {
     PYLITH_METHOD_BEGIN;
 
     // Create linear problem (MMS) with two trial solutions, s and p.
@@ -455,8 +444,7 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void)
 // ----------------------------------------------------------------------
 // Test computeLHSJacobianImplicit().
 void
-pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void)
-{ // testComputeLHSJacobianImplicit
+pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void) {
     PYLITH_METHOD_BEGIN;
 
     Material* material = _material(); CPPUNIT_ASSERT(material);
@@ -560,8 +548,7 @@ pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void)
 // ----------------------------------------------------------------------
 // Test computeLHSJacobianExplicit().
 void
-pylith::materials::TestMaterial::testComputeLHSJacobianInverseExplicit(void)
-{ // testComputeLHSJacobianInverseExplicit
+pylith::materials::TestMaterial::testComputeLHSJacobianInverseExplicit(void) {
     PYLITH_METHOD_BEGIN;
 
     Material* material = _material(); CPPUNIT_ASSERT(material);
@@ -579,8 +566,7 @@ pylith::materials::TestMaterial::testComputeLHSJacobianInverseExplicit(void)
 // ----------------------------------------------------------------------
 // Test updateStateVars().
 void
-pylith::materials::TestMaterial::testUpdateStateVars(void)
-{ // testUpdateStateVars
+pylith::materials::TestMaterial::testUpdateStateVars(void) {
     PYLITH_METHOD_BEGIN;
 
     TestMaterial_Data* data = _data(); CPPUNIT_ASSERT(data);
@@ -600,7 +586,7 @@ pylith::materials::TestMaterial::testUpdateStateVars(void)
     CPPUNIT_ASSERT(_solutionFields);
     pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
     material->_auxField->view("INITIAL_AUX FIELDS"); // :DEBUGGING:
-    material->updateStateVars(data->t, data->dt, perturbation);
+    material->_updateStateVars(data->t, data->dt, perturbation);
 
     const pylith::topology::Field* auxField = material->auxField(); CPPUNIT_ASSERT(auxField);
     material->_auxField->view("UPDATED_AUX FIELDS"); // :DEBUGGING:
@@ -629,8 +615,7 @@ pylith::materials::TestMaterial::testUpdateStateVars(void)
 // ----------------------------------------------------------------------
 // Do minimal initilaization of test data.
 void
-pylith::materials::TestMaterial::_initializeMin(void)
-{ // _initializeMin
+pylith::materials::TestMaterial::_initializeMin(void) {
     PYLITH_METHOD_BEGIN;
 
     Material* material = _material(); CPPUNIT_ASSERT(material);
@@ -665,8 +650,7 @@ pylith::materials::TestMaterial::_initializeMin(void)
 // ----------------------------------------------------------------------
 // Complete initilaization of test data.
 void
-pylith::materials::TestMaterial::_initializeFull(void)
-{ // _initializeFull
+pylith::materials::TestMaterial::_initializeFull(void) {
     PYLITH_METHOD_BEGIN;
 
     Material* material = _material(); CPPUNIT_ASSERT(material);
@@ -691,8 +675,7 @@ pylith::materials::TestMaterial::_initializeFull(void)
 // ----------------------------------------------------------------------
 // Set field to zero on the boundary.
 void
-pylith::materials::TestMaterial::_zeroBoundary(pylith::topology::Field* field)
-{ // _zeroBoundary
+pylith::materials::TestMaterial::_zeroBoundary(pylith::topology::Field* field) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(field);
@@ -776,8 +759,7 @@ pylith::materials::TestMaterial_Data::TestMaterial_Data(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::materials::TestMaterial_Data::~TestMaterial_Data(void)
-{ // destructor
+pylith::materials::TestMaterial_Data::~TestMaterial_Data(void) {
     delete cs; cs = NULL;
     delete gravityField; gravityField = NULL;
     delete normalizer; normalizer = NULL;
