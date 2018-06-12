@@ -253,6 +253,30 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting density subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting density field
 
+    { // Test getting shear_modulus field.
+        pylith::topology::Field shearModulus(*_mesh);
+        shearModulus.copySubfield(auxField, "shear_modulus");
+
+        //shearModulus.view("SHEAR MODULUS"); // DEBUGGING
+
+        // Check result
+        CPPUNIT_ASSERT_EQUAL(std::string("shear_modulus"), std::string(shearModulus.label()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, shearModulus.spaceDim());
+
+        pylith::topology::FieldQuery queryShearModulus(shearModulus);
+        queryShearModulus.initializeWithDefaultQueryFns();
+        queryShearModulus.openDB(_mydata->auxDB, lengthScale);
+
+        PylithReal norm = 0.0;
+        const PylithReal t = _mydata->t;
+        const PetscDM dm = shearModulus.dmMesh(); CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryShearModulus.functions(), (void**)queryShearModulus.contextPtrs(), shearModulus.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        queryShearModulus.closeDB(_mydata->auxDB);
+
+        const PylithReal tolerance = 1.0e-6;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting shear modulus subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting shearModulus field
+
     { // Test getting bulk_modulus field.
         pylith::topology::Field bulkModulus(*_mesh);
         bulkModulus.copySubfield(auxField, "bulk_modulus");
@@ -276,6 +300,30 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
         const PylithReal tolerance = 1.0e-6;
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting bulk modulus subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting bulkModulus field
+
+    if (_mymaterial->_useReferenceState) { // Test getting reference_strain field.
+        pylith::topology::Field referenceStrain(*_mesh);
+        referenceStrain.copySubfield(auxField, "reference_strain");
+
+        //referenceStrain.view("REFERENCE STRAIN"); // DEBUGGING
+
+        // Check result
+        CPPUNIT_ASSERT_EQUAL(std::string("reference_strain"), std::string(referenceStrain.label()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, referenceStrain.spaceDim());
+
+        pylith::topology::FieldQuery queryRefStrain(referenceStrain);
+        queryRefStrain.initializeWithDefaultQueryFns();
+        queryRefStrain.openDB(_mydata->auxDB, lengthScale);
+
+        PylithReal norm = 0.0;
+        const PylithReal t = _mydata->t;
+        const PetscDM dm = referenceStrain.dmMesh(); CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStrain.functions(), (void**)queryRefStrain.contextPtrs(), referenceStrain.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        queryRefStrain.closeDB(_mydata->auxDB);
+
+        const PylithReal tolerance = 1.0e-6;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting reference strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting reference_strain field
 
     if (_mymaterial->_useReferenceState) { // Test getting reference_stress field.
         pylith::topology::Field referenceStress(*_mesh);
