@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,41 +13,41 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/meshio/SingleOutput.py
+# @file pylith/feassemble/SingleObserver.py
 #
-# @brief Python container with one output manager.
+# @brief Python container with one observer.
 
 from pylith.utils.PetscComponent import PetscComponent
 
 
-class SingleOutput(PetscComponent):
+class SingleObserver(PetscComponent):
     """
-    Python container with one output manager.
+    Python container with one observer.
 
-    Factory: object_bin
+    INVENTORY
+
+    Properties
+      - None
+
+    Facilities
+      - *observer* Observer.
+
+    FACTORY: N/A
     """
-
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li None
-    #
-    # \b Facilities
-    # @li \b output Output manager
 
     import pyre.inventory
 
-    from OutputSoln import OutputSoln
-    output = pyre.inventory.facility("output", family="output_manager", factory=OutputSoln)
-    output.meta['tip'] = "Output manager."
+    from pylith.meshio.OutputSoln import OutputSoln
+    output = pyre.inventory.facility("observer", family="observer", factory=OutputSoln)
+    output.meta['tip'] = "Observer of subject."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="singleoutput"):
+    def __init__(self, name="singleobserver"):
         """
         Constructor.
         """
-        PetscComponent.__init__(self, name, facility="output")
+        PetscComponent.__init__(self, name, facility="singleobserver")
         return
 
 
