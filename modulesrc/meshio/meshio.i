@@ -41,7 +41,7 @@
 #include "pylith/meshio/DataWriterHDF5Ext.hh"
 #endif
 #include "pylith/meshio/OutputManager.hh"
-  //#include "pylith/meshio/OutputSoln.hh"
+#include "pylith/meshio/OutputSoln.hh"
   //#include "pylith/meshio/OutputSolnSubset.hh"
   //#include "pylith/meshio/OutputSolnPoints.hh"
   //#include "pylith/meshio/OutputMaterial.hh"
@@ -93,8 +93,8 @@ import_array();
 %include "DataWriterHDF5.i"
 %include "DataWriterHDF5Ext.i"
 #endif
- //%include "OutputManager.i"
- //%include "OutputSoln.i"
+%include "OutputManager.i"
+%include "OutputSoln.i"
  //%include "OutputSolnSubset.i"
  //%include "OutputSolnPoints.i"
  //%include "OutputMaterial.i"

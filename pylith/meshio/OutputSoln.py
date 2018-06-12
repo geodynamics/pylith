@@ -17,16 +17,14 @@
 #
 
 # @file pyre/meshio/OutputSoln.py
-##
+#
 # @brief Python object for managing output of finite-element
 # solution information.
-##
+#
 # Factory: output_manager
 
 from .OutputManager import OutputManager
 from .meshio import OutputSoln as ModuleOutputSoln
-
-# OutputSoln class
 
 
 class OutputSoln(OutputManager, ModuleOutputSoln):
@@ -34,24 +32,16 @@ class OutputSoln(OutputManager, ModuleOutputSoln):
     Python object for managing output of finite-element solution
     information.
 
-    @class Inventory
-    Python object for managing OutputSoln facilities and properties.
+    INVENTORY
 
-    \b Properties
-    @li \b vertex_data_fields Names of vertex data fields to output.
+    Properties
+      - None
 
-    \b Facilities
-    @li None
+    Facilities
+      - None
 
-    Factory: output_manager
+    FACTORY: output_manager
     """
-
-    # INVENTORY //////////////////////////////////////////////////////////
-
-    import pyre.inventory
-
-    vertexDataFields = pyre.inventory.list("vertex_data_fields", default=["all"])
-    vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -67,7 +57,6 @@ class OutputSoln(OutputManager, ModuleOutputSoln):
         Do
         """
         OutputManager.preinitialize(self)
-        ModuleOutputSoln.vertexDataFields(self, self.vertexDataFields)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -77,7 +66,6 @@ class OutputSoln(OutputManager, ModuleOutputSoln):
         Set members based using inventory.
         """
         OutputManager._configure(self)
-        self.vertexDataFields = self.inventory.vertexDataFields
         return
 
     def _createModuleObj(self):

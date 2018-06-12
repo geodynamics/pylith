@@ -20,7 +20,7 @@
 
 #include "ObservedSubject.hh" // Implementation of class methods
 
-#include "pylith/problems/Observer.hh" // USES Observer
+#include "pylith/feassemble/Observer.hh" // USES Observer
 #include "pylith/topology/Field.hh" // USES Field
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
@@ -31,19 +31,19 @@
 
 // ----------------------------------------------------------------------
 // Constructor.
-pylith::problems::ObservedSubject::ObservedSubject(void) {}
+pylith::feassemble::ObservedSubject::ObservedSubject(void) {}
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::problems::ObservedSubject::~ObservedSubject(void) {
+pylith::feassemble::ObservedSubject::~ObservedSubject(void) {
     deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::problems::ObservedSubject::deallocate(void) {
+pylith::feassemble::ObservedSubject::deallocate(void) {
     _observers.clear(); // Memory allocation of Observer* managed elsewhere.
 } // deallocate
 
@@ -51,7 +51,7 @@ pylith::problems::ObservedSubject::deallocate(void) {
 // ----------------------------------------------------------------------
 // Register observer to receive notifications.
 void
-pylith::problems::ObservedSubject::registerObserver(pylith::problems::Observer* observer) {
+pylith::feassemble::ObservedSubject::registerObserver(pylith::feassemble::Observer* observer) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("registerObserver(observer="<<typeid(observer).name()<<")");
 
@@ -66,7 +66,7 @@ pylith::problems::ObservedSubject::registerObserver(pylith::problems::Observer* 
 // ----------------------------------------------------------------------
 // Remove observer from receiving notifications.
 void
-pylith::problems::ObservedSubject::removeObserver(pylith::problems::Observer* observer) {
+pylith::feassemble::ObservedSubject::removeObserver(pylith::feassemble::Observer* observer) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("removeObserver(observer="<<typeid(observer).name()<<")");
 
@@ -81,15 +81,15 @@ pylith::problems::ObservedSubject::removeObserver(pylith::problems::Observer* ob
 // ----------------------------------------------------------------------
 // Notify observers.
 void
-pylith::problems::ObservedSubject::notifyObservers(const PylithReal t,
-                                                   const PylithInt tindex,
-                                                   const pylith::topology::Field& solution,
-                                                   const bool infoOnly) {
+pylith::feassemble::ObservedSubject::notifyObservers(const PylithReal t,
+                                                     const PylithInt tindex,
+                                                     const pylith::topology::Field& solution,
+                                                     const bool infoOnly) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("notifyObservers(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
-    typedef std::set<Observer*>::iterator set_iterator;
-    for (set_iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
+    typedef std::set<Observer*>::iterator observers_iter;
+    for (observers_iter iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);
         (*iter)->update(t, tindex, solution);
     } // for

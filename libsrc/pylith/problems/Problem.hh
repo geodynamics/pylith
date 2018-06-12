@@ -28,7 +28,7 @@
 #include "problemsfwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
-#include "pylith/problems/ObservedSubject.hh" // ISA ObservedSubject
+#include "pylith/feassemble/ObservedSubject.hh" // ISA ObservedSubject
 
 #include "pylith/feassemble/feassemblefwd.hh" // HASA IntegratorPointwise, ConstraintPointwise
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
@@ -50,7 +50,7 @@
  */
 class pylith::problems::Problem :
     public pylith::utils::PyreComponent,
-    public pylith::problems::ObservedSubject {
+    public pylith::feassemble::ObservedSubject {
     friend class TestProblem;   // unit testing
 
     // PUBLIC ENUM //////////////////////////////////////////////////////////

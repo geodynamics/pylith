@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,12 +13,11 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/problems/SolutionSubfield.py
-##
+#
 # @brief Python object for defining attributes of a subfield within a
 # field.
-##
+#
 # Factory: soln_subfield.
 
 from pylith.utils.PetscComponent import PetscComponent

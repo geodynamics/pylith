@@ -17,16 +17,16 @@
 //
 
 /**
- * @file libsrc/problems/ObservedSubject.hh
+ * @file libsrc/feassemble/ObservedSubject.hh
  *
  * @brief Subject of observer.
  */
 
-#if !defined(pylith_problems_observedsubject_hh)
-#define pylith_problems_observedsubject_hh
+#if !defined(pylith_feassemble_observedsubject_hh)
+#define pylith_feassemble_observedsubject_hh
 
 // Include directives ---------------------------------------------------
-#include "problemsfwd.hh" // forward declarations
+#include "feassemblefwd.hh" // forward declarations
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -37,7 +37,7 @@
 
 // ObservedSubject --------------------------------------------------------
 /// Subject of observer.
-class pylith::problems::ObservedSubject : public pylith::utils::GenericComponent {
+class pylith::feassemble::ObservedSubject : public pylith::utils::GenericComponent {
     friend class TestObservedSubject;   // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
@@ -59,13 +59,13 @@ public:
      *
      * @param[in] observer Observer to receive notifications.
      */
-    void registerObserver(pylith::problems::Observer* observer);
+    void registerObserver(pylith::feassemble::Observer* observer);
 
     /** Remove observer from receiving notifications.
      *
      * @param[in] observer Observer to remove.
      */
-    void removeObserver(pylith::problems::Observer* observer);
+    void removeObserver(pylith::feassemble::Observer* observer);
 
     /** Send observers an update.
      *
@@ -83,7 +83,7 @@ public:
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-    std::set<pylith::problems::Observer*> _observers; ///< Ssubscribers of updates.
+    std::set<pylith::feassemble::Observer*> _observers; ///< Ssubscribers of updates.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
@@ -93,7 +93,7 @@ private:
 
 }; // ObservedSubject
 
-#endif // pylith_problems_observedsubject_hh
+#endif // pylith_feassemble_observedsubject_hh
 
 
 // End of file

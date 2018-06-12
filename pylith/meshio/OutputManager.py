@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -17,73 +15,53 @@
 #
 
 # @file pylith/meshio/OutputManager.py
-##
-# @brief Python abstract base class for managing output of
-# finite-element information.
-##
-# Factory: output_manager
+#
+# @brief Python class for managing output of finite-element information.
+#
+# Factory: observer
 
-from pylith.utils.PetscComponent import PetscComponent
-from pylith.utils.NullComponent import NullComponent
+from pylith.feassemble.Observer import Observer
 from .meshio import OutputManager as ModuleOutputManager
 
-# OutputManager class
 
-
-class OutputManager(PetscComponent, ModuleOutputManager):
+class OutputManager(Observer, ModuleOutputManager):
     """
     Python abstract base class for managing output of finite-element
     information.
 
-    \b Properties
-    @li \b trigger Flag indicating whether to use 'elapsed_time' or 'skip_timesteps' to set how often output is written.
-    @li \b elapsed_time Elapsed time between writes.
-    @li \b skip_timesteps Number of time steps to skip between writes.
-    @li \b vertex_info_fields Names of vertex information fields to output.
-    @li \b vertex_data_fields Names of vertex data fields to output.
-    @li \b cell_info_fields Names of cell information fields to output.
-    @li \b cell_data_fields Names of cell data fields to output.
+    INVENTORY
 
-    \b Facilities
-    @li \b vertex_filter Filter for vertex data.
-    @li \b cell_filter Filter for cell data.
+    Properties
+      - *info_fields* Names of information fields to output.
+      - *data_fields* Names of data fields to output.
+
+    Facilities
+      - *trigger* Trigger for defining how often output is written.
+      - *writer* Writer for output.
+      - *field_filter* Filter for output fields.
+
+    FACTORY: observer
     """
-
-    # INVENTORY //////////////////////////////////////////////////////////
 
     import pyre.inventory
 
-    trigger = pyre.inventory.str("trigger", default="skip_timesteps", validator=pyre.inventory.choice(["elasped_time", "skip_timesteps"]))
-    trigger.meta['tip'] = "Flag indicating whether to use 'elapsed_time' or 'skip_timesteps' to set how often output is written."
+    infoFields = pyre.inventory.list("info_fields", default=["all"])
+    infoFields.meta['tip'] = "Names of information fields to output."
 
-    from pyre.units.time import s
-    timeSkip = pyre.inventory.dimensional("elapsed_time", default=1.0 * s)
-    timeSkip.meta['tip'] = "Elapsed time between writes."
+    dataFields = pyre.inventory.list("data_fields", default=["all"])
+    dataFields.meta['tip'] = "Names of data fields to output."
 
-    numTimeStepsSkip = pyre.inventory.int("skip_timesteps", default=0, validator=pyre.inventory.greaterEqual(0))
-    numTimeStepsSkip.meta['tip'] = "Number of time steps to skip between writes."
+    from .OutputTriggerStep import OutputTriggerStep
+    trigger = pyre.inventory.str("trigger", family="output_trigger", factory=OutputTriggerStep)
+    trigger.meta['tip'] = "Trigger defining how often output is written."
 
-    from DataWriterHDF5 import DataWriterHDF5
+    from .DataWriterHDF5 import DataWriterHDF5
     writer = pyre.inventory.facility("writer", factory=DataWriterHDF5, family="data_writer")
     writer.meta['tip'] = "Writer for data."
 
-    vertexFilter = pyre.inventory.facility("vertex_filter", family="output_vertex_filter", factory=NullComponent)
-    vertexFilter.meta['tip'] = "Filter for vertex data."
-
-    cellFilter = pyre.inventory.facility("cell_filter", family="output_cell_filter", factory=NullComponent)
-    cellFilter.meta['tip'] = "Filter for cell data."
-
-    vertexInfoFields = pyre.inventory.list("vertex_info_fields", default=["all"])
-    vertexInfoFields.meta['tip'] = "Names of vertex information fields to output."
-
-    vertexDataFields = pyre.inventory.list("vertex_data_fields", default=["all"])
-    vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
-
-    cellInfoFields = pyre.inventory.list("cell_info_fields", default=["all"])
-    cellInfoFields.meta['tip'] = "Names of cell information fields to output."
-
-    cellDataFields = pyre.inventory.list("cell_data_fields", default=["all"])
-    cellDataFields.meta['tip'] = "Names of cell data fields to output."
+    from .FieldFilterProject import FieldFilterProject
+    fieldFilter = pyre.inventory.facility("field_filter", family="output_field_filter", factory=FieldFilterProject)
+    fieldFilter.meta['tip'] = "Filter for output fields."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -91,8 +69,7 @@ class OutputManager(PetscComponent, ModuleOutputManager):
         """
         Constructor.
         """
-        PetscComponent.__init__(self, name, facility="outputmanager")
-        self._loggingPrefix = "OutM "
+        Observer.__init__(self, name)
         self._createModuleObj()
         return
 
@@ -101,24 +78,11 @@ class OutputManager(PetscComponent, ModuleOutputManager):
         Setup output manager.
         """
         ModuleOutputManager.identifier(self, self.aliases[-1])
-        if self.inventory.trigger == "skip_timesteps":
-            ModuleOutputManager.trigger(self, ModuleOutputManager.SKIP_TIMESTEPS)
-            ModuleOutputManager.numTimeStepsSkip(self, self.numTimeStepsSkip)
-        elif self.trigger == "elapsed_time":
-            ModuleOutputManager.trigger(self, ModuleOutputManager.ELAPSED_TIME)
-            ModuleOutputManager.timeSkip(self, self.timeSkip)
-        else:
-            raise ValueError("Unknown output trigger '%s'." % self.inventory.trigger)
+        ModuleOutputManager.trigger(self, self.trigger)
+        ModuleOutputManager.fieldFilter(self, self.fielFilter)
 
-        if not isinstance(self.inventory.vertexFilter, NullComponent):
-            ModuleOutputManager.vertexFilter(self, self.vertexFilter)
-        if not isinstance(self.inventory.cellFilter, NullComponent):
-            ModuleOutputManager.cellFilter(self, self.cellFilter)
-
-        ModuleOutputManager.vertexInfoFields(self, self.inventory.vertexInfoFields)
-        ModuleOutputManager.vertexDataFields(self, self.inventory.vertexDataFields)
-        ModuleOutputManager.cellInfoFields(self, self.inventory.cellInfoFields)
-        ModuleOutputManager.cellDataFields(self, self.inventory.cellDataFields)
+        ModuleOutputManager.infoFields(self, self.infoFields)
+        ModuleOutputManager.dataFields(self, self.dataFields)
 
         self.writer.preinitialize()
         ModuleOutputManager.writer(self, self.writer)
@@ -130,30 +94,15 @@ class OutputManager(PetscComponent, ModuleOutputManager):
         """
         Set members based using inventory.
         """
-        PetscComponent._configure(self)
-        self.trigger = self.inventory.trigger
-        self.numTimeStepsSkip = self.inventory.numTimeStepsSkip
-        self.timeSkip = self.inventory.timeSkip
-
-        self.coordsys = NullComponent()
-        self.writer = self.inventory.writer
+        Observer._configure(self)
         return
 
     def _createModuleObj(self):
         """
         Create handle to C++ object.
         """
-        ModuleOutputManager.__init__(self)
+        raise NotImplementedError("Implement in subclass.")
         return
-
-
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def output_manager():
-    """
-    Factory associated with OutputManager.
-    """
-    return OutputManager()
 
 
 # End of file

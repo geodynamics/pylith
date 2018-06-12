@@ -51,6 +51,8 @@ libpylith_la_SOURCES = \
 	faults/TopologyOps.cc \
 	feassemble/IntegratorPointwise.cc \
 	feassemble/ConstraintPointwise.cc \
+	feassemble/Observer.hh \
+	feassemble/ObservedSubject.hh \
 	feassemble/IntegratorObserver.cc \
 	feassemble/AuxiliaryFactory.cc \
 	fekernels/Elasticity.cc \
@@ -100,9 +102,7 @@ libpylith_la_SOURCES = \
 	problems/Problem.cc \
 	problems/TimeDependent.cc \
 	problems/SolutionFactory.cc \
-	problems/Observer.hh \
 	problems/ProblemObserver.hh \
-	problems/ObservedSubject.hh \
 	topology/FieldBase.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \

@@ -17,23 +17,23 @@
 //
 
 /**
- * @file libsrc/problems/Observer.hh
+ * @file libsrc/feassemble/Observer.hh
  *
  * @brief Observer of subject.
  */
 
-#if !defined(pylith_problems_observer_hh)
-#define pylith_problems_observer_hh
+#if !defined(pylith_feassemble_observer_hh)
+#define pylith_feassemble_observer_hh
 
 // Include directives ---------------------------------------------------
-#include "problemsfwd.hh" // forward declarations
+#include "feassemblefwd.hh" // forward declarations
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/types.hh" // USES PylithReal, PylithInt
 
 // Observer --------------------------------------------------------
 /// Observer of subject. Receives updates of solution.
-class pylith::problems::Observer {
+class pylith::feassemble::Observer {
     friend class TestObserver;   // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
@@ -71,7 +71,7 @@ private:
 
 }; // Observer
 
-#endif // pylith_problems_observer_hh
+#endif // pylith_feassemble_observer_hh
 
 
 // End of file

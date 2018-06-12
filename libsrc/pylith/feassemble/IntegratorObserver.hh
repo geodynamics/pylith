@@ -28,11 +28,11 @@
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
 
-#include "pylith/problems/Observer.hh" // ISA Observer
+#include "pylith/feassemble/Observer.hh" // ISA Observer
 
 // IntegratorObserver --------------------------------------------------------
 /// Observer of integrator for governing equations. Receives updates of solution.
-class pylith::feassemble::IntegratorObserver : public pylith::problems::Observer {
+class pylith::feassemble::IntegratorObserver : public pylith::feassemble::Observer {
     friend class TestIntegratorObserver;   // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////

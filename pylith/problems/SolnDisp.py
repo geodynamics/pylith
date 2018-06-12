@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,9 +13,8 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/problems/SolnDisp.py
-##
+#
 # @brief Python subfields container with displacement subfield.
 
 from pylith.utils.PetscComponent import PetscComponent
@@ -26,15 +23,15 @@ from pylith.utils.PetscComponent import PetscComponent
 class SolnDisp(PetscComponent):
     """
     Python subfields container with displacement subfield.
-    """
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li None
-    #
-    # \b Facilities
-    # @li \b displacement Displacement subfield.
+    INVENTORY
+
+    Properties
+      - None
+
+    Facilities
+      - *displacement* Displacement subfield.
+    """
 
     import pyre.inventory
 

@@ -34,10 +34,13 @@ namespace pylith {
 
         class ConstraintPointwise; ///< Constrained degrees of freedom.
 
-        class IntegratorObserver; //< Observes integrator.
 
         class AuxiliaryFactory; ///< Creates auxiliary subfields.
 
+	class Observer; ///< Observer of subject.
+	class ObservedSubject; ///< Subject being observed.
+        class IntegratorObserver; //< Observes integrator.
+	
     } // feassemble
 } // pylith
 

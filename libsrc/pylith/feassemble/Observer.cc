@@ -24,12 +24,12 @@
 
 // ----------------------------------------------------------------------
 // Constructor.
-pylith::problems::Observer::Observer(void) {}
+pylith::feassemble::Observer::Observer(void) {}
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::problems::Observer::~Observer(void) {
+pylith::feassemble::Observer::~Observer(void) {
     deallocate();
 } // destructor
 
@@ -37,7 +37,7 @@ pylith::problems::Observer::~Observer(void) {
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::problems::Observer::deallocate(void) {}
+pylith::feassemble::Observer::deallocate(void) {}
 
 
 // End of file

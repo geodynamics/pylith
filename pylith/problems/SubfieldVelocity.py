@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,16 +13,13 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/problems/SubfieldVelocity.py
-##
+#
 # @brief Python object for velocity subfield.
-##
+#
 # Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
-
-# SubfieldVelocity class
 
 
 class SubfieldVelocity(SolutionSubfield):

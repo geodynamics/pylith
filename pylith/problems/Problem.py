@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,11 +13,10 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/problems/Problem.py
-##
+#
 # @brief Python abstract base class for crustal dynamics problems.
-##
+#
 # Factory: problem.
 
 from pylith.utils.PetscComponent import PetscComponent
@@ -60,7 +57,7 @@ def faultFactory(name):
     return facility(name, family="fault", factory=FaultCohesiveKin)
 
 
-def outputFactory(name):
+def observerFactory(name):
     """
     Factory for output items.
     """
@@ -72,26 +69,21 @@ class Problem(PetscComponent, ModuleProblem):
     """
     Python abstract base class for crustal dynamics problems.
 
-    Factory: problem.
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # @class Inventory
-    # Python object for managing Problem facilities and properties.
-    #
-    # \b Properties
-    # @li \b dimension Spatial dimension of problem space.
-    # @li \b solver Type of solver to use.
-    #
-    # \b Facilities
-    # @li \b solution Solution field.
-    # @li \b normalizer Nondimensionalizer for problem.
-    # @li \b materials Array of materials (governing equations) in the problem.
-    # @li \b bc Array of boundary conditions.
-    # @li \b interfaces Array of interior surfaces with relative displacement constraints or constitutive models.
-    # @li \b solution_outputs Array of output managers for solution.
-    # @li \b gravityField Gravity field for problem (SpatialDB).
+    Properties
+      - *dimension* Spatial dimension of problem space.
+      - *solver* Type of solver to use.
+
+    Facilities
+      - *solution* Solution field.
+      - *normalizer* Nondimensionalizer for problem.
+      - *materials* Array of materials (governing equations) in the problem.
+      - *bc* Array of boundary conditions.
+      - *interfaces* Array of interior surfaces with relative displacement constraints or constitutive models.
+      - *solution_observers* Array of observers for solution.
+      - *gravity_field* Gravity field for problem (SpatialDB).
+    """
 
     import pyre.inventory
     from pylith.utils.EmptyBin import EmptyBin
@@ -117,9 +109,9 @@ class Problem(PetscComponent, ModuleProblem):
     interfaces = pyre.inventory.facilityArray("interfaces", itemFactory=faultFactory, factory=EmptyBin)
     interfaces.meta['tip'] = "Interior surfaces with constraints or constitutive models."
 
-    from pylith.meshio.SingleOutput import SingleOutput
-    outputs = pyre.inventory.facilityArray("solution_outputs", itemFactory=outputFactory, factory=SingleOutput)
-    outputs.meta['tip'] = "Output managers for solution."
+    from pylith.meshio.SingleObserver import SingleObserver
+    outputs = pyre.inventory.facilityArray("solution_observers", itemFactory=observerFactory, factory=SingleObserver)
+    outputs.meta['tip'] = "Observers (e.g., output) for solution."
 
     gravityField = pyre.inventory.facility("gravity_field", family="spatial_database", factory=NullComponent)
     gravityField.meta['tip'] = "Database used for gravity field."
@@ -132,6 +124,7 @@ class Problem(PetscComponent, ModuleProblem):
         """
         PetscComponent.__init__(self, name, facility="problem")
         self.mesh = None
+        self._createModuleObj()
         return
 
     def preinitialize(self, mesh):
@@ -144,7 +137,13 @@ class Problem(PetscComponent, ModuleProblem):
             self._info.log("Performing minimal initialization before verifying configuration.")
 
         ModuleProblem.identifier(self, self.aliases[-1])
-        ModuleProblem.solverType(self, self.solverType)
+
+        if self.solverChoice == "linear":
+            ModuleProblem.solverType(self, ModuleProblem.LINEAR)
+        elif self.solverChoice == "nonlinear":
+            ModuleProblem.solverType(self, ModuleProblem.NONLINEAR)
+        else:
+            raise ValueError("Unknown solver choice '%s'." % self.solverChoice)
         ModuleProblem.normalizer(self, self.normalizer)
         if not isinstance(self.gravityField, NullComponent):
             ModuleProblem.gravityField(self, self.gravityField)
@@ -256,14 +255,6 @@ class Problem(PetscComponent, ModuleProblem):
         Set members based using inventory.
         """
         PetscComponent._configure(self)
-
-        if self.solverChoice == "linear":
-            self.solverType = ModuleProblem.LINEAR
-        elif self.solverChoice == "nonlinear":
-            self.solverType = ModuleProblem.NONLINEAR
-        else:
-            raise ValueError("Unknown solver choice '%s'." % self.solverChoice)
-
         return
 
     def _setIntegratorsConstraints(self):

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,16 +13,13 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/problems/SubfieldTemperature.py
-##
+#
 # @brief Python object for temperature subfield.
-##
+#
 # Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
-
-# SubfieldTemperature class
 
 
 class SubfieldTemperature(SolutionSubfield):

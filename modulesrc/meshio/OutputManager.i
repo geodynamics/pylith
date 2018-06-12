@@ -26,7 +26,7 @@ namespace pylith {
     namespace meshio {
 
         class pylith::meshio::OutputManager : public pylith::utils::PyreComponent,
-					      public pylith::problems::Observer {
+					      public pylith::feassemble::Observer {
 
 	  // PUBLIC METHODS /////////////////////////////////////////////////
 	public :
@@ -95,7 +95,7 @@ namespace pylith {
 	     * @param[in] solution Solution field.
 	     */
 	    virtual
-	    void verifyConfiguration(const pylith::topology::Field& solution) const;
+	    void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
 
 	      /** Receive update from subject.
 	       *

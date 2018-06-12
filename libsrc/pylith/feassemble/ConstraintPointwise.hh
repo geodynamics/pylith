@@ -29,7 +29,7 @@
 #include "pylith/feassemble/feassemblefwd.hh"
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
-#include "pylith/problems/ObservedSubject.hh" // ISA ObservedSubject
+#include "pylith/feassemble/ObservedSubject.hh" // ISA ObservedSubject
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::discretizations_map
 #include "pylith/utils/array.hh" // HASA int_array
@@ -43,7 +43,7 @@
  */
 class pylith::feassemble::ConstraintPointwise :
     public pylith::utils::PyreComponent,
-    public pylith::problems::ObservedSubject {
+    public pylith::feassemble::ObservedSubject {
     friend class TestConstraintPointwise;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////

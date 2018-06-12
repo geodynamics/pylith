@@ -28,7 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include "pylith/problems/Observer.hh" // ISA Observer
+#include "pylith/feassemble/Observer.hh" // ISA Observer
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
@@ -38,7 +38,7 @@
 /// Manager for output of finite-element data.
 class pylith::meshio::OutputManager :
     public pylith::utils::PyreComponent,
-    public pylith::problems::Observer {
+    public pylith::feassemble::Observer {
     friend class TestOutputManager;   // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
