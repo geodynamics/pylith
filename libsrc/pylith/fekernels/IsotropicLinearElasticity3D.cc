@@ -23,6 +23,7 @@
 #include "pylith/fekernels/Elasticity3D.hh" // USES Elasticity3D kernels
 
 #include <cassert> // USES assert()
+#include <iostream> // debugging.
 
 /* ======================================================================
  * Kernels for isotropic, linear 3D elasticity.
@@ -57,6 +58,9 @@ pylith::fekernels::IsotropicLinearElasticity3D::g0v_gravbodyforce(const PylithIn
     const PylithInt i_density = 0;
     const PylithInt i_gravityField = 3;
     const PylithInt i_bodyForce = 4;
+#if 1 // :DEBUG:
+	std::cout << "IsotropicLinearElasticity3D::g0v_gravbodyforce" << std::endl;
+#endif
 
     assert(_dim == dim);
     assert(1 == numS || 2 == numS);
@@ -111,6 +115,9 @@ pylith::fekernels::IsotropicLinearElasticity3D::g0v_grav(const PylithInt dim,
     // Incoming auxiliary fields.
     const PylithInt i_density = 0;
     const PylithInt i_gravityField = 3;
+#if 1 // :DEBUG:
+	std::cout << "IsotropicLinearElasticity3D::g0v_grav" << std::endl;
+#endif
 
     assert(_dim == dim);
     assert(1 == numS || 2 == numS);
@@ -156,6 +163,9 @@ pylith::fekernels::IsotropicLinearElasticity3D::g0v_bodyforce(const PylithInt di
 
     // Incoming auxiliary fields.
     const PylithInt i_bodyForce = 3;
+#if 1 // :DEBUG:
+	std::cout << "IsotropicLinearElasticity3D::g0v_bodyforce" << std::endl;
+#endif
 
     assert(_dim == dim);
     assert(1 == numS || 2 == numS);
@@ -205,6 +215,9 @@ pylith::fekernels::IsotropicLinearElasticity3D::g1v(const PylithInt dim,
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = 1;
     const PylithInt i_bulkModulus = 2;
+#if 1 // :DEBUG:
+	std::cout << "IsotropicLinearElasticity3D::g1v" << std::endl;
+#endif
 
     assert(_dim == dim);
     assert(1 == numS || 2 == numS);
@@ -274,6 +287,9 @@ pylith::fekernels::IsotropicLinearElasticity3D::g1v_refstate(const PylithInt dim
     const PylithInt i_bulkModulus = 2;
     const PylithInt i_rstress = numA-2;
     const PylithInt i_rstrain = numA-1;
+#if 1 // :DEBUG:
+	std::cout << "IsotropicLinearElasticity3D::g1v_refstate" << std::endl;
+#endif
 
     assert(_dim == dim);
     assert(1 == numS || 2 == numS);
@@ -314,7 +330,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::g1v_refstate(const PylithInt dim
 
 
 // ----------------------------------------------------------------------
-/* Jg3_vu entry function for 2-D plane strain isotropic linear elasticity.
+/* Jg3_vu entry function for 3-D isotropic linear elasticity.
  *
  * stress_ij = C_ijkl strain_kl
  *
@@ -352,6 +368,9 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jg3vu(const PylithInt dim,
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = 1;
     const PylithInt i_bulkModulus = 2;
+#if 1 // :DEBUG:
+	std::cout << "IsotropicLinearElasticity3D::Jg3vu" << std::endl;
+#endif
 
     assert(_dim == dim);
     assert(1 == numS || 2 == numS);
@@ -518,6 +537,9 @@ pylith::fekernels::IsotropicLinearElasticity3D::stress(const PylithInt dim,
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = 1;
     const PylithInt i_bulkModulus = 2;
+#if 1 // :DEBUG:
+	std::cout << "IsotropicLinearElasticity3D::stress" << std::endl;
+#endif
 
     assert(_dim == dim);
     assert(1 == numS || 2 == numS);
@@ -553,7 +575,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::stress(const PylithInt dim,
 
     stress[0] = stressTensor[0*_dim+0]; // stress_xx
     stress[1] = stressTensor[1*_dim+1]; // stress_yy
-    stress[2] = stressTensor[2*_dim+2]; // stress_yy
+    stress[2] = stressTensor[2*_dim+2]; // stress_zz
     stress[3] = stressTensor[0*_dim+1]; // stress_xy
     stress[4] = stressTensor[1*_dim+2]; // stress_yz
     stress[5] = stressTensor[0*_dim+2]; // stress_xz
@@ -598,6 +620,9 @@ pylith::fekernels::IsotropicLinearElasticity3D::stress_refstate(const PylithInt 
     const PylithInt i_bulkModulus = 2;
     const PylithInt i_rstress = numA-2;
     const PylithInt i_rstrain = numA-1;
+#if 1 // :DEBUG:
+	std::cout << "IsotropicLinearElasticity3D::stress_refstate" << std::endl;
+#endif
 
     assert(_dim == dim);
     assert(1 == numS || 2 == numS);
@@ -633,7 +658,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::stress_refstate(const PylithInt 
 
     stress[0] = stressTensor[0*_dim+0]; // stress_xx
     stress[1] = stressTensor[1*_dim+1]; // stress_yy
-    stress[2] = stressTensor[2*_dim+2]; // stress_yy
+    stress[2] = stressTensor[2*_dim+2]; // stress_zz
     stress[3] = stressTensor[0*_dim+1]; // stress_xy
     stress[4] = stressTensor[1*_dim+2]; // stress_yz
     stress[5] = stressTensor[0*_dim+2]; // stress_xz

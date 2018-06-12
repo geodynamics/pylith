@@ -74,7 +74,7 @@ pylith::fekernels::Elasticity3D::f0v(const PylithInt dim,
 
 
 // ----------------------------------------------------------------------
-// Jf0 function for isotropic linear elasticity plane strain.
+// Jf0 function for isotropic linear elasticity 3D.
 void
 pylith::fekernels::Elasticity3D::Jf0vv(const PylithInt dim,
 									   const PylithInt numS,
