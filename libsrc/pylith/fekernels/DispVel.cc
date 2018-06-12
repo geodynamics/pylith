@@ -21,6 +21,7 @@
 #include "pylith/fekernels/DispVel.hh"
 
 #include <cassert> // USES assert()
+#include <iostream> // debugging.
 
 /* ======================================================================
  * Kernels for time evolution equation with displacement and velocity
@@ -56,6 +57,9 @@ pylith::fekernels::DispVel::f0u(const PylithInt dim,
                                 const PylithInt numConstants,
                                 const PylithScalar constants[],
                                 PylithScalar f0[]) {
+#if 0 // :DEBUG:
+        std::cout << "DispVel::f0u" << std::endl;
+#endif
     assert(sOff);
     assert(s);
     assert(s_t);
@@ -95,6 +99,9 @@ pylith::fekernels::DispVel::f0v(const PylithInt dim,
                                 const PylithInt numConstants,
                                 const PylithScalar constants[],
                                 PylithScalar f0[]) {
+#if 0 // :DEBUG:
+        std::cout << "DispVel::f0v" << std::endl;
+#endif
     assert(sOff);
     assert(s);
     assert(s_t);
@@ -134,6 +141,9 @@ pylith::fekernels::DispVel::g0u(const PylithInt dim,
                                 const PylithInt numConstants,
                                 const PylithScalar constants[],
                                 PylithScalar g0[]) {
+#if 0 // :DEBUG:
+        std::cout << "DispVel::g0u" << std::endl;
+#endif
     assert(sOff);
     assert(s);
     assert(g0);
@@ -199,6 +209,9 @@ pylith::fekernels::DispVel::Jf0uu_utshift(const PylithInt dim,
                                           const PylithScalar constants[],
                                           PylithScalar Jf0[]) {
     const PylithInt _numS = 2;
+#if 0 // :DEBUG:
+        std::cout << "DispVel::Jf0uu_utshift" << std::endl;
+#endif
     assert(_numS == numS);
 
     for (PylithInt i = 0; i < dim; ++i) {
@@ -234,6 +247,9 @@ pylith::fekernels::DispVel::Jg0uv(const PylithInt dim,
                                   const PylithScalar constants[],
                                   PylithScalar Jg0[]) {
     const PylithInt _numS = 2;
+#if 0 // :DEBUG:
+        std::cout << "DispVel::Jg0uv" << std::endl;
+#endif
     assert(_numS == numS);
 
     for (PylithInt i = 0; i < dim; ++i) {
