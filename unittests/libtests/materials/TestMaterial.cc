@@ -641,6 +641,9 @@ pylith::materials::TestMaterial::_initializeMin(void)
     iohandler.filename(data->meshFilename);
     iohandler.read(_mesh); CPPUNIT_ASSERT(_mesh);
 
+    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.", _mesh->numCells() > 0);
+    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.", _mesh->numVertices() > 0);
+
     // Setup coordinates.
     _mesh->coordsys(data->cs);
     CPPUNIT_ASSERT(data->normalizer);
