@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,57 +13,57 @@
 #
 # ----------------------------------------------------------------------
 #
-
-## @file pyre/meshio/DataWriter.py
-##
-## @brief Python abstract base class for writing finite-element data.
-##
-## Factory: output_data_writer
+# @file pyre/meshio/DataWriter.py
+#
+# @brief Python abstract base class for writing finite-element data.
+#
+# Factory: output_data_writer
 
 from pylith.utils.PetscComponent import PetscComponent
 
-# DataWriter class
+
 class DataWriter(PetscComponent):
-  """
-  Python abstract base class for writing finite-element data.
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-  
-  # None
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="datawriter"):
     """
-    Constructor.
-    """
-    PetscComponent.__init__(self, name, facility="datawriter")
-    return
-
-
-  def verifyConfiguration(self):
-    """
-    Verify compatibility of configuration.
-    """
-    return
-
-
-  def preinitialize(self, filename):
-    """
-    Setup data writer.
+    Python abstract base class for writing finite-element data.
     """
 
-    import os
-    relpath = os.path.dirname(filename)
-    
-    if len(relpath) > 0 and not os.path.exists(relpath):
-      # Only create directory on proc 0
-      from pylith.mpi.Communicator import mpi_comm_world
-      comm = mpi_comm_world()
-      if not comm.rank:
-        os.makedirs(relpath)
-    return
+    # PUBLIC METHODS /////////////////////////////////////////////////////
+
+    def __init__(self, name="datawriter"):
+        """
+        Constructor.
+        """
+        PetscComponent.__init__(self, name, facility="datawriter")
+        return
+
+    def preinitialize(self, filename):
+        """
+        Setup data writer.
+        """
+        self._createModuleObj()
+
+        import os
+        relpath = os.path.dirname(filename)
+
+        if len(relpath) > 0 and not os.path.exists(relpath):
+            # Only create directory on proc 0
+            from pylith.mpi.Communicator import mpi_comm_world
+            comm = mpi_comm_world()
+            if not comm.rank:
+                os.makedirs(relpath)
+        return
+
+    def verifyConfiguration(self):
+        """
+        Verify compatibility of configuration.
+        """
+        return
+
+    # PRIVATE METHODS /////////////////////////////////////////////////////
+
+    def _createModuleObj(self):
+        """Create handle to C++ object."""
+        raise NotImplementedError("Implement in subclass.")
 
 
 # End of file

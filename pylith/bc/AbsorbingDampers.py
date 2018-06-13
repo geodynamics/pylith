@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,23 +13,23 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/bc/AbsorbingDampers.py
-##
+#
 # @brief Python object for managing an absorbing boundary condition.
-##
+#
 # Factory: boundary_condition
 
 from .BoundaryCondition import BoundaryCondition
 from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
-
+from .bc import AbsorbingDampers as ModuleAbsorbingDampers
 
 class AbsorbingDampers(BoundaryCondition,
-                       IntegratorPointwise):
+                       IntegratorPointwise,
+                       ModuleAbsorbingDampers):
     """
     Python object for managing an absorbing boundary condition.
 
-    Factory: boundary_condition
+    FACTORY: boundary_condition
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -60,6 +58,13 @@ class AbsorbingDampers(BoundaryCondition,
         """
         BoundaryCondition._configure(self)
         IntegratorPointwise._configure(self)
+        return
+
+    def _createModuleObj(self):
+        """
+        Create handle to corresponding C++ object.
+        """
+        ModuleAbsorbingDampers.__init__(self)
         return
 
 # End of file

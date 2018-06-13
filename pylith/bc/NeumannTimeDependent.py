@@ -23,8 +23,6 @@ from .Neumann import Neumann
 from .bc import NeumannTimeDependent as ModuleNeumannTimeDependent
 from pylith.utils.NullComponent import NullComponent
 
-# NeumannTimeDependent class
-
 
 class NeumannTimeDependent(Neumann,
                            ModuleNeumannTimeDependent):
@@ -32,18 +30,18 @@ class NeumannTimeDependent(Neumann,
     Python object for managing a time-dependent Neumann (prescribed values)
     boundary condition.
 
-    Factory: boundary_condition
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li \b use_initial Use initial term in time-dependent expression.
-    # @li \b use_rate Use rate term in time-dependent expression.
-    # @li \b use_time_history Use time history term in time-dependent expression.
-    #
-    # \b Facilities
-    # @li None
+    Properties
+      - *use_initial* Use initial term in time-dependent expression.
+      - *use_rate* Use rate term in time-dependent expression.
+      - *use_time_history* Use time history term in time-dependent expression.
+
+    Facilities
+      - None
+
+    FACTORY: boundary_condition
+    """
 
     import pyre.inventory
 

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,14 +13,11 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/utils/DumpParametersAscii.py
-##
+#
 # @brief Python DumpParameters object for dumping PyLith parameter information to an ASCII file.
 
 from .DumpParameters import DumpParameters
-
-# DumpParameters class
 
 
 class DumpParametersAscii(DumpParameters):
@@ -35,18 +30,17 @@ class DumpParametersAscii(DumpParameters):
     class Inventory(DumpParameters.Inventory):
         """
         Python object for managing DumpParametersAscii facilities and properties.
-        """
 
-        # @class Inventory
-        # Python object for managing DumpParametersAscii facilities and properties.
-        #
-        # \b Properties
-        # @li \b filename Name of file written with parameters.
-        # @li \b indent Number of spaces to indent.
-        # @li \b verbose Include description, location, and aliases.
-        #
-        # \b Facilities
-        # @li None
+        INVENTORY
+
+        Properties
+          - *filename* Name of file written with parameters.
+          - *indent* Number of spaces to indent.
+          - *verbose* Include description, location, and aliases.
+
+        Facilities
+          - None
+        """
 
         import pyre.inventory
 

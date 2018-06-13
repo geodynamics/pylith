@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,34 +13,31 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/topology/MeshImporter.py
-##
+#
 # @brief Python implementation of importing a mesh.
-##
+#
 # Factory: mesh_generator.
 
 from MeshGenerator import MeshGenerator
-
-# MeshImporter class
 
 
 class MeshImporter(MeshGenerator):
     """
     Python implementation of importing a mesh.
 
-    Factory: mesh_generator.
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li reorder_mesh Reorder mesh using reverse Cuthill-McKee if true.
-    #
-    # \b Facilities
-    # @li \b reader Mesh reader.
-    # @li \b distributor Mesh distributor.
-    # @li \b refiner Mesh refiner.
+    Properties
+      - *reorder_mesh* Reorder mesh using reverse Cuthill-McKee if true.
+
+    Facilities
+      - *reader* Mesh reader.
+      - *distributor* Mesh distributor.
+      - *refiner* Mesh refiner.
+
+    FACTORY: mesh_generator.
+    """
 
     import pyre.inventory
 
@@ -110,6 +105,7 @@ class MeshImporter(MeshGenerator):
         if comm.size > 1:
             if 0 == comm.rank:
                 self._info.log("Distributing mesh.")
+            self.distributor.initialize()
             mesh = self.distributor.distribute(mesh, normalizer)
             if self.debug:
                 mesh.view()

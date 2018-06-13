@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,20 +13,17 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/bc/BoundaryCondition.py
-##
+#
 # @brief Python abstract base class for managing a boundary condition.
-##
+#
 # This implementation of a boundary condition applies to a single
 # boundary of an domain.
-##
+#
 # Factory: boundary_condition
 
 from pylith.utils.PetscComponent import PetscComponent
 from .bc import BoundaryCondition as ModuleBoundaryCondition
-
-# Validator for label
 
 
 def validateLabel(value):
@@ -49,19 +44,17 @@ class BoundaryCondition(PetscComponent,
     This implementation of a boundary condition applies to a single
     face of an domain.
 
-    Factory: boundary_condition
+    INVENTORY
+
+    Properties
+      - *label* Label identifying boundary.
+      - *field* Field associated with boundary condition.
+
+    Facilities
+      - None
+
+    FACTORY: boundary_condition
     """
-
-    # INVENTORY //////////////////////////////////////////////////////////
-
-    # @class Inventory
-    # Python object for managing BoundaryCondition facilities and properties.
-    #
-    # \b Properties
-    # @li \b label Label identifier for boundary.
-    # @li \b field Field in solution to constrain.
-    #
-    # \b Facilities
 
     import pyre.inventory
 
@@ -78,13 +71,13 @@ class BoundaryCondition(PetscComponent,
         Constructor.
         """
         PetscComponent.__init__(self, name, facility="boundary_condition")
-        self._createModuleObj()
         return
 
     def preinitialize(self, mesh):
         """
         Setup boundary condition.
         """
+        self._createModuleObj()
         ModuleBoundaryCondition.label(self, self.label)
         ModuleBoundaryCondition.field(self, self.field)
         return

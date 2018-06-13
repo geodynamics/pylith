@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,18 +13,15 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/bc/Dirichlet.py
-##
+#
 # @brief Python object for managing a Dirichlet (prescribed
 # values) boundary condition.
-##
+#
 # Factory: boundary_condition
 
 from .BoundaryCondition import BoundaryCondition
 from pylith.feassemble.ConstraintPointwise import ConstraintPointwise
-
-# Dirichlet class
 
 
 class Dirichlet(BoundaryCondition,
@@ -35,7 +30,7 @@ class Dirichlet(BoundaryCondition,
     Python object for managing a Dirichlet (prescribed values)
     boundary condition.
 
-    Factory: boundary_condition
+    FACTORY: boundary_condition
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

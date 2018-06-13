@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,19 +13,16 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/bc/DirichletTimeDependent.py
-##
+#
 # @brief Python object for managing a time-dependent Dirichlet (prescribed
 # values) boundary condition.
-##
+#
 # Factory: boundary_condition
 
 from .Dirichlet import Dirichlet
 from .bc import DirichletTimeDependent as ModuleDirichletTimeDependent
 from pylith.utils.NullComponent import NullComponent
-
-# DirichletTimeDependent class
 
 
 class DirichletTimeDependent(Dirichlet,
@@ -36,18 +31,18 @@ class DirichletTimeDependent(Dirichlet,
     Python object for managing a time-dependent Dirichlet (prescribed values)
     boundary condition.
 
+    INVENTORY
+
+    Properties
+      - *use_initial* Use initial term in time-dependent expression.
+      - *use_rate* Use rate term in time-dependent expression.
+      - *use_time_history* Use time history term in time-dependent expression.
+
+    Facilities
+      - None
+
     Factory: boundary_condition
     """
-
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li \b use_initial Use initial term in time-dependent expression.
-    # @li \b use_rate Use rate term in time-dependent expression.
-    # @li \b use_time_history Use time history term in time-dependent expression.
-    #
-    # \b Facilities
-    # @li None
 
     import pyre.inventory
 
@@ -99,17 +94,12 @@ class DirichletTimeDependent(Dirichlet,
         """
         Verify compatibility of configuration.
         """
-        logEvent = "%sverify" % self._loggingPrefix
-        self._eventLogger.eventBegin(logEvent)
-
         Dirichlet.verifyConfiguration(self, self.mesh())
         spaceDim = self.mesh().coordsys().spaceDim()
         for d in self.bcDOF:
             if d < 0 or d >= spaceDim:
                 raise ValueError("Attempting to constrain DOF (%d) that doesn't exist for time-dependent Dirichlet boundary condition '%s'. Space dimension is %d." %
                                  (d, self.aliases[-1], spaceDim))
-
-        self._eventLogger.eventEnd(logEvent)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -130,8 +120,7 @@ class DirichletTimeDependent(Dirichlet,
         """
         Create handle to corresponding C++ object.
         """
-        if not hasattr(self, "this"):
-            ModuleDirichletTimeDependent.__init__(self)
+        ModuleDirichletTimeDependent.__init__(self)
         return
 
 # FACTORIES ////////////////////////////////////////////////////////////

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,15 +13,12 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/utils/PetscComponent.py
-##
+#
 # @brief Python PetscComponent object for aid in deallocating data
 # structures before calling PetscFinalize().
 
 from pyre.components.Component import Component
-
-# PetscComponent class
 
 
 class PetscComponent(Component):

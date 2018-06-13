@@ -45,17 +45,17 @@ class Neumann(BoundaryCondition, IntegratorPointwise, ModuleNeumann):
     Python object for managing a Neumann (natural)
     boundary condition.
 
-    Factory: boundary_condition
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li \b scale Type of scale for nondimenaionlizing Neumann boundary condition (e.g., "pressure" for elasticity").
-    #
-    # \b Facilities
-    # @li \b ref_dir_1 First choice for reference direction to discriminate among tangential directions in 3-D.
-    # @li \b ref_dir_2 Second choice for reference direction to discriminate among tangential directions in 3-D.
+    Properties
+      - *scale* Type of scale for nondimenaionlizing Neumann boundary condition (e.g., "pressure" for elasticity").
+
+    Facilities
+      - *ref_dir_1* First choice for reference direction to discriminate among tangential directions in 3-D.
+      - *ref_dir_2* Second choice for reference direction to discriminate among tangential directions in 3-D.
+
+    FACTORY: boundary_condition
+    """
 
     import pyre.inventory
 

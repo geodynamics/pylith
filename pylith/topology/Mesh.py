@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,14 +13,13 @@
 #
 # ----------------------------------------------------------------------
 #
-
-## @file pylith/topology/Mesh.py
-##
-## @brief Python Mesh for finite-element topology information.
+# @file pylith/topology/Mesh.py
+#
+# @brief Python Mesh for finite-element topology information.
 
 from topology import Mesh as ModuleMesh
 
-# Mesh class
+
 class Mesh(ModuleMesh):
   """
   Python Mesh for finite-element topology information.

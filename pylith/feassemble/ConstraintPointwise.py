@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,9 +13,8 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/feassemble/ConstraintPointwise.py
-##
+#
 # @brief Python abstract base class for constraints on operator
 # actions with finite-elements.
 
@@ -44,23 +41,22 @@ def validateDOF(value):
     return num
 
 
-# ConstraintPointwise class
 class ConstraintPointwise(ObservedComponent,
                           ModuleConstraint):
     """
     Python abstract base class for constraints on operator
     actions with finite-elements.
 
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li None
-    #
-    # \b Facilities
-    # @li \b auxiliary_fields Discretization of auxiliary fields associated with material.
-    # @li \b db_auxiliary_fields Database for auxiliary fields associated with material.
+    Properties
+      - *constrained_dof* Constrained degrees of freedom.
+
+    Facilities
+      - *auxiliary_subfields* Discretization of constraint parameter auxiliary subfields.
+      - *db_auxiliary_field* Spatial database for constrain parameters.
+      - *observers* Observers of constrain (e.g., output).
+    """
 
     import pyre.inventory
 
@@ -96,7 +92,6 @@ class ConstraintPointwise(ObservedComponent,
         self._createModuleObj()
         ObservedComponent.preinitialize(self)
 
-        ModuleConstraint.identifier(self, self.aliases[-1])
         ModuleConstraint.constrainedDOF(self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
         ModuleConstraint.auxFieldDB(self, self.auxFieldDB)
         #ModuleConstraint.output(self, self.outputManager)
@@ -121,8 +116,7 @@ class ConstraintPointwise(ObservedComponent,
         """
         Call constructor for module object for access to C++ object.
         """
-        raise NotImplementedError, \
-            "Please implement _createModuleOb() in derived class."
+        raise NotImplementedError("Please implement _createModuleOb() in derived class.")
 
 
 # End of file

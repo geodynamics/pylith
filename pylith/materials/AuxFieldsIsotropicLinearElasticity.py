@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,35 +13,32 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/materials/AuxFieldsIsotropicLinearElasticity.py
-##
+#
 # @brief Python subfields container for isotropic, linear elasticity
 # subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
 
-# AuxFieldsIsotropicLinearElasticity class
-
 
 class AuxFieldsIsotropicLinearElasticity(PetscComponent):
     """
     Python subfields container for isotropic, linear elasticity subfields.
-    """
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li None
-    #
-    # \b Facilities
-    # @li \b density Density subfield.
-    # @li \b shear_modulus Shear modulus subfield.
-    # @li \b bulk_modulus Bulk modulus subfield.
-    # @li \b body_force Body force.
-    # @li \b reference_stress Reference stress subfield.
-    # @li \b references_strain Reference strain.
-    # @li \b gravitational_acceleration Gravitational acceleration subfield.
+    INVENTORY
+
+    Properties
+      - None
+
+    Facilities
+      - *density* Density subfield.
+      - *shear_modulus* Shear modulus subfield.
+      - *bulk_modulus* Bulk modulus subfield.
+      - *body_force* Body force.
+      - *reference_stress* Reference stress subfield.
+      - *references_strain* Reference strain.
+      - *gravitational_acceleration* Gravitational acceleration subfield.
+    """
 
     import pyre.inventory
 

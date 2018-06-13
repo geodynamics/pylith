@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,7 +13,6 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pyre/meshio/FieldFilter.py
 #
 # @brief Python abstract base class for filtering vertex fields when
@@ -25,36 +22,28 @@
 
 from pylith.utils.PetscComponent import PetscComponent
 
+
 class FieldFilter(PetscComponent):
-  """
-  Python abstract base class for filtering fields when writing
-  finite-element data.
-
-  Factory: output_field_filter
-  """
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="fieldfilter"):
     """
-    Constructor.
-    """
-    PetscComponent.__init__(self, name, facility="fieldfilter")
-    return
+    Python abstract base class for filtering fields when writing
+    finite-element data.
 
+    FACTORY: output_field_filter
+    """
 
-  def verifyConfiguration(self):
-    """
-    Verify compatibility of configuration.
-    """
-    return
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
+    def __init__(self, name="fieldfilter"):
+        """
+        Constructor.
+        """
+        PetscComponent.__init__(self, name, facility="fieldfilter")
+        return
 
-  def initialize(self):
-    """
-    Initialize output manager.
-    """
-    return
+    def preinitialize(self):
+        """Do minimal initialization."""
+        self._createModuleObj()
+        return
 
 
 # End of file

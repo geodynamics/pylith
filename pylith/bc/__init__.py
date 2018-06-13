@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,20 +13,19 @@
 #
 # ----------------------------------------------------------------------
 #
-
-## @file pylith/bc/__init__.py
-##
-## @brief Python PyLith boundary condition module initialization
+# @file pylith/bc/__init__.py
+#
+# @brief Python PyLith boundary condition module initialization
 
 __all__ = [
-    'AbsorbingDampers',
-    'AuxFieldsTimeDependent',
-    'BoundaryCondition',
-    'Dirichlet',
-    'DirichletTimeDependent',
-    'Neumann',
-    'NeumannTimeDependent',
-    'ZeroDB',
+    "AbsorbingDampers",
+    "AuxFieldsTimeDependent",
+    "BoundaryCondition",
+    "Dirichlet",
+    "DirichletTimeDependent",
+    "Neumann",
+    "NeumannTimeDependent",
+    "ZeroDB",
     ]
 
 

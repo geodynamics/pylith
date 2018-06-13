@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,7 +13,6 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pyre/meshio/FieldFilterProject.py
 #
 # @brief Python class for projecting field to another basis.
@@ -54,13 +51,19 @@ class FieldFilterProject(FieldFilter, ModuleFieldFilterProject):
         Constructor.
         """
         FieldFilter.__init__(self, name)
-        ModuleFieldFilterProject.__init__(self)
         return
-
 
     def preinitialize(self):
         """Do minimal initialization."""
+        FieldFilter.preinitialize(self)
         ModuleFieldFilterProject.basisOrder(self, self.basisOrder)
+        return
+
+    # PRIVATE METHODS /////////////////////////////////////////////////////
+
+    def _createModuleObj(self):
+        """Create handle to C++ object."""
+        ModuleFieldFilterNone.__init__(self)
         return
 
 

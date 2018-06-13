@@ -1,4 +1,3 @@
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -14,12 +13,11 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/materials/IsotropicLinearMaxwellPlaneStrain.py
-##
+#
 # @brief Python material for isotropic, linearly Maxwell viscoelastic, plane
 # strain material.
-##
+#
 # Factory: material
 
 from .Material import Material
@@ -30,19 +28,18 @@ class IsotropicLinearMaxwellPlaneStrain(Material, ModuleMaterial):
     """
     Python material for isotropic, linear Maxwell viscoelastic plane strain.
 
-    Factory: material
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li \b id Material identifier (from mesh generator)
-    # @li \b label Descriptive label for material.
-    #
-    # \b Facilities
-    # @li \b db_properties Database of material property parameters
-    # @li \b quadrature Quadrature object for numerical integration
-    # @li \b db_initial_state Database for initial state.
+    Properties
+      - *use_inertia* Include inertial term in elasticity equation.
+      - *use_body_force* Include body force term in elasticity equation.
+      - *use_reference_state* Use reference stress/strain state.
+
+    Facilities
+      - *auxiliary_subfields* Discretization of physical properties and state variables.
+
+    FACTORY: material
+    """
 
     import pyre.inventory
 

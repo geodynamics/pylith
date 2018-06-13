@@ -13,7 +13,6 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/feassemble/IntegratorPointwise.py
 #
 # @brief Python abstract base class for pointwise integrators.
@@ -34,8 +33,9 @@ class IntegratorPointwise(ObservedComponent, ModuleIntegrator):
     Facilities
       - *auxiliary_subfields* Discretization of physical properties and state variables.
       - *db_auxiliary_field* Database for physical property parameters.
+      - *observers* Observers of integrator (e.g., output).
 
-    Factory: material
+    FACTORY: material
     """
 
     import pyre.inventory

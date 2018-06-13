@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,16 +13,15 @@
 #
 # ----------------------------------------------------------------------
 #
-
-## @file pylith/topology/MeshRefiner.py
-##
-## @brief Python manager for refining mesh in parallel.
-##
-## Factory: mesh_refiner.
+# @file pylith/topology/MeshRefiner.py
+#
+# @brief Python manager for refining mesh in parallel.
+#
+# Factory: mesh_refiner.
 
 from pylith.utils.PetscComponent import PetscComponent
 
-# MeshRefiner class
+
 class MeshRefiner(PetscComponent):
   """
   Python manager for refining mesh in parallel.
@@ -79,7 +76,7 @@ class MeshRefiner(PetscComponent):
 
     self._eventLogger = logger
     return
-  
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
@@ -90,4 +87,4 @@ def mesh_refiner():
   return MeshRefiner()
 
 
-# End of file 
+# End of file

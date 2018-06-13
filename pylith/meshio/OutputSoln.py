@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,7 +13,6 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pyre/meshio/OutputSoln.py
 #
 # @brief Python object for managing output of finite-element

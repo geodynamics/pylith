@@ -1,5 +1,3 @@
-#!/usr/bin/env nemesis
-#
 # ======================================================================
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,10 +13,9 @@
 #
 # ======================================================================
 #
-
-## @file pylith/tests/UnitTestApp.py
-
-## @brief Python application for Python unit tests.
+# @file pylith/tests/UnitTestApp.py
+#
+# @brief Python application for Python unit tests.
 
 from pyre.applications.Script import Script
 
@@ -50,7 +47,7 @@ class UnitTestApp(Script):
     petsc.initialize()
 
     success = unittest.TextTestRunner(verbosity=2).run(self._suite()).wasSuccessful()
-    
+
     petsc.finalize()
 
     if not success:
@@ -59,4 +56,4 @@ class UnitTestApp(Script):
     return
 
 
-# End of file 
+# End of file

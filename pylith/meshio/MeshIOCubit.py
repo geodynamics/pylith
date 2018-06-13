@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,51 +13,41 @@
 #
 # ----------------------------------------------------------------------
 #
-
-## @file pyre/meshio/MeshIOCubit.py
-##
-## @brief Python object for reading/writing finite-element mesh from
-## Cubit.
-##
-## Factory: mesh_io
+# @file pyre/meshio/MeshIOCubit.py
+#
+# @brief Python object for reading/writing finite-element mesh from
+# Cubit.
+#
+# Factory: mesh_io
 
 from MeshIOObj import MeshIOObj
 from meshio import MeshIOCubit as ModuleMeshIOCubit
 
-# Validator for filename
+
 def validateFilename(value):
-  """
-  Validate filename.
-  """
-  if 0 == len(value):
-    raise ValueError("Filename for CUBIT input mesh not specified.")
-  return value
+    """
+    Validate filename.
+    """
+    if 0 == len(value):
+        raise ValueError("Filename for CUBIT input mesh not specified.")
+    return value
 
 
-# MeshIOCubit class
 class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
-  """
-  Python object for reading/writing finite-element mesh from Cubit.
-
-  Factory: mesh_io
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(MeshIOObj.Inventory):
     """
-    Python object for managing MeshIOCubit facilities and properties.
-    """
+    Python object for reading/writing finite-element mesh from Cubit.
 
-    ## @class Inventory
-    ## Python object for managing MeshIOCubit facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b filename Name of Cubit Exodus file.
-    ## @li \b use_nodeset_names Ues nodeset names instead of ids.
-    ##
-    ## \b Facilities
-    ## @li coordsys Coordinate system associated with mesh.
+    INVENTORY
+
+    Properties
+      - *filename* Name of Cubit Exodus file.
+      - *use_nodeset_name*s Use nodeset names instead of ids.
+
+    Facilities
+       - *coordsys* Coordinate system associated with mesh.
+
+    FACTORY: mesh_io
+    """
 
     import pyre.inventory
 
@@ -74,46 +62,48 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
     coordsys = pyre.inventory.facility("coordsys", family="coordsys",
                                        factory=CSCart)
     coordsys.meta['tip'] = "Coordinate system associated with mesh."
-  
 
-  # PUBLIC METHODS /////////////////////////////////////////////////////
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="meshiocubit"):
-    """
-    Constructor.
-    """
-    MeshIOObj.__init__(self, name)
-    return
-
-
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _configure(self):
-    """
-    Set members based using inventory.
-    """
-    MeshIOObj._configure(self)
-    self.coordsys = self.inventory.coordsys
-    ModuleMeshIOCubit.filename(self, self.inventory.filename)
-    ModuleMeshIOCubit.useNodesetNames(self, self.inventory.useNames)
-    return
+    def __init__(self, name="meshiocubit"):
+        """
+        Constructor.
+        """
+        MeshIOObj.__init__(self, name)
+        return
 
 
-  def _createModuleObj(self):
-    """
-    Create C++ MeshIOCubit object.
-    """
-    ModuleMeshIOCubit.__init__(self)
-    return
-  
+    def preinitialize(self):
+        """Do minimal initialization."""
+        MeshIOObj.preinitialize(self)
+        ModuleMeshIOCubit.filename(self, self.inventory.filename)
+        ModuleMeshIOCubit.useNodesetNames(self, self.inventory.useNames)
+        return
+
+    # PRIVATE METHODS ////////////////////////////////////////////////////
+
+    def _configure(self):
+        """
+        Set members based using inventory.
+        """
+        MeshIOObj._configure(self)
+        return
+
+    def _createModuleObj(self):
+        """
+        Create C++ MeshIOCubit object.
+        """
+        ModuleMeshIOCubit.__init__(self)
+        return
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def mesh_io():
-  """
-  Factory associated with MeshIOCubit.
-  """
-  return MeshIOCubit()
+    """
+    Factory associated with MeshIOCubit.
+    """
+    return MeshIOCubit()
 
 
-# End of file 
+# End of file

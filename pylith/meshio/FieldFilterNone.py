@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,11 +13,10 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pyre/meshio/FieldFilterNone.py
-##
+#
 # @brief Python class for null field filter.
-##
+#
 # Factory: output_field_filter
 
 from .FieldFilter import FieldFilter
@@ -30,7 +27,7 @@ class FieldFilterNone(FieldFilter, ModuleFieldFilterNone):
     """
     Python class for null field filter.
 
-    Factory: output_field_filter
+    FACTORY: output_field_filter
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -40,6 +37,12 @@ class FieldFilterNone(FieldFilter, ModuleFieldFilterNone):
         Constructor.
         """
         FieldFilter.__init__(self, name)
+        return
+
+    # PRIVATE METHODS /////////////////////////////////////////////////////
+
+    def _createModuleObj(self):
+        """Create handle to C++ object."""
         ModuleFieldFilterNone.__init__(self)
         return
 

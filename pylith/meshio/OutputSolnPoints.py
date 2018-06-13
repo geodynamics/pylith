@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,18 +13,15 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pyre/meshio/OutputSolnPoints.py
-##
+#
 # @brief Python object for managing output of finite-element solution
 # information over a subdomain.
-##
-# Factory: output_manager
+#
+# FACTORY: observer
 
 from OutputManager import OutputManager
 from meshio import OutputSolnPoints as ModuleOutputSolnPoints
-
-# Validator for filename
 
 
 def validateFilename(value):
@@ -38,30 +33,25 @@ def validateFilename(value):
     return value
 
 
-# OutputSolnPoints class
 class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
     """
     Python object for managing output of finite-element solution
     information over a subdomain.
 
-    @class Inventory
-    Python object for managing OutputSolnPoints facilities and properties.
+    INVENTORY
 
-    \b Properties
-    @li \b vertex_data_fields Names of vertex data fields to output.
+    Properties
+      - None
 
-    \b Facilities
-    @li \b reader Reader for list of points.
+    Facilities
+      - *reader* Reader for list of points.
 
-    Factory: output_manager
+    FACTORY: observer
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
 
     import pyre.inventory
-
-    vertexDataFields = pyre.inventory.list("vertex_data_fields", default=["displacement"])
-    vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
 
     from PointsList import PointsList
     reader = pyre.inventory.facility("reader", factory=PointsList, family="points_list")
@@ -74,20 +64,13 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
         Constructor.
         """
         OutputManager.__init__(self, name)
-        self.availableFields = \
-            {'vertex':
-             {'info': [],
-              'data': ["displacement", "velocity"]},
-             'cell':
-             {'info': [],
-              'data': []}}
         return
 
     def preinitialize(self):
         """
         Do
         """
-        OutputManager.preinitialize(self, dataProvider=self)
+        OutputManager.preinitialize(self)
         return
 
     def initialize(self, mesh, normalizer):
@@ -112,39 +95,13 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
         self._eventLogger.eventEnd(logEvent)
         return
 
-    def getDataMesh(self):
-        """
-        Get mesh associated with data fields.
-        """
-        return (self.mesh, None, None)
-
-    def getVertexField(self, name, fields):
-        """
-        Get vertex field.
-        """
-        field = None
-        fieldType = None
-        if name == "displacement":
-            field = fields.get("disp(t)")
-        elif name == "velocity":
-            field = fields.get("velocity(t)")
-        else:
-            raise ValueError, "Vertex field '%s' not available." % name
-        return field
-
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """
         Set members based using inventory.
         """
-        try:
-            OutputManager._configure(self)
-        except ValueError, err:
-            aliases = ", ".join(self.aliases)
-            raise ValueError("Error while configuring output over points "
-                             "(%s):\n%s" % (aliases, err.message))
-
+        OutputManager._configure(self)
         return
 
     def _createModuleObj(self):
@@ -169,7 +126,7 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def output_manager():
+def observer():
     """
     Factory associated with OutputManager.
     """

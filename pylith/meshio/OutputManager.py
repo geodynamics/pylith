@@ -13,7 +13,6 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/meshio/OutputManager.py
 #
 # @brief Python class for managing output of finite-element information.
@@ -72,11 +71,11 @@ class OutputManager(Observer, ModuleOutputManager):
         Observer.__init__(self, name)
         return
 
-    def preinitialize(self, ObservedComponent):
+    def preinitialize(self, observedComponent):
         """
         Setup output manager.
         """
-        self._createModuleObj(ObservedComponent)
+        self._createModuleObj(observedComponent)
 
         ModuleOutputManager.identifier(self, self.aliases[-1])
         ModuleOutputManager.infoFields(self, self.infoFields)
@@ -91,7 +90,7 @@ class OutputManager(Observer, ModuleOutputManager):
         self.writer.preinitialize()
         ModuleOutputManager.writer(self, self.writer)
 
-        ObservedComponent.registerObserver(self)
+        observedComponent.registerObserver(self)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -103,7 +102,7 @@ class OutputManager(Observer, ModuleOutputManager):
         Observer._configure(self)
         return
 
-    def _createModuleObj(self, ObservedComponent):
+    def _createModuleObj(self, observedComponent):
         """
         Create handle to C++ object.
         """

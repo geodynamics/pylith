@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,12 +13,11 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/materials/Material.py
-##
+#
 # @brief Python abstract base class for managing physical properties
 # and state variables of a material.
-##
+#
 # Factory: material
 
 from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
@@ -40,20 +37,17 @@ class Material(IntegratorPointwise, ModuleMaterial):
     """
     Python material property manager.
 
-    Factory: material
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # @class Inventory
-    # Python object for managing Material facilities and properties.
-    #
-    # \b Properties
-    # @li \b id Material identifier (from mesh generator)
-    # @li \b label Descriptive label for material.
-    #
-    # \b Facilities
-    # @li None
+    Properties
+      - *id* Material identifier (from mesh generator)
+      - *label* Descriptive label for material.
+
+    Facilities
+      - *observers* Observers of material (e.g., output).
+
+    FACTORY: material
+    """
 
     import pyre.inventory
 

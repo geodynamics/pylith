@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,16 +13,15 @@
 #
 # ----------------------------------------------------------------------
 #
-
-## @file pyre/meshio/PointsList.py
-##
-## @brief Python object for reading list of points from a file.
-##
-## Factory: output_manager
+# @file pyre/meshio/PointsList.py
+#
+# @brief Python object for reading list of points from a file.
+#
+# Factory: output_manager
 
 from pyre.components.Component import Component
 
-# Validator for filename
+
 def validateFilename(value):
   """
   Validate filename with list of points.
@@ -34,23 +31,21 @@ def validateFilename(value):
   return value
 
 
-# PointsList class
 class PointsList(Component):
   """
   Python object for reading a list of points from a file.
 
-  @class Inventory
-  Python object for managing PointsList facilities and properties.
-  
-  \b Properties
-  @li \b filename Filename for list of points.
-  @li \b comment_delimiter Delimiter for comments.
-  @li \b value_delimiter Delimiter used to separate values.
-  
-  \b Facilities
-  @li None
+  INVENTORY
 
-  Factory: points_list
+  Properties
+    - *filename* Filename for list of points.
+    - *comment_delimiter* Delimiter for comments.
+    - *value_delimiter* Delimiter used to separate values.
+
+  Facilities
+    - None
+
+  FACTORY: points_list
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -105,7 +100,7 @@ class PointsList(Component):
       else:
         ndims = len(fields)-1
       npoints += 1
-        
+
 
     points = numpy.zeros((npoints, ndims), dtype=numpy.float64)
     stations = []
@@ -122,7 +117,7 @@ class PointsList(Component):
       ipoint += 1
 
     return stations,points
-  
+
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -151,4 +146,4 @@ def points_list():
   return PointsList()
 
 
-# End of file 
+# End of file

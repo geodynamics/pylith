@@ -17,7 +17,7 @@
 #
 # @brief Python abstract base class subjects of observers.
 #
-# Factory: none
+# Factory: N/A
 
 from pylith.utils.PetscComponent import PetscComponent
 from .feassemble import ObservedComponent as ModuleObservedComponent
@@ -27,7 +27,7 @@ class ObservedComponent(PetscComponent, ModuleObservedComponent):
     """
     Python abstract base class for subjects of observers.
 
-    FACTORY: none
+    FACTORY: N/A
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

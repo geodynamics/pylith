@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,28 +13,31 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/topology/RefineUniform.py
-##
+#
 # @brief Python manager for uniform global refinement of mesh in
 # parallel.
-##
+#
 # Factory: mesh_refiner.
 
 from MeshRefiner import MeshRefiner
 from topology import RefineUniform as ModuleRefineUniform
-
-# RefineUniform class
 
 
 class RefineUniform(MeshRefiner, ModuleRefineUniform):
     """
     Python manager for uniform global refinement of mesh in parallel.
 
+    INVENTORY
+
+    Properties
+      - *levels* Number of refinement levels.
+
+    Facilities
+      - None
+
     Factory: mesh_refiner
     """
-
-    # INVENTORY //////////////////////////////////////////////////////////
 
     import pyre.inventory
 
@@ -50,6 +51,10 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
         Constructor.
         """
         MeshRefiner.__init__(self, name)
+        return
+
+    def intialize(self):
+        """Initialize refinement."""
         self._createModuleObj()
         return
 

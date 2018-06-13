@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,9 +13,8 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/utils/CollectVersionInfo.py
-##
+#
 # @brief Python CollectVersionInfo object to collect version infofmation for PyLith
 # and its dependencies.
 
@@ -29,7 +26,6 @@ import platform
 import sys
 
 
-# CollectVersionInfo class
 class CollectVersionInfo(Component):
     """
     Python CollectVersionInfo object to collect version information for PyLith

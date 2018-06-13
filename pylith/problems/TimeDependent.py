@@ -40,12 +40,8 @@ class TimeDependent(Problem, ModuleTimeDependent):
       - *initializer* Problem initializer.
       - *progress_monitor* Simple progress monitor via text file.
 
-
     FACTORY: problem.
     """
-
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
 
     import pyre.inventory
     from pyre.units.time import year

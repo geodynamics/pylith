@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,14 +13,13 @@
 #
 # ----------------------------------------------------------------------
 #
-
-## @file pylith/utils/NullComponent.py
-##
-## @brief Python NullComponent object that is an empty component.
+# @file pylith/utils/NullComponent.py
+#
+# @brief Python NullComponent object that is an empty component.
 
 from PetscComponent import PetscComponent
 
-# NullComponent class
+
 class NullComponent(PetscComponent):
   """
   Python NullComponent object that is an empty component.
@@ -36,7 +33,7 @@ class NullComponent(PetscComponent):
     """
     PetscComponent.__init__(self, name="nullcomponent", facility="nullcomponent")
     return
-  
+
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -45,6 +42,6 @@ class NullComponent(PetscComponent):
     Deallocate locally managed data structures.
     """
     return
-    
 
-# End of file 
+
+# End of file
