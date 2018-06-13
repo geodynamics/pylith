@@ -259,6 +259,7 @@ pylith::meshio::DataWriterHDF5::close(void)
 
     _timesteps.clear();
     _tstampIndex = 0;
+    DataWriter::close();
 
     // Only write Xdmf file on process 0
     PetscMPIInt commRank;

@@ -299,6 +299,8 @@ pylith::meshio::DataWriterHDF5Ext::close(void)
         _h5->close();
     } // if
     _tstampIndex = 0;
+    DataWriter::close();
+
     deallocate();
 
     PYLITH_METHOD_END;
