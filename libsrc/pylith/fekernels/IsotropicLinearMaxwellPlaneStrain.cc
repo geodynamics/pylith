@@ -177,7 +177,7 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g0v_bodyforce(const Pylith
                                                  NULL, NULL, NULL, NULL, NULL,
                                                  aOffBody, aOffBody_x, a, a_t, a_x,
                                                  t, x, numConstants, constants, g0);
-} // 0v_bodyforce
+} // g0v_bodyforce
 
 
 // ----------------------------------------------------------------------

@@ -58,7 +58,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::g0v_gravbodyforce(const PylithIn
     const PylithInt i_density = 0;
     const PylithInt i_gravityField = 3;
     const PylithInt i_bodyForce = 4;
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
 	std::cout << "IsotropicLinearElasticity3D::g0v_gravbodyforce" << std::endl;
 #endif
 
@@ -115,7 +115,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::g0v_grav(const PylithInt dim,
     // Incoming auxiliary fields.
     const PylithInt i_density = 0;
     const PylithInt i_gravityField = 3;
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
 	std::cout << "IsotropicLinearElasticity3D::g0v_grav" << std::endl;
 #endif
 
@@ -163,7 +163,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::g0v_bodyforce(const PylithInt di
 
     // Incoming auxiliary fields.
     const PylithInt i_bodyForce = 3;
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
 	std::cout << "IsotropicLinearElasticity3D::g0v_bodyforce" << std::endl;
 #endif
 
@@ -215,7 +215,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::g1v(const PylithInt dim,
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = 1;
     const PylithInt i_bulkModulus = 2;
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
 	std::cout << "IsotropicLinearElasticity3D::g1v" << std::endl;
 #endif
 
@@ -287,7 +287,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::g1v_refstate(const PylithInt dim
     const PylithInt i_bulkModulus = 2;
     const PylithInt i_rstress = numA-2;
     const PylithInt i_rstrain = numA-1;
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
 	std::cout << "IsotropicLinearElasticity3D::g1v_refstate" << std::endl;
 #endif
 
@@ -368,7 +368,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jg3vu(const PylithInt dim,
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = 1;
     const PylithInt i_bulkModulus = 2;
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
 	std::cout << "IsotropicLinearElasticity3D::Jg3vu" << std::endl;
 #endif
 
@@ -537,7 +537,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::stress(const PylithInt dim,
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = 1;
     const PylithInt i_bulkModulus = 2;
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
 	std::cout << "IsotropicLinearElasticity3D::stress" << std::endl;
 #endif
 
@@ -620,7 +620,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::stress_refstate(const PylithInt 
     const PylithInt i_bulkModulus = 2;
     const PylithInt i_rstress = numA-2;
     const PylithInt i_rstrain = numA-1;
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
 	std::cout << "IsotropicLinearElasticity3D::stress_refstate" << std::endl;
 #endif
 

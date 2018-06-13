@@ -398,12 +398,9 @@ pylith::meshio::MeshIOAscii::_readCells(spatialdata::utils::LineParser& parser,
                 buffer >> label;
                 buffer >> (*materialIds)[iCell];
             } // for
-            if (!_useIndexZero) {
-                // if files begins with index 1, then decrement to index 0
-                // for compatibility with PETSc
-                for (int i = 0; i < *numCells; ++i)
-                    --(*materialIds)[i];
-            } // if
+
+            // Zero index does NOT apply to materialIds.
+
             parser.ignore('}');
         } else {
             std::ostringstream msg;

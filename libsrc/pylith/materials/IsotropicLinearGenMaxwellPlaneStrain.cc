@@ -154,8 +154,8 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_auxFieldSetup(void) {
     _auxMaterialFactory->bulkModulus(); // 2
     _auxMaterialFactory->maxwellTimeGeneralizedMaxwell(); // 3
     _auxMaterialFactory->shearModulusRatioGeneralizedMaxwell(); // 4
-    _auxMaterialFactory->totalStrain(); // 5
-    _auxMaterialFactory->viscousStrainGeneralizedMaxwell(); // 6
+    _auxMaterialFactory->viscousStrainGeneralizedMaxwell(); // 5
+    _auxMaterialFactory->totalStrain(); // 6
     if (_gravityField) {
         _auxMaterialFactory->gravityField(_gravityField);
     } // if
@@ -167,9 +167,8 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_auxFieldSetup(void) {
         _auxMaterialFactory->referenceStrain(); // numA-1
     } // if
 
-    _updateStateVarsKernels["total_strain"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateTotalStrain;
-
     _updateStateVarsKernels["viscous_strain"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain;
+    _updateStateVarsKernels["total_strain"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateTotalStrain;
 
     PYLITH_METHOD_END;
 } // _auxFieldSetup
