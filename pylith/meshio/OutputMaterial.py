@@ -26,15 +26,13 @@
 from .OutputManager import OutputManager
 from .meshio import OutputMaterial as ModuleOutputMaterial
 
-# OutputMaterial class
-
 
 class OutputMaterial(OutputManager, ModuleOutputMaterial):
     """
     Python object for managing output of finite-element solution
     information.
 
-    Factory: output_manager
+    Factory: observer
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -58,7 +56,7 @@ class OutputMaterial(OutputManager, ModuleOutputMaterial):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def output_manager():
+def observer():
     """
     Factory associated with OutputManager.
     """

@@ -29,7 +29,6 @@
 #include <typeinfo> // USES typeid()
 
 #include "pylith/materials/Material.hh" // TEMPORARY
-#include <iostream>
 
 // ----------------------------------------------------------------------
 const char* pylith::meshio::OutputMaterial::_pyreComponent = "outputmaterial";
@@ -41,12 +40,6 @@ pylith::meshio::OutputMaterial::OutputMaterial(pylith::feassemble::IntegratorPoi
 { // constructor
     PyreComponent::name(_pyreComponent);
 
-    // :KLUDGE: Temporary code to set _label and _labelId if integrator ISA Material.
-    const pylith::materials::Material* const material = dynamic_cast<const pylith::materials::Material* const>(integrator);
-    if (material) {
-        _temporarySetLabel("material-id", material->id());
-        PYLITH_COMPONENT_DEBUG("Setting OutputMaterial label='material-id' and label id="<<material->id()<<".");
-    } // if
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -74,6 +67,7 @@ pylith::meshio::OutputMaterial::verifyConfiguration(const pylith::topology::Fiel
     PYLITH_COMPONENT_DEBUG("OutputManager::verifyConfiguration(solution="<<solution.label()<<")");
 
     assert(_integrator);
+
     const pylith::topology::Field* auxField = _integrator->auxField();
     const pylith::topology::Field* derivedField = _integrator->derivedField();
 
@@ -117,6 +111,7 @@ pylith::meshio::OutputMaterial::verifyConfiguration(const pylith::topology::Fiel
     PYLITH_METHOD_END;
 } // verifyConfiguration
 
+
 // ----------------------------------------------------------------------
 // Write output for step in solution.
 void
@@ -127,6 +122,15 @@ pylith::meshio::OutputMaterial::_writeInfo(void) {
     if (!_integrator) { PYLITH_METHOD_END; }
 
     assert(_integrator);
+
+    // :KLUDGE: Temporary code to set _label and _labelId if integrator ISA Material. This will go away when each material
+    // has its own PetscDM.
+    const pylith::materials::Material* const material = dynamic_cast<const pylith::materials::Material* const>(_integrator);
+    if (material) {
+        _temporarySetLabel("material-id", material->id());
+        PYLITH_COMPONENT_DEBUG("Setting OutputMaterial label='material-id' and label id="<<material->id()<<".");
+    } // if
+
     const pylith::topology::Field* auxField = _integrator->auxField();
     if (!auxField) { PYLITH_METHOD_END; }
 

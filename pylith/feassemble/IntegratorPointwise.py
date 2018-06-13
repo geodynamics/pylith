@@ -21,6 +21,19 @@ from pylith.feassemble.ObservedComponent import ObservedComponent
 from .feassemble import IntegratorPointwise as ModuleIntegrator
 
 
+# ITEM FACTORIES ///////////////////////////////////////////////////////
+
+def observerFactory(name):
+    """
+    Factory for output items.
+    """
+    from pyre.inventory import facility
+    from pylith.meshio.OutputMaterial import OutputMaterial
+    return facility(name, family="observer", factory=OutputMaterial)
+
+
+# CLASSES //////////////////////////////////////////////////////////////
+
 class IntegratorPointwise(ObservedComponent, ModuleIntegrator):
     """
     Python abstract base class for pointwise integrators.
@@ -49,9 +62,9 @@ class IntegratorPointwise(ObservedComponent, ModuleIntegrator):
     auxFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
     auxFieldDB.meta['tip'] = "Database for physical property parameters."
 
-    #from pylith.meshio.OutputManager import OutputManager
-    #outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputManager)
-    #outputManager.meta['tip'] = "Output manager."
+    from pylith.feassemble.SingleObserver import SingleIntegratorObserver
+    observers = pyre.inventory.facilityArray("observers", itemFactory=observerFactory, factory=SingleIntegratorObserver)
+    observers.meta['tip'] = "Observers (e.g., output) for integrator."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -71,13 +84,14 @@ class IntegratorPointwise(ObservedComponent, ModuleIntegrator):
         ObservedComponent.preinitialize(self)
 
         ModuleIntegrator.auxFieldDB(self, self.auxFieldDB)
-        #ModuleIntegrator.output(self, self.outputManager)
 
         for subfield in self.auxSubfields.components():
             fieldName = subfield.aliases[-1]
-            ModuleIntegrator.auxSubfieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
+            ModuleIntegrator.auxSubfieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder,
+                                                       subfield.isBasisContinuous, subfield.feSpace)
 
-        # self.outputManager.preinitialize()
+        for observer in self.observers.components():
+            observer.preinitialize(self)
         return
 
 # PRIVATE METHODS ////////////////////////////////////////////////////
