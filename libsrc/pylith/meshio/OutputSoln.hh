@@ -29,7 +29,7 @@
 #include "meshiofwd.hh" // forward declarations
 
 #include "OutputManager.hh" // ISA OutputManager
-#include "pylith/problems/ProblemObserver.hh" // ISA ProblemObserver
+#include "problems/problemsfwd.hh" // HASA Problem
 
 #include "pylith/utils/array.hh" // HASA string_vector
 
