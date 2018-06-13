@@ -51,7 +51,7 @@
 
 // Interfaces
 %include "../utils/PyreComponent.i"
-%include "../feassemble/ObservedSubject.i"
+%include "../feassemble/ObservedComponent.i"
 %include "Problem.i"
 %include "TimeDependent.i"
 

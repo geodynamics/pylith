@@ -53,7 +53,7 @@ import_array();
 
 // Interfaces
 %include "../utils/PyreComponent.i"
-%include "../feassemble/ObservedSubject.i" // ISA ObservedSubject
+%include "../feassemble/ObservedComponent.i" // ISA ObservedComponent
 %include "../feassemble/IntegratorPointwise.i" // ISA IntegratorPointwise
 
 %include "FaultCohesive.i"

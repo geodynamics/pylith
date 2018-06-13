@@ -29,7 +29,7 @@ swig_sources = \
 	IntegratorPointwise.i \
 	ConstraintPointwise.i \
 	Observer.i \
-	ObservedSubject.i \
+	ObservedComponent.i \
 	../utils/PyreComponent.i \
 	../topology/FieldBase.i
 

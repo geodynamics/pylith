@@ -21,7 +21,7 @@
 # @brief Python abstract base class for constraints on operator
 # actions with finite-elements.
 
-from pylith.feassemble.ObservedSubject import ObservedSubject
+from pylith.feassemble.ObservedComponent import ObservedComponent
 from .feassemble import ConstraintPointwise as ModuleConstraint
 
 import numpy
@@ -45,7 +45,7 @@ def validateDOF(value):
 
 
 # ConstraintPointwise class
-class ConstraintPointwise(ObservedSubject,
+class ConstraintPointwise(ObservedComponent,
                           ModuleConstraint):
     """
     Python abstract base class for constraints on operator
@@ -86,14 +86,16 @@ class ConstraintPointwise(ObservedSubject,
         """
         Constructor.
         """
-        ObservedSubject.__init__(self, name, facility="constraint")
-        self._createModuleObj()
+        ObservedComponent.__init__(self, name, facility="constraint")
         return
 
     def preinitialize(self, mesh):
         """
         Setup constraint.
         """
+        self._createModuleObj()
+        ObservedComponent.preinitialize(self)
+
         ModuleConstraint.identifier(self, self.aliases[-1])
         ModuleConstraint.constrainedDOF(self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
         ModuleConstraint.auxFieldDB(self, self.auxFieldDB)
@@ -112,7 +114,7 @@ class ConstraintPointwise(ObservedSubject,
         """
         Setup members using inventory.
         """
-        ObservedSubject._configure(self)
+        ObservedComponent._configure(self)
         return
 
     def _createModuleObj(self):

@@ -72,11 +72,11 @@ class OutputManager(Observer, ModuleOutputManager):
         Observer.__init__(self, name)
         return
 
-    def preinitialize(self, observedSubject):
+    def preinitialize(self, ObservedComponent):
         """
         Setup output manager.
         """
-        self._createModuleObj(observedSubject)
+        self._createModuleObj(ObservedComponent)
 
         ModuleOutputManager.identifier(self, self.aliases[-1])
         ModuleOutputManager.infoFields(self, self.infoFields)
@@ -91,7 +91,7 @@ class OutputManager(Observer, ModuleOutputManager):
         self.writer.preinitialize()
         ModuleOutputManager.writer(self, self.writer)
 
-        observedSubject.registerObserver(self)
+        ObservedComponent.registerObserver(self)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -103,7 +103,7 @@ class OutputManager(Observer, ModuleOutputManager):
         Observer._configure(self)
         return
 
-    def _createModuleObj(self, observedSubject):
+    def _createModuleObj(self, ObservedComponent):
         """
         Create handle to C++ object.
         """

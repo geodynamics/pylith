@@ -18,11 +18,11 @@
 #
 # @brief Python abstract base class for pointwise integrators.
 
-from pylith.feassemble.ObservedSubject import ObservedSubject
+from pylith.feassemble.ObservedComponent import ObservedComponent
 from .feassemble import IntegratorPointwise as ModuleIntegrator
 
 
-class IntegratorPointwise(ObservedSubject, ModuleIntegrator):
+class IntegratorPointwise(ObservedComponent, ModuleIntegrator):
     """
     Python abstract base class for pointwise integrators.
 
@@ -59,7 +59,7 @@ class IntegratorPointwise(ObservedSubject, ModuleIntegrator):
         """
         Constructor.
         """
-        ObservedSubject.__init__(self, name, facility="integrator")
+        ObservedComponent.__init__(self, name, facility="integrator")
         return
 
     def preinitialize(self, mesh):
@@ -67,7 +67,7 @@ class IntegratorPointwise(ObservedSubject, ModuleIntegrator):
         Do pre-initialization setup.
         """
         self._createModuleObj()
-        ModuleIntegrator.identifier(self, self.aliases[-1])
+        ObservedComponent.preinitialize(self)
         ModuleIntegrator.auxFieldDB(self, self.auxFieldDB)
         #ModuleIntegrator.output(self, self.outputManager)
 
@@ -84,7 +84,7 @@ class IntegratorPointwise(ObservedSubject, ModuleIntegrator):
         """
         Setup members using inventory.
         """
-        ObservedSubject._configure(self)
+        ObservedComponent._configure(self)
         return
 
     def _createModuleObj(self):

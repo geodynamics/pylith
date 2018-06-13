@@ -58,7 +58,7 @@ void
 pylith::feassemble::IntegratorPointwise::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    ObservedSubject::deallocate();
+    ObservedComponent::deallocate();
 
     delete _normalizer; _normalizer = NULL;
     delete _logger; _logger = NULL;

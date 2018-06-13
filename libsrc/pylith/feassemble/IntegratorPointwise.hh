@@ -29,8 +29,7 @@
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
 
-#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
-#include "pylith/feassemble/ObservedSubject.hh" // ISA ObservedSubject
+#include "pylith/feassemble/ObservedComponent.hh" // ISA ObservedComponent
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase
 #include "pylith/utils/petscfwd.h" // USES PetscMat, PetscVec
@@ -44,8 +43,7 @@
  * time integration of equations defined by pointwise functions.
  */
 class pylith::feassemble::IntegratorPointwise :
-    public pylith::utils::PyreComponent,
-    public pylith::feassemble::ObservedSubject {
+    public pylith::feassemble::ObservedComponent {
     friend class TestIntegratorPointwise;   // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////

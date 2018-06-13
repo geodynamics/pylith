@@ -28,6 +28,7 @@ swig_sources = \
 	bc.i \
 	BoundaryCondition.i \
 	../utils/PyreComponent.i \
+	../feassemble/ObservedComponent.i \
 	../feassemble/ConstraintPointwise.i \
 	../feassemble/IntegratorPointwise.i \
 	Dirichlet.i \

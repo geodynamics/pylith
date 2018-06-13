@@ -27,7 +27,7 @@ subpkgpyexec_PYTHON = materials.py
 swig_sources = \
 	materials.i \
 	../feassemble/IntegratorPointwise.i \
-	../feassemble/ObservedSubject.i \
+	../feassemble/ObservedComponent.i \
 	Material.i \
 	IsotropicLinearElasticityPlaneStrain.i \
 	IsotropicLinearMaxwellPlaneStrain.i \

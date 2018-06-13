@@ -17,35 +17,38 @@
 //
 
 /**
- * @file libsrc/feassemble/ObservedSubject.hh
+ * @file libsrc/feassemble/ObservedComponent.hh
  *
  * @brief Subject of observer.
  */
 
-#if !defined(pylith_feassemble_observedsubject_hh)
-#define pylith_feassemble_observedsubject_hh
+#if !defined(pylith_feassemble_ObservedComponent_hh)
+#define pylith_feassemble_ObservedComponent_hh
 
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
+
+#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/types.hh" // USES PylithReal, PylithInt
 
 #include <set> // USES std::set
 
-// ObservedSubject --------------------------------------------------------
+// ObservedComponent --------------------------------------------------------
 /// Subject of observer.
-class pylith::feassemble::ObservedSubject {
-    friend class TestObservedSubject;   // unit testing
+class pylith::feassemble::ObservedComponent :
+    public pylith::utils::PyreComponent {
+    friend class TestObservedComponent;   // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
     /// Constructor.
-    ObservedSubject(void);
+    ObservedComponent(void);
 
     /// Destructor
-    virtual ~ObservedSubject(void);
+    virtual ~ObservedComponent(void);
 
     /// Deallocate PETSc and local data structures.
     virtual
@@ -86,12 +89,12 @@ private:
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    ObservedSubject(const ObservedSubject&);   ///< Not implemented.
-    const ObservedSubject& operator=(const ObservedSubject&);   ///< Not implemented
+    ObservedComponent(const ObservedComponent&);   ///< Not implemented.
+    const ObservedComponent& operator=(const ObservedComponent&);   ///< Not implemented
 
-}; // ObservedSubject
+}; // ObservedComponent
 
-#endif // pylith_feassemble_observedsubject_hh
+#endif // pylith_feassemble_ObservedComponent_hh
 
 
 // End of file

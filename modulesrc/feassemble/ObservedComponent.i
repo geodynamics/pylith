@@ -17,28 +17,28 @@
 //
 
 /**
- * @file modulesrc/feassemble/ObservedSubject.i
+ * @file modulesrc/feassemble/ObservedComponent.i
  *
- * @brief Python interface to C++ ObservedSubject object.
+ * @brief Python interface to C++ ObservedComponent object.
  */
 
 namespace pylith {
     namespace feassemble {
 
-        class ObservedSubject {
-	    
+        class ObservedComponent : public pylith::utils::PyreComponent {
+
 	    // PUBLIC METHODS ///////////////////////////////////////////////////////
 	public:
 	    /// Constructor.
-	    ObservedSubject(void);
-	    
+	    ObservedComponent(void);
+
 	    /// Destructor
-	    virtual ~ObservedSubject(void);
-	    
+	    virtual ~ObservedComponent(void);
+
 	    /// Deallocate PETSc and local data structures.
 	    virtual
 	    void deallocate(void);
-	    
+
 	    /** Register observer to receive notifications.
 	     *
 	     * Observers are used for output.
@@ -46,13 +46,13 @@ namespace pylith {
 	     * @param[in] observer Observer to receive notifications.
 	     */
 	    void registerObserver(pylith::feassemble::Observer* observer);
-	    
+
 	    /** Remove observer from receiving notifications.
 	     *
 	     * @param[in] observer Observer to remove.
 	     */
 	    void removeObserver(pylith::feassemble::Observer* observer);
-	    
+
 	    /** Send observers an update.
 	     *
 	     * @param[in] t Current time.
@@ -64,8 +64,8 @@ namespace pylith {
 				 const PylithInt tindex,
 				 const pylith::topology::Field& solution,
 				 const bool infoOnly=false);
-	    
-	}; // ObservedSubject
+
+	}; // ObservedComponent
 
     } // feassemble
 } // pylith

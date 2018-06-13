@@ -25,8 +25,7 @@ namespace pylith {
     namespace feassemble {
 
         class IntegratorPointwise :
-	    public pylith::utils::PyreComponent,
-	    public pylith::feassemble::ObservedSubject {
+            public pylith::feassemble::ObservedComponent {
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 	public:
@@ -135,7 +134,7 @@ namespace pylith {
 			  const PylithReal dt,
 			  const PylithInt tindex,
 			  const pylith::topology::Field& solution);
-	    
+
 	    /** Compute RHS residual for G(t,s).
 	     *
 	     * @param[out] residual Field for residual.

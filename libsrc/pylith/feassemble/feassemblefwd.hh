@@ -38,7 +38,7 @@ namespace pylith {
         class AuxiliaryFactory; ///< Creates auxiliary subfields.
 
 	class Observer; ///< Observer of subject.
-	class ObservedSubject; ///< Subject being observed.
+	class ObservedComponent; ///< Subject being observed.
         class IntegratorObserver; //< Observes integrator.
 	
     } // feassemble

@@ -26,9 +26,7 @@ namespace pylith {
     namespace problems {
 
         class Problem :
-	    public pylith::utils::PyreComponent,
-	    public pylith::feassemble::ObservedSubject
-         { // Problem
+	          public pylith::feassemble::ObservedComponent {
 
 // PUBLIC ENUM ////////////////////////////////////////////////////
 public:
