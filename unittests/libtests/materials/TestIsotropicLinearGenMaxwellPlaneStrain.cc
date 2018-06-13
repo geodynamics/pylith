@@ -186,19 +186,6 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::test_auxFieldSetup(
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // Shear modulus ratio
 
-    { // Total strain
-        const char* label = "total_strain";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
-    } // Total strain
-
     { // Viscous strain
         const char* label = "viscous_strain";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
@@ -211,6 +198,19 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::test_auxFieldSetup(
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // Viscous strain
+
+    { // Total strain
+        const char* label = "total_strain";
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
+        CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
+        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+    } // Total strain
 
     if (_mymaterial->_gravityField) { // gravity field
         const char* label = "gravity_field";
@@ -378,6 +378,30 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
 		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting shear modulus ratio subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting shear_modulus_ratio field
 
+    { // Test getting viscous_strain field.
+        pylith::topology::Field viscousStrain(*_mesh);
+        viscousStrain.copySubfield(auxField, "viscous_strain");
+
+        //viscousStrain.view("VISCOUS STRAIN"); // DEBUGGING
+
+        // Check result
+        CPPUNIT_ASSERT_EQUAL(std::string("viscous_strain"), std::string(viscousStrain.label()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, viscousStrain.spaceDim());
+
+        pylith::topology::FieldQuery queryViscousStrain(viscousStrain);
+        queryViscousStrain.initializeWithDefaultQueryFns();
+        queryViscousStrain.openDB(_mydata->auxDB, lengthScale);
+
+        PylithReal norm = 0.0;
+        const PylithReal t = _mydata->t;
+        const PetscDM dm = viscousStrain.dmMesh(); CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryViscousStrain.functions(), (void**)queryViscousStrain.contextPtrs(), viscousStrain.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        queryViscousStrain.closeDB(_mydata->auxDB);
+
+        const PylithReal tolerance = 1.0e-6;
+		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting viscous strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting viscous_strain field
+
     { // Test getting total_strain field.
         pylith::topology::Field totalStrain(*_mesh);
         totalStrain.copySubfield(auxField, "total_strain");
@@ -401,30 +425,6 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         const PylithReal tolerance = 1.0e-6;
 		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting total strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting total_strain field
-
-    { // Test getting viscous_strain field.
-        pylith::topology::Field viscousStrain(*_mesh);
-        viscousStrain.copySubfield(auxField, "viscous_strain");
-
-        //viscousStrain.view("VISCOUS STRAIN"); // DEBUGGING
-
-        // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("viscous_strain"), std::string(viscousStrain.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, viscousStrain.spaceDim());
-
-        pylith::topology::FieldQuery queryViscousStrain(viscousStrain);
-        queryViscousStrain.initializeWithDefaultQueryFns();
-        queryViscousStrain.openDB(_mydata->auxDB, lengthScale);
-
-        PylithReal norm = 0.0;
-        const PylithReal t = _mydata->t;
-        const PetscDM dm = viscousStrain.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryViscousStrain.functions(), (void**)queryViscousStrain.contextPtrs(), viscousStrain.localVector(), &norm); CPPUNIT_ASSERT(!err);
-        queryViscousStrain.closeDB(_mydata->auxDB);
-
-        const PylithReal tolerance = 1.0e-6;
-		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting total strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
-    } // Test getting viscous_strain field
 
 	if (_mymaterial->_useReferenceState) { // Test getting reference_stress field.
         pylith::topology::Field referenceStress(*_mesh);
@@ -542,9 +542,9 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::_setupSolutionField
         perturbation.zeroLocal();
 		pylith::problems::SolutionFactory factory(perturbation, *_mydata->normalizer);
         factory.setValues(_mydata->perturbDB);
-    } // Perturbation @ t2
+    } // Perturbation
 
-    { // Time derivative of solution @ t2
+    { // Time derivative of perturbation
         pylith::topology::Field& perturbationDot = _solutionFields->get("perturbation_dot");
         const pylith::topology::Field& solutionDot = _solutionFields->get("solution_dot");
         perturbationDot.cloneSection(solutionDot);
@@ -552,7 +552,7 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::_setupSolutionField
         perturbationDot.zeroLocal();
 		pylith::problems::SolutionFactory factory(perturbationDot, *_mydata->normalizer);
         factory.setValues(_mydata->perturbDB);
-    } // Time derivative of solution @ t2
+    } // Time derivative of perturbation
 
     PYLITH_METHOD_END;
 } // _setupSolutionFields

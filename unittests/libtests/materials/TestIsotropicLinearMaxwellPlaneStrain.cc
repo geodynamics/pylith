@@ -341,6 +341,54 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting Maxwell time subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting maxwell_time field
 
+    { // Test getting viscous_strain field.
+        pylith::topology::Field viscousStrain(*_mesh);
+        viscousStrain.copySubfield(auxField, "viscous_strain");
+
+        //viscousStrain.view("VISCOUS STRAIN"); // DEBUGGING
+
+        // Check result
+        CPPUNIT_ASSERT_EQUAL(std::string("viscous_strain"), std::string(viscousStrain.label()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, viscousStrain.spaceDim());
+
+        pylith::topology::FieldQuery queryViscousStrain(viscousStrain);
+        queryViscousStrain.initializeWithDefaultQueryFns();
+        queryViscousStrain.openDB(_mydata->auxDB, lengthScale);
+
+        PylithReal norm = 0.0;
+        const PylithReal t = _mydata->t;
+        const PetscDM dm = viscousStrain.dmMesh(); CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryViscousStrain.functions(), (void**)queryViscousStrain.contextPtrs(), viscousStrain.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        queryViscousStrain.closeDB(_mydata->auxDB);
+
+        const PylithReal tolerance = 1.0e-6;
+		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting viscous strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting viscous_strain field
+
+    { // Test getting total_strain field.
+        pylith::topology::Field totalStrain(*_mesh);
+        totalStrain.copySubfield(auxField, "total_strain");
+
+        //totalStrain.view("TOTAL STRAIN"); // DEBUGGING
+
+        // Check result
+        CPPUNIT_ASSERT_EQUAL(std::string("total_strain"), std::string(totalStrain.label()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, totalStrain.spaceDim());
+
+        pylith::topology::FieldQuery queryTotalStrain(totalStrain);
+        queryTotalStrain.initializeWithDefaultQueryFns();
+        queryTotalStrain.openDB(_mydata->auxDB, lengthScale);
+
+        PylithReal norm = 0.0;
+        const PylithReal t = _mydata->t;
+        const PetscDM dm = totalStrain.dmMesh(); CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryTotalStrain.functions(), (void**)queryTotalStrain.contextPtrs(), totalStrain.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        queryTotalStrain.closeDB(_mydata->auxDB);
+
+        const PylithReal tolerance = 1.0e-6;
+		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting total strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting total_strain field
+
     if (_mymaterial->_useReferenceState) { // Test getting reference_stress field.
         pylith::topology::Field referenceStress(*_mesh);
         referenceStress.copySubfield(auxField, "reference_stress");
