@@ -175,31 +175,6 @@ pylith::meshio::OutputManager::dataFields(void) const {
 } // dataFields
 
 
-#if 0
-
-// ----------------------------------------------------------------------
-// Verify configuration is acceptable.
-void
-pylith::meshio::OutputManager::verifyConfiguration(const pylith::topology::Field& solution) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputConstraint::verifyConfiguration(solution="<<solution.label()<<")");
-
-    const size_t numFields = _infoFields.size();
-    if ((numFields > 0) && (std::string("all") != _infoFields[0])) {
-        for (size_t iField = 0; iField < numFields; iField++) {
-            if (!auxField.hasSubfield(_infoFields[iField].c_str())) {
-                std::ostringstream msg;
-                msg << "Could not find field '" << _infoFields[iField] << "' in auxiliary field '" << auxField.label() << "' for output.";
-                throw std::runtime_error(msg.str());
-            } // if
-        } // for
-    } // if
-
-    PYLITH_METHOD_END;
-} // verifyConfiguration
-
-#endif
-
 // ----------------------------------------------------------------------
 // Get update from integrator (subject of observer).
 void
@@ -375,8 +350,8 @@ pylith::meshio::OutputManager::_dataNamesExpanded(const pylith::topology::Field&
             for (size_t iAdd = 0, iName = dataNames.size(); iAdd < numAdd; ++iAdd) {
                 dataNames[iName] = derivedSubfields[iAdd];
             } // for
-            PYLITH_METHOD_RETURN(dataNames);
         } // if
+        PYLITH_METHOD_RETURN(dataNames);
     } // if
 
     PYLITH_METHOD_RETURN(_dataFields);
