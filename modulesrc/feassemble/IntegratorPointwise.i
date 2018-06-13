@@ -41,6 +41,13 @@ namespace pylith {
 	    virtual
 	    void deallocate(void);
 
+	    /** Get mesh associated with integrator domain.
+	     *
+	     * @returns Mesh associated with integrator domain.
+	     */
+	    virtual
+	    const pylith::topology::Mesh& domainMesh(void) const = 0;
+	    
 	    /** Get auxiliary field.
 	     *
 	     * @return field Field over integrator domain.

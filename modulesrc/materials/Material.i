@@ -74,7 +74,13 @@ namespace pylith {
        */
       const char* label(void) const;
       
-      /** Initialize material. Setup auxiliary fields.
+	/** Get mesh associated with integrator domain.
+	 *
+	 * @returns Mesh associated with integrator domain.
+	 */
+	const pylith::topology::Mesh& domainMesh(void) const;
+
+	/** Initialize material. Setup auxiliary fields.
        *
        * @param solution Solution field.
        */

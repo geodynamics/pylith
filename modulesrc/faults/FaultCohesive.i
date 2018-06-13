@@ -88,6 +88,12 @@ namespace pylith {
 	     */
 	    void refDir2(const PylithReal vec[3]);
 	    
+	    /** Get mesh associated with integrator domain.
+	     *
+	     * @returns Mesh associated with integrator domain.
+	     */
+	    const pylith::topology::Mesh& domainMesh(void) const;
+	    
 	    /** Adjust mesh topology for fault implementation.
 	     *
 	     * @param mesh[in] PETSc mesh.

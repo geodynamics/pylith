@@ -127,6 +127,14 @@ pylith::materials::Material::label(void) const {
 } // label
 
 // ----------------------------------------------------------------------
+// Get mesh associated with integrator domain.
+const pylith::topology::Mesh&
+pylith::materials::Material::domainMesh(void) const {
+    assert(!_auxField);
+    return _auxField->mesh();
+} // domainMesh
+
+// ----------------------------------------------------------------------
 // Get physical property parameters and initial state (if used) from database.
 void
 pylith::materials::Material::initialize(const pylith::topology::Field& solution) {
