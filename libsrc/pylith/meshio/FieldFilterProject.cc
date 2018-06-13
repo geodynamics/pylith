@@ -31,7 +31,10 @@ const char* pylith::meshio::FieldFilterProject::_pyreComponent = "fieldfilterpro
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::FieldFilterProject::FieldFilterProject(void) :
-    _fieldP1(NULL) {
+    _fieldP1(NULL),
+    _passThruFns(NULL),
+    _basisOrder(1)
+{ // constructor
     PyreComponent::name(_pyreComponent);
 } // constructor
 
@@ -50,6 +53,7 @@ pylith::meshio::FieldFilterProject::deallocate(void) {
     FieldFilter::deallocate();
 
     delete _fieldP1; _fieldP1 = NULL;
+    delete _passThruFns; _passThruFns = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -58,7 +62,9 @@ pylith::meshio::FieldFilterProject::deallocate(void) {
 // Copy constructor.
 pylith::meshio::FieldFilterProject::FieldFilterProject(const FieldFilterProject& f) :
     FieldFilter(f),
-    _fieldP1(NULL)
+    _fieldP1(NULL),
+    _passThruFns(NULL),
+    _basisOrder(f._basisOrder)
 {}
 
 // ----------------------------------------------------------------------
@@ -143,7 +149,7 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
 
     const PylithReal t = 0.0;
     PetscDM dmFieldP1 = _fieldP1->dmMesh();
-    PetscErrorCode err = DMProjectFieldLocal(dmFieldP1, t, _fieldP1->localVector(), _passThruFns, INSERT_VALUES, _fieldP1->localVector());PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMProjectFieldLocal(dmFieldP1, t, fieldIn->localVector(), _passThruFns, INSERT_VALUES, _fieldP1->localVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_RETURN(_fieldP1);
 } // filter

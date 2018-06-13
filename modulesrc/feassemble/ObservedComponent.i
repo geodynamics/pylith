@@ -53,6 +53,12 @@ namespace pylith {
 	     */
 	    void removeObserver(pylith::feassemble::Observer* observer);
 
+	    /** Verify observers are compatible.
+	     *
+	     * @param[in] solution Solution field.
+	     */
+	    void verifyObservers(const pylith::topology::Field& solution) const;
+
 	    /** Send observers an update.
 	     *
 	     * @param[in] t Current time.

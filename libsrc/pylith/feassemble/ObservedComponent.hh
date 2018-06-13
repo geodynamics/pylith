@@ -41,7 +41,6 @@ class pylith::feassemble::ObservedComponent :
     public pylith::utils::PyreComponent {
     friend class TestObservedComponent;   // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
     /// Constructor.
@@ -68,6 +67,12 @@ public:
      */
     void removeObserver(pylith::feassemble::Observer* observer);
 
+    /** Verify observers are compatible.
+     *
+     * @param[in] solution Solution field.
+     */
+    void verifyObservers(const pylith::topology::Field& solution) const;
+
     /** Send observers an update.
      *
      * @param[in] t Current time.
@@ -84,6 +89,7 @@ public:
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
+    typedef std::set<pylith::feassemble::Observer*>::iterator iterator; ///< Iterator.
     std::set<pylith::feassemble::Observer*> _observers; ///< Ssubscribers of updates.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////

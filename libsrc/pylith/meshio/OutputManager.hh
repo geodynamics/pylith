@@ -106,13 +106,6 @@ public:
      */
     const pylith::string_vector& dataFields(void) const;
 
-    /** Verify configuration.
-     *
-     * @param[in] solution Solution field.
-     */
-    virtual
-    void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
-
     /** Receive update from subject.
      *
      * @param[in] t Current time.
@@ -151,6 +144,7 @@ protected:
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
      */
+    virtual
     void _writeDataStep(const PylithReal t,
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);

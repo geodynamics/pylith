@@ -90,13 +90,6 @@ namespace pylith {
 			    const int numNames);
 	    %clear(const char* const* names, const int numNames);
 
-	    /** Verify configuration.
-	     *
-	     * @param[in] solution Solution field.
-	     */
-	    virtual
-	    void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
-
 	      /** Receive update from subject.
 	       *
 	       * @param[in] t Current time.

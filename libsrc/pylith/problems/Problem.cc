@@ -221,6 +221,8 @@ pylith::problems::Problem::verifyConfiguration(int* const materialIds,
         _constraints[i]->verifyConfiguration(*_solution);
     } // for
 
+    verifyObservers(*_solution);
+
     PYLITH_METHOD_END;
 }  // verifyConfiguration
 

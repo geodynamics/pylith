@@ -28,31 +28,28 @@
 // Constructor
 pylith::meshio::DataWriter::DataWriter(void) :
     _timeScale(1.0),
+    _context(""),
     _isInfo(false),
-    _context("")
+    _isOpen(false)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::DataWriter::~DataWriter(void)
-{ // destructor
+pylith::meshio::DataWriter::~DataWriter(void) {
     deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::DataWriter::deallocate(void)
-{ // deallocate
-} // deallocate
+pylith::meshio::DataWriter::deallocate(void) {}
 
 
 // ----------------------------------------------------------------------
 // Set time scale for simulation time.
 void
-pylith::meshio::DataWriter::timeScale(const PylithScalar value)
-{ // timeScale
+pylith::meshio::DataWriter::timeScale(const PylithScalar value) {
     PYLITH_METHOD_BEGIN;
 
     if (value <= 0.0) {
@@ -67,16 +64,23 @@ pylith::meshio::DataWriter::timeScale(const PylithScalar value)
 } // timeScale
 
 // ----------------------------------------------------------------------
+// Is data writer open, i.e., ready for openTimeStep()/closeTimeStep()?
+bool
+pylith::meshio::DataWriter::isOpen(void) const {
+    return _isOpen;
+} // isOpen
+
+// ----------------------------------------------------------------------
 // Prepare for writing files.
 void
 pylith::meshio::DataWriter::open(const topology::Mesh& mesh,
                                  const bool isInfo,
                                  const char* label,
-                                 const int labelId)
-{ // open
+                                 const int labelId) {
     PYLITH_METHOD_BEGIN;
 
     _isInfo = isInfo;
+    _isOpen = true;
 
     PetscDM dmMesh = mesh.dmMesh(); assert(dmMesh);
     const char* meshName = NULL;
@@ -96,9 +100,9 @@ pylith::meshio::DataWriter::open(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Close output files.
 void
-pylith::meshio::DataWriter::close(void)
-{ // close
+pylith::meshio::DataWriter::close(void) {
     _context = "";
+    _isOpen = false;
 } // close
 
 // ----------------------------------------------------------------------
@@ -107,24 +111,23 @@ void
 pylith::meshio::DataWriter::openTimeStep(const PylithScalar t,
                                          const topology::Mesh& mesh,
                                          const char* label,
-                                         const int labelId)
-{ // openTimeStep
-  // Default: no implementation.
+                                         const int labelId) {
+    // Default: no implementation.
 } // openTimeStep
 
 // ----------------------------------------------------------------------
 // Cleanup after writing data for a time step.
 void
-pylith::meshio::DataWriter::closeTimeStep(void)
-{ // closeTimeStep
-  // Default: no implementation.
+pylith::meshio::DataWriter::closeTimeStep(void) {
+    // Default: no implementation.
 } // closeTimeStep
 
 // ----------------------------------------------------------------------
 // Copy constructor.
 pylith::meshio::DataWriter::DataWriter(const DataWriter& w) :
+    _context(w._context),
     _isInfo(w._isInfo),
-    _context(w._context)
+    _isOpen(w._isOpen)
 { // copy constructor
 } // copy constructor
 
@@ -135,7 +138,9 @@ void
 pylith::meshio::DataWriter::writePointNames(const pylith::string_vector& names,
                                             const topology::Mesh& mesh)
 { // writePointNames
-  // Default: no implementation.
+
+    // Default: no implementation.
+
 } // writePointNames
 
 
@@ -143,8 +148,7 @@ pylith::meshio::DataWriter::writePointNames(const pylith::string_vector& names,
 // Create and populate PETSc global vector with coordinates of mesh vertices.
 void
 pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
-                                               const pylith::topology::Mesh& mesh)
-{ // getCoordsGlobalVec
+                                               const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
 
     assert(coordsGlobalVec);
@@ -247,5 +251,6 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
 
     PYLITH_METHOD_END;
 } // getCoordsGlobalVec
+
 
 // End of file

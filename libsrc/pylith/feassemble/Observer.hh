@@ -49,6 +49,13 @@ public:
     virtual
     void deallocate(void);
 
+    /** Verify observer is compatible with solution.
+     *
+     * @param[in] solution Solution field.
+     */
+    virtual
+    void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
+
     /** Receive update (subject of observer).
      *
      * @param[in] t Current time.
@@ -61,7 +68,6 @@ public:
                 const PylithInt tindex,
                 const pylith::topology::Field& solution,
                 const bool infoOnly=false) = 0;
-
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:

@@ -271,6 +271,10 @@ pylith::meshio::OutputManager::_openDataStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG("OutputManager::_openDataStep(t="<<t<<", mesh="<<typeid(mesh).name()<<")");
 
     assert(_writer);
+    if (!_writer->isOpen()) {
+        bool infoOnly = false;
+        _writer->open(mesh, infoOnly, _label.length() ? _label.c_str() : NULL, _labelId);
+    } // if
     _writer->openTimeStep(t, mesh, _label.length() ? _label.c_str() : NULL, _labelId);
 
     PYLITH_METHOD_END;

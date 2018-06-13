@@ -79,17 +79,32 @@ pylith::feassemble::ObservedComponent::removeObserver(pylith::feassemble::Observ
 
 
 // ----------------------------------------------------------------------
+// Verify observers.
+void
+pylith::feassemble::ObservedComponent::verifyObservers(const pylith::topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    //PYLITH_COMPONENT_DEBUG("verifyObservers(solution="<<solution.label()<<")");
+
+    for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
+        assert(*iter);
+        (*iter)->verifyConfiguration(solution);
+    } // for
+
+    PYLITH_METHOD_END;
+} // verifyObservers
+
+
+// ----------------------------------------------------------------------
 // Notify observers.
 void
 pylith::feassemble::ObservedComponent::notifyObservers(const PylithReal t,
-                                                     const PylithInt tindex,
-                                                     const pylith::topology::Field& solution,
-                                                     const bool infoOnly) {
+                                                       const PylithInt tindex,
+                                                       const pylith::topology::Field& solution,
+                                                       const bool infoOnly) {
     PYLITH_METHOD_BEGIN;
     //PYLITH_COMPONENT_DEBUG("notifyObservers(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
-    typedef std::set<Observer*>::iterator observers_iter;
-    for (observers_iter iter = _observers.begin(); iter != _observers.end(); ++iter) {
+    for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);
         (*iter)->update(t, tindex, solution);
     } // for

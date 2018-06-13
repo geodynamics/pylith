@@ -67,6 +67,12 @@ public:
      */
     void timeScale(const PylithScalar value);
 
+    /** Is data writer open, i.e., ready for openTimeStep()/closeTimeStep()?
+     *
+     * @returns True if data writer is open, false otherwise.
+     */
+    bool isOpen(void) const;
+
     /** Prepare for writing files.
      *
      * @param[in] mesh Finite-element mesh.
@@ -166,8 +172,9 @@ private:
 protected:
 
     PylithScalar _timeScale;   ///< Time scale for dimensioning time in output.
-    bool _isInfo;   ///< True if only writing info values.
     std::string _context;   ///< Context of scatters for DataWriter.
+    bool _isInfo;   ///< True if only writing info values.
+    bool _isOpen; ///< True if writer is ready for openTimeStep()/closeTimeStep().
 
 }; // DataWriter
 
