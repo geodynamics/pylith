@@ -74,6 +74,7 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
     def preinitialize(self):
         """Do minimal initialization."""
         MeshIOObj.preinitialize(self)
+
         self.filename(self.inventory.filename)
         return
 

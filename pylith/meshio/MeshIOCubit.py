@@ -72,10 +72,10 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
         MeshIOObj.__init__(self, name)
         return
 
-
     def preinitialize(self):
         """Do minimal initialization."""
         MeshIOObj.preinitialize(self)
+
         ModuleMeshIOCubit.filename(self, self.inventory.filename)
         ModuleMeshIOCubit.useNodesetNames(self, self.inventory.useNames)
         return

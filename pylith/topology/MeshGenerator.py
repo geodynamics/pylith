@@ -57,6 +57,12 @@ class MeshGenerator(PetscComponent):
         self.interpolate = True
         return
 
+    def preinitialize(self):
+        """
+        Do minimal initialization.
+        """
+        return
+
     def create(self, normalizer, faults=None):
         """
         Generate a Mesh.

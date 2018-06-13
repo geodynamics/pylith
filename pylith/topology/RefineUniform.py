@@ -53,8 +53,10 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
         MeshRefiner.__init__(self, name)
         return
 
-    def intialize(self):
-        """Initialize refinement."""
+    def preintialize(self):
+        """Do minimal initialization."""
+        MeshRefiner.preinitialize()
+
         self._createModuleObj()
         return
 

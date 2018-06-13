@@ -99,6 +99,7 @@ class MeshIOLagrit(MeshIOObj, ModuleMeshIOLagrit):
     def preinitialize(self):
         """Do minimal initialization."""
         MeshIOObj.preinitialize(self)
+
         ModuleMeshIOLagrit.filenameGmv(self, self.filenameGmv)
         ModuleMeshIOLagrit.filenamePset(self, self.filenamePset)
         ModuleMeshIOLagrit.flipEndian(self, self.flipEndian)
@@ -115,7 +116,6 @@ class MeshIOLagrit(MeshIOObj, ModuleMeshIOLagrit):
         MeshIOObj._configure(self)
         return
 
-
     def _createModuleObj(self):
         """
         Create C++ MeshIOLagrit object.
@@ -127,10 +127,10 @@ class MeshIOLagrit(MeshIOObj, ModuleMeshIOLagrit):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def mesh_io():
-  """
-  Factory associated with MeshIOLagrit.
-  """
-  return MeshIOLagrit()
+    """
+    Factory associated with MeshIOLagrit.
+    """
+    return MeshIOLagrit()
 
 
 # End of file

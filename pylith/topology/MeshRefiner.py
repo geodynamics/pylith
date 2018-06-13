@@ -23,68 +23,69 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class MeshRefiner(PetscComponent):
-  """
-  Python manager for refining mesh in parallel.
-
-  Factory: mesh_refiner
-  """
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="refiner"):
     """
-    Constructor.
+    Python manager for refining mesh in parallel.
+
+    Factory: mesh_refiner
     """
-    PetscComponent.__init__(self, name, facility="refiner")
-    return
 
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def refine(self, mesh):
-    """
-    Refine mesh.
-    """
-    self._setupLogging()
-    logEvent = "%srefine" % self._loggingPrefix
-    self._eventLogger.eventBegin(logEvent)
+    def __init__(self, name="refiner"):
+        """
+        Constructor.
+        """
+        PetscComponent.__init__(self, name, facility="refiner")
+        return
 
-    self._eventLogger.eventEnd(logEvent)
-    return mesh
+    def preinitialize(self):
+        """Do minimal initialization."""
+        return
 
+    def refine(self, mesh):
+        """
+        Refine mesh.
+        """
+        self._setupLogging()
+        logEvent = "%srefine" % self._loggingPrefix
+        self._eventLogger.eventBegin(logEvent)
 
-  # PRIVATE METHODS ////////////////////////////////////////////////////
+        self._eventLogger.eventEnd(logEvent)
+        return mesh
 
-  def _configure(self):
-    """
-    Set members based using inventory.
-    """
-    PetscComponent._configure(self)
-    return
+    # PRIVATE METHODS ////////////////////////////////////////////////////
 
+    def _configure(self):
+        """
+        Set members based using inventory.
+        """
+        PetscComponent._configure(self)
+        return
 
-  def _setupLogging(self):
-    """
-    Setup event logging.
-    """
-    self._loggingPrefix = "Refin "
-    from pylith.utils.EventLogger import EventLogger
-    logger = EventLogger()
-    logger.className("FE Refinement")
-    logger.initialize()
-    events = ["refine"]
-    for event in events:
-      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+    def _setupLogging(self):
+        """
+        Setup event logging.
+        """
+        self._loggingPrefix = "Refin "
+        from pylith.utils.EventLogger import EventLogger
+        logger = EventLogger()
+        logger.className("FE Refinement")
+        logger.initialize()
+        events = ["refine"]
+        for event in events:
+            logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
-    self._eventLogger = logger
-    return
+        self._eventLogger = logger
+        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def mesh_refiner():
-  """
-  Factory associated with MeshRefiner.
-  """
-  return MeshRefiner()
+    """
+    Factory associated with MeshRefiner.
+    """
+    return MeshRefiner()
 
 
 # End of file

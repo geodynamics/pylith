@@ -63,7 +63,7 @@ class FieldFilterProject(FieldFilter, ModuleFieldFilterProject):
 
     def _createModuleObj(self):
         """Create handle to C++ object."""
-        ModuleFieldFilterNone.__init__(self)
+        ModuleFieldFilterProject.__init__(self)
         return
 
 

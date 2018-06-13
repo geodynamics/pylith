@@ -35,6 +35,10 @@ class DumpParameters(Component):
         self.info = None
         return
 
+    def preinitialize(self):
+        """Do minimal initialization."""
+        return
+
     def write(self, app):
         """
         Write parameters to ASCII file.
@@ -134,7 +138,6 @@ class DumpParameters(Component):
             if 0 == comm.rank:
                 os.makedirs(relpath)
         return
-
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

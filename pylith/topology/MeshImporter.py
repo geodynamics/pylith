@@ -66,6 +66,17 @@ class MeshImporter(MeshGenerator):
         self._loggingPrefix = "MeIm "
         return
 
+    def preinitialize(self):
+        """
+        Do minimal initialization.
+        """
+        MeshGenerator.preinitialize(self)
+
+        self.reader.preinitialize()
+        self.distributor.preinitialize()
+        self.refiner.preinitialize()
+        return
+
     def create(self, normalizer, faults=None):
         """
         Hook for creating mesh.

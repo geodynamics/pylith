@@ -62,7 +62,7 @@ class Distributor(PetscComponent, ModuleDistributor):
         PetscComponent.__init__(self, name, facility="mesh_distributor")
         return
 
-    def initialize(self):
+    def preinitialize(self):
         """Do minimal initialization."""
         ModuleDistributor.__init__(self)
         return

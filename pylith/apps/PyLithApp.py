@@ -28,27 +28,29 @@ from PetscApplication import PetscApplication
 class PyLithApp(PetscApplication):
     """
     Python PyLithApp application.
+
+    INVENTORY
+
+    Properties
+      - *start_python_debugger* Start Python debugger at beginning of main().
+      - *typos* Flag for behavior of handling unknown properties and facilities ["relaxed", "strict", "pedantic"]
+      - *initialize_only* Stop simulation after initializing problem.
+
+    Facilities
+      - *dump_parameters* Dump parameters used and version information to file.
+      - *mesh_generator* Generator or importer for finite-element mesh.
+      - *problem* Computational problem to solve.
     """
-
-    # INVENTORY //////////////////////////////////////////////////////////
-
-    # \b Properties
-    # @li \b initialize-only Stop simulation after initializing problem.
-    #
-    # \b Facilities
-    # @li \b mesher Generates or imports the computational mesh.
-    # @li \b problem Computational problem to solve
-    # @li \b petsc Manager for PETSc options
 
     import pyre.inventory
 
-    pdbOn = pyre.inventory.bool("start-python-debugger", default=False)
+    pdbOn = pyre.inventory.bool("start_python_debugger", default=False)
     pdbOn.meta['tip'] = "Start python debugger at beginning of main()."
 
     typos = pyre.inventory.str("typos", default="pedantic", validator=pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
     typos.meta['tip'] = "Specifies the handling of unknown properties and facilities"
 
-    initializeOnly = pyre.inventory.bool("initialize-only", default=False)
+    initializeOnly = pyre.inventory.bool("initialize_only", default=False)
     initializeOnly.meta['tip'] = "Stop simulation after initializing problem."
 
     from pylith.utils.DumpParametersJson import DumpParametersJson
@@ -82,6 +84,7 @@ class PyLithApp(PetscApplication):
             pdb.set_trace()
 
         # Dump parameters and version information
+        self.parameters.preinitialize()
         self.parameters.write(self)
 
         from pylith.mpi.Communicator import mpi_comm_world
@@ -99,6 +102,7 @@ class PyLithApp(PetscApplication):
         interfaces = None
         if "interfaces" in dir(self.problem):
             interfaces = self.problem.interfaces.components()
+        self.mesher.preinitialize()
         mesh = self.mesher.create(self.problem.normalizer, interfaces)
         del interfaces
         self.mesher = None
