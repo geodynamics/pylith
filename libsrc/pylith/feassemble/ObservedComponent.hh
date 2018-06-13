@@ -22,8 +22,8 @@
  * @brief Subject of observer.
  */
 
-#if !defined(pylith_feassemble_ObservedComponent_hh)
-#define pylith_feassemble_ObservedComponent_hh
+#if !defined(pylith_feassemble_observedcomponent_hh)
+#define pylith_feassemble_observedcomponent_hh
 
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
@@ -94,7 +94,7 @@ private:
 
 }; // ObservedComponent
 
-#endif // pylith_feassemble_ObservedComponent_hh
+#endif // pylith_feassemble_observedcomponent_hh
 
 
 // End of file

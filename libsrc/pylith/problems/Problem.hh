@@ -90,7 +90,7 @@ public:
     void normalizer(const spatialdata::units::Nondimensional& dim);
 
     /** Set gravity field.
-       *Pr
+     *
      * @param[in] g Gravity field.
      */
     void gravityField(spatialdata::spatialdb::GravityField* const g);
