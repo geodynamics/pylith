@@ -38,9 +38,9 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputSolnPoints::OutputSolnPoints(void) :
-    _mesh(0),
-    _pointsMesh(0),
-    _interpolator(0)
+    _mesh(NULL),
+    _pointsMesh(NULL),
+    _interpolator(NULL)
 { // constructor
 } // constructor
 
@@ -64,8 +64,8 @@ pylith::meshio::OutputSolnPoints::deallocate(void)
         PetscErrorCode err = DMInterpolationDestroy(&_interpolator); PYLITH_CHECK_ERROR(err);
     } // if
 
-    _mesh = 0; // :TODO: Use shared pointer
-    delete _pointsMesh; _pointsMesh = 0;
+    _mesh = NULL; // :TODO: Use shared pointer
+    delete _pointsMesh; _pointsMesh = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -186,7 +186,7 @@ pylith::meshio::OutputSolnPoints::_open(const topology::Mesh& mesh,
 
     assert(_pointsMesh);
     assert(_writer);
-    _writer->open(*_pointsMesh, isInfo, _label.length() ? _label.c_str() : NULL, _labelId);
+    _writer->open(*_pointsMesh, isInfo);
 
     PYLITH_METHOD_END;
 } // open
@@ -196,8 +196,8 @@ pylith::meshio::OutputSolnPoints::_open(const topology::Mesh& mesh,
 // Append finite-element field to file.
 void
 pylith::meshio::OutputSolnPoints::_appendField(const PylithReal t,
-                                               topology::Field& field,
-                                               const topology::Mesh& mesh) {
+                                               pylith::topology::Field& field,
+                                               const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
 
 #if 1

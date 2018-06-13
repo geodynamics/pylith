@@ -42,7 +42,10 @@ class pylith::meshio::OutputSoln : public pylith::meshio::OutputManager {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
-    /// Constructor
+    /** Constructor
+     *
+     * @param[in] problem Problem to observe.
+     */
     OutputSoln(pylith::problems::Problem* const problem);
 
     /// Destructor

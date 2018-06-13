@@ -41,8 +41,11 @@ class pylith::meshio::OutputMaterial : public OutputManager {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
-    /// Constructor
-    OutputMaterial(void);
+    /** Constructor
+     *
+     * @param[in] integrator Integrator to observe.
+     */
+    OutputMaterial(pylith::feassemble::IntegratorPointwise* const integrator);
 
     /// Destructor
     ~OutputMaterial(void);
@@ -59,6 +62,9 @@ public:
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
 
+    /// Write solution at time step.
+    void _writeInfo(void);
+
     /** Write solution at time step.
      *
      * @param[in] t Current time.
@@ -68,6 +74,11 @@ protected:
     void _writeDataStep(const PylithReal t,
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
+
+    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected:
+
+    pylith::feassemble::IntegratorPointwise* const _integrator;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:

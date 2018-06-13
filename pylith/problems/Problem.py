@@ -62,7 +62,7 @@ def observerFactory(name):
     Factory for output items.
     """
     from pyre.inventory import facility
-    return facility(name, family="output_manager", factory=OutputSoln)
+    return facility(name, family="observer", factory=OutputSoln)
 
 
 class Problem(ObservedComponent, ModuleProblem):
@@ -109,8 +109,8 @@ class Problem(ObservedComponent, ModuleProblem):
     interfaces = pyre.inventory.facilityArray("interfaces", itemFactory=faultFactory, factory=EmptyBin)
     interfaces.meta['tip'] = "Interior surfaces with constraints or constitutive models."
 
-    from pylith.feassemble.SingleObserver import SingleObserver
-    observers = pyre.inventory.facilityArray("solution_observers", itemFactory=observerFactory, factory=SingleObserver)
+    from pylith.feassemble.SingleObserver import SingleSolnObserver
+    observers = pyre.inventory.facilityArray("solution_observers", itemFactory=observerFactory, factory=SingleSolnObserver)
     observers.meta['tip'] = "Observers (e.g., output) for solution."
 
     gravityField = pyre.inventory.facility("gravity_field", family="spatial_database", factory=NullComponent)

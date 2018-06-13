@@ -106,7 +106,7 @@ pylith::feassemble::ObservedComponent::notifyObservers(const PylithReal t,
 
     for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);
-        (*iter)->update(t, tindex, solution);
+        (*iter)->update(t, tindex, solution, infoOnly);
     } // for
 
     PYLITH_METHOD_END;

@@ -21,6 +21,7 @@
 #include "FieldOps.hh" // implementation of class methods
 
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
 #include "petscdm.h" // USES PetscDM
@@ -200,6 +201,12 @@ pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
         if (infoA.description.numComponents != infoB.description.numComponents) { isMatch = false; }
         if (infoA.fe.basisOrder != infoB.fe.basisOrder) { isMatch = false; }
     } // for
+
+    // Must match across all processors.
+    PetscInt matchLocal = isMatch;
+    PetscInt matchGlobal = 0;
+    PetscErrorCode err = MPI_Allreduce(&matchLocal, &matchGlobal, 1, MPIU_INT, MPI_LOR, fieldA.mesh().comm()); PYLITH_CHECK_ERROR(err);
+    isMatch = matchGlobal == 1;
 
     //PYLITH_JOURNAL_DEBUG("layoutsMatch return value="<<isMatch<<".");
     PYLITH_METHOD_RETURN(isMatch);

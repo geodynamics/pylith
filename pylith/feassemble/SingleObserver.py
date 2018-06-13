@@ -20,7 +20,7 @@
 from pylith.utils.PetscComponent import PetscComponent
 
 
-class SingleObserver(PetscComponent):
+class SingleSolnObserver(PetscComponent):
     """
     Python container with one observer.
 
@@ -43,11 +43,42 @@ class SingleObserver(PetscComponent):
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="singleobserver"):
+    def __init__(self, name="singlesolnobserver"):
         """
         Constructor.
         """
-        PetscComponent.__init__(self, name, facility="singleobserver")
+        PetscComponent.__init__(self, name, facility="singlesolnobserver")
+        return
+
+
+class SingleIntegratorObserver(PetscComponent):
+    """
+    Python container with one observer.
+
+    INVENTORY
+
+    Properties
+      - None
+
+    Facilities
+      - *observer* Observer.
+
+    FACTORY: N/A
+    """
+
+    import pyre.inventory
+
+    from pylith.meshio.OutputMaterial import OutputMaterial
+    output = pyre.inventory.facility("observer", family="observer", factory=OutputMaterial)
+    output.meta['tip'] = "Observer of subject."
+
+    # PUBLIC METHODS /////////////////////////////////////////////////////
+
+    def __init__(self, name="singlematerialobserver"):
+        """
+        Constructor.
+        """
+        PetscComponent.__init__(self, name, facility="singlematerialobserver")
         return
 
 

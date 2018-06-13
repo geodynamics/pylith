@@ -67,7 +67,9 @@ class IntegratorPointwise(ObservedComponent, ModuleIntegrator):
         Do pre-initialization setup.
         """
         self._createModuleObj()
+
         ObservedComponent.preinitialize(self)
+
         ModuleIntegrator.auxFieldDB(self, self.auxFieldDB)
         #ModuleIntegrator.output(self, self.outputManager)
 

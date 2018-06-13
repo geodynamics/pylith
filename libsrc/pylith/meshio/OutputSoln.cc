@@ -98,7 +98,7 @@ pylith::meshio::OutputSoln::_writeDataStep(const PylithReal t,
         } // if
 
         pylith::topology::Field* fieldBuffer = _getBuffer(solution, subfieldNames[iField].c_str()); assert(fieldBuffer);
-        _appendField(t, *fieldBuffer, fieldBuffer->mesh());
+        _appendField(t, fieldBuffer, fieldBuffer->mesh());
     } // for
     _closeDataStep();
 

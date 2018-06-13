@@ -226,38 +226,6 @@ pylith::meshio::OutputManager::_writeInfo(void) {
 
     // Empty method.
 
-#if 0
-    if (!_integrator) {
-        PYLITH_METHOD_END;
-    } // if
-
-    assert(_integrator);
-    const pylith::topology::Field* auxField = observer->auxField();
-    if (!auxField) {
-        PYLITH_METHOD_END;
-    } // if
-
-    assert(auxField);
-    const pylith::string_vector& subfieldNames = (1 == _infoFields.size() && std::string("all") == _infoFields[0]) ? auxField->subfieldNames() : _infoFields;
-
-    const bool isInfo = true;
-    _open(auxField->mesh(), isInfo, _label, _labelId);
-    _openTimeStep(0.0, auxField->mesh(), _label, _labelId);
-    const size_t numFields = subfieldNames.size();
-    for (size_t iField = 0; iField < numFields; iField++) {
-        if (!auxField->hasSubfield(subfieldNames[iField].c_str())) {
-            std::ostringstream msg;
-            msg << "Could not find field '" << subfieldNames[iField] << "' in auxiliary field for info output.";
-            throw std::runtime_error(msg.str());
-        } // if
-
-        pylith::topology::Field& fieldBuffer = this->getBuffer(*auxField, subfieldNames[iField].c_str());
-        _appendField(0.0, fieldBuffer);
-    } // for
-    _closeTimeStep();
-    _close();
-#endif
-
     PYLITH_METHOD_END;
 } // _writeInfo
 
@@ -344,12 +312,14 @@ pylith::meshio::OutputManager::_close(void) {
 // Append finite-element vertex field to file.
 void
 pylith::meshio::OutputManager::_appendField(const PylithReal t,
-                                            pylith::topology::Field& field,
+                                            pylith::topology::Field* field,
                                             const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("OutputManager::appendField(t="<<t<<", field="<<typeid(field).name()<<", mesh="<<typeid(mesh).name()<<")");
 
-    pylith::topology::Field* fieldFiltered = _fieldFilter->filter(&field);
+    assert(field);
+
+    pylith::topology::Field* fieldFiltered = _fieldFilter->filter(field);
     pylith::topology::Field* fieldDimensioned = _dimension(fieldFiltered);assert(fieldDimensioned);
 
     const int basisOrder = _basisOrder(*fieldDimensioned);
@@ -366,12 +336,51 @@ pylith::meshio::OutputManager::_appendField(const PylithReal t,
         PYLITH_COMPONENT_ERROR(
             "Unsupported basis order for output ("
             << basisOrder <<"). Use FieldFilterProject with basis order of 0 or 1. Skipping output of '"
-            << field.label() << "' field."
+            << field->label() << "' field."
             );
     } // switch
 
     PYLITH_METHOD_END;
 } // _appendField
+
+// ----------------------------------------------------------------------
+// Names of information fields for output.
+pylith::string_vector
+pylith::meshio::OutputManager::_infoNamesExpanded(const pylith::topology::Field* auxField) const {
+    PYLITH_METHOD_BEGIN;
+
+    if (auxField && (1 == _infoFields.size()) && (std::string("all") == _infoFields[0])) {
+        PYLITH_METHOD_RETURN(auxField->subfieldNames());
+    } // if
+
+    PYLITH_METHOD_RETURN(_infoFields);
+} // _infoNamesExpanded
+
+// ----------------------------------------------------------------------
+// Names of data fields for output.
+pylith::string_vector
+pylith::meshio::OutputManager::_dataNamesExpanded(const pylith::topology::Field& solution,
+                                                  const pylith::topology::Field* auxField,
+                                                  const pylith::topology::Field* derivedField) const {
+    PYLITH_METHOD_BEGIN;
+
+    if ((1 == _dataFields.size()) && (std::string("all") == _dataFields[0])) {
+        pylith::string_vector dataNames;
+        dataNames = solution.subfieldNames();
+
+        if (derivedField) {
+            const pylith::string_vector& derivedSubfields = derivedField->subfieldNames();
+            const size_t numAdd = derivedSubfields.size();
+            dataNames.resize(dataNames.size() + numAdd);
+            for (size_t iAdd = 0, iName = dataNames.size(); iAdd < numAdd; ++iAdd) {
+                dataNames[iName] = derivedSubfields[iAdd];
+            } // for
+            PYLITH_METHOD_RETURN(dataNames);
+        } // if
+    } // if
+
+    PYLITH_METHOD_RETURN(_dataFields);
+} // _dataNamesExpanded
 
 // ----------------------------------------------------------------------
 /** Get buffer for field.
@@ -517,4 +526,12 @@ pylith::meshio::OutputManager::_basisOrder(const pylith::topology::Field& field)
     PYLITH_METHOD_RETURN(basisOrder);
 } // _basisOrder
 
+// ----------------------------------------------------------------------
+// TEMPOARY Set label and label id.
+void
+pylith::meshio::OutputManager::_temporarySetLabel(const char* label,
+                                                  const PylithInt labelId) {
+    _label = label;
+    _labelId = labelId;
+} // _temporarySetLabel
 // End of file

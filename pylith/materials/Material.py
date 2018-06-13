@@ -24,6 +24,19 @@ from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
 from .materials import Material as ModuleMaterial
 
 
+# ITEM FACTORIES ///////////////////////////////////////////////////////
+
+def observerFactory(name):
+    """
+    Factory for output items.
+    """
+    from pyre.inventory import facility
+    from pylith.meshio.OutputMaterial import OutputMaterial
+    return facility(name, family="observer", factory=OutputMaterial)
+
+
+# VALIDATORS ///////////////////////////////////////////////////////////
+
 def validateLabel(value):
     """
     Validate descriptive label.
@@ -57,9 +70,9 @@ class Material(IntegratorPointwise, ModuleMaterial):
     label = pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Descriptive label for material."
 
-    #from pylith.meshio.OutputMaterial import OutputMaterial
-    #outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputMaterial)
-    #outputManager.meta['tip'] = "Output manager for material information."
+    from pylith.feassemble.SingleObserver import SingleIntegratorObserver
+    observers = pyre.inventory.facilityArray("observers", itemFactory=observerFactory, factory=SingleIntegratorObserver)
+    observers.meta['tip'] = "Observers (e.g., output) for material."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -78,6 +91,9 @@ class Material(IntegratorPointwise, ModuleMaterial):
 
         ModuleMaterial.id(self, self.materialId)
         ModuleMaterial.label(self, self.label)
+
+        for observer in self.observers.components():
+            observer.preinitialize(self)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

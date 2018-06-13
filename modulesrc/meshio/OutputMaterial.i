@@ -30,8 +30,11 @@ namespace pylith {
 	// PUBLIC METHODS ///////////////////////////////////////////////
 	public :
 
-	    /// Constructor
-	    OutputMaterial(void);
+	    /** Constructor
+	     *
+	     * @param[in] integrator Integrator to observe.
+	     */
+	    OutputMaterial(pylith::feassemble::IntegratorPointwise* const integrator);
 
 	    /// Destructor
 	    ~OutputMaterial(void);
@@ -42,22 +45,8 @@ namespace pylith {
 	    /** Verify configuration.
 	     *
 	     * @param[in] solution Solution field.
-	     * @param[in] auxField Auxiliary field.
 	     */
-	    void verifyConfiguration(const pylith::topology::Field& solution,
-				     const pylith::topology::Field& auxField) const;
-	    
-	    /** Write solution at time step.
-	     *
-	     * @param[in] t Current time.
-	     * @param[in] tindex Current time step.
-	     * @param[in] solution Solution at time t.
-	     * @param[in] auxField Auxiliary field.
-	     */
-	    void writeTimeStep(const PylithReal t,
-			       const PylithInt tindex,
-			       const pylith::topology::Field& solution,
-			       const pylith::topology::Field& auxField);
+	    void verifyConfiguration(const pylith::topology::Field& solution) const;
 	    
 	}; // OutputMaterial
 

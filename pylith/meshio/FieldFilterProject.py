@@ -41,7 +41,7 @@ class FieldFilterProject(FieldFilter, ModuleFieldFilterProject):
 
     import pyre.inventory
 
-    basisOrder = pyre.inventory.int("basis_order", default=1, validator=pyre.inventory.greater(0))
+    basisOrder = pyre.inventory.int("basis_order", default=1, validator=pyre.inventory.greaterEqual(0))
     basisOrder.meta["tip"] = "Basis order of projected field."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

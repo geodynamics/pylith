@@ -123,7 +123,21 @@ public:
 protected:
 
     /// Write diagnostic information.
+    virtual
     void _writeInfo(void);
+
+    /** Prepare for output.
+     *
+     * @param[in] mesh Finite-element mesh object.
+     * @param[in] isInfo True if only writing info values.
+     */
+    virtual
+    void _open(const pylith::topology::Mesh& mesh,
+               const bool isInfo);
+
+    /// Close output files.
+    virtual
+    void _close(void);
 
     /** Prepare for output at this solution step.
      *
@@ -149,19 +163,6 @@ protected:
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
 
-    /** Prepare for output.
-     *
-     * @param[in] mesh Finite-element mesh object.
-     * @param[in] isInfo True if only writing info values.
-     */
-    virtual
-    void _open(const pylith::topology::Mesh& mesh,
-               const bool isInfo);
-
-    /// Close output files.
-    virtual
-    void _close(void);
-
     /** Append finite-element vertex field to file.
      *
      * @param[in] t Time associated with field.
@@ -170,8 +171,29 @@ protected:
      */
     virtual
     void _appendField(const PylithReal t,
-                      pylith::topology::Field& field,
+                      pylith::topology::Field* field,
                       const pylith::topology::Mesh& mesh);
+
+    /** Names of information fields for output.
+     *
+     * Expand "all" into list of actual fields.
+     *
+     * @param[in] auxField Auxiliary field.
+     */
+    pylith::string_vector _infoNamesExpanded(const pylith::topology::Field* auxField) const;
+
+    /** Names of data fields for output.
+     *
+     * Expand "all" into list of actual fields in the solution field and derived field. We do not include subfields of
+     * the auxiliary field, because most are physical parameters that do not change.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] auxField Auxiliary field.
+     * @param[in] derivedField Derived field.
+     */
+    pylith::string_vector _dataNamesExpanded(const pylith::topology::Field& solution,
+                                             const pylith::topology::Field* auxField,
+                                             const pylith::topology::Field* derivedField) const;
 
     /** Get buffer for field.
      *
@@ -198,6 +220,14 @@ protected:
      */
     int _basisOrder(const pylith::topology::Field& field);
 
+    /** TEMPOARY Set label and label id.
+     *
+     * @param[in] label Name of label.
+     * @param[in] labelId Label value.
+     */
+    void _temporarySetLabel(const char* label,
+                            const PylithInt labelId);
+
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
 
@@ -206,15 +236,15 @@ protected:
     FieldFilter* _fieldFilter;   ///< Filter applied to fields.
     OutputTrigger* _trigger; ///< Trigger for deciding how often to write output.
 
-    // :TODO: Remove _label and _labelId once materials use their own PetscDM.
-    std::string _label; ///< Name of label defining cells to include in output (=0 means use all cells in mesh).
-    PylithInt _labelId; ///< Value of label defining which cells to include.
-
     pylith::string_vector _infoFields;
     pylith::string_vector _dataFields;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
+
+    // :TODO: Remove _label and _labelId once materials use their own PetscDM.
+    std::string _label; ///< Name of label defining cells to include in output (=0 means use all cells in mesh).
+    PylithInt _labelId; ///< Value of label defining which cells to include.
 
     static const char* _pyreComponent; ///< Name of Pyre component.
 

@@ -48,11 +48,11 @@ class OutputMaterial(OutputManager, ModuleOutputMaterial):
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
-    def _createModuleObj(self):
+    def _createModuleObj(self, integrator):
         """
         Create handle to C++ object.
         """
-        ModuleOutputMaterial.__init__(self)
+        ModuleOutputMaterial.__init__(self, integrator)
         return
 
 
