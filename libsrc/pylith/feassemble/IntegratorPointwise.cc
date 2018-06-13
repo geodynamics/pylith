@@ -170,8 +170,8 @@ pylith::feassemble::IntegratorPointwise::prestep(const PylithReal t,
 // Update auxiliary fields at end of time step.
 void
 pylith::feassemble::IntegratorPointwise::poststep(const PylithReal t,
-                                                  const PylithReal dt,
                                                   const PylithInt tindex,
+                                                  const PylithReal dt,
                                                   const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("poststep(t="<<t<<", dt="<<dt<<") empty method");

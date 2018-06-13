@@ -149,8 +149,8 @@ public:
      */
     virtual
     void poststep(const PylithReal t,
-                  const PylithReal dt,
                   const PylithInt tindex,
+                  const PylithReal dt,
                   const pylith::topology::Field& solution);
 
 
