@@ -21,6 +21,7 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	IntegratorPointwise.hh \
+	IntegratorBoundary.hh \
 	ConstraintPointwise.hh \
 	Observer.hh \
 	ObservedComponent.hh \

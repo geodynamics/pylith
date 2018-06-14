@@ -46,6 +46,19 @@ class pylith::feassemble::IntegratorPointwise :
     public pylith::feassemble::ObservedComponent {
     friend class TestIntegratorPointwise;   // unit testing
 
+    // PUBLIC ENUMS /////////////////////////////////////////////////////////
+public:
+
+enum FEKernelKeys {
+    KERNELS_RHS_RESIDUAL=0,
+    KERNELS_LHS_RESIDUAL=1,
+    KERNELS_RHS_JACOBIAN=2,
+    KERNELS_LHS_JACOBIAN=3,
+    KERNELS_LHS_JACOBIAN_LUMPEDINV=4,
+    KERNELS_UPDATE_STATE_VARS=5,
+    KERNELS_DERIVED_FIELDS=6,
+};
+
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 

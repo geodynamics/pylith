@@ -31,16 +31,17 @@ namespace pylith {
     namespace feassemble {
 
         class IntegratorPointwise; ///< Integration of terms in governing equation.
+        class IntegratorBoundary; ///< Integration of terms over external boundary.
 
         class ConstraintPointwise; ///< Constrained degrees of freedom.
 
 
         class AuxiliaryFactory; ///< Creates auxiliary subfields.
 
-	class Observer; ///< Observer of subject.
-	class ObservedComponent; ///< Subject being observed.
+        class Observer; ///< Observer of subject.
+        class ObservedComponent; ///< Subject being observed.
         class IntegratorObserver; //< Observes integrator.
-	
+
     } // feassemble
 } // pylith
 

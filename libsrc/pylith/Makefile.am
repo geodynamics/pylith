@@ -50,6 +50,7 @@ libpylith_la_SOURCES = \
 	faults/KinSrcAuxiliaryFactory.cc \
 	faults/TopologyOps.cc \
 	feassemble/IntegratorPointwise.cc \
+	feassemble/IntegratorBoundary.cc \
 	feassemble/ConstraintPointwise.cc \
 	feassemble/Observer.cc \
 	feassemble/ObservedComponent.cc \

@@ -133,20 +133,26 @@ protected:
      */
     void _auxFieldSetup(const pylith::topology::Field& solution);
 
-    /** Set kernels for RHS residual G(t,s).
-     *
-     * Potentially, there are g0 and g1 kernels for each equation. If no
-     * kernel is needed, then set the kernel function to NULL.
-     *
-     * @param solution Solution field.
-     */
-    void _setFEKernelsRHSResidual(const pylith::topology::Field& solution) const;
-
     /** Get factory for setting up auxliary fields.
      *
      * @returns Factor for auxiliary fields.
      */
     pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
+
+    /** Has point-wise functions (kernels) for integration/projection?
+     *
+     * @param[in] kernelsKey Set of kernels.
+     * @returns True if we have kernels for that operation, otherwise false.
+     */
+    bool _hasFEKernels(const IntegratorPointwise::FEKernelKeys kernelsKey) const;
+
+    /** Set point-wise functions (kernels) for integration/projection.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] kernelsKey Set of kernels.
+     */
+    void _setFEKernels(const pylith::topology::Field& solution,
+                       const IntegratorPointwise::FEKernelKeys kernelsKey) const;
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
