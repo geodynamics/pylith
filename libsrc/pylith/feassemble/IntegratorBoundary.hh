@@ -95,6 +95,7 @@ public:
      *
      * @param[in] solution Solution field.
      */
+    virtual
     void verifyConfiguration(const pylith::topology::Field& solution) const;
 
     /** Initialize boundary condition.
@@ -226,7 +227,7 @@ protected:
      * @returns True if we have kernels for that operation, otherwise false.
      */
     virtual
-    bool _hasFEKernels(const IntegratorPointwise::FEKernelKeys kernelsKey) const = 0;
+    bool _hasFEKernels(const pylith::feassemble::IntegratorPointwise::FEKernelKeys kernelsKey) const = 0;
 
     /** Set point-wise functions (kernels) for integration/projection.
      *
@@ -235,7 +236,7 @@ protected:
      */
     virtual
     void _setFEKernels(const pylith::topology::Field& solution,
-                       const IntegratorPointwise::FEKernelKeys kernelsKey) const = 0;
+                       const pylith::feassemble::IntegratorPointwise::FEKernelKeys kernelsKey) const = 0;
 
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////

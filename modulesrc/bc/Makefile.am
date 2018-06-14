@@ -31,10 +31,12 @@ swig_sources = \
 	../feassemble/ObservedComponent.i \
 	../feassemble/ConstraintPointwise.i \
 	../feassemble/IntegratorPointwise.i \
+	../feassemble/IntegratorBoundary.i \
 	Dirichlet.i \
 	DirichletTimeDependent.i \
 	Neumann.i \
-	NeumannTimeDependent.i
+	NeumannTimeDependent.i \
+	AbsorbingDampers.i
 
 swig_generated = \
 	bc_wrap.cxx \

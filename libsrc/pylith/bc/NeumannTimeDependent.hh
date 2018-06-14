@@ -144,7 +144,7 @@ protected:
      * @param[in] kernelsKey Set of kernels.
      * @returns True if we have kernels for that operation, otherwise false.
      */
-    bool _hasFEKernels(const IntegratorPointwise::FEKernelKeys kernelsKey) const;
+    bool _hasFEKernels(const pylith::feassemble::IntegratorPointwise::FEKernelKeys kernelsKey) const;
 
     /** Set point-wise functions (kernels) for integration/projection.
      *
@@ -152,7 +152,7 @@ protected:
      * @param[in] kernelsKey Set of kernels.
      */
     void _setFEKernels(const pylith::topology::Field& solution,
-                       const IntegratorPointwise::FEKernelKeys kernelsKey) const;
+                       const pylith::feassemble::IntegratorPointwise::FEKernelKeys kernelsKey) const;
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:

@@ -24,6 +24,7 @@
 #include "pylith/bc/DirichletTimeDependent.hh"
 #include "pylith/bc/Neumann.hh"
 #include "pylith/bc/NeumannTimeDependent.hh"
+#include "pylith/bc/AbsorbingDampers.hh"
 %}
 
 
@@ -53,12 +54,14 @@
 %include "../feassemble/ObservedComponent.i"
 %include "../feassemble/ConstraintPointwise.i"
 %include "../feassemble/IntegratorPointwise.i"
+%include "../feassemble/IntegratorBoundary.i"
 
 %include "BoundaryCondition.i"
 %include "Dirichlet.i"
 %include "DirichletTimeDependent.i"
 %include "Neumann.i"
 %include "NeumannTimeDependent.i"
+%include "AbsorbingDampers.i"
 
 
 

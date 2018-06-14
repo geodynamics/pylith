@@ -25,9 +25,8 @@
 #define pylith_bc_neumann_hh
 
 // Include directives ---------------------------------------------------
+#include "pylith/bc/bcfwd.hh" // forward delcaration
 #include "pylith/feassemble/IntegratorBoundary.hh" // ISA IntegratorBoundary
-
-#include "pylith/bc/bcfwd.hh" // forward delcarations
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
@@ -43,9 +42,11 @@ public:
     Neumann(void);
 
     /// Destructor.
+    virtual
     ~Neumann(void);
 
     /// Deallocate PETSc and local data structures.
+    virtual
     void deallocate(void);
 
     /** Name of scale associated with Neumann boundary

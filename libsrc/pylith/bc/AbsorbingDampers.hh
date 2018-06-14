@@ -25,16 +25,14 @@
 #define pylith_bc_absorbingdampers_hh
 
 // Include directives ---------------------------------------------------
-#include "BoundaryCondition.hh" // ISA BoundaryCondition
-#include "pylith/feassemble/IntegratorPointwise.hh" // ISA IntegratorPointwise
+#include "pylith/bc/bcfwd.hh" // forward delcaration
+#include "pylith/feassemble/IntegratorBoundary.hh" // ISA IntegratorBoundary
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
 // AbsorbingDampers ----------------------------------------------------
 /// @brief AbsorbingDampers (e.g., traction) boundary conditions.
-class pylith::bc::AbsorbingDampers :
-    public pylith::bc::BoundaryCondition,
-    public pylith::feassemble::IntegratorPointwise {
+class pylith::bc::AbsorbingDampers : public pylith::feassemble::IntegratorBoundary {
     friend class TestAbsorbingDampers;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -55,87 +53,6 @@ public:
      */
     void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-    /** Initialize boundary condition.
-     *
-     * @param[in] solution Solution field.
-     */
-    void initialize(const pylith::topology::Field& solution);
-
-    /** Compute RHS residual for G(t,s).
-     *
-     * @param[out] residual Field for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
-     */
-    void computeRHSResidual(pylith::topology::Field* residual,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution);
-
-    /** Compute RHS Jacobian and preconditioner for G(t,s).
-     *
-     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
-     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
-     */
-    void computeRHSJacobian(PetscMat jacobianMat,
-                            PetscMat preconMat,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution);
-
-    /** Compute LHS residual for F(t,s,\dot{s}).
-     *
-     * @param[out] residual Field for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
-     * @param[in] solutionDot Field with time derivative of current trial solution.
-     */
-    void computeLHSResidual(pylith::topology::Field* residual,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution,
-                            const pylith::topology::Field& solutionDot);
-
-    /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
-     *
-     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
-     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] tshift Scale for time derivative.
-     * @param[in] solution Field with current trial solution.
-     * @param[in] solutionDot Field with time derivative of current trial solution.
-     */
-    void computeLHSJacobianImplicit(PetscMat jacobianMat,
-                                    PetscMat precondMat,
-                                    const PylithReal t,
-                                    const PylithReal dt,
-                                    const PylithReal tshift,
-                                    const pylith::topology::Field& solution,
-                                    const pylith::topology::Field& solutionDot);
-
-
-    /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
-     *
-     * @param[out] jacobianInv Inverse of lumped Jacobian as a field.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] tshift Scale for time derivative.
-     * @param[in] solution Field with current trial solution.
-     */
-    void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                     const PylithReal t,
-                                     const PylithReal dt,
-                                     const PylithReal tshift,
-                                     const pylith::topology::Field& solution);
-
-
-
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
@@ -153,33 +70,32 @@ protected:
      */
     void _auxFieldSetup(const pylith::topology::Field& solution);
 
-    /** Set kernels for RHS residual G(t,s).
-     *
-     * Potentially, there are g0 and g1 kernels for each equation. If no
-     * kernel is needed, then set the kernel function to NULL.
-     *
-     * @param solution Solution field.
-     */
-    void _setFEKernelsRHSResidual(const pylith::topology::Field& solution) const;
-
     /** Get factory for setting up auxliary fields.
      *
      * @returns Factor for auxiliary fields.
      */
     pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
 
+    /** Has point-wise functions (kernels) for integration/projection?
+     *
+     * @param[in] kernelsKey Set of kernels.
+     * @returns True if we have kernels for that operation, otherwise false.
+     */
+    bool _hasFEKernels(const pylith::feassemble::IntegratorPointwise::FEKernelKeys kernelsKey) const;
 
-    // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected:
+    /** Set point-wise functions (kernels) for integration/projection.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] kernelsKey Set of kernels.
+     */
+    void _setFEKernels(const pylith::topology::Field& solution,
+                       const pylith::feassemble::IntegratorPointwise::FEKernelKeys kernelsKey) const;
 
-    pylith::topology::Mesh* _boundaryMesh;   ///< Boundary mesh.
-    pylith::topology::FieldBase::Description _description; ///< Description of field associated with BC.
-    PylithReal _refDir1[3]; ///< First choice reference direction used to compute boundary tangential directions.
-    PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
 
+    pylith::topology::FieldBase::Description _description; ///< Description of field associated with BC.
     pylith::bc::AbsorbingDampersAuxiliaryFactory* _auxAbsorbingDampersFactory; ///< Factory for auxiliary subfields.
     static const char* _pyreComponent; ///< Name of Pyre component.
 

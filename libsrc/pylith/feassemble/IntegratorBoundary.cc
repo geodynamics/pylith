@@ -85,6 +85,53 @@ pylith::feassemble::IntegratorBoundary::deallocate(void) {
 
 
 // ----------------------------------------------------------------------
+// Set mesh label associated with boundary condition surface.
+void
+pylith::feassemble::IntegratorBoundary::label(const char* value) {
+    if (strlen(value) == 0) {
+        throw std::runtime_error("Empty string given for boundary condition label.");
+    } // if
+
+    _label = value;
+} // label
+
+
+// ----------------------------------------------------------------------
+// Get mesh label associated with boundary condition surface.
+const char*
+pylith::feassemble::IntegratorBoundary::label(void) const {
+    return _label.c_str();
+} // label
+
+
+// ----------------------------------------------------------------------
+// Set name of field in solution to constrain.
+void
+pylith::feassemble::IntegratorBoundary::field(const char* value) {
+    PYLITH_METHOD_BEGIN;
+
+    if (strlen(value) == 0) {
+        throw std::runtime_error("Empty string given for name of solution field for boundary condition.");
+    } // if
+    _field = value;
+
+    PYLITH_METHOD_END;
+}  // field
+
+
+// ----------------------------------------------------------------------
+// Get name of field in solution to constrain.
+const char*
+pylith::feassemble::IntegratorBoundary::field(void) const {
+    journal::debug_t debug("boundarycondition");
+    debug << journal::at(__HERE__)
+          << "BoundaryCondition::field()" << journal::endl;
+
+    return _field.c_str();
+} // field
+
+
+// ----------------------------------------------------------------------
 // Set first choice for reference direction to discriminate among tangential directions in 3-D.
 void
 pylith::feassemble::IntegratorBoundary::refDir1(const PylithReal vec[3]) {

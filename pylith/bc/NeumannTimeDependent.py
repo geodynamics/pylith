@@ -24,11 +24,9 @@ from .bc import NeumannTimeDependent as ModuleNeumannTimeDependent
 from pylith.utils.NullComponent import NullComponent
 
 
-class NeumannTimeDependent(Neumann,
-                           ModuleNeumannTimeDependent):
+class NeumannTimeDependent(Neumann, ModuleNeumannTimeDependent):
     """
-    Python object for managing a time-dependent Neumann (prescribed values)
-    boundary condition.
+    Python object for managing a time-dependent Neumann (natural) boundary condition.
 
     INVENTORY
 
@@ -38,7 +36,7 @@ class NeumannTimeDependent(Neumann,
       - *use_time_history* Use time history term in time-dependent expression.
 
     Facilities
-      - None
+      - *auxiliary_subfields* Discretization of time-dependent Neumann parameters.
 
     FACTORY: boundary_condition
     """
@@ -60,7 +58,7 @@ class NeumannTimeDependent(Neumann,
     from .AuxFieldsTimeDependent import AuxFieldsTimeDependent
     from pylith.topology.AuxSubfield import subfieldFactory
     auxSubfields = pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsTimeDependent)
-    auxSubfields.meta['tip'] = "Discretization of constraint parameters."
+    auxSubfields.meta['tip'] = "Discretization of time-dependent Neumann parameters."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

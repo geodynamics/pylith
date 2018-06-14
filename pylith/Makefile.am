@@ -40,6 +40,7 @@ nobase_pkgpyexec_PYTHON = \
 	faults/SingleRupture.py \
 	feassemble/__init__.py \
 	feassemble/IntegratorPointwise.py \
+	feassemble/IntegratorBoundary.py \
 	feassemble/ConstraintPointwise.py \
 	feassemble/Observer.py \
 	feassemble/SingleObserver.py \

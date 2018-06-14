@@ -137,14 +137,15 @@ pylith::meshio::OutputMaterial::_writeInfo(void) {
     const pylith::string_vector& infoNames = _infoNamesExpanded(auxField);
 
     const bool isInfo = true;
-    _open(auxField->mesh(), isInfo);
-    _openDataStep(0.0, auxField->mesh());
+    const pylith::topology::Mesh& domainMesh = _integrator->domainMesh();
+    _open(domainMesh, isInfo);
+    _openDataStep(0.0, domainMesh);
 
     const size_t numInfoFields = infoNames.size();
     for (size_t i = 0; i < numInfoFields; i++) {
         if (auxField->hasSubfield(infoNames[i].c_str())) {
             pylith::topology::Field* fieldBuffer = _getBuffer(*auxField, infoNames[i].c_str()); assert(fieldBuffer);
-            _appendField(0.0, fieldBuffer, fieldBuffer->mesh());
+            _appendField(0.0, fieldBuffer, domainMesh);
         } else {
             std::ostringstream msg;
             msg << "Could not find field '" << infoNames[i] << "' in auxiliary field for info output.";
@@ -171,22 +172,23 @@ pylith::meshio::OutputMaterial::_writeDataStep(const PylithReal t,
     assert(_integrator);
     const pylith::topology::Field* auxField = _integrator->auxField();
     const pylith::topology::Field* derivedField = _integrator->derivedField();
+    const pylith::topology::Mesh& domainMesh = _integrator->domainMesh();
 
     const pylith::string_vector& dataNames = _dataNamesExpanded(solution, auxField, derivedField);
 
-    _openDataStep(t, solution.mesh());
+    _openDataStep(t, domainMesh);
 
     const size_t numDataFields = dataNames.size();
     for (size_t i = 0; i < numDataFields; i++) {
         if (solution.hasSubfield(dataNames[i].c_str())) {
             pylith::topology::Field* fieldBuffer = _getBuffer(solution, dataNames[i].c_str()); assert(fieldBuffer);
-            _appendField(t, fieldBuffer, fieldBuffer->mesh());
+            _appendField(t, fieldBuffer, domainMesh);
         } else if (auxField && auxField->hasSubfield(dataNames[i].c_str())) {
             pylith::topology::Field* fieldBuffer = _getBuffer(*auxField, dataNames[i].c_str()); assert(fieldBuffer);
-            _appendField(t, fieldBuffer, fieldBuffer->mesh());
+            _appendField(t, fieldBuffer, domainMesh);
         } else if (derivedField && derivedField->hasSubfield(dataNames[i].c_str())) {
             pylith::topology::Field* fieldBuffer = _getBuffer(*derivedField, dataNames[i].c_str()); assert(fieldBuffer);
-            _appendField(t, fieldBuffer, fieldBuffer->mesh());
+            _appendField(t, fieldBuffer, domainMesh);
         } else {
             std::ostringstream msg;
             msg << "Could not find field '" << dataNames[i] << "' for data output.";

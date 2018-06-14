@@ -130,7 +130,7 @@ pylith::materials::Material::label(void) const {
 // Get mesh associated with integrator domain.
 const pylith::topology::Mesh&
 pylith::materials::Material::domainMesh(void) const {
-    assert(!_auxField);
+    assert(_auxField);
     return _auxField->mesh();
 } // domainMesh
 
