@@ -36,7 +36,7 @@ one = sympy.sympify(1)
 two = sympy.sympify(2)
 three = sympy.sympify(3)
 
-f = open(outFile, 'w')
+out = open(outFile, 'w')
 
 # ----------------------------------------------------------------------
 def printTensor(tensor, tensorName):
@@ -54,12 +54,12 @@ def printTensor(tensor, tensorName):
     if (rank == 2):
       for j in range(ndim):
         line = tensorName + '_%d%d = %s\n' % (i+1, j+1, simpTensor[i,j])
-        f.write(line)
+        out.write(line)
     else:
       line = tensorName + '_%d = %s\n' % (i+1, simpTensor[i])
-      f.write(line)
+      out.write(line)
 
-  f.write('\n')
+  out.write('\n')
 
   return
 # ----------------------------------------------------------------------
@@ -198,18 +198,18 @@ equil = sympy.tensor.array.tensorcontraction(equilDeriv, (1,2))
 
 # Write results to file.
 print "Writing solution variables:"
-f.write('Solution variables:\n')
+out.write('Solution variables:\n')
 printTensor(U, 's')
 printTensor(Udot, 's_t')
 printTensor(defGrad, 's_x')
 
-f.write('Solution variables (perturbed solution):\n')
+out.write('Solution variables (perturbed solution):\n')
 printTensor(UPert, 'sPert')
 printTensor(UdotPert, 'sPert_t')
 printTensor(defGradPert, 'sPert_x')
 
 print "Writing auxiliary variables:"
-f.write('\nAuxiliary variables:\n')
+out.write('\nAuxiliary variables:\n')
 printTensor(strain, 'totalStrain')
 printTensor(strainRate, 'totalStrain_t')
 printTensor(visStrain_1, 'visStrain_1')
@@ -219,7 +219,7 @@ printTensor(visStrainRate_2, 'visStrain_2_t')
 printTensor(visStrain_3, 'visStrain_3')
 printTensor(visStrainRate_3, 'visStrain_3_t')
 
-f.write('\nAuxiliary variables (perturbed solution):\n')
+out.write('\nAuxiliary variables (perturbed solution):\n')
 printTensor(strainPert, 'totalStrainPert')
 printTensor(strainRatePert, 'totalStrainPert_t')
 printTensor(visStrain_1Pert, 'visStrainPert_1')
@@ -230,11 +230,11 @@ printTensor(visStrain_3Pert, 'visStrainPert_3')
 printTensor(visStrainRate_3Pert, 'visStrainPert_3_t')
 
 print "Writing equilibrium equations:"
-f.write('\nEquilibrium:\n')
+out.write('\nEquilibrium:\n')
 printTensor(equil, 'equil')
 
 print "Writing additional variables:"
-f.write('\nAdditional:\n')
+out.write('\nAdditional:\n')
 printTensor(devStrain, 'devStrain')
 printTensor(devStrainRate, 'devStrain_t')
 printTensor(stress, 'stress')
@@ -243,7 +243,7 @@ printTensor(visStrainFunc_1, 'visStrainFunc_1')
 printTensor(visStrainFunc_2, 'visStrainFunc_2')
 printTensor(visStrainFunc_3, 'visStrainFunc_3')
 
-f.write('\nAdditional (perturbed solution):\n')
+out.write('\nAdditional (perturbed solution):\n')
 printTensor(devStrainPert, 'devStrainPert')
 printTensor(devStrainRatePert, 'devStrainPert_t')
 printTensor(stressPert, 'stressPert')
@@ -252,4 +252,4 @@ printTensor(visStrainFunc_1Pert, 'visStrainFuncPert_1')
 printTensor(visStrainFunc_2Pert, 'visStrainFuncPert_2')
 printTensor(visStrainFunc_3Pert, 'visStrainFuncPert_3')
 
-f.close()
+out.close()

@@ -50,6 +50,8 @@ namespace pylith {
         class Elasticity3D;
         class IsotropicLinearElasticity3D;
 
+        class IsotropicLinearMaxwell3D;
+
         class FaultCohesiveKin;
 
     } // fekernels

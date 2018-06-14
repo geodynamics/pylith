@@ -14,7 +14,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# Initial attempt to compute governing equations for Maxwell plane strain
+# Initial attempt to compute governing equations for Maxwell 3D
 # material and then run assumed solution through these equations.
 # PREREQUISITES:  sympy
 # ----------------------------------------------------------------------
@@ -26,10 +26,10 @@ import sympy.tensor
 import sympy.tensor.array
 # ----------------------------------------------------------------------
 ndim = 3
-numComps = 2
+numComps = 3
 ndimRange = range(ndim)
 numCompsRange = range(numComps)
-outFile = 'mms_maxplanestrain.txt'
+outFile = 'mms_max3d.txt'
 
 zero = sympy.sympify(0)
 one = sympy.sympify(1)
@@ -76,17 +76,21 @@ dt = sympy.symbols('dt')
  maxwellTime) = sympy.symbols('bulkModulus shearModulus maxwellTime')
 
 # Assumed displacements:  second-order spatial variation for now.
-a, b, c, d, e = sympy.symbols('a b c d e')
-u1 = (x * x * a + two * x * y * b + y * y * c) * sympy.exp(-t/maxwellTime)
-u2 = (x * x * c + two * y * x * b + y * y * a) * sympy.exp(-t/maxwellTime)
-u3 = zero
+a, b, c, d, e, f, g = sympy.symbols('a b c d e f g')
+u1 = (x * x * a + two * x * y * b + y * y * c + two * x * z * d + two * y * z * e + z * z * f) * \
+     sympy.exp(-t/maxwellTime)
+u2 = (x * x * c + two * x * y * b + y * y * a + two * x * z * d + two * y * z * e + z * z * f) * \
+     sympy.exp(-t/maxwellTime)
+u3 = (x * x * f + two * x * y * b + y * y * c + two * x * z * d + two * y * z * e + z * z * a) * \
+     sympy.exp(-t/maxwellTime)
 U = sympy.tensor.array.Array([u1, u2, u3])
 Udot = U.diff(t)
 
 # Perturbed solution:
-u1Pert = u1 + d * x
-u2Pert = u2 + d * x
-UPert = sympy.tensor.array.Array([u1Pert, u2Pert, u3])
+u1Pert = u1 + g * x
+u2Pert = u2 + g * x
+u3Pert = u3 + g * x
+UPert = sympy.tensor.array.Array([u1Pert, u2Pert, u3Pert])
 UdotPert = UPert.diff(t)
 
 # Deformation gradient, transpose, and strain tensor.

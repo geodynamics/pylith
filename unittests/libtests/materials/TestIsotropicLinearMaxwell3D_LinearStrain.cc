@@ -18,9 +18,9 @@
 
 #include <portinfo>
 
-#include "TestIsotropicLinearMaxwellPlaneStrain.hh" // Implementation of cases
+#include "TestIsotropicLinearMaxwell3D.hh" // Implementation of cases
 
-#include "pylith/materials/IsotropicLinearMaxwellPlaneStrain.hh" // USES IsotropicLinearMaxwellPlaneStrain
+#include "pylith/materials/IsotropicLinearMaxwell3D.hh" // USES IsotropicLinearMaxwell3D
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -30,32 +30,33 @@
 // forward declarations
 namespace pylith {
     namespace materials {
-        class TestIsotropicLinearMaxwellPlaneStrain_LinearStrain;
+        class TestIsotropicLinearMaxwell3D_LinearStrain;
 
-        class TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP1;
-        class TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP2;
-        class TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP3;
-        class TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP4;
+        class TestIsotropicLinearMaxwell3D_LinearStrain_TetP1;
+        class TestIsotropicLinearMaxwell3D_LinearStrain_TetP2;
+        class TestIsotropicLinearMaxwell3D_LinearStrain_TetP3;
+        class TestIsotropicLinearMaxwell3D_LinearStrain_TetP4;
 
-        class TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ1;
-        class TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ2;
-        class TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ3;
-        class TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ4;
+        class TestIsotropicLinearMaxwell3D_LinearStrain_HexQ1;
+        class TestIsotropicLinearMaxwell3D_LinearStrain_HexQ2;
+        class TestIsotropicLinearMaxwell3D_LinearStrain_HexQ3;
+        class TestIsotropicLinearMaxwell3D_LinearStrain_HexQ4;
 
     } // materials
 } // pylith
 
 
 // ----------------------------------------------------------------------
-class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
-    public pylith::materials::TestIsotropicLinearMaxwellPlaneStrain {
+class pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain :
+    public pylith::materials::TestIsotropicLinearMaxwell3D {
 
     /// Spatial database user functions for auxiiliary subfields (includes derived fields).
     static const double SMALL;
 
     // Density
     static double density(const double x,
-                          const double y) {
+                          const double y,
+						  const double z) {
         return 4000.0;
     } // density
     static const char* density_units(void) {
@@ -64,7 +65,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
 
     // Vs
     static double vs(const double x,
-                     const double y) {
+					 const double y,
+                     const double z) {
         return 5600.0;
     } // vs
     static const char* vs_units(void) {
@@ -73,8 +75,9 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
 
     // Vp
     static double vp(const double x,
-                     const double y) {
-        return sqrt(3.0)*vs(x,y);
+					 const double y,
+                     const double z) {
+        return sqrt(3.0)*vs(x,y,z);
     } // vp
     static const char* vp_units(void) {
         return "m/s";
@@ -82,7 +85,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
 
     // Viscosity
     static double viscosity(const double x,
-                            const double y) {
+							const double y,
+                            const double z) {
         return 7.91700159488e+19;
     } // viscosity
     static const char* viscosity_units(void) {
@@ -91,8 +95,9 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
 
     // shear modulus
     static double shearModulus(const double x,
-                               const double y) {
-        return density(x,y) * vs(x,y) * vs(x,y);
+							   const double y,
+                               const double z) {
+        return density(x,y,z) * vs(x,y,z) * vs(x,y,z);
     } // shearModulus
     static const char* shearModulus_units(void) {
         return "Pa";
@@ -100,8 +105,9 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
 
     // bulk modulus
     static double bulkModulus(const double x,
-                              const double y) {
-        return density(x,y)*(vp(x,y)*vp(x,y) - 4.0/3.0*vs(x,y)*vs(x,y));
+							  const double y,
+                              const double z) {
+        return density(x,y,z)*(vp(x,y,z)*vp(x,y,z) - 4.0/3.0*vs(x,y,z)*vs(x,y,z));
     } // bulkModulus
     static const char* bulkModulus_units(void) {
         return "Pa";
@@ -109,8 +115,9 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
 
     // Maxwell time
     static double maxwellTime(const double x,
-                              const double y) {
-        return viscosity(x,y) / shearModulus(x,y);
+							  const double y,
+                              const double z) {
+        return viscosity(x,y,z) / shearModulus(x,y,z);
     } // maxwellTime
     static const char* maxwellTime_units(void) {
         return "s";
@@ -122,6 +129,9 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
         double b;
         double c;
         double d;
+        double e;
+        double f;
+        double g;
         double t;
         double dt;
     };
@@ -130,137 +140,241 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
     // Total strain
 
     static double totalStrain_xx(const double x,
-                                 const double y) {
-        return (2.0*constants.a*x + 2.0*constants.b*y) * exp(-constants.t/maxwellTime(x,y));
+								 const double y,
+                                 const double z) {
+		return (2.0*constants.a*x + 2.0*constants.b*y + 2.0*constants.d*z)*exp(-constants.t/maxwellTime(x,y,z));
     } // totalStrain_xx
+
     static double totalStrain_yy(const double x,
-                                 const double y) {
-        return (2.0*constants.b*x + 2.0*constants.a*y) * exp(-constants.t/maxwellTime(x,y));
+								 const double y,
+                                 const double z) {
+		return (2.0*constants.b*x + 2.0*constants.a*y + 2.0*constants.e*z)*exp(-constants.t/maxwellTime(x,y,z));
     } // totalStrain_yy
+
     static double totalStrain_zz(const double x,
-                                 const double y) {
-        return 0.0;
+								 const double y,
+                                 const double z) {
+		return (2.0*constants.d*x + 2.0*constants.e*y + 2.0*constants.a*z)*exp(-constants.t/maxwellTime(x,y,z));
     } // totalStrain_zz
+
     static double totalStrain_xy(const double x,
-                                 const double y) {
-        return (constants.b*(x+y) + constants.c*(x+y))*exp(-constants.t/maxwellTime(x,y));
+								 const double y,
+                                 const double z) {
+		return (constants.b*(x + y) + constants.c*(x + y) + z*(constants.d + constants.e))*exp(-constants.t/maxwellTime(x,y,z));
     } // totalStrain_xy
+
+    static double totalStrain_yz(const double x,
+								 const double y,
+                                 const double z) {
+		return (x*(constants.b + constants.d) + y*(constants.c + constants.e) + z*(constants.e + constants.f))*exp(-constants.t/maxwellTime(x,y,z));
+    } // totalStrain_yz
+
+    static double totalStrain_xz(const double x,
+								 const double y,
+                                 const double z) {
+		return (constants.d*(x + z) + constants.f*(x + z) + y*(constants.b + constants.e))*exp(-constants.t/maxwellTime(x,y,z));
+    } // totalStrain_xz
 
     // Viscous strain
 
     static double viscousStrain_xx(const double x,
-                                   const double y) {
-        return 2.0*maxwellTime(x,y)*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(2.0*x-y) - constants.b*(x-2.0*y)) * exp(-2.0*constants.t/maxwellTime(x,y))/(3.0*constants.t);
+								   const double y,
+                                   const double z) {
+		return -2.0*maxwellTime(x,y,z)*(exp(constants.t/maxwellTime(x,y,z)) - 1.0)*
+			(constants.a*(z + y - 2.0*x) + constants.b*(x - 2.0*y) + constants.d*(x - 2.0*z) + constants.e*(y + z))*
+			exp(-2.0*constants.t/maxwellTime(x,y,z))/(3.0*constants.t);
     } // viscousStrain_xx
+
     static double viscousStrain_yy(const double x,
-                                   const double y) {
-        return -2.0*maxwellTime(x,y)*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(x-2.0*y) - constants.b*(2.0*x-y)) * exp(-2.0*constants.t/maxwellTime(x,y))/(3.0*constants.t);
+								   const double y,
+                                   const double z) {
+		return -2.0*maxwellTime(x,y,z)*(exp(constants.t/maxwellTime(x,y,z)) - 1.0)*
+			(constants.a*(x + z - 2.0*y) + constants.b*(y - 2.0*x) + constants.d*(x + z) + constants.e*(y - 2.0*z))*
+			exp(-2.0*constants.t/maxwellTime(x,y,z))/(3.0*constants.t);
     } // viscousStrain_yy
+
     static double viscousStrain_zz(const double x,
-                                   const double y) {
-        return -2.0*maxwellTime(x,y)*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(x+y) + constants.b*(x+y)) * exp(-2.0*constants.t/maxwellTime(x,y))/(3.0*constants.t);
+								   const double y,
+                                   const double z) {
+		return -2.0*maxwellTime(x,y,z)*(exp(constants.t/maxwellTime(x,y,z)) - 1.0)*
+			(constants.a*(x + y - 2.0*z) + constants.b*(x + y) + constants.d*(z - 2.0*x) + constants.e*(z - 2.0*y))*
+			exp(-2.0*constants.t/maxwellTime(x,y,z))/(3.0*constants.t);
     } // viscousStrain_zz
+
     static double viscousStrain_xy(const double x,
-                                   const double y) {
-        return maxwellTime(x,y)*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.b*(x+y) + constants.c*(x+y)) * exp(-2.0*constants.t/maxwellTime(x,y))/constants.t;
+								   const double y,
+                                   const double z) {
+		return maxwellTime(x,y,z)*(exp(constants.t/maxwellTime(x,y,z)) - 1.0)*
+			(constants.b*(x + y) + constants.c*(x + y) + z*(constants.d + constants.e))*
+			exp(-2.0*constants.t/maxwellTime(x,y,z))/constants.t;
     } // viscousStrain_xy
+
+    static double viscousStrain_yz(const double x,
+								   const double y,
+                                   const double z) {
+		return maxwellTime(x,y,z)*(exp(constants.t/maxwellTime(x,y,z)) - 1.0)*
+			(x*(constants.b + constants.d) + y*(constants.c + constants.e) + z*(constants.e + constants.f))*
+			exp(-2.0*constants.t/maxwellTime(x,y,z))/constants.t;
+    } // viscousStrain_yz
+
+    static double viscousStrain_xz(const double x,
+								   const double y,
+                                   const double z) {
+		return maxwellTime(x,y,z)*(exp(constants.t/maxwellTime(x,y,z)) - 1.0)*
+			(y*(constants.b + constants.e) + constants.d*(x + z) + constants.f*(x + z))*
+			exp(-2.0*constants.t/maxwellTime(x,y,z))/constants.t;
+    } // viscousStrain_xz
 
     // Total strain for perturbed solution.
 
     static double totalStrainUpdate_xx(const double x,
-									   const double y) {
-        return (2.0*constants.a*x + 2.0*constants.b*y) * exp(-constants.t/maxwellTime(x,y)) + constants.d;
+									   const double y,
+									   const double z) {
+		return (2.0*constants.a*x + 2.0*constants.b*y + 2.0*constants.d*z)*exp(-constants.t/maxwellTime(x,y,z)) + constants.g;
     } // totalStrainUpdate_xx
+
     static double totalStrainUpdate_yy(const double x,
-									   const double y) {
-        return (2.0*constants.b*x + 2.0*constants.a*y) * exp(-constants.t/maxwellTime(x,y));
+									   const double y,
+									   const double z) {
+		return (2.0*constants.a*y + 2.0*constants.b*x + 2.0*constants.e*z)*exp(-constants.t/maxwellTime(x,y,z));
     } // totalStrainUpdate_yy
+
     static double totalStrainUpdate_zz(const double x,
-									   const double y) {
-        return 0.0;
+									   const double y,
+									   const double z) {
+		return (2.0*constants.a*z + 2.0*constants.d*x + 2.0*constants.e*y)*exp(-constants.t/maxwellTime(x,y,z));
     } // totalStrainUpdate_zz
+
     static double totalStrainUpdate_xy(const double x,
-									   const double y) {
-        return (constants.b*(x+y) + constants.c*(x+y))*exp(-constants.t/maxwellTime(x,y)) + constants.d/2.0;
+									   const double y,
+									   const double z) {
+		return (constants.b*(x + y) + constants.c*(x + y) + z*(constants.d + constants.e))*
+			exp(-constants.t/maxwellTime(x,y,z)) + constants.g/2.0;
     } // totalStrainUpdate_xy
+
+    static double totalStrainUpdate_yz(const double x,
+									   const double y,
+									   const double z) {
+		return (x*(constants.b + constants.d) + y*(constants.c + constants.e) + z*(constants.e + constants.f))*
+			exp(-constants.t/maxwellTime(x,y,z));
+    } // totalStrainUpdate_yz
+
+    static double totalStrainUpdate_xz(const double x,
+									   const double y,
+									   const double z) {
+		return (y*(constants.b + constants.e) + constants.d*(x + z) + constants.f*(x + z))*
+			exp(-constants.t/maxwellTime(x,y,z)) + constants.g/2.0;
+    } // totalStrainUpdate_xz
 
     // Values needed to compute viscous strain for perturbed solution.
 	static double meanStrainT(const double x,
-							  const double y) {
-		return (totalStrain_xx(x,y) + totalStrain_yy(x,y))/3.0;
+							  const double y,
+							  const double z) {
+		return (totalStrain_xx(x,y,z) + totalStrain_yy(x,y,z) + totalStrain_zz(x,y,z))/3.0;
 	}
 
 	static double devStrainT_xx(const double x,
-								const double y) {
-		return totalStrain_xx(x,y) - meanStrainT(x,y);
+								const double y,
+								const double z) {
+		return totalStrain_xx(x,y,z) - meanStrainT(x,y,z);
 	}
 
 	static double devStrainT_yy(const double x,
-								const double y) {
-		return totalStrain_yy(x,y) - meanStrainT(x,y);
+								const double y,
+								const double z) {
+		return totalStrain_yy(x,y,z) - meanStrainT(x,y,z);
 	}
 
 	static double devStrainT_zz(const double x,
-								const double y) {
-		return totalStrain_zz(x,y) - meanStrainT(x,y);
+								const double y,
+								const double z) {
+		return totalStrain_zz(x,y,z) - meanStrainT(x,y,z);
 	}
 
 	static double meanStrainTplusDt(const double x,
-									const double y) {
-		return (totalStrainUpdate_xx(x,y) + totalStrainUpdate_yy(x,y))/3.0;
+									const double y,
+									const double z) {
+		return (totalStrainUpdate_xx(x,y,z) + totalStrainUpdate_yy(x,y,z) + totalStrainUpdate_zz(x,y,z))/3.0;
 	}
 
 	static double devStrainTplusDt_xx(const double x,
-									  const double y) {
-		return totalStrainUpdate_xx(x,y) - meanStrainTplusDt(x,y);
+									  const double y,
+									  const double z) {
+		return totalStrainUpdate_xx(x,y,z) - meanStrainTplusDt(x,y,z);
 	}
 
 	static double devStrainTplusDt_yy(const double x,
-									  const double y) {
-		return totalStrainUpdate_yy(x,y) - meanStrainTplusDt(x,y);
+									  const double y,
+									  const double z) {
+		return totalStrainUpdate_yy(x,y,z) - meanStrainTplusDt(x,y,z);
 	}
 
 	static double devStrainTplusDt_zz(const double x,
-									  const double y) {
-		return totalStrainUpdate_zz(x,y) - meanStrainTplusDt(x,y);
+									  const double y,
+									  const double z) {
+		return totalStrainUpdate_zz(x,y,z) - meanStrainTplusDt(x,y,z);
 	}
 
 	static double dq(const double x,
-					 const double y) {
-		return maxwellTime(x,y) * (1.0 - exp(-constants.dt/maxwellTime(x,y)))/constants.dt;
+					 const double y,
+					 const double z) {
+		return maxwellTime(x,y,z) * (1.0 - exp(-constants.dt/maxwellTime(x,y,z)))/constants.dt;
 	}
 	
     // Viscous strain for perturbed solution.
 
     static double viscousStrainUpdate_xx(const double x,
-										 const double y) {
-		return exp(-constants.dt/maxwellTime(x,y)) * viscousStrain_xx(x,y) + dq(x,y) * (devStrainTplusDt_xx(x,y) - devStrainT_xx(x,y));
+										 const double y,
+										 const double z) {
+		return exp(-constants.dt/maxwellTime(x,y,z))*viscousStrain_xx(x,y,z) + dq(x,y,z)*(devStrainTplusDt_xx(x,y,z) - devStrainT_xx(x,y,z));
     } // viscousStrainUpdate_xx
 
     static double viscousStrainUpdate_yy(const double x,
-										 const double y) {
-		return exp(-constants.dt/maxwellTime(x,y)) * viscousStrain_yy(x,y) + dq(x,y) * (devStrainTplusDt_yy(x,y) - devStrainT_yy(x,y));
+										 const double y,
+										 const double z) {
+		return exp(-constants.dt/maxwellTime(x,y,z))*viscousStrain_yy(x,y,z) + dq(x,y,z)*(devStrainTplusDt_yy(x,y,z) - devStrainT_yy(x,y,z));
     } // viscousStrainUpdate_yy
 
     static double viscousStrainUpdate_zz(const double x,
-										 const double y) {
-		return exp(-constants.dt/maxwellTime(x,y)) * viscousStrain_zz(x,y) + dq(x,y) * (devStrainTplusDt_zz(x,y) - devStrainT_zz(x,y));
+										 const double y,
+										 const double z) {
+		return exp(-constants.dt/maxwellTime(x,y,z))*viscousStrain_zz(x,y,z) + dq(x,y,z)*(devStrainTplusDt_zz(x,y,z) - devStrainT_zz(x,y,z));
     } // viscousStrainUpdate_zz
 
     static double viscousStrainUpdate_xy(const double x,
-										 const double y) {
-		return exp(-constants.dt/maxwellTime(x,y)) * viscousStrain_xy(x,y) + dq(x,y) * (totalStrainUpdate_xy(x,y) - totalStrain_xy(x,y));
+										 const double y,
+										 const double z) {
+		return exp(-constants.dt/maxwellTime(x,y,z))*viscousStrain_xy(x,y,z) + dq(x,y,z)*(totalStrainUpdate_xy(x,y,z) - totalStrain_xy(x,y,z));
     } // viscousStrainUpdate_xy
+
+    static double viscousStrainUpdate_yz(const double x,
+										 const double y,
+										 const double z) {
+		return exp(-constants.dt/maxwellTime(x,y,z))*viscousStrain_yz(x,y,z) + dq(x,y,z)*(totalStrainUpdate_yz(x,y,z) - totalStrain_yz(x,y,z));
+    } // viscousStrainUpdate_yz
+
+    static double viscousStrainUpdate_xz(const double x,
+										 const double y,
+										 const double z) {
+		return exp(-constants.dt/maxwellTime(x,y,z))*viscousStrain_xz(x,y,z) + dq(x,y,z)*(totalStrainUpdate_xz(x,y,z) - totalStrain_xz(x,y,z));
+    } // viscousStrainUpdate_xz
 
     // Body force
     static double bodyforce_x(const double x,
-                              const double y) {
-        return 6.0*bulkModulus(x,y)*(constants.a + constants.b) * exp(-constants.t/maxwellTime(x,y));
+							  const double y,
+                              const double z) {
+        return 6.0*bulkModulus(x,y,z)*(constants.a + constants.b + constants.d) * exp(-constants.t/maxwellTime(x,y,z));
     } // bodyforce_x
     static double bodyforce_y(const double x,
-                              const double y) {
-        return 6.0*bulkModulus(x,y)*(constants.a + constants.b) * exp(-constants.t/maxwellTime(x,y));
+							  const double y,
+                              const double z) {
+        return 6.0*bulkModulus(x,y,z)*(constants.a + constants.b + constants.e) * exp(-constants.t/maxwellTime(x,y,z));
     } // bodyforce_y
+    static double bodyforce_z(const double x,
+							  const double y,
+                              const double z) {
+        return 6.0*bulkModulus(x,y,z)*(constants.a + constants.d + constants.e) * exp(-constants.t/maxwellTime(x,y,z));
+    } // bodyforce_z
     static const char* bodyforce_units(void) {
         return "kg*m/s**2";
     }
@@ -269,43 +383,76 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
 
     // Displacement
     static double disp_x(const double x,
-                         const double y) {
-        return (constants.a*x*x + 2.0*constants.b*x*y + constants.c*y*y) * exp(-constants.t/maxwellTime(x,y));
+						 const double y,
+                         const double z) {
+        return (constants.a*x*x + 2.0*constants.b*x*y + constants.c*y*y +
+				2.0*constants.d*x*z + 2.0*constants.e*y*z + constants.f*z*z) * exp(-constants.t/maxwellTime(x,y,z));
     } // disp_x
+
     static double disp_y(const double x,
-                         const double y) {
-        return (constants.a*y*y + 2.0*constants.b*x*y + constants.c*x*x) * exp(-constants.t/maxwellTime(x,y));
+						 const double y,
+                         const double z) {
+        return (constants.a*y*y + 2.0*constants.b*x*y + constants.c*x*x +
+				2.0*constants.d*x*z + 2.0*constants.e*y*z + constants.f*z*z) * exp(-constants.t/maxwellTime(x,y,z));
     } // disp_y
+
+    static double disp_z(const double x,
+						 const double y,
+                         const double z) {
+        return (constants.a*z*z + 2.0*constants.b*x*y + constants.c*y*y +
+				2.0*constants.d*x*z + 2.0*constants.e*y*z + constants.f*x*x) * exp(-constants.t/maxwellTime(x,y,z));
+    } // disp_z
     static const char* disp_units(void) {
         return "m";
     } // disp_units
 
     static double disp_dot_x(const double x,
-                             const double y) {
-        return -(constants.a*x*x + 2.0*constants.b*x*y + constants.c*y*y) * exp(-constants.t/maxwellTime(x,y)) / maxwellTime(x,y);
+							 const double y,
+                             const double z) {
+        return -(constants.a*x*x + 2.0*constants.b*x*y + constants.c*y*y + 2.0*constants.d*x*z +
+				 2.0*constants.e*y*z + constants.f*z*z) * exp(-constants.t/maxwellTime(x,y,z)) / maxwellTime(x,y,z);
     } // disp_dot_x
+
     static double disp_dot_y(const double x,
-                             const double y) {
-        return -(constants.a*y*y + 2.0*constants.b*x*y + constants.c*x*x) * exp(-constants.t/maxwellTime(x,y))/maxwellTime(x,y);
+							 const double y,
+                             const double z) {
+        return -(constants.a*y*y + 2.0*constants.b*x*y + constants.c*x*x + 2.0*constants.d*x*z +
+				 2.0*constants.e*y*z + constants.f*z*z) * exp(-constants.t/maxwellTime(x,y,z)) / maxwellTime(x,y,z);
     } // disp_dot_y
+
+    static double disp_dot_z(const double x,
+							 const double y,
+                             const double z) {
+        return -(constants.a*z*z + 2.0*constants.b*x*y + constants.c*y*y + 2.0*constants.d*x*z +
+				 2.0*constants.e*y*z + constants.f*x*x) * exp(-constants.t/maxwellTime(x,y,z)) / maxwellTime(x,y,z);
+    } // disp_dot_z
     static const char* disp_dot_units(void) {
         return "m/s";
-    } // disp_dot_units
+    } // disp_units
 
     // Displacement + perturbation
     static double disp_perturb_x(const double x,
-                                 const double y) {
-        return disp_x(x, y) + constants.d*x;
+								 const double y,
+                                 const double z) {
+        return disp_x(x,y,z) + constants.g*x;
     } // disp_perturb_x
+
     static double disp_perturb_y(const double x,
-                                 const double y) {
-        return disp_y(x, y) + constants.d*x;
+								 const double y,
+                                 const double z) {
+        return disp_y(x,y,z) + constants.g*x;
     } // disp_perturb_y
+
+    static double disp_perturb_z(const double x,
+								 const double y,
+                                 const double z) {
+        return disp_z(x,y,z) + constants.g*x;
+    } // disp_perturb_z
 
 protected:
     void setUp(void) {
-        TestIsotropicLinearMaxwellPlaneStrain::setUp();
-        _mydata = new TestIsotropicLinearMaxwellPlaneStrain_Data(); CPPUNIT_ASSERT(_mydata);
+        TestIsotropicLinearMaxwell3D::setUp();
+        _mydata = new TestIsotropicLinearMaxwell3D_Data(); CPPUNIT_ASSERT(_mydata);
 
         // dimension set in base class.
         // meshFilename set in derived class.
@@ -351,12 +498,17 @@ protected:
         _mydata->auxDB->addValue("viscous_strain_yy", viscousStrain_yy, "none");
         _mydata->auxDB->addValue("viscous_strain_zz", viscousStrain_zz, "none");
         _mydata->auxDB->addValue("viscous_strain_xy", viscousStrain_xy, "none");
+        _mydata->auxDB->addValue("viscous_strain_yz", viscousStrain_yz, "none");
+        _mydata->auxDB->addValue("viscous_strain_xz", viscousStrain_xz, "none");
         _mydata->auxDB->addValue("total_strain_xx", totalStrain_xx, "none");
         _mydata->auxDB->addValue("total_strain_yy", totalStrain_yy, "none");
         _mydata->auxDB->addValue("total_strain_zz", totalStrain_zz, "none");
         _mydata->auxDB->addValue("total_strain_xy", totalStrain_xy, "none");
+        _mydata->auxDB->addValue("total_strain_yz", totalStrain_yz, "none");
+        _mydata->auxDB->addValue("total_strain_xz", totalStrain_xz, "none");
         _mydata->auxDB->addValue("body_force_x", bodyforce_x, bodyforce_units());
         _mydata->auxDB->addValue("body_force_y", bodyforce_y, bodyforce_units());
+        _mydata->auxDB->addValue("body_force_z", bodyforce_z, bodyforce_units());
 
         CPPUNIT_ASSERT(_mydata->auxUpdateDB);
         _mydata->auxUpdateDB->addValue("density", density, density_units());
@@ -370,61 +522,73 @@ protected:
         _mydata->auxUpdateDB->addValue("viscous_strain_yy", viscousStrainUpdate_yy, "none");
         _mydata->auxUpdateDB->addValue("viscous_strain_zz", viscousStrainUpdate_zz, "none");
         _mydata->auxUpdateDB->addValue("viscous_strain_xy", viscousStrainUpdate_xy, "none");
+        _mydata->auxUpdateDB->addValue("viscous_strain_yz", viscousStrainUpdate_yz, "none");
+        _mydata->auxUpdateDB->addValue("viscous_strain_xz", viscousStrainUpdate_xz, "none");
         _mydata->auxUpdateDB->addValue("total_strain_xx", totalStrainUpdate_xx, "none");
         _mydata->auxUpdateDB->addValue("total_strain_yy", totalStrainUpdate_yy, "none");
         _mydata->auxUpdateDB->addValue("total_strain_zz", totalStrainUpdate_zz, "none");
         _mydata->auxUpdateDB->addValue("total_strain_xy", totalStrainUpdate_xy, "none");
+        _mydata->auxUpdateDB->addValue("total_strain_yz", totalStrainUpdate_yz, "none");
+        _mydata->auxUpdateDB->addValue("total_strain_xz", totalStrainUpdate_xz, "none");
         _mydata->auxUpdateDB->addValue("body_force_x", bodyforce_x, bodyforce_units());
         _mydata->auxUpdateDB->addValue("body_force_y", bodyforce_y, bodyforce_units());
+        _mydata->auxUpdateDB->addValue("body_force_z", bodyforce_z, bodyforce_units());
 
         CPPUNIT_ASSERT(_mydata->solnDB);
         _mydata->solnDB->addValue("displacement_x", disp_x, disp_units());
         _mydata->solnDB->addValue("displacement_y", disp_y, disp_units());
+        _mydata->solnDB->addValue("displacement_z", disp_z, disp_units());
         _mydata->solnDB->addValue("displacement_dot_x", disp_dot_x, disp_dot_units());
         _mydata->solnDB->addValue("displacement_dot_y", disp_dot_y, disp_dot_units());
+        _mydata->solnDB->addValue("displacement_dot_z", disp_dot_z, disp_dot_units());
 
         CPPUNIT_ASSERT(_mydata->perturbDB);
         _mydata->perturbDB->addValue("displacement_x", disp_perturb_x, disp_units());
         _mydata->perturbDB->addValue("displacement_y", disp_perturb_y, disp_units());
+        _mydata->perturbDB->addValue("displacement_z", disp_perturb_z, disp_units());
         _mydata->perturbDB->addValue("displacement_dot_x", disp_dot_x, disp_dot_units());
         _mydata->perturbDB->addValue("displacement_dot_y", disp_dot_y, disp_dot_units());
+        _mydata->perturbDB->addValue("displacement_dot_z", disp_dot_z, disp_dot_units());
 
         CPPUNIT_ASSERT(_mymaterial);
         _mymaterial->useInertia(false);
         _mymaterial->useBodyForce(true);
         _mymaterial->useReferenceState(false);
 
-        _mymaterial->label("Isotropic Linear Maxwell Plane Strain");
+        _mymaterial->label("Isotropic Linear Maxwell 3D");
         _mymaterial->id(24);
 
     } // setUp
 
-}; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain
-const double pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::SMALL = 1.0e-5;
+}; // TestIsotropicLinearMaxwell3D_LinearStrain
+const double pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain::SMALL = 1.0e-5;
 
-const pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::AuxConstants pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::constants = {
+const pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain::AuxConstants pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain::constants = {
     1.0e-7, // a
     2.5e-7, // b
     3.0e-7, // c
-    9.0e-8, // d
+    3.5e-7, // d
+    4.0e-7, // e
+    4.5e-7, // f
+    9.0e-8, // g
     5.0e+7, // t
     5.0e+7  // dt
 };
 
 
 // ----------------------------------------------------------------------
-class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP1 :
-    public pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain {
+class pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_TetP1 :
+    public pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain {
 
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP1,
-                           TestIsotropicLinearMaxwellPlaneStrain);
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwell3D_LinearStrain_TetP1,
+                           TestIsotropicLinearMaxwell3D);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::setUp();
+        TestIsotropicLinearMaxwell3D_LinearStrain::setUp();
         CPPUNIT_ASSERT(_mydata);
 
-        _mydata->meshFilename = "data/tri_small.mesh";
+        _mydata->meshFilename = "data/tet_small.mesh";
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -435,24 +599,24 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP
         _initializeMin();
     } // setUp
 
-}; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP1
-// Do not use this test because TriP1 cannot represent a linear strain field.
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP1);
+}; // TestIsotropicLinearMaxwell3D_LinearStrain_TetP1
+// Do not use this test because TetP1 cannot represent a linear strain field.
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_TetP1);
 
 
 // ----------------------------------------------------------------------
-class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP2 :
-    public pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain {
+class pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_TetP2 :
+    public pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain {
 
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP2,
-                           TestIsotropicLinearMaxwellPlaneStrain);
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwell3D_LinearStrain_TetP2,
+                           TestIsotropicLinearMaxwell3D);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::setUp();
+        TestIsotropicLinearMaxwell3D_LinearStrain::setUp();
         CPPUNIT_ASSERT(_mydata);
 
-        _mydata->meshFilename = "data/tri_small.mesh";
+        _mydata->meshFilename = "data/tet_small.mesh";
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -474,23 +638,23 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP
         _initializeMin();
     } // setUp
 
-}; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP2);
+}; // TestIsotropicLinearMaxwell3D_LinearStrain_TetP2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_TetP2);
 
 
 // ----------------------------------------------------------------------
-class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP3 :
-    public pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain {
+class pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_TetP3 :
+    public pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain {
 
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP3,
-                           pylith::materials::TestIsotropicLinearMaxwellPlaneStrain);
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwell3D_LinearStrain_TetP3,
+                           pylith::materials::TestIsotropicLinearMaxwell3D);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::setUp();
+        TestIsotropicLinearMaxwell3D_LinearStrain::setUp();
         CPPUNIT_ASSERT(_mydata);
 
-        _mydata->meshFilename = "data/tri_small.mesh";
+        _mydata->meshFilename = "data/tet_small.mesh";
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -512,22 +676,22 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP
         _initializeMin();
     } // setUp
 
-}; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP3);
+}; // TestIsotropicLinearMaxwell3D_LinearStrain_TetP3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_TetP3);
 
 // ----------------------------------------------------------------------
-class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP4 :
-    public pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain {
+class pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_TetP4 :
+    public pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain {
 
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP4,
-                           TestIsotropicLinearMaxwellPlaneStrain);
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwell3D_LinearStrain_TetP4,
+                           TestIsotropicLinearMaxwell3D);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::setUp();
+        TestIsotropicLinearMaxwell3D_LinearStrain::setUp();
         CPPUNIT_ASSERT(_mydata);
 
-        _mydata->meshFilename = "data/tri_small.mesh";
+        _mydata->meshFilename = "data/tet_small.mesh";
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -549,22 +713,22 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP
         _initializeMin();
     } // setUp
 
-}; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP4
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP4);
+}; // TestIsotropicLinearMaxwell3D_LinearStrain_TetP4
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_TetP4);
 
 // ----------------------------------------------------------------------
-class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ1 :
-    public pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain {
+class pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_HexQ1 :
+    public pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain {
 
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ1,
-                           TestIsotropicLinearMaxwellPlaneStrain);
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwell3D_LinearStrain_HexQ1,
+                           TestIsotropicLinearMaxwell3D);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::setUp();
+        TestIsotropicLinearMaxwell3D_LinearStrain::setUp();
         CPPUNIT_ASSERT(_mydata);
 
-        _mydata->meshFilename = "data/quad_aligned.mesh";
+        _mydata->meshFilename = "data/hex_small.mesh";
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -586,24 +750,24 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
         _initializeMin();
     } // setUp
 
-}; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ1
-// Do not use this test because TriP1 cannot represent a linear strain field.
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ1);
+}; // TestIsotropicLinearMaxwell3D_LinearStrain_HexQ1
+// Do not use this test because HexP1 cannot represent a linear strain field.
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_HexQ1);
 
 
 // ----------------------------------------------------------------------
-class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ2 :
-    public pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain {
+class pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_HexQ2 :
+    public pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain {
 
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ2,
-                           TestIsotropicLinearMaxwellPlaneStrain);
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwell3D_LinearStrain_HexQ2,
+                           TestIsotropicLinearMaxwell3D);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::setUp();
+        TestIsotropicLinearMaxwell3D_LinearStrain::setUp();
         CPPUNIT_ASSERT(_mydata);
 
-        _mydata->meshFilename = "data/quad_aligned.mesh";
+        _mydata->meshFilename = "data/hex_small.mesh";
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -625,23 +789,23 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
         _initializeMin();
     } // setUp
 
-}; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ2);
+}; // TestIsotropicLinearMaxwell3D_LinearStrain_HexQ2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_HexQ2);
 
 
 // ----------------------------------------------------------------------
-class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ3 :
-    public pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain {
+class pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_HexQ3 :
+    public pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain {
 
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ3,
-                           TestIsotropicLinearMaxwellPlaneStrain);
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwell3D_LinearStrain_HexQ3,
+                           TestIsotropicLinearMaxwell3D);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::setUp();
+        TestIsotropicLinearMaxwell3D_LinearStrain::setUp();
         CPPUNIT_ASSERT(_mydata);
 
-        _mydata->meshFilename = "data/quad_aligned.mesh";
+        _mydata->meshFilename = "data/hex_small.mesh";
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -663,23 +827,23 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
         _initializeMin();
     } // setUp
 
-}; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ3);
+}; // TestIsotropicLinearMaxwell3D_LinearStrain_HexQ3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_HexQ3);
 
 
 // ----------------------------------------------------------------------
-class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ4 :
-    public pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain {
+class pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_HexQ4 :
+    public pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain {
 
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ4,
-                           TestIsotropicLinearMaxwellPlaneStrain);
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwell3D_LinearStrain_HexQ4,
+                           TestIsotropicLinearMaxwell3D);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::setUp();
+        TestIsotropicLinearMaxwell3D_LinearStrain::setUp();
         CPPUNIT_ASSERT(_mydata);
 
-        _mydata->meshFilename = "data/quad_aligned.mesh";
+        _mydata->meshFilename = "data/hex_small.mesh";
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -701,8 +865,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
         _initializeMin();
     } // setUp
 
-}; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ4
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ4);
+}; // TestIsotropicLinearMaxwell3D_LinearStrain_HexQ4
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_HexQ4);
 
 
 // End of file
