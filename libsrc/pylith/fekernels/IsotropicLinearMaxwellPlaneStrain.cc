@@ -738,7 +738,7 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain(const Py
     assert(totalStrainTpdt);
 
     const PylithScalar* disp_x = &s_x[sOff[i_disp]];
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
     const PylithInt i_totalStrain = 5;
     const PylithScalar* totalStrain = &a[aOff[i_totalStrain]];
 	std::cout << "fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain" << std::endl;
@@ -749,7 +749,7 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain(const Py
     totalStrainTpdt[1] = disp_x[1*_dim+1];
     totalStrainTpdt[2] = 0.0;
     totalStrainTpdt[3] = 0.5 * (disp_x[0*_dim+1] + disp_x[1*_dim+0]);
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
     std::cout << "totalStrainTpdt[0]:  " << totalStrainTpdt[0] << std::endl;
 #endif
 
@@ -812,7 +812,7 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain(const 
     assert(s_x);
     assert(a);
     assert(visStrainTpdt);
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
     const PylithScalar* totalStrain = &a[aOff[i_totalStrain]];
     const PylithScalar* disp_x = &s_x[sOff[i_disp]];
     const PylithScalar totalStrainTpdt[4] = {
