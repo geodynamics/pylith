@@ -94,6 +94,7 @@ libpylith_la_SOURCES = \
 	meshio/DataWriterVTK.cc \
 	meshio/OutputManager.cc \
 	meshio/OutputIntegrator.cc \
+	meshio/OutputConstraint.cc \
 	meshio/OutputSoln.cc \
 	meshio/OutputTrigger.cc \
 	meshio/OutputTriggerStep.cc \

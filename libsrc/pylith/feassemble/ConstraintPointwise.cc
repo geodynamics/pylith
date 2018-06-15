@@ -98,12 +98,11 @@ pylith::feassemble::ConstraintPointwise::constrainedDOF(void) const {
 
 // ----------------------------------------------------------------------
 // Return auxiliary subfields for this problem.
-const pylith::topology::Field&
+const pylith::topology::Field*
 pylith::feassemble::ConstraintPointwise::auxField(void) const {
     PYLITH_METHOD_BEGIN;
 
-    assert(_auxField);
-    PYLITH_METHOD_RETURN(*_auxField);
+    PYLITH_METHOD_RETURN(_auxField);
 } // auxField
 
 // ----------------------------------------------------------------------
@@ -152,7 +151,7 @@ pylith::feassemble::ConstraintPointwise::normalizer(const spatialdata::units::No
 
 
 // ----------------------------------------------------------------------
-// Update auxiliary fields at beginning of time step.
+// Update at beginning of time step.
 void
 pylith::feassemble::ConstraintPointwise::prestep(const double t,
                                                  const double dt)
@@ -164,6 +163,23 @@ pylith::feassemble::ConstraintPointwise::prestep(const double t,
 
     PYLITH_METHOD_END;
 } // prestep
+
+
+// ----------------------------------------------------------------------
+// Update at end of time step.
+void
+pylith::feassemble::ConstraintPointwise::poststep(const PylithReal t,
+                                                  const PylithInt tindex,
+                                                  const PylithReal dt,
+                                                  const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("poststep(t="<<t<<", dt="<<dt<<") empty method");
+
+    const bool infoOnly = false;
+    notifyObservers(t, tindex, solution, infoOnly);
+
+    PYLITH_METHOD_END;
+} // poststep
 
 
 // End of file

@@ -13,26 +13,26 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/OutputIntegrator.py
+# @file pyre/meshio/OutputConstraint.py
 #
-# @brief Python object for managing output over domain of integration.
+# @brief Python object for managing output over points with constrained degrees of freedom.
 #
 # Factory: output_manager
 
 from .OutputManager import OutputManager
-from .meshio import OutputIntegrator as ModuleOutputIntegrator
+from .meshio import OutputConstraint as ModuleOutputConstraint
 
 
-class OutputIntegrator(OutputManager, ModuleOutputIntegrator):
+class OutputConstraint(OutputManager, ModuleOutputConstraint):
     """
-    Python object for managing output over domain of integration.
+    Python object for managing output over points with constrained degrees of freedom.
 
     Factory: observer
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="OutputIntegrator"):
+    def __init__(self, name="outputconstraint"):
         """
         Constructor.
         """
@@ -45,7 +45,7 @@ class OutputIntegrator(OutputManager, ModuleOutputIntegrator):
         """
         Create handle to C++ object.
         """
-        ModuleOutputIntegrator.__init__(self, integrator)
+        ModuleOutputConstraint.__init__(self, integrator)
         return
 
 
@@ -55,7 +55,7 @@ def observer():
     """
     Factory associated with OutputManager.
     """
-    return OutputIntegrator()
+    return OutputConstraint()
 
 
 # End of file

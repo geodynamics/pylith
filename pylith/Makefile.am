@@ -66,6 +66,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/OutputManager.py \
 	meshio/OutputSoln.py \
 	meshio/OutputIntegrator.py \
+	meshio/OutputConstraint.py \
 	meshio/OutputTrigger.py \
 	meshio/OutputTriggerStep.py \
 	meshio/OutputTriggerTime.py \

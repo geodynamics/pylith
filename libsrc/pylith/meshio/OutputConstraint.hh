@@ -17,13 +17,13 @@
 //
 
 /**
- * @file libsrc/meshio/OutputIntegrator.hh
+ * @file libsrc/meshio/OutputConstraint.hh
  *
- * @brief C++ object for managing output of the solution over the domain of an integrator.
+ * @brief C++ object for managing output of the solution over the domain of a constraint.
  */
 
-#if !defined(pylith_meshio_outputintegrator_hh)
-#define pylith_meshio_outputintegrator_hh
+#if !defined(pylith_meshio_outputconstraint_hh)
+#define pylith_meshio_outputconstraint_hh
 
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
@@ -32,23 +32,23 @@
 
 #include "pylith/utils/array.hh" // HASA string_vector
 
-// OutputIntegrator -----------------------------------------------------
-/** @brief C++ object for managing output of the solution over the domain of an integrator.
+// OutputConstraint -----------------------------------------------------
+/** @brief C++ object for managing output of the solution over the domain of a constraint.
  */
-class pylith::meshio::OutputIntegrator : public pylith::meshio::OutputManager {
-    friend class TestOutputIntegrator;   // unit testing
+class pylith::meshio::OutputConstraint : public pylith::meshio::OutputManager {
+    friend class TestOutputConstraint;   // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
     /** Constructor
      *
-     * @param[in] integrator Integrator to observe.
+     * @param[in] constraint Constraint to observe.
      */
-    OutputIntegrator(pylith::feassemble::IntegratorPointwise* const integrator);
+    OutputConstraint(pylith::feassemble::ConstraintPointwise* const constraint);
 
     /// Destructor
-    ~OutputIntegrator(void);
+    ~OutputConstraint(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -78,7 +78,7 @@ protected:
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
 
-    pylith::feassemble::IntegratorPointwise* const _integrator;
+    pylith::feassemble::ConstraintPointwise* const _constraint;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
@@ -88,11 +88,11 @@ private:
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    OutputIntegrator(const OutputIntegrator&);   ///< Not implemented.
-    const OutputIntegrator& operator=(const OutputIntegrator&);   ///< Not implemented
+    OutputConstraint(const OutputConstraint&);   ///< Not implemented.
+    const OutputConstraint& operator=(const OutputConstraint&);   ///< Not implemented
 
-}; // OutputIntegrator
+}; // OutputConstraint
 
-#endif // pylith_meshio_outputintegrator_hh
+#endif // pylith_meshio_outputconstraint_hh
 
 // End of file

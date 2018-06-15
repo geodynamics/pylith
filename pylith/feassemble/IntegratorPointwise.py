@@ -21,8 +21,6 @@ from pylith.feassemble.ObservedComponent import ObservedComponent
 from .feassemble import IntegratorPointwise as ModuleIntegrator
 
 
-# ITEM FACTORIES ///////////////////////////////////////////////////////
-
 def observerFactory(name):
     """
     Factory for output items.
@@ -31,8 +29,6 @@ def observerFactory(name):
     from pylith.meshio.OutputIntegrator import OutputIntegrator
     return facility(name, family="observer", factory=OutputIntegrator)
 
-
-# CLASSES //////////////////////////////////////////////////////////////
 
 class IntegratorPointwise(ObservedComponent, ModuleIntegrator):
     """

@@ -74,11 +74,42 @@ class SingleIntegratorObserver(PetscComponent):
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="singlematerialobserver"):
+    def __init__(self, name="singleintegratorobserver"):
         """
         Constructor.
         """
-        PetscComponent.__init__(self, name, facility="singlematerialobserver")
+        PetscComponent.__init__(self, name, facility="singleintegratorobserver")
+        return
+
+
+class SingleConstraintObserver(PetscComponent):
+    """
+    Python container with one observer.
+
+    INVENTORY
+
+    Properties
+      - None
+
+    Facilities
+      - *observer* Observer.
+
+    FACTORY: N/A
+    """
+
+    import pyre.inventory
+
+    from pylith.meshio.OutputConstraint import OutputConstraint
+    output = pyre.inventory.facility("observer", family="observer", factory=OutputConstraint)
+    output.meta['tip'] = "Observer of subject."
+
+    # PUBLIC METHODS /////////////////////////////////////////////////////
+
+    def __init__(self, name="singleintegratorobserver"):
+        """
+        Constructor.
+        """
+        PetscComponent.__init__(self, name, facility="singleintegratorobserver")
         return
 
 

@@ -41,8 +41,16 @@ def validateDOF(value):
     return num
 
 
-class ConstraintPointwise(ObservedComponent,
-                          ModuleConstraint):
+def observerFactory(name):
+    """
+    Factory for output items.
+    """
+    from pyre.inventory import facility
+    from pylith.meshio.OutputIntegrator import OutputIntegrator
+    return facility(name, family="observer", factory=OutputIntegrator)
+
+
+class ConstraintPointwise(ObservedComponent, ModuleConstraint):
     """
     Python abstract base class for constraints on operator
     actions with finite-elements.
@@ -55,7 +63,7 @@ class ConstraintPointwise(ObservedComponent,
     Facilities
       - *auxiliary_subfields* Discretization of constraint parameter auxiliary subfields.
       - *db_auxiliary_field* Spatial database for constrain parameters.
-      - *observers* Observers of constrain (e.g., output).
+      - *observers* Observers of constraint (e.g., output).
     """
 
     import pyre.inventory
@@ -72,9 +80,9 @@ class ConstraintPointwise(ObservedComponent,
     auxFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
     auxFieldDB.meta['tip'] = "Database for constraint parameters."
 
-    #from pylith.meshio.OutputManager import OutputManager
-    #outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputManager)
-    #outputManager.meta['tip'] = "Output manager."
+    from pylith.feassemble.SingleObserver import SingleConstraintObserver
+    observers = pyre.inventory.facilityArray("observers", itemFactory=observerFactory, factory=SingleConstraintObserver)
+    observers.meta['tip'] = "Observers (e.g., output) for constraint."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -94,13 +102,14 @@ class ConstraintPointwise(ObservedComponent,
 
         ModuleConstraint.constrainedDOF(self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
         ModuleConstraint.auxFieldDB(self, self.auxFieldDB)
-        #ModuleConstraint.output(self, self.outputManager)
 
         for subfield in self.auxSubfields.components():
             fieldName = subfield.aliases[-1]
-            ModuleConstraint.auxSubfieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
+            ModuleConstraint.auxSubfieldDiscretization(
+                self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
 
-        # self.outputManager.preinitialize()
+        for observer in self.observers.components():
+            observer.preinitialize(self)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

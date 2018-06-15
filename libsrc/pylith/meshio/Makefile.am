@@ -32,6 +32,7 @@ subpkginclude_HEADERS = \
 	MeshIOLagrit.icc \
 	OutputManager.hh \
 	OutputIntegrator.hh \
+	OutputConstraint.hh \
 	OutputSoln.hh \
 	OutputSolnSubset.hh \
 	OutputSolnPoints.hh \

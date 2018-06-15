@@ -85,7 +85,7 @@ public:
      *
      * @returns field Field over boundary.
      */
-    const pylith::topology::Field& auxField(void) const;
+    const pylith::topology::Field* auxField(void) const;
 
     /** Set spatial database for filling auxiliary subfields.
      *
@@ -135,6 +135,19 @@ public:
     virtual
     void prestep(const double t,
                  const double dt);
+
+    /** Update at end of time step.
+     *
+     * @param[in] t Current time.
+     * @param[in] tindex Current time step.
+     * @param[in] dt Current time step.
+     * @param[in] solution Solution at time t.
+     */
+    virtual
+    void poststep(const PylithReal t,
+                  const PylithInt tindex,
+                  const PylithReal dt,
+                  const pylith::topology::Field& solution);
 
     /** Set constrained values in solution field.
      *

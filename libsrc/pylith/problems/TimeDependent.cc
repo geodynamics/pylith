@@ -379,6 +379,12 @@ pylith::problems::TimeDependent::poststep(void)
         _integrators[i]->poststep(t, tindex, dt, *_solution);
     }  // for
 
+    // Update constraints.
+    const size_t numConstraints = _constraints.size();
+    for (size_t i = 0; i < numConstraints; ++i) {
+        _constraints[i]->poststep(t, tindex, dt, *_solution);
+    }  // for
+
     // Send problem observers updated solution.
     notifyObservers(t, tindex, *_solution);
 
@@ -491,7 +497,7 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
     journal::debug_t debug(_pyreComponent);
     debug << journal::at(__HERE__)
           << "computeLHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", s_tshift="<<s_tshift<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" <<
-    journal::endl;
+        journal::endl;
 
     // Get current time step.
     PylithReal dt;
