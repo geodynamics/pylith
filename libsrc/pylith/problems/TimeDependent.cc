@@ -410,8 +410,8 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
 
     // If explicit time stepping, multiply RHS, G(t,s), by M^{-1}
     if (EXPLICIT == problem->_formulationType) {
-        const PylithReal tshift = 1.0; // Keep shift terms on LHS, so use 1.0 for terms moved to RHS.
-        problem->Problem::computeLHSJacobianLumpedInv(t, dt, tshift, solutionVec);
+        const PylithReal s_tshift = 1.0; // Keep shift terms on LHS, so use 1.0 for terms moved to RHS.
+        problem->Problem::computeLHSJacobianLumpedInv(t, dt, s_tshift, solutionVec);
 
         assert(problem->_jacobianLHSLumpedInv);
         err = VecPointwiseMult(residualVec, problem->_jacobianLHSLumpedInv->localVector(), residualVec); PYLITH_CHECK_ERROR(err);
@@ -481,7 +481,7 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
                                                     PetscReal t,
                                                     PetscVec solutionVec,
                                                     PetscVec solutionDotVec,
-                                                    PetscReal tshift,
+                                                    PetscReal s_tshift,
                                                     PetscMat jacobianMat,
                                                     PetscMat precondMat,
                                                     void* context)
@@ -490,7 +490,7 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
 
     journal::debug_t debug(_pyreComponent);
     debug << journal::at(__HERE__)
-          << "computeLHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", tshift="<<tshift<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" <<
+          << "computeLHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", s_tshift="<<s_tshift<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" <<
     journal::endl;
 
     // Get current time step.
@@ -498,7 +498,7 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
     PetscErrorCode err = TSGetTimeStep(ts, &dt); PYLITH_CHECK_ERROR(err);
 
     pylith::problems::TimeDependent* problem = (pylith::problems::TimeDependent*)context;
-    problem->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, tshift, solutionVec, solutionDotVec);
+    problem->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, s_tshift, solutionVec, solutionDotVec);
 
     PYLITH_METHOD_RETURN(0);
 } // computeLHSJacobian

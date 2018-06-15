@@ -218,7 +218,7 @@ pylith::faults::FaultCohesiveKin::computeRHSJacobian(PetscMat jacobianMat,
 
     pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
     solutionDot.label("solution_dot");
-    const PylithReal tshift = 0.0; // No dependence on time derivative of solution in RHS, so shift isn't applicable.
+    const PylithReal s_tshift = 0.0; // No dependence on time derivative of solution in RHS, so shift isn't applicable.
 
     PetscErrorCode err;
     PetscDM dmSoln = solution.dmMesh();
@@ -246,14 +246,14 @@ pylith::faults::FaultCohesiveKin::computeRHSJacobian(PetscMat jacobianMat,
     _setFEKernelsRHSJacobianFaultPositive(solution);
     faultLabel = std::string(label()) + std::string("_fault_positive");
     err = DMGetLabel(dmSoln, faultLabel.c_str(), &dmLabel); PYLITH_CHECK_ERROR(err);
-    err = DMPlexComputeBdJacobianSingle(dmSoln, t, tshift, dmLabel, 1, &labelId, solution.localVector(),
+    err = DMPlexComputeBdJacobianSingle(dmSoln, t, s_tshift, dmLabel, 1, &labelId, solution.localVector(),
                                         solutionDot.localVector(), jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
 
     PYLITH_COMPONENT_DEBUG("DMPlexComputeBdJacobianSingle() on the negative side of fault ''"<<label()<<"')");
     _setFEKernelsRHSJacobianFaultNegative(solution);
     faultLabel = std::string(label()) + std::string("_fault_negative");
     err = DMGetLabel(dmSoln, faultLabel.c_str(), &dmLabel); PYLITH_CHECK_ERROR(err);
-    err = DMPlexComputeBdJacobianSingle(dmSoln, t, tshift, dmLabel, 1, &labelId, solution.localVector(),
+    err = DMPlexComputeBdJacobianSingle(dmSoln, t, s_tshift, dmLabel, 1, &labelId, solution.localVector(),
                                         solutionDot.localVector(), jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
 
 #else
@@ -290,12 +290,12 @@ pylith::faults::FaultCohesiveKin::computeLHSJacobianImplicit(PetscMat jacobianMa
                                                              PetscMat precondMat,
                                                              const PylithReal t,
                                                              const PylithReal dt,
-                                                             const PylithReal tshift,
+                                                             const PylithReal s_tshift,
                                                              const pylith::topology::Field& solution,
                                                              const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(
-        "computeLHSJacobianImplicit(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<") empty method");
+        "computeLHSJacobianImplicit(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<") empty method");
 
     // No contribution to LHS Jacobian.
 
@@ -309,7 +309,7 @@ void
 pylith::faults::FaultCohesiveKin::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
                                                               const PylithReal t,
                                                               const PylithReal dt,
-                                                              const PylithReal tshift,
+                                                              const PylithReal s_tshift,
                                                               const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<") empty method");

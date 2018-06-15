@@ -338,7 +338,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v_refstate(const PylithI
  * @param[in] a_t Time derivative of auxiliary field.
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
- * @param[in] utshift Coefficient for dF/ds_t term in Jacobian.
+ * @param[in] s_tshift Coefficient for dF/ds_t term in Jacobian.
  * @param[in] x Coordinates of point evaluation.
  * @param[in] numConstants Number of registered constants.
  * @param[in] constants Array of registered constants.
@@ -359,7 +359,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_implicit(const Pylit
                                                                      const PylithScalar a_t[],
                                                                      const PylithScalar a_x[],
                                                                      const PylithReal t,
-                                                                     const PylithReal utshift,
+                                                                     const PylithReal s_tshift,
                                                                      const PylithScalar x[],
                                                                      const PylithInt numConstants,
                                                                      const PylithScalar constants[],
@@ -385,7 +385,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_implicit(const Pylit
  * @param[in] a_t Time derivative of auxiliary field.
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
- * @param[in] utshift Coefficient for dF/ds_t term in Jacobian.
+ * @param[in] s_tshift Coefficient for dF/ds_t term in Jacobian.
  * @param[in] x Coordinates of point evaluation.
  * @param[in] numConstants Number of registered constants.
  * @param[in] constants Array of registered constants.
@@ -406,7 +406,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_explicit(const Pylit
                                                                      const PylithScalar a_t[],
                                                                      const PylithScalar a_x[],
                                                                      const PylithReal t,
-                                                                     const PylithReal utshift,
+                                                                     const PylithReal s_tshift,
                                                                      const PylithScalar x[],
                                                                      const PylithInt numConstants,
                                                                      const PylithScalar constants[],
@@ -432,7 +432,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_explicit(const Pylit
  * @param[in] a_t Time derivative of auxiliary field.
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
- * @param[in] utshift Coefficient for dF/ds_t term in Jacobian.
+ * @param[in] s_tshift Coefficient for dF/ds_t term in Jacobian.
  * @param[in] x Coordinates of point evaluation.
  * @param[in] numConstants Number of registered constants.
  * @param[in] constants Array of registered constants.
@@ -453,7 +453,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3vu(const PylithInt dim,
                                                             const PylithScalar a_t[],
                                                             const PylithScalar a_x[],
                                                             const PylithReal t,
-                                                            const PylithReal utshift,
+                                                            const PylithReal s_tshift,
                                                             const PylithScalar x[],
                                                             const PylithInt numConstants,
                                                             const PylithScalar constants[],

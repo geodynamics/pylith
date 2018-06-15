@@ -179,7 +179,7 @@ public:
          * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
          * @param[in] t Current time.
          * @param[in] dt Current time step.
-         * @param[in] tshift Scale for time derivative.
+         * @param[in] s_tshift Scale for time derivative.
          * @param[in] solutionVec PETSc Vec with current trial solution.
          * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
          */
@@ -187,7 +187,7 @@ public:
                                         PetscMat precondMat,
                                         const PylithReal t,
                                         const PylithReal dt,
-                                        const PylithReal tshift,
+                                        const PylithReal s_tshift,
                                         PetscVec solutionVec,
                                         PetscVec solutionDotVec);
 
@@ -195,12 +195,12 @@ public:
          *
          * @param[in] t Current time.
          * @param[in] dt Current time step.
-         * @param[in] tshift Scale for time derivative.
+         * @param[in] s_tshift Scale for time derivative.
          * @param[in] solutionVec PETSc Vec with current trial solution.
          */
         void computeLHSJacobianLumpedInv(const PylithReal t,
                                          const PylithReal dt,
-					 const PylithReal tshift,
+					 const PylithReal s_tshift,
                                          PetscVec solutionVec);
 
 

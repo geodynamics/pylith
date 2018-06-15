@@ -186,7 +186,7 @@ public:
 
     PylithReal t; ///< Time for solution in simulation.
     PylithReal dt; ///< Time step in simulation.
-    PylithReal tshift; ///< Time shift for LHS Jacobian.
+    PylithReal s_tshift; ///< Time shift for LHS Jacobian.
     PylithReal perturbation; ///< Maximum amplitude of random perturbation.
 
     int numSolnSubfields; ///< Number of solution fields.

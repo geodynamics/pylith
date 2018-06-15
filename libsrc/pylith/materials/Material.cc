@@ -208,8 +208,8 @@ pylith::materials::Material::computeRHSJacobian(PetscMat jacobianMat,
 
     pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
     solutionDot.label("solution_dot");
-    const PylithReal tshift = 0.0; // No dependence on time derivative of solution in RHS, so shift isn't applicable.
-    _computeJacobian(jacobianMat, precondMat, t, dt, tshift, solution, solutionDot);
+    const PylithReal s_tshift = 0.0; // No dependence on time derivative of solution in RHS, so shift isn't applicable.
+    _computeJacobian(jacobianMat, precondMat, t, dt, s_tshift, solution, solutionDot);
     _needNewRHSJacobian = false;
 
     PYLITH_METHOD_END;
@@ -243,17 +243,17 @@ pylith::materials::Material::computeLHSJacobianImplicit(PetscMat jacobianMat,
                                                         PetscMat precondMat,
                                                         const PylithReal t,
                                                         const PylithReal dt,
-                                                        const PylithReal tshift,
+                                                        const PylithReal s_tshift,
                                                         const pylith::topology::Field& solution,
                                                         const pylith::topology::Field& solutionDot)
 { // computeLHSJacobianImplicit
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("computeLHSJacobianImplicit(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
+    PYLITH_COMPONENT_DEBUG("computeLHSJacobianImplicit(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
     _setFEKernelsLHSJacobian(solution);
     _setFEConstants(solution, dt);
 
-    _computeJacobian(jacobianMat, precondMat, t, dt, tshift, solution, solutionDot);
+    _computeJacobian(jacobianMat, precondMat, t, dt, s_tshift, solution, solutionDot);
     _needNewLHSJacobian = false;
 
     PYLITH_METHOD_END;
@@ -266,7 +266,7 @@ void
 pylith::materials::Material::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
                                                          const PylithReal t,
                                                          const PylithReal dt,
-                                                         const PylithReal tshift,
+                                                         const PylithReal s_tshift,
                                                          const pylith::topology::Field& solution)
 { // computeLHSJacobianInverseExplicit
     PYLITH_METHOD_BEGIN;
@@ -302,7 +302,7 @@ pylith::materials::Material::computeLHSJacobianLumpedInv(pylith::topology::Field
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cells); PYLITH_CHECK_ERROR(err);
 
-    err = DMPlexComputeJacobianAction(dmSoln, cells, t, tshift, vecRowSum, NULL, vecRowSum, jacobianInv->localVector(), NULL); PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeJacobianAction(dmSoln, cells, t, s_tshift, vecRowSum, NULL, vecRowSum, jacobianInv->localVector(), NULL); PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&cells); PYLITH_CHECK_ERROR(err);
 
     // Compute the Jacobian inverse.
@@ -367,12 +367,12 @@ pylith::materials::Material::_computeJacobian(PetscMat jacobianMat,
                                               PetscMat precondMat,
                                               const PylithReal t,
                                               const PylithReal dt,
-                                              const PylithReal tshift,
+                                              const PylithReal s_tshift,
                                               const pylith::topology::Field& solution,
                                               const pylith::topology::Field& solutionDot)
 { // _computeJacobian
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_computeJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_computeJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
     assert(jacobianMat);
     assert(precondMat);
@@ -400,7 +400,7 @@ pylith::materials::Material::_computeJacobian(PetscMat jacobianMat,
 
     PYLITH_COMPONENT_DEBUG("DMPlexComputeJacobian_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<< ","<<cEnd<<".");
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cells); PYLITH_CHECK_ERROR(err);
-    err = DMPlexComputeJacobian_Internal(dmMesh, cells, t, tshift, solution.localVector(), solutionDot.localVector(), jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeJacobian_Internal(dmMesh, cells, t, s_tshift, solution.localVector(), solutionDot.localVector(), jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&cells); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;

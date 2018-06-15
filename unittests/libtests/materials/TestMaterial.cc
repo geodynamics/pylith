@@ -484,7 +484,7 @@ pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void) {
 
     const PylithReal t = data->t;
     const PylithReal dt = data->dt;
-    const PylithReal tshift = data->tshift;
+    const PylithReal s_tshift = data->tshift;
     material->computeLHSResidual(&residual1, t, dt, solution, solutionDot);
     material->computeLHSResidual(&residual2, t, dt, perturbation, perturbationDot);
 
@@ -507,7 +507,7 @@ pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void) {
     err = MatZeroEntries(jacobianMat); CPPUNIT_ASSERT(!err);
     PetscMat precondMat = jacobianMat; // Use Jacobian == preconditioner
 
-    material->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, tshift, solution, solutionDot);
+    material->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, s_tshift, solution, solutionDot);
     CPPUNIT_ASSERT_EQUAL(false, material->needNewLHSJacobian());
     err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY); PYLITH_CHECK_ERROR(err);
     err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY); PYLITH_CHECK_ERROR(err);
@@ -728,7 +728,7 @@ pylith::materials::TestMaterial_Data::TestMaterial_Data(void) :
 
     t(0.0),
     dt(0.0),
-    tshift(0.0),
+    s_tshift(0.0),
     perturbation(1.0e-4),
 
     numSolnSubfields(0),

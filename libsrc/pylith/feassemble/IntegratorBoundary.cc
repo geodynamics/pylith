@@ -293,11 +293,15 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobianImplicit(PetscMat jaco
                                                                    PetscMat precondMat,
                                                                    const PylithReal t,
                                                                    const PylithReal dt,
-                                                                   const PylithReal tshift,
+                                                                   const PylithReal s_tshift,
                                                                    const pylith::topology::Field& solution,
                                                                    const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("computeLHSJacobianImplicit(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
+
+    assert(jacobianMat);
+    assert(precondMat);
+    assert(s_tshift > 0);
 
     if (!_hasFEKernels(KERNELS_LHS_JACOBIAN)) { PYLITH_METHOD_END; }
 
@@ -315,10 +319,13 @@ void
 pylith::feassemble::IntegratorBoundary::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
                                                                     const PylithReal t,
                                                                     const PylithReal dt,
-                                                                    const PylithReal tshift,
+                                                                    const PylithReal s_tshift,
                                                                     const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("computeLHSJacobianLumpedInv(jacobianMat="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("computeLHSJacobianLumpedInv(jacobianMat="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solution="<<solution.label()<<")");
+
+    assert(jacobianInv);
+    assert(s_tshift > 0);
 
     if (!_hasFEKernels(KERNELS_LHS_JACOBIAN_LUMPEDINV)) { PYLITH_METHOD_END; }
 

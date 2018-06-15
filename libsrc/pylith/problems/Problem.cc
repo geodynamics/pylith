@@ -423,17 +423,18 @@ pylith::problems::Problem::computeLHSJacobianImplicit(PetscMat jacobianMat,
                                                       PetscMat precondMat,
                                                       const PylithReal t,
                                                       const PylithReal dt,
-                                                      const PylithReal tshift,
+                                                      const PylithReal s_tshift,
                                                       PetscVec solutionVec,
                                                       PetscVec solutionDotVec)
 { // computeLHSJacobianImplicit
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobianImplicit(t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
+    PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobianImplicit(t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
 
     assert(jacobianMat);
     assert(precondMat);
     assert(solutionVec);
     assert(solutionDotVec);
+    assert(s_tshift > 0);
 
     const size_t numIntegrators = _integrators.size();
 
@@ -454,7 +455,7 @@ pylith::problems::Problem::computeLHSJacobianImplicit(PetscMat jacobianMat,
 
     // Sum Jacobian contributions across integrators.
     for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, tshift, *_solution, *_solutionDot);
+        _integrators[i]->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, s_tshift, *_solution, *_solutionDot);
     } // for
 
     // Solver handles assembly.
@@ -468,15 +469,16 @@ pylith::problems::Problem::computeLHSJacobianImplicit(PetscMat jacobianMat,
 void
 pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
                                                        const PylithReal dt,
-                                                       const PylithReal tshift,
+                                                       const PylithReal s_tshift,
                                                        PetscVec solutionVec)
 { // computeLHSJacobianLumpedInv
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobianLumpedInv(t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solutionVec="<<solutionVec<<")");
+    PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobianLumpedInv(t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solutionVec="<<solutionVec<<")");
 
     assert(solutionVec);
     assert(_solution);
     assert(_jacobianLHSLumpedInv);
+    assert(s_tshift > 0);
 
     const size_t numIntegrators = _integrators.size();
 
@@ -501,7 +503,7 @@ pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
 
     // Sum Jacobian contributions across integrators.
     for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->computeLHSJacobianLumpedInv(_jacobianLHSLumpedInv, t, dt, tshift, *_solution);
+        _integrators[i]->computeLHSJacobianLumpedInv(_jacobianLHSLumpedInv, t, dt, s_tshift, *_solution);
     } // for
 
     // No need to assemble inverse of lumped Jacobian across processes, because it contributes to residual.

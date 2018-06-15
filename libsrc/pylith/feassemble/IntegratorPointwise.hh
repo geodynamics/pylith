@@ -223,7 +223,7 @@ public:
      * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
      * @param[in] t Current time.
      * @param[in] dt Current time step.
-     * @param[in] tshift Scale for time derivative.
+     * @param[in] s_tshift Scale for time derivative.
      * @param[in] solution Field with current trial solution.
      * @param[in] solutionDot Field with time derivative of current trial solution.
      */
@@ -232,7 +232,7 @@ public:
                                     PetscMat precondMat,
                                     const PylithReal t,
                                     const PylithReal dt,
-                                    const PylithReal tshift,
+                                    const PylithReal s_tshift,
                                     const pylith::topology::Field& solution,
                                     const pylith::topology::Field& solutionDot) = 0;
 
@@ -242,14 +242,14 @@ public:
      * @param[out] jacobianInv Inverse of lumped Jacobian as a field.
      * @param[in] t Current time.
      * @param[in] dt Current time step.
-     * @param[in] tshift Scale for time derivative.
+     * @param[in] s_tshift Scale for time derivative.
      * @param[in] solution Field with current trial solution.
      */
     virtual
     void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
                                      const PylithReal t,
                                      const PylithReal dt,
-                                     const PylithReal tshift,
+                                     const PylithReal s_tshift,
                                      const pylith::topology::Field& solution) = 0;
 
 
