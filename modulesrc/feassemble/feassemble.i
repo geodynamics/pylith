@@ -22,7 +22,6 @@
 #include "pylith/feassemble/Observer.hh"
 #include "pylith/feassemble/ObservedComponent.hh"
 #include "pylith/feassemble/IntegratorPointwise.hh"
-#include "pylith/feassemble/IntegratorBoundary.hh"
 #include "pylith/feassemble/ConstraintPointwise.hh"
 %}
 
@@ -52,7 +51,6 @@ import_array();
 %include "Observer.i"
 %include "ObservedComponent.i"
 %include "IntegratorPointwise.i"
-%include "IntegratorBoundary.i"
 %include "ConstraintPointwise.i"
 
 // End of file

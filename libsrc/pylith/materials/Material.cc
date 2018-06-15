@@ -24,10 +24,8 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::checkDisretization()
 #include "pylith/materials/AuxiliaryFactory.hh" // USES AuxiliaryFactory
-#include "pylith/feassemble/IntegratorObserver.hh" // USES IntegratorObserver
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/Stratum.hh" // USES StratumIS
-#include "pylith/meshio/OutputManager.hh" // USES OutputManager
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional

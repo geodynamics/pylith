@@ -21,12 +21,10 @@ __all__ = [
     "AbsorbingDampers",
     "AuxFieldsTimeDependent",
     "BoundaryCondition",
-    "Dirichlet",
     "DirichletTimeDependent",
-    "Neumann",
     "NeumannTimeDependent",
     "ZeroDB",
-    ]
+]
 
 
 # End of file

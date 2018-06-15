@@ -55,7 +55,7 @@ namespace pylith {
         class FieldFilterProject;
 
         class OutputManager;
-        class OutputMaterial;
+        class OutputIntegrator;
         class OutputSoln;
         class OutputSolnSubset;
         class OutputSolnPoints;

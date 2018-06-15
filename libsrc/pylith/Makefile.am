@@ -34,9 +34,9 @@ lib_LTLIBRARIES = libpylith.la
 libpylith_la_SOURCES = \
 	bc/BoundaryCondition.cc \
 	bc/TimeDependentAuxiliaryFactory.cc \
-	bc/Dirichlet.cc \
+	bc/ConstraintBoundary.cc \
 	bc/DirichletTimeDependent.cc \
-	bc/Neumann.cc \
+	bc/IntegratorBoundary.cc \
 	bc/NeumannTimeDependent.cc \
 	bc/AbsorbingDampers.cc \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
@@ -50,11 +50,9 @@ libpylith_la_SOURCES = \
 	faults/KinSrcAuxiliaryFactory.cc \
 	faults/TopologyOps.cc \
 	feassemble/IntegratorPointwise.cc \
-	feassemble/IntegratorBoundary.cc \
 	feassemble/ConstraintPointwise.cc \
 	feassemble/Observer.cc \
 	feassemble/ObservedComponent.cc \
-	feassemble/IntegratorObserver.cc \
 	feassemble/AuxiliaryFactory.cc \
 	fekernels/Elasticity.cc \
 	fekernels/ElasticityPlaneStrain.cc \
@@ -95,7 +93,7 @@ libpylith_la_SOURCES = \
 	meshio/DataWriter.cc \
 	meshio/DataWriterVTK.cc \
 	meshio/OutputManager.cc \
-	meshio/OutputMaterial.cc \
+	meshio/OutputIntegrator.cc \
 	meshio/OutputSoln.cc \
 	meshio/OutputTrigger.cc \
 	meshio/OutputTriggerStep.cc \

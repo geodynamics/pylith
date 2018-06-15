@@ -44,7 +44,7 @@
 #include "pylith/meshio/OutputSoln.hh"
   //#include "pylith/meshio/OutputSolnSubset.hh"
   //#include "pylith/meshio/OutputSolnPoints.hh"
-#include "pylith/meshio/OutputMaterial.hh"
+#include "pylith/meshio/OutputIntegrator.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -98,7 +98,7 @@ import_array();
 %include "OutputSoln.i"
  //%include "OutputSolnSubset.i"
  //%include "OutputSolnPoints.i"
-%include "OutputMaterial.i"
+%include "OutputIntegrator.i"
 
 
 // End of file

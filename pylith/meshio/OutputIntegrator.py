@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-# @file pyre/meshio/OutputMaterial.py
+# @file pyre/meshio/OutputIntegrator.py
 ##
 # @brief Python object for managing output of finite-element
 # solution information.
@@ -24,10 +24,10 @@
 # Factory: output_manager
 
 from .OutputManager import OutputManager
-from .meshio import OutputMaterial as ModuleOutputMaterial
+from .meshio import OutputIntegrator as ModuleOutputIntegrator
 
 
-class OutputMaterial(OutputManager, ModuleOutputMaterial):
+class OutputIntegrator(OutputManager, ModuleOutputIntegrator):
     """
     Python object for managing output of finite-element solution
     information.
@@ -37,7 +37,7 @@ class OutputMaterial(OutputManager, ModuleOutputMaterial):
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="outputmaterial"):
+    def __init__(self, name="OutputIntegrator"):
         """
         Constructor.
         """
@@ -50,7 +50,7 @@ class OutputMaterial(OutputManager, ModuleOutputMaterial):
         """
         Create handle to C++ object.
         """
-        ModuleOutputMaterial.__init__(self, integrator)
+        ModuleOutputIntegrator.__init__(self, integrator)
         return
 
 
@@ -60,7 +60,7 @@ def observer():
     """
     Factory associated with OutputManager.
     """
-    return OutputMaterial()
+    return OutputIntegrator()
 
 
 # End of file

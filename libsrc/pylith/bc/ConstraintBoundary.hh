@@ -16,47 +16,75 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/bc/Dirichlet.hh
+/** @file libsrc/bc/ConstraintBoundary.hh
  *
- * @brief C++ implementation of Dirichlet (prescribed values at
- * degrees of freedom) boundary conditions.
+ * @brief C++ implementation of ConstraintBoundary for constraint degrees of freedom on external boundary.
  */
 
-#if !defined(pylith_bc_dirichletnew_hh)
-#define pylith_bc_dirichletnew_hh
+#if !defined(pylith_bc_constraintboundary_hh)
+#define pylith_bc_constraintboundary_hh
 
 // Include directives ---------------------------------------------------
-#include "BoundaryCondition.hh" // ISA BoundaryCondition
+#include "bcfwd.hh" // Forward declaration
 #include "pylith/feassemble/ConstraintPointwise.hh" // ISA ConstraintPointwise
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
-// Dirichlet ----------------------------------------------------
-/// @brief Dirichlet (prescribed values at degrees of freedom) boundary
-/// conditions with points on a boundary.
-class pylith::bc::Dirichlet :
-    public pylith::bc::BoundaryCondition,
-    public pylith::feassemble::ConstraintPointwise {
+#include <string> // HASA std::string
 
-    friend class DirichletAuxiliaryFactory; // factory for auxiliary fields
-    friend class TestDirichletNew;   // unit testing
+// ConstraintBoundary ----------------------------------------------------
+/// @brief Integrator for integrals over domain boundaries.
+class pylith::bc::ConstraintBoundary : public pylith::feassemble::ConstraintPointwise {
+
+    friend class TestIntegratorPointwise; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    Dirichlet(void);
+    ConstraintBoundary(void);
 
     /// Destructor.
-    ~Dirichlet(void);
+    ~ConstraintBoundary(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
+
+    /** Set mesh label associated with boundary condition surface.
+     *
+     * @param[in] value Label of surface (from mesh generator).
+     */
+    void label(const char* value);
+
+    /** Get mesh label associated with boundary condition surface.
+     *
+     * @returns Label of surface (from mesh generator).
+     */
+    const char* label(void) const;
+
+    /** Set name of field in solution to constrain.
+     *
+     * @param[in] value Name of field in solution to constrain.
+     */
+    void field(const char* value);
+
+    /** Get name of field in solution to constrain.
+     *
+     * @returns Name of field in solution to constrain.
+     */
+    const char* field(void) const;
+
+    /** Get mesh associated with integrator domain.
+     *
+     * @returns Mesh associated with integrator domain.
+     */
+    const pylith::topology::Mesh& domainMesh(void) const;
 
     /** Verify configuration is acceptable.
      *
      * @param[in] solution Solution field.
      */
+    virtual
     void verifyConfiguration(const pylith::topology::Field& solution) const;
 
     /** Initialize boundary condition.
@@ -76,6 +104,8 @@ public:
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
+    // These will become methods in ConstraintPhysics.
+
     /** Setup auxiliary subfields (discretization and query fns).
      *
      * Create subfields in auxiliary fields (includes name of the field,
@@ -84,40 +114,44 @@ protected:
      * from a spatial database.
      *
      * @attention The order of the calls to subfieldAdd() must match the
-     * order of the auxiliary fields in the FE kernels.
+     * order of the auxiliary subfields in the FE kernels.
      *
      * @param[in] solution Solution field.
      */
     virtual
     void _auxFieldSetup(const pylith::topology::Field& solution) = 0;
 
-    /** Set kernels for RHS residual G(t,s).
-     *
-     * Potentially, there are g0 and g1 kernels for each equation. If no
-     * kernel is needed, then set the kernel function to NULL.
+    /** Set kernel for computing value of constrained degree of freedom from auxiliary field.
      *
      * @param solution Solution field.
      */
     virtual
-    void _setFEKernelsConstraint(const pylith::topology::Field& solution) = 0;
+    void _setFEKernelConstraint(const pylith::topology::Field& solution) = 0;
 
+    /** Get point-wise function (kernel) for settings constraint from auxiliary field.
+     *
+     * @returns Point-wise function.
+     */
+    virtual
+    PetscPointFunc _getFEKernelConstraint(void) = 0;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
 
     pylith::topology::Mesh* _boundaryMesh;   ///< Boundary mesh.
-    PetscPointFunc _bcKernel; ///< Kernel for boundary condition value.
+    std::string _label;   ///< Label to identify boundary condition points in mesh.
+    std::string _field; ///< Name of solution field for boundary condition.
     pylith::topology::FieldBase::Description _description; ///< Description for constrained field.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
 
-    Dirichlet(const Dirichlet&); ///< Not implemented.
-    const Dirichlet& operator=(const Dirichlet&); ///< Not implemented.
+    ConstraintBoundary(const ConstraintBoundary&); ///< Not implemented.
+    const ConstraintBoundary& operator=(const ConstraintBoundary&); ///< Not implemented.
 
-}; // class Dirichlet
+}; // class ConstraintBoundary
 
-#endif // pylith_bc_dirichletnew_hh
+#endif // pylith_bc_constraintboundary_hh
 
 
 // End of file

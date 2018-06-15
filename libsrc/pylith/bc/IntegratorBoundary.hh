@@ -16,25 +16,26 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/feassemble/IntegratorBoundary.hh
+/** @file libsrc/bc/IntegratorBoundary.hh
  *
  * @brief C++ implementation of IntegratorBoundary for performing finite-element integration over an external boundary.
  */
 
-#if !defined(pylith_feassemble_integratorboundary_hh)
-#define pylith_feassemble_integratorboundary_hh
+#if !defined(pylith_bc_integratorboundary_hh)
+#define pylith_bc_integratorboundary_hh
 
 // Include directives ---------------------------------------------------
+#include "bcfwd.hh" // Forward declaration
 #include "pylith/feassemble/IntegratorPointwise.hh" // ISA IntegratorPointwise
 
-#include "pylith/topology/topologyfwd.hh" // USES Field
+#include "pylith/topology/FieldBase.hh" // USES FieldBase::Description
 
 #include <string> // HASA std::string
 
 // IntegratorBoundary ----------------------------------------------------
 /// @brief Integrator for integrals over domain boundaries.
-class pylith::feassemble::IntegratorBoundary :
-    public pylith::feassemble::IntegratorPointwise {
+class pylith::bc::IntegratorBoundary : public pylith::feassemble::IntegratorPointwise {
+
     friend class TestIntegratorPointwise; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -247,6 +248,7 @@ protected:
     PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
     std::string _label;   ///< Label to identify boundary condition points in mesh.
     std::string _field; ///< Name of solution field for boundary condition.
+    pylith::topology::FieldBase::Description _description; ///< Description of field associated with BC.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
@@ -256,7 +258,7 @@ private:
 
 }; // class IntegratorBoundary
 
-#endif // pylith_feassemble_integratorboundary_hh
+#endif // pylith_bc_integratorboundary_hh
 
 
 // End of file

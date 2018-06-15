@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "OutputMaterial.hh" // implementation of class methods
+#include "OutputIntegrator.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
@@ -31,11 +31,11 @@
 #include "pylith/materials/Material.hh" // TEMPORARY
 
 // ----------------------------------------------------------------------
-const char* pylith::meshio::OutputMaterial::_pyreComponent = "outputmaterial";
+const char* pylith::meshio::OutputIntegrator::_pyreComponent = "outputintegrator";
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshio::OutputMaterial::OutputMaterial(pylith::feassemble::IntegratorPointwise* const integrator) :
+pylith::meshio::OutputIntegrator::OutputIntegrator(pylith::feassemble::IntegratorPointwise* const integrator) :
     _integrator(integrator)
 { // constructor
     PyreComponent::name(_pyreComponent);
@@ -44,14 +44,14 @@ pylith::meshio::OutputMaterial::OutputMaterial(pylith::feassemble::IntegratorPoi
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::OutputMaterial::~OutputMaterial(void) {
+pylith::meshio::OutputIntegrator::~OutputIntegrator(void) {
     deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::OutputMaterial::deallocate(void) {
+pylith::meshio::OutputIntegrator::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     OutputManager::deallocate();
@@ -62,7 +62,7 @@ pylith::meshio::OutputMaterial::deallocate(void) {
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::meshio::OutputMaterial::verifyConfiguration(const pylith::topology::Field& solution) const {
+pylith::meshio::OutputIntegrator::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("OutputManager::verifyConfiguration(solution="<<solution.label()<<")");
 
@@ -115,9 +115,9 @@ pylith::meshio::OutputMaterial::verifyConfiguration(const pylith::topology::Fiel
 // ----------------------------------------------------------------------
 // Write output for step in solution.
 void
-pylith::meshio::OutputMaterial::_writeInfo(void) {
+pylith::meshio::OutputIntegrator::_writeInfo(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputMaterial::_writeInfo()");
+    PYLITH_COMPONENT_DEBUG("OutputIntegrator::_writeInfo()");
 
     if (!_integrator) { PYLITH_METHOD_END; }
 
@@ -128,7 +128,7 @@ pylith::meshio::OutputMaterial::_writeInfo(void) {
     const pylith::materials::Material* const material = dynamic_cast<const pylith::materials::Material* const>(_integrator);
     if (material) {
         _temporarySetLabel("material-id", material->id());
-        PYLITH_COMPONENT_DEBUG("Setting OutputMaterial label='material-id' and label id="<<material->id()<<".");
+        PYLITH_COMPONENT_DEBUG("Setting OutputIntegrator label='material-id' and label id="<<material->id()<<".");
     } // if
 
     const pylith::topology::Field* auxField = _integrator->auxField();
@@ -163,11 +163,11 @@ pylith::meshio::OutputMaterial::_writeInfo(void) {
 // ----------------------------------------------------------------------
 // Write output for step in solution.
 void
-pylith::meshio::OutputMaterial::_writeDataStep(const PylithReal t,
-                                               const PylithInt tindex,
-                                               const pylith::topology::Field& solution) {
+pylith::meshio::OutputIntegrator::_writeDataStep(const PylithReal t,
+                                                 const PylithInt tindex,
+                                                 const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputMaterial::_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputIntegrator::_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
     assert(_integrator);
     const pylith::topology::Field* auxField = _integrator->auxField();

@@ -45,7 +45,7 @@ swig_sources = \
 	../feassemble/Observer.i \
 	OutputManager.i \
 	OutputSoln.i \
-	OutputMaterial.i
+	OutputIntegrator.i
 
 swig_generated = \
 	meshio_wrap.cxx \

@@ -37,10 +37,10 @@
 // ----------------------------------------------------------------------
 // Local "private" functions.
 namespace pylith {
-    namespace feassemble {
+    namespace bc {
         static
         void _computeResidual(pylith::topology::Field* residual,
-                              const pylith::feassemble::IntegratorBoundary* integrator,
+                              const pylith::bc::IntegratorBoundary* integrator,
                               const PylithReal t,
                               const PylithReal dt,
                               const pylith::topology::Field& solution,
@@ -50,8 +50,10 @@ namespace pylith {
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::feassemble::IntegratorBoundary::IntegratorBoundary(void) :
-    _boundaryMesh(NULL)
+pylith::bc::IntegratorBoundary::IntegratorBoundary(void) :
+    _boundaryMesh(NULL),
+    _label(""),
+    _field("")
 { // constructor
     _refDir1[0] = 0.0;
     _refDir1[1] = 0.0;
@@ -60,12 +62,18 @@ pylith::feassemble::IntegratorBoundary::IntegratorBoundary(void) :
     _refDir2[0] = 0.0;
     _refDir2[1] = 1.0;
     _refDir2[2] = 0.0;
+
+    _description.label = "unknown";
+    _description.vectorFieldType = pylith::topology::FieldBase::OTHER;
+    _description.numComponents = 0;
+    _description.scale = 1.0;
+    _description.validator = NULL;
 } // constructor
 
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::feassemble::IntegratorBoundary::~IntegratorBoundary(void) {
+pylith::bc::IntegratorBoundary::~IntegratorBoundary(void) {
     deallocate();
 } // destructor
 
@@ -73,7 +81,7 @@ pylith::feassemble::IntegratorBoundary::~IntegratorBoundary(void) {
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::feassemble::IntegratorBoundary::deallocate(void) {
+pylith::bc::IntegratorBoundary::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     IntegratorPointwise::deallocate();
@@ -87,7 +95,7 @@ pylith::feassemble::IntegratorBoundary::deallocate(void) {
 // ----------------------------------------------------------------------
 // Set mesh label associated with boundary condition surface.
 void
-pylith::feassemble::IntegratorBoundary::label(const char* value) {
+pylith::bc::IntegratorBoundary::label(const char* value) {
     if (strlen(value) == 0) {
         throw std::runtime_error("Empty string given for boundary condition label.");
     } // if
@@ -99,7 +107,7 @@ pylith::feassemble::IntegratorBoundary::label(const char* value) {
 // ----------------------------------------------------------------------
 // Get mesh label associated with boundary condition surface.
 const char*
-pylith::feassemble::IntegratorBoundary::label(void) const {
+pylith::bc::IntegratorBoundary::label(void) const {
     return _label.c_str();
 } // label
 
@@ -107,7 +115,7 @@ pylith::feassemble::IntegratorBoundary::label(void) const {
 // ----------------------------------------------------------------------
 // Set name of field in solution to constrain.
 void
-pylith::feassemble::IntegratorBoundary::field(const char* value) {
+pylith::bc::IntegratorBoundary::field(const char* value) {
     PYLITH_METHOD_BEGIN;
 
     if (strlen(value) == 0) {
@@ -122,7 +130,7 @@ pylith::feassemble::IntegratorBoundary::field(const char* value) {
 // ----------------------------------------------------------------------
 // Get name of field in solution to constrain.
 const char*
-pylith::feassemble::IntegratorBoundary::field(void) const {
+pylith::bc::IntegratorBoundary::field(void) const {
     journal::debug_t debug("boundarycondition");
     debug << journal::at(__HERE__)
           << "BoundaryCondition::field()" << journal::endl;
@@ -134,7 +142,7 @@ pylith::feassemble::IntegratorBoundary::field(void) const {
 // ----------------------------------------------------------------------
 // Set first choice for reference direction to discriminate among tangential directions in 3-D.
 void
-pylith::feassemble::IntegratorBoundary::refDir1(const PylithReal vec[3]) {
+pylith::bc::IntegratorBoundary::refDir1(const PylithReal vec[3]) {
     // Set reference direction, insuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
@@ -152,7 +160,7 @@ pylith::feassemble::IntegratorBoundary::refDir1(const PylithReal vec[3]) {
 // ----------------------------------------------------------------------
 // Set second choice for reference direction to discriminate among tangential directions in 3-D.
 void
-pylith::feassemble::IntegratorBoundary::refDir2(const PylithReal vec[3]) {
+pylith::bc::IntegratorBoundary::refDir2(const PylithReal vec[3]) {
     // Set reference direction, insuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
@@ -170,7 +178,7 @@ pylith::feassemble::IntegratorBoundary::refDir2(const PylithReal vec[3]) {
 // ----------------------------------------------------------------------
 // Get mesh associated with integrator domain.
 const pylith::topology::Mesh&
-pylith::feassemble::IntegratorBoundary::domainMesh(void) const {
+pylith::bc::IntegratorBoundary::domainMesh(void) const {
     assert(_boundaryMesh);
     return *_boundaryMesh;
 } // domainMesh
@@ -179,7 +187,7 @@ pylith::feassemble::IntegratorBoundary::domainMesh(void) const {
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::feassemble::IntegratorBoundary::verifyConfiguration(const pylith::topology::Field& solution) const {
+pylith::bc::IntegratorBoundary::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
 
@@ -197,7 +205,7 @@ pylith::feassemble::IntegratorBoundary::verifyConfiguration(const pylith::topolo
 // ----------------------------------------------------------------------
 // Initialize boundary condition.
 void
-pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field& solution) {
+pylith::bc::IntegratorBoundary::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("initialize(solution="<<solution.label()<<")");
 
@@ -229,10 +237,10 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
 // ----------------------------------------------------------------------
 // Compute RHS residual for G(t,s).
 void
-pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Field* residual,
-                                                           const PylithReal t,
-                                                           const PylithReal dt,
-                                                           const pylith::topology::Field& solution) {
+pylith::bc::IntegratorBoundary::computeRHSResidual(pylith::topology::Field* residual,
+                                                   const PylithReal t,
+                                                   const PylithReal dt,
+                                                   const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
@@ -252,11 +260,11 @@ pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Fie
 // ----------------------------------------------------------------------
 // Compute RHS residual for G(t,s).
 void
-pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Field* residual,
-                                                           const PylithReal t,
-                                                           const PylithReal dt,
-                                                           const pylith::topology::Field& solution,
-                                                           const pylith::topology::Field& solutionDot) {
+pylith::bc::IntegratorBoundary::computeLHSResidual(pylith::topology::Field* residual,
+                                                   const PylithReal t,
+                                                   const PylithReal dt,
+                                                   const pylith::topology::Field& solution,
+                                                   const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("computeLHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
@@ -273,11 +281,11 @@ pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Fie
 // ----------------------------------------------------------------------
 // Compute RHS Jacobian and preconditioner for G(t,s).
 void
-pylith::feassemble::IntegratorBoundary::computeRHSJacobian(PetscMat jacobianMat,
-                                                           PetscMat preconMat,
-                                                           const PylithReal t,
-                                                           const PylithReal dt,
-                                                           const pylith::topology::Field& solution) {
+pylith::bc::IntegratorBoundary::computeRHSJacobian(PetscMat jacobianMat,
+                                                   PetscMat preconMat,
+                                                   const PylithReal t,
+                                                   const PylithReal dt,
+                                                   const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", preconMat="<<preconMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
@@ -295,13 +303,13 @@ pylith::feassemble::IntegratorBoundary::computeRHSJacobian(PetscMat jacobianMat,
 // ----------------------------------------------------------------------
 // Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
 void
-pylith::feassemble::IntegratorBoundary::computeLHSJacobianImplicit(PetscMat jacobianMat,
-                                                                   PetscMat precondMat,
-                                                                   const PylithReal t,
-                                                                   const PylithReal dt,
-                                                                   const PylithReal s_tshift,
-                                                                   const pylith::topology::Field& solution,
-                                                                   const pylith::topology::Field& solutionDot) {
+pylith::bc::IntegratorBoundary::computeLHSJacobianImplicit(PetscMat jacobianMat,
+                                                           PetscMat precondMat,
+                                                           const PylithReal t,
+                                                           const PylithReal dt,
+                                                           const PylithReal s_tshift,
+                                                           const pylith::topology::Field& solution,
+                                                           const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("computeLHSJacobianImplicit(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
@@ -323,11 +331,11 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobianImplicit(PetscMat jaco
 // ----------------------------------------------------------------------
 // Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
 void
-pylith::feassemble::IntegratorBoundary::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                                                    const PylithReal t,
-                                                                    const PylithReal dt,
-                                                                    const PylithReal s_tshift,
-                                                                    const pylith::topology::Field& solution) {
+pylith::bc::IntegratorBoundary::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
+                                                            const PylithReal t,
+                                                            const PylithReal dt,
+                                                            const PylithReal s_tshift,
+                                                            const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("computeLHSJacobianLumpedInv(jacobianMat="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solution="<<solution.label()<<")");
 
@@ -348,8 +356,8 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobianLumpedInv(pylith::topo
 // ----------------------------------------------------------------------
 // Set constants used in finite-element integrations.
 void
-pylith::feassemble::IntegratorBoundary::_setFEConstants(const pylith::topology::Field& solution,
-                                                        const PylithReal dt) const {
+pylith::bc::IntegratorBoundary::_setFEConstants(const pylith::topology::Field& solution,
+                                                const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEConstants(solution="<<solution.label()<<", dt="<<dt<<")");
 
@@ -376,12 +384,12 @@ pylith::feassemble::IntegratorBoundary::_setFEConstants(const pylith::topology::
 // ----------------------------------------------------------------------
 // Compute residual.
 void
-pylith::feassemble::_computeResidual(pylith::topology::Field* residual,
-                                     const pylith::feassemble::IntegratorBoundary* integrator,
-                                     const PylithReal t,
-                                     const PylithReal dt,
-                                     const pylith::topology::Field& solution,
-                                     const pylith::topology::Field& solutionDot) {
+pylith::bc::_computeResidual(pylith::topology::Field* residual,
+                             const pylith::bc::IntegratorBoundary* integrator,
+                             const PylithReal t,
+                             const PylithReal dt,
+                             const pylith::topology::Field& solution,
+                             const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
     //PYLITH_COMPONENT_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 

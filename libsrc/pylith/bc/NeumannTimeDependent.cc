@@ -59,6 +59,7 @@ namespace pylith {
 pylith::bc::NeumannTimeDependent::NeumannTimeDependent(void) :
     _dbTimeHistory(NULL),
     _auxTimeDependentFactory(new pylith::bc::TimeDependentAuxiliaryFactory(pylith::bc::TimeDependentAuxiliaryFactory::TANGENTIAL_NORMAL)),
+    _scaleName("pressure"),
     _useInitial(true),
     _useRate(false),
     _useTimeHistory(false)
@@ -82,7 +83,7 @@ pylith::bc::NeumannTimeDependent::deallocate(void)
 { // deallocate
     PYLITH_METHOD_BEGIN;
 
-    Neumann::deallocate();
+    IntegratorBoundary::deallocate();
     delete _auxTimeDependentFactory; _auxTimeDependentFactory = NULL;
 
     _dbTimeHistory = NULL; // :KLUDGE: Use shared pointer.
@@ -169,6 +170,23 @@ pylith::bc::NeumannTimeDependent::useTimeHistory(void) const
 
 
 // ----------------------------------------------------------------------
+// Name of scale associated with Neumann boundary condition (e.g., pressure for elasticity).
+void
+pylith::bc::NeumannTimeDependent::scaleName(const char* value) {
+    if (( value == std::string("length")) ||
+        ( value == std::string("time")) ||
+        ( value == std::string("pressure")) ||
+        ( value == std::string("density")) ||
+        ( value == std::string("pressure")) ) {
+        _scaleName = value;
+    } else {
+        std::ostringstream msg;
+        msg << "Unknown name of scale ("<<value<<") for Neumann boundary condition '" << label() << "'.";
+        throw std::runtime_error(msg.str());
+    } // if
+} // scaleName
+
+// ----------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
 pylith::bc::NeumannTimeDependent::prestep(const double t,
@@ -225,7 +243,6 @@ pylith::bc::NeumannTimeDependent::prestep(const double t,
               // Update value (normalized amplitude) in auxiliary field.
             auxFieldsArray[off+offValue] = value;
         } // for
-
     } // if
 
     PYLITH_METHOD_END;

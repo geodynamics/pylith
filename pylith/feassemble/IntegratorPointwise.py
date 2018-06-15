@@ -28,8 +28,8 @@ def observerFactory(name):
     Factory for output items.
     """
     from pyre.inventory import facility
-    from pylith.meshio.OutputMaterial import OutputMaterial
-    return facility(name, family="observer", factory=OutputMaterial)
+    from pylith.meshio.OutputIntegrator import OutputIntegrator
+    return facility(name, family="observer", factory=OutputIntegrator)
 
 
 # CLASSES //////////////////////////////////////////////////////////////

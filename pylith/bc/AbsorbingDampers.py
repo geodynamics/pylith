@@ -19,7 +19,7 @@
 #
 # Factory: boundary_condition
 
-from pylith.feassemble.IntegratorBoundary import IntegratorBoundary
+from pylith.bc.IntegratorBoundary import IntegratorBoundary
 from .bc import AbsorbingDampers as ModuleAbsorbingDampers
 
 

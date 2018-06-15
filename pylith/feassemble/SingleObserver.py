@@ -68,8 +68,8 @@ class SingleIntegratorObserver(PetscComponent):
 
     import pyre.inventory
 
-    from pylith.meshio.OutputMaterial import OutputMaterial
-    output = pyre.inventory.facility("observer", family="observer", factory=OutputMaterial)
+    from pylith.meshio.OutputIntegrator import OutputIntegrator
+    output = pyre.inventory.facility("observer", family="observer", factory=OutputIntegrator)
     output.meta['tip'] = "Observer of subject."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

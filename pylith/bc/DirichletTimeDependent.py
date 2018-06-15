@@ -20,13 +20,12 @@
 #
 # Factory: boundary_condition
 
-from .Dirichlet import Dirichlet
+from .ConstraintBoundary import ConstraintBoundary
 from .bc import DirichletTimeDependent as ModuleDirichletTimeDependent
 from pylith.utils.NullComponent import NullComponent
 
 
-class DirichletTimeDependent(Dirichlet,
-                             ModuleDirichletTimeDependent):
+class DirichletTimeDependent(ConstraintBoundary, ModuleDirichletTimeDependent):
     """
     Python object for managing a time-dependent Dirichlet (prescribed values)
     boundary condition.
@@ -39,7 +38,7 @@ class DirichletTimeDependent(Dirichlet,
       - *use_time_history* Use time history term in time-dependent expression.
 
     Facilities
-      - None
+      - *auxiliary_subfields* Discretization of constraint parameters.
 
     Factory: boundary_condition
     """
@@ -60,7 +59,8 @@ class DirichletTimeDependent(Dirichlet,
 
     from .AuxFieldsTimeDependent import AuxFieldsTimeDependent
     from pylith.topology.AuxSubfield import subfieldFactory
-    auxSubfields = pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsTimeDependent)
+    auxSubfields = pyre.inventory.facilityArray(
+        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsTimeDependent)
     auxSubfields.meta['tip'] = "Discretization of constraint parameters."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ class DirichletTimeDependent(Dirichlet,
         """
         Constructor.
         """
-        Dirichlet.__init__(self, name)
+        ConstraintBoundary.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
@@ -79,9 +79,10 @@ class DirichletTimeDependent(Dirichlet,
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
         if 0 == comm.rank:
-            self._info.log("Performing minimal initialization of time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
+            self._info.log(
+                "Performing minimal initialization of time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
 
-        Dirichlet.preinitialize(self, mesh)
+        ConstraintBoundary.preinitialize(self, mesh)
 
         ModuleDirichletTimeDependent.useInitial(self, self.useInitial)
         ModuleDirichletTimeDependent.useRate(self, self.useRate)
@@ -94,7 +95,7 @@ class DirichletTimeDependent(Dirichlet,
         """
         Verify compatibility of configuration.
         """
-        Dirichlet.verifyConfiguration(self, self.mesh())
+        ConstraintBoundary.verifyConfiguration(self, self.mesh())
         spaceDim = self.mesh().coordsys().spaceDim()
         for d in self.bcDOF:
             if d < 0 or d >= spaceDim:
@@ -109,11 +110,13 @@ class DirichletTimeDependent(Dirichlet,
         Setup members using inventory.
         """
         if self.inventory.useTimeHistory and isinstance(self.inventory.dbTimeHistory, NullComponent):
-            raise ValueError("Missing time history database for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
+            raise ValueError(
+                "Missing time history database for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
         if not self.inventory.useTimeHistory and not isinstance(self.inventory.dbTimeHistory, NullComponent):
-            self._warning.log("Ignoring time history database setting for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
+            self._warning.log(
+                "Ignoring time history database setting for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
 
-        Dirichlet._configure(self)
+        ConstraintBoundary._configure(self)
         return
 
     def _createModuleObj(self):

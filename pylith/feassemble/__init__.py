@@ -16,25 +16,17 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/feassemble/__init__.py
+# @file pylith/feassemble/__init__.py
 ##
-## @brief Python PyLith finite-element assembler module initialization
+# @brief Python PyLith finite-element assembler module initialization
 
-__all__ = ['CellGeometry',
-           'Constraint',
-           'ElasticityExplicit',
-           'ElasticityExplicitLgDeform',
-           'ElasticityImplicit',
-           'ElasticityImplicitLgDeform',
-           'FIATQuadrature',
-           'FIATLagrange',
-           'FIATSimplex',
-           'IntegratorElasticity',
-           'IntegratorElasticityLgDeform',
-           'Integrator',
-           'Quadrature',
-           'ReferenceCell',
-           ]
+__all__ = [
+    "ConstraintPointwise",
+    "IntegratorPointwise",
+    "ObservedComponent",
+    "Observer",
+    "SingleObserver",
+]
 
 
 # End of file

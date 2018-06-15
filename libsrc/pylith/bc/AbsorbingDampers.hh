@@ -25,14 +25,13 @@
 #define pylith_bc_absorbingdampers_hh
 
 // Include directives ---------------------------------------------------
-#include "pylith/bc/bcfwd.hh" // forward delcaration
-#include "pylith/feassemble/IntegratorBoundary.hh" // ISA IntegratorBoundary
+#include "pylith/bc/IntegratorBoundary.hh" // ISA IntegratorBoundary
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
 // AbsorbingDampers ----------------------------------------------------
 /// @brief AbsorbingDampers (e.g., traction) boundary conditions.
-class pylith::bc::AbsorbingDampers : public pylith::feassemble::IntegratorBoundary {
+class pylith::bc::AbsorbingDampers : public pylith::bc::IntegratorBoundary {
     friend class TestAbsorbingDampers;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////

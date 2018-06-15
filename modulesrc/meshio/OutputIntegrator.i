@@ -17,15 +17,15 @@
 //
 
 /**
- * @file modulesrc/meshio/OutputMaterial.i
+ * @file modulesrc/meshio/OutputIntegrator.i
  *
- * @brief Python interface to C++ OutputMaterial object.
+ * @brief Python interface to C++ OutputIntegrator object.
  */
 
 namespace pylith {
     namespace meshio {
 
-	class pylith::meshio::OutputMaterial : public OutputManager {
+	class pylith::meshio::OutputIntegrator : public OutputManager {
 
 	// PUBLIC METHODS ///////////////////////////////////////////////
 	public :
@@ -34,10 +34,10 @@ namespace pylith {
 	     *
 	     * @param[in] integrator Integrator to observe.
 	     */
-	    OutputMaterial(pylith::feassemble::IntegratorPointwise* const integrator);
+	    OutputIntegrator(pylith::feassemble::IntegratorPointwise* const integrator);
 
 	    /// Destructor
-	    ~OutputMaterial(void);
+	    ~OutputIntegrator(void);
 
 	    /// Deallocate PETSc and local data structures.
 	    void deallocate(void);
@@ -48,7 +48,7 @@ namespace pylith {
 	     */
 	    void verifyConfiguration(const pylith::topology::Field& solution) const;
 	    
-	}; // OutputMaterial
+	}; // OutputIntegrator
 
     } // meshio
 } // pylith

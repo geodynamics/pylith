@@ -31,7 +31,7 @@ subpkginclude_HEADERS = \
 	MeshIOLagrit.hh \
 	MeshIOLagrit.icc \
 	OutputManager.hh \
-	OutputMaterial.hh \
+	OutputIntegrator.hh \
 	OutputSoln.hh \
 	OutputSolnSubset.hh \
 	OutputSolnPoints.hh \

@@ -13,12 +13,12 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/feassemble/IntegratorBoundary.py
+# @file pylith/bc/IntegratorBoundary.py
 #
 # @brief Python abstract base class for pointwise integrators.
 
-from .IntegratorPointwise import IntegratorPointwise
-from .feassemble import IntegratorBoundary as ModuleIntegratorBoundary
+from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
+from .bc import IntegratorBoundary as ModuleIntegratorBoundary
 
 
 def validateLabel(value):

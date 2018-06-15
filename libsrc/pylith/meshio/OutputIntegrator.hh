@@ -17,13 +17,13 @@
 //
 
 /**
- * @file libsrc/meshio/OutputMaterial.hh
+ * @file libsrc/meshio/OutputIntegrator.hh
  *
  * @brief C++ object for managing output of the solution over the domain.
  */
 
-#if !defined(pylith_meshio_outputmaterial_hh)
-#define pylith_meshio_outputmaterial_hh
+#if !defined(pylith_meshio_outputintegrator_hh)
+#define pylith_meshio_outputintegrator_hh
 
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
@@ -32,11 +32,11 @@
 
 #include "pylith/utils/array.hh" // HASA string_vector
 
-// OutputMaterial -----------------------------------------------------
+// OutputIntegrator -----------------------------------------------------
 /** @brief C++ object for managing output of the solution over the domain.
  */
-class pylith::meshio::OutputMaterial : public OutputManager {
-    friend class TestOutputMaterial;   // unit testing
+class pylith::meshio::OutputIntegrator : public OutputManager {
+    friend class TestOutputIntegrator;   // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
@@ -45,10 +45,10 @@ public:
      *
      * @param[in] integrator Integrator to observe.
      */
-    OutputMaterial(pylith::feassemble::IntegratorPointwise* const integrator);
+    OutputIntegrator(pylith::feassemble::IntegratorPointwise* const integrator);
 
     /// Destructor
-    ~OutputMaterial(void);
+    ~OutputIntegrator(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -88,11 +88,11 @@ private:
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    OutputMaterial(const OutputMaterial&);   ///< Not implemented.
-    const OutputMaterial& operator=(const OutputMaterial&);   ///< Not implemented
+    OutputIntegrator(const OutputIntegrator&);   ///< Not implemented.
+    const OutputIntegrator& operator=(const OutputIntegrator&);   ///< Not implemented
 
-}; // OutputMaterial
+}; // OutputIntegrator
 
-#endif // pylith_meshio_outputmaterial_hh
+#endif // pylith_meshio_outputintegrator_hh
 
 // End of file

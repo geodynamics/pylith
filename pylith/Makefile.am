@@ -24,9 +24,9 @@ nobase_pkgpyexec_PYTHON = \
 	apps/EqInfoApp.py \
 	bc/__init__.py \
 	bc/BoundaryCondition.py \
-	bc/Dirichlet.py \
+	bc/ConstraintBoundary.py \
 	bc/DirichletTimeDependent.py \
-	bc/Neumann.py \
+	bc/IntegratorBoundary.py \
 	bc/NeumannTimeDependent.py \
 	bc/AuxFieldsTimeDependent.py \
 	bc/AbsorbingDampers.py \
@@ -40,7 +40,6 @@ nobase_pkgpyexec_PYTHON = \
 	faults/SingleRupture.py \
 	feassemble/__init__.py \
 	feassemble/IntegratorPointwise.py \
-	feassemble/IntegratorBoundary.py \
 	feassemble/ConstraintPointwise.py \
 	feassemble/Observer.py \
 	feassemble/SingleObserver.py \
@@ -66,7 +65,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/FieldFilterProject.py \
 	meshio/OutputManager.py \
 	meshio/OutputSoln.py \
-	meshio/OutputMaterial.py \
+	meshio/OutputIntegrator.py \
 	meshio/OutputTrigger.py \
 	meshio/OutputTriggerStep.py \
 	meshio/OutputTriggerTime.py \
