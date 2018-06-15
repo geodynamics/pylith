@@ -220,6 +220,9 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
 
     delete _derivedField; _derivedField = NULL;
 
+    const bool infoOnly = true;
+    notifyObservers(0.0, 0, solution, infoOnly);
+
     PYLITH_METHOD_END;
 } // initialize
 
@@ -239,6 +242,7 @@ pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Fie
     solutionDot.label("solution_dot");
 
     _setFEKernels(solution, KERNELS_RHS_RESIDUAL);
+    _setFEConstants(solution, dt);
     _computeResidual(residual, this, t, dt, solution, solutionDot);
 
     PYLITH_METHOD_END;
@@ -259,6 +263,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Fie
     if (!_hasFEKernels(KERNELS_LHS_RESIDUAL)) { PYLITH_METHOD_END; }
 
     _setFEKernels(solution, KERNELS_LHS_RESIDUAL);
+    _setFEConstants(solution, dt);
     _computeResidual(residual, this, t, dt, solution, solutionDot);
 
     PYLITH_METHOD_END;
@@ -279,6 +284,7 @@ pylith::feassemble::IntegratorBoundary::computeRHSJacobian(PetscMat jacobianMat,
     if (!_hasFEKernels(KERNELS_RHS_JACOBIAN)) { PYLITH_METHOD_END; }
 
     _setFEKernels(solution, KERNELS_RHS_JACOBIAN);
+    _setFEConstants(solution, dt);
     PYLITH_COMPONENT_ERROR(":TODO: Implement IntegratorBoundary::_computeJacobian().");
     throw std::logic_error(":TODO: Implement IntegratorBoundary::_computeJacobian().");
 
@@ -306,6 +312,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobianImplicit(PetscMat jaco
     if (!_hasFEKernels(KERNELS_LHS_JACOBIAN)) { PYLITH_METHOD_END; }
 
     _setFEKernels(solution, KERNELS_LHS_JACOBIAN);
+    _setFEConstants(solution, dt);
     PYLITH_COMPONENT_ERROR(":TODO: Implement IntegratorBoundary::_computeJacobian().");
     throw std::logic_error(":TODO: Implement IntegratorBoundary::_computeJacobian().");
 
@@ -330,6 +337,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobianLumpedInv(pylith::topo
     if (!_hasFEKernels(KERNELS_LHS_JACOBIAN_LUMPEDINV)) { PYLITH_METHOD_END; }
 
     _setFEKernels(solution, KERNELS_LHS_JACOBIAN_LUMPEDINV);
+    _setFEConstants(solution, dt);
     PYLITH_COMPONENT_ERROR(":TODO: Implement IntegratorBoundary::_computeJacobian().");
     throw std::logic_error(":TODO: Implement IntegratorBoundary::_computeJacobian().");
 
