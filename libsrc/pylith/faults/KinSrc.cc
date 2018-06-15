@@ -157,8 +157,7 @@ pylith::faults::KinSrc::slip(pylith::topology::Field* const faultAuxField,
     PetscDM dmFaultAux = faultAuxField->dmMesh();
     err = PetscObjectCompose((PetscObject) dmFaultAux, "dmAux", (PetscObject) _auxField->dmMesh());PYLITH_CHECK_ERROR(err);
     err = PetscObjectCompose((PetscObject) dmFaultAux, "A", (PetscObject) _auxField->localVector());PYLITH_CHECK_ERROR(err);
-
-    err = DMProjectFieldLocal(dmFaultAux, t, faultAuxField->localVector(), subfieldKernels, INSERT_VALUES, faultAuxField->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMProjectFieldLocal(dmFaultAux, t, faultAuxField->localVector(), subfieldKernels, ADD_VALUES, faultAuxField->localVector());PYLITH_CHECK_ERROR(err);
     delete[] subfieldKernels; subfieldKernels = NULL;
 
     PYLITH_METHOD_END;
