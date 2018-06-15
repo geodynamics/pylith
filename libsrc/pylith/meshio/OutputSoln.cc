@@ -60,11 +60,11 @@ pylith::meshio::OutputSoln::deallocate(void) {
 void
 pylith::meshio::OutputSoln::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputSoln::verifyConfiguration(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
 
-    const size_t numSubfields = _dataFields.size();
-    if ((numSubfields > 0) && (std::string("all") != _dataFields[0])) {
-        for (size_t iField = 0; iField < numSubfields; iField++) {
+    const size_t numDataFields = _dataFields.size();
+    if ((numDataFields > 0) && (std::string("all") != _dataFields[0])) {
+        for (size_t iField = 0; iField < numDataFields; iField++) {
             if (!solution.hasSubfield(_dataFields[iField].c_str())) {
                 std::ostringstream msg;
                 msg << "Could not find field '" << _dataFields[iField] << "' in solution '" << solution.label() << "' for output.";
@@ -84,13 +84,13 @@ pylith::meshio::OutputSoln::_writeDataStep(const PylithReal t,
                                            const PylithInt tindex,
                                            const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputSoln::_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
     const pylith::string_vector& subfieldNames = (1 == _dataFields.size() && std::string("all") == _dataFields[0]) ? solution.subfieldNames() : _dataFields;
 
     _openDataStep(t, solution.mesh());
-    const size_t numSubfields = subfieldNames.size();
-    for (size_t iField = 0; iField < numSubfields; iField++) {
+    const size_t numDataFields = subfieldNames.size();
+    for (size_t iField = 0; iField < numDataFields; iField++) {
         if (!solution.hasSubfield(subfieldNames[iField].c_str())) {
             std::ostringstream msg;
             msg << "Could not find field '" << subfieldNames[iField] << "' in solution for output.";

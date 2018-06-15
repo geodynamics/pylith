@@ -42,7 +42,7 @@ class OutputSoln(OutputManager, ModuleOutputSoln):
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="OutputSoln"):
+    def __init__(self, name="outputsoln"):
         """
         Constructor.
         """

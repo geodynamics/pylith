@@ -65,6 +65,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/FieldFilterProject.py \
 	meshio/OutputManager.py \
 	meshio/OutputSoln.py \
+	meshio/OutputSolnBoundary.py \
 	meshio/OutputIntegrator.py \
 	meshio/OutputConstraint.py \
 	meshio/OutputTrigger.py \

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2017 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -17,27 +17,31 @@
 //
 
 /**
- * @file libsrc/meshio/OutputSoln.hh
+ * @file libsrc/meshio/OutputSolnBoundary.hh
  *
- * @brief C++ object for managing output of the solution over the domain.
+ * @brief C++ object for managing output of finite-element data over a
+ * boundary.
  */
 
-#if !defined(pylith_meshio_outputsoln_hh)
-#define pylith_meshio_outputsoln_hh
+#if !defined(pylith_meshio_outputsolnboundary_hh)
+#define pylith_meshio_outputsolnboundary_hh
 
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include "OutputManager.hh" // ISA OutputManager
-#include "pylith/problems/problemsfwd.hh" // HASA Problem
+#include "pylith/meshio/OutputSoln.hh" // ISA OutputSoln
 
-#include "pylith/utils/array.hh" // HASA string_vector
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh
 
-// OutputSoln -----------------------------------------------------
-/** @brief C++ object for managing output of the solution over the domain.
+#include <string> // HASA std::string
+
+// OutputSolnBoundary -----------------------------------------------------
+/** @brief C++ object for managing output of finite-element data over
+ * a boundary.
  */
-class pylith::meshio::OutputSoln : public pylith::meshio::OutputManager {
-    friend class TestOutputSoln;   // unit testing
+class pylith::meshio::OutputSolnBoundary : public pylith::meshio::OutputSoln {
+
+    friend class TestOutputSolnBoundary; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
@@ -46,14 +50,20 @@ public:
      *
      * @param[in] problem Problem to observe.
      */
-    OutputSoln(pylith::problems::Problem* const problem);
+    OutputSolnBoundary(pylith::problems::Problem* const problem);
 
     /// Destructor
-    virtual ~OutputSoln(void);
+    virtual ~OutputSolnBoundary(void);
 
     /// Deallocate PETSc and local data structures.
     virtual
     void deallocate(void);
+
+    /** Set label identifier for subdomain.
+     *
+     * @param[in] value Label of subdomain.
+     */
+    void label(const char* value);
 
     /** Verify configuration.
      *
@@ -76,24 +86,22 @@ protected:
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
 
-    // PROTECTED MEMBERS ////////////////////////////////////////////////////
-protected:
-
-    pylith::problems::Problem* const _problem;
-
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
+
+    std::string _label; ///< Label of subdomain.
+    pylith::topology::Mesh* _boundaryMesh; ///< Mesh of subdomain.
 
     static const char* _pyreComponent; ///< Name of Pyre component.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    OutputSoln(const OutputSoln&);   ///< Not implemented.
-    const OutputSoln& operator=(const OutputSoln&);   ///< Not implemented
+    OutputSolnBoundary(const OutputSolnBoundary&); ///< Not implemented.
+    const OutputSolnBoundary& operator=(const OutputSolnBoundary&); ///< Not implemented
 
-}; // OutputSoln
+}; // OutputSolnBoundary
 
-#endif // pylith_meshio_outputsoln_hh
+#endif // pylith_meshio_outputsolnboundary_hh
 
 // End of file

@@ -39,7 +39,7 @@ swig_sources = \
 	DataWriter.i \
 	DataWriterVTK.i \
 	OutputManager.i \
-	OutputSolnSubset.i \
+	OutputSolnBoundary.i \
 	OutputSolnPoints.i \
 	../utils/PyreComponent.i \
 	../feassemble/Observer.i \

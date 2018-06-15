@@ -85,7 +85,7 @@ libpylith_la_SOURCES = \
 	meshio/PsetFile.cc \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
-	meshio/OutputSolnSubset.cc \
+	meshio/OutputSolnBoundary.cc \
 	meshio/OutputSolnPoints.cc \
 	meshio/FieldFilter.cc \
 	meshio/FieldFilterNone.cc \

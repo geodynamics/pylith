@@ -34,7 +34,7 @@ subpkginclude_HEADERS = \
 	OutputIntegrator.hh \
 	OutputConstraint.hh \
 	OutputSoln.hh \
-	OutputSolnSubset.hh \
+	OutputSolnBoundary.hh \
 	OutputSolnPoints.hh \
 	FieldFilter.hh \
 	FieldFilterNone.hh \

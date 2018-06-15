@@ -13,15 +13,15 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/OutputSolnSubset.py
+# @file pyre/meshio/OutputSolnBoundary.py
 #
 # @brief Python object for managing output of finite-element solution
 # information over a subdomain.
 #
 # Factory: observer
 
-from .OutputManager import OutputManager
-from .meshio import OutputSolnSubset as ModuleOutputSolnSubset
+from .OutputSoln import OutputSoln
+from .meshio import OutputSolnBoundary as ModuleOutputSolnSubset
 
 
 def validateLabel(value):
@@ -33,10 +33,10 @@ def validateLabel(value):
     return value
 
 
-class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
+class OutputSolnBoundary(OutputSoln, ModuleOutputSolnSubset):
     """
     Python object for managing output of finite-element solution
-    information over a subdomain.
+    information over a boundary.
 
     INVENTORY
 
@@ -46,13 +46,13 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
     Facilities
       - None
 
-    Factory: output_manager
+    Factory: observer
     """
 
     import pyre.inventory
 
     label = pyre.inventory.str("label", default="", validator=validateLabel)
-    label.meta['tip'] = "Label identifier for subdomain."
+    label.meta['tip'] = "Label identifier for boundary."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -60,23 +60,15 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
         """
         Constructor.
         """
-        OutputManager.__init__(self, name)
+        OutputSoln.__init__(self, name)
         return
 
-    def preinitialize(self):
+    def preinitialize(self, problem):
         """
-        Do
+        Do mimimal initialization.
         """
-        OutputManager.preinitialize(self)
+        OutputSoln.preinitialize(self, problem)
         ModuleOutputSolnSubset.label(self, self.label)
-        return
-
-    def verifyConfiguration(self, mesh):
-        """
-        Verify compatibility of configuration.
-        """
-        OutputManager.verifyConfiguration(self, mesh)
-        ModuleOutputSolnSubset.verifyConfiguration(self, mesh)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -85,14 +77,14 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
         """
         Set members based using inventory.
         """
-        OutputManager._configure(self)
+        OutputSoln._configure(self)
         return
 
-    def _createModuleObj(self):
+    def _createModuleObj(self, problem):
         """
         Create handle to C++ object.
         """
-        ModuleOutputSolnSubset.__init__(self)
+        ModuleOutputSolnSubset.__init__(self, problem)
         return
 
 
@@ -100,9 +92,9 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
 
 def observer():
     """
-    Factory associated with OutputManager.
+    Factory associated with OutputSoln.
     """
-    return OutputSolnSubset()
+    return OutputSolnBoundary()
 
 
 # End of file

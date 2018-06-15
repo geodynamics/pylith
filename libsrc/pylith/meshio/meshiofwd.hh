@@ -58,7 +58,7 @@ namespace pylith {
         class OutputIntegrator;
         class OutputConstraint;
         class OutputSoln;
-        class OutputSolnSubset;
+        class OutputSolnBoundary;
         class OutputSolnPoints;
 
         class OutputTrigger;
