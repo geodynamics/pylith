@@ -265,7 +265,12 @@ pylith::meshio::DataWriterHDF5::close(void)
     PetscMPIInt commRank;
     err = MPI_Comm_rank(PETSC_COMM_WORLD, &commRank); PYLITH_CHECK_ERROR(err);
     if (!commRank) {
-        Xdmf::write(hdf5Filename().c_str());
+        try {
+            Xdmf::write(hdf5Filename().c_str());
+        } catch (const std::exception& err) {
+            journal::error_t error("datawriter");
+            error << err.what() << journal::endl;
+        } // catch
     } // if
 
     PYLITH_METHOD_END;
