@@ -64,6 +64,7 @@ namespace pylith {
         class IsotropicLinearIncompElasticityPlaneStrain;
         class IsotropicLinearElasticity3D;
         class IsotropicLinearMaxwell3D;
+        class IsotropicLinearGenMaxwell3D;
 
         class Query;
 

@@ -63,6 +63,7 @@ libpylith_la_SOURCES = \
 	fekernels/Elasticity3D.cc \
 	fekernels/IsotropicLinearElasticity3D.cc \
 	fekernels/IsotropicLinearMaxwell3D.cc \
+	fekernels/IsotropicLinearGenMaxwell3D.cc \
 	fekernels/DispVel.cc \
 	fekernels/TimeDependentFn.cc \
 	fekernels/NeumannTimeDependent.cc \
@@ -76,6 +77,7 @@ libpylith_la_SOURCES = \
 	materials/IsotropicLinearIncompElasticityPlaneStrain.cc \
 	materials/IsotropicLinearElasticity3D.cc \
 	materials/IsotropicLinearMaxwell3D.cc \
+	materials/IsotropicLinearGenMaxwell3D.cc \
 	materials/Query.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \

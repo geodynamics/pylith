@@ -714,7 +714,8 @@ class pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_TetP4 :
     } // setUp
 
 }; // TestIsotropicLinearMaxwell3D_LinearStrain_TetP4
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_TetP4);
+// Leave this one out for now since it takes too long.
+//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_TetP4);
 
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_HexQ1 :
@@ -866,7 +867,8 @@ class pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_HexQ4 :
     } // setUp
 
 }; // TestIsotropicLinearMaxwell3D_LinearStrain_HexQ4
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_HexQ4);
+// Leave this one out for now since it takes too long.
+//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwell3D_LinearStrain_HexQ4);
 
 
 // End of file
