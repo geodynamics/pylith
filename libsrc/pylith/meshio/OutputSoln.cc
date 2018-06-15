@@ -86,18 +86,21 @@ pylith::meshio::OutputSoln::_writeDataStep(const PylithReal t,
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
-    const pylith::string_vector& subfieldNames = (1 == _dataFields.size() && std::string("all") == _dataFields[0]) ? solution.subfieldNames() : _dataFields;
+    const pylith::topology::Field* auxField = NULL;
+    const pylith::topology::Field* derivedField = NULL;
+
+    const pylith::string_vector& dataNames = _dataNamesExpanded(solution, auxField, derivedField);
 
     _openDataStep(t, solution.mesh());
-    const size_t numDataFields = subfieldNames.size();
+    const size_t numDataFields = dataNames.size();
     for (size_t iField = 0; iField < numDataFields; iField++) {
-        if (!solution.hasSubfield(subfieldNames[iField].c_str())) {
+        if (!solution.hasSubfield(dataNames[iField].c_str())) {
             std::ostringstream msg;
-            msg << "Could not find field '" << subfieldNames[iField] << "' in solution for output.";
+            msg << "Could not find field '" << dataNames[iField] << "' in solution for output.";
             throw std::runtime_error(msg.str());
         } // if
 
-        pylith::topology::Field* fieldBuffer = _getBuffer(solution, subfieldNames[iField].c_str()); assert(fieldBuffer);
+        pylith::topology::Field* fieldBuffer = _getBuffer(solution, dataNames[iField].c_str()); assert(fieldBuffer);
         _appendField(t, fieldBuffer, fieldBuffer->mesh());
     } // for
     _closeDataStep();
