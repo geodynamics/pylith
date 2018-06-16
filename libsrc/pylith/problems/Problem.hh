@@ -62,7 +62,7 @@ public:
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
-    //. Constructor
+    /// Constructor
     Problem(void);
 
     /// Destructor

@@ -56,21 +56,19 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Set station names and coordinates of points .
+    /** Set station coordinates and names.
      *
-     * @param[in] points Array of dimensioned coordinates for points [numPoints*spaceDim].
-     * @param[in] numPoints Number of points.
+     * @param[in] points Array of station coordinates [numStations * spaceDim].
+     * @param[in] numStations Number of stations.
      * @param[in] spaceDim Spatial dimension for coordinates.
-     * @param[in] stationNames Array with name for each point, e.g., station name.
-     * @param[in] numStations Number of stations (points) in array.
-       @param[in] coordsys Coordinate system associated with points.
+     * @param[in] stationNames Array with station names.
+     * @param[in] numStationNames Number of station banes.
      */
-    void points(const PylithReal* points,
-                const int numPoints,
-                const int spaceDim,
-                const char* const* stationNames,
-                const int numStations,
-                const spatialdata::geocoords::CoordSys* coordsys);
+    void stations(const PylithReal* stationCoords,
+                  const PylithInt numStations,
+                  const PylithInt spaceDim,
+                  const char* const* stationNames,
+                  const PylithInt numStationNames);
 
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
@@ -85,8 +83,11 @@ protected:
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
 
-    // Setup interpolatior.
-    void _setupInterpolator(void);
+    /** Setup interpolatior.
+     *
+     * @param[in] mesh Finite-element mesh of domain.
+     */
+    void _setupInterpolator(const pylith::topology::Mesh& mesh);
 
     // Interpolate field.
     void _interpolateField(void);
@@ -94,18 +95,21 @@ protected:
     /// Write dataset with names of points to file.
     void _writePointNames(void);
 
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+private:
+
+    pylith::scalar_array _stationCoords; ///< Array of station coordinates.
+    pylith::string_vector _stationNames; ///< Array of station names.
+    pylith::topology::Mesh* _stationsMesh;   ///< Mesh for stations (no cells).
+    DMInterpolationInfo _interpolator;   ///< Field interpolator.
+
+    static const char* _pyreComponent; ///< Name of Pyre component.
+
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
     OutputSolnPoints(const OutputSolnPoints&);   ///< Not implemented.
     const OutputSolnPoints& operator=(const OutputSolnPoints&);   ///< Not implemented
-
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
-    pylith::topology::Mesh* _pointsMesh;   ///< Mesh for points (no cells).
-    pylith::string_vector _stations; ///< Array of station names, one for each point.
-    DMInterpolationInfo _interpolator;   ///< Field interpolator.
 
 }; // OutputSolnPoints
 

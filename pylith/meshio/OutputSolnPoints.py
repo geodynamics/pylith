@@ -63,8 +63,16 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
         """
         OutputSoln.preinitialize(self, problem)
 
-        stations, points = self.reader.read()
-        ModuleOutputSolnPoints.points(points, stations, reader.coordsys)
+        stationNames, stationCoords = self.reader.read()
+
+        # Convert to mesh coordinate system
+        from spatialdata.geocoords.Converter import convert
+        convert(points, problem.mesh.coordsys(), reaer.coordsys)
+
+        # Nondimensionalize
+        stationsCoords /= problem.normalizer.lengthScale.value
+
+        ModuleOutputSolnPoints.stations(stationCoords, stationNames)
         return
 
     def initialize(self, mesh, normalizer):
