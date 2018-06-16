@@ -53,10 +53,9 @@ public:
     OutputSolnBoundary(pylith::problems::Problem* const problem);
 
     /// Destructor
-    virtual ~OutputSolnBoundary(void);
+    ~OutputSolnBoundary(void);
 
     /// Deallocate PETSc and local data structures.
-    virtual
     void deallocate(void);
 
     /** Set label identifier for subdomain.
@@ -69,7 +68,6 @@ public:
      *
      * @param[in] solution Solution field.
      */
-    virtual
     void verifyConfiguration(const pylith::topology::Field& solution) const;
 
     // PROTECTED METHODS ////////////////////////////////////////////////////
@@ -81,7 +79,6 @@ protected:
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
      */
-    virtual
     void _writeDataStep(const PylithReal t,
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);

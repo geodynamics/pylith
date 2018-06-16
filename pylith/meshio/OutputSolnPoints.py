@@ -20,20 +20,11 @@
 #
 # FACTORY: observer
 
-from OutputManager import OutputManager
-from meshio import OutputSolnPoints as ModuleOutputSolnPoints
+from .OutputSoln import OutputSoln
+from .meshio import OutputSolnPoints as ModuleOutputSolnPoints
 
 
-def validateFilename(value):
-    """
-    Validate filename with list of points.
-    """
-    if 0 == len(value):
-        raise ValueError("Filename for list of points not specified.")
-    return value
-
-
-class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
+class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
     """
     Python object for managing output of finite-element solution
     information over a subdomain.
@@ -63,14 +54,17 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
         """
         Constructor.
         """
-        OutputManager.__init__(self, name)
+        OutputSoln.__init__(self, name)
         return
 
-    def preinitialize(self):
+    def preinitialize(self, problem):
         """
-        Do
+        Do mimimal initialization.
         """
-        OutputManager.preinitialize(self)
+        OutputSoln.preinitialize(self, problem)
+
+        stations, points = self.reader.read()
+        ModuleOutputSolnPoints.points(points, stations, reader.coordsys)
         return
 
     def initialize(self, mesh, normalizer):
@@ -80,7 +74,7 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
         logEvent = "%sinit" % self._loggingPrefix
         self._eventLogger.eventBegin(logEvent)
 
-        OutputManager.initialize(self, normalizer)
+        OutputSoln.initialize(self, normalizer)
 
         # Read points
         stations, points = self.reader.read()
@@ -101,14 +95,14 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
         """
         Set members based using inventory.
         """
-        OutputManager._configure(self)
+        OutputSoln._configure(self)
         return
 
-    def _createModuleObj(self):
+    def _createModuleObj(self, problem):
         """
         Create handle to C++ object.
         """
-        ModuleOutputSolnPoints.__init__(self)
+        ModuleOutputSolnPoints.__init__(self, problem)
         return
 
     def _open(self, mesh, nsteps, label, labelId):
@@ -128,7 +122,7 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
 
 def observer():
     """
-    Factory associated with OutputManager.
+    Factory associated with OutputSoln.
     """
     return OutputSolnPoints()
 
