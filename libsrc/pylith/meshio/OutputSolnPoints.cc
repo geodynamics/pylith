@@ -20,8 +20,8 @@
 
 #include "OutputSolnPoints.hh" // implementation of class methods
 
-#include "DataWriter.hh" // USES DataWriter
-#include "MeshBuilder.hh" // USES MeshBuilder
+#include "pylith/meshio/DataWriter.hh" // USES DataWriter
+#include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Fields.hh" // USES Fields
@@ -37,8 +37,8 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshio::OutputSolnPoints::OutputSolnPoints(void) :
-    _mesh(NULL),
+pylith::meshio::OutputSolnPoints::OutputSolnPoints(pylith::problems::Problem* const problem) :
+    OutputSoln(problem),
     _pointsMesh(NULL),
     _interpolator(NULL)
 { // constructor
@@ -54,35 +54,105 @@ pylith::meshio::OutputSolnPoints::~OutputSolnPoints(void)
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::OutputSolnPoints::deallocate(void)
-{ // deallocate
+pylith::meshio::OutputSolnPoints::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    OutputManager::deallocate();
+    OutputSoln::deallocate();
 
-    if (_interpolator) {
-        PetscErrorCode err = DMInterpolationDestroy(&_interpolator); PYLITH_CHECK_ERROR(err);
-    } // if
+    PetscErrorCode err = DMInterpolationDestroy(&_interpolator); PYLITH_CHECK_ERROR(err);
 
-    _mesh = NULL; // :TODO: Use shared pointer
     delete _pointsMesh; _pointsMesh = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
 
 // ----------------------------------------------------------------------
+// Set station names and coordinates of points .
+void
+pylith::meshio::OutputSolnPoints::points(const PylithReal* points,
+                                         const int numPoints,
+                                         const int spaceDim,
+                                         const char* const* stationNames,
+                                         const int numStations,
+                                         const spatialdata::geocoords::CoordSys* coordsys) {
+    // 1. Convert points to mesh coordinates system.
+    //
+    // 2. Nondimensionalize coordinates.
+    //
+    // 3. Create serial mesh.
+
+#if 0
+    assert(points);
+
+    // Create nondimensionalized array of point locations
+    const int size = numPoints * spaceDim;
+    scalar_array pointsNondim(size);
+    for (int i = 0; i < size; ++i) {
+        pointsNondim[i] = points[i] / normalizer.lengthScale();
+    } // for
+
+    // Create serial mesh corresponding to points.
+    const int meshDim = 0;
+    delete _pointsMesh; _pointsMesh = new pylith::topology::Mesh(meshDim, _mesh->comm()); assert(_pointsMesh);
+
+    const int numPointsLocal = _interpolator->n;
+    PylithScalar* pointsLocal = NULL;
+    err = VecGetArray(_interpolator->coords, &pointsLocal); PYLITH_CHECK_ERROR(err);
+    scalar_array pointsArray(numPointsLocal*spaceDim); // Array of vertex coordinates for local mesh.
+    const int sizeLocal = numPointsLocal*spaceDim;
+    for (int i = 0; i < sizeLocal; ++i) {
+        // Must scale by length scale because we gave interpolator nondimensioned coordinates
+        pointsArray[i] = pointsLocal[i]*normalizer.lengthScale();
+    } // for
+    int_array cells(numPointsLocal);
+    for (int i = 0; i < numPointsLocal; ++i) {
+        cells[i] = i;
+    } // for
+    const int numCells = numPointsLocal;
+    const int numCorners = 1;
+    const bool isParallel = true;
+    MeshBuilder::buildMesh(_pointsMesh, &pointsArray, numPointsLocal, spaceDim,
+                           cells, numCells, numCorners, meshDim, isParallel);
+    err = VecRestoreArray(_interpolator->coords, &pointsLocal); PYLITH_CHECK_ERROR(err);
+
+    // Set coordinate system and create nondimensionalized coordinates
+    _pointsMesh->coordsys(_mesh->coordsys());
+    topology::MeshOps::nondimensionalize(_pointsMesh, normalizer);
+
+    if (!_fields) {
+        _fields = new topology::Fields(*_pointsMesh); assert(_fields);
+    } // if
+
+    // Copy station names. :TODO: Reorder to match output (pointsLocal).
+    _stations.resize(numPointsLocal);
+    for (int iLocal = 0; iLocal < numPointsLocal; ++iLocal) {
+        // Find point in array of points to get index for station name.
+        for (int iAll = 0; iAll < numPoints; ++iAll) {
+            const PylithScalar tolerance = 1.0e-6;
+            PylithScalar dist = 0.0;
+            for (int iDim = 0; iDim < spaceDim; ++iDim) {
+                dist += pow(points[iAll*spaceDim+iDim] - pointsArray[iLocal*spaceDim+iDim], 2);
+            } // for
+            if (sqrt(dist) < tolerance) {
+                _stations[iLocal] = names[iAll];
+                break;
+            } // if
+        } // for
+    } // for
+#endif
+    PYLITH_METHOD_END;
+
+} // points
+
+// ----------------------------------------------------------------------
 // Setup interpolator.
 void
-pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
-                                                    const PylithScalar* points,
-                                                    const int numPoints,
-                                                    const int spaceDim,
-                                                    const char* const* names,
-                                                    const int numNames,
-                                                    const spatialdata::units::Nondimensional& normalizer)
-{ // setupInterpolator
+pylith::meshio::OutputSolnPoints::_setupInterpolator(void) {
     PYLITH_METHOD_BEGIN;
 
+    // Make private method?
+
+#if 0
     assert(mesh);
     assert(points);
 
@@ -172,37 +242,32 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
             } // if
         } // for
     } // for
+#endif
 
     PYLITH_METHOD_END;
 } // setupInterpolator
 
 
 // ----------------------------------------------------------------------
-// Prepare for output.
+// Write solution at time step.
 void
-pylith::meshio::OutputSolnPoints::_open(const topology::Mesh& mesh,
-                                        const bool isInfo) {
+pylith::meshio::OutputSolnPoints::_writeDataStep(const PylithReal t,
+                                                 const PylithInt tindex,
+                                                 const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
 
-    assert(_pointsMesh);
-    assert(_writer);
-    _writer->open(*_pointsMesh, isInfo);
-
     PYLITH_METHOD_END;
-} // open
-
+} // _writeDataSet
 
 // ----------------------------------------------------------------------
 // Append finite-element field to file.
 void
-pylith::meshio::OutputSolnPoints::_appendField(const PylithReal t,
-                                               pylith::topology::Field& field,
-                                               const pylith::topology::Mesh& mesh) {
+pylith::meshio::OutputSolnPoints::_interpolateField(void) {
     PYLITH_METHOD_BEGIN;
 
 #if 1
-    PYLITH_COMPONENT_ERROR(":TODO: Implement OutputSolnPoints::appendField().");
-    throw std::logic_error(":TODO: Implement OutputSolnPoints::appendField().");
+    PYLITH_COMPONENT_ERROR(":TODO: Implement OutputSolnPoints::interpolateField().");
+    throw std::logic_error(":TODO: Implement OutputSolnPoints::interpolateField().");
 #else
     assert(_mesh);
     assert(_fields);
@@ -258,7 +323,7 @@ pylith::meshio::OutputSolnPoints::_appendField(const PylithReal t,
     err = DMInterpolationSetDof(_interpolator, fiberDim); PYLITH_CHECK_ERROR(err);
     err = DMInterpolationEvaluate(_interpolator, dmMesh, field.localVector(), fieldInterp.localVector()); PYLITH_CHECK_ERROR(err);
 
-    OutputManager::appendVertexField(t, fieldInterp, *_pointsMesh);
+    OutputSoln::appendVertexField(t, fieldInterp, *_pointsMesh);
 #endif
 
     PYLITH_METHOD_END;

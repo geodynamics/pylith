@@ -85,8 +85,6 @@ libpylith_la_SOURCES = \
 	meshio/PsetFile.cc \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
-	meshio/OutputSolnBoundary.cc \
-	meshio/OutputSolnPoints.cc \
 	meshio/FieldFilter.cc \
 	meshio/FieldFilterNone.cc \
 	meshio/FieldFilterProject.cc \
@@ -96,6 +94,8 @@ libpylith_la_SOURCES = \
 	meshio/OutputIntegrator.cc \
 	meshio/OutputConstraint.cc \
 	meshio/OutputSoln.cc \
+	meshio/OutputSolnBoundary.cc \
+	meshio/OutputSolnPoints.cc \
 	meshio/OutputTrigger.cc \
 	meshio/OutputTriggerStep.cc \
 	meshio/OutputTriggerTime.cc \
