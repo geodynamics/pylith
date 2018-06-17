@@ -50,6 +50,7 @@ nobase_pkgpyexec_PYTHON = \
 	materials/IsotropicLinearIncompElasticityPlaneStrain.py \
 	materials/AuxFieldsIsotropicLinearElasticity.py \
 	materials/AuxFieldsIsotropicLinearMaxwell.py \
+	materials/IsotropicLinearElasticity3D.py \
 	meshio/__init__.py \
 	meshio/CellFilter.py \
 	meshio/DataWriter.py \
