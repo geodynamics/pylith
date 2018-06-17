@@ -113,20 +113,8 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
         ModuleOutputSolnPoints.__init__(self, problem)
         return
 
-    def _open(self, mesh, nsteps, label, labelId):
-        """
-        Call C++ open();
-        """
-        if label != None and labelId != None:
-            ModuleOutputSolnPoints.open(self, mesh, nsteps, label, labelId)
-        else:
-            ModuleOutputSolnPoints.open(self, mesh, nsteps)
-
-        ModuleOutputSolnPoints.writePointNames(self)
-        return
-
-
 # FACTORIES ////////////////////////////////////////////////////////////
+
 
 def observer():
     """

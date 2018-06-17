@@ -43,7 +43,7 @@
 #include "pylith/meshio/OutputManager.hh"
 #include "pylith/meshio/OutputSoln.hh"
 #include "pylith/meshio/OutputSolnBoundary.hh"
-  //#include "pylith/meshio/OutputSolnPoints.hh"
+#include "pylith/meshio/OutputSolnPoints.hh"
 #include "pylith/meshio/OutputIntegrator.hh"
 #include "pylith/meshio/OutputConstraint.hh"
 
@@ -98,7 +98,7 @@ import_array();
 %include "OutputManager.i"
 %include "OutputSoln.i"
 %include "OutputSolnBoundary.i"
- //%include "OutputSolnPoints.i"
+%include "OutputSolnPoints.i"
 %include "OutputIntegrator.i"
 %include "OutputConstraint.i"
 

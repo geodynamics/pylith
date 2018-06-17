@@ -83,14 +83,21 @@ protected:
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
 
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private:
+
     /** Setup interpolatior.
      *
      * @param[in] mesh Finite-element mesh of domain.
      */
     void _setupInterpolator(const pylith::topology::Mesh& mesh);
 
-    // Interpolate field.
-    void _interpolateField(void);
+    /** Interpolate field.
+     *
+     * @param[in] field Field to interpolate;
+     * @returns Interpolated field.
+     */
+    pylith::topology::Field* _interpolateField(const pylith::topology::Field& field);
 
     /// Write dataset with names of points to file.
     void _writePointNames(void);
