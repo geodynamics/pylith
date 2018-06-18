@@ -29,7 +29,8 @@ swig_sources = \
 	Material.i \
 	IsotropicLinearElasticityPlaneStrain.i \
 	IsotropicLinearMaxwellPlaneStrain.i \
-	IsotropicLinearIncompElasticityPlaneStrain.i
+	IsotropicLinearIncompElasticityPlaneStrain.i \
+	IsotropicLinearElasticity3D.i
 
 swigincludedir = $(pkgdatadir)/swig/$(subpackage)
 swiginclude_HEADERS = \
