@@ -21,6 +21,12 @@
 %{
 #include "pylith/materials/Material.hh"
 #include "pylith/materials/IsotropicLinearElasticityPlaneStrain.hh"
+#include "pylith/materials/IsotropicLinearIncompElasticityPlaneStrain.hh"
+#include "pylith/materials/IsotropicLinearMaxwellPlaneStrain.hh"
+#include "pylith/materials/IsotropicLinearGenMaxwellPlaneStrain.hh"
+#include "pylith/materials/IsotropicLinearElasticity3D.hh"
+#include "pylith/materials/IsotropicLinearMaxwell3D.hh"
+#include "pylith/materials/IsotropicLinearGenMaxwell3D.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -52,6 +58,12 @@ import_array();
 
 %include "Material.i"
 %include "IsotropicLinearElasticityPlaneStrain.i"
+%include "IsotropicLinearIncompElasticityPlaneStrain.i"
+%include "IsotropicLinearMaxwellPlaneStrain.i"
+%include "IsotropicLinearGenMaxwellPlaneStrain.i"
+%include "IsotropicLinearElasticity3D.i"
+%include "IsotropicLinearMaxwell3D.i"
+%include "IsotropicLinearGenMaxwell3D.i"
 
 
 // End of file
