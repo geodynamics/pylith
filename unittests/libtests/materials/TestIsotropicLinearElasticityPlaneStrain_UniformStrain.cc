@@ -172,9 +172,9 @@ protected:
         static const char* _auxSubfields[3] = {"density", "shear_modulus", "bulk_modulus"};
         _mydata->auxSubfields = _auxSubfields;
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
-            {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
-            {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
+            pylith::topology::Field::Discretization(0, 1), // density
+            pylith::topology::Field::Discretization(0, 1), // shear_modulus
+            pylith::topology::Field::Discretization(0, 1), // bulk_modulus
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -226,7 +226,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_UniformStrain_
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
+            pylith::topology::Field::Discretization(1, 1), // disp
         };
         _mydata->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -253,14 +253,14 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_UniformStrain_
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            {2, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
+            pylith::topology::Field::Discretization(2, 2), // disp
         };
         _mydata->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
-            {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
-            {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
+            pylith::topology::Field::Discretization(0, 2), // density
+            pylith::topology::Field::Discretization(0, 2), // shear_modulus
+            pylith::topology::Field::Discretization(0, 2), // bulk_modulus
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -287,14 +287,14 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_UniformStrain_
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            {3, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
+            pylith::topology::Field::Discretization(3, 3), // disp
         };
         _mydata->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
-            {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
-            {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
+            pylith::topology::Field::Discretization(0, 3), // density
+            pylith::topology::Field::Discretization(0, 3), // shear_modulus
+            pylith::topology::Field::Discretization(0, 3), // bulk_modulus
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -321,14 +321,14 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_UniformStrain_
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            {4, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
+            pylith::topology::Field::Discretization(4, 4), // disp
         };
         _mydata->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
-            {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
-            {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
+            pylith::topology::Field::Discretization(0, 4), // density
+            pylith::topology::Field::Discretization(0, 4), // shear_modulus
+            pylith::topology::Field::Discretization(0, 4), // bulk_modulus
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -355,14 +355,14 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_UniformStrain_
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
+            pylith::topology::Field::Discretization(1, 1), // disp
         };
         _mydata->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
-            {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
-            {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
+            pylith::topology::Field::Discretization(0, 1), // density
+            pylith::topology::Field::Discretization(0, 1), // shear_modulus
+            pylith::topology::Field::Discretization(0, 1), // bulk_modulus
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -389,14 +389,14 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_UniformStrain_
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            {2, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
+            pylith::topology::Field::Discretization(2, 2), // disp
         };
         _mydata->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
-            {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
-            {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
+            pylith::topology::Field::Discretization(0, 2), // density
+            pylith::topology::Field::Discretization(0, 2), // shear_modulus
+            pylith::topology::Field::Discretization(0, 2), // bulk_modulus
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -423,14 +423,14 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_UniformStrain_
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            {3, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
+            pylith::topology::Field::Discretization(3, 3), // disp
         };
         _mydata->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
-            {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
-            {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
+            pylith::topology::Field::Discretization(0, 3), // density
+            pylith::topology::Field::Discretization(0, 3), // shear_modulus
+            pylith::topology::Field::Discretization(0, 3), // bulk_modulus
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -457,14 +457,14 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_UniformStrain_
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            {4, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
+            pylith::topology::Field::Discretization(4, 4), // disp
         };
         _mydata->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
-            {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
-            {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
+            pylith::topology::Field::Discretization(0, 4), // density
+            pylith::topology::Field::Discretization(0, 4), // shear_modulus
+            pylith::topology::Field::Discretization(0, 4), // bulk_modulus
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
