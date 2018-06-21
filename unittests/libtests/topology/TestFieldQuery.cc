@@ -90,14 +90,14 @@ pylith::topology::TestFieldQuery::testQueryFn(void) {
     const char* name = "abc";
 
     // Test with non-null query functions and database.
-    pylith::topology::FieldQuery::queryfn_type fnA;
+    pylith::topology::FieldQuery::queryfn_type fnA = NULL;
     spatialdata::spatialdb::UserFunctionDB dbA;
     _query->queryFn(name, fnA, &dbA);
     CPPUNIT_ASSERT_EQUAL(fnA, _query->queryFn(name));
     CPPUNIT_ASSERT_EQUAL((const spatialdata::spatialdb::SpatialDB*)&dbA, _query->queryDB(name));
 
     // Test with non-null query function but NULL database.
-    pylith::topology::FieldQuery::queryfn_type fnB;
+    pylith::topology::FieldQuery::queryfn_type fnB = NULL;
     _query->queryFn(name, fnB);
     CPPUNIT_ASSERT_EQUAL(fnB, _query->queryFn(name));
     CPPUNIT_ASSERT(!_query->queryDB(name));

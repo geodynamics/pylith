@@ -61,29 +61,26 @@ protected:
         static const char* displacementComponents[2] = { "displacement_x", "displacement_y" };
         static const char* temperatureComponents[1] = {"temperature"};
         static const pylith::topology::Field::Description auxDescriptions[2] = {
-            {
+            pylith::topology::Field::Description(
                 "displacement", // label
                 "displacement", // alias
-                pylith::topology::Field::VECTOR, // vectorFieldType
                 pylith::string_vector(displacementComponents, displacementComponents+2),
                 2,
-                1000.0,
-                NULL,
-            },{
-                "temperature", // label
-                "temperature", // alias
-                pylith::topology::Field::SCALAR, // vectorFieldType
-                pylith::string_vector(temperatureComponents, temperatureComponents+1),
-                1,
-                1.0,
-                NULL,
-            },
+                pylith::topology::Field::VECTOR, // vectorFieldType
+                1000.0),
+                pylith::topology::Field::Description(
+                    "temperature", // label
+                    "temperature", // alias
+                    pylith::string_vector(temperatureComponents, temperatureComponents+1),
+                    1,
+                    pylith::topology::Field::SCALAR, // vectorFieldType
+                    1.0),
         };
         _data->auxDescriptions = const_cast<pylith::topology::Field::Description*>(auxDescriptions);
 
         static const pylith::topology::Field::Discretization auxDiscretizations[2] = {
-            {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // displacement
-            {2, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // temperature
+            pylith::topology::Field::Discretization(1, 2), // displacement
+            pylith::topology::Field::Discretization(2, 2), // temperature
         };
         _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(auxDiscretizations);
 
