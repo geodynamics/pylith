@@ -46,7 +46,7 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
   const char *groupName = "";
 
   if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
-  err = DMPlexCreateSubmesh(dmMesh, groupField, 1, &subdm);PYLITH_CHECK_ERROR(err);
+  err = DMPlexCreateSubmesh(dmMesh, groupField, 1, PETSC_FALSE, &subdm);PYLITH_CHECK_ERROR(err);
   // Check that no cell have all vertices on the fault
   if (groupField) {
     IS              subpointIS;
