@@ -16,38 +16,39 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/materials/TestHomogeneous.py
+# @file unittests/pytests/materials/TestHomogeneous.py
 
-## @brief Unit testing of Homogenous object.
+# @brief Unit testing of Homogenous object.
 
 import unittest
 
 # ----------------------------------------------------------------------
+
+
 class TestHomogeneous(unittest.TestCase):
-  """
-  Unit testing of Homogeneous object.
-  """
-
-  def test_constructor(self):
     """
-    Test constructor.
+    Unit testing of Homogeneous object.
     """
-    from pylith.materials.Homogeneous import Homogeneous
-    materials = Homogeneous()
-    return
+
+    def test_constructor(self):
+        """
+        Test constructor.
+        """
+        from pylith.materials.Homogeneous import Homogeneous
+        materials = Homogeneous()
+        return
+
+    def test_configure(self):
+        """
+        Test _configure().
+        """
+        from pylith.materials.Homogeneous import Homogeneous
+        materials = Homogeneous()
+        from pylith.materials.IsotropicLinearElasticityPlaneStrain import IsotropicLinearElasticityPlaneStrain
+        materials.material = IsotropicLinearElasticityPlaneStrain()
+        materials._configure()
+        self.assertEqual(1, len(materials.components()))
+        return
 
 
-  def test_configure(self):
-    """
-    Test _configure().
-    """
-    from pylith.materials.Homogeneous import Homogeneous
-    materials = Homogeneous()
-    from pylith.materials.ElasticIsotropic3D import ElasticIsotropic3D
-    materials.inventory.material = ElasticIsotropic3D()
-    materials._configure()
-    self.assertEqual(1, len(materials.components()))
-    return
-
-
-# End of file 
+# End of file

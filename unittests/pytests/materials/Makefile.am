@@ -25,20 +25,7 @@ dist_check_SCRIPTS = testmaterials.py
 
 noinst_PYTHON = \
 	TestHomogeneous.py \
-	TestMaterial.py \
-	TestElasticMaterial.py \
-	TestElasticPlaneStrain.py \
-	TestElasticPlaneStress.py \
-	TestElasticIsotropic3D.py \
-	TestMaxwellIsotropic3D.py \
-	TestMaxwellPlaneStrain.py \
-	TestGenMaxwellIsotropic3D.py \
-	TestGenMaxwellPlaneStrain.py \
-	TestGenMaxwellQpQsIsotropic3D.py \
-	TestPowerLaw3D.py \
-	TestPowerLawPlaneStrain.py \
-	TestDruckerPrager3D.py \
-	TestDruckerPragerPlaneStrain.py
+	TestIsotropicLinearElasticityPlaneStrain.py
 
 
-# End of file 
+# End of file
