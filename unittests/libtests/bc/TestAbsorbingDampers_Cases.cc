@@ -114,9 +114,9 @@ protected:
                 };
                 _data->auxSubfields = const_cast<const char**>(auxSubfields);
                 static const pylith::topology::Field::Discretization auxDiscretizations[3] = {
-                    {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
-                    {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // vp
-                    {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // vs
+                    pylith::topology::Field::Discretization(0, 1), // density
+                    pylith::topology::Field::Discretization(0, 1), // vp
+                    pylith::topology::Field::Discretization(0, 1), // vs
                 };
                 _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(auxDiscretizations);
 
@@ -129,9 +129,9 @@ protected:
                 _data->t = 1.23;
                 _data->solnNumSubfields = 3;
                 static const pylith::topology::Field::Discretization solnDiscretizations[3] = {
-                    {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // displacement
-                    {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // velocity
-                    {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // fluid_pressure
+                    pylith::topology::Field::Discretization(1, 1), // displacement
+                    pylith::topology::Field::Discretization(1, 1), // velocity
+                    pylith::topology::Field::Discretization(1, 1), // fluid_pressure
                 };
                 _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(solnDiscretizations);
 

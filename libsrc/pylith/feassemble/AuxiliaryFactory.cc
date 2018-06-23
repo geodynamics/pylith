@@ -39,8 +39,7 @@ pylith::feassemble::AuxiliaryFactory::AuxiliaryFactory(void) :
     _queryDB(NULL),
     _fieldQuery(NULL)
 { // constructor
-    const pylith::topology::FieldBase::Discretization defaultInfo = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
-    _subfieldDiscretizations["default"] = defaultInfo;
+    _subfieldDiscretizations["default"] = pylith::topology::FieldBase::Discretization();
 } // constructor
 
 // ----------------------------------------------------------------------

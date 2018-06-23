@@ -109,7 +109,7 @@ protected:
                 static const char* auxSubfields[1] = { "initial_amplitude" };
                 _data->auxSubfields = const_cast<const char**>(auxSubfields);
                 static const pylith::topology::Field::Discretization auxDiscretizations[1] = {
-                    {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // initial_amplitude
+                    pylith::topology::Field::Discretization(1, 1), // initial_amplitude
                 };
                 _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(auxDiscretizations);
 
@@ -121,9 +121,9 @@ protected:
                 _data->t = 1.23;
                 _data->solnNumSubfields = 3;
                 static const pylith::topology::Field::Discretization solnDiscretizations[3] = {
-                    {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // displacement
-                    {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // velocity
-                    {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // fluid_pressure
+                    pylith::topology::Field::Discretization(1, 1), // displacement
+                    pylith::topology::Field::Discretization(1, 1), // velocity
+                    pylith::topology::Field::Discretization(1, 1), // fluid_pressure
                 };
                 _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(solnDiscretizations);
 
