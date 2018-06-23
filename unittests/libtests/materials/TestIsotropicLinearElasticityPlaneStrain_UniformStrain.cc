@@ -336,7 +336,8 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_UniformStrain_
     } // setUp
 
 }; // TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP4
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP4);
+// Leave this out for now to shorten runtime.
+//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP4);
 
 
 // ----------------------------------------------------------------------
@@ -472,7 +473,8 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_UniformStrain_
     } // setUp
 
 }; // TestIsotropicLinearElasticityPlaneStrain_UniformStrain_QuadQ4
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticityPlaneStrain_UniformStrain_QuadQ4);
+// Leave this out for now to shorten runtime.
+//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticityPlaneStrain_UniformStrain_QuadQ4);
 
 
 // End of file

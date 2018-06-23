@@ -369,6 +369,8 @@ pylith::materials::AuxiliaryFactory::totalStrain(void)
     description.vectorFieldType = pylith::topology::Field::OTHER;
     description.numComponents = strainSize;
     description.componentNames.resize(strainSize);
+    description.hasHistory = true;
+    description.historySize = 1;
     for (int i = 0; i < strainSize; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
@@ -399,6 +401,8 @@ pylith::materials::AuxiliaryFactory::viscousStrain(void)
     description.vectorFieldType = pylith::topology::Field::OTHER;
     description.numComponents = strainSize;
     description.componentNames.resize(strainSize);
+    description.hasHistory = true;
+    description.historySize = 1;
     for (int i = 0; i < strainSize; ++i) {
         description.componentNames[i] = std::string(fieldName) + std::string(componentSuffixes[i]);
     } // for
@@ -430,6 +434,8 @@ pylith::materials::AuxiliaryFactory::viscousStrainGeneralizedMaxwell(void)
     description.vectorFieldType = pylith::topology::Field::OTHER;
     description.numComponents = 3 * strainSize;
     description.componentNames.resize(3 * strainSize);
+    description.hasHistory = true;
+    description.historySize = 1;
     for (int j = 0, iname = 0; j < 3; ++j) {
         for (int i = 0; i < strainSize; ++i, ++iname) {
             description.componentNames[iname] = std::string(fieldName) + std::string(componentElementNumbers[j]) + std::string(componentSuffixes[i]);

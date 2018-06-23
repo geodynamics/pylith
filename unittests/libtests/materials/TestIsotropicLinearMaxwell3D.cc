@@ -128,8 +128,8 @@ pylith::materials::TestIsotropicLinearMaxwell3D::test_auxFieldSetup(void) {
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(densityScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // density
@@ -141,8 +141,8 @@ pylith::materials::TestIsotropicLinearMaxwell3D::test_auxFieldSetup(void) {
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(pressureScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // shear modulus
@@ -154,8 +154,8 @@ pylith::materials::TestIsotropicLinearMaxwell3D::test_auxFieldSetup(void) {
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(pressureScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // bulk modulus
@@ -167,8 +167,8 @@ pylith::materials::TestIsotropicLinearMaxwell3D::test_auxFieldSetup(void) {
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(timeScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // Maxwell time
@@ -180,8 +180,8 @@ pylith::materials::TestIsotropicLinearMaxwell3D::test_auxFieldSetup(void) {
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // Viscous strain
@@ -193,8 +193,8 @@ pylith::materials::TestIsotropicLinearMaxwell3D::test_auxFieldSetup(void) {
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // Total strain
@@ -206,8 +206,8 @@ pylith::materials::TestIsotropicLinearMaxwell3D::test_auxFieldSetup(void) {
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::VECTOR, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(accelerationScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // gravity field
@@ -219,8 +219,8 @@ pylith::materials::TestIsotropicLinearMaxwell3D::test_auxFieldSetup(void) {
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::VECTOR, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(forceScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // body force
@@ -232,8 +232,8 @@ pylith::materials::TestIsotropicLinearMaxwell3D::test_auxFieldSetup(void) {
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(pressureScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // reference stress
@@ -245,8 +245,8 @@ pylith::materials::TestIsotropicLinearMaxwell3D::test_auxFieldSetup(void) {
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // reference strain
