@@ -47,6 +47,9 @@ class TestApp(UnitTestApp):
         from TestIsotropicLinearElasticityPlaneStrain import TestIsotropicLinearElasticityPlaneStrain
         suite.addTest(unittest.makeSuite(TestIsotropicLinearElasticityPlaneStrain))
 
+        from TestIsotropicLinearElasticity3D import TestIsotropicLinearElasticity3D
+        suite.addTest(unittest.makeSuite(TestIsotropicLinearElasticity3D))
+
         from TestHomogeneous import TestHomogeneous
         suite.addTest(unittest.makeSuite(TestHomogeneous))
 
