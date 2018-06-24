@@ -23,16 +23,7 @@
 import unittest
 
 from pylith.materials.IsotropicLinearElasticityPlaneStrain import IsotropicLinearElasticityPlaneStrain
-
-# ----------------------------------------------------------------------
-
-
-def configureSubcomponents(facility):
-    """Configure subcomponents."""
-    for component in facility.components():
-        configureSubcomponents(component)
-        component._configure()
-    return
+from pylith.tests.UnitTestApp import configureSubcomponents
 
 
 class TestIsotropicLinearElasticityPlaneStrain(unittest.TestCase):
@@ -55,18 +46,32 @@ class TestIsotropicLinearElasticityPlaneStrain(unittest.TestCase):
         self.assertEqual(2, self.material.dimension())
         return
 
-    def testPreinitialize(self):
+    def test_preinitialize(self):
         """
-        Test preinitialize().
+        Test preinitialize(). Set inventory and verify values from C++ object.
         """
         from pylith.topology.Mesh import Mesh
         mesh = Mesh()
+
+        materialId = 4
+        label = "material ABC"
+        useInertia = True
+        useBodyForce = False
+        useReferenceState = True
+
+        self.material.inventory.materialId = materialId
+        self.material.inventory.label = label
+        self.material.inventory.useInertia = useInertia
+        self.material.inventory.useBodyForce = useBodyForce
+        self.material.inventory.useReferenceState = useReferenceState
         self.material.preinitialize(mesh)
 
         from pylith.materials.IsotropicLinearElasticityPlaneStrain import ModuleMaterial
-        self.assertEqual(0, ModuleMaterial.id(self.material))
-        self.assertEqual("", ModuleMaterial.label(self.material))
-        self.assertEqual(False, ModuleMaterial.useInertia(self.material))
+        self.assertEqual(materialId, ModuleMaterial.id(self.material))
+        self.assertEqual(label, ModuleMaterial.label(self.material))
+        self.assertEqual(useInertia, ModuleMaterial.useInertia(self.material))
+        self.assertEqual(useBodyForce, ModuleMaterial.useBodyForce(self.material))
+        self.assertEqual(useReferenceState, ModuleMaterial.useReferenceState(self.material))
         return
 
     def test_factory(self):
@@ -74,7 +79,7 @@ class TestIsotropicLinearElasticityPlaneStrain(unittest.TestCase):
         Test factory method.
         """
         from pylith.materials.IsotropicLinearElasticityPlaneStrain import material
-        m = material()
+        self.assertTrue(isinstance(material(), IsotropicLinearElasticityPlaneStrain))
         return
 
 
