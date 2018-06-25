@@ -44,12 +44,27 @@ class TestApp(UnitTestApp):
 
         suite = unittest.TestSuite()
 
+        # Plane strain
         from TestIsotropicLinearElasticityPlaneStrain import TestIsotropicLinearElasticityPlaneStrain
         suite.addTest(unittest.makeSuite(TestIsotropicLinearElasticityPlaneStrain))
 
+        from TestIsotropicLinearMaxwellPlaneStrain import TestIsotropicLinearMaxwellPlaneStrain
+        suite.addTest(unittest.makeSuite(TestIsotropicLinearMaxwellPlaneStrain))
+
+        from TestIsotropicLinearGenMaxwellPlaneStrain import TestIsotropicLinearGenMaxwellPlaneStrain
+        suite.addTest(unittest.makeSuite(TestIsotropicLinearGenMaxwellPlaneStrain))
+
+        # 3D
         from TestIsotropicLinearElasticity3D import TestIsotropicLinearElasticity3D
         suite.addTest(unittest.makeSuite(TestIsotropicLinearElasticity3D))
 
+        from TestIsotropicLinearMaxwell3D import TestIsotropicLinearMaxwell3D
+        suite.addTest(unittest.makeSuite(TestIsotropicLinearMaxwell3D))
+
+        from TestIsotropicLinearGenMaxwell3D import TestIsotropicLinearGenMaxwell3D
+        suite.addTest(unittest.makeSuite(TestIsotropicLinearGenMaxwell3D))
+
+        # Containers
         from TestHomogeneous import TestHomogeneous
         suite.addTest(unittest.makeSuite(TestHomogeneous))
 
