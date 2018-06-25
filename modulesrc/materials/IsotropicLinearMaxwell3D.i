@@ -22,85 +22,103 @@
  */
 
 namespace pylith {
-  namespace materials {
+    namespace materials {
 
-    class IsotropicLinearMaxwell3D : public Material
-    { // class IsotropicLinearMaxwell3D
+        class IsotropicLinearMaxwell3D : public Material { // class IsotropicLinearMaxwell3D
 
-      // PUBLIC METHODS /////////////////////////////////////////////////////
-    public :
+            // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-      /// Default constructor.
-      IsotropicLinearMaxwell3D(void);
+            /// Default constructor.
+            IsotropicLinearMaxwell3D(void);
 
-      /// Destructor.
-      ~IsotropicLinearMaxwell3D(void);
+            /// Destructor.
+            ~IsotropicLinearMaxwell3D(void);
 
-      /** Include inertia?
-       *
-       * @param[in] value Flag indicating to include inertial term.
-       */
-      void useInertia(const bool value);
+            /** Include inertia?
+             *
+             * @param[in] value Flag indicating to include inertial term.
+             */
+            void useInertia(const bool value);
 
-      /** Include body force?
-       *
-       * @param[in] value Flag indicating to include body force term.
-       */
-      void useBodyForce(const bool value);
+            /** Include inertia?
+             *
+             * @returns True if including inertial term, false otherwise.
+             */
+            bool useInertia(void) const;
 
-      /** Use reference stress and strain in computation of stress and
-       * strain?
-       *
-       * @param[in] value Flag indicating to include reference stress and strain.
-       */
-      void useReferenceState(const bool value);
+            /** Include body force?
+             *
+             * @param[in] value Flag indicating to include body force term.
+             */
+            void useBodyForce(const bool value);
 
-      /** Verify configuration is acceptable.
-       *
-       * @param[in] solution Solution field.
-       */
-      void verifyConfiguration(const pylith::topology::Field& solution) const;
+            /** Include body force?
+             *
+             * @returns True if including body force term, false otherwise.
+             */
+            bool useBodyForce(void) const;
 
-// PROTECTED METHODS //////////////////////////////////////////////////
-    protected :
+            /** Use reference stress and strain in computation of stress and
+             * strain?
+             *
+             * @param[in] value Flag indicating to include reference stress and strain.
+             */
+            void useReferenceState(const bool value);
 
-      /// Setup auxiliary subfields (discretization and query fns).
-      void _auxFieldSetup(void);
+            /** Use reference stress and strain in computation of stress and
+             * strain?
+             *
+             * @returns True if using reference stress and strain, false otherwise.
+             */
+            bool useReferenceState(void) const;
 
-      /** Set kernels for RHS residual G(t,u).
-       *
-       * @param[in] solution Solution field.
-       */
-      void _setFEKernelsRHSResidual(const topology::Field& solution) const;
+            /** Verify configuration is acceptable.
+             *
+             * @param[in] solution Solution field.
+             */
+            void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-      /** Set kernels for RHS Jacobian G(t,u).
-       *
-       * @param[in] solution Solution field.
-       */
-      void _setFEKernelsRHSJacobian(const topology::Field& solution) const ;
+            // PROTECTED METHODS //////////////////////////////////////////////////
+protected:
 
-      /** Set kernels for LHS residual F(t,u,\dot{u}).
-       *
-       * @param[in] solution Solution field.
-       */
-      void _setFEKernelsLHSResidual(const topology::Field& solution) const;
+            /// Setup auxiliary subfields (discretization and query fns).
+            void _auxFieldSetup(void);
 
-      /** Set kernels for LHS Jacobian F(t,u,\dot{u}) when implicit time-stepping.
-       *
-       * @param[in] solution Solution field.
-       */
-      void _setFEKernelsLHSJacobian(const topology::Field& solution) const;
+            /** Set kernels for RHS residual G(t,u).
+             *
+             * @param[in] solution Solution field.
+             */
+            void _setFEKernelsRHSResidual(const topology::Field& solution) const;
 
-      /** Set kernels for updating state variables.
-       *
-       * @param[in] solution Solution field.
-       */
-      void _setFEKernelsUpdateStatevars(const topology::Field& solution) const;
+            /** Set kernels for RHS Jacobian G(t,u).
+             *
+             * @param[in] solution Solution field.
+             */
+            void _setFEKernelsRHSJacobian(const topology::Field& solution) const;
+
+            /** Set kernels for LHS residual F(t,u,\dot{u}).
+             *
+             * @param[in] solution Solution field.
+             */
+            void _setFEKernelsLHSResidual(const topology::Field& solution) const;
+
+            /** Set kernels for LHS Jacobian F(t,u,\dot{u}) when implicit time-stepping.
+             *
+             * @param[in] solution Solution field.
+             */
+            void _setFEKernelsLHSJacobian(const topology::Field& solution) const;
+
+            /** Set kernels for updating state variables.
+             *
+             * @param[in] solution Solution field.
+             */
+            void _setFEKernelsUpdateStatevars(const topology::Field& solution) const;
 
 
-    }; // class IsotropicLinearMaxwell3D
+        }; // class IsotropicLinearMaxwell3D
 
-  } // materials
+    } // materials
 } // pylith
 
 
