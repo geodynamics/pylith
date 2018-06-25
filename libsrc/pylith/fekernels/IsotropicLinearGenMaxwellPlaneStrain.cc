@@ -840,7 +840,7 @@ pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateTotalStrain(const
 #endif
 
     assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
+    // assert(1 == numS || 2 == numS);
     assert(7 <= numA && 11 >= numA);
     assert(sOff);
     assert(aOff);
@@ -907,7 +907,7 @@ pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain(con
 #endif
 
     assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
+    // assert(1 == numS || 2 == numS);
     assert(numA >= 7);
     assert(sOff);
     assert(aOff);

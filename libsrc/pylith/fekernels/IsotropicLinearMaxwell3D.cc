@@ -829,7 +829,7 @@ pylith::fekernels::IsotropicLinearMaxwell3D::updateTotalStrain(const PylithInt d
 #endif
 
     assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
+    // assert(1 == numS || 2 == numS);
     assert(6 <= numA && 10 >= numA);
     assert(sOff);
     assert(aOff);
@@ -907,7 +907,7 @@ pylith::fekernels::IsotropicLinearMaxwell3D::updateViscousStrain(const PylithInt
 #endif
 
     assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
+    // assert(1 == numS || 2 == numS);
     assert(numA >= 6);
     assert(sOff);
     assert(aOff);

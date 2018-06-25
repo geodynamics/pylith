@@ -187,7 +187,7 @@ any location cannot be associated with both prescribed displacements
 
 \subsection{Neglecting Inertia}
 
-If we neglect the intertial term, then time dependence only arises
+If we neglect the inertial term, then time dependence only arises
 from history-dependent constitutive equations and boundary
 conditions. Considering the displacement $\vec{u}$ as the unknown, we
 have
@@ -671,7 +671,7 @@ generate the prescribed slip.
 
 \subsection{Neglecting Inertia}
 
-If we neglect the intertial term, then time dependence only arises
+If we neglect the inertial term, then time dependence only arises
 from history-dependent constitutive equations and boundary conditions. Considering the
 displacement $\vec{u}$ and Lagrange multiplier $\vec{\lambda}$ fields as the unknowns, we have
 \begin{align}
@@ -920,7 +920,74 @@ governing equations:
   % Neumann
   \tensor{\sigma} \cdot \vec{n} = \vec{\tau} \text{ on }\Gamma_\tau, \\
   % Dirichlet
-  \vec{u} = \vec{u}_0 \text{ on }\Gamma_u.
+  \vec{u} = \vec{u}_0 \text{ on }\Gamma_u, \\
+  p = p_0 \text{ on }\Gamma_p.
+\end{gather}
+
+\subsection{Notation}
+\begin{itemize}
+\item Unknowns
+  \begin{description}
+  \item[$\vec{u}$] Displacement field
+  \item[$\vec{v}$] Velocity field (if including inertial term)
+  \item[$p$] Pressure field
+  \end{description}
+\item Derived quantities
+  \begin{description}
+    \item[$\tensor{\sigma}$] Stress tensor
+    \item[$\tensor{\epsilon}$] Strain tensor
+  \end{description}
+\item Constitutive parameters
+  \begin{description}
+  \item[$\mu$] Shear modulus
+  \item[$K$] Bulk modulus
+  \item[$\rho$] Density
+  \end{description}
+\item Source terms
+  \begin{description}
+    \item[$\vec{f}$] Body force per unit volume, for example $\rho \vec{g}$
+  \end{description}
+\end{itemize}
+
+\subsection{Neglecting Inertia}
+If we neglect inertia, then time dependence only arises from
+history-dependent constitutive equations and boundary
+conditions. Considering displacement $\vec[u]$ and pressure $p$ as
+unknowns, we have
+
+\begin{gather}
+  % Solution
+  % \vec{s}^T = \left( \vec{u} \ p \right)^T, \\
+  % Static equilibrium
+  \vec{0} &= \vec{f}(\vec{x},t) + \tensor{\nabla} \cdot \tensor{\sigma}(\vec{u}) \text{ in }
+  \Omega, \\
+  % Pressure
+  0 = \vec{\nabla} \cdot \vec{u} + \frac{p}{K}, \\
+  % Neumann
+  \tensor{\sigma} \cdot \vec{n} = \vec{\tau} \text{ on }\Gamma_\tau, \\
+  % Dirichlet
+  \vec{u} = \vec{u}_0 \text{ on }\Gamma_u, \\
+  p = p_0 \text{ on }\Gamma_p.
+\end{gather}
+
+Using trial functions $\trialvec[u]$ and $\trialscalar[p]$ and
+incorporating the Neumann boundary conditions, we write the weak form
+as
+\begin{gather}
+  % Displacement
+  \int_\Omega \trialvec[u] \cdot \left( \frac{\partial \vec{u}(t)}{\partial t} \right) \, 
+d\Omega = 
+  \int_\Omega \trialvec[u] \cdot \vec{v}(t) \, d\Omega, \\
+  % Velocity
+  \int_\Omega \trialvec[v] \cdot \left( \rho \frac{\partial \vec{v}(t)}{\partial t} \right) \, 
+d\Omega = 
+  \int_\Omega \trialvec[v] \cdot \vec{f}(t) + \nabla \trialvec[v] : \left(p\tensor{I}-
+\tensor{\sigma}^\mathit{dev}
+(\vec{u})\right)\, d\Omega + \int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(t) \, d\Gamma, \
+\
+  % Pressure
+  0 = \int_\Omega \trialscalar[p] \cdot \left(\vec{\nabla} \cdot \vec{u} + \frac{p}{K} \right) 
+\, d\Omega.
 \end{gather}
 
 Using trial functions $\trialvec[u]$, $\trialvec[v]$, and $\trialscalar[p]$ and
