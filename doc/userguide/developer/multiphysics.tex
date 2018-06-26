@@ -90,6 +90,10 @@ solution fields $s_i$ and $s_j$ is
 where $B$ is a matrix of the derivatives of the basis functions and $B^T$
 is a matrix of the derivatives of the trial functions. 
 
+\important{See
+  \url{http://www.mcs.anl.gov/petsc/petsc-master/docs/manualpages/DT/PetscFEIntegrateJacobian.html}
+  for the ordering of indicies in the Jacobian pointwise functions.}
+
 \matt{(Comment from Brad) Additionally, I think it is very important
   that we have a way to control allocation of the sparse matrix. We do
   not want to allocate portions that are not coupled, because it is
