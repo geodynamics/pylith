@@ -198,6 +198,7 @@
 \newcommand{\commandline}[1]{{\ttfamily #1}}
 \newcommand{\object}[1]{{\sffamily #1}}
 \newcommand{\menu}[1]{{\sffamily #1}}
+\newcommand{\gitbranch}[1]{{\ttfamily #1}}
 
 % ------------------------------------------------------------------
 % Code blocks

@@ -1,0 +1,140 @@
+\section{Adding New Governing Equations and/or Materials}
+
+There are four basic pieces to adding new physics in the form of a
+governing equation or material:
+\begin{enumerate}
+\item Select the fields for the solution. This will control the form
+  of the partial differential equation and the terms in the residuals
+  and Jacobians.
+\item Derive the point-wise functions for the residuals and
+  Jacobians. Determine what flags will be used to indicate which terms
+  to include.
+\item Determine which parameters in the point-wise functions could
+  vary in space as well as any state variables. We bundle all state variables
+  and spatially varying parameters into a field called the auxiliary
+  field. Each material has a separate auxiliary field.
+\item Parameters that are spatially uniform and constant in time
+  are treated separately from the parameters in the auxliary field.
+\end{enumerate}
+
+\subsection{Python}
+
+\begin{itemize}
+\item Define solution subfields.
+
+  \begin{itemize}
+  \item All subfields in the solution field are \object{SolutionSubfield}
+    objects. PyLith already includes several solution subfields:
+    \begin{description}
+    \item[\object{SubfieldDisplacement}] Displacement vector field.
+    \item[\object{SubfieldVelocity}] Velocity vector field.
+    \item[\object{SubfieldLagrangeFault}] Lagrange multiplier field for
+      fault constraints.
+    \item[\object{SubfieldPressure}] Fluid pressure or mean stress scalar field.
+    \item[\object{SubfieldTemperature}] Temperature scalar field.
+    \end{description}
+    %
+  \item PyLith includes solution field containers with predefined
+    subfields:
+    \begin{description}
+    \item[\object{SolnDisp}] Solution composed of a displacement field.
+    \item[\object{SolnDispVel}] Solution composed of displacement and velocity fields.
+    \item[\object{SolnDispPres}] Solution composed of displacement and
+      mean stress (pressure) fields.
+    \item[\object{SolnDispLagrange}] Solution composed of displacement
+      and Lagrange multiplier fields.
+    \item[\object{SolnDispPresLagrange}] Solution composed of
+      displacement, mean stress (pressure), and Lagrange multiplier subfields.
+    \item[\object{SolnDispVelLagrange}] Solution composed of
+      displacement, velocity, and Lagrange multiplier subfields.
+    \end{description}
+  \end{itemize}
+%
+\item Define auxiliary subfields.
+
+  The auxiliary subfields for a material are defined as facilities in
+  a Pyre Component. For example, the ones for
+  \object{IsotropicLinearElasticityPlaneStrain} are in
+  \object{AuxFieldIsotropicLinearElasticity}. The order of the subfields
+  is defined {\em not} by the order they are listed in the Pyre
+  component, but by the order they are added to the auxiliary field in
+  by the C++ object. 
+
+\item Flags to turn on/off terms in governing equation.
+
+  For the elasticity equation, we sometimes do not include body forces
+  or inertial terms in our simulations. Rather than implement these
+  cases as separate materials, we simply include flags in the material
+  to turn these terms on/off. The flags are implemented as Pyre
+  properties in our material component.
+\end{itemize}
+
+\todo{brad}{Add class diagram showing relationships among
+  \object{Solution}, \object{SolnDisp}, \ldots,
+  \object{SolutionSubfield}, \object{SubfieldDisplacement}, \ldots}
+
+\subsection{C++}
+
+\warning{We will likely be refactoring the \object{Material} and
+  \object{IntegratorPointwise}, so how the point-wise functions for
+  the residual, Jacobians, state variable update, and computation of
+  derived fields are set will likely be significantly different and
+  easier in the future. For now, you should use
+  \object{IsotropicLinearElasticityPlaneStrain} as a model for how to
+  implement a material.}
+
+\begin{itemize}
+\item Define auxiliary subfields.
+
+  We build the auxiliary field using classes derived from
+  \object{pylith::feassemble::AuxiliaryFactory}. The method
+  corresponding to each subfield specifies the name of the subfield,
+  its components, and scale for nondimensionalizing. We generally
+  create a single auxiliary factor object for each governing equation
+  but not each bulkd constitutive model, because constitutive models
+  for the same governing equation often have many of the same
+  subfields. For example, most of our bulk constitutive models for the
+  elasticity contain density, bulk modulus, and shear modulus
+  auxiliary subfields.
+
+  \important{Within the concrete implementation of the material
+    object, we add the subfields to the auxiliary field. The order in
+    which they are added determines the order they will be in the
+    auxiliary field. You will need to use know this order when you
+    implement the point-wise functions.}
+
+\item Implement the point-wise functions.
+
+  The point-wise functions for the residuals, Jacobians, and
+  projections follow nearly identical interfaces. Note that within
+  PyLith, we use PylithInt, PylithReal, and PylithScalar instead of
+  PetscInt, PetscReal, and PetscScalar.
+
+\item Set the point-wise functions.
+
+  We set the point-wise functions for the residual using
+  \object{PetscDSSetResidual} and for the Jacobian using
+  \object{PetscDSSetJacobian}.
+  
+\end{itemize}
+
+\todo{brad}{Add class diagram showing relationships among
+  \object{Material}, \object{ConcreteMaterialA}, \ldots,
+  \object{Integrator}, \object{IntegratorSubdomain}, \ldots}
+
+\subsection{C++ Unit Tests}
+
+\todo{brad}{Layout of unit tests. Method of manufactured
+  solutions. Use of \object{UserFunctionDB} spatial database.}
+
+\todo{brad}{Add class diagram showing relationships among
+  \object{TestMaterial}, \object{TestConcreteMaterialA}, \ldots,
+  \object{TestConcreteMaterialA\_Data}, \object{TestConcreteMaterialA\_MMS}, \ldots}
+
+
+\subsection{Python Unit Tests}
+
+\todo{brad}{Goal of Python unit tests.}
+
+
+% End of file
