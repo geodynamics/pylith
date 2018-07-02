@@ -58,8 +58,8 @@ class OutputManager(Observer, ModuleOutputManager):
     writer = pyre.inventory.facility("writer", factory=DataWriterHDF5, family="data_writer")
     writer.meta['tip'] = "Writer for data."
 
-    from .FieldFilterProject import FieldFilterProject
-    fieldFilter = pyre.inventory.facility("field_filter", family="output_field_filter", factory=FieldFilterProject)
+    from .FieldFilterNone import FieldFilterNone
+    fieldFilter = pyre.inventory.facility("field_filter", family="output_field_filter", factory=FieldFilterNone)
     fieldFilter.meta['tip'] = "Filter for output fields."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
