@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,10 +13,9 @@
 #
 # ----------------------------------------------------------------------
 #
-
-## @file pylith/faults/__init__.py
-##
-## @brief Python PyLith faults module initialization
+# @file pylith/faults/__init__.py
+#
+# @brief Python PyLith faults module initialization
 
 __all__ = [
     "FaultCohesive",

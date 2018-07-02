@@ -50,16 +50,20 @@ namespace pylith {
         class DataWriterVTK;
         class DataWriterHDF5;
         class DataWriterHDF5Ext;
-        class CellFilter;
-        class CellFilterDecimateP0;
-        class VertexFilter;
-        class VertexFilterDecimateP1;
+        class FieldFilter;
+        class FieldFilterNone;
+        class FieldFilterProject;
 
         class OutputManager;
-        class OutputMaterial;
+        class OutputIntegrator;
+        class OutputConstraint;
         class OutputSoln;
-        class OutputSolnSubset;
+        class OutputSolnBoundary;
         class OutputSolnPoints;
+
+        class OutputTrigger;
+        class OutputTriggerStep;
+        class OutputTriggerTime;
 
         class HDF5;
         class Xdmf;

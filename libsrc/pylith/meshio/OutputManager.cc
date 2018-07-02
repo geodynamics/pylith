@@ -20,9 +20,9 @@
 
 #include "OutputManager.hh" // Implementation of class methods
 
-#include "DataWriter.hh" // USES DataWriter
-#include "VertexFilter.hh" // USES VertexFilter
-#include "CellFilter.hh" // USES CellFilter
+#include "pylith/meshio/DataWriter.hh" // USES DataWriter
+#include "pylith/meshio/FieldFilter.hh" // USES FieldFilter
+#include "pylith/meshio/OutputTrigger.hh" // USES OutputTrigger
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
@@ -32,8 +32,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <iostream> // USES std::cout
-#include <typeinfo> \
-    // USES typeid()
+#include <typeinfo> // USES typeid()
 
 // ----------------------------------------------------------------------
 const char* pylith::meshio::OutputManager::_pyreComponent = "outputmanager";
@@ -43,13 +42,10 @@ const char* pylith::meshio::OutputManager::_pyreComponent = "outputmanager";
 pylith::meshio::OutputManager::OutputManager(void) :
     _fields(NULL),
     _writer(NULL),
-    _vertexFilter(NULL),
-    _cellFilter(NULL),
-    _timeSkip(0.0),
-    _timeWrote(-PYLITH_MAXSCALAR),
-    _numTimeStepsSkip(0),
-    _timeStepWrote(PYLITH_MININT+10),
-    _trigger(SKIP_TIMESTEPS)
+    _fieldFilter(NULL),
+    _trigger(NULL),
+    _label(""),
+    _labelId(0)
 { // constructor
     PyreComponent::name(_pyreComponent);
 } // constructor
@@ -64,59 +60,34 @@ pylith::meshio::OutputManager::~OutputManager(void) {
 // Deallocate PETSc and local data structures.
 void
 pylith::meshio::OutputManager::deallocate(void) {
+    if (_writer) {
+        _writer->close();
+        _writer->deallocate();
+    }
+    if (_fieldFilter) { _fieldFilter->deallocate(); }
+
     _writer = NULL; // :TODO: Use shared pointer
-    _vertexFilter = NULL; // :TODO: Use shared pointer
-    _cellFilter = NULL; // :TODO: Use shared pointer
+    _fieldFilter = NULL; // :TODO: Use shared pointer
+    _trigger = NULL; // :TODO: Use shared pointer
+
     delete _fields; _fields = NULL;
 } // deallocate
 
 // ----------------------------------------------------------------------
 // Set trigger for how often to write output.
 void
-pylith::meshio::OutputManager::trigger(TriggerEnum flag) {
-    PYLITH_COMPONENT_DEBUG("OutputManager::trigger(flag="<<flag<<")");
+pylith::meshio::OutputManager::trigger(pylith::meshio::OutputTrigger* const otrigger) {
+    PYLITH_COMPONENT_DEBUG("OutputManager::trigger(otrigger="<<typeid(otrigger).name()<<")");
 
-    _trigger = flag;
+    _trigger = otrigger;
 } // trigger
 
 // ----------------------------------------------------------------------
 // Get trigger for how often to write otuput.
-pylith::meshio::OutputManager::TriggerEnum
+const pylith::meshio::OutputTrigger*
 pylith::meshio::OutputManager::trigger(void) const {
     return _trigger;
 }  // trigger
-
-// ----------------------------------------------------------------------
-// Set number of time steps to skip between writes.
-void
-pylith::meshio::OutputManager::numTimeStepsSkip(const int value) {
-    PYLITH_COMPONENT_DEBUG("OutputManager::numTimeStepsSkip(value="<<value<<")");
-
-    _numTimeStepsSkip = (value >= 0) ? value : 0;
-} // numTimeStepsSkip
-
-// ----------------------------------------------------------------------
-// Get number of time steps to skip between writes.
-int
-pylith::meshio::OutputManager::numTimeStepsSkip(void) const {
-    return _numTimeStepsSkip;
-} // numTimeStepsSkip
-
-// ----------------------------------------------------------------------
-// Set elapsed time between writes.
-void
-pylith::meshio::OutputManager::timeSkip(const double value) {
-    PYLITH_COMPONENT_DEBUG("OutputManager::timeSkip(value="<<value<<")");
-
-    _timeSkip = (value >= 0.0) ? value : 0.0;
-} // timeSkip
-
-// ----------------------------------------------------------------------
-// Get elapsed time between writes.
-double
-pylith::meshio::OutputManager::timeSkip(void) const {
-    return _timeSkip;
-} // timeSkip
 
 // ----------------------------------------------------------------------
 // Set writer to write data to file.
@@ -131,356 +102,260 @@ pylith::meshio::OutputManager::writer(DataWriter* const datawriter) {
 } // writer
 
 // ----------------------------------------------------------------------
-// Set filter for vertex data.
+// Set filter for fields.
 void
-pylith::meshio::OutputManager::vertexFilter(VertexFilter* const filter) {
+pylith::meshio::OutputManager::fieldFilter(FieldFilter* const filter) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::vertexFilter(filter="<<typeid(filter).name()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManager::fieldFilter(filter="<<typeid(filter).name()<<")");
 
-    _vertexFilter = filter; // :TODO: Use shared pointer
+    _fieldFilter = filter; // :TODO: Use shared pointer
 
     PYLITH_METHOD_END;
-} // vertexFilter
-
-// ----------------------------------------------------------------------
-// Set filter for cell data.
-void
-pylith::meshio::OutputManager::cellFilter(CellFilter* const filter) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::cellFilter(filter="<<typeid(filter).name()<<")");
-
-    _cellFilter = filter; // :TODO: Use shared pointer
-
-    PYLITH_METHOD_END;
-} // cellFilter
+} // fieldFilter
 
 // ----------------------------------------------------------------------
 // Set names of vertex information fields to output.
 void
-pylith::meshio::OutputManager::vertexInfoFields(const char* names[],
-                                                const int numNames) {
+pylith::meshio::OutputManager::infoFields(const char* names[],
+                                          const int numNames) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::vertexInfoFields(names="<<names<<", numNames="<<numNames<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManager::infoFields(names="<<names<<", numNames="<<numNames<<")");
 
     assert((names && numNames) || (!names && !numNames));
 
-    _vertexInfoFields.resize(numNames);
+    _infoFields.resize(numNames);
     for (int i = 0; i < numNames; ++i) {
         assert(names[i]);
-        _vertexInfoFields[i] = names[i];
+        _infoFields[i] = names[i];
     } // for
 
     PYLITH_METHOD_END;
-} // vertexInfoFields
+} // infoFields
 
 
 // ----------------------------------------------------------------------
 // Get names of vertex information fields to output.
 const pylith::string_vector&
-pylith::meshio::OutputManager::vertexInfoFields(void) const {
+pylith::meshio::OutputManager::infoFields(void) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::vertexInfoFields()");
+    PYLITH_COMPONENT_DEBUG("OutputManager::infoFields()");
 
-    PYLITH_METHOD_RETURN(_vertexInfoFields);
-} // vertexInfoFields
+    PYLITH_METHOD_RETURN(_infoFields);
+} // infoFields
 
 
 // ----------------------------------------------------------------------
 // Set names of vertex data fields to output.
 void
-pylith::meshio::OutputManager::vertexDataFields(const char* names[],
-                                                const int numNames) {
+pylith::meshio::OutputManager::dataFields(const char* names[],
+                                          const int numNames) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::vertexDataFields(names="<<names<<", numNames="<<numNames<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManager::dataFields(names="<<names<<", numNames="<<numNames<<")");
 
     assert((names && numNames) || (!names && !numNames));
 
-    _vertexDataFields.resize(numNames);
+    _dataFields.resize(numNames);
     for (int i = 0; i < numNames; ++i) {
         assert(names[i]);
-        _vertexDataFields[i] = names[i];
+        _dataFields[i] = names[i];
     } // for
 
     PYLITH_METHOD_END;
-} // vertexDataFields
+} // dataFields
 
 
 // ----------------------------------------------------------------------
 // Get names of vertex data fields to output.
 const pylith::string_vector&
-pylith::meshio::OutputManager::vertexDataFields(void) const {
+pylith::meshio::OutputManager::dataFields(void) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::vertexDataFields()");
+    PYLITH_COMPONENT_DEBUG("OutputManager::dataFields()");
 
-    PYLITH_METHOD_RETURN(_vertexDataFields);
-} // vertexDataFields
+    PYLITH_METHOD_RETURN(_dataFields);
+} // dataFields
 
 
 // ----------------------------------------------------------------------
-// Set names of cell information fields to output.
+// Get update from integrator (subject of observer).
 void
-pylith::meshio::OutputManager::cellInfoFields(const char* names[],
-                                              const int numNames) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::cellInfoFields(names="<<names<<", numNames="<<numNames<<")");
-
-    assert((names && numNames) || (!names && !numNames));
-
-    _cellInfoFields.resize(numNames);
-    for (int i = 0; i < numNames; ++i) {
-        assert(names[i]);
-        _cellInfoFields[i] = names[i];
-    } // for
-
-    PYLITH_METHOD_END;
-} // cellInfoFields
-
-// ----------------------------------------------------------------------
-// Get names of cell information fields to output.
-const pylith::string_vector&
-pylith::meshio::OutputManager::cellInfoFields(void) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::cellInfoFields()");
-
-    PYLITH_METHOD_RETURN(_cellInfoFields);
-} // cellInfoFields
-
-
-// ----------------------------------------------------------------------
-// Get names of cell data fields to output.
-const pylith::string_vector&
-pylith::meshio::OutputManager::cellDataFields(void) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::cellDataFields()");
-
-    PYLITH_METHOD_RETURN(_cellDataFields);
-} // cellDataFields
-
-
-// ----------------------------------------------------------------------
-// Set names of vertex data fields to output.
-void
-pylith::meshio::OutputManager::cellDataFields(const char* names[],
-                                              const int numNames) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::cellDataFields(names="<<names<<", numNames="<<numNames<<")");
-
-    assert((names && numNames) || (!names && !numNames));
-
-    _cellDataFields.resize(numNames);
-    for (int i = 0; i < numNames; ++i) {
-        assert(names[i]);
-        _vertexInfoFields[i] = names[i];
-    } // for
-
-    PYLITH_METHOD_END;
-} // cellDataFields
-
-
-// ----------------------------------------------------------------------
-// Verify configuration is acceptable.
-void
-pylith::meshio::OutputManager::verifyConfiguration(const pylith::topology::Field& solution,
-                                                   const pylith::topology::Field& auxField) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputConstraint::verifyConfiguration(solution="<<solution.label()<<", auxField="<<auxField.label()<<")");
-
-    const size_t numFields = _vertexInfoFields.size();
-    if ((numFields > 0) && (std::string("all") != _vertexInfoFields[0])) {
-        for (size_t iField = 0; iField < numFields; iField++) {
-            if (!auxField.hasSubfield(_vertexInfoFields[iField].c_str())) {
-                std::ostringstream msg;
-                msg << "Could not find field '" << _vertexInfoFields[iField] << "' in auxiliary field '" << auxField.label() << "' for output.";
-                throw std::runtime_error(msg.str());
-            } // if
-        } // for
-    } // if
-
-    PYLITH_METHOD_END;
-} // verifyConfiguration
-
+pylith::meshio::OutputManager::update(const PylithReal t,
+                                      const PylithInt tindex,
+                                      const pylith::topology::Field& solution,
+                                      const bool infoOnly) {
+    if (infoOnly) {
+        _writeInfo();
+    } else {
+        assert(_trigger);
+        if (_trigger->shouldWrite(t, tindex)) {
+            _writeDataStep(t, tindex, solution);
+        } // if
+    } // if/else
+} // update
 
 // ----------------------------------------------------------------------
 // Write information.
 void
-pylith::meshio::OutputManager::writeInfo(const pylith::topology::Field& auxField,
-                                         const char* label,
-                                         const int labelId) {
+pylith::meshio::OutputManager::_writeInfo(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::writeInfo(auxField="<<auxField.label()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManager::_writeInfo() empty method");
 
-    const pylith::string_vector& subfieldNames = (1 == _vertexInfoFields.size() && std::string("all") == _vertexInfoFields[0]) ? auxField.subfieldNames() : _vertexInfoFields;
-
-    const bool isInfo = true;
-    this->open(auxField.mesh(), isInfo, label, labelId);
-    this->openTimeStep(0.0, auxField.mesh(), label, labelId);
-    const size_t numFields = subfieldNames.size();
-    for (size_t iField = 0; iField < numFields; iField++) {
-        if (!auxField.hasSubfield(subfieldNames[iField].c_str())) {
-            std::ostringstream msg;
-            msg << "Could not find field '" << subfieldNames[iField] << "' in auxiliary field for output.";
-            throw std::runtime_error(msg.str());
-        } // if
-
-        pylith::topology::Field& fieldBuffer = this->getBuffer(auxField, subfieldNames[iField].c_str());
-        this->appendVertexField(0.0, fieldBuffer, fieldBuffer.mesh());
-    } // for
-    this->closeTimeStep();
-    this->close();
+    // Empty method.
 
     PYLITH_METHOD_END;
-} // writeInfo
+} // _writeInfo
 
 
 // ----------------------------------------------------------------------
-// Write solution at time step.
+// Prepare for output at this solution step.
 void
-pylith::meshio::OutputManager::writeTimeStep(const PylithReal t,
-                                             const PylithInt tindex,
-                                             const pylith::topology::Field& solution,
-                                             const pylith::topology::Field& auxField) {
+pylith::meshio::OutputManager::_openDataStep(const PylithReal t,
+                                             const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<", auxField="<<auxField.label()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("OutputManager::_openDataStep(t="<<t<<", mesh="<<typeid(mesh).name()<<")");
+
+    assert(_writer);
+    if (!_writer->isOpen()) {
+        bool infoOnly = false;
+        _writer->open(mesh, infoOnly, _label.length() ? _label.c_str() : NULL, _labelId);
+    } // if
+    _writer->openTimeStep(t, mesh, _label.length() ? _label.c_str() : NULL, _labelId);
+
     PYLITH_METHOD_END;
-} // writeTimeStep
+} // _openDataStep
+
+// ----------------------------------------------------------------------
+// Finalize output at this solution step.
+void
+pylith::meshio::OutputManager::_closeDataStep(void) {
+
+    assert(_writer);
+    _writer->closeTimeStep();
+
+} // _closeDataStep
+
+// ----------------------------------------------------------------------
+// Write data for step in solution.
+void
+pylith::meshio::OutputManager::_writeDataStep(const PylithReal t,
+                                              const PylithInt tindex,
+                                              const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("OutputManager::_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<") empty method");
+
+    // Empty method.
+
+    PYLITH_METHOD_END;
+} // _writeDataStep
 
 // ----------------------------------------------------------------------
 // Prepare for output.
 void
-pylith::meshio::OutputManager::open(const pylith::topology::Mesh& mesh,
-                                    const bool isInfo,
-                                    const char* label,
-                                    const int labelId) {
+pylith::meshio::OutputManager::_open(const pylith::topology::Mesh& mesh,
+                                     const bool isInfo) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::open(mesh="<<typeid(mesh).name()<<", isInfo="<<isInfo<<", label="<<(label ? label : "NULL")<<", labelId="<<labelId<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManager::open(mesh="<<typeid(mesh).name()<<", isInfo="<<isInfo<<")");
 
 
     if (!_writer) {
-        std::ostringstream msg;
-        if (label) {
-            msg << "Writer for output manager for " << label << " not set.";
-            throw std::runtime_error(msg.str());
+        if (_label.length() > 0) {
+            PYLITH_COMPONENT_ERROR("Writer for output manager for " << _label << " not set.");
         } else {
-            throw std::runtime_error("Writer for output manager not set.");
+            PYLITH_COMPONENT_ERROR("Writer for output manager not set.");
         } // if/else
     } // if
 
     assert(_writer);
-    _writer->open(mesh, isInfo, label, labelId);
+    _writer->open(mesh, isInfo, _label.length() ? _label.c_str() : NULL, _labelId);
 
     PYLITH_METHOD_END;
-} // open
+} // _open
 
 // ----------------------------------------------------------------------
 /// Close output files.
 void
-pylith::meshio::OutputManager::close(void) {
+pylith::meshio::OutputManager::_close(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::close()");
+    PYLITH_COMPONENT_DEBUG("OutputManager::_close()");
 
     assert(_writer);
     _writer->close();
 
     PYLITH_METHOD_END;
-} // close
-
-// ----------------------------------------------------------------------
-// Setup file for writing fields at time step.
-void
-pylith::meshio::OutputManager::openTimeStep(const PylithReal t,
-                                            const pylith::topology::Mesh& mesh,
-                                            const char* label,
-                                            const int labelId) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::openTimeStep(t="<<t<<", mesh="<<typeid(mesh).name()<<", label="<<(label ? label : "NULL")<<", labelId="<<labelId<<")");
-
-    assert(_writer);
-    _writer->openTimeStep(t, mesh, label, labelId);
-
-    PYLITH_METHOD_END;
-} // openTimeStep
-
-// ----------------------------------------------------------------------
-// End writing fields at time step.
-void
-pylith::meshio::OutputManager::closeTimeStep(void) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::closeTimeStep()");
-
-    assert(_writer);
-    _writer->closeTimeStep();
-
-    PYLITH_METHOD_END;
-} // closeTimeStep
+} // _close
 
 // ----------------------------------------------------------------------
 // Append finite-element vertex field to file.
 void
-pylith::meshio::OutputManager::appendVertexField(const PylithReal t,
-                                                 pylith::topology::Field& field,
-                                                 const topology::Mesh& mesh) {
+pylith::meshio::OutputManager::_appendField(const PylithReal t,
+                                            pylith::topology::Field* field,
+                                            const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::appendVertexField(t="<<t<<", field="<<typeid(field).name()<<", mesh="<<typeid(mesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManager::appendField(t="<<t<<", field="<<typeid(field).name()<<", mesh="<<typeid(mesh).name()<<")");
 
-    topology::Field& fieldFiltered = (!_vertexFilter) ? field : _vertexFilter->filter(field);
-    topology::Field& fieldDimensioned = _dimension(fieldFiltered);
+    assert(field);
 
-    _writer->writeVertexField(t, fieldDimensioned, mesh);
+    pylith::topology::Field* fieldFiltered = _fieldFilter->filter(field);
+    pylith::topology::Field* fieldDimensioned = _dimension(fieldFiltered);assert(fieldDimensioned);
 
-    PYLITH_METHOD_END;
-} // appendVertexField
-
-// ----------------------------------------------------------------------
-// Append finite-element cell field to file.
-void
-pylith::meshio::OutputManager::appendCellField(const PylithReal t,
-                                               pylith::topology::Field& field,
-                                               const char* label,
-                                               const int labelId) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::appendCellField(t="<<t<<", field="<<typeid(field).name()<<", label="<<label<<", labelId="<<labelId<<")");
-
-    topology::Field& fieldFiltered = (!_cellFilter) ? field : _cellFilter->filter(field, label, labelId);
-    topology::Field& fieldDimensioned = _dimension(fieldFiltered);
-
-    try {
-        _writer->writeCellField(t, fieldDimensioned, label, labelId);
-    } catch (std::runtime_error e) {
-        std::cout << "ERROR: " << e.what() << std::endl<<std::endl<<std::endl;
-    } // try/catch
-
-    PYLITH_METHOD_END;
-} // appendCellField
-
-// ----------------------------------------------------------------------
-// Check whether we want to write output at time t.
-bool
-pylith::meshio::OutputManager::shouldWrite(const PylithReal t,
-                                           const PylithInt timeStep) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::shouldWrite(t="<<t<<", timeStep="<<timeStep<<")");
-
-    bool shouldWrite = false;
-    switch (_trigger) {
-    case SKIP_TIMESTEPS:
-        if (timeStep - _timeStepWrote > _numTimeStepsSkip) {
-            shouldWrite = true;
-            _timeStepWrote = timeStep;
-        } // if
+    const int basisOrder = _basisOrder(*fieldDimensioned);
+    switch (basisOrder) {
+    case 0:
+        _writer->writeCellField(t, *fieldDimensioned, _label.c_str(), _labelId);
         break;
-    case ELAPSED_TIME:
-        if (t - _timeWrote >= _timeSkip) {
-            shouldWrite = true;
-            _timeWrote = t;
-        } // if
+
+    case 1:
+        _writer->writeVertexField(t, *fieldDimensioned, mesh);
         break;
+
     default:
-        PYLITH_COMPONENT_ERROR("Unknown trigger type.");
-        throw std::logic_error("Unknown trigger type.");
+        PYLITH_COMPONENT_ERROR(
+            "Unsupported basis order for output ("
+            << basisOrder <<"). Use FieldFilterProject with basis order of 0 or 1. Skipping output of '"
+            << field->label() << "' field."
+            );
     } // switch
 
-    PYLITH_METHOD_RETURN(shouldWrite);
-} // shouldWrite
+    PYLITH_METHOD_END;
+} // _appendField
+
+// ----------------------------------------------------------------------
+// Names of information fields for output.
+pylith::string_vector
+pylith::meshio::OutputManager::_infoNamesExpanded(const pylith::topology::Field* auxField) const {
+    PYLITH_METHOD_BEGIN;
+
+    if (auxField && (1 == _infoFields.size()) && (std::string("all") == _infoFields[0])) {
+        PYLITH_METHOD_RETURN(auxField->subfieldNames());
+    } // if
+
+    PYLITH_METHOD_RETURN(_infoFields);
+} // _infoNamesExpanded
+
+// ----------------------------------------------------------------------
+// Names of data fields for output.
+pylith::string_vector
+pylith::meshio::OutputManager::_dataNamesExpanded(const pylith::topology::Field& solution,
+                                                  const pylith::topology::Field* auxField,
+                                                  const pylith::topology::Field* derivedField) const {
+    PYLITH_METHOD_BEGIN;
+
+    if ((1 == _dataFields.size()) && (std::string("all") == _dataFields[0])) {
+        pylith::string_vector dataNames;
+        dataNames = solution.subfieldNames();
+
+        if (derivedField) {
+            const pylith::string_vector& derivedSubfields = derivedField->subfieldNames();
+            const size_t numAdd = derivedSubfields.size();
+            dataNames.resize(dataNames.size() + numAdd);
+            for (size_t iAdd = 0, iName = dataNames.size(); iAdd < numAdd; ++iAdd) {
+                dataNames[iName] = derivedSubfields[iAdd];
+            } // for
+        } // if
+        PYLITH_METHOD_RETURN(dataNames);
+    } // if
+
+    PYLITH_METHOD_RETURN(_dataFields);
+} // _dataNamesExpanded
 
 // ----------------------------------------------------------------------
 /** Get buffer for field.
@@ -491,18 +366,24 @@ pylith::meshio::OutputManager::shouldWrite(const PylithReal t,
  * @param[in] name Name of subfield (optional).
  * @returns Field to use as buffer for outputting field.
  */
-pylith::topology::Field&
-pylith::meshio::OutputManager::getBuffer(const pylith::topology::Field& fieldIn,
-                                         const char* name) {
+pylith::topology::Field*
+pylith::meshio::OutputManager::_getBuffer(const pylith::topology::Field& fieldIn,
+                                          const char* name) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("OutputManager::_getBuffer(fieldIn="<<fieldIn.label()<<")");
 
     pylith::topology::FieldBase::VectorFieldEnum fieldType = pylith::topology::FieldBase::MULTI_OTHER;
     if (name) {
-        const pylith::topology::Field::SubfieldInfo& info = fieldIn.subfieldInfo(name);
-        fieldType = info.description.vectorFieldType;
+        fieldType = fieldIn.subfieldInfo(name).description.vectorFieldType;
     } else {
-        //fieldType = fieldIn.vectorFieldType();
+        // Get vector field type for subfield if only one subfield in field.
+        const pylith::string_vector& subfieldNames = fieldIn.subfieldNames();
+        if (size_t(1) == subfieldNames.size()) {
+            fieldType = fieldIn.subfieldInfo(subfieldNames[0].c_str()).description.vectorFieldType;
+        } else {
+            PYLITH_COMPONENT_ERROR("No subfield specified for field '"<<fieldIn.label() <<"' with multiple subfields.");
+            throw std::runtime_error("No subfield specified for field with multiple fields.");
+        } // if/else
     } // if/else
 
     std::string fieldName = "buffer (other)";
@@ -549,7 +430,7 @@ pylith::meshio::OutputManager::getBuffer(const pylith::topology::Field& fieldIn,
           //fieldOut.vectorFieldType(fieldIn.vectorFieldType());
           //fieldOut.scale(fieldIn.scale());
     } // if
-    topology::Field& fieldOut = _fields->get(fieldName.c_str());
+    pylith::topology::Field& fieldOut = _fields->get(fieldName.c_str());
     if (name) {
         fieldOut.copySubfield(fieldIn, name);
     } else {
@@ -557,30 +438,41 @@ pylith::meshio::OutputManager::getBuffer(const pylith::topology::Field& fieldIn,
     } // if/else
     fieldOut.dimensionalizeOkay(true);
 
-    PYLITH_METHOD_RETURN(fieldOut);
-} // getBuffer
+    PYLITH_METHOD_RETURN(&fieldOut);
+} // _getBuffer
 
 // ----------------------------------------------------------------------
 // Dimension field.
-pylith::topology::Field&
-pylith::meshio::OutputManager::_dimension(pylith::topology::Field& fieldIn) {
+pylith::topology::Field*
+pylith::meshio::OutputManager::_dimension(pylith::topology::Field* fieldIn) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputManager::_dimension(fieldIn="<<fieldIn.label()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManager::_dimension(fieldIn="<<typeid(fieldIn).name()<<")");
 
-#if 0 // :TODO: FIX THIS.
-    if (1.0 == fieldIn.scale()) {
-        PYLITH_METHOD_RETURN(fieldIn);
-    }
-#endif
+    if (!fieldIn) { PYLITH_METHOD_RETURN(NULL); }
 
-    if (fieldIn.dimensionalizeOkay()) {
-        fieldIn.dimensionalize();
+    assert(fieldIn);
+
+    // Check to see if all subfields have scales of 1.0.
+    bool needDimensioning = false;
+    const pylith::string_vector& subfieldNames = fieldIn->subfieldNames();
+    const size_t numSubfields = subfieldNames.size();
+    for (size_t i = 0; i < numSubfields; ++i) {
+
+        if (fieldIn->subfieldInfo(subfieldNames[i].c_str()).description.scale != 1.0) {
+            needDimensioning = true;
+            break;
+        } // if
+    } // for
+    if (!needDimensioning) { PYLITH_METHOD_RETURN(fieldIn); }
+
+    if (fieldIn->dimensionalizeOkay()) {
+        fieldIn->dimensionalize();
         PYLITH_METHOD_RETURN(fieldIn);
     } else {
-        pylith::topology::Field& fieldOut = getBuffer(fieldIn);
-        fieldOut.copy(fieldIn);
-        fieldOut.dimensionalizeOkay(true);
-        fieldOut.dimensionalize();
+        pylith::topology::Field* fieldOut = _getBuffer(*fieldIn);
+        fieldOut->copy(*fieldIn);
+        fieldOut->dimensionalizeOkay(true);
+        fieldOut->dimensionalize();
 
         PYLITH_METHOD_RETURN(fieldOut);
     } // if/else
@@ -590,4 +482,31 @@ pylith::meshio::OutputManager::_dimension(pylith::topology::Field& fieldIn) {
 } // _dimension
 
 
+// ----------------------------------------------------------------------
+// Get basis order of field.
+int
+pylith::meshio::OutputManager::_basisOrder(const pylith::topology::Field& field) {
+    PYLITH_METHOD_BEGIN;
+
+    int basisOrder = -1;
+
+    const pylith::string_vector& subfieldNames = field.subfieldNames();
+    const size_t numSubfields = subfieldNames.size();
+    if (1 == numSubfields) {
+        basisOrder = field.subfieldInfo(subfieldNames[0].c_str()).fe.basisOrder;
+    } else {
+        PYLITH_COMPONENT_ERROR("Expected one subfield in field '"<<field.label()<<"'.");
+    } // if/else
+
+    PYLITH_METHOD_RETURN(basisOrder);
+} // _basisOrder
+
+// ----------------------------------------------------------------------
+// TEMPOARY Set label and label id.
+void
+pylith::meshio::OutputManager::_temporarySetLabel(const char* label,
+                                                  const PylithInt labelId) {
+    _label = label;
+    _labelId = labelId;
+} // _temporarySetLabel
 // End of file

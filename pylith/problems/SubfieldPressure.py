@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,11 +13,10 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/problems/SubfieldPressure.py
-##
+#
 # @brief Python object for pressure subfield.
-##
+#
 # Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield

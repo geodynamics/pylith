@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,18 +13,15 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pyre/meshio/OutputSoln.py
-##
+#
 # @brief Python object for managing output of finite-element
 # solution information.
-##
-# Factory: output_manager
+#
+# Factory: observer
 
 from .OutputManager import OutputManager
 from .meshio import OutputSoln as ModuleOutputSoln
-
-# OutputSoln class
 
 
 class OutputSoln(OutputManager, ModuleOutputSoln):
@@ -34,40 +29,31 @@ class OutputSoln(OutputManager, ModuleOutputSoln):
     Python object for managing output of finite-element solution
     information.
 
-    @class Inventory
-    Python object for managing OutputSoln facilities and properties.
+    INVENTORY
 
-    \b Properties
-    @li \b vertex_data_fields Names of vertex data fields to output.
+    Properties
+      - None
 
-    \b Facilities
-    @li None
+    Facilities
+      - None
 
-    Factory: output_manager
+    FACTORY: observer
     """
-
-    # INVENTORY //////////////////////////////////////////////////////////
-
-    import pyre.inventory
-
-    vertexDataFields = pyre.inventory.list("vertex_data_fields", default=["all"])
-    vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="OutputSoln"):
+    def __init__(self, name="outputsoln"):
         """
         Constructor.
         """
         OutputManager.__init__(self, name)
         return
 
-    def preinitialize(self):
+    def preinitialize(self, problem):
         """
-        Do
+        Do mimimal initialization.
         """
-        OutputManager.preinitialize(self)
-        ModuleOutputSoln.vertexDataFields(self, self.vertexDataFields)
+        OutputManager.preinitialize(self, problem)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -77,22 +63,21 @@ class OutputSoln(OutputManager, ModuleOutputSoln):
         Set members based using inventory.
         """
         OutputManager._configure(self)
-        self.vertexDataFields = self.inventory.vertexDataFields
         return
 
-    def _createModuleObj(self):
+    def _createModuleObj(self, problem):
         """
         Create handle to C++ object.
         """
-        ModuleOutputSoln.__init__(self)
+        ModuleOutputSoln.__init__(self, problem)
         return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def output_manager():
+def observer():
     """
-    Factory associated with OutputManager.
+    Factory associated with OutputSoln.
     """
     return OutputSoln()
 

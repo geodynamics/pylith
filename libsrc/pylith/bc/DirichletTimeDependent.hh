@@ -27,7 +27,7 @@
 #define pylith_bc_dirichlettimedependent_hh
 
 // Include directives ---------------------------------------------------
-#include "Dirichlet.hh" // ISA Dirichlet
+#include "ConstraintBoundary.hh" // ISA ConstraintBoundary
 
 // DirichletTimeDependent ----------------------------------------------------
 /** @brief Dirichlet (prescribed values at degrees of freedom) boundary
@@ -46,7 +46,8 @@
  *        time history start (scalar) t_2(x)
  *        time history value (scalar) a(t-t_2(x))
  */
-class pylith::bc::DirichletTimeDependent : public pylith::bc::Dirichlet { // class DirichletTimeDependent
+class pylith::bc::DirichletTimeDependent : public pylith::bc::ConstraintBoundary {
+
     friend class TestDirichletTimeDependent;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -120,6 +121,12 @@ public:
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
+    /** Get factory for setting up auxliary fields.
+     *
+     * @returns Factor for auxiliary fields.
+     */
+    pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
+
     /** Setup auxiliary subfields (discretization and query fns).
      *
      * Create subfields in auxiliary fields (includes name of the field,
@@ -141,19 +148,20 @@ protected:
      *
      * @param solution Solution field.
      */
-    void _setFEKernelsConstraint(const pylith::topology::Field& solution);
+    void _setFEKernelConstraint(const pylith::topology::Field& solution);
 
-    /** Get factory for setting up auxliary fields.
+    /** Get point-wise function (kernel) for settings constraint from auxiliary field.
      *
-     * @returns Factor for auxiliary fields.
+     * @returns Point-wise function.
      */
-    pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
+    PetscPointFunc _getFEKernelConstraint(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////
 private:
 
     spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
     pylith::bc::TimeDependentAuxiliaryFactory* _auxTimeDependentFactory; ///< Factory for auxiliary subfields.
+    PetscPointFunc _bcKernel; ///< Kernel for boundary condition value.
 
     bool _useInitial; ///< Use initial value term.
     bool _useRate; ///< Use rate term.

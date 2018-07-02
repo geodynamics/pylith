@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,13 +13,12 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/feassemble/ConstraintPointwise.py
-##
+#
 # @brief Python abstract base class for constraints on operator
 # actions with finite-elements.
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.feassemble.ObservedComponent import ObservedComponent
 from .feassemble import ConstraintPointwise as ModuleConstraint
 
 import numpy
@@ -44,23 +41,30 @@ def validateDOF(value):
     return num
 
 
-# ConstraintPointwise class
-class ConstraintPointwise(PetscComponent,
-                          ModuleConstraint):
+def observerFactory(name):
+    """
+    Factory for output items.
+    """
+    from pyre.inventory import facility
+    from pylith.meshio.OutputIntegrator import OutputIntegrator
+    return facility(name, family="observer", factory=OutputIntegrator)
+
+
+class ConstraintPointwise(ObservedComponent, ModuleConstraint):
     """
     Python abstract base class for constraints on operator
     actions with finite-elements.
 
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li None
-    #
-    # \b Facilities
-    # @li \b auxiliary_fields Discretization of auxiliary fields associated with material.
-    # @li \b db_auxiliary_fields Database for auxiliary fields associated with material.
+    Properties
+      - *constrained_dof* Constrained degrees of freedom.
+
+    Facilities
+      - *auxiliary_subfields* Discretization of constraint parameter auxiliary subfields.
+      - *db_auxiliary_field* Spatial database for constrain parameters.
+      - *observers* Observers of constraint (e.g., output).
+    """
 
     import pyre.inventory
 
@@ -76,9 +80,9 @@ class ConstraintPointwise(PetscComponent,
     auxFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
     auxFieldDB.meta['tip'] = "Database for constraint parameters."
 
-    from pylith.meshio.OutputManager import OutputManager
-    outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputManager)
-    outputManager.meta['tip'] = "Output manager."
+    from pylith.feassemble.SingleObserver import SingleConstraintObserver
+    observers = pyre.inventory.facilityArray("observers", itemFactory=observerFactory, factory=SingleConstraintObserver)
+    observers.meta['tip'] = "Observers (e.g., output) for constraint."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -86,24 +90,26 @@ class ConstraintPointwise(PetscComponent,
         """
         Constructor.
         """
-        PetscComponent.__init__(self, name, facility="constraint")
-        self._createModuleObj()
+        ObservedComponent.__init__(self, name, facility="constraint")
         return
 
     def preinitialize(self, mesh):
         """
         Setup constraint.
         """
-        ModuleConstraint.identifier(self, self.aliases[-1])
+        self._createModuleObj()
+        ObservedComponent.preinitialize(self)
+
         ModuleConstraint.constrainedDOF(self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
         ModuleConstraint.auxFieldDB(self, self.auxFieldDB)
-        ModuleConstraint.output(self, self.outputManager)
 
         for subfield in self.auxSubfields.components():
             fieldName = subfield.aliases[-1]
-            ModuleConstraint.auxSubfieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
+            ModuleConstraint.auxSubfieldDiscretization(
+                self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
 
-        self.outputManager.preinitialize()
+        for observer in self.observers.components():
+            observer.preinitialize(self)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -112,15 +118,14 @@ class ConstraintPointwise(PetscComponent,
         """
         Setup members using inventory.
         """
-        PetscComponent._configure(self)
+        ObservedComponent._configure(self)
         return
 
     def _createModuleObj(self):
         """
         Call constructor for module object for access to C++ object.
         """
-        raise NotImplementedError, \
-            "Please implement _createModuleOb() in derived class."
+        raise NotImplementedError("Please implement _createModuleOb() in derived class.")
 
 
 # End of file

@@ -38,7 +38,7 @@
  *
  * LHS Jacobian
  *
- * Jf0_veldisp_DispVelImplicit: tshift
+ * Jf0_veldisp_DispVelImplicit: s_tshift
  *
  * Jf0_veldisp_DispVelExplicit: 0
  *
@@ -181,13 +181,13 @@ public:
                     const PylithScalar a_t[],
                     const PylithScalar a_x[],
                     const PylithReal t,
-                    const PylithReal utshift,
+                    const PylithReal s_tshift,
                     const PylithScalar x[],
                     const PylithInt numConstants,
                     const PylithScalar constants[],
                     PylithScalar Jf0[]);
 
-    /** Jf0 function for displacement equation: Jf0uu = utshift.
+    /** Jf0 function for displacement equation: Jf0uu = s_tshift.
      *
      * Solution fields: [disp(dim), vel(dim)]
      */
@@ -206,7 +206,7 @@ public:
                        const PylithScalar a_t[],
                        const PylithScalar a_x[],
                        const PylithReal t,
-                       const PylithReal utshift,
+                       const PylithReal s_tshift,
                        const PylithScalar x[],
                        const PylithInt numConstants,
                        const PylithScalar constants[],
@@ -231,7 +231,7 @@ public:
                const PylithScalar a_t[],
                const PylithScalar a_x[],
                const PylithReal t,
-               const PylithReal utshift,
+               const PylithReal s_tshift,
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],

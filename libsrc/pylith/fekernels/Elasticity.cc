@@ -177,7 +177,7 @@ pylith::fekernels::Elasticity::Jf0vv_inertiaimplicit(const PylithInt dim,
                                                      const PylithScalar a_t[],
                                                      const PylithScalar a_x[],
                                                      const PylithReal t,
-                                                     const PylithReal utshift,
+                                                     const PylithReal s_tshift,
                                                      const PylithScalar x[],
                                                      const PylithInt numConstants,
                                                      const PylithScalar constants[],
@@ -193,12 +193,13 @@ pylith::fekernels::Elasticity::Jf0vv_inertiaimplicit(const PylithInt dim,
     assert(aOff);
     assert(aOff[i_density] >= 0);
     assert(a);
+    assert(s_tshift > 0);
 
     const PylithScalar density = a[aOff[i_density]];
 
     for (PylithInt i = 0; i < dim; ++i) {
         for (PylithInt j = 0; j < dim; ++j) {
-            Jf0[i*dim+j] += utshift * density;
+            Jf0[i*dim+j] += s_tshift * density;
         } // for
     } // for
 } // Jf0vv_inertiaimplicit
@@ -221,7 +222,7 @@ pylith::fekernels::Elasticity::Jf0vv_inertiaexplicit(const PylithInt dim,
                                                      const PylithScalar a_t[],
                                                      const PylithScalar a_x[],
                                                      const PylithReal t,
-                                                     const PylithReal utshift,
+                                                     const PylithReal s_tshift,
                                                      const PylithScalar x[],
                                                      const PylithInt numConstants,
                                                      const PylithScalar constants[],

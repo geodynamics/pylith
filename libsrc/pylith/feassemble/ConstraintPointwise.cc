@@ -21,7 +21,6 @@
 #include "pylith/feassemble/ConstraintPointwise.hh" // implementation of object methods
 
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
-#include "pylith/meshio/OutputManager.hh" // USES OutputManager
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
@@ -41,30 +40,26 @@
 pylith::feassemble::ConstraintPointwise::ConstraintPointwise(void) :
     _normalizer(new spatialdata::units::Nondimensional),
     _auxField(NULL),
-    _output(NULL),
     _logger(NULL)
-{ // constructor
-} // constructor
+{}
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::feassemble::ConstraintPointwise::~ConstraintPointwise(void)
-{ // destructor
+pylith::feassemble::ConstraintPointwise::~ConstraintPointwise(void) {
     deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::feassemble::ConstraintPointwise::deallocate(void)
-{ // deallocate
+pylith::feassemble::ConstraintPointwise::deallocate(void) {
     PYLITH_METHOD_BEGIN;
+
+    ObservedComponent::deallocate();
 
     delete _normalizer; _normalizer = NULL;
     delete _logger; _logger = NULL;
     delete _auxField; _auxField = NULL;
-
-    _output = NULL; // :KLUDGE: Memory managed by Python object. :TODO: Use shared pointer.
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -74,8 +69,7 @@ pylith::feassemble::ConstraintPointwise::deallocate(void)
 // Set indices of constrained degrees of freedom at each location.
 void
 pylith::feassemble::ConstraintPointwise::constrainedDOF(const int* flags,
-                                                        const int size)
-{ // constrainedDOF
+                                                        const int size) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("constrainedDOF(flags="<<flags<<", size="<<size<<")");
 
@@ -98,28 +92,23 @@ pylith::feassemble::ConstraintPointwise::constrainedDOF(const int* flags,
 // ----------------------------------------------------------------------
 // Get indices of constrained degrees of freedom.
 const pylith::int_array&
-pylith::feassemble::ConstraintPointwise::constrainedDOF(void) const
-{ // constrainedDOF
+pylith::feassemble::ConstraintPointwise::constrainedDOF(void) const {
     return _constrainedDOF;
 } // constrainedDOF
 
 // ----------------------------------------------------------------------
 // Return auxiliary subfields for this problem.
-const pylith::topology::Field&
-pylith::feassemble::ConstraintPointwise::auxField(void) const
-{ // auxField
+const pylith::topology::Field*
+pylith::feassemble::ConstraintPointwise::auxField(void) const {
     PYLITH_METHOD_BEGIN;
 
-    assert(_auxField);
-
-    PYLITH_METHOD_RETURN(*_auxField);
+    PYLITH_METHOD_RETURN(_auxField);
 } // auxField
 
 // ----------------------------------------------------------------------
 // Set database for filling auxiliary subfields.
 void
-pylith::feassemble::ConstraintPointwise::auxFieldDB(spatialdata::spatialdb::SpatialDB* value)
-{ // auxFieldDB
+pylith::feassemble::ConstraintPointwise::auxFieldDB(spatialdata::spatialdb::SpatialDB* value) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("auxFieldDB(value="<<value<<")");
 
@@ -136,8 +125,7 @@ pylith::feassemble::ConstraintPointwise::auxSubfieldDiscretization(const char* n
                                                                    const int basisOrder,
                                                                    const int quadOrder,
                                                                    const bool isBasisContinuous,
-                                                                   const pylith::topology::FieldBase::SpaceEnum feSpace)
-{ // auxSubfieldDiscretization
+                                                                   const pylith::topology::FieldBase::SpaceEnum feSpace) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("auxSubfieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
 
@@ -151,8 +139,7 @@ pylith::feassemble::ConstraintPointwise::auxSubfieldDiscretization(const char* n
 // ----------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
 void
-pylith::feassemble::ConstraintPointwise::normalizer(const spatialdata::units::Nondimensional& dim)
-{ // normalizer
+pylith::feassemble::ConstraintPointwise::normalizer(const spatialdata::units::Nondimensional& dim) {
     PYLITH_COMPONENT_DEBUG("normalizer(dim="<<typeid(dim).name()<<")");
 
     if (!_normalizer) {
@@ -164,36 +151,7 @@ pylith::feassemble::ConstraintPointwise::normalizer(const spatialdata::units::No
 
 
 // ----------------------------------------------------------------------
-// Set output manager.
-void
-pylith::feassemble::ConstraintPointwise::output(pylith::meshio::OutputManager* manager) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("output(manager="<<manager<<")");
-
-    _output = manager;
-
-    PYLITH_METHOD_END;
-} // output
-
-
-// ----------------------------------------------------------------------
-// Write information (auxiliary field) output.
-void
-pylith::feassemble::ConstraintPointwise::writeInfo(void) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("writeInfo(void)");
-
-    if (_output) {
-        assert(_auxField);
-        _output->writeInfo(*_auxField);
-    } // if
-
-    PYLITH_METHOD_END;
-} // writeInfo
-
-
-// ----------------------------------------------------------------------
-// Update auxiliary fields at beginning of time step.
+// Update at beginning of time step.
 void
 pylith::feassemble::ConstraintPointwise::prestep(const double t,
                                                  const double dt)
@@ -205,6 +163,23 @@ pylith::feassemble::ConstraintPointwise::prestep(const double t,
 
     PYLITH_METHOD_END;
 } // prestep
+
+
+// ----------------------------------------------------------------------
+// Update at end of time step.
+void
+pylith::feassemble::ConstraintPointwise::poststep(const PylithReal t,
+                                                  const PylithInt tindex,
+                                                  const PylithReal dt,
+                                                  const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("poststep(t="<<t<<", dt="<<dt<<") empty method");
+
+    const bool infoOnly = false;
+    notifyObservers(t, tindex, solution, infoOnly);
+
+    PYLITH_METHOD_END;
+} // poststep
 
 
 // End of file

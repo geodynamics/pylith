@@ -156,6 +156,14 @@ pylith::faults::FaultCohesive::refDir2(const double vec[3]) {
     } // for
 } // refDir2
 
+// ----------------------------------------------------------------------
+// Get mesh associated with integrator domain.
+const pylith::topology::Mesh&
+pylith::faults::FaultCohesive::domainMesh(void) const {
+    assert(!_faultMesh);
+    return *_faultMesh;
+} // domainMesh
+
 
 // ----------------------------------------------------------------------
 // Adjust mesh topology for fault implementation.

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,28 +13,25 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/materials/Homogeneous.py
-##
+#
 # @brief Python materials container with one material.
 
 from pylith.utils.PetscComponent import PetscComponent
-
-# Homogeneous class
 
 
 class Homogeneous(PetscComponent):
     """
     Python materials container with one material.
-    """
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li None
-    #
-    # \b Facilities
-    # @li \b material Material in problem
+    INVENTORY
+
+    Properties
+      - None
+
+    Facilities
+      - *material* Material in problem.
+    """
 
     import pyre.inventory
 

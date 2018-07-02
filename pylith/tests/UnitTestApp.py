@@ -1,5 +1,3 @@
-#!/usr/bin/env nemesis
-#
 # ======================================================================
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,9 +13,8 @@
 #
 # ======================================================================
 #
-
 # @file pylith/tests/UnitTestApp.py
-
+#
 # @brief Python application for Python unit tests.
 
 from pyre.applications.Script import Script

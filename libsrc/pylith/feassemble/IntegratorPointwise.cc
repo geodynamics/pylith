@@ -23,7 +23,6 @@
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/meshio/OutputManager.hh" // USES OutputManager
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -41,11 +40,11 @@ pylith::feassemble::IntegratorPointwise::IntegratorPointwise(void) :
     _normalizer(new spatialdata::units::Nondimensional),
     _gravityField(NULL),
     _auxField(NULL),
-    _output(NULL),
+    _derivedField(NULL),
     _logger(NULL),
     _needNewRHSJacobian(true),
     _needNewLHSJacobian(true)
-{} // constructor
+{}
 
 // ----------------------------------------------------------------------
 // Destructor
@@ -59,27 +58,31 @@ void
 pylith::feassemble::IntegratorPointwise::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
+    ObservedComponent::deallocate();
+
     delete _normalizer; _normalizer = NULL;
     delete _logger; _logger = NULL;
     delete _auxField; _auxField = NULL;
+    delete _derivedField; _derivedField = NULL;
 
     _gravityField = NULL; // :KLUDGE: Memory managed by Python object. :TODO: Use shared pointer.
-    _output = NULL; // :KLUDGE: Memory managed by Python object. :TODO: Use shared pointer.
 
     PYLITH_METHOD_END;
 } // deallocate
 
 // ----------------------------------------------------------------------
 // Get auxiliary field.
-const pylith::topology::Field&
-pylith::feassemble::IntegratorPointwise::auxField(void) const
-{
-    PYLITH_METHOD_BEGIN;
-
-    assert(_auxField);
-
-    PYLITH_METHOD_RETURN(*_auxField);
+const pylith::topology::Field*
+pylith::feassemble::IntegratorPointwise::auxField(void) const {
+    return _auxField;
 } // auxField
+
+// ----------------------------------------------------------------------
+// Get derived field.
+const pylith::topology::Field*
+pylith::feassemble::IntegratorPointwise::derivedField(void) const {
+    return _derivedField;
+} // derivedField
 
 // ----------------------------------------------------------------------
 // Set database for auxiliary fields.
@@ -150,23 +153,10 @@ pylith::feassemble::IntegratorPointwise::gravityField(spatialdata::spatialdb::Gr
 
 
 // ----------------------------------------------------------------------
-// Set output manager.
-void
-pylith::feassemble::IntegratorPointwise::output(pylith::meshio::OutputManager* manager) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("output(manager="<<manager<<")");
-
-    _output = manager;
-
-    PYLITH_METHOD_END;
-} // output
-
-
-// ----------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
-pylith::feassemble::IntegratorPointwise::prestep(const double t,
-                                                 const double dt) {
+pylith::feassemble::IntegratorPointwise::prestep(const PylithReal t,
+                                                 const PylithReal dt) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("prestep(t="<<t<<", dt="<<dt<<") empty method");
 
@@ -177,13 +167,51 @@ pylith::feassemble::IntegratorPointwise::prestep(const double t,
 
 
 // ----------------------------------------------------------------------
+// Update auxiliary fields at end of time step.
+void
+pylith::feassemble::IntegratorPointwise::poststep(const PylithReal t,
+                                                  const PylithInt tindex,
+                                                  const PylithReal dt,
+                                                  const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("poststep(t="<<t<<", dt="<<dt<<") empty method");
+
+    _updateStateVars(t, dt, solution);
+
+    const bool infoOnly = false;
+    notifyObservers(t, tindex, solution, infoOnly);
+
+    PYLITH_METHOD_END;
+} // poststep
+
+
+// ----------------------------------------------------------------------
+// Set constants used in finite-element integrations.
+void
+pylith::feassemble::IntegratorPointwise::_setFEConstants(const pylith::topology::Field& solution,
+                                                         const PylithReal dt) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setFEConstants(solution="<<solution.label()<<", dt="<<dt<<")");
+
+    PetscDS prob = NULL;
+    PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
+
+    // Pointwise functions have been set in DS
+    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err); assert(prob);
+    err = PetscDSSetConstants(prob, 0, NULL); PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+} // _setFEConstants
+
+
+// ----------------------------------------------------------------------
 // Update state variables as needed.
 void
-pylith::feassemble::IntegratorPointwise::updateStateVars(const PylithReal t,
-                                                         const PylithReal dt,
-                                                         const pylith::topology::Field& solution) {
+pylith::feassemble::IntegratorPointwise::_updateStateVars(const PylithReal t,
+                                                          const PylithReal dt,
+                                                          const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateStateVars(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("updateStateVars(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
     if (0 == _updateStateVarsKernels.size()) {
         PYLITH_METHOD_END;
@@ -255,60 +283,21 @@ pylith::feassemble::IntegratorPointwise::updateStateVars(const PylithReal t,
 #endif
     
     PYLITH_METHOD_END;
-} // updateStateVars
+} // _updateStateVars
 
 
 // ----------------------------------------------------------------------
-// Write information (auxiliary field) output.
+// Compute field derived from solution and auxiliary field.
 void
-pylith::feassemble::IntegratorPointwise::writeInfo(void) {
+pylith::feassemble::IntegratorPointwise::_computeDerivedFields(const PylithReal t,
+                                                               const PylithReal dt,
+                                                               const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("writeInfo(void)");
+    PYLITH_COMPONENT_DEBUG("_computeDerivedFields(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
-    if (_output) {
-        assert(_auxField);
-        _output->writeInfo(*_auxField);
-    } // if
+
 
     PYLITH_METHOD_END;
-} // writeInfo
-
-
-// ----------------------------------------------------------------------
-// Write solution related output.
-void
-pylith::feassemble::IntegratorPointwise::writeTimeStep(const PylithReal t,
-                                                       const PylithInt tindex,
-                                                       const pylith::topology::Field& solution) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
-
-    if (_output) {
-        assert(_auxField);
-        _output->writeTimeStep(t, tindex, solution, *_auxField);
-    } // if
-
-    PYLITH_METHOD_END;
-} // writeTimeStep
-
-
-// ----------------------------------------------------------------------
-// Set constants used in finite-element integrations.
-void
-pylith::feassemble::IntegratorPointwise::_setFEConstants(const pylith::topology::Field& solution,
-                                                         const PylithReal dt) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEConstants(solution="<<solution.label()<<", dt="<<dt<<")");
-
-    PetscDS prob = NULL;
-    PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
-
-    // Pointwise functions have been set in DS
-    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err); assert(prob);
-    err = PetscDSSetConstants(prob, 0, NULL); PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_END;
-} // _setFEConstants
-
+} // _computeDerivedFields
 
 // End of file

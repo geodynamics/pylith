@@ -40,7 +40,7 @@
 void
 pylith::materials::TestIsotropicLinearElasticity3D::setUp(void) {
     TestMaterial::setUp();
-    _mymaterial = new IsotropicLinearElasticity3D(); CPPUNIT_ASSERT(_mymaterial);
+    _mymaterial = new IsotropicLinearElasticity3D();CPPUNIT_ASSERT(_mymaterial);
     _mydata = NULL;
 
     GenericComponent::name("TestIsotropicLinearElasticity3D");
@@ -62,8 +62,8 @@ pylith::materials::TestIsotropicLinearElasticity3D::tearDown(void) {
 
     TestMaterial::tearDown();
 
-    delete _mymaterial; _mymaterial = NULL;
-    delete _mydata; _mydata = NULL;
+    delete _mymaterial;_mymaterial = NULL;
+    delete _mydata;_mydata = NULL;
 } // tearDown
 
 
@@ -116,7 +116,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::test_auxFieldSetup(void) {
     const PylithReal forceScale = pressureScale / lengthScale;
     const PylithReal accelerationScale = lengthScale / (timeScale * timeScale);
 
-    delete _mymaterial->_auxField; _mymaterial->_auxField = new topology::Field(*_mesh); CPPUNIT_ASSERT(_mymaterial->_auxField);
+    delete _mymaterial->_auxField;_mymaterial->_auxField = new topology::Field(*_mesh);CPPUNIT_ASSERT(_mymaterial->_auxField);
     _mymaterial->_auxFieldSetup();
 
     // Check discretizations
@@ -228,10 +228,10 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
     CPPUNIT_ASSERT(_mydata->normalizer);
     const PylithReal lengthScale = _mydata->normalizer->lengthScale();
 
-    const pylith::topology::Field& auxField = _mymaterial->auxField();
+    const pylith::topology::Field* auxField = _mymaterial->auxField();CPPUNIT_ASSERT(auxField);
     { // Test getting density field.
         pylith::topology::Field density(*_mesh);
-        density.copySubfield(auxField, "density");
+        density.copySubfield(*auxField, "density");
 
         //density.view("DENSITY"); // DEBUGGING
 
@@ -245,8 +245,8 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = density.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        const PetscDM dm = density.dmMesh();CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryDensity.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -255,7 +255,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
 
     { // Test getting shear_modulus field.
         pylith::topology::Field shearModulus(*_mesh);
-        shearModulus.copySubfield(auxField, "shear_modulus");
+        shearModulus.copySubfield(*auxField, "shear_modulus");
 
         //shearModulus.view("SHEAR MODULUS"); // DEBUGGING
 
@@ -269,8 +269,8 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = shearModulus.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryShearModulus.functions(), (void**)queryShearModulus.contextPtrs(), shearModulus.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        const PetscDM dm = shearModulus.dmMesh();CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryShearModulus.functions(), (void**)queryShearModulus.contextPtrs(), shearModulus.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryShearModulus.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -279,7 +279,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
 
     { // Test getting bulk_modulus field.
         pylith::topology::Field bulkModulus(*_mesh);
-        bulkModulus.copySubfield(auxField, "bulk_modulus");
+        bulkModulus.copySubfield(*auxField, "bulk_modulus");
 
         //bulkModulus.view("BULK MODULUS"); // DEBUGGING
 
@@ -293,8 +293,8 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = bulkModulus.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        const PetscDM dm = bulkModulus.dmMesh();CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryBulkModulus.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -303,7 +303,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
 
     if (_mymaterial->_useReferenceState) { // Test getting reference_strain field.
         pylith::topology::Field referenceStrain(*_mesh);
-        referenceStrain.copySubfield(auxField, "reference_strain");
+        referenceStrain.copySubfield(*auxField, "reference_strain");
 
         //referenceStrain.view("REFERENCE STRAIN"); // DEBUGGING
 
@@ -317,8 +317,8 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = referenceStrain.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStrain.functions(), (void**)queryRefStrain.contextPtrs(), referenceStrain.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        const PetscDM dm = referenceStrain.dmMesh();CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStrain.functions(), (void**)queryRefStrain.contextPtrs(), referenceStrain.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryRefStrain.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -327,7 +327,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
 
     if (_mymaterial->_useReferenceState) { // Test getting reference_stress field.
         pylith::topology::Field referenceStress(*_mesh);
-        referenceStress.copySubfield(auxField, "reference_stress");
+        referenceStress.copySubfield(*auxField, "reference_stress");
 
         //referenceStress.view("REFERENCE STRESS"); // DEBUGGING
 
@@ -341,14 +341,13 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = referenceStress.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStress.functions(), (void**)queryRefStress.contextPtrs(), referenceStress.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        const PetscDM dm = referenceStress.dmMesh();CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStress.functions(), (void**)queryRefStress.contextPtrs(), referenceStress.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryRefStress.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting reference stress subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting reference_stress field
-
 
     PYLITH_METHOD_END;
 } // testGetAuxField
@@ -430,6 +429,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::_setupSolutionFields(void) {
     PYLITH_METHOD_END;
 } // _setupSolutionFields
 
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::materials::TestIsotropicLinearElasticity3D_Data::TestIsotropicLinearElasticity3D_Data(void) {
@@ -438,7 +438,7 @@ pylith::materials::TestIsotropicLinearElasticity3D_Data::TestIsotropicLinearElas
     gravityVector[1] = 0.0;
     gravityVector[2] = 0.0;
 
-    cs = new spatialdata::geocoords::CSCart; CPPUNIT_ASSERT(cs);
+    cs = new spatialdata::geocoords::CSCart;CPPUNIT_ASSERT(cs);
     cs->setSpaceDim(dimension);
     cs->initialize();
 

@@ -29,59 +29,60 @@
 #include "meshiofwd.hh" // forward declarations
 
 #include "OutputManager.hh" // ISA OutputManager
+#include "pylith/problems/problemsfwd.hh" // HASA Problem
 
 #include "pylith/utils/array.hh" // HASA string_vector
 
 // OutputSoln -----------------------------------------------------
 /** @brief C++ object for managing output of the solution over the domain.
  */
-class pylith::meshio::OutputSoln : public OutputManager {
+class pylith::meshio::OutputSoln : public pylith::meshio::OutputManager {
     friend class TestOutputSoln;   // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
-    /// Constructor
-    OutputSoln(void);
+    /** Constructor
+     *
+     * @param[in] problem Problem to observe.
+     */
+    OutputSoln(pylith::problems::Problem* const problem);
 
     /// Destructor
-    ~OutputSoln(void);
+    virtual ~OutputSoln(void);
 
     /// Deallocate PETSc and local data structures.
+    virtual
     void deallocate(void);
-
-    /** Set names of solution fields to output.
-     *
-     * @param[in] names Array of names of fields to output.
-     * @param[in] numNames Length of array.
-     */
-    void vertexDataFields(const char* names[],
-                          const int numNames);
 
     /** Verify configuration.
      *
      * @param[in] solution Solution field.
-     * @param[in] auxField Auxiliary field.
      */
-    void verifyConfiguration(const pylith::topology::Field& solution,
-                             const pylith::topology::Field& auxField) const;
+    virtual
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
+
+    // PROTECTED METHODS ////////////////////////////////////////////////////
+protected:
 
     /** Write solution at time step.
      *
      * @param[in] t Current time.
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
-     * @param[in] auxField Auxiliary field.
      */
-    void writeTimeStep(const PylithReal t,
-                       const PylithInt tindex,
-                       const pylith::topology::Field& solution,
-                       const pylith::topology::Field& auxField);
+    virtual
+    void _writeDataStep(const PylithReal t,
+                        const PylithInt tindex,
+                        const pylith::topology::Field& solution);
+
+    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected:
+
+    pylith::problems::Problem* const _problem;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
-
-    pylith::string_vector _vertexDataFields; ///< Names of solution fields to output.
 
     static const char* _pyreComponent; ///< Name of Pyre component.
 

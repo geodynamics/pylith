@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,11 +13,10 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/problems/Solution.py
-##
+#
 # @brief Python solution field for problem.
-##
+#
 # Factory: solution.
 
 from pylith.utils.PetscComponent import PetscComponent
@@ -29,16 +26,17 @@ class Solution(PetscComponent):
     """
     Python solution field for problem.
 
-    Factory: solution.
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li None
-    #
-    # \b Facilities
-    # @li \b subfields Subfields in solution.
+    Facilities
+      - None
+
+    Properties
+      - subfelds Subfields in solution.
+
+
+    FACTORY: solution.
+    """
 
     import pyre.inventory
 

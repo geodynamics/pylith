@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,9 +13,8 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/problems/SolnDispPres.py
-##
+#
 # @brief Python subfields container with displacement and pressure subfields.
 
 from pylith.utils.PetscComponent import PetscComponent

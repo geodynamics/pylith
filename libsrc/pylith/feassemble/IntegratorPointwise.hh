@@ -29,10 +29,9 @@
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
 
-#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
+#include "pylith/feassemble/ObservedComponent.hh" // ISA ObservedComponent
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase
-#include "pylith/meshio/meshiofwd.hh" // HOLDSA OutputManager
 #include "pylith/utils/petscfwd.h" // USES PetscMat, PetscVec
 #include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
 
@@ -43,11 +42,22 @@
 /** @brief General operations for implicit and explicit
  * time integration of equations defined by pointwise functions.
  */
-class pylith::feassemble::IntegratorPointwise : public pylith::utils::PyreComponent {
+class pylith::feassemble::IntegratorPointwise :
+    public pylith::feassemble::ObservedComponent {
     friend class TestIntegratorPointwise;   // unit testing
 
-    // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
+    // PUBLIC ENUMS /////////////////////////////////////////////////////////
 public:
+
+enum FEKernelKeys {
+    KERNELS_RHS_RESIDUAL=0,
+    KERNELS_LHS_RESIDUAL=1,
+    KERNELS_RHS_JACOBIAN=2,
+    KERNELS_LHS_JACOBIAN=3,
+    KERNELS_LHS_JACOBIAN_LUMPEDINV=4,
+    KERNELS_UPDATE_STATE_VARS=5,
+    KERNELS_DERIVED_FIELDS=6,
+};
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
@@ -62,11 +72,24 @@ public:
     virtual
     void deallocate(void);
 
+    /** Get mesh associated with integrator domain.
+     *
+     * @returns Mesh associated with integrator domain.
+     */
+    virtual
+    const pylith::topology::Mesh& domainMesh(void) const = 0;
+
     /** Get auxiliary field.
      *
      * @return field Field over integrator domain.
      */
-    const pylith::topology::Field& auxField(void) const;
+    const pylith::topology::Field* auxField(void) const;
+
+    /** Get derived field.
+     *
+     * @return field Field over integrator domain.
+     */
+    const pylith::topology::Field* derivedField(void) const;
 
     /** Set spatial database for filling auxiliary subfields.
      *
@@ -114,12 +137,6 @@ public:
      */
     void gravityField(spatialdata::spatialdb::GravityField* const g);
 
-    /** Set output manager.
-     *
-     * @param[in] manager Output manager for integrator.
-     */
-    void output(pylith::meshio::OutputManager* manager);
-
     /** Verify configuration is acceptable.
      *
      * @param[in] solution Solution field.
@@ -134,14 +151,28 @@ public:
     virtual
     void initialize(const pylith::topology::Field& solution) = 0;
 
-    /** Update auxiliary fields at beginning of time step.
+    /** Update at beginning of time step.
      *
      * @param[in] t Current time.
      * @param[in] dt Current time step.
      */
     virtual
-    void prestep(const double t,
-                 const double dt);
+    void prestep(const PylithReal t,
+                 const PylithReal dt);
+
+    /** Update at end of time step.
+     *
+     * @param[in] t Current time.
+     * @param[in] tindex Current time step.
+     * @param[in] dt Current time step.
+     * @param[in] solution Solution at time t.
+     */
+    virtual
+    void poststep(const PylithReal t,
+                  const PylithInt tindex,
+                  const PylithReal dt,
+                  const pylith::topology::Field& solution);
+
 
     /** Compute RHS residual for G(t,s).
      *
@@ -192,7 +223,7 @@ public:
      * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
      * @param[in] t Current time.
      * @param[in] dt Current time step.
-     * @param[in] tshift Scale for time derivative.
+     * @param[in] s_tshift Scale for time derivative.
      * @param[in] solution Field with current trial solution.
      * @param[in] solutionDot Field with time derivative of current trial solution.
      */
@@ -201,7 +232,7 @@ public:
                                     PetscMat precondMat,
                                     const PylithReal t,
                                     const PylithReal dt,
-                                    const PylithReal tshift,
+                                    const PylithReal s_tshift,
                                     const pylith::topology::Field& solution,
                                     const pylith::topology::Field& solutionDot) = 0;
 
@@ -211,42 +242,16 @@ public:
      * @param[out] jacobianInv Inverse of lumped Jacobian as a field.
      * @param[in] t Current time.
      * @param[in] dt Current time step.
-     * @param[in] tshift Scale for time derivative.
+     * @param[in] s_tshift Scale for time derivative.
      * @param[in] solution Field with current trial solution.
      */
     virtual
     void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
                                      const PylithReal t,
                                      const PylithReal dt,
-                                     const PylithReal tshift,
+                                     const PylithReal s_tshift,
                                      const pylith::topology::Field& solution) = 0;
 
-
-    /** Update state variables as needed.
-     *
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
-     */
-    virtual
-    void updateStateVars(const PylithReal t,
-                         const PylithReal dt,
-                         const pylith::topology::Field& solution);
-
-    // Write information (auxiliary field) output.
-    virtual
-    void writeInfo(void);
-
-    /** Write solution related output.
-     *
-     * @param[in] t Current time.
-     * @param[in] tindex Current time step.
-     * @param[in] solution Field with solution at current time.
-     */
-    virtual
-    void writeTimeStep(const PylithReal t,
-                       const PylithInt tindex,
-                       const pylith::topology::Field& solution);
 
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
@@ -267,6 +272,28 @@ protected:
     void _setFEConstants(const pylith::topology::Field& solution,
                          const PylithReal dt) const;
 
+    /** Update state variables as needed.
+     *
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    virtual
+    void _updateStateVars(const PylithReal t,
+                          const PylithReal dt,
+                          const pylith::topology::Field& solution);
+
+    /** Compute fields derived from solution and auxiliary field.
+     *
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    virtual
+    void _computeDerivedFields(const PylithReal t,
+                               const PylithReal dt,
+                               const pylith::topology::Field& solution);
+
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
 
@@ -274,7 +301,7 @@ protected:
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
     pylith::topology::Field* _auxField; ///< Auxiliary field for this integrator.
-    pylith::meshio::OutputManager* _output; ///< Output manager for integrator.
+    pylith::topology::Field* _derivedField; ///< Derived field for this integrator.
 
     pylith::utils::EventLogger* _logger;   ///< Event logger.
 
@@ -290,11 +317,8 @@ protected:
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    /// Not implemented.
-    IntegratorPointwise(const IntegratorPointwise&);
-
-    /// Not implemented
-    const IntegratorPointwise& operator=(const IntegratorPointwise&);
+    IntegratorPointwise(const IntegratorPointwise&); ///< Not implemented.
+    const IntegratorPointwise& operator=(const IntegratorPointwise&); ///< Not implemented.
 
 }; // IntegratorPointwise
 

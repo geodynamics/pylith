@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,36 +13,33 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/topology/AuxSubfield.py
-##
+#
 # @brief Python object for defining attributes of a subfield within a
 # field.
-##
+#
 # Factory: subfield.
 
 from pyre.components.Component import Component
-
-# AuxSubfield class
 
 
 class AuxSubfield(Component):
     """
     Python object for defining discretization of an auxiliary subfield.
 
-    Factory: auxiliary_subfield.
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li \b basis_order Order of basis functions.
-    # @li \b quadrature_order Order of numerical quadrature.
-    # @li \b basis_continuous Is basis continuous?
-    # @li \b feSpace Finite-element space [polynomial, point).
-    #
-    # \b Facilities
-    # @li None
+    Properties
+      - *basis_order* Order of basis functions.
+      - *quadrature_order* Order of numerical quadrature.
+      - *basis_continuous* Is basis continuous?
+      - *finite_element_space* Finite-element space [polynomial, point].
+
+    Facilities
+      - None
+
+    FACTORY: auxiliary_subfield
+    """
 
     import pyre.inventory
 

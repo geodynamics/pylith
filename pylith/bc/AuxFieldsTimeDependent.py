@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,15 +13,12 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/materials/AuxFieldsTimeDependent.py
-##
+#
 # @brief Python subfields container for isotropic, linear elasticity
 # subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
-
-# AuxFieldsTimeDependent class
 
 
 class AuxFieldsTimeDependent(PetscComponent):
@@ -37,19 +32,21 @@ class AuxFieldsTimeDependent(PetscComponent):
     t_1(x): rate_start
     f_2(x): time_history_amplitude
     t_2(x): time_history_start
-    """
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li None
-    #
-    # \b Facilities
-    # @li \b initial_amplitude Initial amplitude, f_0(x), subfield.
-    # @li \b rate_amplitude Rate amplitude, \dot{f}_1(x), subfield.
-    # @li \b rate_start Rate start time, t_1(x), subfield.
-    # @li \b time_history_amplitude Time history amplitude, f_2(x), subfield.
-    # @li \b time_history_start Time history start time, t_2(s), subfield.
+    INVENTORY
+
+    Properties
+      - None
+
+    Facilities
+      - *initial_amplitude* Initial amplitude, f_0(x), subfield.
+      - *rate_amplitude* Rate amplitude, \dot{f}_1(x), subfield.
+      - *rate_start* Rate start time, t_1(x), subfield.
+      - *time_history_amplitude* Time history amplitude, f_2(x), subfield.
+      - *time_history_start* Time history start time, t_2(s), subfield.
+
+    FACTORY: N/A
+    """
 
     import pyre.inventory
 

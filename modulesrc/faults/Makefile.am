@@ -26,6 +26,8 @@ subpkgpyexec_PYTHON = faults.py
 
 swig_sources = \
 	faults.i \
+	../feassemble/IntegratorPointwise.i \
+	../feassemble/ObservedComponent.i \
 	FaultCohesive.i \
 	FaultCohesiveKin.i \
 	KinSrc.i \

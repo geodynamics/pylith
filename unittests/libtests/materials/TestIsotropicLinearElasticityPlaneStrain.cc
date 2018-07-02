@@ -228,10 +228,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
     CPPUNIT_ASSERT(_mydata->normalizer);
     const PylithReal lengthScale = _mydata->normalizer->lengthScale();
 
-    const pylith::topology::Field& auxField = _mymaterial->auxField();
+    const pylith::topology::Field* auxField = _mymaterial->auxField();CPPUNIT_ASSERT(auxField);
     { // Test getting density field.
         pylith::topology::Field density(*_mesh);
-        density.copySubfield(auxField, "density");
+        density.copySubfield(*auxField, "density");
 
         //density.view("DENSITY"); // DEBUGGING
 
@@ -255,7 +255,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 
     { // Test getting bulk_modulus field.
         pylith::topology::Field bulkModulus(*_mesh);
-        bulkModulus.copySubfield(auxField, "bulk_modulus");
+        bulkModulus.copySubfield(*auxField, "bulk_modulus");
 
         //bulkModulus.view("BULK MODULUS"); // DEBUGGING
 
@@ -279,7 +279,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 
     if (_mymaterial->_useReferenceState) { // Test getting reference_stress field.
         pylith::topology::Field referenceStress(*_mesh);
-        referenceStress.copySubfield(auxField, "reference_stress");
+        referenceStress.copySubfield(*auxField, "reference_stress");
 
         //referenceStress.view("REFERENCE STRESS"); // DEBUGGING
 

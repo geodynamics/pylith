@@ -25,7 +25,6 @@
 
 #include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
 #include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
-#include "pylith/meshio/OutputSoln.hh" // USES OutputSoln
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -49,7 +48,6 @@ pylith::problems::Problem::Problem() :
     _gravityField(NULL),
     _integrators(0),
     _constraints(0),
-    _outputs(0),
     _solverType(LINEAR)
 { // constructor
 } // constructor
@@ -168,26 +166,6 @@ pylith::problems::Problem::constraints(pylith::feassemble::ConstraintPointwise* 
     PYLITH_METHOD_END;
 } // constraints
 
-// ----------------------------------------------------------------------
-// Set constraints over the mesh.
-void
-pylith::problems::Problem::outputs(pylith::meshio::OutputSoln* outputArray[],
-                                   const int numOutputs)
-{ // outputs
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::output("<<outputArray<<", numOutputs="<<numOutputs<<")");
-
-    assert( (!outputArray && 0 == numOutputs) || (outputArray && 0 < numOutputs) );
-
-    _outputs.resize(numOutputs);
-    for (int i = 0; i < numOutputs; ++i) {
-        assert(outputArray[i]);
-        _outputs[i] = outputArray[i];
-    } // for
-
-    PYLITH_METHOD_END;
-} // outputs
-
 
 // ----------------------------------------------------------------------
 // Do minimal initialization.
@@ -243,6 +221,8 @@ pylith::problems::Problem::verifyConfiguration(int* const materialIds,
         _constraints[i]->verifyConfiguration(*_solution);
     } // for
 
+    verifyObservers(*_solution);
+
     PYLITH_METHOD_END;
 }  // verifyConfiguration
 
@@ -274,14 +254,6 @@ pylith::problems::Problem::initialize(void)
     _solution->allocate();
     _solution->zeroLocal();
     _solution->createScatter(_solution->mesh(), "global");
-
-    // Initialize output.
-    const size_t numOutput = _outputs.size();
-    for (size_t i = 0; i < numOutput; ++i) {
-        assert(_outputs[i]);
-        const bool isInfo = false;
-        _outputs[i]->open(_solution->mesh(), isInfo);
-    } // for
 
     // Initialize residual.
     delete _residual; _residual = new pylith::topology::Field(_solution->mesh()); assert(_residual);
@@ -451,17 +423,18 @@ pylith::problems::Problem::computeLHSJacobianImplicit(PetscMat jacobianMat,
                                                       PetscMat precondMat,
                                                       const PylithReal t,
                                                       const PylithReal dt,
-                                                      const PylithReal tshift,
+                                                      const PylithReal s_tshift,
                                                       PetscVec solutionVec,
                                                       PetscVec solutionDotVec)
 { // computeLHSJacobianImplicit
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobianImplicit(t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
+    PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobianImplicit(t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
 
     assert(jacobianMat);
     assert(precondMat);
     assert(solutionVec);
     assert(solutionDotVec);
+    assert(s_tshift > 0);
 
     const size_t numIntegrators = _integrators.size();
 
@@ -482,7 +455,7 @@ pylith::problems::Problem::computeLHSJacobianImplicit(PetscMat jacobianMat,
 
     // Sum Jacobian contributions across integrators.
     for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, tshift, *_solution, *_solutionDot);
+        _integrators[i]->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, s_tshift, *_solution, *_solutionDot);
     } // for
 
     // Solver handles assembly.
@@ -496,15 +469,16 @@ pylith::problems::Problem::computeLHSJacobianImplicit(PetscMat jacobianMat,
 void
 pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
                                                        const PylithReal dt,
-                                                       const PylithReal tshift,
+                                                       const PylithReal s_tshift,
                                                        PetscVec solutionVec)
 { // computeLHSJacobianLumpedInv
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobianLumpedInv(t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solutionVec="<<solutionVec<<")");
+    PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobianLumpedInv(t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solutionVec="<<solutionVec<<")");
 
     assert(solutionVec);
     assert(_solution);
     assert(_jacobianLHSLumpedInv);
+    assert(s_tshift > 0);
 
     const size_t numIntegrators = _integrators.size();
 
@@ -529,7 +503,7 @@ pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
 
     // Sum Jacobian contributions across integrators.
     for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->computeLHSJacobianLumpedInv(_jacobianLHSLumpedInv, t, dt, tshift, *_solution);
+        _integrators[i]->computeLHSJacobianLumpedInv(_jacobianLHSLumpedInv, t, dt, s_tshift, *_solution);
     } // for
 
     // No need to assemble inverse of lumped Jacobian across processes, because it contributes to residual.

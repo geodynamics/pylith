@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,38 +13,35 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/problems/TimeDependent.py
-##
+#
 # @brief Python class for time dependent crustal
 # dynamics problems.
-##
+#
 # Factory: problem.
 
 from .Problem import Problem
 from .problems import TimeDependent as ModuleTimeDependent
-
-# TimeDependent class
 
 
 class TimeDependent(Problem, ModuleTimeDependent):
     """
     Python class for time dependent crustal dynamics problems.
 
-    Factory: problem.
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li \b initial_dt Initial time step.
-    # @li \b start_time Start time for problem.
-    # @li \b total_time Time duration of problem.
-    # @li \b max_timesteps Maximum number of time steps.
-    #
-    # \b Facilities
-    # @li \b initializer Problem initializer.
-    # @li \b progress_monitor Simple progress monitor via text file.
+    Properties
+      - *initial_dt* Initial time step.
+      - *start_time* Start time for problem.
+      - *total_time* Time duration of problem.
+      - *max_timesteps* Maximum number of time steps.
+
+    Facilities
+      - *initializer* Problem initializer.
+      - *progress_monitor* Simple progress monitor via text file.
+
+    FACTORY: problem.
+    """
 
     import pyre.inventory
     from pyre.units.time import year
@@ -74,8 +69,6 @@ class TimeDependent(Problem, ModuleTimeDependent):
         Constructor.
         """
         Problem.__init__(self, name)
-        ModuleTimeDependent.__init__(self)
-        self._loggingPrefix = "PrTD "
         return
 
     def preinitialize(self, mesh):
@@ -84,21 +77,17 @@ class TimeDependent(Problem, ModuleTimeDependent):
         bc/quadrature, etc.).
         """
         self._setupLogging()
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
-            self._info.log("Performing minimal initialization before verifying configuration.")
 
         import weakref
         self.mesh = weakref.ref(mesh)
 
-        ModuleTimeDependent.identifier(self, self.aliases[-1])
+        Problem.preinitialize(self, mesh)
+
         ModuleTimeDependent.startTime(self, self.startTime.value)
         ModuleTimeDependent.dtInitial(self, self.dtInitial.value)
         ModuleTimeDependent.totalTime(self, self.totalTime.value)
         ModuleTimeDependent.maxTimeSteps(self, self.maxTimeSteps)
 
-        Problem.preinitialize(self, mesh)
         return
 
     def run(self, app):
@@ -121,6 +110,13 @@ class TimeDependent(Problem, ModuleTimeDependent):
         Set members based using inventory.
         """
         Problem._configure(self)
+        return
+
+    def _createModuleObj(self):
+        """
+        Create handle to C++ object.
+        """
+        ModuleTimeDependent.__init__(self)
         return
 
 

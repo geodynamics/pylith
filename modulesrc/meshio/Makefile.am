@@ -30,18 +30,23 @@ swig_sources = \
 	MeshIOAscii.i \
 	MeshIOLagrit.i \
 	MeshIOCubit.i \
-	VertexFilter.i \
-	VertexFilterDecimateP1.i \
-	CellFilter.i \
+	FieldFilter.i \
+	FieldFilterNone.i \
+	FieldFilterProject.i \
+	OutputTrigger.i \
+	OutputTriggerStep.i \
+	OutputTriggerTime.i \
 	DataWriter.i \
 	DataWriterVTK.i \
 	OutputManager.i \
-	OutputSolnSubset.i \
+	OutputSolnBoundary.i \
 	OutputSolnPoints.i \
 	../utils/PyreComponent.i \
+	../feassemble/Observer.i \
 	OutputManager.i \
 	OutputSoln.i \
-	OutputMaterial.i
+	OutputIntegrator.i \
+	OutputConstraint.i
 
 swig_generated = \
 	meshio_wrap.cxx \

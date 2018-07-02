@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,17 +13,18 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/materials/Material.py
-##
+#
 # @brief Python abstract base class for managing physical properties
 # and state variables of a material.
-##
+#
 # Factory: material
 
 from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
 from .materials import Material as ModuleMaterial
 
+
+# VALIDATORS ///////////////////////////////////////////////////////////
 
 def validateLabel(value):
     """
@@ -40,20 +39,17 @@ class Material(IntegratorPointwise, ModuleMaterial):
     """
     Python material property manager.
 
-    Factory: material
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # @class Inventory
-    # Python object for managing Material facilities and properties.
-    #
-    # \b Properties
-    # @li \b id Material identifier (from mesh generator)
-    # @li \b label Descriptive label for material.
-    #
-    # \b Facilities
-    # @li None
+    Properties
+      - *id* Material identifier (from mesh generator)
+      - *label* Descriptive label for material.
+
+    Facilities
+      - None
+
+    FACTORY: material
+    """
 
     import pyre.inventory
 
@@ -62,10 +58,6 @@ class Material(IntegratorPointwise, ModuleMaterial):
 
     label = pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Descriptive label for material."
-
-    from pylith.meshio.OutputMaterial import OutputMaterial
-    outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputMaterial)
-    outputManager.meta['tip'] = "Output manager for material information."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -84,6 +76,7 @@ class Material(IntegratorPointwise, ModuleMaterial):
 
         ModuleMaterial.id(self, self.materialId)
         ModuleMaterial.label(self, self.label)
+
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

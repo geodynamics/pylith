@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,23 +13,21 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/bc/AbsorbingDampers.py
-##
-# @brief Python object for managing an absorbing boundary condition.
-##
+#
+# @brief Python object for managing absorbing dampers condition.
+#
 # Factory: boundary_condition
 
-from .BoundaryCondition import BoundaryCondition
-from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
+from pylith.bc.IntegratorBoundary import IntegratorBoundary
+from .bc import AbsorbingDampers as ModuleAbsorbingDampers
 
 
-class AbsorbingDampers(BoundaryCondition,
-                       IntegratorPointwise):
+class AbsorbingDampers(IntegratorBoundary, ModuleAbsorbingDampers):
     """
-    Python object for managing an absorbing boundary condition.
+    Python object for managing absorbing dampers condition.
 
-    Factory: boundary_condition
+    FACTORY: boundary_condition
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -40,16 +36,14 @@ class AbsorbingDampers(BoundaryCondition,
         """
         Constructor.
         """
-        BoundaryCondition.__init__(self, name)
-        IntegratorPointwise.__init__(self, name)
+        IntegratorBoundary.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
         """
         Do pre-initialization setup.
         """
-        BoundaryCondition.preinitialize(self, mesh)
-        IntegratorPointwise.preinitialize(self, mesh)
+        IntegratorBoundary.preinitialize(self, mesh)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -58,8 +52,14 @@ class AbsorbingDampers(BoundaryCondition,
         """
         Setup members using inventory.
         """
-        BoundaryCondition._configure(self)
-        IntegratorPointwise._configure(self)
+        IntegratorBoundary._configure(self)
+        return
+
+    def _createModuleObj(self):
+        """
+        Create handle to corresponding C++ object.
+        """
+        ModuleAbsorbingDampers.__init__(self)
         return
 
 # End of file

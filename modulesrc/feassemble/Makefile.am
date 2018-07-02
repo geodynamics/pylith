@@ -28,6 +28,8 @@ swig_sources = \
 	feassemble.i \
 	IntegratorPointwise.i \
 	ConstraintPointwise.i \
+	Observer.i \
+	ObservedComponent.i \
 	../utils/PyreComponent.i \
 	../topology/FieldBase.i
 

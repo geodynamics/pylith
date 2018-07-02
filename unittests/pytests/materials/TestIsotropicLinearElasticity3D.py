@@ -43,7 +43,7 @@ class TestIsotropicLinearElasticity3D(unittest.TestCase):
         """
         Test constructor.
         """
-        self.assertEqual(3, self.material.dimension())
+        self.assertEqual(0, self.material.materialId)
         return
 
     def testPreinitialize(self):

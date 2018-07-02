@@ -31,7 +31,7 @@ namespace pylith {
 	public :
 	    
 	    /// Constructor
-	    OutputSoln(void);
+	    OutputSoln(pylith::problems::Problem* const problem);
 	    
 	    /// Destructor
 	    ~OutputSoln(void);
@@ -39,38 +39,11 @@ namespace pylith {
 	    /// Deallocate PETSc and local data structures.
 	    void deallocate(void);
 	    
-	    /** Set names of solution fields to output.
-	     *
-	     * @param[in] names Array of names of fields to output.
-	     * @param[in] numNames Length of array.
-	     */
-	    %apply(const char* const* string_list, const int list_len){
-			(const char* names[], const int numNames)
-	    };
-	    void vertexDataFields(const char* names[],
-				  const int numNames);
-        %clear(const char* const* names, const int numNames);
-
 	    /** Verify configuration.
 	     *
 	     * @param[in] solution Solution field.
-	     * @param[in] auxField Auxiliary field.
 	     */
-	    void verifyConfiguration(const pylith::topology::Field& solution,
-				     const pylith::topology::Field& auxField) const;
-	    
-	    /** Write solution at time step.
-	     *
-	     * @param[in] t Current time.
-	     * @param[in] tindex Current time step.
-	     * @param[in] solution Solution at time t.
-	     * @param[in] auxField Auxiliary field.
-	     */
-	    virtual
-	    void writeTimeStep(const PylithReal t,
-			       const PylithInt tindex,
-			       const pylith::topology::Field& solution,
-			       const pylith::topology::Field& auxField);
+	    void verifyConfiguration(const pylith::topology::Field& solution) const;
 	    
 	}; // OutputSoln
       

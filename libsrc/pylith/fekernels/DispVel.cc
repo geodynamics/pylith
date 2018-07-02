@@ -177,7 +177,7 @@ pylith::fekernels::DispVel::Jf0uu_zero(const PylithInt dim,
                                        const PylithScalar a_t[],
                                        const PylithScalar a_x[],
                                        const PylithReal t,
-                                       const PylithReal utshift,
+                                       const PylithReal s_tshift,
                                        const PylithScalar x[],
                                        const PylithInt numConstants,
                                        const PylithScalar constants[],
@@ -187,7 +187,7 @@ pylith::fekernels::DispVel::Jf0uu_zero(const PylithInt dim,
 
 
 // ----------------------------------------------------------------------
-// Jf0 function for displacement equation: Jf0uu = utshift.
+// Jf0 function for displacement equation: Jf0uu = s_tshift.
 void
 pylith::fekernels::DispVel::Jf0uu_utshift(const PylithInt dim,
                                           const PylithInt numS,
@@ -203,7 +203,7 @@ pylith::fekernels::DispVel::Jf0uu_utshift(const PylithInt dim,
                                           const PylithScalar a_t[],
                                           const PylithScalar a_x[],
                                           const PylithReal t,
-                                          const PylithReal utshift,
+                                          const PylithReal s_tshift,
                                           const PylithScalar x[],
                                           const PylithInt numConstants,
                                           const PylithScalar constants[],
@@ -213,9 +213,10 @@ pylith::fekernels::DispVel::Jf0uu_utshift(const PylithInt dim,
         std::cout << "DispVel::Jf0uu_utshift" << std::endl;
 #endif
     assert(_numS == numS);
+    assert(s_tshift > 0);
 
     for (PylithInt i = 0; i < dim; ++i) {
-        Jf0[i*dim+i] += utshift;
+        Jf0[i*dim+i] += s_tshift;
     } // for
 } // Jf0uu
 
@@ -241,7 +242,7 @@ pylith::fekernels::DispVel::Jg0uv(const PylithInt dim,
                                   const PylithScalar a_t[],
                                   const PylithScalar a_x[],
                                   const PylithReal t,
-                                  const PylithReal utshift,
+                                  const PylithReal s_tshift,
                                   const PylithScalar x[],
                                   const PylithInt numConstants,
                                   const PylithScalar constants[],

@@ -56,22 +56,19 @@ class FaultCohesive(IntegratorPointwise, ModuleFaultCohesive):
     Python abstract base class for a fault surface implemeted with
     cohesive elements.
 
-    Inventory
+    INVENTORY
 
-    @class Inventory
-    Python object for managing FaultCohesive facilities and properties.
+    Properties
+      - *id* Fault identifier
+      - *label* Label identifier for fault.
+      - *edge* Label identifier for buried fault edges.
+      - *ref_dir_1* First choice for reference direction to discriminate among tangential directions in 3-D.
+      - *ref_dir_2* Second choice for reference direction to discriminate among tangential directions in 3-D.
 
-    \b Properties
-    @li \b id Fault identifier
-    @li \b label Label identifier for fault.
-    @li \b edge Label identifier for buried fault edges.
-    @li \b up_dir Up-dip or up direction
-      (perpendicular to along-strike and not collinear with fault normal;
-      applies to fault surfaces in 2-D and 3-D).
+    Facilities
+      - None
 
-    \b Facilities
-
-    Factory: fault
+    FACTORY: fault
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
@@ -88,10 +85,10 @@ class FaultCohesive(IntegratorPointwise, ModuleFaultCohesive):
     edge.meta['tip'] = "Label identifier for buried fault edges."
 
     refDir1 = pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
-    refDir1.meta['tip'] = "Set first choice for reference direction to discriminate among tangential directions in 3-D."
+    refDir1.meta['tip'] = "First choice for reference direction to discriminate among tangential directions in 3-D."
 
     refDir2 = pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
-    refDir2.meta['tip'] = "Set first choice for reference direction to discriminate among tangential directions in 3-D."
+    refDir2.meta['tip'] = "Second choice for reference direction to discriminate among tangential directions in 3-D."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

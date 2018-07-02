@@ -90,7 +90,7 @@ pylith::fekernels::ElasticityPlaneStrain::Jf0vv(const PylithInt dim,
                                                 const PylithScalar a_t[],
                                                 const PylithScalar a_x[],
                                                 const PylithReal t,
-                                                const PylithReal utshift,
+                                                const PylithReal s_tshift,
                                                 const PylithScalar x[],
                                                 const PylithInt numConstants,
                                                 const PylithScalar constants[],
@@ -107,9 +107,10 @@ pylith::fekernels::ElasticityPlaneStrain::Jf0vv(const PylithInt dim,
     assert(numA >= 5);
     assert(aOff);
     assert(a);
+    assert(s_tshift > 0);
 
     for (i = 0; i < _dim; ++i) {
-        Jf0[i*_dim+i] += utshift * density;
+        Jf0[i*_dim+i] += s_tshift * density;
     } // for
 } // Jf0vv
 

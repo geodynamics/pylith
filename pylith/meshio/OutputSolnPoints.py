@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,53 +13,36 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pyre/meshio/OutputSolnPoints.py
-##
+#
 # @brief Python object for managing output of finite-element solution
 # information over a subdomain.
-##
-# Factory: output_manager
+#
+# FACTORY: observer
 
-from OutputManager import OutputManager
-from meshio import OutputSolnPoints as ModuleOutputSolnPoints
-
-# Validator for filename
+from .OutputSoln import OutputSoln
+from .meshio import OutputSolnPoints as ModuleOutputSolnPoints
 
 
-def validateFilename(value):
-    """
-    Validate filename with list of points.
-    """
-    if 0 == len(value):
-        raise ValueError("Filename for list of points not specified.")
-    return value
-
-
-# OutputSolnPoints class
-class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
+class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
     """
     Python object for managing output of finite-element solution
     information over a subdomain.
 
-    @class Inventory
-    Python object for managing OutputSolnPoints facilities and properties.
+    INVENTORY
 
-    \b Properties
-    @li \b vertex_data_fields Names of vertex data fields to output.
+    Properties
+      - None
 
-    \b Facilities
-    @li \b reader Reader for list of points.
+    Facilities
+      - *reader* Reader for list of points.
 
-    Factory: output_manager
+    FACTORY: observer
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
 
     import pyre.inventory
-
-    vertexDataFields = pyre.inventory.list("vertex_data_fields", default=["displacement"])
-    vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
 
     from PointsList import PointsList
     reader = pyre.inventory.facility("reader", factory=PointsList, family="points_list")
@@ -73,21 +54,25 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
         """
         Constructor.
         """
-        OutputManager.__init__(self, name)
-        self.availableFields = \
-            {'vertex':
-             {'info': [],
-              'data': ["displacement", "velocity"]},
-             'cell':
-             {'info': [],
-              'data': []}}
+        OutputSoln.__init__(self, name)
         return
 
-    def preinitialize(self):
+    def preinitialize(self, problem):
         """
-        Do
+        Do mimimal initialization.
         """
-        OutputManager.preinitialize(self, dataProvider=self)
+        OutputSoln.preinitialize(self, problem)
+
+        stationNames, stationCoords = self.reader.read()
+
+        # Convert to mesh coordinate system
+        from spatialdata.geocoords.Converter import convert
+        convert(points, problem.mesh.coordsys(), reaer.coordsys)
+
+        # Nondimensionalize
+        stationsCoords /= problem.normalizer.lengthScale.value
+
+        ModuleOutputSolnPoints.stations(stationCoords, stationNames)
         return
 
     def initialize(self, mesh, normalizer):
@@ -97,7 +82,7 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
         logEvent = "%sinit" % self._loggingPrefix
         self._eventLogger.eventBegin(logEvent)
 
-        OutputManager.initialize(self, normalizer)
+        OutputSoln.initialize(self, normalizer)
 
         # Read points
         stations, points = self.reader.read()
@@ -112,66 +97,28 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
         self._eventLogger.eventEnd(logEvent)
         return
 
-    def getDataMesh(self):
-        """
-        Get mesh associated with data fields.
-        """
-        return (self.mesh, None, None)
-
-    def getVertexField(self, name, fields):
-        """
-        Get vertex field.
-        """
-        field = None
-        fieldType = None
-        if name == "displacement":
-            field = fields.get("disp(t)")
-        elif name == "velocity":
-            field = fields.get("velocity(t)")
-        else:
-            raise ValueError, "Vertex field '%s' not available." % name
-        return field
-
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """
         Set members based using inventory.
         """
-        try:
-            OutputManager._configure(self)
-        except ValueError, err:
-            aliases = ", ".join(self.aliases)
-            raise ValueError("Error while configuring output over points "
-                             "(%s):\n%s" % (aliases, err.message))
-
+        OutputSoln._configure(self)
         return
 
-    def _createModuleObj(self):
+    def _createModuleObj(self, problem):
         """
         Create handle to C++ object.
         """
-        ModuleOutputSolnPoints.__init__(self)
+        ModuleOutputSolnPoints.__init__(self, problem)
         return
-
-    def _open(self, mesh, nsteps, label, labelId):
-        """
-        Call C++ open();
-        """
-        if label != None and labelId != None:
-            ModuleOutputSolnPoints.open(self, mesh, nsteps, label, labelId)
-        else:
-            ModuleOutputSolnPoints.open(self, mesh, nsteps)
-
-        ModuleOutputSolnPoints.writePointNames(self)
-        return
-
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def output_manager():
+
+def observer():
     """
-    Factory associated with OutputManager.
+    Factory associated with OutputSoln.
     """
     return OutputSolnPoints()
 

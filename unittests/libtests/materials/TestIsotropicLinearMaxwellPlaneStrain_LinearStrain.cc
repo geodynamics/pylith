@@ -319,7 +319,7 @@ protected:
 
         _mydata->t = constants.t/_mydata->normalizer->timeScale();
         _mydata->dt = constants.dt/_mydata->normalizer->timeScale();
-        _mydata->tshift = 1.0 / _mydata->dt;
+        _mydata->s_tshift = 1.0 / _mydata->dt;
 
         // solnDiscretizations set in derived class.
 

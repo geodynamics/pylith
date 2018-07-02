@@ -26,14 +26,15 @@ subpkgpyexec_PYTHON = bc.py
 
 swig_sources = \
 	bc.i \
-	BoundaryCondition.i \
 	../utils/PyreComponent.i \
+	../feassemble/ObservedComponent.i \
 	../feassemble/ConstraintPointwise.i \
 	../feassemble/IntegratorPointwise.i \
-	Dirichlet.i \
+	ConstraintBoundary.i \
 	DirichletTimeDependent.i \
-	Neumann.i \
-	NeumannTimeDependent.i
+	IntegratorBoundary.i \
+	NeumannTimeDependent.i \
+	AbsorbingDampers.i
 
 swig_generated = \
 	bc_wrap.cxx \

@@ -46,7 +46,6 @@ pylith::meshio::DataWriterVTK::DataWriterVTK(void) :
     _vertexFieldCache(0),
     _cellFieldCache(0),
     _precision(6),
-    _isOpen(false),
     _isOpenTimeStep(false),
     _wroteVertexHeader(false),
     _wroteCellHeader(false)
@@ -89,7 +88,6 @@ pylith::meshio::DataWriterVTK::DataWriterVTK(const DataWriterVTK& w) :
     _vertexFieldCache(0),
     _cellFieldCache(0),
     _precision(w._precision),
-    _isOpen(w._isOpen),
     _isOpenTimeStep(w._isOpenTimeStep),
     _wroteVertexHeader(w._wroteVertexHeader),
     _wroteCellHeader(w._wroteCellHeader)
@@ -150,8 +148,6 @@ pylith::meshio::DataWriterVTK::open(const pylith::topology::Mesh& mesh,
     _dm = mesh.dmMesh(); assert(_dm);
     err = PetscObjectReference((PetscObject) _dm); PYLITH_CHECK_ERROR(err);
 
-    _isOpen = true;
-
     PYLITH_METHOD_END;
 } // open
 
@@ -176,8 +172,6 @@ pylith::meshio::DataWriterVTK::close(void)
     } // if
 
     DataWriter::close();
-
-    _isOpen = false;
 
     PYLITH_METHOD_END;
 } // close

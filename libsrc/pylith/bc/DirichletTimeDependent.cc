@@ -23,7 +23,6 @@
 #include "TimeDependentAuxiliaryFactory.hh" // USES TimeDependentAuxiliaryFactory
 
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "pylith/fekernels/TimeDependentFn.hh" // USES TimeDependentFn kernels
@@ -46,6 +45,7 @@ const char* pylith::bc::DirichletTimeDependent::_pyreComponent = "dirichlettimed
 pylith::bc::DirichletTimeDependent::DirichletTimeDependent(void) :
     _dbTimeHistory(NULL),
     _auxTimeDependentFactory(new pylith::bc::TimeDependentAuxiliaryFactory),
+    _bcKernel(NULL),
     _useInitial(true),
     _useRate(false),
     _useTimeHistory(false)
@@ -56,8 +56,7 @@ pylith::bc::DirichletTimeDependent::DirichletTimeDependent(void) :
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::bc::DirichletTimeDependent::~DirichletTimeDependent(void)
-{ // destructor
+pylith::bc::DirichletTimeDependent::~DirichletTimeDependent(void) {
     deallocate();
 } // destructor
 
@@ -65,13 +64,14 @@ pylith::bc::DirichletTimeDependent::~DirichletTimeDependent(void)
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::bc::DirichletTimeDependent::deallocate(void)
-{ // deallocate
+pylith::bc::DirichletTimeDependent::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    Dirichlet::deallocate();
+    ConstraintBoundary::deallocate();
+
     _dbTimeHistory = NULL; // :KLUDGE: Use shared pointer.
     delete _auxTimeDependentFactory; _auxTimeDependentFactory = NULL;
+    _bcKernel = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -80,8 +80,7 @@ pylith::bc::DirichletTimeDependent::deallocate(void)
 // ----------------------------------------------------------------------
 // Set time history database.
 void
-pylith::bc::DirichletTimeDependent::dbTimeHistory(spatialdata::spatialdb::TimeHistory* th)
-{ // dbTimeHistory
+pylith::bc::DirichletTimeDependent::dbTimeHistory(spatialdata::spatialdb::TimeHistory* th) {
     _dbTimeHistory = th;
 } // dbTimeHistory
 
@@ -89,16 +88,14 @@ pylith::bc::DirichletTimeDependent::dbTimeHistory(spatialdata::spatialdb::TimeHi
 // ----------------------------------------------------------------------
 // Get time history database.
 const spatialdata::spatialdb::TimeHistory*
-pylith::bc::DirichletTimeDependent::dbTimeHistory(void)
-{ // dbTimeHistory
+pylith::bc::DirichletTimeDependent::dbTimeHistory(void) {
     return _dbTimeHistory;
 } // dbTimeHistory
 
 // ----------------------------------------------------------------------
 // Use initial value term in time history expression.
 void
-pylith::bc::DirichletTimeDependent::useInitial(const bool value)
-{ // useInitial
+pylith::bc::DirichletTimeDependent::useInitial(const bool value) {
     PYLITH_COMPONENT_DEBUG("useInitial(value="<<value<<")");
 
     _useInitial = value;
@@ -108,8 +105,7 @@ pylith::bc::DirichletTimeDependent::useInitial(const bool value)
 // ----------------------------------------------------------------------
 // Get flag associated with using initial value term in time history expression.
 bool
-pylith::bc::DirichletTimeDependent::useInitial(void) const
-{ // useInitial
+pylith::bc::DirichletTimeDependent::useInitial(void) const {
     return _useInitial;
 } // useInitial
 
@@ -117,8 +113,7 @@ pylith::bc::DirichletTimeDependent::useInitial(void) const
 // ----------------------------------------------------------------------
 // Use rate value term in time history expression.
 void
-pylith::bc::DirichletTimeDependent::useRate(const bool value)
-{ // useRate
+pylith::bc::DirichletTimeDependent::useRate(const bool value) {
     PYLITH_COMPONENT_DEBUG("useRate(value="<<value<<")");
 
     _useRate = value;
@@ -128,8 +123,7 @@ pylith::bc::DirichletTimeDependent::useRate(const bool value)
 // ----------------------------------------------------------------------
 // Get flag associated with using rate value term in time history expression.
 bool
-pylith::bc::DirichletTimeDependent::useRate(void) const
-{ // useRate
+pylith::bc::DirichletTimeDependent::useRate(void) const {
     return _useRate;
 } // useRate
 
@@ -137,8 +131,7 @@ pylith::bc::DirichletTimeDependent::useRate(void) const
 // ----------------------------------------------------------------------
 // Use time history term in time history expression.
 void
-pylith::bc::DirichletTimeDependent::useTimeHistory(const bool value)
-{ // useTimeHistory
+pylith::bc::DirichletTimeDependent::useTimeHistory(const bool value) {
     PYLITH_COMPONENT_DEBUG("useTimeHistory(value="<<value<<")");
 
     _useTimeHistory = value;
@@ -148,8 +141,7 @@ pylith::bc::DirichletTimeDependent::useTimeHistory(const bool value)
 // ----------------------------------------------------------------------
 // Get flag associated with using time history term in time history expression.
 bool
-pylith::bc::DirichletTimeDependent::useTimeHistory(void) const
-{ // useTimeHistory
+pylith::bc::DirichletTimeDependent::useTimeHistory(void) const {
     return _useTimeHistory;
 } // useTimeHistory
 
@@ -158,8 +150,7 @@ pylith::bc::DirichletTimeDependent::useTimeHistory(void) const
 // Update auxiliary fields at beginning of time step.
 void
 pylith::bc::DirichletTimeDependent::prestep(const double t,
-                                            const double dt)
-{ // prestep
+                                            const double dt) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_prestep(t="<<t<<", dt="<<dt<<")");
 
@@ -220,10 +211,17 @@ pylith::bc::DirichletTimeDependent::prestep(const double t,
 
 
 // ----------------------------------------------------------------------
+// Get factory for setting up auxliary fields.
+pylith::feassemble::AuxiliaryFactory*
+pylith::bc::DirichletTimeDependent::_auxFactory(void) {
+    return _auxTimeDependentFactory;
+} // auxFactory
+
+
+// ----------------------------------------------------------------------
 // Setup auxiliary subfields (discretization and query fns).
 void
-pylith::bc::DirichletTimeDependent::_auxFieldSetup(const pylith::topology::Field& solution)
-{ // _auxFieldsSetup
+pylith::bc::DirichletTimeDependent::_auxFieldSetup(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_auxFieldsSetup(solution="<<solution.label()<<")");
 
@@ -254,10 +252,9 @@ pylith::bc::DirichletTimeDependent::_auxFieldSetup(const pylith::topology::Field
 // ----------------------------------------------------------------------
 // Set kernels for setting Dirhclet values.
 void
-pylith::bc::DirichletTimeDependent::_setFEKernelsConstraint(const pylith::topology::Field& solution)
-{ // _setFEKernelsConstraint
+pylith::bc::DirichletTimeDependent::_setFEKernelConstraint(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsConstraint(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_setFEKernelConstraint(solution="<<solution.label()<<")");
 
     const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
     PetscDS prob = NULL;
@@ -300,15 +297,15 @@ pylith::bc::DirichletTimeDependent::_setFEKernelsConstraint(const pylith::topolo
     } // switch
 
     PYLITH_METHOD_END;
-} // _setFEKernelsConstraint
+} // _setFEKernelConstraint
 
 // ----------------------------------------------------------------------
-// Get factory for setting up auxliary fields.
-pylith::feassemble::AuxiliaryFactory*
-pylith::bc::DirichletTimeDependent::_auxFactory(void)
-{ // _auxFactory
-    return _auxTimeDependentFactory;
-} // auxFactory
+// Get point-wise function (kernel) for settings constraint from auxiliary field.
+PetscPointFunc
+pylith::bc::DirichletTimeDependent::_getFEKernelConstraint(void) {
+    return _bcKernel;
+} // _getFEKernelConstraint
+
 
 
 // End of file

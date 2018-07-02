@@ -20,7 +20,7 @@
  * @file libsrc/meshio/OutputSolnPoints.hh
  *
  * @brief C++ object for managing output of finite-element data over a
- * subdomain.
+ * an arbitrary set of points.
  */
 
 #if !defined(pylith_meshio_outputsolnpoints_hh)
@@ -28,124 +28,95 @@
 
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
+#include "pylith/meshio/OutputSoln.hh" // ISA OutputSoln
+
 #include "pylith/utils/petscfwd.h"
 
-#include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
-
-#include "pylith/topology/Mesh.hh" // ISA OutputManager<Mesh>
-#include "pylith/topology/Field.hh" // ISA OutputManager<Field<Mesh>>
-#include "OutputManager.hh" // ISA OutputManager
+#include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 
 // OutputSolnPoints -----------------------------------------------------
 /** @brief C++ object for managing output of finite-element data over
- * a subdomain.
+ * an arbitrary set of points.
  */
-class pylith::meshio::OutputSolnPoints : public OutputManager
-{ // OutputSolnPoints
-friend class TestOutputSolnPoints;   // unit testing
+class pylith::meshio::OutputSolnPoints : public pylith::meshio::OutputSoln {
+    friend class TestOutputSolnPoints;   // unit testing
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
-/// Constructor
-OutputSolnPoints(void);
+    /** Constructor
+     *
+     * @param[in] problem Problem to observe.
+     */
+    OutputSolnPoints(pylith::problems::Problem* const problem);
 
-/// Destructor
-~OutputSolnPoints(void);
+    /// Destructor
+    ~OutputSolnPoints(void);
 
-/// Deallocate PETSc and local data structures.
-void deallocate(void);
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
 
-/** Get mesh associated with points.
- *
- * @returns Mesh associated with points.
- */
-const pylith::topology::Mesh& pointsMesh(void);
+    /** Set station coordinates and names.
+     *
+     * @param[in] points Array of station coordinates [numStations * spaceDim].
+     * @param[in] numStations Number of stations.
+     * @param[in] spaceDim Spatial dimension for coordinates.
+     * @param[in] stationNames Array with station names.
+     * @param[in] numStationNames Number of station banes.
+     */
+    void stations(const PylithReal* stationCoords,
+                  const PylithInt numStations,
+                  const PylithInt spaceDim,
+                  const char* const* stationNames,
+                  const PylithInt numStationNames);
 
-/** Setup interpolator.
- *
- * @param mesh Domain mesh.
- * @param points Array of dimensioned coordinates for points [numPoints*spaceDim].
- * @param numPoints Number of points.
- * @param spaceDim Spatial dimension for coordinates.
- * @param names Array with name for each point, e.g., station name.
- * @param nunNames Number of names in array.
- * @param normalizer Nondimensionalizer.
- */
-void setupInterpolator(pylith::topology::Mesh* mesh,
-                       const PylithScalar* points,
-                       const int numPoints,
-                       const int spaceDim,
-                       const char* const* names,
-                       const int numNames,
-                       const spatialdata::units::Nondimensional& normalizer);
+    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected:
 
-/** Prepare for output.
- *
- * @param mesh Finite-element mesh object.
- * @param numTimeSteps Expected number of time steps.
- * @param label Name of label defining cells to include in output
- *   (=0 means use all cells in mesh).
- * @param labelId Value of label defining which cells to include.
- */
-void open(const pylith::topology::Mesh& mesh,
-          const int numTimeSteps,
-          const char* label =0,
-          const int labelId =0);
+    /** Write solution at time step.
+     *
+     * @param[in] t Current time.
+     * @param[in] tindex Current time step.
+     * @param[in] solution Solution at time t.
+     */
+    void _writeDataStep(const PylithReal t,
+                        const PylithInt tindex,
+                        const pylith::topology::Field& solution);
 
-/** Setup file for writing fields at time step.
- *
- * @param t Time of time step.
- * @param mesh Finite-element mesh object.
- * @param label Name of label defining cells to include in output
- *   (=0 means use all cells in mesh).
- * @param labelId Value of label defining which cells to include.
- */
-void openTimeStep(const PylithScalar t,
-                  const pylith::topology::Mesh& mesh,
-                  const char* label =0,
-                  const int labelId =0);
-
-/** Append finite-element vertex field to file.
- *
- * @param t Time associated with field.
- * @param field Vertex field.
- * @param mesh Mesh for output.
- */
-void appendVertexField(const PylithScalar t,
-                       pylith::topology::Field& field,
-                       const topology::Mesh& mesh);
-
-/** Append finite-element cell field to file.
- *
- * @param t Time associated with field.
- * @param field Cell field.
- * @param label Name of label defining cells to include in output
- *   (=0 means use all cells in mesh).
- * @param labelId Value of label defining which cells to include.
- */
-void appendCellField(const PylithScalar t,
-                     pylith::topology::Field& field,
-                     const char* label =0,
-                     const int labelId =0);
-
-/** Write dataset with names of points to file.
- */
-void writePointNames(void);
-
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
 
-OutputSolnPoints(const OutputSolnPoints&);   ///< Not implemented.
-const OutputSolnPoints& operator=(const OutputSolnPoints&);   ///< Not implemented
+    /** Setup interpolatior.
+     *
+     * @param[in] mesh Finite-element mesh of domain.
+     */
+    void _setupInterpolator(const pylith::topology::Mesh& mesh);
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
+    /** Interpolate field.
+     *
+     * @param[in] field Field to interpolate;
+     * @returns Interpolated field.
+     */
+    pylith::topology::Field* _interpolateField(const pylith::topology::Field& field);
+
+    /// Write dataset with names of points to file.
+    void _writePointNames(void);
+
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-pylith::topology::Mesh* _mesh;   ///< Domain mesh.
-pylith::topology::Mesh* _pointsMesh;   ///< Mesh for points (no cells).
-DMInterpolationInfo _interpolator;   ///< Field interpolator.
-pylith::string_vector _stations; ///< Array of station names.
+    pylith::scalar_array _stationCoords; ///< Array of station coordinates.
+    pylith::string_vector _stationNames; ///< Array of station names.
+    pylith::topology::Mesh* _stationsMesh;   ///< Mesh for stations (no cells).
+    DMInterpolationInfo _interpolator;   ///< Field interpolator.
+
+    static const char* _pyreComponent; ///< Name of Pyre component.
+
+    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+private:
+
+    OutputSolnPoints(const OutputSolnPoints&);   ///< Not implemented.
+    const OutputSolnPoints& operator=(const OutputSolnPoints&);   ///< Not implemented
 
 }; // OutputSolnPoints
 

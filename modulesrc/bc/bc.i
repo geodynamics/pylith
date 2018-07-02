@@ -19,11 +19,9 @@
 
 // Header files for module C++ code
 %{
-#include "pylith/bc/BoundaryCondition.hh"
-#include "pylith/bc/Dirichlet.hh"
 #include "pylith/bc/DirichletTimeDependent.hh"
-#include "pylith/bc/Neumann.hh"
 #include "pylith/bc/NeumannTimeDependent.hh"
+#include "pylith/bc/AbsorbingDampers.hh"
 %}
 
 
@@ -50,14 +48,15 @@
 
 // Interfaces
 %include "../utils/PyreComponent.i"
+%include "../feassemble/ObservedComponent.i"
 %include "../feassemble/ConstraintPointwise.i"
 %include "../feassemble/IntegratorPointwise.i"
 
-%include "BoundaryCondition.i"
-%include "Dirichlet.i"
+%include "ConstraintBoundary.i"
 %include "DirichletTimeDependent.i"
-%include "Neumann.i"
+%include "IntegratorBoundary.i"
 %include "NeumannTimeDependent.i"
+%include "AbsorbingDampers.i"
 
 
 

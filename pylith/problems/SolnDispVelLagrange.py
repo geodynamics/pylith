@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,9 +13,8 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/problems/SolnDispVelLagrange.py
-##
+#
 # @brief Python subfields container with displacement, velocity, and
 # fault Lagrange multiplier subfields.
 

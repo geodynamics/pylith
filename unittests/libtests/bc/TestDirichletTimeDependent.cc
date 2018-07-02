@@ -301,18 +301,18 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void)
     // Verify auxiliary field.
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_mesh);
-    const pylith::topology::Field& auxField = _bc->auxField();
-    CPPUNIT_ASSERT_EQUAL(std::string("Dirichlet auxiliary"), std::string(auxField.label()));
-    CPPUNIT_ASSERT_EQUAL(_mesh->dimension(), auxField.spaceDim());
+    const pylith::topology::Field* auxField = _bc->auxField(); CPPUNIT_ASSERT(auxField);
+    CPPUNIT_ASSERT_EQUAL(std::string("Dirichlet auxiliary"), std::string(auxField->label()));
+    CPPUNIT_ASSERT_EQUAL(_mesh->dimension(), auxField->spaceDim());
 
     PylithReal norm = 0.0;
     PylithReal t = _data->t;
-    const PetscDM dm = auxField.dmMesh(); CPPUNIT_ASSERT(dm);
-    pylith::topology::FieldQuery query(auxField);
+    const PetscDM dm = auxField->dmMesh(); CPPUNIT_ASSERT(dm);
+    pylith::topology::FieldQuery query(*auxField);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->normalizer);
     query.openDB(_data->auxDB, _data->normalizer->lengthScale());
-    err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm); CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -341,17 +341,17 @@ pylith::bc::TestDirichletTimeDependent::testPrestep(void)
     CPPUNIT_ASSERT(_solution);
     _bc->initialize(*_solution);
 
-    const pylith::topology::Field& auxField = _bc->auxField();
-    CPPUNIT_ASSERT(auxField.hasSubfield("time_history_value"));
+    const pylith::topology::Field* auxField = _bc->auxField(); CPPUNIT_ASSERT(auxField);
+    CPPUNIT_ASSERT(auxField->hasSubfield("time_history_value"));
 
     pylith::topology::Field valueField(*_mesh);
-    valueField.copySubfield(auxField, "time_history_value");
+    valueField.copySubfield(*auxField, "time_history_value");
     CPPUNIT_ASSERT(valueField.sectionSize() > 0);
     CPPUNIT_ASSERT_EQUAL(std::string("time_history_value"), std::string(valueField.label()));
 
     PylithReal norm = 0.0;
     PylithReal t = _data->t;
-    const PetscDM dm = auxField.dmMesh(); CPPUNIT_ASSERT(dm);
+    const PetscDM dm = auxField->dmMesh(); CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery query(valueField);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->normalizer);

@@ -43,7 +43,7 @@ class TestIsotropicLinearGenMaxwellPlaneStrain(unittest.TestCase):
         """
         Test constructor.
         """
-        self.assertEqual(2, self.material.dimension())
+        self.assertEqual(0, self.material.materialId)
         return
 
     def test_preinitialize(self):
