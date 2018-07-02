@@ -36,7 +36,7 @@ one = sympy.sympify(1)
 two = sympy.sympify(2)
 three = sympy.sympify(3)
 
-f = open(outFile, 'w')
+out = open(outFile, 'w')
 
 # ----------------------------------------------------------------------
 def printTensor(tensor, tensorName):
@@ -54,12 +54,12 @@ def printTensor(tensor, tensorName):
     if (rank == 2):
       for j in range(ndim):
         line = tensorName + '_%d%d = %s\n' % (i+1, j+1, simpTensor[i,j])
-        f.write(line)
+        out.write(line)
     else:
       line = tensorName + '_%d = %s\n' % (i+1, simpTensor[i])
-      f.write(line)
+      out.write(line)
 
-  f.write('\n')
+  out.write('\n')
 
   return
 # ----------------------------------------------------------------------
@@ -69,6 +69,7 @@ print "Defining basis, solution, and constants:"
 from sympy.abc import x, y, z, t
 u1, u2, u3 = sympy.symbols('u1 u2 u3', type="Function")
 X = sympy.tensor.array.Array([x, y, z])
+dt = sympy.symbols('dt')
 
 # Material constants.
 (bulkModulus, shearModulus,
@@ -118,11 +119,14 @@ devStrainRatePert = devStrainPert.diff(t)
 
 # Assumed viscous strain.
 print "Computing viscous strains:"
-visStrain = devStrain * (one - sympy.exp(-t/maxwellTime))
+dq = maxwellTime * (one - sympy.exp(-t/maxwellTime))/t
+visStrain = devStrain * dq
 
 # Assumed viscous strain for perturbed solution.
 print "Computing viscous strains for perturbed solution:"
-visStrainPert = devStrainPert * (one - sympy.exp(-t/maxwellTime))
+expFac = sympy.exp(-dt/maxwellTime)
+dqPert = maxwellTime * (one - sympy.exp(-dt/maxwellTime))/dt
+visStrainPert = expFac * visStrain + dq * (devStrainPert - devStrain)
 
 # Define viscous strain rate and stress function.
 visStrainRate = visStrain.diff(t)
@@ -151,46 +155,46 @@ equil = sympy.tensor.array.tensorcontraction(equilDeriv, (1,2))
 
 # Write results to file.
 print "Writing solution variables:"
-f.write('Solution variables:\n')
+out.write('Solution variables:\n')
 printTensor(U, 's')
 printTensor(Udot, 's_t')
 printTensor(defGrad, 's_x')
 
-f.write('Solution variables (perturbed solution):\n')
+out.write('Solution variables (perturbed solution):\n')
 printTensor(UPert, 'sPert')
 printTensor(UdotPert, 'sPert_t')
 printTensor(defGradPert, 'sPert_x')
 
 print "Writing auxiliary variables:"
-f.write('\nAuxiliary variables:\n')
+out.write('\nAuxiliary variables:\n')
 printTensor(strain, 'totalStrain')
 printTensor(strainRate, 'totalStrain_t')
 printTensor(visStrain, 'visStrain')
 printTensor(visStrainRate, 'visStrain_t')
 
-f.write('\nAuxiliary variables (perturbed solution):\n')
+out.write('\nAuxiliary variables (perturbed solution):\n')
 printTensor(strainPert, 'totalStrainPert')
 printTensor(strainRatePert, 'totalStrainPert_t')
 printTensor(visStrainPert, 'visStrainPert')
 printTensor(visStrainRatePert, 'visStrainPert_t')
 
 print "Writing equilibrium equations:"
-f.write('\nEquilibrium:\n')
+out.write('\nEquilibrium:\n')
 printTensor(equil, 'equil')
 
 print "Writing additional variables:"
-f.write('\nAdditional:\n')
+out.write('\nAdditional:\n')
 printTensor(devStrain, 'devStrain')
 printTensor(devStrainRate, 'devStrain_t')
 printTensor(stress, 'stress')
 printTensor(devStress, 'devStress')
 printTensor(visStrainFunc, 'visStrainFunc')
 
-f.write('\nAdditional (perturbed solution):\n')
+out.write('\nAdditional (perturbed solution):\n')
 printTensor(devStrainPert, 'devStrainPert')
 printTensor(devStrainRatePert, 'devStrainPert_t')
 printTensor(stressPert, 'stressPert')
 printTensor(devStressPert, 'devStressPert')
 printTensor(visStrainFuncPert, 'visStrainFuncPert')
 
-f.close()
+out.close()

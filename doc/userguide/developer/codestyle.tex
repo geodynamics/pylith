@@ -4,7 +4,7 @@
 This chapter will be an appendix in the PyLith Manual.
 
 There are a number of standard coding styles for programming
-languages, notable PEP8 for Python. For PyLith we try to be consistent
+languages, notably PEP8 for Python. For PyLith we try to be consistent
 in naming conventions across Python and C++ while following a subset
 of the used in PETSc and PEP8 with documentation styles consistent
 with Doxygen.
@@ -16,6 +16,10 @@ The principal guidelines include:
 \begin{itemize}
   \item Naming conventions
     \begin{itemize}
+    \item Use self-documenting names.
+    \item Avoid single letter variables. Choose names that are readily
+      found via searches across single or multiple files (e.g., grep).
+    \item Class names are generally nouns and methods are verbs. 
     \item Class names use upper camel case, e.g., \object{TimeDependent}.
     \item Public method names use camel case, e.g.,
       \object{computeRHSResidual()}.
@@ -31,7 +35,10 @@ The principal guidelines include:
     \item List authors, copyright, and license info at the very
       beginning of every file.
     \item For every class method, describe its function and include a
-      description for each argument.
+      description for each argument. For Python this is done in the
+      docstring of the method, and for C++ this is done in a doxygen
+      style comment immediately before the method declaration in the
+      header file.
     \item Document nontrivial algorithms and any assumptions.
     \end{itemize}
   \item Error checking
@@ -42,8 +49,8 @@ The principal guidelines include:
     \item Messages for internal errors should indicate the location in
       the code where the error was trapped.
     \item All pointers should be checked for null values before use.
-    \item Return values for all calls to functions in external
-      libraries are checked.
+    \item Check the return values for all calls to functions in external
+      libraries.
     \end{itemize}
   \item Testing
     \begin{itemize}
@@ -57,9 +64,9 @@ The principal guidelines include:
 Our philosophy is that PyLith should never crash. If it encounters a
 fatal error, then it should generate an appropriate error message and
 abort. In C++ we throw \object{std::runtime\_error} exceptions for
-errors resulting from user errors and \object{std::logic\_error}
-exceptions for internal coding errors. In Python we use standard
-exception objects.
+errors resulting from user input and \object{std::logic\_error}
+exceptions for internal inconsistencies or logic errors. In Python we
+use standard exception objects.
 
 Additional protections against crashing include: using asserts to
 verify pointers are non-null before using them and using the
@@ -83,7 +90,9 @@ call to a PETSc function.
 
 In combination with the above procedures, we also make use of the Pyre
 journals to display warnings and errors to facilitate debugging. The
-journals provide the file name and line number along with the message.
+journals provide the file name and line number along with the
+message. By default, Pyre journals for errors are turned on and those
+for warnings and debugging are turned off.
 
 \begin{cplusplus}[Example of using Pyre journals and standard exceptions]
     switch (bitUse) {
@@ -114,11 +123,11 @@ journals provide the file name and line number along with the message.
 Object definition (header) files use the \filename{.hh} suffix. C
 header files use the \filename{.h} suffix.
 
-\important{{\em All} class methods must include a description of what
-  the method does and a description of each argument and the return
-  value if it is not void.}
+\important{{\em All} declarations of class methods must include a
+  description of what the method does and a description of each
+  argument and the return value if it is not void.}
 
-\begin{cplusplus}[Sample C++ definition (header) file]
+\begin{cplusplus}[Sample C++ declaration (header) file]
 // ======================================================================
 //
 // Brad T. Aagaard, U.S. Geological Survey
@@ -181,7 +190,7 @@ header files use the \filename{.h} suffix.
  *
  */
 class pylith::problems::Problem : public pylith::utils::PyreComponent {
-  /- Order of declarations is:
+  /* Order of declarations is:
   *
   * 1. Friend classes.
   * 2. Public enums
@@ -351,35 +360,36 @@ private:
 \subsection{Object Implementation Files}
 
 Object implementation files use the \filename{.cc} suffix. Inline
-implementation files use the \filename{icc} suffix and are included
+implementation files use the \filename{.icc} suffix and are included
 from the definition files. C implementation files use the \object{.c}
 suffix.
 
 To facilitate debugging and error messages, we use the following
 macros:
 \begin{description}
-\item[PYLITH\_METHOD\_BEGIN] Use this macro at the beginning of all
-  but methods using any PETSc routines and most other methods except
-  trivial or inline methods.
+\item[PYLITH\_METHOD\_BEGIN] This macro allows line numbers of source
+  files to be included in PETSc error messages. Use this macro at the
+  beginning of all methods using any PETSc routines as well as most
+  other methods. We don't use this macro in destructors because many
+  of them are called {\em after} PetscFinalize.  trivial or inline
+  methods.
 \item[PYLITH\_METHOD\_END] Use the macro at the end of all methods
   using PYLITH\_METHOD\_BEGIN that return void.
-\item[PYLITH\_RETURN\_END] Use Thieu macro at the end of all methods
+\item[PYLITH\_RETURN\_END] Use this macro at the end of all methods
   using PYLITH\_METHOD\_BEGIN that return non-void values.
-\item[PYLITH\_JOURNAL\_DEBUG] Use this macro immediate after
-  PYLITH\_METHOD\_BEGIN in all methods for objects that {\em do not} have a corresponding
-  Pyre component.
 \item[PYLITH\_CHECK\_ERROR] after {\em every} call to a PETSc function
   to check the return value.
+\item[PYLITH\_JOURNAL\_DEBUG] Use this macro immediate after
+  PYLITH\_METHOD\_BEGIN in methods of all objects that inherit from \object{GenericComponent}.
 \item[PYLITH\_COMPONENT\_DEBUG] Use this macro immediate after
-  PYLITH\_METHOD\_BEGIN in all methods for objects that {\em do} have
-  a corresponding Pyre component. The class {\em must} inherit from
-  \object{pylith::utils::PyreComponent} and non-abstract classes
-  should call \object{PyreComponent::name()} in the constructor. We
-  recommend using a static data member for the name with the lowercase
-  name matching the Pyre component, e.g., timedependent.
+  PYLITH\_METHOD\_BEGIN in methods of all objects that inherit from
+  \object{PyreComponent}.  Non-abstract classes should call
+  \object{PyreComponent::name()} in the constructor. We recommend
+  using a static data member for the name with the lowercase name
+  matching the Pyre component, e.g., timedependent.
 \end{description}
 
-\begin{cplusplus}[Sample C++ implementation file]
+\begin{cplusplus}[Sample C++ definition (implementation) file]
 // ======================================================================
 //
 // Brad T. Aagaard, U.S. Geological Survey
@@ -695,43 +705,41 @@ def materialFactory(name):
 class Problem(PetscComponent, ModuleProblem):
     """Python abstract base class for crustal dynamics problems.
 
-    Factory: problem. List the factory if one exists.
+    INVENTORY
+
+    Properties
+      - *solver_type* Type of solver to user.
+
+    Facilities
+      - *solution* Solution field for problem.
+      - *materials* Materials in problem.
+      
+    FACTORY: problem. List the factory if one exists.
     """
 
-    # INVENTORY //////////////////////////////////////////////////////////
+    import pyre.inventory
 
-    # Define the Pyre facilities and properties. We list the
-    # facilities first and then the properties. For each facility or
-    # property, we list the description in the meta attribute. This is
-    # the information that is displayed in the --help and PyLith
-    # parameters application.
-    class Inventory(PetscComponent.Inventory):
-        """Python object for managing Problem facilities and properties.
-        """
+    # Usually, we put all arguments on a single line. If the
+    # function call is really long, break the arguments into
+    # logical pieces, usually one argument per line.
+    solverTypeStr = pyre.inventory.str(
+        "solver",
+        default="linear",
+        validator=pyre.inventory.choice(["linear", "nonlinear"])
+    )
+    solverTypeStr.meta['tip'] = "Type of solver to use ['linear', 'nonlinear']."
 
-        import pyre.inventory
+    from Solution import Solution
+    solution = pyre.inventory.facility("solution", family="solution", factory=Solution)
+    solution.meta['tip'] = "Solution field for problem."
 
-        # Usually, we put all arguments on a single line. If the
-        # function call is really long, break the arguments into
-        # logical pieces, usually one argument per line.
-        solverType = pyre.inventory.str(
-            "solver",
-            default="linear",
-            validator=pyre.inventory.choice(["linear", "nonlinear"])
-        )
-        solverType.meta['tip'] = "Type of solver to use ['linear', 'nonlinear']."
-
-        from Solution import Solution
-        solution = pyre.inventory.facility("solution", family="solution", factory=Solution)
-        solution.meta['tip'] = "Solution field for problem."
-
-        from pylith.materials.Homogeneous import Homogeneous
-        materials = pyre.inventory.facilityArray(
-            "materials",
-            itemFactory=materialFactory,
-            factory=Homogeneous
-        )
-        materials.meta['tip'] = "Materials in problem."
+    from pylith.materials.Homogeneous import Homogeneous
+    materials = pyre.inventory.facilityArray(
+        "materials",
+        itemFactory=materialFactory,
+        factory=Homogeneous
+    )
+    materials.meta['tip'] = "Materials in problem."
 
         
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -760,7 +768,13 @@ class Problem(PetscComponent, ModuleProblem):
         # class name and pass self as an argument to make it clear
         # that this is calling a C++ method and not a Python method.
         ModuleProblem.identifier(self, self.aliases[-1])
-        ModuleProblem.solverType(self, self.solverType)
+
+        if self.solverTypeStr == "linear":
+            ModuleProblem.solverType(self, ModuleProblem.LINEAR)
+        elif self.solverTypeStr == "nonlinear":
+            ModuleProblem.solverType(self, ModuleProblem.NONLINEAR)
+        else:
+            raise ValueError("Unknown solver type '%s'." % self.solverTypeStr)
 
         # Do minimal setup of solution.
         self.solution.preinitialize(mesh, self.normalizer)
@@ -799,33 +813,7 @@ class Problem(PetscComponent, ModuleProblem):
         """
         PetscComponent._configure(self)
 
-        if self.inventory.solverType == "linear":
-            self.solverType = ModuleProblem.LINEAR
-        elif self.inventory.solverType == "nonlinear":
-            self.solverType = ModuleProblem.NONLINEAR
-        else:
-            raise ValueError("Unknown solver type '%s'." % self.solverType)
-
-        self.solution = self.inventory.solution
-        self.materials = self.inventory.materials
-
         return
-
-    def _setupLogging(self):
-        """
-        Setup event logging.
-        """
-        if not "_loggingPrefix" in dir(self):
-            self._loggingPrefix = ""
-
-        from pylith.utils.EventLogger import EventLogger
-        logger = EventLogger()
-        logger.className("Problem")
-        logger.initialize()
-
-        self._eventLogger = logger
-        return
-
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
@@ -839,3 +827,6 @@ def problem():
 
 # End of file
 \end{python}
+
+
+% End of file

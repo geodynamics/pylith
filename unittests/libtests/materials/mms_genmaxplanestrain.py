@@ -25,7 +25,7 @@ import sympy
 import sympy.tensor
 import sympy.tensor.array
 # ----------------------------------------------------------------------
-ndim = 2
+ndim = 3
 numComps = 2
 ndimRange = range(ndim)
 numCompsRange = range(numComps)
@@ -36,7 +36,7 @@ one = sympy.sympify(1)
 two = sympy.sympify(2)
 three = sympy.sympify(3)
 
-f = open(outFile, 'w')
+out = open(outFile, 'w')
 
 # ----------------------------------------------------------------------
 def printTensor(tensor, tensorName):
@@ -54,12 +54,12 @@ def printTensor(tensor, tensorName):
     if (rank == 2):
       for j in range(ndim):
         line = tensorName + '_%d%d = %s\n' % (i+1, j+1, simpTensor[i,j])
-        f.write(line)
+        out.write(line)
     else:
       line = tensorName + '_%d = %s\n' % (i+1, simpTensor[i])
-      f.write(line)
+      out.write(line)
 
-  f.write('\n')
+  out.write('\n')
 
   return
 # ----------------------------------------------------------------------
@@ -68,8 +68,8 @@ print "Defining basis, solution, and constants:"
 # Define basis and displacement vector.
 from sympy.abc import x, y, z, t
 u1, u2, u3 = sympy.symbols('u1 u2 u3', type="Function")
-X = sympy.tensor.array.Array([x, y])
-X3d = sympy.tensor.array.Array([x, y, z])
+X = sympy.tensor.array.Array([x, y, z])
+dt = sympy.symbols('dt')
 
 # Material constants.
 (bulkModulus, shearModulus) = sympy.symbols('bulkModulus shearModulus')
@@ -89,11 +89,14 @@ u2 = (x * x * c + two * y * x * b + y * y * a) * \
       shearModulusRatio_2 * sympy.exp(-t/maxwellTime_2) + \
       shearModulusRatio_3 * sympy.exp(-t/maxwellTime_3))
 u3 = zero
-U = sympy.tensor.array.Array([u1, u2])
+U = sympy.tensor.array.Array([u1, u2, u3])
 Udot = U.diff(t)
 
-U3d = sympy.tensor.array.Array([u1, u2, u3])
-U3ddot = U3d.diff(t)
+# Perturbed solution:
+u1Pert = u1 + d * x
+u2Pert = u2 + d * x
+UPert = sympy.tensor.array.Array([u1Pert, u2Pert, u3])
+UdotPert = UPert.diff(t)
 
 # Deformation gradient, transpose, and strain tensor.
 print "Computing strain tensor:"
@@ -102,10 +105,12 @@ defGradTranspose = sympy.tensor.array.Array(defGrad.tomatrix().transpose())
 strain = (defGrad + defGradTranspose)/two
 strainRate = strain.diff(t)
 
-defGrad3d = sympy.tensor.array.derive_by_array(U3d, X3d)
-defGradTranspose3d = sympy.tensor.array.Array(defGrad3d.tomatrix().transpose())
-strain3d = (defGrad3d + defGradTranspose3d)/two
-strainRate3d = strain3d.diff(t)
+# Deformation gradient, etc., for perturbed solution.
+print "Computing strain tensor perturbed solution:"
+defGradPert = sympy.tensor.array.derive_by_array(UPert, X)
+defGradTransposePert = sympy.tensor.array.Array(defGradPert.tomatrix().transpose())
+strainPert = (defGradPert + defGradTransposePert)/two
+strainRatePert = strainPert.diff(t)
 
 # Define volumetric strain and deviatoric strain.
 print "Computing deviatoric strain tensor:"
@@ -114,22 +119,40 @@ volStrainArr = sympy.tensor.array.tensorproduct(volStrain, sympy.eye(ndim))
 devStrain = strain - volStrainArr/three
 devStrainRate = devStrain.diff(t)
 
-volStrain3d = sympy.tensor.array.tensorcontraction(strain3d, (0, 1))
-volStrainArr3d = sympy.tensor.array.tensorproduct(volStrain3d, sympy.eye(3))
-devStrain3d = strain3d - volStrainArr3d/three
-devStrainRate3d = devStrain3d.diff(t)
+# Define volumetric strain and deviatoric strain for perturbed solution.
+print "Computing deviatoric strain tensor for perturbed solution:"
+volStrainPert = sympy.tensor.array.tensorcontraction(strainPert, (0, 1))
+volStrainArrPert = sympy.tensor.array.tensorproduct(volStrainPert,
+                                                    sympy.eye(ndim))
+devStrainPert = strainPert - volStrainArrPert/three
+devStrainRatePert = devStrainPert.diff(t)
 
 # Assumed viscous strains.
 print "Computing viscous strains:"
-visStrain_1 = devStrain * (one - sympy.exp(-t/maxwellTime_1))
-visStrain_2 = devStrain * (one - sympy.exp(-t/maxwellTime_2))
-visStrain_3 = devStrain * (one - sympy.exp(-t/maxwellTime_3))
+dq_1 = maxwellTime_1 * (one - sympy.exp(-t/maxwellTime_1))/t
+dq_2 = maxwellTime_2 * (one - sympy.exp(-t/maxwellTime_2))/t
+dq_3 = maxwellTime_3 * (one - sympy.exp(-t/maxwellTime_3))/t
+visStrain_1 = devStrain * dq_1
+visStrain_2 = devStrain * dq_2
+visStrain_3 = devStrain * dq_3
 
-visStrain3d_1 = devStrain3d * (one - sympy.exp(-t/maxwellTime_1))
-visStrain3d_2 = devStrain3d * (one - sympy.exp(-t/maxwellTime_2))
-visStrain3d_3 = devStrain3d * (one - sympy.exp(-t/maxwellTime_3))
+# Assumed viscous strains for perturbed solution.
+print "Computing viscous strains for perturbed solution:"
+expFac_1Pert = sympy.exp(-dt/maxwellTime_1)
+expFac_2Pert = sympy.exp(-dt/maxwellTime_2)
+expFac_3Pert = sympy.exp(-dt/maxwellTime_3)
+dq_1Pert = maxwellTime_1 * (one - sympy.exp(-dt/maxwellTime_1))/dt
+dq_2Pert = maxwellTime_2 * (one - sympy.exp(-dt/maxwellTime_2))/dt
+dq_3Pert = maxwellTime_3 * (one - sympy.exp(-dt/maxwellTime_3))/dt
+visStrain_1Pert = expFac_1Pert * visStrain_1 + \
+                  dq_1Pert * (devStrainPert - devStrain)
+visStrain_2Pert = expFac_2Pert * visStrain_2 + \
+                  dq_2Pert * (devStrainPert - devStrain)
+visStrain_3Pert = expFac_3Pert * visStrain_3 + \
+                  dq_3Pert * (devStrainPert - devStrain)
 
 # Define viscous strain rate and stress function.
+print "Computing viscous strain rates:"
 visStrainRate_1 = visStrain_1.diff(t)
 visStrainFunc_1 = maxwellTime_1 * (devStrainRate - visStrainRate_1)
 visStrainRate_2 = visStrain_2.diff(t)
@@ -137,12 +160,14 @@ visStrainFunc_2 = maxwellTime_2 * (devStrainRate - visStrainRate_2)
 visStrainRate_3 = visStrain_3.diff(t)
 visStrainFunc_3 = maxwellTime_3 * (devStrainRate - visStrainRate_3)
 
-visStrainRate3d_1 = visStrain3d_1.diff(t)
-visStrainFunc3d_1 = maxwellTime_1 * (devStrainRate3d - visStrainRate3d_1)
-visStrainRate3d_2 = visStrain3d_2.diff(t)
-visStrainFunc3d_2 = maxwellTime_2 * (devStrainRate3d - visStrainRate3d_2)
-visStrainRate3d_3 = visStrain3d_3.diff(t)
-visStrainFunc3d_3 = maxwellTime_3 * (devStrainRate3d - visStrainRate3d_3)
+# Define viscous strain rate and stress function for perturbed solution.
+print "Computing viscous strain rates for perturbed solution:"
+visStrainRate_1Pert = visStrain_1Pert.diff(t)
+visStrainFunc_1Pert = maxwellTime_1 * (devStrainRatePert - visStrainRate_1Pert)
+visStrainRate_2Pert = visStrain_2Pert.diff(t)
+visStrainFunc_2Pert = maxwellTime_2 * (devStrainRatePert - visStrainRate_2Pert)
+visStrainRate_3Pert = visStrain_3Pert.diff(t)
+visStrainFunc_3Pert = maxwellTime_3 * (devStrainRatePert - visStrainRate_3Pert)
 
 # Define deviatoric stress and mean stress.
 print "Computing stresses:"
@@ -156,35 +181,35 @@ devStress = two * shearModulus * (shearModulusRatio_0 * devStrain + \
 meanStressArr = bulkModulus * volStrainArr
 stress = meanStressArr + devStress
 
-devStress3d = two * shearModulus * (shearModulusRatio_0 * devStrain3d + \
-                                    shearModulusRatio_1 * visStrainFunc3d_1 + \
-                                    shearModulusRatio_2 * visStrainFunc3d_2 + \
-                                    shearModulusRatio_3 * visStrainFunc3d_3)
-meanStressArr3d = bulkModulus * volStrainArr3d
-stress3d = meanStressArr3d + devStress3d
+# Define deviatoric stress and mean stress for perturbed solution.
+print "Computing stresses for perturbed solution:"
+devStressPert = two * shearModulus * \
+                (shearModulusRatio_0 * devStrainPert + \
+                 shearModulusRatio_1 * visStrainFunc_1Pert + \
+                 shearModulusRatio_2 * visStrainFunc_2Pert + \
+                 shearModulusRatio_3 * visStrainFunc_3Pert)
+meanStressArrPert = bulkModulus * volStrainArrPert
+stressPert = meanStressArrPert + devStressPert
 
 # Equilibrium equation.
 print "Computing equilibrium:"
 equilDeriv = sympy.tensor.array.derive_by_array(stress, X)
 equil = sympy.tensor.array.tensorcontraction(equilDeriv, (1,2))
 
-equilDeriv3d = sympy.tensor.array.derive_by_array(stress3d, X3d)
-equil3d = sympy.tensor.array.tensorcontraction(equilDeriv3d, (1,2))
-
 # Write results to file.
 print "Writing solution variables:"
-f.write('Solution variables:\n')
+out.write('Solution variables:\n')
 printTensor(U, 's')
 printTensor(Udot, 's_t')
 printTensor(defGrad, 's_x')
 
-f.write('Solution variables (3d):\n')
-printTensor(U3d, 's3d')
-printTensor(U3ddot, 's3d_t')
-printTensor(defGrad3d, 's3d_x')
+out.write('Solution variables (perturbed solution):\n')
+printTensor(UPert, 'sPert')
+printTensor(UdotPert, 'sPert_t')
+printTensor(defGradPert, 'sPert_x')
 
 print "Writing auxiliary variables:"
-f.write('\nAuxiliary variables:\n')
+out.write('\nAuxiliary variables:\n')
 printTensor(strain, 'totalStrain')
 printTensor(strainRate, 'totalStrain_t')
 printTensor(visStrain_1, 'visStrain_1')
@@ -194,25 +219,22 @@ printTensor(visStrainRate_2, 'visStrain_2_t')
 printTensor(visStrain_3, 'visStrain_3')
 printTensor(visStrainRate_3, 'visStrain_3_t')
 
-f.write('\nAuxiliary variables (3d):\n')
-printTensor(strain3d, 'totalStrain3d')
-printTensor(strainRate3d, 'totalStrain3d_t')
-printTensor(visStrain3d_1, 'visStrain3d_1')
-printTensor(visStrainRate3d_1, 'visStrain3d_1_t')
-printTensor(visStrain3d_2, 'visStrain3d_2')
-printTensor(visStrainRate3d_2, 'visStrain3d_2_t')
-printTensor(visStrain3d_3, 'visStrain3d_3')
-printTensor(visStrainRate3d_3, 'visStrain3d_3_t')
+out.write('\nAuxiliary variables (perturbed solution):\n')
+printTensor(strainPert, 'totalStrainPert')
+printTensor(strainRatePert, 'totalStrainPert_t')
+printTensor(visStrain_1Pert, 'visStrainPert_1')
+printTensor(visStrainRate_1Pert, 'visStrainPert_1_t')
+printTensor(visStrain_2Pert, 'visStrainPert_2')
+printTensor(visStrainRate_2Pert, 'visStrainPert_2_t')
+printTensor(visStrain_3Pert, 'visStrainPert_3')
+printTensor(visStrainRate_3Pert, 'visStrainPert_3_t')
 
 print "Writing equilibrium equations:"
-f.write('\nEquilibrium:\n')
+out.write('\nEquilibrium:\n')
 printTensor(equil, 'equil')
 
-f.write('\nEquilibrium (3d):\n')
-printTensor(equil3d, 'equil3d')
-
 print "Writing additional variables:"
-f.write('\nAdditional:\n')
+out.write('\nAdditional:\n')
 printTensor(devStrain, 'devStrain')
 printTensor(devStrainRate, 'devStrain_t')
 printTensor(stress, 'stress')
@@ -221,13 +243,13 @@ printTensor(visStrainFunc_1, 'visStrainFunc_1')
 printTensor(visStrainFunc_2, 'visStrainFunc_2')
 printTensor(visStrainFunc_3, 'visStrainFunc_3')
 
-f.write('\nAdditional (3d):\n')
-printTensor(devStrain3d, 'devStrain3d')
-printTensor(devStrainRate3d, 'devStrain3d_t')
-printTensor(stress3d, 'stress3d')
-printTensor(devStress3d, 'devStress3d')
-printTensor(visStrainFunc3d_1, 'visStrainFunc3d_1')
-printTensor(visStrainFunc3d_2, 'visStrainFunc3d_2')
-printTensor(visStrainFunc3d_3, 'visStrainFunc3d_3')
+out.write('\nAdditional (perturbed solution):\n')
+printTensor(devStrainPert, 'devStrainPert')
+printTensor(devStrainRatePert, 'devStrainPert_t')
+printTensor(stressPert, 'stressPert')
+printTensor(devStressPert, 'devStressPert')
+printTensor(visStrainFunc_1Pert, 'visStrainFuncPert_1')
+printTensor(visStrainFunc_2Pert, 'visStrainFuncPert_2')
+printTensor(visStrainFunc_3Pert, 'visStrainFuncPert_3')
 
-f.close()
+out.close()

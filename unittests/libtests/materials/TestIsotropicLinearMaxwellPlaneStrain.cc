@@ -35,13 +35,12 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::setUp(void) {
     TestMaterial::setUp();
-    _mymaterial = new IsotropicLinearMaxwellPlaneStrain(); CPPUNIT_ASSERT(_mymaterial);
+    _mymaterial = new IsotropicLinearMaxwellPlaneStrain();CPPUNIT_ASSERT(_mymaterial);
     _mydata = NULL;
 
     GenericComponent::name("TestIsotropicLinearMaxwellPlaneStrain");
@@ -63,8 +62,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::tearDown(void) {
 
     TestMaterial::tearDown();
 
-    delete _mymaterial; _mymaterial = NULL;
-    delete _mydata; _mydata = NULL;
+    delete _mymaterial;_mymaterial = NULL;
+    delete _mydata;_mydata = NULL;
 } // tearDown
 
 
@@ -117,7 +116,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
     const PylithReal forceScale = pressureScale / lengthScale;
     const PylithReal accelerationScale = lengthScale/(timeScale * timeScale);
 
-    delete _mymaterial->_auxField; _mymaterial->_auxField = new topology::Field(*_mesh); CPPUNIT_ASSERT(_mymaterial->_auxField);
+    delete _mymaterial->_auxField;_mymaterial->_auxField = new topology::Field(*_mesh);CPPUNIT_ASSERT(_mymaterial->_auxField);
     _mymaterial->_auxFieldSetup();
 
     // Check discretizations
@@ -128,8 +127,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(densityScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // density
@@ -141,8 +140,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(pressureScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // shear modulus
@@ -154,8 +153,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(pressureScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // bulk modulus
@@ -167,24 +166,11 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(timeScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // Maxwell time
-
-    { // Total strain
-        const char* label = "total_strain";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
-    } // Total strain
 
     { // Viscous strain
         const char* label = "viscous_strain";
@@ -193,11 +179,24 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // Viscous strain
+
+    { // Total strain
+        const char* label = "total_strain";
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
+        CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+    } // Total strain
 
     if (_mymaterial->_gravityField) { // gravity field
         const char* label = "gravity_field";
@@ -206,8 +205,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::VECTOR, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(accelerationScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // gravity field
@@ -219,8 +218,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::VECTOR, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(forceScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // body force
@@ -232,8 +231,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(pressureScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // reference stress
@@ -245,8 +244,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // reference strain
@@ -268,7 +267,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
     CPPUNIT_ASSERT(_mydata->normalizer);
     const PylithReal lengthScale = _mydata->normalizer->lengthScale();
 
-    const pylith::topology::Field* auxField = _mymaterial->auxField(); assert(auxField);
+    const pylith::topology::Field* auxField = _mymaterial->auxField();assert(auxField);
     { // Test getting density field.
         pylith::topology::Field density(*_mesh);
         density.copySubfield(*auxField, "density");
@@ -285,8 +284,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = density.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        const PetscDM dm = density.dmMesh();CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryDensity.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -309,8 +308,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = bulkModulus.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        const PetscDM dm = bulkModulus.dmMesh();CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryBulkModulus.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -333,13 +332,61 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = maxwellTime.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryMaxwellTime.functions(), (void**)queryMaxwellTime.contextPtrs(), maxwellTime.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        const PetscDM dm = maxwellTime.dmMesh();CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryMaxwellTime.functions(), (void**)queryMaxwellTime.contextPtrs(), maxwellTime.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryMaxwellTime.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting Maxwell time subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting maxwell_time field
+
+    { // Test getting viscous_strain field.
+        pylith::topology::Field viscousStrain(*_mesh);
+        viscousStrain.copySubfield(*auxField, "viscous_strain");
+
+        //viscousStrain.view("VISCOUS STRAIN"); // DEBUGGING
+
+        // Check result
+        CPPUNIT_ASSERT_EQUAL(std::string("viscous_strain"), std::string(viscousStrain.label()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, viscousStrain.spaceDim());
+
+        pylith::topology::FieldQuery queryViscousStrain(viscousStrain);
+        queryViscousStrain.initializeWithDefaultQueryFns();
+        queryViscousStrain.openDB(_mydata->auxDB, lengthScale);
+
+        PylithReal norm = 0.0;
+        const PylithReal t = _mydata->t;
+        const PetscDM dm = viscousStrain.dmMesh();CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryViscousStrain.functions(), (void**)queryViscousStrain.contextPtrs(), viscousStrain.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        queryViscousStrain.closeDB(_mydata->auxDB);
+
+        const PylithReal tolerance = 1.0e-6;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting viscous strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting viscous_strain field
+
+    { // Test getting total_strain field.
+        pylith::topology::Field totalStrain(*_mesh);
+        totalStrain.copySubfield(*auxField, "total_strain");
+
+        //totalStrain.view("TOTAL STRAIN"); // DEBUGGING
+
+        // Check result
+        CPPUNIT_ASSERT_EQUAL(std::string("total_strain"), std::string(totalStrain.label()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, totalStrain.spaceDim());
+
+        pylith::topology::FieldQuery queryTotalStrain(totalStrain);
+        queryTotalStrain.initializeWithDefaultQueryFns();
+        queryTotalStrain.openDB(_mydata->auxDB, lengthScale);
+
+        PylithReal norm = 0.0;
+        const PylithReal t = _mydata->t;
+        const PetscDM dm = totalStrain.dmMesh();CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryTotalStrain.functions(), (void**)queryTotalStrain.contextPtrs(), totalStrain.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        queryTotalStrain.closeDB(_mydata->auxDB);
+
+        const PylithReal tolerance = 1.0e-6;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting total strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting total_strain field
 
     if (_mymaterial->_useReferenceState) { // Test getting reference_stress field.
         pylith::topology::Field referenceStress(*_mesh);
@@ -357,8 +404,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = referenceStress.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStress.functions(), (void**)queryRefStress.contextPtrs(), referenceStress.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        const PetscDM dm = referenceStress.dmMesh();CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStress.functions(), (void**)queryRefStress.contextPtrs(), referenceStress.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryRefStress.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -381,14 +428,13 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = referenceStrain.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStrain.functions(), (void**)queryRefStrain.contextPtrs(), referenceStrain.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        const PetscDM dm = referenceStrain.dmMesh();CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStrain.functions(), (void**)queryRefStrain.contextPtrs(), referenceStrain.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryRefStrain.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting reference strain subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting reference_strain field
-
 
     PYLITH_METHOD_END;
 } // testGetAuxField
@@ -470,6 +516,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
     PYLITH_METHOD_END;
 } // _setupSolutionFields
 
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_Data::TestIsotropicLinearMaxwellPlaneStrain_Data(void) {
@@ -478,12 +525,12 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_Data::TestIsotropicLine
     gravityVector[1] = 0.0;
     gravityVector[2] = 0;
 
-    cs = new spatialdata::geocoords::CSCart; CPPUNIT_ASSERT(cs);
+    cs = new spatialdata::geocoords::CSCart;CPPUNIT_ASSERT(cs);
     cs->setSpaceDim(dimension);
     cs->initialize();
 
     // Some auxiliary subfields get updated in updateStateVars().
-    auxUpdateDB = new spatialdata::spatialdb::UserFunctionDB; CPPUNIT_ASSERT(auxUpdateDB);
+    auxUpdateDB = new spatialdata::spatialdb::UserFunctionDB;CPPUNIT_ASSERT(auxUpdateDB);
 
     solnDB->coordsys(*cs);
     perturbDB->coordsys(*cs);

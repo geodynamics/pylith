@@ -231,6 +231,61 @@ public:
                const PylithScalar constants[],
                PylithScalar Jg3[]);
 
+    /** Calculate stress for 2-D plane strain isotropic linear
+     * elasticity WITHOUT a reference stress and strain.
+     *
+     * Used to output the stress field.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), ...]
+     */
+    static
+    void stress(const PylithInt dim,
+                const PylithInt numS,
+                const PylithInt numA,
+                const PylithInt sOff[],
+                const PylithInt sOff_x[],
+                const PylithScalar s[],
+                const PylithScalar s_t[],
+                const PylithScalar s_x[],
+                const PylithInt aOff[],
+                const PylithInt aOff_x[],
+                const PylithScalar a[],
+                const PylithScalar a_t[],
+                const PylithScalar a_x[],
+                const PylithReal t,
+                const PylithScalar x[],
+                const PylithInt numConstants,
+                const PylithScalar constants[],
+                PylithScalar stress[]);
+
+    /** Calculate stress for 2-D plane strain isotropic linear
+     * elasticity WITH a reference stress/strain.
+     *
+     * Used to output the stress field.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), ..., refstress(4), refstrain(4)]
+     */
+    static
+    void stress_refstate(const PylithInt dim,
+                         const PylithInt numS,
+                         const PylithInt numA,
+                         const PylithInt sOff[],
+                         const PylithInt sOff_x[],
+                         const PylithScalar s[],
+                         const PylithScalar s_t[],
+                         const PylithScalar s_x[],
+                         const PylithInt aOff[],
+                         const PylithInt aOff_x[],
+                         const PylithScalar a[],
+                         const PylithScalar a_t[],
+                         const PylithScalar a_x[],
+                         const PylithReal t,
+                         const PylithScalar x[],
+                         const PylithInt numConstants,
+                         const PylithScalar constants[],
+                         PylithScalar stress[]);
 
 }; // IsotropicLinearElasticityPlaneStrain
 

@@ -25,6 +25,9 @@ subpkginclude_HEADERS = \
 	IsotropicLinearElasticityPlaneStrain.hh \
 	IsotropicLinearMaxwellPlaneStrain.hh \
 	IsotropicLinearIncompElasticityPlaneStrain.hh \
+	IsotropicLinearElasticity3D.hh \
+	IsotropicLinearMaxwell3D.hh \
+	IsotropicLinearGenMaxwell3D.hh \
 	Query.hh \
 	materialsfwd.hh
 

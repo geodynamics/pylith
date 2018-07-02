@@ -348,6 +348,7 @@ pylith::materials::Material::_computeResidual(pylith::topology::Field* residual,
     assert(residual->localVector());
     err = DMGetLabel(dmSoln, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
+    assert(cEnd > cStart); // Double-check that this material has cells.
 
     PYLITH_COMPONENT_DEBUG("DMPlexComputeResidual_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<<","<<cEnd<<".");
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cells); PYLITH_CHECK_ERROR(err);

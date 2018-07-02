@@ -86,9 +86,9 @@ void
 pylith::materials::TestMaterial::testAuxSubfieldDiscretization(void) {
     PYLITH_METHOD_BEGIN;
 
-    const topology::FieldBase::Discretization infoDefault = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
-    const topology::FieldBase::Discretization infoA = {1, 2, false, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
-    const topology::FieldBase::Discretization infoB = {2, 2, true, pylith::topology::FieldBase::POINT_SPACE};
+    const topology::FieldBase::Discretization infoDefault = pylith::topology::Field::Discretization(1, 1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
+    const topology::FieldBase::Discretization infoA = pylith::topology::Field::Discretization(1, 2, false, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
+    const topology::FieldBase::Discretization infoB = pylith::topology::Field::Discretization(2, 2, true, pylith::topology::FieldBase::POINT_SPACE);
 
     Material* material = _material(); CPPUNIT_ASSERT(material);
     material->auxSubfieldDiscretization("A", infoA.basisOrder, infoA.quadOrder, infoA.isBasisContinuous, infoA.feSpace);
@@ -484,7 +484,7 @@ pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void) {
 
     const PylithReal t = data->t;
     const PylithReal dt = data->dt;
-    const PylithReal s_tshift = data->tshift;
+    const PylithReal s_tshift = data->s_tshift;
     material->computeLHSResidual(&residual1, t, dt, solution, solutionDot);
     material->computeLHSResidual(&residual2, t, dt, perturbation, perturbationDot);
 
@@ -599,7 +599,7 @@ pylith::materials::TestMaterial::testUpdateStateVars(void) {
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->normalizer);
     query.openDB(data->auxUpdateDB, data->normalizer->lengthScale());
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
     PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "1"); // :DEBUG:
     DMSetFromOptions(dm); // :DEBUG:
 #endif
@@ -625,6 +625,9 @@ pylith::materials::TestMaterial::_initializeMin(void) {
     CPPUNIT_ASSERT(data->meshFilename);
     iohandler.filename(data->meshFilename);
     iohandler.read(_mesh); CPPUNIT_ASSERT(_mesh);
+
+    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.", _mesh->numCells() > 0);
+    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.", _mesh->numVertices() > 0);
 
     // Setup coordinates.
     _mesh->coordsys(data->cs);

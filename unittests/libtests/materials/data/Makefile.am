@@ -23,7 +23,9 @@ dist_noinst_DATA = \
 	quad_onecell.mesh \
 	quad_fourcells.mesh \
 	quad_small.mesh \
-	quad_aligned.mesh
+	quad_aligned.mesh \
+	tet_small.mesh \
+	hex_small.mesh
 
 noinst_DATA =
 

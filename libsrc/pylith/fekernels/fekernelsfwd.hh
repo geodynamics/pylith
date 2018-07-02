@@ -47,6 +47,12 @@ namespace pylith {
         class NeumannTimeDependent;
         class AbsorbingDampers;
 
+        class Elasticity3D;
+        class IsotropicLinearElasticity3D;
+
+        class IsotropicLinearMaxwell3D;
+        class IsotropicLinearGenMaxwell3D;
+
         class FaultCohesiveKin;
 
     } // fekernels

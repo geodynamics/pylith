@@ -222,6 +222,34 @@ public:
                                    PylithScalar stress[]);
 
 
+    /** Calculate strain for 2-D plane strain isotropic linear
+     * elasticity.
+     *
+     * Used to output the strain field.
+     *
+     * Solution fields: [disp(dim)]
+     */
+    static
+    void strain(const PylithInt dim,
+                const PylithInt numS,
+                const PylithInt numA,
+                const PylithInt sOff[],
+                const PylithInt sOff_x[],
+                const PylithScalar s[],
+                const PylithScalar s_t[],
+                const PylithScalar s_x[],
+                const PylithInt aOff[],
+                const PylithInt aOff_x[],
+                const PylithScalar a[],
+                const PylithScalar a_t[],
+                const PylithScalar a_x[],
+                const PylithReal t,
+                const PylithScalar x[],
+                const PylithInt numConstants,
+                const PylithScalar constants[],
+                PylithScalar strain[]);
+
+
 }; // ElasticityPlaneStrain
 
 #endif // pylith_fekernels_elasticityplanestrain_hh
