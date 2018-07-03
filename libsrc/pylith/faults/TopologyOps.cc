@@ -29,8 +29,7 @@
 void
 pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
                                          const pylith::topology::Mesh& mesh,
-                                         PetscDMLabel groupField)
-{ // createFault
+                                         PetscDMLabel groupField) {
     PYLITH_METHOD_BEGIN;
 
     assert(faultMesh);
@@ -67,7 +66,7 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
 
                 if ((closure[cl] < vStart) || (closure[cl] >= vEnd)) { continue;}
                 err = DMLabelGetValue(groupField, closure[cl], &value);PYLITH_CHECK_ERROR(err);
-                if (value == defaultValue) {invalidCell = PETSC_FALSE; break;}
+                if (value == defaultValue) {invalidCell = PETSC_FALSE;break;}
             } // for
             err = DMPlexRestoreTransitiveClosure(dmMesh, dmpoints[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
             if (invalidCell) {
@@ -90,13 +89,13 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
     PYLITH_METHOD_END;
 } // createFault
 
+
 // ----------------------------------------------------------------------
 void
 pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
                                     const pylith::topology::Mesh& faultMesh,
                                     PetscDMLabel faultBdLabel,
-                                    const int materialId)
-{ // create
+                                    const int materialId) {
     assert(mesh);
     PetscDM sdm = NULL;
     PetscDM dm = mesh->dmMesh();assert(dm);
@@ -181,7 +180,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
     }
     // Completes the set of cells scheduled to be replaced
     err = DMPlexLabelCohesiveComplete(dm, label, faultBdLabel, PETSC_FALSE, faultMesh.dmMesh());PYLITH_CHECK_ERROR(err);
-    err = DMPlexConstructCohesiveCells(dm, label, &sdm);PYLITH_CHECK_ERROR(err);
+    err = DMPlexConstructCohesiveCells(dm, label, NULL, &sdm);PYLITH_CHECK_ERROR(err);
 
     err = DMGetLabel(sdm, "material-id", &mlabel);PYLITH_CHECK_ERROR(err);
     if (mlabel) {
@@ -192,7 +191,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
             PetscInt onBd;
 
             /* Eliminate hybrid cells on the boundary of the split from cohesive label,
-               they are marked with -(cell number) since the hybrid cell number aliases vertices in the old mesh */
+             * they are marked with -(cell number) since the hybrid cell number aliases vertices in the old mesh */
             err = DMLabelGetValue(label, -cell, &onBd);PYLITH_CHECK_ERROR(err);
             //if (onBd == dim) continue;
             err = DMLabelSetValue(mlabel, cell, materialId);PYLITH_CHECK_ERROR(err);
@@ -206,14 +205,14 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
     mesh->dmMesh(sdm);
 } // create
 
+
 // ----------------------------------------------------------------------
 // Form a parallel fault mesh using the cohesive cell information
 void
 pylith::faults::TopologyOps::createFaultParallel(pylith::topology::Mesh* faultMesh,
                                                  const pylith::topology::Mesh& mesh,
                                                  const int materialId,
-                                                 const char* label)
-{ // createFaultParallel
+                                                 const char* label) {
     PYLITH_METHOD_BEGIN;
 
     assert(faultMesh);
@@ -250,8 +249,7 @@ pylith::faults::TopologyOps::classifyCellsDM(PetscDM dmMesh,
                                              PetscInt firstCohesiveCell,
                                              PointSet& replaceCells,
                                              PointSet& noReplaceCells,
-                                             const int debug)
-{
+                                             const int debug) {
     // Replace all cells on a given side of the fault with a vertex on the fault
     PointSet vReplaceCells;
     PointSet vNoReplaceCells;
@@ -303,12 +301,12 @@ pylith::faults::TopologyOps::classifyCellsDM(PetscDM dmMesh,
                 if (debug) { std::cout << "  already a cohesive cell" << std::endl;}
                 continue;
             } // if
-              // If neighbor shares a face with anyone in replaceCells, then add
+             // If neighbor shares a face with anyone in replaceCells, then add
             for (PointSet::const_iterator c_iter = vReplaceCells.begin(); c_iter != vReplaceCells.end(); ++c_iter) {
                 const PetscInt *coveringPoints;
                 PetscInt numCoveringPoints, points[2];
 
-                points[0] = point; points[1] = *c_iter;
+                points[0] = point;points[1] = *c_iter;
                 err = DMPlexGetMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);PYLITH_CHECK_ERROR(err);
                 err = DMPlexRestoreMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);PYLITH_CHECK_ERROR(err);
                 if (numCoveringPoints == faceSize) {
@@ -325,7 +323,7 @@ pylith::faults::TopologyOps::classifyCellsDM(PetscDM dmMesh,
                 const PetscInt *coveringPoints;
                 PetscInt numCoveringPoints, points[2];
 
-                points[0] = point; points[1] = *c_iter;
+                points[0] = point;points[1] = *c_iter;
                 err = DMPlexGetMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);PYLITH_CHECK_ERROR(err);
                 err = DMPlexRestoreMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);PYLITH_CHECK_ERROR(err);
                 if (numCoveringPoints == faceSize) {
@@ -356,5 +354,6 @@ pylith::faults::TopologyOps::classifyCellsDM(PetscDM dmMesh,
     // More checking
     noReplaceCells.insert(vNoReplaceCells.begin(), vNoReplaceCells.end());
 } // classifyCellsDM
+
 
 // End of file
