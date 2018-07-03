@@ -741,10 +741,13 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain(const Py
     std::cout << "disp[0]:  " << disp[0] << std::endl;
     std::cout << "disp[1]:  " << disp[1] << std::endl;
     std::cout << "disp_x[0]:  " << disp_x[0] << std::endl;
+    std::cout << "disp_x[1]:  " << disp_x[1] << std::endl;
     const PylithInt i_totalStrainPrevious = 5;
     const PylithScalar* totalStrainPrevious = &a[aOff[i_totalStrainPrevious]];
     std::cout << "totalStrainPrevious[0]:  " << totalStrainPrevious[0] << std::endl;
+    std::cout << "totalStrainPrevious[1]:  " << totalStrainPrevious[1] << std::endl;
     std::cout << "totalStrain[0]:  " << totalStrain[0] << std::endl;
+    std::cout << "totalStrain[1]:  " << totalStrain[1] << std::endl;
 	const double aa = 1.0e-4;
 	const double b = 2.5e-4;
 	const double c = 3.0e-4;

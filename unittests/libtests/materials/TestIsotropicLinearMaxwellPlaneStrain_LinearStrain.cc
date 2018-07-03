@@ -133,14 +133,17 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
                                  const double y) {
         return (2.0*constants.a*x + 2.0*constants.b*y) * exp(-constants.t/maxwellTime(x,y));
     } // totalStrain_xx
+
     static double totalStrain_yy(const double x,
                                  const double y) {
         return (2.0*constants.b*x + 2.0*constants.a*y) * exp(-constants.t/maxwellTime(x,y));
     } // totalStrain_yy
+
     static double totalStrain_zz(const double x,
                                  const double y) {
         return 0.0;
     } // totalStrain_zz
+
     static double totalStrain_xy(const double x,
                                  const double y) {
         return (constants.b*(x+y) + constants.c*(x+y))*exp(-constants.t/maxwellTime(x,y));
@@ -152,14 +155,17 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
                                    const double y) {
         return 2.0*maxwellTime(x,y)*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(2.0*x-y) - constants.b*(x-2.0*y)) * exp(-2.0*constants.t/maxwellTime(x,y))/(3.0*constants.t);
     } // viscousStrain_xx
+
     static double viscousStrain_yy(const double x,
                                    const double y) {
         return -2.0*maxwellTime(x,y)*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(x-2.0*y) - constants.b*(2.0*x-y)) * exp(-2.0*constants.t/maxwellTime(x,y))/(3.0*constants.t);
     } // viscousStrain_yy
+
     static double viscousStrain_zz(const double x,
                                    const double y) {
         return -2.0*maxwellTime(x,y)*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(x+y) + constants.b*(x+y)) * exp(-2.0*constants.t/maxwellTime(x,y))/(3.0*constants.t);
     } // viscousStrain_zz
+
     static double viscousStrain_xy(const double x,
                                    const double y) {
         return maxwellTime(x,y)*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.b*(x+y) + constants.c*(x+y)) * exp(-2.0*constants.t/maxwellTime(x,y))/constants.t;
@@ -171,14 +177,17 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
 									   const double y) {
         return (2.0*constants.a*x + 2.0*constants.b*y) * exp(-constants.t/maxwellTime(x,y)) + constants.d;
     } // totalStrainUpdate_xx
+
     static double totalStrainUpdate_yy(const double x,
 									   const double y) {
         return (2.0*constants.b*x + 2.0*constants.a*y) * exp(-constants.t/maxwellTime(x,y));
     } // totalStrainUpdate_yy
+
     static double totalStrainUpdate_zz(const double x,
 									   const double y) {
         return 0.0;
     } // totalStrainUpdate_zz
+
     static double totalStrainUpdate_xy(const double x,
 									   const double y) {
         return (constants.b*(x+y) + constants.c*(x+y))*exp(-constants.t/maxwellTime(x,y)) + constants.d/2.0;
@@ -257,10 +266,12 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
                               const double y) {
         return 6.0*bulkModulus(x,y)*(constants.a + constants.b) * exp(-constants.t/maxwellTime(x,y));
     } // bodyforce_x
+
     static double bodyforce_y(const double x,
                               const double y) {
         return 6.0*bulkModulus(x,y)*(constants.a + constants.b) * exp(-constants.t/maxwellTime(x,y));
     } // bodyforce_y
+
     static const char* bodyforce_units(void) {
         return "kg*m/s**2";
     }
@@ -272,10 +283,12 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
                          const double y) {
         return (constants.a*x*x + 2.0*constants.b*x*y + constants.c*y*y) * exp(-constants.t/maxwellTime(x,y));
     } // disp_x
+
     static double disp_y(const double x,
                          const double y) {
         return (constants.a*y*y + 2.0*constants.b*x*y + constants.c*x*x) * exp(-constants.t/maxwellTime(x,y));
     } // disp_y
+
     static const char* disp_units(void) {
         return "m";
     } // disp_units
@@ -284,10 +297,12 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
                              const double y) {
         return -(constants.a*x*x + 2.0*constants.b*x*y + constants.c*y*y) * exp(-constants.t/maxwellTime(x,y)) / maxwellTime(x,y);
     } // disp_dot_x
+
     static double disp_dot_y(const double x,
                              const double y) {
         return -(constants.a*y*y + 2.0*constants.b*x*y + constants.c*x*x) * exp(-constants.t/maxwellTime(x,y))/maxwellTime(x,y);
     } // disp_dot_y
+
     static const char* disp_dot_units(void) {
         return "m/s";
     } // disp_dot_units
@@ -297,6 +312,7 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
                                  const double y) {
         return disp_x(x, y) + constants.d*x;
     } // disp_perturb_x
+
     static double disp_perturb_y(const double x,
                                  const double y) {
         return disp_y(x, y) + constants.d*x;
@@ -407,7 +423,7 @@ const pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::Aux
     2.5e-7, // b
     3.0e-7, // c
     9.0e-8, // d
-    5.0e+7, // t
+    9.0e+7, // t
     5.0e+7  // dt
 };
 
