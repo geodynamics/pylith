@@ -81,17 +81,13 @@ you can use for development under the Forking Workflow:
   repository you will create a pull request.
 \end{enumerate}
 
-\tip{We recommend adding your SSH public key to your GitHub
-  account. See
-  \href{https://help.github.com/articles/connecting-to-github-with-ssh/}{GitHub
-    Help: Connecting
-    To GitHub with SSH} for more information. This provides additional
-  security and eliminates the need to enter your username and password
-  whenenver you push to your repository. For additional security
-  consider setting up your GitHub account to use two-factor
-  authentication. See \href{two-factor
-    authentication}{https://help.github.com/articles/securing-your-account-with-two-factor-authentication-2fa/}
-  {GitHub Help: Securing your account with two-factor authentication}.}
+\tip{We recommend adding your SSH public key to your GitHub account. See
+\href{https://help.github.com/articles/connecting-to-github-with-ssh/}{GitHub Help: Connecting To GitHub with SSH} for
+more information. This provides additional security and eliminates the need to enter your username and password
+whenenver you push to your repository. For additional security consider setting up your GitHub account to use two-factor
+authentication. See
+\href{https://help.github.com/articles/securing-your-account-with-two-factor-authentication-2fa/}{GitHub Help: Securing
+your account with two-factor authentication}.}
 
 % ------------------------------------------------------------------------------
 \subsection{Developer Binary}
@@ -148,18 +144,18 @@ include:
 
 \begin{shell}[Example PyLith Installer setup for development]
 # Prerequisites:
-#  * C/C++ compiler  
+#  * C/C++ compiler
 #  * autotools
 #  * fork of PyLith repository
 
 # Set some variables to hold information about our installer setup.
 # The PYLITH_REPO should be
 # https://github.com/YOUR_GITHUB_USERNAME/pylith.git or
-# git@github.com:YOUR_GITHUB_USERNAME/pylith.git  
+# git@github.com:YOUR_GITHUB_USERNAME/pylith.git
 $ PYLITH_DIR=$HOME/pylith-developer
 $ PYLITH_REPO=git@github.com:YOUR_GITHUB_USERNAME/pylith.git
 $ PYLITH_BRANCH=knepley/feature-petsc-fe
-  
+
 # Create a top-level directory for PyLith.
 $ mkdir -p $PYLITH_DIR
 $ cd $PYLITH_DIR
@@ -175,7 +171,7 @@ $ cd $PYLITH_DIR && mkdir build && cd build
 $ ../pylith_installer/configure \
     --with-pylith-git=$PYLITH_BRANCH \
     --with-pylith-repo=$PYLITH_REPO \
-    --enable-debugging \  
+    --enable-debugging \
     --enable-mpi=mpich \
     --enable-pcre \
     --enable-swig \
@@ -205,7 +201,7 @@ your repository in sync with the central repository.
 
 \begin{shell}[Setting upstream repository]
 # List the current remotes for your fork.
-$ git remote -v  
+$ git remote -v
 origin git@github.com/YOUR_GITHUB_USERNAME/pylith.git (fetch)
 origin git@github.com/YOUR_GITHUB_USERNAME/pylith.git (push)
 
@@ -213,7 +209,7 @@ origin git@github.com/YOUR_GITHUB_USERNAME/pylith.git (push)
 $ git remote add upstream https://github.com/geodynamics/pylith.git
 
 # Verify the upstream repository has been added.
-$ git remote -v  
+$ git remote -v
 origin git@github.com/YOUR_GITHUB_USERNAME/pylith.git (fetch)
 origin git@github.com/YOUR_GITHUB_USERNAME/pylith.git (push)
 upstream https://github.com/geodynamics/pylith.git (fetch)
@@ -257,7 +253,7 @@ the upstream repository as described in Section~\vref{sec:developer:merge:upstre
 # Start from the current development branch (usually 'master')
 $ git checkout master
 
-# Make sure it is up to date. 
+# Make sure it is up to date.
 $ git pull
 
 # Create branch from 'master', substituting appropriate names for
@@ -294,7 +290,24 @@ request. See
 % ------------------------------------------------------------------------------
 \subsection{Rebuilding PETSc}
 
-\todo{brad}{Add stuff here}
+Updating and rebuilding PETSc is quite simple once it has been configured and built once before.
+
+\begin{shell}[Updating and rebuilding PETSc]
+# Change to PETSc source Directory
+$ cd PETSC_SOURCE_DIRECTORY
+
+# Get updates from PETSc repository.
+$ git pull
+
+# Reconfigure
+$ arch-pylith/lib/petsc/conf/reconfigure-arch-pylith.py
+
+# Rebuild
+$ make
+
+# Install
+$ make install
+\end{shell}
 
 % ------------------------------------------------------------------------------
 \subsection{Rebuilding PyLith}
