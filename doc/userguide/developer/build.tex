@@ -370,12 +370,54 @@ one of the following:
   \commandline{NTHREADS} is the number of cores to use. For example,
   \commandline{make -j16 all}.}
 
-\todo{brad}{Add example of rebuilding lib, modules, and Python.}
+After modifying code, the C++ library, SWIG modules, and Python code need to be rebuilt and reinstalled before running a
+PyLith simulation.
 
-\todo{brad}{Add example of running \commandline{make} and
-  \commandline{make check} for a change to a C++ file.}
+\begin{shell}[Rebuilding Pylith C++ library, SWIG modules, and Python modules]
+# Change to top-level PyLith build directory.
+$ cd PATH_TO_PYLITH_BUILD_DIRECTORY
 
-\todo{brad}{Add example of running \commandline{make} and
-  \commandline{make check} for a change to a Python file.}
+# Rebuild and reinstall library using 8 threads.
+$ make install -j8 -C libsrc
+
+# Rebuild and reinstall modules
+$ make install -C modulesrc
+
+# Reinstall Python code
+$ make install -C PyLith
+
+# Reinstall everything using 8 threads to build library.
+$ make install -j8
+\end{shell}
+
+When fixing a bug exposed by a C++ unit test, after changing C++ code, only the C++ library needs to be rebuilt before
+running a C++ unit test.
+
+\begin{shell}[Rebuilding Pylith C++ library and rerunning a C++ unit test]
+# Change to top-level PyLith build directory.
+$ cd PATH_TO_PYLITH_BUILD_DIRECTORY
+
+# Rebuild library using 8 threads.
+$ make -j8 -C libsrc
+
+# Rerun boundary condition C++ unit tests.
+$ make check -C unittests/libtests/bc
+\end{shell}
+
+Similarly, when fixing a bug exposed by a Python unit test, after changing Python code, only the Python modules need to
+be reinstalled before running a Python unit test. If changes are also made to the C++ code, then the C++ library and modules
+must be rebuilt and reinstalled before running a Python unit test.
+
+\begin{shell}[Rebuilding Pylith Python modules and rerunning a Python unit test]
+# Change to top-level PyLith build directory.
+$ cd PATH_TO_PYLITH_BUILD_DIRECTORY
+
+# Rebuild library using 8 threads.
+$ make install -C pylith
+
+# Rerun boundary condition Python unit tests.
+$ make check -C unittests/pytests/bc
+\end{shell}
+
 
 % End of file
