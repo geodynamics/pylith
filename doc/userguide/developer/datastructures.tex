@@ -44,6 +44,32 @@ meshes without change. For example, we can write a fintie element
 assembly loop that applies to meshes of any dimension, with any cell
 shape, with (almost) any finite element.
 
+\subsubsection{Point Depth and Height}
+
+In general, vertices are at a {\bf depth} of 0 and cells are at the maximum depth. Similarly, cells are at a {\bf
+height} of 0 and vertices are at the maximum depth. Notice that depth and height correspond the the usual dimension and
+codimension. For a 3-D mesh with vertices, edges, faces, and cells:
+
+\begin{table}
+\begin{center}
+\begin{tabular}{lcc}
+\hline
+Point type & Depth & Height \\
+\hline
+Vertices  &  0  &  3 \\
+Edges  &  1  &  2 \\
+Faces  &  2  &  1 \\
+Cells  &  3  &  0 \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Depth and height of various topological pieces.}
+\end{table}
+
+For a boundary mesh, we currently store the full set (vertices, edges, faces, and cells). Obviously for 2-D meshes, the
+boundary mesh doesn't contain "volume" cells, but just vertices, edges, and faces. This means the "boundary" cells are
+at a height of 1 and maximum depth - 1 .
+
 \todo{brad}{Add diagram of finite-element mesh in DMPlex form.}
 
 \subsection{\object{PetscSection} and \object{PetscVec}}
@@ -213,7 +239,7 @@ our purposes.
       const PetscReal x[],
       PetscScalar f0[]);
 \end{cplusplus}
-  
+
 \begin{cplusplus}[PetscPointJac Interface]
 /** Interface for PETSc point-wise Jacobians.
  *
@@ -241,7 +267,7 @@ our purposes.
       const PetscReal x[],
       PetscScalar Jf0[]);
 \end{cplusplus}
-  
+
 \begin{cplusplus}[PetscDSSetResidual Function]
 /** Set point-wise functions for LHS or RHS residual.
  *
@@ -258,7 +284,7 @@ our purposes.
                     PetscPointFunc f0,
                     PetscPointFunc f1);
 \end{cplusplus}
-  
+
 \begin{cplusplus}[PetscDSSetJacobian Function]
 /** Set point-wise functions for LHS or RHS Jacobian.
  *
@@ -281,7 +307,7 @@ our purposes.
                     PetscPointJac Jf2,
                     PetscPointJac Jf3);
 \end{cplusplus}
-  
+
 
 
 % End of file

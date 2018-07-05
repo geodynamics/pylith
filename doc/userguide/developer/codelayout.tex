@@ -136,10 +136,15 @@ information that needs to be passed between C++ and Python.
 ommitted documentation and comments that we would normally include and simplified the object hierarchy. See
 Section~\vref{cha:code:style} for  details about the coding style we use in PyLith.}
 
+\important{Consistent inheritance between C++ and Python is important in order for SWIG to generate a Python interface
+that is consistent with the C++ interface.}
+
 \begin{python}[Skeleton Python object in PyLith]
 rom pylith.utils.PetscComponent import PetscComponent
 from .materials import Material as ModuleMaterial
 
+# Python objects should inherit the corresponding SWIG interface object (ModuleMaterial).
+# Python object inheritance should match C++ object inheritance.
 class Material(PetscComponent, ModuleMaterial):
 
     # Pyre inventory: properties and facilities
@@ -160,7 +165,7 @@ class Material(PetscComponent, ModuleMaterial):
 
     def preinitialize(self, mesh):
 
-        # Create the C++ object
+        # Create the C++ object. This method must be called exactly once.
         self._createModuleObj()
 
         # Pass name of Pyre component to C++
@@ -177,6 +182,7 @@ class Material(PetscComponent, ModuleMaterial):
 
 
     # Private methods
+
     def _createModuleObj(self):
         ModuleMaterial.__init__(self)
         return
@@ -317,6 +323,61 @@ pylith::materials::Material::initialize(const pylith::topology::Field& solution)
 } // initialize
 
 // Implementation of other methods not shown.
+
+\end{cplusplus}
+
+
+\subsubsection{SWIG Interface Files}
+
+SWIG interface files are essentially stripped down versions of C++ header files. Because SWIG only implements the public
+interface, we omit all data members and all protected and private data methods that are not abstract methods or
+implement abstract methods.
+
+\begin{cplusplus}[SWIG interface file]
+// The class declaration must appear within the appropriate namespace blocks.
+
+namespace pylith {
+    namespace materials {
+
+        class Material : public pylith::utils::PyreComponent {
+            public: // public methods
+
+            // Constructor and desctructor
+
+            Material(const int dimension);
+            virtual ~Material(void);
+
+            // Method to deallocate PETSc data structures before calling PetscFinalize().
+            virtual void deallocate(void);
+
+            // Accessors
+
+            int dimension(void) const;
+            void id(const int value);
+            int id(void) const;
+            void label(const char* value);
+            const char* label(void) const;
+
+            // Initialization
+
+            void verifyConfiguration(const pylith::topology::Field& solution);
+            void initialize(const pylith::topology::Field& solution);
+
+            // Finite-element integration
+
+            void computeRHSResidual(pylith::topology::Field* residual,
+                                    const PylithReal t,
+                                    const PylithReal dt,
+                                    const pylith::topology::Field& solution);
+            void computeRHSJacobian(PetscMat jacobianMat,
+                                    PetscMat preconMat,
+                                    const PylithReal t,
+                                    const PylithReal dt,
+                                    const pylith::topology::Field& solution);
+
+        };
+    }
+}
 
 \end{cplusplus}
 
