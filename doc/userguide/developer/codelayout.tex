@@ -114,7 +114,6 @@ In a time-dependent problem, the PETSc \object{TS} object (relabeled
 beginning of each time step, the \object{PetscTS} object calls
 \object{problems::TimeDependent::prestep()}, and at the end of each
 time step, it calls \object{problems::TimeDependent::poststep()}.
-
 Within each time step, the \object{PetscTS} object calls the PETSc
 linear and nonlinear solvers as needed, which call the following
 methods of the C++ \object{pylith::problems::TimeDependent} object as
@@ -123,6 +122,203 @@ needed
 \object{computeRHSJacobian()},
 \object{computeLHSResidual()}, and
 \object{computeLHSJacobian()}.
+The \object{pylith::problems::TimeDependent} object calls the corresponding methods in the boundary conditions,
+constraints, and material objects.
+
+\subsubsection{Boundary between Python and C++}
+
+The Python code is limited to collecting user input. Everything else is
+done in C++. This facilitates debugging (it is easier to track symbols in
+the C/C++ debugger) and unit testing, and reduces the amount of
+information that needs to be passed between C++ and Python.
+
+\warning{The examples below show skeleton Python and C++ objects to illustrate the essential ingredients. We have
+ommitted documentation and comments that we would normally include and simplified the object hierarchy. See
+Section~\vref{cha:code:style} for  details about the coding style we use in PyLith.}
+
+\begin{python}[Skeleton Python object in PyLith]
+rom pylith.utils.PetscComponent import PetscComponent
+from .materials import Material as ModuleMaterial
+
+class Material(PetscComponent, ModuleMaterial):
+
+    # Pyre inventory: properties and facilities
+    import pyre.inventory
+
+    materialId = pyre.inventory.int("id", default=0)
+    materialId.meta['tip'] = "Material identifier (from mesh generator)."
+
+    label = pyre.inventory.str("label", default="", validator=validateLabel)
+    label.meta['tip'] = "Descriptive label for material."
+
+
+    # Public methods
+
+    def __init__(self, name="material"):
+        IntegratorPointwise.__init__(self, name)
+        return
+
+    def preinitialize(self, mesh):
+
+        # Create the C++ object
+        self._createModuleObj()
+
+        # Pass name of Pyre component to C++
+        ModuleMaterial.identifier(self, self.aliases[-1])
+
+        # Pass Pyre inventory to C++
+        ModuleMaterial.id(self, self.materialId)
+        ModuleMaterial.label(self, self.label)
+        return
+
+    def verifyConfiguration(self, solution):
+        # Avoid implementing this method at the Python level if at all possible.
+        return
+
+
+    # Private methods
+    def _createModuleObj(self):
+        ModuleMaterial.__init__(self)
+        return
+
+\end{python}
+
+\begin{cplusplus}[Skeleton C++ header file in PyLith]
+#if !defined(pylith_materials_material_hh) // Include guard
+#define pylith_materials_material_hh
+
+#include "materialsfwd.hh" // forward declaration of Material object
+
+#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
+
+class pylith::materials::Material : public pylith::utils::PyreComponent {
+    friend class TestMaterial // unit testing
+
+public: // public methods
+
+    // Constructor and desctructor
+
+    Material(const int dimension);
+    virtual ~Material(void);
+
+    // Method to deallocate PETSc data structures before calling PetscFinalize().
+    virtual void deallocate(void);
+
+    // Accessors
+
+    int dimension(void) const;
+    void id(const int value);
+    int id(void) const;
+    void label(const char* value);
+    const char* label(void) const;
+
+    // Initialization
+
+    void verifyConfiguration(const pylith::topology::Field& solution);
+    void initialize(const pylith::topology::Field& solution);
+
+    // Finite-element integration
+
+    void computeRHSResidual(pylith::topology::Field* residual,
+                            const PylithReal t,
+                            const PylithReal dt,
+                            const pylith::topology::Field& solution);
+    void computeRHSJacobian(PetscMat jacobianMat,
+                            PetscMat preconMat,
+                            const PylithReal t,
+                            const PylithReal dt,
+                            const pylith::topology::Field& solution);
+
+
+private: // Data members
+
+    const int _dimension;
+    int _id;
+    std::string _label;
+
+    static const char* _pyreComponent; // Name of Pyre component.
+
+
+private: // Methods not implemented by design to avoid expensive copies.
+
+    Material(const Material&);
+    const Material& operator=(const Material&);
+
+};
+
+#endif // pylith_materials_material_hh
+\end{cplusplus}
+
+\begin{cplusplus}[Skeleton C++ definition file in PyLith]
+// Information about local configuration generated while running configure script.
+#include <portinfo>
+
+#include "Material.hh" // implementation of object methods
+
+const char* pylith::materials::Material::_pyreComponent = "material";
+
+pylith::materials::Material::Material(const int dimension) :
+     _dimension(dimension),
+     _id(0),
+     _label("") {
+    pylith::utils::PyreComponent::name(_pyreComponent);
+} // constructor
+
+pylith::materials::Material::~Material(void) {
+    deallocate();
+} // destructor
+
+void
+pylith::materials::Material::deallocate(void) {
+    PYLITH_METHOD_BEGIN;
+
+    // Deallocate PETSc and other data structures
+
+    PYLITH_METHOD_END;
+} // deallocate
+
+int
+pylith::materials::Material::dimension(void) const {
+    return _dimension;
+}
+
+void
+pylith::materials::Material::id(const int value) {
+    PYLITH_COMPONENT_DEBUG("id(value="<<value<<")");
+
+    _id = value;
+} // id
+
+int
+pylith::materials::Material::id(void) const {
+    return _id;
+} // id
+
+void
+pylith::materials::Material::label(const char* value) {
+    PYLITH_COMPONENT_DEBUG("label(value="<<value<<")");
+
+    _label = value;
+} // label
+
+const char*
+pylith::materials::Material::label(void) const {
+    return _label.c_str();
+} // label
+
+void
+pylith::materials::Material::initialize(const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("intialize(solution="<<solution.label()<<")");
+
+    // Implementation not shown.
+
+    PYLITH_METHOD_END;
+} // initialize
+
+// Implementation of other methods not shown.
+
+\end{cplusplus}
 
 
 % End of file
