@@ -58,7 +58,7 @@ governing equation or material:
   \object{AuxFieldIsotropicLinearElasticity}. The order of the subfields
   is defined {\em not} by the order they are listed in the Pyre
   component, but by the order they are added to the auxiliary field in
-  by the C++ object. 
+  by the C++ object.
 
 \item Flags to turn on/off terms in governing equation.
 
@@ -115,7 +115,7 @@ governing equation or material:
   We set the point-wise functions for the residual using
   \object{PetscDSSetResidual} and for the Jacobian using
   \object{PetscDSSetJacobian}.
-  
+
 \end{itemize}
 
 \todo{brad}{Add class diagram showing relationships among
@@ -124,8 +124,22 @@ governing equation or material:
 
 \subsection{C++ Unit Tests}
 
-\todo{brad}{Layout of unit tests. Method of manufactured
-  solutions. Use of \object{UserFunctionDB} spatial database.}
+The C++ unit tests focus on testing all methods of a C++ object. In most cases, this includes the accessors, layout and
+values of the auxiliary field, the residual, and Jacobian. For the residual and Jacobian, we use the method of
+manufactured solutions. In testing the residual, we manufacture a solution that solves the governing equation. We setup
+the object so that the auxiliary field and solution passed to the residual computation should produce a zero residual
+vector. The \object{UserFunctionDB} spatial database allows us to populate the auxiliary field and solution using
+anlytical functions. To test the computation of the RHS Jacobian, we compute
+\begin{equation}
+    Jg(s) (p - s) = G(p) - G(s),
+\end{equation}
+where $Jg(s)$ is the RHS Jacobian, $p$ is a small perturbation from a solution $s$, $G(p)$ is the RHS residual for $p$,
+and $G(s)$ is the RHS residual for $s$. We test the computation of the LHS Jacobian, using the corresponding LHS Jacobian $Jf$
+and LHS residual $Jf$.
+
+\important{In setting up a test using the Method of Manufactured Solutions it is important to make sure the
+discretization of the used for each of the subfields in the auxiliary field and solution field are sufficient to
+represent the analytical function.}
 
 \todo{brad}{Add class diagram showing relationships among
   \object{TestMaterial}, \object{TestConcreteMaterialA}, \ldots,
@@ -134,7 +148,10 @@ governing equation or material:
 
 \subsection{Python Unit Tests}
 
-\todo{brad}{Goal of Python unit tests.}
+With the Python implementation focused on gathering the user configuration of a simulation, there is
+minimal functionality we can test at the Python level. Consequently, the Python unit tests are generally
+limited to testing the SWIG interface, which involves creating the C++ object and insuring the Pyre
+properties and facilities and any other information is passed to the C++ object.
 
 
 % End of file
