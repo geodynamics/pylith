@@ -124,6 +124,12 @@ Section~\vref{sec:developer:petsc:section} for how to interpret the layout of a 
 solution.view("Solution Field");
 \end{cplusplus}
 
+\begin{shell}[Debugging output from \object{Field::view()}]
+:TODO: ADD DEBUGGING OUTPUT
+\end{shell}
+\todo{brad}{Add example output for Field::view().}
+
+
 In tests in which we compare a computed field against one from an analytical solution using
 \object{DMPlexComputeL2DiffLocal()} and the fields do not agree, it is generally helpful to determine which pieces do
 not agree. The \object{DMPlex} object contains an internal switch to print the point-by-point differences while computing
@@ -141,6 +147,7 @@ DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), 
 \begin{shell}[Debugging output from \object{DMPlexComputeL2DiffLocal()}]
 :TODO: ADD DEBUGGING OUTPUT
 \end{shell}
+\todo{brad}{Add example output for -dm\_plex\_print\_l2.}
 
 
 % End of file
