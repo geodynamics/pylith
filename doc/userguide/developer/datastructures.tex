@@ -70,7 +70,12 @@ For a boundary mesh, we currently store the full set (vertices, edges, faces, an
 boundary mesh doesn't contain "volume" cells, but just vertices, edges, and faces. This means the "boundary" cells are
 at a height of 1 and maximum depth - 1 .
 
-\todo{brad}{Add diagram of finite-element mesh in DMPlex form.}
+\begin{figure}
+  \includegraphics{developer/figs/meshtopology}
+  \caption{Conventional numbering (left) with vertices and cells numbered independently and \object{DMPlex} numbering (right)
+  with cells, vertices, edges, (and faces), numbered sequentially.}
+  \label{fig:developer:mesh:topology}
+\end{figure}
 
 \subsection{\object{PetscSection} and \object{PetscVec}}
 \label{sec:developer:petsc:section}
@@ -112,8 +117,84 @@ boundary values in order to compute those integrals. Whereas global
 vectors are used for the algebraic solver since we do not want
 unknowns fixed by constraints to participate in the solve.
 
-\todo{brad}{Add ASCII view of PetscSection corresponding to
-  finite-element mesh.}
+\begin{shell}[\object{PetscSection} information for a solution field with three subfields]
+# This example solution field has three subfields:
+#   * displacement (vector field, 2 components, basis order 1)
+#   * velocity (vector field, 2 components, basis order 1)
+#   * pressure (scalar field, 1 component, basis order 0)
+#
+# The displacement and velocity subfields have degrees of freedom on the vertices.
+# The pressure subfield has degrees of freedom on the cells.
+#
+# The order of the values (offsets in the PetscVec) follows the
+# ordering of the points (cells, vertices, edges, and faces).
+# In this example, the pressure subfield appears first (offsets 0-3),
+# followed by the two components of the displacement subfield and
+# velocity subfield for each point.
+PetscSection Object: 1 MPI processes
+  type not yet set
+3 fields
+  field 0 with 2 components # displacement field
+Process 0:
+# (POINT) dim SUBFIELD_NUM_COMPONENTS offset OFFSET
+(   0) dim  0 offset   0 # Cells
+(   1) dim  0 offset   0
+(   2) dim  0 offset   0
+(   3) dim  0 offset   0
+(   4) dim  2 offset   4 # Vertices
+(   5) dim  2 offset   8
+(   6) dim  2 offset  12
+(   7) dim  2 offset  16
+(   8) dim  2 offset  20
+(   9) dim  0 offset  24 # Edges
+(  10) dim  0 offset  24
+(  11) dim  0 offset  24
+(  12) dim  0 offset  24
+(  13) dim  0 offset  24
+(  14) dim  0 offset  24
+(  15) dim  0 offset  24
+(  16) dim  0 offset  24
+field 1 with 2 components # velocity field
+Process 0:
+(   0) dim  0 offset   0 # Cells
+(   1) dim  0 offset   0
+(   2) dim  0 offset   0
+(   3) dim  0 offset   0
+(   4) dim  2 offset   6 # Vertices
+(   5) dim  2 offset  10
+(   6) dim  2 offset  14
+(   7) dim  2 offset  18
+(   8) dim  2 offset  22
+(   9) dim  0 offset  24 # Edges
+(  10) dim  0 offset  24
+(  11) dim  0 offset  24
+(  12) dim  0 offset  24
+(  13) dim  0 offset  24
+(  14) dim  0 offset  24
+(  15) dim  0 offset  24
+(  16) dim  0 offset  24
+field 2 with 1 components # pressure field
+Process 0:
+(   0) dim  1 offset   0 # Cells
+(   1) dim  1 offset   1
+(   2) dim  1 offset   2
+(   3) dim  1 offset   3
+(   4) dim  0 offset   4 # Vertices
+(   5) dim  0 offset   4
+(   6) dim  0 offset   4
+(   7) dim  0 offset   4
+(   8) dim  0 offset   4
+(   9) dim  0 offset   4 # Edges
+(  10) dim  0 offset   4
+(  11) dim  0 offset   4
+(  12) dim  0 offset   4
+(  13) dim  0 offset   4
+(  14) dim  0 offset   4
+(  15) dim  0 offset   4
+(  16) dim  0 offset   4
+
+
+\end{shell}
 
 \subsection{Integration}
 
