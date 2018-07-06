@@ -91,16 +91,14 @@ $ gdb .libs/testbc
 \subsection{Runing Valgrind on PyLith}
 
 Valgrind is a useful tool for finding memory leaks, use of uninitialized variables, and invalid reads and writes to
-memory. When running valgrind there are three useful command line arguments:
-\begin{description}
+memory. When running valgrind there are three useful command line arguments: \begin{description}
 \item[\commandline{-{}-log-file=FILENAME}] Send output to FILENAME. This does not work when running the PyLith
-application because each new process wipes out the log file.
-\item[\commandline{-{}-suppressions=FILE}] Omit errors matching given patterns when reporting errors. Valgrind often
-reports lots of errors arising from the way OpenMPI and Python handle memory allocation and deallocation. We usually use
-the Python suppression file \filename{share/valgrind-python.supp} when running valgrind.
-\item[\commandline{-{}-trace-children=yes}] Continue tracing errors in subprocesses. This is important when running valgrind
-on the PyLith executable, as the actual computation is done in a forked process.
-\end{description}
+application because each new process wipes out the log file. \item[\commandline{-{}-suppressions=FILE}] Omit errors
+matching given patterns when reporting errors. Valgrind often reports lots of errors arising from the way OpenMPI and
+Python handle memory allocation and deallocation. We usually use the Python suppression file
+\filename{share/valgrind-python.supp} when running valgrind. \item[\commandline{-{}-trace-children=yes}] Continue
+tracing errors in subprocesses. This is important when running valgrind on the PyLith executable, as the actual
+computation is done in a forked process. \end{description}
 
 \begin{shell}[Running Valgrind]
 # Run valgrind on the testbc executable
@@ -112,6 +110,37 @@ $ valgrind --trace-children=yes \
   --suppressions=$HOME/src/cig/pylith/share/valgrind-python.supp pylith
 \end{shell}
 
+\subsection{Debugging Output}
+
+In addition to using the debugger to inspect code and variables, it is often helpful to print fields to stdout or
+inspect where a computed field does not match the expected field. Turning on this type of output is usually done by
+temporarily inserting calls to a few viewing functions within the test code.
+
+Viewing a field will print the subfield metadata, the layout of the field, and the field values. See
+Section~\vref{sec:developer:petsc:section} for how to interpret the layout of a field as given by PetscSection.
+
+\begin{cplusplus}[Viewing a field]
+// Call Field::view(const char* description) method.
+solution.view("Solution Field");
+\end{cplusplus}
+
+In tests in which we compare a computed field against one from an analytical solution using
+\object{DMPlexComputeL2DiffLocal()} and the fields do not agree, it is generally helpful to determine which pieces do
+not agree. The \object{DMPlex} object contains an internal switch to print the point-by-point differences while computing
+the norm.
+
+\begin{cplusplus}[Turn on debugging within \object{DMPlexComputeL2DiffLocal()}]
+PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "1");
+
+// Pass DMPlex object of computed field used in DMPlexComputeL2DiffLocal.
+DMSetFromOptions(solution.dmMesh());
+
+DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), solution.localVector(), &norm);
+\end{cplusplus}
+
+\begin{shell}[Debugging output from \object{DMPlexComputeL2DiffLocal()}]
+:TODO: ADD DEBUGGING OUTPUT
+\end{shell}
 
 
 % End of file
