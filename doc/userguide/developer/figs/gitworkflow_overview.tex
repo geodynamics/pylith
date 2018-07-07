@@ -1,0 +1,47 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\renewcommand{\familydefault}{phv}
+
+\usepackage{tikz}
+
+\begin{document}
+\usetikzlibrary{arrows,shapes}
+\input{../../palettes/figcolors}
+
+\tikzstyle{repository} = [rectangle,
+                      text width=12em,
+                      text centered,
+                      rounded corners=0.75em,
+                      minimum height=4.5em,
+                      very thick]
+\tikzstyle{github} = [repository,
+                      draw=blue!80!black,
+                      top color=ltblue!50!white,
+                      bottom color=blue]
+\tikzstyle{local} = [repository,
+                    draw=orange!80!black,
+                      top color=ltorange!50!white,
+                      bottom color=orange]
+
+\tikzstyle{arrow} = [->, thick]
+\tikzstyle{arrow-up} = [arrow, color=purple]
+\tikzstyle{arrow-down} = [arrow, color=green]
+
+\tikzstyle{shift-up} = [yshift=1.5em]
+\tikzstyle{shift-down} = [yshift=-1.5em]
+
+\begin{tikzpicture}[node distance=25.0em]
+
+  % repositories
+  \node (geodynamics-github) [github] {GitHub\\[4pt] {\tt geodynamics/pylith}};
+  \node (developer-github) [github, right of=geodynamics-github] {GitHub\\[4pt] {\tt saradeveloper/pylith}};
+  \node (developer-computer) [local, below of=developer-github, yshift=10.0em] {Local Computer\\[4pt] {\tt saradeveloper/pylith}};
+
+  % operations
+  \path[arrow-down] ([shift-up]geodynamics-github.east) edge node[above, pos=0.8] {fork} ([shift-up]developer-github.west);
+  \path[arrow-up] ([shift-down]developer-github.west) edge node[below, pos=0.7] {pull request} ([shift-down]geodynamics-github.east);
+
+\end{tikzpicture}
+
+\end{document}
