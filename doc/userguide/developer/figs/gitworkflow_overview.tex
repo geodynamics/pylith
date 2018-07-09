@@ -13,8 +13,7 @@
                       text width=12em,
                       text centered,
                       rounded corners=0.75em,
-                      minimum height=4.5em,
-                      very thick]
+                      minimum height=4.5em]
 \tikzstyle{github} = [repository,
                       draw=blue!80!black,
                       top color=ltblue!50!white,
@@ -24,14 +23,16 @@
                       top color=ltorange!50!white,
                       bottom color=orange]
 
-\tikzstyle{arrow} = [->, thick]
+\tikzstyle{arrow} = [->, very thick, >=latex]
 \tikzstyle{arrow-up} = [arrow, color=purple]
 \tikzstyle{arrow-down} = [arrow, color=green]
 
-\tikzstyle{shift-up} = [yshift=1.5em]
+\tikzstyle{shift-up} = [yshift=+1.5em]
 \tikzstyle{shift-down} = [yshift=-1.5em]
+\tikzstyle{shift-left} = [xshift=-1.5em]
+\tikzstyle{shift-right} = [xshift=+1.5em]
 
-\begin{tikzpicture}[node distance=25.0em]
+\begin{tikzpicture}[node distance=25.0em, line width=1.5pt]
 
   % repositories
   \node (geodynamics-github) [github] {GitHub\\[4pt] {\tt geodynamics/pylith}};
@@ -41,6 +42,16 @@
   % operations
   \path[arrow-down] ([shift-up]geodynamics-github.east) edge node[above, pos=0.8] {fork} ([shift-up]developer-github.west);
   \path[arrow-up] ([shift-down]developer-github.west) edge node[below, pos=0.7] {pull request} ([shift-down]geodynamics-github.east);
+
+  \path[arrow-down] ([shift-left]developer-github.south) edge
+  node[left, pos=0.85] {clone, pull} ([shift-left]developer-computer.north);
+  \path[arrow-up] ([shift-right]developer-computer.north) edge node[right, pos=0.85] {push} ([shift-right]developer-github.south);
+
+  \draw[arrow-up] (developer-computer.south west) to [looseness=2,
+  out=200, in=-20] node[below] {commit} (developer-computer.south east);
+
+%\draw[arrow-up] ([xshift=-3mm]developer-computer.south) arc (120:420:6mm) node[right, yshift=-3mm] {commit};
+
 
 \end{tikzpicture}
 
