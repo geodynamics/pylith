@@ -742,6 +742,8 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain(const Py
     std::cout << "disp[1]:  " << disp[1] << std::endl;
     std::cout << "disp_x[0]:  " << disp_x[0] << std::endl;
     std::cout << "disp_x[1]:  " << disp_x[1] << std::endl;
+    std::cout << "disp_x[2]:  " << disp_x[2] << std::endl;
+    std::cout << "disp_x[3]:  " << disp_x[3] << std::endl;
     const PylithInt i_totalStrainPrevious = 5;
     const PylithScalar* totalStrainPrevious = &a[aOff[i_totalStrainPrevious]];
     std::cout << "totalStrainPrevious[0]:  " << totalStrainPrevious[0] << std::endl;
@@ -755,17 +757,17 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain(const Py
 	const PylithInt i_maxwellTime = 3;
     const PylithScalar maxwellTime = a[aOff[i_maxwellTime]];
     const PylithScalar dt = constants[0];
-	const double dispxPredPrevious = (aa*x[0]*x[0] + 2.0*b*x[0]*x[1] + c*x[1]*x[1]) * exp(-dt/maxwellTime)/maxwellTime;
-	const double dispyPredPrevious = (aa*x[1]*x[1] + 2.0*b*x[0]*x[1] + c*x[0]*x[0]) * exp(-dt/maxwellTime)/maxwellTime;
-	const double dispxPred = (aa*x[0]*x[0] + 2.0*b*x[0]*x[1] + c*x[1]*x[1]) * exp(-dt/maxwellTime)/maxwellTime + d*x[0];
-	const double dispyPred = (aa*x[1]*x[1] + 2.0*b*x[0]*x[1] + c*x[0]*x[0]) * exp(-dt/maxwellTime)/maxwellTime + d*x[0];
+	const double dispxPredPrevious = (aa*x[0]*x[0] + 2.0*b*x[0]*x[1] + c*x[1]*x[1]) * exp(-t/maxwellTime);
+	const double dispyPredPrevious = (aa*x[1]*x[1] + 2.0*b*x[0]*x[1] + c*x[0]*x[0]) * exp(-t/maxwellTime);
+	const double dispxPred = dispxPredPrevious + d*x[0];
+	const double dispyPred = dispyPredPrevious + d*x[0];
     std::cout << "dispxPredPrevious  " << dispxPredPrevious << std::endl;
     std::cout << "dispyPredPrevious  " << dispyPredPrevious << std::endl;
     std::cout << "dispxPred  " << dispxPred << std::endl;
     std::cout << "dispyPred  " << dispyPred << std::endl;
-	const double totalStrainxxPredPrevious = (2.0*aa*x[0] + 2.0*b*x[1])*exp(-dt/maxwellTime);
+	const double totalStrainxxPredPrevious = (2.0*aa*x[0] + 2.0*b*x[1])*exp(-t/maxwellTime);
     std::cout << "totalStrainxxPredPrevious  " << totalStrainxxPredPrevious << std::endl;
-	const double totalStrainxxPred = (2.0*aa*x[0] + 2.0*b*x[1])*exp(-dt/maxwellTime) + d;
+	const double totalStrainxxPred = totalStrainxxPredPrevious + d;
     std::cout << "totalStrainxxPred  " << totalStrainxxPred << std::endl;
 #endif
 
