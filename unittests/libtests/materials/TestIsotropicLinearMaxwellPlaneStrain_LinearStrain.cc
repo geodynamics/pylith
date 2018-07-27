@@ -214,6 +214,11 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
 		return totalStrain_zz(x,y) - meanStrainT(x,y);
 	}
 
+	static double devStrainT_xy(const double x,
+								const double y) {
+		return totalStrain_xy(x,y);
+	}
+
 	static double meanStrainTplusDt(const double x,
 									const double y) {
 		return (totalStrainUpdate_xx(x,y) + totalStrainUpdate_yy(x,y))/3.0;
@@ -232,6 +237,11 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
 	static double devStrainTplusDt_zz(const double x,
 									  const double y) {
 		return totalStrainUpdate_zz(x,y) - meanStrainTplusDt(x,y);
+	}
+
+	static double devStrainTplusDt_xy(const double x,
+									  const double y) {
+		return totalStrainUpdate_xy(x,y);
 	}
 
 	static double dq(const double x,
@@ -258,9 +268,30 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain :
 
     static double viscousStrainUpdate_xy(const double x,
 										 const double y) {
-		return exp(-constants.dt/maxwellTime(x,y)) * viscousStrain_xy(x,y) + dq(x,y) * (totalStrainUpdate_xy(x,y) - totalStrain_xy(x,y));
+		return exp(-constants.dt/maxwellTime(x,y)) * viscousStrain_xy(x,y) + dq(x,y) * (devStrainTplusDt_xy(x,y) - devStrainT_xy(x,y));
     } // viscousStrainUpdate_xy
 
+/*
+    static double viscousStrainUpdate_xx(const double x,
+										 const double y) {
+		return 2.0*maxwellTime(x,y)*(constants.d*exp((constants.dt + 2.0*constants.t)/maxwellTime(x,y)) + (2.0*constants.a*x - constants.a*y - constants.b*x + 2.0*constants.b*y)*exp(constants.t/maxwellTime(x,y)))*(exp(constants.t/maxwellTime(x,y)) - 1.0)*exp((-constants.dt - 3.0*constants.t)/maxwellTime(x,y))/(3.0*constants.t);
+    } // viscousStrainUpdate_xx
+
+    static double viscousStrainUpdate_yy(const double x,
+										 const double y) {
+		return -maxwellTime(x,y)*(constants.d*exp((constants.dt + 2.0*constants.t)/maxwellTime(x,y)) + 2.0*(constants.a*x - 2.0*constants.a*y - 2.0*constants.b*x + constants.b*y)*exp(constants.t/maxwellTime(x,y)))*(exp(constants.t/maxwellTime(x,y)) - 1.0)*exp(-(constants.dt + 3.0*constants.t)/maxwellTime(x,y))/(3.0*constants.t);
+    } // viscousStrainUpdate_yy
+
+    static double viscousStrainUpdate_zz(const double x,
+										 const double y) {
+		return -maxwellTime(x,y)*(constants.d*exp((constants.dt + 2.0*constants.t)/maxwellTime(x,y)) + 2.0*(constants.a*x + constants.a*y + constants.b*x + constants.b*y)*exp(constants.t/maxwellTime(x,y)))*(exp(constants.t/maxwellTime(x,y)) - 1.0)*exp(-(constants.dt + 3.0*constants.t)/maxwellTime(x,y))/(3.0*constants.t);
+    } // viscousStrainUpdate_zz
+
+    static double viscousStrainUpdate_xy(const double x,
+										 const double y) {
+		return maxwellTime(x,y)*(constants.d*exp((constants.dt + 2.0*constants.t)/maxwellTime(x,y)) + 2.0*(constants.b*x + constants.b*y + constants.c*x + constants.c*y)*exp(constants.t/maxwellTime(x,y)))*(exp(constants.t/maxwellTime(x,y)) - 1.0)*exp((-constants.dt - 3.0*constants.t)/maxwellTime(x,y))/(2.0*constants.t);
+    } // viscousStrainUpdate_xy
+*/
     // Body force
     static double bodyforce_x(const double x,
                               const double y) {

@@ -191,7 +191,7 @@ pylith::feassemble::IntegratorPointwise::updateStateVars(const PylithReal t,
         PYLITH_METHOD_END;
     } // if
 
-#define DEBUG_OUTPUT 1
+#define DEBUG_OUTPUT 0
 #define MATT_CHARLES_GLOBAL_VECS 1
 
     assert(_auxField);

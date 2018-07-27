@@ -613,7 +613,7 @@ pylith::materials::TestMaterial::testUpdateStateVars(void)
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->normalizer);
     query.openDB(data->auxUpdateDB, data->normalizer->lengthScale());
-#if 0 // :DEBUG:
+#if 1 // :DEBUG:
     PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "1"); // :DEBUG:
     DMSetFromOptions(dm); // :DEBUG:
 #endif
