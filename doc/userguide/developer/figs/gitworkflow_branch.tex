@@ -15,9 +15,9 @@
                       rounded corners=0.75em,
                       minimum height=4.5em]
 \tikzstyle{github} = [repository,
-                      draw=blue!80!black,
-                      top color=ltblue!50!white,
-                      bottom color=blue]
+                      draw=green!80!black,
+                      top color=ltgreen!20!white,
+                      bottom color=ltgreen]
 \tikzstyle{local} = [repository,
                     draw=orange!80!black,
                       top color=ltorange!50!white,
@@ -31,9 +31,9 @@
 \begin{tikzpicture}[node distance=25.0em, line width=1.5pt]
 
   % repositories
-  \node (geodynamics-github) [github] {GitHub\\[4pt] upstream\\[4pt] {\tt geodynamics/pylith}};
-  \node (developer-github) [github, right of=geodynamics-github] {GitHub\\[4pt] origin\\[4pt] {\tt saradeveloper/pylith}};
-  \node (developer-computer) [local, right of=developer-github] {Local Computer\\[4pt] {\tt saradeveloper/pylith}};
+  \node (geodynamics-github) [github] {GitHub\\[4pt] {\tt geodynamics/pylith}\\[4pt] upstream};
+  \node (developer-github) [github, right of=geodynamics-github] {GitHub\\[4pt] {\tt saradeveloper/pylith}\\[4pt] origin};
+  \node (developer-computer) [local, right of=developer-github] {Local Computer\\[4pt] {\tt saradeveloper/pylith}\\[4pt] \ };
 
   % branches
   \node (upstream-master) [branch] at ($(geodynamics-github.south)+(0,-4mm)$) {master};

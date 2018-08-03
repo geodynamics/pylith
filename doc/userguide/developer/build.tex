@@ -26,9 +26,9 @@ else is limited to read access.
 
 Currently, the PyLith maintainers use the
 \href{https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow}{Gitflow
-  Workflow}, which is a variation, of the
+  Workflow}, which is a variation of the
 \href{https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow}{Feature
-  Branch Workflow} . New features are added on individual branches and
+  Branch Workflow}. New features are added on individual branches and
 merged to specific shared branches.
 
 At any given time there are three main shared Git branches:
@@ -42,7 +42,7 @@ At any given time there are three main shared Git branches:
   to this branch and merged to the \gitbranch{master} as
   appropriate. Upon a new release, the \gitbranch{master} branch is
   merged into the \gitbranch{maint} branch.
-\item[\gitbranch{next}] The \gitbranch{next} is used to test
+\item[\gitbranch{next}] The \gitbranch{next} branch is used to test
   integration of development branches. The PyLith maintainers test
   integration of new features they are implementing by merging to
   this branch, before merging them to the \gitbranch{master}
@@ -114,6 +114,7 @@ you can use for development under the Forking Workflow:
   account. You can make changes to this copy and when you are ready to
   contribute changes back to the \gitbranch{geodynamics/pylith}
   repository you will create a pull request.
+
 \end{enumerate}
 
 \tip{We recommend adding your SSH public key to your GitHub account. See
