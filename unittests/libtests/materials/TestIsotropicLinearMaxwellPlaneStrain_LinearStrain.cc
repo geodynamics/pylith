@@ -380,8 +380,8 @@ protected:
             pylith::topology::Field::Discretization(0, 1), // shear_modulus
             pylith::topology::Field::Discretization(0, 1), // bulk_modulus
             pylith::topology::Field::Discretization(0, 1), // maxwell_time
-            pylith::topology::Field::Discretization(1, 1), // viscous_strain
-            pylith::topology::Field::Discretization(1, 1), // total_strain
+            pylith::topology::Field::Discretization(1, 1, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 1, false), // total_strain
             pylith::topology::Field::Discretization(0, 1), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -512,8 +512,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP
             pylith::topology::Field::Discretization(0, 2), // shear_modulus
             pylith::topology::Field::Discretization(0, 2), // bulk_modulus
             pylith::topology::Field::Discretization(0, 2), // maxwell_time
-            pylith::topology::Field::Discretization(1, 2), // viscous_strain
-            pylith::topology::Field::Discretization(1, 2), // total_strain
+            pylith::topology::Field::Discretization(1, 2, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 2, false), // total_strain
             pylith::topology::Field::Discretization(0, 2), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -550,8 +550,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP
             pylith::topology::Field::Discretization(0, 3), // shear_modulus
             pylith::topology::Field::Discretization(0, 3), // bulk_modulus
             pylith::topology::Field::Discretization(0, 3), // maxwell_time
-            pylith::topology::Field::Discretization(1, 3), // viscous_strain
-            pylith::topology::Field::Discretization(1, 3), // total_strain
+            pylith::topology::Field::Discretization(1, 3, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 3, false), // total_strain
             pylith::topology::Field::Discretization(0, 3), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -587,8 +587,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP
             pylith::topology::Field::Discretization(0, 4), // shear_modulus
             pylith::topology::Field::Discretization(0, 4), // bulk_modulus
             pylith::topology::Field::Discretization(0, 4), // maxwell_time
-            pylith::topology::Field::Discretization(1, 4), // viscous_strain
-            pylith::topology::Field::Discretization(1, 4), // total_strain
+            pylith::topology::Field::Discretization(1, 4, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 4, false), // total_strain
             pylith::topology::Field::Discretization(0, 4), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -625,8 +625,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
             pylith::topology::Field::Discretization(0, 1), // shear_modulus
             pylith::topology::Field::Discretization(0, 1), // bulk_modulus
             pylith::topology::Field::Discretization(0, 1), // maxwell_time
-            pylith::topology::Field::Discretization(1, 1), // viscous_strain
-            pylith::topology::Field::Discretization(1, 1), // total_strain
+            pylith::topology::Field::Discretization(1, 1, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 1, false), // total_strain
             pylith::topology::Field::Discretization(0, 1), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -664,8 +664,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
             pylith::topology::Field::Discretization(0, 2), // shear_modulus
             pylith::topology::Field::Discretization(0, 2), // bulk_modulus
             pylith::topology::Field::Discretization(0, 2), // maxwell_time
-            pylith::topology::Field::Discretization(1, 2), // viscous_strain
-            pylith::topology::Field::Discretization(1, 2), // total_strain
+            pylith::topology::Field::Discretization(1, 2, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 2, false), // total_strain
             pylith::topology::Field::Discretization(0, 2), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -702,8 +702,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
             pylith::topology::Field::Discretization(0, 3), // shear_modulus
             pylith::topology::Field::Discretization(0, 3), // bulk_modulus
             pylith::topology::Field::Discretization(0, 3), // maxwell_time
-            pylith::topology::Field::Discretization(1, 3), // viscous_strain
-            pylith::topology::Field::Discretization(1, 3), // total_strain
+            pylith::topology::Field::Discretization(1, 3, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 3, false), // total_strain
             pylith::topology::Field::Discretization(0, 3), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -740,8 +740,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
             pylith::topology::Field::Discretization(0, 4), // shear_modulus
             pylith::topology::Field::Discretization(0, 4), // bulk_modulus
             pylith::topology::Field::Discretization(0, 4), // maxwell_time
-            pylith::topology::Field::Discretization(1, 4), // viscous_strain
-            pylith::topology::Field::Discretization(1, 4), // total_strain
+            pylith::topology::Field::Discretization(1, 4, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 4, false), // total_strain
             pylith::topology::Field::Discretization(0, 4), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
