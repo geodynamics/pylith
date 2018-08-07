@@ -4,7 +4,7 @@
 For those less familiar with building software from source and using
 Git for version control, we recommend using the PyLith developer
 binary. This is a special binary that contains binary versions of all of the PyLith
-dependencies except for spatialdata and PETSc. Those two dependencies
+dependencies except for spatialdata and PETSc. ose two dependencies
 and PyLith are downloaded from the Git repositories, configured, and
 built from source using a utility script. See Section
 \vref{sec:developer:binary} for detailed instructions.
@@ -20,9 +20,10 @@ source.
 We use the Git version control system \url{https://git-scm.com} with a
 central GitHub repository \url{https://github.com/geodynamics/pylith}
 for development. We will refer to this central repository as the
-\gitbranch{geodynamics/pylith} repository. Only the PyLith maintainers
-have write access to the \url{geodynamics/pylith} repository; everyone
-else is limited to read access.
+geodynamics/pylith repository. Only the PyLith maintainers have write
+access to the geodynamics/pylith repository; everyone else is limited
+to read access. Contributions are incorporated into the
+geodynamics/pylith repository via pull requests.
 
 Currently, the PyLith maintainers use the
 \href{https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow}{Gitflow
@@ -54,13 +55,13 @@ Developers outside the PyLith maintainers follow the
   Workflow} illustrated in
 Figures~\vref{fig:developer:git:repositories}
 and~\vref{fig:developer:git:branch}. Each developer forks the
-\gitbranch{geodynamics/pylith} repository so that they have a copy of
+geodynamics/pylith repository so that they have a copy of
 the repository for their changes. Each new, independent feature you
 develop should be done in a separate branch. Large feature
 contributions should be broken up into multiple phases, where each
 phase provides a working version that passes all of its tests. Each
 phase corresponds to a separate branch that is merged back into the
-\gitbranch{geodynamics/pylith} repository (usually the
+geodynamics/pylith repository (usually the
 \gitbranch{master} branch) via a
 \href{https://help.github.com/articles/about-pull-requests/}{pull
   request} when it is completed.
@@ -69,7 +70,7 @@ phase corresponds to a separate branch that is merged back into the
   \includegraphics[scale=0.7]{developer/figs/gitworkflow_repositories}
   \caption{Overview of repositories for the Git forking workflow used in PyLith
     development. The main repository is the
-    \filename{geodynamics/pylith} at GitHub. Developers create a fork
+    geodynamics/pylith at GitHub. Developers create a fork
     of that repository under their own GitHub account (e.g.,
     saradeveloper), which is cloned to their local computer. Changes
     and additions to the code are committed to the repoisitory on the
@@ -84,11 +85,11 @@ phase corresponds to a separate branch that is merged back into the
   \includegraphics[scale=0.7]{developer/figs/gitworkflow_branch}
   \caption{Overview of repositories and branches for the Git forking
     workflow used in PyLith development. From the \gitbranch{master}
-    branch on their local machine, a developer creates a feature
+    branch on her local machine, a developer creates a feature
     branch, e.g., \gitbranch{feature-powerlaw}, to complete a single
     task such as adding a feature, fixing a bug, or making an
     improvement to the documentation. The developer will likely break
-    up the changes into several steps, which as saved locally as
+    up the changes into several steps, which are saved locally as
     commits. The commits may be pushed to the developer's repository
     on GitHub for backup or syncing on multiple computers. Once the
     task is completed, the developer submits a pull request to have
@@ -108,22 +109,25 @@ There are two steps to setting up a copy of the PyLith repository that
 you can use for development under the Forking Workflow:
 \begin{enumerate}
 \item Create a GitHub account.
-\item Fork the \gitbranch{geodynamics/pylith} repository.
+\item Fork the geodynamics/pylith repository.
 
   This will create a copy of the PyLith repository in your GitHub
   account. You can make changes to this copy and when you are ready to
-  contribute changes back to the \gitbranch{geodynamics/pylith}
+  contribute changes back to the geodynamics/pylith
   repository you will create a pull request.
 
 \end{enumerate}
 
-\tip{We recommend adding your SSH public key to your GitHub account. See
-\href{https://help.github.com/articles/connecting-to-github-with-ssh/}{GitHub Help: Connecting To GitHub with SSH} for
-more information. This provides additional security and eliminates the need to enter your username and password
-whenenver you push to your repository. For additional security consider setting up your GitHub account to use two-factor
-authentication. See
-\href{https://help.github.com/articles/securing-your-account-with-two-factor-authentication-2fa/}{GitHub Help: Securing
-your account with two-factor authentication}.}
+\tip{We recommend adding your SSH public key to your GitHub
+  account. See
+  \href{https://help.github.com/articles/connecting-to-github-with-ssh/}{GitHub
+    Help: Connecting To GitHub with SSH} for more information. This
+  provides additional security and eliminates the need for you to enter your
+  username and password whenenver you push to your repository. For
+  additional security consider setting up your GitHub account to use
+  two-factor authentication. See
+  \href{https://help.github.com/articles/securing-your-account-with-two-factor-authentication-2fa/}{GitHub
+    Help: Securing your account with two-factor authentication}.}
 
 % ------------------------------------------------------------------------------
 \subsection{Developer Binary}
@@ -143,7 +147,7 @@ relavant to using the installer for development:
   the form \url{git@github.com:YOUR_GITHUB_USERNAME/pylith.git}. If
   you are accessing GitHub via HTTPS, the URL usually has the form
   \url{https://github.com/YOUR_GITHUB_USERNAME/pylith.git}. The
-  default URL is the \gitbranch{geodynamics/pylith} repository,
+  default URL is the geodynamics/pylith repository,
   \url{https://github.com/geodynamics/pylith.git}.
 \item[\commandline{-{}-with-pylith-git=BRANCH}] Build the
   \gitbranch{BRANCH} of PyLith. If you are just starting development
@@ -151,7 +155,7 @@ relavant to using the installer for development:
   \gitbranch{knepley/feature-petsc-fe} branch.
 \item[\commandline{-{}-with-spatialdata-repo=URL}] Clone the
   spatialdata source code from this URL. The default is the
-  \gitbranch{geodynamics/spatialdata} repository,
+  geodynamics/spatialdata repository,
   \url{https://github.com/geodynamics/spatialdata.git}. You do not
   need to change this unless you want to contribute to development of
   the spatialdata library.
@@ -235,8 +239,9 @@ workflow associated with these steps.
 \label{sec:developer:set:upstream}
 
 On each computer where you have the clone of your fork, you need to
-create a link to the ``upstream'' repository. This allows you to keep
-your repository in sync with the central repository.
+create a link to the ``upstream'' geodynamics/pylith
+repository. This allows you to keep your repository in sync with the
+central repository.
 
 \begin{shell}[Setting upstream repository]
 # List the current remotes for your fork.
@@ -320,8 +325,7 @@ graphical user interfaces to Git.
 
 Once you have completed implementing and testing a new feature on a
 branch in your fork and wish to contribute it back to the
-\gitbranch{geodynamics/pylith} repository, you open a pull
-request. See
+geodynamics/pylith repository, you open a pull request. See
 \href{https://help.github.com/articles/about-pull-requests/}{GitHub
   Help: About pull requests} for more information.
 
@@ -330,6 +334,12 @@ request. See
 \subsection{Rebuilding PETSc}
 
 Updating and rebuilding PETSc is quite simple once it has been configured and built once before.
+
+\important{After rebuilding PETSc, you should rebuild PyLith. If there
+  are incompatibilities between the two, then you will normally get
+  compilation errors building PyLith. If there are incompatibilities
+  and you do not rebuild PyLith, then you will usually get a
+  segmentation fault when running PyLith.}
 
 \begin{shell}[Updating and rebuilding PETSc]
 # Change to PETSc source Directory
@@ -357,7 +367,7 @@ Pylith uses the GNU Build System (autotools: autoconf, automake,
 libtool) to configure and build. The configure settings are defined in
 \filename{configure.ac} with additional macros in the \filename{m4}
 directory. Note that the \filename{m4} directory is a Git submodule
-corresponding to the \filename{geodynamics/autoconf} Git repository.
+corresponding to the geodynamics/autoconf Git repository.
 
 \subsubsection{Makefiles}
 

@@ -15,20 +15,20 @@ The remainder of this section discusses three aspects of the
 finite-element implementation handled by PyLith to give you a peek of
 what is doing on under the hood.
 
-\subsection{Meshing}
+%\subsection{Meshing}
 
-We have chosen to employ the \textit{cohesive element} formulation for
-faults, in order to apply separate constitutive relations to the fault
-surface. Lets examine why we made this choice. We would like the two
-sides of the faults to operate independently in some sense, but
-maintain a coupling (prescribed or dynamic). Thus we would like the
-displacement of the two sides to be independent variables, constrained
-by the coupling equation. We could have maintained the same mesh
-topology, but added extra variables on the vertices, edges, and faces
-on the fault surface. However, this would change assembly on all cells
-along the fault, and greatly complicate optimization and maintenance
-of the assembly code. So we pushed the complication to the mesh
-topology.
+%We employ the \textit{cohesive element} formulation for faults in
+%order to apply separate constitutive relations to the fault
+%surface. We want the two sides of the faults to operate independently
+%in some sense, but maintain a coupling (prescribed slip or spontaneous
+%rupture). In other words, we would like the displacement of the two
+%sides to be independent variables, constrained by the coupling
+%equation. Alternatively, we could have maintained the same mesh
+%topology, but added extra variables on the vertices, edges, and faces
+%on the fault surface. However, this would change assembly on all cells
+%along the fault, and greatly complicate optimization and maintenance
+%of the assembly code. Instead, we pushed the complication of the fault
+%interface to the mesh topology.
 
 \subsection{\object{DMPlex}}
 
@@ -46,24 +46,28 @@ shape, with (almost) any finite element.
 
 \subsubsection{Point Depth and Height}
 
-In general, vertices are at a {\bf depth} of 0 and cells are at the maximum depth. Similarly, cells are at a {\bf
-height} of 0 and vertices are at the maximum depth. Notice that depth and height correspond the the usual dimension and
-codimension. For a 3-D mesh with vertices, edges, faces, and cells:
+In general, vertices are at a \textit{depth} of 0 and cells are at the
+maximum depth. Similarly, cells are at a \textit{height} of 0 and
+vertices are at the maximum height. Notice that depth and height
+correspond to the usual dimension and
+codimension. Table~\vref{tab:dmplex:height:depth} shows the heights
+and depths of the vertices edges, faces, and cells in a 3-D mesh.
 
-\begin{table}
-\begin{center}
-\begin{tabular}{lcc}
-\hline
-Point type & Depth & Height \\
-\hline
-Vertices  &  0  &  3 \\
-Edges  &  1  &  2 \\
-Faces  &  2  &  1 \\
-Cells  &  3  &  0 \\
-\hline
-\end{tabular}
-\end{center}
-\caption{Depth and height of various topological pieces.}
+\begin{table}[htbp]
+  \caption{Depth and height of various topological pieces.}
+  \label{tab:dmplex:height:depth}
+  \begin{center}
+    \begin{tabular}{lcc}
+      \hline
+      Point type & Depth & Height \\
+      \hline
+      Vertices  &  0  &  3 \\
+      Edges  &  1  &  2 \\
+      Faces  &  2  &  1 \\
+      Cells  &  3  &  0 \\
+      \hline
+    \end{tabular}
+  \end{center}
 \end{table}
 
 For a boundary mesh, we currently store the full set (vertices, edges, faces, and cells). Obviously for 2-D meshes, the

@@ -123,14 +123,17 @@ needed
 \object{computeLHSResidual()}, and
 \object{computeLHSJacobian()}.
 The \object{pylith::problems::TimeDependent} object calls the corresponding methods in the boundary conditions,
-constraints, and material objects.
+constraints, and materials objects.
 
 \subsubsection{Boundary between Python and C++}
 
-The Python code is limited to collecting user input. Everything else is
-done in C++. This facilitates debugging (it is easier to track symbols in
-the C/C++ debugger) and unit testing, and reduces the amount of
-information that needs to be passed between C++ and Python.
+The Python code is limited to collecting user input. Everything else
+is done in C++. This facilitates debugging (it is easier to track
+symbols in the C/C++ debugger) and unit testing, and reduces the
+amount of information that needs to be passed from Python to C++. The
+source code that follows shows the essential ingradients for Python
+and C++ objects, using the concrete example of the \object{Material}
+objects.
 
 \warning{The examples below show skeleton Python and C++ objects to illustrate the essential ingredients. We have
 ommitted documentation and comments that we would normally include and simplified the object hierarchy. See
