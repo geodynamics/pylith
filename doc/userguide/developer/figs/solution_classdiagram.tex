@@ -1,0 +1,44 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\renewcommand{\familydefault}{phv}
+
+\usepackage{tikz}
+
+\newcommand{\umlclass}[2]{#1\\ #2}
+\newcommand{\umltype}[1]{<<type>>\\ #1}
+\newcommand{\umlemptyclass}[1]{#1}
+
+\begin{document}
+\usetikzlibrary{arrows,shapes,calc}
+\input{../../palettes/figcolors}
+
+\tikzstyle{class} = [rectangle,
+                      text width=20em,
+                      text centered]
+
+\tikzstyle{aggregate} = [<->, very thick, <=diamond, >=angle 60]
+\tikzstyle{inherit} = [<-, very thick, <=angle 60]
+
+
+\begin{tikzpicture}[node distance=25.0em, line width=1.5pt]
+
+  % Solution
+  \node (solution) [class] {\umlclass{Solution}{subfields}};
+
+  % Solution containers
+  \node (solution-containers) [class] {\umltype{FacilityArray}};
+
+  \node (soln-disp) [class] {\umlclass{SolnDisp}{displacement};
+  \node (soln-dispvel) [class] {\umlclass{SolnDispVel}{displacement\\ velocity}};
+
+  % Solution subfields
+  \node (subfield) [class] {\umlemptyclass{SolutionSubfield}};
+
+  \node (subfield-disp) [class] {\umlemptyclass{SubfieldDisplacement}};
+  \node (subfield-vel) [class] {\umlemptyclass{SubfieldVelocity}};
+  \node (subfield-lagrange) [class] {\umlemptyclass{SubfieldLagrangeFault}};
+
+\end{tikzpicture}
+
+\end{document}
