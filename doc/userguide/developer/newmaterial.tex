@@ -23,8 +23,10 @@ governing equation or material:
 \item Define solution subfields.
 
   \begin{itemize}
-  \item All subfields in the solution field are \object{SolutionSubfield}
-    objects. PyLith already includes several solution subfields:
+  \item All subfields in the solution field are
+    \object{SolutionSubfield} objects (see
+    \vref{fig:developer:solution:class}). PyLith already includes
+    several solution subfields:
     \begin{description}
     \item[\object{SubfieldDisplacement}] Displacement vector field.
     \item[\object{SubfieldVelocity}] Velocity vector field.
@@ -69,9 +71,11 @@ governing equation or material:
   properties in our material component.
 \end{itemize}
 
-\todo{brad}{Add class diagram showing relationships among
-  \object{Solution}, \object{SolnDisp}, \ldots,
-  \object{SolutionSubfield}, \object{SubfieldDisplacement}, \ldots}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.8]{developer/figs/solution_classdiagram}
+  \caption{Class diagram for the solution field, solution subfields, and pre-defined solution fields with various subfields.}
+  \label{fig:developer:solution:class}
+\end{figure}
 
 \subsection{C++}
 
@@ -118,9 +122,14 @@ governing equation or material:
 
 \end{itemize}
 
-\todo{brad}{Add class diagram showing relationships among
-  \object{Material}, \object{ConcreteMaterialA}, \ldots,
-  \object{Integrator}, \object{IntegratorSubdomain}, \ldots}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.8]{developer/figs/material_classdiagram}
+  \caption{Class diagram for the bulk materials. Each material
+    implementation inherits from the abstract \object{Material} class
+    which inherits from the abstract \object{IntegratorPointwise}
+    class.}
+  \label{fig:developer:material:class}
+\end{figure}
 
 \subsection{C++ Unit Tests}
 
@@ -141,9 +150,19 @@ and LHS residual $Jf$.
 discretization of the used for each of the subfields in the auxiliary field and solution field are sufficient to
 represent the analytical function.}
 
-\todo{brad}{Add class diagram showing relationships among
-  \object{TestMaterial}, \object{TestConcreteMaterialA}, \ldots,
-  \object{TestConcreteMaterialA\_Data}, \object{TestConcreteMaterialA\_MMS}, \ldots}
+
+\begin{figure}[htbp]
+  \includegraphics[scale=0.8]{developer/figs/testmaterial_classdiagram}
+  \caption{Class diagram for testing the
+    \object{IsotropicLinearElasticityPlaneStrain} material with a
+    solution generated using the Method of Manufactured
+    Solutions. \object{TestIsotropicLinearElasticityPlaneStrain\_UniformStrain}
+    contains the parameters and generated solution and the subclasses
+    include various discretizations. All of the test data is held in
+    the \object{TestIsotropicLinearElasticityPlaneStrain\_Data}
+    object.}
+  \label{fig:developer:test:material:class}
+\end{figure}
 
 
 \subsection{Python Unit Tests}

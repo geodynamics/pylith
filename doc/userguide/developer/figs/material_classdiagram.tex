@@ -1,0 +1,32 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\renewcommand{\familydefault}{phv}
+
+\usepackage{tikz}
+
+\begin{document}
+\usetikzlibrary{positioning,arrows,shapes,calc}
+\input{../../palettes/figcolors}
+\input{umlstyle}
+
+\begin{tikzpicture}[node distance=10em, line width=1.5pt]
+
+  \node (integrator) [abstract-class] {\umlemptyclass{IntegratorPointwise}};
+
+  \node (material) [abstract-class] at ($(integrator.south)-(0,4em)$) {\umlemptyclass{Material}};
+
+  \node (elastic-2d) [concrete-class] at ($(material.south)-(0,4em)$) {\umlemptyclass{IsotropicLinearElasticityPlaneStrain}};
+  \node (elastic-3d) [concrete-class] at ($(elastic-2d.south)-(0,1ex)$) {\umlemptyclass{IsotropicLinearElasticity3D}};
+  \node (maxwell-2d) [concrete-class] at ($(elastic-3d.south)-(0,1ex)$) {\umlemptyclass{IsotropicLinearMaxwellPlaneStrain}};
+  \node (maxwell-3d) [concrete-class] at ($(maxwell-2d.south)-(0,1ex)$) {\umlemptyclass{IsotropicLinearMaxwell3D}};
+  \node (genmaxwell-2d) [concrete-class] at ($(maxwell-3d.south)-(0,1ex)$) {\umlemptyclass{IsotropicLinearGenMaxwellPlaneStrain}};
+  \node (genmaxwell-3d) [concrete-class] at ($(genmaxwell-2d.south)-(0,1ex)$) {\umlemptyclass{IsotropicLinearGenMaxwell3D}};
+
+  % Relationships
+  \draw[inherit] (material) -- (integrator);
+  \draw[inherit] (elastic-2d) -- (material);
+  
+\end{tikzpicture}
+
+\end{document}
