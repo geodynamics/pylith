@@ -14,7 +14,8 @@ Running PyLith in a debugger is often an efficient way to quickly zero in on the
 \commandline{-{}-petsc.start\_in\_debugger}. To use an alternative debugger, such as \filename{lldb}, append the name
 of the debugger executable, for example \commandline{-{}-petsc.start\_in\_debugger=lldb}. By default, PETSc will try to
 start the debugger in an xterm. To use an alternative terminal program, use the command line argument
-\commandline{-{}-petsc.debug\_terminal=TERMINAL}. For example for the GNOME terminal, use
+\commandline{-{}-petsc.debug\_terminal=TERMINAL}. For example for the
+GNOME terminal, use \\
 \commandline{-{}-petsc.debug\_terminal="gnome-terminal -x"}.
 
 \begin{shell}[Running PyLith in a debugger]
@@ -248,13 +249,13 @@ DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), 
 
 \begin{shell}[Debugging output from \object{DMPlexComputeL2DiffLocal()}]
 Cell 0 Element Solution for Field 0 # displacement vector field
-  | -0.999 | # Values of solution field variable at quadrature points for cell 0
+  | -0.999 | # Values of solution field variable at vertices of cell 0
   | -4.2 |
   | -0.999 |
   | 0. |
   | -0.999 |
   | -0.6 |
-    elem 0 field 0 diff 0.           # Differences with respect to field given by analytical function
+    elem 0 field 0 diff 0.  # Differences at quadrature points with respect to field given by analytical function
     elem 0 field 0 diff 6.27226e-32
     elem 0 field 0 diff 2.24281e-33
     elem 0 field 0 diff 8.97125e-33
@@ -287,7 +288,7 @@ Cell 0 Element Solution for Field 2 # pressure scalar field
     elem 0 field 2 diff 0.
   elem 0 diff 7.61795e-32
 Cell 1 Element Solution for Field 0
-  | -0.999 | # Values of solution field variable at quadrature points for cell 1
+  | -0.999 | # Values of solution field variable at vertices of cell 1
   | 0.6 |
   | -0.999 |
   | 0. |

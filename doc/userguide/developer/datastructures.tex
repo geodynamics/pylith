@@ -70,9 +70,11 @@ and depths of the vertices edges, faces, and cells in a 3-D mesh.
   \end{center}
 \end{table}
 
-For a boundary mesh, we currently store the full set (vertices, edges, faces, and cells). Obviously for 2-D meshes, the
-boundary mesh doesn't contain "volume" cells, but just vertices, edges, and faces. This means the "boundary" cells are
-at a height of 1 and maximum depth - 1 .
+For a boundary mesh, we currently store the full set (vertices, edges,
+faces, and cells). Obviously for 2-D meshes, the boundary mesh doesn't
+contain "volume" cells, but just vertices, edges, and faces. This
+means the "boundary" cells are at a height of 1 and a depth equal to
+the maximum depth $-$ 1 .
 
 \begin{figure}
   \includegraphics{developer/figs/meshtopology}
@@ -91,9 +93,10 @@ may hold multiple subfields, each with its own discretization. The
 chart of the \object{PetscSection} defines the range of points
 (minimum and maximum) over which the section is defined. For each
 point in the chart, the section holds the number of degrees of freedom
-it has and the offset in the \object{PetscVec} for its first degree of
-freedom. The section also holds the number of degrees of freedom and
-offset for each individual subfield within the section.
+a point has and the offset in the \object{PetscVec} for its first
+degree of freedom. The section also holds the number of
+degrees of freedom and offset for each individual subfield within the
+section for each point in the chart.
 
 Because the \object{PetscSection} knows only about points, and not
 about topolgoy or geometry, it allows us to express the mathematical
@@ -101,25 +104,26 @@ concepts without getting lost in the details. For example, a $P_1$ 3D
 vector field assigns 3 dofs to each vertex. This same section could be
 used to layout a field over a circle, surface of a cylinder, M\"obius
 strip, sphere, cube, ball, or Pylith mesh. It separates the layout of
-data over a mesh from the actual storage of values, which is done by a
-plain old PETSc \object{Vec}. The section tells you how to look up the
-values, which are ``attached'' to a piece of the mesh, inside the
+data over a mesh from the actual storage of values, which is done by
+the \object{PetscVec}. The section tells you how to look up the
+values, which are associated with a piece of the mesh, inside the
 vector. For example, you can ask for the offset into the vector for
 the values associated with an edge in the mesh, and how many dofs
 there are on the edge.
 
 The \object{PetscSection} also includes the information about the
-constrained degrees of freedom. We refer to the \object{PetscVec} with
-the constrained degrees of freedom included as the {\em local} vector
-and the \object{PetscVec} with the constrained degrees of freedom
-removed as the {\em global} vector. Constraints often arise from
-Dirichlet boundary conditions, which change directly the basis
-functions of the approximating space, but can also arise from
-algebraic relations between unknowns. A local vector is often used for
-assembly of the residual vector and Jacobian matrix, since we need the
-boundary values in order to compute those integrals. Whereas global
-vectors are used for the algebraic solver since we do not want
-unknowns fixed by constraints to participate in the solve.
+constrained degrees of freedom. We refer to a \object{PetscVec} that
+includes the values for the constrained degrees of freedom as a {\em
+  local} vector and a \object{PetscVec} with the values for the
+constrained degrees of freedom removed as a {\em global}
+vector. Constraints often arise from Dirichlet boundary conditions,
+which change the basis functions of the approximating space, but can
+also arise from algebraic relations between unknowns. A local vector
+is used for assembly of the residual vector and Jacobian matrix,
+because we need the boundary values in order to compute those
+integrals. Global vectors are used for the algebraic solver because we
+do not want solution values fixed by constraints to participate in the
+solve.
 
 \begin{shell}[\object{PetscSection} information for a solution field with three subfields]
 # This example solution field has three subfields:
@@ -285,6 +289,11 @@ our purposes.
   finite-element space into another finite-element space.
 \end{description}
 
+\subsection{Point-wise Functions}
+
+The following code excerpts show the interface for point-wise functions
+for the residual and the Jacobian.
+
 \begin{cplusplus}[PetscPointFunc Interface]
 /** Interface for PETSc point-wise functions.
  *
@@ -354,6 +363,9 @@ our purposes.
       PetscScalar Jf0[]);
 \end{cplusplus}
 
+The two functions in the following code excerpts show the interface
+for setting the point-wise functions.
+
 \begin{cplusplus}[PetscDSSetResidual Function]
 /** Set point-wise functions for LHS or RHS residual.
  *
@@ -393,7 +405,6 @@ our purposes.
                     PetscPointJac Jf2,
                     PetscPointJac Jf3);
 \end{cplusplus}
-
 
 
 % End of file

@@ -45,7 +45,8 @@ The principal guidelines include:
     \begin{itemize}
     \item PyLith should never crash.
     \item All user errors should be trapped as early as possible and
-      reported with an informative error message.
+      reported with an informative error message. If possible, suggest
+      ways to correct the error.
     \item Messages for internal errors should indicate the location in
       the code where the error was trapped.
     \item All pointers should be checked for null values before use.
@@ -74,15 +75,18 @@ PYLITH\_CHECK\_ERROR macro to check the return value after {\em every}
 call to a PETSc function.
 
 \begin{cplusplus}[Example of using assert()]
-    assert(_solution);
+    assert(_solution); // Verify _solution is not NULL.
 
     // Initialize integrators.
     const size_t numIntegrators = _integrators.size();
     for (size_t i = 0; i < numIntegrators; ++i) {
-        assert(_integrators[i]);
+        assert(_integrators[i]); // Verify _integrators[i] is not NULL.
         _integrators[i]->initialize(*_solution);
     } // for  
 \end{cplusplus}
+
+\tip{For production runs only, we often build with -DNDEBUG to remove
+  assert() calls.}
 
 \begin{cplusplus}[Example of using PYLITH\_CHECK\_ERROR macro]
   PetscErrorCode err = TSGetTimeStep(ts, &dt); PYLITH_CHECK_ERROR(err);
@@ -113,17 +117,16 @@ for warnings and debugging are turned off.
 \end{cplusplus}
 
 
-\tip{For production runs only, we often build with -DNDEBUG to remove
-  assert() calls.}
-
 \section{C/C++}
 
 \subsection{Object Definition Files}
 
 Object definition (header) files use the \filename{.hh} suffix. C
-header files use the \filename{.h} suffix.
+header files use the \filename{.h} suffix. The following code excerpt
+demonstrates the conventions we use in formatting header files and
+including comments.
 
-\important{{\em All} declarations of class methods must include a
+\important{{\em All} declarations of class methods should include a
   description of what the method does and a description of each
   argument and the return value if it is not void.}
 
@@ -132,12 +135,12 @@ header files use the \filename{.h} suffix.
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, The State University of New York at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2018 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -361,7 +364,7 @@ private:
 
 Object implementation files use the \filename{.cc} suffix. Inline
 implementation files use the \filename{.icc} suffix and are included
-from the definition files. C implementation files use the \object{.c}
+from the definition files. C implementation files use the \filename{.c}
 suffix.
 
 To facilitate debugging and error messages, we use the following
@@ -371,17 +374,19 @@ macros:
   files to be included in PETSc error messages. Use this macro at the
   beginning of all methods using any PETSc routines as well as most
   other methods. We don't use this macro in destructors because many
-  of them are called {\em after} PetscFinalize.  trivial or inline
-  methods.
+  of them are called {\em after} PetscFinalize. We also do not use
+  this macro in trivial or inline methods that do not call any PETSc
+  routines.
 \item[PYLITH\_METHOD\_END] Use the macro at the end of all methods
-  using PYLITH\_METHOD\_BEGIN that return void.
+  that begin with PYLITH\_METHOD\_BEGIN and return void.
 \item[PYLITH\_RETURN\_END] Use this macro at the end of all methods
-  using PYLITH\_METHOD\_BEGIN that return non-void values.
+  that begin with PYLITH\_METHOD\_BEGIN and return non-void values.
 \item[PYLITH\_CHECK\_ERROR] after {\em every} call to a PETSc function
   to check the return value.
-\item[PYLITH\_JOURNAL\_DEBUG] Use this macro immediate after
-  PYLITH\_METHOD\_BEGIN in methods of all objects that inherit from \object{GenericComponent}.
-\item[PYLITH\_COMPONENT\_DEBUG] Use this macro immediate after
+\item[PYLITH\_JOURNAL\_DEBUG] Use this macro immediately after
+  PYLITH\_METHOD\_BEGIN in methods of all objects that inherit from
+  \object{GenericComponent}.
+\item[PYLITH\_COMPONENT\_DEBUG] Use this macro immediately after
   PYLITH\_METHOD\_BEGIN in methods of all objects that inherit from
   \object{PyreComponent}.  Non-abstract classes should call
   \object{PyreComponent::name()} in the constructor. We recommend
@@ -394,7 +399,7 @@ macros:
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, The State University of New York at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
@@ -648,7 +653,6 @@ pylith::problems::Problem::computeRHSResidual(PetscVec residualVec,
   
 \end{cplusplus}
 
-
 \section{Python}
 
 Example of Python source code using our preferred coding style:
@@ -658,7 +662,7 @@ Example of Python source code using our preferred coding style:
 #
 # Brad T. Aagaard, U.S. Geological Survey
 # Charles A. Williams, GNS Science
-# Matthew G. Knepley, University of Chicago
+# Matthew G. Knepley, The State University of New York at Buffalo
 #
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
@@ -827,6 +831,37 @@ def problem():
 
 # End of file
 \end{python}
+
+\section{Formatting C++ and Python Source Files}
+
+We use \filename{autopep8} and \filename{uncrustify} to format
+Python and C++ source files, respectively. The corresponding
+configuration files are \filename{autopep8.cfg} and
+\filename{uncrustify.cfg} in the \filename{doc/developer}
+directory. The Python script\\ \filename{doc/developer/format\_source.py}
+is a handy utility for calling \filename{autopep8} and
+\filename{uncrustify} with the appropriate arguments and formatting
+multiple files.
+
+\begin{shell}[Formatting Python and C++ source code using format\_source.py]
+# Prerequisites:
+#  * autopep8
+#  * uncrustify
+#
+# Run from the top-level source directory.
+
+# Format a C++ file
+$ doc/developer/format_source.py --cplusplus=libsrc/pylith/materials/Material.cc
+
+# Format C++ files in a directory
+$ doc/developer/format_source.py --cplusplus=libsrc/pylith/materials/*.cc
+
+# Format a Python file
+$ doc/developer/format_source.py --python=pylith/materials/Material.py
+
+# Format Python files in a directory
+$ doc/developer/format_source.py --python=pylith/materials/*.py
+\end{shell}
 
 
 % End of file
