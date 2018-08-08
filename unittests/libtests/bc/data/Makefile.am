@@ -18,6 +18,7 @@
 
 dist_noinst_DATA = \
 	tri_small.mesh \
+	tri_fourcells.mesh \
 	quad_small.mesh \
 	elasticstrain1d.spatialdb \
 	tri3.mesh \
@@ -65,4 +66,4 @@ BUILT_SOURCES = export-data
 clean-local: clean-data
 
 
-# End of file 
+# End of file

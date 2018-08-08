@@ -36,5 +36,13 @@ mesh = {
       0  1  3  4
     }
   }
-  
+  group = {
+    type = vertices
+    name = boundary_bottom
+    count = 2
+    indices = {
+      0  1
+    }
+  }
+
 }
