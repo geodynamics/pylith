@@ -5,11 +5,10 @@ point-wise functions allows the PyLith implementation of the equations
 to be done at a rather high level. Most of the finite-element details
 are encapsulated in PETSc routines that compute the integrals and
 solve the system of equations. In fact, adding materials and boundary
-conditions rarely requires calling any PETSc finite-element
-functions. Instead, a new material supplies and registers the
-point-wise functions. The new material may need to add to the library
-of solution subfields and auxiliary subfields, but adding these fields
-is also done at a high-level.
+conditions requires calling only a few PETSc finite-element functions
+to register the point-wise functions. A new material may need to add
+to the library of solution subfields and auxiliary subfields, but
+adding these fields is also done at a high-level.
 
 The remainder of this section discusses three aspects of the
 finite-element implementation handled by PyLith to give you a peek of
@@ -234,49 +233,59 @@ finite-element space. PETSc provides a family of functions for
 this. We generally use two of these, one for analytical functions and
 one for discretized fields. Projection may be a misleading term here,
 since we are not refering to the common $L_2$ projection, but rather
-interpolation of the function by functions in our finite element
+interpolation of the function by functions in our finite-element
 space.
 
-How do we find the interpolant? Lets start with the simple example of
-Fourier analysis, which most people have experience with. If I want
-the Fourier interpolant $\tilde f$ for a given function $f$, then I
-need to determine its Fourier coefficients,
+Let's start with the simple example of 
+Fourier analysis, which most people have experience with. If we want
+the Fourier interpolant $\tilde f$ for a given function $f$, then we
+need to determine its Fourier coefficients, $f_k$, where
 \begin{align}
   \tilde f = \sum_k f_k e^{i k x}.
 \end{align}
-This is not difficult because the basis functions in the Fourier
-representation are orthogonal
+This is straightforward because the basis functions in the Fourier
+representation are orthogonal,
 \begin{align}
-  \int^{2\pi}_0 e^{-i m x} e^{i k x} = 2\pi \delta_{km}.
+  \int^{2\pi}_0 e^{-i m x} e^{i k x} \, dx = 2\pi \delta_{km}.
 \end{align}
-Thus, we just multiply by the conjugate of the basis function and integrate,
+To find the coefficient $f_m$, we just multiply by the conjugate of
+the basis function and integrate,
 \begin{align}
-  \int^{2\pi}_0 e^{-i m x} \tilde f &= \int^{2\pi}_0 e^{-i m x} \sum_k f_k e^{i k x}, \\
-                                  &= \sum_k f_k \int^{2\pi}_0 e^{-i m x} e^{i k x}, \\
+  \int^{2\pi}_0 e^{-i m x} \tilde f \, dx &= \int^{2\pi}_0 e^{-i m x} \sum_k f_k e^{i k x} \, dx, \\
+                                  &= \sum_k f_k \int^{2\pi}_0 e^{-i m x} e^{i k x} \, dx, \\
                                   &= \sum_k f_k 2\pi \delta_{km}, \\
-                                  &= 2\pi f_m,
+  &= 2\pi f_m,
 \end{align}
-and we have our coefficient $f_m$. The finite element basis
-$\{\phi_i\}$ is not orthogonal, so we have an extra step. We could
-take the inner product of $f$ with all the basis functions, and then
-sort out the dependecies by solving a linear system (the mass matrix),
-which is what happens in $L_2$ projection. However, suppose we have
-another basis $\{\psi_i\}$ of linear functionals which is
-\textit{biorthogonal} to $\{\phi_i\}$, meaning
+and we have our coefficient $f_m$,
+\begin{equation}
+  f_m = \frac{1}{2 \pi}\int^{2\pi}_0 e^{-i m x} \tilde f \, dx.
+\end{equation}
+The finite element basis $\{\phi_i\}$ is not orthogonal, so we have an
+extra step. We could take the inner product of $f$ with all the basis
+functions, and then sort out the dependecies by solving a linear
+system (the mass matrix), which is what happens in $L_2$
+projection. However, suppose we have another basis $\{\psi_i\}$ of
+linear functionals which is \textit{biorthogonal} to $\{\phi_i\}$,
+meaning
 \begin{align}
   \psi_i(\phi_j) = \delta_{ij}.
 \end{align}
-Then we can easily pick out the coefficient of $\tilde f$ by acting
-with the corresponding basis functional,
+We can easily pick out the coefficient of $\tilde f$ by acting
+with the corresponding basis functional. Our interpolant is
+\begin{equation}
+  \tilde f = \sum_k f_k \phi_k(x).
+\end{equation}
+Acting on the interpolant with the biorthogonal basis results in
+\begin{equation}
+  \psi_i(\tilde f) = \psi_i\left( \sum_k f_k \phi_k(x) \right).
+\end{equation}
+Making use of the fact that the finite-element basis $\{\phi_i\}$ is linear, yields
 \begin{align}
-  \tilde f &= \sum_k f_k \phi_k(x),\\
-  \psi_i(\tilde f) &= \psi_i(\sum_k f_k \phi_k(x)),\\
-  \psi_i(\tilde f) &= \sum_k f_k \psi_i(\phi_k(x)),\\
-  \psi_i(\tilde f) &= \sum_k f_k \delta_{ik},\\
-  \psi_i(\tilde f) &= f_i,\\
+  \psi_i(\tilde f) &= \sum_k f_k \psi_i\left( \phi_k(x) \right),\\
+  \psi_i(\tilde f) &= \sum_k f_k \delta_{ik}, \\
+  \psi_i(\tilde f) &= f_i.
 \end{align}
-where we used the linearity of the $\psi_i$ in the third step. We will
-call $\{\phi_i\}$ the \textit{primal} basis, and $\{\psi_i\}$ the
+We call $\{\phi_i\}$ the \textit{primal} basis, and $\{\psi_i\}$ the
 \textit{dual} basis. We note that if $f$ does not lie in our
 approximation space spanned by $\{\phi_i\}$, then interpolation is not
 equivalent to $L_2$ projection. This will not usually be important for

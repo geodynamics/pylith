@@ -70,6 +70,7 @@
 % ------------------------------------------------------------------
 % Font Sizes
 \RequirePackage{times}
+\RequirePackage{helvet}
 \renewcommand{\LARGE}{\@setfontsize\LARGE{17}{22}}
 \renewcommand{\Large}{\@setfontsize\Large{14.4}{18}}
 \renewcommand{\large}{\@setfontsize\large{10.95}{13.6}}
