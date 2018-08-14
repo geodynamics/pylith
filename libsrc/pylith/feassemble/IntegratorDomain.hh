@@ -25,12 +25,12 @@
 #if !defined(pylith_feassemble_integratordomain_hh)
 #define pylith_feassemble_integratordomain_hh
 
-#include "feassemblefwd.hh" // forward declarations
+#include "feassemblefwd.hh"// forward declarations
 
-#include "pylith/feassemble/Integrator.hh" // ISA Integrator
+#include "pylith/feassemble/Integrator.hh"// ISA Integrator
 
 class pylith::feassemble::IntegratorDomain : public pylith::feassemble::Integrator {
-    friend class TestIntegratorDomain; // unit testing
+    friend class TestIntegratorDomain;// unit testing
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -44,6 +44,42 @@ public:
     /// Deallocate PETSc and local data structures.
     virtual
     void deallocate(void);
+
+    /** Get spatial dimension of material.
+     *
+     * @returns Spatial dimension.
+     */
+    int getDimension(void) const;
+
+    /** Set identifier of material.
+     *
+     * @param value Material identifier
+     */
+    void setId(const int value);
+
+    /** Get identifier of material.
+     *
+     * @returns Material identifier
+     */
+    int getId(void) const;
+
+    /** Set label of material.
+     *
+     * @param value Label of material
+     */
+    void setLabel(const char* value);
+
+    /** Get label of material.
+     *
+     * @returns Label of material
+     */
+    const char* getLabel(void) const;
+
+    /** Set gravity field.
+     *
+     * @param g Gravity field.
+     */
+    void gravityField(spatialdata::spatialdb::GravityField* const g);
 
     /** Add kernels for RHS residual.
      *
@@ -86,26 +122,6 @@ public:
      * @param[in] solution Solution field (layout).
      */
     void initialize(const pylith::topology::Field& solution);
-
-    /** Update at beginning of time step.
-     *
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     */
-    void prestep(const PylithReal t,
-                 const PylithReal dt);
-
-    /** Update at end of time step.
-     *
-     * @param[in] t Current time.
-     * @param[in] tindex Current time step.
-     * @param[in] dt Current time step.
-     * @param[in] solution Solution at time t.
-     */
-    void poststep(const PylithReal t,
-                  const PylithInt tindex,
-                  const PylithReal dt,
-                  const pylith::topology::Field& solution);
 
     /** Compute RHS residual for G(t,s).
      *
@@ -182,7 +198,7 @@ public:
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    /* Compute residual using current kernels.
+    /** Compute residual using current kernels.
      *
      * @param[out] residual Field for residual.
      * @param[in] t Current time.
@@ -196,7 +212,7 @@ protected:
                           const pylith::topology::Field& solution,
                           const pylith::topology::Field& solutionDot);
 
-    /* Compute Jacobian using current kernels.
+    /** Compute Jacobian using current kernels.
      *
      * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
      * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
@@ -237,14 +253,14 @@ protected:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    std::vector<ResidualKernels> _kernelsRHSResidual; ///< kernels for RHS residual.
-    std::vector<ResidualKernels> _kernelsRHSResidual; ///< kernels for LHS residual.
+    std::vector<ResidualKernels> _kernelsRHSResidual;///< kernels for RHS residual.
+    std::vector<ResidualKernels> _kernelsRHSResidual;///< kernels for LHS residual.
 
-    std::vector<JacobianKernels> _kernelsRHSJacobian; ///< kernels for RHS Jacobian.
-    std::vector<JacobianKernels> _kernelsLHSJacobian; ///> kernels for LHS Jacobian.
+    std::vector<JacobianKernels> _kernelsRHSJacobian;///< kernels for RHS Jacobian.
+    std::vector<JacobianKernels> _kernelsLHSJacobian;///> kernels for LHS Jacobian.
 
-    std::vector<ProjectKernels> _kernelsUpstateStateVars; ///< kernels for updating state variables.
-    std::vector<ProjectKernels> _kernelsDerivedField; ///< kernels for computing derived field.
+    std::vector<ProjectKernels> _kernelsUpstateStateVars;///< kernels for updating state variables.
+    std::vector<ProjectKernels> _kernelsDerivedField;///< kernels for computing derived field.
 
     const int _dimension;
     int _id;
@@ -253,11 +269,13 @@ private:
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    IntegratorDomain(const IntegratorDomain&); ///< Not implemented.
-    const IntegratorDomain& operator=(const IntegratorDomain&); ///< Not implemented.
+    IntegratorDomain(const IntegratorDomain&);///< Not implemented.
+    const IntegratorDomain& operator=(const IntegratorDomain&);///< Not implemented.
 
-}; // IntegratorDomain
+};
 
-#endif // pylith_feassemble_integratordomain_hh
+// IntegratorDomain
+
+#endif// pylith_feassemble_integratordomain_hh
 
 // End of file

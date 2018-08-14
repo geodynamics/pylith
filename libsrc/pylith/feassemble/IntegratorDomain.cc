@@ -18,23 +18,18 @@
 
 #include <portinfo>
 
-#include "IntegratorDomain.hh" // implementation of object methods
+#include "IntegratorDomain.hh"// implementation of object methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldOps.hh" // USES FieldOps::checkDisretization()
-#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
-#include "pylith/topology/Stratum.hh" // USES StratumIS
+#include "pylith/topology/Mesh.hh"// USES Mesh
+#include "pylith/topology/Field.hh"// USES Field
 
-#include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
-#include "spatialdata/spatialdb/GravityField.hh" // HASA GravityField
-#include "petscds.h" // USES PetscDS
+#include "spatialdata/spatialdb/GravityField.hh"// HASA GravityField
+#include "petscds.h"// USES PetscDS
 
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/journals.hh"// USES PYLITH_JOURNAL_*
 
-#include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
+#include <cassert>// USES assert()
+#include <stdexcept>// USES std::runtime_error
 
 extern "C" PetscErrorCode DMPlexComputeResidual_Internal(PetscDM dm,
                                                          IS cellIS,
@@ -59,15 +54,15 @@ extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(PetscDM dm,
 pylith::feassemble::IntegratorDomain::IntegratorDomain(const int dimension) :
     _dimension(dimension),
     _id(0),
-    _label(""){ // constructor
-} // constructor
+    _label(""){// constructor
+}// constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::feassemble::IntegratorDomain::~IntegratorDomain(void) {
     deallocate();
-} // destructor
+}// destructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -79,13 +74,13 @@ pylith::feassemble::IntegratorDomain::deallocate(void) {
     pylith::feassemble::Integrator::deallocate();
 
     PYLITH_METHOD_END;
-} // deallocate
+}// deallocate
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get spatial dimension of material.
 int
-pylith::feassemble::IntegratorDomain::dimension(void) const {
+pylith::feassemble::IntegratorDomain::getDimension(void) const {
     return _dimension;
 }
 
@@ -93,37 +88,45 @@ pylith::feassemble::IntegratorDomain::dimension(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set identifier of material.
 void
-pylith::feassemble::IntegratorDomain::id(const int value) {
-    PYLITH_JOURNAL_DEBUG("id(value="<<value<<")");
+pylith::feassemble::IntegratorDomain::setId(const int value) {
+    PYLITH_JOURNAL_DEBUG("setId(value="<<value<<")");
 
     _id = value;
-} // id
+}// id
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get identifier of material.
 int
-pylith::feassemble::IntegratorDomain::id(void) const {
+pylith::feassemble::IntegratorDomain::getId(void) const {
     return _id;
-} // id
+}// id
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set label of material.
 void
-pylith::feassemble::IntegratorDomain::label(const char* value) {
-    PYLITH_JOURNAL_DEBUG("label(value="<<value<<")");
+pylith::feassemble::IntegratorDomain::setLabel(const char* value) {
+    PYLITH_JOURNAL_DEBUG("setLabel(value="<<value<<")");
 
     _label = value;
-} // label
+}// label
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get label of material.
 const char*
-pylith::feassemble::IntegratorDomain::label(void) const {
+pylith::feassemble::IntegratorDomain::getLabel(void) const {
     return _label.c_str();
-} // label
+}// label
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set gravity field.
+void
+pylith::feassemble::IntegratorDomain::gravityField(spatialdata::spatialdb::GravityField* const g) {
+    _gravityField = g;
+}// gravityField
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -132,7 +135,7 @@ const pylith::topology::Mesh&
 pylith::feassemble::IntegratorDomain::getIntegrationDomainMesh(void) const {
     assert(_auxField);
     return _auxField->mesh();
-} // domainMesh
+}// domainMesh
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -144,7 +147,7 @@ pylith::feassemble::IntegratorDomain::setKernelsRHSResidual(const std::vector<Re
     _kernelsRHSResidual = kernels;
 
     PYLITH_METHOD_END;
-} // setKernelsRHSResidual
+}// setKernelsRHSResidual
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -156,7 +159,7 @@ pylith::feassemble::IntegratorDomain::setKernelsRHSJacobianl(const std::vector<J
     _kernelsRHSJacobianl = kernels;
 
     PYLITH_METHOD_END;
-} // setKernelsRHSJacobianl
+}// setKernelsRHSJacobianl
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -168,7 +171,7 @@ pylith::feassemble::IntegratorDomain::setKernelsLHSResidual(const std::vector<Re
     _kernelsLHSResidual = kernels;
 
     PYLITH_METHOD_END;
-} // setKernelsLHSResidual
+}// setKernelsLHSResidual
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -180,7 +183,7 @@ pylith::feassemble::IntegratorDomain::setKernelsLHSJacobian(const std::vector<Ja
     _kernelsLHSJacobian = kernels;
 
     PYLITH_METHOD_END;
-} // setKernelsLHSJacobian
+}// setKernelsLHSJacobian
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -192,7 +195,7 @@ pylith::feassemble::IntegratorDomain::setKernelsUpdateStateVars(const std::vecto
     _kernelsUps = kernels;
 
     PYLITH_METHOD_END;
-} // setKernelsUpdateStateVars
+}// setKernelsUpdateStateVars
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -204,30 +207,7 @@ pylith::feassemble::IntegratorDomain::setKernelsDerivedField(const std::vector<P
     _kernelsDerivedField = kernels;
 
     PYLITH_METHOD_END;
-} // setKernelsDerivedField
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get physical property parameters and initial state (if used) from database.
-void
-pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& solution) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
-
-    // Get cells associated with integration domain.
-    const pylith::topology::Mesh& mesh = solution.mesh();
-    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-    pylith::topology::CoordsVisitor::optimizeClosure(dmMesh);
-
-    delete _auxField;_auxField = _physics->createAuxiliaryField(mesh);
-    delete _derivedField;_derivedField = physics->createDerivedField(mesh);
-
-    //_auxField->view("MATERIAL AUXILIARY FIELD"); // :DEBUG: TEMPORARY
-    const bool infoOnly = true;
-    _observed->notifyObservers(0.0, 0, solution, infoOnly);
-
-    PYLITH_METHOD_END;
-} // initialize
+}// setKernelsDerivedField
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -242,15 +222,14 @@ pylith::feassemble::IntegratorDomain::computeRHSResidual(pylith::topology::Field
 
     if (!_kernelsRHSResidual) { PYLITH_METHOD_END;}
 
-    _setCurrentKernelsResidual(solution, _kernelsRHSResidual);
     _setCurrentKernelsConstants(solution, dt);
 
-    pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
+    pylith::topology::Field solutionDot(solution.mesh());// No dependence on time derivative of solution in RHS.
     solutionDot.label("solution_dot");
-    _computeResidual(residual, t, dt, solution, solutionDot);
+    _computeResidual(residual, _kernelsRHSResidual, t, dt, solution, solutionDot);
 
     PYLITH_METHOD_END;
-} // computeRHSResidual
+}// computeRHSResidual
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -266,17 +245,16 @@ pylith::feassemble::IntegratorDomain::computeRHSJacobian(PetscMat jacobianMat,
 
     if (!_kernelsRHSJacobian) { PYLITH_METHOD_END;}
 
-    _setCurrentKernelsJacobian(solution, _kernelsRHSJacobian);
     _setCurrentKernelsConstants(solution, dt);
 
-    pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
+    pylith::topology::Field solutionDot(solution.mesh());// No dependence on time derivative of solution in RHS.
     solutionDot.label("solution_dot");
-    const PylithReal s_tshift = 0.0; // No dependence on time derivative of solution in RHS, so shift isn't applicable.
-    _computeJacobian(jacobianMat, precondMat, t, dt, s_tshift, solution, solutionDot);
+    const PylithReal s_tshift = 0.0;// No dependence on time derivative of solution in RHS, so shift isn't applicable.
+    _computeJacobian(jacobianMat, precondMat, t_kernelsRHSJacobian, dt, s_tshift, solution, solutionDot);
     _needNewRHSJacobian = false;
 
     PYLITH_METHOD_END;
-} // computeRHSJacobian
+}// computeRHSJacobian
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -292,11 +270,10 @@ pylith::feassemble::IntegratorDomain::computeLHSResidual(pylith::topology::Field
 
     if (!_kernelsLHSResidual) { PYLITH_METHOD_END;}
 
-    _setCurrentKernelsResidual(solution, _kernelsLHSResidual);
     _setCurrentKernelsConstants(solution, dt);
 
-    _computeResidual(residual, t, dt, solution, solutionDot);
-} // computeLHSResidual
+    _computeResidual(residual, _kernelsLHSResidualt, dt, solution, solutionDot);
+}// computeLHSResidual
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -317,11 +294,11 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
     _setCurrentKernelsJacobian(solution, _kernelsLHSJacobian);
     _setCurrentKernelsConstants(solution, dt);
 
-    _computeJacobian(jacobianMat, precondMat, t, dt, s_tshift, solution, solutionDot);
+    _computeJacobian(jacobianMat, precondMat, _kernelsLHSJacobian, t, dt, s_tshift, solution, solutionDot);
     _needNewLHSJacobian = false;
 
     PYLITH_METHOD_END;
-} // computeLHSJacobian
+}// computeLHSJacobian
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -337,7 +314,6 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
 
     assert(jacobianInv);
 
-    _setCurrentKernelsJacobian(solution, _kernelsLHSJacobian);
     _setCurrentKernelsConstants(solution, dt);
 
     PetscDS prob = NULL;
@@ -348,11 +324,12 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
 
     // Set pointwise function (kernels) in DS
     err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
+    const std::vector<JacobianKernels>& kernels = _kernelsLHSJacobian;
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_fieldTrial = solution.subfieldInfo(kernels.fieldTrial).index;
         const PetscInt i_fieldBasis = solution.subfieldInfo(kernels.fieldBasis).index;
         err = PetscDSSetJacobian(prob, i_fieldTrial, i_fieldBasis, kernels.j0, kernels.j1, kernels.j2, kernels.j3);PYLITH_CHECK_ERROR(err);
-    } // for
+    }// for
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
@@ -379,7 +356,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
     _needNewLHSJacobian = false;
 
     PYLITH_METHOD_END;
-} // computeLHSJacobianLumpedInv
+}// computeLHSJacobianLumpedInv
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -411,7 +388,7 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_field = solution.subfieldInfo(kernels.fieldTrial).index;
         err = PetscDSSetJacobian(prob, i_field, kernels.r0, kernels.r1);PYLITH_CHECK_ERROR(err);
-    } // for
+    }// for
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
@@ -422,7 +399,7 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     assert(residual->localVector());
     err = DMGetLabel(dmSoln, "material-id", &dmLabel);PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-    assert(cEnd > cStart); // Double-check that this material has cells.
+    assert(cEnd > cStart);// Double-check that this material has cells.
 
     PYLITH_JOURNAL_DEBUG("DMPlexComputeResidual_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<<","<<cEnd<<".");
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cells);PYLITH_CHECK_ERROR(err);
@@ -430,7 +407,7 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     err = ISDestroy(&cells);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
-} // _computeResidual
+}// _computeResidual
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -438,6 +415,7 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
 void
 pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
                                                        PetscMat precondMat,
+                                                       const std::vector<JacobianKernels>& kernels,
                                                        const PylithReal t,
                                                        const PylithReal dt,
                                                        const PylithReal s_tshift,
@@ -464,7 +442,7 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
         const PetscInt i_fieldTrial = solution.subfieldInfo(kernels.fieldTrial).index;
         const PetscInt i_fieldBasis = solution.subfieldInfo(kernels.fieldBasis).index;
         err = PetscDSSetJacobian(prob, i_fieldTrial, i_fieldBasis, kernels.j0, kernels.j1, kernels.j2, kernels.j3);PYLITH_CHECK_ERROR(err);
-    } // for
+    }// for
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmMesh, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
@@ -481,7 +459,7 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
     err = ISDestroy(&cells);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
-} // _computeJacobian
+}// _computeJacobian
 
 
 // End of file

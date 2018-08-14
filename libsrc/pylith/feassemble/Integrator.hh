@@ -25,26 +25,25 @@
 #if !defined(pylith_feassemble_integrator_hh)
 #define pylith_feassemble_integrator_hh
 
-// Include directives ---------------------------------------------------
-#include "feassemblefwd.hh" // forward declarations
+#include "feassemblefwd.hh"// forward declarations
 
-#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
+#include "pylith/utils/GenericComponent.hh"// ISA GenericComponent
 
-#include "pylith/topology/FieldBase.hh" // USES FieldBase
-#include "pylith/utils/petscfwd.h" // USES PetscMat, PetscVec
-#include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
+#include "pylith/topology/FieldBase.hh"// USES FieldBase
+#include "pylith/utils/petscfwd.h"// USES PetscMat, PetscVec
+#include "pylith/utils/utilsfwd.hh"// HOLDSA Logger
 
 class pylith::feassemble::Integrator : public pylith::utils::GenericComponent {
-    friend class TestIntegrator; // unit testing
+    friend class TestIntegrator;// unit testing
 
-    // PUBLIC STRUCTS ////////////////////////////////////////////////////////
+    // PUBLIC STRUCTS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     struct ResidualKernels {
         std::string field;
         PetscPointFunc r0;
         PetscPointFunc r1;
-    }; // ResidualKernels
+    };// ResidualKernels
 
     struct JacobianKernels {
         std::string fieldTrial;
@@ -53,14 +52,14 @@ public:
         PetscJacobianFunc j1;
         PetscJacobianFunc j2;
         PetscJacobianFunc j3;
-    }
+    };// JacobianKernels
 
     struct ProjectKernels {
         std::string field;
         PetscPointFunc p;
-    }
+    };// ProjectKernels
 
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -84,7 +83,7 @@ public:
      *
      * @return field Field over integrator domain.
      */
-    const pylith::topology::Field* getAuxField(void) const;
+    const pylith::topology::Field* getAuxiliaryField(void) const;
 
     /** Get derived field.
      *
@@ -110,14 +109,12 @@ public:
      *
      * @returns True if Jacobian needs to be recomputed, false otherwise.
      */
-    virtual
     bool needNewRHSJacobian(void) const;
 
     /** Check whether LHS Jacobian needs to be recomputed.
      *
      * @returns True if Jacobian needs to be recomputed, false otherwise.
      */
-    virtual
     bool needNewLHSJacobian(void) const;
 
     /** Initialize integrator.
@@ -125,7 +122,7 @@ public:
      * @param[in] solution Solution field (layout).
      */
     virtual
-    void initialize(const pylith::topology::Field& solution) = 0;
+    void initialize(const pylith::topology::Field& solution);
 
     /** Update at beginning of time step.
      *
@@ -226,17 +223,17 @@ public:
                                      const PylithReal s_tshift,
                                      const pylith::topology::Field& solution) = 0;
 
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    /** Set constants used in finite-element integrations.
+    /** Set constants used in finite-element kernels.
      *
      * @param[in] solution Solution field.
      * @param[in] dt Current time step.
      */
     virtual
-    void _setFEConstants(const pylith::topology::Field& solution,
-                         const PylithReal dt) const;
+    void _setKernelConstants(const pylith::topology::Field& solution,
+                             const PylithReal dt) const;
 
     /** Update state variables as needed.
      *
@@ -247,7 +244,7 @@ protected:
     virtual
     void _updateStateVars(const PylithReal t,
                           const PylithReal dt,
-                          const pylith::topology::Field& solution);
+                          const pylith::topology::Field& solution) = 0;
 
     /** Compute fields derived from solution and auxiliary field.
      *
@@ -258,34 +255,33 @@ protected:
     virtual
     void _computeDerivedFields(const PylithReal t,
                                const PylithReal dt,
-                               const pylith::topology::Field& solution);
+                               const pylith::topology::Field& solution) = 0;
 
-    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    const pylith::problems::Physics* _physics; ///< Physics associated with integrator.
-    pylith::topology::Field* _auxField; ///< Auxiliary field for this integrator.
-    pylith::topology::Field* _derivedField; ///< Derived field for this integrator.
-    pylith::feassemble::ObservedComponent* _observed; ///< Observed component.
+    const pylith::problems::Physics* _physics;///< Physics associated with integrator.
+    pylith::topology::Field* _auxField;///< Auxiliary field for this integrator.
+    pylith::topology::Field* _derivedField;///< Derived field for this integrator.
+    pylith::feassemble::ObservedComponent* _observed;///< Observed component.
 
-    pylith::utils::EventLogger* _logger; ///< Event logger.
+    pylith::utils::EventLogger* _logger;///< Event logger.
 
     /// True if we need to recompute Jacobian for operator, false otherwise.
     /// Default is false;
     bool _needNewRHSJacobian;
     bool _needNewLHSJacobian;
 
-    typedef std::map<std::string, PetscPointFunc> UpdateStateVarsMap;
-    UpdateStateVarsMap _updateStateVarsKernels;
-
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    Integrator(const Integrator&); ///< Not implemented.
-    const Integrator& operator=(const Integrator&); ///< Not implemented.
+    Integrator(const Integrator&);///< Not implemented.
+    const Integrator& operator=(const Integrator&);///< Not implemented.
 
-}; // Integrator
+};
 
-#endif // pylith_feassemble_integrator_hh
+// Integrator
+
+#endif// pylith_feassemble_integrator_hh
 
 // End of file
