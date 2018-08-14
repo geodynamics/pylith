@@ -296,7 +296,7 @@ pylith::meshio::DataWriterVTK::writeVertexField(const PylithScalar t,
   // Will change to just VecView() once I setup the vectors correctly
   // (use VecSetOperation() to change the view method).
   PetscViewerVTKFieldType ft = fieldCached.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
-  PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) _dm, DMPlexVTKWriteAll, ft, (PetscObject) fieldVec);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) _dm, DMPlexVTKWriteAll, ft, PETSC_TRUE, (PetscObject) fieldVec);PYLITH_CHECK_ERROR(err);
   err = PetscObjectReference((PetscObject) fieldVec);PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
   
   _wroteVertexHeader = true;
@@ -340,7 +340,7 @@ pylith::meshio::DataWriterVTK::writeCellField(const PylithScalar t,
   // Will change to just VecView() once I setup the vectors correctly
   // (use VecSetOperation() to change the view).
   PetscViewerVTKFieldType ft = fieldCached.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_CELL_FIELD : PETSC_VTK_CELL_VECTOR_FIELD;
-  PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) _dm, DMPlexVTKWriteAll, ft, (PetscObject) fieldVec); PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) _dm, DMPlexVTKWriteAll, ft, PETSC_TRUE, (PetscObject) fieldVec); PYLITH_CHECK_ERROR(err);
   err = PetscObjectReference((PetscObject) fieldVec);PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
   
   _wroteCellHeader = true;

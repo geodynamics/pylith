@@ -46,7 +46,6 @@ pylith::topology::Field::Field(const Mesh& mesh) :
   _metadata.dimsOkay = false;
   if (mesh.dmMesh()) {
     PetscDM dm = mesh.dmMesh();assert(dm);
-    PetscVec coordVec = NULL;
     PetscSection s = NULL;
     PetscErrorCode err;
 
