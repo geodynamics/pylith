@@ -598,7 +598,7 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP
 
 }; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP4
 // Leave this out for now to shorten runtime.
-//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP4);
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP4);
 
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ1 :
@@ -751,7 +751,7 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
 
 }; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ4
 // Leave this out for now to shorten runtime.
-//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ4);
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ4);
 
 
 // End of file
