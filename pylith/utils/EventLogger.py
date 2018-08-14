@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,16 +13,15 @@
 #
 # ----------------------------------------------------------------------
 #
-
-## @file pylith/utils/EventLogger.py
-##
-## @brief Python object for managing event logging using PETSc.
-##
-## Each logger object manages the events for a single "logging class".
+# @file pylith/utils/EventLogger.py
+#
+# @brief Python object for managing event logging using PETSc.
+#
+# Each logger object manages the events for a single "logging class".
 
 from utils import EventLogger as ModuleEventLogger
 
-# EventLogger class
+
 class EventLogger(ModuleEventLogger):
   """
   Python object for managing event logging using PETSc.
@@ -80,4 +77,4 @@ class EventLogger(ModuleEventLogger):
     return
 
 
-# End of file 
+# End of file

@@ -32,12 +32,16 @@ namespace pylith {
 
         class BoundaryCondition;
         class TimeDependentAuxiliaryFactory;
+
+        class ConstraintBoundary;
         class Dirichlet;
         class DirichletTimeDependent;
-        class Neumann;
+
+        class IntegratorBoundary;
         class NeumannTimeDependent;
-	class AbsorbingDampers;
-	class AbsorbingDampersAuxiliaryFactory;
+        class AbsorbingDampers;
+
+        class AbsorbingDampersAuxiliaryFactory;
 
     } // bc
 } // pylith

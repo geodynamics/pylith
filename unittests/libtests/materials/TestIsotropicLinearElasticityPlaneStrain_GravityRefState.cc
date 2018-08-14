@@ -190,7 +190,7 @@ protected:
 
         _mydata->t = 1.0;
         _mydata->dt = 0.05;
-        _mydata->tshift = 1.0 / _mydata->dt;
+        _mydata->s_tshift = 1.0 / _mydata->dt;
 
         // solnDiscretizations set in derived class.
 
@@ -263,7 +263,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
         TestIsotropicLinearElasticityPlaneStrain_GravityRefState::setUp();
         CPPUNIT_ASSERT(_mydata);
 
-        _mydata->meshFilename = "data/tri_fourcells.mesh";
+        _mydata->meshFilename = "data/tri_small.mesh";
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -290,7 +290,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
         TestIsotropicLinearElasticityPlaneStrain_GravityRefState::setUp();
         CPPUNIT_ASSERT(_mydata);
 
-        _mydata->meshFilename = "data/tri_fourcells.mesh";
+        _mydata->meshFilename = "data/tri_small.mesh";
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -327,7 +327,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
         TestIsotropicLinearElasticityPlaneStrain_GravityRefState::setUp();
         CPPUNIT_ASSERT(_mydata);
 
-        _mydata->meshFilename = "data/tri_fourcells.mesh";
+        _mydata->meshFilename = "data/tri_small.mesh";
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -364,7 +364,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
         TestIsotropicLinearElasticityPlaneStrain_GravityRefState::setUp();
         CPPUNIT_ASSERT(_mydata);
 
-        _mydata->meshFilename = "data/tri_fourcells.mesh";
+        _mydata->meshFilename = "data/tri_small.mesh";
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {

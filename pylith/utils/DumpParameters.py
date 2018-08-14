@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,14 +13,11 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/utils/DumpParameters.py
 #
 # @brief Python DumpParameters object for dumping PyLith parameter information to a file.
 
 from pyre.components.Component import Component
-
-# DumpParameters class
 
 
 class DumpParameters(Component):
@@ -38,6 +33,10 @@ class DumpParameters(Component):
         """
         Component.__init__(self, name="dumpparamters", facility="dumpparameters")
         self.info = None
+        return
+
+    def preinitialize(self):
+        """Do minimal initialization."""
         return
 
     def write(self, app):
@@ -131,7 +130,7 @@ class DumpParameters(Component):
         """
         import os
         relpath = os.path.dirname(filename)
-    
+
         if len(relpath) > 0 and not os.path.exists(relpath):
             # Only create directory on proc 0
             from pylith.mpi.Communicator import mpi_comm_world
@@ -140,7 +139,6 @@ class DumpParameters(Component):
                 os.makedirs(relpath)
         return
 
-    
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

@@ -158,12 +158,6 @@ public:
      */
     PylithInt sectionSize(void) const;
 
-    /** Has section been setup?
-     *
-     * @returns True if section has been setup.
-     */
-    bool hasSection(void) const; // :TODO: @brad Remove, OBSOLETE.
-
     /** Get local PetscSection.
      *
      * @returns PETSc section.
@@ -429,7 +423,7 @@ private:
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-    subfields_type _subfields;   ///< Map of subfields bundled together.
+    subfields_type _subfields;   ///< Map of subfields in field.
     std::string _label; ///< Label for field.
     bool _dimsOkay; ///< Ok to replace nondimensionalized values with dimensionalized values.
 

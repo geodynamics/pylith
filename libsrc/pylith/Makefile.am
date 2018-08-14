@@ -34,9 +34,9 @@ lib_LTLIBRARIES = libpylith.la
 libpylith_la_SOURCES = \
 	bc/BoundaryCondition.cc \
 	bc/TimeDependentAuxiliaryFactory.cc \
-	bc/Dirichlet.cc \
+	bc/ConstraintBoundary.cc \
 	bc/DirichletTimeDependent.cc \
-	bc/Neumann.cc \
+	bc/IntegratorBoundary.cc \
 	bc/NeumannTimeDependent.cc \
 	bc/AbsorbingDampers.cc \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
@@ -51,6 +51,8 @@ libpylith_la_SOURCES = \
 	faults/TopologyOps.cc \
 	feassemble/IntegratorPointwise.cc \
 	feassemble/ConstraintPointwise.cc \
+	feassemble/Observer.cc \
+	feassemble/ObservedComponent.cc \
 	feassemble/AuxiliaryFactory.cc \
 	fekernels/Elasticity.cc \
 	fekernels/ElasticityPlaneStrain.cc \
@@ -90,16 +92,20 @@ libpylith_la_SOURCES = \
 	meshio/PsetFile.cc \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
-	meshio/OutputSolnSubset.cc \
-	meshio/OutputSolnPoints.cc \
-	meshio/CellFilter.cc \
-	meshio/VertexFilter.cc \
-	meshio/VertexFilterDecimateP1.cc \
+	meshio/FieldFilter.cc \
+	meshio/FieldFilterNone.cc \
+	meshio/FieldFilterProject.cc \
 	meshio/DataWriter.cc \
 	meshio/DataWriterVTK.cc \
 	meshio/OutputManager.cc \
-	meshio/OutputMaterial.cc \
+	meshio/OutputIntegrator.cc \
+	meshio/OutputConstraint.cc \
 	meshio/OutputSoln.cc \
+	meshio/OutputSolnBoundary.cc \
+	meshio/OutputSolnPoints.cc \
+	meshio/OutputTrigger.cc \
+	meshio/OutputTriggerStep.cc \
+	meshio/OutputTriggerTime.cc \
 	problems/Problem.cc \
 	problems/TimeDependent.cc \
 	problems/SolutionFactory.cc \

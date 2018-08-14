@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,33 +13,39 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/feassemble/IntegratorPointwise.py
-##
+#
 # @brief Python abstract base class for pointwise integrators.
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.feassemble.ObservedComponent import ObservedComponent
 from .feassemble import IntegratorPointwise as ModuleIntegrator
 
-# IntegratorPointwise class
+
+def observerFactory(name):
+    """
+    Factory for output items.
+    """
+    from pyre.inventory import facility
+    from pylith.meshio.OutputIntegrator import OutputIntegrator
+    return facility(name, family="observer", factory=OutputIntegrator)
 
 
-class IntegratorPointwise(PetscComponent,
-                          ModuleIntegrator):
+class IntegratorPointwise(ObservedComponent, ModuleIntegrator):
     """
     Python abstract base class for pointwise integrators.
 
-    Factory: material
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li None
-    #
-    # \b Facilities
-    # @li \b auxiliary_fields Discretization of auxiliary fields associated with material.
-    # @li \b db_auxiliary_fields Database for auxiliary fields associated with material.
+    Properties
+      - None
+
+    Facilities
+      - *auxiliary_subfields* Discretization of physical properties and state variables.
+      - *db_auxiliary_field* Database for physical property parameters.
+      - *observers* Observers of integrator (e.g., output).
+
+    FACTORY: material
+    """
 
     import pyre.inventory
 
@@ -54,9 +58,9 @@ class IntegratorPointwise(PetscComponent,
     auxFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
     auxFieldDB.meta['tip'] = "Database for physical property parameters."
 
-    from pylith.meshio.OutputManager import OutputManager
-    outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputManager)
-    outputManager.meta['tip'] = "Output manager."
+    from pylith.feassemble.SingleObserver import SingleIntegratorObserver
+    observers = pyre.inventory.facilityArray("observers", itemFactory=observerFactory, factory=SingleIntegratorObserver)
+    observers.meta['tip'] = "Observers (e.g., output) for integrator."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -64,23 +68,26 @@ class IntegratorPointwise(PetscComponent,
         """
         Constructor.
         """
-        PetscComponent.__init__(self, name, facility="integrator")
-        self._createModuleObj()
+        ObservedComponent.__init__(self, name, facility="integrator")
         return
 
     def preinitialize(self, mesh):
         """
         Do pre-initialization setup.
         """
-        ModuleIntegrator.identifier(self, self.aliases[-1])
+        self._createModuleObj()
+
+        ObservedComponent.preinitialize(self)
+
         ModuleIntegrator.auxFieldDB(self, self.auxFieldDB)
-        ModuleIntegrator.output(self, self.outputManager)
 
         for subfield in self.auxSubfields.components():
             fieldName = subfield.aliases[-1]
-            ModuleIntegrator.auxSubfieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
+            ModuleIntegrator.auxSubfieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder,
+                                                       subfield.isBasisContinuous, subfield.feSpace)
 
-        self.outputManager.preinitialize()
+        for observer in self.observers.components():
+            observer.preinitialize(self)
         return
 
 # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -89,7 +96,7 @@ class IntegratorPointwise(PetscComponent,
         """
         Setup members using inventory.
         """
-        PetscComponent._configure(self)
+        ObservedComponent._configure(self)
         return
 
     def _createModuleObj(self):

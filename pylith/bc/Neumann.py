@@ -19,43 +19,24 @@
 #
 # Factory: boundary_condition
 
-from .BoundaryCondition import BoundaryCondition
-from .bc import NeumannTimeDependent as ModuleNeumann
-from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
+from pylith.feassemble.IntegratorBoundary import IntegratorBoundary
+from .bc import Neumann as ModuleNeumann
 
 
-def validateDir(value):
+class Neumann(IntegratorBoundary, ModuleNeumann):
     """
-    Validate direction.
+    Python object for managing a Neumann (natural) boundary condition.
+
+    INVENTORY
+
+    Properties
+      - *scale* Type of scale for nondimenaionlizing Neumann boundary condition (e.g., "pressure" for elasticity").
+
+    Facilities
+      - None
+
+    FACTORY: boundary_condition
     """
-    msg = "Direction must be a 3 component vector (list)."
-    if not isinstance(value, list):
-        raise ValueError(msg)
-    if 3 != len(value):
-        raise ValueError(msg)
-    try:
-        nums = map(float, value)
-    except:
-        raise ValueError(msg)
-    return nums
-
-
-class Neumann(BoundaryCondition, IntegratorPointwise, ModuleNeumann):
-    """
-    Python object for managing a Neumann (natural)
-    boundary condition.
-
-    Factory: boundary_condition
-    """
-
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li \b scale Type of scale for nondimenaionlizing Neumann boundary condition (e.g., "pressure" for elasticity").
-    #
-    # \b Facilities
-    # @li \b ref_dir_1 First choice for reference direction to discriminate among tangential directions in 3-D.
-    # @li \b ref_dir_2 Second choice for reference direction to discriminate among tangential directions in 3-D.
 
     import pyre.inventory
 
@@ -63,31 +44,21 @@ class Neumann(BoundaryCondition, IntegratorPointwise, ModuleNeumann):
                                    validator=pyre.inventory.choice(["length", "time", "pressure", "density", "velocity"]))
     scaleName.meta['tip'] = "Type of scale for nondimensionalizing Neumann boundary condition ('pressure' for elasticity)."
 
-    refDir1 = pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
-    refDir1.meta['tip'] = "First choice for reference direction to discriminate among tangential directions in 3-D."
-
-    refDir2 = pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
-    refDir2.meta['tip'] = "Second choice for reference direction to discriminate among tangential directions in 3-D."
-
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="neumann"):
         """
         Constructor.
         """
-        BoundaryCondition.__init__(self, name)
-        IntegratorPointwise.__init__(self, name)
+        IntegratorBoundary.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
         """
         Do pre-initialization setup.
         """
-        BoundaryCondition.preinitialize(self, mesh)
-        IntegratorPointwise.preinitialize(self, mesh)
+        IntegratorBoundary.preinitialize(self, mesh)
 
-        ModuleNeumann.refDir1(self, self.refDir1)
-        ModuleNeumann.refDir2(self, self.refDir2)
         ModuleNeumann.scaleName(self, self.scaleName)
         return
 
@@ -97,8 +68,8 @@ class Neumann(BoundaryCondition, IntegratorPointwise, ModuleNeumann):
         """
         Setup members using inventory.
         """
-        BoundaryCondition._configure(self)
-        IntegratorPointwise._configure(self)
+        IntegratorBoundary._configure(self)
         return
+
 
 # End of file

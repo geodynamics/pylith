@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,15 +13,14 @@
 #
 # ----------------------------------------------------------------------
 #
-
-## @file pylith/topology/ReverseCuthillMcKee.py
-##
-## @brief Python interface to PETSc reverse Cuthill-McKee reordering
-## of mesh cells and vertices.
+# @file pylith/topology/ReverseCuthillMcKee.py
+#
+# @brief Python interface to PETSc reverse Cuthill-McKee reordering
+# of mesh cells and vertices.
 
 from topology import ReverseCuthillMcKee as ModuleReverseCuthillMcKee
 
-# ReverseCuthillMcKee class
+
 class ReverseCuthillMcKee(ModuleReverseCuthillMcKee):
   """
   Python interface to PETSc reverse Cuthill-McKee reordering of mesh

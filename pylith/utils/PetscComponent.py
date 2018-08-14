@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,58 +13,60 @@
 #
 # ----------------------------------------------------------------------
 #
-
-## @file pylith/utils/PetscComponent.py
-##
-## @brief Python PetscComponent object for aid in deallocating data
-## structures before calling PetscFinalize().
+# @file pylith/utils/PetscComponent.py
+#
+# @brief Python PetscComponent object for aid in deallocating data
+# structures before calling PetscFinalize().
 
 from pyre.components.Component import Component
 
-# PetscComponent class
+
 class PetscComponent(Component):
-  """
-  Python PetscComponent object for aid in deallocating data structures
-  before calling PetscFinalize().
-  """
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name, facility):
     """
-    Constructor.
+    Python PetscComponent object for aid in deallocating data structures
+    before calling PetscFinalize().
     """
-    Component.__init__(self, name, facility)
-    return
 
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def cleanup(self):
-    """
-    Deallocate data structures.
-    """
-    for component in self.components():
-      if isinstance(component, PetscComponent):
-        component.cleanup()
+    def __init__(self, name, facility):
+        """
+        Constructor.
+        """
+        Component.__init__(self, name, facility)
+        return
 
-      # Facility arrays are not PetscComponents but have components().
-      elif hasattr(component, "components"):
-        for subcomponent in component.components():
-          if isinstance(subcomponent, PetscComponent):
-            subcomponent.cleanup()
+    def cleanup(self):
+        """
+        Deallocate data structures.
+        """
+        for component in self.components():
+            if isinstance(component, PetscComponent):
+                component.cleanup()
 
-    self._cleanup()
-    return
+            # Facility arrays are not PetscComponents but have components().
+            elif hasattr(component, "components"):
+                for subcomponent in component.components():
+                    if isinstance(subcomponent, PetscComponent):
+                        subcomponent.cleanup()
 
+        self._cleanup()
+        return
 
-  # PRIVATE METHODS ////////////////////////////////////////////////////
+    # PRIVATE METHODS ////////////////////////////////////////////////////
 
-  def _cleanup(self):
-    """
-    Deallocate locally managed data structures.
-    """
-    if "deallocate" in dir(self):
-      self.deallocate()
-    return
+    def _cleanup(self):
+        """
+        Deallocate locally managed data structures.
+        """
+        # If module object not yet created, return
+        if getattr(self, "this", None) is None:
+            return
+
+        deallocate = getattr(self, "deallocate", None)
+        if callable(deallocate):
+            deallocate()
+        return
 
 
 # End of file

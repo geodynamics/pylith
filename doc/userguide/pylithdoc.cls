@@ -70,6 +70,7 @@
 % ------------------------------------------------------------------
 % Font Sizes
 \RequirePackage{times}
+\RequirePackage{helvet}
 \renewcommand{\LARGE}{\@setfontsize\LARGE{17}{22}}
 \renewcommand{\Large}{\@setfontsize\Large{14.4}{18}}
 \renewcommand{\large}{\@setfontsize\large{10.95}{13.6}}
@@ -198,6 +199,7 @@
 \newcommand{\commandline}[1]{{\ttfamily #1}}
 \newcommand{\object}[1]{{\sffamily #1}}
 \newcommand{\menu}[1]{{\sffamily #1}}
+\newcommand{\gitbranch}[1]{{\ttfamily #1}}
 
 % ------------------------------------------------------------------
 % Code blocks
@@ -221,7 +223,7 @@
 % .cfg
 %
 \lstdefinelanguage{cfg}{%
-  basicstyle=\small\ttfamily,
+  basicstyle=\footnotesize\ttfamily,
   frame=tb,%
   morecomment=[l][\color{orange}\itshape]{\#},
   morecomment=[l][\color{orange}\itshape]{;},
@@ -247,7 +249,7 @@
   \lstset{%
     language=bash,%
     frame=tb,%
-    basicstyle=\small\ttfamily,%
+    basicstyle=\footnotesize\ttfamily,%
     morekeywords={$},%
     commentstyle=\itshape\color{orange},
     title={#1},
@@ -263,7 +265,7 @@
   \lstset{%
     language=python,%
     frame=tb,%
-    basicstyle=\small\ttfamily,%
+    basicstyle=\footnotesize\ttfamily,%
     morekeywords={>>>},%
     commentstyle=\itshape\color{orange},
     title={#1},
@@ -279,7 +281,7 @@
   \lstset{%
     language=c++,%
     frame=tb,%
-    basicstyle=\small\ttfamily,%
+    basicstyle=\footnotesize\ttfamily,%
     commentstyle=\itshape\color{orange},
     title={#1},
     backgroundcolor=\color{\captioncolor!10},
@@ -311,7 +313,7 @@
 % File formats
 % MeshIOAscii
 \lstdefinelanguage{MeshIOAscii}{%
-  basicstyle=\small\ttfamily,
+  basicstyle=\footnotesize\ttfamily,
   frame=tb,%
   alsoletter={-},%
   morecomment=[l][\color{orange}\itshape]{//},
@@ -321,7 +323,7 @@
 %
 % SimpleIOAscii
 \lstdefinelanguage{SimpleIOAscii}{%
-  basicstyle=\small\ttfamily,
+  basicstyle=\footnotesize\ttfamily,
   frame=tb,%
   alsoletter={-},%
   morecomment=[l][\color{orange}\itshape]{//},
@@ -332,7 +334,7 @@
 %
 % SimpleGridDB
 \lstdefinelanguage{SimpleGridDB}{%
-  basicstyle=\small\ttfamily,
+  basicstyle=\footnotesize\ttfamily,
   frame=tb,%
   alsoletter={-},%
   morecomment=[l][\color{orange}\itshape]{//},
@@ -343,7 +345,7 @@
 %
 % TimeHistoryIO
 \lstdefinelanguage{TimeHistoryIO}{%
-  basicstyle=\small\ttfamily,
+  basicstyle=\footnotesize\ttfamily,
   frame=tb,%
   alsoletter={-},%
   morecomment=[l][\color{orange}\itshape]{//},
@@ -353,7 +355,7 @@
 %
 % PointsList
 \lstdefinelanguage{PointsList}{%
-  basicstyle=\small\ttfamily,
+  basicstyle=\footnotesize\ttfamily,
   frame=tb,%
   morecomment=[l][\color{orange}\itshape]{\#},
   morekeywords={units},
@@ -362,7 +364,7 @@
 %
 % TimeStepUser
 \lstdefinelanguage{TimeStepUser}{%
-  basicstyle=\small\ttfamily,
+  basicstyle=\footnotesize\ttfamily,
   frame=tb,%
   morecomment=[l][\color{orange}\itshape]{//},
   morekeywords={units},

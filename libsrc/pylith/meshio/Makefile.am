@@ -31,13 +31,17 @@ subpkginclude_HEADERS = \
 	MeshIOLagrit.hh \
 	MeshIOLagrit.icc \
 	OutputManager.hh \
-	OutputMaterial.hh \
+	OutputIntegrator.hh \
+	OutputConstraint.hh \
 	OutputSoln.hh \
-	OutputSolnSubset.hh \
+	OutputSolnBoundary.hh \
 	OutputSolnPoints.hh \
-	CellFilter.hh \
-	VertexFilter.hh \
-	VertexFilterDecimateP1.hh \
+	FieldFilter.hh \
+	FieldFilterNone.hh \
+	FieldFilterProject.hh \
+	OutputTrigger.hh \
+	OutputTriggerStep.hh \
+	OutputTriggerTime.hh \
 	meshiofwd.hh
 
 if ENABLE_HDF5

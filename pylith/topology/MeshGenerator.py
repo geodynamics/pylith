@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,33 +13,30 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/topology/MeshGenerator.py
-##
+#
 # @brief Python abstract base class for mesh generator.
-##
+#
 # Factory: mesh_generator.
 
 from pylith.utils.PetscComponent import PetscComponent
-
-# MeshGenerator class
 
 
 class MeshGenerator(PetscComponent):
     """
     Python abstract base class for mesh generator.
 
-    Factory: mesh_generator
-    """
+    INVENTORY
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li \b debug Debugging flag for mesh.
-    # @li \b interpolate Build intermediate mesh topology elements (if true)
-    #
-    # \b Facilities
-    # @li None
+    Properties
+      - *debug* Debugging flag for mesh.
+      - *interpolate* Build intermediate mesh topology elements (if true)
+
+    Facilities
+      - None
+
+    FACTORY: mesh_generator
+    """
 
     import pyre.inventory
 
@@ -59,7 +54,13 @@ class MeshGenerator(PetscComponent):
         """
         PetscComponent.__init__(self, name, facility="meshgenerator")
         self.debug = False
-        self.interpolate = False
+        self.interpolate = True
+        return
+
+    def preinitialize(self):
+        """
+        Do minimal initialization.
+        """
         return
 
     def create(self, normalizer, faults=None):
@@ -91,34 +92,12 @@ class MeshGenerator(PetscComponent):
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
 
-        # self._info.activate()
-        #mesh.view("===== MESH BEFORE ADJUSTING TOPOLOGY =====")
-
         if not interfaces is None:
-            firstFaultVertex = 0
-            firstLagrangeVertex = 0
-            firstFaultCell = 0
             for interface in interfaces:
                 if 0 == comm.rank:
-                    self._info.log("Counting vertices for fault '%s'." % interface.label)
-                #nvertices = interface.numVerticesNoMesh(mesh)
-                #firstLagrangeVertex += nvertices
-                #firstFaultCell += nvertices
-                # if interface.useLagrangeConstraints():
-                #    firstFaultCell += nvertices
-            for interface in interfaces:
-                #nvertices = interface.numVerticesNoMesh(mesh)
-                if 0 == comm.rank:
-                    # self._info.log("Adjusting topology for fault '%s' with %d vertices." %
-                    #               (interface.label(), nvertices))
                     self._info.log("Adjusting topology for fault '%s'." % interface.label)
-                # firstFaultVertex, firstLagrangeVertex, firstFaultCell = \
-                #    interface.adjustTopology(mesh, firstFaultVertex, firstLagrangeVertex, firstFaultCell)
                 interface.preinitialize(mesh)
                 interface.adjustTopology(mesh)
-
-        #mesh.view("===== MESH AFTER ADJUSTING TOPOLOGY =====")
-        # self._info.deactivate()
 
         self._eventLogger.eventEnd(logEvent)
         return

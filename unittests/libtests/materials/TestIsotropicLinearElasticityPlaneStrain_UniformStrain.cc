@@ -164,7 +164,7 @@ protected:
 
         _mydata->t = 1.0;
         _mydata->dt = 0.05;
-        _mydata->tshift = 1.0 / _mydata->dt;
+        _mydata->s_tshift = 1.0 / _mydata->dt;
 
         // solnDiscretizations set in derived class.
 

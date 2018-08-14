@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,16 +13,14 @@
 #
 # ----------------------------------------------------------------------
 #
-
-## @file pylith/topology/Field.py
-##
-## @brief Python object for managing a vector field over vertices or
-## cells of a finite-element mesh.
+# @file pylith/topology/Field.py
+#
+# @brief Python object for managing a vector field over vertices or
+# cells of a finite-element mesh.
 
 from topology import Field as ModuleField
 
-# ----------------------------------------------------------------------
-# Field class
+
 class Field(ModuleField):
   """
   Python object for managing a vector field over vertices or cells of
@@ -47,6 +43,6 @@ class Field(ModuleField):
     """
     self.deallocate()
     return
-    
+
 
 # End of file

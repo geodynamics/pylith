@@ -25,7 +25,6 @@
 
 #include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
 #include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
-#include "pylith/meshio/OutputSoln.hh" // USES OutputSoln
 
 #include "petscts.h" // USES PetscTS
 
@@ -374,21 +373,20 @@ pylith::problems::TimeDependent::poststep(void)
     assert(_solution);
     _solution->scatterVectorToLocal(solutionVec);
 
-    // Output solution.
-    pylith::topology::Field nullField(_solution->mesh());
-    const size_t numOutput = _outputs.size();
-    for (size_t i = 0; i < numOutput; ++i) {
-        assert(_outputs[i]);
-        _outputs[i]->writeTimeStep(t, tindex, *_solution, nullField);
-    } // for
-
-    // Update state variables
+    // Update integrators.
     const size_t numIntegrators = _integrators.size();
-    assert(numIntegrators > 0); // must have at least 1 integrator
     for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->updateStateVars(t, dt, *_solution);
-        _integrators[i]->writeTimeStep(t, tindex, *_solution);
+        _integrators[i]->poststep(t, tindex, dt, *_solution);
     }  // for
+
+    // Update constraints.
+    const size_t numConstraints = _constraints.size();
+    for (size_t i = 0; i < numConstraints; ++i) {
+        _constraints[i]->poststep(t, tindex, dt, *_solution);
+    }  // for
+
+    // Send problem observers updated solution.
+    notifyObservers(t, tindex, *_solution);
 
     PYLITH_METHOD_END;
 } // poststep
@@ -418,8 +416,8 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
 
     // If explicit time stepping, multiply RHS, G(t,s), by M^{-1}
     if (EXPLICIT == problem->_formulationType) {
-        const PylithReal tshift = 1.0; // Keep shift terms on LHS, so use 1.0 for terms moved to RHS.
-        problem->Problem::computeLHSJacobianLumpedInv(t, dt, tshift, solutionVec);
+        const PylithReal s_tshift = 1.0; // Keep shift terms on LHS, so use 1.0 for terms moved to RHS.
+        problem->Problem::computeLHSJacobianLumpedInv(t, dt, s_tshift, solutionVec);
 
         assert(problem->_jacobianLHSLumpedInv);
         err = VecPointwiseMult(residualVec, problem->_jacobianLHSLumpedInv->localVector(), residualVec); PYLITH_CHECK_ERROR(err);
@@ -489,7 +487,7 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
                                                     PetscReal t,
                                                     PetscVec solutionVec,
                                                     PetscVec solutionDotVec,
-                                                    PetscReal tshift,
+                                                    PetscReal s_tshift,
                                                     PetscMat jacobianMat,
                                                     PetscMat precondMat,
                                                     void* context)
@@ -498,15 +496,15 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
 
     journal::debug_t debug(_pyreComponent);
     debug << journal::at(__HERE__)
-          << "computeLHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", tshift="<<tshift<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" <<
-    journal::endl;
+          << "computeLHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", s_tshift="<<s_tshift<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" <<
+        journal::endl;
 
     // Get current time step.
     PylithReal dt;
     PetscErrorCode err = TSGetTimeStep(ts, &dt); PYLITH_CHECK_ERROR(err);
 
     pylith::problems::TimeDependent* problem = (pylith::problems::TimeDependent*)context;
-    problem->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, tshift, solutionVec, solutionDotVec);
+    problem->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, s_tshift, solutionVec, solutionDotVec);
 
     PYLITH_METHOD_RETURN(0);
 } // computeLHSJacobian

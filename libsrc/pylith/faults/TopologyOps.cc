@@ -29,7 +29,7 @@
 void
 pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
                                          const pylith::topology::Mesh& mesh,
-                                         PetscDMLabel groupField){ // createFault
+                                         PetscDMLabel groupField) {
     PYLITH_METHOD_BEGIN;
 
     assert(faultMesh);
@@ -95,7 +95,7 @@ void
 pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
                                     const pylith::topology::Mesh& faultMesh,
                                     PetscDMLabel faultBdLabel,
-                                    const int materialId){ // create
+                                    const int materialId) {
     assert(mesh);
     PetscDM sdm = NULL;
     PetscDM dm = mesh->dmMesh();assert(dm);
@@ -212,7 +212,7 @@ void
 pylith::faults::TopologyOps::createFaultParallel(pylith::topology::Mesh* faultMesh,
                                                  const pylith::topology::Mesh& mesh,
                                                  const int materialId,
-                                                 const char* label){ // createFaultParallel
+                                                 const char* label) {
     PYLITH_METHOD_BEGIN;
 
     assert(faultMesh);
@@ -249,7 +249,7 @@ pylith::faults::TopologyOps::classifyCellsDM(PetscDM dmMesh,
                                              PetscInt firstCohesiveCell,
                                              PointSet& replaceCells,
                                              PointSet& noReplaceCells,
-                                             const int debug){
+                                             const int debug) {
     // Replace all cells on a given side of the fault with a vertex on the fault
     PointSet vReplaceCells;
     PointSet vNoReplaceCells;

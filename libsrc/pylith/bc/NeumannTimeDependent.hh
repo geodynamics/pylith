@@ -26,7 +26,7 @@
 #define pylith_bc_neumanntimedependent_hh
 
 // Include directives ---------------------------------------------------
-#include "Neumann.hh" // ISA Neumann
+#include "IntegratorBoundary.hh" // ISA IntegratorBoundary
 
 // NeumannTimeDependent ----------------------------------------------------
 /** @brief Neumann (e.g., traction) boundary
@@ -45,7 +45,7 @@
  *        time history start (scalar) t_2(x)
  *        time history value (scalar) a(t-t_2(x))
  */
-class pylith::bc::NeumannTimeDependent : public pylith::bc::Neumann {
+class pylith::bc::NeumannTimeDependent : public pylith::bc::IntegratorBoundary {
     friend class TestNeumannTimeDependent;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -108,6 +108,19 @@ public:
      */
     bool useTimeHistory(void) const;
 
+    /** Name of scale associated with Neumann boundary
+     * condition (e.g., 'pressure' for elasticity).
+     *
+     * A Neumann boundary condition constrains the gradient in
+     * a solution subfield. In some cases the constraint is
+     * actually on a scaled version of the gradient as is the
+     * case of a Neumann boundary condition for elasticity
+     * that constrains boundary tractions.
+     *
+     * @param value Name of scale for nondimensionalizing Neumann boundary condition.
+     */
+    void scaleName(const char* value);
+
     /** Update auxiliary fields at beginning of time step.
      *
      * @param[in] t Current time.
@@ -133,26 +146,33 @@ protected:
      */
     void _auxFieldSetup(const pylith::topology::Field& solution);
 
-    /** Set kernels for RHS residual G(t,s).
-     *
-     * Potentially, there are g0 and g1 kernels for each equation. If no
-     * kernel is needed, then set the kernel function to NULL.
-     *
-     * @param solution Solution field.
-     */
-    void _setFEKernelsRHSResidual(const pylith::topology::Field& solution) const;
-
     /** Get factory for setting up auxliary fields.
      *
      * @returns Factor for auxiliary fields.
      */
     pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
 
+    /** Has point-wise functions (kernels) for integration/projection?
+     *
+     * @param[in] kernelsKey Set of kernels.
+     * @returns True if we have kernels for that operation, otherwise false.
+     */
+    bool _hasFEKernels(const pylith::feassemble::IntegratorPointwise::FEKernelKeys kernelsKey) const;
+
+    /** Set point-wise functions (kernels) for integration/projection.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] kernelsKey Set of kernels.
+     */
+    void _setFEKernels(const pylith::topology::Field& solution,
+                       const pylith::feassemble::IntegratorPointwise::FEKernelKeys kernelsKey) const;
+
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
 
     spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
     pylith::bc::TimeDependentAuxiliaryFactory* _auxTimeDependentFactory; ///< Factory for auxiliary subfields.
+    std::string _scaleName; ///< Name of scale associated with Neumann boundary condition.
 
     bool _useInitial; ///< Use initial value term.
     bool _useRate; ///< Use rate term.

@@ -178,7 +178,7 @@ PetscErrorCode computeLHSJacobian(PetscTS ts,
                                   PetscReal t,
                                   PetscVec solutionVec,
                                   PetscVec solutionDotVec,
-                                  PetscReal tshift,
+                                  PetscReal s_tshift,
                                   PetscMat jacobianMat,
                                   PetscMat precondMat,
                                   void* context);

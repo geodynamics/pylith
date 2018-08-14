@@ -212,34 +212,15 @@ pylith::topology::Field::vectorFieldType(void) const
 } // vectorFieldType
 
 // ----------------------------------------------------------------------
-// Has section been setup?
-bool
-pylith::topology::Field::hasSection(void) const
-{ // hasSection
-    PYLITH_METHOD_BEGIN;
-
-    PetscErrorCode err;
-    PetscSection s = NULL;
-    err = DMGetDefaultSection(_dm, &s); PYLITH_CHECK_ERROR(err);
-
-    PetscInt pStart = 0, pEnd = 0;
-    err = PetscSectionGetChart(s, &pStart, &pEnd); PYLITH_CHECK_ERROR(err);
-
-    bool result = (pEnd < 0) ? false : true;
-
-    PYLITH_METHOD_RETURN(result);
-} // hasSection
-
-// ----------------------------------------------------------------------
 // Get the chart size.
-int
+PylithInt
 pylith::topology::Field::chartSize(void) const
 { // chartSize
     PYLITH_METHOD_BEGIN;
 
     assert(_dm);
     PetscSection s = NULL;
-    PetscInt pStart, pEnd;
+    PylithInt pStart, pEnd;
     PetscErrorCode err;
 
     err = DMGetDefaultSection(_dm, &s); PYLITH_CHECK_ERROR(err);
@@ -250,12 +231,12 @@ pylith::topology::Field::chartSize(void) const
 
 // ----------------------------------------------------------------------
 // Get the number of degrees of freedom.
-int
+PylithInt
 pylith::topology::Field::sectionSize(void) const
 { // sectionSize
     PYLITH_METHOD_BEGIN;
 
-    PetscInt size = 0;
+    PylithInt size = 0;
 
     if (_dm) {
         PetscSection s = NULL;

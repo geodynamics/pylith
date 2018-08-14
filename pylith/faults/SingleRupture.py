@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -26,16 +24,13 @@ class SingleRupture(PetscComponent):
     """
     Python kinematic rupture container with one rupture.
 
-    Inventory
+    INVENTORY
 
-    @class Inventory
-    Python object for managing SingleRupture facilities and properties.
+    Properties
+      - None
 
-    \b Properties
-    @li None
-
-    \b Facilities
-    @li \b rupture Kinematic earthquake rupture in problem
+    Facilities
+      - *rupture* Kinematic earthquake rupture in problem.
 
     """
 

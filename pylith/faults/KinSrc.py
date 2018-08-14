@@ -31,15 +31,16 @@ class KinSrc(PetscComponent, ModuleKinSrc):
     """
     Python object for managing parameters for a kinematic earthquake sources.
 
-    Inventory
+    INVENTORY
 
-    \b Properties
-    @li \b origin_time Origin time for earthquake rupture.
+    Properties
+      - *origin_time* Origin time for earthquake rupture.
+
+    Facilities
+      - *db_auxiliary_field* Database for slip time function parameters.
 
     Factory: eq_kinematic_src
     """
-
-    # INVENTORY //////////////////////////////////////////////////////////
 
     import pyre.inventory
 
@@ -58,13 +59,13 @@ class KinSrc(PetscComponent, ModuleKinSrc):
         Constructor.
         """
         PetscComponent.__init__(self, name, facility="eq_kinematic_src")
-        self._createModuleObj()
         return
 
     def preinitialize(self):
         """
         Do pre-initialization setup.
         """
+        self._createModuleObj()
         ModuleKinSrc.auxFieldDB(self, self.auxFieldDB)
         ModuleKinSrc.originTime(self, self.originTime.value)
         return

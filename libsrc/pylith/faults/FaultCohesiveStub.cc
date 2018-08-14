@@ -65,7 +65,7 @@ pylith::faults::FaultCohesiveStub::computeLHSJacobianImplicit(PetscMat jacobianM
                                                               PetscMat precondMat,
                                                               const PylithReal t,
                                                               const PylithReal dt,
-                                                              const PylithReal tshift,
+                                                              const PylithReal s_tshift,
                                                               const pylith::topology::Field& solution,
                                                               const pylith::topology::Field& solutionDot) {}
 
@@ -76,7 +76,7 @@ void
 pylith::faults::FaultCohesiveStub::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
                                                                const PylithReal t,
                                                                const PylithReal dt,
-                                                               const PylithReal tshift,
+                                                               const PylithReal s_tshift,
                                                                const pylith::topology::Field& solution) {}
 
 // ----------------------------------------------------------------------

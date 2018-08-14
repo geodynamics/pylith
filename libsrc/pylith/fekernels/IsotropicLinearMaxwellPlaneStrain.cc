@@ -368,24 +368,24 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v_refstate(const PylithI
  */
 void
 pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::Jg3vu(const PylithInt dim,
-															const PylithInt numS,
-															const PylithInt numA,
-															const PylithInt sOff[],
-															const PylithInt sOff_x[],
-															const PylithScalar s[],
-															const PylithScalar s_t[],
-															const PylithScalar s_x[],
-															const PylithInt aOff[],
-															const PylithInt aOff_x[],
-															const PylithScalar a[],
-															const PylithScalar a_t[],
-															const PylithScalar a_x[],
-															const PylithReal t,
-															const PylithReal utshift,
-															const PylithScalar x[],
-															const PylithInt numConstants,
-															const PylithScalar constants[],
-															PylithScalar Jg3[]) {
+                                                        const PylithInt numS,
+                                                        const PylithInt numA,
+                                                        const PylithInt sOff[],
+                                                        const PylithInt sOff_x[],
+                                                        const PylithScalar s[],
+                                                        const PylithScalar s_t[],
+                                                        const PylithScalar s_x[],
+                                                        const PylithInt aOff[],
+                                                        const PylithInt aOff_x[],
+                                                        const PylithScalar a[],
+                                                        const PylithScalar a_t[],
+                                                        const PylithScalar a_x[],
+                                                        const PylithReal t,
+                                                        const PylithReal s_tshift,
+                                                        const PylithScalar x[],
+                                                        const PylithInt numConstants,
+                                                        const PylithScalar constants[],
+                                                        PylithScalar Jg3[]) {
     const PylithInt _dim = 2;
 
     // Incoming auxiliary fields.

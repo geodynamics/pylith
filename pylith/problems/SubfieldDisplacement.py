@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,11 +13,10 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/problems/SubfieldDisplacement.py
-##
+#
 # @brief Python object for displacement subfield.
-##
+#
 # Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield

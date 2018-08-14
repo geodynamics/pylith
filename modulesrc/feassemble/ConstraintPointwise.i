@@ -24,7 +24,8 @@
 namespace pylith {
     namespace feassemble {
 
-        class ConstraintPointwise : public pylith::utils::PyreComponent { // class ConstraintPointwise
+        class ConstraintPointwise :
+            public pylith::feassemble::ObservedComponent {
 
             // PUBLIC METHODS /////////////////////////////////////////////////
 public:
@@ -65,7 +66,7 @@ public:
              *
              * @returns field Field over boundary.
              */
-            const pylith::topology::Field& auxField(void) const;
+            const pylith::topology::Field* auxField(void) const;
 
             /** Set spatial database for auxiliary fields.
              *
@@ -82,22 +83,16 @@ public:
              * @param[in] feSpace Finite-element space.
              */
             void auxSubfieldDiscretization(const char* name,
-					   const int basisOrder,
-					   const int quadOrder,
-					   const bool isBasisContinuous,
-					   const pylith::topology::FieldBase::SpaceEnum feSpace);
+                                           const int basisOrder,
+                                           const int quadOrder,
+                                           const bool isBasisContinuous,
+                                           const pylith::topology::FieldBase::SpaceEnum feSpace);
 
             /** Set manager of scales used to nondimensionalize problem.
              *
              * @param dim Nondimensionalizer.
              */
             void normalizer(const spatialdata::units::Nondimensional& dim);
-
-	    /** Set output manager.
-	     *
-	     * @param[in] manager Output manager for integrator.
-	     */
-	    void output(pylith::meshio::OutputManager* manager);
 
             /** Verify configuration is acceptable.
              *
@@ -113,10 +108,6 @@ public:
             virtual
             void initialize(const pylith::topology::Field& solution) = 0;
 
-	    // Write information (auxiliary field) output.
-	    virtual
-	    void writeInfo(void);
-
             /** Update auxiliary fields at beginning of time step.
              *
              * @param[in] t Current time.
@@ -125,6 +116,19 @@ public:
             virtual
             void prestep(const double t,
                          const double dt);
+
+            /** Update at end of time step.
+             *
+             * @param[in] t Current time.
+             * @param[in] tindex Current time step.
+             * @param[in] dt Current time step.
+             * @param[in] solution Solution at time t.
+             */
+            virtual
+            void poststep(const PylithReal t,
+                          const PylithInt tindex,
+                          const PylithReal dt,
+                          const pylith::topology::Field& solution);
 
             /** Set constrained values in solution field.
              *

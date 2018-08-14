@@ -19,31 +19,27 @@
 #
 # Factory: boundary_condition
 
-from .Neumann import Neumann
+from .IntegratorBoundary import IntegratorBoundary
 from .bc import NeumannTimeDependent as ModuleNeumannTimeDependent
 from pylith.utils.NullComponent import NullComponent
 
-# NeumannTimeDependent class
 
-
-class NeumannTimeDependent(Neumann,
-                           ModuleNeumannTimeDependent):
+class NeumannTimeDependent(IntegratorBoundary, ModuleNeumannTimeDependent):
     """
-    Python object for managing a time-dependent Neumann (prescribed values)
-    boundary condition.
+    Python object for managing a time-dependent Neumann (natural) boundary condition.
 
-    Factory: boundary_condition
+    INVENTORY
+
+    Properties
+      - *use_initial* Use initial term in time-dependent expression.
+      - *use_rate* Use rate term in time-dependent expression.
+      - *use_time_history* Use time history term in time-dependent expression.
+
+    Facilities
+      - *auxiliary_subfields* Discretization of time-dependent Neumann parameters.
+
+    FACTORY: boundary_condition
     """
-
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li \b use_initial Use initial term in time-dependent expression.
-    # @li \b use_rate Use rate term in time-dependent expression.
-    # @li \b use_time_history Use time history term in time-dependent expression.
-    #
-    # \b Facilities
-    # @li None
 
     import pyre.inventory
 
@@ -61,8 +57,9 @@ class NeumannTimeDependent(Neumann,
 
     from .AuxFieldsTimeDependent import AuxFieldsTimeDependent
     from pylith.topology.AuxSubfield import subfieldFactory
-    auxSubfields = pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsTimeDependent)
-    auxSubfields.meta['tip'] = "Discretization of constraint parameters."
+    auxSubfields = pyre.inventory.facilityArray(
+        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsTimeDependent)
+    auxSubfields.meta['tip'] = "Discretization of time-dependent Neumann parameters."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -70,7 +67,7 @@ class NeumannTimeDependent(Neumann,
         """
         Constructor.
         """
-        Neumann.__init__(self, name)
+        IntegratorBoundary.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
@@ -80,9 +77,10 @@ class NeumannTimeDependent(Neumann,
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
         if 0 == comm.rank:
-            self._info.log("Performing minimal initialization of time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
+            self._info.log(
+                "Performing minimal initialization of time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
 
-        Neumann.preinitialize(self, mesh)
+        IntegratorBoundary.preinitialize(self, mesh)
 
         ModuleNeumannTimeDependent.useInitial(self, self.useInitial)
         ModuleNeumannTimeDependent.useRate(self, self.useRate)
@@ -98,11 +96,13 @@ class NeumannTimeDependent(Neumann,
         Setup members using inventory.
         """
         if self.inventory.useTimeHistory and isinstance(self.inventory.dbTimeHistory, NullComponent):
-            raise ValueError("Missing time history database for time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
+            raise ValueError(
+                "Missing time history database for time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
         if not self.inventory.useTimeHistory and not isinstance(self.inventory.dbTimeHistory, NullComponent):
-            self._warning.log("Ignoring time history database setting for time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
+            self._warning.log(
+                "Ignoring time history database setting for time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
 
-        Neumann._configure(self)
+        IntegratorBoundary._configure(self)
         return
 
     def _createModuleObj(self):

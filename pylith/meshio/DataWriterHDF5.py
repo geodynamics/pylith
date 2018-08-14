@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,9 +13,8 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pyre/meshio/DataWriterHDF5.py
-##
+#
 # @brief Python object for writing finite-element data to HDF5 file.
 
 from DataWriter import DataWriter
@@ -28,13 +25,13 @@ class DataWriterHDF5(DataWriter, ModuleDataWriterHDF5):
     """
     Python object for writing finite-element data to HDF5 file.
 
-    Inventory
+    INVENTORY
 
-    \b Properties
-    @li \b filename Name of HDF5 file.
+    Properties
+      - *filename* Name of HDF5 file.
 
-    \b Facilities
-    @li None
+    Facilities
+      - None
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
@@ -62,6 +59,14 @@ class DataWriterHDF5(DataWriter, ModuleDataWriterHDF5):
 
         ModuleDataWriterHDF5.filename(self, self.filename)
         return
+
+    # PRIVATE METHODS /////////////////////////////////////////////////////
+
+    def _createModuleObj(self):
+        """Create handle to C++ object."""
+        ModuleDataWriterHDF5.__init__(self)
+        return
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

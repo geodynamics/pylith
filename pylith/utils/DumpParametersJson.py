@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,38 +13,32 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/utils/DumpParametersJson.py
-##
+#
 # @brief Python DumpParameters object for dumping PyLith parameter information to a JSON file.
 
 from .DumpParameters import DumpParameters
-
-# DumpParameters class
 
 
 class DumpParametersJson(DumpParameters):
     """
     Python DumpParameters object for dumping PyLith parameter information to a JSON file.
-    """
 
-    # INVENTORY //////////////////////////////////////////////////////////
+    INVENTORY
+
+    Properties
+      - *filename* Name of file written with parameters.
+      - *style* Style of JSON file [compact, normal].
+      - *indent* Number of spaces to indent, use negative number for no newlines.
+
+    Facilities
+      - None
+    """
 
     class Inventory(DumpParameters.Inventory):
         """
         Python object for managing DumpParametersJson facilities and properties.
         """
-
-        # @class Inventory
-        # Python object for managing DumpParametersJson facilities and properties.
-        #
-        # \b Properties
-        # @li \b filename Name of file written with parameters.
-        # @li \b style Style of JSON file [compact, normal].
-        # @li \b indent Number of spaces to indent, use negative number for no newlines.
-        #
-        # \b Facilities
-        # @li Nones
 
         import pyre.inventory
 

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,17 +13,14 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/bc/ZeroDB.py
-##
+#
 # @brief Python object for spatial database with uniform zero initial
 # amplitude values for degrees of freedom.
-##
+#
 # Factory: spatial_database
 
 from spatialdata.spatialdb.UniformDB import UniformDB
-
-# ZeroDB class
 
 
 class ZeroDB(UniformDB):
@@ -33,16 +28,16 @@ class ZeroDB(UniformDB):
     Python object for spatial database with uniform zero initial amplitude values
     for degrees of freedom.
 
+    INVENTORY
+
+    Properties
+      - *label* Label for ZeroDB spatial database.
+
+    Facilities
+      - None
+
     Factory: spatial_database
     """
-
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li None
-    #
-    # \b Facilities
-    # @li none
 
     import pyre.inventory
 
@@ -51,6 +46,7 @@ class ZeroDB(UniformDB):
     data = [0.0 * m, 0.0 * m, 0.0 * m]
 
     label = pyre.inventory.str("label", default="Zero initial amplitude spatial database.")
+    label.meta["tip"] = "Label for ZeroDB spatial database."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

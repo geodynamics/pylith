@@ -67,6 +67,12 @@ public:
      */
     void timeScale(const PylithScalar value);
 
+    /** Is data writer open, i.e., ready for openTimeStep()/closeTimeStep()?
+     *
+     * @returns True if data writer is open, false otherwise.
+     */
+    bool isOpen(void) const;
+
     /** Prepare for writing files.
      *
      * @param[in] mesh Finite-element mesh.
@@ -78,7 +84,7 @@ public:
     virtual
     void open(const pylith::topology::Mesh& mesh,
               const bool isInfo,
-              const char* label=0,
+              const char* label=NULL,
               const int labelId=0);
 
     /// Close output files.
@@ -96,7 +102,7 @@ public:
     virtual
     void openTimeStep(const PylithScalar t,
                       const topology::Mesh& mesh,
-                      const char* label=0,
+                      const char* label=NULL,
                       const int labelId=0);
 
     /// Cleanup after writing data for a time step.
@@ -125,7 +131,7 @@ public:
     virtual
     void writeCellField(const PylithScalar t,
                         pylith::topology::Field& field,
-                        const char* label=0,
+                        const char* label=NULL,
                         const int labelId=0) = 0;
 
     /** Write dataset with names of points to file.
@@ -166,8 +172,9 @@ private:
 protected:
 
     PylithScalar _timeScale;   ///< Time scale for dimensioning time in output.
-    bool _isInfo;   ///< True if only writing info values.
     std::string _context;   ///< Context of scatters for DataWriter.
+    bool _isInfo;   ///< True if only writing info values.
+    bool _isOpen; ///< True if writer is ready for openTimeStep()/closeTimeStep().
 
 }; // DataWriter
 

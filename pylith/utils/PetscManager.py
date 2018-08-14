@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,20 +13,19 @@
 #
 # ----------------------------------------------------------------------
 #
-
-## @file pylith/utils/PetscManager.py
-##
-## @brief Python PetscManager object for managing PETSc options.
-##
-## The PetscManager also takes care of initializing and finalizing
-## PETSc.
-##
-## Factory: petsc_manager
+# @file pylith/utils/PetscManager.py
+#
+# @brief Python PetscManager object for managing PETSc options.
+#
+# The PetscManager also takes care of initializing and finalizing
+# PETSc.
+#
+# Factory: petsc_manager
 
 from pyre.components.Component import Component
 import pylith.utils.petsc as petsc
 
-# PetscManager class
+
 class PetscManager(Component):
   """
   Python PetscManager object for managing PETSc options.
@@ -75,7 +72,7 @@ class PetscManager(Component):
       self._info.log("Finalizing PETSc.")
     petsc.finalize()
     return
-  
+
 
   def setOption(self, name, value):
     """
@@ -118,4 +115,4 @@ def petsc_manager():
   return PetscManager()
 
 
-# End of file 
+# End of file

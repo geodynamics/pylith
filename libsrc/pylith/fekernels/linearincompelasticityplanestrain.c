@@ -283,7 +283,7 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1v_refstate(const P
  * @param a_t Time derivative of auxiliary field.
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
- * @param utshift Coefficient for dF/ds_t term in Jacobian.
+ * @param s_tshift Coefficient for dF/ds_t term in Jacobian.
  * @param x Coordinates of point evaluation.
  * @param f0 Result [dim*dim].
  */
@@ -302,7 +302,7 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jf0vv_implicit(const
                                                                            const PylithScalar a_t[],
                                                                            const PylithScalar a_x[],
                                                                            const PylithReal t,
-                                                                           const PylithReal utshift,
+                                                                           const PylithReal s_tshift,
                                                                            const PylithScalar x[],
                                                                            const PylithInt numConstants,
                                                                            const PylithScalar constants[],
@@ -321,7 +321,7 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jf0vv_implicit(const
     assert(a);
 
     for (i = 0; i < _dim; ++i) {
-        Jf0[i*_dim+i] += utshift * density;
+        Jf0[i*_dim+i] += s_tshift * density;
     } /* for */
 } /* IsotropicLinearIncompElasticityPlaneStrain_Jf0vv_implicit */
 
@@ -344,7 +344,7 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jf0vv_implicit(const
  * @param a_t Time derivative of auxiliary field.
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
- * @param utshift Coefficient for dF/ds_t term in Jacobian.
+ * @param s_tshift Coefficient for dF/ds_t term in Jacobian.
  * @param x Coordinates of point evaluation.
  * @param f0 Result [dim*dim].
  */
@@ -363,7 +363,7 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jf0vv_explicit(const
                                                                            const PylithScalar a_t[],
                                                                            const PylithScalar a_x[],
                                                                            const PylithReal t,
-                                                                           const PylithReal utshift,
+                                                                           const PylithReal s_tshift,
                                                                            const PylithScalar x[],
                                                                            const PylithInt numConstants,
                                                                            const PylithScalar constants[],
@@ -410,7 +410,7 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3vu(const PylithIn
                                                                   const PylithScalar a_t[],
                                                                   const PylithScalar a_x[],
                                                                   const PylithReal t,
-                                                                  const PylithReal utshift,
+                                                                  const PylithReal s_tshift,
                                                                   const PylithScalar x[],
                                                                   const PylithInt numConstants,
                                                                   const PylithScalar constants[],
@@ -487,7 +487,7 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg1pu(const PylithIn
                                                                   const PylithScalar a_t[],
                                                                   const PylithScalar a_x[],
                                                                   const PylithReal t,
-                                                                  const PylithReal utshift,
+                                                                  const PylithReal s_tshift,
                                                                   const PylithScalar x[],
                                                                   const PylithInt numConstants,
                                                                   const PylithScalar constants[],
@@ -529,7 +529,7 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg2vp(const PylithIn
                                                                   const PylithScalar a_t[],
                                                                   const PylithScalar a_x[],
                                                                   const PylithReal t,
-                                                                  const PylithReal utshift,
+                                                                  const PylithReal s_tshift,
                                                                   const PylithScalar x[],
                                                                   const PylithInt numConstants,
                                                                   const PylithScalar constants[],

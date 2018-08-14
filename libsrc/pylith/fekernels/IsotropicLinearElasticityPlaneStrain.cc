@@ -342,7 +342,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jg3vu(const PylithInt d
                                                                const PylithScalar a_t[],
                                                                const PylithScalar a_x[],
                                                                const PylithReal t,
-                                                               const PylithReal utshift,
+                                                               const PylithReal s_tshift,
                                                                const PylithScalar x[],
                                                                const PylithInt numConstants,
                                                                const PylithScalar constants[],

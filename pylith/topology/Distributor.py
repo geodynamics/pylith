@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,33 +13,30 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/topology/Distributor.py
-##
+#
 # @brief Python manager for distributing mesh among processors.
-##
+#
 # Factory: mesh_distributor.
 
 from pylith.utils.PetscComponent import PetscComponent
 from topology import Distributor as ModuleDistributor
-
-# Distributor class
 
 
 class Distributor(PetscComponent, ModuleDistributor):
     """
     Python manager for distributing mesh among processors.
 
-    Inventory
+    INVENTORY
 
-    \b Properties
-    @li \b partitioner Name of mesh partitioner {"metis", "chaco"}.
-    @li \b writePartition Write partition information to file.
+    Properties
+      - *partitioner* Name of mesh partitioner ["metis", "chaco"].
+      - *write_partition* Write partition information to file.
 
-    \b Facilities
-    @li \b writer Data writer for for partition information.
+    Facilities
+      - *data_writer* Data writer for for partition information.
 
-    Factory: mesh_distributor
+    FACTORY: mesh_distributor
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
@@ -65,6 +60,10 @@ class Distributor(PetscComponent, ModuleDistributor):
         Constructor.
         """
         PetscComponent.__init__(self, name, facility="mesh_distributor")
+        return
+
+    def preinitialize(self):
+        """Do minimal initialization."""
         ModuleDistributor.__init__(self)
         return
 
@@ -84,12 +83,7 @@ class Distributor(PetscComponent, ModuleDistributor):
             partitionerName = self.partitioner
         ModuleDistributor.distribute(newMesh, mesh, partitionerName)
 
-        #from pylith.utils.petsc import MemoryLogger
-        #memoryLogger = MemoryLogger.singleton()
-
-        # memoryLogger.stagePush(mesh.memLoggingStage)
         mesh.cleanup()
-        # memoryLogger.stagePop()
 
         if self.writePartition:
             self.dataWriter.initialize(normalizer)

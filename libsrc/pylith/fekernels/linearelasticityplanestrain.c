@@ -389,7 +389,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_implicit(const Pylit
                                                                      const PylithScalar a_t[],
                                                                      const PylithScalar a_x[],
                                                                      const PylithReal t,
-                                                                     const PylithReal utshift,
+                                                                     const PylithReal s_tshift,
                                                                      const PylithScalar x[],
                                                                      const PylithInt numConstants,
                                                                      const PylithScalar constants[],
@@ -409,7 +409,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_implicit(const Pylit
     assert(a);
 
     for (i = 0; i < _dim; ++i) {
-        Jf0[i*_dim+i] += utshift * density;
+        Jf0[i*_dim+i] += s_tshift * density;
     } /* for */
 } /* IsotropicLinearElasticityPlaneStrain_Jf0vv_implicit */
 
@@ -432,7 +432,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_explicit(const Pylit
                                                                      const PylithScalar a_t[],
                                                                      const PylithScalar a_x[],
                                                                      const PylithReal t,
-                                                                     const PylithReal utshift,
+                                                                     const PylithReal s_tshift,
                                                                      const PylithScalar x[],
                                                                      const PylithInt numConstants,
                                                                      const PylithScalar constants[],
@@ -486,7 +486,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3vu(const PylithInt dim,
                                                             const PylithScalar a_t[],
                                                             const PylithScalar a_x[],
                                                             const PylithReal t,
-                                                            const PylithReal utshift,
+                                                            const PylithReal s_tshift,
                                                             const PylithScalar x[],
                                                             const PylithInt numConstants,
                                                             const PylithScalar constants[],

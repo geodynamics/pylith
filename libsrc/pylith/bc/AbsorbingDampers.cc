@@ -40,11 +40,24 @@
     // USES std::ostringstream
 
 // ----------------------------------------------------------------------
+const char* pylith::bc::AbsorbingDampers::_pyreComponent = "absorbingdampers";
+
+// Local "private" functions.
+namespace pylith {
+    namespace bc {
+        static void _setFEKernelsRHSResidual(const AbsorbingDampers* const bc,
+                                             PetscDS prob,
+                                             const PylithInt fieldIndex);
+    } // bc
+} // pylith
+
+// ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::AbsorbingDampers::AbsorbingDampers(void) :
-    _boundaryMesh(NULL),
     _auxAbsorbingDampersFactory(new pylith::bc::AbsorbingDampersAuxiliaryFactory)
 { // constructor
+    PyreComponent::name(_pyreComponent);
+
     _field = "velocity";
 } // constructor
 
@@ -60,9 +73,8 @@ void
 pylith::bc::AbsorbingDampers::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    IntegratorPointwise::deallocate();
+    IntegratorBoundary::deallocate();
 
-    delete _boundaryMesh; _boundaryMesh = NULL;
     delete _auxAbsorbingDampersFactory; _auxAbsorbingDampersFactory = NULL;
 
     PYLITH_METHOD_END;
@@ -75,12 +87,7 @@ pylith::bc::AbsorbingDampers::verifyConfiguration(const pylith::topology::Field&
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
 
-    if (!solution.hasSubfield(_field.c_str())) {
-        std::ostringstream msg;
-        msg << "Cannot apply absorbing boundary condition to field '"<< _field
-            << "'; field is not in solution.";
-        throw std::runtime_error(msg.str());
-    } // if
+    IntegratorBoundary::verifyConfiguration(solution);
 
     const pylith::topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
     if (pylith::topology::Field::VECTOR != info.description.vectorFieldType) {
@@ -92,122 +99,6 @@ pylith::bc::AbsorbingDampers::verifyConfiguration(const pylith::topology::Field&
 
     PYLITH_METHOD_END;
 } // verifyConfiguration
-
-
-// ----------------------------------------------------------------------
-// Initialize boundary condition.
-void
-pylith::bc::AbsorbingDampers::initialize(const pylith::topology::Field& solution) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("initialize(solution="<<solution.label()<<")");
-
-    _setFEKernelsRHSResidual(solution);
-
-    _boundaryMesh = new pylith::topology::Mesh(solution.mesh(), _label.c_str()); assert(_boundaryMesh);
-    PetscDM dmBoundary = _boundaryMesh->dmMesh(); assert(dmBoundary);
-    pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
-
-    delete _auxField; _auxField = new pylith::topology::Field(*_boundaryMesh); assert(_auxField);
-    _auxField->label("auxiliary subfields");
-    _auxFieldSetup(solution);
-    _auxField->subfieldsSetup();
-    _auxField->allocate();
-    _auxField->zeroLocal();
-
-    assert(_normalizer);
-    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
-    factory->initializeSubfields();
-
-    //_auxField->view("AUXILIARY FIELD"); // :DEBUG:
-
-    PYLITH_METHOD_END;
-} // initialize
-
-// ----------------------------------------------------------------------
-// Compute RHS residual for G(t,s).
-void
-pylith::bc::AbsorbingDampers::computeRHSResidual(pylith::topology::Field* residual,
-                                                 const PylithReal t,
-                                                 const PylithReal dt,
-                                                 const pylith::topology::Field& solution) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
-
-    _setFEKernelsRHSResidual(solution);
-
-    pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
-    solutionDot.label("solution_dot");
-
-    assert(residual);
-    assert(_auxField);
-
-    PetscDS prob = NULL;
-    PetscErrorCode err;
-
-    PetscDM dmSoln = solution.dmMesh();
-    PetscDM dmAux = _auxField->dmMesh();
-    PetscDMLabel dmLabel;
-
-    // Pointwise function have been set in DS
-    err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
-
-    // Get auxiliary data
-    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxField->localVector()); PYLITH_CHECK_ERROR(err);
-
-    // Compute the local residual
-    assert(solution.localVector());
-    assert(residual->localVector());
-    err = DMGetLabel(dmSoln, _label.c_str(), &dmLabel); PYLITH_CHECK_ERROR(err);
-    const int labelId = 1;
-    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
-
-    //solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
-
-    PYLITH_COMPONENT_DEBUG("DMPlexComputeBdResidualSingle() for boundary '"<<label()<<"')");
-    err = DMPlexComputeBdResidualSingle(dmSoln, t, dmLabel, 1, &labelId, info.index, solution.localVector(), solutionDot.localVector(), residual->localVector()); PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_END;
-} // computeRHSResidual
-
-// ----------------------------------------------------------------------
-// Compute RHS Jacobian and preconditioner for G(t,s).
-void
-pylith::bc::AbsorbingDampers::computeRHSJacobian(PetscMat jacobianMat,
-                                                 PetscMat preconMat,
-                                                 const PylithReal t,
-                                                 const PylithReal dt,
-                                                 const pylith::topology::Field& solution) {}
-
-// ----------------------------------------------------------------------
-// Compute LHS residual for F(t,s,\dot{s}).
-void
-pylith::bc::AbsorbingDampers::computeLHSResidual(pylith::topology::Field* residual,
-                                                 const PylithReal t,
-                                                 const PylithReal dt,
-                                                 const pylith::topology::Field& solution,
-                                                 const pylith::topology::Field& solutionDot) {}
-
-// ----------------------------------------------------------------------
-// Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
-void
-pylith::bc::AbsorbingDampers::computeLHSJacobianImplicit(PetscMat jacobianMat,
-                                                         PetscMat precondMat,
-                                                         const PylithReal t,
-                                                         const PylithReal dt,
-                                                         const PylithReal tshift,
-                                                         const pylith::topology::Field& solution,
-                                                         const pylith::topology::Field& solutionDot) {}
-
-
-// ----------------------------------------------------------------------
-// Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
-void
-pylith::bc::AbsorbingDampers::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                                          const PylithReal t,
-                                                          const PylithReal dt,
-                                                          const PylithReal tshift,
-                                                          const pylith::topology::Field& solution) {}
 
 
 // ----------------------------------------------------------------------
@@ -234,33 +125,82 @@ pylith::bc::AbsorbingDampers::_auxFieldSetup(const pylith::topology::Field& solu
 
 
 // ----------------------------------------------------------------------
-// Set kernels for RHS residual G(t,s).
-void
-pylith::bc::AbsorbingDampers::_setFEKernelsRHSResidual(const pylith::topology::Field& solution) const
-{ // _setFEKernelsResidual
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsResidual(solution="<<solution.label()<<")");
-
-    const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
-    PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
-
-    PetscBdPointFunc g0 = pylith::fekernels::AbsorbingDampers::g0;
-    PetscBdPointFunc g1 = NULL;
-
-    const int fieldIndex = solution.subfieldInfo(_field.c_str()).index;
-    err = PetscDSSetBdResidual(prob, fieldIndex, g0, g1); PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_END;
-} // _setFEKernelsResidual
-
-
-// ----------------------------------------------------------------------
 // Get factory for setting up auxliary fields.
 pylith::feassemble::AuxiliaryFactory*
 pylith::bc::AbsorbingDampers::_auxFactory(void) {
     return _auxAbsorbingDampersFactory;
 } // _auxFactory
+
+
+// ----------------------------------------------------------------------
+// Does boundary conditon have point-wise functions (kernels) for integration/projection.
+bool
+pylith::bc::AbsorbingDampers::_hasFEKernels(IntegratorPointwise::FEKernelKeys kernelsKey) const {
+    bool hasKernels = false;
+    switch (kernelsKey) {
+    case KERNELS_RHS_RESIDUAL:
+        hasKernels = true;
+        break;
+    case KERNELS_LHS_RESIDUAL:
+    case KERNELS_RHS_JACOBIAN:
+    case KERNELS_LHS_JACOBIAN:
+    case KERNELS_LHS_JACOBIAN_LUMPEDINV:
+    case KERNELS_UPDATE_STATE_VARS:
+    case KERNELS_DERIVED_FIELDS:
+        hasKernels = false;
+        break;
+    default:
+        PYLITH_COMPONENT_ERROR("Unrecognized finite-element kernels key '"<<kernelsKey<<"'.");
+        throw std::logic_error("Unrecognized finite-element kernels key.");
+    } // switch
+    return hasKernels;
+} // _hasKernels
+
+
+// ----------------------------------------------------------------------
+// Set point-wise functions (kernels) for integration/projection.
+void
+pylith::bc::AbsorbingDampers::_setFEKernels(const pylith::topology::Field& solution,
+                                            IntegratorPointwise::FEKernelKeys kernelsKey) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setFEKernels(solution="<<solution.label()<<", kernelsKey="<<kernelsKey<<")");
+
+    const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
+    PetscDS prob = NULL;
+    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
+
+    const int fieldIndex = solution.subfieldInfo(_field.c_str()).index;
+
+    switch (kernelsKey) {
+    case KERNELS_RHS_RESIDUAL:
+        _setFEKernelsRHSResidual(this, prob, fieldIndex);
+        break;
+    case KERNELS_LHS_RESIDUAL:
+    case KERNELS_RHS_JACOBIAN:
+    case KERNELS_LHS_JACOBIAN:
+    case KERNELS_LHS_JACOBIAN_LUMPEDINV:
+    case KERNELS_UPDATE_STATE_VARS:
+    case KERNELS_DERIVED_FIELDS:
+        break;
+    } // switch
+} // _setFEKernels
+
+
+// ----------------------------------------------------------------------
+// Set point-wise functions (kernels) for integrating RHS residual for vector field.
+void
+pylith::bc::_setFEKernelsRHSResidual(const AbsorbingDampers* const bc,
+                                     PetscDS prob,
+                                     const PylithInt fieldIndex) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscBdPointFunc g0 = pylith::fekernels::AbsorbingDampers::g0;
+    PetscBdPointFunc g1 = NULL;
+
+    PetscErrorCode err = PetscDSSetBdResidual(prob, fieldIndex, g0, g1); PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+} // _setFEKernelsRHSResidualVector
 
 
 // End of file

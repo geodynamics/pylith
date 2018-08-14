@@ -25,8 +25,8 @@
 namespace pylith {
     namespace problems {
 
-        class Problem : public pylith::utils::PyreComponent
-         { // Problem
+        class Problem :
+	          public pylith::feassemble::ObservedComponent {
 
 // PUBLIC ENUM ////////////////////////////////////////////////////
 public:
@@ -95,14 +95,6 @@ public:
          */
         void constraints(pylith::feassemble::ConstraintPointwise* constraintArray[],
                          const int numConstraints);
-
-        /** Set handles to solution outputs.
-         *
-         * @param[in] outputArray Array of solution outputs.
-         * @param[in] numOutputs Number of solution outputs.
-         */
-        void outputs(pylith::meshio::OutputSoln* outputArray[],
-                     const int numOutputs);
 
         /** Do minimal initialization.
          *
@@ -187,7 +179,7 @@ public:
          * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
          * @param[in] t Current time.
          * @param[in] dt Current time step.
-         * @param[in] tshift Scale for time derivative.
+         * @param[in] s_tshift Scale for time derivative.
          * @param[in] solutionVec PETSc Vec with current trial solution.
          * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
          */
@@ -195,7 +187,7 @@ public:
                                         PetscMat precondMat,
                                         const PylithReal t,
                                         const PylithReal dt,
-                                        const PylithReal tshift,
+                                        const PylithReal s_tshift,
                                         PetscVec solutionVec,
                                         PetscVec solutionDotVec);
 
@@ -203,12 +195,12 @@ public:
          *
          * @param[in] t Current time.
          * @param[in] dt Current time step.
-         * @param[in] tshift Scale for time derivative.
+         * @param[in] s_tshift Scale for time derivative.
          * @param[in] solutionVec PETSc Vec with current trial solution.
          */
         void computeLHSJacobianLumpedInv(const PylithReal t,
                                          const PylithReal dt,
-					 const PylithReal tshift,
+					 const PylithReal s_tshift,
                                          PetscVec solutionVec);
 
 
