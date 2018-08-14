@@ -25,12 +25,12 @@
 #if !defined(pylith_feassemble_integratordomain_hh)
 #define pylith_feassemble_integratordomain_hh
 
-#include "feassemblefwd.hh"// forward declarations
+#include "feassemblefwd.hh" // forward declarations
 
-#include "pylith/feassemble/Integrator.hh"// ISA Integrator
+#include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 class pylith::feassemble::IntegratorDomain : public pylith::feassemble::Integrator {
-    friend class TestIntegratorDomain;// unit testing
+    friend class TestIntegratorDomain; // unit testing
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -51,35 +51,23 @@ public:
      */
     int getDimension(void) const;
 
-    /** Set identifier of material.
+    /** Set value of label material-id used to identify material cells.
      *
      * @param value Material identifier
      */
-    void setId(const int value);
+    void setMaterialId(const int value);
 
-    /** Get identifier of material.
+    /** Get value of label material-id used to identify material cells.
      *
      * @returns Material identifier
      */
-    int getId(void) const;
-
-    /** Set label of material.
-     *
-     * @param value Label of material
-     */
-    void setLabel(const char* value);
-
-    /** Get label of material.
-     *
-     * @returns Label of material
-     */
-    const char* getLabel(void) const;
+    int getMaterialId(void) const;
 
     /** Set gravity field.
      *
      * @param g Gravity field.
      */
-    void gravityField(spatialdata::spatialdb::GravityField* const g);
+    void setGravityField(spatialdata::spatialdb::GravityField* const g);
 
     /** Add kernels for RHS residual.
      *
@@ -253,29 +241,26 @@ protected:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    std::vector<ResidualKernels> _kernelsRHSResidual;///< kernels for RHS residual.
-    std::vector<ResidualKernels> _kernelsRHSResidual;///< kernels for LHS residual.
+    std::vector<ResidualKernels> _kernelsRHSResidual; ///< kernels for RHS residual.
+    std::vector<ResidualKernels> _kernelsRHSResidual; ///< kernels for LHS residual.
 
-    std::vector<JacobianKernels> _kernelsRHSJacobian;///< kernels for RHS Jacobian.
-    std::vector<JacobianKernels> _kernelsLHSJacobian;///> kernels for LHS Jacobian.
+    std::vector<JacobianKernels> _kernelsRHSJacobian; ///< kernels for RHS Jacobian.
+    std::vector<JacobianKernels> _kernelsLHSJacobian; ///> kernels for LHS Jacobian.
 
-    std::vector<ProjectKernels> _kernelsUpstateStateVars;///< kernels for updating state variables.
-    std::vector<ProjectKernels> _kernelsDerivedField;///< kernels for computing derived field.
+    std::vector<ProjectKernels> _kernelsUpstateStateVars; ///< kernels for updating state variables.
+    std::vector<ProjectKernels> _kernelsDerivedField; ///< kernels for computing derived field.
 
     const int _dimension;
-    int _id;
-    std::string _label;
+    int _materialId;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    IntegratorDomain(const IntegratorDomain&);///< Not implemented.
-    const IntegratorDomain& operator=(const IntegratorDomain&);///< Not implemented.
+    IntegratorDomain(const IntegratorDomain&); ///< Not implemented.
+    const IntegratorDomain& operator=(const IntegratorDomain&); ///< Not implemented.
 
-};
+}; // IntegratorDomain
 
-// IntegratorDomain
-
-#endif// pylith_feassemble_integratordomain_hh
+#endif // pylith_feassemble_integratordomain_hh
 
 // End of file
