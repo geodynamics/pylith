@@ -46,7 +46,7 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
   const char *groupName = "";
 
   if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
-  err = DMPlexCreateSubmesh(dmMesh, groupField, 1, &subdm);PYLITH_CHECK_ERROR(err);
+  err = DMPlexCreateSubmesh(dmMesh, groupField, 1, PETSC_FALSE, &subdm);PYLITH_CHECK_ERROR(err);
   // Check that no cell have all vertices on the fault
   if (groupField) {
     IS              subpointIS;
@@ -186,7 +186,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   }
   // Completes the set of cells scheduled to be replaced
   err = DMPlexLabelCohesiveComplete(dm, label, faultBdLabel, PETSC_FALSE, faultMesh.dmMesh());PYLITH_CHECK_ERROR(err);
-  err = DMPlexConstructCohesiveCells(dm, label, &sdm);PYLITH_CHECK_ERROR(err);
+  err = DMPlexConstructCohesiveCells(dm, label, NULL, &sdm);PYLITH_CHECK_ERROR(err);
 
   err = DMGetLabel(sdm, "material-id", &mlabel);PYLITH_CHECK_ERROR(err);
   if (mlabel) {

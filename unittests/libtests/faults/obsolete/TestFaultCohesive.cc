@@ -838,16 +838,18 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
     const PetscInt *points = NULL;
     PetscInt numPoints = 0, depth = 0;
     const char *name = NULL;
-    std::string skipA = "depth";
-    std::string skipB = "material-id";
-    std::string skipC = "vtk";
-    std::string skipD = "ghost";
+    const std::string skipA = "depth";
+    const std::string skipB = "material-id";
+    const std::string skipC = "vtk";
+    const std::string skipD = "ghost";
+    const std::string skipE = "dim";
 
     err = DMGetLabelName(dmMesh, l, &name);PYLITH_CHECK_ERROR(err);
     if (std::string(name) == skipA) continue;
     if (std::string(name) == skipB) continue;
     if (std::string(name) == skipC) continue;
     if (std::string(name) == skipD) continue;
+    if (std::string(name) == skipE) continue;
     err = DMGetLabel(dmMesh, name, &label);PYLITH_CHECK_ERROR(err);CPPUNIT_ASSERT(label);
     err = DMLabelGetStratumIS(label, 1, &is);PYLITH_CHECK_ERROR(err);
     err = ISGetLocalSize(is, &numPoints);PYLITH_CHECK_ERROR(err);
@@ -977,16 +979,18 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
     const PetscInt *points = NULL;
     PetscInt numPoints = 0, depth = 0;
     const char *name = NULL;
-    std::string skipA = "depth";
-    std::string skipB = "material-id";
-    std::string skipC = "vtk";
-    std::string skipD = "ghost";
-
+    const std::string skipA = "depth";
+    const std::string skipB = "material-id";
+    const std::string skipC = "vtk";
+    const std::string skipD = "ghost";
+    const std::string skipE = "dim";
+    
     err = DMGetLabelName(dmMesh, l, &name);PYLITH_CHECK_ERROR(err);
     if (std::string(name) == skipA) continue;
     if (std::string(name) == skipB) continue;
     if (std::string(name) == skipC) continue;
     if (std::string(name) == skipD) continue;
+    if (std::string(name) == skipE) continue;
     err = DMGetLabel(dmMesh, name, &label);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT(label);
     err = DMLabelGetStratumIS(label, 1, &is);PYLITH_CHECK_ERROR(err);
