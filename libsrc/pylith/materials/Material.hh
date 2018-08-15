@@ -47,10 +47,10 @@
  *   + displacement, pressure, [velocity, Lagrange multipliers]
  */
 
-class pylith::materials::Material : public pylith::feassemble::IntegratorPointwise {
+class pylith::materials::Material : public pylith::problems::Physics {
     friend class AuxiliaryFactory; ///< Helper for setting up auxiliary fields.
 
-    friend class TestMaterial;   // unit testing
+    friend class TestMaterial; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
@@ -72,246 +72,94 @@ public:
      *
      * @returns Spatial dimension.
      */
-    int dimension(void) const;
+    int getDimension(void) const;
 
     /** Set identifier of material.
      *
      * @param value Material identifier
      */
-    void id(const int value);
+    void setMaterialId(const int value);
 
     /** Get identifier of material.
      *
      * @returns Material identifier
      */
-    int id(void) const;
+    int getMaterialId(void) const;
 
-    /** Set label of material.
+    /** Set descriptive label for material.
      *
-     * @param value Label of material
+     * @param value Label of material.
      */
-    void label(const char* value);
+    void setDescriptiveLabel(const char* value);
 
-    /** Get label of material.
+    /** Get descruptive label of material.
      *
      * @returns Label of material
      */
-    const char* label(void) const;
+    const char* getDescriptiveLabel(void) const;
 
-    /** Get mesh associated with integrator domain.
+    /** Create integrator and set kernels.
      *
-     * @returns Mesh associated with integrator domain.
+     * @solution Solution field.
+     * @returns Integrator if applicable, otherwise NULL.
      */
-    const pylith::topology::Mesh& domainMesh(void) const;
+    virtual
+    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution) = 0;
 
-    /** Initialize material. Setup auxiliary fields.
+    /** Create constraint and set kernels.
      *
-     * @param solution Solution field.
+     * @solution Solution field.
+     * @returns Constraint if applicable, otherwise NULL.
      */
-    void initialize(const pylith::topology::Field& solution);
+    virtual
+    pylith::feassemble::Constraint* createConstraint(const pylith::topology::Field& solution) = 0;
 
-    /** Compute RHS residual for G(t,s).
+    /** Create auxiliary field.
      *
-     * @param[out] residual Field for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
+     * @mesh Finite-element mesh associated with physics.
+     * @returns Auxiliary field if applicable, otherwise NULL.
      */
-    void computeRHSResidual(pylith::topology::Field* residual,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution);
+    virtual
+    pylith::topology::Field* createAuxiliaryField(const pylith::topology::Mesh& mesh) = 0;
 
-    /** Compute RHS Jacobian and preconditioner for G(t,s).
+    /** Create derived field.
      *
-     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
-     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
+     * @mesh Finite-element mesh associated with physics.
+     * @returns Derived field if applicable, otherwise NULL.
      */
-    void computeRHSJacobian(PetscMat jacobianMat,
-                            PetscMat preconMat,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution);
+    virtual
+    pylith::topology::Field* createDerivedField(const pylith::topology::Mesh& mesh) = 0;
 
-    /** Compute LHS residual for F(t,s,\dot{s}).
+    /** Verify configuration is acceptable.
      *
-     * @param[out] residual Field for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
-     * @param[in] solutionDot Field with time derivative of current trial solution.
+     * @param[in] solution Solution field.
      */
-    void computeLHSResidual(pylith::topology::Field* residual,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution,
-                            const pylith::topology::Field& solutionDot);
-
-    /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
-     *
-     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
-     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] s_tshift Scale for time derivative.
-     * @param[in] solution Field with current trial solution.
-     * @param[in] solutionDot Field with time derivative of current trial solution.
-     */
-    void computeLHSJacobianImplicit(PetscMat jacobianMat,
-                                    PetscMat precondMat,
-                                    const PylithReal t,
-                                    const PylithReal dt,
-                                    const PylithReal s_tshift,
-                                    const pylith::topology::Field& solution,
-                                    const pylith::topology::Field& solutionDot);
-
-
-    /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
-     *
-     * @param[out] jacobian Inverse of lumped Jacobian as a field.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] s_tshift Scale for time derivative.
-     * @param[in] solution Field with current trial solution.
-     */
-    void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                     const PylithReal t,
-                                     const PylithReal dt,
-                                     const PylithReal s_tshift,
-                                     const pylith::topology::Field& solution);
-
+    virtual
+    void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
 
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
-    /* Compute residual using current kernels.
-     *
-     * @param[out] residual Field for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
-     * @param[in] solutionDot Field with time derivative of current trial solution.
-     */
-    void _computeResidual(pylith::topology::Field* residual,
-                          const PylithReal t,
-                          const PylithReal dt,
-                          const pylith::topology::Field& solution,
-                          const pylith::topology::Field& solutionDot);
-
-    /* Compute Jacobian using current kernels.
-     *
-     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
-     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] s_tshift Scale for time derivative.
-     * @param[in] solution Field with current trial solution.
-     * @param[in] solutionDot Field with time derivative of current trial solution.
-     */
-    void _computeJacobian(PetscMat jacobianMat,
-                          PetscMat precondMat,
-                          const PylithReal t,
-                          const PylithReal dt,
-                          const PylithReal s_tshift,
-                          const pylith::topology::Field& solution,
-                          const pylith::topology::Field& solutionDot);
-
-    /** Setup auxiliary subfields (discretization and query fns).
-     *
-     * Create subfields in auxiliary fields (includes name of the field,
-     * vector field type, discretization, and scale for
-     * nondimensionalization) and set query functions for filling them
-     * from a spatial database.
-     *
-     * @attention The order of the calls to subfieldAdd() must match the
-     * order of the auxiliary fields in the FE kernels.
-     */
-    virtual
-    void _auxFieldSetup(void) = 0;
-
-    /** Set kernels for RHS residual G(t,s).
-     *
-     * Potentially, there are g0 and g1 kernels for each equation. If no
-     * kernel is needed, then set the kernel function to NULL.
-     *
-     * @param[inout] solution Solution field.
-     */
-    virtual
-    void _setFEKernelsRHSResidual(const pylith::topology::Field& solution) const = 0;
-
-
-    /** Set kernels for RHS Jacobian G(t,s).
-     *
-     * Potentially, there are Jg0, Jg1, Jg2, and Jg3 kernels for each
-     * combination of equations. If no kernel is needed, then set the
-     * kernel function to NULL.
-     *
-     * - Jg0(ifield, jfield)
-     * - Jg1(ifield, jfield, jdim)
-     * - Jg2(ifield, jfield, idim)
-     * - Jg3(ifield, jfield, idim, jdim)
-     *
-     * @param[inout] solution Solution field.
-     */
-    virtual
-    void _setFEKernelsRHSJacobian(const pylith::topology::Field& solution) const = 0;
-
-
-    /** Set kernels for LHS residual F(t,s,\dot{s}).
-     *
-     * Potentially, there are f0 and f1 kernels for each equation. If no
-     * kernel is needed, then set the kernel function to NULL.
-     *
-     * @param[inout] solution Solution field.
-     */
-    virtual
-    void _setFEKernelsLHSResidual(const pylith::topology::Field& solution) const = 0;
-
-
-    /** Set kernels for LHS Jacobian F(t,s,\dot{s}).
-     *
-     * - Jf0(ifield, jfield)
-     * - Jf1(ifield, jfield, jdim)
-     * - Jf2(ifield, jfield, idim)
-     * - Jf3(ifield, jfield, idim, jdim)
-     *
-     * @param[inout] solution Solution field.
-     */
-    virtual
-    void _setFEKernelsLHSJacobian(const pylith::topology::Field& solution) const = 0;
-
-
-    /** Get factory for setting up auxliary fields.
-     *
-     * @returns Factor for auxiliary fields.
-     */
-    pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
-
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
 
-    pylith::topology::StratumIS* _materialIS;   ///< Index set for material cells.
-    pylith::materials::AuxiliaryFactory* _auxMaterialFactory; ///< Factory for auxiliary subfields.
+    pylith::materials::AuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
 
-    const int _dimension;   ///< Spatial dimension of material.
-    int _id;   ///< Material identifier.
-    std::string _label;   ///< Label of material.
+    const int _dimension; ///< Spatial dimension of material.
+    int _materialId; ///< Material identifier.
+    std::string _label; ///< Label of material.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
 
-    Material(const Material&);   ///< Not implemented.
-    const Material& operator=(const Material&);   ///< Not implemented
+    Material(const Material&); ///< Not implemented.
+    const Material& operator=(const Material&); ///< Not implemented
 
 }; // class Material
 
 #endif // pylith_materials_material_hh
-
 
 // End of file

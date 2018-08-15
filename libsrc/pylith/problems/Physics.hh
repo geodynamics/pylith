@@ -50,33 +50,43 @@ public:
     virtual
     void deallocate(void);
 
+    /** Set manager of scales used to nondimensionalize problem.
+     *
+     * @param dim Nondimensionalizer.
+     */
+    void setNormalizer(const spatialdata::units::Nondimensional& dim);
+
     /** Create integrator and set kernels.
      *
      * @solution Solution field.
      * @returns Integrator if applicable, otherwise NULL.
      */
-    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution);
+    virtual
+    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution) = 0;
 
     /** Create constraint and set kernels.
      *
      * @solution Solution field.
      * @returns Constraint if applicable, otherwise NULL.
      */
-    pylith::feassemble::Constraint* createConstraint(const pylith::topology::Field& solution);
+    virtual
+    pylith::feassemble::Constraint* createConstraint(const pylith::topology::Field& solution) = 0;
 
     /** Create auxiliary field.
      *
      * @mesh Finite-element mesh associated with physics.
      * @returns Auxiliary field if applicable, otherwise NULL.
      */
-    pylith::topology::Field* createAuxiliaryField(const pylith::topology::Mesh& mesh);
+    virtual
+    pylith::topology::Field* createAuxiliaryField(const pylith::topology::Mesh& mesh) = 0;
 
     /** Create derived field.
      *
      * @mesh Finite-element mesh associated with physics.
      * @returns Derived field if applicable, otherwise NULL.
      */
-    pylith::topology::Field* createDerivedField(const pylith::topology::Mesh& mesh);
+    virtual
+    pylith::topology::Field* createDerivedField(const pylith::topology::Mesh& mesh) = 0;
 
     /** Verify configuration is acceptable.
      *
