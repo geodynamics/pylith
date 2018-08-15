@@ -18,7 +18,7 @@
 # @brief Python abstract base class for constraints on operator
 # actions with finite-elements.
 
-from pylith.feassemble.ObservedComponent import ObservedComponent
+from pylith.feassemble.Observers import Observers
 from .feassemble import ConstraintPointwise as ModuleConstraint
 
 import numpy
@@ -50,7 +50,7 @@ def observerFactory(name):
     return facility(name, family="observer", factory=OutputConstraint)
 
 
-class ConstraintPointwise(ObservedComponent, ModuleConstraint):
+class ConstraintPointwise(Observers, ModuleConstraint):
     """
     Python abstract base class for constraints on operator
     actions with finite-elements.
@@ -90,7 +90,7 @@ class ConstraintPointwise(ObservedComponent, ModuleConstraint):
         """
         Constructor.
         """
-        ObservedComponent.__init__(self, name, facility="constraint")
+        Observers.__init__(self, name, facility="constraint")
         return
 
     def preinitialize(self, mesh):
@@ -98,7 +98,7 @@ class ConstraintPointwise(ObservedComponent, ModuleConstraint):
         Setup constraint.
         """
         self._createModuleObj()
-        ObservedComponent.preinitialize(self)
+        Observers.preinitialize(self)
 
         ModuleConstraint.constrainedDOF(self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
         ModuleConstraint.auxFieldDB(self, self.auxFieldDB)
@@ -118,7 +118,7 @@ class ConstraintPointwise(ObservedComponent, ModuleConstraint):
         """
         Setup members using inventory.
         """
-        ObservedComponent._configure(self)
+        Observers._configure(self)
         return
 
     def _createModuleObj(self):

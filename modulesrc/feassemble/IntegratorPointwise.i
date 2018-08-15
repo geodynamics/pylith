@@ -25,7 +25,7 @@ namespace pylith {
     namespace feassemble {
 
         class IntegratorPointwise :
-            public pylith::feassemble::ObservedComponent {
+            public pylith::feassemble::Observers {
 
     // PUBLIC ENUMS /////////////////////////////////////////////////////////
 public:

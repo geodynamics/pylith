@@ -27,7 +27,7 @@ subpkgpyexec_PYTHON = bc.py
 swig_sources = \
 	bc.i \
 	../utils/PyreComponent.i \
-	../feassemble/ObservedComponent.i \
+	../feassemble/Observers.i \
 	../feassemble/ConstraintPointwise.i \
 	../feassemble/IntegratorPointwise.i \
 	ConstraintBoundary.i \

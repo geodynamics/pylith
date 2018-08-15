@@ -23,7 +23,7 @@ subpkginclude_HEADERS = \
 	IntegratorPointwise.hh \
 	ConstraintPointwise.hh \
 	Observer.hh \
-	ObservedComponent.hh \
+	Observers.hh \
 	AuxiliaryFactory.hh \
 	feassemblefwd.hh
 

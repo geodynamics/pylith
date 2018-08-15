@@ -23,7 +23,7 @@
 __all__ = [
     "ConstraintPointwise",
     "IntegratorPointwise",
-    "ObservedComponent",
+    "Observers",
     "Observer",
     "SingleObserver",
 ]

@@ -25,7 +25,7 @@ namespace pylith {
     namespace feassemble {
 
         class ConstraintPointwise :
-            public pylith::feassemble::ObservedComponent {
+            public pylith::feassemble::Observers {
 
             // PUBLIC METHODS /////////////////////////////////////////////////
 public:

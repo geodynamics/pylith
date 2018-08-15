@@ -27,7 +27,7 @@ subpkgpyexec_PYTHON = problems.py
 swig_sources = \
 	problems.i \
 	../utils/PyreComponent.i \
-	../feassemble/ObservedComponent.i \
+	../feassemble/Observers.i \
 	../include/integratorarray.i \
 	../include/constraintarray.i \
 	../include/outputarray.i \

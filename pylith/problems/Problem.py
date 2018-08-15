@@ -19,7 +19,7 @@
 #
 # Factory: problem.
 
-from pylith.feassemble.ObservedComponent import ObservedComponent
+from pylith.feassemble.Observers import Observers
 from .problems import Problem as ModuleProblem
 
 from pylith.utils.NullComponent import NullComponent
@@ -65,7 +65,7 @@ def observerFactory(name):
     return facility(name, family="observer", factory=OutputSoln)
 
 
-class Problem(ObservedComponent, ModuleProblem):
+class Problem(Observers, ModuleProblem):
     """
     Python abstract base class for crustal dynamics problems.
 
@@ -122,7 +122,7 @@ class Problem(ObservedComponent, ModuleProblem):
         """
         Constructor.
         """
-        ObservedComponent.__init__(self, name, facility="problem")
+        Observers.__init__(self, name, facility="problem")
         self.mesh = None
         return
 
@@ -136,7 +136,7 @@ class Problem(ObservedComponent, ModuleProblem):
             self._info.log("Performing minimal initialization before verifying configuration.")
 
         self._createModuleObj()
-        ObservedComponent.preinitialize(self)
+        Observers.preinitialize(self)
 
         if self.solverChoice == "linear":
             ModuleProblem.solverType(self, ModuleProblem.LINEAR)
@@ -247,7 +247,7 @@ class Problem(ObservedComponent, ModuleProblem):
         """
         Set members based using inventory.
         """
-        ObservedComponent._configure(self)
+        Observers._configure(self)
         return
 
     def _setIntegratorsConstraints(self):

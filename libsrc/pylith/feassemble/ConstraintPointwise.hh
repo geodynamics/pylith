@@ -28,7 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "pylith/feassemble/feassemblefwd.hh"
 
-#include "pylith/feassemble/ObservedComponent.hh" // ISA ObservedComponent
+#include "pylith/feassemble/Observers.hh" // ISA Observers
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::discretizations_map
 #include "pylith/utils/array.hh" // HASA int_array
@@ -41,7 +41,7 @@
 /** @brief Abstract base class for defining constraints on boundaries.
  */
 class pylith::feassemble::ConstraintPointwise :
-    public pylith::feassemble::ObservedComponent {
+    public pylith::feassemble::Observers {
     friend class TestConstraintPointwise;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////

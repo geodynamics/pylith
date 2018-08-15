@@ -17,23 +17,23 @@
 //
 
 /**
- * @file modulesrc/feassemble/ObservedComponent.i
+ * @file modulesrc/feassemble/Observers.i
  *
- * @brief Python interface to C++ ObservedComponent object.
+ * @brief Python interface to C++ Observers object.
  */
 
 namespace pylith {
     namespace feassemble {
 
-        class ObservedComponent : public pylith::utils::PyreComponent {
+        class Observers : public pylith::utils::PyreComponent {
 
 	    // PUBLIC METHODS ///////////////////////////////////////////////////////
 	public:
 	    /// Constructor.
-	    ObservedComponent(void);
+	    Observers(void);
 
 	    /// Destructor
-	    virtual ~ObservedComponent(void);
+	    virtual ~Observers(void);
 
 	    /// Deallocate PETSc and local data structures.
 	    virtual
@@ -71,7 +71,7 @@ namespace pylith {
 				 const pylith::topology::Field& solution,
 				 const bool infoOnly=false);
 
-	}; // ObservedComponent
+	}; // Observers
 
     } // feassemble
 } // pylith

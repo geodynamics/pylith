@@ -17,15 +17,14 @@
 //
 
 /**
- * @file libsrc/feassemble/ObservedComponent.hh
+ * @file libsrc/feassemble/Observers.hh
  *
- * @brief Subject of observer.
+ * @brief Collection of observers for an object.
  */
 
-#if !defined(pylith_feassemble_observedcomponent_hh)
-#define pylith_feassemble_observedcomponent_hh
+#if !defined(pylith_feassemble_observers_hh)
+#define pylith_feassemble_observers_hh
 
-// Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
@@ -35,19 +34,16 @@
 
 #include <set> // USES std::set
 
-// ObservedComponent --------------------------------------------------------
-/// Subject of observer.
-class pylith::feassemble::ObservedComponent :
-    public pylith::utils::PyreComponent {
-    friend class TestObservedComponent;   // unit testing
+class pylith::feassemble::Observers : public pylith::utils::PyreComponent {
+    friend class TestObservers; // unit testing
 
 public:
 
     /// Constructor.
-    ObservedComponent(void);
+    Observers(void);
 
     /// Destructor
-    virtual ~ObservedComponent(void);
+    virtual ~Observers(void);
 
     /// Deallocate PETSc and local data structures.
     virtual
@@ -85,22 +81,20 @@ public:
                          const pylith::topology::Field& solution,
                          const bool infoOnly=false);
 
-
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
     typedef std::set<pylith::feassemble::Observer*>::iterator iterator; ///< Iterator.
-    std::set<pylith::feassemble::Observer*> _observers; ///< Ssubscribers of updates.
+    std::set<pylith::feassemble::Observer*> _observers; ///< Subscribers of updates.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    ObservedComponent(const ObservedComponent&);   ///< Not implemented.
-    const ObservedComponent& operator=(const ObservedComponent&);   ///< Not implemented
+    Observers(const Observers&); ///< Not implemented.
+    const Observers& operator=(const Observers&); ///< Not implemented
 
-}; // ObservedComponent
+}; // Observers
 
-#endif // pylith_feassemble_observedcomponent_hh
-
+#endif // pylith_feassemble_observers_hh
 
 // End of file

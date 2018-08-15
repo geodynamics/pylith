@@ -52,7 +52,7 @@ libpylith_la_SOURCES = \
 	feassemble/IntegratorPointwise.cc \
 	feassemble/ConstraintPointwise.cc \
 	feassemble/Observer.cc \
-	feassemble/ObservedComponent.cc \
+	feassemble/Observers.cc \
 	feassemble/AuxiliaryFactory.cc \
 	fekernels/Elasticity.cc \
 	fekernels/ElasticityPlaneStrain.cc \

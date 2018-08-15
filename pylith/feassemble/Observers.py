@@ -13,17 +13,17 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/meshio/ObservedComponent.py
+# @file pylith/meshio/Observers.py
 #
 # @brief Python abstract base class subjects of observers.
 #
 # Factory: N/A
 
 from pylith.utils.PetscComponent import PetscComponent
-from .feassemble import ObservedComponent as ModuleObservedComponent
+from .feassemble import Observers as ModuleObservers
 
 
-class ObservedComponent(PetscComponent, ModuleObservedComponent):
+class Observers(PetscComponent, ModuleObservers):
     """
     Python abstract base class for subjects of observers.
 
@@ -41,7 +41,7 @@ class ObservedComponent(PetscComponent, ModuleObservedComponent):
 
     def preinitialize(self):
         """Do minimal initialization. Mostly setup low-level C++ object."""
-        ModuleObservedComponent.identifier(self, self.aliases[-1])
+        ModuleObservers.identifier(self, self.aliases[-1])
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

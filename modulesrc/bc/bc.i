@@ -48,7 +48,7 @@
 
 // Interfaces
 %include "../utils/PyreComponent.i"
-%include "../feassemble/ObservedComponent.i"
+%include "../feassemble/Observers.i"
 %include "../feassemble/ConstraintPointwise.i"
 %include "../feassemble/IntegratorPointwise.i"
 

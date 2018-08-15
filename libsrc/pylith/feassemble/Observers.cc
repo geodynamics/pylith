@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "ObservedComponent.hh" // Implementation of class methods
+#include "Observers.hh" // Implementation of class methods
 
 #include "pylith/feassemble/Observer.hh" // USES Observer
 #include "pylith/topology/Field.hh" // USES Field
@@ -31,19 +31,19 @@
 
 // ----------------------------------------------------------------------
 // Constructor.
-pylith::feassemble::ObservedComponent::ObservedComponent(void) {}
+pylith::feassemble::Observers::Observers(void) {}
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::feassemble::ObservedComponent::~ObservedComponent(void) {
+pylith::feassemble::Observers::~Observers(void) {
     deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::feassemble::ObservedComponent::deallocate(void) {
+pylith::feassemble::Observers::deallocate(void) {
     _observers.clear(); // Memory allocation of Observer* managed elsewhere.
 } // deallocate
 
@@ -51,7 +51,7 @@ pylith::feassemble::ObservedComponent::deallocate(void) {
 // ----------------------------------------------------------------------
 // Register observer to receive notifications.
 void
-pylith::feassemble::ObservedComponent::registerObserver(pylith::feassemble::Observer* observer) {
+pylith::feassemble::Observers::registerObserver(pylith::feassemble::Observer* observer) {
     PYLITH_METHOD_BEGIN;
     //PYLITH_COMPONENT_DEBUG("registerObserver(observer="<<typeid(observer).name()<<")");
 
@@ -66,7 +66,7 @@ pylith::feassemble::ObservedComponent::registerObserver(pylith::feassemble::Obse
 // ----------------------------------------------------------------------
 // Remove observer from receiving notifications.
 void
-pylith::feassemble::ObservedComponent::removeObserver(pylith::feassemble::Observer* observer) {
+pylith::feassemble::Observers::removeObserver(pylith::feassemble::Observer* observer) {
     PYLITH_METHOD_BEGIN;
     //PYLITH_COMPONENT_DEBUG("removeObserver(observer="<<typeid(observer).name()<<")");
 
@@ -81,7 +81,7 @@ pylith::feassemble::ObservedComponent::removeObserver(pylith::feassemble::Observ
 // ----------------------------------------------------------------------
 // Verify observers.
 void
-pylith::feassemble::ObservedComponent::verifyObservers(const pylith::topology::Field& solution) const {
+pylith::feassemble::Observers::verifyObservers(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     //PYLITH_COMPONENT_DEBUG("verifyObservers(solution="<<solution.label()<<")");
 
@@ -97,7 +97,7 @@ pylith::feassemble::ObservedComponent::verifyObservers(const pylith::topology::F
 // ----------------------------------------------------------------------
 // Notify observers.
 void
-pylith::feassemble::ObservedComponent::notifyObservers(const PylithReal t,
+pylith::feassemble::Observers::notifyObservers(const PylithReal t,
                                                        const PylithInt tindex,
                                                        const pylith::topology::Field& solution,
                                                        const bool infoOnly) {

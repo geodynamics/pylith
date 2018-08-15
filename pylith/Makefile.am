@@ -43,7 +43,7 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/ConstraintPointwise.py \
 	feassemble/Observer.py \
 	feassemble/SingleObserver.py \
-	feassemble/ObservedComponent.py \
+	feassemble/Observers.py \
 	friction/__init__.py \
 	materials/__init__.py \
 	materials/Homogeneous.py \
