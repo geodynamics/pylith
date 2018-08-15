@@ -23,9 +23,10 @@ subpkginclude_HEADERS = \
 	Problem.hh \
 	TimeDependent.hh \
 	SolutionFactory.hh \
+	Physics.hh \
 	problemsfwd.hh
 
 noinst_HEADERS =
 
 
-# End of file 
+# End of file

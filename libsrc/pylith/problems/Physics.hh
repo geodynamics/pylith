@@ -16,28 +16,29 @@
 // ======================================================================
 //
 
-/*** @file libsrc/feassemble/Physics.hh
+/*** @file libsrc/problems/Physics.hh
  *
  * @brief Abstract base class for objects defining physics, such as behavior
  * of a bulk makterial, boundary condition, interface, or constraint.
  */
 
-#if !defined(pylith_feassemble_physics_hh)
-#define pylith_feassemble_physics_hh
+#if !defined(pylith_problems_physics_hh)
+#define pylith_problems_physics_hh
 
-// Include directives ---------------------------------------------------
-#include "feassemblefwd.hh" // forward declarations
+#include "problemsfwd.hh" // forward declarations
 
-#include "pylith/topology/FieldBase.hh" // USES FieldBase
-#include "pylith/utils/petscfwd.h" // USES PetscMat, PetscVec
+#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA spatialdb
+#include "pylith/topology/Field.hh" // USES FieldBase
+#include "pylith/feassemble/feassemblefwd.hh" // USES Integrator, Constraint
+
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 #include "spatialdata/units/unitsfwd.hh" // HASA Nondimensional
 
-class pylith::feassemble::Physics : public pylith::utils::PyreComponent {
+class pylith::problems::Physics : public pylith::utils::PyreComponent {
     friend class TestPhysics; // unit testing
 
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -56,9 +57,58 @@ public:
      */
     void setNormalizer(const spatialdata::units::Nondimensional& dim);
 
+    /** Set spatial database for populating auxiliary field.
+     *
+     * @param[in] value Spatial database with iniital values for auxiliary field.
+     */
+    void setAuxiliaryFieldDB(spatialdata::spatialdb::SpatialDB* const value);
+
+    /** Set discretization information for auxiliary subfield.
+     *
+     * @param[in] subfieldName Name of auxiliary subfield.
+     * @param[in] basisOrder Polynomial order for basis.
+     * @param[in] quadOrder Order of quadrature rule.
+     * @param[in] isBasisContinuous True if basis is continuous.
+     * @param[in] feSpace Finite-element space.
+     */
+    void setAuxiliarySubfieldDiscretization(const char* subfieldName,
+                                            const int basisOrder,
+                                            const int quadOrder,
+                                            const bool isBasisContinuous,
+                                            const pylith::topology::FieldBase::SpaceEnum feSpace);
+
+    /** Register observer to receive notifications.
+     *
+     * Observers are used for output.
+     *
+     * @param[in] observer Observer to receive notifications.
+     */
+    void registerObserver(pylith::feassemble::Observer* observer);
+
+    /** Remove observer from receiving notifications.
+     *
+     * @param[in] observer Observer to remove.
+     */
+    void removeObserver(pylith::feassemble::Observer* observer);
+
+    /** Get observers receiving notifications of physics updates.
+     *
+     * @returns Observers receiving notifications.
+     */
+    pylith::feassemble::Observers* getObservers(void);
+
+    /** Get constants used in kernels (point-wise functions).
+     *
+     * @param[in] solution Solution field.
+     * @param[in] dt Current time step.
+     *
+     * @return Array of constants.
+     */
+    const pylith::real_array& getKernelConstants(const PylithReal dt);
+
     /** Create integrator and set kernels.
      *
-     * @solution Solution field.
+     * @param[in] solution Solution field.
      * @returns Integrator if applicable, otherwise NULL.
      */
     virtual
@@ -66,7 +116,7 @@ public:
 
     /** Create constraint and set kernels.
      *
-     * @solution Solution field.
+     * @param[in] solution Solution field.
      * @returns Constraint if applicable, otherwise NULL.
      */
     virtual
@@ -74,7 +124,7 @@ public:
 
     /** Create auxiliary field.
      *
-     * @mesh Finite-element mesh associated with physics.
+     * @param[in\ mesh Finite-element mesh associated with physics.
      * @returns Auxiliary field if applicable, otherwise NULL.
      */
     virtual
@@ -82,7 +132,7 @@ public:
 
     /** Create derived field.
      *
-     * @mesh Finite-element mesh associated with physics.
+     * @param[in] mesh Finite-element mesh associated with physics.
      * @returns Derived field if applicable, otherwise NULL.
      */
     virtual
@@ -95,14 +145,35 @@ public:
     virtual
     void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
 
-    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+protected:
+
+    /** Get auxiliary factory associated with physics.
+     *
+     * @return Auxiliary factory for physics object.
+     */
+    virtual
+    pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void) = 0;
+
+    /** Update kernel constants.
+     *
+     * @param[in] dt Current time step.
+     */
+    virtual
+    void _updateKernelConstants(const PylithReal dt);
+
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer.
+    pylith::real_array _kernelConstants; ///< Constants used in finite-element kernels (point-wise functions).
 
-    pylith::utils::EventLogger* _logger; ///< Event logger.
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+private:
 
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    pylith::feassemble::Observers* _observers; ///< Subscribers of updates.
+
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     Physics(const Physics&); ///< Not implemented.
@@ -110,6 +181,6 @@ private:
 
 }; // Physics
 
-#endif // pylith_feassemble_physics_hh
+#endif // pylith_problems_physics_hh
 
 // End of file

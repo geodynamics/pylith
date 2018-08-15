@@ -49,6 +49,7 @@ libpylith_la_SOURCES = \
 	faults/KinSrcConstRate.cc \
 	faults/KinSrcAuxiliaryFactory.cc \
 	faults/TopologyOps.cc \
+	feassemble/Integrator.cc \
 	feassemble/IntegratorPointwise.cc \
 	feassemble/ConstraintPointwise.cc \
 	feassemble/Observer.cc \
@@ -109,6 +110,7 @@ libpylith_la_SOURCES = \
 	problems/Problem.cc \
 	problems/TimeDependent.cc \
 	problems/SolutionFactory.cc \
+	problems/Physics.cc \
 	topology/FieldBase.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \

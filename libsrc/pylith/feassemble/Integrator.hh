@@ -25,45 +25,50 @@
 #if !defined(pylith_feassemble_integrator_hh)
 #define pylith_feassemble_integrator_hh
 
-#include "feassemblefwd.hh"// forward declarations
+#include "feassemblefwd.hh" // forward declarations
 
-#include "pylith/utils/GenericComponent.hh"// ISA GenericComponent
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
-#include "pylith/topology/FieldBase.hh"// USES FieldBase
-#include "pylith/utils/petscfwd.h"// USES PetscMat, PetscVec
-#include "pylith/utils/utilsfwd.hh"// HOLDSA Logger
+#include "pylith/problems/problemsfwd.hh" // HASA Physics
+
+#include "pylith/topology/FieldBase.hh" // USES FieldBase
+#include "pylith/utils/petscfwd.h" // USES PetscMat, PetscVec
+#include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
 
 class pylith::feassemble::Integrator : public pylith::utils::GenericComponent {
-    friend class TestIntegrator;// unit testing
+    friend class TestIntegrator; // unit testing
 
     // PUBLIC STRUCTS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
+    /// Kernels (point-wise functions) for residual.
     struct ResidualKernels {
-        std::string field;
-        PetscPointFunc r0;
-        PetscPointFunc r1;
-    };// ResidualKernels
+        std::string subfield; ///< Name of subfield
+        PetscPointFunc r0; ///< f0 (RHS) or g0 (LHS) function.
+        PetscPointFunc r1; ///< f1 (RHS) or g1 (LHS) function.
+    }; // ResidualKernels
 
+    /// Kernels (point-wise functions) for Jacobian;
     struct JacobianKernels {
-        std::string fieldTrial;
-        std::string fieldBasis;
-        PetscJacobianFunc j0;
-        PetscJacobianFunc j1;
-        PetscJacobianFunc j2;
-        PetscJacobianFunc j3;
-    };// JacobianKernels
+        std::string subfieldTrial; ///< Name of subfield associated with trial function (row in Jacobian).
+        std::string subfieldBasis; ///< Name of subfield associated with basis function (column in Jacobian).
+        PetscPointJac j0; ///< J0 function.
+        PetscPointJac j1; ///< J1 function.
+        PetscPointJac j2; ///< J2 function.
+        PetscPointJac j3; ///< J3 function.
+    }; // JacobianKernels
 
+    /// Project kernels (point-wise functions) for updating state variables or computing derived fields.
     struct ProjectKernels {
-        std::string field;
-        PetscPointFunc p;
-    };// ProjectKernels
+        std::string subfield; ///< Name of subfield for function.
+        PetscPointFunc f; ///< Point-wise function.
+    }; // ProjectKernels
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    Integrator(const pylith::problems::Physics* physics);
+    Integrator(pylith::problems::Physics* const physics);
 
     /// Destructor
     virtual ~Integrator(void);
@@ -77,7 +82,7 @@ public:
      * @returns Mesh associated with integrator domain.
      */
     virtual
-    const pylith::topology::Mesh& getIntegationDomainMesh(void) const;
+    const pylith::topology::Mesh& getIntegationDomainMesh(void) const = 0;
 
     /** Get auxiliary field.
      *
@@ -90,20 +95,6 @@ public:
      * @return field Field over integrator domain.
      */
     const pylith::topology::Field* getDerivedField(void) const;
-
-    /** Register observer to receive notifications.
-     *
-     * Observers are used for output.
-     *
-     * @param[in] observer Observer to receive notifications.
-     */
-    void registerObserver(pylith::feassemble::Observer* observer);
-
-    /** Remove observer from receiving notifications.
-     *
-     * @param[in] observer Observer to remove.
-     */
-    void removeObserver(pylith::feassemble::Observer* observer);
 
     /** Check whether RHS Jacobian needs to be recomputed.
      *
@@ -260,12 +251,12 @@ protected:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    const pylith::problems::Physics* _physics;///< Physics associated with integrator.
-    pylith::topology::Field* _auxField;///< Auxiliary field for this integrator.
-    pylith::topology::Field* _derivedField;///< Derived field for this integrator.
-    pylith::feassemble::ObservedComponent* _observed;///< Observed component.
+    pylith::problems::Physics* const _physics; ///< Physics associated with integrator.
+    pylith::topology::Field* _auxField; ///< Auxiliary field for this integrator.
+    pylith::topology::Field* _derivedField; ///< Derived field for this integrator.
+    pylith::feassemble::Observers* _observers; ///< Observers component.
 
-    pylith::utils::EventLogger* _logger;///< Event logger.
+    pylith::utils::EventLogger* _logger; ///< Event logger.
 
     /// True if we need to recompute Jacobian for operator, false otherwise.
     /// Default is false;
@@ -275,13 +266,11 @@ protected:
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    Integrator(const Integrator&);///< Not implemented.
-    const Integrator& operator=(const Integrator&);///< Not implemented.
+    Integrator(const Integrator&); ///< Not implemented.
+    const Integrator& operator=(const Integrator&); ///< Not implemented.
 
-};
+}; // Integrator
 
-// Integrator
-
-#endif// pylith_feassemble_integrator_hh
+#endif // pylith_feassemble_integrator_hh
 
 // End of file

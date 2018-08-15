@@ -29,16 +29,15 @@
 
 namespace pylith {
     namespace problems {
-
         class Problem;
         class TimeDependent;
         class SolutionFactory;
 
+        class Physics;
+
     } // problems
 } // pylith
 
-
 #endif // pylith_problems_problemsfwd_hh
-
 
 // End of file

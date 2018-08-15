@@ -18,26 +18,28 @@
 
 #include <portinfo>
 
-#include "Integrator.hh"// implementation of class methods
+#include "Integrator.hh" // implementation of class methods
 
-#include "pylith/topology/Mesh.hh"// USES Mesh
-#include "pylith/topology/Field.hh"// USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/feassemble/Observers.hh" // USES Observers
+#include "pylith/problems/Physics.hh" // USES Physics
 
-#include "pylith/utils/EventLogger.hh"// USES EventLogger
-#include "pylith/utils/journals.hh"// USES PYLITH_COMPONENT_*
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
-#include <cassert>// USES assert()
-#include <typeinfo>// USES typeid()
+#include <cassert> // USES assert()
+#include <typeinfo> // USES typeid()
 #include <stdexcept> \
     // USES std::runtime_error
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
-pylith::feassemble::Integrator::Integrator(pylith::problems::Physics const* physics) :
+pylith::feassemble::Integrator::Integrator(pylith::problems::Physics* const physics) :
     _physics(physics),
     _auxField(NULL),
     _derivedField(NULL),
-    _observed(new pylith::feassemble::ObservedComponent),
+    _observers(NULL),
     _logger(NULL),
     _needNewRHSJacobian(true),
     _needNewLHSJacobian(true)
@@ -48,7 +50,7 @@ pylith::feassemble::Integrator::Integrator(pylith::problems::Physics const* phys
 // Destructor
 pylith::feassemble::Integrator::~Integrator(void) {
     deallocate();
-}// destructor
+} // destructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -57,14 +59,13 @@ void
 pylith::feassemble::Integrator::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    _physics = NULL;// :KLUDGE: Replace with shared pointer
     delete _auxField;_auxField = NULL;
     delete _derivedField;_derivedField = NULL;
-    delete _observed;_observed = NULL;
+    delete _observers;_observers = NULL;
     delete _logger;_logger = NULL;
 
     PYLITH_METHOD_END;
-}// deallocate
+} // deallocate
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -72,7 +73,7 @@ pylith::feassemble::Integrator::deallocate(void) {
 const pylith::topology::Field*
 pylith::feassemble::Integrator::getAuxiliaryField(void) const {
     return _auxField;
-}// getAuxiliaryField
+} // getAuxiliaryField
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -80,25 +81,7 @@ pylith::feassemble::Integrator::getAuxiliaryField(void) const {
 const pylith::topology::Field*
 pylith::feassemble::Integrator::getDerivedField(void) const {
     return _derivedField;
-}// getDerivedField
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Register observer to receive notifications.
-void
-pylith::feassemble::Integrator::registerObserver(pylith::feassemble::Observer* observer) {
-    assert(_observed);
-    _observed->registerObserver(observer);
-}// registerObserver
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Remove observer from receiving notifications.
-void
-pylith::feassemble::Integrator::removeObserver(pylith::feassemble::Observer* observer) {
-    assert(_observed);
-    _observed->removeObserver(observer);
-}// removeObserver
+} // getDerivedField
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -106,7 +89,7 @@ pylith::feassemble::Integrator::removeObserver(pylith::feassemble::Observer* obs
 bool
 pylith::feassemble::Integrator::needNewRHSJacobian(void) const {
     return _needNewRHSJacobian;
-}// needNewRHSJacobian
+} // needNewRHSJacobian
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -114,25 +97,26 @@ pylith::feassemble::Integrator::needNewRHSJacobian(void) const {
 bool
 pylith::feassemble::Integrator::needNewLHSJacobian(void) const {
     return _needNewLHSJacobian;
-}// needNewLHSJacobian
+} // needNewLHSJacobian
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get physical property parameters and initial state (if used) from database.
 void
-pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& solution) {
+pylith::feassemble::Integrator::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
 
-    delete _auxField;_auxField = _physics->createAuxiliaryField(mesh);
-    delete _derivedField;_derivedField = _physics->createDerivedField(mesh);
+    delete _auxField;_auxField = _physics->createAuxiliaryField(solution.mesh());
+    delete _derivedField;_derivedField = _physics->createDerivedField(solution.mesh());
+    _observers = _physics->getObservers(); // Memory managed by Python
 
     //_auxField->view("MATERIAL AUXILIARY FIELD"); // :DEBUG: TEMPORARY
     const bool infoOnly = true;
-    _observed->notifyObservers(0.0, 0, solution, infoOnly);
+    _observers->notifyObservers(0.0, 0, solution, infoOnly);
 
     PYLITH_METHOD_END;
-}// initialize
+} // initialize
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -141,12 +125,12 @@ void
 pylith::feassemble::Integrator::prestep(const PylithReal t,
                                         const PylithReal dt) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("prestep(t="<<t<<", dt="<<dt<<") empty method");
+    PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<") empty method");
 
     // Default is to do nothing.
 
     PYLITH_METHOD_END;
-}// prestep
+} // prestep
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -157,15 +141,16 @@ pylith::feassemble::Integrator::poststep(const PylithReal t,
                                          const PylithReal dt,
                                          const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("poststep(t="<<t<<", dt="<<dt<<") empty method");
+    PYLITH_JOURNAL_DEBUG("poststep(t="<<t<<", dt="<<dt<<") empty method");
 
     _updateStateVars(t, dt, solution);
 
     const bool infoOnly = false;
-    notifyObservers(t, tindex, solution, infoOnly);
+    assert(_observers);
+    _observers->notifyObservers(t, tindex, solution, infoOnly);
 
     PYLITH_METHOD_END;
-}// poststep
+} // poststep
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -174,17 +159,23 @@ void
 pylith::feassemble::Integrator::_setKernelConstants(const pylith::topology::Field& solution,
                                                     const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEConstants(solution="<<solution.label()<<", dt="<<dt<<")");
+    PYLITH_JOURNAL_DEBUG("_setFEConstants(solution="<<solution.label()<<", dt="<<dt<<")");
+
+    assert(_physics);
+    const pylith::real_array& constants = _physics->getKernelConstants(dt);
 
     PetscDS prob = NULL;
     PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
 
-    // Pointwise functions have been set in DS
     PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
-    err = PetscDSSetConstants(prob, 0, NULL);PYLITH_CHECK_ERROR(err);
+    if (constants.size() > 0) {
+        err = PetscDSSetConstants(prob, constants.size(), const_cast<double*>(&constants[0]));PYLITH_CHECK_ERROR(err);
+    } else {
+        err = PetscDSSetConstants(prob, 0, NULL);PYLITH_CHECK_ERROR(err);
+    } // if/else
 
     PYLITH_METHOD_END;
-}// _setKernelConstants
+} // _setKernelConstants
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -193,12 +184,13 @@ void
 pylith::feassemble::Integrator::_updateStateVars(const PylithReal t,
                                                  const PylithReal dt,
                                                  const pylith::topology::Field& solution) {
+#if 0
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateStateVars(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("updateStateVars(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
     if (0 == _updateStateVarsKernels.size()) {
         PYLITH_METHOD_END;
-    }// if
+    } // if
 
     assert(_auxField);
 
@@ -244,11 +236,11 @@ pylith::feassemble::Integrator::_updateStateVars(const PylithReal t,
     // By default, set all auxiliary subfield update kernels to NULL.
     for (size_t i = 0; i < numSubfields; ++i) {
         stateVarsKernels[i] = NULL;
-    }// for
+    } // for
     for (UpdateStateVarsMap::const_iterator iter = _updateStateVarsKernels.begin(); iter != _updateStateVarsKernels.end(); ++iter) {
         const pylith::topology::Field::SubfieldInfo& sinfo = _auxField->subfieldInfo(iter->first.c_str());
         stateVarsKernels[sinfo.index] = iter->second;
-    }// for
+    } // for
 
     err = DMProjectFieldLocal(dmState, t, _auxField->localVector(), stateVarsKernels, INSERT_VALUES, _auxField->localVector());PYLITH_CHECK_ERROR(err);
     delete[] stateVarsKernels;stateVarsKernels = NULL;
@@ -268,7 +260,8 @@ pylith::feassemble::Integrator::_updateStateVars(const PylithReal t,
 #endif
 
     PYLITH_METHOD_END;
-}// _updateStateVars
+#endif
+} // _updateStateVars
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -278,10 +271,10 @@ pylith::feassemble::Integrator::_computeDerivedFields(const PylithReal t,
                                                       const PylithReal dt,
                                                       const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_computeDerivedFields(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("_computeDerivedFields(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
     PYLITH_METHOD_END;
-}// _computeDerivedFields
+} // _computeDerivedFields
 
 
 // End of file

@@ -18,21 +18,20 @@
 
 /** @file libsrc/materials/Material.hh
  *
- * @brief C++ abstract base class for Material object.
+ * @brief C++ abstract base class for materials.
  */
 
 #if !defined(pylith_materials_material_hh)
 #define pylith_materials_material_hh
 
-// Include directives ---------------------------------------------------
 #include "materialsfwd.hh" // forward declarations
 
-#include "pylith/feassemble/IntegratorPointwise.hh" // ISA IntegratorPointwise
+#include "pylith/problems/Physics.hh" // ISA Physics
 
 #include <string> // HASA std::string
 
 // Material -------------------------------------------------------------
-/** @brief C++ abstract base class for Material object.
+/** @brief C++ abstract base class for materials.
  *
  * Interface definition for a material. A material encapsulates both
  * the rheology as well as the governing equation.
@@ -74,13 +73,13 @@ public:
      */
     int getDimension(void) const;
 
-    /** Set identifier of material.
+    /** Set value of label material-id used to identify material cells.
      *
      * @param value Material identifier
      */
     void setMaterialId(const int value);
 
-    /** Get identifier of material.
+    /** Get value of label material-id used to identify material cells.
      *
      * @returns Material identifier
      */
@@ -112,7 +111,7 @@ public:
      * @returns Constraint if applicable, otherwise NULL.
      */
     virtual
-    pylith::feassemble::Constraint* createConstraint(const pylith::topology::Field& solution) = 0;
+    pylith::feassemble::Constraint* createConstraint(const pylith::topology::Field& solution);
 
     /** Create auxiliary field.
      *
@@ -140,6 +139,11 @@ public:
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
+    /** Get auxiliary factory associated with physics.
+     * @return Auxiliary factory for physics object.
+     */
+    pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
+
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
 
@@ -149,8 +153,8 @@ protected:
 private:
 
     const int _dimension; ///< Spatial dimension of material.
-    int _materialId; ///< Material identifier.
-    std::string _label; ///< Label of material.
+    int _materialId; ///< Value of material-id label in mesh.
+    std::string _descriptiveLabel; ///< Descriptive label for material.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
@@ -158,7 +162,7 @@ private:
     Material(const Material&); ///< Not implemented.
     const Material& operator=(const Material&); ///< Not implemented
 
-}; // class Material
+}; // Material
 
 #endif // pylith_materials_material_hh
 

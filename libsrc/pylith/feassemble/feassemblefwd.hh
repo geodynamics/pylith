@@ -29,9 +29,15 @@
 
 namespace pylith {
     namespace feassemble {
+        class Integrator; ///< Abstract base class for finite-element integration.
+        class IntegratorDomain; ///< Abstract base class for finite-element integration over portions on the domain.
+        class IntegratorBoundary; ///< Abstract base class for finite-element integration over a boundary.
+        class IntegratorInterface; ///< Abstract base class for finite-element integration over an interior interface.
+
+        class Constraint; ///< Abstract base class for finite-element constraints.
+        class ConstraintBoundary; ///< Abstract base class for finite-element constraints on a boundary.
 
         class IntegratorPointwise; ///< Integration of terms in governing equation.
-
         class ConstraintPointwise; ///< Constrained degrees of freedom.
 
         class AuxiliaryFactory; ///< Creates auxiliary subfields.
@@ -43,8 +49,6 @@ namespace pylith {
     } // feassemble
 } // pylith
 
-
 #endif // pylith_feassemble_feassemblefwd_hh
-
 
 // End of file
