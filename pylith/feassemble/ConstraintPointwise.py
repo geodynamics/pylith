@@ -46,8 +46,8 @@ def observerFactory(name):
     Factory for output items.
     """
     from pyre.inventory import facility
-    from pylith.meshio.OutputIntegrator import OutputIntegrator
-    return facility(name, family="observer", factory=OutputIntegrator)
+    from pylith.meshio.OutputConstraint import OutputConstraint
+    return facility(name, family="observer", factory=OutputConstraint)
 
 
 class ConstraintPointwise(ObservedComponent, ModuleConstraint):
