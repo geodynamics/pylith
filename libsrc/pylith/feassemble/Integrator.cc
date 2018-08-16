@@ -107,8 +107,10 @@ pylith::feassemble::Integrator::initialize(const pylith::topology::Field& soluti
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
 
-    delete _auxField;_auxField = _physics->createAuxiliaryField(solution.mesh());
-    delete _derivedField;_derivedField = _physics->createDerivedField(solution.mesh());
+    const pylith::topology::Mesh& integrationDomainMesh = getIntegrationDomainMesh();
+
+    delete _auxField;_auxField = _physics->createAuxiliaryField(solution, integrationDomainMesh);
+    delete _derivedField;_derivedField = _physics->createDerivedField(solution, integrationDomainMesh);
     _observers = _physics->getObservers(); // Memory managed by Python
 
     //_auxField->view("MATERIAL AUXILIARY FIELD"); // :DEBUG: TEMPORARY

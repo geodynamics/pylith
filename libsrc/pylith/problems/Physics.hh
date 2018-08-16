@@ -124,19 +124,25 @@ public:
 
     /** Create auxiliary field.
      *
-     * @param[in\ mesh Finite-element mesh associated with physics.
+     * @param[in] solution Solution field.
+     * @param[in\ physicsMesh Finite-element mesh associated with physics.
+     *
      * @returns Auxiliary field if applicable, otherwise NULL.
      */
     virtual
-    pylith::topology::Field* createAuxiliaryField(const pylith::topology::Mesh& mesh) = 0;
+    pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
+                                                  const pylith::topology::Mesh& physicsMesh) = 0;
 
     /** Create derived field.
      *
-     * @param[in] mesh Finite-element mesh associated with physics.
+     * @param[in] solution Solution field.
+     * @param[in\ physicsMesh Finite-element mesh associated with physics.
+     *
      * @returns Derived field if applicable, otherwise NULL.
      */
     virtual
-    pylith::topology::Field* createDerivedField(const pylith::topology::Mesh& mesh) = 0;
+    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
+                                                const pylith::topology::Mesh& physicsMesh) = 0;
 
     /** Verify configuration is acceptable.
      *

@@ -46,6 +46,21 @@ public:
         std::string subfield; ///< Name of subfield
         PetscPointFunc r0; ///< f0 (RHS) or g0 (LHS) function.
         PetscPointFunc r1; ///< f1 (RHS) or g1 (LHS) function.
+
+        ResidualKernels(void) :
+            subfield(""),
+            r0(NULL),
+            r1(NULL) {}
+
+
+        ResidualKernels(const char* subfieldValue,
+                        PetscPointFunc r0Value,
+                        PetscPointFunc r1Value) :
+            subfield(subfieldValue),
+            r0(r0Value),
+            r1(r1Value) {}
+
+
     }; // ResidualKernels
 
     /// Kernels (point-wise functions) for Jacobian;
@@ -56,6 +71,30 @@ public:
         PetscPointJac j1; ///< J1 function.
         PetscPointJac j2; ///< J2 function.
         PetscPointJac j3; ///< J3 function.
+
+        JacobianKernels(void) :
+            subfieldTrial(""),
+            subfieldBasis(""),
+            j0(NULL),
+            j1(NULL),
+            j2(NULL),
+            j3(NULL) {}
+
+
+        JacobianKernels(const char* subfieldTrialValue,
+                        const char* subfieldBasisValue,
+                        PetscPointJac j0Value,
+                        PetscPointJac j1Value,
+                        PetscPointJac j2Value,
+                        PetscPointJac j3Value) :
+            subfieldTrial(subfieldTrialValue),
+            subfieldBasis(subfieldBasisValue),
+            j0(j0Value),
+            j1(j1Value),
+            j2(j2Value),
+            j3(j3Value) {}
+
+
     }; // JacobianKernels
 
     /// Project kernels (point-wise functions) for updating state variables or computing derived fields.
@@ -82,7 +121,7 @@ public:
      * @returns Mesh associated with integrator domain.
      */
     virtual
-    const pylith::topology::Mesh& getIntegationDomainMesh(void) const = 0;
+    const pylith::topology::Mesh& getIntegrationDomainMesh(void) const = 0;
 
     /** Get auxiliary field.
      *

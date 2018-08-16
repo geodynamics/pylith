@@ -36,7 +36,7 @@ class pylith::feassemble::IntegratorDomain : public pylith::feassemble::Integrat
 public:
 
     /// Constructor
-    IntegratorDomain(const pylith::problems::Physics* physics);
+    IntegratorDomain(pylith::problems::Physics* const physics);
 
     /// Destructor
     virtual ~IntegratorDomain(void);
@@ -44,12 +44,6 @@ public:
     /// Deallocate PETSc and local data structures.
     virtual
     void deallocate(void);
-
-    /** Get spatial dimension of material.
-     *
-     * @returns Spatial dimension.
-     */
-    int getDimension(void) const;
 
     /** Set value of label material-id used to identify material cells.
      *
@@ -63,53 +57,47 @@ public:
      */
     int getMaterialId(void) const;
 
-    /** Set gravity field.
+    /** Get mesh associated with integrator domain.
      *
-     * @param g Gravity field.
+     * @returns Mesh associated with integrator domain.
      */
-    void setGravityField(spatialdata::spatialdb::GravityField* const g);
+    const pylith::topology::Mesh& getIntegrationDomainMesh(void) const;
 
-    /** Add kernels for RHS residual.
+    /** Set kernels for RHS residual.
      *
      * @param kernels Array of kernerls for computing the RHS residual.
      */
     void setKernelsRHSResidual(const std::vector<ResidualKernels>& kernels);
 
-    /** Add kernels for RHS Jacobian.
+    /** Set kernels for RHS Jacobian.
      *
      * @param kernels Array of kernerls for computing the RHS Jacobian.
      */
     void setKernelsRHSJacobian(const std::vector<JacobianKernels>& kernels);
 
-    /** Add kernels for RHS residual.
+    /** Set kernels for LHS residual.
      *
-     * @param kernels Array of kernerls for computing the RHS residual.
+     * @param kernels Array of kernerls for computing the LHS residual.
      */
     void setKernelsLHSResidual(const std::vector<ResidualKernels>& kernels);
 
-    /** Add kernels for LHS Jacobian.
+    /** Set kernels for LHS Jacobian.
      *
      * @param kernels Array of kernerls for computing the LHS Jacobian.
      */
     void setKernelsLHSJacobian(const std::vector<JacobianKernels>& kernels);
 
-    /** Add kernels for updating state variables.
+    /** Set kernels for updating state variables.
      *
      * @param kernels Array of kernels for updating state variables.
      */
     void setKernelsUpdateStateVars(const std::vector<ProjectKernels>& kernels);
 
-    /** Add kernels for computing derived field.
+    /** Set kernels for computing derived field.
      *
      * @param kernels Array of kernels for computing derived field.
      */
     void setKernelsDerivedField(const std::vector<ProjectKernels>& kernels);
-
-    /** Initialize integrator.
-     *
-     * @param[in] solution Solution field (layout).
-     */
-    void initialize(const pylith::topology::Field& solution);
 
     /** Compute RHS residual for G(t,s).
      *
@@ -189,12 +177,14 @@ protected:
     /** Compute residual using current kernels.
      *
      * @param[out] residual Field for residual.
+     * @param[in] kernels Kernels for computing residual.
      * @param[in] t Current time.
      * @param[in] dt Current time step.
      * @param[in] solution Field with current trial solution.
      * @param[in] solutionDot Field with time derivative of current trial solution.
      */
     void _computeResidual(pylith::topology::Field* residual,
+                          const std::vector<ResidualKernels>& kernels,
                           const PylithReal t,
                           const PylithReal dt,
                           const pylith::topology::Field& solution,
@@ -204,6 +194,7 @@ protected:
      *
      * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
      * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
+     * @param[in] kernels Kernels for computing Jacobian.
      * @param[in] t Current time.
      * @param[in] dt Current time step.
      * @param[in] s_tshift Scale for time derivative.
@@ -212,6 +203,7 @@ protected:
      */
     void _computeJacobian(PetscMat jacobianMat,
                           PetscMat precondMat,
+                          const std::vector<JacobianKernels>& kernels,
                           const PylithReal t,
                           const PylithReal dt,
                           const PylithReal s_tshift,
@@ -242,15 +234,14 @@ protected:
 private:
 
     std::vector<ResidualKernels> _kernelsRHSResidual; ///< kernels for RHS residual.
-    std::vector<ResidualKernels> _kernelsRHSResidual; ///< kernels for LHS residual.
+    std::vector<ResidualKernels> _kernelsLHSResidual; ///< kernels for LHS residual.
 
     std::vector<JacobianKernels> _kernelsRHSJacobian; ///< kernels for RHS Jacobian.
     std::vector<JacobianKernels> _kernelsLHSJacobian; ///> kernels for LHS Jacobian.
 
-    std::vector<ProjectKernels> _kernelsUpstateStateVars; ///< kernels for updating state variables.
+    std::vector<ProjectKernels> _kernelsUpdateStateVars; ///< kernels for updating state variables.
     std::vector<ProjectKernels> _kernelsDerivedField; ///< kernels for computing derived field.
 
-    const int _dimension;
     int _materialId;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////

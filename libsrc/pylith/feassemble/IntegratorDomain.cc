@@ -51,9 +51,9 @@ extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(PetscDM dm,
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::feassemble::IntegratorDomain::IntegratorDomain(const int dimension) :
-    _dimension(dimension),
-    _id(0) {}
+pylith::feassemble::IntegratorDomain::IntegratorDomain(pylith::problems::Physics* const physics) :
+    Integrator(physics),
+    _materialId(0) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -76,14 +76,6 @@ pylith::feassemble::IntegratorDomain::deallocate(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get spatial dimension of material.
-int
-pylith::feassemble::IntegratorDomain::getDimension(void) const {
-    return _dimension;
-} // getDimension
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Set value of label material-id used to identify material cells.
 void
 pylith::feassemble::IntegratorDomain::setMaterialId(const int value) {
@@ -97,16 +89,8 @@ pylith::feassemble::IntegratorDomain::setMaterialId(const int value) {
 // Get value of label material-id used to identify material cells.
 int
 pylith::feassemble::IntegratorDomain::getMaterialId(void) const {
-    return _id;
+    return _materialId;
 } // getMaterialId
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set gravity field.
-void
-pylith::feassemble::IntegratorDomain::setGravityField(spatialdata::spatialdb::GravityField* const g) {
-    _gravityField = g;
-} // setGravityField
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -132,14 +116,14 @@ pylith::feassemble::IntegratorDomain::setKernelsRHSResidual(const std::vector<Re
 
 // ---------------------------------------------------------------------------------------------------------------------
 void
-pylith::feassemble::IntegratorDomain::setKernelsRHSJacobianl(const std::vector<JacobianlKernels>& kernels) {
+pylith::feassemble::IntegratorDomain::setKernelsRHSJacobian(const std::vector<JacobianKernels>& kernels) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setKernelsRHSJacobianl(# kernels="<<kernels.size()<<")");
+    PYLITH_JOURNAL_DEBUG("setKernelsRHSJacobian(# kernels="<<kernels.size()<<")");
 
-    _kernelsRHSJacobianl = kernels;
+    _kernelsRHSJacobian = kernels;
 
     PYLITH_METHOD_END;
-} // setKernelsRHSJacobianl
+} // setKernelsRHSJacobian
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -172,7 +156,7 @@ pylith::feassemble::IntegratorDomain::setKernelsUpdateStateVars(const std::vecto
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("setKernelsUpdateStateVars(# kernels="<<kernels.size()<<")");
 
-    _kernelsUps = kernels;
+    _kernelsUpdateStateVars = kernels;
 
     PYLITH_METHOD_END;
 } // setKernelsUpdateStateVars
@@ -200,9 +184,9 @@ pylith::feassemble::IntegratorDomain::computeRHSResidual(pylith::topology::Field
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
-    if (!_kernelsRHSResidual) { PYLITH_METHOD_END;}
+    if (0 == _kernelsRHSResidual.size()) { PYLITH_METHOD_END;}
 
-    _setCurrentKernelsConstants(solution, dt);
+    _setKernelConstants(solution, dt);
 
     pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
     solutionDot.label("solution_dot");
@@ -223,14 +207,14 @@ pylith::feassemble::IntegratorDomain::computeRHSJacobian(PetscMat jacobianMat,
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
-    if (!_kernelsRHSJacobian) { PYLITH_METHOD_END;}
+    if (0 == _kernelsRHSJacobian.size()) { PYLITH_METHOD_END;}
 
-    _setCurrentKernelsConstants(solution, dt);
+    _setKernelConstants(solution, dt);
 
     pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
     solutionDot.label("solution_dot");
     const PylithReal s_tshift = 0.0; // No dependence on time derivative of solution in RHS, so shift isn't applicable.
-    _computeJacobian(jacobianMat, precondMat, t_kernelsRHSJacobian, dt, s_tshift, solution, solutionDot);
+    _computeJacobian(jacobianMat, precondMat, _kernelsRHSJacobian, t, dt, s_tshift, solution, solutionDot);
     _needNewRHSJacobian = false;
 
     PYLITH_METHOD_END;
@@ -248,11 +232,11 @@ pylith::feassemble::IntegratorDomain::computeLHSResidual(pylith::topology::Field
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
-    if (!_kernelsLHSResidual) { PYLITH_METHOD_END;}
+    if (0 == _kernelsLHSResidual.size()) { PYLITH_METHOD_END;}
 
-    _setCurrentKernelsConstants(solution, dt);
+    _setKernelConstants(solution, dt);
 
-    _computeResidual(residual, _kernelsLHSResidualt, dt, solution, solutionDot);
+    _computeResidual(residual, _kernelsLHSResidual, t, dt, solution, solutionDot);
 } // computeLHSResidual
 
 
@@ -269,10 +253,9 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
-    if (!_kernelsLHSJacobian) { PYLITH_METHOD_END;}
+    if (0 == _kernelsLHSJacobian.size()) { PYLITH_METHOD_END;}
 
-    _setCurrentKernelsJacobian(solution, _kernelsLHSJacobian);
-    _setCurrentKernelsConstants(solution, dt);
+    _setKernelConstants(solution, dt);
 
     _computeJacobian(jacobianMat, precondMat, _kernelsLHSJacobian, t, dt, s_tshift, solution, solutionDot);
     _needNewLHSJacobian = false;
@@ -294,7 +277,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
 
     assert(jacobianInv);
 
-    _setCurrentKernelsConstants(solution, dt);
+    _setKernelConstants(solution, dt);
 
     PetscDS prob = NULL;
     PetscErrorCode err;
@@ -306,14 +289,14 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
     err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
     const std::vector<JacobianKernels>& kernels = _kernelsLHSJacobian;
     for (size_t i = 0; i < kernels.size(); ++i) {
-        const PetscInt i_fieldTrial = solution.subfieldInfo(kernels.fieldTrial).index;
-        const PetscInt i_fieldBasis = solution.subfieldInfo(kernels.fieldBasis).index;
-        err = PetscDSSetJacobian(prob, i_fieldTrial, i_fieldBasis, kernels.j0, kernels.j1, kernels.j2, kernels.j3);PYLITH_CHECK_ERROR(err);
+        const PetscInt i_fieldTrial = solution.subfieldInfo(kernels[i].subfieldTrial.c_str()).index;
+        const PetscInt i_fieldBasis = solution.subfieldInfo(kernels[i].subfieldBasis.c_str()).index;
+        err = PetscDSSetJacobian(prob, i_fieldTrial, i_fieldBasis, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
     } // for
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxField()->localVector());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxField->localVector());PYLITH_CHECK_ERROR(err);
 
     PetscVec vecRowSum = NULL;
     err = DMGetGlobalVector(dmSoln, &vecRowSum);PYLITH_CHECK_ERROR(err);
@@ -324,7 +307,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
     PetscIS cells = NULL;
     PetscInt cStart = 0, cEnd = 0;
     err = DMGetLabel(dmSoln, "material-id", &dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumBounds(dmLabel, _materialId, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cells);PYLITH_CHECK_ERROR(err);
 
     err = DMPlexComputeJacobianAction(dmSoln, cells, t, s_tshift, vecRowSum, NULL, vecRowSum, jacobianInv->localVector(), NULL);PYLITH_CHECK_ERROR(err);
@@ -349,7 +332,7 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
                                                        const pylith::topology::Field& solution,
                                                        const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_computeResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
+    PYLITH_JOURNAL_DEBUG("_computeResidual(residual="<<residual<<", # kernels="<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
     assert(residual);
     assert(_auxField);
@@ -366,8 +349,8 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     // Set pointwise function (kernels) in DS
     err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
     for (size_t i = 0; i < kernels.size(); ++i) {
-        const PetscInt i_field = solution.subfieldInfo(kernels.fieldTrial).index;
-        err = PetscDSSetJacobian(prob, i_field, kernels.r0, kernels.r1);PYLITH_CHECK_ERROR(err);
+        const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
+        err = PetscDSSetResidual(prob, i_field, kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
     } // for
 
     // Get auxiliary data
@@ -378,10 +361,10 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     assert(solution.localVector());
     assert(residual->localVector());
     err = DMGetLabel(dmSoln, "material-id", &dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumBounds(dmLabel, _materialId, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     assert(cEnd > cStart); // Double-check that this material has cells.
 
-    PYLITH_JOURNAL_DEBUG("DMPlexComputeResidual_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<<","<<cEnd<<".");
+    PYLITH_JOURNAL_DEBUG("DMPlexComputeResidual_Internal() with material-id '"<<_materialId<<"' and cells ["<<cStart<<","<<cEnd<<".");
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cells);PYLITH_CHECK_ERROR(err);
     err = DMPlexComputeResidual_Internal(dmSoln, cells, PETSC_MIN_REAL, solution.localVector(), solutionDot.localVector(), residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&cells);PYLITH_CHECK_ERROR(err);
@@ -402,7 +385,7 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
                                                        const pylith::topology::Field& solution,
                                                        const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_computeJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
+    PYLITH_JOURNAL_DEBUG("_computeJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", # kernels="<<kernels.size()<<", t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
     assert(jacobianMat);
     assert(precondMat);
@@ -417,23 +400,23 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
     PetscDMLabel dmLabel = NULL;
 
     // Set pointwise function (kernels) in DS
-    err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(solution.dmMesh(), &prob);PYLITH_CHECK_ERROR(err);
     for (size_t i = 0; i < kernels.size(); ++i) {
-        const PetscInt i_fieldTrial = solution.subfieldInfo(kernels.fieldTrial).index;
-        const PetscInt i_fieldBasis = solution.subfieldInfo(kernels.fieldBasis).index;
-        err = PetscDSSetJacobian(prob, i_fieldTrial, i_fieldBasis, kernels.j0, kernels.j1, kernels.j2, kernels.j3);PYLITH_CHECK_ERROR(err);
+        const PetscInt i_fieldTrial = solution.subfieldInfo(kernels[i].subfieldTrial.c_str()).index;
+        const PetscInt i_fieldBasis = solution.subfieldInfo(kernels[i].subfieldBasis.c_str()).index;
+        err = PetscDSSetJacobian(prob, i_fieldTrial, i_fieldBasis, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
     } // for
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmMesh, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxField()->localVector());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) _auxField->localVector());PYLITH_CHECK_ERROR(err);
 
     // Compute the local Jacobian
     assert(solution.localVector());
     err = DMGetLabel(dmMesh, "material-id", &dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumBounds(dmLabel, _materialId, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
 
-    PYLITH_JOURNAL_DEBUG("DMPlexComputeJacobian_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<< ","<<cEnd<<".");
+    PYLITH_JOURNAL_DEBUG("DMPlexComputeJacobian_Internal() with material-id '"<<_materialId<<"' and cells ["<<cStart<< ","<<cEnd<<".");
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cells);PYLITH_CHECK_ERROR(err);
     err = DMPlexComputeJacobian_Internal(dmMesh, cells, t, s_tshift, solution.localVector(), solutionDot.localVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&cells);PYLITH_CHECK_ERROR(err);
