@@ -73,7 +73,8 @@ libpylith_la_SOURCES = \
 	fekernels/AbsorbingDampers.cc \
 	fekernels/FaultCohesiveKin.cc \
 	materials/Material.cc \
-	materials/AuxiliaryFactory.cc \
+	materials/AuxiliaryFactoryElastic.cc \
+	materials/AuxiliaryFactoryViscoelastic.cc \
 	materials/IsotropicLinearElasticityPlaneStrain.cc \
 	materials/IsotropicLinearMaxwellPlaneStrain.cc \
 	materials/IsotropicLinearGenMaxwellPlaneStrain.cc \

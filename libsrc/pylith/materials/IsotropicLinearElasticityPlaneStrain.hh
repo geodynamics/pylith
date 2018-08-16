@@ -24,19 +24,14 @@
 #if !defined(pylith_materials_isotropiclinearelasticityplanestrain_hh)
 #define pylith_materials_isotropiclinearelasticityplanestrain_hh
 
-// Include directives ---------------------------------------------------
 #include "materialsfwd.hh" // forward declarations
 
 #include "pylith/materials/Material.hh" // ISA Material
 
-// Material -------------------------------------------------------------
-/** @brief C++ class for isotropic linear elastic plane strain material.
- */
+class pylith::materials::IsotropicLinearElasticityPlaneStrain : public pylith::materials::Material {
+    friend class TestIsotropicLinearElasticityPlaneStrain; // unit testing
 
-class pylith::materials::IsotropicLinearElasticityPlaneStrain : public pylith::materials::Material { // class IsotropicLinearElasticityPlaneStrain
-    friend class TestIsotropicLinearElasticityPlaneStrain;   // unit testing
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -44,6 +39,9 @@ public:
 
     /// Destructor.
     ~IsotropicLinearElasticityPlaneStrain(void);
+
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
 
     /** Include inertia?
      *
@@ -83,62 +81,102 @@ public:
      */
     bool useReferenceState(void) const;
 
+    /** Create integrator and set kernels.
+     *
+     * @param[in] solution Solution field.
+     *
+     *  @returns Integrator if applicable, otherwise NULL.
+     */
+    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution);
+
+    /** Create auxiliary field.
+     *
+     * @param[in] solution Solution field.
+     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+     *
+     * @returns Auxiliary field if applicable, otherwise NULL.
+     */
+    pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
+                                                  const pylith::topology::Mesh& domainMesh);
+
+    /** Create derived field.
+     *
+     * @param[in] solution Solution field.
+     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+     *
+     * @returns Derived field if applicable, otherwise NULL.
+     */
+    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
+                                                const pylith::topology::Mesh& domainMesh);
+
     /** Verify configuration is acceptable.
      *
      * @param[in] solution Solution field.
      */
     void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    /// Setup auxiliary subfields (discretization and query fns).
-    void _auxFieldSetup(void);
-
-    /** Set kernels for RHS residual G(t,u).
-     *
-     * @param[in] solution Solution field.
+    /** Get auxiliary factory associated with physics.
+     * @return Auxiliary factory for physics object.
      */
-    void _setFEKernelsRHSResidual(const pylith::topology::Field& solution) const;
+    pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
-    /** Set kernels for RHS Jacobian G(t,u).
-     *
-     * @param[in] solution Solution field.
-     */
-    void _setFEKernelsRHSJacobian(const pylith::topology::Field& solution) const;
-
-    /** Set kernels for LHS residual F(t,u,\dot{u}).
-     *
-     * @param[in] solution Solution field.
-     */
-    void _setFEKernelsLHSResidual(const pylith::topology::Field& solution) const;
-
-
-    /** Set kernels for LHS Jacobian F(t,u,\dot{u}).
-     *
-     * @param[in] solution Solution field.
-     */
-    void _setFEKernelsLHSJacobian(const pylith::topology::Field& solution) const;
-
-
-    // PRIVATE MEMBERS ////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    bool _useInertia;   ///< Flag to include inertial term.
-    bool _useBodyForce;   ///< Flag to include body force term.
-    bool _useReferenceState;   ///< Flag to use reference stress and strain.
+    /** Set kernels for RHS residual.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    void _setKernelsRHSResidual(pylith::feassemble::IntegratorDomain* integrator,
+                                const pylith::topology::Field& solution) const;
 
-    static const char* _pyreComponent; ///< Name of Pyre component.
+    /** Set kernels for RHS Jacobian.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    void _setKernelsRHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
+                                const pylith::topology::Field& solution) const;
+
+    /** Set kernels for LHS residual.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    void _setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
+                                const pylith::topology::Field& solution) const;
+
+    /** Set kernels for LHS Jacobian.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    void _setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
+                                const pylith::topology::Field& solution) const;
+
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+private:
+
+    bool _useInertia; ///< Flag to include inertial term.
+    bool _useBodyForce; ///< Flag to include body force term.
+    bool _useReferenceState; ///< Flag to use reference stress and strain.
+
+    pylith::materials::AuxiliaryFactoryElastic* _auxiliaryFactory; ///< Factory for auxiliary subfields.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
 
-    IsotropicLinearElasticityPlaneStrain(const IsotropicLinearElasticityPlaneStrain&);   ///< Not implemented.
-    const IsotropicLinearElasticityPlaneStrain& operator=(const IsotropicLinearElasticityPlaneStrain&);   ///< Not implemented
+    IsotropicLinearElasticityPlaneStrain(const IsotropicLinearElasticityPlaneStrain&); ///< Not implemented.
+
+    /// Not implemented.
+    const IsotropicLinearElasticityPlaneStrain& operator=(const IsotropicLinearElasticityPlaneStrain&);
 
 }; // class IsotropicLinearElasticityPlaneStrain
 
 #endif // pylith_materials_isotropiclinearelasticityplanestrain_hh
-
 
 // End of file

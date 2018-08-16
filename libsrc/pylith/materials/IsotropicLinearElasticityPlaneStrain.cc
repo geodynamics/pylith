@@ -20,9 +20,10 @@
 
 #include "pylith/materials/IsotropicLinearElasticityPlaneStrain.hh" // implementation of object methods
 
-#include "pylith/materials/AuxiliaryFactory.hh" // USES AuxiliaryFactory
-
+#include "pylith/materials/AuxiliaryFactoryElastic.hh" // USES AuxiliaryFactoryElastic
+#include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
+#include "pylith/topology/FieldOps.hh" // USES FieldOps
 
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/ElasticityPlaneStrain.hh" // USES ElasticityPlaneStrain kernels
@@ -34,29 +35,40 @@
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include "petscds.h"
+// ---------------------------------------------------------------------------------------------------------------------
+typedef pylith::feassemble::Integrator::ResidualKernels ResidualKernels;
+typedef pylith::feassemble::Integrator::JacobianKernels JacobianKernels;
 
-// ----------------------------------------------------------------------
-const char* pylith::materials::IsotropicLinearElasticityPlaneStrain::_pyreComponent = "isotropiclinearelasticityplanestrain";
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::IsotropicLinearElasticityPlaneStrain::IsotropicLinearElasticityPlaneStrain(void) :
     pylith::materials::Material(2),
     _useInertia(false),
     _useBodyForce(false),
-    _useReferenceState(false)
-{ // constructor
-    pylith::utils::PyreComponent::name(_pyreComponent);
+    _useReferenceState(false),
+    _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryElastic) {
+    pylith::utils::PyreComponent::name("isotropiclinearelasticityplanestrain");
 } // constructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::materials::IsotropicLinearElasticityPlaneStrain::~IsotropicLinearElasticityPlaneStrain(void) {} // destructor
+pylith::materials::IsotropicLinearElasticityPlaneStrain::~IsotropicLinearElasticityPlaneStrain(void) {
+    deallocate();
+} // destructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::materials::IsotropicLinearElasticityPlaneStrain::deallocate(void) {
+    Material::deallocate();
+
+    delete _auxiliaryFactory;_auxiliaryFactory = NULL;
+} // deallocate
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Include inertia?
 void
 pylith::materials::IsotropicLinearElasticityPlaneStrain::useInertia(const bool value) {
@@ -66,7 +78,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useInertia(const bool v
 } // useInertia
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Include inertia?
 bool
 pylith::materials::IsotropicLinearElasticityPlaneStrain::useInertia(void) const {
@@ -74,7 +86,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useInertia(void) const 
 } // useInertia
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Include body force?
 void
 pylith::materials::IsotropicLinearElasticityPlaneStrain::useBodyForce(const bool value) {
@@ -84,7 +96,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useBodyForce(const bool
 } // useBodyForce
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Include body force?
 bool
 pylith::materials::IsotropicLinearElasticityPlaneStrain::useBodyForce(void) const {
@@ -92,7 +104,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useBodyForce(void) cons
 } // useBodyForce
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Use reference stress and strain in computation of stress and
 // strain?
 void
@@ -103,7 +115,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useReferenceState(const
 } // useReferenceState
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Use reference stress and strain in computation of stress and
 // strain?
 bool
@@ -112,7 +124,88 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useReferenceState(void)
 } // useReferenceState
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+// Create integrator and set kernels.
+pylith::feassemble::Integrator*
+pylith::materials::IsotropicLinearElasticityPlaneStrain::createIntegrator(const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+
+    pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
+    integrator->setMaterialId(getMaterialId());
+
+    _setKernelsRHSResidual(integrator, solution);
+    _setKernelsRHSJacobian(integrator, solution);
+    _setKernelsLHSResidual(integrator, solution);
+    _setKernelsLHSJacobian(integrator, solution);
+    // No state variables.
+    // _setKernelsDerivedFields(integrator, solution);
+
+    PYLITH_METHOD_RETURN(integrator);
+} // createIntegrator
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Create auxiliary field.
+pylith::topology::Field*
+pylith::materials::IsotropicLinearElasticityPlaneStrain::createAuxiliaryField(const pylith::topology::Field& solution,
+                                                                              const pylith::topology::Mesh& domainMesh) {
+    PYLITH_METHOD_BEGIN;
+
+    pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
+    auxiliaryField->label("IsotropicLinearElasticityPlaneStrain auxiliary field");
+
+    const int dim = 2;
+
+    assert(_auxiliaryFactory);
+    assert(_normalizer);
+    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, dim);
+
+    // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
+
+    // :ATTENTION: In quasi-static problems, the time scale is usually quite large
+    // (order of tens to hundreds of years), which means that the density scale is very large,
+    // and the acceleration scale is very small. Nevertheless, density times gravitational
+    // acceleration will have a scale of pressure divided by length and should be within a few orders
+    // of magnitude of 1.
+
+    _auxiliaryFactory->addDensity(); // 0
+    _auxiliaryFactory->addShearModulus(); // 1
+    _auxiliaryFactory->addBulkModulus(); // 2
+    if (_gravityField) {
+        _auxiliaryFactory->addGravityField(_gravityField);
+    } // if
+    if (_useBodyForce) {
+        _auxiliaryFactory->addBodyForce();
+    } // if
+    if (_useReferenceState) {
+        _auxiliaryFactory->addReferenceStress(); // numA-2
+        _auxiliaryFactory->addReferenceStrain(); // numA-1
+    } // if
+
+    auxiliaryField->subfieldsSetup();
+    pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
+    auxiliaryField->allocate();
+    auxiliaryField->zeroLocal();
+
+    assert(_auxiliaryFactory);
+    _auxiliaryFactory->initializeSubfields();
+
+    PYLITH_METHOD_RETURN(auxiliaryField);
+} // createAuxiliaryField
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Create derived field.
+pylith::topology::Field*
+pylith::materials::IsotropicLinearElasticityPlaneStrain::createDerivedField(const pylith::topology::Field& solution,
+                                                                            const pylith::topology::Mesh& domainMesh) {
+    PYLITH_METHOD_BEGIN;
+
+    PYLITH_METHOD_RETURN(NULL);
+} // createDerivedField
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::materials::IsotropicLinearElasticityPlaneStrain::verifyConfiguration(const pylith::topology::Field& solution) const {
@@ -131,56 +224,23 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::verifyConfiguration(con
 } // verifyConfiguration
 
 
-// ----------------------------------------------------------------------
-// Preinitialize material. Set names/sizes of auxiliary subfields.
-void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldSetup(void) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_auxFieldSetup()");
+// ---------------------------------------------------------------------------------------------------------------------
+// Get auxiliary factory associated with physics.
+pylith::feassemble::AuxiliaryFactory*
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_getAuxiliaryFactory(void) {
+    return _auxiliaryFactory;
+} // _getAuxiliaryFactory
 
-    const int dim = 2;
-
-    assert(_auxMaterialFactory);
-    assert(_normalizer);
-    _auxMaterialFactory->initialize(_auxField, *_normalizer, dim);
-
-    // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
-
-    // :ATTENTION: In quasi-static problems, the time scale is usually quite large
-    // (order of tens to hundreds of years), which means that the density scale is very large,
-    // and the acceleration scale is very small. Nevertheless, density times gravitational
-    // acceleration will have a scale of pressure divided by length and should be within a few orders
-    // of magnitude of 1.
-
-    _auxMaterialFactory->density(); // 0
-    _auxMaterialFactory->shearModulus(); // 1
-    _auxMaterialFactory->bulkModulus(); // 2
-    if (_gravityField) {
-        _auxMaterialFactory->gravityField(_gravityField);
-    } // if
-    if (_useBodyForce) {
-        _auxMaterialFactory->bodyForce();
-    } // if
-    if (_useReferenceState) {
-        _auxMaterialFactory->referenceStress(); // numA-2
-        _auxMaterialFactory->referenceStrain(); // numA-1
-    } // if
-
-    PYLITH_METHOD_END;
-} // _auxFieldSetup
 
 // ----------------------------------------------------------------------
 // Set kernels for RHS residual G(t,s).
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSResidual(const topology::Field& solution) const {
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setKernelsRHSResidual(pylith::feassemble::IntegratorDomain* integrator,
+                                                                                const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSResidual(solution="<<solution.label()<<")");
 
-    const PetscDM dm = solution.dmMesh(); assert(dm);
-    PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
-
-    const PetscInt i_disp = solution.subfieldInfo("displacement").index;
+    std::vector<ResidualKernels> kernels;
 
     if (!solution.hasSubfield("velocity")) {
         // Displacement
@@ -190,10 +250,9 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSResidua
                                    NULL;
         const PetscPointFunc g1u = (!_useReferenceState) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::g1v : pylith::fekernels::IsotropicLinearElasticityPlaneStrain::g1v_refstate;
 
-        err = PetscDSSetResidual(prob, i_disp, g0u, g1u); PYLITH_CHECK_ERROR(err);
+        kernels.resize(1);
+        kernels[0] = ResidualKernels("displacement", g0u, g1u);
     } else {
-        const PetscInt i_vel = solution.subfieldInfo("velocity").index;
-
         // Displacement
         const PetscPointFunc g0u = pylith::fekernels::DispVel::g0u;
         const PetscPointFunc g1u = NULL;
@@ -205,27 +264,26 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSResidua
                                    NULL;
         const PetscPointFunc g1v = (!_useReferenceState) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::g1v : pylith::fekernels::IsotropicLinearElasticityPlaneStrain::g1v_refstate;
 
-        err = PetscDSSetResidual(prob, i_disp, g0u, g1u); PYLITH_CHECK_ERROR(err);
-        err = PetscDSSetResidual(prob, i_vel,  g0v, g1v); PYLITH_CHECK_ERROR(err);
+        kernels.resize(2);
+        kernels[0] = ResidualKernels("displacement", g0u, g1u);
+        kernels[1] = ResidualKernels("velocity", g0v, g1v);
     } // if/else
 
+    integrator->setKernelsRHSResidual(kernels);
 
     PYLITH_METHOD_END;
-} // _setFEKernelsRHSResidual
+} // _setKernelsRHSResidual
 
 
 // ----------------------------------------------------------------------
 // Set kernels for RHS Jacobian G(t,s).
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSJacobian(const topology::Field& solution) const {
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setKernelsRHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
+                                                                                const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSJacobian(solution="<<solution.label()<<")");
 
-    const PetscDM dm = solution.dmMesh(); assert(dm);
-    PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
-
-    const PetscInt i_disp = solution.subfieldInfo("displacement").index;
+    std::vector<JacobianKernels> kernels;
 
     if (!solution.hasSubfield("velocity")) {
         const PetscPointJac Jg0uu = NULL;
@@ -233,11 +291,9 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSJacobia
         const PetscPointJac Jg2uu = NULL;
         const PetscPointJac Jg3uu = pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jg3vu;
 
-        err = PetscDSSetJacobian(prob, i_disp, i_disp, Jg0uu, Jg1uu, Jg2uu, Jg3uu); PYLITH_CHECK_ERROR(err);
+        kernels.resize(1);
+        kernels[0] = JacobianKernels("displacement", "displacement", Jg0uu, Jg1uu, Jg2uu, Jg3uu);
     } else {
-        const PetscInt i_vel = solution.subfieldInfo("velocity").index;
-
-        // Jacobian kernels
         const PetscPointJac Jg0uu = NULL;
         const PetscPointJac Jg1uu = NULL;
         const PetscPointJac Jg2uu = NULL;
@@ -258,38 +314,33 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSJacobia
         const PetscPointJac Jg2vv = NULL;
         const PetscPointJac Jg3vv = NULL;
 
-        err = PetscDSSetJacobian(prob, i_disp, i_disp, Jg0uu, Jg1uu, Jg2uu, Jg3uu); PYLITH_CHECK_ERROR(err);
-        err = PetscDSSetJacobian(prob, i_disp, i_vel,  Jg0uv, Jg1uv, Jg2uv, Jg3uv); PYLITH_CHECK_ERROR(err);
-        err = PetscDSSetJacobian(prob, i_vel,  i_disp, Jg0vu, Jg1vu, Jg2vu, Jg3vu); PYLITH_CHECK_ERROR(err);
-        err = PetscDSSetJacobian(prob, i_vel,  i_vel,  Jg0vv, Jg1vv, Jg2vv, Jg3vv); PYLITH_CHECK_ERROR(err);
+        kernels.resize(4);
+        kernels[0] = JacobianKernels("displacement", "displacement", Jg0uu, Jg1uu, Jg2uu, Jg3uu);
+        kernels[1] = JacobianKernels("displacement", "velocity", Jg0uv, Jg1uv, Jg2uv, Jg3uv);
+        kernels[2] = JacobianKernels("velocity", "displacement", Jg0vu, Jg1vu, Jg2vu, Jg3vu);
+        kernels[3] = JacobianKernels("velocity", "velocity", Jg0vv, Jg1vv, Jg2vv, Jg3vv);
 
     } // if/else
 
+    integrator->setKernelsRHSJacobian(kernels);
+
     PYLITH_METHOD_END;
-} // _setFEKernelsRHSJacobian
+} // setKernelsRHSJacobian
 
 
 // ----------------------------------------------------------------------
 // Set kernels for LHS residual F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSResidual(const topology::Field& solution) const {
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
+                                                                                const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSResidual(solution="<<solution.label()<<")");
 
-    const PetscDM dm = solution.dmMesh(); assert(dm);
-    PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
-
-    const PetscInt i_disp = solution.subfieldInfo("displacement").index;
+    std::vector<ResidualKernels> kernels;
 
     if (!solution.hasSubfield("velocity")) {
         // F(t,s,\dot{s}) = \vec{0}.
-        const PetscPointFunc f0u = NULL;
-        const PetscPointFunc f1u = NULL;
-        err = PetscDSSetResidual(prob, i_disp, f0u, f1u); PYLITH_CHECK_ERROR(err);
     } else {
-        const PetscInt i_vel = solution.subfieldInfo("velocity").index;
-
         // Displacement
         const PetscPointFunc f0u = pylith::fekernels::DispVel::f0u;
         const PetscPointFunc f1u = NULL;
@@ -298,39 +349,36 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSResidua
         const PetscPointFunc f0v = (_useInertia) ? pylith::fekernels::DispVel::f0v : NULL;
         const PetscPointFunc f1v = NULL;
 
-        err = PetscDSSetResidual(prob, i_disp, f0u, f1u); PYLITH_CHECK_ERROR(err);
-        err = PetscDSSetResidual(prob, i_vel,  f0v, f1v); PYLITH_CHECK_ERROR(err);
+        kernels.resize(2);
+        kernels[0] = ResidualKernels("displacement", f0u, f1u);
+        kernels[1] = ResidualKernels("velocity", f0v, f1v);
     } // if/else
 
+    integrator->setKernelsLHSResidual(kernels);
+
     PYLITH_METHOD_END;
-} // _setFEKernelsLHSResidual
+} // setKernelsLHSResidual
 
 
 // ----------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobian(const topology::Field& solution) const {
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
+                                                                                const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSJacobian(solution="<<solution.label()<<")");
 
-    const PetscDM dm = solution.dmMesh(); assert(dm);
-    PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
-
-    const PetscInt i_disp = solution.subfieldInfo("displacement").index;
+    std::vector<JacobianKernels> kernels;
 
     if (!solution.hasSubfield("velocity")) {
-        // Jacobian kernels
         const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_zero;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
         const PetscPointJac Jf3uu = NULL;
 
-        err = PetscDSSetJacobian(prob, i_disp, i_disp, Jf0uu, Jf1uu, Jf2uu, Jf3uu); PYLITH_CHECK_ERROR(err);
+        kernels.resize(1);
+        kernels[0] = JacobianKernels("displacement", "displacement", Jf0uu, Jf1uu, Jf2uu, Jf3uu);
     } else {
-        const PetscInt i_vel = solution.subfieldInfo("velocity").index;
-
-        // Jacobian kernels
         const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_utshift;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
@@ -351,14 +399,15 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobia
         const PetscPointJac Jf2vv = NULL;
         const PetscPointJac Jf3vv = NULL;
 
-        err = PetscDSSetJacobian(prob, i_disp, i_disp, Jf0uu, Jf1uu, Jf2uu, Jf3uu); PYLITH_CHECK_ERROR(err);
-        err = PetscDSSetJacobian(prob, i_disp, i_vel,  Jf0uv, Jf1uv, Jf2uv, Jf3uv); PYLITH_CHECK_ERROR(err);
-        err = PetscDSSetJacobian(prob, i_vel,  i_disp, Jf0vu, Jf1vu, Jf2vu, Jf3vu); PYLITH_CHECK_ERROR(err);
-        err = PetscDSSetJacobian(prob, i_vel,  i_vel,  Jf0vv, Jf1vv, Jf2vv, Jf3vv); PYLITH_CHECK_ERROR(err);
+        kernels.resize(4);
+        kernels[0] = JacobianKernels("displacement", "displacement", Jf0uu, Jf1uu, Jf2uu, Jf3uu);
+        kernels[1] = JacobianKernels("displacement", "velocity", Jf0uv, Jf1uv, Jf2uv, Jf3uv);
+        kernels[2] = JacobianKernels("velocity", "displacement", Jf0vu, Jf1vu, Jf2vu, Jf3vu);
+        kernels[3] = JacobianKernels("velocity", "velocity", Jf0vv, Jf1vv, Jf2vv, Jf3vv);
     } // if/else
 
     PYLITH_METHOD_END;
-} // _setFEKernelsLHSJacobian
+} // setKernelsLHSJacobian
 
 
 // End of file

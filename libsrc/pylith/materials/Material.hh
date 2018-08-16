@@ -47,11 +47,9 @@
  */
 
 class pylith::materials::Material : public pylith::problems::Physics {
-    friend class AuxiliaryFactory; ///< Helper for setting up auxiliary fields.
-
     friend class TestMaterial; // unit testing
 
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /** Default constructor.
@@ -97,66 +95,25 @@ public:
      */
     const char* getDescriptiveLabel(void) const;
 
-    /** Create integrator and set kernels.
+    /** Set gravity field.
      *
-     * @solution Solution field.
-     * @returns Integrator if applicable, otherwise NULL.
+     * @param g Gravity field.
      */
-    virtual
-    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution) = 0;
+    void setGravityField(spatialdata::spatialdb::GravityField* const g);
 
-    /** Create constraint and set kernels.
-     *
-     * @solution Solution field.
-     * @returns Constraint if applicable, otherwise NULL.
-     */
-    virtual
-    pylith::feassemble::Constraint* createConstraint(const pylith::topology::Field& solution);
-
-    /** Create auxiliary field.
-     *
-     * @mesh Finite-element mesh associated with physics.
-     * @returns Auxiliary field if applicable, otherwise NULL.
-     */
-    virtual
-    pylith::topology::Field* createAuxiliaryField(const pylith::topology::Mesh& mesh) = 0;
-
-    /** Create derived field.
-     *
-     * @mesh Finite-element mesh associated with physics.
-     * @returns Derived field if applicable, otherwise NULL.
-     */
-    virtual
-    pylith::topology::Field* createDerivedField(const pylith::topology::Mesh& mesh) = 0;
-
-    /** Verify configuration is acceptable.
-     *
-     * @param[in] solution Solution field.
-     */
-    virtual
-    void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
-
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    /** Get auxiliary factory associated with physics.
-     * @return Auxiliary factory for physics object.
-     */
-    pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
+    spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field for gravitational body forces.
 
-    // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected:
-
-    pylith::materials::AuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
-
-    // PRIVATE MEMBERS ////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     const int _dimension; ///< Spatial dimension of material.
     int _materialId; ///< Value of material-id label in mesh.
     std::string _descriptiveLabel; ///< Descriptive label for material.
 
-    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     Material(const Material&); ///< Not implemented.

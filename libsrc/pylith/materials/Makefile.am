@@ -21,7 +21,8 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	Material.hh \
-	AuxiliaryFactory.hh \
+	AuxiliaryFactoryElastic.hh \
+	AuxiliaryFactoryViscoelastic.hh \
 	IsotropicLinearElasticityPlaneStrain.hh \
 	IsotropicLinearMaxwellPlaneStrain.hh \
 	IsotropicLinearIncompElasticityPlaneStrain.hh \

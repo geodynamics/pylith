@@ -20,8 +20,6 @@
 
 #include "Material.hh" // implementation of object methods
 
-#include "pylith/materials/AuxiliaryFactory.hh" // TEMPORARY
-
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()
@@ -31,7 +29,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::Material::Material(const int dimension) :
-    _auxiliaryFactory(new pylith::materials::AuxiliaryFactory),
+    _gravityField(NULL),
     _dimension(dimension),
     _materialId(0),
     _descriptiveLabel("") {
@@ -53,7 +51,8 @@ pylith::materials::Material::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     pylith::problems::Physics::deallocate();
-    delete _auxiliaryFactory;_auxiliaryFactory = NULL;
+
+    _gravityField = NULL; // :TODO: Use shared pointer.
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -104,49 +103,19 @@ pylith::materials::Material::getDescriptiveLabel(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Set gravity field.
+void
+pylith::materials::Material::setGravityField(spatialdata::spatialdb::GravityField* const g) {
+    _gravityField = g;
+} // setGravityField
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
 pylith::feassemble::Constraint*
 createConstraint(const pylith::topology::Field& solution) {
     return NULL;
 } // createConstraint
 
-
-#if 0
-// ---------------------------------------------------------------------------------------------------------------------
-// Get physical property parameters and initial state (if used) from database.
-void
-pylith::materials::Material::initialize(const pylith::topology::Field& solution) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("intialize(solution="<<solution.label()<<")");
-
-    // Get cells associated with material
-    const pylith::topology::Mesh& mesh = solution.mesh();
-    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-    pylith::topology::CoordsVisitor::optimizeClosure(dmMesh);
-
-    const bool includeOnlyCells = true;
-    delete _materialIS;_materialIS = new pylith::topology::StratumIS(dmMesh, "material-id", _id, includeOnlyCells);assert(_materialIS);
-
-    delete _auxField;_auxField = new pylith::topology::Field(mesh);assert(_auxField);
-    _auxField->label("auxiliary subfields");
-    _auxFieldSetup();
-    _auxField->subfieldsSetup();
-    pylith::topology::FieldOps::checkDiscretization(solution, *_auxField);
-    _auxField->allocate();
-    _auxField->zeroLocal();
-
-    assert(_normalizer);
-    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory();assert(factory);
-    factory->initializeSubfields();
-
-    //_auxField->view("MATERIAL AUXILIARY FIELD"); // :DEBUG: TEMPORARY
-    const bool infoOnly = true;
-    notifyObservers(0.0, 0, solution, infoOnly);
-
-    PYLITH_METHOD_END;
-} // initialize
-
-
-#endif
 
 // End of file
