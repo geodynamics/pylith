@@ -70,13 +70,10 @@ libpylith_la_SOURCES = \
 	materials/Material.cc \
 	materials/AuxiliaryFactoryElastic.cc \
 	materials/AuxiliaryFactoryViscoelastic.cc \
-	materials/IsotropicLinearElasticityPlaneStrain.cc \
-	materials/IsotropicLinearMaxwellPlaneStrain.cc \
-	materials/IsotropicLinearGenMaxwellPlaneStrain.cc \
+	materials/IsotropicLinearElasticity.cc \
+	materials/IsotropicLinearMaxwell.cc \
+	materials/IsotropicLinearGenMaxwell.cc \
 	materials/IsotropicLinearIncompElasticityPlaneStrain.cc \
-	materials/IsotropicLinearElasticity3D.cc \
-	materials/IsotropicLinearMaxwell3D.cc \
-	materials/IsotropicLinearGenMaxwell3D.cc \
 	materials/Query.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \
