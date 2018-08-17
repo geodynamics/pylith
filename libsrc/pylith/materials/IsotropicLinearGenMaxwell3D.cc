@@ -352,7 +352,7 @@ pylith::materials::IsotropicLinearGenMaxwell3D::_setFEKernelsLHSJacobian(const p
         const PetscInt i_vel = solution.subfieldInfo("velocity").index;
 
         // Jacobian kernels
-        const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_utshift;
+        const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_stshift;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
         const PetscPointJac Jf3uu = NULL;
@@ -367,7 +367,7 @@ pylith::materials::IsotropicLinearGenMaxwell3D::_setFEKernelsLHSJacobian(const p
         const PetscPointJac Jf2vu = NULL;
         const PetscPointJac Jf3vu = NULL;
 
-        const PetscPointJac Jf0vv = (_useInertia) ? pylith::fekernels::DispVel::Jf0uu_utshift : NULL;
+        const PetscPointJac Jf0vv = (_useInertia) ? pylith::fekernels::DispVel::Jf0uu_stshift : NULL;
         const PetscPointJac Jf1vv = NULL;
         const PetscPointJac Jf2vv = NULL;
         const PetscPointJac Jf3vv = NULL;

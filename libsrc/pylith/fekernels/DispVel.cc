@@ -57,9 +57,6 @@ pylith::fekernels::DispVel::f0u(const PylithInt dim,
                                 const PylithInt numConstants,
                                 const PylithScalar constants[],
                                 PylithScalar f0[]) {
-#if 0 // :DEBUG:
-        std::cout << "DispVel::f0u" << std::endl;
-#endif
     assert(sOff);
     assert(s);
     assert(s_t);
@@ -70,7 +67,6 @@ pylith::fekernels::DispVel::f0u(const PylithInt dim,
 
     const PylithInt i_disp = 0;
     const PylithScalar* disp_t = &s_t[sOff[i_disp]];
-
 
     for (PylithInt i = 0; i < dim; ++i) {
         f0[i] += disp_t[i];
@@ -99,9 +95,6 @@ pylith::fekernels::DispVel::f0v(const PylithInt dim,
                                 const PylithInt numConstants,
                                 const PylithScalar constants[],
                                 PylithScalar f0[]) {
-#if 0 // :DEBUG:
-        std::cout << "DispVel::f0v" << std::endl;
-#endif
     assert(sOff);
     assert(s);
     assert(s_t);
@@ -112,7 +105,6 @@ pylith::fekernels::DispVel::f0v(const PylithInt dim,
 
     const PylithInt i_vel = 1;
     const PylithScalar* vel_t = &s_t[sOff[i_vel]];
-
 
     for (PylithInt i = 0; i < dim; ++i) {
         f0[i] += vel_t[i];
@@ -141,9 +133,6 @@ pylith::fekernels::DispVel::g0u(const PylithInt dim,
                                 const PylithInt numConstants,
                                 const PylithScalar constants[],
                                 PylithScalar g0[]) {
-#if 0 // :DEBUG:
-        std::cout << "DispVel::g0u" << std::endl;
-#endif
     assert(sOff);
     assert(s);
     assert(g0);
@@ -189,7 +178,7 @@ pylith::fekernels::DispVel::Jf0uu_zero(const PylithInt dim,
 // ----------------------------------------------------------------------
 // Jf0 function for displacement equation: Jf0uu = s_tshift.
 void
-pylith::fekernels::DispVel::Jf0uu_utshift(const PylithInt dim,
+pylith::fekernels::DispVel::Jf0uu_stshift(const PylithInt dim,
                                           const PylithInt numS,
                                           const PylithInt numA,
                                           const PylithInt sOff[],
@@ -209,9 +198,6 @@ pylith::fekernels::DispVel::Jf0uu_utshift(const PylithInt dim,
                                           const PylithScalar constants[],
                                           PylithScalar Jf0[]) {
     const PylithInt _numS = 2;
-#if 0 // :DEBUG:
-        std::cout << "DispVel::Jf0uu_utshift" << std::endl;
-#endif
     assert(_numS == numS);
     assert(s_tshift > 0);
 
@@ -248,14 +234,12 @@ pylith::fekernels::DispVel::Jg0uv(const PylithInt dim,
                                   const PylithScalar constants[],
                                   PylithScalar Jg0[]) {
     const PylithInt _numS = 2;
-#if 0 // :DEBUG:
-        std::cout << "DispVel::Jg0uv" << std::endl;
-#endif
     assert(_numS == numS);
 
     for (PylithInt i = 0; i < dim; ++i) {
         Jg0[i*dim+i] += 1.0;
     } // for
 } // Jg0uv
+
 
 // End of file

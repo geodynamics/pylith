@@ -18,13 +18,12 @@
 
 /** @file libsrc/bc/AuxiliaryFactory.hh
  *
- * @brief C++ helper class for setting up auxiliary fields for boundary conditions.
+ * @brief C++ helper class for setting up auxiliary subfields.
  */
 
 #if !defined(pylith_feassemble_auxiliaryfactory_hh)
 #define pylith_feassemble_auxiliaryfactory_hh
 
-// Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -34,12 +33,10 @@
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 #include "spatialdata/units/unitsfwd.hh" // HOLDSA Normalizer
 
-// AuxiliaryFactory-----------------------------------------------
-/// @brief C++ helper class for setting up auxiliary fields.
 class pylith::feassemble::AuxiliaryFactory : public pylith::utils::GenericComponent {
     friend class TestAuxiliaryFactory; // unit testing
 
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -97,7 +94,7 @@ public:
     /// Fill subfield values.
     void initializeSubfields(void);
 
-    // PROTECTED METHODS ////////////////////////////////////////////////////
+    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Set query function for subfield.
@@ -110,7 +107,7 @@ protected:
                              pylith::topology::FieldQuery::queryfn_type,
                              spatialdata::spatialdb::SpatialDB* db = NULL);
 
-    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     pylith::topology::Field* _field; ///< Auxiliary field.
@@ -129,7 +126,7 @@ protected:
     /// Field query for filling subfield values via spatial database.
     pylith::topology::FieldQuery* _fieldQuery;
 
-    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     AuxiliaryFactory(const AuxiliaryFactory &); ///< Not implemented.

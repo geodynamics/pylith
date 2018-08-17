@@ -29,20 +29,20 @@
 
 #include <cassert>
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::feassemble::AuxiliaryFactory::AuxiliaryFactory(void) :
     _field(NULL),
     _defaultDescription(NULL),
     _normalizer(new spatialdata::units::Nondimensional),
-    _spaceDim(3),
+    _spaceDim(0),
     _queryDB(NULL),
-    _fieldQuery(NULL){ // constructor
+    _fieldQuery(NULL) { // constructor
     _subfieldDiscretizations["default"] = pylith::topology::FieldBase::Discretization();
 } // constructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::feassemble::AuxiliaryFactory::~AuxiliaryFactory(void) {
     _field = NULL; // :TODO: use shared pointer
@@ -54,7 +54,7 @@ pylith::feassemble::AuxiliaryFactory::~AuxiliaryFactory(void) {
 } // destructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Set database for filling auxiliary subfields.
 void
 pylith::feassemble::AuxiliaryFactory::setQueryDB(spatialdata::spatialdb::SpatialDB* value) {
@@ -62,7 +62,7 @@ pylith::feassemble::AuxiliaryFactory::setQueryDB(spatialdata::spatialdb::Spatial
 } // setQueryDB
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Get database for filling auxiliary subfields.
 const spatialdata::spatialdb::SpatialDB*
 pylith::feassemble::AuxiliaryFactory::getQueryDB(void) {
@@ -70,7 +70,7 @@ pylith::feassemble::AuxiliaryFactory::getQueryDB(void) {
 } // getQueryDB
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Set discretization information for auxiliary subfield.
 void
 pylith::feassemble::AuxiliaryFactory::setSubfieldDiscretization(const char* subfieldName,
@@ -92,7 +92,7 @@ pylith::feassemble::AuxiliaryFactory::setSubfieldDiscretization(const char* subf
 } // setSubfieldDiscretization
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Get discretization information for subfield.
 const pylith::topology::FieldBase::Discretization&
 pylith::feassemble::AuxiliaryFactory::getSubfieldDiscretization(const char* subfieldName) const {
@@ -113,7 +113,7 @@ pylith::feassemble::AuxiliaryFactory::getSubfieldDiscretization(const char* subf
 } // getSubfieldDiscretization
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Initialie factory for setting up auxiliary subfields.
 void
 pylith::feassemble::AuxiliaryFactory::initialize(pylith::topology::Field* field,
@@ -146,7 +146,7 @@ pylith::feassemble::AuxiliaryFactory::initialize(pylith::topology::Field* field,
 } // initialize
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Initialize subfields.
 void
 pylith::feassemble::AuxiliaryFactory::initializeSubfields(void) {
@@ -174,7 +174,7 @@ pylith::feassemble::AuxiliaryFactory::initializeSubfields(void) {
 } // initializeSubfields
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Set query function for subfield.
 void
 pylith::feassemble::AuxiliaryFactory::_setSubfieldQueryFn(const char* subfieldName,

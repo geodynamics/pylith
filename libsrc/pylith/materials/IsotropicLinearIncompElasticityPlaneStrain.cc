@@ -27,7 +27,7 @@
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 
 #include "pylith/fekernels/DispVel.hh" // USES DispVel kernels
-#include "pylith/fekernels/IsotropicLinearElasticityPlaneStrain.hh" // USES IsotropicLinearElasticityPlaneStrain kernels
+#include "pylith/fekernels/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity kernels
 #include "pylith/fekernels/IncompressibleElasticity.hh" // USES IncompressibleElasticity kernels
 #include "pylith/fekernels/IsotropicLinearIncompElasticityPlaneStrain.hh" // USES IsotropicLinearIncompElasticityPlaneStrain kernels
 
@@ -244,7 +244,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSJ
         const PetscPointJac Jg0uu = NULL;
         const PetscPointJac Jg1uu = NULL;
         const PetscPointJac Jg2uu = NULL;
-        const PetscPointJac Jg3uu = pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jg3vu;
+        const PetscPointJac Jg3uu = pylith::fekernels::IsotropicLinearElasticity::Jg3vu;
 
         const PetscPointJac Jg0up = NULL;
         const PetscPointJac Jg1up = NULL;
