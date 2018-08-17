@@ -106,6 +106,13 @@ public:
      */
     const pylith::real_array& getKernelConstants(const PylithReal dt);
 
+    /** Verify configuration is acceptable.
+     *
+     * @param[in] solution Solution field.
+     */
+    virtual
+    void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
+
     /** Create integrator and set kernels.
      *
      * @param[in] solution Solution field.
@@ -143,13 +150,6 @@ public:
     virtual
     pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
                                                 const pylith::topology::Mesh& physicsMesh) = 0;
-
-    /** Verify configuration is acceptable.
-     *
-     * @param[in] solution Solution field.
-     */
-    virtual
-    void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

@@ -24,11 +24,10 @@ subpkginclude_HEADERS = \
 	Elasticity.hh \
 	IsotropicLinearElasticity.hh \
 	Viscoelasticity.hh \
-	IsotropicLinearMaxwellPlaneStrain.hh \
+	IsotropicLinearMaxwell.hh \
+	IsotropicLinearGenMaxwell.hh \
 	IncompressibleElasticity.hh \
 	IsotropicLinearIncompElasticityPlaneStrain.hh \
-	IsotropicLinearMaxwell3D.hh \
-	IsotropicLinearGenMaxwell3D.hh \
 	DispVel.hh \
 	TimeDependentFn.hh \
 	NeumannTimeDependent.hh \

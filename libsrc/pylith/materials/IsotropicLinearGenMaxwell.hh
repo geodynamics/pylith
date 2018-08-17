@@ -16,29 +16,29 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/IsotropicLinearMaxwell.hh
+/** @file libsrc/materials/IsotropicLinearGenMaxwell.hh
  *
- * @brief C++ class for isotropic linear Maxwell viscoelastic material.
+ * @brief C++ class for isotropic linear Generalized Maxwell viscoelastic plane strain material.
  */
 
-#if !defined(pylith_materials_isotropiclinearmaxwell_hh)
-#define pylith_materials_isotropiclinearmaxwell_hh
+#if !defined(pylith_materials_isotropiclineargenmaxwell_hh)
+#define pylith_materials_isotropiclineargenmaxwell_hh
 
 #include "materialsfwd.hh" // forward declarations
 
 #include "pylith/materials/Material.hh" // ISA Material
 
-class pylith::materials::IsotropicLinearMaxwell : public pylith::materials::Material {
-    friend class TestIsotropicLinearMaxwell; // unit testing
+class pylith::materials::IsotropicLinearGenMaxwell : public pylith::materials::Material {
+    friend class TestIsotropicLinearGenMaxwell; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    IsotropicLinearMaxwell(void);
+    IsotropicLinearGenMaxwell(void);
 
     /// Destructor.
-    ~IsotropicLinearMaxwell(void);
+    ~IsotropicLinearGenMaxwell(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -184,11 +184,11 @@ private:
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    IsotropicLinearMaxwell(const IsotropicLinearMaxwell&); ///< Not implemented.
-    const IsotropicLinearMaxwell& operator=(const IsotropicLinearMaxwell&); ///< Not implemented
+    IsotropicLinearGenMaxwell(const IsotropicLinearGenMaxwell&); ///< Not implemented.
+    const IsotropicLinearGenMaxwell& operator=(const IsotropicLinearGenMaxwell&); ///< Not implemented
 
-}; // class IsotropicLinearMaxwell
+}; // class IsotropicLinearGenMaxwell
 
-#endif // pylith_materials_isotropiclinearmaxwell_hh
+#endif // pylith_materials_isotropiclineargenmaxwell_hh
 
 // End of file

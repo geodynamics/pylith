@@ -81,6 +81,12 @@ public:
      */
     bool useReferenceState(void) const;
 
+    /** Verify configuration is acceptable.
+     *
+     * @param[in] solution Solution field.
+     */
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
+
     /** Create integrator and set kernels.
      *
      * @param[in] solution Solution field.
@@ -108,12 +114,6 @@ public:
      */
     pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
                                                 const pylith::topology::Mesh& domainMesh);
-
-    /** Verify configuration is acceptable.
-     *
-     * @param[in] solution Solution field.
-     */
-    void verifyConfiguration(const pylith::topology::Field& solution) const;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

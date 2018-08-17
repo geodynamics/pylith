@@ -124,6 +124,25 @@ pylith::materials::IsotropicLinearMaxwell::useReferenceState(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Verify configuration is acceptable.
+void
+pylith::materials::IsotropicLinearMaxwell::verifyConfiguration(const pylith::topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+
+    // Verify solution contains expected fields.
+    if (!solution.hasSubfield("displacement")) {
+        throw std::runtime_error("Cannot find 'displacement' field in solution; required for material 'IsotropicLinearMaxwell'.");
+    } // if
+    if (_useInertia && !solution.hasSubfield("velocity")) {
+        throw std::runtime_error("Cannot find 'velocity' field in solution; required for material 'IsotropicLinearMaxwell' with inertia.");
+    } // if
+
+    PYLITH_METHOD_END;
+} // verifyConfiguration
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
 pylith::materials::IsotropicLinearMaxwell::createIntegrator(const pylith::topology::Field& solution) {
@@ -203,25 +222,6 @@ pylith::materials::IsotropicLinearMaxwell::createDerivedField(const pylith::topo
 
     PYLITH_METHOD_RETURN(NULL);
 } // createDerivedField
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Verify configuration is acceptable.
-void
-pylith::materials::IsotropicLinearMaxwell::verifyConfiguration(const pylith::topology::Field& solution) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
-
-    // Verify solution contains expected fields.
-    if (!solution.hasSubfield("displacement")) {
-        throw std::runtime_error("Cannot find 'displacement' field in solution; required for material 'IsotropicLinearMaxwell'.");
-    } // if
-    if (_useInertia && !solution.hasSubfield("velocity")) {
-        throw std::runtime_error("Cannot find 'velocity' field in solution; required for material 'IsotropicLinearMaxwell' with inertia.");
-    } // if
-
-    PYLITH_METHOD_END;
-} // verifyConfiguration
 
 
 // ---------------------------------------------------------------------------------------------------------------------

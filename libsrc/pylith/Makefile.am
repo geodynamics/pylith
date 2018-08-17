@@ -59,10 +59,9 @@ libpylith_la_SOURCES = \
 	fekernels/IsotropicLinearElasticity.cc \
 	fekernels/Viscoelasticity.cc \
 	fekernels/IsotropicLinearMaxwell.cc \
-	fekernels/IsotropicLinearGenMaxwellPlaneStrain.cc \
+	fekernels/IsotropicLinearGenMaxwell.cc \
 	fekernels/IncompressibleElasticity.cc \
 	fekernels/IsotropicLinearIncompElasticityPlaneStrain.cc \
-	fekernels/IsotropicLinearGenMaxwell3D.cc \
 	fekernels/DispVel.cc \
 	fekernels/TimeDependentFn.cc \
 	fekernels/NeumannTimeDependent.cc \
