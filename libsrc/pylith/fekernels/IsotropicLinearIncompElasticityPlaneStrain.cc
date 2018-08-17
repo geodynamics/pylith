@@ -20,7 +20,7 @@
 
 #include "pylith/fekernels/IsotropicLinearIncompElasticityPlaneStrain.hh"
 
-#include "pylith/fekernels/ElasticityPlaneStrain.hh" // USES ElasticityPlaneStrain kernels
+#include "pylith/fekernels/Elasticity.hh" // USES ElasticityPlaneStrain kernels
 
 #include <cassert> // USES assert()
 
@@ -109,6 +109,7 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::g1u(const PylithI
         g1[i] -= stress[i];
     } // for
 } // g1u
+
 
 // ----------------------------------------------------------------------
 /** g1 function for isotropic linear incompressible elasticity plane strain

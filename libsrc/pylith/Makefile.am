@@ -50,7 +50,7 @@ libpylith_la_SOURCES = \
 	faults/KinSrcAuxiliaryFactory.cc \
 	faults/TopologyOps.cc \
 	feassemble/Integrator.cc \
-	feassemble/IntegratorPointwise.cc \
+	feassemble/IntegratorDomain.cc \
 	feassemble/ConstraintPointwise.cc \
 	feassemble/Observer.cc \
 	feassemble/Observers.cc \
@@ -73,7 +73,7 @@ libpylith_la_SOURCES = \
 	materials/IsotropicLinearElasticity.cc \
 	materials/IsotropicLinearMaxwell.cc \
 	materials/IsotropicLinearGenMaxwell.cc \
-	materials/IsotropicLinearIncompElasticityPlaneStrain.cc \
+	materials/IsotropicLinearIncompElasticity.cc \
 	materials/Query.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \

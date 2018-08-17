@@ -37,8 +37,7 @@ namespace pylith {
         class IsotropicLinearElasticity;
         class IsotropicLinearMaxwell;
         class IsotropicLinearGenMaxwell;
-
-        class IsotropicLinearIncompElasticityPlaneStrain;
+        class IsotropicLinearIncompElasticity;
 
         class Query;
 
