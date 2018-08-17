@@ -18,16 +18,16 @@
 
 #include <portinfo>
 
-#include "pylith/materials/IsotropicLinearElasticity.hh" // implementation of object methods
+#include "pylith/materials/IsotropicLinearMaxwell.hh" // implementation of object methods
 
-#include "pylith/materials/AuxiliaryFactoryElastic.hh" // USES AuxiliaryFactoryElastic
+#include "pylith/materials/AuxiliaryFactoryViscoelastic.hh" // USES AuxiliaryFactoryViscoelastic
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
-#include "pylith/fekernels/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity kernels
+#include "pylith/fekernels/IsotropicLinearMaxwell.hh" // USES IsotropicLinearMaxwell kernels
 #include "pylith/fekernels/DispVel.hh" // USES DispVel kernels
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -38,21 +38,21 @@
 // ---------------------------------------------------------------------------------------------------------------------
 typedef pylith::feassemble::Integrator::ResidualKernels ResidualKernels;
 typedef pylith::feassemble::Integrator::JacobianKernels JacobianKernels;
+typedef pylith::feassemble::Integrator::ProjectKernels ProjectKernels;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::materials::IsotropicLinearElasticity::IsotropicLinearElasticity(void) :
+pylith::materials::IsotropicLinearMaxwell::IsotropicLinearMaxwell(void) :
     _useInertia(false),
     _useBodyForce(false),
-    _useReferenceState(false),
-    _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryElastic) {
-    pylith::utils::PyreComponent::name("isotropiclinearelasticityplanestrain");
+    _useReferenceState(false) {
+    pylith::utils::PyreComponent::name("isotropiclinearmaxwell");
 } // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::materials::IsotropicLinearElasticity::~IsotropicLinearElasticity(void) {
+pylith::materials::IsotropicLinearMaxwell::~IsotropicLinearMaxwell(void) {
     deallocate();
 } // destructor
 
@@ -60,7 +60,7 @@ pylith::materials::IsotropicLinearElasticity::~IsotropicLinearElasticity(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::materials::IsotropicLinearElasticity::deallocate(void) {
+pylith::materials::IsotropicLinearMaxwell::deallocate(void) {
     Material::deallocate();
 
     delete _auxiliaryFactory;_auxiliaryFactory = NULL;
@@ -70,7 +70,7 @@ pylith::materials::IsotropicLinearElasticity::deallocate(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Include inertia?
 void
-pylith::materials::IsotropicLinearElasticity::useInertia(const bool value) {
+pylith::materials::IsotropicLinearMaxwell::useInertia(const bool value) {
     PYLITH_COMPONENT_DEBUG("useInertia(value="<<value<<")");
 
     _useInertia = value;
@@ -80,7 +80,7 @@ pylith::materials::IsotropicLinearElasticity::useInertia(const bool value) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Include inertia?
 bool
-pylith::materials::IsotropicLinearElasticity::useInertia(void) const {
+pylith::materials::IsotropicLinearMaxwell::useInertia(void) const {
     return _useInertia;
 } // useInertia
 
@@ -88,7 +88,7 @@ pylith::materials::IsotropicLinearElasticity::useInertia(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Include body force?
 void
-pylith::materials::IsotropicLinearElasticity::useBodyForce(const bool value) {
+pylith::materials::IsotropicLinearMaxwell::useBodyForce(const bool value) {
     PYLITH_COMPONENT_DEBUG("useBodyForce(value="<<value<<")");
 
     _useBodyForce = value;
@@ -98,7 +98,7 @@ pylith::materials::IsotropicLinearElasticity::useBodyForce(const bool value) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Include body force?
 bool
-pylith::materials::IsotropicLinearElasticity::useBodyForce(void) const {
+pylith::materials::IsotropicLinearMaxwell::useBodyForce(void) const {
     return _useBodyForce;
 } // useBodyForce
 
@@ -107,7 +107,7 @@ pylith::materials::IsotropicLinearElasticity::useBodyForce(void) const {
 // Use reference stress and strain in computation of stress and
 // strain?
 void
-pylith::materials::IsotropicLinearElasticity::useReferenceState(const bool value) {
+pylith::materials::IsotropicLinearMaxwell::useReferenceState(const bool value) {
     PYLITH_COMPONENT_DEBUG("useReferenceState="<<value<<")");
 
     _useReferenceState = value;
@@ -118,7 +118,7 @@ pylith::materials::IsotropicLinearElasticity::useReferenceState(const bool value
 // Use reference stress and strain in computation of stress and
 // strain?
 bool
-pylith::materials::IsotropicLinearElasticity::useReferenceState(void) const {
+pylith::materials::IsotropicLinearMaxwell::useReferenceState(void) const {
     return _useReferenceState;
 } // useReferenceState
 
@@ -126,7 +126,7 @@ pylith::materials::IsotropicLinearElasticity::useReferenceState(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
-pylith::materials::IsotropicLinearElasticity::createIntegrator(const pylith::topology::Field& solution) {
+pylith::materials::IsotropicLinearMaxwell::createIntegrator(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
 
     pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
@@ -136,7 +136,7 @@ pylith::materials::IsotropicLinearElasticity::createIntegrator(const pylith::top
     _setKernelsRHSJacobian(integrator, solution);
     _setKernelsLHSResidual(integrator, solution);
     _setKernelsLHSJacobian(integrator, solution);
-    // No state variables.
+    _setKernelsUpdateStateVars(integrator, solution);
     // _setKernelsDerivedFields(integrator, solution);
 
     PYLITH_METHOD_RETURN(integrator);
@@ -146,12 +146,12 @@ pylith::materials::IsotropicLinearElasticity::createIntegrator(const pylith::top
 // ---------------------------------------------------------------------------------------------------------------------
 // Create auxiliary field.
 pylith::topology::Field*
-pylith::materials::IsotropicLinearElasticity::createAuxiliaryField(const pylith::topology::Field& solution,
-                                                                   const pylith::topology::Mesh& domainMesh) {
+pylith::materials::IsotropicLinearMaxwell::createAuxiliaryField(const pylith::topology::Field& solution,
+                                                                const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->label("IsotropicLinearElasticity auxiliary field");
+    auxiliaryField->label("IsotropicLinearMaxwell auxiliary field");
 
     assert(_auxiliaryFactory);
     assert(_normalizer);
@@ -168,6 +168,9 @@ pylith::materials::IsotropicLinearElasticity::createAuxiliaryField(const pylith:
     _auxiliaryFactory->addDensity(); // 0
     _auxiliaryFactory->addShearModulus(); // 1
     _auxiliaryFactory->addBulkModulus(); // 2
+    _auxiliaryFactory->addMaxwellTime(); // 3
+    _auxiliaryFactory->addViscousStrain(); // 4
+    _auxiliaryFactory->addTotalStrain(); // 5
     if (_gravityField) {
         _auxiliaryFactory->addGravityField(_gravityField);
     } // if
@@ -194,8 +197,8 @@ pylith::materials::IsotropicLinearElasticity::createAuxiliaryField(const pylith:
 // ---------------------------------------------------------------------------------------------------------------------
 // Create derived field.
 pylith::topology::Field*
-pylith::materials::IsotropicLinearElasticity::createDerivedField(const pylith::topology::Field& solution,
-                                                                 const pylith::topology::Mesh& domainMesh) {
+pylith::materials::IsotropicLinearMaxwell::createDerivedField(const pylith::topology::Field& solution,
+                                                              const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
 
     PYLITH_METHOD_RETURN(NULL);
@@ -205,16 +208,16 @@ pylith::materials::IsotropicLinearElasticity::createDerivedField(const pylith::t
 // ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::materials::IsotropicLinearElasticity::verifyConfiguration(const pylith::topology::Field& solution) const {
+pylith::materials::IsotropicLinearMaxwell::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
 
     // Verify solution contains expected fields.
     if (!solution.hasSubfield("displacement")) {
-        throw std::runtime_error("Cannot find 'displacement' field in solution; required for material 'IsotropicLinearElasticity'.");
+        throw std::runtime_error("Cannot find 'displacement' field in solution; required for material 'IsotropicLinearMaxwell'.");
     } // if
     if (_useInertia && !solution.hasSubfield("velocity")) {
-        throw std::runtime_error("Cannot find 'velocity' field in solution; required for material 'IsotropicLinearElasticity' with inertia.");
+        throw std::runtime_error("Cannot find 'velocity' field in solution; required for material 'IsotropicLinearMaxwell' with inertia.");
     } // if
 
     PYLITH_METHOD_END;
@@ -224,18 +227,32 @@ pylith::materials::IsotropicLinearElasticity::verifyConfiguration(const pylith::
 // ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
-pylith::materials::IsotropicLinearElasticity::_getAuxiliaryFactory(void) {
+pylith::materials::IsotropicLinearMaxwell::_getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // _getAuxiliaryFactory
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Update kernel constants.
+void
+pylith::materials::IsotropicLinearMaxwell::_updateKernelConstants(const PylithReal dt) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setKernelConstants(dt="<<dt<<")");
+
+    if (1 != _kernelConstants.size()) { _kernelConstants.resize(1);}
+    _kernelConstants[0] = dt;
+
+    PYLITH_METHOD_END;
+} // _updateKernelConstants
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for RHS residual G(t,s).
 void
-pylith::materials::IsotropicLinearElasticity::_setKernelsRHSResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                                                     const topology::Field& solution) const {
+pylith::materials::IsotropicLinearMaxwell::_setKernelsRHSResidual(pylith::feassemble::IntegratorDomain* integrator,
+                                                                  const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSResidual(integrator="<<integrator<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsRHSResidual(integrator="<<integrator<<", solution="<<solution.label()<<")");
 
     const int spaceDim = solution.spaceDim();
 
@@ -243,16 +260,15 @@ pylith::materials::IsotropicLinearElasticity::_setKernelsRHSResidual(pylith::fea
 
     if (!solution.hasSubfield("velocity")) {
         // Displacement
-        const PetscPointFunc g0u =
-            (_gravityField && _useBodyForce) ? pylith::fekernels::IsotropicLinearElasticity::g0v_gravbodyforce :
-            (_gravityField) ? pylith::fekernels::IsotropicLinearElasticity::g0v_grav :
-            (_useBodyForce) ? pylith::fekernels::IsotropicLinearElasticity::g0v_bodyforce :
-            NULL;
+        const PetscPointFunc g0u = (_gravityField && _useBodyForce) ? pylith::fekernels::IsotropicLinearMaxwell::g0v_gravbodyforce :
+                                   (_gravityField) ? pylith::fekernels::IsotropicLinearMaxwell::g0v_grav :
+                                   (_useBodyForce) ? pylith::fekernels::IsotropicLinearMaxwell::g0v_bodyforce :
+                                   NULL;
         const PetscPointFunc g1u =
-            (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::g1v :
-            (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::g1v :
-            (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::g1v_refstate :
-            (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::g1v_refstate :
+            (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::g1v :
+            (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v :
+            (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::g1v_refstate :
+            (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v_refstate :
             NULL;
 
         kernels.resize(1);
@@ -263,15 +279,15 @@ pylith::materials::IsotropicLinearElasticity::_setKernelsRHSResidual(pylith::fea
         const PetscPointFunc g1u = NULL;
 
         // Velocity
-        const PetscPointFunc g0v = (_gravityField && _useBodyForce) ? pylith::fekernels::IsotropicLinearElasticity::g0v_gravbodyforce :
-                                   (_gravityField) ? pylith::fekernels::IsotropicLinearElasticity::g0v_grav :
-                                   (_useBodyForce) ? pylith::fekernels::IsotropicLinearElasticity::g0v_bodyforce :
+        const PetscPointFunc g0v = (_gravityField && _useBodyForce) ? pylith::fekernels::IsotropicLinearMaxwell::g0v_gravbodyforce :
+                                   (_gravityField) ? pylith::fekernels::IsotropicLinearMaxwell::g0v_grav :
+                                   (_useBodyForce) ? pylith::fekernels::IsotropicLinearMaxwell::g0v_bodyforce :
                                    NULL;
         const PetscPointFunc g1v =
-            (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::g1v :
-            (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::g1v :
-            (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::g1v_refstate :
-            (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::g1v_refstate :
+            (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::g1v :
+            (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v :
+            (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::g1v_refstate :
+            (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v_refstate :
             NULL;
 
         kernels.resize(2);
@@ -289,10 +305,10 @@ pylith::materials::IsotropicLinearElasticity::_setKernelsRHSResidual(pylith::fea
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for RHS Jacobian G(t,s).
 void
-pylith::materials::IsotropicLinearElasticity::_setKernelsRHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                                                                     const topology::Field& solution) const {
+pylith::materials::IsotropicLinearMaxwell::_setKernelsRHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
+                                                                  const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSJacobian(integrator="<<integrator<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsRHSJacobian(integrator="<<integrator<<", solution="<<solution.label()<<")");
 
     const int spaceDim = solution.spaceDim();
 
@@ -302,8 +318,8 @@ pylith::materials::IsotropicLinearElasticity::_setKernelsRHSJacobian(pylith::fea
         const PetscPointJac Jg0uu = NULL;
         const PetscPointJac Jg1uu = NULL;
         const PetscPointJac Jg2uu = NULL;
-        const PetscPointJac Jg3uu = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::Jg3vu :
-                                    (2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::Jg3vu :
+        const PetscPointJac Jg3uu = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::Jg3vu :
+                                    (2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::Jg3vu :
                                     NULL;
 
         kernels.resize(1);
@@ -322,8 +338,8 @@ pylith::materials::IsotropicLinearElasticity::_setKernelsRHSJacobian(pylith::fea
         const PetscPointJac Jg0vu = NULL;
         const PetscPointJac Jg1vu = NULL;
         const PetscPointJac Jg2vu = NULL;
-        const PetscPointJac Jg3vu = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::Jg3vu :
-                                    (2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::Jg3vu :
+        const PetscPointJac Jg3vu = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::Jg3vu :
+                                    (2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::Jg3vu :
                                     NULL;
 
         const PetscPointJac Jg0vv = NULL;
@@ -342,16 +358,16 @@ pylith::materials::IsotropicLinearElasticity::_setKernelsRHSJacobian(pylith::fea
     integrator->setKernelsRHSJacobian(kernels);
 
     PYLITH_METHOD_END;
-} // setKernelsRHSJacobian
+} // _setKernelsRHSJacobian
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for LHS residual F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearElasticity::_setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                                                     const topology::Field& solution) const {
+pylith::materials::IsotropicLinearMaxwell::_setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
+                                                                  const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSResidual(integrator="<<integrator<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsLHSResidual(integrator="<<integrator<<", solution="<<solution.label()<<")");
 
     std::vector<ResidualKernels> kernels;
 
@@ -375,20 +391,21 @@ pylith::materials::IsotropicLinearElasticity::_setKernelsLHSResidual(pylith::fea
     integrator->setKernelsLHSResidual(kernels);
 
     PYLITH_METHOD_END;
-} // setKernelsLHSResidual
+} // _setKernelsLHSResidual
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearElasticity::_setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                                                                     const topology::Field& solution) const {
+pylith::materials::IsotropicLinearMaxwell::_setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
+                                                                  const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSJacobian(integrator="<<integrator<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsLHSJacobian(integrator="<<integrator<<", solution="<<solution.label()<<")");
 
     std::vector<JacobianKernels> kernels;
 
     if (!solution.hasSubfield("velocity")) {
+        // Jacobian kernels
         const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_zero;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
@@ -428,7 +445,35 @@ pylith::materials::IsotropicLinearElasticity::_setKernelsLHSJacobian(pylith::fea
     integrator->setKernelsLHSJacobian(kernels);
 
     PYLITH_METHOD_END;
-} // setKernelsLHSJacobian
+} // _setKernelsLHSJacobian
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set kernels for updating state variables.
+void
+pylith::materials::IsotropicLinearMaxwell::_setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
+                                                                      const pylith::topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setKernelsUpdateStateVars(integrator="<<integrator<<", solution="<<solution.label()<<")");
+
+    const int spaceDim = solution.spaceDim();
+
+    const PetscPointFunc funcViscousStrain = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::updateViscousStrain :
+                                             (2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain :
+                                             NULL;
+    const PetscPointFunc funcTotalStrain = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::updateTotalStrain :
+                                           (2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain :
+                                           NULL;
+
+    std::vector<ProjectKernels> kernels(2);
+    kernels[0] = ProjectKernels("viscous_strain", funcViscousStrain);
+    kernels[1] = ProjectKernels("total_strain", funcTotalStrain);
+
+    assert(integrator);
+    integrator->setKernelsUpdateStateVars(kernels);
+
+    PYLITH_METHOD_END;
+} // _setKernelsUpdateStateVars
 
 
 // End of file

@@ -56,15 +56,12 @@ libpylith_la_SOURCES = \
 	feassemble/Observers.cc \
 	feassemble/AuxiliaryFactory.cc \
 	fekernels/Elasticity.cc \
-	fekernels/ElasticityPlaneStrain.cc \
-	fekernels/Elasticity3D.cc \
 	fekernels/IsotropicLinearElasticity.cc \
-	fekernels/Viscoelastic.cc \
-	fekernels/IsotropicLinearMaxwellPlaneStrain.cc \
+	fekernels/Viscoelasticity.cc \
+	fekernels/IsotropicLinearMaxwell.cc \
 	fekernels/IsotropicLinearGenMaxwellPlaneStrain.cc \
 	fekernels/IncompressibleElasticity.cc \
 	fekernels/IsotropicLinearIncompElasticityPlaneStrain.cc \
-	fekernels/IsotropicLinearMaxwell3D.cc \
 	fekernels/IsotropicLinearGenMaxwell3D.cc \
 	fekernels/DispVel.cc \
 	fekernels/TimeDependentFn.cc \

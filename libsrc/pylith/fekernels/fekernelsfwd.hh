@@ -39,9 +39,13 @@ namespace pylith {
         class IsotropicLinearElasticityPlaneStrain;
         class IsotropicLinearElasticity3D;
 
-        class Viscoelastic;
+        class Viscoelasticity;
+        class IsotropicLinearMaxwell;
         class IsotropicLinearMaxwellPlaneStrain;
+        class IsotropicLinearMaxwell3D;
+
         class IsotropicLinearGenMaxwellPlaneStrain;
+        class IsotropicLinearGenMaxwell3D;
 
         class IncompressibleElasticity;
         class IsotropicLinearIncompElasticityPlaneStrain;
@@ -49,9 +53,6 @@ namespace pylith {
         class TimeDependentFn;
         class NeumannTimeDependent;
         class AbsorbingDampers;
-
-        class IsotropicLinearMaxwell3D;
-        class IsotropicLinearGenMaxwell3D;
 
         class FaultCohesiveKin;
 

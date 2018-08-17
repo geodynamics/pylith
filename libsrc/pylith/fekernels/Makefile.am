@@ -23,7 +23,7 @@ subpkginclude_HEADERS = \
 	fekernelsfwd.hh \
 	Elasticity.hh \
 	IsotropicLinearElasticity.hh \
-	Viscoelastic.hh \
+	Viscoelasticity.hh \
 	IsotropicLinearMaxwellPlaneStrain.hh \
 	IncompressibleElasticity.hh \
 	IsotropicLinearIncompElasticityPlaneStrain.hh \

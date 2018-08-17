@@ -28,12 +28,18 @@
  * - 2: bulk_modulus(1)
  * - 3: gravity_field (2, optional)
  * - 4: body_force(2,optional)
- * - 5: reference_stress(4,optional) (stress_xx, stress_yy, stress_xy, stress_zz)
- * - 6: reference_strain(4,optional) (strain_xx, strain_yy, strain_xy, strain_zz)
+ * - 5: reference_stress(optional)
+ *     2D: 4 components (stress_xx, stress_yy, stress_zz, stress_xy)
+ *     3D: 6 components (stress_xx, stress_yy, stress_zz, stress_xy, stress_yz, stress_xz)
+ * - 6: reference_strain(optional)
+ *     2D: 4 components (strain_xx, strain_yy, strain_zz, strain_xy)
+ *     3D: 6 components (strain_xx, strain_yy, strain_zz, strain_xy, strain_yz, strain_xz)
  *
  * \int_V \vec{\phi}_u \cdot \left( \rho \frac{\partial \vec{v}(t)}{\partial t} \right) \, dV =
  *   \int_V \vec{\phi}_u \cdot \vec{f}(t) - \nabla \vec{\phi}_u : \tensor{\sigma}(\vec{u}) \, dV +
  *   \int_{S_\tau} \vec{\phi}_u \cdot \vec{\tau}(t) \, dS.
+ *
+ * =====================================================================================================================
  *
  * Kernel interface.
  *
@@ -55,7 +61,6 @@
  * @param[in] numConstants Number of registered constants.
  * @param[in] constants Array of registered constants.
  * @param[out] f0 [dim].
- * ======================================================================
  */
 
 #if !defined(pylith_fekernels_isotropiclinearelasticity_hh)
