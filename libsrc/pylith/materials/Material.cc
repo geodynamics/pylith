@@ -28,9 +28,8 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::materials::Material::Material(const int dimension) :
+pylith::materials::Material::Material(void) :
     _gravityField(NULL),
-    _dimension(dimension),
     _materialId(0),
     _descriptiveLabel("") {
     //
@@ -56,14 +55,6 @@ pylith::materials::Material::deallocate(void) {
 
     PYLITH_METHOD_END;
 } // deallocate
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get spatial dimension of material.
-int
-pylith::materials::Material::getDimension(void) const {
-    return _dimension;
-} // getDimension
 
 
 // ---------------------------------------------------------------------------------------------------------------------

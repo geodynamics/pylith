@@ -23,10 +23,9 @@ subpkginclude_HEADERS = \
 	Material.hh \
 	AuxiliaryFactoryElastic.hh \
 	AuxiliaryFactoryViscoelastic.hh \
-	IsotropicLinearElasticityPlaneStrain.hh \
+	IsotropicLinearElasticity.hh \
 	IsotropicLinearMaxwellPlaneStrain.hh \
 	IsotropicLinearIncompElasticityPlaneStrain.hh \
-	IsotropicLinearElasticity3D.hh \
 	IsotropicLinearMaxwell3D.hh \
 	IsotropicLinearGenMaxwell3D.hh \
 	Query.hh \

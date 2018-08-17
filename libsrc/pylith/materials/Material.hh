@@ -52,11 +52,8 @@ class pylith::materials::Material : public pylith::problems::Physics {
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /** Default constructor.
-     *
-     * @param dimension Spatial dimension associated with material.
-     */
-    Material(const int dimension);
+    /// Default constructor.
+    Material(void);
 
     /// Destructor.
     virtual ~Material(void);
@@ -64,12 +61,6 @@ public:
     /// Deallocate PETSc and local data structures.
     virtual
     void deallocate(void);
-
-    /** Get spatial dimension of material.
-     *
-     * @returns Spatial dimension.
-     */
-    int getDimension(void) const;
 
     /** Set value of label material-id used to identify material cells.
      *
@@ -109,7 +100,6 @@ protected:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    const int _dimension; ///< Spatial dimension of material.
     int _materialId; ///< Value of material-id label in mesh.
     std::string _descriptiveLabel; ///< Descriptive label for material.
 

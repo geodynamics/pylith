@@ -16,7 +16,7 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/IsotropicLinearElasticityPlaneStrain.hh
+/** @file libsrc/materials/IsotropicLinearElasticity.hh
  *
  * @brief C++ class for isotropic linear elastic plane strain material.
  */
@@ -28,17 +28,17 @@
 
 #include "pylith/materials/Material.hh" // ISA Material
 
-class pylith::materials::IsotropicLinearElasticityPlaneStrain : public pylith::materials::Material {
-    friend class TestIsotropicLinearElasticityPlaneStrain; // unit testing
+class pylith::materials::IsotropicLinearElasticity : public pylith::materials::Material {
+    friend class TestIsotropicLinearElasticity; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    IsotropicLinearElasticityPlaneStrain(void);
+    IsotropicLinearElasticity(void);
 
     /// Destructor.
-    ~IsotropicLinearElasticityPlaneStrain(void);
+    ~IsotropicLinearElasticity(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -167,15 +167,15 @@ private:
 
     pylith::materials::AuxiliaryFactoryElastic* _auxiliaryFactory; ///< Factory for auxiliary subfields.
 
-    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    IsotropicLinearElasticityPlaneStrain(const IsotropicLinearElasticityPlaneStrain&); ///< Not implemented.
+    IsotropicLinearElasticity(const IsotropicLinearElasticity&); ///< Not implemented.
 
     /// Not implemented.
-    const IsotropicLinearElasticityPlaneStrain& operator=(const IsotropicLinearElasticityPlaneStrain&);
+    const IsotropicLinearElasticity& operator=(const IsotropicLinearElasticity&);
 
-}; // class IsotropicLinearElasticityPlaneStrain
+}; // class IsotropicLinearElasticity
 
 #endif // pylith_materials_isotropiclinearelasticityplanestrain_hh
 

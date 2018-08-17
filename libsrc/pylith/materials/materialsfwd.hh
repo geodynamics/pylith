@@ -34,11 +34,10 @@ namespace pylith {
         class AuxiliaryFactoryElastic;
         class AuxiliaryFactoryViscoelastic;
 
-        class IsotropicLinearElasticityPlaneStrain;
+        class IsotropicLinearElasticity;
         class IsotropicLinearMaxwellPlaneStrain;
         class IsotropicLinearGenMaxwellPlaneStrain;
         class IsotropicLinearIncompElasticityPlaneStrain;
-        class IsotropicLinearElasticity3D;
         class IsotropicLinearMaxwell3D;
         class IsotropicLinearGenMaxwell3D;
 

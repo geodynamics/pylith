@@ -22,13 +22,11 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	fekernelsfwd.hh \
 	Elasticity.hh \
-	ElasticityPlaneStrain.hh \
-	IsotropicLinearElasticityPlaneStrain.hh \
+	IsotropicLinearElasticity.hh \
 	Viscoelastic.hh \
 	IsotropicLinearMaxwellPlaneStrain.hh \
 	IncompressibleElasticity.hh \
 	IsotropicLinearIncompElasticityPlaneStrain.hh \
-	IsotropicLinearElasticity3D.hh \
 	IsotropicLinearMaxwell3D.hh \
 	IsotropicLinearGenMaxwell3D.hh \
 	DispVel.hh \
