@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "pylith/fekernels/Viscoelastic.hh"
+#include "pylith/fekernels/Viscoelasticity.hh"
 
 #include <cassert> // USES assert()
 
@@ -30,8 +30,8 @@
 // ----------------------------------------------------------------------
 // Function to compute Maxwell viscous strain coefficient.
 PylithScalar
-pylith::fekernels::Viscoelastic::maxwellViscousStrainCoeff(const PylithScalar dt,
-                                                           const PylithScalar maxwellTime) {
+pylith::fekernels::Viscoelasticity::maxwellViscousStrainCoeff(const PylithScalar dt,
+                                                              const PylithScalar maxwellTime) {
 #if 0
     // Define cutoff values
     const PylithScalar timeFrac = 1.0e-10;

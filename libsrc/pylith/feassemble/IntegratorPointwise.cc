@@ -46,11 +46,13 @@ pylith::feassemble::IntegratorPointwise::IntegratorPointwise(void) :
     _needNewLHSJacobian(true)
 {}
 
+
 // ----------------------------------------------------------------------
 // Destructor
 pylith::feassemble::IntegratorPointwise::~IntegratorPointwise(void) {
     deallocate();
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
@@ -60,15 +62,16 @@ pylith::feassemble::IntegratorPointwise::deallocate(void) {
 
     Observers::deallocate();
 
-    delete _normalizer; _normalizer = NULL;
-    delete _logger; _logger = NULL;
-    delete _auxField; _auxField = NULL;
-    delete _derivedField; _derivedField = NULL;
+    delete _normalizer;_normalizer = NULL;
+    delete _logger;_logger = NULL;
+    delete _auxField;_auxField = NULL;
+    delete _derivedField;_derivedField = NULL;
 
     _gravityField = NULL; // :KLUDGE: Memory managed by Python object. :TODO: Use shared pointer.
 
     PYLITH_METHOD_END;
 } // deallocate
+
 
 // ----------------------------------------------------------------------
 // Get auxiliary field.
@@ -77,12 +80,14 @@ pylith::feassemble::IntegratorPointwise::auxField(void) const {
     return _auxField;
 } // auxField
 
+
 // ----------------------------------------------------------------------
 // Get derived field.
 const pylith::topology::Field*
 pylith::feassemble::IntegratorPointwise::derivedField(void) const {
     return _derivedField;
 } // derivedField
+
 
 // ----------------------------------------------------------------------
 // Set database for auxiliary fields.
@@ -91,7 +96,7 @@ pylith::feassemble::IntegratorPointwise::auxFieldDB(spatialdata::spatialdb::Spat
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("auxFieldDB(value="<<value<<")");
 
-    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory();assert(factory);
     factory->queryDB(value);
 
     PYLITH_METHOD_END;
@@ -109,8 +114,8 @@ pylith::feassemble::IntegratorPointwise::auxSubfieldDiscretization(const char* n
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("auxSubfieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
 
-    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
-    factory->subfieldDiscretization(name, basisOrder, quadOrder, isBasisContinuous, feSpace);
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory();assert(factory);
+    factory->setSubfieldDiscretization(name, basisOrder, quadOrder, isBasisContinuous, feSpace);
 
     PYLITH_METHOD_END;
 } // auxSubfieldDiscretization
@@ -123,12 +128,14 @@ pylith::feassemble::IntegratorPointwise::needNewRHSJacobian(void) const {
     return _needNewRHSJacobian;
 } // needNewRHSJacobian
 
+
 // ----------------------------------------------------------------------
 // Check whether LHS Jacobian needs to be recomputed.
 bool
 pylith::feassemble::IntegratorPointwise::needNewLHSJacobian(void) const {
     return _needNewLHSJacobian;
 } // needNewLHSJacobian
+
 
 // ----------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
@@ -194,11 +201,11 @@ pylith::feassemble::IntegratorPointwise::_setFEConstants(const pylith::topology:
     PYLITH_COMPONENT_DEBUG("_setFEConstants(solution="<<solution.label()<<", dt="<<dt<<")");
 
     PetscDS prob = NULL;
-    PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
+    PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
 
     // Pointwise functions have been set in DS
-    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err); assert(prob);
-    err = PetscDSSetConstants(prob, 0, NULL); PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
+    err = PetscDSSetConstants(prob, 0, NULL);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setFEConstants
@@ -221,8 +228,8 @@ pylith::feassemble::IntegratorPointwise::_updateStateVars(const PylithReal t,
 
     PetscErrorCode err;
 #if 0
-    PetscDM  auxDM = _auxField->dmMesh(), stateVarDM, dms[2], superDM;
-    PetscIS  stateVarIS, *superIS;
+    PetscDM auxDM = _auxField->dmMesh(), stateVarDM, dms[2], superDM;
+    PetscIS stateVarIS, *superIS;
     PetscVec stateVarVec, A, locA;
 
     // HAPPEN ONCE
@@ -230,11 +237,11 @@ pylith::feassemble::IntegratorPointwise::_updateStateVars(const PylithReal t,
     err = DMCreateSubDM(auxDM, numStateSubfields, stateSubfields, &stateVarIS, &stateVarDM);PYLITH_CHECK_ERROR(err);
     err = DMCreateGlobalVector(stateVarDM, &stateVarVec);PYLITH_CHECK_ERROR(err);
     // Create superDM of {state vars, solution}
-    dms[0] = stateVarDM; dms[1] = solution->dmMesh();
+    dms[0] = stateVarDM;dms[1] = solution->dmMesh();
     err = DMCreateSuperDM(dms, 2, &superIS, &superDM);PYLITH_CHECK_ERROR(err);
     err = DMCreateGlobalVector(superDM, &A);PYLITH_CHECK_ERROR(err);
     err = DMCreateLocalVector(superDM, &locA);PYLITH_CHECK_ERROR(err);
-    
+
     // Copy state vars from auxiliary vars
     err = VecISCopy(stateVarVec, stateVarIS, SCATTER_FORWARD, _auxField->globalVector());PYLITH_CHECK_ERROR(err);
     // Copy current state vars and solution into superDM space
@@ -251,7 +258,7 @@ pylith::feassemble::IntegratorPointwise::_updateStateVars(const PylithReal t,
     err = PetscObjectCompose((PetscObject) dmState, "dmAux", (PetscObject) solution.dmMesh());PYLITH_CHECK_ERROR(err);
     err = PetscObjectCompose((PetscObject) dmState, "A", (PetscObject) solution.localVector());PYLITH_CHECK_ERROR(err);
 #endif
-    
+
     _setFEConstants(*_auxField, dt);
 
     // Set update kernel for each auxiliary subfield.
@@ -268,12 +275,14 @@ pylith::feassemble::IntegratorPointwise::_updateStateVars(const PylithReal t,
     } // for
 
     err = DMProjectFieldLocal(dmState, t, _auxField->localVector(), stateVarsKernels, INSERT_VALUES, _auxField->localVector());PYLITH_CHECK_ERROR(err);
-    delete[] stateVarsKernels; stateVarsKernels = NULL;
+    delete[] stateVarsKernels;stateVarsKernels = NULL;
 
 #if 0
     // HAPPEN ONCE
     // Destroy superDM stuff
-    for (i = 0; i < 2; ++i) {err = ISDestroy(&superIS[i]);PYLITH_CHECK_ERROR(err);}
+    for (i = 0; i < 2; ++i) {
+        err = ISDestroy(&superIS[i]);PYLITH_CHECK_ERROR(err);
+    }
     err = DMDestroy(&superDM);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&stateVarIS);PYLITH_CHECK_ERROR(err);
     err = DMDestroy(&stateVarDM);PYLITH_CHECK_ERROR(err);
@@ -281,7 +290,7 @@ pylith::feassemble::IntegratorPointwise::_updateStateVars(const PylithReal t,
     err = VecDestroy(&A);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&stateVarVec);PYLITH_CHECK_ERROR(err);
 #endif
-    
+
     PYLITH_METHOD_END;
 } // _updateStateVars
 
@@ -295,9 +304,8 @@ pylith::feassemble::IntegratorPointwise::_computeDerivedFields(const PylithReal 
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_computeDerivedFields(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
-
-
     PYLITH_METHOD_END;
 } // _computeDerivedFields
+
 
 // End of file

@@ -39,16 +39,16 @@ const char* pylith::bc::TimeDependentAuxiliaryFactory::_componentsTTN[3] = { "_t
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::TimeDependentAuxiliaryFactory::TimeDependentAuxiliaryFactory(const ReferenceEnum reference) :
-    _auxComponents(reference)
-{ // constructor
+    _auxComponents(reference){ // constructor
     GenericComponent::name(_genericComponent);
 } // constructor
 
+
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::bc::TimeDependentAuxiliaryFactory::~TimeDependentAuxiliaryFactory(void)
-{ // destructor
+pylith::bc::TimeDependentAuxiliaryFactory::~TimeDependentAuxiliaryFactory(void){ // destructor
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Set names of vector components in auxiliary subfield.
@@ -86,8 +86,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::_setVectorFieldComponentNames(pylith:
 // ----------------------------------------------------------------------
 // Add initial amplitude field to auxiliary fields.
 void
-pylith::bc::TimeDependentAuxiliaryFactory::initialAmplitude(void)
-{ // initialAmplitudert
+pylith::bc::TimeDependentAuxiliaryFactory::initialAmplitude(void){ // initialAmplitudert
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("initialAmplitude(void)");
 
@@ -116,8 +115,8 @@ pylith::bc::TimeDependentAuxiliaryFactory::initialAmplitude(void)
         throw std::logic_error("Unknown vector field case in TimeDependentAuxiliaryFactory::initialAmplitude().");
     } // switch
 
-    _field->subfieldAdd(subfieldDescription, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // initialAmplitude
@@ -126,8 +125,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::initialAmplitude(void)
 // ----------------------------------------------------------------------
 // Add rate amplitude field to auxiliary fields.
 void
-pylith::bc::TimeDependentAuxiliaryFactory::rateAmplitude(void)
-{ // rateAmplitude
+pylith::bc::TimeDependentAuxiliaryFactory::rateAmplitude(void){ // rateAmplitude
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("rateAmplitude(void)");
 
@@ -155,8 +153,8 @@ pylith::bc::TimeDependentAuxiliaryFactory::rateAmplitude(void)
         throw std::logic_error("Unknown vector field case in TimeDependentAuxiliaryFactory::rateAmplitude().");
     } // switch
 
-    _field->subfieldAdd(subfieldDescription, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // rateAmplitude
@@ -165,8 +163,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::rateAmplitude(void)
 // ----------------------------------------------------------------------
 // Add rate start time field to auxiliary fields.
 void
-pylith::bc::TimeDependentAuxiliaryFactory::rateStartTime(void)
-{ // rateStartTime
+pylith::bc::TimeDependentAuxiliaryFactory::rateStartTime(void){ // rateStartTime
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("rateStartTime(void)");
 
@@ -184,8 +181,8 @@ pylith::bc::TimeDependentAuxiliaryFactory::rateStartTime(void)
     subfieldDescription.scale = _normalizer->timeScale();
     subfieldDescription.validator = NULL;
 
-    _field->subfieldAdd(subfieldDescription, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // rateStartTime
@@ -194,8 +191,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::rateStartTime(void)
 // ----------------------------------------------------------------------
 // Add time history amplitude field to auxiliary fields.
 void
-pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryAmplitude(void)
-{ // timeHistoryAmplitude
+pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryAmplitude(void){ // timeHistoryAmplitude
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("timeHistoryAmplitude(void)");
 
@@ -223,8 +219,8 @@ pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryAmplitude(void)
         throw std::logic_error("Unknown vector field case in TimeDependentAuxiliaryFactory::timeHistoryAmplitude().");
     } // switch
 
-    _field->subfieldAdd(subfieldDescription, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // timeHistoryAmplitude
@@ -233,8 +229,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryAmplitude(void)
 // ----------------------------------------------------------------------
 // Add time history start time field to auxiliary fields.
 void
-pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryStartTime(void)
-{ // timeHistoryStartTime
+pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryStartTime(void){ // timeHistoryStartTime
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("timeHistoryStartTime(void)");
 
@@ -252,8 +247,8 @@ pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryStartTime(void)
     subfieldDescription.scale = _normalizer->timeScale();
     subfieldDescription.validator = NULL;
 
-    _field->subfieldAdd(subfieldDescription, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // timeHistoryStartTime
@@ -262,8 +257,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryStartTime(void)
 // ----------------------------------------------------------------------
 // Add time history value field to auxiliary fields.
 void
-pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryValue(void)
-{ // timeHistoryValue
+pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryValue(void){ // timeHistoryValue
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("timeHistoryValue(void)");
 
@@ -281,10 +275,11 @@ pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryValue(void)
     subfieldDescription.scale = _normalizer->timeScale();
     subfieldDescription.validator = NULL;
 
-    _field->subfieldAdd(subfieldDescription, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, NULL); // populated by integrator or constraint at begining of time step.
+    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, NULL); // populated by integrator or constraint at begining of time step.
 
     PYLITH_METHOD_END;
 } // timeHistoryValue
+
 
 // End of file

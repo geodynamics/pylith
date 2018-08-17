@@ -34,14 +34,15 @@ const char* pylith::bc::AbsorbingDampersAuxiliaryFactory::_genericComponent = "a
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::bc::AbsorbingDampersAuxiliaryFactory::AbsorbingDampersAuxiliaryFactory(void)
-{ // constructor
+pylith::bc::AbsorbingDampersAuxiliaryFactory::AbsorbingDampersAuxiliaryFactory(void){ // constructor
     GenericComponent::name(_genericComponent);
 } // constructor
+
 
 // ----------------------------------------------------------------------
 // Destructor.
 pylith::bc::AbsorbingDampersAuxiliaryFactory::~AbsorbingDampersAuxiliaryFactory(void) {}
+
 
 // ----------------------------------------------------------------------
 // Add density field to auxiliary fields.
@@ -63,8 +64,8 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::density(void) {
     description.scale = densityScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
-    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // density
@@ -90,8 +91,8 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::vs(void) {
     description.scale = velocityScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // vs
@@ -117,8 +118,8 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::vp(void) {
     description.scale = velocityScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // vp

@@ -44,8 +44,7 @@ pylith::faults::FaultCohesive::FaultCohesive(void) :
     _auxFaultFactory(new pylith::faults::AuxiliaryFactory),
     _id(100),
     _label(""),
-    _edge("")
-{ // constructor
+    _edge(""){ // constructor
     _refDir1[0] = 0.0;
     _refDir1[1] = 0.0;
     _refDir1[2] = 1.0;
@@ -55,11 +54,13 @@ pylith::faults::FaultCohesive::FaultCohesive(void) :
     _refDir2[2] = 0.0;
 } // constructor
 
+
 // ----------------------------------------------------------------------
 // Destructor.
 pylith::faults::FaultCohesive::~FaultCohesive(void) {
     deallocate();
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
@@ -69,11 +70,12 @@ pylith::faults::FaultCohesive::deallocate(void) {
 
     pylith::feassemble::IntegratorPointwise::deallocate();
     ISDestroy(&_cohesivePointMap);
-    delete _faultMesh; _faultMesh = NULL;
-    delete _auxFaultFactory; _auxFaultFactory = NULL;
+    delete _faultMesh;_faultMesh = NULL;
+    delete _auxFaultFactory;_auxFaultFactory = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
+
 
 // ----------------------------------------------------------------------
 // Set material identifier of fault.
@@ -83,6 +85,7 @@ pylith::faults::FaultCohesive::id(const int value) {
 
     _id = value;
 } // id
+
 
 // ----------------------------------------------------------------------
 // Get material identifier of fault.
@@ -101,12 +104,14 @@ pylith::faults::FaultCohesive::label(const char* value) {
     _label = value;
 } // label
 
+
 // ----------------------------------------------------------------------
 // Get label of group of vertices associated with fault.
 const char*
 pylith::faults::FaultCohesive::label(void) const {
     return _label.c_str();
 } // label
+
 
 // ----------------------------------------------------------------------
 // Set label of group of vertices defining buried edge of fault.
@@ -117,12 +122,14 @@ pylith::faults::FaultCohesive::edge(const char* value) {
     _edge = value;
 } // edge
 
+
 // ----------------------------------------------------------------------
 // Get label of group of vertices defining buried edge of fault.
 const char*
 pylith::faults::FaultCohesive::edge(void) const {
     return _edge.c_str();
 } // edge
+
 
 // ----------------------------------------------------------------------
 // Set first choice for reference direction to discriminate among tangential directions in 3-D.
@@ -140,6 +147,7 @@ pylith::faults::FaultCohesive::refDir1(const double vec[3]) {
     } // for
 } // refDir1
 
+
 // ----------------------------------------------------------------------
 // Set second choice for reference direction to discriminate among tangential directions in 3-D.
 void
@@ -156,6 +164,7 @@ pylith::faults::FaultCohesive::refDir2(const double vec[3]) {
     } // for
 } // refDir2
 
+
 // ----------------------------------------------------------------------
 // Get mesh associated with integrator domain.
 const pylith::topology::Mesh&
@@ -168,8 +177,7 @@ pylith::faults::FaultCohesive::domainMesh(void) const {
 // ----------------------------------------------------------------------
 // Adjust mesh topology for fault implementation.
 void
-pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh)
-{ // adjustTopology
+pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh){ // adjustTopology
     PYLITH_METHOD_BEGIN;
 
     assert(mesh);
@@ -240,6 +248,7 @@ pylith::faults::FaultCohesive::verifyConfiguration(const pylith::topology::Field
     PYLITH_METHOD_END;
 } // verifyConfiguration
 
+
 // ----------------------------------------------------------------------
 // Initialize integrator. Create fault mesh from cohesive cells and cohesive point map.
 void
@@ -248,21 +257,21 @@ pylith::faults::FaultCohesive::initialize(const pylith::topology::Field& solutio
     PYLITH_COMPONENT_DEBUG("initialize(solution="<<solution.label()<<")");
 
     const bool isSubMesh = true;
-    delete _faultMesh; _faultMesh = new pylith::topology::Mesh(isSubMesh); assert(_faultMesh);
+    delete _faultMesh;_faultMesh = new pylith::topology::Mesh(isSubMesh);assert(_faultMesh);
     pylith::faults::TopologyOps::createFaultParallel(_faultMesh, solution.mesh(), id(), label());
     pylith::topology::MeshOps::checkTopology(*_faultMesh);
 
     // Optimize closure for coordinates.
-    PetscDM dmFault = _faultMesh->dmMesh(); assert(dmFault);
+    PetscDM dmFault = _faultMesh->dmMesh();assert(dmFault);
     pylith::topology::CoordsVisitor::optimizeClosure(dmFault);
 
     // Set default discretization of auxiliary subfields to match lagrange_multiplier_fault subfield in solution.
     assert(_auxFaultFactory);
     const pylith::topology::FieldBase::Discretization& discretization = solution.subfieldInfo("lagrange_multiplier_fault").fe;
-    _auxFaultFactory->subfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder,
-                                             discretization.isBasisContinuous, discretization.feSpace);
+    _auxFaultFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder,
+                                                discretization.isBasisContinuous, discretization.feSpace);
 
-    delete _auxField; _auxField = new pylith::topology::Field(*_faultMesh); assert(_auxField);
+    delete _auxField;_auxField = new pylith::topology::Field(*_faultMesh);assert(_auxField);
     _auxField->label("fault auxiliary");
     _auxFieldSetup();
     _auxField->subfieldsSetup();
@@ -271,7 +280,7 @@ pylith::faults::FaultCohesive::initialize(const pylith::topology::Field& solutio
     _auxField->zeroLocal();
 
     assert(_normalizer);
-    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory();assert(factory);
     factory->initializeSubfields();
 
     PYLITH_METHOD_END;

@@ -34,14 +34,15 @@ const char* pylith::faults::KinSrcAuxiliaryFactory::_genericComponent = "kinsrca
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::KinSrcAuxiliaryFactory::KinSrcAuxiliaryFactory(void)
-{ // constructor
+pylith::faults::KinSrcAuxiliaryFactory::KinSrcAuxiliaryFactory(void){ // constructor
     GenericComponent::name(_genericComponent);
 } // constructor
+
 
 // ----------------------------------------------------------------------
 // Destructor.
 pylith::faults::KinSrcAuxiliaryFactory::~KinSrcAuxiliaryFactory(void) {}
+
 
 // ----------------------------------------------------------------------
 // Add slip initiation time (relative to origin time) subfield to auxiliary fields.
@@ -63,8 +64,8 @@ pylith::faults::KinSrcAuxiliaryFactory::initiationTime(void) {
     description.scale = timeScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // initiationTime
@@ -90,8 +91,8 @@ pylith::faults::KinSrcAuxiliaryFactory::riseTime(void) {
     description.scale = timeScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // riseTime
@@ -107,7 +108,6 @@ pylith::faults::KinSrcAuxiliaryFactory::finalSlip(void) {
     const char* fieldName = "final_slip";
     const char* componentNames[3] = { "final_slip_opening", "final_slip_left_lateral", "final_slip_opening" };
 
-
     const PylithReal lengthScale = _normalizer->lengthScale();
 
     pylith::topology::Field::Description description;
@@ -122,8 +122,8 @@ pylith::faults::KinSrcAuxiliaryFactory::finalSlip(void) {
     description.scale = lengthScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // finalSlip
@@ -154,8 +154,8 @@ pylith::faults::KinSrcAuxiliaryFactory::slipRate(void) {
     description.scale = lengthScale / timeScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // slipRate

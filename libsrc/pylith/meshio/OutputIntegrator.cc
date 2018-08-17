@@ -36,17 +36,18 @@ const char* pylith::meshio::OutputIntegrator::_pyreComponent = "outputintegrator
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputIntegrator::OutputIntegrator(pylith::feassemble::IntegratorPointwise* const integrator) :
-    _integrator(integrator)
-{ // constructor
+    _integrator(integrator){ // constructor
     PyreComponent::name(_pyreComponent);
 
 } // constructor
+
 
 // ----------------------------------------------------------------------
 // Destructor
 pylith::meshio::OutputIntegrator::~OutputIntegrator(void) {
     deallocate();
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
@@ -58,6 +59,7 @@ pylith::meshio::OutputIntegrator::deallocate(void) {
 
     PYLITH_METHOD_END;
 } // deallocate
+
 
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
@@ -96,9 +98,9 @@ pylith::meshio::OutputIntegrator::verifyConfiguration(const pylith::topology::Fi
     const size_t numDataFields = _dataFields.size();
     if ((numDataFields > 0) && (std::string("all") != _dataFields[0])) {
         for (size_t i = 0; i < numDataFields; i++) {
-            if (solution.hasSubfield(_dataFields[i].c_str())) { continue; }
-            if (auxField && auxField->hasSubfield(_dataFields[i].c_str())) { continue; }
-            if (derivedField && derivedField->hasSubfield(_dataFields[i].c_str())) { continue; }
+            if (solution.hasSubfield(_dataFields[i].c_str())) { continue;}
+            if (auxField && auxField->hasSubfield(_dataFields[i].c_str())) { continue;}
+            if (derivedField && derivedField->hasSubfield(_dataFields[i].c_str())) { continue;}
 
             std::ostringstream msg;
             msg << "Could not find field '" << _dataFields[i] << "' in solution '" << solution.label()
@@ -119,20 +121,21 @@ pylith::meshio::OutputIntegrator::_writeInfo(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("OutputIntegrator::_writeInfo()");
 
-    if (!_integrator) { PYLITH_METHOD_END; }
+    if (!_integrator) { PYLITH_METHOD_END;}
 
     assert(_integrator);
 
-    // :KLUDGE: Temporary code to set _label and _labelId if integrator ISA Material. This will go away when each material
+    // :KLUDGE: Temporary code to set _label and _labelId if integrator ISA Material. This will go away when each
+    // material
     // has its own PetscDM.
     const pylith::materials::Material* const material = dynamic_cast<const pylith::materials::Material* const>(_integrator);
     if (material) {
-        _temporarySetLabel("material-id", material->id());
-        PYLITH_COMPONENT_DEBUG("Setting OutputIntegrator label='material-id' and label id="<<material->id()<<".");
+        _temporarySetLabel("material-id", material->getMaterialId());
+        PYLITH_COMPONENT_DEBUG("Setting OutputIntegrator label='material-id' and label id="<<material->getMaterialId()<<".");
     } // if
 
     const pylith::topology::Field* auxField = _integrator->auxField();
-    if (!auxField) { PYLITH_METHOD_END; }
+    if (!auxField) { PYLITH_METHOD_END;}
 
     const pylith::string_vector& infoNames = _infoNamesExpanded(auxField);
 
@@ -144,7 +147,7 @@ pylith::meshio::OutputIntegrator::_writeInfo(void) {
     const size_t numInfoFields = infoNames.size();
     for (size_t i = 0; i < numInfoFields; i++) {
         if (auxField->hasSubfield(infoNames[i].c_str())) {
-            pylith::topology::Field* fieldBuffer = _getBuffer(*auxField, infoNames[i].c_str()); assert(fieldBuffer);
+            pylith::topology::Field* fieldBuffer = _getBuffer(*auxField, infoNames[i].c_str());assert(fieldBuffer);
             _appendField(0.0, fieldBuffer, domainMesh);
         } else {
             std::ostringstream msg;
@@ -181,13 +184,13 @@ pylith::meshio::OutputIntegrator::_writeDataStep(const PylithReal t,
     const size_t numDataFields = dataNames.size();
     for (size_t i = 0; i < numDataFields; i++) {
         if (solution.hasSubfield(dataNames[i].c_str())) {
-            pylith::topology::Field* fieldBuffer = _getBuffer(solution, dataNames[i].c_str()); assert(fieldBuffer);
+            pylith::topology::Field* fieldBuffer = _getBuffer(solution, dataNames[i].c_str());assert(fieldBuffer);
             _appendField(t, fieldBuffer, domainMesh);
         } else if (auxField && auxField->hasSubfield(dataNames[i].c_str())) {
-            pylith::topology::Field* fieldBuffer = _getBuffer(*auxField, dataNames[i].c_str()); assert(fieldBuffer);
+            pylith::topology::Field* fieldBuffer = _getBuffer(*auxField, dataNames[i].c_str());assert(fieldBuffer);
             _appendField(t, fieldBuffer, domainMesh);
         } else if (derivedField && derivedField->hasSubfield(dataNames[i].c_str())) {
-            pylith::topology::Field* fieldBuffer = _getBuffer(*derivedField, dataNames[i].c_str()); assert(fieldBuffer);
+            pylith::topology::Field* fieldBuffer = _getBuffer(*derivedField, dataNames[i].c_str());assert(fieldBuffer);
             _appendField(t, fieldBuffer, domainMesh);
         } else {
             std::ostringstream msg;

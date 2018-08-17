@@ -34,14 +34,15 @@ const char* pylith::faults::AuxiliaryFactory::_genericComponent = "faultsauxilia
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::AuxiliaryFactory::AuxiliaryFactory(void)
-{ // constructor
+pylith::faults::AuxiliaryFactory::AuxiliaryFactory(void){ // constructor
     GenericComponent::name(_genericComponent);
 } // constructor
+
 
 // ----------------------------------------------------------------------
 // Destructor.
 pylith::faults::AuxiliaryFactory::~AuxiliaryFactory(void) {}
+
 
 // ----------------------------------------------------------------------
 // Add fault strike direction subfield to auxiliary fields.
@@ -65,11 +66,12 @@ pylith::faults::AuxiliaryFactory::strikeDir(void) {
     description.scale = 1.0;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, NULL); // Computed during initialization.
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, NULL); // Computed during initialization.
 
     PYLITH_METHOD_END;
 } // strikeDir
+
 
 // ----------------------------------------------------------------------
 // Add fault up-dip direction subfield to auxiliary fields.
@@ -93,11 +95,12 @@ pylith::faults::AuxiliaryFactory::upDipDir(void) {
     description.scale = 1.0;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, NULL); // Computed during initialization.
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, NULL); // Computed during initialization.
 
     PYLITH_METHOD_END;
 } // upDipDir
+
 
 // ----------------------------------------------------------------------
 // Add fault normal direction subfield to auxiliary fields.
@@ -121,11 +124,12 @@ pylith::faults::AuxiliaryFactory::normalDir(void) {
     description.scale = 1.0;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, NULL); // Computed during initialization.
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, NULL); // Computed during initialization.
 
     PYLITH_METHOD_END;
 } // normalDir
+
 
 // ----------------------------------------------------------------------
 // Add fault slip subfield to auxiliary fields.
@@ -151,8 +155,8 @@ pylith::faults::AuxiliaryFactory::slip(void) {
     description.scale = lengthScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, NULL); // Populated by kinematic source at beginning of time step.
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, NULL); // Populated by kinematic source at beginning of time step.
 
     PYLITH_METHOD_END;
 } // slip

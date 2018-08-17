@@ -43,11 +43,13 @@ pylith::feassemble::ConstraintPointwise::ConstraintPointwise(void) :
     _logger(NULL)
 {}
 
+
 // ----------------------------------------------------------------------
 // Destructor.
 pylith::feassemble::ConstraintPointwise::~ConstraintPointwise(void) {
     deallocate();
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
@@ -57,9 +59,9 @@ pylith::feassemble::ConstraintPointwise::deallocate(void) {
 
     Observers::deallocate();
 
-    delete _normalizer; _normalizer = NULL;
-    delete _logger; _logger = NULL;
-    delete _auxField; _auxField = NULL;
+    delete _normalizer;_normalizer = NULL;
+    delete _logger;_logger = NULL;
+    delete _auxField;_auxField = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -96,6 +98,7 @@ pylith::feassemble::ConstraintPointwise::constrainedDOF(void) const {
     return _constrainedDOF;
 } // constrainedDOF
 
+
 // ----------------------------------------------------------------------
 // Return auxiliary subfields for this problem.
 const pylith::topology::Field*
@@ -105,6 +108,7 @@ pylith::feassemble::ConstraintPointwise::auxField(void) const {
     PYLITH_METHOD_RETURN(_auxField);
 } // auxField
 
+
 // ----------------------------------------------------------------------
 // Set database for filling auxiliary subfields.
 void
@@ -112,11 +116,12 @@ pylith::feassemble::ConstraintPointwise::auxFieldDB(spatialdata::spatialdb::Spat
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("auxFieldDB(value="<<value<<")");
 
-    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
-    factory->queryDB(value);
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory();assert(factory);
+    factory->setQueryDB(value);
 
     PYLITH_METHOD_END;
 } // auxFieldDB
+
 
 // ----------------------------------------------------------------------
 // Set discretization information for auxiliary subfield.
@@ -129,8 +134,8 @@ pylith::feassemble::ConstraintPointwise::auxSubfieldDiscretization(const char* n
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("auxSubfieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
 
-    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
-    factory->subfieldDiscretization(name, basisOrder, quadOrder, isBasisContinuous, feSpace);
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory();assert(factory);
+    factory->setSubfieldDiscretization(name, basisOrder, quadOrder, isBasisContinuous, feSpace);
 
     PYLITH_METHOD_END;
 } // auxSubfieldDiscretization
@@ -154,8 +159,7 @@ pylith::feassemble::ConstraintPointwise::normalizer(const spatialdata::units::No
 // Update at beginning of time step.
 void
 pylith::feassemble::ConstraintPointwise::prestep(const double t,
-                                                 const double dt)
-{ // prestep
+                                                 const double dt){ // prestep
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("prestep(t="<<t<<", dt="<<dt<<") empty method");
 

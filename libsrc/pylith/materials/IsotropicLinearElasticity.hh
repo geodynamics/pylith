@@ -18,11 +18,11 @@
 
 /** @file libsrc/materials/IsotropicLinearElasticity.hh
  *
- * @brief C++ class for isotropic linear elastic plane strain material.
+ * @brief C++ class for isotropic linear elastic material.
  */
 
-#if !defined(pylith_materials_isotropiclinearelasticityplanestrain_hh)
-#define pylith_materials_isotropiclinearelasticityplanestrain_hh
+#if !defined(pylith_materials_isotropiclinearelasticity_hh)
+#define pylith_materials_isotropiclinearelasticity_hh
 
 #include "materialsfwd.hh" // forward declarations
 
@@ -177,6 +177,6 @@ private:
 
 }; // class IsotropicLinearElasticity
 
-#endif // pylith_materials_isotropiclinearelasticityplanestrain_hh
+#endif // pylith_materials_isotropiclinearelasticity_hh
 
 // End of file
