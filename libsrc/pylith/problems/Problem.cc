@@ -55,7 +55,7 @@ pylith::problems::Problem::Problem() :
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::problems::Problem::~Problem(void){ // destructor
+pylith::problems::Problem::~Problem(void) {
     deallocate();
 } // destructor
 
@@ -63,7 +63,7 @@ pylith::problems::Problem::~Problem(void){ // destructor
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::problems::Problem::deallocate(void){ // deallocate
+pylith::problems::Problem::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     _solution = NULL; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
@@ -80,7 +80,7 @@ pylith::problems::Problem::deallocate(void){ // deallocate
 // ----------------------------------------------------------------------
 // Set problem type.
 void
-pylith::problems::Problem::solverType(const SolverTypeEnum value){ // solverType
+pylith::problems::Problem::solverType(const SolverTypeEnum value) {
     PYLITH_COMPONENT_DEBUG("Problem::solverType(value="<<value<<")");
 
     _solverType = value;
@@ -90,7 +90,7 @@ pylith::problems::Problem::solverType(const SolverTypeEnum value){ // solverType
 // ----------------------------------------------------------------------
 // Get problem type.
 pylith::problems::Problem::SolverTypeEnum
-pylith::problems::Problem::solverType(void) const { // solverType
+pylith::problems::Problem::solverType(void) const {
     return _solverType;
 } // solverType
 
@@ -98,7 +98,7 @@ pylith::problems::Problem::solverType(void) const { // solverType
 // ----------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
 void
-pylith::problems::Problem::normalizer(const spatialdata::units::Nondimensional& dim){ // normalizer
+pylith::problems::Problem::normalizer(const spatialdata::units::Nondimensional& dim) {
     PYLITH_COMPONENT_DEBUG("Problem::normalizer(dim="<<typeid(dim).name()<<")");
 
     if (!_normalizer) {
@@ -112,7 +112,7 @@ pylith::problems::Problem::normalizer(const spatialdata::units::Nondimensional& 
 // ----------------------------------------------------------------------
 // Set gravity field.
 void
-pylith::problems::Problem::gravityField(spatialdata::spatialdb::GravityField* const g){ // gravityField
+pylith::problems::Problem::gravityField(spatialdata::spatialdb::GravityField* const g) {
     PYLITH_COMPONENT_DEBUG("Problem::gravityField(g="<<typeid(*g).name()<<")");
 
     _gravityField = g;
@@ -122,7 +122,7 @@ pylith::problems::Problem::gravityField(spatialdata::spatialdb::GravityField* co
 // ----------------------------------------------------------------------
 // Set solution field.
 void
-pylith::problems::Problem::solution(pylith::topology::Field* field){ // solution
+pylith::problems::Problem::solution(pylith::topology::Field* field) {
     PYLITH_COMPONENT_DEBUG("Problem::solution(field="<<typeid(*field).name()<<")");
 
     _solution = field;
@@ -133,7 +133,7 @@ pylith::problems::Problem::solution(pylith::topology::Field* field){ // solution
 // Set integrators over the mesh.
 void
 pylith::problems::Problem::integrators(pylith::feassemble::IntegratorPointwise* integratorArray[],
-                                       const int numIntegrators){ // integrators
+                                       const int numIntegrators) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("Problem::integrators("<<integratorArray<<", numIntegrators="<<numIntegrators<<")");
 
@@ -152,7 +152,7 @@ pylith::problems::Problem::integrators(pylith::feassemble::IntegratorPointwise* 
 // Set constraints over the mesh.
 void
 pylith::problems::Problem::constraints(pylith::feassemble::ConstraintPointwise* constraintArray[],
-                                       const int numConstraints){ // constraints
+                                       const int numConstraints) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("Problem::constraints("<<constraintArray<<", numConstraints="<<numConstraints<<")");
 
@@ -170,7 +170,7 @@ pylith::problems::Problem::constraints(pylith::feassemble::ConstraintPointwise* 
 // ----------------------------------------------------------------------
 // Do minimal initialization.
 void
-pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh){ // preinitialize
+pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("Problem::preinitialzie(mesh="<<typeid(mesh).name()<<")");
 
@@ -197,7 +197,7 @@ pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh){ //
 // Verify configuration.
 void
 pylith::problems::Problem::verifyConfiguration(int* const materialIds,
-                                               const int numMaterials) const { // verifyConfiguration
+                                               const int numMaterials) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("Problem::verifyConfiguration(materialIds="<<materialIds<<", numMaterials="<<numMaterials<<")");
 
@@ -229,7 +229,7 @@ pylith::problems::Problem::verifyConfiguration(int* const materialIds,
 // ----------------------------------------------------------------------
 // Initialize.
 void
-pylith::problems::Problem::initialize(void){ // initialize
+pylith::problems::Problem::initialize(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("Problem::initialize()");
 
@@ -273,7 +273,7 @@ pylith::problems::Problem::initialize(void){ // initialize
 void
 pylith::problems::Problem::setSolutionLocal(const PylithReal t,
                                             PetscVec solutionVec,
-                                            PetscVec solutionDotVec){ // setSolutionLocal
+                                            PetscVec solutionDotVec) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("setSolutionLocal(t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<")");
 
@@ -307,7 +307,7 @@ void
 pylith::problems::Problem::computeRHSResidual(PetscVec residualVec,
                                               const PylithReal t,
                                               const PylithReal dt,
-                                              PetscVec solutionVec){ // computeRHSResidual
+                                              PetscVec solutionVec) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("Problem::computeRHSResidual(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", residualVec="<<residualVec<<")");
 
@@ -342,7 +342,7 @@ pylith::problems::Problem::computeRHSJacobian(PetscMat jacobianMat,
                                               PetscMat precondMat,
                                               const PylithReal t,
                                               const PylithReal dt,
-                                              PetscVec solutionVec){ // computeRHSJacobian
+                                              PetscVec solutionVec) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("Problem::computeRHSJacobian(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
 
@@ -390,7 +390,7 @@ pylith::problems::Problem::computeLHSResidual(PetscVec residualVec,
                                               const PylithReal t,
                                               const PylithReal dt,
                                               PetscVec solutionVec,
-                                              PetscVec solutionDotVec){ // computeLHSResidual
+                                              PetscVec solutionDotVec) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("Problem::computeLHSResidual(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", residualVec="<<residualVec<<")");
 
@@ -427,7 +427,7 @@ pylith::problems::Problem::computeLHSJacobianImplicit(PetscMat jacobianMat,
                                                       const PylithReal dt,
                                                       const PylithReal s_tshift,
                                                       PetscVec solutionVec,
-                                                      PetscVec solutionDotVec){ // computeLHSJacobianImplicit
+                                                      PetscVec solutionDotVec) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobianImplicit(t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
 
@@ -471,7 +471,7 @@ void
 pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
                                                        const PylithReal dt,
                                                        const PylithReal s_tshift,
-                                                       PetscVec solutionVec){ // computeLHSJacobianLumpedInv
+                                                       PetscVec solutionVec) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobianLumpedInv(t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solutionVec="<<solutionVec<<")");
 
