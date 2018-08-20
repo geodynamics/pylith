@@ -36,7 +36,6 @@ libpylith_la_SOURCES = \
 	bc/TimeDependentAuxiliaryFactory.cc \
 	bc/ConstraintBoundary.cc \
 	bc/DirichletTimeDependent.cc \
-	bc/IntegratorBoundary.cc \
 	bc/NeumannTimeDependent.cc \
 	bc/AbsorbingDampers.cc \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
@@ -51,6 +50,7 @@ libpylith_la_SOURCES = \
 	faults/TopologyOps.cc \
 	feassemble/Integrator.cc \
 	feassemble/IntegratorDomain.cc \
+	feassemble/IntegratorBoundary.cc \
 	feassemble/ConstraintPointwise.cc \
 	feassemble/Observer.cc \
 	feassemble/Observers.cc \

@@ -35,10 +35,12 @@
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
+#include <typeinfo> // USES typeid()
+
 // ---------------------------------------------------------------------------------------------------------------------
-typedef pylith::feassemble::Integrator::ResidualKernels ResidualKernels;
-typedef pylith::feassemble::Integrator::JacobianKernels JacobianKernels;
-typedef pylith::feassemble::Integrator::ProjectKernels ProjectKernels;
+typedef pylith::feassemble::IntegratorDomain::ResidualKernels ResidualKernels;
+typedef pylith::feassemble::IntegratorDomain::JacobianKernels JacobianKernels;
+typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -147,6 +149,7 @@ pylith::materials::IsotropicLinearMaxwell::verifyConfiguration(const pylith::top
 pylith::feassemble::Integrator*
 pylith::materials::IsotropicLinearMaxwell::createIntegrator(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.label()<<")");
 
     pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
     integrator->setMaterialId(getMaterialId());
@@ -168,6 +171,7 @@ pylith::topology::Field*
 pylith::materials::IsotropicLinearMaxwell::createAuxiliaryField(const pylith::topology::Field& solution,
                                                                 const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
     auxiliaryField->label("IsotropicLinearMaxwell auxiliary field");

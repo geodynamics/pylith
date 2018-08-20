@@ -36,8 +36,8 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ---------------------------------------------------------------------------------------------------------------------
-typedef pylith::feassemble::Integrator::ResidualKernels ResidualKernels;
-typedef pylith::feassemble::Integrator::JacobianKernels JacobianKernels;
+typedef pylith::feassemble::IntegratorDomain::ResidualKernels ResidualKernels;
+typedef pylith::feassemble::IntegratorDomain::JacobianKernels JacobianKernels;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.

@@ -101,7 +101,7 @@ pylith::feassemble::Integrator::needNewLHSJacobian(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get physical property parameters and initial state (if used) from database.
+// Initialize integration domain, auxiliary field, and derived field. Update observers.
 void
 pylith::feassemble::Integrator::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
