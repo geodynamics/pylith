@@ -24,15 +24,15 @@
 #if !defined(pylith_bc_absorbingdampers_hh)
 #define pylith_bc_absorbingdampers_hh
 
-#include "pylith/bc/bcfwd.hh" // forward declaration
+#include "pylith/bc/bcfwd.hh"// forward declaration
 
-#include "pylith/problems/Physics.hh" // ISA Physics
+#include "pylith/problems/Physics.hh"// ISA Physics
 
-#include "pylith/topology/topologyfwd.hh" // USES Field
+#include "pylith/topology/topologyfwd.hh"// USES Field
 
 /// @brief AbsorbingDampers (e.g., traction) boundary conditions.
 class pylith::bc::AbsorbingDampers : public pylith::problems::Physics {
-    friend class TestAbsorbingDampers; // unit testing
+    friend class TestAbsorbingDampers;// unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
@@ -128,33 +128,22 @@ protected:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    /** Set kernels for RHS residual.
-     *
-     * @param[out] integrator Integrator for boundary condition.
-     * @param[in] solution Solution field.
-     */
-    void _setKernelsRHSResidual(pylith::feassemble::IntegratorBoundary* integrator,
-                                const pylith::topology::Field& solution) const;
-
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    pylith::topology::FieldBase::Description _description; ///< Description of field associated with BC.
-    pylith::bc::AbsorbingDampersAuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
-    PylithReal _refDir1[3]; ///< First choice reference direction used to compute boundary tangential directions.
-    PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
-    std::string _boundaryLabel; ///< Label to identify boundary condition points in mesh.
-
-    static const char* _subfieldName; ///< Name of solution subfield associated with absorbing dampers.
+    pylith::topology::FieldBase::Description _description;///< Description of field associated with BC.
+    pylith::bc::AbsorbingDampersAuxiliaryFactory* _auxiliaryFactory;///< Factory for auxiliary subfields.
+    PylithReal _refDir1[3];///< First choice reference direction used to compute boundary tangential directions.
+    PylithReal _refDir2[3];///< Second choice reference direction used to compute boundary tangential directions.
+    std::string _boundaryLabel;///< Label to identify boundary condition points in mesh.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    AbsorbingDampers(const AbsorbingDampers&); ///< Not implemented.
-    const AbsorbingDampers& operator=(const AbsorbingDampers&); ///< Not implemented.
+    AbsorbingDampers(const AbsorbingDampers&);///< Not implemented.
+    const AbsorbingDampers& operator=(const AbsorbingDampers&);///< Not implemented.
 
-}; // class AbsorbingDampers
+};
 
-#endif // pylith_bc_absorbingdampers_hh
+// class AbsorbingDampers
+
+#endif// pylith_bc_absorbingdampers_hh
 
 // End of file

@@ -18,29 +18,53 @@
 
 #include <portinfo>
 
-#include "AbsorbingDampers.hh" // implementation of object methods
+#include "AbsorbingDampers.hh"// implementation of object methods
 
-#include "AbsorbingDampersAuxiliaryFactory.hh" // USES AuxiliaryFactory
+#include "AbsorbingDampersAuxiliaryFactory.hh"// USES AuxiliaryFactory
 
-#include "pylith/feassemble/IntegratorBoundary.hh" // USES IntegratorBoundary
-#include "pylith/fekernels/AbsorbingDampers.hh" // USES AbsorbingDampers kernels
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldOps.hh" // USES FieldOps
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/fekernels/AbsorbingDampers.hh"// USES AbsorbingDampers kernels
 
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/feassemble/IntegratorBoundary.hh"// USES IntegratorBoundary
+#include "pylith/topology/Mesh.hh"// USES Mesh
+#include "pylith/topology/Field.hh"// USES Field
+#include "pylith/topology/FieldOps.hh"// USES FieldOps
+#include "spatialdata/units/Nondimensional.hh"// USES Nondimensional
 
-#include <strings.h> // USES strcasecmp()
-#include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
-#include <sstream> // USES std::ostringstream
-#include <typeinfo> // USES typeid
+#include "pylith/utils/journals.hh"// USES PYLITH_COMPONENT_*
+
+#include <strings.h>// USES strcasecmp()
+#include <cassert>// USES assert()
+#include <stdexcept>// USES std::runtime_error
+#include <sstream>// USES std::ostringstream
+#include <typeinfo>// USES typeid
 
 // ---------------------------------------------------------------------------------------------------------------------
-const char* pylith::bc::AbsorbingDampers::_subfieldName = "velocity";
-
 typedef pylith::feassemble::IntegratorBoundary::ResidualKernels ResidualKernels;
+
+// ---------------------------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace bc {
+        class _AbsorbingDampers {
+            // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
+public:
+
+            /** Set kernels for RHS residual.
+             *
+             * @param[out] integrator Integrator for boundary condition.
+             * @param[in] solution Solution field.
+             */
+            static
+            void setKernelsRHSResidual(pylith::feassemble::IntegratorBoundary* integrator,
+                                       const pylith::topology::Field& solution);
+
+            static const char* subfieldName;
+        };
+
+        // _NeumannTimeDependent
+        const char* _AbsorbingDampers::subfieldName = "velocity";
+
+    }// bc
+}// pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -56,14 +80,14 @@ pylith::bc::AbsorbingDampers::AbsorbingDampers(void) :
     _refDir2[0] = 0.0;
     _refDir2[1] = 1.0;
     _refDir2[2] = 0.0;
-} // constructor
+}// constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::bc::AbsorbingDampers::~AbsorbingDampers(void) {
     deallocate();
-} // destructor
+}// destructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -77,7 +101,7 @@ pylith::bc::AbsorbingDampers::deallocate(void) {
     delete _auxiliaryFactory;_auxiliaryFactory = NULL;
 
     PYLITH_METHOD_END;
-} // deallocate
+}// deallocate
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -86,10 +110,10 @@ void
 pylith::bc::AbsorbingDampers::setMarkerLabel(const char* value) {
     if (strlen(value) == 0) {
         throw std::runtime_error("Empty string given for boundary condition label.");
-    } // if
+    }// if
 
     _boundaryLabel = value;
-} // setMarkerLabel
+}// setMarkerLabel
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -97,7 +121,7 @@ pylith::bc::AbsorbingDampers::setMarkerLabel(const char* value) {
 const char*
 pylith::bc::AbsorbingDampers::getMarkerLabel(void) const {
     return _boundaryLabel.c_str();
-} // getMarkerLabel
+}// getMarkerLabel
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -111,11 +135,11 @@ pylith::bc::AbsorbingDampers::setRefDir1(const PylithReal vec[3]) {
         msg << "Magnitude of reference direction 1 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
             <<") for boundary condition '" << _boundaryLabel << "' is negligible. Use a unit vector.";
         throw std::runtime_error(msg.str());
-    } // if
+    }// if
     for (int i = 0; i < 3; ++i) {
         _refDir1[i] = vec[i] / mag;
-    } // for
-} // setRefDir1
+    }// for
+}// setRefDir1
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -129,11 +153,11 @@ pylith::bc::AbsorbingDampers::setRefDir2(const PylithReal vec[3]) {
         msg << "Magnitude of reference direction 2 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
             <<") for boundary condition '" << _boundaryLabel << "' is negligible. Use a unit vector.";
         throw std::runtime_error(msg.str());
-    } // if
+    }// if
     for (int i = 0; i < 3; ++i) {
         _refDir1[i] = vec[i] / mag;
-    } // for
-} // setRefDir2
+    }// for
+}// setRefDir2
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -143,22 +167,22 @@ pylith::bc::AbsorbingDampers::verifyConfiguration(const pylith::topology::Field&
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
 
-    if (!solution.hasSubfield(_subfieldName)) {
+    if (!solution.hasSubfield(_AbsorbingDampers::subfieldName)) {
         std::ostringstream msg;
-        msg << "Cannot apply Neumann boundary condition to field '"<< _subfieldName
+        msg << "Cannot apply Neumann boundary condition to field '"<< _AbsorbingDampers::subfieldName
             << "'; field is not in solution.";
         throw std::runtime_error(msg.str());
-    } // if
+    }// if
 
-    const pylith::topology::Field::SubfieldInfo& info = solution.subfieldInfo(_subfieldName);
+    const pylith::topology::Field::SubfieldInfo& info = solution.subfieldInfo(_AbsorbingDampers::subfieldName);
     if (pylith::topology::Field::VECTOR != info.description.vectorFieldType) {
         std::ostringstream msg;
-        msg << "Absorbing boundary condition cannot be applied to non-vector field '"<< _subfieldName << "' in solution.";
+        msg << "Absorbing boundary condition cannot be applied to non-vector field '"<< _AbsorbingDampers::subfieldName << "' in solution.";
         throw std::runtime_error(msg.str());
-    } // if
+    }// if
 
     PYLITH_METHOD_END;
-} // verifyConfiguration
+}// verifyConfiguration
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -171,10 +195,10 @@ pylith::bc::AbsorbingDampers::createIntegrator(const pylith::topology::Field& so
     pylith::feassemble::IntegratorBoundary* integrator = new pylith::feassemble::IntegratorBoundary(this);assert(integrator);
     integrator->setMarkerLabel(getMarkerLabel());
 
-    _setKernelsRHSResidual(integrator, solution);
+    _AbsorbingDampers::setKernelsRHSResidual(integrator, solution);
 
     PYLITH_METHOD_RETURN(integrator);
-} // createIntegrator
+}// createIntegrator
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -182,7 +206,7 @@ pylith::bc::AbsorbingDampers::createIntegrator(const pylith::topology::Field& so
 pylith::feassemble::Constraint*
 pylith::bc::AbsorbingDampers::createConstraint(const pylith::topology::Field& solution) {
     return NULL;
-} // createConstraint
+}// createConstraint
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -194,7 +218,7 @@ pylith::bc::AbsorbingDampers::createAuxiliaryField(const pylith::topology::Field
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->label("IsotropicLinearElasticity auxiliary field");
+    auxiliaryField->label("AbsorbingDampers auxiliary field");
 
     assert(_auxiliaryFactory);
     assert(_normalizer);
@@ -208,9 +232,9 @@ pylith::bc::AbsorbingDampers::createAuxiliaryField(const pylith::topology::Field
     // acceleration will have a scale of pressure divided by length and should be within a few orders
     // of magnitude of 1.
 
-    _auxiliaryFactory->addDensity(); // 0
-    _auxiliaryFactory->addVp(); // 1
-    _auxiliaryFactory->addVs(); // 2
+    _auxiliaryFactory->addDensity();// 0
+    _auxiliaryFactory->addVp();// 1
+    _auxiliaryFactory->addVs();// 2
 
     auxiliaryField->subfieldsSetup();
     pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
@@ -221,7 +245,7 @@ pylith::bc::AbsorbingDampers::createAuxiliaryField(const pylith::topology::Field
     _auxiliaryFactory->initializeSubfields();
 
     PYLITH_METHOD_RETURN(auxiliaryField);
-} // createAuxiliaryField
+}// createAuxiliaryField
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -233,7 +257,7 @@ pylith::bc::AbsorbingDampers::createDerivedField(const pylith::topology::Field& 
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
 
     PYLITH_METHOD_RETURN(NULL);
-} // createDerivedField
+}// createDerivedField
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -241,7 +265,7 @@ pylith::bc::AbsorbingDampers::createDerivedField(const pylith::topology::Field& 
 pylith::feassemble::AuxiliaryFactory*
 pylith::bc::AbsorbingDampers::_getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
-} // _getAuxiliaryFactory
+}// _getAuxiliaryFactory
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -260,28 +284,28 @@ pylith::bc::AbsorbingDampers::_updateKernelConstants(const PylithReal dt) {
     _kernelConstants[5] = _refDir2[2];
 
     PYLITH_METHOD_END;
-} // _updateKernelConstants
+}// _updateKernelConstants
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for RHS residual G(t,s).
 void
-pylith::bc::AbsorbingDampers::_setKernelsRHSResidual(pylith::feassemble::IntegratorBoundary* integrator,
-                                                     const topology::Field& solution) const {
+pylith::bc::_AbsorbingDampers::setKernelsRHSResidual(pylith::feassemble::IntegratorBoundary* integrator,
+                                                     const topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSResidual(integrator="<<integrator<<", solution="<<solution.label()<<")");
+    //PYLITH_COMPONENT_DEBUG("_setKernelsRHSResidual(integrator="<<integrator<<", solution="<<solution.label()<<")");
 
     PetscBdPointFunc g0 = pylith::fekernels::AbsorbingDampers::g0;
     PetscBdPointFunc g1 = NULL;
 
     std::vector<ResidualKernels> kernels(1);
-    kernels[0] = ResidualKernels(_subfieldName, g0, g1);
+    kernels[0] = ResidualKernels(subfieldName, g0, g1);
 
     assert(integrator);
     integrator->setKernelsRHSResidual(kernels);
 
     PYLITH_METHOD_END;
-} // _setKernelsRHSResidual
+}// _setKernelsRHSResidual
 
 
 // End of file
