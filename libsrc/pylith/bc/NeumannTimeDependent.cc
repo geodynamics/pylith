@@ -22,11 +22,13 @@
 
 #include "TimeDependentAuxiliaryFactory.hh" // USES TimeDependentAuxiliaryFactory
 
+#include "pylith/fekernels/NeumannTimeDependent.hh" // USES NeumannTimeDependent kernels
+
+#include "pylith/feassemble/IntegratorBoundary.hh" // USES IntegratorBoundary
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
-
-#include "pylith/fekernels/NeumannTimeDependent.hh" // USES NeumannTimeDependent kernels
 
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -37,54 +39,73 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
+#include <typeinfo> // USES typeid()
 
-// ----------------------------------------------------------------------
-const char* pylith::bc::NeumannTimeDependent::_pyreComponent = "neumanntimedependent";
+// ---------------------------------------------------------------------------------------------------------------------
+typedef pylith::feassemble::IntegratorBoundary::ResidualKernels ResidualKernels;
 
-// Local "private" functions.
+// ---------------------------------------------------------------------------------------------------------------------
 namespace pylith {
     namespace bc {
-        static void _setFEKernelsRHSResidualScalar(const NeumannTimeDependent* const bc,
-                                                   PetscDS prob,
-                                                   const PylithInt fieldIndex);
+        class _NeumannTimeDependent {
+            // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
+public:
 
-        static void _setFEKernelsRHSResidualVector(const NeumannTimeDependent* const bc,
-                                                   PetscDS prob,
-                                                   const PylithInt fieldIndex);
+            /** Set kernels for RHS residual.
+             *
+             * @param[out] integrator Integrator for boundary condition.
+             * @param[in] bc Neumann time-dependent boundary condition.
+             * @param[in] solution Solution field.
+             */
+            static
+            void setKernelsRHSResidual(pylith::feassemble::IntegratorBoundary* integrator,
+                                       const pylith::bc::NeumannTimeDependent& bc,
+                                       const pylith::topology::Field& solution);
+
+        };
+
+        // _NeumannTimeDependent
+
     } // bc
 } // pylith
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::bc::NeumannTimeDependent::NeumannTimeDependent(void) :
     _dbTimeHistory(NULL),
-    _auxTimeDependentFactory(new pylith::bc::TimeDependentAuxiliaryFactory(pylith::bc::TimeDependentAuxiliaryFactory::TANGENTIAL_NORMAL)),
+    _auxiliaryFactory(new pylith::bc::TimeDependentAuxiliaryFactory(pylith::bc::TimeDependentAuxiliaryFactory::TANGENTIAL_NORMAL)),
     _scaleName("pressure"),
+    _boundaryLabel(""),
+    _subfieldName(""),
     _useInitial(true),
     _useRate(false),
-    _useTimeHistory(false)
-{ // constructor
-    PyreComponent::name(_pyreComponent);
+    _useTimeHistory(false) {
+    PyreComponent::name("neumanntimedependent");
+    _refDir1[0] = 0.0;
+    _refDir1[1] = 0.0;
+    _refDir1[2] = 1.0;
+
+    _refDir2[0] = 0.0;
+    _refDir2[1] = 1.0;
+    _refDir2[2] = 0.0;
 } // constructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::bc::NeumannTimeDependent::~NeumannTimeDependent(void)
-{ // destructor
+pylith::bc::NeumannTimeDependent::~NeumannTimeDependent(void) {
     deallocate();
 } // destructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::bc::NeumannTimeDependent::deallocate(void)
-{ // deallocate
+pylith::bc::NeumannTimeDependent::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    IntegratorBoundary::deallocate();
-    delete _auxTimeDependentFactory; _auxTimeDependentFactory = NULL;
+    Physics::deallocate();
+    delete _auxiliaryFactory;_auxiliaryFactory = NULL;
 
     _dbTimeHistory = NULL; // :KLUDGE: Use shared pointer.
 
@@ -92,87 +113,102 @@ pylith::bc::NeumannTimeDependent::deallocate(void)
 } // deallocate
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Set time history database.
 void
-pylith::bc::NeumannTimeDependent::dbTimeHistory(spatialdata::spatialdb::TimeHistory* th)
-{ // dbTimeHistory
+pylith::bc::NeumannTimeDependent::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th) {
     _dbTimeHistory = th;
-} // dbTimeHistory
+} // setTimeHistoryDB
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Get time history database.
 const spatialdata::spatialdb::TimeHistory*
-pylith::bc::NeumannTimeDependent::dbTimeHistory(void)
-{ // dbTimeHistory
+pylith::bc::NeumannTimeDependent::getTimeHistoryDB(void) {
     return _dbTimeHistory;
-} // dbTimeHistory
+} // getTimeHistoryDB
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Use initial value term in time history expression.
 void
-pylith::bc::NeumannTimeDependent::useInitial(const bool value)
-{ // useInitial
+pylith::bc::NeumannTimeDependent::useInitial(const bool value) { // useInitial
     PYLITH_COMPONENT_DEBUG("useInitial(value="<<value<<")");
 
     _useInitial = value;
 } // useInitial
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Get flag associated with using initial value term in time history expression.
 bool
-pylith::bc::NeumannTimeDependent::useInitial(void) const
-{ // useInitial
+pylith::bc::NeumannTimeDependent::useInitial(void) const { // useInitial
     return _useInitial;
 } // useInitial
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Use rate value term in time history expression.
 void
-pylith::bc::NeumannTimeDependent::useRate(const bool value)
-{ // useRate
+pylith::bc::NeumannTimeDependent::useRate(const bool value) { // useRate
     PYLITH_COMPONENT_DEBUG("useRate(value="<<value<<")");
 
     _useRate = value;
 } // useRate
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Get flag associated with using rate value term in time history expression.
 bool
-pylith::bc::NeumannTimeDependent::useRate(void) const
-{ // useRate
+pylith::bc::NeumannTimeDependent::useRate(void) const { // useRate
     return _useRate;
 } // useRate
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Use time history term in time history expression.
 void
-pylith::bc::NeumannTimeDependent::useTimeHistory(const bool value)
-{ // useTimeHistory
+pylith::bc::NeumannTimeDependent::useTimeHistory(const bool value) { // useTimeHistory
     PYLITH_COMPONENT_DEBUG("useTimeHistory(value="<<value<<")");
 
     _useTimeHistory = value;
 } // useTimeHistory
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Get flag associated with using time history term in time history expression.
 bool
-pylith::bc::NeumannTimeDependent::useTimeHistory(void) const
-{ // useTimeHistory
+pylith::bc::NeumannTimeDependent::useTimeHistory(void) const { // useTimeHistory
     return _useTimeHistory;
 } // useTimeHistory
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+// Set name of solution subfield associated with boundary condition.
+void
+pylith::bc::NeumannTimeDependent::setSubfieldName(const char* value) {
+    if (!value || (0 == strlen(value))) {
+        std::ostringstream msg;
+        msg << "Value of solution subfield for Neumann boundary condition '" << _boundaryLabel
+            <<"' must be nonempty string.";
+        throw std::runtime_error(msg.str());
+    } // if
+    _subfieldName = value;
+} // setSubfieldName
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get name of solution subfield associated with boundary condition.
+const char*
+pylith::bc::NeumannTimeDependent::getSubfieldName(void) const {
+    return _subfieldName.c_str();
+} // getSubfieldName
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Name of scale associated with Neumann boundary condition (e.g., pressure for elasticity).
 void
-pylith::bc::NeumannTimeDependent::scaleName(const char* value) {
+pylith::bc::NeumannTimeDependent::setScaleName(const char* value) {
     if (( value == std::string("length")) ||
         ( value == std::string("time")) ||
         ( value == std::string("pressure")) ||
@@ -181,52 +217,215 @@ pylith::bc::NeumannTimeDependent::scaleName(const char* value) {
         _scaleName = value;
     } else {
         std::ostringstream msg;
-        msg << "Unknown name of scale ("<<value<<") for Neumann boundary condition '" << label() << "'.";
+        msg << "Unknown name of scale ("<<value<<") for Neumann boundary condition '" << _boundaryLabel << "'.";
         throw std::runtime_error(msg.str());
     } // if
-} // scaleName
+} // setScaleName
 
-// ----------------------------------------------------------------------
-// Update auxiliary fields at beginning of time step.
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set label marking boundary associated with boundary condition surface.
 void
-pylith::bc::NeumannTimeDependent::prestep(const double t,
-                                          const double dt)
-{ // prestep
+pylith::bc::NeumannTimeDependent::setMarkerLabel(const char* value) {
+    if (strlen(value) == 0) {
+        throw std::runtime_error("Empty string given for boundary condition label.");
+    } // if
+
+    _boundaryLabel = value;
+} // setMarkerLabel
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get label marking boundary associated with boundary condition surface.
+const char*
+pylith::bc::NeumannTimeDependent::getMarkerLabel(void) const {
+    return _boundaryLabel.c_str();
+} // getMarkerLabel
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set first choice for reference direction to discriminate among tangential directions in 3-D.
+void
+pylith::bc::NeumannTimeDependent::setRefDir1(const PylithReal vec[3]) {
+    // Set reference direction, insuring it is a unit vector.
+    const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
+    if (mag < 1.0e-6) {
+        std::ostringstream msg;
+        msg << "Magnitude of reference direction 1 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
+            <<") for boundary condition '" << _boundaryLabel << "' is negligible. Use a unit vector.";
+        throw std::runtime_error(msg.str());
+    } // if
+    for (int i = 0; i < 3; ++i) {
+        _refDir1[i] = vec[i] / mag;
+    } // for
+} // setRefDir1
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set second choice for reference direction to discriminate among tangential directions in 3-D.
+void
+pylith::bc::NeumannTimeDependent::setRefDir2(const PylithReal vec[3]) {
+    // Set reference direction, insuring it is a unit vector.
+    const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
+    if (mag < 1.0e-6) {
+        std::ostringstream msg;
+        msg << "Magnitude of reference direction 2 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
+            <<") for boundary condition '" << _boundaryLabel << "' is negligible. Use a unit vector.";
+        throw std::runtime_error(msg.str());
+    } // if
+    for (int i = 0; i < 3; ++i) {
+        _refDir1[i] = vec[i] / mag;
+    } // for
+} // setRefDir2
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Verify configuration is acceptable.
+void
+pylith::bc::NeumannTimeDependent::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_prestep(t="<<t<<", dt="<<dt<<")");
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+
+    if (!solution.hasSubfield(_subfieldName.c_str())) {
+        std::ostringstream msg;
+        msg << "Cannot apply Neumann boundary condition to field '"<< _subfieldName
+            << "'; field is not in solution.";
+        throw std::runtime_error(msg.str());
+    } // if
+
+    PYLITH_METHOD_END;
+} // verifyConfiguration
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Create integrator and set kernels.
+pylith::feassemble::Integrator*
+pylith::bc::NeumannTimeDependent::createIntegrator(const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.label()<<")");
+
+    pylith::feassemble::IntegratorBoundary* integrator = new pylith::feassemble::IntegratorBoundary(this);assert(integrator);
+    integrator->setMarkerLabel(getMarkerLabel());
+
+    _NeumannTimeDependent::setKernelsRHSResidual(integrator, *this, solution);
+
+    PYLITH_METHOD_RETURN(integrator);
+} // createIntegrator
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Create constraint and set kernels.
+pylith::feassemble::Constraint*
+pylith::bc::NeumannTimeDependent::createConstraint(const pylith::topology::Field& solution) {
+    return NULL;
+} // createConstraint
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Create auxiliary field.
+pylith::topology::Field*
+pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::Field& solution,
+                                                       const pylith::topology::Mesh& domainMesh) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+
+    pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
+    auxiliaryField->label("NeumannTimeDependent auxiliary field");
+
+    assert(_auxiliaryFactory);
+    assert(_normalizer);
+    pylith::topology::Field::Description description = solution.subfieldInfo(_subfieldName.c_str()).description;
+    if (_scaleName == std::string("pressure")) {
+        description.scale = _normalizer->pressureScale();
+    } else if (_scaleName == std::string("velocity")) {
+        description.scale = _normalizer->lengthScale() / _normalizer->pressureScale();
+    } else if (_scaleName == std::string("length")) {
+        description.scale = _normalizer->pressureScale();
+    } else if (_scaleName == std::string("time")) {
+        description.scale = _normalizer->pressureScale();
+    } else if (_scaleName == std::string("debsuty")) {
+        description.scale = _normalizer->pressureScale();
+    } else {
+        std::ostringstream msg;
+        msg << "Unknown name of scale ("<<_scaleName<<") for Neumann boundary condition for '" << _boundaryLabel << "'.";
+        PYLITH_COMPONENT_ERROR(msg.str());
+        throw std::logic_error(msg.str());
+    } // if/else
+    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, solution.spaceDim(), &description);
+
+    // :ATTENTION: The order of the factory methods must match the order of the auxiliary subfields in the FE kernels.
+
+    if (_useInitial) {
+        _auxiliaryFactory->addInitialAmplitude();
+    } // if
+    if (_useRate) {
+        _auxiliaryFactory->addRateAmplitude();
+        _auxiliaryFactory->addRateStartTime();
+    } // _useRate
+    if (_useTimeHistory) {
+        _auxiliaryFactory->addTimeHistoryAmplitude();
+        _auxiliaryFactory->addTimeHistoryStartTime();
+        _auxiliaryFactory->addTimeHistoryValue();
+    } // _useTimeHistory
+
+    auxiliaryField->subfieldsSetup();
+    pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
+    auxiliaryField->allocate();
+    auxiliaryField->zeroLocal();
+
+    assert(_auxiliaryFactory);
+    _auxiliaryFactory->initializeSubfields();
+
+    PYLITH_METHOD_RETURN(auxiliaryField);
+} // createAuxiliaryField
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Create derived field.
+pylith::topology::Field*
+pylith::bc::NeumannTimeDependent::createDerivedField(const pylith::topology::Field& solution,
+                                                     const pylith::topology::Mesh& domainMesh) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
+
+    PYLITH_METHOD_RETURN(NULL);
+} // createDerivedField
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Update auxiliary subfields at beginning of time step.
+void
+pylith::bc::NeumannTimeDependent::prestep(pylith::topology::Field* auxiliaryField,
+                                          const double t) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("prestep(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
     if (_useTimeHistory) {
         assert(_normalizer);
-        assert(_auxField);
+        assert(auxiliaryField);
 
         const PylithScalar timeScale = _normalizer->timeScale();
 
         PetscErrorCode err = 0;
 
-        PetscSection auxFieldsSection = _auxField->localSection(); assert(auxFieldsSection);
+        PetscSection auxiliaryFieldSection = auxiliaryField->localSection();assert(auxiliaryFieldSection);
         PetscInt pStart = 0, pEnd = 0;
-        err = PetscSectionGetChart(auxFieldsSection, &pStart, &pEnd); PYLITH_CHECK_ERROR(err);
-        pylith::topology::VecVisitorMesh auxFieldsVisitor(*_auxField);
-        PetscScalar* auxFieldsArray = auxFieldsVisitor.localArray(); assert(auxFieldsArray);
+        err = PetscSectionGetChart(auxiliaryFieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+        pylith::topology::VecVisitorMesh auxFieldsVisitor(*auxiliaryField);
+        PetscScalar* auxiliaryFieldArray = auxFieldsVisitor.localArray();assert(auxiliaryFieldArray);
 
         // Compute offset of time history subfields in auxiliary field.
-        const PetscInt numComponents = _description.numComponents; assert(numComponents > 0);
-        PetscInt offTH = 0;
-        if (_useInitial) {offTH += numComponents;}
-        if (_useRate) {offTH += numComponents + 1;}
-        const PetscInt offStartTime = offTH + numComponents;
-        const PetscInt offValue = offStartTime + 1;
+        const PetscInt i_startTime = auxiliaryField->subfieldInfo("time_history_start_time").index;
+        const PetscInt i_value = auxiliaryField->subfieldInfo("time_history_value").index;
 
         // Loop over all points in section.
         for (PetscInt p = pStart; p < pEnd; ++p) {
             // Skip points without values in section.
             if (!auxFieldsVisitor.sectionDof(p)) {continue;}
 
-            // Get offset for point.
-            const PetscInt off = auxFieldsVisitor.sectionOffset(p);
-
             // Get starting time and compute relative time for point.
-            const PylithScalar tStart = auxFieldsArray[off+offStartTime];
+            const PetscInt offStartTime = auxFieldsVisitor.sectionSubfieldOffset(i_startTime, p);
+            const PylithScalar tStart = auxiliaryFieldArray[offStartTime];
             const PylithScalar tRel = t - tStart;
 
             // Query time history for value (normalized amplitude).
@@ -241,7 +440,8 @@ pylith::bc::NeumannTimeDependent::prestep(const double t,
                 } // if
             } // if
               // Update value (normalized amplitude) in auxiliary field.
-            auxFieldsArray[off+offValue] = value;
+            const PetscInt offValue = auxFieldsVisitor.sectionSubfieldOffset(i_value, p);
+            auxiliaryFieldArray[offValue] = value;
         } // for
     } // if
 
@@ -249,156 +449,80 @@ pylith::bc::NeumannTimeDependent::prestep(const double t,
 } // prestep
 
 
-// ----------------------------------------------------------------------
-// Setup auxiliary subfields (discretization and query fns).
-void
-pylith::bc::NeumannTimeDependent::_auxFieldSetup(const pylith::topology::Field& solution)
-{ // _auxFieldSetup
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_auxFieldSetup(solution="<<solution.label()<<")");
-
-    assert(_auxTimeDependentFactory);
-    assert(_normalizer);
-    pylith::topology::Field::Description description = solution.subfieldInfo(_field.c_str()).description;
-    if (_scaleName == std::string("pressure")) {
-        description.scale = _normalizer->pressureScale();
-    } else if (_scaleName == std::string("velocity")) {
-        description.scale = _normalizer->lengthScale() / _normalizer->pressureScale();
-    } else if (_scaleName == std::string("length")) {
-        description.scale = _normalizer->pressureScale();
-    } else if (_scaleName == std::string("time")) {
-        description.scale = _normalizer->pressureScale();
-    } else if (_scaleName == std::string("debsuty")) {
-        description.scale = _normalizer->pressureScale();
-    } else {
-        std::ostringstream msg;
-        msg << "Unknown name of scale ("<<_scaleName<<") for Neumann boundary condition '" << label() << "'.";
-        PYLITH_COMPONENT_ERROR(msg.str());
-        throw std::logic_error(msg.str());
-    } // if/else
-    _auxTimeDependentFactory->initialize(_auxField, *_normalizer, solution.spaceDim(), &description);
-
-    // :ATTENTION: The order of the factory methods must match the order of the auxiliary subfields in the FE kernels.
-
-    if (_useInitial) {
-        _auxTimeDependentFactory->initialAmplitude();
-    } // if
-    if (_useRate) {
-        _auxTimeDependentFactory->rateAmplitude();
-        _auxTimeDependentFactory->rateStartTime();
-    } // _useRate
-    if (_useTimeHistory) {
-        _auxTimeDependentFactory->timeHistoryAmplitude();
-        _auxTimeDependentFactory->timeHistoryStartTime();
-        _auxTimeDependentFactory->timeHistoryValue();
-    } // _useTimeHistory
-
-    PYLITH_METHOD_END;
-}     // _auxFieldSetup
-
-
-// ----------------------------------------------------------------------
-// Get factory for setting up auxliary fields.
+// ---------------------------------------------------------------------------------------------------------------------
+// Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
-pylith::bc::NeumannTimeDependent::_auxFactory(void) {
-    return _auxTimeDependentFactory;
-} // _auxFactory
+pylith::bc::NeumannTimeDependent::_getAuxiliaryFactory(void) {
+    return _auxiliaryFactory;
+} // _getAuxiliaryFactory
 
 
-// ----------------------------------------------------------------------
-// Does boundary conditon have point-wise functions (kernels) for integration/projection.
-bool
-pylith::bc::NeumannTimeDependent::_hasFEKernels(IntegratorPointwise::FEKernelKeys kernelsKey) const {
-    bool hasKernels = false;
-    switch (kernelsKey) {
-    case KERNELS_RHS_RESIDUAL:
-        hasKernels = true;
-        break;
-    case KERNELS_LHS_RESIDUAL:
-    case KERNELS_RHS_JACOBIAN:
-    case KERNELS_LHS_JACOBIAN:
-    case KERNELS_LHS_JACOBIAN_LUMPEDINV:
-    case KERNELS_UPDATE_STATE_VARS:
-    case KERNELS_DERIVED_FIELDS:
-        hasKernels = false;
-        break;
-    default:
-        PYLITH_COMPONENT_ERROR("Unrecognized finite-element kernels key '"<<kernelsKey<<"'.");
-        throw std::logic_error("Unrecognized finite-element kernels key.");
-    } // switch
-    return hasKernels;
-} // _hasKernels
-
-
-// ----------------------------------------------------------------------
-// Set point-wise functions (kernels) for integration/projection.
+// ---------------------------------------------------------------------------------------------------------------------
+// Update kernel constants.
 void
-pylith::bc::NeumannTimeDependent::_setFEKernels(const pylith::topology::Field& solution,
-                                                IntegratorPointwise::FEKernelKeys kernelsKey) const {
+pylith::bc::NeumannTimeDependent::_updateKernelConstants(const PylithReal dt) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernels(solution="<<solution.label()<<", kernelsKey="<<kernelsKey<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelConstants(dt="<<dt<<")");
 
-    const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
-    PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
+    if (6 != _kernelConstants.size()) { _kernelConstants.resize(6);}
+    _kernelConstants[0] = _refDir1[0];
+    _kernelConstants[1] = _refDir1[1];
+    _kernelConstants[2] = _refDir1[2];
+    _kernelConstants[3] = _refDir2[0];
+    _kernelConstants[4] = _refDir2[1];
+    _kernelConstants[5] = _refDir2[2];
 
-    const bool isScalarField = _description.vectorFieldType == pylith::topology::Field::SCALAR;
-    const int fieldIndex = solution.subfieldInfo(_field.c_str()).index;
+    PYLITH_METHOD_END;
+} // _updateKernelConstants
 
-    switch (kernelsKey) {
-    case KERNELS_RHS_RESIDUAL:
-        if (isScalarField) {
-            _setFEKernelsRHSResidualScalar(this, prob, fieldIndex);
-        } else {
-            _setFEKernelsRHSResidualVector(this, prob, fieldIndex);
-        } // if/else
-        break;
-    case KERNELS_LHS_RESIDUAL:
-    case KERNELS_RHS_JACOBIAN:
-    case KERNELS_LHS_JACOBIAN:
-    case KERNELS_LHS_JACOBIAN_LUMPEDINV:
-    case KERNELS_UPDATE_STATE_VARS:
-    case KERNELS_DERIVED_FIELDS:
-        break;
-    } // switch
-} // _setFEKernels
 
-// ----------------------------------------------------------------------
-// Set point-wise functions (kernels) for integrating RHS residual for scalar field.
+// ---------------------------------------------------------------------------------------------------------------------
+// Set kernels for RHS residual G(t,s).
 void
-pylith::bc::_setFEKernelsRHSResidualScalar(const NeumannTimeDependent* const bc,
-                                           PetscDS prob,
-                                           const PylithInt fieldIndex) {
+pylith::bc::_NeumannTimeDependent::setKernelsRHSResidual(pylith::feassemble::IntegratorBoundary* integrator,
+                                                         const pylith::bc::NeumannTimeDependent& bc,
+                                                         const topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
+    //PYLITH_COMPONENT_DEBUG("setKernelsRHSResidual(integrator="<<integrator<<", solution="<<solution.label()<<")");
 
     PetscBdPointFunc g0 = NULL;
     PetscBdPointFunc g1 = NULL;
 
-    const int bitInitial = bc->useInitial() ? 0x1 : 0x0;
-    const int bitRate = bc->useRate() ? 0x2 : 0x0;
-    const int bitTimeHistory = bc->useTimeHistory() ? 0x4 : 0x0;
+    const pylith::topology::Field::VectorFieldEnum fieldType = solution.subfieldInfo(bc.getSubfieldName()).description.vectorFieldType;
+    const bool isScalarField = fieldType == pylith::topology::Field::SCALAR;
+
+    const int bitInitial = bc.useInitial() ? 0x1 : 0x0;
+    const int bitRate = bc.useRate() ? 0x2 : 0x0;
+    const int bitTimeHistory = bc.useTimeHistory() ? 0x4 : 0x0;
     const int bitUse = bitInitial | bitRate | bitTimeHistory;
     switch (bitUse) {
     case 0x1:
-        g0 = pylith::fekernels::NeumannTimeDependent::g0_initial_scalar;
+        g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initial_scalar :
+             pylith::fekernels::NeumannTimeDependent::g0_initial_vector;
         break;
     case 0x2:
-        g0 = pylith::fekernels::NeumannTimeDependent::g0_rate_scalar;
+        g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_rate_scalar :
+             pylith::fekernels::NeumannTimeDependent::g0_rate_vector;
         break;
     case 0x4:
-        g0 = pylith::fekernels::NeumannTimeDependent::g0_timeHistory_scalar;
+        g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_timeHistory_scalar :
+             pylith::fekernels::NeumannTimeDependent::g0_timeHistory_vector;
         break;
     case 0x3:
-        g0 = pylith::fekernels::NeumannTimeDependent::g0_initialRate_scalar;
+        g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initialRate_scalar :
+             pylith::fekernels::NeumannTimeDependent::g0_initialRate_scalar;
         break;
     case 0x5:
-        g0 = pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_scalar;
+        g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_scalar :
+             pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_scalar;
         break;
     case 0x6:
-        g0 = pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_scalar;
+        g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_scalar :
+             pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_vector;
         break;
     case 0x7:
-        g0 = pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_scalar;
+        g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_scalar :
+             pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_vector;
         break;
     case 0x0:
         //PYLITH_COMPONENT_WARNING("Neumann time-dependent BC provides no values.");
@@ -407,60 +531,14 @@ pylith::bc::_setFEKernelsRHSResidualScalar(const NeumannTimeDependent* const bc,
         throw std::logic_error("Unknown combination of flags for Neumann time-dependent BC terms.");
     } // switch
 
-    PetscErrorCode err = PetscDSSetBdResidual(prob, fieldIndex, g0, g1); PYLITH_CHECK_ERROR(err);
+    std::vector<ResidualKernels> kernels(1);
+    kernels[0] = ResidualKernels(bc.getSubfieldName(), g0, g1);
+
+    assert(integrator);
+    integrator->setKernelsRHSResidual(kernels);
 
     PYLITH_METHOD_END;
-} // _setFEKernelsRHSResidualScalar
-
-
-// ----------------------------------------------------------------------
-// Set point-wise functions (kernels) for integrating RHS residual for vector field.
-void
-pylith::bc::_setFEKernelsRHSResidualVector(const NeumannTimeDependent* const bc,
-                                           PetscDS prob,
-                                           const PylithInt fieldIndex) {
-    PYLITH_METHOD_BEGIN;
-
-    PetscBdPointFunc g0 = NULL;
-    PetscBdPointFunc g1 = NULL;
-
-    const int bitInitial = bc->useInitial() ? 0x1 : 0x0;
-    const int bitRate = bc->useRate() ? 0x2 : 0x0;
-    const int bitTimeHistory = bc->useTimeHistory() ? 0x4 : 0x0;
-    const int bitUse = bitInitial | bitRate | bitTimeHistory;
-    switch (bitUse) {
-    case 0x1:
-        g0 = pylith::fekernels::NeumannTimeDependent::g0_initial_vector;
-        break;
-    case 0x2:
-        g0 = pylith::fekernels::NeumannTimeDependent::g0_rate_vector;
-        break;
-    case 0x4:
-        g0 = pylith::fekernels::NeumannTimeDependent::g0_timeHistory_vector;
-        break;
-    case 0x3:
-        g0 = pylith::fekernels::NeumannTimeDependent::g0_initialRate_vector;
-        break;
-    case 0x5:
-        g0 = pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_vector;
-        break;
-    case 0x6:
-        g0 = pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_vector;
-        break;
-    case 0x7:
-        g0 = pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_vector;
-        break;
-    case 0x0:
-        //PYLITH_COMPONENT_WARNING("Neumann time-dependent BC provides no values.");
-        break;
-    default:
-        throw std::logic_error("Unknown combination of flags for Neumann time-dependent BC terms.");
-    } // switch
-
-    PetscErrorCode err = PetscDSSetBdResidual(prob, fieldIndex, g0, g1); PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_END;
-} // _setFEKernelsRHSResidualVector
+} // setKernelsRHSResidual
 
 
 // End of file

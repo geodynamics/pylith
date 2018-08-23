@@ -25,20 +25,20 @@
 #define pylith_bc_timedependentauxiliaryfactory_hh
 
 // Include directives ---------------------------------------------------
-#include "bcfwd.hh" // forward declarations
-#include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
+#include "bcfwd.hh"// forward declarations
+#include "pylith/feassemble/AuxiliaryFactory.hh"// ISA AuxiliaryFactory
 
 // TimeDependentAuxiliaryFactory-----------------------------------------------
 /// @brief C++ helper class for setting up auxiliary fields for time-dependent boundary conditions.
 class pylith::bc::TimeDependentAuxiliaryFactory : public pylith::feassemble::AuxiliaryFactory {
-    friend class TestDirichletAuxiliaryFactory;   // unit testing
+    friend class TestDirichletAuxiliaryFactory;// unit testing
 
     // PUBLIC ENUMS ///////////////////////////////////////////////////////
 public:
 
     enum ReferenceEnum {
-        XYZ=0, ///< Coordinate directions (x, y, z).
-        TANGENTIAL_NORMAL=1, ///< Directions tangential and normal to the boundary (tangential_1, tangential_2, normal).
+        XYZ=0,///< Coordinate directions (x, y, z).
+        TANGENTIAL_NORMAL=1,///< Directions tangential and normal to the boundary (tangential_1, tangential_2, normal).
     };
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -57,22 +57,22 @@ public:
 public:
 
     /// Add initial amplitude field to auxiliary fields.
-    void initialAmplitude(void);
+    void addInitialAmplitude(void);
 
     /// Add rate amplitude field to auxiliary fields.
-    void rateAmplitude(void);
+    void addRateAmplitude(void);
 
     /// Add rate start time amplitude field to auxiliary fields.
-    void rateStartTime(void);
+    void addRateStartTime(void);
 
     /// Add time history amplitude field to auxiliary fields.
-    void timeHistoryAmplitude(void);
+    void addTimeHistoryAmplitude(void);
 
     /// Add time history start time field to auxiliary fields.
-    void timeHistoryStartTime(void);
+    void addTimeHistoryStartTime(void);
 
     /// Add time history value field to auxiliary fields.
-    void timeHistoryValue(void);
+    void addTimeHistoryValue(void);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 public:
@@ -86,23 +86,18 @@ public:
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
 
-    static const char* _genericComponent; ///< Name of generic component.
-
-    static const char* _componentsXYZ[3]; ///< Names of field components in XYZ coordinate system.
-    static const char* _componentsTN[2]; ///< Names of field components in 2-D tangential/normal coordinate system.
-    static const char* _componentsTTN[3]; ///< Names of field components in 3-D tangential/normal coordinate system.
-
-    ReferenceEnum _auxComponents; ///< Coordinate system reference for field components.
+    ReferenceEnum _auxComponents;///< Coordinate system reference for field components.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
 
-    TimeDependentAuxiliaryFactory(const TimeDependentAuxiliaryFactory &);   ///< Not implemented.
-    const TimeDependentAuxiliaryFactory& operator=(const TimeDependentAuxiliaryFactory&);   ///< Not implemented
+    TimeDependentAuxiliaryFactory(const TimeDependentAuxiliaryFactory &);///< Not implemented.
+    const TimeDependentAuxiliaryFactory& operator=(const TimeDependentAuxiliaryFactory&);///< Not implemented
 
-}; // class TimeDependentAuxiliaryFactory
+};
 
-#endif // pylith_bc_timedependentauxiliaryfactory_hh
+// class TimeDependentAuxiliaryFactory
 
+#endif// pylith_bc_timedependentauxiliaryfactory_hh
 
 // End of file

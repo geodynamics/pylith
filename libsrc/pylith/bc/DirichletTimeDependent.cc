@@ -48,8 +48,7 @@ pylith::bc::DirichletTimeDependent::DirichletTimeDependent(void) :
     _bcKernel(NULL),
     _useInitial(true),
     _useRate(false),
-    _useTimeHistory(false)
-{ // constructor
+    _useTimeHistory(false) { // constructor
     PyreComponent::name(_pyreComponent);
 } // constructor
 
@@ -70,7 +69,7 @@ pylith::bc::DirichletTimeDependent::deallocate(void) {
     ConstraintBoundary::deallocate();
 
     _dbTimeHistory = NULL; // :KLUDGE: Use shared pointer.
-    delete _auxTimeDependentFactory; _auxTimeDependentFactory = NULL;
+    delete _auxTimeDependentFactory;_auxTimeDependentFactory = NULL;
     _bcKernel = NULL;
 
     PYLITH_METHOD_END;
@@ -91,6 +90,7 @@ const spatialdata::spatialdb::TimeHistory*
 pylith::bc::DirichletTimeDependent::dbTimeHistory(void) {
     return _dbTimeHistory;
 } // dbTimeHistory
+
 
 // ----------------------------------------------------------------------
 // Use initial value term in time history expression.
@@ -162,13 +162,13 @@ pylith::bc::DirichletTimeDependent::prestep(const double t,
 
         PetscErrorCode err;
 
-        PetscSection auxFieldsSection = _auxField->localSection(); assert(auxFieldsSection);
+        PetscSection auxFieldsSection = _auxField->localSection();assert(auxFieldsSection);
         PetscInt pStart = 0, pEnd = 0;
-        err = PetscSectionGetChart(auxFieldsSection, &pStart, &pEnd); PYLITH_CHECK_ERROR(err);
+        err = PetscSectionGetChart(auxFieldsSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
         pylith::topology::VecVisitorMesh auxFieldsVisitor(*_auxField);
-        PetscScalar* auxFieldsArray = auxFieldsVisitor.localArray(); assert(auxFieldsArray);
+        PetscScalar* auxFieldsArray = auxFieldsVisitor.localArray();assert(auxFieldsArray);
 
-        const PylithInt numComponents = _description.numComponents; assert(numComponents > 0);
+        const PylithInt numComponents = _description.numComponents;assert(numComponents > 0);
         PetscInt offTH = 0;
         if (_useInitial) {offTH += numComponents;}
         if (_useRate) {offTH += numComponents + 1;}
@@ -233,20 +233,20 @@ pylith::bc::DirichletTimeDependent::_auxFieldSetup(const pylith::topology::Field
     // :ATTENTION: The order of the factory methods must match the order of the auxiliary subfields in the FE kernels.
 
     if (_useInitial) {
-        _auxTimeDependentFactory->initialAmplitude();
+        _auxTimeDependentFactory->addInitialAmplitude();
     } // if
     if (_useRate) {
-        _auxTimeDependentFactory->rateAmplitude();
-        _auxTimeDependentFactory->rateStartTime();
+        _auxTimeDependentFactory->addRateAmplitude();
+        _auxTimeDependentFactory->addRateStartTime();
     } // _useRate
     if (_useTimeHistory) {
-        _auxTimeDependentFactory->timeHistoryAmplitude();
-        _auxTimeDependentFactory->timeHistoryStartTime();
-        _auxTimeDependentFactory->timeHistoryValue();
+        _auxTimeDependentFactory->addTimeHistoryAmplitude();
+        _auxTimeDependentFactory->addTimeHistoryStartTime();
+        _auxTimeDependentFactory->addTimeHistoryValue();
     } // _useTimeHistory
 
     PYLITH_METHOD_END;
-}     // _auxFieldSetup
+} // _auxFieldSetup
 
 
 // ----------------------------------------------------------------------
@@ -256,9 +256,9 @@ pylith::bc::DirichletTimeDependent::_setFEKernelConstraint(const pylith::topolog
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelConstraint(solution="<<solution.label()<<")");
 
-    const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
+    const PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
     PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
 
     const bool isScalarField = _description.vectorFieldType == pylith::topology::Field::SCALAR;
 
@@ -299,13 +299,13 @@ pylith::bc::DirichletTimeDependent::_setFEKernelConstraint(const pylith::topolog
     PYLITH_METHOD_END;
 } // _setFEKernelConstraint
 
+
 // ----------------------------------------------------------------------
 // Get point-wise function (kernel) for settings constraint from auxiliary field.
 PetscPointFunc
 pylith::bc::DirichletTimeDependent::_getFEKernelConstraint(void) {
     return _bcKernel;
 } // _getFEKernelConstraint
-
 
 
 // End of file
