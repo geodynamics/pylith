@@ -27,7 +27,7 @@
 #include <stdexcept> \
     // USES std::runtime_error()
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::bc::BoundaryCondition::BoundaryCondition(void) :
     _boundaryLabel(""),
@@ -42,14 +42,14 @@ pylith::bc::BoundaryCondition::BoundaryCondition(void) :
 } // constructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::bc::BoundaryCondition::~BoundaryCondition(void) {
     deallocate();
 } // destructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::bc::BoundaryCondition::deallocate(void) {
