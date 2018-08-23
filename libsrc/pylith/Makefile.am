@@ -51,6 +51,7 @@ libpylith_la_SOURCES = \
 	feassemble/Integrator.cc \
 	feassemble/IntegratorDomain.cc \
 	feassemble/IntegratorBoundary.cc \
+	feassemble/IntegratorInterface.cc \
 	feassemble/ConstraintPointwise.cc \
 	feassemble/Observer.cc \
 	feassemble/Observers.cc \
