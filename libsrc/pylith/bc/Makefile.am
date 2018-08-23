@@ -24,7 +24,6 @@ subpkginclude_HEADERS = \
 	TimeDependentAuxiliaryFactory.hh \
 	ConstraintBoundary.hh \
 	DirichletTimeDependent.hh \
-	IntegratorBoundary.hh \
 	NeumannTimeDependent.hh \
 	AbsorbingDampers.hh \
 	AbsorbingDampersAuxiliaryFactory.hh \

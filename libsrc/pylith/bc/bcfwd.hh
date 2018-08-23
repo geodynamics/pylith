@@ -29,7 +29,6 @@
 
 namespace pylith {
     namespace bc {
-
         class BoundaryCondition;
         class TimeDependentAuxiliaryFactory;
 
@@ -37,7 +36,6 @@ namespace pylith {
         class Dirichlet;
         class DirichletTimeDependent;
 
-        class IntegratorBoundary;
         class NeumannTimeDependent;
         class AbsorbingDampers;
 
@@ -46,8 +44,6 @@ namespace pylith {
     } // bc
 } // pylith
 
-
 #endif // pylith_bc_bcfwd_hh
-
 
 // End of file

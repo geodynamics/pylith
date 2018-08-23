@@ -25,11 +25,9 @@
 #if !defined(pylith_bc_neumanntimedependent_hh)
 #define pylith_bc_neumanntimedependent_hh
 
-#include "pylith/bc/bcfwd.hh"// forward declaration
+#include "pylith/bc/BoundaryCondition.hh" // ISA BoundaryCondition
 
-#include "pylith/problems/Physics.hh"// ISA Physics
-
-#include "pylith/topology/topologyfwd.hh"// USES Field
+#include "pylith/topology/topologyfwd.hh" // USES Field
 
 // NeumannTimeDependent ----------------------------------------------------
 /** @brief Neumann (e.g., traction) boundary
@@ -48,8 +46,8 @@
  *        time history start (scalar) t_2(x)
  *        time history value (scalar) a(t-t_2(x))
  */
-class pylith::bc::NeumannTimeDependent : public pylith::problems::Physics {
-    friend class TestNeumannTimeDependent;// unit testing
+class pylith::bc::NeumannTimeDependent : public pylith::bc::BoundaryCondition {
+    friend class TestNeumannTimeDependent; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
@@ -111,18 +109,6 @@ public:
      */
     bool useTimeHistory(void) const;
 
-    /** Set name of solution subfield associated with boundary condition.
-     *
-     * @param[in] value Name of solution subfield.
-     */
-    void setSubfieldName(const char* value);
-
-    /** Get name of solution subfield associated with boundary condition.
-     *
-     * @preturn Name of solution subfield.
-     */
-    const char* getSubfieldName(void) const;
-
     /** Set name of scale associated with Neumann boundary
      * condition (e.g., 'pressure' for elasticity).
      *
@@ -135,36 +121,6 @@ public:
      * @param value Name of scale for nondimensionalizing Neumann boundary condition.
      */
     void setScaleName(const char* value);
-
-    /** Set label marking boundary associated with boundary condition surface.
-     *
-     * @param[in] value Label of surface (from mesh generator).
-     */
-    void setMarkerLabel(const char* value);
-
-    /** Get label marking boundary associated with boundary condition surface.
-     *
-     * @returns Label of surface (from mesh generator).
-     */
-    const char* getMarkerLabel(void) const;
-
-    /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
-     *
-     * @param vec Reference direction unit vector.
-     */
-    void setRefDir1(const PylithReal vec[3]);
-
-    /** Set second choice for reference direction to discriminate among tangential directions in 3-D.
-     *
-     * @param vec Reference direction unit vector.
-     */
-    void setRefDir2(const PylithReal vec[3]);
-
-    /** Verify configuration is acceptable.
-     *
-     * @param[in] solution Solution field.
-     */
-    void verifyConfiguration(const pylith::topology::Field& solution) const;
 
     /** Create integrator and set kernels.
      *
@@ -226,29 +182,25 @@ protected:
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
 
-    spatialdata::spatialdb::TimeHistory* _dbTimeHistory;///< Time history database.
-    pylith::bc::TimeDependentAuxiliaryFactory* _auxiliaryFactory;///< Factory for auxiliary subfields.
-    std::string _scaleName;///< Name of scale associated with Neumann boundary condition.
-    PylithReal _refDir1[3];///< First choice reference direction used to compute boundary tangential directions.
-    PylithReal _refDir2[3];///< Second choice reference direction used to compute boundary tangential directions.
-    std::string _boundaryLabel;///< Label to identify boundary condition points in mesh.
-    std::string _subfieldName;///< Name of solution subfield for boundary condition.
+    spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
+    pylith::bc::TimeDependentAuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
+    std::string _scaleName; ///< Name of scale associated with Neumann boundary condition.
 
-    bool _useInitial;///< Use initial value term.
-    bool _useRate;///< Use rate term.
-    bool _useTimeHistory;///< Use time history term.
+    bool _useInitial; ///< Use initial value term.
+    bool _useRate; ///< Use rate term.
+    bool _useTimeHistory; ///< Use time history term.
 
     // NOT IMPLEMENTED
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    NeumannTimeDependent(const NeumannTimeDependent&);///< Not implemented.
-    const NeumannTimeDependent& operator=(const NeumannTimeDependent&);///< Not implemented.
+    NeumannTimeDependent(const NeumannTimeDependent&); ///< Not implemented.
+    const NeumannTimeDependent& operator=(const NeumannTimeDependent&); ///< Not implemented.
 
 };
 
 // class NeumannTimeDependent
 
-#endif// pylith_bc_neumanntimedependent_hh
+#endif // pylith_bc_neumanntimedependent_hh
 
 // End of file

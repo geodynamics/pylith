@@ -30,8 +30,15 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::BoundaryCondition::BoundaryCondition(void) :
-    _label("")
-{ // constructor
+    _boundaryLabel(""),
+    _subfieldName("") {
+    _refDir1[0] = 0.0;
+    _refDir1[1] = 0.0;
+    _refDir1[2] = 1.0;
+
+    _refDir2[0] = 0.0;
+    _refDir2[1] = 1.0;
+    _refDir2[2] = 0.0;
 } // constructor
 
 
@@ -45,54 +52,105 @@ pylith::bc::BoundaryCondition::~BoundaryCondition(void) {
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::bc::BoundaryCondition::deallocate(void) {}
+pylith::bc::BoundaryCondition::deallocate(void) {
+    Physics::deallocate();
+} // deallocate
 
 
-// ----------------------------------------------------------------------
-// Set mesh label associated with boundary condition surface.
+// ---------------------------------------------------------------------------------------------------------------------
+// Set label marking boundary associated with boundary condition surface.
 void
-pylith::bc::BoundaryCondition::label(const char* value) {
+pylith::bc::BoundaryCondition::setMarkerLabel(const char* value) {
     if (strlen(value) == 0) {
         throw std::runtime_error("Empty string given for boundary condition label.");
     } // if
 
-    _label = value;
-} // label
+    _boundaryLabel = value;
+} // setMarkerLabel
 
 
-// ----------------------------------------------------------------------
-// Get mesh label associated with boundary condition surface.
+// ---------------------------------------------------------------------------------------------------------------------
+// Get label marking boundary associated with boundary condition surface.
 const char*
-pylith::bc::BoundaryCondition::label(void) const {
-    return _label.c_str();
-} // label
+pylith::bc::BoundaryCondition::getMarkerLabel(void) const {
+    return _boundaryLabel.c_str();
+} // getMarkerLabel
 
 
-// ----------------------------------------------------------------------
-// Set name of field in solution to constrain.
+// ---------------------------------------------------------------------------------------------------------------------
+// Set name of solution subfield associated with boundary condition.
 void
-pylith::bc::BoundaryCondition::field(const char* value) {
-    PYLITH_METHOD_BEGIN;
-
-    if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for name of solution field for boundary condition.");
+pylith::bc::BoundaryCondition::setSubfieldName(const char* value) {
+    if (!value || (0 == strlen(value))) {
+        std::ostringstream msg;
+        msg << "Empty string given for name of solution subfield for boundary condition '" << _boundaryLabel
+            <<"'.";
+        throw std::runtime_error(msg.str());
     } // if
-    _field = value;
+    _subfieldName = value;
+} // setSubfieldName
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get name of solution subfield associated with boundary condition.
+const char*
+pylith::bc::BoundaryCondition::getSubfieldName(void) const {
+    return _subfieldName.c_str();
+} // getSubfieldName
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set first choice for reference direction to discriminate among tangential directions in 3-D.
+void
+pylith::bc::BoundaryCondition::setRefDir1(const PylithReal vec[3]) {
+    // Set reference direction, insuring it is a unit vector.
+    const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
+    if (mag < 1.0e-6) {
+        std::ostringstream msg;
+        msg << "Magnitude of reference direction 1 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
+            <<") for boundary condition '" << _boundaryLabel << "' is negligible. Use a unit vector.";
+        throw std::runtime_error(msg.str());
+    } // if
+    for (int i = 0; i < 3; ++i) {
+        _refDir1[i] = vec[i] / mag;
+    } // for
+} // setRefDir1
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set second choice for reference direction to discriminate among tangential directions in 3-D.
+void
+pylith::bc::BoundaryCondition::setRefDir2(const PylithReal vec[3]) {
+    // Set reference direction, insuring it is a unit vector.
+    const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
+    if (mag < 1.0e-6) {
+        std::ostringstream msg;
+        msg << "Magnitude of reference direction 2 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
+            <<") for boundary condition '" << _boundaryLabel << "' is negligible. Use a unit vector.";
+        throw std::runtime_error(msg.str());
+    } // if
+    for (int i = 0; i < 3; ++i) {
+        _refDir1[i] = vec[i] / mag;
+    } // for
+} // setRefDir2
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Verify configuration is acceptable.
+void
+pylith::bc::BoundaryCondition::verifyConfiguration(const pylith::topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+
+    if (!solution.hasSubfield(_subfieldName.c_str())) {
+        std::ostringstream msg;
+        msg << "Cannot apply Neumann boundary condition to field '"<< _subfieldName
+            << "'; field is not in solution.";
+        throw std::runtime_error(msg.str());
+    } // if
 
     PYLITH_METHOD_END;
-}  // field
-
-
-// ----------------------------------------------------------------------
-// Get name of field in solution to constrain.
-const char*
-pylith::bc::BoundaryCondition::field(void) const {
-    journal::debug_t debug("boundarycondition");
-    debug << journal::at(__HERE__)
-          << "BoundaryCondition::field()" << journal::endl;
-
-    return _field.c_str();
-} // field
+} // verifyConfiguration
 
 
 // End of file

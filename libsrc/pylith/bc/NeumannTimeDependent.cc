@@ -75,19 +75,10 @@ pylith::bc::NeumannTimeDependent::NeumannTimeDependent(void) :
     _dbTimeHistory(NULL),
     _auxiliaryFactory(new pylith::bc::TimeDependentAuxiliaryFactory(pylith::bc::TimeDependentAuxiliaryFactory::TANGENTIAL_NORMAL)),
     _scaleName("pressure"),
-    _boundaryLabel(""),
-    _subfieldName(""),
     _useInitial(true),
     _useRate(false),
     _useTimeHistory(false) {
     PyreComponent::name("neumanntimedependent");
-    _refDir1[0] = 0.0;
-    _refDir1[1] = 0.0;
-    _refDir1[2] = 1.0;
-
-    _refDir2[0] = 0.0;
-    _refDir2[1] = 1.0;
-    _refDir2[2] = 0.0;
 } // constructor
 
 
@@ -104,7 +95,7 @@ void
 pylith::bc::NeumannTimeDependent::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    Physics::deallocate();
+    BoundaryCondition::deallocate();
     delete _auxiliaryFactory;_auxiliaryFactory = NULL;
 
     _dbTimeHistory = NULL; // :KLUDGE: Use shared pointer.
@@ -184,28 +175,6 @@ pylith::bc::NeumannTimeDependent::useTimeHistory(void) const { // useTimeHistory
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set name of solution subfield associated with boundary condition.
-void
-pylith::bc::NeumannTimeDependent::setSubfieldName(const char* value) {
-    if (!value || (0 == strlen(value))) {
-        std::ostringstream msg;
-        msg << "Value of solution subfield for Neumann boundary condition '" << _boundaryLabel
-            <<"' must be nonempty string.";
-        throw std::runtime_error(msg.str());
-    } // if
-    _subfieldName = value;
-} // setSubfieldName
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get name of solution subfield associated with boundary condition.
-const char*
-pylith::bc::NeumannTimeDependent::getSubfieldName(void) const {
-    return _subfieldName.c_str();
-} // getSubfieldName
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Name of scale associated with Neumann boundary condition (e.g., pressure for elasticity).
 void
 pylith::bc::NeumannTimeDependent::setScaleName(const char* value) {
@@ -221,80 +190,6 @@ pylith::bc::NeumannTimeDependent::setScaleName(const char* value) {
         throw std::runtime_error(msg.str());
     } // if
 } // setScaleName
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set label marking boundary associated with boundary condition surface.
-void
-pylith::bc::NeumannTimeDependent::setMarkerLabel(const char* value) {
-    if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for boundary condition label.");
-    } // if
-
-    _boundaryLabel = value;
-} // setMarkerLabel
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get label marking boundary associated with boundary condition surface.
-const char*
-pylith::bc::NeumannTimeDependent::getMarkerLabel(void) const {
-    return _boundaryLabel.c_str();
-} // getMarkerLabel
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set first choice for reference direction to discriminate among tangential directions in 3-D.
-void
-pylith::bc::NeumannTimeDependent::setRefDir1(const PylithReal vec[3]) {
-    // Set reference direction, insuring it is a unit vector.
-    const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
-    if (mag < 1.0e-6) {
-        std::ostringstream msg;
-        msg << "Magnitude of reference direction 1 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
-            <<") for boundary condition '" << _boundaryLabel << "' is negligible. Use a unit vector.";
-        throw std::runtime_error(msg.str());
-    } // if
-    for (int i = 0; i < 3; ++i) {
-        _refDir1[i] = vec[i] / mag;
-    } // for
-} // setRefDir1
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set second choice for reference direction to discriminate among tangential directions in 3-D.
-void
-pylith::bc::NeumannTimeDependent::setRefDir2(const PylithReal vec[3]) {
-    // Set reference direction, insuring it is a unit vector.
-    const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
-    if (mag < 1.0e-6) {
-        std::ostringstream msg;
-        msg << "Magnitude of reference direction 2 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
-            <<") for boundary condition '" << _boundaryLabel << "' is negligible. Use a unit vector.";
-        throw std::runtime_error(msg.str());
-    } // if
-    for (int i = 0; i < 3; ++i) {
-        _refDir1[i] = vec[i] / mag;
-    } // for
-} // setRefDir2
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Verify configuration is acceptable.
-void
-pylith::bc::NeumannTimeDependent::verifyConfiguration(const pylith::topology::Field& solution) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
-
-    if (!solution.hasSubfield(_subfieldName.c_str())) {
-        std::ostringstream msg;
-        msg << "Cannot apply Neumann boundary condition to field '"<< _subfieldName
-            << "'; field is not in solution.";
-        throw std::runtime_error(msg.str());
-    } // if
-
-    PYLITH_METHOD_END;
-} // verifyConfiguration
 
 
 // ---------------------------------------------------------------------------------------------------------------------
