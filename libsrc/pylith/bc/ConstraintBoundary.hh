@@ -35,8 +35,7 @@
 // ConstraintBoundary ----------------------------------------------------
 /// @brief Integrator for integrals over domain boundaries.
 class pylith::bc::ConstraintBoundary : public pylith::feassemble::ConstraintPointwise {
-
-    friend class TestIntegratorPointwise; // unit testing
+    friend class TestConstraintBoundary; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
@@ -138,8 +137,8 @@ protected:
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
 
-    pylith::topology::Mesh* _boundaryMesh;   ///< Boundary mesh.
-    std::string _label;   ///< Label to identify boundary condition points in mesh.
+    pylith::topology::Mesh* _boundaryMesh; ///< Boundary mesh.
+    std::string _label; ///< Label to identify boundary condition points in mesh.
     std::string _field; ///< Name of solution field for boundary condition.
     pylith::topology::FieldBase::Description _description; ///< Description for constrained field.
 
@@ -152,6 +151,5 @@ private:
 }; // class ConstraintBoundary
 
 #endif // pylith_bc_constraintboundary_hh
-
 
 // End of file
