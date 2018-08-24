@@ -31,7 +31,7 @@
 class pylith::bc::AbsorbingDampers : public pylith::bc::BoundaryCondition {
     friend class TestAbsorbingDampers; // unit testing
 
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -101,7 +101,6 @@ protected:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    pylith::topology::FieldBase::Description _description; ///< Description of field associated with BC.
     pylith::bc::AbsorbingDampersAuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
     PylithReal _refDir1[3]; ///< First choice reference direction used to compute boundary tangential directions.
     PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
