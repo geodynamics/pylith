@@ -51,7 +51,6 @@
 #include "pylith/utils/types.hh"
 
 class pylith::fekernels::FaultCohesiveKin {
-
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
@@ -77,7 +76,6 @@ public:
      * @param[out] f0 [dim].
      */
 
-
     /** g0 function for elasticity equation: g0u = -\lambda.
      *
      * Solution fields: [disp(dim), ..., lagrange(dim)]
@@ -98,10 +96,10 @@ public:
                  const PylithScalar a_x[],
                  const PylithReal t,
                  const PylithScalar x[],
+                 const PylithReal n[],
                  const PylithInt numConstants,
                  const PylithScalar constants[],
                  PylithScalar g0[]);
-
 
     /** g0 function for elasticity equation: g0u = +\lambda.
      *
@@ -123,10 +121,10 @@ public:
                  const PylithScalar a_x[],
                  const PylithReal t,
                  const PylithScalar x[],
+                 const PylithReal n[],
                  const PylithInt numConstants,
                  const PylithScalar constants[],
                  PylithScalar g0[]);
-
 
     /** g0 function for slip constraint equation: g0\lambda = 0.5*d - u^+.
      *
@@ -148,10 +146,10 @@ public:
                  const PylithScalar a_x[],
                  const PylithReal t,
                  const PylithScalar x[],
+                 const PylithReal n[],
                  const PylithInt numConstants,
                  const PylithScalar constants[],
                  PylithScalar g0[]);
-
 
     /** g0 function for slip constraint equation: g0\lambda = 0.5*d + u^-.
      *
@@ -173,10 +171,10 @@ public:
                  const PylithScalar a_x[],
                  const PylithReal t,
                  const PylithScalar x[],
+                 const PylithReal n[],
                  const PylithInt numConstants,
                  const PylithScalar constants[],
                  PylithScalar g0[]);
-
 
     /** Jg0 function for displacement equation: -\lambda.
      *
@@ -199,10 +197,10 @@ public:
                    const PylithReal t,
                    const PylithReal s_tshift,
                    const PylithScalar x[],
+                   const PylithReal n[],
                    const PylithInt numConstants,
                    const PylithScalar constants[],
                    PylithScalar Jg0[]);
-
 
     /** Jg0 function for displacement equation: +\lambda.
      *
@@ -225,10 +223,10 @@ public:
                    const PylithReal t,
                    const PylithReal s_tshift,
                    const PylithScalar x[],
+                   const PylithReal n[],
                    const PylithInt numConstants,
                    const PylithScalar constants[],
                    PylithScalar Jg0[]);
-
 
     /** Jg0 function for slip constraint equation: -\lambda.
      *
@@ -251,10 +249,10 @@ public:
                    const PylithReal t,
                    const PylithReal s_tshift,
                    const PylithScalar x[],
+                   const PylithReal n[],
                    const PylithInt numConstants,
                    const PylithScalar constants[],
                    PylithScalar Jg0[]);
-
 
     /** Jg0 function for slip constraint equation: +\lambda.
      *
@@ -277,14 +275,13 @@ public:
                    const PylithReal t,
                    const PylithReal s_tshift,
                    const PylithScalar x[],
+                   const PylithReal n[],
                    const PylithInt numConstants,
                    const PylithScalar constants[],
                    PylithScalar Jg0[]);
 
-
 }; // FaultCohesiveKin
 
 #endif // pylith_fekernels_faultcohesivekin_hh
-
 
 /* End of file */

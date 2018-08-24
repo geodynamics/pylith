@@ -25,21 +25,15 @@
 #if !defined(pylith_faults_faultcohesivekin_hh)
 #define pylith_faults_faultcohesivekin_hh
 
-// Include directives ---------------------------------------------------
 #include "FaultCohesive.hh" // ISA FaultCohesive
 
 #include <string> // HASA std::string
 #include <map> // HASA std::map
 
-// FaultCohesiveKin -----------------------------------------------------
-/**
- * @brief C++ implementation for a fault surface with kinematic
- * (prescribed) slip implemented with cohesive elements.
- */
 class pylith::faults::FaultCohesiveKin : public pylith::faults::FaultCohesive {
     friend class TestFaultCohesiveKin; // unit testing
 
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -51,174 +45,100 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Set kinematic earthquake sources.
+    /** Set kinematic earthquake ruptures.
      *
-     * @param names Array of kinematic earthquake source names.
-     * @param numNames Number of earthquake sources.
-     * @param sources Array of kinematic earthquake sources.
-     * @param numSources Number of earthquake sources.
+     * @param names Array of kinematic earthquake rupture names.
+     * @param numNames Number of earthquake rupture names.
+     * @param ruptures Array of kinematic earthquake ruptures.
+     * @param numRuptures Number of earthquake ruptures.
      */
-    void eqsrcs(const char* const* names,
-                const int numNames,
-                KinSrc** sources,
-                const int numSources);
+    void setEqRuptures(const char* const* names,
+                       const int numNames,
+                       KinSrc** ruptures,
+                       const int numRuptures);
 
-    /** Initialize fault.
-     *
-     * Setup earthquake sources.
+    /** Verify configuration is acceptable.
      *
      * @param[in] solution Solution field.
      */
-    void initialize(const pylith::topology::Field& solution);
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-    /** Update auxiliary fields at beginning of time step.
+    /** Create integrator and set kernels.
      *
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
+     * @param[in] solution Solution field.
+     * @returns Integrator if applicable, otherwise NULL.
      */
-    void prestep(const double t,
-                 const double dt);
+    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution);
 
-    /** Compute RHS residual for G(t,s).
+    /** Create constraint and set kernels.
      *
-     * @param[out] residual Field for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
+     * @param[in] solution Solution field.
+     * @returns Constraint if applicable, otherwise NULL.
      */
-    void computeRHSResidual(pylith::topology::Field* residual,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution);
+    pylith::feassemble::Constraint* createConstraint(const pylith::topology::Field& solution);
 
-    /** Compute RHS Jacobian and preconditioner for G(t,s).
+    /** Create auxiliary field.
      *
-     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
-     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
-     */
-    void computeRHSJacobian(PetscMat jacobianMat,
-                            PetscMat preconMat,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution);
-
-    /** Compute LHS residual for F(t,s,\dot{s}).
+     * @param[in] solution Solution field.
+     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
      *
-     * @param[out] residual Field for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
-     * @param[in] solutionDot Field with time derivative of current trial solution.
+     * @returns Auxiliary field if applicable, otherwise NULL.
      */
-    void computeLHSResidual(pylith::topology::Field* residual,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution,
-                            const pylith::topology::Field& solutionDot);
+    pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
+                                                  const pylith::topology::Mesh& domainMesh);
 
-    /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
+    /** Create derived field.
      *
-     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
-     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] s_tshift Scale for time derivative.
-     * @param[in] solution Field with current trial solution.
-     * @param[in] solutionDot Field with time derivative of current trial solution.
-     */
-    void computeLHSJacobianImplicit(PetscMat jacobianMat,
-                                    PetscMat precondMat,
-                                    const PylithReal t,
-                                    const PylithReal dt,
-                                    const PylithReal s_tshift,
-                                    const pylith::topology::Field& solution,
-                                    const pylith::topology::Field& solutionDot);
-
-    /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
+     * @param[in] solution Solution field.
+     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
      *
-     * @param[out] jacobianInv Inverse of lumped Jacobian as a field.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] s_tshift Scale for time derivative.
-     * @param[in] solution Field with current trial solution.
+     * @returns Derived field if applicable, otherwise NULL.
      */
-    void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                     const PylithReal t,
-                                     const PylithReal dt,
-                                     const PylithReal s_tshift,
-                                     const pylith::topology::Field& solution);
+    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
+                                                const pylith::topology::Mesh& domainMesh);
 
-    // PROTECTED NETHODS //////////////////////////////////////////////////
+    /** Update auxiliary subfields at beginning of time step.
+     *
+     * @param[out] auxiliaryField Auxiliary field.
+     * @param[in] t Current time.
+     */
+    void prestep(pylith::topology::Field* auxiliaryField,
+                 const double t);
+
+    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    /** Setup auxiliary subfields (discretization and query fns).
+    /** Get auxiliary factory associated with physics.
      *
-     * Create subfields in auxiliary fields (includes name of the field,
-     * vector field type, discretization, and scale for
-     * nondimensionalization) and set query functions for filling them
-     * from a spatial database.
-     *
-     * @attention The order of the calls to subfieldAdd() must match the
-     * order of the auxiliary fields in the FE kernels.
+     * @return Auxiliary factory for physics object.
      */
-    void _auxFieldSetup(void);
+    pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
-    /** Set pointwise functions for computing contributions of the positive
-     * side of the fault to the RHS residual.
+    /** Update kernel constants.
      *
-     * @param[in] solution Solution field.
+     * @param[in] dt Current time step.
      */
-    void _setFEKernelsRHSResidualFaultPositive(const pylith::topology::Field& solution);
+    void _updateKernelConstants(const PylithReal dt);
 
-    /** Set pointwise functions for computing contributions of the positive
-     * side of the fault to the RHS residual.
-     *
-     * @param[in] solution Solution field.
-     */
-    void _setFEKernelsRHSResidualFaultNegative(const pylith::topology::Field& solution);
-
-    /** Set pointwise functions for computing contributions of the positive
-     * side of the fault to the RHS Jacobian.
-     *
-     * @param[in] solution Solution field.
-     */
-    void _setFEKernelsRHSJacobianFaultPositive(const pylith::topology::Field& solution);
-
-    /** Set pointwise functions for computing contributions of the positive
-     * side of the fault to the RHS Jacobian.
-     *
-     * @param[in] solution Solution field.
-     */
-    void _setFEKernelsRHSJacobianFaultNegative(const pylith::topology::Field& solution);
-
-    // PRIVATE TYPEDEFS ///////////////////////////////////////////////////
+    // PRIVATE TYPEDEFS ////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     typedef std::map<std::string, KinSrc*> srcs_type;
 
-    // PRIVATE MEMBERS ////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    srcs_type _eqSrcs; ///< Array of kinematic earthquake sources.
+    pylith::faults::AuxiliaryFactoryKinematic* _auxiliaryFactory; ///< Factory for auxiliary subfields.
+    srcs_type _ruptures; ///< Array of kinematic earthquake ruptures.
 
-    static const char* _pyreComponent; ///< Name of Pyre component.
-
-
-    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    /// Not implemented
-    FaultCohesiveKin(const FaultCohesiveKin&);
-
-    /// Not implemented
-    const FaultCohesiveKin& operator=(const FaultCohesiveKin&);
+    FaultCohesiveKin(const FaultCohesiveKin&); ///< Not implemented
+    const FaultCohesiveKin& operator=(const FaultCohesiveKin&); ///< Not implemented.
 
 }; // class FaultCohesiveKin
 
 #endif // pylith_faults_faultcohesivekin_hh
-
 
 // End of file

@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "AuxiliaryFactory.hh" // implementation of object methods
+#include "AuxiliaryFactoryKinematic.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
@@ -29,27 +29,24 @@
 
 #include <cassert>
 
-// ----------------------------------------------------------------------
-const char* pylith::faults::AuxiliaryFactory::_genericComponent = "faultsauxiliaryfactory";
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::faults::AuxiliaryFactory::AuxiliaryFactory(void){ // constructor
-    GenericComponent::name(_genericComponent);
+pylith::faults::AuxiliaryFactoryKinematic::AuxiliaryFactoryKinematic(void) {
+    GenericComponent::name("auxiliaryfactorykinematic");
 } // constructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::faults::AuxiliaryFactory::~AuxiliaryFactory(void) {}
+pylith::faults::AuxiliaryFactoryKinematic::~AuxiliaryFactoryKinematic(void) {}
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Add fault strike direction subfield to auxiliary fields.
 void
-pylith::faults::AuxiliaryFactory::strikeDir(void) {
+pylith::faults::AuxiliaryFactoryKinematic::addStrikeDir(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("strikeDir(void)");
+    PYLITH_JOURNAL_DEBUG("addStrikeDir(void)");
 
     const char* fieldName = "strike_dir";
     const char* componentNames[3] = { "strike_dir_x", "strike_dir_y", "strike_dir_z" };
@@ -70,15 +67,15 @@ pylith::faults::AuxiliaryFactory::strikeDir(void) {
     _setSubfieldQueryFn(fieldName, NULL); // Computed during initialization.
 
     PYLITH_METHOD_END;
-} // strikeDir
+} // addStrikeDir
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Add fault up-dip direction subfield to auxiliary fields.
 void
-pylith::faults::AuxiliaryFactory::upDipDir(void) {
+pylith::faults::AuxiliaryFactoryKinematic::addUpDipDir(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("upDipDir(void)");
+    PYLITH_JOURNAL_DEBUG("addUpDipDir(void)");
 
     const char* fieldName = "up_dip_dir";
     const char* componentNames[3] = { "up_dip_dir_x", "up_dip_dir_y", "up_dip_dir_z" };
@@ -99,15 +96,15 @@ pylith::faults::AuxiliaryFactory::upDipDir(void) {
     _setSubfieldQueryFn(fieldName, NULL); // Computed during initialization.
 
     PYLITH_METHOD_END;
-} // upDipDir
+} // addUpDipDir
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Add fault normal direction subfield to auxiliary fields.
 void
-pylith::faults::AuxiliaryFactory::normalDir(void) {
+pylith::faults::AuxiliaryFactoryKinematic::addNormalDir(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("normalDir(void)");
+    PYLITH_JOURNAL_DEBUG("addNormalDir(void)");
 
     const char* fieldName = "normal_dir";
     const char* componentNames[3] = { "normal_dir_x", "normal_dir_y", "normal_dir_z" };
@@ -128,15 +125,15 @@ pylith::faults::AuxiliaryFactory::normalDir(void) {
     _setSubfieldQueryFn(fieldName, NULL); // Computed during initialization.
 
     PYLITH_METHOD_END;
-} // normalDir
+} // addNormalDir
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Add fault slip subfield to auxiliary fields.
 void
-pylith::faults::AuxiliaryFactory::slip(void) {
+pylith::faults::AuxiliaryFactoryKinematic::addSlip(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("slip(void)");
+    PYLITH_JOURNAL_DEBUG("addSlip(void)");
 
     const char* fieldName = "slip";
     const char* componentNames[3] = { "slip_opening", "slip_left_lateral", "slip_reverse" };
@@ -159,7 +156,7 @@ pylith::faults::AuxiliaryFactory::slip(void) {
     _setSubfieldQueryFn(fieldName, NULL); // Populated by kinematic source at beginning of time step.
 
     PYLITH_METHOD_END;
-} // slip
+} // addSlip
 
 
 // End of file

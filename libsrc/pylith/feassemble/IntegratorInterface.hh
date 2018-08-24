@@ -120,13 +120,13 @@ public:
      *
      * @param[in] value Label of surface (from mesh generator).
      */
-    void setMarkerLabel(const char* value);
+    void setSurfaceMarkerLabel(const char* value);
 
     /** Get label marking boundary associated with interface surface.
      *
      * @returns Label of surface (from mesh generator).
      */
-    const char* getMarkerLabel(void) const;
+    const char* getSurfaceMarkerLabel(void) const;
 
     /** Get mesh associated with integrator domain.
      *

@@ -18,26 +18,23 @@
 
 /** @file libsrc/faults/FaultCohesive.hh
  *
- * @brief C++ abstract base class for a fault surface implemented with
- * cohesive elements.
+ * @brief C++ abstract base class for a fault interface implemented with
+ * cohesive cells.
  */
 
 #if !defined(pylith_faults_faultcohesive_hh)
 #define pylith_faults_faultcohesive_hh
 
-// Include directives ---------------------------------------------------
 #include "faultsfwd.hh" // forward declarations
 
-#include "pylith/feassemble/IntegratorPointwise.hh" // ISA Integrator
+#include "pylith/problems/Physics.hh" // ISA Physics
 
 #include <string> // HASA std::string
 
-// FaultCohesive --------------------------------------------------------
-/// Absract base class for fault surface implemented with cohesive cells.
-class pylith::faults::FaultCohesive : public pylith::feassemble::IntegratorPointwise {
+class pylith::faults::FaultCohesive : public pylith::problems::Physics {
     friend class TestFaultCohesive; // unit testing
 
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -50,59 +47,53 @@ public:
     virtual
     void deallocate(void);
 
-    /** Set material identifier of fault.
+    /** Set identifier for fault cohesive cells.
      *
      * @param[in] value Fault identifier
      */
-    void id(const int value);
+    void setInterfaceId(const int value);
 
-    /** Get material identifier of fault.
+    /** Get identifier for fault cohesive cells.
      *
      * @returns Fault identifier
      */
-    int id(void) const;
+    int getInterfaceId(void) const;
 
-    /** Set label of group of vertices associated with fault.
+    /** Set label marking surface of interface.
      *
-     * @param[in] value Label of fault
+     * @param[in] value Label of surface (from mesh generator).
      */
-    void label(const char* value);
+    void setSurfaceMarkerLabel(const char* value);
 
-    /** Get label of group of vertices associated with fault.
+    /** Get label marking surface of interface.
      *
-     * @returns Label of fault
+     * @returns Label of surface (from mesh generator).
      */
-    const char* label(void) const;
+    const char* getSurfaceMarkerLabel(void) const;
 
-    /** Set label of group of vertices defining buried edge of fault.
+    /** Set label marking buried edges of interface surface.
      *
-     * @param[in] value Label of fault
+     * @param[in] value Label of buried surface edge (from mesh generator).
      */
-    void edge(const char* value);
+    void setBuriedEdgesMarkerLabel(const char* value);
 
-    /** Get label of group of vertices defining buried edge of fault.
+    /** Get label marking buried edges of interface surface.
      *
-     * @returns Label of fault
+     * @returns Label of buried surface edge (from mesh generator).
      */
-    const char* edge(void) const;
+    const char* getBuriedEdgesMarkerLabel(void) const;
 
     /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
      *
      * @param vec Reference direction unit vector.
      */
-    void refDir1(const PylithReal vec[3]);
+    void setRefDir1(const PylithReal vec[3]);
 
     /** Set second choice for reference direction to discriminate among tangential directions in 3-D.
      *
      * @param vec Reference direction unit vector.
      */
-    void refDir2(const PylithReal vec[3]);
-
-    /** Get mesh associated with integrator domain.
-     *
-     * @returns Mesh associated with integrator domain.
-     */
-    const pylith::topology::Mesh& domainMesh(void) const;
+    void setRefDir2(const PylithReal vec[3]);
 
     /** Adjust mesh topology for fault implementation.
      *
@@ -110,68 +101,20 @@ public:
      */
     void adjustTopology(pylith::topology::Mesh* const mesh);
 
-    /** Verify configuration is acceptable.
-     *
-     * @param[in] solution Solution field.
-     */
-    virtual
-    void verifyConfiguration(const pylith::topology::Field& solution) const;
-
-    /** Initialize fault.
-     *
-     * Create fault mesh from cohesive cells and cohesive point map.
-     *
-     * Derived class initialize, should:
-     * 1. Setup subfields in auxiliary field.
-     * 2. Populate auxiliary subfields.
-     * 3. Set finite-element kernels.
-     *
-     * @param[in] solution Solution field (layout).
-     */
-    virtual
-    void initialize(const pylith::topology::Field& solution);
-
-
-    // PROTECTED NETHODS //////////////////////////////////////////////////
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    /** Get factory for setting up auxliary fields.
-     *
-     * @returns Factor for auxiliary fields.
-     */
-    pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
-
-    /** Setup auxiliary subfields (discretization and query fns).
-     *
-     * Create subfields in auxiliary fields (includes name of the field,
-     * vector field type, discretization, and scale for
-     * nondimensionalization) and set query functions for filling them
-     * from a spatial database.
-     *
-     * @attention The order of the calls to subfieldAdd() must match the
-     * order of the auxiliary fields in the FE kernels.
-     */
-    virtual
-    void _auxFieldSetup(void) = 0;
-
-    // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected:
-
-    pylith::topology::Mesh* _faultMesh; ///< Mesh over fault surface.
-    PetscIS _cohesivePointMap; ///< Map from fault point to higher dimension point in cohesive cell.
-    pylith::faults::AuxiliaryFactory* _auxFaultFactory; ///< Factory for auxiliary subfields.
-
-
-    // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private:
-
-    int _id; ///< Identifier for cohesive cells.
-    std::string _label; ///< Label for vertices associated with fault.
-    std::string _edge; ///< Label for vertices along buried edges of fault.
     PylithReal _refDir1[3]; ///< First choice reference direction used to compute boundary tangential directions.
     PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
 
-    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+private:
+
+    int _interfaceId; ///< Identifier for cohesive cells.
+    std::string _interfaceLabel; ///< Label identifying vertices associated with fault.
+    std::string _buriedEdgesLabel; ///< Label identifying vertices along buried edges of fault.
+
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     FaultCohesive(const FaultCohesive&); ///< Not implemented
@@ -180,6 +123,5 @@ private:
 }; // class FaultCohesive
 
 #endif // pylith_faults_faultcohesive_hh
-
 
 // End of file

@@ -73,6 +73,7 @@ public:
              * @param[in] solution Field with current trial solution.
              * @param[in] solutionDot Field with time derivative of current trial solution.
              */
+            static
             void computeJacobian(PetscMat jacobianMat,
                                  PetscMat precondMat,
                                  const pylith::feassemble::IntegratorInterface* integrator,
@@ -121,21 +122,21 @@ pylith::feassemble::IntegratorInterface::deallocate(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set label marking boundary associated with boundary condition surface.
 void
-pylith::feassemble::IntegratorInterface::setMarkerLabel(const char* value) {
+pylith::feassemble::IntegratorInterface::setSurfaceMarkerLabel(const char* value) {
     if (strlen(value) == 0) {
         throw std::runtime_error("Empty string given for boundary condition label.");
     } // if
 
     _interfaceLabel = value;
-} // setMarkerLabel
+} // setSurfaceMarkerLabel
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get label marking boundary associated with boundary condition surface.
 const char*
-pylith::feassemble::IntegratorInterface::getMarkerLabel(void) const {
+pylith::feassemble::IntegratorInterface::getSurfaceMarkerLabel(void) const {
     return _interfaceLabel.c_str();
-} // getMarkerLabel
+} // getSurfaceMarkerLabel
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -258,10 +259,16 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
 
-    // :TODO: FIX THIS
-    delete _interfaceMesh;_interfaceMesh = new pylith::topology::Mesh(solution.mesh(), _interfaceLabel.c_str());assert(_interfaceMesh);
-    PetscDM dmBoundary = _interfaceMesh->dmMesh();assert(dmBoundary);
-    pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
+#if 0
+    const bool isSubMesh = true;
+    delete _interfaceMesh;_interfaceMesh = new pylith::topology::Mesh(isSubMesh);assert(_interfaceMesh);
+    pylith::faults::TopologyOps::createFaultParallel(_interfaceMesh, solution.mesh(), _physics->getInterfaceId(), _physics->getSurfaceMarkerLabel());
+    pylith::topology::MeshOps::checkTopology(*_interfaceMesh);
+#endif
+
+    // Optimize closure for coordinates.
+    PetscDM dmFault = _interfaceMesh->dmMesh();assert(dmFault);
+    pylith::topology::CoordsVisitor::optimizeClosure(dmFault);
 
     Integrator::initialize(solution);
 
@@ -286,13 +293,15 @@ pylith::feassemble::IntegratorInterface::computeRHSResidual(pylith::topology::Fi
     pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
     solutionDot.label("solution_dot");
 
-#if 1
-    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement computeRHSResidual().");
-#else
-    _IntegratorInterface::computeResidual(residual, this, _kernelsRHSResidualPos, labelValuePos, t, dt, solution, solutionDot);
+    const PylithInt faceDim = solution.mesh().dimension() - 1;
 
-    _IntegratorInterface::computeResidual(residual, this, _kernelsRHSResidualPos, labelValueNeg, t, dt, solution, solutionDot);
-#endif
+    const PylithInt labelValuePos = 100 + faceDim;
+    _IntegratorInterface::computeResidual(residual, this, _kernelsRHSResidualPos, labelValuePos,
+                                          t, dt, solution, solutionDot);
+
+    const PylithInt labelValueNeg = -(100 + faceDim);
+    _IntegratorInterface::computeResidual(residual, this, _kernelsRHSResidualPos, labelValueNeg,
+                                          t, dt, solution, solutionDot);
 
     PYLITH_METHOD_END;
 } // computeRHSResidual
@@ -309,9 +318,25 @@ pylith::feassemble::IntegratorInterface::computeRHSJacobian(PetscMat jacobianMat
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<") empty method");
 
-#if 1
-    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement computeRHSJacobian().");
-#endif
+    if ((0 == _kernelsRHSJacobianPos.size()) && (0 == _kernelsRHSJacobianNeg.size())) { PYLITH_METHOD_END;}
+
+    _setKernelConstants(solution, dt);
+
+    pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
+    solutionDot.label("solution_dot");
+    const PylithReal s_tshift = 0.0; // No dependence on time derivative of solution in RHS, so shift isn't applicable.
+
+    const PylithInt faceDim = solution.mesh().dimension() - 1;
+
+    const PylithInt labelValuePos = 100 + faceDim;
+    _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsRHSJacobianPos, labelValuePos,
+                                          t, dt, s_tshift, solution, solutionDot);
+
+    const PylithInt labelValueNeg = -(100 + faceDim);
+    _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsRHSJacobianPos, labelValueNeg,
+                                          t, dt, s_tshift, solution, solutionDot);
+
+    _needNewRHSJacobian = false;
 
     PYLITH_METHOD_END;
 } // computeRHSJacobian
@@ -332,14 +357,17 @@ pylith::feassemble::IntegratorInterface::computeLHSResidual(pylith::topology::Fi
 
     _setKernelConstants(solution, dt);
 
-#if 1
-    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement computeLHSResidual().");
-#else
-    _IntegratorInterface::computeResidual(residual, this, _kernelsLHSResidualPos, labelValuePos, t, dt, solution, solutionDot);
+    const PylithInt faceDim = solution.mesh().dimension() - 1;
 
-    _IntegratorInterface::computeResidual(residual, this, _kernelsLHSResidualNeg, labelValueNeg, t, dt, solution, solutionDot);
-#endif
+    const PylithInt labelValuePos = 100 + faceDim;
+    _IntegratorInterface::computeResidual(residual, this, _kernelsLHSResidualPos, labelValuePos,
+                                          t, dt, solution, solutionDot);
 
+    const PylithInt labelValueNeg = -(100 + faceDim);
+    _IntegratorInterface::computeResidual(residual, this, _kernelsLHSResidualPos, labelValueNeg,
+                                          t, dt, solution, solutionDot);
+
+    PYLITH_METHOD_END;
 } // computeLHSResidual
 
 
@@ -354,11 +382,23 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobian(PetscMat jacobianMat
                                                             const pylith::topology::Field& solution,
                                                             const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<") empty method");
+    PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
-#if 1
-    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement computeLHSJacobian().");
-#endif
+    if ((0 == _kernelsLHSJacobianPos.size()) && (0 == _kernelsLHSJacobianNeg.size())) { PYLITH_METHOD_END;}
+
+    _setKernelConstants(solution, dt);
+
+    const PylithInt faceDim = solution.mesh().dimension() - 1;
+
+    const PylithInt labelValuePos = 100 + faceDim;
+    _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsLHSJacobianPos, labelValuePos,
+                                          t, dt, s_tshift, solution, solutionDot);
+
+    const PylithInt labelValueNeg = -(100 + faceDim);
+    _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsLHSJacobianPos, labelValueNeg,
+                                          t, dt, s_tshift, solution, solutionDot);
+
+    _needNewLHSJacobian = false;
 
     PYLITH_METHOD_END;
 } // computeLHSJacobian
@@ -405,7 +445,6 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
 
     PetscDM dmSoln = solution.dmMesh();
     PetscDM dmAux = auxiliaryField->dmMesh();
-    PetscDMLabel dmLabel = NULL;
 
     PetscDS prob = NULL;
     err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
@@ -414,22 +453,85 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
     err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
+    std::string interfaceLabelName = std::string(integrator->getSurfaceMarkerLabel()) + std::string("-interface");
+    PetscDMLabel interfaceDMLabel = NULL;
+    err = DMGetLabel(dmSoln, interfaceLabelName.c_str(), &interfaceDMLabel);PYLITH_CHECK_ERROR(err);assert(interfaceDMLabel);
+
+#if 0 // DEBUGGING
+    std::cout << "DOMAIN MESH" << std::endl;
+    solution.mesh().view("::ascii_info_detail");
+
+    std::cout << "FAULT MESH" << std::endl;
+    auxiliaryField->mesh().view("::ascii_info_detail");
+
+    err = DMLabelView(interfaceDMLabel, PETSC_VIEWER_STDOUT_SELF);
+#endif // DEBUGGING
+
     // Compute the local residual
     assert(solution.localVector());
     assert(residual->localVector());
-    err = DMGetLabel(dmSoln, integrator->getMarkerLabel(), &dmLabel);PYLITH_CHECK_ERROR(err);
-
-    //solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
-
-    //PYLITH_COMPONENT_DEBUG("DMPlexComputeBdResidualSingle() for boundary '"<<label()<<"')");
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
         err = PetscDSSetBdResidual(prob, i_field, kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
-        err = DMPlexComputeBdResidualSingle(dmSoln, t, dmLabel, 1, &labelValue, i_field, solution.localVector(), solutionDot.localVector(), residual->localVector());PYLITH_CHECK_ERROR(err);
+        err = DMPlexComputeBdResidualSingle(dmSoln, t, interfaceDMLabel, 1, &labelValue, i_field, solution.localVector(), solutionDot.localVector(), residual->localVector());PYLITH_CHECK_ERROR(err);
     } // for
 
     PYLITH_METHOD_END;
 } // computeResidual
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Compute Jacobian.
+void
+pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
+                                                          PetscMat precondMat,
+                                                          const pylith::feassemble::IntegratorInterface* integrator,
+                                                          const std::vector<pylith::feassemble::IntegratorInterface::JacobianKernels>& kernels,
+                                                          const PylithInt labelValue,
+                                                          const PylithReal t,
+                                                          const PylithReal dt,
+                                                          const PylithReal s_tshift,
+                                                          const pylith::topology::Field& solution,
+                                                          const pylith::topology::Field& solutionDot) {
+    PYLITH_METHOD_BEGIN;
+    //PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<",
+    // dt="<<dt<<", solution="<<solution.label()<<")");
+
+    assert(jacobianMat);
+    assert(precondMat);
+
+    const pylith::topology::Field* auxiliaryField = integrator->getAuxiliaryField();assert(auxiliaryField);
+
+    PetscErrorCode err;
+
+    PetscDM dmSoln = solution.dmMesh();
+    PetscDM dmAux = auxiliaryField->dmMesh();
+
+    PetscDS prob = NULL;
+    err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
+
+    // Get auxiliary data
+    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+
+    std::string interfaceLabelName = std::string(integrator->getSurfaceMarkerLabel()) + std::string("-interface");
+    PetscDMLabel interfaceDMLabel = NULL;
+    err = DMGetLabel(dmSoln, interfaceLabelName.c_str(), &interfaceDMLabel);PYLITH_CHECK_ERROR(err);assert(interfaceDMLabel);
+
+    // Compute the local Jacobian
+    assert(solution.localVector());
+
+    for (size_t i = 0; i < kernels.size(); ++i) {
+        const PetscInt i_fieldTrial = solution.subfieldInfo(kernels[i].subfieldTrial.c_str()).index;
+        const PetscInt i_fieldBasis = solution.subfieldInfo(kernels[i].subfieldBasis.c_str()).index;
+        err = PetscDSSetBdJacobian(prob, i_fieldTrial, i_fieldBasis, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
+
+        err = DMPlexComputeBdJacobianSingle(dmSoln, t, interfaceDMLabel, 1, &labelValue, i_fieldTrial, solution.localVector(),
+                                            solutionDot.localVector(), s_tshift, jacobianMat, precondMat);PYLITH_CHECK_ERROR(err);
+    } // for
+
+    PYLITH_METHOD_END;
+} // computeJacobian
 
 
 // End of file

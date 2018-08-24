@@ -42,7 +42,7 @@ libpylith_la_SOURCES = \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveStub.cc \
 	faults/FaultCohesiveKin.cc \
-	faults/AuxiliaryFactory.cc \
+	faults/AuxiliaryFactoryKinematic.cc \
 	faults/KinSrc.cc \
 	faults/KinSrcStep.cc \
 	faults/KinSrcConstRate.cc \
