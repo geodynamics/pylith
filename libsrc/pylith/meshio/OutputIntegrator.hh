@@ -25,27 +25,23 @@
 #if !defined(pylith_meshio_outputintegrator_hh)
 #define pylith_meshio_outputintegrator_hh
 
-// Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
 #include "OutputManager.hh" // ISA OutputManager
 
 #include "pylith/utils/array.hh" // HASA string_vector
 
-// OutputIntegrator -----------------------------------------------------
-/** @brief C++ object for managing output of the solution over the domain of an integrator.
- */
 class pylith::meshio::OutputIntegrator : public pylith::meshio::OutputManager {
-    friend class TestOutputIntegrator;   // unit testing
+    friend class TestOutputIntegrator; // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /** Constructor
      *
      * @param[in] integrator Integrator to observe.
      */
-    OutputIntegrator(pylith::feassemble::IntegratorPointwise* const integrator);
+    OutputIntegrator(pylith::feassemble::Integrator* const integrator);
 
     /// Destructor
     ~OutputIntegrator(void);
@@ -75,21 +71,16 @@ protected:
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
 
-    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::feassemble::IntegratorPointwise* const _integrator;
+    pylith::feassemble::Integrator* const _integrator;
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    static const char* _pyreComponent; ///< Name of Pyre component.
-
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
-    OutputIntegrator(const OutputIntegrator&);   ///< Not implemented.
-    const OutputIntegrator& operator=(const OutputIntegrator&);   ///< Not implemented
+    OutputIntegrator(const OutputIntegrator&); ///< Not implemented.
+    const OutputIntegrator& operator=(const OutputIntegrator&); ///< Not implemented
 
 }; // OutputIntegrator
 

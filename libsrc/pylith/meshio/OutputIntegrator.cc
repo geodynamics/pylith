@@ -22,22 +22,20 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
+#include "pylith/feassemble/Integrator.hh" // USES Integrator
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <typeinfo> // USES typeid()
 
-#include "pylith/materials/Material.hh" // TEMPORARY
-
-// ----------------------------------------------------------------------
-const char* pylith::meshio::OutputIntegrator::_pyreComponent = "outputintegrator";
+#include "pylith/materials/Material.hh" \
+    // TEMPORARY
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshio::OutputIntegrator::OutputIntegrator(pylith::feassemble::IntegratorPointwise* const integrator) :
-    _integrator(integrator){ // constructor
-    PyreComponent::name(_pyreComponent);
+pylith::meshio::OutputIntegrator::OutputIntegrator(pylith::feassemble::Integrator* const integrator) :
+    _integrator(integrator) {
+    PyreComponent::name("outputintegrator");
 
 } // constructor
 
@@ -70,12 +68,12 @@ pylith::meshio::OutputIntegrator::verifyConfiguration(const pylith::topology::Fi
 
     assert(_integrator);
 
-    const pylith::topology::Field* auxField = _integrator->auxField();
-    const pylith::topology::Field* derivedField = _integrator->derivedField();
+    const pylith::topology::Field* auxiliaryField = _integrator->getAuxiliaryField();
+    const pylith::topology::Field* derivedField = _integrator->getDerivedField();
 
     // Info fields should be in integrator's auxiliary field.
     const size_t numInfoFields = _infoFields.size();
-    if (!auxField && (numInfoFields > 0)) {
+    if (!auxiliaryField && (numInfoFields > 0)) {
         std::ostringstream msg;
         msg << "Integrator has no auxiliary field, but output of information fields requested.\n"
             << "Information fields requested:";
@@ -84,11 +82,11 @@ pylith::meshio::OutputIntegrator::verifyConfiguration(const pylith::topology::Fi
         } // for
         throw std::runtime_error(msg.str());
     } else if ((numInfoFields > 0) && (std::string("all") != _infoFields[0])) {
-        assert(auxField);
+        assert(auxiliaryField);
         for (size_t i = 0; i < numInfoFields; i++) {
-            if (!auxField->hasSubfield(_infoFields[i].c_str())) {
+            if (!auxiliaryField->hasSubfield(_infoFields[i].c_str())) {
                 std::ostringstream msg;
-                msg << "Could not find field '" << _infoFields[i] << "' in auxiliary field '" << auxField->label() << "' for output.";
+                msg << "Could not find field '" << _infoFields[i] << "' in auxiliary field '" << auxiliaryField->label() << "' for output.";
                 throw std::runtime_error(msg.str());
             } // if
         } // for
@@ -99,12 +97,12 @@ pylith::meshio::OutputIntegrator::verifyConfiguration(const pylith::topology::Fi
     if ((numDataFields > 0) && (std::string("all") != _dataFields[0])) {
         for (size_t i = 0; i < numDataFields; i++) {
             if (solution.hasSubfield(_dataFields[i].c_str())) { continue;}
-            if (auxField && auxField->hasSubfield(_dataFields[i].c_str())) { continue;}
+            if (auxiliaryField && auxiliaryField->hasSubfield(_dataFields[i].c_str())) { continue;}
             if (derivedField && derivedField->hasSubfield(_dataFields[i].c_str())) { continue;}
 
             std::ostringstream msg;
             msg << "Could not find field '" << _dataFields[i] << "' in solution '" << solution.label()
-                << "' or auxiliary field '" << (auxField ? auxField->label() : "NULL") << "' or derived field "
+                << "' or auxiliary field '" << (auxiliaryField ? auxiliaryField->label() : "NULL") << "' or derived field "
                 << (derivedField ? derivedField->label() : "NULL") << "' for output.";
             throw std::runtime_error(msg.str());
         } // for
@@ -126,28 +124,27 @@ pylith::meshio::OutputIntegrator::_writeInfo(void) {
     assert(_integrator);
 
     // :KLUDGE: Temporary code to set _label and _labelId if integrator ISA Material. This will go away when each
-    // material
-    // has its own PetscDM.
+    // material has its own PetscDM.
     const pylith::materials::Material* const material = dynamic_cast<const pylith::materials::Material* const>(_integrator);
     if (material) {
         _temporarySetLabel("material-id", material->getMaterialId());
         PYLITH_COMPONENT_DEBUG("Setting OutputIntegrator label='material-id' and label id="<<material->getMaterialId()<<".");
     } // if
 
-    const pylith::topology::Field* auxField = _integrator->auxField();
-    if (!auxField) { PYLITH_METHOD_END;}
+    const pylith::topology::Field* auxiliaryField = _integrator->getAuxiliaryField();
+    if (!auxiliaryField) { PYLITH_METHOD_END;}
 
-    const pylith::string_vector& infoNames = _infoNamesExpanded(auxField);
+    const pylith::string_vector& infoNames = _infoNamesExpanded(auxiliaryField);
 
     const bool isInfo = true;
-    const pylith::topology::Mesh& domainMesh = _integrator->domainMesh();
+    const pylith::topology::Mesh& domainMesh = _integrator->getIntegrationDomainMesh();
     _open(domainMesh, isInfo);
     _openDataStep(0.0, domainMesh);
 
     const size_t numInfoFields = infoNames.size();
     for (size_t i = 0; i < numInfoFields; i++) {
-        if (auxField->hasSubfield(infoNames[i].c_str())) {
-            pylith::topology::Field* fieldBuffer = _getBuffer(*auxField, infoNames[i].c_str());assert(fieldBuffer);
+        if (auxiliaryField->hasSubfield(infoNames[i].c_str())) {
+            pylith::topology::Field* fieldBuffer = _getBuffer(*auxiliaryField, infoNames[i].c_str());assert(fieldBuffer);
             _appendField(0.0, fieldBuffer, domainMesh);
         } else {
             std::ostringstream msg;
@@ -173,11 +170,11 @@ pylith::meshio::OutputIntegrator::_writeDataStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG("OutputIntegrator::_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
     assert(_integrator);
-    const pylith::topology::Field* auxField = _integrator->auxField();
-    const pylith::topology::Field* derivedField = _integrator->derivedField();
-    const pylith::topology::Mesh& domainMesh = _integrator->domainMesh();
+    const pylith::topology::Field* auxiliaryField = _integrator->getAuxiliaryField();
+    const pylith::topology::Field* derivedField = _integrator->getDerivedField();
+    const pylith::topology::Mesh& domainMesh = _integrator->getIntegrationDomainMesh();
 
-    const pylith::string_vector& dataNames = _dataNamesExpanded(solution, auxField, derivedField);
+    const pylith::string_vector& dataNames = _dataNamesExpanded(solution, auxiliaryField, derivedField);
 
     _openDataStep(t, domainMesh);
 
@@ -186,8 +183,8 @@ pylith::meshio::OutputIntegrator::_writeDataStep(const PylithReal t,
         if (solution.hasSubfield(dataNames[i].c_str())) {
             pylith::topology::Field* fieldBuffer = _getBuffer(solution, dataNames[i].c_str());assert(fieldBuffer);
             _appendField(t, fieldBuffer, domainMesh);
-        } else if (auxField && auxField->hasSubfield(dataNames[i].c_str())) {
-            pylith::topology::Field* fieldBuffer = _getBuffer(*auxField, dataNames[i].c_str());assert(fieldBuffer);
+        } else if (auxiliaryField && auxiliaryField->hasSubfield(dataNames[i].c_str())) {
+            pylith::topology::Field* fieldBuffer = _getBuffer(*auxiliaryField, dataNames[i].c_str());assert(fieldBuffer);
             _appendField(t, fieldBuffer, domainMesh);
         } else if (derivedField && derivedField->hasSubfield(dataNames[i].c_str())) {
             pylith::topology::Field* fieldBuffer = _getBuffer(*derivedField, dataNames[i].c_str());assert(fieldBuffer);
