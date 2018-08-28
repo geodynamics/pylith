@@ -20,145 +20,11 @@
 
 #include "IsotropicLinearMaxwell.hh" // Implementation of object methods.
 
-#include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
+#include "pylith/fekernels/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity* kernels
 #include "pylith/fekernels/Viscoelasticity.hh" // USES Viscoelasticity kernels
 
 #include <cassert> // USES assert()
 #include <cmath> // USES exp()
-#include <iostream> // debugging.
-
-// =====================================================================================================================
-// Kernels for isotropic, linear Maxwell viscoelastic independent of spatial dimension.
-// =====================================================================================================================
-
-// ---------------------------------------------------------------------------------------------------------------------
-// g0 function for isotropic linear Maxwell viscoelastic with both gravity and body forces.
-void
-pylith::fekernels::IsotropicLinearMaxwell::g0v_gravbodyforce(const PylithInt dim,
-                                                             const PylithInt numS,
-                                                             const PylithInt numA,
-                                                             const PylithInt sOff[],
-                                                             const PylithInt sOff_x[],
-                                                             const PylithScalar s[],
-                                                             const PylithScalar s_t[],
-                                                             const PylithScalar s_x[],
-                                                             const PylithInt aOff[],
-                                                             const PylithInt aOff_x[],
-                                                             const PylithScalar a[],
-                                                             const PylithScalar a_t[],
-                                                             const PylithScalar a_x[],
-                                                             const PylithReal t,
-                                                             const PylithScalar x[],
-                                                             const PylithInt numConstants,
-                                                             const PylithScalar constants[],
-                                                             PylithScalar g0[]) {
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-    const PylithInt i_gravityField = 6;
-    const PylithInt i_bodyForce = 7;
-
-    const PylithInt _numS = 0; // Number passed on to g0_bodyforce.
-
-    assert(1 == numS || 2 == numS);
-    assert(numA >= 8);
-    assert(aOff);
-
-    const PylithInt numAGrav = 2; // Number passed on to g0_grav.
-    const PylithInt aOffGrav[2] = { aOff[i_density], aOff[i_gravityField] };
-    pylith::fekernels::Elasticity::g0v_grav(dim, _numS, numAGrav,
-                                            NULL, NULL, NULL, NULL, NULL,
-                                            aOffGrav, NULL, a, a_t, NULL,
-                                            t, x, numConstants, constants, g0);
-
-    const PylithInt numABody = 1; // Number passed on to g0_bodyforce.
-    const PylithInt aOffBody[1] = { aOff[i_bodyForce] };
-    pylith::fekernels::Elasticity::g0v_bodyforce(dim, _numS, numABody,
-                                                 NULL, NULL, NULL, NULL, NULL,
-                                                 aOffBody, NULL, a, a_t, NULL,
-                                                 t, x, numConstants, constants, g0);
-} // g0v_gravbodyforce
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// g0 function for isotropic linear Maxwell viscoelastic with just gravity.
-void
-pylith::fekernels::IsotropicLinearMaxwell::g0v_grav(const PylithInt dim,
-                                                    const PylithInt numS,
-                                                    const PylithInt numA,
-                                                    const PylithInt sOff[],
-                                                    const PylithInt sOff_x[],
-                                                    const PylithScalar s[],
-                                                    const PylithScalar s_t[],
-                                                    const PylithScalar s_x[],
-                                                    const PylithInt aOff[],
-                                                    const PylithInt aOff_x[],
-                                                    const PylithScalar a[],
-                                                    const PylithScalar a_t[],
-                                                    const PylithScalar a_x[],
-                                                    const PylithReal t,
-                                                    const PylithScalar x[],
-                                                    const PylithInt numConstants,
-                                                    const PylithScalar constants[],
-                                                    PylithScalar g0[]) {
-    const PylithInt _numS = 0; // Number passed on to g0_bodyforce.
-
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-    const PylithInt i_gravityField = 6;
-
-    assert(1 == numS || 2 == numS);
-    assert(numA >= 7);
-    assert(aOff);
-
-    const PylithInt numAGrav = 2; // Number passed on to g0_grav.
-    const PylithInt aOffGrav[2] = { aOff[i_density], aOff[i_gravityField] };
-
-    pylith::fekernels::Elasticity::g0v_grav(dim, _numS, numAGrav,
-                                            NULL, NULL, NULL, NULL, NULL,
-                                            aOffGrav, NULL, a, a_t, NULL,
-                                            t, x, numConstants, constants, g0);
-} // g0v_grav
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// g0 function for isotropic linear Maxwell viscoelastic with only body forces.
-void
-pylith::fekernels::IsotropicLinearMaxwell::g0v_bodyforce(const PylithInt dim,
-                                                         const PylithInt numS,
-                                                         const PylithInt numA,
-                                                         const PylithInt sOff[],
-                                                         const PylithInt sOff_x[],
-                                                         const PylithScalar s[],
-                                                         const PylithScalar s_t[],
-                                                         const PylithScalar s_x[],
-                                                         const PylithInt aOff[],
-                                                         const PylithInt aOff_x[],
-                                                         const PylithScalar a[],
-                                                         const PylithScalar a_t[],
-                                                         const PylithScalar a_x[],
-                                                         const PylithReal t,
-                                                         const PylithScalar x[],
-                                                         const PylithInt numConstants,
-                                                         const PylithScalar constants[],
-                                                         PylithScalar g0[]) {
-    const PylithInt _numS = 0; // Number passed on to g0_bodyforce.
-
-    // Incoming auxiliary fields.
-    const PylithInt i_bodyForce = 6;
-
-    assert(1 == numS || 2 == numS);
-    assert(numA >= 7);
-    assert(aOff);
-
-    const PylithInt numABody = 1; // Number passed on to g0_bodyforce.
-    const PylithInt aOffBody[1] = { aOff[i_bodyForce] };
-
-    pylith::fekernels::Elasticity::g0v_bodyforce(dim, _numS, numABody,
-                                                 NULL, NULL, NULL, NULL, NULL,
-                                                 aOffBody, NULL, a, a_t, NULL,
-                                                 t, x, numConstants, constants, g0);
-} // g0v_bodyforce
-
 
 // =====================================================================================================================
 // Kernels for isotropic, linear Maxwell viscoelastic plane strain.
@@ -218,10 +84,10 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v(const PylithInt dim,
 
     PylithScalar stress[4] = { 0.0, 0.0, 0.0, 0.0 }; // Full stress tensor
 
-    pylith::fekernels::ElasticityPlaneStrain::meanStress(_dim, _numS, numAMean,
-                                                         sOffDisp, sOffDisp_x, s, s_t, s_x,
-                                                         aOffMean, NULL, a, a_t, NULL,
-                                                         t, x, numConstants, constants, stress);
+    pylith::fekernels::IsotropicLinearElasticityPlaneStrain::meanStress(_dim, _numS, numAMean,
+                                                                        sOffDisp, sOffDisp_x, s, s_t, s_x,
+                                                                        aOffMean, NULL, a, a_t, NULL,
+                                                                        t, x, numConstants, constants, stress);
     deviatoricStress(_dim, _numS, numADev,
                      sOffDisp, sOffDisp_x, s, s_t, s_x,
                      aOffDev, NULL, a, a_t, NULL,
@@ -284,7 +150,7 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v_refstate(const PylithI
     const PylithInt aOffMean[3] = { aOff[i_bulkModulus], aOff[i_rstress], aOff[i_rstrain] };
 
     const PylithInt numADev = 6; // Pass shear modulus, Maxwell time, viscous strain, total strain,
-                                // reference stress, and reference strain.
+                                 // reference stress, and reference strain.
     const PylithInt aOffDev[6] = { aOff[i_shearModulus], aOff[i_maxwellTime], aOff[i_viscousStrain],
                                    aOff[i_totalStrain], aOff[i_rstress], aOff[i_rstrain] };
 
@@ -320,7 +186,7 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v_refstate(const PylithI
  *
  * Isotropic:
  *  C_ijkl = bulkModulus * delta_ij * delta_kl + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk -
- *************************2/3*delta_ij*delta_kl)
+ ****************************2/3*delta_ij*delta_kl)
  */
 void
 pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::Jg3vu(const PylithInt dim,
@@ -941,7 +807,7 @@ pylith::fekernels::IsotropicLinearMaxwell3D::g1v_refstate(const PylithInt dim,
     const PylithInt aOffMean[3] = { aOff[i_bulkModulus], aOff[i_rstress], aOff[i_rstrain] };
 
     const PylithInt numADev = 6; // Pass shear modulus, Maxwell time, viscous strain, total strain,
-                                // reference stress, and reference strain.
+                                 // reference stress, and reference strain.
     const PylithInt aOffDev[6] = { aOff[i_shearModulus], aOff[i_maxwellTime], aOff[i_viscousStrain],
                                    aOff[i_totalStrain], aOff[i_rstress], aOff[i_rstrain] };
 
@@ -977,7 +843,7 @@ pylith::fekernels::IsotropicLinearMaxwell3D::g1v_refstate(const PylithInt dim,
  *
  * Isotropic:
  *  C_ijkl = bulkModulus * delta_ij * delta_kl + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk -
- *************2/3*delta_ij*delta_kl)
+ ****************2/3*delta_ij*delta_kl)
  */
 void
 pylith::fekernels::IsotropicLinearMaxwell3D::Jg3vu(const PylithInt dim,
@@ -1266,7 +1132,7 @@ pylith::fekernels::IsotropicLinearMaxwell3D::deviatoricStress_refstate(const Pyl
     const PylithScalar shearModulus = a[aOff[i_shearModulus]];
     const PylithScalar* refstress = &a[aOff[i_rstress]]; // sigma_11, sigma_22, sigma_33, sigma_12, sigma_23, sigma_13
     const PylithScalar* refstrain = &a[aOff[i_rstrain]]; // epsilon_11, epsilon_22, epsilon_33, epsilon_12, epsilon_23,
-                                                        // epsilon_13
+                                                         // epsilon_13
 
     const PylithInt _numS = 1; // Number passed on to visStrain kernel.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };

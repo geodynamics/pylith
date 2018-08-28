@@ -28,6 +28,8 @@
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
+#include "pylith/utils/arrayfwd.hh" // USES std::vector
+#include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain::ProjectKernels
 
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES Coordsys
 
@@ -85,6 +87,24 @@ public:
      */
     virtual
     PetscPointFunc getKernelDerivedStress(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+
+    /** Add kernels for updating state variables.
+     *
+     * @param[inout] kernels Array of kernels for updating state variables.
+     * @param[in] coordsys Coordinate system.
+     */
+    virtual
+    void addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
+                                   const spatialdata::geocoords::CoordSys* coordsys) const;
+
+    /** Update kernel constants.
+     *
+     * @param[inout] kernelConstants Array of constants used in integration kernels.
+     * @param[in] dt Current time step.
+     */
+    virtual
+    void updateKernelConstants(pylith::real_array* kernelConstants,
+                               const PylithReal dt) const;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

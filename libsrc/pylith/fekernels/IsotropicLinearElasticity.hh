@@ -126,7 +126,8 @@ public:
                       const PylithScalar constants[],
                       PylithScalar g1[]);
 
-    /** Jg3_vu entry function for 2-D plane strain isotropic linear elasticity.
+    /** Jg3_vu entry function for 2-D plane strain isotropic linear elasticity WITHOUT reference stress and reference
+     * strain.
      *
      * Solution fields: [...]
      * Auxiliary fields: [shear_modulus(1), bulk_modulus(1), ...]

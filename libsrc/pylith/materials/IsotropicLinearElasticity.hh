@@ -26,7 +26,7 @@
 
 #include "materialsfwd.hh" // forward declarations
 
-#include "pylith/materials/RheologyElasticity.hh" // ISA BulkRheology
+#include "pylith/materials/RheologyElasticity.hh" // ISA RheologyElasticity
 
 class pylith::materials::IsotropicLinearElasticity : public pylith::materials::RheologyElasticity {
     friend class TestIsotropicLinearElasticity; // unit testing
