@@ -29,6 +29,8 @@
 
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
+#include "pylith/utils/arrayfwd.hh" // HASA std::vector
+
 class pylith::feassemble::IntegratorBoundary : public pylith::feassemble::Integrator {
     friend class TestIntegratorBoundary; // unit testing
 
@@ -209,11 +211,11 @@ private:
 
     pylith::topology::Mesh* _boundaryMesh; ///< Boundary mesh.
     std::string _boundaryLabel; ///< Label to identify boundary condition points in mesh.
-    std::string _subfieldName; ///< Name of solution subfield associated with boundary condition.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
+    IntegratorBoundary(void); ///< Not implemented.
     IntegratorBoundary(const IntegratorBoundary&); ///< Not implemented.
     const IntegratorBoundary& operator=(const IntegratorBoundary&); ///< Not implemented.
 

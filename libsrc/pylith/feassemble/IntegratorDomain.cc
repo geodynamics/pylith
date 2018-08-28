@@ -97,8 +97,8 @@ pylith::feassemble::IntegratorDomain::getMaterialId(void) const {
 // Get mesh associated with integration domain.
 const pylith::topology::Mesh&
 pylith::feassemble::IntegratorDomain::getIntegrationDomainMesh(void) const {
-    assert(_auxField);
-    return _auxField->mesh();
+    assert(_auxiliaryField);
+    return _auxiliaryField->mesh();
 } // domainMesh
 
 
@@ -271,7 +271,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
                                                                   const PylithReal t,
                                                                   const PylithReal dt,
                                                                   const PylithReal s_tshift,
-                                                                  const pylith::topology::Field& solution){
+                                                                  const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
@@ -283,7 +283,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
     PetscErrorCode err;
 
     PetscDM dmSoln = solution.dmMesh();
-    PetscDM dmAux = _auxField->dmMesh();
+    PetscDM dmAux = _auxiliaryField->dmMesh();
 
     // Set pointwise function (kernels) in DS
     err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
@@ -296,7 +296,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxField->localVector());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
     PetscVec vecRowSum = NULL;
     err = DMGetGlobalVector(dmSoln, &vecRowSum);PYLITH_CHECK_ERROR(err);
@@ -335,7 +335,7 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     PYLITH_JOURNAL_DEBUG("_computeResidual(residual="<<residual<<", # kernels="<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
     assert(residual);
-    assert(_auxField);
+    assert(_auxiliaryField);
 
     PetscDS prob = NULL;
     PetscIS cells = NULL;
@@ -343,7 +343,7 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     PetscErrorCode err;
 
     PetscDM dmSoln = solution.dmMesh();
-    PetscDM dmAux = _auxField->dmMesh();
+    PetscDM dmAux = _auxiliaryField->dmMesh();
     PetscDMLabel dmLabel = NULL;
 
     // Set pointwise function (kernels) in DS
@@ -355,7 +355,7 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxField->localVector());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
     // Compute the local residual
     assert(solution.localVector());
@@ -389,14 +389,14 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
 
     assert(jacobianMat);
     assert(precondMat);
-    assert(_auxField);
+    assert(_auxiliaryField);
 
     PetscDS prob = NULL;
     PetscIS cells = NULL;
     PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
     PetscDM dmMesh = solution.dmMesh();
-    PetscDM dmAux = _auxField->dmMesh();
+    PetscDM dmAux = _auxiliaryField->dmMesh();
     PetscDMLabel dmLabel = NULL;
 
     // Set pointwise function (kernels) in DS
@@ -409,7 +409,7 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmMesh, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) _auxField->localVector());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
     // Compute the local Jacobian
     assert(solution.localVector());

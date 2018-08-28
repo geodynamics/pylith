@@ -27,10 +27,8 @@
 #include "pylith/feassemble/IntegratorBoundary.hh" // USES IntegratorBoundary
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
-#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
-#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
-#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
@@ -96,8 +94,8 @@ pylith::bc::NeumannTimeDependent::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     BoundaryCondition::deallocate();
-    delete _auxiliaryFactory;_auxiliaryFactory = NULL;
 
+    delete _auxiliaryFactory;_auxiliaryFactory = NULL;
     _dbTimeHistory = NULL; // :KLUDGE: Use shared pointer.
 
     PYLITH_METHOD_END;
@@ -281,7 +279,7 @@ pylith::topology::Field*
 pylith::bc::NeumannTimeDependent::createDerivedField(const pylith::topology::Field& solution,
                                                      const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
 
     PYLITH_METHOD_RETURN(NULL);
 } // createDerivedField
@@ -297,47 +295,8 @@ pylith::bc::NeumannTimeDependent::prestep(pylith::topology::Field* auxiliaryFiel
 
     if (_useTimeHistory) {
         assert(_normalizer);
-        assert(auxiliaryField);
-
         const PylithScalar timeScale = _normalizer->timeScale();
-
-        PetscErrorCode err = 0;
-
-        PetscSection auxiliaryFieldSection = auxiliaryField->localSection();assert(auxiliaryFieldSection);
-        PetscInt pStart = 0, pEnd = 0;
-        err = PetscSectionGetChart(auxiliaryFieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-        pylith::topology::VecVisitorMesh auxFieldsVisitor(*auxiliaryField);
-        PetscScalar* auxiliaryFieldArray = auxFieldsVisitor.localArray();assert(auxiliaryFieldArray);
-
-        // Compute offset of time history subfields in auxiliary field.
-        const PetscInt i_startTime = auxiliaryField->subfieldInfo("time_history_start_time").index;
-        const PetscInt i_value = auxiliaryField->subfieldInfo("time_history_value").index;
-
-        // Loop over all points in section.
-        for (PetscInt p = pStart; p < pEnd; ++p) {
-            // Skip points without values in section.
-            if (!auxFieldsVisitor.sectionDof(p)) {continue;}
-
-            // Get starting time and compute relative time for point.
-            const PetscInt offStartTime = auxFieldsVisitor.sectionSubfieldOffset(i_startTime, p);
-            const PylithScalar tStart = auxiliaryFieldArray[offStartTime];
-            const PylithScalar tRel = t - tStart;
-
-            // Query time history for value (normalized amplitude).
-            PylithScalar value = 0.0;
-            if (tRel >= 0.0) {
-                PylithScalar tDim = tRel * timeScale;
-                const int err = _dbTimeHistory->query(&value, tDim);
-                if (err) {
-                    std::ostringstream msg;
-                    msg << "Error querying for time '" << tDim << "' in time history database '" << _dbTimeHistory->label() << "'.";
-                    throw std::runtime_error(msg.str());
-                } // if
-            } // if
-              // Update value (normalized amplitude) in auxiliary field.
-            const PetscInt offValue = auxFieldsVisitor.sectionSubfieldOffset(i_value, p);
-            auxiliaryFieldArray[offValue] = value;
-        } // for
+        TimeDependentAuxiliaryFactory::updateAuxiliaryField(auxiliaryField, t, timeScale, _dbTimeHistory);
     } // if
 
     PYLITH_METHOD_END;

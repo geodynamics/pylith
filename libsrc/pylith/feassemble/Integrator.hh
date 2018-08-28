@@ -30,8 +30,8 @@
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/problems/problemsfwd.hh" // HASA Physics
+#include "pylith/topology/topologyfwd.hh" // USES Field
 
-#include "pylith/topology/FieldBase.hh" // USES FieldBase
 #include "pylith/utils/petscfwd.h" // USES PetscMat, PetscVec
 #include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
 
@@ -41,7 +41,10 @@ class pylith::feassemble::Integrator : public pylith::utils::GenericComponent {
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Constructor
+    /** Constructor
+     *
+     * @param[in] physics Physics implemented by integrator.
+     */
     Integrator(pylith::problems::Physics* const physics);
 
     /// Destructor
@@ -224,7 +227,7 @@ protected:
 protected:
 
     pylith::problems::Physics* const _physics; ///< Physics associated with integrator.
-    pylith::topology::Field* _auxField; ///< Auxiliary field for this integrator.
+    pylith::topology::Field* _auxiliaryField; ///< Auxiliary field for this integrator.
     pylith::topology::Field* _derivedField; ///< Derived field for this integrator.
     pylith::feassemble::Observers* _observers; ///< Observers component.
 
@@ -238,6 +241,7 @@ protected:
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
+    Integrator(void); /// Not implemented.
     Integrator(const Integrator&); ///< Not implemented.
     const Integrator& operator=(const Integrator&); ///< Not implemented.
 

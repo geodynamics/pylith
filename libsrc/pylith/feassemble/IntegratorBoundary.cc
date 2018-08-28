@@ -25,11 +25,12 @@
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
 
 #include "spatialdata/spatialdb/GravityField.hh" // HASA GravityField
-#include "petscds.h" // USES PetscDS
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
-#include <cassert> // USES assert()
 
+#include "petscds.h" // USES PetscDS
+
+#include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -68,8 +69,7 @@ public:
 pylith::feassemble::IntegratorBoundary::IntegratorBoundary(pylith::problems::Physics* const physics) :
     Integrator(physics),
     _boundaryMesh(NULL),
-    _boundaryLabel(""),
-    _subfieldName("") {
+    _boundaryLabel("") {
     _needNewRHSJacobian = false;
     _needNewLHSJacobian = false;
 } // constructor
@@ -88,7 +88,7 @@ void
 pylith::feassemble::IntegratorBoundary::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    pylith::feassemble::Integrator::deallocate();
+    Integrator::deallocate();
 
     delete _boundaryMesh;_boundaryMesh = NULL;
 
@@ -101,7 +101,7 @@ pylith::feassemble::IntegratorBoundary::deallocate(void) {
 void
 pylith::feassemble::IntegratorBoundary::setMarkerLabel(const char* value) {
     if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for boundary condition label.");
+        throw std::runtime_error("Empty string given for boundary condition integrator label.");
     } // if
 
     _boundaryLabel = value;
@@ -250,7 +250,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobianLumpedInv(pylith::topo
                                                                     const PylithReal t,
                                                                     const PylithReal dt,
                                                                     const PylithReal s_tshift,
-                                                                    const pylith::topology::Field& solution){
+                                                                    const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<") empty method");
 

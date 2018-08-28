@@ -20,18 +20,6 @@
  *
  * @brief C++ implementation of Neumann (e.g., traction) boundary condition
  * with time-dependent expression for value.
- */
-
-#if !defined(pylith_bc_neumanntimedependent_hh)
-#define pylith_bc_neumanntimedependent_hh
-
-#include "pylith/bc/BoundaryCondition.hh" // ISA BoundaryCondition
-
-#include "pylith/topology/topologyfwd.hh" // USES Field
-
-// NeumannTimeDependent ----------------------------------------------------
-/** @brief Neumann (e.g., traction) boundary
- * condition with a time-depdnent expression.
  *
  * f(x,t) = f_0(x) + \dot{f}_1(x)*(t-t_1(x)) + f_2(x)*a(t-t_2(x)).
  *
@@ -46,10 +34,18 @@
  *        time history start (scalar) t_2(x)
  *        time history value (scalar) a(t-t_2(x))
  */
+
+#if !defined(pylith_bc_neumanntimedependent_hh)
+#define pylith_bc_neumanntimedependent_hh
+
+#include "pylith/bc/BoundaryCondition.hh" // ISA BoundaryCondition
+
+#include "pylith/topology/topologyfwd.hh" // USES Field
+
 class pylith::bc::NeumannTimeDependent : public pylith::bc::BoundaryCondition {
     friend class TestNeumannTimeDependent; // unit testing
 
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -179,7 +175,7 @@ protected:
      */
     void _updateKernelConstants(const PylithReal dt);
 
-    // PRIVATE MEMBERS ////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
@@ -197,9 +193,7 @@ private:
     NeumannTimeDependent(const NeumannTimeDependent&); ///< Not implemented.
     const NeumannTimeDependent& operator=(const NeumannTimeDependent&); ///< Not implemented.
 
-};
-
-// class NeumannTimeDependent
+}; // class NeumannTimeDependent
 
 #endif // pylith_bc_neumanntimedependent_hh
 

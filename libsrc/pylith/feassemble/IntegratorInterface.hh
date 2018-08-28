@@ -28,6 +28,7 @@
 #include "feassemblefwd.hh" // forward declarations
 
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
+#include "pylith/utils/arrayfwd.hh" // HASA std::vector
 
 class pylith::feassemble::IntegratorInterface : public pylith::feassemble::Integrator {
     friend class TestIntegratorInterface; // unit testing
@@ -303,6 +304,7 @@ private:
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
+    IntegratorInterface(void); ///< Not implemented.
     IntegratorInterface(const IntegratorInterface&); ///< Not implemented.
     const IntegratorInterface& operator=(const IntegratorInterface&); ///< Not implemented.
 
