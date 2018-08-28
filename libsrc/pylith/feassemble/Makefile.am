@@ -24,8 +24,8 @@ subpkginclude_HEADERS = \
 	IntegratorDomain.hh \
 	IntegratorBoundary.hh \
 	IntegratorInterface.hh \
-	IntegratorPointwise.hh \
-	ConstraintPointwise.hh \
+	Constraint.hh \
+	ConstraintBoundary.hh \
 	Observer.hh \
 	Observers.hh \
 	AuxiliaryFactory.hh \

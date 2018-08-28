@@ -25,78 +25,60 @@
 #if !defined(pylith_topology_meshops_hh)
 #define pylith_topology_meshops_hh
 
-// Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
+
+#include "pylith/utils/array.hh" // USES int_array
 
 #include "spatialdata/units/unitsfwd.hh" // forward declarations
 
-// MeshOps --------------------------------------------------------------
-/// Simple operations on a Mesh object.
-class pylith::topology::MeshOps
-{ // MeshOps
-friend class TestMeshOps;   // unit testing
+class pylith::topology::MeshOps { // MeshOps
+    friend class TestMeshOps; // unit testing
 
-// PUBLIC MEMBERS ///////////////////////////////////////////////////////
+    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-/** Nondimensionalize the finite-element mesh.
- *
- * @param mesh Finite-element mesh.
- * @param normalizer Nondimensionalizer.
- */
-static
-void nondimensionalize(Mesh* const mesh,
-                       const spatialdata::units::Nondimensional& normalizer);
+    /** Nondimensionalize the finite-element mesh.
+     *
+     * @param mesh Finite-element mesh.
+     * @param normalizer Nondimensionalizer.
+     */
+    static
+    void nondimensionalize(Mesh* const mesh,
+                           const spatialdata::units::Nondimensional& normalizer);
 
-/** Check topology of mesh.
- *
- * @param mesh Finite-element mesh.
- */
-static
-void checkTopology(const Mesh& mesh);
+    /** Check topology of mesh.
+     *
+     * @param mesh Finite-element mesh.
+     */
+    static
+    void checkTopology(const Mesh& mesh);
 
-/** Determine is mesh contains simplex cells (i.e., line, tri, tet).
- *
- * @returns True if mesh contains simplex cells.
- */
-static
-bool isSimplexMesh(const Mesh& mesh);
+    /** Determine is mesh contains simplex cells (i.e., line, tri, tet).
+     *
+     * @returns True if mesh contains simplex cells.
+     */
+    static
+    bool isSimplexMesh(const Mesh& mesh);
 
-/** Check to make sure material id of every cell matches the id of
- *  one of the materials.
- *
- * @param mesh Finite-element mesh.
- * @param materialIds Array of ids for all materials and cohesive
- * cell interfaces.
- * @param numMaterials Size of array.
- */
-static
-void checkMaterialIds(const Mesh& mesh,
-                      int* const materialIds,
-                      const int numMaterials);
+    /** Check to make sure material id of every cell matches the id of
+     *  one of the materials.
+     *
+     * @param[in] mesh Finite-element mesh.
+     * @param[in] materialIds Array of ids for all materials and interior interfaces.
+     */
+    static
+    void checkMaterialIds(const Mesh& mesh,
+                          pylith::int_array& materialIds);
 
-/** Get number of cells associated with material.
- *
- * @param mesh Finite-element mesh.
- * @param materialId Id of material.
- * @returns Number of cells.
- */
-static
-int numMaterialCells(const Mesh& mesh,
-                     int materialId);
-
-
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-MeshOps(void);   ///< Not Implemented
-MeshOps(const MeshOps&);   ///< Not implemented
-const MeshOps& operator=(const MeshOps&);   ///< Not implemented
-
+    MeshOps(void); ///< Not Implemented
+    MeshOps(const MeshOps&); ///< Not implemented
+    const MeshOps& operator=(const MeshOps&); ///< Not implemented
 
 }; // MeshOps
 
 #endif // pylith_topology_meshops_hh
-
 
 // End of file

@@ -37,14 +37,10 @@ namespace pylith {
         class Constraint; ///< Abstract base class for finite-element constraints.
         class ConstraintBoundary; ///< Abstract base class for finite-element constraints on a boundary.
 
-        class IntegratorPointwise; ///< Integration of terms in governing equation.
-        class ConstraintPointwise; ///< Constrained degrees of freedom.
-
         class AuxiliaryFactory; ///< Creates auxiliary subfields.
 
         class Observer; ///< Observer of subject.
         class Observers; ///< Subject being Observers.
-        class IntegratorObserver; //< Observes integrator.
 
     } // feassemble
 } // pylith

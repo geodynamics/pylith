@@ -34,7 +34,6 @@ lib_LTLIBRARIES = libpylith.la
 libpylith_la_SOURCES = \
 	bc/BoundaryCondition.cc \
 	bc/TimeDependentAuxiliaryFactory.cc \
-	bc/ConstraintBoundary.cc \
 	bc/DirichletTimeDependent.cc \
 	bc/NeumannTimeDependent.cc \
 	bc/AbsorbingDampers.cc \
@@ -52,7 +51,8 @@ libpylith_la_SOURCES = \
 	feassemble/IntegratorDomain.cc \
 	feassemble/IntegratorBoundary.cc \
 	feassemble/IntegratorInterface.cc \
-	feassemble/ConstraintPointwise.cc \
+	feassemble/Constraint.cc \
+	feassemble/ConstraintBoundary.cc \
 	feassemble/Observer.cc \
 	feassemble/Observers.cc \
 	feassemble/AuxiliaryFactory.cc \

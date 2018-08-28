@@ -18,14 +18,16 @@
 
 #include <portinfo>
 
-#include "TimeDependentAuxiliaryFactory.hh"// implementation of object methods
+#include "TimeDependentAuxiliaryFactory.hh" // implementation of object methods
 
-#include "pylith/topology/Field.hh"// HOLDSA AuxiliaryField
-#include "pylith/topology/FieldQuery.hh"// USES FieldQuery
+#include "pylith/topology/Field.hh" // HOLDSA AuxiliaryField
+#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
-#include "spatialdata/units/Nondimensional.hh"// USES Nondimensional
+#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include "pylith/utils/journals.hh"// USES PYLITH_JOURNAL*
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 
 #include <cassert>
 
@@ -51,21 +53,20 @@ public:
         const char* pylith::bc::_TimeDependentAuxiliaryFactory::componentsXYZ[3] = { "_x", "_y", "_z" };
         const char* pylith::bc::_TimeDependentAuxiliaryFactory::componentsTN[2] = { "_tangential", "_normal" };
         const char* pylith::bc::_TimeDependentAuxiliaryFactory::componentsTTN[3] = { "_tangential_1", "_tangential_2", "_normal" };
-    }// bc
-}// pylith
+    } // bc
+} // pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
-// ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::TimeDependentAuxiliaryFactory::TimeDependentAuxiliaryFactory(const ReferenceEnum reference) :
-    _auxComponents(reference){// constructor
+    _auxComponents(reference) { // constructor
     GenericComponent::name("timedependentauxiliaryfactory");
-}// constructor
+} // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::bc::TimeDependentAuxiliaryFactory::~TimeDependentAuxiliaryFactory(void) {}// destructor
+pylith::bc::TimeDependentAuxiliaryFactory::~TimeDependentAuxiliaryFactory(void) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -85,20 +86,20 @@ pylith::bc::TimeDependentAuxiliaryFactory::_setVectorFieldComponentNames(pylith:
             componentNames = _TimeDependentAuxiliaryFactory::componentsTN;
         } else if (3 == _spaceDim) {
             componentNames = _TimeDependentAuxiliaryFactory::componentsTTN;
-        }// if/else
-    }// if/else
+        } // if/else
+    } // if/else
     if (!componentNames) {
         PYLITH_JOURNAL_ERROR("Unknown case for auxiliary component reference ("<<_auxComponents<<") and spatial dimension ("<<_spaceDim<<").");
         throw std::logic_error("Unknown case for auxiliary component reference and spatial dimension.");
-    }// if
+    } // if
 
     assert(size_t(_spaceDim) == description->numComponents);
     for (int i = 0; i < _spaceDim; ++i) {
         description->componentNames[i] = description->label + std::string(componentNames[i]);
-    }// for
+    } // for
 
     PYLITH_METHOD_END;
-}// _setVectorFieldComponentNames
+} // _setVectorFieldComponentNames
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -123,21 +124,21 @@ pylith::bc::TimeDependentAuxiliaryFactory::addInitialAmplitude(void) {
         assert(numComponents == subfieldDescription.componentNames.size());
         subfieldDescription.componentNames[0] = fieldName;
         break;
-    }// SCALAR
+    } // SCALAR
     case pylith::topology::FieldBase::VECTOR: {
         _setVectorFieldComponentNames(&subfieldDescription);
         break;
-    }// VECTOR
+    } // VECTOR
     default:
         PYLITH_JOURNAL_ERROR("Unknown vector field case.");
         throw std::logic_error("Unknown vector field case in TimeDependentAuxiliaryFactory::initialAmplitude().");
-    }// switch
+    } // switch
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
     _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
-}// addInitialAmplitude
+} // addInitialAmplitude
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -161,21 +162,21 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateAmplitude(void) {
         assert(numComponents == subfieldDescription.componentNames.size());
         subfieldDescription.componentNames[0] = fieldName;
         break;
-    }// SCALAR
+    } // SCALAR
     case pylith::topology::FieldBase::VECTOR: {
         _setVectorFieldComponentNames(&subfieldDescription);
         break;
-    }// VECTOR
+    } // VECTOR
     default:
         PYLITH_JOURNAL_ERROR("Unknown vector field case.");
         throw std::logic_error("Unknown vector field case in TimeDependentAuxiliaryFactory::addRateAmplitude().");
-    }// switch
+    } // switch
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
     _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
-}// addRateAmplitude
+} // addRateAmplitude
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -203,7 +204,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateStartTime(void) {
     _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
-}// addRateStartTime
+} // addRateStartTime
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -227,21 +228,21 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryAmplitude(void) {
         assert(numComponents == subfieldDescription.componentNames.size());
         subfieldDescription.componentNames[0] = fieldName;
         break;
-    }// SCALAR
+    } // SCALAR
     case pylith::topology::FieldBase::VECTOR: {
         _setVectorFieldComponentNames(&subfieldDescription);
         break;
-    }// VECTOR
+    } // VECTOR
     default:
         PYLITH_JOURNAL_ERROR("Unknown vector field case.");
         throw std::logic_error("Unknown vector field case in TimeDependentAuxiliaryFactory::addTimeHistoryAmplitude().");
-    }// switch
+    } // switch
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
     _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
-}// addTimeHistoryAmplitude
+} // addTimeHistoryAmplitude
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -269,7 +270,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryStartTime(void) {
     _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
-}// addTimeHistoryStartTime
+} // addTimeHistoryStartTime
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -294,10 +295,61 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryValue(void) {
     subfieldDescription.validator = NULL;
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, NULL);// populated by integrator or constraint at begining of time step.
+    _setSubfieldQueryFn(fieldName, NULL); // populated by integrator or constraint at begining of time step.
 
     PYLITH_METHOD_END;
-}// addTimeHistoryValue
+} // addTimeHistoryValue
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+void
+pylith::bc::TimeDependentAuxiliaryFactory::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                                                                const PylithReal t,
+                                                                const PylithReal timeScale,
+                                                                spatialdata::spatialdb::TimeHistory* const dbTimeHistory) {
+    assert(auxiliaryField);
+    assert(dbTimeHistory);
+
+    PetscErrorCode err = 0;
+
+    PetscSection auxiliaryFieldSection = auxiliaryField->localSection();assert(auxiliaryFieldSection);
+    PetscInt pStart = 0, pEnd = 0;
+    err = PetscSectionGetChart(auxiliaryFieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+    pylith::topology::VecVisitorMesh auxiliaryFieldVisitor(*auxiliaryField);
+    PetscScalar* auxiliaryFieldArray = auxiliaryFieldVisitor.localArray();assert(auxiliaryFieldArray);
+
+    // Compute offset of time history subfields in auxiliary field.
+    const PetscInt i_startTime = auxiliaryField->subfieldInfo("time_history_start_time").index;
+    const PetscInt i_value = auxiliaryField->subfieldInfo("time_history_value").index;
+
+    // Loop over all points in section.
+    for (PetscInt p = pStart; p < pEnd; ++p) {
+        // Skip points without values in section.
+        if (!auxiliaryFieldVisitor.sectionDof(p)) {continue;}
+
+        // Get starting time and compute relative time for point.
+        const PetscInt offStartTime = auxiliaryFieldVisitor.sectionSubfieldOffset(i_startTime, p);
+        const PylithScalar tStart = auxiliaryFieldArray[offStartTime];
+        const PylithScalar tRel = t - tStart;
+
+        // Query time history for value (normalized amplitude).
+        PylithScalar value = 0.0;
+        if (tRel >= 0.0) {
+            PylithScalar tDim = tRel * timeScale;
+            const int err = dbTimeHistory->query(&value, tDim);
+            if (err) {
+                std::ostringstream msg;
+                msg << "Error querying for time '" << tDim << "' in time history database '" << dbTimeHistory->label() << "'.";
+                throw std::runtime_error(msg.str());
+            } // if
+        } // if
+
+        // Update value (normalized amplitude) in auxiliary field.
+        const PetscInt offValue = auxiliaryFieldVisitor.sectionSubfieldOffset(i_value, p);
+        auxiliaryFieldArray[offValue] = value;
+    } // for
+
+} // updateAuilixaryField
 
 
 // End of file

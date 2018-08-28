@@ -24,24 +24,23 @@
 #if !defined(pylith_bc_timedependentauxiliaryfactory_hh)
 #define pylith_bc_timedependentauxiliaryfactory_hh
 
-// Include directives ---------------------------------------------------
-#include "bcfwd.hh"// forward declarations
-#include "pylith/feassemble/AuxiliaryFactory.hh"// ISA AuxiliaryFactory
+#include "bcfwd.hh" // forward declarations
+#include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
 
-// TimeDependentAuxiliaryFactory-----------------------------------------------
-/// @brief C++ helper class for setting up auxiliary fields for time-dependent boundary conditions.
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES TimeHistory
+
 class pylith::bc::TimeDependentAuxiliaryFactory : public pylith::feassemble::AuxiliaryFactory {
-    friend class TestDirichletAuxiliaryFactory;// unit testing
+    friend class TestDirichletAuxiliaryFactory; // unit testing
 
-    // PUBLIC ENUMS ///////////////////////////////////////////////////////
+    // PUBLIC ENUMS ////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     enum ReferenceEnum {
-        XYZ=0,///< Coordinate directions (x, y, z).
-        TANGENTIAL_NORMAL=1,///< Directions tangential and normal to the boundary (tangential_1, tangential_2, normal).
+        XYZ=0, ///< Coordinate directions (x, y, z).
+        TANGENTIAL_NORMAL=1, ///< Directions tangential and normal to the boundary (tangential_1, tangential_2, normal).
     };
 
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /** Default constructor.
@@ -52,9 +51,6 @@ public:
 
     /// Destructor.
     ~TimeDependentAuxiliaryFactory(void);
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
 
     /// Add initial amplitude field to auxiliary fields.
     void addInitialAmplitude(void);
@@ -74,8 +70,21 @@ public:
     /// Add time history value field to auxiliary fields.
     void addTimeHistoryValue(void);
 
-    // PRIVATE MEMBERS ////////////////////////////////////////////////////
-public:
+    /** Update auxiliary field for current time.
+     *
+     * @param[inout] auxiliaryField Auxiliary field to update.
+     * @param[in] t Current time.
+     * @param[in] timeScale Time scale for nondimensionalization.
+     * @param[in] dbTimeHistory Time history database.
+     */
+    static
+    void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                              const PylithReal t,
+                              const PylithReal timeScale,
+                              spatialdata::spatialdb::TimeHistory* const dbTimeHistory);
+
+    // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
+private:
 
     /** Set names of vector field components in auxiliary subfield.
      *
@@ -83,21 +92,19 @@ public:
      */
     void _setVectorFieldComponentNames(pylith::topology::FieldBase::Description* description);
 
-    // PRIVATE MEMBERS ////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    ReferenceEnum _auxComponents;///< Coordinate system reference for field components.
+    ReferenceEnum _auxComponents; ///< Coordinate system reference for field components.
 
-    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    TimeDependentAuxiliaryFactory(const TimeDependentAuxiliaryFactory &);///< Not implemented.
-    const TimeDependentAuxiliaryFactory& operator=(const TimeDependentAuxiliaryFactory&);///< Not implemented
+    TimeDependentAuxiliaryFactory(const TimeDependentAuxiliaryFactory &); ///< Not implemented.
+    const TimeDependentAuxiliaryFactory& operator=(const TimeDependentAuxiliaryFactory&); ///< Not implemented
 
-};
+}; // class TimeDependentAuxiliaryFactory
 
-// class TimeDependentAuxiliaryFactory
-
-#endif// pylith_bc_timedependentauxiliaryfactory_hh
+#endif // pylith_bc_timedependentauxiliaryfactory_hh
 
 // End of file

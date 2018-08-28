@@ -19,33 +19,29 @@
 /**
  * @file libsrc/meshio/OutputConstraint.hh
  *
- * @brief C++ object for managing output of the solution over the domain of a constraint.
+ * @brief C++ object for managing output of the solution over the domain for a constraint.
  */
 
 #if !defined(pylith_meshio_outputconstraint_hh)
 #define pylith_meshio_outputconstraint_hh
 
-// Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
 #include "OutputManager.hh" // ISA OutputManager
 
 #include "pylith/utils/array.hh" // HASA string_vector
 
-// OutputConstraint -----------------------------------------------------
-/** @brief C++ object for managing output of the solution over the domain of a constraint.
- */
 class pylith::meshio::OutputConstraint : public pylith::meshio::OutputManager {
-    friend class TestOutputConstraint;   // unit testing
+    friend class TestOutputConstraint; // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /** Constructor
      *
      * @param[in] constraint Constraint to observe.
      */
-    OutputConstraint(pylith::feassemble::ConstraintPointwise* const constraint);
+    OutputConstraint(pylith::feassemble::Constraint* const constraint);
 
     /// Destructor
     ~OutputConstraint(void);
@@ -59,7 +55,7 @@ public:
      */
     void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Write solution at time step.
@@ -75,21 +71,16 @@ protected:
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
 
-    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::feassemble::ConstraintPointwise* const _constraint;
+    pylith::feassemble::Constraint* const _constraint;
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    static const char* _pyreComponent; ///< Name of Pyre component.
-
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
-    OutputConstraint(const OutputConstraint&);   ///< Not implemented.
-    const OutputConstraint& operator=(const OutputConstraint&);   ///< Not implemented
+    OutputConstraint(const OutputConstraint&); ///< Not implemented.
+    const OutputConstraint& operator=(const OutputConstraint&); ///< Not implemented
 
 }; // OutputConstraint
 

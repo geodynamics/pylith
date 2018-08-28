@@ -23,8 +23,11 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
-#include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
-#include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
+#include "pylith/materials/Material.hh" // USES Material
+#include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
+#include "pylith/bc/BoundaryCondition.hh" // USES BoundaryCondition
+#include "pylith/feassemble/Integrator.hh" // USES Integrator
+//#include "pylith/feassemble/Constraint.hh" // USES Constraint
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
 
@@ -47,20 +50,18 @@ pylith::problems::Problem::Problem() :
     _jacobianLHSLumpedInv(NULL),
     _normalizer(NULL),
     _gravityField(NULL),
-    _integrators(0),
-    _constraints(0),
-    _solverType(LINEAR){ // constructor
+    _solverType(LINEAR) { // constructor
 } // constructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor
 pylith::problems::Problem::~Problem(void) {
     deallocate();
 } // destructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::problems::Problem::deallocate(void) {
@@ -77,94 +78,113 @@ pylith::problems::Problem::deallocate(void) {
 } // deallocate
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Set problem type.
 void
-pylith::problems::Problem::solverType(const SolverTypeEnum value) {
-    PYLITH_COMPONENT_DEBUG("Problem::solverType(value="<<value<<")");
+pylith::problems::Problem::setSolverType(const SolverTypeEnum value) {
+    PYLITH_COMPONENT_DEBUG("Problem::setSolverType(value="<<value<<")");
 
     _solverType = value;
-} // solverType
+} // setSolverType
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Get problem type.
 pylith::problems::Problem::SolverTypeEnum
-pylith::problems::Problem::solverType(void) const {
+pylith::problems::Problem::getSolverType(void) const {
     return _solverType;
-} // solverType
+} // getSolverType
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
 void
-pylith::problems::Problem::normalizer(const spatialdata::units::Nondimensional& dim) {
-    PYLITH_COMPONENT_DEBUG("Problem::normalizer(dim="<<typeid(dim).name()<<")");
+pylith::problems::Problem::setNormalizer(const spatialdata::units::Nondimensional& dim) {
+    PYLITH_COMPONENT_DEBUG("Problem::setNormalizer(dim="<<typeid(dim).name()<<")");
 
     if (!_normalizer) {
         _normalizer = new spatialdata::units::Nondimensional(dim);
     } else {
         *_normalizer = dim;
     } // if/else
-} // normalizer
+} // setNormalizer
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Set gravity field.
 void
-pylith::problems::Problem::gravityField(spatialdata::spatialdb::GravityField* const g) {
-    PYLITH_COMPONENT_DEBUG("Problem::gravityField(g="<<typeid(*g).name()<<")");
+pylith::problems::Problem::setGravityField(spatialdata::spatialdb::GravityField* const g) {
+    PYLITH_COMPONENT_DEBUG("Problem::setGravityField(g="<<typeid(*g).name()<<")");
 
     _gravityField = g;
-} // gravityField
+} // setGravityField
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Set solution field.
 void
-pylith::problems::Problem::solution(pylith::topology::Field* field) {
-    PYLITH_COMPONENT_DEBUG("Problem::solution(field="<<typeid(*field).name()<<")");
+pylith::problems::Problem::setSolution(pylith::topology::Field* field) {
+    PYLITH_COMPONENT_DEBUG("Problem::setSolution(field="<<typeid(*field).name()<<")");
 
     _solution = field;
-} // solution
+} // setSolution
 
 
-// ----------------------------------------------------------------------
-// Set integrators over the mesh.
+// ---------------------------------------------------------------------------------------------------------------------
+// Set materials.
 void
-pylith::problems::Problem::integrators(pylith::feassemble::IntegratorPointwise* integratorArray[],
-                                       const int numIntegrators) {
+pylith::problems::Problem::setMaterials(pylith::materials::Material* materials[],
+                                        const int numMaterials) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::integrators("<<integratorArray<<", numIntegrators="<<numIntegrators<<")");
+    PYLITH_COMPONENT_DEBUG("Problem::setMaterials("<<materials<<", numMaterials="<<numMaterials<<")");
 
-    assert( (!integratorArray && 0 == numIntegrators) || (integratorArray && 0 < numIntegrators) );
+    assert( (!materials && 0 == numMaterials) || (materials && 0 < numMaterials) );
 
-    _integrators.resize(numIntegrators);
-    for (int i = 0; i < numIntegrators; ++i) {
-        _integrators[i] = integratorArray[i];
+    _materials.resize(numMaterials);
+    for (int i = 0; i < numMaterials; ++i) {
+        _materials[i] = materials[i];
     } // for
 
     PYLITH_METHOD_END;
-} // integrators
+} // setMaterials
 
 
-// ----------------------------------------------------------------------
-// Set constraints over the mesh.
+// ---------------------------------------------------------------------------------------------------------------------
+// Set materials.
 void
-pylith::problems::Problem::constraints(pylith::feassemble::ConstraintPointwise* constraintArray[],
-                                       const int numConstraints) {
+pylith::problems::Problem::setBoundaryConditions(pylith::bc::BoundaryCondition* bc[],
+                                                 const int numBC) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::constraints("<<constraintArray<<", numConstraints="<<numConstraints<<")");
+    PYLITH_COMPONENT_DEBUG("Problem::setBoundaryConditions("<<bc<<", numBC="<<numBC<<")");
 
-    assert( (!constraintArray && 0 == numConstraints) || (constraintArray && 0 < numConstraints) );
+    assert( (!bc && 0 == numBC) || (bc && 0 < numBC) );
 
-    _constraints.resize(numConstraints);
-    for (int i = 0; i < numConstraints; ++i) {
-        _constraints[i] = constraintArray[i];
+    _bc.resize(numBC);
+    for (int i = 0; i < numBC; ++i) {
+        _bc[i] = bc[i];
     } // for
 
     PYLITH_METHOD_END;
-} // constraints
+} // setBoundaryConditions
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set materials.
+void
+pylith::problems::Problem::setInterfaces(pylith::faults::FaultCohesive* interfaces[],
+                                         const int numInterfaces) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("Problem::setInterfaces("<<interfaces<<", numInterfaces="<<numInterfaces<<")");
+
+    assert( (!interfaces && 0 == numInterfaces) || (interfaces && 0 < numInterfaces) );
+
+    _interfaces.resize(numInterfaces);
+    for (int i = 0; i < numInterfaces; ++i) {
+        _interfaces[i] = interfaces[i];
+    } // for
+
+    PYLITH_METHOD_END;
+} // setInterfaces
 
 
 // ----------------------------------------------------------------------
@@ -176,17 +196,23 @@ pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh) {
 
     assert(_normalizer);
 
-    const size_t numIntegrators = _integrators.size();
-    for (size_t i = 0; i < numIntegrators; ++i) {
-        assert(_integrators[i]);
-        _integrators[i]->normalizer(*_normalizer);
-        _integrators[i]->gravityField(_gravityField);
+    const size_t numMaterials = _materials.size();
+    for (size_t i = 0; i < numMaterials; ++i) {
+        assert(_materials[i]);
+        _materials[i]->setNormalizer(*_normalizer);
+        _materials[i]->setGravityField(_gravityField);
     } // for
 
-    const size_t numConstraints = _constraints.size();
-    for (size_t i = 0; i < numConstraints; ++i) {
-        assert(_constraints[i]);
-        _constraints[i]->normalizer(*_normalizer);
+    const size_t numInterfaces = _interfaces.size();
+    for (size_t i = 0; i < numInterfaces; ++i) {
+        assert(_interfaces[i]);
+        _interfaces[i]->setNormalizer(*_normalizer);
+    } // for
+
+    const size_t numBC = _bc.size();
+    for (size_t i = 0; i < numBC; ++i) {
+        assert(_bc[i]);
+        _bc[i]->setNormalizer(*_normalizer);
     } // for
 
     PYLITH_METHOD_END;
@@ -196,28 +222,31 @@ pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh) {
 // ----------------------------------------------------------------------
 // Verify configuration.
 void
-pylith::problems::Problem::verifyConfiguration(int* const materialIds,
-                                               const int numMaterials) const {
+pylith::problems::Problem::verifyConfiguration(void) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::verifyConfiguration(materialIds="<<materialIds<<", numMaterials="<<numMaterials<<")");
+    PYLITH_COMPONENT_DEBUG("Problem::verifyConfiguration(void)");
 
     assert(_solution);
 
-    // Check to make sure material-id for each cell matches the id of a material.
-    pylith::topology::MeshOps::checkMaterialIds(_solution->mesh(), materialIds, numMaterials);
-
-    // Check to make sure integrators are compatible with the solution.
-    const size_t numIntegrators = _integrators.size();
-    for (size_t i = 0; i < numIntegrators; ++i) {
-        assert(_integrators[i]);
-        _integrators[i]->verifyConfiguration(*_solution);
+    // Check to make sure materials are compatible with the solution.
+    const size_t numMaterials = _materials.size();
+    for (size_t i = 0; i < numMaterials; ++i) {
+        assert(_materials[i]);
+        _materials[i]->verifyConfiguration(*_solution);
     } // for
 
-    // Check to make sure constraints are compatible with the solution.
-    const size_t numConstraints = _constraints.size();
-    for (size_t i = 0; i < numConstraints; ++i) {
-        assert(_constraints[i]);
-        _constraints[i]->verifyConfiguration(*_solution);
+    // Check to make sure interfaces are compatible with the solution.
+    const size_t numInterfaces = _interfaces.size();
+    for (size_t i = 0; i < numInterfaces; ++i) {
+        assert(_interfaces[i]);
+        _interfaces[i]->verifyConfiguration(*_solution);
+    } // for
+
+    // Check to make sure boundary conditions are compatible with the solution.
+    const size_t numBC = _bc.size();
+    for (size_t i = 0; i < numBC; ++i) {
+        assert(_bc[i]);
+        _bc[i]->verifyConfiguration(*_solution);
     } // for
 
     verifyObservers(*_solution);
@@ -235,6 +264,9 @@ pylith::problems::Problem::initialize(void) {
 
     assert(_solution);
 
+    _createIntegrators();
+    _createConstraints();
+
     const pylith::topology::Mesh& mesh = _solution->mesh();
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
     pylith::topology::CoordsVisitor::optimizeClosure(dmMesh);
@@ -246,12 +278,14 @@ pylith::problems::Problem::initialize(void) {
         _integrators[i]->initialize(*_solution);
     } // for
 
-    // Initialize constraints.
+#if 0 // :TODO: Implement Constraint.
+      // Initialize constraints.
     const size_t numConstraints = _constraints.size();
     for (size_t i = 0; i < numConstraints; ++i) {
         assert(_constraints[i]);
         _constraints[i]->initialize(*_solution);
     } // for
+#endif
 
     // Initialize solution field.
     _solution->allocate();
@@ -290,10 +324,12 @@ pylith::problems::Problem::setSolutionLocal(const PylithReal t,
         _solutionDot->scatterVectorToLocal(solutionDotVec);
     } // if
 
+#if 0 // :TODO: Implement Constraint.
     const size_t numConstraints = _constraints.size();
     for (size_t i = 0; i < numConstraints; ++i) {
         _constraints[i]->setSolution(_solution, t);
     } // for
+#endif
 
     //_solution->view("SOLUTION AFTER SETTING VALUES");
 
@@ -421,15 +457,15 @@ pylith::problems::Problem::computeLHSResidual(PetscVec residualVec,
 // ----------------------------------------------------------------------
 // Compute LHS Jacobian for F(t,s,\dot{s}) for implicit time stepping.
 void
-pylith::problems::Problem::computeLHSJacobianImplicit(PetscMat jacobianMat,
-                                                      PetscMat precondMat,
-                                                      const PylithReal t,
-                                                      const PylithReal dt,
-                                                      const PylithReal s_tshift,
-                                                      PetscVec solutionVec,
-                                                      PetscVec solutionDotVec) {
+pylith::problems::Problem::computeLHSJacobian(PetscMat jacobianMat,
+                                              PetscMat precondMat,
+                                              const PylithReal t,
+                                              const PylithReal dt,
+                                              const PylithReal s_tshift,
+                                              PetscVec solutionVec,
+                                              PetscVec solutionDotVec) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobianImplicit(t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
+    PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobian(t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
 
     assert(jacobianMat);
     assert(precondMat);
@@ -456,7 +492,7 @@ pylith::problems::Problem::computeLHSJacobianImplicit(PetscMat jacobianMat,
 
     // Sum Jacobian contributions across integrators.
     for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, s_tshift, *_solution, *_solutionDot);
+        _integrators[i]->computeLHSJacobian(jacobianMat, precondMat, t, dt, s_tshift, *_solution, *_solutionDot);
     } // for
 
     // Solver handles assembly.
@@ -510,6 +546,110 @@ pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
 
     PYLITH_METHOD_END;
 } // computeLHSJacobianLumpedInv
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Check material and interface ids.
+void
+pylith::problems::Problem::_checkMaterialIds(void) {
+    const size_t numMaterials = _materials.size();
+    const size_t numInterfaces = _interfaces.size();
+
+    pylith::int_array materialIds(numMaterials + numInterfaces);
+    size_t count = 0;
+    for (size_t i = 0; i < numMaterials; ++i) {
+        assert(_materials[i]);
+        materialIds[count++] = _materials[i]->getMaterialId();
+    } // for
+    for (size_t i = 0; i < numInterfaces; ++i) {
+        assert(_interfaces[i]);
+        materialIds[count++] = _interfaces[i]->getInterfaceId();
+    } // for
+
+    pylith::topology::MeshOps::checkMaterialIds(_solution->mesh(), materialIds);
+} // _checkMaterialIds
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Create array of integrators from materials, interfaces, and boundary conditions.
+void
+pylith::problems::Problem::_createIntegrators(void) {
+    PYLITH_METHOD_BEGIN;
+
+    const size_t numMaterials = _materials.size();
+    const size_t numInterfaces = _interfaces.size();
+    const size_t numBC = _bc.size();
+
+    const size_t maxSize = numMaterials + numInterfaces + numBC;
+    _integrators.resize(maxSize);
+    size_t count = 0;
+
+    for (size_t i = 0; i < numMaterials; ++i) {
+        assert(_materials[i]);
+        pylith::feassemble::Integrator* integrator = _materials[i]->createIntegrator(*_solution);
+        assert(count < maxSize);
+        if (integrator) { _integrators[count++] = integrator;}
+    } // for
+
+    for (size_t i = 0; i < numInterfaces; ++i) {
+        assert(_interfaces[i]);
+        pylith::feassemble::Integrator* integrator = _interfaces[i]->createIntegrator(*_solution);
+        assert(count < maxSize);
+        if (integrator) { _integrators[count++] = integrator;}
+    } // for
+
+    // Check to make sure boundary conditions are compatible with the solution.
+    for (size_t i = 0; i < numBC; ++i) {
+        assert(_bc[i]);
+        pylith::feassemble::Integrator* integrator = _bc[i]->createIntegrator(*_solution);
+        assert(count < maxSize);
+        if (integrator) { _integrators[count++] = integrator;}
+    } // for
+
+    _integrators.resize(count);
+
+    PYLITH_METHOD_END;
+} // _createIntegrators
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Create array of constraints from materials, interfaces, and boundary conditions.
+void
+pylith::problems::Problem::_createConstraints(void) {
+    PYLITH_METHOD_BEGIN;
+
+    const size_t numMaterials = _materials.size();
+    const size_t numInterfaces = _interfaces.size();
+    const size_t numBC = _bc.size();
+
+    const size_t maxSize = numMaterials + numInterfaces + numBC;
+    _constraints.resize(maxSize);
+    size_t count = 0;
+
+    for (size_t i = 0; i < numMaterials; ++i) {
+        assert(_materials[i]);
+        pylith::feassemble::Constraint* constraint = _materials[i]->createConstraint(*_solution);
+        assert(count < maxSize);
+        if (constraint) { _constraints[count++] = constraint;}
+    } // for
+
+    for (size_t i = 0; i < numInterfaces; ++i) {
+        assert(_interfaces[i]);
+        pylith::feassemble::Constraint* constraint = _interfaces[i]->createConstraint(*_solution);
+        assert(count < maxSize);
+        if (constraint) { _constraints[count++] = constraint;}
+    } // for
+
+    // Check to make sure boundary conditions are compatible with the solution.
+    for (size_t i = 0; i < numBC; ++i) {
+        assert(_bc[i]);
+        pylith::feassemble::Constraint* constraint = _bc[i]->createConstraint(*_solution);
+        assert(count < maxSize);
+        if (constraint) { _constraints[count++] = constraint;}
+    } // for
+
+    _constraints.resize(count);
+} // _createConstraints
 
 
 // End of file

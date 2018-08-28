@@ -22,30 +22,29 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
+#include "pylith/feassemble/Constraint.hh" // USES Constraint
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
-#include <typeinfo> // USES typeid()
+#include <typeinfo> \
+    // USES typeid()
 
-// ----------------------------------------------------------------------
-const char* pylith::meshio::OutputConstraint::_pyreComponent = "outputconstraint";
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor
-pylith::meshio::OutputConstraint::OutputConstraint(pylith::feassemble::ConstraintPointwise* const constraint) :
-    _constraint(constraint)
-{ // constructor
-    PyreComponent::name(_pyreComponent);
+pylith::meshio::OutputConstraint::OutputConstraint(pylith::feassemble::Constraint* const constraint) :
+    _constraint(constraint) { // constructor
+    PyreComponent::name("outputconstraint");
 } // constructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor
 pylith::meshio::OutputConstraint::~OutputConstraint(void) {
     deallocate();
 } // destructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::meshio::OutputConstraint::deallocate(void) {
@@ -56,7 +55,8 @@ pylith::meshio::OutputConstraint::deallocate(void) {
     PYLITH_METHOD_END;
 } // deallocate
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::meshio::OutputConstraint::verifyConfiguration(const pylith::topology::Field& solution) const {
@@ -65,11 +65,11 @@ pylith::meshio::OutputConstraint::verifyConfiguration(const pylith::topology::Fi
 
     assert(_constraint);
 
-    const pylith::topology::Field* auxField = _constraint->auxField();
+    const pylith::topology::Field* auxiliaryField = _constraint->getAuxiliaryField();
 
     // Info fields should be in constraint's auxiliary field.
     const size_t numInfoFields = _infoFields.size();
-    if (!auxField && (numInfoFields > 0)) {
+    if (!auxiliaryField && (numInfoFields > 0)) {
         std::ostringstream msg;
         msg << "Constraint has no auxiliary field, but output of information fields requested.\n"
             << "Information fields requested:";
@@ -78,11 +78,11 @@ pylith::meshio::OutputConstraint::verifyConfiguration(const pylith::topology::Fi
         } // for
         throw std::runtime_error(msg.str());
     } else if ((numInfoFields > 0) && (std::string("all") != _infoFields[0])) {
-        assert(auxField);
+        assert(auxiliaryField);
         for (size_t i = 0; i < numInfoFields; i++) {
-            if (!auxField->hasSubfield(_infoFields[i].c_str())) {
+            if (!auxiliaryField->hasSubfield(_infoFields[i].c_str())) {
                 std::ostringstream msg;
-                msg << "Could not find field '" << _infoFields[i] << "' in auxiliary field '" << auxField->label()
+                msg << "Could not find field '" << _infoFields[i] << "' in auxiliary field '" << auxiliaryField->label()
                     << "' for constraint output.";
                 throw std::runtime_error(msg.str());
             } // if
@@ -93,12 +93,12 @@ pylith::meshio::OutputConstraint::verifyConfiguration(const pylith::topology::Fi
     const size_t numDataFields = _dataFields.size();
     if ((numDataFields > 0) && (std::string("all") != _dataFields[0])) {
         for (size_t i = 0; i < numDataFields; i++) {
-            if (solution.hasSubfield(_dataFields[i].c_str())) { continue; }
-            if (auxField && auxField->hasSubfield(_dataFields[i].c_str())) { continue; }
+            if (solution.hasSubfield(_dataFields[i].c_str())) { continue;}
+            if (auxiliaryField && auxiliaryField->hasSubfield(_dataFields[i].c_str())) { continue;}
 
             std::ostringstream msg;
             msg << "Could not find field '" << _dataFields[i] << "' in solution '" << solution.label()
-                << "' or auxiliary field '" << (auxField ? auxField->label() : "NULL") << "' for constraint output.";
+                << "' or auxiliary field '" << (auxiliaryField ? auxiliaryField->label() : "NULL") << "' for constraint output.";
             throw std::runtime_error(msg.str());
         } // for
     } // if
@@ -107,31 +107,31 @@ pylith::meshio::OutputConstraint::verifyConfiguration(const pylith::topology::Fi
 } // verifyConfiguration
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Write output for step in solution.
 void
 pylith::meshio::OutputConstraint::_writeInfo(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("OutputConstraint::_writeInfo()");
 
-    if (!_constraint) { PYLITH_METHOD_END; }
+    if (!_constraint) { PYLITH_METHOD_END;}
 
     assert(_constraint);
 
-    const pylith::topology::Field* auxField = _constraint->auxField();
-    if (!auxField) { PYLITH_METHOD_END; }
+    const pylith::topology::Field* auxiliaryField = _constraint->getAuxiliaryField();
+    if (!auxiliaryField) { PYLITH_METHOD_END;}
 
-    const pylith::string_vector& infoNames = _infoNamesExpanded(auxField);
+    const pylith::string_vector& infoNames = _infoNamesExpanded(auxiliaryField);
 
     const bool isInfo = true;
-    const pylith::topology::Mesh& domainMesh = _constraint->domainMesh();
+    const pylith::topology::Mesh& domainMesh = _constraint->getConstraintDomainMesh();
     _open(domainMesh, isInfo);
     _openDataStep(0.0, domainMesh);
 
     const size_t numInfoFields = infoNames.size();
     for (size_t i = 0; i < numInfoFields; i++) {
-        if (auxField->hasSubfield(infoNames[i].c_str())) {
-            pylith::topology::Field* fieldBuffer = _getBuffer(*auxField, infoNames[i].c_str()); assert(fieldBuffer);
+        if (auxiliaryField->hasSubfield(infoNames[i].c_str())) {
+            pylith::topology::Field* fieldBuffer = _getBuffer(*auxiliaryField, infoNames[i].c_str());assert(fieldBuffer);
             _appendField(0.0, fieldBuffer, domainMesh);
         } else {
             std::ostringstream msg;
@@ -147,7 +147,7 @@ pylith::meshio::OutputConstraint::_writeInfo(void) {
 } // _writeInfo
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Write output for step in solution.
 void
 pylith::meshio::OutputConstraint::_writeDataStep(const PylithReal t,
@@ -157,21 +157,21 @@ pylith::meshio::OutputConstraint::_writeDataStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG("OutputConstraint::_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
     assert(_constraint);
-    const pylith::topology::Field* auxField = _constraint->auxField();
+    const pylith::topology::Field* auxiliaryField = _constraint->getAuxiliaryField();
     const pylith::topology::Field* derivedField = NULL;
-    const pylith::topology::Mesh& domainMesh = _constraint->domainMesh();
+    const pylith::topology::Mesh& domainMesh = _constraint->getConstraintDomainMesh();
 
-    const pylith::string_vector& dataNames = _dataNamesExpanded(solution, auxField, derivedField);
+    const pylith::string_vector& dataNames = _dataNamesExpanded(solution, auxiliaryField, derivedField);
 
     _openDataStep(t, domainMesh);
 
     const size_t numDataFields = dataNames.size();
     for (size_t i = 0; i < numDataFields; i++) {
         if (solution.hasSubfield(dataNames[i].c_str())) {
-            pylith::topology::Field* fieldBuffer = _getBuffer(solution, dataNames[i].c_str()); assert(fieldBuffer);
+            pylith::topology::Field* fieldBuffer = _getBuffer(solution, dataNames[i].c_str());assert(fieldBuffer);
             _appendField(t, fieldBuffer, domainMesh);
-        } else if (auxField && auxField->hasSubfield(dataNames[i].c_str())) {
-            pylith::topology::Field* fieldBuffer = _getBuffer(*auxField, dataNames[i].c_str()); assert(fieldBuffer);
+        } else if (auxiliaryField && auxiliaryField->hasSubfield(dataNames[i].c_str())) {
+            pylith::topology::Field* fieldBuffer = _getBuffer(*auxiliaryField, dataNames[i].c_str());assert(fieldBuffer);
             _appendField(t, fieldBuffer, domainMesh);
         } else {
             std::ostringstream msg;
