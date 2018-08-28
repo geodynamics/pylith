@@ -21,15 +21,13 @@
  * @brief C++ helper class for setting up auxiliary subfields for elastic materials.
  */
 
-#if !defined(pylith_materials_auxiliaryfactory_hh)
-#define pylith_materials_auxiliaryfactory_hh
+#if !defined(pylith_materials_auxiliaryfactoryelastic_hh)
+#define pylith_materials_auxiliaryfactoryelastic_hh
 
 #include "materialsfwd.hh" // forward declarations
-#include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
+#include "pylith/materials/AuxiliaryFactoryElasticity.hh" // ISA AuxiliaryFactoryElasticity
 
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
-
-class pylith::materials::AuxiliaryFactoryElastic : public pylith::feassemble::AuxiliaryFactory {
+class pylith::materials::AuxiliaryFactoryElastic : public pylith::materials::AuxiliaryFactoryElasticity {
     friend class TestAuxiliaryFactoryElastic; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,23 +39,11 @@ public:
     /// Destructor.
     ~AuxiliaryFactoryElastic(void);
 
-    /// Add density subfield to auxiliary subfields.
-    void addDensity(void);
-
     /// Add shear modulus subfield to auxiliary subfields.
     void addShearModulus(void);
 
     /// Add bulk subfield to auxiliary subfields.
     void addBulkModulus(void);
-
-    /** Add gravity subfield to auxiliary subfields.
-     *
-     * @param[in] gf Gravity field.
-     */
-    void addGravityField(spatialdata::spatialdb::GravityField* gf);
-
-    /// Add body force subfield to auxiliary subfields.
-    void addBodyForce(void);
 
     /// Add reference stress subfield to auxiliary subfields.
     void addReferenceStress(void);
@@ -73,6 +59,6 @@ private:
 
 }; // class AuxiliaryFactoryElastic
 
-#endif // pylith_materials_auxiliaryfactory_hh
+#endif // pylith_materials_auxiliaryfactoryelastic_hh
 
 // End of file

@@ -1,0 +1,99 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2015 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ----------------------------------------------------------------------
+//
+
+/** @file libsrc/materials/RheologyElasticity.hh
+ *
+ * @brief C++ abstract base class for bulk rheologies associated with the elasticity equation.
+ */
+
+#if !defined(pylith_materials_rheologyelasticity_hh)
+#define pylith_materials_rheologyelasticity_hh
+
+#include "materialsfwd.hh" // forward declarations
+#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
+
+#include "pylith/topology/topologyfwd.hh" // USES Field
+
+#include "spatialdata/geocoords/geocoordsfwd.hh" // USES Coordsys
+
+#include "petscds.h" // USES PetscPointFunc, PetscPointJac
+
+class pylith::materials::RheologyElasticity : public pylith::utils::PyreComponent {
+    friend class TestIsotropicLinearElasticity; // unit testing
+
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Default constructor.
+    RheologyElasticity(void);
+
+    /// Destructor.
+    virtual ~RheologyElasticity(void);
+
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
+
+    /** Get auxiliary factory associated with physics.
+     *
+     * @return Auxiliary factory for physics object.
+     */
+    virtual
+    pylith::materials::AuxiliaryFactoryElasticity* getAuxiliaryFactory(void) = 0;
+
+    /// Add rheology subfields to auxiliary field.
+    virtual
+    void addAuxiliarySubfields(void) = 0;
+
+    /** Get stress kernel for RHS residual, G(t,s).
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return RHS residual kernel for stress.
+     */
+    virtual
+    PetscPointFunc getKernelRHSResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+
+    /** Get elastic constants kernel for RHS Jacobian G(t,s).
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return RHS Jacobian kernel for elastic constants.
+     */
+    virtual
+    PetscPointJac getKernelRHSJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+
+    /** Get stress kernel for derived field.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return Project kernel for computing stress subfield in derived field.
+     */
+    virtual
+    PetscPointFunc getKernelDerivedStress(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+private:
+
+    RheologyElasticity(const RheologyElasticity&); ///< Not implemented.
+    const RheologyElasticity& operator=(const RheologyElasticity&); /// Not implemented.
+
+}; // class RheologyElasticity
+
+#endif // pylith_materials_rheologyelasticity_hh
+
+// End of file

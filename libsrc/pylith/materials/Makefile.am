@@ -21,12 +21,14 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	Material.hh \
-	AuxiliaryFactoryElastic.hh \
-	AuxiliaryFactoryViscoelastic.hh \
+	Elasticity.hh \
+	AuxiliaryFactoryElasticity.hh \
 	IsotropicLinearElasticity.hh \
 	IsotropicLinearMaxwell.hh \
 	IsotropicLinearGenMaxwell.hh \
 	IsotropicLinearIncompElasticity.hh \
+	AuxiliaryFactoryElastic.hh \
+	AuxiliaryFactoryViscoelastic.hh \
 	Query.hh \
 	materialsfwd.hh
 
