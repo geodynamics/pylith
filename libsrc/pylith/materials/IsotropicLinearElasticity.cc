@@ -91,12 +91,15 @@ pylith::materials::IsotropicLinearElasticity::addAuxiliarySubfields(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("addAuxiliarySubfields(void)");
 
-    _auxiliaryFactory->addShearModulus();
-    _auxiliaryFactory->addBulkModulus();
+    // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the point-wise
+    // functions (kernels).
+
     if (_useReferenceState) {
         _auxiliaryFactory->addReferenceStress();
         _auxiliaryFactory->addReferenceStrain();
     } // if
+    _auxiliaryFactory->addShearModulus();
+    _auxiliaryFactory->addBulkModulus();
 
     PYLITH_METHOD_END;
 } // addAuxiliarySubfields

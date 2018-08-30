@@ -59,15 +59,15 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::g1v(const PylithInt dim
     const PylithInt i_bulkModulus = numA-1;
 
     assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
+    assert(numS >= 1);
     assert(numA >= 2);
     assert(sOff);
-    assert(sOff[i_disp]);
+    assert(sOff[i_disp] >= 0);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_shearModulus]);
-    assert(aOff[i_bulkModulus]);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -117,33 +117,33 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::g1v_refstate(const Pyli
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-4;
-    const PylithInt i_bulkModulus = numA-3;
-    const PylithInt i_rstress = numA-2;
-    const PylithInt i_rstrain = numA-1;
+    const PylithInt i_rstress = numA-4;
+    const PylithInt i_rstrain = numA-3;
+    const PylithInt i_shearModulus = numA-2;
+    const PylithInt i_bulkModulus = numA-1;
 
     assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
+    assert(numS >= 1);
     assert(numA >= 4);
     assert(sOff);
-    assert(sOff[i_disp]);
+    assert(sOff[i_disp] >= 0);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_shearModulus]);
-    assert(aOff[i_bulkModulus]);
-    assert(aOff[i_rstress]);
-    assert(aOff[i_rstrain]);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
 
     const PylithInt numAMean = 3; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[3] = { aOff[i_bulkModulus], aOff[i_rstress], aOff[i_rstrain] };
+    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
 
     const PylithInt numADev = 3; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[3] = { aOff[i_shearModulus], aOff[i_rstress], aOff[i_rstrain] };
+    const PylithInt aOffDev[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus] };
 
     PylithScalar stress[4] = {0.0, 0.0, 0.0, 0.0};
     meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
@@ -198,11 +198,11 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jg3vu(const PylithInt d
     const PylithInt i_bulkModulus = numA-1;
 
     assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
+    assert(numS >= 1);
     assert(numA >= 2);
     assert(aOff);
-    assert(aOff[i_shearModulus]);
-    assert(aOff[i_bulkModulus]);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
     assert(a);
     assert(Jg3);
 
@@ -252,52 +252,6 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jg3vu(const PylithInt d
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-/* Jg3_vu entry function for 2-D plane strain isotropic linear elasticity WIT reference stress and reference strain.
- */
-void
-pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jg3vu_refstate(const PylithInt dim,
-                                                                        const PylithInt numS,
-                                                                        const PylithInt numA,
-                                                                        const PylithInt sOff[],
-                                                                        const PylithInt sOff_x[],
-                                                                        const PylithScalar s[],
-                                                                        const PylithScalar s_t[],
-                                                                        const PylithScalar s_x[],
-                                                                        const PylithInt aOff[],
-                                                                        const PylithInt aOff_x[],
-                                                                        const PylithScalar a[],
-                                                                        const PylithScalar a_t[],
-                                                                        const PylithScalar a_x[],
-                                                                        const PylithReal t,
-                                                                        const PylithReal s_tshift,
-                                                                        const PylithScalar x[],
-                                                                        const PylithInt numConstants,
-                                                                        const PylithScalar constants[],
-                                                                        PylithScalar Jg3[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-4;
-    const PylithInt i_bulkModulus = numA-3;
-
-    assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
-    assert(numA >= 4);
-    assert(aOff);
-    assert(aOff[i_shearModulus]);
-    assert(aOff[i_bulkModulus]);
-    assert(a);
-    assert(Jg3);
-
-    const PylithInt numANoState = 2; // Number passed to Jg3vu
-    const PylithInt aOffNoState[2] = { aOff[i_shearModulus], aOff[i_bulkModulus] };
-
-    Jg3vu(_dim, numS, numANoState, NULL, NULL, NULL, NULL, NULL, aOffNoState, NULL, a, NULL, NULL,
-          t, s_tshift, x, numConstants, constants, Jg3);
-} // Jg3vu
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 /* Calculate stress vector for 2-D plane strain isotropic linear
  * elasticity WITHOUT a reference stress and strain.
  *
@@ -335,15 +289,15 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::stress(const PylithInt 
     const PylithInt i_bulkModulus = numA-1;
 
     assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
+    assert(numS >= 1);
     assert(numA >= 3);
     assert(sOff);
-    assert(sOff[i_disp]);
+    assert(sOff[i_disp] >= 0);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_shearModulus]);
-    assert(aOff[i_bulkModulus]);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
     assert(stressVector);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
@@ -408,21 +362,23 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::stress_refstate(const P
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-4;
-    const PylithInt i_bulkModulus = numA-3;
-    const PylithInt i_rstress = numA-2;
-    const PylithInt i_rstrain = numA-1;
+    const PylithInt i_rstress = numA-4;
+    const PylithInt i_rstrain = numA-3;
+    const PylithInt i_shearModulus = numA-2;
+    const PylithInt i_bulkModulus = numA-1;
 
     assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
+    assert(numS >= 1);
     assert(numA >= 4);
     assert(sOff);
-    assert(sOff[i_disp]);
+    assert(sOff[i_disp] >= 0);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_shearModulus]);
-    assert(aOff[i_bulkModulus]);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
     assert(stressVector);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
@@ -430,10 +386,10 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::stress_refstate(const P
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
 
     const PylithInt numAMean = 3; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[3] = { aOff[i_bulkModulus], aOff[i_rstress], aOff[i_rstrain] };
+    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
 
     const PylithInt numADev = 3; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[3] = { aOff[i_shearModulus], aOff[i_rstress], aOff[i_rstrain] };
+    const PylithInt aOffDev[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus] };
 
     PylithScalar stressTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
     meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
@@ -493,12 +449,10 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::meanStress(const Pylith
     assert(_dim == dim);
     assert(1 == numS);
     assert(1 == numA);
-    assert(sOff);
-    assert(sOff[i_disp]);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_bulkModulus]);
+    assert(aOff[i_bulkModulus] >= 0);
     assert(stress);
 
     const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
@@ -548,21 +502,19 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::meanStress_refstate(con
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_bulkModulus = 0;
-    const PylithInt i_rstress = 1;
-    const PylithInt i_rstrain = 2;
+    const PylithInt i_rstress = 0;
+    const PylithInt i_rstrain = 1;
+    const PylithInt i_bulkModulus = 2;
 
     assert(_dim == dim);
     assert(1 == numS);
     assert(3 == numA);
-    assert(sOff);
-    assert(sOff[i_disp]);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_bulkModulus]);
-    assert(aOff[i_rstress]);
-    assert(aOff[i_rstrain]);
+    assert(aOff[i_bulkModulus] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
     assert(stress);
 
     const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
@@ -625,12 +577,10 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::deviatoricStress(const 
     assert(_dim == dim);
     assert(1 == numS);
     assert(1 == numA);
-    assert(sOff);
-    assert(sOff[i_disp]);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_shearModulus]);
+    assert(aOff[i_shearModulus] >= 0);
     assert(stress);
 
     const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
@@ -658,8 +608,8 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::deviatoricStress(const 
  * devStress_ij = stress_ij - meanStress*delta_ij
  *
  * i==j
- * devStress_ii = refstress_ii - meanRefstress + 2*shearModulus*(strain_ii - refstrain_ii) - 2/3*shearModulus*(strain_kk
- *******************************- refstrain_kk)
+ * devStress_ii = refstress_ii - meanRefstress
+ *  + 2*shearModulus*(strain_ii - refstrain_ii) - 2/3*shearModulus*(strain_kk - refstrain_kk)
  *
  * i!=j
  * devStress_ij = refstress_ij + 2*shearModulus*(strain_ij - refstrain_ij)
@@ -689,21 +639,19 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::deviatoricStress_refsta
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = 0;
-    const PylithInt i_rstress = 1;
-    const PylithInt i_rstrain = 2;
+    const PylithInt i_rstress = 0;
+    const PylithInt i_rstrain = 1;
+    const PylithInt i_shearModulus = 2;
 
     assert(_dim == dim);
     assert(1 == numS);
     assert(3 == numA);
-    assert(sOff);
-    assert(sOff[i_disp]);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_shearModulus]);
-    assert(aOff[i_rstress]);
-    assert(aOff[i_rstrain]);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
     assert(stress);
 
     const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
@@ -764,15 +712,15 @@ pylith::fekernels::IsotropicLinearElasticity3D::g1v(const PylithInt dim,
     const PylithInt i_bulkModulus = numA-1;
 
     assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
+    assert(numS >= 1);
     assert(numA >= 2);
     assert(sOff);
-    assert(sOff[i_disp]);
+    assert(sOff[i_disp] >= 0);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_shearModulus]);
-    assert(aOff[i_bulkModulus]);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -822,33 +770,33 @@ pylith::fekernels::IsotropicLinearElasticity3D::g1v_refstate(const PylithInt dim
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-4;
-    const PylithInt i_bulkModulus = numA-3;
-    const PylithInt i_rstress = numA-2;
-    const PylithInt i_rstrain = numA-1;
+    const PylithInt i_rstress = numA-4;
+    const PylithInt i_rstrain = numA-3;
+    const PylithInt i_shearModulus = numA-2;
+    const PylithInt i_bulkModulus = numA-1;
 
     assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
+    assert(numS >= 1);
     assert(numA >= 4);
     assert(sOff);
-    assert(sOff[i_disp]);
+    assert(sOff[i_disp] >= 0);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_shearModulus]);
-    assert(aOff[i_bulkModulus]);
-    assert(aOff[i_rstress]);
-    assert(aOff[i_rstrain]);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
 
     const PylithInt numAMean = 3; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[3] = { aOff[i_bulkModulus], aOff[i_rstress], aOff[i_rstrain] };
+    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
 
     const PylithInt numADev = 3; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[3] = { aOff[i_shearModulus], aOff[i_rstress], aOff[i_rstrain] };
+    const PylithInt aOffDev[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus] };
 
     PylithScalar stress[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
@@ -903,11 +851,10 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jg3vu(const PylithInt dim,
     const PylithInt i_bulkModulus = numA-1;
 
     assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
     assert(numA >= 2);
     assert(aOff);
-    assert(aOff[i_shearModulus]);
-    assert(aOff[i_bulkModulus]);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
     assert(a);
     assert(Jg3);
 
@@ -1032,51 +979,6 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jg3vu(const PylithInt dim,
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Jg3_vu entry function for 3-D isotropic linear elasticity with reference stress and reference strain.
-void
-pylith::fekernels::IsotropicLinearElasticity3D::Jg3vu_refstate(const PylithInt dim,
-                                                               const PylithInt numS,
-                                                               const PylithInt numA,
-                                                               const PylithInt sOff[],
-                                                               const PylithInt sOff_x[],
-                                                               const PylithScalar s[],
-                                                               const PylithScalar s_t[],
-                                                               const PylithScalar s_x[],
-                                                               const PylithInt aOff[],
-                                                               const PylithInt aOff_x[],
-                                                               const PylithScalar a[],
-                                                               const PylithScalar a_t[],
-                                                               const PylithScalar a_x[],
-                                                               const PylithReal t,
-                                                               const PylithReal s_tshift,
-                                                               const PylithScalar x[],
-                                                               const PylithInt numConstants,
-                                                               const PylithScalar constants[],
-                                                               PylithScalar Jg3[]) {
-    const PylithInt _dim = 3;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-4;
-    const PylithInt i_bulkModulus = numA-3;
-
-    assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
-    assert(numA >= 4);
-    assert(aOff);
-    assert(aOff[i_shearModulus]);
-    assert(aOff[i_bulkModulus]);
-    assert(a);
-    assert(Jg3);
-
-    const PylithInt numANoState = 2; // Number passed to Jg3vu
-    const PylithInt aOffNoState[2] = { aOff[i_shearModulus], aOff[i_bulkModulus] };
-
-    Jg3vu(_dim, numS, numANoState, NULL, NULL, NULL, NULL, NULL, aOffNoState, NULL, a, NULL, NULL,
-          t, s_tshift, x, numConstants, constants, Jg3);
-} // Jg3vu
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 /* Calculate stress vector for 3-D isotropic linear
  * elasticity WITHOUT a reference stress and strain.
  *
@@ -1114,15 +1016,15 @@ pylith::fekernels::IsotropicLinearElasticity3D::stress(const PylithInt dim,
     const PylithInt i_bulkModulus = 2;
 
     assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
+    assert(numS >= 1);
     assert(numA >= 3);
     assert(sOff);
-    assert(sOff[i_disp]);
+    assert(sOff[i_disp] >= 0);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_shearModulus]);
-    assert(aOff[i_bulkModulus]);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
     assert(stressVector);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
@@ -1184,21 +1086,23 @@ pylith::fekernels::IsotropicLinearElasticity3D::stress_refstate(const PylithInt 
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-4;
-    const PylithInt i_bulkModulus = numA-3;
-    const PylithInt i_rstress = numA-2;
-    const PylithInt i_rstrain = numA-1;
+    const PylithInt i_rstress = numA-4;
+    const PylithInt i_rstrain = numA-3;
+    const PylithInt i_shearModulus = numA-2;
+    const PylithInt i_bulkModulus = numA-1;
 
     assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
+    assert(numS >= 1);
     assert(numA >= 4);
     assert(sOff);
-    assert(sOff[i_disp]);
+    assert(sOff[i_disp] >= 0);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_shearModulus]);
-    assert(aOff[i_bulkModulus]);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
     assert(stressVector);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
@@ -1263,12 +1167,10 @@ pylith::fekernels::IsotropicLinearElasticity3D::meanStress(const PylithInt dim,
     assert(_dim == dim);
     assert(1 == numS);
     assert(1 == numA);
-    assert(sOff);
-    assert(sOff[i_disp]);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_bulkModulus]);
+    assert(aOff[i_bulkModulus] >= 0);
     assert(stress);
 
     const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
@@ -1318,21 +1220,19 @@ pylith::fekernels::IsotropicLinearElasticity3D::meanStress_refstate(const Pylith
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_bulkModulus = 0;
-    const PylithInt i_rstress = 1;
-    const PylithInt i_rstrain = 2;
+    const PylithInt i_rstress = 0;
+    const PylithInt i_rstrain = 1;
+    const PylithInt i_bulkModulus = 2;
 
     assert(_dim == dim);
     assert(1 == numS);
     assert(3 == numA);
-    assert(sOff);
-    assert(sOff[i_disp]);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_bulkModulus]);
-    assert(aOff[i_rstress]);
-    assert(aOff[i_rstrain]);
+    assert(aOff[i_bulkModulus] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
     assert(stress);
 
     const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
@@ -1395,12 +1295,10 @@ pylith::fekernels::IsotropicLinearElasticity3D::deviatoricStress(const PylithInt
     assert(_dim == dim);
     assert(1 == numS);
     assert(1 == numA);
-    assert(sOff);
-    assert(sOff[i_disp]);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_shearModulus]);
+    assert(aOff[i_shearModulus] >= 0);
     assert(stress);
 
     const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
@@ -1467,21 +1365,19 @@ pylith::fekernels::IsotropicLinearElasticity3D::deviatoricStress_refstate(const 
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = 0;
-    const PylithInt i_rstress = 1;
-    const PylithInt i_rstrain = 2;
+    const PylithInt i_rstress = 0;
+    const PylithInt i_rstrain = 1;
+    const PylithInt i_shearModulus = 2;
 
     assert(_dim == dim);
     assert(1 == numS);
     assert(3 == numA);
-    assert(sOff);
-    assert(sOff[i_disp]);
     assert(sOff_x);
-    assert(sOff_x[i_disp]);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_shearModulus]);
-    assert(aOff[i_rstress]);
-    assert(aOff[i_rstrain]);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
     assert(stress);
 
     const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];

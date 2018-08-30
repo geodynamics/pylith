@@ -93,6 +93,9 @@ pylith::materials::IsotropicLinearMaxwell::addAuxiliarySubfields(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("addAuxiliarySubfields(void)");
 
+    // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the point-wise
+    // functions (kernels).
+
     _auxiliaryFactory->addShearModulus();
     _auxiliaryFactory->addBulkModulus();
     _auxiliaryFactory->addMaxwellTime();

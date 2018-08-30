@@ -26,14 +26,17 @@
  * - 0: density(1)
  * - 1: body_force(2,optional)
  * - 2: gravity_field (2, optional)
- * - 3: shear_modulus(1)
- * - 4: bulk_modulus(1)
- * - 5: reference_stress(optional)
+ * - 3: reference_stress(optional)
  *     2D: 4 components (stress_xx, stress_yy, stress_zz, stress_xy)
  *     3D: 6 components (stress_xx, stress_yy, stress_zz, stress_xy, stress_yz, stress_xz)
- * - 6: reference_strain(optional)
+ * - 4: reference_strain(optional)
  *     2D: 4 components (strain_xx, strain_yy, strain_zz, strain_xy)
  *     3D: 6 components (strain_xx, strain_yy, strain_zz, strain_xy, strain_yz, strain_xz)
+ * - 5: shear_modulus(1)
+ * - 6: bulk_modulus(1)
+ *
+ * The elasticity subfields come first (with required ones before optional ones) followed by the rheology subfields
+ * (optional ones before required ones). The rheology fields have required fields last because we index from the back.
  *
  * \int_V \vec{\phi}_u \cdot \left( \rho \frac{\partial \vec{v}(t)}{\partial t} \right) \, dV =
  *   \int_V \vec{\phi}_u \cdot \vec{f}(t) - \nabla \vec{\phi}_u : \tensor{\sigma}(\vec{u}) \, dV +
@@ -104,7 +107,7 @@ public:
     /** g1 function for isotropic linear elasticity plane strain WITH reference stress and reference strain.
      *
      * Solution fields: [disp(dim), ...]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), refstress(4), refstrain(4)]
+     * Auxiliary fields: [..., refstress(4), refstrain(4), shear_modulus(1), bulk_modulus(1)]
      */
     static
     void g1v_refstate(const PylithInt dim,
@@ -126,11 +129,10 @@ public:
                       const PylithScalar constants[],
                       PylithScalar g1[]);
 
-    /** Jg3_vu entry function for 2-D plane strain isotropic linear elasticity WITHOUT reference stress and reference
-     * strain.
+    /** Jg3_vu entry function for 2-D plane strain isotropic linear elasticity.
      *
      * Solution fields: [...]
-     * Auxiliary fields: [shear_modulus(1), bulk_modulus(1), ...]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
     static
     void Jg3vu(const PylithInt dim,
@@ -152,36 +154,6 @@ public:
                const PylithInt numConstants,
                const PylithScalar constants[],
                PylithScalar Jg3[]);
-
-    /** Jg3_vu entry function for 2-D plane strain isotropic linear elasticity with reference stress and reference
-     * strain.
-     *
-     * This is not a separate implementation of Jg3vu(). We discard the reference stress and reference strain
-     * auxiliary subfields and call Jg3vu().
-     *
-     * Solution fields: [...]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), refstress(4), refstrain(4)]
-     */
-    static
-    void Jg3vu_refstate(const PylithInt dim,
-                        const PylithInt numS,
-                        const PylithInt numA,
-                        const PylithInt sOff[],
-                        const PylithInt sOff_x[],
-                        const PylithScalar s[],
-                        const PylithScalar s_t[],
-                        const PylithScalar s_x[],
-                        const PylithInt aOff[],
-                        const PylithInt aOff_x[],
-                        const PylithScalar a[],
-                        const PylithScalar a_t[],
-                        const PylithScalar a_x[],
-                        const PylithReal t,
-                        const PylithReal s_tshift,
-                        const PylithScalar x[],
-                        const PylithInt numConstants,
-                        const PylithScalar constants[],
-                        PylithScalar Jg3[]);
 
     /** Calculate stress for 2-D plane strain isotropic linear
      * elasticity WITHOUT a reference stress and strain.
@@ -217,7 +189,7 @@ public:
      * Used to output the stress field.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), refstress(4), refstrain(4)]
+     * Auxiliary fields: [..., refstress(4), refstrain(4), shear_modulus(1), bulk_modulus(1)]
      */
     static
     void stress_refstate(const PylithInt dim,
@@ -269,7 +241,7 @@ public:
      * elasticity WITH reference stress and reference strain.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [bulk_modulus(1), reference_stress(4), reference_strain(4)]
+     * Auxiliary fields: [reference_stress(4), reference_strain(4), bulk_modulus(1)]
      */
     static
     void meanStress_refstate(const PylithInt dim,
@@ -321,7 +293,7 @@ public:
      * elasticity WITH reference stress and strain.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [shear_modulus(1), reference_stress(4), reference_strain(4)]
+     * Auxiliary fields: [reference_stress(4), reference_strain(4), shear_modulus(1)]
      */
     static
     void deviatoricStress_refstate(const PylithInt dim,
@@ -354,7 +326,7 @@ public:
     /** g1 function for isotropic linear elasticity in 3D WITHOUT reference stress and reference strain.
      *
      * Solution fields: [disp(dim), ...]
-     * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), ...]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
     static
     void g1v(const PylithInt dim,
@@ -379,7 +351,7 @@ public:
     /** g1 function for isotropic linear elasticity in 3D WITH reference stress and reference strain.
      *
      * Solution fields: [disp(dim), ...]
-     * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), ..., refstress(4), refstrain(4)]
+     * Auxiliary fields: [..., refstress(4), refstrain(4), shear_modulus(1), bulk_modulus(1)]
      */
     static
     void g1v_refstate(const PylithInt dim,
@@ -401,7 +373,7 @@ public:
                       const PylithScalar constants[],
                       PylithScalar g1[]);
 
-    /** Jg3_vu entry function for 3-D isotropic linear elasticity WITHOUT reference stress and reference strain.
+    /** Jg3_vu entry function for 3-D isotropic linear elasticity.
      *
      * Solution fields: [...]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
@@ -426,35 +398,6 @@ public:
                const PylithInt numConstants,
                const PylithScalar constants[],
                PylithScalar Jg3[]);
-
-    /** Jg3_vu entry function for 3-D isotropic linear elasticity with reference stress and reference strain.
-     *
-     * This is not a separate implementation of Jg3vu(). We discard the reference stress and reference strain
-     * auxiliary subfields and call Jg3vu().
-     *
-     * Solution fields: [...]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), refstress(6), refstrain(6)]
-     */
-    static
-    void Jg3vu_refstate(const PylithInt dim,
-                        const PylithInt numS,
-                        const PylithInt numA,
-                        const PylithInt sOff[],
-                        const PylithInt sOff_x[],
-                        const PylithScalar s[],
-                        const PylithScalar s_t[],
-                        const PylithScalar s_x[],
-                        const PylithInt aOff[],
-                        const PylithInt aOff_x[],
-                        const PylithScalar a[],
-                        const PylithScalar a_t[],
-                        const PylithScalar a_x[],
-                        const PylithReal t,
-                        const PylithReal s_tshift,
-                        const PylithScalar x[],
-                        const PylithInt numConstants,
-                        const PylithScalar constants[],
-                        PylithScalar Jg3[]);
 
     /** Calculate stress for 3-D isotropic linear elasticity WITHOUT a reference stress and strain.
      *
@@ -488,7 +431,7 @@ public:
      * Used to output the stress field.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), refstress(6), refstrain(6)]
+     * Auxiliary fields: [..., refstress(6), refstrain(6), shear_modulus(1), bulk_modulus(1)]
      */
     static
     void stress_refstate(const PylithInt dim,
@@ -540,7 +483,7 @@ public:
      * elasticity WITH reference stress and reference strain.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [bulk_modulus(1), reference_stress(6), reference_strain(6)]
+     * Auxiliary fields: [reference_stress(6), reference_strain(6), bulk_modulus(1)]
      */
     static
     void meanStress_refstate(const PylithInt dim,
@@ -592,7 +535,7 @@ public:
      * elasticity WITH reference stress and strain.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [shear_modulus(1), reference_stress(6), reference_strain(6)]
+     * Auxiliary fields: [reference_stress(6), reference_strain(6), shear_modulus(1)]
      */
     static
     void deviatoricStress_refstate(const PylithInt dim,
