@@ -16,11 +16,11 @@
  * ----------------------------------------------------------------------
  */
 
-/** @file libsrc/fekernels/IsotropicLinearMaxwellPlaneStrain.hh
+/** @file libsrc/fekernels/IsotropicLinearMaxwell.hh
  *
  * Kernels for linear Maxwell viscoelastic plane strain.
  *
- * Solution fields: [disp(dim), vel(dim, optional)]
+ * Solution fields: [disp(dim), ...]
  *
  * Isotropic, linear Maxwell viscoelastic plane strain without reference stress/strain.
  * Auxiliary fields:
@@ -330,8 +330,8 @@ public:
      * Used in outputing the stress field.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), maxwell_time(1), total_strain(4), viscous_strain(4),
-     *                    reference_stress(4), reference_strain(4)]
+     * Auxiliary fields: [..., reference_stress(4), reference_strain(4), shear_modulus(1), bulk_modulus(1),
+     *                   maxwell_time(1), total_strain(4), viscous_strain(4)]
      */
     static
     void stress_refstate(const PylithInt dim,
@@ -389,8 +389,8 @@ public:
     /** g1 function for isotropic linear Maxwell 3D WITH reference stress and reference strain.
      *
      * Solution fields: [disp(dim), ...]
-     * Auxiliary fields: [shear_modulus(1), bulk_modulus(1), maxwell_time(1), total_strain(6), viscous_strain(6),
-     *                    reference_stress(6), reference_strain(6)]
+     * Auxiliary fields: [..., reference_stress(6), reference_strain(6), shear_modulus(1), bulk_modulus(1),
+     *                    maxwell_time(1), total_strain(6), viscous_strain(6)]
      */
     static
     void g1v_refstate(const PylithInt dim,
@@ -416,7 +416,7 @@ public:
      * reference strain.
      *
      * Solution fields: [...]
-     * Auxiliary fields: [shear_modulus(1), bulk_modulus(1), maxwell_time(1), total_strain(6), viscous_strain(6)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), maxwell_time(1), total_strain(6), viscous_strain(6)]
      */
     static
     void Jg3vu(const PylithInt dim,
@@ -438,34 +438,6 @@ public:
                const PylithInt numConstants,
                const PylithScalar constants[],
                PylithScalar Jg3[]);
-
-    /** Jg3_vu entry function for 3-D  isotropic linear Maxwell viscoelasticity WITH reference stress and
-     * reference strain.
-     *
-     * Solution fields: [...]
-     * Auxiliary fields: [shear_modulus(1), bulk_modulus(1), maxwell_time(1), total_strain(6), viscous_strain(6),
-     *                    reference_stress(6), reference_strain(6)]
-     */
-    static
-    void Jg3vu_refstate(const PylithInt dim,
-                        const PylithInt numS,
-                        const PylithInt numA,
-                        const PylithInt sOff[],
-                        const PylithInt sOff_x[],
-                        const PylithScalar s[],
-                        const PylithScalar s_t[],
-                        const PylithScalar s_x[],
-                        const PylithInt aOff[],
-                        const PylithInt aOff_x[],
-                        const PylithScalar a[],
-                        const PylithScalar a_t[],
-                        const PylithScalar a_x[],
-                        const PylithReal t,
-                        const PylithReal s_tshift,
-                        const PylithScalar x[],
-                        const PylithInt numConstants,
-                        const PylithScalar constants[],
-                        PylithScalar Jg3[]);
 
     /** Calculate deviatoric stress for 3-D isotropic linear
      * Maxwell viscoelasticity WITHOUT reference stress and strain.
@@ -598,32 +570,6 @@ public:
                              const PylithScalar constants[],
                              PylithScalar visStrainTpdt[]);
 
-    /** Update viscous strain for 3-D isotropic linear Maxwell viscoelasticity WITH reference stress and reference
-     * strain.
-     *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), maxwell_time(1), total_strain(6), viscous_strain(6)]
-     */
-    static
-    void updateViscousStrain_refstate(const PylithInt dim,
-                                      const PylithInt numS,
-                                      const PylithInt numA,
-                                      const PylithInt sOff[],
-                                      const PylithInt sOff_x[],
-                                      const PylithScalar s[],
-                                      const PylithScalar s_t[],
-                                      const PylithScalar s_x[],
-                                      const PylithInt aOff[],
-                                      const PylithInt aOff_x[],
-                                      const PylithScalar a[],
-                                      const PylithScalar a_t[],
-                                      const PylithScalar a_x[],
-                                      const PylithReal t,
-                                      const PylithScalar x[],
-                                      const PylithInt numConstants,
-                                      const PylithScalar constants[],
-                                      PylithScalar visStrainTpdt[]);
-
     /** Calculate stress for 3-D isotropic linear Maxwell WITHOUT a reference stress and strain.
      *
      * Used in outputing the stress field.
@@ -656,8 +602,8 @@ public:
      * Used in outputing the stress field.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), maxwell_time(1), total_strain(6), viscous_strain(6),
-     *                    reference_stress(6), reference_strain(6)]
+     * Auxiliary fields: [..., reference_stress(6), reference_strain(6), shear_modulus(1), bulk_modulus(1),
+     *                   maxwell_time(1), total_strain(6), viscous_strain(6)]
      */
     static
     void stress_refstate(const PylithInt dim,

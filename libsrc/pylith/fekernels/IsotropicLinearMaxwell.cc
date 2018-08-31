@@ -89,13 +89,13 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v(const PylithInt dim,
         aOff[i_shearModulus], aOff[i_maxwellTime], aOff[i_viscousStrain], aOff[i_totalStrain]
     };
 
-    PylithScalar stress[4] = { 0.0, 0.0, 0.0, 0.0 }; // Full stress tensor
+    PylithScalar stressTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
     IsotropicLinearElasticityPlaneStrain::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
-                                                     aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stress);
+                                                     aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                     t, x, numConstants, constants, stress);
+                     t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        g1[i] -= stress[i];
+        g1[i] -= stressTensor[i];
     } // for
 } // g1v
 
@@ -164,13 +164,13 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v_refstate(const PylithI
     const PylithInt aOffDev[6] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_maxwellTime],
                                   aOff[i_viscousStrain], aOff[i_totalStrain] };
 
-    PylithScalar stress[4] = {0.0, 0.0, 0.0, 0.0};
+    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
     IsotropicLinearElasticityPlaneStrain::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
-                                                              aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stress);
+                                                              aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                              t, x, numConstants, constants, stress);
+                              t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        g1[i] -= stress[i];
+        g1[i] -= stressTensor[i];
     } // for
 } // g1v_refstate
 
@@ -545,7 +545,7 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::computeViscousStrain(const
 /* Update total strain for a Maxwell viscoelastic material.
  *
  * IMPORTANT: The order of the auxiliary field and solution field are reversed compared to the residual and Jacobian
- ******************kernels.
+ * kernels.
  *
  */
 void
@@ -694,6 +694,166 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain(const 
 } // updateViscousStrain
 
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Calculate stress for 2-D plane strain isotropic linear Maxwell WITHOUT a reference stress and strain.
+void
+pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::stress(const PylithInt dim,
+                                                             const PylithInt numS,
+                                                             const PylithInt numA,
+                                                             const PylithInt sOff[],
+                                                             const PylithInt sOff_x[],
+                                                             const PylithScalar s[],
+                                                             const PylithScalar s_t[],
+                                                             const PylithScalar s_x[],
+                                                             const PylithInt aOff[],
+                                                             const PylithInt aOff_x[],
+                                                             const PylithScalar a[],
+                                                             const PylithScalar a_t[],
+                                                             const PylithScalar a_x[],
+                                                             const PylithReal t,
+                                                             const PylithScalar x[],
+                                                             const PylithInt numConstants,
+                                                             const PylithScalar constants[],
+                                                             PylithScalar stressVector[]) {
+    const PylithInt _dim = 2;
+
+    // Incoming solution fields.
+    const PylithInt i_disp = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_shearModulus = numA-5;
+    const PylithInt i_bulkModulus = numA-4;
+    const PylithInt i_maxwellTime = numA-3;
+    const PylithInt i_viscousStrain = numA-2;
+    const PylithInt i_totalStrain = numA-1;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(numA >= 5);
+    assert(sOff);
+    assert(sOff[i_disp] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
+    assert(aOff);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
+    assert(aOff[i_maxwellTime] >= 0);
+    assert(aOff[i_viscousStrain] >= 0);
+    assert(aOff[i_totalStrain] >= 0);
+
+    const PylithInt _numS = 1; // Number passed on to stress kernels.
+    const PylithInt sOffDisp[1] = { sOff[i_disp] };
+    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+
+    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
+    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
+
+    const PylithInt numADev = 4; // Number passed to deviatoric stress kernel.
+    const PylithInt aOffDev[4] = {
+        aOff[i_shearModulus], aOff[i_maxwellTime], aOff[i_viscousStrain], aOff[i_totalStrain]
+    };
+
+    PylithScalar stressTensor[4] = { 0.0, 0.0, 0.0, 0.0 }; // Full stress tensor
+    IsotropicLinearElasticityPlaneStrain::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
+                                                     aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
+    deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+                     t, x, numConstants, constants, stressTensor);
+
+    const PylithScalar bulkModulus = aOff[i_bulkModulus];
+    const PylithScalar shearModulus = aOff[i_shearModulus];
+    const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
+    const PylithScalar stress_zz = 0.5*lambda/(lambda+shearModulus) * (stressTensor[0*_dim+0] + stressTensor[1*_dim+1]);
+
+    stressVector[0] = stressTensor[0*_dim+0]; // stress_xx
+    stressVector[1] = stressTensor[1*_dim+1]; // stress_yy
+    stressVector[2] = stress_zz;
+    stressVector[3] = stressTensor[0*_dim+1]; // stress_xy
+} // stress
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Calculate stress for 2-D plane strain isotropic linear Maxwell WITH a reference stress/strain.
+void
+pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::stress_refstate(const PylithInt dim,
+                                                                      const PylithInt numS,
+                                                                      const PylithInt numA,
+                                                                      const PylithInt sOff[],
+                                                                      const PylithInt sOff_x[],
+                                                                      const PylithScalar s[],
+                                                                      const PylithScalar s_t[],
+                                                                      const PylithScalar s_x[],
+                                                                      const PylithInt aOff[],
+                                                                      const PylithInt aOff_x[],
+                                                                      const PylithScalar a[],
+                                                                      const PylithScalar a_t[],
+                                                                      const PylithScalar a_x[],
+                                                                      const PylithReal t,
+                                                                      const PylithScalar x[],
+                                                                      const PylithInt numConstants,
+                                                                      const PylithScalar constants[],
+                                                                      PylithScalar stressVector[]) {
+    const PylithInt _dim = 2;
+
+    // Incoming solution fields.
+    const PylithInt i_disp = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_rstress = numA-7;
+    const PylithInt i_rstrain = numA-6;
+    const PylithInt i_shearModulus = numA-5;
+    const PylithInt i_bulkModulus = numA-4;
+    const PylithInt i_maxwellTime = numA-3;
+    const PylithInt i_viscousStrain = numA-2;
+    const PylithInt i_totalStrain = numA-1;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(numA >= 7);
+    assert(sOff);
+    assert(sOff[i_disp] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
+    assert(aOff);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
+    assert(aOff[i_maxwellTime] >= 0);
+    assert(aOff[i_viscousStrain] >= 0);
+    assert(aOff[i_totalStrain] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
+
+    const PylithInt _numS = 1; // Number passed on to stress kernels.
+    const PylithInt sOffDisp[1] = { sOff[i_disp] };
+    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+
+    const PylithInt numAMean = 3; // Pass bulk modulus, reference stress, and reference strain.
+    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
+
+    const PylithInt numADev = 6; // Pass shear modulus, Maxwell time, viscous strain, total strain,
+                                 // reference stress, and reference strain.
+    const PylithInt aOffDev[6] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_maxwellTime],
+                                  aOff[i_viscousStrain], aOff[i_totalStrain] };
+
+    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
+    IsotropicLinearElasticityPlaneStrain::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
+                                                              aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
+    deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+                              t, x, numConstants, constants, stressTensor);
+
+    const PylithScalar bulkModulus = aOff[i_bulkModulus];
+    const PylithScalar shearModulus = aOff[i_shearModulus];
+    const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
+    const PylithScalar* rstress = &a[aOff[i_rstress]];
+    const PylithScalar stress_zz = rstress[2] +
+                                   0.5*lambda/(lambda+shearModulus) * (stressTensor[0*_dim+0]-rstress[0] + stressTensor[1*_dim+1]-rstress[1]);
+
+    stressVector[0] = stressTensor[0*_dim+0]; // stress_xx
+    stressVector[1] = stressTensor[1*_dim+1]; // stress_yy
+    stressVector[2] = stress_zz;
+    stressVector[3] = stressTensor[0*_dim+1]; // stress_xy
+} // stress
+
+
 // =====================================================================================================================
 // Kernels for isotropic, linear Maxwell viscoelastic 3D material.
 // =====================================================================================================================
@@ -757,176 +917,16 @@ pylith::fekernels::IsotropicLinearMaxwell3D::g1v(const PylithInt dim,
         aOff[i_shearModulus], aOff[i_maxwellTime], aOff[i_viscousStrain], aOff[i_totalStrain]
     };
 
-    PylithScalar stress[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // Full stress tensor
+    PylithScalar stressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     IsotropicLinearElasticity3D::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
-                                            aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stress);
-    deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                     t, x, numConstants, constants, stress);
-
-    for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        g1[i] -= stress[i];
-    } // for
-} // g1v
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Calculate stress for 2-D plane strain isotropic linear Maxwell WITHOUT a reference stress and strain.
-void
-pylith::fekernels::IsotropicLinearMaxwell3D::stress(const PylithInt dim,
-                                                    const PylithInt numS,
-                                                    const PylithInt numA,
-                                                    const PylithInt sOff[],
-                                                    const PylithInt sOff_x[],
-                                                    const PylithScalar s[],
-                                                    const PylithScalar s_t[],
-                                                    const PylithScalar s_x[],
-                                                    const PylithInt aOff[],
-                                                    const PylithInt aOff_x[],
-                                                    const PylithScalar a[],
-                                                    const PylithScalar a_t[],
-                                                    const PylithScalar a_x[],
-                                                    const PylithReal t,
-                                                    const PylithScalar x[],
-                                                    const PylithInt numConstants,
-                                                    const PylithScalar constants[],
-                                                    PylithScalar stressVector[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-5;
-    const PylithInt i_bulkModulus = numA-4;
-    const PylithInt i_maxwellTime = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_totalStrain = numA-1;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 5);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff[i_maxwellTime] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_totalStrain] >= 0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 4; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[4] = {
-        aOff[i_shearModulus], aOff[i_maxwellTime], aOff[i_viscousStrain], aOff[i_totalStrain]
-    };
-
-    PylithScalar stressTensor[4] = { 0.0, 0.0, 0.0, 0.0 }; // Full stress tensor
-    IsotropicLinearElasticityPlaneStrain::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
-                                                     aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
+                                            aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, stressTensor);
 
-    const PylithScalar bulkModulus = aOff[i_bulkModulus];
-    const PylithScalar shearModulus = aOff[i_shearModulus];
-    const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
-    const PylithScalar stress_zz = 0.5*lambda/(lambda+shearModulus) * (stressTensor[0] + stressTensor[1]);
-
-    stressVector[0] = stressTensor[0]; // stress_xx
-    stressVector[1] = stressTensor[1]; // stress_yy
-    stressVector[2] = stress_zz;
-    stressVector[3] = stressTensor[3]; // stress_xy
-} // stress
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Calculate stress for 2-D plane strain isotropic linear Maxwell WITH a reference stress/strain.
-void
-pylith::fekernels::IsotropicLinearMaxwell3D::stress_refstate(const PylithInt dim,
-                                                             const PylithInt numS,
-                                                             const PylithInt numA,
-                                                             const PylithInt sOff[],
-                                                             const PylithInt sOff_x[],
-                                                             const PylithScalar s[],
-                                                             const PylithScalar s_t[],
-                                                             const PylithScalar s_x[],
-                                                             const PylithInt aOff[],
-                                                             const PylithInt aOff_x[],
-                                                             const PylithScalar a[],
-                                                             const PylithScalar a_t[],
-                                                             const PylithScalar a_x[],
-                                                             const PylithReal t,
-                                                             const PylithScalar x[],
-                                                             const PylithInt numConstants,
-                                                             const PylithScalar constants[],
-                                                             PylithScalar stressVector[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_rstress = numA-7;
-    const PylithInt i_rstrain = numA-6;
-    const PylithInt i_shearModulus = numA-5;
-    const PylithInt i_bulkModulus = numA-4;
-    const PylithInt i_maxwellTime = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_totalStrain = numA-1;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 7);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff[i_maxwellTime] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_totalStrain] >= 0);
-    assert(aOff[i_rstress] >= 0);
-    assert(aOff[i_rstrain] >= 0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 3; // Pass bulk modulus, reference stress, and reference strain.
-    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 6; // Pass shear modulus, Maxwell time, viscous strain, total strain,
-                                 // reference stress, and reference strain.
-    const PylithInt aOffDev[6] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_maxwellTime],
-                                  aOff[i_viscousStrain], aOff[i_totalStrain] };
-
-    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
-    IsotropicLinearElasticityPlaneStrain::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
-                                                              aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
-    deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                              t, x, numConstants, constants, stressTensor);
-
-    const PylithScalar bulkModulus = aOff[i_bulkModulus];
-    const PylithScalar shearModulus = aOff[i_shearModulus];
-    const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
-    const PylithScalar* rstress = &a[aOff[i_rstress]];
-    const PylithScalar stress_zz = rstress[2] +
-                                   0.5*lambda/(lambda+shearModulus) * (stressTensor[0]-rstress[0] + stressTensor[1]-rstress[1]);
-
-    stressVector[0] = stressTensor[0]; // stress_xx
-    stressVector[1] = stressTensor[1]; // stress_yy
-    stressVector[2] = stress_zz;
-    stressVector[3] = stressTensor[3]; // stress_xy
-} // stress
+    for (PylithInt i = 0; i < _dim*_dim; ++i) {
+        g1[i] -= stressTensor[i];
+    } // for
+} // g1v
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -993,14 +993,14 @@ pylith::fekernels::IsotropicLinearMaxwell3D::g1v_refstate(const PylithInt dim,
     const PylithInt aOffDev[6] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_maxwellTime],
                                    aOff[i_viscousStrain], aOff[i_totalStrain] };
 
-    PylithScalar stress[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    PylithScalar stressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     IsotropicLinearElasticity3D::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
-                                                     aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stress);
+                                                     aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                              t, x, numConstants, constants, stress);
+                              t, x, numConstants, constants, stressTensor);
 
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        g1[i] -= stress[i];
+        g1[i] -= stressTensor[i];
     } // for
 } // g1v_refstate
 
@@ -1625,6 +1625,156 @@ pylith::fekernels::IsotropicLinearMaxwell3D::updateViscousStrain(const PylithInt
                          t, x, numConstants, constants, visStrainTpdt);
 
 } // updateViscousStrain
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Calculate stress for 2-D plane strain isotropic linear Maxwell WITHOUT a reference stress and strain.
+void
+pylith::fekernels::IsotropicLinearMaxwell3D::stress(const PylithInt dim,
+                                                    const PylithInt numS,
+                                                    const PylithInt numA,
+                                                    const PylithInt sOff[],
+                                                    const PylithInt sOff_x[],
+                                                    const PylithScalar s[],
+                                                    const PylithScalar s_t[],
+                                                    const PylithScalar s_x[],
+                                                    const PylithInt aOff[],
+                                                    const PylithInt aOff_x[],
+                                                    const PylithScalar a[],
+                                                    const PylithScalar a_t[],
+                                                    const PylithScalar a_x[],
+                                                    const PylithReal t,
+                                                    const PylithScalar x[],
+                                                    const PylithInt numConstants,
+                                                    const PylithScalar constants[],
+                                                    PylithScalar stressVector[]) {
+    const PylithInt _dim = 3;
+
+    // Incoming solution fields.
+    const PylithInt i_disp = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_shearModulus = numA-5;
+    const PylithInt i_bulkModulus = numA-4;
+    const PylithInt i_maxwellTime = numA-3;
+    const PylithInt i_viscousStrain = numA-2;
+    const PylithInt i_totalStrain = numA-1;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(numA >= 5);
+    assert(sOff);
+    assert(sOff[i_disp] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
+    assert(aOff);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
+    assert(aOff[i_maxwellTime] >= 0);
+    assert(aOff[i_viscousStrain] >= 0);
+    assert(aOff[i_totalStrain] >= 0);
+
+    const PylithInt _numS = 1; // Number passed on to stress kernels.
+    const PylithInt sOffDisp[1] = { sOff[i_disp] };
+    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+
+    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
+    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
+
+    const PylithInt numADev = 4; // Number passed to deviatoric stress kernel.
+    const PylithInt aOffDev[4] = {
+        aOff[i_shearModulus], aOff[i_maxwellTime], aOff[i_viscousStrain], aOff[i_totalStrain]
+    };
+
+    PylithScalar stressTensor[4] = { 0.0, 0.0, 0.0, 0.0 }; // Full stress tensor
+    IsotropicLinearElasticity3D::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
+                                            aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
+    deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+                     t, x, numConstants, constants, stressTensor);
+    stressVector[0] = stressTensor[0*_dim+0]; // stress_xx
+    stressVector[1] = stressTensor[1*_dim+1]; // stress_yy
+    stressVector[2] = stressTensor[2*_dim+2]; // stress_zz
+    stressVector[3] = stressTensor[0*_dim+1]; // stress_xy
+    stressVector[4] = stressTensor[1*_dim+2]; // stress_yz
+    stressVector[5] = stressTensor[0*_dim+2]; // stress_xz
+} // stress
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Calculate stress for 2-D plane strain isotropic linear Maxwell WITH a reference stress/strain.
+void
+pylith::fekernels::IsotropicLinearMaxwell3D::stress_refstate(const PylithInt dim,
+                                                             const PylithInt numS,
+                                                             const PylithInt numA,
+                                                             const PylithInt sOff[],
+                                                             const PylithInt sOff_x[],
+                                                             const PylithScalar s[],
+                                                             const PylithScalar s_t[],
+                                                             const PylithScalar s_x[],
+                                                             const PylithInt aOff[],
+                                                             const PylithInt aOff_x[],
+                                                             const PylithScalar a[],
+                                                             const PylithScalar a_t[],
+                                                             const PylithScalar a_x[],
+                                                             const PylithReal t,
+                                                             const PylithScalar x[],
+                                                             const PylithInt numConstants,
+                                                             const PylithScalar constants[],
+                                                             PylithScalar stressVector[]) {
+    const PylithInt _dim = 3;
+
+    // Incoming solution fields.
+    const PylithInt i_disp = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_rstress = numA-7;
+    const PylithInt i_rstrain = numA-6;
+    const PylithInt i_shearModulus = numA-5;
+    const PylithInt i_bulkModulus = numA-4;
+    const PylithInt i_maxwellTime = numA-3;
+    const PylithInt i_viscousStrain = numA-2;
+    const PylithInt i_totalStrain = numA-1;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(numA >= 7);
+    assert(sOff);
+    assert(sOff[i_disp] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
+    assert(aOff);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
+    assert(aOff[i_maxwellTime] >= 0);
+    assert(aOff[i_viscousStrain] >= 0);
+    assert(aOff[i_totalStrain] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
+
+    const PylithInt _numS = 1; // Number passed on to stress kernels.
+    const PylithInt sOffDisp[1] = { sOff[i_disp] };
+    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+
+    const PylithInt numAMean = 3; // Pass bulk modulus, reference stress, and reference strain.
+    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
+
+    const PylithInt numADev = 6; // Pass shear modulus, Maxwell time, viscous strain, total strain,
+                                 // reference stress, and reference strain.
+    const PylithInt aOffDev[6] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_maxwellTime],
+                                  aOff[i_viscousStrain], aOff[i_totalStrain] };
+
+    PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+    IsotropicLinearElasticity3D::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
+                                                     aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
+    deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+                              t, x, numConstants, constants, stressTensor);
+    stressVector[0] = stressTensor[0*_dim+0]; // stress_xx
+    stressVector[1] = stressTensor[1*_dim+1]; // stress_yy
+    stressVector[2] = stressTensor[2*_dim+2]; // stress_zz
+    stressVector[3] = stressTensor[0*_dim+1]; // stress_xy
+    stressVector[4] = stressTensor[1*_dim+2]; // stress_yz
+    stressVector[5] = stressTensor[0*_dim+2]; // stress_xz
+} // stress
 
 
 // End of file
