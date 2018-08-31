@@ -138,10 +138,8 @@ pylith::materials::IsotropicLinearMaxwell::getKernelRHSJacobianElasticConstants(
 
     const int spaceDim = coordsys->spaceDim();
     PetscPointJac Jg3uu =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::Jg3vu :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::Jg3vu :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::Jg3vu_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::Jg3vu_refstate :
+        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::Jg3vu :
+        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::Jg3vu :
         NULL;
 
     PYLITH_METHOD_RETURN(Jg3uu);
@@ -193,12 +191,14 @@ pylith::materials::IsotropicLinearMaxwell::addKernelsUpdateStateVars(std::vector
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<")");
 
     const int spaceDim = coordsys->spaceDim();
-    const PetscPointFunc funcViscousStrain = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::updateViscousStrain :
-                                             (2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain :
-                                             NULL;
-    const PetscPointFunc funcTotalStrain = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::updateTotalStrain :
-                                           (2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain :
-                                           NULL;
+    const PetscPointFunc funcViscousStrain =
+        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::updateViscousStrain :
+        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain :
+        NULL;
+    const PetscPointFunc funcTotalStrain =
+        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::updateTotalStrain :
+        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain :
+        NULL;
 
     assert(kernels);
     size_t prevNumKernels = kernels->size();

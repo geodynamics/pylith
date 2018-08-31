@@ -133,10 +133,8 @@ pylith::materials::IsotropicLinearElasticity::getKernelRHSJacobianElasticConstan
 
     const int spaceDim = coordsys->spaceDim();
     PetscPointJac Jg3uu =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::Jg3vu :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jg3vu :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::Jg3vu_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jg3vu_refstate :
+        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::Jg3vu :
+        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jg3vu :
         NULL;
 
     PYLITH_METHOD_RETURN(Jg3uu);
