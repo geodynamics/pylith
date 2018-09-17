@@ -899,9 +899,7 @@ With a differential algebraic equation, we only need to specify the Jacobians fo
 \end{align}
 
 % ----------------------------------------------------------------------
-\section{Incompressible Isotropic Elasticity with Infinitesimal Strain (Bathe) and No Faults}
-
-\todo{charles}{This section needs to be updated. Break up formulation into cases without inertial terms (solution includes displacement and pressure fields) and with inertial terms (solution includes displacement, velocity, and pressure fields).}
+\section{Incompressible Isotropic Elasticity with Infinitesimal Strain (Bathe) and No Faults or Inertia}
 
 Building from the elasticity equation
 (equations~\ref{eqn:velocity:strong:form}
@@ -910,17 +908,47 @@ incompressible material. As the bulk modulus ($K$) approaches
 infinity, the volumetric strain ($\Tr(\epsilon)$) approaches zero and
 the pressure remains finite, $p = -K \Tr(\epsilon)$. We consider
 pressure $p$ as an independent variable and decompose the stress into the
-pressure and deviatoric components. This leads to the following set of
-governing equations:
+pressure and deviatoric components. As a result, we write the stress tensor in terms of both the displacement and pressure fields,
+\begin{equation}
+  \tensor{\sigma}(\vec{u},p) = \tensor{\sigma}^\mathit{dev}(\vec{u}) - p\tensor{I}.
+\end{equation}
+
+\subsection{Notation}
+\begin{itemize}
+\item Unknowns
+  \begin{description}
+  \item[$\vec{u}$] Displacement field
+  \item[$p$] Pressure field (positive pressure corresponds to negative stress)
+  \end{description}
+\item Derived quantities
+  \begin{description}
+    \item[$\tensor{\sigma}$] Stress tensor
+    \item[$\tensor{\epsilon}$] Strain tensor
+  \end{description}
+\item Constitutive parameters
+  \begin{description}
+  \item[$\mu$] Shear modulus
+  \item[$K$] Bulk modulus
+  \item[$\rho$] Density
+  \end{description}
+\item Source terms
+  \begin{description}
+    \item[$\vec{f}$] Body force per unit volume, for example $\rho \vec{g}$
+  \end{description}
+\end{itemize}
+
+
+\subsection{Implicit Time Stepping}
+
+We only consider the case of an incompressible material while
+neglecting inertia. The time dependence only arises from
+history-dependent constitutive equations and boundary conditions. We
+have
 \begin{gather}
   % Solution
-  \vec{s}^T = \left( \vec{u} \ \vec{v} \ p \right)^T, \\
-  % Displacement
-  \frac{\partial\vec{u}(t)}{\partial t} = \vec{v}(t), \\
-  % Velocity
-  \rho \frac{\partial\vec{v}(t)}{\partial t} = \vec{f}(t) + \tensor{\nabla} \cdot 
-\tensor{\sigma}(\vec{u}) 
-\text{ in }\Omega, \\
+  \vec{s}^T = \left( \vec{u} \quad \ p \right)^T, \\
+  % Elasticity
+  \vec{0} = \vec{f}(t) + \tensor{\nabla} \cdot \left(\tensor{\sigma}^\mathit{dev}(\vec{u}) - p\tensor{I}\right) \text{ in }\Omega, \\
   % Pressure
   0 = \vec{\nabla} \cdot \vec{u} + \frac{p}{K}, \\
   % Neumann
@@ -929,158 +957,53 @@ governing equations:
   \vec{u} = \vec{u}_0 \text{ on }\Gamma_u.
 \end{gather}
 
-Using trial functions $\trialvec[u]$, $\trialvec[v]$, and $\trialscalar[p]$ and
+Using trial functions $\trialvec[u]$ and $\trialscalar[p]$ and
 incorporating the Neumann boundary conditions, we write the weak form
 as
 \begin{gather}
   % Displacement
-  \int_\Omega \trialvec[u] \cdot \left( \frac{\partial \vec{u}(t)}{\partial t} \right) \, 
-d\Omega = 
-  \int_\Omega \trialvec[u] \cdot \vec{v}(t) \, d\Omega, \\
-  % Velocity
-  \int_\Omega \trialvec[v] \cdot \left( \rho \frac{\partial \vec{v}(t)}{\partial t} \right) \, 
-d\Omega = 
-  \int_\Omega \trialvec[v] \cdot \vec{f}(t) + \nabla \trialvec[v] : \left(p\tensor{I}-
-\tensor{\sigma}^\mathit{dev}
-(\vec{u})\right)\, d\Omega + \int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(t) \, d\Gamma, \
-\
+  0 = 
+  \int_\Omega \trialvec[u] \cdot \vec{f}(t) + \nabla \trialvec[u] : \left(-\tensor{\sigma}^\mathit{dev}(\vec{u}) + p\tensor{I}
+  \right)\, d\Omega + \int_{\Gamma_\tau} \trialvec[u] \cdot \vec{\tau}(t) \, d\Gamma, \\
   % Pressure
   0 = \int_\Omega \trialscalar[p] \cdot \left(\vec{\nabla} \cdot \vec{u} + \frac{p}{K} \right) 
 \, d\Omega.
 \end{gather}
 
-\subsection{Implicit Time Stepping}
-The resulting system of equations to solve  is
+Identifying $G(t,s)$, we have
 \begin{gather}
-  \label{eqn:imcompressible:elasticity:velocity}
-  \int_\Omega \trialvec[u] \cdot \eqnannotate{\left( \frac{\partial \vec{u}(t)}{\partial t} 
-\right)}{f_0^u} \, 
-d\Omega = 
-  \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{v}(t)}{g_0^u} \, d\Omega, \\
+  \label{eqn:incompressible:elasticity:displacement}
+  0 = \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{f}(t)}{g_0^u} + \nabla \trialvec[u] :
+  \eqnannotate{\left(-\tensor{\sigma}^\mathit{dev}(\vec{u}) + p\tensor{I}\right)}{g_1^u}  \, d\Omega
+  + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(t)}{g_0^u} \, d\Gamma, \\
 %
-  \label{eqn:incompressible:elasticity:displacement:implicit}
-  \int_\Omega \trialvec[v] \cdot \eqnannotate{\left( \rho \frac{\partial \vec{v}(t)}{\partial 
-t} \right)}{f_0^v} 
-\, d\Omega =
-  \int_\Omega \trialvec[v] \cdot \eqnannotate{\vec{f}(t)}{g_0^v} + \nabla \trialvec[v] : 
-\eqnannotate{p\tensor{I}-
-\tensor{\sigma}^\mathit{dev}(\vec{u})}{g_1^v} \, d\Omega + \int_{\Gamma_\tau} \trialvec[v] 
-\cdot 
-\eqnannotate{\vec{\tau}(t)}{g_0^v} \, d\Gamma, \\
-%
-  \label{eqn:incompressible:elasticity:pressure:implicit}
+  \label{eqn:incompressible:elasticity:pressure}
   0 = \int_\Omega \trialscalar[p] \cdot \eqnannotate{\left(\vec{\nabla} \cdot \vec{u} + 
-\frac{p}{K} \right)}
-{g_0^p} \, d\Omega.
+\frac{p}{K} \right)}{g_0^p} \, d\Omega.
 \end{gather}
 
 
 \subsubsection{Jacobians}
 
-With three fields we have nine Jacobians for the LHS and RHS associated with the coupling of 
-the three fields.
+With two fields we have four Jacobians for the RHS associated with the coupling of 
+the two fields.
 \begin{align}
-% J_F  
-  J_F^{uu} &= \frac{\partial F^u}{\partial u} + s_\mathit{tshift} \frac{\partial F^u}{\partial 
-\dot{u}} = \int_\Omega 
-\trialvec[u] \cdot s_\mathit{tshift}\,\basisvec[u] \, d\Omega = \int_\Omega \trialscalar[u]_i 
-\, 
-\eqnannotate{s_\mathit{tshift} \delta_{ij}}{J_{f0}^{uu}} \, \basisscalar[u]_j \, d\Omega \\
-  J_F^{uv} &= \frac{\partial F^u}{\partial v} + s_\mathit{tshift} \frac{\partial F^u}{\partial 
-\dot{v}} = \tensor{0} \\
-  J_F^{up} &= \frac{\partial F^u}{\partial p} + s_\mathit{tshift} \frac{\partial F^u}{\partial 
-\dot{p}} = \tensor{0} \\
-%
-  J_F^{vu} &= \frac{\partial F^v}{\partial u} + s_\mathit{tshift} \frac{\partial F^v}{\partial 
-\dot{u}} = \tensor{0} \\
-  J_F^{vv} &= \frac{\partial F^v}{\partial v} + s_\mathit{tshift} \frac{\partial F^v}{\partial 
-\dot{v}} = \int_\Omega 
-\trialvec[v] \cdot s_\mathit{tshift}\,\rho\,\basisvec[v] \, d\Omega = \int_\Omega 
-\trialscalar[v]_i \, 
-\eqnannotate{s_\mathit{tshift} \, \rho \, \delta_{ij}}{J_{f0}^{vv}} \, \basisscalar[v]_j \, 
-d\Omega \\
-  J_F^{vp} &= \frac{\partial F^v}{\partial p} + s_\mathit{tshift} \frac{\partial F^v}{\partial 
-\dot{p}} = \tensor{0} \\
-%
-  J_F^{pu} &= \frac{\partial F^p}{\partial u} + s_\mathit{tshift} \frac{\partial F^p}{\partial 
-\dot{u}} = \tensor{0} \\
-  J_F^{pv} &= \frac{\partial F^p}{\partial v} + s_\mathit{tshift} \frac{\partial F^p}{\partial 
-\dot{v}} = \tensor{0} \\
-  J_F^{pp} &= \frac{\partial F^p}{\partial p} + s_\mathit{tshift} \frac{\partial F^p}{\partial 
-\dot{p}} = \tensor{0} \\
-%
-% J_G
-  J_G^{uu} &= \frac{\partial G^u}{\partial u} = \tensor{0} \\
-  J_G^{uv} &= \frac{\partial G^u}{\partial v} = \int_\Omega \trialvec[u] \cdot \basisvec[v] \, 
-d\Omega = 
-\int_\Omega \trialscalar[u]_i \, \eqnannotate{\delta_{ij}}{J_{g0}^{uv}} \, \basisscalar[v]_j 
-\, d\Omega \\
-  J_G^{up} &= \frac{\partial G^u}{\partial p} = \tensor{0} \\
-%
-  J_G^{vu} &= \frac{\partial G^v}{\partial u} = \int_\Omega \nabla \trialvec[u] : 
+  J_G^{uu} &= \frac{\partial G^u}{\partial u} = \int_\Omega \nabla \trialvec[u] : 
 \frac{\partial}{\partial u}(-
 \tensor{\sigma}^\mathit{dev}) \, d\Omega 
-  = \int_\Omega \nabla \trialvec[u] : -\tensor{C} : \frac{1}{2}(\nabla + \nabla^T)\basisvec[u] 
-\, d\Omega 
-  = \int_\Omega \trialscalar[v]_{i,k} \, \eqnannotate{\left(-C^\mathit{dev}_{ikjl}\right)}
-{J_{g3}^{vu}}  \, 
+  = \int_\Omega \trialscalar[u]_{i,k} \, \eqnannotate{\left(-C^\mathit{dev}_{ikjl}\right)}
+{J_{g3}^{uu}}  \, 
 \basisscalar[u]_{j,l}\, d\Omega \\
-  J_G^{vv} &= \frac{\partial G^v}{\partial v} = \tensor{0} \\
-  J_G^{vp} &= \frac{\partial G^v}{\partial p} = \int_\Omega \nabla\trialvec[v] : \tensor{I} 
-\basisscalar[p] \, 
-d\Omega = \int_\Omega \trialscalar[v]_{i,j} : \eqnannotate{\delta_{ij}}{J_{g2}^{vp}} \, 
-\basisscalar[p] \, d\Omega 
-\\
+  J_G^{up} &= \frac{\partial G^u}{\partial p} = \int_\Omega \nabla\trialvec[u] : \tensor{I} 
+\basisscalar[p] \,  d\Omega = \int_\Omega \trialscalar[u]_{i,k} \eqnannotate{\delta_{ik}}{J_{g2}^{up}} \, 
+\basisscalar[p] \, d\Omega \\
 %
-  J_G^{pu} &= \frac{\partial G^p}{\partial u} = \int_\Omega \trialscalar[p] (\vec{\nabla} 
-\cdot \basisvec[u]) \, 
-d\Omega = \int_\Omega \trialscalar[p] \eqnannotate{\delta_{ij}}{J_{g1}^{pu}} 
-\basisscalar[u]_{i,j}) \, d\Omega\\
-  J_G^{pv} &= \frac{\partial G^p}{\partial v} = \tensor{0} \\
-  J_G^{pp} &= \frac{\partial G^p}{\partial p} = \int_v \trialscalar[p] \eqnannotate{\frac{1}
-{K}}{J_{g1}^{pu}} 
-\basisscalar[p] \, d\Omega
+  J_G^{pu} &= \frac{\partial G^p}{\partial u} = \int_\Omega \trialscalar[p] \left(\vec{\nabla} 
+\cdot \basisvec[u]\right) \, d\Omega = \int_\Omega \trialscalar[p] \eqnannotate{\delta_{jl}}{J_{g1}^{pu}} 
+\basisscalar[u]_{j,l} \, d\Omega\\
+  J_G^{pp} &= \frac{\partial G^p}{\partial p} = \int_\Omega \trialscalar[p] \eqnannotate{\frac{1}
+{K}}{J_{g0}^{pp}} \basisscalar[p] \, d\Omega
 \end{align}
-
-
-\subsection{Explicit Time Stepping}
-Recall that explicit time stepping requires
-$F(t,s,\dot{s})=\dot{s}$. As a result, we use the time derivative of
-the pressure equation. We write $F^*(t,s,\dot{s}) = \dot{s}$ and
-$G^*(t,s) = M^{-1}G(t,s)$ and we do not provide functions for $f_0$
-and $f_1$. Thus, we our system of equations to solve is
-\begin{gather}
-  \label{eqn:incompressibe:elasticity:velocity:explicit}
-  \int_\Omega \trialvec[u] \cdot \left( \frac{\partial \vec{u}(t)}{\partial t} \right) \, 
-d\Omega = 
-  (M^{uu})^{-1} \left( \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{v}(t)}{g_0^u} \, 
-d\Omega \right), \\
-%
-  \label{eqn:impcompressibe:elasticity:displacement:explicit}
-  \int_\Omega \trialvec[v] \cdot \left( \frac{\partial \vec{v}(t)}{\partial t} \right) \, 
-d\Omega =
-  (M^{vv})^{-1} \left( \int_\Omega \trialvec[v] \cdot \eqnannotate{\vec{f}(t)}{g_0^v} + \nabla 
-\trialvec[u] : 
-\eqnannotate{p\tensor{I}-\tensor{\sigma}^\mathit{dev}(\vec{u})}{g_1^v} \, d\Omega + 
-\int_{\Gamma_\tau} 
-\trialvec[u] \cdot \eqnannotate{\vec{\tau}(t)}{g_0^v} \, d\Gamma \right), \\
-%
-  \label{eqn:incompressible:elasticity:pressure:explicit}
-  \int_\Omega \trialscalar[p] \cdot \frac{\partial p}{\partial t} \, d\Omega = (M^{pp})^{-1} 
-\left( \int_\Omega 
-\trialscalar[p] \cdot \eqnannotate{\vec{\nabla} \cdot -\vec{v}}{g_0^p} \, d\Omega \right),
-\end{gather}
-where 
-\begin{gather}
-  M^{uu} = I, \\
-  M^{vv} = \mathit{Lump}(\int_\Omega \trialvec[v] \cdot J_{f0}^{vv} \cdot \basisvec[v] \, 
-d\Omega), \quad J_{f0}
-^{vv} = \rho, \\
-  M^{pp} = \int_\Omega \trialscalar[p] \cdot J_{f0}^{pp} \cdot \basisscalar[p] \, d\Omega, 
-\quad J_{f0}^{pp} = 
-\frac{1}{K}, \\
-\end{gather}
-and we refer to $M$ as the LHS (or I) Jacobian for explicit time stepping.
 
 
 % ----------------------------------------------------------------------
