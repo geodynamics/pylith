@@ -43,6 +43,11 @@ namespace pylith {
         class AuxiliaryFactoryElastic;
         class AuxiliaryFactoryViscoelastic;
 
+        class IncompressibleElasticity;
+
+        class RheologyIncompressibleElasticity;
+        class IsotropicLinearIncompElasticity;
+
         class Query;
 
     } // materials

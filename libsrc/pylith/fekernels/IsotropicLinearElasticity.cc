@@ -68,6 +68,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::g1v(const PylithInt dim
     assert(aOff);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
+    assert(g1);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -588,10 +589,9 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::deviatoricStress(const 
 
     const PylithReal strainTrace = disp_x[0*_dim+0] + disp_x[1*_dim+1];
     const PylithReal traceTerm = -2.0/3.0*shearModulus * strainTrace;
-    const PylithReal twomu = 2.0*shearModulus;
 
-    const PylithScalar stress_xx = twomu*disp_x[0*_dim+0] + traceTerm;
-    const PylithScalar stress_yy = twomu*disp_x[1*_dim+1] + traceTerm;
+    const PylithScalar stress_xx = 2.0*shearModulus*disp_x[0*_dim+0] + traceTerm;
+    const PylithScalar stress_yy = 2.0*shearModulus*disp_x[1*_dim+1] + traceTerm;
     const PylithScalar stress_xy = shearModulus * (disp_x[0*_dim+1] + disp_x[1*_dim+0]);
 
     stress[0*_dim+0] += stress_xx;
@@ -664,11 +664,10 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::deviatoricStress_refsta
     const PylithReal refstrainTrace = refstrain[0] + refstrain[1] + refstrain[2];
     const PylithReal meanrstress = (refstress[0] + refstress[1] + refstress[2]) / 3.0;
     const PylithReal traceTerm = -2.0/3.0*shearModulus * (strainTrace - refstrainTrace);
-    const PylithReal twomu = 2.0*shearModulus;
 
-    const PylithScalar stress_xx = refstress[0] - meanrstress + twomu*(disp_x[0*_dim+0]-refstrain[0]) + traceTerm;
-    const PylithScalar stress_yy = refstress[1] - meanrstress + twomu*(disp_x[1*_dim+1]-refstrain[1]) + traceTerm;
-    const PylithScalar stress_xy = refstress[3] + twomu * (0.5*(disp_x[0*_dim+1] + disp_x[1*_dim+0]) - refstrain[3]);
+    const PylithScalar stress_xx = refstress[0] - meanrstress + 2.0*shearModulus*(disp_x[0*_dim+0]-refstrain[0]) + traceTerm;
+    const PylithScalar stress_yy = refstress[1] - meanrstress + 2.0*shearModulus*(disp_x[1*_dim+1]-refstrain[1]) + traceTerm;
+    const PylithScalar stress_xy = refstress[3] + 2.0*shearModulus * (0.5*(disp_x[0*_dim+1] + disp_x[1*_dim+0]) - refstrain[3]);
 
     stress[0*_dim+0] += stress_xx;
     stress[1*_dim+1] += stress_yy;

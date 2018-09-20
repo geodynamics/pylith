@@ -26,9 +26,9 @@
 
 #include "materialsfwd.hh" // forward declarations
 
-#include "pylith/materials/Material.hh" // ISA Material
+#include "pylith/materials/RheologyIncompressibleElasticity.hh" // ISA RheologyIncompressibleElasticity
 
-class pylith::materials::IsotropicLinearIncompElasticity : public pylith::materials::Material {
+class pylith::materials::IsotropicLinearIncompElasticity : public pylith::materials::RheologyIncompressibleElasticity {
     friend class TestIsotropicLinearIncompElasticity; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,30 +43,6 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Include inertia?
-     *
-     * @param[in] value Flag indicating to include inertial term.
-     */
-    void useInertia(const bool value);
-
-    /** Include inertia?
-     *
-     * @returns True if including inertial term, false otherwise.
-     */
-    bool useInertia(void) const;
-
-    /** Include body force?
-     *
-     * @param[in] value Flag indicating to include body force term.
-     */
-    void useBodyForce(const bool value);
-
-    /** Include body force?
-     *
-     * @returns True if including body force term, false otherwise.
-     */
-    bool useBodyForce(void) const;
-
     /** Include reference stress/strain?
      *
      * @param value Flag indicating to include reference stress/strain.
@@ -80,39 +56,57 @@ public:
      */
     bool useReferenceState(void) const;
 
-    /** Verify configuration is acceptable.
+    /** Get auxiliary factory associated with physics.
      *
-     * @param[in] solution Solution field.
+     * @return Auxiliary factory for physics object.
      */
-    void verifyConfiguration(const pylith::topology::Field& solution) const;
+    pylith::materials::AuxiliaryFactoryElasticity* getAuxiliaryFactory(void);
 
-    /** Create integrator and set kernels.
+    /** Add rheology subfields to auxiliary field.
      *
-     * @param[in] solution Solution field.
-     *
-     *  @returns Integrator if applicable, otherwise NULL.
+     * @param[inout] auxiliaryField Auxiliary field.
      */
-    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution);
+    void addAuxiliarySubfields(void);
 
-    /** Create auxiliary field.
+    /** Get stress kernel for RHS residual, G(t,s).
      *
-     * @param[in] solution Solution field.
-     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+     * @param[in] coordsys Coordinate system.
      *
-     * @returns Auxiliary field if applicable, otherwise NULL.
+     * @return RHS residual kernel for stress.
      */
-    pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
-                                                  const pylith::topology::Mesh& domainMesh);
+    PetscPointFunc getKernelRHSResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    /** Create derived field.
+    /** Get pressure kernel for RHS residual, G(t,s).
      *
-     * @param[in] solution Solution field.
-     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+     * @param[in] coordsys Coordinate system.
      *
-     * @returns Derived field if applicable, otherwise NULL.
+     * @return RHS residual kernel for pressure.
      */
-    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
-                                                const pylith::topology::Mesh& domainMesh);
+    PetscPointFunc getKernelRHSResidualPressure(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+    /** Get elastic constants kernel for RHS Jacobian G(t,s).
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return RHS Jacobian kernel for elastic constants.
+     */
+    PetscPointJac getKernelRHSJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+    /** Get inverse of the bulk modulus kernel for RHS Jacobian G(t,s).
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return RHS Jacobian kernel for inverse of bulk modulus.
+     */
+    PetscPointJac getKernelRHSJacobianInverseBulkModulus(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+    /** Get stress kernel for derived field.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return Project kernel for computing stress subfield in derived field.
+     */
+    PetscPointFunc getKernelDerivedStress(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
@@ -125,46 +119,8 @@ protected:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    /** Set kernels for RHS residual.
-     *
-     * @param[out] integrator Integrator for material.
-     * @param[in] solution Solution field.
-     */
-    void _setKernelsRHSResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                const pylith::topology::Field& solution) const;
-
-    /** Set kernels for RHS Jacobian.
-     *
-     * @param[out] integrator Integrator for material.
-     * @param[in] solution Solution field.
-     */
-    void _setKernelsRHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                                const pylith::topology::Field& solution) const;
-
-    /** Set kernels for LHS residual.
-     *
-     * @param[out] integrator Integrator for material.
-     * @param[in] solution Solution field.
-     */
-    void _setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                const pylith::topology::Field& solution) const;
-
-    /** Set kernels for LHS Jacobian.
-     *
-     * @param[out] integrator Integrator for material.
-     * @param[in] solution Solution field.
-     */
-    void _setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                                const pylith::topology::Field& solution) const;
-
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    bool _useInertia; ///< Flag to include inertial term.
-    bool _useBodyForce; ///< Flag to include body force term.
-    bool _useReferenceState; ///< Flag to use reference stress and strain.
-
     pylith::materials::AuxiliaryFactoryElastic* _auxiliaryFactory; ///< Factory for auxiliary subfields.
+    bool _useReferenceState; ///< Flag to use reference stress and strain.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
@@ -172,7 +128,9 @@ private:
     IsotropicLinearIncompElasticity(const IsotropicLinearIncompElasticity&); ///< Not implemented.
     const IsotropicLinearIncompElasticity& operator=(const IsotropicLinearIncompElasticity&); ///< Not implemented
 
-}; // class IsotropicLinearIncompElasticity
+};
+
+// class IsotropicLinearIncompElasticity
 
 #endif // pylith_materials_isotropiclinearincompelasticity_hh
 

@@ -62,18 +62,23 @@ libpylith_la_SOURCES = \
 	fekernels/IsotropicLinearMaxwell.cc \
 	fekernels/IsotropicLinearGenMaxwell.cc \
 	fekernels/IncompressibleElasticity.cc \
-	fekernels/IsotropicLinearIncompElasticityPlaneStrain.cc \
+	fekernels/IsotropicLinearIncompElasticity.cc \
 	fekernels/DispVel.cc \
 	fekernels/TimeDependentFn.cc \
 	fekernels/NeumannTimeDependent.cc \
 	fekernels/AbsorbingDampers.cc \
 	fekernels/FaultCohesiveKin.cc \
 	materials/Material.cc \
-	materials/AuxiliaryFactoryElastic.cc \
-	materials/AuxiliaryFactoryViscoelastic.cc \
+	materials/Elasticity.cc \
+	materials/RheologyElasticity.cc \
+	materials/AuxiliaryFactoryElasticity.cc \
 	materials/IsotropicLinearElasticity.cc \
 	materials/IsotropicLinearMaxwell.cc \
 	materials/IsotropicLinearGenMaxwell.cc \
+	materials/AuxiliaryFactoryElastic.cc \
+	materials/AuxiliaryFactoryViscoelastic.cc \
+	materials/IncompressibleElasticity.cc \
+	materials/RheologyIncompressibleElasticity.cc \
 	materials/IsotropicLinearIncompElasticity.cc \
 	materials/Query.cc \
 	meshio/BinaryIO.cc \

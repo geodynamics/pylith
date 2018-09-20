@@ -16,44 +16,32 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/Elasticity.hh
+/** @file libsrc/materials/IncompressibleElasticity.hh
  *
- * @brief C++ class for solving elasticity equation.
+ * @brief C++ class for solving the elasticity equation with incompressible bulk materials.
  */
 
-#if !defined(pylith_materials_elasticity_hh)
-#define pylith_materials_elasticity_hh
+#if !defined(pylith_materials_incompressibleelasticity_hh)
+#define pylith_materials_incompressibleelasticity_hh
 
 #include "materialsfwd.hh" // forward declarations
 
 #include "pylith/materials/Material.hh" // ISA Material
 
-class pylith::materials::Elasticity : public pylith::materials::Material {
-    friend class TestElasticity; // unit testing
+class pylith::materials::IncompressibleElasticity : public pylith::materials::Material {
+    friend class TestIncompressibleElasticity; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    Elasticity(void);
+    IncompressibleElasticity(void);
 
     /// Destructor.
-    ~Elasticity(void);
+    ~IncompressibleElasticity(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
-
-    /** Include inertia?
-     *
-     * @param[in] value Flag indicating to include inertial term.
-     */
-    void useInertia(const bool value);
-
-    /** Include inertia?
-     *
-     * @returns True if including inertial term, false otherwise.
-     */
-    bool useInertia(void) const;
 
     /** Include body force?
      *
@@ -71,13 +59,13 @@ public:
      *
      * @param[in] rheology Bulk rheology for elasticity.
      */
-    void setBulkRheology(pylith::materials::RheologyElasticity* const rheology);
+    void setBulkRheology(pylith::materials::RheologyIncompressibleElasticity* const rheology);
 
     /** Get bulk rheology.
      *
      * @returns Bulk rheology for elasticity.
      */
-    pylith::materials::RheologyElasticity* getBulkRheology(void) const;
+    pylith::materials::RheologyIncompressibleElasticity* getBulkRheology(void) const;
 
     /** Verify configuration is acceptable.
      *
@@ -141,14 +129,6 @@ private:
     void _setKernelsRHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
                                 const pylith::topology::Field& solution) const;
 
-    /** Set kernels for LHS residual.
-     *
-     * @param[out] integrator Integrator for material.
-     * @param[in] solution Solution field.
-     */
-    void _setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                const pylith::topology::Field& solution) const;
-
     /** Set kernels for LHS Jacobian.
      *
      * @param[out] integrator Integrator for material.
@@ -160,20 +140,19 @@ private:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    bool _useInertia; ///< Flag to include inertial term.
     bool _useBodyForce; ///< Flag to include body force term.
-    pylith::materials::RheologyElasticity* _rheology; ///< Bulk rheology for elasticity.
+    pylith::materials::RheologyIncompressibleElasticity* _rheology; ///< Bulk rheology for incompressible elasticity.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    Elasticity(const Elasticity&); ///< Not implemented.
-    const Elasticity& operator=(const Elasticity&); /// Not implemented.
+    IncompressibleElasticity(const IncompressibleElasticity&); ///< Not implemented.
+    const IncompressibleElasticity& operator=(const IncompressibleElasticity&); /// Not implemented.
 
 };
 
 // class Elasticity
 
-#endif // pylith_materials_elasticity_hh
+#endif // pylith_materials_incompressibleelasticity_hh
 
 // End of file

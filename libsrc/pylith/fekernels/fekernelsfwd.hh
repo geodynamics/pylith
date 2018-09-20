@@ -49,7 +49,9 @@ namespace pylith {
         class IsotropicLinearGenMaxwell3D;
 
         class IncompressibleElasticity;
+        class IsotropicLinearIncompElasticity;
         class IsotropicLinearIncompElasticityPlaneStrain;
+        class IsotropicLinearIncompElasticity3D;
 
         class TimeDependentFn;
         class NeumannTimeDependent;

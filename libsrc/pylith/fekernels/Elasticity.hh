@@ -53,8 +53,6 @@
 
 #include "pylith/utils/types.hh"
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Generic elasticity kernels for inertia and body forces.
 class pylith::fekernels::Elasticity {
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -238,7 +236,9 @@ public:
                                const PylithScalar constants[],
                                PylithScalar Jf0[]);
 
-}; // Elasticity
+};
+
+// Elasticity
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// Kernels specific to elasticity plane strain.
@@ -273,7 +273,9 @@ public:
                 const PylithScalar constants[],
                 PylithScalar strain[]);
 
-}; // ElasticityPlaneStrain
+};
+
+// ElasticityPlaneStrain
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// Kernels specific to elasticity in 3D.
@@ -307,7 +309,9 @@ public:
                 const PylithScalar constants[],
                 PylithScalar strain[]);
 
-}; // Elasticity3D
+};
+
+// Elasticity3D
 
 #endif // pylith_fekernels_elasticity3d_hh
 

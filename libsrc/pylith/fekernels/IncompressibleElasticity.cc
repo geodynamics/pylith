@@ -22,76 +22,14 @@
 
 #include <cassert> // USES assert()
 
-/* ======================================================================
- * Kernels for pressure volume integral.
- *
- * Solution fields = [disp(dim), pres]
- * Auxiliary fields = bulkModulus
- *
- * 0 = \int_V \phi_p \cdot
- *  \left( \vec {\nabla} \cdot \vec{u} + \frac{p}{\kappa} \right) \, dV.
- *
- * ======================================================================
- */
+// =====================================================================================================================
+// Generic incompressible elasticity kernels.
+// =====================================================================================================================
 
-// ----------------------------------------------------------------------
-/* g0 function for pressure equation.
- */
+// ---------------------------------------------------------------------------------------------------------------------
+// Jg1pu function for pressure equation for incompressible elasticity.
 void
-pylith::fekernels::IncompressibleElasticity::g0p(const PylithInt dim,
-                                                 const PylithInt numS,
-                                                 const PylithInt numA,
-                                                 const PylithInt sOff[],
-                                                 const PylithInt sOff_x[],
-                                                 const PylithScalar s[],
-                                                 const PylithScalar s_t[],
-                                                 const PylithScalar s_x[],
-                                                 const PylithInt aOff[],
-                                                 const PylithInt aOff_x[],
-                                                 const PylithScalar a[],
-                                                 const PylithScalar a_t[],
-                                                 const PylithScalar a_x[],
-                                                 const PylithReal t,
-                                                 const PylithScalar x[],
-                                                 const PylithInt numConstants,
-                                                 const PylithScalar constants[],
-                                                 PylithScalar g0[]) {
-    const PylithInt _numS = 2;
-
-    const PylithInt i_disp = 0;
-    const PylithInt i_pres = 1;
-
-    const PylithScalar* disp_x = &s_x[sOff[i_disp]];
-    const PylithScalar pres = s[sOff[i_pres]];
-
-    const PylithInt i_bulkModulus = 2;
-
-    const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
-
-    PylithInt i;
-
-    assert(_numS == numS);
-    assert(3 <= numA);
-    assert(sOff);
-    assert(s);
-    assert(aOff);
-    assert(a);
-    assert(g0);
-
-    PylithScalar strainTrace = 0;
-
-    for (i = 0; i < dim; ++i) {
-        strainTrace += disp_x[i];
-    } // for
-    g0[0] += strainTrace + pres/bulkModulus;
-} // g0p
-
-
-// ----------------------------------------------------------------------
-/* Jg0 function for pressure equation.
- */
-void
-pylith::fekernels::IncompressibleElasticity::Jg0pp(const PylithInt dim,
+pylith::fekernels::IncompressibleElasticity::Jg1pu(const PylithInt dim,
                                                    const PylithInt numS,
                                                    const PylithInt numA,
                                                    const PylithInt sOff[],
@@ -109,20 +47,75 @@ pylith::fekernels::IncompressibleElasticity::Jg0pp(const PylithInt dim,
                                                    const PylithScalar x[],
                                                    const PylithInt numConstants,
                                                    const PylithScalar constants[],
-                                                   PylithScalar Jg0[]) {
-    const PylithInt _numS = 2;
+                                                   PylithScalar Jg1[]) {
+    assert(Jg1);
 
-    const PylithInt i_bulkModulus = 1;
-    const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
+    /* j(f,g,dg), f=0, g=0..dim, dg=0..dim
+     *
+     * j == 1 if g==dg, otherwise 0.
+     *
+     * 3-D
+     * 0: j000 = 1
+     * 1: j001 = 0
+     * 2: j002 = 0
+     * 3: j010 = 0
+     * 4: j011 = 1
+     * 5: j012 = 0
+     * 6: j020 = 0
+     * 7: j021 = 0
+     * 8: j022 = 1
+     */
 
-    assert(_numS == numS);
-    assert(3 <= numA);
-    assert(aOff);
-    assert(a);
-    assert(Jg0);
+    for (PylithInt i = 0; i < dim; ++i) {
+        Jg1[i*dim+i] += 1.0;
+    } // for
+} // Jg1pu
 
 
-    Jg0[0] += 1.0 / bulkModulus;
-} // Jg0pp_implicit
+// ---------------------------------------------------------------------------------------------------------------------
+// Jg2up function for elasticity equation.
+void
+pylith::fekernels::IncompressibleElasticity::Jg2up(const PylithInt dim,
+                                                   const PylithInt numS,
+                                                   const PylithInt numA,
+                                                   const PylithInt sOff[],
+                                                   const PylithInt sOff_x[],
+                                                   const PylithScalar s[],
+                                                   const PylithScalar s_t[],
+                                                   const PylithScalar s_x[],
+                                                   const PylithInt aOff[],
+                                                   const PylithInt aOff_x[],
+                                                   const PylithScalar a[],
+                                                   const PylithScalar a_t[],
+                                                   const PylithScalar a_x[],
+                                                   const PylithReal t,
+                                                   const PylithReal s_tshift,
+                                                   const PylithScalar x[],
+                                                   const PylithInt numConstants,
+                                                   const PylithScalar constants[],
+                                                   PylithScalar Jg2[]) {
+    assert(Jg2);
+
+    /* j(f,g,df), f=0..dim, df=0..dim, g=0
+     *
+     * j == 1 if f==df, otherwise 0.
+     *
+     * 3-D
+     * 0: j000 = 1
+     * 1: j001 = 0
+     * 2: j002 = 0
+     * 3: j100 = 0
+     * 4: j101 = 1
+     * 5: j102 = 0
+     * 6: j200 = 0
+     * 7: j201 = 0
+     * 8: j202 = 1
+     */
+
+    for (PylithInt i = 0; i < dim; ++i) {
+        Jg2[i*dim+i] += 1.0;
+    } // for
+} // Jg2up
+
 
 // End of file
