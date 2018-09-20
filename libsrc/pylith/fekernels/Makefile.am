@@ -27,7 +27,7 @@ subpkginclude_HEADERS = \
 	IsotropicLinearMaxwell.hh \
 	IsotropicLinearGenMaxwell.hh \
 	IncompressibleElasticity.hh \
-	IsotropicLinearIncompElasticityPlaneStrain.hh \
+	IsotropicLinearIncompElasticity.hh \
 	DispVel.hh \
 	TimeDependentFn.hh \
 	NeumannTimeDependent.hh \

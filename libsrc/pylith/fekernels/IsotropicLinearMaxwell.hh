@@ -16,32 +16,37 @@
  * ----------------------------------------------------------------------
  */
 
-/** @file libsrc/fekernels/IsotropicLinearMaxwellPlaneStrain.hh
+/** @file libsrc/fekernels/IsotropicLinearMaxwell.hh
  *
  * Kernels for linear Maxwell viscoelastic plane strain.
  *
- * Solution fields: [disp(dim), vel(dim, optional)]
+ * Solution fields: [disp(dim), ...]
  *
  * Isotropic, linear Maxwell viscoelastic plane strain without reference stress/strain.
  * Auxiliary fields:
  * - 0: density(1)
- * - 1: shear_modulus(1)
- * - 2: bulk_modulus(1)
- * - 3: maxwell_time(1)
- * - 4: total_strain
- *     2D: 4 components (strain_xx, strain_yy, strain_zz, strain_xy)
- *     3D: 6 components (strain_xx, strain_yy, strain_zz, strain_xy, strain_yz, strain_xz)
- * - 5: viscous_strain
- *     2D: 4 components (strain_xx, strain_yy, strain_zz, strain_xy)
- *     3D: 6 components (strain_xx, strain_yy, strain_zz, strain_xy, strain_yz, strain_xz)
- * - 6: gravity_field (2, optional)
- * - 7: body_force(2,optional)
- * - 5: reference_stress(optional)
+ * - 1: body_force(2,optional)
+ * - 2: gravity_field (2, optional)
+ * - 3: reference_stress(optional)
  *     2D: 4 components (stress_xx, stress_yy, stress_zz, stress_xy)
  *     3D: 6 components (stress_xx, stress_yy, stress_zz, stress_xy, stress_yz, stress_xz)
- * - 6: reference_strain(optional)
+ * - 4: reference_strain(optional)
  *     2D: 4 components (strain_xx, strain_yy, strain_zz, strain_xy)
  *     3D: 6 components (strain_xx, strain_yy, strain_zz, strain_xy, strain_yz, strain_xz)
+ * - 5: shear_modulus(1)
+ * - 6: bulk_modulus(1)
+ * - 7: maxwell_time(1)
+ * - 8: viscous_strain
+ *     2D: 4 components (strain_xx, strain_yy, strain_zz, strain_xy)
+ *     3D: 6 components (strain_xx, strain_yy, strain_zz, strain_xy, strain_yz, strain_xz)
+ * - 9: total_strain
+ *     2D: 4 components (strain_xx, strain_yy, strain_zz, strain_xy)
+ *     3D: 6 components (strain_xx, strain_yy, strain_zz, strain_xy, strain_yz, strain_xz)
+ *
+ * The elasticity subfields come first (with required ones before optional ones) followed by the rheology subfields
+ * (optional ones before required ones). The rheology fields have required fields last because we index from the back.
+ *
+ * Viscous strain must be before total strain, because viscous strain at t+dt depends on total strain at t.
  *
  * \int_V \vec{\phi}_u \cdot \left( \rho \frac{\partial \vec{v}(t)}{\partial t} \right) \, dV =
  *   \int_V \vec{\phi}_u \cdot \vec{f}(t) - \nabla \vec{\phi}_u : \tensor{\sigma}(\vec{u}) \, dV +
@@ -79,143 +84,6 @@
 #include "pylith/utils/types.hh"
 
 // ---------------------------------------------------------------------------------------------------------------------
-/// Kernels for isotropic, linearly Maxwell viscoelastic that are independent of spatial dimension.
-class pylith::fekernels::IsotropicLinearMaxwell {
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
-    /** f0 function for isotropic linear Maxwell.
-     *
-     * Solution fields: [disp(dim), vel(dim)]
-     * Auxiliary fields: [density(1), ...]
-     */
-    static
-    void f0v(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar f0[]);
-
-    /** Jf0 function for isotropoc linear Maxwell.
-     *
-     * Solution fields: [...]
-     * Auxiliary fields: [density(1), ...]
-     */
-    static
-    void Jf0vv(const PylithInt dim,
-               const PylithInt numS,
-               const PylithInt numA,
-               const PylithInt sOff[],
-               const PylithInt sOff_x[],
-               const PylithScalar s[],
-               const PylithScalar s_t[],
-               const PylithScalar s_x[],
-               const PylithInt aOff[],
-               const PylithInt aOff_x[],
-               const PylithScalar a[],
-               const PylithScalar a_t[],
-               const PylithScalar a_x[],
-               const PylithReal t,
-               const PylithReal s_tshift,
-               const PylithScalar x[],
-               const PylithInt numConstants,
-               const PylithScalar constants[],
-               PylithScalar Jf0[]);
-
-    /** g0 function for isotropic linear Maxwell with both gravity and body forces.
-     *
-     * Solution fields: [...]
-     * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1),
-     *   maxwell_time(1), total_strain(4/6), viscous_strain(4/6), gravity_field(dim), body_force(dim), ...]
-     */
-    static
-    void g0v_gravbodyforce(const PylithInt dim,
-                           const PylithInt numS,
-                           const PylithInt numA,
-                           const PylithInt sOff[],
-                           const PylithInt sOff_x[],
-                           const PylithScalar s[],
-                           const PylithScalar s_t[],
-                           const PylithScalar s_x[],
-                           const PylithInt aOff[],
-                           const PylithInt aOff_x[],
-                           const PylithScalar a[],
-                           const PylithScalar a_t[],
-                           const PylithScalar a_x[],
-                           const PylithReal t,
-                           const PylithScalar x[],
-                           const PylithInt numConstants,
-                           const PylithScalar constants[],
-                           PylithScalar g0[]);
-
-    /** g0 function for isotropic linear Maxwell with gravity.
-     *
-     * Solution fields: [...]
-     * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1),
-     *   maxwell_time(1), total_strain(4/6), viscous_strain(4/6), gravity_field(dim), ...]
-     */
-    static
-    void g0v_grav(const PylithInt dim,
-                  const PylithInt numS,
-                  const PylithInt numA,
-                  const PylithInt sOff[],
-                  const PylithInt sOff_x[],
-                  const PylithScalar s[],
-                  const PylithScalar s_t[],
-                  const PylithScalar s_x[],
-                  const PylithInt aOff[],
-                  const PylithInt aOff_x[],
-                  const PylithScalar a[],
-                  const PylithScalar a_t[],
-                  const PylithScalar a_x[],
-                  const PylithReal t,
-                  const PylithScalar x[],
-                  const PylithInt numConstants,
-                  const PylithScalar constants[],
-                  PylithScalar g0[]);
-
-    /** g0 function for isotropic linear Maxwell with body forces.
-     *
-     * Solution fields: [...]
-     * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1),
-     *   maxwell_time(1), total_strain(4/6), viscous_strain(4/6), body_force(dim), ...]
-     */
-    static
-    void g0v_bodyforce(const PylithInt dim,
-                       const PylithInt numS,
-                       const PylithInt numA,
-                       const PylithInt sOff[],
-                       const PylithInt sOff_x[],
-                       const PylithScalar s[],
-                       const PylithScalar s_t[],
-                       const PylithScalar s_x[],
-                       const PylithInt aOff[],
-                       const PylithInt aOff_x[],
-                       const PylithScalar a[],
-                       const PylithScalar a_t[],
-                       const PylithScalar a_x[],
-                       const PylithReal t,
-                       const PylithScalar x[],
-                       const PylithInt numConstants,
-                       const PylithScalar constants[],
-                       PylithScalar g0[]);
-
-}; // IsotropicLinearMaxwell
-
-// ---------------------------------------------------------------------------------------------------------------------
 /// Kernels for isotropic, linear Maxwell plane strain.
 class pylith::fekernels::IsotropicLinearMaxwellPlaneStrain {
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -224,13 +92,7 @@ public:
     /** g1 function for isotropic linear Maxwell plane strain WITHOUT reference stress and reference strain.
      *
      * Solution fields: [disp(dim), ...]
-     * Auxiliary fields: [0: density(1),
-     *                    1: shear_modulus(1),
-     *                    2: bulk_modulus(1),
-     *                    3: maxwell_time(1),
-     *                    4: total_strain(4),
-     *                    5: viscous_strain(4),
-     *                    ...]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), maxwell_time(1), total_strain(4), viscous_strain(4)]
      */
     static
     void g1v(const PylithInt dim,
@@ -255,15 +117,8 @@ public:
     /** g1 function for isotropic linear Maxwell plane strain WITH reference stress and reference strain.
      *
      * Solution fields: [disp(dim), ...]
-     * Auxiliary fields: [0: density(1),
-     *                    1: shear_modulus(1),
-     *                    2: bulk_modulus(1),
-     *                    3: maxwell_time(1),
-     *                    4: total_strain(4),
-     *                    5: viscous_strain(4),
-     *                    ...
-     *                    numA-2: reference_stress(4),
-     *                    numA-1: reference_strain(4)]
+     * Auxiliary fields: [..., reference_stress(4), reference_strain(4), shear_modulus(1), bulk_modulus(1),
+     *                    maxwell_time(1), total_strain(4), viscous_strain(4)]
      */
     static
     void g1v_refstate(const PylithInt dim,
@@ -288,13 +143,7 @@ public:
     /** Jg3_vu entry function for 2-D plane strain isotropic linear Maxwell viscoelasticity.
      *
      * Solution fields: [...]
-     * Auxiliary fields: [0: density(1),
-     *                    1: shear_modulus(1),
-     *                    2: bulk_modulus(1),
-     *                    3: maxwell_time(1),
-     *                    4: total_strain(4),
-     *                    5: viscous_strain(4),
-     *                    ...]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), maxwell_time(1), total_strain(4), viscous_strain(4)]
      */
     static
     void Jg3vu(const PylithInt dim,
@@ -347,12 +196,8 @@ public:
      * Maxwell viscoelasticity WITH reference stress and strain.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [0: shear_modulus(1),
-     *                    1: maxwell_time(1),
-     *                    2: total_strain(4),
-     *                    3: viscous_strain(4),
-     *                    4: reference_stress(4),
-     *                    5: reference_strain(4)]
+     * Auxiliary fields: [shear_modulus(1), maxwell_time(1), total_strain(4), viscous_strain(4),
+     *                    reference_stress(4), reference_strain(4)]
      */
     static
     void deviatoricStress_refstate(const PylithInt dim,
@@ -426,17 +271,10 @@ public:
                            const PylithScalar constants[],
                            PylithScalar totalStrainTpdt[]);
 
-    /** Update viscous strain for 2-D plane strain isotropic linear
-     * Maxwell viscoelasticity.
+    /** Update viscous strain for 2-D plane strain isotropic linear Maxwell viscoelasticity.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [0: density(1),
-     *                    1: shear_modulus(1),
-     *                    2: bulk_modulus(1),
-     *                    3: maxwell_time(1),
-     *                    4: total_strain(4),
-     *                    5: viscous_strain(4),
-     *                    ...]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), maxwell_time(1), total_strain(4), viscous_strain(4)]
      */
     static
     void updateViscousStrain(const PylithInt dim,
@@ -461,10 +299,10 @@ public:
     /** Calculate stress for 2-D plane strain isotropic linear
      * Maxwell WITHOUT a reference stress and strain.
      *
-     * Used to output the stress field.
+     * Used in outputing the stress field.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), ...]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), maxwell_time(1), total_strain(4), viscous_strain(4)]
      */
     static
     void stress(const PylithInt dim,
@@ -484,15 +322,16 @@ public:
                 const PylithScalar x[],
                 const PylithInt numConstants,
                 const PylithScalar constants[],
-                PylithScalar stress[]);
+                PylithScalar stressVector[]);
 
     /** Calculate stress for 2-D plane strain isotropic linear
      * Maxwell WITH a reference stress/strain.
      *
-     * Used to output the stress field.
+     * Used in outputing the stress field.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), ..., refstress(4), refstrain(4)]
+     * Auxiliary fields: [..., reference_stress(4), reference_strain(4), shear_modulus(1), bulk_modulus(1),
+     *                   maxwell_time(1), total_strain(4), viscous_strain(4)]
      */
     static
     void stress_refstate(const PylithInt dim,
@@ -512,7 +351,7 @@ public:
                          const PylithScalar x[],
                          const PylithInt numConstants,
                          const PylithScalar constants[],
-                         PylithScalar stress[]);
+                         PylithScalar stressVector[]);
 
 }; // IsotropicLinearMaxwellPlaneStrain
 
@@ -525,13 +364,7 @@ public:
     /** g1 function for isotropic linear Maxwell 3D WITHOUT reference stress and reference strain.
      *
      * Solution fields: [disp(dim), ...]
-     * Auxiliary fields: [0: density(1),
-     *                    1: shear_modulus(1),
-     *                    2: bulk_modulus(1),
-     *                    3: maxwell_time(1),
-     *                    4: viscous_strain(6),
-     *                    5: total_strain(6),
-     *                    ...]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), maxwell_time(1), total_strain(6), viscous_strain(6)]
      */
     static
     void g1v(const PylithInt dim,
@@ -556,15 +389,8 @@ public:
     /** g1 function for isotropic linear Maxwell 3D WITH reference stress and reference strain.
      *
      * Solution fields: [disp(dim), ...]
-     * Auxiliary fields: [0: density(1),
-     *                    1: shear_modulus(1),
-     *                    2: bulk_modulus(1),
-     *                    3: maxwell_time(1),
-     *                    4: viscous_strain(6),
-     *                    5: total_strain(6),
-     *                    ...
-     *                    numA-2: reference_stress(6),
-     *                    numA-1: reference_strain(6)]
+     * Auxiliary fields: [..., reference_stress(6), reference_strain(6), shear_modulus(1), bulk_modulus(1),
+     *                    maxwell_time(1), total_strain(6), viscous_strain(6)]
      */
     static
     void g1v_refstate(const PylithInt dim,
@@ -586,16 +412,11 @@ public:
                       const PylithScalar constants[],
                       PylithScalar g1[]);
 
-    /** Jg3_vu entry function for 3-D isotropic linear Maxwell viscoelasticity.
+    /** Jg3_vu entry function for 3-D isotropic linear Maxwell viscoelasticity WITHOUT reference stress and
+     * reference strain.
      *
      * Solution fields: [...]
-     * Auxiliary fields: [0: density(1),
-     *                    1: shear_modulus(1),
-     *                    2: bulk_modulus(1),
-     *                    3: maxwell_time(1),
-     *                    4: viscous_strain(6),
-     *                    5: total_strain(6),
-     *                    ...]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), maxwell_time(1), total_strain(6), viscous_strain(6)]
      */
     static
     void Jg3vu(const PylithInt dim,
@@ -612,7 +433,7 @@ public:
                const PylithScalar a_t[],
                const PylithScalar a_x[],
                const PylithReal t,
-               const PylithReal utshift,
+               const PylithReal s_tshift,
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
@@ -622,7 +443,7 @@ public:
      * Maxwell viscoelasticity WITHOUT reference stress and strain.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [shear_modulus(1), maxwell_time(1), viscous_strain(6), total_strain(6)]
+     * Auxiliary fields: [shear_modulus(1), maxwell_time(1), total_strain(6), viscous_strain(6)]
      */
     static
     void deviatoricStress(const PylithInt dim,
@@ -648,12 +469,8 @@ public:
      * Maxwell viscoelasticity WITH reference stress and strain.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [0: shear_modulus(1),
-     *                    1: maxwell_time(1),
-     *                    2: viscous_strain(6),
-     *                    3: total_strain(6),
-     *                    4: reference_stress(6),
-     *                    5: reference_strain(6)]
+     * Auxiliary fields: [shear_modulus(1), maxwell_time(1), total_strain(6), viscous_strain(6),
+     *                    reference_stress(6), reference_strain(6)]
      */
     static
     void deviatoricStress_refstate(const PylithInt dim,
@@ -679,7 +496,7 @@ public:
      * Maxwell viscoelasticity.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [maxwell_time(1), viscous_strain(6), total_strain(6)]
+     * Auxiliary fields: [maxwell_time(1), total_strain(6), viscous_strain(6)]
      */
     static
     void computeViscousStrain(const PylithInt dim,
@@ -727,17 +544,11 @@ public:
                            const PylithScalar constants[],
                            PylithScalar totalStrainTpdt[]);
 
-    /** Update viscous strain for 3-D isotropic linear
-     * Maxwell viscoelasticity.
+    /** Update viscous strain for 3-D isotropic linear Maxwell viscoelasticity WITHOUT reference stress and reference
+     * strain.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [0: density(1),
-     *                    1: shear_modulus(1),
-     *                    2: bulk_modulus(1),
-     *                    3: maxwell_time(1),
-     *                    4: viscous_strain(6),
-     *                    5: total_strain(6),
-     *                    ...]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), maxwell_time(1), total_strain(6), viscous_strain(6)]
      */
     static
     void updateViscousStrain(const PylithInt dim,
@@ -759,6 +570,60 @@ public:
                              const PylithScalar constants[],
                              PylithScalar visStrainTpdt[]);
 
+    /** Calculate stress for 3-D isotropic linear Maxwell WITHOUT a reference stress and strain.
+     *
+     * Used in outputing the stress field.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), maxwell_time(1), total_strain(6), viscous_strain(6)]
+     */
+    static
+    void stress(const PylithInt dim,
+                const PylithInt numS,
+                const PylithInt numA,
+                const PylithInt sOff[],
+                const PylithInt sOff_x[],
+                const PylithScalar s[],
+                const PylithScalar s_t[],
+                const PylithScalar s_x[],
+                const PylithInt aOff[],
+                const PylithInt aOff_x[],
+                const PylithScalar a[],
+                const PylithScalar a_t[],
+                const PylithScalar a_x[],
+                const PylithReal t,
+                const PylithScalar x[],
+                const PylithInt numConstants,
+                const PylithScalar constants[],
+                PylithScalar stressVector[]);
+
+    /** Calculate stress for 3-D isotropic linear Maxwell WITH a reference stress/strain.
+     *
+     * Used in outputing the stress field.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [..., reference_stress(6), reference_strain(6), shear_modulus(1), bulk_modulus(1),
+     *                   maxwell_time(1), total_strain(6), viscous_strain(6)]
+     */
+    static
+    void stress_refstate(const PylithInt dim,
+                         const PylithInt numS,
+                         const PylithInt numA,
+                         const PylithInt sOff[],
+                         const PylithInt sOff_x[],
+                         const PylithScalar s[],
+                         const PylithScalar s_t[],
+                         const PylithScalar s_x[],
+                         const PylithInt aOff[],
+                         const PylithInt aOff_x[],
+                         const PylithScalar a[],
+                         const PylithScalar a_t[],
+                         const PylithScalar a_x[],
+                         const PylithReal t,
+                         const PylithScalar x[],
+                         const PylithInt numConstants,
+                         const PylithScalar constants[],
+                         PylithScalar stressVector[]);
 }; // IsotropicLinearMaxwell3D
 
 #endif // pylith_fekernels_isotropiclinearmaxwell_hh

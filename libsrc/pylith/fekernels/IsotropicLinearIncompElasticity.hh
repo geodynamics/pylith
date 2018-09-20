@@ -9,18 +9,18 @@
  * This code was developed as part of the Computational Infrastructure
  * for Geodynamics (http:*geodynamics.org).
  *
- * Copyright (c) 2010-2017 University of California, Davis
+ * Copyright (c) 2010-2015 University of California, Davis
  *
  * See COPYING for license information.
  *
  * ----------------------------------------------------------------------
  */
 
-/** @file libsrc/fekernels/IsotropicLinearElasticity.hh
+/** @file libsrc/fekernels/IsotropicLinearIncompElasticityPlaneStrain.hh
  *
- * Kernels for isotropic, linear elasticity.
+ * Kernels for linear incompressible elasticity plane strain WITHOUT inertia.
  *
- * Solution fields: [disp(dim), vel(dim, optional)]
+ * Solution fields: [disp(dim), pressure(1)]
  *
  * Auxiliary fields:
  * - 0: density(1)
@@ -38,11 +38,7 @@
  * The elasticity subfields come first (with required ones before optional ones) followed by the rheology subfields
  * (optional ones before required ones). The rheology fields have required fields last because we index from the back.
  *
- * \int_V \vec{\phi}_u \cdot \left( \rho \frac{\partial \vec{v}(t)}{\partial t} \right) \, dV =
- *   \int_V \vec{\phi}_u \cdot \vec{f}(t) - \nabla \vec{\phi}_u : \tensor{\sigma}(\vec{u}) \, dV +
- *   \int_{S_\tau} \vec{\phi}_u \cdot \vec{\tau}(t) \, dS.
- *
- * =====================================================================================================================
+ * :TODO: @brad Add equation here
  *
  * Kernel interface.
  *
@@ -66,26 +62,111 @@
  * @param[out] f0 [dim].
  */
 
-#if !defined(pylith_fekernels_isotropiclinearelasticity_hh)
-#define pylith_fekernels_isotropiclinearelasticity_hh
+#if !defined(pylith_fekernels_isotropiclinearincompelasticity_hh)
+#define pylith_fekernels_isotropiclinearincompelasticity_hh
 
 #include "fekernelsfwd.hh" // forward declarations
 
 #include "pylith/utils/types.hh"
 
 // ---------------------------------------------------------------------------------------------------------------------
-/// Kernels specific to isotropic, linearly elasticity plane strain.
-class pylith::fekernels::IsotropicLinearElasticityPlaneStrain {
+class pylith::fekernels::IsotropicLinearIncompElasticity {
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /** g1 function for isotropic linear elasticity plane strain WITHOUT reference stress and reference strain.
+    /** g0p function for isotropic linear incompressible elasticity WITHOUT reference stress and reference strain.
      *
-     * Solution fields: [disp(dim), ...]
+     * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void g1v(const PylithInt dim,
+    void g0p(const PylithInt dim,
+             const PylithInt numS,
+             const PylithInt numA,
+             const PylithInt sOff[],
+             const PylithInt sOff_x[],
+             const PylithScalar s[],
+             const PylithScalar s_t[],
+             const PylithScalar s_x[],
+             const PylithInt aOff[],
+             const PylithInt aOff_x[],
+             const PylithScalar a[],
+             const PylithScalar a_t[],
+             const PylithScalar a_x[],
+             const PylithReal t,
+             const PylithScalar x[],
+             const PylithInt numConstants,
+             const PylithScalar constants[],
+             PylithScalar g0[]);
+
+    /** g0p function for isotropic linear incompressible elasticity WITH reference stress and reference strain.
+     *
+     * Solution fields: [disp(dim), pressure(1)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void g0p_refstate(const PylithInt dim,
+                      const PylithInt numS,
+                      const PylithInt numA,
+                      const PylithInt sOff[],
+                      const PylithInt sOff_x[],
+                      const PylithScalar s[],
+                      const PylithScalar s_t[],
+                      const PylithScalar s_x[],
+                      const PylithInt aOff[],
+                      const PylithInt aOff_x[],
+                      const PylithScalar a[],
+                      const PylithScalar a_t[],
+                      const PylithScalar a_x[],
+                      const PylithReal t,
+                      const PylithScalar x[],
+                      const PylithInt numConstants,
+                      const PylithScalar constants[],
+                      PylithScalar g0[]);
+
+    /** Jg0_pp function for isotropic linear incompressible elasticity .
+     *
+     * Solution fields: [disp(dim), pressure(1)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void Jg0pp(const PylithInt dim,
+               const PylithInt numS,
+               const PylithInt numA,
+               const PylithInt sOff[],
+               const PylithInt sOff_x[],
+               const PylithScalar s[],
+               const PylithScalar s_t[],
+               const PylithScalar s_x[],
+               const PylithInt aOff[],
+               const PylithInt aOff_x[],
+               const PylithScalar a[],
+               const PylithScalar a_t[],
+               const PylithScalar a_x[],
+               const PylithReal t,
+               const PylithReal s_tshift,
+               const PylithScalar x[],
+               const PylithInt numConstants,
+               const PylithScalar constants[],
+               PylithScalar Jg0[]);
+
+};
+
+// IsotropicLinearIncompElasticity
+
+// ---------------------------------------------------------------------------------------------------------------------
+class pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain {
+    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+
+    /** g1 function for 2-D plane strain isotropic linear incompressible elasticity WITHOUT reference stress and
+     * reference strain.
+     *
+     * Solution fields: [disp(dim), pressure(1)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void g1u(const PylithInt dim,
              const PylithInt numS,
              const PylithInt numA,
              const PylithInt sOff[],
@@ -104,13 +185,14 @@ public:
              const PylithScalar constants[],
              PylithScalar g1[]);
 
-    /** g1 function for isotropic linear elasticity plane strain WITH reference stress and reference strain.
+    /** g1 function for 2-D plane strain isotropic linear incompressible elasticity WITH reference stress and reference
+     * strain.
      *
-     * Solution fields: [disp(dim), ...]
+     * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., refstress(4), refstrain(4), shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void g1v_refstate(const PylithInt dim,
+    void g1u_refstate(const PylithInt dim,
                       const PylithInt numS,
                       const PylithInt numA,
                       const PylithInt sOff[],
@@ -129,13 +211,13 @@ public:
                       const PylithScalar constants[],
                       PylithScalar g1[]);
 
-    /** Jg3_vu entry function for 2-D plane strain isotropic linear elasticity.
+    /** Jg3_uu entry function for 2-D plane strain isotropic linear incompressible elasticity.
      *
      * Solution fields: [...]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void Jg3vu(const PylithInt dim,
+    void Jg3uu(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
                const PylithInt sOff[],
@@ -155,8 +237,8 @@ public:
                const PylithScalar constants[],
                PylithScalar Jg3[]);
 
-    /** Calculate stress for 2-D plane strain isotropic linear
-     * elasticity WITHOUT a reference stress and strain.
+    /** Calculate stress for 2-D plane strain isotropic linear incompressible elasticity WITHOUT a reference stress and
+     * strain.
      *
      * Used to output the stress field.
      *
@@ -183,8 +265,7 @@ public:
                 const PylithScalar constants[],
                 PylithScalar stress[]);
 
-    /** Calculate stress for 2-D plane strain isotropic linear
-     * elasticity WITH a reference stress/strain.
+    /** Calculate stress for 2-D plane strain isotropic linear incompressible elasticity WITH a reference stress/strain.
      *
      * Used to output the stress field.
      *
@@ -211,8 +292,8 @@ public:
                          const PylithScalar constants[],
                          PylithScalar stress[]);
 
-    /** Calculate mean stress for 2-D plane strain isotropic linear
-     * elasticity WITHOUT reference stress and reference strain.
+    /** Calculate mean stress for 2-D plane strain isotropic linear incompressible elasticity WITHOUT reference stress
+     * and strain.
      *
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [bulk_modulus(1)]
@@ -237,11 +318,11 @@ public:
                     const PylithScalar constants[],
                     PylithScalar stress[]);
 
-    /** Calculate mean stress for 2-D plane strain isotropic linear
-     * elasticity WITH reference stress and reference strain.
+    /** Calculate mean stress for 2-D plane strain isotropic linear incompressible elasticity WITH reference stress and
+     * reference strain.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [reference_stress(4), reference_strain(4), bulk_modulus(1)]
+     * Auxiliary fields: [refstress(4), refstrain(4), bulk_modulus(1)]
      */
     static
     void meanStress_refstate(const PylithInt dim,
@@ -263,8 +344,8 @@ public:
                              const PylithScalar constants[],
                              PylithScalar stress[]);
 
-    /** Calculate deviatoric stress for 2-D plane strain isotropic linear
-     * elasticity WITHOUT reference stress and strain.
+    /** Calculate deviatoric stress for 2-D plane strain isotropic linear incompressible elasticity WITHOUT reference
+     * stress and strain.
      *
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [shear_modulus(1)]
@@ -289,8 +370,8 @@ public:
                           const PylithScalar constants[],
                           PylithScalar stress[]);
 
-    /** Calculate deviatoric stress for 2-D plane strain isotropic linear
-     * elasticity WITH reference stress and strain.
+    /** Calculate deviatoric stress for 2-D plane strain isotropic linear incompressible elasticity WITH reference
+     * stress and strain.
      *
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [reference_stress(4), reference_strain(4), shear_modulus(1)]
@@ -315,21 +396,22 @@ public:
                                    const PylithScalar constants[],
                                    PylithScalar stress[]);
 
-}; // IsotropicLinearElasticityPlaneStrain
+};
+
+// IsotropicLinearIncompElasticityPlaneStrain
 
 // ---------------------------------------------------------------------------------------------------------------------
-/// Kernels specific to isotropic, linearly elasticity in 3D.
-class pylith::fekernels::IsotropicLinearElasticity3D {
+class pylith::fekernels::IsotropicLinearIncompElasticity3D {
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /** g1 function for isotropic linear elasticity in 3D WITHOUT reference stress and reference strain.
+    /** g1 function for 3-D isotropic linear incompressible elasticity WITHOUT reference stress and reference strain.
      *
-     * Solution fields: [disp(dim), ...]
+     * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void g1v(const PylithInt dim,
+    void g1u(const PylithInt dim,
              const PylithInt numS,
              const PylithInt numA,
              const PylithInt sOff[],
@@ -348,13 +430,13 @@ public:
              const PylithScalar constants[],
              PylithScalar g1[]);
 
-    /** g1 function for isotropic linear elasticity in 3D WITH reference stress and reference strain.
+    /** g1 function for 3-D isotropic linear incompressible elasticity WITH reference stress and reference strain.
      *
-     * Solution fields: [disp(dim), ...]
+     * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., refstress(4), refstrain(4), shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void g1v_refstate(const PylithInt dim,
+    void g1u_refstate(const PylithInt dim,
                       const PylithInt numS,
                       const PylithInt numA,
                       const PylithInt sOff[],
@@ -373,13 +455,13 @@ public:
                       const PylithScalar constants[],
                       PylithScalar g1[]);
 
-    /** Jg3_vu entry function for 3-D isotropic linear elasticity.
+    /** Jg3_uu entry function for 3-D isotropic linear incompressible elasticity.
      *
      * Solution fields: [...]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void Jg3vu(const PylithInt dim,
+    void Jg3uu(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
                const PylithInt sOff[],
@@ -399,7 +481,7 @@ public:
                const PylithScalar constants[],
                PylithScalar Jg3[]);
 
-    /** Calculate stress for 3-D isotropic linear elasticity WITHOUT a reference stress and strain.
+    /** Calculate stress for 3-D isotropic linear incompressible elasticity WITHOUT a reference stress and strain.
      *
      * Used to output the stress field.
      *
@@ -426,12 +508,12 @@ public:
                 const PylithScalar constants[],
                 PylithScalar stress[]);
 
-    /** Calculate stress for 3-D isotropic linear elasticity WITH a reference stress/strain.
+    /** Calculate stress for 3-D isotropic linear incompressible elasticity WITH a reference stress/strain.
      *
      * Used to output the stress field.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., refstress(6), refstrain(6), shear_modulus(1), bulk_modulus(1)]
+     * Auxiliary fields: [..., refstress(4), refstrain(4), shear_modulus(1), bulk_modulus(1)]
      */
     static
     void stress_refstate(const PylithInt dim,
@@ -453,8 +535,7 @@ public:
                          const PylithScalar constants[],
                          PylithScalar stress[]);
 
-    /** Calculate mean stress for 3-D isotropic linear
-     * elasticity WITHOUT reference stress and reference strain.
+    /** Calculate mean stress for 3-D isotropic linear incompressible elasticity WITHOUT reference stress and strain.
      *
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [bulk_modulus(1)]
@@ -479,11 +560,11 @@ public:
                     const PylithScalar constants[],
                     PylithScalar stress[]);
 
-    /** Calculate mean stress for 3-D isotropic linear
-     * elasticity WITH reference stress and reference strain.
+    /** Calculate mean stress for 3-D isotropic linear incompressible elasticity WITH reference stress and reference
+     * strain.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [reference_stress(6), reference_strain(6), bulk_modulus(1)]
+     * Auxiliary fields: [refstress(4), refstrain(4), bulk_modulus(1)]
      */
     static
     void meanStress_refstate(const PylithInt dim,
@@ -505,8 +586,8 @@ public:
                              const PylithScalar constants[],
                              PylithScalar stress[]);
 
-    /** Calculate deviatoric stress for 3-D isotropic linear
-     * elasticity WITHOUT reference stress and strain.
+    /** Calculate deviatoric stress for 3-D isotropic linear incompressible elasticity WITHOUT reference stress and
+     * strain.
      *
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [shear_modulus(1)]
@@ -531,11 +612,10 @@ public:
                           const PylithScalar constants[],
                           PylithScalar stress[]);
 
-    /** Calculate deviatoric stress for 3-D isotropic linear
-     * elasticity WITH reference stress and strain.
+    /** Calculate deviatoric stress for 3-D isotropic linear incompressible elasticity WITH reference stress and strain.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [reference_stress(6), reference_strain(6), shear_modulus(1)]
+     * Auxiliary fields: [reference_stress(4), reference_strain(4), shear_modulus(1)]
      */
     static
     void deviatoricStress_refstate(const PylithInt dim,
@@ -557,8 +637,10 @@ public:
                                    const PylithScalar constants[],
                                    PylithScalar stress[]);
 
-}; // IsotropicLinearElasticity3D
+};
 
-#endif // pylith_fekernels_isotropiclinearelasticity_hh
+// IsotropicLinearIncompElasticity3D
+
+#endif // pylith_fekernels_isotropiclinearincompelasticity_hh
 
 // End of file
