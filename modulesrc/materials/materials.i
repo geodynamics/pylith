@@ -20,13 +20,12 @@
 // Header files for module C++ code
 %{
 #include "pylith/materials/Material.hh"
-#include "pylith/materials/IsotropicLinearElasticityPlaneStrain.hh"
-#include "pylith/materials/IsotropicLinearIncompElasticityPlaneStrain.hh"
-#include "pylith/materials/IsotropicLinearMaxwellPlaneStrain.hh"
-#include "pylith/materials/IsotropicLinearGenMaxwellPlaneStrain.hh"
-#include "pylith/materials/IsotropicLinearElasticity3D.hh"
-#include "pylith/materials/IsotropicLinearMaxwell3D.hh"
-#include "pylith/materials/IsotropicLinearGenMaxwell3D.hh"
+#include "pylith/materials/RheologyElasticity.hh"
+#include "pylith/materials/IsotropicLinearElasticity.hh"
+#include "pylith/materials/IsotropicLinearMaxwell.hh"
+#include "pylith/materials/IsotropicLinearGenMaxwell.hh"
+#include "pylith/materials/RheologyIncompressibleElasticity.hh"
+#include "pylith/materials/IsotropicLinearIncompElasticity.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -54,17 +53,15 @@ import_array();
 
 // Interfaces
 %include "../utils/PyreComponent.i"
-%include "../feassemble/Observers.i"
-%include "../feassemble/IntegratorPointwise.i"
+%include "../problems/Physics.i"
 
 %include "Material.i"
-%include "IsotropicLinearElasticityPlaneStrain.i"
-%include "IsotropicLinearIncompElasticityPlaneStrain.i"
-%include "IsotropicLinearMaxwellPlaneStrain.i"
-%include "IsotropicLinearGenMaxwellPlaneStrain.i"
-%include "IsotropicLinearElasticity3D.i"
-%include "IsotropicLinearMaxwell3D.i"
-%include "IsotropicLinearGenMaxwell3D.i"
+%include "RheologyElasticity.i"
+%include "IsotropicLinearElasticity.i"
+%include "IsotropicLinearMaxwell.i"
+%include "IsotropicLinearGenMaxwell.i"
+%include "RheologyIncompressibleElasticity.i"
+%include "IsotropicLinearIncompElasticity.i"
 
 
 // End of file
