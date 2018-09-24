@@ -54,7 +54,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
     err = PetscSpaceCreate(PetscObjectComm((PetscObject) dm), &space); PYLITH_CHECK_ERROR(err); assert(space);
     err = PetscSpaceSetType(space, feinfo.feSpace == FieldBase::POLYNOMIAL_SPACE ? PETSCSPACEPOLYNOMIAL : PETSCSPACEPOINT); PYLITH_CHECK_ERROR(err);
     err = PetscSpaceSetNumComponents(space, numComponents); PYLITH_CHECK_ERROR(err);
-    err = PetscSpaceSetOrder(space, basisOrder);
+    err = PetscSpaceSetDegree(space, basisOrder, PETSC_DETERMINE);
     if (feinfo.feSpace == FieldBase::POLYNOMIAL_SPACE) {
         err = PetscSpacePolynomialSetTensor(space, useTensor); PYLITH_CHECK_ERROR(err);
         err = PetscSpaceSetNumVariables(space, dim); PYLITH_CHECK_ERROR(err);
