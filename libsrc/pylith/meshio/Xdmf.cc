@@ -59,7 +59,7 @@ pylith::meshio::Xdmf::write(const char* filenameH5) {
     Py_DECREF(cls);
     Py_DECREF(mod);
 
-    PyObject* pyWrite = PyObject_CallMethod(pyXdmf, "write", "s", filenameH5);
+    PyObject* pyWrite = PyObject_CallMethod(pyXdmf, const_cast<char*>("write"), const_cast<char*>("s"), filenameH5);
     if (!pyWrite) {
         if (PyErr_Occurred()) {
             PyErr_Clear();
