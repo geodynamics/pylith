@@ -39,9 +39,9 @@ class TestPetscVersion(unittest.TestCase):
     if PetscVersion.isRelease():
       self.assertEqual("unknown", revision)
     else:
-      # Check that revision is of the form v2.1.3-16-g9323114
+      # Check that revision is of the form v2.1.3-16-g9323114 or v3.10-88-g06a760874e
       import re
-      match = re.search("v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+-g[0-9,a-z]+", revision)
+      match = re.search("v[0-9]+\.[0-9]+(\.[0-9]+)*-[0-9]+-g[0-9,a-z]+", revision)
       self.failIf(match is None)
     return
 

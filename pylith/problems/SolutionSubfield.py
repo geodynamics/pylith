@@ -113,7 +113,7 @@ class SolutionSubfield(PetscComponent):
         from pylith.topology.Field import Field
         self.componentNames = []
         if self.vectorFieldType == Field.SCALAR:
-            self.componentNames = self.fieldName
+            self.componentNames = [self.fieldName]
         elif self.vectorFieldType == Field.VECTOR:
             labels = ["x", "y", "z"]
             self.componentNames = ["{}_{}".format(self.userAlias, label) for label in labels[:spaceDim]]
