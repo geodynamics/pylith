@@ -54,49 +54,49 @@ public:
      *
      * @param[in] value Start time (nondimensional).
      */
-    void startTime(const double value);
+    void setStartTime(const double value);
 
     /** Get start time for problem.
      *
      * @returns Start time (nondimensional).
      */
-    double startTime(void) const;
+    double getStartTime(void) const;
 
     /** Set total time for problem.
      *
      * @param[in] value Total time (nondimensional).
      */
-    void totalTime(const double value);
+    void setTotalTime(const double value);
 
     /** Get total time for problem.
      *
      * @returns Total time (nondimensional).
      */
-    double totalTime(void) const;
+    double getTotalTime(void) const;
 
     /** Set maximum number of time steps.
      *
      * @param[in] value Maximum number of time steps.
      */
-    void maxTimeSteps(const size_t value);
+    void setMaxTimeSteps(const size_t value);
 
     /** Get maximum number of time steps.
      *
      * @returns Maximum number of time steps.
      */
-    size_t maxTimeSteps(void) const;
+    size_t getMaxTimeSteps(void) const;
 
     /** Set initial time step for problem.
      *
      * @param[in] value Initial time step (nondimensional).
      */
-    void dtInitial(const double value);
+    void setInitialTimeStep(const double value);
 
     /** Get initial time step for problem.
      *
      * @returns Initial time step (nondimensional).
      */
-    double dtInitial(void) const;
+    double getInitialTimeStep(void) const;
 
     /// Initialize.
     void initialize(void);

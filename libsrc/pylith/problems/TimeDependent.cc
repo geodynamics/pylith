@@ -41,7 +41,7 @@ namespace pylith {
 public:
 
             static const char* pyreComponent;
-        };
+        }; // _TimeDependent
 
         const char* _TimeDependent::pyreComponent = "timedependent";
     } // problems
@@ -84,25 +84,25 @@ pylith::problems::TimeDependent::deallocate(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set start time for problem.
 void
-pylith::problems::TimeDependent::startTime(const double value) {
+pylith::problems::TimeDependent::setStartTime(const double value) {
     PYLITH_COMPONENT_DEBUG("startTime(value="<<value<<")");
 
     _startTime = value;
-} // startTime
+} // setStartTime
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get start time for problem.
 double
-pylith::problems::TimeDependent::startTime(void) const {
+pylith::problems::TimeDependent::getStartTime(void) const {
     return _startTime;
-} // startTime
+} // getStartTime
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set total time for problem.
 void
-pylith::problems::TimeDependent::totalTime(const double value) {
+pylith::problems::TimeDependent::setTotalTime(const double value) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("totalTime(value="<<value<<")");
 
@@ -114,21 +114,21 @@ pylith::problems::TimeDependent::totalTime(const double value) {
     _totalTime = value;
 
     PYLITH_METHOD_END;
-} // totalTime
+} // setTotalTime
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get total time for problem.
 double
-pylith::problems::TimeDependent::totalTime(void) const {
+pylith::problems::TimeDependent::getTotalTime(void) const {
     return _totalTime;
-} // totalTime
+} // getTotalTime
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set maximum number of time steps.
 void
-pylith::problems::TimeDependent::maxTimeSteps(const size_t value) {
+pylith::problems::TimeDependent::setMaxTimeSteps(const size_t value) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("maxTimeSteps(value="<<value<<")");
 
@@ -140,23 +140,23 @@ pylith::problems::TimeDependent::maxTimeSteps(const size_t value) {
     _maxTimeSteps = value;
 
     PYLITH_METHOD_END;
-} // maxTimeSteps
+} // setMaxTimeSteps
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get maximum number of time steps.
 size_t
-pylith::problems::TimeDependent::maxTimeSteps(void) const {
+pylith::problems::TimeDependent::getMaxTimeSteps(void) const {
     return _maxTimeSteps;
-} // maxTimeSteps
+} // getMaxTimeSteps
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set initial time step for problem.
 void
-pylith::problems::TimeDependent::dtInitial(const double value) {
+pylith::problems::TimeDependent::setInitialTimeStep(const double value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("dtInitial(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("setInitialTimeStep(value="<<value<<")");
 
     if (value < 0.0) {
         std::ostringstream msg;
@@ -166,15 +166,15 @@ pylith::problems::TimeDependent::dtInitial(const double value) {
     _dtInitial = value;
 
     PYLITH_METHOD_END;
-} // dtInitial
+} // setInitialTimeStep
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get initial time step for problem.
 PetscReal
-pylith::problems::TimeDependent::dtInitial(void) const {
+pylith::problems::TimeDependent::getInitialTimeStep(void) const {
     return _dtInitial;
-} // dtInitial
+} // getInitialTimeStep
 
 
 // ---------------------------------------------------------------------------------------------------------------------
