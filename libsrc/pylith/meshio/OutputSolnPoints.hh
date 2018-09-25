@@ -26,7 +26,6 @@
 #if !defined(pylith_meshio_outputsolnpoints_hh)
 #define pylith_meshio_outputsolnpoints_hh
 
-// Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 #include "pylith/meshio/OutputSoln.hh" // ISA OutputSoln
 
@@ -34,14 +33,10 @@
 
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 
-// OutputSolnPoints -----------------------------------------------------
-/** @brief C++ object for managing output of finite-element data over
- * an arbitrary set of points.
- */
 class pylith::meshio::OutputSolnPoints : public pylith::meshio::OutputSoln {
-    friend class TestOutputSolnPoints;   // unit testing
+    friend class TestOutputSolnPoints; // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /** Constructor
@@ -70,7 +65,7 @@ public:
                   const char* const* stationNames,
                   const PylithInt numStationNames);
 
-    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Write solution at time step.
@@ -83,7 +78,7 @@ protected:
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
 
-    // PRIVATE MEMBERS ////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     /** Setup interpolatior.
@@ -102,21 +97,19 @@ private:
     /// Write dataset with names of points to file.
     void _writePointNames(void);
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     pylith::scalar_array _stationCoords; ///< Array of station coordinates.
     pylith::string_vector _stationNames; ///< Array of station names.
-    pylith::topology::Mesh* _stationsMesh;   ///< Mesh for stations (no cells).
-    DMInterpolationInfo _interpolator;   ///< Field interpolator.
+    pylith::topology::Mesh* _stationsMesh; ///< Mesh for stations (no cells).
+    DMInterpolationInfo _interpolator; ///< Field interpolator.
 
-    static const char* _pyreComponent; ///< Name of Pyre component.
-
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    OutputSolnPoints(const OutputSolnPoints&);   ///< Not implemented.
-    const OutputSolnPoints& operator=(const OutputSolnPoints&);   ///< Not implemented
+    OutputSolnPoints(const OutputSolnPoints&); ///< Not implemented.
+    const OutputSolnPoints& operator=(const OutputSolnPoints&); ///< Not implemented
 
 }; // OutputSolnPoints
 

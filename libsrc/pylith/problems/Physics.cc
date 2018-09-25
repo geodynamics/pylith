@@ -34,7 +34,8 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::problems::Physics::Physics(void) :
-    _normalizer(new spatialdata::units::Nondimensional)
+    _normalizer(new spatialdata::units::Nondimensional),
+    _observers(new pylith::feassemble::Observers)
 {}
 
 
@@ -52,6 +53,7 @@ pylith::problems::Physics::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     delete _normalizer;_normalizer = NULL;
+    delete _observers;_observers = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate

@@ -25,18 +25,15 @@
 #if !defined(pylith_feassemble_observer_hh)
 #define pylith_feassemble_observer_hh
 
-// Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/types.hh" // USES PylithReal, PylithInt
 
-// Observer --------------------------------------------------------
-/// Observer of subject. Receives updates of solution.
 class pylith::feassemble::Observer {
-    friend class TestObserver;   // unit testing
+    friend class TestObserver; // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor.
@@ -69,15 +66,14 @@ public:
                 const pylith::topology::Field& solution,
                 const bool infoOnly=false) = 0;
 
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    Observer(const Observer&);   ///< Not implemented.
-    const Observer& operator=(const Observer&);   ///< Not implemented
+    Observer(const Observer&); ///< Not implemented.
+    const Observer& operator=(const Observer&); ///< Not implemented
 
 }; // Observer
 
 #endif // pylith_feassemble_observer_hh
-
 
 // End of file

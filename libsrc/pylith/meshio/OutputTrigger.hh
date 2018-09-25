@@ -25,19 +25,16 @@
 #if !defined(pylith_meshio_outputtrigger_hh)
 #define pylith_meshio_outputtrigger_hh
 
-// Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh"
 
 #include "pylith/utils/types.hh" // USE PylithInt, PylithReal
 
-// OutputTrigger --------------------------------------------------------
-/// Abstract base class for output trigger.
 class pylith::meshio::OutputTrigger : public pylith::utils::PyreComponent {
-    friend class TestOutputTrigger;   // unit testing
+    friend class TestOutputTrigger; // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -56,16 +53,16 @@ public:
     bool shouldWrite(const PylithReal t,
                      const PylithInt tindex) = 0;
 
-
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    OutputTrigger(const OutputTrigger&);   ///< Not implemented.
-    const OutputTrigger& operator=(const OutputTrigger&);   ///< Not implemented
+    OutputTrigger(const OutputTrigger&); ///< Not implemented.
+    const OutputTrigger& operator=(const OutputTrigger&); ///< Not implemented
 
-}; // OutputTrigger
+};
+
+// OutputTrigger
 
 #endif // pylith_meshio_outputtrigger_hh
-
 
 // End of file

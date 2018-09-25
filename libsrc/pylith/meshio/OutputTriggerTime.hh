@@ -25,17 +25,14 @@
 #if !defined(pylith_meshio_outputtriggertime_hh)
 #define pylith_meshio_outputtriggertime_hh
 
-// Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
 #include "pylith/meshio/OutputTrigger.hh" // ISA OutputTrigger
 
-// OutputTrigger --------------------------------------------------------
-/// Abstract base class for output trigger.
 class pylith::meshio::OutputTriggerTime : public pylith::meshio::OutputTrigger {
-    friend class TestOutputTriggerTime;   // unit testing
+    friend class TestOutputTriggerTime; // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -65,24 +62,22 @@ public:
      */
     double timeSkip(void) const;
 
-
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     PylithReal _timeSkip; ///< Elapsed time between writes.
     PylithReal _timeWrote; ///< Time when data was previously writtern.
 
-    static const char* _pyreComponent; ///< Name of Pyre component.
-
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    OutputTriggerTime(const OutputTriggerTime&);   ///< Not implemented.
-    const OutputTriggerTime& operator=(const OutputTriggerTime&);   ///< Not implemented
+    OutputTriggerTime(const OutputTriggerTime&); ///< Not implemented.
+    const OutputTriggerTime& operator=(const OutputTriggerTime&); ///< Not implemented
 
-}; // OutputTriggerTime
+};
+
+// OutputTriggerTime
 
 #endif // pylith_meshio_outputtriggertime_hh
-
 
 // End of file

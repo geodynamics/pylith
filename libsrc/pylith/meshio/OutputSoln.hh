@@ -25,7 +25,6 @@
 #if !defined(pylith_meshio_outputsoln_hh)
 #define pylith_meshio_outputsoln_hh
 
-// Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
 #include "OutputManager.hh" // ISA OutputManager
@@ -33,13 +32,10 @@
 
 #include "pylith/utils/array.hh" // HASA string_vector
 
-// OutputSoln -----------------------------------------------------
-/** @brief C++ object for managing output of the solution over the domain.
- */
 class pylith::meshio::OutputSoln : public pylith::meshio::OutputManager {
-    friend class TestOutputSoln;   // unit testing
+    friend class TestOutputSoln; // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /** Constructor
@@ -62,7 +58,7 @@ public:
     virtual
     void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-    // PROTECTED METHODS ////////////////////////////////////////////////////
+    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Write solution at time step.
@@ -76,21 +72,16 @@ protected:
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
 
-    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     pylith::problems::Problem* const _problem;
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    static const char* _pyreComponent; ///< Name of Pyre component.
-
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
-    OutputSoln(const OutputSoln&);   ///< Not implemented.
-    const OutputSoln& operator=(const OutputSoln&);   ///< Not implemented
+    OutputSoln(const OutputSoln&); ///< Not implemented.
+    const OutputSoln& operator=(const OutputSoln&); ///< Not implemented
 
 }; // OutputSoln
 

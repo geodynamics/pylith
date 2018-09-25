@@ -25,26 +25,20 @@
 #if !defined(pylith_problems_timedependent_hh)
 #define pylith_problems_timedependent_hh
 
-// Include directives ---------------------------------------------------
 #include "Problem.hh" // ISA Problem
 
-// TimeDependent ---------------------------------------------------------
-/** @brief Object for time dependent problem.
- *
- * TimeDependent uses the PETSc TS object for time stepping.
- */
 class pylith::problems::TimeDependent : public pylith::problems::Problem {
-    friend class TestTimeDependent;   // unit testing
+    friend class TestTimeDependent; // unit testing
 
-    // PUBLIC ENUM //////////////////////////////////////////////////////////
+    // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     enum FormulationTypeEnum {
         IMPLICIT, // Implicit time stepping.
         EXPLICIT, // Explicit time stepping.
-    };   // FormulationTypeEnum
+    }; // FormulationTypeEnum
 
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -201,26 +195,24 @@ public:
     static
     PetscErrorCode poststep(PetscTS ts);
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    double _startTime;   ///< Starting time.
-    double _dtInitial;   ///< Initial time step.
-    double _totalTime;   ///< Total time (duration) of problem.
-    size_t _maxTimeSteps;   ///< Maximum number of time steps for problem.
-    PetscTS _ts;   ///< PETSc time stepper.
-    FormulationTypeEnum _formulationType;   ///< Type of time stepping.
+    double _startTime; ///< Starting time.
+    double _dtInitial; ///< Initial time step.
+    double _totalTime; ///< Total time (duration) of problem.
+    size_t _maxTimeSteps; ///< Maximum number of time steps for problem.
+    PetscTS _ts; ///< PETSc time stepper.
+    FormulationTypeEnum _formulationType; ///< Type of time stepping.
 
-    static const char* _pyreComponent; ///< Name of Pyre component.
-
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    TimeDependent(const TimeDependent&);   ///< Not implemented
-    const TimeDependent& operator=(const TimeDependent&);   ///< Not implemented
+    TimeDependent(const TimeDependent&); ///< Not implemented
+    const TimeDependent& operator=(const TimeDependent&); ///< Not implemented
+
 }; // TimeDependent
 
 #endif // pylith_problems_timedependent_hh
-
 
 // End of file

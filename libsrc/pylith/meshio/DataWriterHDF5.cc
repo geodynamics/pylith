@@ -46,31 +46,28 @@ extern "C" {
 #define PYLITH_HDF5_USE_API_18
 #endif
 
-// ----------------------------------------------------------------------
-const char* pylith::meshio::DataWriterHDF5::_pyreComponent = "datawriterhdf5";
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::DataWriterHDF5::DataWriterHDF5(void) :
     _filename("output.h5"),
     _viewer(0),
     _tstamp(0),
-    _tstampIndex(0){ // constructor
-    PyreComponent::name(_pyreComponent);
+    _tstampIndex(0) {
+    PyreComponent::name("datawriterhdf5");
 } // constructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::DataWriterHDF5::~DataWriterHDF5(void){ // destructor
+pylith::meshio::DataWriterHDF5::~DataWriterHDF5(void) {
     deallocate();
 } // destructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::DataWriterHDF5::deallocate(void){ // deallocate
+pylith::meshio::DataWriterHDF5::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     DataWriter::deallocate();
@@ -83,24 +80,24 @@ pylith::meshio::DataWriterHDF5::deallocate(void){ // deallocate
 } // deallocate
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Copy constructor.
 pylith::meshio::DataWriterHDF5::DataWriterHDF5(const DataWriterHDF5& w) :
     DataWriter(w),
     _filename(w._filename),
     _viewer(0),
     _tstamp(0),
-    _tstampIndex(0){ // copy constructor
+    _tstampIndex(0) { // copy constructor
 } // copy constructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Prepare file for data at a new time step.
 void
 pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
                                      const bool isInfo,
                                      const char* label,
-                                     const int labelId){ // open
+                                     const int labelId) {
     PYLITH_METHOD_BEGIN;
 
     DataWriter::open(mesh, isInfo, label, labelId);
@@ -218,7 +215,7 @@ pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
                 vertices[v++] = gv < 0 ? -(gv+1) : gv;
             }
             err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-            //assert(v == (cell-cStart+1)*numCorners); Would be true without the label check
+            // assert(v == (cell-cStart+1)*numCorners); Would be true without the label check
         } // for
         err = VecRestoreArray(cellVec, &vertices);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PushGroup(_viewer, "/topology");PYLITH_CHECK_ERROR(err);
@@ -246,10 +243,10 @@ pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
 } // open
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Close output files.
 void
-pylith::meshio::DataWriterHDF5::close(void){ // close
+pylith::meshio::DataWriterHDF5::close(void) {
     PYLITH_METHOD_BEGIN;
 
     PetscErrorCode err = 0;
@@ -279,12 +276,12 @@ pylith::meshio::DataWriterHDF5::close(void){ // close
 } // close
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Write field over vertices to file.
 void
 pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
                                                  pylith::topology::Field& field,
-                                                 const pylith::topology::Mesh& mesh){ // writeVertexField
+                                                 const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
 
     assert(_viewer);
@@ -352,13 +349,13 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
 } // writeVertexField
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Write field over cells to file.
 void
 pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
                                                pylith::topology::Field& field,
                                                const char* label,
-                                               const int labelId){ // writeCellField
+                                               const int labelId) {
     PYLITH_METHOD_BEGIN;
 
     assert(_viewer);
@@ -419,11 +416,11 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
 } // writeCellField
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Write dataset with names of points to file.
 void
 pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& names,
-                                                const pylith::topology::Mesh& mesh){ // writePointNames
+                                                const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
 
     assert(_viewer);
@@ -559,10 +556,10 @@ pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& nam
 } // writePointNames
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Generate filename for HDF5 file.
 std::string
-pylith::meshio::DataWriterHDF5::hdf5Filename(void) const { // hdf5Filename
+pylith::meshio::DataWriterHDF5::hdf5Filename(void) const {
     PYLITH_METHOD_BEGIN;
 
     std::ostringstream filename;
@@ -577,11 +574,11 @@ pylith::meshio::DataWriterHDF5::hdf5Filename(void) const { // hdf5Filename
 } // hdf5Filename
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Write time stamp to file.
 void
 pylith::meshio::DataWriterHDF5::_writeTimeStamp(const PylithScalar t,
-                                                const int commRank){ // _writeTimeStamp
+                                                const int commRank) {
     assert(_tstamp);
     PetscErrorCode err = 0;
 

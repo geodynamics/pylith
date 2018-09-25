@@ -25,7 +25,6 @@
 #if !defined(pylith_meshio_OutputManager_hh)
 #define pylith_meshio_OutputManager_hh
 
-// Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
 #include "pylith/feassemble/Observer.hh" // ISA Observer
@@ -34,14 +33,12 @@
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/array.hh" // HASA string_vector
 
-// OutputManager --------------------------------------------------------
-/// Manager for output of finite-element data.
 class pylith::meshio::OutputManager :
     public pylith::utils::PyreComponent,
     public pylith::feassemble::Observer {
-    friend class TestOutputManager;   // unit testing
+    friend class TestOutputManager; // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -119,7 +116,7 @@ public:
                 const pylith::topology::Field& solution,
                 const bool infoOnly=false);
 
-    // PROTECTED METHODS ////////////////////////////////////////////////////
+    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Write diagnostic information.
@@ -228,35 +225,32 @@ protected:
     void _temporarySetLabel(const char* label,
                             const PylithInt labelId);
 
-    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::topology::Fields* _fields;   ///< Container with field buffers used for output.
-    DataWriter* _writer;   ///< Writer for data.
-    FieldFilter* _fieldFilter;   ///< Filter applied to fields.
+    pylith::topology::Fields* _fields; ///< Container with field buffers used for output.
+    DataWriter* _writer; ///< Writer for data.
+    FieldFilter* _fieldFilter; ///< Filter applied to fields.
     OutputTrigger* _trigger; ///< Trigger for deciding how often to write output.
 
     pylith::string_vector _infoFields;
     pylith::string_vector _dataFields;
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     // :TODO: Remove _label and _labelId once materials use their own PetscDM.
     std::string _label; ///< Name of label defining cells to include in output (=0 means use all cells in mesh).
     PylithInt _labelId; ///< Value of label defining which cells to include.
 
-    static const char* _pyreComponent; ///< Name of Pyre component.
-
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    OutputManager(const OutputManager&);   ///< Not implemented.
-    const OutputManager& operator=(const OutputManager&);   ///< Not implemented
+    OutputManager(const OutputManager&); ///< Not implemented.
+    const OutputManager& operator=(const OutputManager&); ///< Not implemented
 
 }; // OutputManager
 
 #endif // pylith_meshio_OutputManager_hh
-
 
 // End of file

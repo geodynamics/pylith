@@ -31,9 +31,9 @@
 
 #include "problemsfwd.hh" // forward declarations
 
-#include "pylith/feassemble/Observers.hh" // ISA Observers
+#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
-#include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Integrator, Constraint
+#include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Integrator, Constraint, Observers
 #include "pylith/materials/materialsfwd.hh" // HOLDSA Material
 #include "pylith/bc/bcfwd.hh" // HOLDSA BoundaryCondition
 #include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesive
@@ -46,7 +46,7 @@
 
 #include "pylith/utils/array.hh" // HASA std::vector
 
-class pylith::problems::Problem : public pylith::feassemble::Observers {
+class pylith::problems::Problem : public pylith::utils::PyreComponent {
     friend class TestProblem; // unit testing
 
     // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92,6 +92,20 @@ public:
      * @param[in] g Gravity field.
      */
     void setGravityField(spatialdata::spatialdb::GravityField* const g);
+
+    /** Register observer to receive notifications.
+     *
+     * Observers are used for output.
+     *
+     * @param[in] observer Observer to receive notifications.
+     */
+    void registerObserver(pylith::feassemble::Observer* observer);
+
+    /** Remove observer from receiving notifications.
+     *
+     * @param[in] observer Observer to remove.
+     */
+    void removeObserver(pylith::feassemble::Observer* observer);
 
     /** Set solution field.
      *
@@ -235,6 +249,8 @@ protected:
 
     std::vector<pylith::feassemble::Integrator*> _integrators; ///< Array of integrators.
     std::vector<pylith::feassemble::Constraint*> _constraints; ///< Array of constraints.
+    pylith::feassemble::Observers* _observers; ///< Subscribers of updates.
+
     SolverTypeEnum _solverType; ///< Problem (solver) type.
 
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////

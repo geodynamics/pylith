@@ -25,17 +25,14 @@
 #if !defined(pylith_meshio_outputtriggerstep_hh)
 #define pylith_meshio_outputtriggerstep_hh
 
-// Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
 #include "pylith/meshio/OutputTrigger.hh" // ISA OutputTrigger
 
-// OutputTrigger --------------------------------------------------------
-/// Abstract base class for output trigger.
 class pylith::meshio::OutputTriggerStep : public pylith::meshio::OutputTrigger {
-    friend class TestOutputTriggerStep;   // unit testing
+    friend class TestOutputTriggerStep; // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -65,24 +62,22 @@ public:
      */
     int numStepsSkip(void) const;
 
-
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     PylithInt _numStepsSkip; ///< Number of steps to skip between writes.
     PylithInt _stepWrote; ///< Step when data was previously written.
 
-    static const char* _pyreComponent; ///< Name of Pyre component.
-
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    OutputTriggerStep(const OutputTriggerStep&);   ///< Not implemented.
-    const OutputTriggerStep& operator=(const OutputTriggerStep&);   ///< Not implemented
+    OutputTriggerStep(const OutputTriggerStep&); ///< Not implemented.
+    const OutputTriggerStep& operator=(const OutputTriggerStep&); ///< Not implemented
 
-}; // OutputTriggerStep
+};
+
+// OutputTriggerStep
 
 #endif // pylith_meshio_outputtriggerstep_hh
-
 
 // End of file

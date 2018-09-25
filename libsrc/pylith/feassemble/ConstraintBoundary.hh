@@ -26,7 +26,7 @@
 
 #include "feassemblefwd.hh" // forward declarations
 
-#include "pylith/feassemble/Constraint.hh" // ISA ConstraintPointwise
+#include "pylith/feassemble/Constraint.hh" // ISA Constraint
 
 class pylith::feassemble::ConstraintBoundary : public pylith::feassemble::Constraint {
     friend class TestConstraintBoundary; // unit testing
@@ -70,7 +70,9 @@ private:
     ConstraintBoundary(const ConstraintBoundary&); ///< Not implemented.
     const ConstraintBoundary& operator=(const ConstraintBoundary&); ///< Not implemented.
 
-}; // class ConstraintBoundary
+};
+
+// class ConstraintBoundary
 
 #endif // pylith_feassemble_constraintboundary_hh
 

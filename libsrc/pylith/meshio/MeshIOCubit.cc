@@ -33,30 +33,26 @@
 #include <sstream> // USES std::ostringstream
 #include <typeinfo> // USES std::typeid
 
-// ----------------------------------------------------------------------
-const char* pylith::meshio::MeshIOCubit::_pyreComponent = "meshiocubit";
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIOCubit::MeshIOCubit(void) :
     _filename(""),
-    _useNodesetNames(true)
-{ // constructor
-    PyreComponent::name(_pyreComponent);
+    _useNodesetNames(true) { // constructor
+    PyreComponent::name("meshiocubit");
 } // constructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::MeshIOCubit::~MeshIOCubit(void)
-{ // destructor
+pylith::meshio::MeshIOCubit::~MeshIOCubit(void) {
     deallocate();
 } // destructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::MeshIOCubit::deallocate(void)
-{ // deallocate
+pylith::meshio::MeshIOCubit::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     MeshIO::deallocate();
@@ -64,11 +60,11 @@ pylith::meshio::MeshIOCubit::deallocate(void)
     PYLITH_METHOD_END;
 } // deallocate
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Unpickle mesh
 void
-pylith::meshio::MeshIOCubit::_read(void)
-{ // _read
+pylith::meshio::MeshIOCubit::_read(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_read()");
 
@@ -92,7 +88,7 @@ pylith::meshio::MeshIOCubit::_read(void)
             const int meshDim = exofile.getDim("num_dim");
 
             _readVertices(exofile, &coordinates, &numVertices, &spaceDim);
-            err = MPI_Bcast(&spaceDim, 1, MPI_INT, 0, _mesh->comm()); PYLITH_CHECK_ERROR(err);
+            err = MPI_Bcast(&spaceDim, 1, MPI_INT, 0, _mesh->comm());PYLITH_CHECK_ERROR(err);
             _readCells(exofile, &cells, &materialIds, &numCells, &numCorners);
             _orientCells(&cells, numCells, numCorners, meshDim);
             MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, meshDim);
@@ -110,7 +106,7 @@ pylith::meshio::MeshIOCubit::_read(void)
             throw std::runtime_error(msg.str());
         } // try/catch
     } else {
-        err = MPI_Bcast(&spaceDim, 1, MPI_INT, 0, _mesh->comm()); PYLITH_CHECK_ERROR(err);
+        err = MPI_Bcast(&spaceDim, 1, MPI_INT, 0, _mesh->comm());PYLITH_CHECK_ERROR(err);
         MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, meshDim);
         _setMaterials(materialIds);
     }
@@ -119,11 +115,11 @@ pylith::meshio::MeshIOCubit::_read(void)
     PYLITH_METHOD_END;
 } // read
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Write mesh to file.
 void
-pylith::meshio::MeshIOCubit::_write(void) const
-{ // write
+pylith::meshio::MeshIOCubit::_write(void) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_write()");
 
@@ -136,14 +132,14 @@ pylith::meshio::MeshIOCubit::_write(void) const
     PYLITH_METHOD_END;
 } // write
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Read mesh vertices.
 void
 pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
                                            scalar_array* coordinates,
                                            int* numVertices,
-                                           int* numDims) const
-{ // _readVertices
+                                           int* numDims) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_readVertices(exofile="<<typeid(exofile).name()<<", coordinates="<<coordinates<<", numVertices="<<numVertices<<", numDims="<<numDims<<")");
 
@@ -168,10 +164,12 @@ pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
         exofile.getVar(&buffer[0], dims, ndims, "coord");
 
         coordinates->resize(*numVertices * *numDims);
-        for (int iVertex = 0; iVertex < *numVertices; ++iVertex)
-            for (int iDim = 0; iDim < *numDims; ++iDim)
+        for (int iVertex = 0; iVertex < *numVertices; ++iVertex) {
+            for (int iDim = 0; iDim < *numDims; ++iDim) {
                 (*coordinates)[iVertex*(*numDims)+iDim] =
                     buffer[iDim*(*numVertices)+iVertex];
+            }
+        }
 
     } else {
         const char* coordNames[3] = { "coordx", "coordy", "coordz" };
@@ -186,23 +184,24 @@ pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
         for (int i = 0; i < *numDims; ++i) {
             exofile.getVar(&buffer[0], dims, ndims, coordNames[i]);
 
-            for (int iVertex = 0; iVertex < *numVertices; ++iVertex)
+            for (int iVertex = 0; iVertex < *numVertices; ++iVertex) {
                 (*coordinates)[iVertex*(*numDims)+i] = buffer[iVertex];
+            }
         } // for
     } // else
 
     PYLITH_METHOD_END;
 } // _readVertices
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Read mesh cells.
 void
 pylith::meshio::MeshIOCubit::_readCells(ExodusII& exofile,
                                         int_array* cells,
                                         int_array* materialIds,
                                         int* numCells,
-                                        int* numCorners) const
-{ // _readCells
+                                        int* numCorners) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_readCells(exofile="<<typeid(exofile).name()<<", cells="<<cells<<", materialIds="<<materialIds<<", numCells="<<numCells<<", numCorners="<<numCorners<<")");
 
@@ -254,8 +253,9 @@ pylith::meshio::MeshIOCubit::_readCells(ExodusII& exofile,
         exofile.getVar(&(*cells)[index* (*numCorners)], dims, ndims,
                        varname.str().c_str());
 
-        for (int i = 0; i < blockSize; ++i)
+        for (int i = 0; i < blockSize; ++i) {
             (*materialIds)[index+i] = blockIds[iMaterial];
+        }
 
         index += blockSize;
     } // for
@@ -265,11 +265,11 @@ pylith::meshio::MeshIOCubit::_readCells(ExodusII& exofile,
     PYLITH_METHOD_END;
 } // _readCells
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Read mesh groups.
 void
-pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile)
-{ // _readGroups
+pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_readGroups(exofile="<<typeid(exofile).name()<<")");
 
@@ -291,7 +291,6 @@ pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile)
     } // if
 
     for (int iGroup = 0; iGroup < numGroups; ++iGroup) {
-
         std::ostringstream varname;
         varname << "num_nod_ns" << iGroup+1;
         const int nodesetSize = exofile.getDim(varname.str().c_str());
@@ -321,49 +320,48 @@ pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile)
     PYLITH_METHOD_END;
 } // _readGroups
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Write mesh dimensions.
 void
-pylith::meshio::MeshIOCubit::_writeDimensions(ExodusII& exofile) const
-{ // _writeDimensions
+pylith::meshio::MeshIOCubit::_writeDimensions(ExodusII& exofile) const {
     throw std::logic_error("MeshIOCubit::_writeDimensions() not implemented.");
 } // _writeDimensions
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Write mesh variables.
 void
-pylith::meshio::MeshIOCubit::_writeVariables(ExodusII& exofile) const
-{ // _writeVariables
+pylith::meshio::MeshIOCubit::_writeVariables(ExodusII& exofile) const {
     throw std::logic_error("MeshIOCubit::_writeVariables() not implemented.");
 } // _writeVariables
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Write mesh attributes.
 void
-pylith::meshio::MeshIOCubit::_writeAttributes(ExodusII& exofile) const
-{ // _writeAttributes
+pylith::meshio::MeshIOCubit::_writeAttributes(ExodusII& exofile) const {
     throw std::logic_error("MeshIOCubit::_writeAttributes() not implemented.");
 } // _writeAttributes
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Reorder vertices in cells to match PyLith conventions.
 void
 pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
                                           const int numCells,
                                           const int numCorners,
-                                          const int meshDim)
-{ // _orientCells
+                                          const int meshDim) {
     PYLITH_METHOD_BEGIN;
 
     assert(cells);
     assert(cells->size() == size_t(numCells*numCorners));
 
     if ((2 == meshDim) && (4 == numCorners)) { // QUAD4
-        ; // do nothing
+        // do nothing
 
     } else if ((3 == meshDim) && (8 == numCorners)) { // HEX8
-        ; // do nothing
+        // do nothing
 
     } else if ((2 == meshDim) && (6 == numCorners)) { // TRI6
         // CUBIT

@@ -26,27 +26,24 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
-
-// ----------------------------------------------------------------------
-const char* pylith::meshio::OutputSolnBoundary::_pyreComponent = "outputsoln";
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputSolnBoundary::OutputSolnBoundary(pylith::problems::Problem* const problem) :
     OutputSoln(problem),
     _label(""),
-    _boundaryMesh(NULL)
-{ // constructor
-    PyreComponent::name(_pyreComponent);
+    _boundaryMesh(NULL) { // constructor
+    PyreComponent::name("outputsoln");
 } // constructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor
 pylith::meshio::OutputSolnBoundary::~OutputSolnBoundary(void) {
     deallocate();
 } // destructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::meshio::OutputSolnBoundary::deallocate(void) {
@@ -54,12 +51,13 @@ pylith::meshio::OutputSolnBoundary::deallocate(void) {
 
     OutputSoln::deallocate();
 
-    delete _boundaryMesh; _boundaryMesh = NULL;
+    delete _boundaryMesh;_boundaryMesh = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set label identifier for subdomain.
 void
 pylith::meshio::OutputSolnBoundary::label(const char* value) {
@@ -70,7 +68,8 @@ pylith::meshio::OutputSolnBoundary::label(const char* value) {
     PYLITH_METHOD_END;
 } // label
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::Field& solution) const {
@@ -92,7 +91,7 @@ pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::
 } // verifyConfiguration
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Write data for step in solution.
 void
 pylith::meshio::OutputSolnBoundary::_writeDataStep(const PylithReal t,
@@ -102,7 +101,7 @@ pylith::meshio::OutputSolnBoundary::_writeDataStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG("_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
     if (!_boundaryMesh) {
-        _boundaryMesh = new pylith::topology::Mesh(solution.mesh(), _label.c_str()); assert(_boundaryMesh);
+        _boundaryMesh = new pylith::topology::Mesh(solution.mesh(), _label.c_str());assert(_boundaryMesh);
     } // if
 
     const pylith::topology::Field* auxField = NULL;
@@ -119,7 +118,7 @@ pylith::meshio::OutputSolnBoundary::_writeDataStep(const PylithReal t,
             throw std::runtime_error(msg.str());
         } // if
 
-        pylith::topology::Field* fieldBuffer = _getBuffer(solution, dataNames[iField].c_str()); assert(fieldBuffer);
+        pylith::topology::Field* fieldBuffer = _getBuffer(solution, dataNames[iField].c_str());assert(fieldBuffer);
         _appendField(t, fieldBuffer, *_boundaryMesh);
     } // for
     _closeDataStep();

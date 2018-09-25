@@ -36,7 +36,7 @@
 
 class pylith::feassemble::Observers : public pylith::utils::PyreComponent {
     friend class TestObservers; // unit testing
-
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor.
@@ -81,19 +81,21 @@ public:
                          const pylith::topology::Field& solution,
                          const bool infoOnly=false);
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     typedef std::set<pylith::feassemble::Observer*>::iterator iterator; ///< Iterator.
     std::set<pylith::feassemble::Observer*> _observers; ///< Subscribers of updates.
 
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     Observers(const Observers&); ///< Not implemented.
     const Observers& operator=(const Observers&); ///< Not implemented
 
-}; // Observers
+};
+
+// Observers
 
 #endif // pylith_feassemble_observers_hh
 

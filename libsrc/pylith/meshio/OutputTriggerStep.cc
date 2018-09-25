@@ -24,23 +24,21 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
-// ----------------------------------------------------------------------
-const char* pylith::meshio::OutputTriggerStep::_pyreComponent = "outputtriggerstep";
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputTriggerStep::OutputTriggerStep(void) :
     _numStepsSkip(0),
-    _stepWrote(PYLITH_MININT+10)
-{ // constructor
-    PyreComponent::name(_pyreComponent);
+    _stepWrote(PYLITH_MININT+10) { // constructor
+    PyreComponent::name("outputtriggerstep");
 } // constructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor
 pylith::meshio::OutputTriggerStep::~OutputTriggerStep(void) {}
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set number of steps to skip between writes.
 void
 pylith::meshio::OutputTriggerStep::numStepsSkip(const int value) {
@@ -49,14 +47,16 @@ pylith::meshio::OutputTriggerStep::numStepsSkip(const int value) {
     _numStepsSkip = (value >= 0) ? value : 0;
 } // numStepsSkip
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Get number of steps to skip between writes.
 int
 pylith::meshio::OutputTriggerStep::numStepsSkip(void) const {
     return _numStepsSkip;
 } // numStepsSkip
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Check whether we want to write output at time t.
 bool
 pylith::meshio::OutputTriggerStep::shouldWrite(const PylithReal t,

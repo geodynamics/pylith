@@ -27,24 +27,22 @@
 
 #include <typeinfo> // USES typeid()
 
-// ----------------------------------------------------------------------
-const char* pylith::meshio::OutputSoln::_pyreComponent = "outputsoln";
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputSoln::OutputSoln(pylith::problems::Problem* const problem) :
-    _problem(problem)
-{ // constructor
-    PyreComponent::name(_pyreComponent);
+    _problem(problem) { // constructor
+    PyreComponent::name("outputsoln");
 } // constructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor
 pylith::meshio::OutputSoln::~OutputSoln(void) {
     deallocate();
 } // destructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::meshio::OutputSoln::deallocate(void) {
@@ -55,7 +53,8 @@ pylith::meshio::OutputSoln::deallocate(void) {
     PYLITH_METHOD_END;
 } // deallocate
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::meshio::OutputSoln::verifyConfiguration(const pylith::topology::Field& solution) const {
@@ -77,7 +76,7 @@ pylith::meshio::OutputSoln::verifyConfiguration(const pylith::topology::Field& s
 } // verifyConfiguration
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Write data for step in solution.
 void
 pylith::meshio::OutputSoln::_writeDataStep(const PylithReal t,
@@ -100,7 +99,7 @@ pylith::meshio::OutputSoln::_writeDataStep(const PylithReal t,
             throw std::runtime_error(msg.str());
         } // if
 
-        pylith::topology::Field* fieldBuffer = _getBuffer(solution, dataNames[iField].c_str()); assert(fieldBuffer);
+        pylith::topology::Field* fieldBuffer = _getBuffer(solution, dataNames[iField].c_str());assert(fieldBuffer);
         _appendField(t, fieldBuffer, fieldBuffer->mesh());
     } // for
     _closeDataStep();

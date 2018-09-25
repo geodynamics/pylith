@@ -27,7 +27,8 @@
 #include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
 #include "pylith/bc/BoundaryCondition.hh" // USES BoundaryCondition
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
-//#include "pylith/feassemble/Constraint.hh" // USES Constraint
+#include "pylith/feassemble/Constraint.hh" // USES Constraint
+#include "pylith/feassemble/Observers.hh" // USES Observers
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
 
@@ -50,6 +51,7 @@ pylith::problems::Problem::Problem() :
     _jacobianLHSLumpedInv(NULL),
     _normalizer(NULL),
     _gravityField(NULL),
+    _observers(new pylith::feassemble::Observers),
     _solverType(LINEAR) { // constructor
 } // constructor
 
@@ -118,6 +120,34 @@ pylith::problems::Problem::setGravityField(spatialdata::spatialdb::GravityField*
 
     _gravityField = g;
 } // setGravityField
+
+
+// ----------------------------------------------------------------------
+// Register observer to receive notifications.
+void
+pylith::problems::Problem::registerObserver(pylith::feassemble::Observer* observer) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("registerObserver(observer="<<typeid(observer).name()<<")");
+
+    assert(_observers);
+    _observers->registerObserver(observer);
+
+    PYLITH_METHOD_END;
+} // registerObserver
+
+
+// ----------------------------------------------------------------------
+// Remove observer from receiving notifications.
+void
+pylith::problems::Problem::removeObserver(pylith::feassemble::Observer* observer) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("removeObserver(observer="<<typeid(observer).name()<<")");
+
+    assert(_observers);
+    _observers->removeObserver(observer);
+
+    PYLITH_METHOD_END;
+} // removeObserver
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -249,7 +279,8 @@ pylith::problems::Problem::verifyConfiguration(void) const {
         _bc[i]->verifyConfiguration(*_solution);
     } // for
 
-    verifyObservers(*_solution);
+    assert(_observers);
+    _observers->verifyObservers(*_solution);
 
     PYLITH_METHOD_END;
 } // verifyConfiguration
@@ -278,14 +309,12 @@ pylith::problems::Problem::initialize(void) {
         _integrators[i]->initialize(*_solution);
     } // for
 
-#if 0 // :TODO: Implement Constraint.
-      // Initialize constraints.
+    // Initialize constraints.
     const size_t numConstraints = _constraints.size();
     for (size_t i = 0; i < numConstraints; ++i) {
         assert(_constraints[i]);
         _constraints[i]->initialize(*_solution);
     } // for
-#endif
 
     // Initialize solution field.
     _solution->allocate();
@@ -324,12 +353,10 @@ pylith::problems::Problem::setSolutionLocal(const PylithReal t,
         _solutionDot->scatterVectorToLocal(solutionDotVec);
     } // if
 
-#if 0 // :TODO: Implement Constraint.
     const size_t numConstraints = _constraints.size();
     for (size_t i = 0; i < numConstraints; ++i) {
         _constraints[i]->setSolution(_solution, t);
     } // for
-#endif
 
     //_solution->view("SOLUTION AFTER SETTING VALUES");
 
@@ -640,7 +667,6 @@ pylith::problems::Problem::_createConstraints(void) {
         if (constraint) { _constraints[count++] = constraint;}
     } // for
 
-    // Check to make sure boundary conditions are compatible with the solution.
     for (size_t i = 0; i < numBC; ++i) {
         assert(_bc[i]);
         pylith::feassemble::Constraint* constraint = _bc[i]->createConstraint(*_solution);
