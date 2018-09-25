@@ -24,34 +24,31 @@
 
 namespace pylith {
     namespace meshio {
+        class pylith::meshio::OutputIntegrator : public OutputManager {
+            // PUBLIC METHODS ///////////////////////////////////////////////
+public:
 
-	class pylith::meshio::OutputIntegrator : public OutputManager {
+            /** Constructor
+             *
+             * @param[in] integrator Integrator to observe.
+             */
+            OutputIntegrator(pylith::feassemble::Integrator* const integrator);
 
-	// PUBLIC METHODS ///////////////////////////////////////////////
-	public :
+            /// Destructor
+            ~OutputIntegrator(void);
 
-	    /** Constructor
-	     *
-	     * @param[in] integrator Integrator to observe.
-	     */
-	    OutputIntegrator(pylith::feassemble::IntegratorPointwise* const integrator);
+            /// Deallocate PETSc and local data structures.
+            void deallocate(void);
 
-	    /// Destructor
-	    ~OutputIntegrator(void);
+            /** Verify configuration.
+             *
+             * @param[in] solution Solution field.
+             */
+            void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-	    /// Deallocate PETSc and local data structures.
-	    void deallocate(void);
-
-	    /** Verify configuration.
-	     *
-	     * @param[in] solution Solution field.
-	     */
-	    void verifyConfiguration(const pylith::topology::Field& solution) const;
-	    
-	}; // OutputIntegrator
+        }; // OutputIntegrator
 
     } // meshio
 } // pylith
-
 
 // End of file

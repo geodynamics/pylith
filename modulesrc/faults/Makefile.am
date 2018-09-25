@@ -26,8 +26,7 @@ subpkgpyexec_PYTHON = faults.py
 
 swig_sources = \
 	faults.i \
-	../feassemble/IntegratorPointwise.i \
-	../feassemble/Observers.i \
+	../problems/Physics.i \
 	FaultCohesive.i \
 	FaultCohesiveKin.i \
 	KinSrc.i \
@@ -63,4 +62,4 @@ MAINTAINERCLEANFILES = \
 	$(srcdir)/faults.py
 
 
-# End of file 
+# End of file

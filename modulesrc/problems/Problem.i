@@ -24,190 +24,193 @@
 
 namespace pylith {
     namespace problems {
-
-        class Problem :
-	          public pylith::feassemble::Observers {
-
-// PUBLIC ENUM ////////////////////////////////////////////////////
+        class Problem : public pylith::utils::PyreComponent {
+            // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-        enum SolverTypeEnum {
-            LINEAR, // Linear solver.
-            NONLINEAR, // Nonlinear solver.
-        }; // SolverType
+            enum SolverTypeEnum {
+                LINEAR, // Linear solver.
+                NONLINEAR, // Nonlinear solver.
+            }; // SolverType
 
-
-// PUBLIC MEMBERS /////////////////////////////////////////////////
+            // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-        /// Constructor
-        Problem(void);
+            /// Constructor
+            Problem(void);
 
-        /// Destructor
-        virtual
-        ~Problem(void);
+            /// Destructor
+            virtual ~Problem(void);
 
-        /// Deallocate PETSc and local data structures.
-        void deallocate(void);
+            /// Deallocate PETSc and local data structures.
+            void deallocate(void);
 
-        /** Set solver type.
-         *
-         * @param[in] value Solver type.
-         */
-        void solverType(const SolverTypeEnum value);
+            /** Set solver type.
+             *
+             * @param[in] value Solver type.
+             */
+            void setSolverType(const SolverTypeEnum value);
 
-        /** Get solver type.
-         *
-         * @returns Solver type.
-         */
-        SolverTypeEnum solverType(void) const;
+            /** Get solver type.
+             *
+             * @returns Solver type.
+             */
+            SolverTypeEnum getSolverType(void) const;
 
-        /** Set manager of scales used to nondimensionalize problem.
-         *
-         * @param dim Nondimensionalizer.
-         */
-        void normalizer(const spatialdata::units::Nondimensional& dim);
+            /** Set manager of scales used to nondimensionalize problem.
+             *
+             * @param[in] dim Nondimensionalizer.
+             */
+            void setNormalizer(const spatialdata::units::Nondimensional& dim);
 
-        /** Set gravity field.
-         *
-         * @param g Gravity field.
-         */
-        void gravityField(spatialdata::spatialdb::GravityField* const g);
+            /** Set gravity field.
+             *
+             * @param[in] g Gravity field.
+             */
+            void setGravityField(spatialdata::spatialdb::GravityField* const g);
 
-        /** Set solution field.
-         *
-         * @param[in] field Solution field.
-         */
-        void solution(pylith::topology::Field* field);
+            /** Register observer to receive notifications.
+             *
+             * Observers are used for output.
+             *
+             * @param[in] observer Observer to receive notifications.
+             */
+            void registerObserver(pylith::feassemble::Observer* observer);
 
-        /** Set handles to integrators.
-         *
-         * @param[in] integratorArray Array of integrators.
-         * @param[in] numIntegrators Number of integrators.
-         */
-        void integrators(pylith::feassemble::IntegratorPointwise* integratorArray[],
-                         const int numIntegrators);
+            /** Remove observer from receiving notifications.
+             *
+             * @param[in] observer Observer to remove.
+             */
+            void removeObserver(pylith::feassemble::Observer* observer);
 
-        /** Set handles to constraints.
-         *
-         * @param[in] constraintArray Array of constraints.
-         * @param[in] numContraints Number of constraints.
-         */
-        void constraints(pylith::feassemble::ConstraintPointwise* constraintArray[],
-                         const int numConstraints);
+            /** Set solution field.
+             *
+             * @param[in] field Solution field.
+             */
+            void setSolution(pylith::topology::Field* field);
 
-        /** Do minimal initialization.
-         *
-         * @param mesh Finite-element mesh.
-         */
-        virtual
-        void preinitialize(const pylith::topology::Mesh& mesh);
+            /** Set materials.
+             *
+             * @param[in] materials Array of materials.
+             * @param[in] numMaterials Number of materials.
+             */
+            void setMaterials(pylith::materials::Material* materials[],
+                              const int numMaterials);
 
-        /** Verify configuration.
-         *
-         * @param[in] materialIds Array of material ids.
-         * @param[in] numMaterials Size of array (number of materials).
-         *
-         */
-         %apply(int* INPLACE_ARRAY1, int DIM1) {
-           (int* const materialIds, const int numMaterials)
-           };
-        virtual
-        void verifyConfiguration(int* const materialIds,
-                                 const int numMaterials);
-        %clear(int* const materialIds, const int numMaterials);
+            /** Set boundary conditions.
+             *
+             * @param[in] bc Array of boundary conditions.
+             * @param[in] numBC Number of boundary conditions.
+             */
+            void setBoundaryConditions(pylith::bc::BoundaryCondition* bc[],
+                                       const int numBC);
 
-        /** Initialize.
-         *
-         */
-        virtual
-        void initialize(void);
+            /** Set interior interface conditions.
+             *
+             * @param[in] interfaces Array of interior interfaces.
+             * @param[in] numInterfaces Number of interior interfaces.
+             */
+            void setInterfaces(pylith::faults::FaultCohesive* faults[],
+                               const int numFaults);
 
-	/** Set solution values according to constraints (Dirichlet BC).
-	 *
-	 * @param[in] t Current time.
-	 * @param[in] solutionVec PETSc Vec with current global view of solution.
-	 * @param[in] solutionDotVec PETSc Vec with current global view of time derivative of solution.
-	 */
-	     void setSolutionLocal(const PylithReal t,
-				   PetscVec solutionVec,
-				   PetscVec solutionDotVec);
+            /** Do minimal initialization.
+             *
+             * @param mesh Finite-element mesh.
+             */
+            virtual
+            void preinitialize(const pylith::topology::Mesh& mesh);
 
-        /** Compute RHS residual, G(t,s).
-         *
-         * @param[out] residualVec PETSc Vec for residual.
-         * @param[in] t Current time.
-         * @param[in] dt Current time step.
-         * @param[in] solutionVec PETSc Vec with current trial solution.
-         */
-        void computeRHSResidual(PetscVec residualVec,
-                                const PetscReal t,
-                                const PetscReal dt,
-                                PetscVec solutionVec);
+            /// Verify configuration.
+            virtual
+            void verifyConfiguration(void) const;
 
-        /* Compute RHS Jacobian for G(t,s).
-         *
-         * @param[out] jacobianMat PETSc Mat for Jacobian.
-         * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
-         * @param[in] t Current time.
-         * @param[in] dt Current time step.
-         * @param[in] solutionVec PETSc Vec with current trial solution.
-         */
-        void computeRHSJacobian(PetscMat jacobianMat,
-                                PetscMat precondMat,
-                                const PylithReal t,
-                                const PylithReal dt,
-                                PetscVec solutionVec);
+            /// Initialize problem.
+            virtual
+            void initialize(void);
 
-        /** Compute LHS residual, F(t,s,\dot{s}).
-         *
-         * @param[out] residualVec PETSc Vec for residual.
-         * @param[in] t Current time.
-         * @param[in] dt Current time step.
-         * @param[in] solutionVec PETSc Vec with current trial solution.
-         * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
-         */
-        void computeLHSResidual(PetscVec residualVec,
-                                const PetscReal t,
-                                const PetscReal dt,
-                                PetscVec solutionVec,
-                                PetscVec solutionDotVec);
+            /** Set solution values according to constraints (Dirichlet BC).
+             *
+             * @param[in] t Current time.
+             * @param[in] solutionVec PETSc Vec with current global view of solution.
+             * @param[in] solutionDotVec PETSc Vec with current global view of time derivative of solution.
+             */
+            void setSolutionLocal(const PylithReal t,
+                                  PetscVec solutionVec,
+                                  PetscVec solutionDotVec);
 
-        /* Compute LHS Jacobian for F(t,s,\dot{s}) for implicit time stepping.
-         *
-         * @param[out] jacobianMat PETSc Mat for Jacobian.
-         * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
-         * @param[in] t Current time.
-         * @param[in] dt Current time step.
-         * @param[in] s_tshift Scale for time derivative.
-         * @param[in] solutionVec PETSc Vec with current trial solution.
-         * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
-         */
-        void computeLHSJacobianImplicit(PetscMat jacobianMat,
-                                        PetscMat precondMat,
-                                        const PylithReal t,
-                                        const PylithReal dt,
-                                        const PylithReal s_tshift,
-                                        PetscVec solutionVec,
-                                        PetscVec solutionDotVec);
+            /** Compute RHS residual, G(t,s) and assemble into global vector.
+             *
+             * @param[out] residualVec PETSc Vec for residual.
+             * @param[in] t Current time.
+             * @param[in] dt Current time step.
+             * @param[in] solutionVec PETSc Vec with current trial solution.
+             */
+            void computeRHSResidual(PetscVec residualVec,
+                                    const PetscReal t,
+                                    const PetscReal dt,
+                                    PetscVec solutionVec);
 
-        /* Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) for explicit time stepping.
-         *
-         * @param[in] t Current time.
-         * @param[in] dt Current time step.
-         * @param[in] s_tshift Scale for time derivative.
-         * @param[in] solutionVec PETSc Vec with current trial solution.
-         */
-        void computeLHSJacobianLumpedInv(const PylithReal t,
-                                         const PylithReal dt,
-					 const PylithReal s_tshift,
-                                         PetscVec solutionVec);
+            /* Compute RHS Jacobian for G(t,s).
+             *
+             * @param[out] jacobianMat PETSc Mat for Jacobian.
+             * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
+             * @param[in] t Current time.
+             * @param[in] dt Current time step.
+             * @param[in] solutionVec PETSc Vec with current trial solution.
+             */
+            void computeRHSJacobian(PetscMat jacobianMat,
+                                    PetscMat precondMat,
+                                    const PylithReal t,
+                                    const PylithReal dt,
+                                    PetscVec solutionVec);
 
+            /** Compute LHS residual, F(t,s,\dot{s}) and assemble into global vector.
+             *
+             * @param[out] residualVec PETSc Vec for residual.
+             * @param[in] t Current time.
+             * @param[in] dt Current time step.
+             * @param[in] solutionVec PETSc Vec with current trial solution.
+             * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
+             */
+            void computeLHSResidual(PetscVec residualVec,
+                                    const PetscReal t,
+                                    const PetscReal dt,
+                                    PetscVec solutionVec,
+                                    PetscVec solutionDotVec);
+
+            /* Compute LHS Jacobian for F(t,s,\dot{s}) for implicit time stepping.
+             *
+             * @param[out] jacobianMat PETSc Mat for Jacobian.
+             * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
+             * @param[in] t Current time.
+             * @param[in] dt Current time step.
+             * @param[in] s_tshift Scale for time derivative.
+             * @param[in] solutionVec PETSc Vec with current trial solution.
+             * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
+             */
+            void computeLHSJacobian(PetscMat jacobianMat,
+                                    PetscMat precondMat,
+                                    const PylithReal t,
+                                    const PylithReal dt,
+                                    const PylithReal s_tshift,
+                                    PetscVec solutionVec,
+                                    PetscVec solutionDotVec);
+
+            /* Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) for explicit time stepping.
+             *
+             * @param[in] t Current time.
+             * @param[in] dt Current time step.
+             * @param[in] s_tshift Scale for time derivative.
+             * @param[in] solutionVec PETSc Vec with current trial solution.
+             */
+            void computeLHSJacobianLumpedInv(const PylithReal t,
+                                             const PylithReal dt,
+                                             const PylithReal s_tshift,
+                                             PetscVec solutionVec);
 
         }; // Problem
 
     } // problems
 } // pylith
-
 
 // End of file

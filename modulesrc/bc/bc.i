@@ -48,13 +48,10 @@
 
 // Interfaces
 %include "../utils/PyreComponent.i"
-%include "../feassemble/Observers.i"
-%include "../feassemble/ConstraintPointwise.i"
-%include "../feassemble/IntegratorPointwise.i"
+%include "../problems/Physics.i"
 
-%include "ConstraintBoundary.i"
+%include "BoundaryCondition.i"
 %include "DirichletTimeDependent.i"
-%include "IntegratorBoundary.i"
 %include "NeumannTimeDependent.i"
 %include "AbsorbingDampers.i"
 

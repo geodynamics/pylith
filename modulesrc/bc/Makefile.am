@@ -27,12 +27,9 @@ subpkgpyexec_PYTHON = bc.py
 swig_sources = \
 	bc.i \
 	../utils/PyreComponent.i \
-	../feassemble/Observers.i \
-	../feassemble/ConstraintPointwise.i \
-	../feassemble/IntegratorPointwise.i \
-	ConstraintBoundary.i \
+	../problems/Physics.i \
+	BoundaryCondition.i \
 	DirichletTimeDependent.i \
-	IntegratorBoundary.i \
 	NeumannTimeDependent.i \
 	AbsorbingDampers.i
 

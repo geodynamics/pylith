@@ -23,10 +23,8 @@
 
 namespace pylith {
     namespace bc {
-
-        class AbsorbingDampers : public pylith::bc::IntegratorBoundary {
-
-            // PUBLIC METHODS /////////////////////////////////////////////////
+        class AbsorbingDampers : public pylith::bc::BoundaryCondition {
+            // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
             /// Default constructor.
@@ -44,49 +42,60 @@ public:
              */
             void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-            // PROTECTED METHODS //////////////////////////////////////////////////
+            /** Create integrator and set kernels.
+             *
+             * @param[in] solution Solution field.
+             * @returns Integrator if applicable, otherwise NULL.
+             */
+            pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution);
+
+            /** Create constraint and set kernels.
+             *
+             * @param[in] solution Solution field.
+             * @returns Constraint if applicable, otherwise NULL.
+             */
+            pylith::feassemble::Constraint* createConstraint(const pylith::topology::Field& solution);
+
+            /** Create auxiliary field.
+             *
+             * @param[in] solution Solution field.
+             * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+             *
+             * @returns Auxiliary field if applicable, otherwise NULL.
+             */
+            pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
+                                                          const pylith::topology::Mesh& domainMesh);
+
+            /** Create derived field.
+             *
+             * @param[in] solution Solution field.
+             * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+             *
+             * @returns Derived field if applicable, otherwise NULL.
+             */
+            pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
+                                                        const pylith::topology::Mesh& domainMesh);
+
+            // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-            /** Setup auxiliary subfields (discretization and query fns).
+            /** Get auxiliary factory associated with physics.
              *
-             * Create subfields in auxiliary fields (includes name of the field,
-             * vector field type, discretization, and scale for
-             * nondimensionalization) and set query functions for filling them
-             * from a spatial database.
-             *
-             * @attention The order of the calls to subfieldAdd() must match the
-             * order of the auxiliary fields in the FE kernels.
-             *
-             * @param[in] solution Solution field.
+             * @return Auxiliary factory for physics object.
              */
-            void _auxFieldSetup(const pylith::topology::Field& solution);
+            pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
-            /** Get factory for setting up auxliary fields.
+            /** Update kernel constants.
              *
-             * @returns Factor for auxiliary fields.
+             * @param[in] dt Current time step.
              */
-            pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
+            void _updateKernelConstants(const PylithReal dt);
 
-            /** Has point-wise functions (kernels) for integration/projection?
-             *
-             * @param[in] kernelsKey Set of kernels.
-             * @returns True if we have kernels for that operation, otherwise false.
-             */
-            bool _hasFEKernels(const pylith::feassemble::IntegratorPointwise::FEKernelKeys kernelsKey) const;
+        };
 
-            /** Set point-wise functions (kernels) for integration/projection.
-             *
-             * @param[in] solution Solution field.
-             * @param[in] kernelsKey Set of kernels.
-             */
-            void _setFEKernels(const pylith::topology::Field& solution,
-                               const pylith::feassemble::IntegratorPointwise::FEKernelKeys kernelsKey) const;
-
-
-        }; // class AbsorbingDampers
+        // class AbsorbingDampers
 
     } // bc
 } // pylith
-
 
 // End of file

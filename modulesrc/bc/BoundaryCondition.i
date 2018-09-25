@@ -23,10 +23,8 @@
 
 namespace pylith {
     namespace bc {
-
-        class BoundaryCondition { // class BoundaryCondition
-
-            // PUBLIC METHODS /////////////////////////////////////////////////
+        class BoundaryCondition : public pylith::problems::Physics {
+            // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
             /// Default constructor.
@@ -39,34 +37,54 @@ public:
             virtual
             void deallocate(void);
 
-            /** Set label of boundary condition surface.
+            /** Set label marking boundary associated with boundary condition surface.
              *
-             * @param value Label of surface (from mesh generator).
+             * @param[in] value Label of surface (from mesh generator).
              */
-            void label(const char* value);
+            void setMarkerLabel(const char* value);
 
-            /** Get label of boundary condition surface.
+            /** Get label marking boundary associated with boundary condition surface.
              *
              * @returns Label of surface (from mesh generator).
              */
-            const char* label(void) const;
+            const char* getMarkerLabel(void) const;
 
-            /** Set name of field in solution to constrain.
+            /** Set name of solution subfield associated with boundary condition.
              *
-             * @param[in] value Name of field in solution to constrain.
+             * @param[in] value Name of solution subfield.
              */
-            void field(const char* value);
+            void setSubfieldName(const char* value);
 
-            /** Get name of field in solution to constrain.
+            /** Get name of solution subfield associated with boundary condition.
              *
-             * @returns Name of field in solution to constrain.
+             * @preturn Name of solution subfield.
              */
-            const char* field(void) const;
+            const char* getSubfieldName(void) const;
 
-        }; // class BoundaryCondition
+            /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
+             *
+             * @param vec Reference direction unit vector.
+             */
+            void setRefDir1(const PylithReal vec[3]);
+
+            /** Set second choice for reference direction to discriminate among tangential directions in 3-D.
+             *
+             * @param vec Reference direction unit vector.
+             */
+            void setRefDir2(const PylithReal vec[3]);
+
+            /** Verify configuration is acceptable.
+             *
+             * @param[in] solution Solution field.
+             */
+            virtual
+            void verifyConfiguration(const pylith::topology::Field& solution) const;
+
+        };
+
+        // class BoundaryCondition
 
     } // bc
 } // pylith
-
 
 // End of file

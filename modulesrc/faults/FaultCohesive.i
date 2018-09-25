@@ -23,109 +23,77 @@
 
 namespace pylith {
     namespace faults {
-	
-	class FaultCohesive : public pylith::feassemble::IntegratorPointwise {
+        class FaultCohesive : public pylith::problems::Physics {
+            // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
+public:
 
-	    // PUBLIC METHODS /////////////////////////////////////////////////
-	public :
+            /// Default constructor.
+            FaultCohesive(void);
 
-	    /// Default constructor.
-	    FaultCohesive(void);
-      
-	    /// Destructor.
-	    virtual
-	    ~FaultCohesive(void);
-	    
-	    /// Deallocate PETSc and local data structures.
-	    virtual
-	    void deallocate(void);
-	    
-	    /** Set material identifier of fault.
-	     *
-	     * @param[in] value Fault identifier
-	     */
-	    void id(const int value);
-	    
-	    /** Get material identifier of fault.
-	     *
-	     * @returns Fault identifier
-	     */
-	    int id(void) const;
-	    
-	    /** Set label of group of vertices associated with fault.
-	     *
-	     * @param[in] value Label of fault
-	     */
-	    void label(const char* value);
-	    
-	    /** Get label of group of vertices associated with fault.
-	     *
-	     * @returns Label of fault
-	     */
-	    const char* label(void) const;
-	    
-	    /** Set label of group of vertices defining buried edge of fault.
-	     *
-	     * @param[in] value Label of fault
-	     */
-	    void edge(const char* value);
-	    
-	    /** Get label of group of vertices defining buried edge of fault.
-	     *
-	     * @returns Label of fault
-	     */
-	    const char* edge(void) const;
-	    
-	    /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
-	     *
-	     * @param vec Reference direction unit vector.
-	     */
-	    void refDir1(const PylithReal vec[3]);
-	    
-	    /** Set second choice for reference direction to discriminate among tangential directions in 3-D.
-	     *
-	     * @param vec Reference direction unit vector.
-	     */
-	    void refDir2(const PylithReal vec[3]);
-	    
-	    /** Get mesh associated with integrator domain.
-	     *
-	     * @returns Mesh associated with integrator domain.
-	     */
-	    const pylith::topology::Mesh& domainMesh(void) const;
-	    
-	    /** Adjust mesh topology for fault implementation.
-	     *
-	     * @param mesh[in] PETSc mesh.
-	     */
-	    void adjustTopology(pylith::topology::Mesh* const mesh);
-	    
-	    /** Verify configuration is acceptable.
-	     *
-	     * @param[in] solution Solution field.
-	     */
-	    virtual
-	    void verifyConfiguration(const pylith::topology::Field& solution) const;
-	    
-	    /** Initialize fault.
-	     *
-	     * Create fault mesh from cohesive cells and cohesive point map.
-	     *
-	     * Derived class initialize, should:
-	     * 1. Setup subfields in auxiliary field.
-	     * 2. Populate auxiliary subfields.
-	     * 3. Set finite-element kernels.
-	     *
-	     * @param[in] solution Solution field (layout).
-	     */
-	    virtual
-	    void initialize(const pylith::topology::Field& solution);
-	    
-	    
-	}; // class FaultCohesive
-	
+            /// Destructor.
+            virtual ~FaultCohesive(void);
+
+            /// Deallocate PETSc and local data structures.
+            virtual
+            void deallocate(void);
+
+            /** Set identifier for fault cohesive cells.
+             *
+             * @param[in] value Fault identifier
+             */
+            void setInterfaceId(const int value);
+
+            /** Get identifier for fault cohesive cells.
+             *
+             * @returns Fault identifier
+             */
+            int getInterfaceId(void) const;
+
+            /** Set label marking surface of interface.
+             *
+             * @param[in] value Label of surface (from mesh generator).
+             */
+            void setSurfaceMarkerLabel(const char* value);
+
+            /** Get label marking surface of interface.
+             *
+             * @returns Label of surface (from mesh generator).
+             */
+            const char* getSurfaceMarkerLabel(void) const;
+
+            /** Set label marking buried edges of interface surface.
+             *
+             * @param[in] value Label of buried surface edge (from mesh generator).
+             */
+            void setBuriedEdgesMarkerLabel(const char* value);
+
+            /** Get label marking buried edges of interface surface.
+             *
+             * @returns Label of buried surface edge (from mesh generator).
+             */
+            const char* getBuriedEdgesMarkerLabel(void) const;
+
+            /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
+             *
+             * @param vec Reference direction unit vector.
+             */
+            void setRefDir1(const PylithReal vec[3]);
+
+            /** Set second choice for reference direction to discriminate among tangential directions in 3-D.
+             *
+             * @param vec Reference direction unit vector.
+             */
+            void setRefDir2(const PylithReal vec[3]);
+
+            /** Adjust mesh topology for fault implementation.
+             *
+             * @param mesh[in] PETSc mesh.
+             */
+            void adjustTopology(pylith::topology::Mesh* const mesh);
+
+        }; // class FaultCohesive
+
     } // faults
 } // pylith
 
-
-// End of file 
+// End of file

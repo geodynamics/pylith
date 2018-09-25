@@ -26,12 +26,9 @@ subpkgpyexec_PYTHON = feassemble.py
 
 swig_sources = \
 	feassemble.i \
-	IntegratorPointwise.i \
-	ConstraintPointwise.i \
 	Observer.i \
 	Observers.i \
-	../utils/PyreComponent.i \
-	../topology/FieldBase.i
+	../utils/PyreComponent.i
 
 swig_generated = \
 	feassemble_wrap.cxx \

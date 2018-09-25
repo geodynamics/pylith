@@ -1,5 +1,3 @@
-// -*- C++ -*-
-//
 // ======================================================================
 //
 // Brad T. Aagaard, U.S. Geological Survey
@@ -53,8 +51,7 @@ import_array();
 
 // Interfaces
 %include "../utils/PyreComponent.i"
-%include "../feassemble/Observers.i" // ISA Observers
-%include "../feassemble/IntegratorPointwise.i" // ISA IntegratorPointwise
+%include "../problems/Physics.i"
 
 %include "FaultCohesive.i"
 %include "FaultCohesiveKin.i"
@@ -63,4 +60,3 @@ import_array();
 %include "KinSrcConstRate.i"
 
 // End of file
-

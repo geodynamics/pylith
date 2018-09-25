@@ -24,9 +24,7 @@
 
 namespace pylith {
     namespace meshio {
-
         class pylith::meshio::OutputConstraint : public OutputManager {
-
             // PUBLIC METHODS ///////////////////////////////////////////////
 public:
 
@@ -34,7 +32,7 @@ public:
              *
              * @param[in] constraint Constraint to observe.
              */
-            OutputConstraint(pylith::feassemble::ConstraintPointwise* const constraint);
+            OutputConstraint(pylith::feassemble::Constraint* const constraint);
 
             /// Destructor
             ~OutputConstraint(void);
@@ -52,6 +50,5 @@ public:
 
     } // meshio
 } // pylith
-
 
 // End of file
