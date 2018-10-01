@@ -766,7 +766,8 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain(const Py
     assert(_dim == dim);
     assert(3 <= numS);
     assert(6 <= numA && 10 >= numA);
-    assert(sOff);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
     assert(s_x);
     assert(a);
@@ -794,7 +795,7 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain(const Py
 	const double b = 2.5e-4;
 	const double c = 3.0e-4;
 	const double d = 9.0e-8;
-	const PylithInt i_maxwellTime = 3;
+	const PylithInt i_maxwellTime = NumA - 3;
     const PylithScalar maxwellTime = a[aOff[i_maxwellTime]];
     const PylithScalar dt = constants[0];
 	const double dispxPredPrevious = (aa*x[0]*x[0] + 2.0*b*x[0]*x[1] + c*x[1]*x[1]) * exp(-t/maxwellTime);
@@ -854,16 +855,22 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain(const 
     const PylithInt i_disp = 2;
 
     // Incoming auxiliary fields.
-    const PylithInt i_maxwellTime = 3;
-    const PylithInt i_viscousStrain = 4;
-    const PylithInt i_totalStrain = 5;
+    const PylithInt i_maxwellTime = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_totalStrain = numA - 1;
 
 	// Assertions.
 	assert(_dim == dim);
 	assert(numS == 3);
 	assert(numA >= 6);
 	assert(sOff);
+	assert(sOff[i_viscousStrainPrevious] >= 0);
+	assert(sOff[i_totalStrainPrevious] >= 0);
+	assert(sOff[i_disp] >= 0);
 	assert(aOff);
+	assert(aOff[i_maxwellTime] >= 0);
+	assert(aOff[i_viscousStrain] >= 0);
+	assert(aOff[i_totalStrain] >= 0);
 	assert(s_x);
 	assert(a);
 	assert(visStrain);
