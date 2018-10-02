@@ -20,7 +20,7 @@
 #
 # Factory: material
 
-from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
+from pylith.problems.Physics import Physics
 from .materials import Material as ModuleMaterial
 
 
@@ -35,7 +35,7 @@ def validateLabel(value):
     return value
 
 
-class Material(IntegratorPointwise, ModuleMaterial):
+class Material(Physics, ModuleMaterial):
     """
     Python material property manager.
 
@@ -65,27 +65,19 @@ class Material(IntegratorPointwise, ModuleMaterial):
         """
         Constructor.
         """
-        IntegratorPointwise.__init__(self, name)
+        Physics.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
         """
         Setup material.
         """
-        IntegratorPointwise.preinitialize(self, mesh)
+        Physics.preinitialize(self, mesh)
 
-        ModuleMaterial.id(self, self.materialId)
-        ModuleMaterial.label(self, self.label)
+        ModuleMaterial.setMaterialId(self, self.materialId)
+        ModuleMaterial.setDescriptiveLabelabel(self, self.label)
 
         return
 
-    # PRIVATE METHODS ////////////////////////////////////////////////////
-
-    def _configure(self):
-        """
-        Setup members using inventory.
-        """
-        IntegratorPointwise._configure(self)
-        return
 
 # End of file

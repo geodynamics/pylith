@@ -19,13 +19,12 @@
 #
 # Factory: problem.
 
-from pylith.feassemble.Observers import Observers
+from pylith.utils.PetscComponent import PetscComponent
 from .problems import Problem as ModuleProblem
 
 from pylith.utils.NullComponent import NullComponent
 from pylith.meshio.OutputSoln import OutputSoln
-from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
-from pylith.feassemble.ConstraintPointwise import ConstraintPointwise
+from pylith.feassemble.Observers import Observers
 
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
@@ -35,8 +34,8 @@ def materialFactory(name):
     Factory for material items.
     """
     from pyre.inventory import facility
-    from pylith.materials.IsotropicLinearElasticityPlaneStrain import IsotropicLinearElasticityPlaneStrain
-    return facility(name, family="material", factory=IsotropicLinearElasticityPlaneStrain)
+    from pylith.materials.Elasticity import Elasticity
+    return facility(name, family="material", factory=Elasticity)
 
 
 def bcFactory(name):
@@ -65,7 +64,7 @@ def observerFactory(name):
     return facility(name, family="observer", factory=OutputSoln)
 
 
-class Problem(Observers, ModuleProblem):
+class Problem(PetscComponent, ModuleProblem):
     """
     Python abstract base class for crustal dynamics problems.
 
@@ -88,7 +87,8 @@ class Problem(Observers, ModuleProblem):
     import pyre.inventory
     from pylith.utils.EmptyBin import EmptyBin
 
-    solverChoice = pyre.inventory.str("solver", default="linear", validator=pyre.inventory.choice(["linear", "nonlinear"]))
+    solverChoice = pyre.inventory.str("solver", default="linear",
+                                      validator=pyre.inventory.choice(["linear", "nonlinear"]))
     solverChoice.meta['tip'] = "Type of solver to use ['linear', 'nonlinear']."
 
     from Solution import Solution
@@ -110,7 +110,8 @@ class Problem(Observers, ModuleProblem):
     interfaces.meta['tip'] = "Interior surfaces with constraints or constitutive models."
 
     from pylith.feassemble.SingleObserver import SingleSolnObserver
-    observers = pyre.inventory.facilityArray("solution_observers", itemFactory=observerFactory, factory=SingleSolnObserver)
+    observers = pyre.inventory.facilityArray(
+        "solution_observers", itemFactory=observerFactory, factory=SingleSolnObserver)
     observers.meta['tip'] = "Observers (e.g., output) for solution."
 
     gravityField = pyre.inventory.facility("gravity_field", family="spatial_database", factory=NullComponent)
@@ -122,7 +123,7 @@ class Problem(Observers, ModuleProblem):
         """
         Constructor.
         """
-        Observers.__init__(self, name, facility="problem")
+        PetscComponent.__init__(self, name, facility="problem")
         self.mesh = None
         return
 
@@ -136,17 +137,17 @@ class Problem(Observers, ModuleProblem):
             self._info.log("Performing minimal initialization before verifying configuration.")
 
         self._createModuleObj()
-        Observers.preinitialize(self)
+        self.observers.preinitialize(self)
 
         if self.solverChoice == "linear":
-            ModuleProblem.solverType(self, ModuleProblem.LINEAR)
+            ModuleProblem.setSolverType(self, ModuleProblem.LINEAR)
         elif self.solverChoice == "nonlinear":
-            ModuleProblem.solverType(self, ModuleProblem.NONLINEAR)
+            ModuleProblem.setSolverType(self, ModuleProblem.NONLINEAR)
         else:
             raise ValueError("Unknown solver choice '%s'." % self.solverChoice)
-        ModuleProblem.normalizer(self, self.normalizer)
+        ModuleProblem.setNormalizer(self, self.normalizer)
         if not isinstance(self.gravityField, NullComponent):
-            ModuleProblem.gravityField(self, self.gravityField)
+            ModuleProblem.setGravityField(self, self.gravityField)
 
         # Do minimal setup of solution.
         self.solution.preinitialize(mesh, self.normalizer)
@@ -155,21 +156,22 @@ class Problem(Observers, ModuleProblem):
         # Preinitialize materials
         for material in self.materials.components():
             material.preinitialize(mesh)
+        ModuleProblem.setMaterials(self, self.materials.components())
 
         # Preinitialize boundary conditions.
         for bc in self.bc.components():
             bc.preinitialize(mesh)
+        ModuleProblem.setBoundaryConditions(self, self.bc.comonents())
 
         # Preinitialize interfaces
         for interface in self.interfaces.components():
             interface.preinitialize(mesh)
+        ModuleProblem.setInterfaces(self.interfaces.components())
 
         # Preinitialize observers.
         for observer in self.observers.components():
             observer.preinitialize(self)
-
-        # Set integrators and constraints.
-        self._setIntegratorsConstraints()
+            ModuleProblem.registerObserver(self, observer)
 
         ModuleProblem.preinitialize(self, mesh)
         return
@@ -183,24 +185,7 @@ class Problem(Observers, ModuleProblem):
         if 0 == comm.rank:
             self._info.log("Verifying compatibility of problem configuration.")
 
-        # Check to make sure ids of materials and interfaces are unique
-        materialIds = {}
-        for material in self.materials.components():
-            if material.id() in materialIds.keys():
-                raise ValueError("ID values for materials '%s' and '%s' are both '%d'. Material id values must be unique." %
-                                 (material.label, materialIds[material.materialId], material.materialId))
-            materialIds[material.materialId] = material.label
-
-        for interface in self.interfaces.components():
-            if interface.matId in materialIds.keys():
-                raise ValueError("ID values for material '%s' and interface '%s' are both '%d'. Material and interface id values must be unique." %
-                                 (materialIds[interface.matId], interface.label, interface.matId))
-            materialIds[interface.matId] = interface.label
-
-        # Check to make sure material-id for each cell matches the id of a material
-        import numpy
-        idValues = numpy.array(materialIds.keys(), dtype=numpy.int32)
-        ModuleProblem.verifyConfiguration(self, idValues)
+        ModuleProblem.verifyConfiguration(self)
 
         self._printInfo()
         return
@@ -242,39 +227,6 @@ class Problem(Observers, ModuleProblem):
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
-
-    def _configure(self):
-        """
-        Set members based using inventory.
-        """
-        Observers._configure(self)
-        return
-
-    def _setIntegratorsConstraints(self):
-        integrators = []
-        constraints = []
-
-        for material in self.materials.components():
-            if not isinstance(material, IntegratorPointwise):
-                raise TypeError("Material '%s' fails integrator implementation test." % material.name)
-            integrators.append(material)
-
-        for interface in self.interfaces.components():
-            if not isinstance(interface, IntegratorPointwise):
-                raise TypeError("Interface '%s' fails integrator implementation test." % interface.name)
-            integrators.append(interface)
-
-        for bc in self.bc.components():
-            if isinstance(bc, IntegratorPointwise):
-                integrators.append(bc)
-            elif isinstance(bc, ConstraintPointwise):
-                constraints.append(bc)
-            else:
-                raise TypeError("Unable to classify bc '%s' into an in integrator or constraint." % bc)
-
-        ModuleProblem.integrators(self, integrators)
-        ModuleProblem.constraints(self, constraints)
-        return
 
     def _printInfo(self):
         """Write overview of problem to info journal.

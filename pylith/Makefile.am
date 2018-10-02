@@ -48,15 +48,16 @@ nobase_pkgpyexec_PYTHON = \
 	materials/__init__.py \
 	materials/Homogeneous.py \
 	materials/Material.py \
-	materials/IsotropicLinearElasticityPlaneStrain.py \
-	materials/IsotropicLinearMaxwellPlaneStrain.py \
-	materials/IsotropicLinearGenMaxwellPlaneStrain.py \
+	materials/Elasticity.py \
+	materials/RheologyElasticity.py \
+	materials/IsotropicLinearElasticity.py \
+	materials/IsotropicLinearMaxwell.py \
+	materials/IsotropicLinearGenMaxwell.py \
 	materials/AuxFieldsIsotropicLinearElasticity.py \
 	materials/AuxFieldsIsotropicLinearMaxwell.py \
 	materials/AuxFieldsIsotropicLinearGenMaxwell.py \
-	materials/IsotropicLinearElasticity3D.py \
-	materials/IsotropicLinearMaxwell3D.py \
-	materials/IsotropicLinearGenMaxwell3D.py \
+	materials/RheologyIncompressibleElasticity.py \
+	materials/IsotropicLinearIncompElasticity.py \
 	meshio/__init__.py \
 	meshio/DataWriter.py \
 	meshio/DataWriterVTK.py \

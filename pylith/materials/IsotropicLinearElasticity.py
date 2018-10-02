@@ -13,96 +13,75 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/materials/IsotropicLinearElasticityPlaneStrain.py
+# @file pylith/materials/IsotropicLinearElasticity.py
 #
 # @brief Python material for isotropic, linearly elastic, plane
 # strain material.
 #
-# Factory: material
+# Factory: elasticity_rheology
 
-from .Material import Material
-from .materials import IsotropicLinearElasticityPlaneStrain as ModuleMaterial
+from .RheologyElasticity import RheologyElasticity
+from .materials import IsotropicLinearElastic as ModuleLinearElasticity
 
 
-class IsotropicLinearElasticityPlaneStrain(Material, ModuleMaterial):
+class IsotropicLinearElasticity(RheologyElasticity, ModuleLinearElasticity):
     """
     Python material for isotropic, linearly elastic plane strain.
 
     INVENTORY
 
     Properties
-      - *use_inertia* Include inertial term in elasticity equation.
-      - *use_body_force* Include body force term in elasticity equation.
       - *use_reference_state* Use reference stress/strain state.
 
     Facilities
       - *auxiliary_subfields* Discretization of physical properties and state variables.
 
-    FACTORY: material
+    FACTORY: elasticity_rheology
     """
 
     import pyre.inventory
-
-    useInertia = pyre.inventory.bool("use_inertia", default=False)
-    useInertia.meta['tip'] = "Include inertial term in elasticity equation."
-
-    useBodyForce = pyre.inventory.bool("use_body_force", default=False)
-    useBodyForce.meta['tip'] = "Include body force term in elasticity equation."
 
     useReferenceState = pyre.inventory.bool("use_reference_state", default=False)
     useReferenceState.meta['tip'] = "Use reference stress/strain state."
 
     from .AuxFieldsIsotropicLinearElasticity import AuxFieldsIsotropicLinearElasticity
     from pylith.topology.AuxSubfield import subfieldFactory
-    auxSubfields = pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsIsotropicLinearElasticity)
+    auxSubfields = pyre.inventory.facilityArray(
+        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsIsotropicLinearElasticity)
     auxSubfields.meta['tip'] = "Discretization of physical properties and state variables."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="isotropiclinearelasticityplanestrain"):
+    def __init__(self, name="isotropiclinearelasticity"):
         """
         Constructor.
         """
-        Material.__init__(self, name)
+        RheologyElasticity.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
-            self._info.log("Performing minimal initialization of material '%s'" % self.aliases[-1])
+        RheologyElasticity.preinitialize(self, mesh)
 
-        Material.preinitialize(self, mesh)
-
-        ModuleMaterial.useInertia(self, self.useInertia)
-        ModuleMaterial.useBodyForce(self, self.useBodyForce)
-        ModuleMaterial.useReferenceState(self, self.useReferenceState)
+        ModuleLinearElasticity.useReferenceState(self, self.useReferenceState)
 
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
-    def _configure(self):
-        """
-        Setup members using inventory.
-        """
-        Material._configure(self)
-        return
-
     def _createModuleObj(self):
         """
         Call constructor for module object for access to C++ object.
         """
-        ModuleMaterial.__init__(self)
+        ModuleLinearElasticity.__init__(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def material():
+def elasticity_rheology():
     """
-    Factory associated with IsotropicLinearElasticityPlaneStrain.
+    Factory associated with IsotropicLinearElasticity.
     """
-    return IsotropicLinearElasticityPlaneStrain()
+    return IsotropicLinearElasticity()
 
 
 # End of file
