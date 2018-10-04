@@ -28,11 +28,12 @@ check_PROGRAMS = testfeassemble
 
 # Primary source files
 testfeassemble_SOURCES = \
+	TestObservers.cc \
 	test_feassemble.cc
 
 
-
-noinst_HEADERS = 
+noinst_HEADERS =
+	TestObservers.hh
 
 AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
@@ -56,4 +57,4 @@ leakcheck: testfeassemble
 	valgrind --log-file=valgrind_feassemble.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testfeassemble
 
 
-# End of file 
+# End of file
