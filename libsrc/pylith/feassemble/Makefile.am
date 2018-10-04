@@ -27,6 +27,7 @@ subpkginclude_HEADERS = \
 	Constraint.hh \
 	ConstraintBoundary.hh \
 	Observer.hh \
+	ObserverStub.hh \
 	Observers.hh \
 	AuxiliaryFactory.hh \
 	feassemblefwd.hh

@@ -54,6 +54,7 @@ libpylith_la_SOURCES = \
 	feassemble/Constraint.cc \
 	feassemble/ConstraintBoundary.cc \
 	feassemble/Observer.cc \
+	feassemble/ObserverStub.cc \
 	feassemble/Observers.cc \
 	feassemble/AuxiliaryFactory.cc \
 	fekernels/Elasticity.cc \
@@ -138,7 +139,7 @@ libpylith_la_LIBADD = \
 AM_CPPFLAGS = -I$(top_srcdir)/libsrc
 AM_CPPFLAGS += $(PETSC_CC_INCLUDES)
 
-AM_CPPFLAGS += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_SIEVE_FLAGS)
+AM_CPPFLAGS += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR)
 
 if ENABLE_HDF5
   libpylith_la_SOURCES += \

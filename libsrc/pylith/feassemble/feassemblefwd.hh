@@ -40,6 +40,8 @@ namespace pylith {
         class AuxiliaryFactory; ///< Creates auxiliary subfields.
 
         class Observer; ///< Observer of subject.
+        class ObserverStub; ///< Minimal implementation of observer for unit testing.
+        class ObserverStubException;
         class Observers; ///< Subject being Observers.
 
     } // feassemble
