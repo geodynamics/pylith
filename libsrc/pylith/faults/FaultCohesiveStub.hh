@@ -25,13 +25,10 @@
 #if !defined(pylith_faults_faultcohesivestub_hh)
 #define pylith_faults_faultcohesivestub_hh
 
-// Include directives ---------------------------------------------------
 #include "pylith/faults/FaultCohesive.hh" // ISA FaultCohesive
 
-// FaultCohesiveStub ----------------------------------------------------
-/// @brief FaultCohesiveStub for unit tests needing meshes with cohesive cells.
 class pylith::faults::FaultCohesiveStub : public pylith::faults::FaultCohesive {
-    friend class TestFaultCohesiveStub;   // unit testing
+    friend class TestFaultCohesiveStub; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
@@ -100,7 +97,6 @@ public:
                                     const pylith::topology::Field& solution,
                                     const pylith::topology::Field& solutionDot);
 
-
     /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
      *
      * @param[out] jacobianInv Inverse of lumped Jacobian as a field.
@@ -145,6 +141,5 @@ private:
 }; // class FaultCohesiveStub
 
 #endif // pylith_faults_faultcohesivestub_hh
-
 
 // End of file

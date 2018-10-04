@@ -18,23 +18,21 @@
 
 #include <portinfo>
 
-#include "Observer.hh" \
-    // Implementation of class methods
+#include "Observer.hh" // Implementation of class methods
 
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::feassemble::Observer::Observer(void) {}
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor
 pylith::feassemble::Observer::~Observer(void) {
     deallocate();
 } // destructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::feassemble::Observer::deallocate(void) {}
