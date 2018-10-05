@@ -39,6 +39,9 @@ public:
 } // pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::feassemble::TestObservers);
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::feassemble::TestObservers::setUp(void) {
