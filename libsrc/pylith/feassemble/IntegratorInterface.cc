@@ -95,6 +95,7 @@ public:
 pylith::feassemble::IntegratorInterface::IntegratorInterface(pylith::problems::Physics* const physics) :
     Integrator(physics),
     _interfaceMesh(NULL),
+    _interfaceId(100),
     _interfaceLabel("") {}
 
 
@@ -117,6 +118,22 @@ pylith::feassemble::IntegratorInterface::deallocate(void) {
 
     PYLITH_METHOD_END;
 } // deallocate
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set value of label material-id used to identify interface cells.
+void
+pylith::feassemble::IntegratorInterface::setInterfaceId(const int value) {
+    _interfaceId = value;
+} // setInterfaceId
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get value of label material-id used to identify interface cells.
+int
+pylith::feassemble::IntegratorInterface::getInterfaceId(void) const {
+    return _interfaceId;
+} // getInterfaceId
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -433,7 +450,7 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
                                                           const pylith::topology::Field& solution,
                                                           const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    //PYLITH_COMPONENT_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<",
+    // PYLITH_COMPONENT_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<",
     // solution="<<solution.label()<<")");
 
     assert(integrator);
@@ -494,7 +511,7 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
                                                           const pylith::topology::Field& solution,
                                                           const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    //PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<",
+    // PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<",
     // dt="<<dt<<", solution="<<solution.label()<<")");
 
     assert(jacobianMat);

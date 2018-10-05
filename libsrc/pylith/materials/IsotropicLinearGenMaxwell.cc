@@ -79,6 +79,14 @@ pylith::materials::IsotropicLinearGenMaxwell::useReferenceState(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Get auxiliary factory associated with physics.
+pylith::materials::AuxiliaryFactoryElasticity*
+pylith::materials::IsotropicLinearGenMaxwell::getAuxiliaryFactory(void) {
+    return _auxiliaryFactory;
+} // getAuxiliaryFactory
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Add rheology subfields to auxiliary field.
 void
 pylith::materials::IsotropicLinearGenMaxwell::addAuxiliarySubfields(void) {

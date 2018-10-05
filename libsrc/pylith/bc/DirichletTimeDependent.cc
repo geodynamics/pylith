@@ -304,13 +304,19 @@ pylith::bc::DirichletTimeDependent::_getAuxiliaryFactory(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Update kernel constants.
+void
+pylith::bc::DirichletTimeDependent::_updateKernelConstants(const PylithReal dt) {}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for computing constraint value.
 void
 pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::ConstraintBoundary* constraint,
                                                          const pylith::bc::DirichletTimeDependent& bc,
                                                          const topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    //PYLITH_COMPONENT_DEBUG("setKernelConstraint(integrator="<<integrator<<", bc="<<bc<<",
+    // PYLITH_COMPONENT_DEBUG("setKernelConstraint(integrator="<<integrator<<", bc="<<bc<<",
     // solution="<<solution.label()<<")");
 
     PetscPointFunc bcKernel = NULL;
@@ -352,10 +358,10 @@ pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::Con
                    pylith::fekernels::TimeDependentFn::initialRateTimeHistory_vector;
         break;
     case 0x0:
-        //PYLITH_COMPONENT_WARNING("Dirichlet BC provides no constraints.");
+        // PYLITH_COMPONENT_WARNING("Dirichlet BC provides no constraints.");
         break;
     default:
-        //PYLITH_COMPONENT_ERROR("Unknown combination of flags for Dirichlet BC terms (useInitial="<<_useInitial<<",
+        // PYLITH_COMPONENT_ERROR("Unknown combination of flags for Dirichlet BC terms (useInitial="<<_useInitial<<",
         // useRate="<<_useRate<<", useTimeHistory="<<_useTimeHistory<<").");
         throw std::logic_error("Unknown combination of flags for Dirichlet BC terms.");
     } // switch

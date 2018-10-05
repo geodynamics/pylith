@@ -294,11 +294,12 @@ private:
 
     std::vector<JacobianKernels> _kernelsRHSJacobianPos; ///< kernels for RHS Jacobian for positive side of interface.
     std::vector<JacobianKernels> _kernelsRHSJacobianNeg; ///< kernels for RHS Jacobian for negative side of interface.
-    std::vector<JacobianKernels> _kernelsLHSJacobianPos; ///> kernels for LHS Jacobian for positive side of interface.
-    std::vector<JacobianKernels> _kernelsLHSJacobianNeg; ///> kernels for LHS Jacobian for negative side of interface.
+    std::vector<JacobianKernels> _kernelsLHSJacobianPos; /// > kernels for LHS Jacobian for positive side of interface.
+    std::vector<JacobianKernels> _kernelsLHSJacobianNeg; /// > kernels for LHS Jacobian for negative side of interface.
 
     pylith::topology::Mesh* _interfaceMesh; ///< Boundary mesh.
 
+    int _interfaceId;
     std::string _interfaceLabel; ///< Label value associated with interface.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
