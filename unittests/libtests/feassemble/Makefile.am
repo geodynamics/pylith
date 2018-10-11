@@ -29,11 +29,13 @@ check_PROGRAMS = testfeassemble
 # Primary source files
 testfeassemble_SOURCES = \
 	TestObservers.cc \
+	TestAuxiliaryFactory.cc \
 	test_feassemble.cc
 
 
 noinst_HEADERS =
-	TestObservers.hh
+	TestObservers.hh \
+	TestAuxiliaryFactory.hh
 
 AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
