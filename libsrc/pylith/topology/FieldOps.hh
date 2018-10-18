@@ -31,6 +31,8 @@
 #include "FieldBase.hh" // USES FieldBase::Discretization
 #include "pylith/utils/petscfwd.h" // USES PetscFE
 
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
+
 // FieldOps -------------------------------------------------------------
 /// @brief C++ class for simple operations for a Field object.
 class pylith::topology::FieldOps { // FieldOps
@@ -84,6 +86,18 @@ public:
     bool layoutsMatch(const pylith::topology::Field& fieldA,
                       const pylith::topology::Field& fieldB);
 
+    /** Check to make sure field matches spatial database.
+     *
+     * @param[in] field Field to check.
+     * @param[in] fieldDB Spatial database describing field.
+     * @param[in] lengthScale Length scale for nondimensionalization.
+     * @returns L2 norm of difference between field and spatial database.
+     */
+    static
+    PylithReal checkFieldWithDB(const pylith::topology::Field& field,
+                                spatialdata::spatialdb::SpatialDB* fielDB,
+                                const PylithReal lengthScale);
+
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
@@ -94,6 +108,5 @@ private:
 }; // FieldOps
 
 #endif // pylith_topology_fieldOps_hh
-
 
 // End of file
