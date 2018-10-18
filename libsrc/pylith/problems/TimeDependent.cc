@@ -278,12 +278,13 @@ pylith::problems::TimeDependent::initialize(void) {
     err = TSSetTimeStep(_ts, _dtInitial);PYLITH_CHECK_ERROR(err);
     err = TSSetMaxSteps(_ts, _maxTimeSteps);PYLITH_CHECK_ERROR(err);
     err = TSSetMaxTime(_ts, _totalTime);PYLITH_CHECK_ERROR(err);
+    err = TSSetDM(_ts, _solution->dmMesh());PYLITH_CHECK_ERROR(err);
 
     // Set initial solution.
     _solution->zeroLocal();
     PYLITH_COMPONENT_ERROR(":TODO: @brad Implement setting initial solution.");
     // :TODO: Set initial conditions.
-    PetscVec solutionVec;
+    PetscVec solutionVec = NULL;
     err = DMCreateGlobalVector(_solution->dmMesh(), &solutionVec);PYLITH_CHECK_ERROR(err);
     _solution->scatterLocalToVector(solutionVec);
     PYLITH_COMPONENT_DEBUG("Setting PetscTS initial conditions using global vector for solution.");
