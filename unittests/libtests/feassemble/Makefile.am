@@ -30,12 +30,14 @@ check_PROGRAMS = testfeassemble
 testfeassemble_SOURCES = \
 	TestObservers.cc \
 	TestAuxiliaryFactory.cc \
+	TestIntegratorDomain.cc \
 	test_feassemble.cc
 
 
 noinst_HEADERS =
 	TestObservers.hh \
-	TestAuxiliaryFactory.hh
+	TestAuxiliaryFactory.hh \
+	TestIntegratorDomain.hh
 
 AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
