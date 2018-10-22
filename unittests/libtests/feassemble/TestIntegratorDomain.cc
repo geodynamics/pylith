@@ -612,14 +612,15 @@ pylith::feassemble::TestIntegratorDomain_Data::TestIntegratorDomain_Data(void) :
     dimension(0),
     meshFilename(0),
     boundaryLabel(NULL),
+    materialId(0),
     cs(NULL),
 
     normalizer(new spatialdata::units::Nondimensional),
 
     t(0.0),
     dt(0.0),
+    tindex(0),
     s_tshift(0.0),
-    perturbation(1.0e-4),
 
     numSolutionSubfields(0),
     solutionDiscretizations(NULL),
