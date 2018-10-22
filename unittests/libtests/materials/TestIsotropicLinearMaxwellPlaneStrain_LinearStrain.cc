@@ -560,7 +560,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP
     } // setUp
 
 }; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP3);
+// Remove this test for now until higher order integration is done properly.
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP3);
 
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP4 :
@@ -598,7 +599,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP
 
 }; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP4
 // Leave this out for now to shorten runtime.
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP4);
+// Remove this test for now until higher order integration is done properly.
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP4);
 
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ1 :
@@ -712,7 +714,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
     } // setUp
 
 }; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ3);
+// Remove this test for now until higher order integration is done properly.
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ3);
 
 
 // ----------------------------------------------------------------------
@@ -750,8 +753,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
     } // setUp
 
 }; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ4
-// Leave this out for now to shorten runtime.
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ4);
+// Remove this test for now until higher order integration is done properly.
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ4);
 
 
 // End of file

@@ -822,7 +822,7 @@ pylith::fekernels::IsotropicLinearMaxwell3D::updateTotalStrain(const PylithInt d
     assert(s_x);
     assert(a);
     assert(totalStrain);
-    const PylithScalar* disp_x = &s_x[sOff[i_disp]];
+    const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
 
     totalStrain[0] = disp_x[0*_dim+0];
     totalStrain[1] = disp_x[1*_dim+1];
@@ -893,9 +893,9 @@ pylith::fekernels::IsotropicLinearMaxwell3D::updateViscousStrain(const PylithInt
     const PylithInt i_disp = 2;
 
     // Incoming auxiliary fields.
-    const PylithInt i_maxwellTime = numA - 3;
-    const PylithInt i_viscousStrain = numA - 2;
-    const PylithInt i_totalStrain = numA - 1;
+    const PylithInt i_maxwellTime = 3;
+    const PylithInt i_viscousStrain = 4;
+    const PylithInt i_totalStrain = 5;
 
 	// Assertions.
 	assert(_dim == dim);

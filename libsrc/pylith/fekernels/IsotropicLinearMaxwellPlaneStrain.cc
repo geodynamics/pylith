@@ -795,7 +795,7 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain(const Py
 	const double b = 2.5e-4;
 	const double c = 3.0e-4;
 	const double d = 9.0e-8;
-	const PylithInt i_maxwellTime = NumA - 3;
+	const PylithInt i_maxwellTime = 3;
     const PylithScalar maxwellTime = a[aOff[i_maxwellTime]];
     const PylithScalar dt = constants[0];
 	const double dispxPredPrevious = (aa*x[0]*x[0] + 2.0*b*x[0]*x[1] + c*x[1]*x[1]) * exp(-t/maxwellTime);
@@ -855,9 +855,9 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain(const 
     const PylithInt i_disp = 2;
 
     // Incoming auxiliary fields.
-    const PylithInt i_maxwellTime = numA - 3;
-    const PylithInt i_viscousStrain = numA - 2;
-    const PylithInt i_totalStrain = numA - 1;
+    const PylithInt i_maxwellTime = 3;
+    const PylithInt i_viscousStrain = 4;
+    const PylithInt i_totalStrain = 5;
 
 	// Assertions.
 	assert(_dim == dim);
@@ -915,7 +915,7 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain(const 
         visStrain[iComp] = expFac * viscousStrainPrevious[iComp] + dq * (devStrain[iComp] - devStrainPrevious[iComp]);
     } // for
 
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
 	std::cout << "fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain" << std::endl;
     std::cout << "dim:  " << dim << std::endl;
     std::cout << "numS:  " << numS << std::endl;
