@@ -36,7 +36,7 @@
 // SolutionFactory-----------------------------------------------
 /// @brief C++ helper class for setting up solution subfields for unit tests.
 class pylith::problems::SolutionFactory : public pylith::utils::GenericComponent {
-    friend class TestSolutionFactory;   // unit testing
+    friend class TestSolutionFactory; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
@@ -57,61 +57,61 @@ public:
      *
      * @param[in] discretization Discretization for displacement field.
      */
-    void displacement(const pylith::topology::FieldBase::Discretization& discretization);
+    void addDisplacement(const pylith::topology::FieldBase::Discretization& discretization);
 
     /** Add velocity field to solution field.
      *
      * @param[in] discretization Discretization for velocity field.
      */
-    void velocity(const pylith::topology::FieldBase::Discretization& discretization);
+    void addVelocity(const pylith::topology::FieldBase::Discretization& discretization);
 
     /** Add pressure field to solution field.
      *
      * @param[in] discretization Discretization for pressure field.
      */
-    void pressure(const pylith::topology::FieldBase::Discretization& discretization);
+    void addPressure(const pylith::topology::FieldBase::Discretization& discretization);
 
     /** Add fluid pressure field to solution field.
      *
      * @param[in] discretization Discretization for fluid pressure field.
      */
-    void fluidPressure(const pylith::topology::FieldBase::Discretization& discretization);
+    void addFluidPressure(const pylith::topology::FieldBase::Discretization& discretization);
 
     /** Add temperature field to solution field.
      *
      * @param[in] discretization Discretization for temperature field.
      */
-    void temperature(const pylith::topology::FieldBase::Discretization& discretization);
+    void addTemperature(const pylith::topology::FieldBase::Discretization& discretization);
 
     /** Add time derivative of displacement field to solution field.
      *
      * @param[in] discretization Discretization for time derivative of displacement field.
      */
-    void displacementDot(const pylith::topology::FieldBase::Discretization& discretization);
+    void addDisplacementDot(const pylith::topology::FieldBase::Discretization& discretization);
 
     /** Add time derivative of velocity field to solution field.
      *
      * @param[in] discretization Discretization for time derivative of velocity field.
      */
-    void velocityDot(const pylith::topology::FieldBase::Discretization& discretization);
+    void addVelocityDot(const pylith::topology::FieldBase::Discretization& discretization);
 
     /** Add time derivative of pressure field to solution field.
      *
      * @param[in] discretization Discretization for time derivative of pressure field.
      */
-    void pressureDot(const pylith::topology::FieldBase::Discretization& discretization);
+    void addPressureDot(const pylith::topology::FieldBase::Discretization& discretization);
 
     /** Add time derivative of fluid pressure field to solution field.
      *
      * @param[in] discretization Discretization for time derivative of fluid pressure field.
      */
-    void fluidPressureDot(const pylith::topology::FieldBase::Discretization& discretization);
+    void addFluidPressureDot(const pylith::topology::FieldBase::Discretization& discretization);
 
     /** Add time derivative of temperature field to solution field.
      *
      * @param[in] discretization Discretization for time derivative of temperature field.
      */
-    void temperatureDot(const pylith::topology::FieldBase::Discretization& discretization);
+    void addTemperatureDot(const pylith::topology::FieldBase::Discretization& discretization);
 
     /** Allocate and populate field with values using spatial database.
      *
@@ -126,17 +126,14 @@ private:
     const spatialdata::units::Nondimensional& _normalizer; ///< Nondimensionalizer.
     const int _spaceDim; ///< Spatal dimension of problem.
 
-    static const char* _genericComponent; ///< Name of Generic component.
-
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
 
-    SolutionFactory(const SolutionFactory &);   ///< Not implemented.
-    const SolutionFactory& operator=(const SolutionFactory&);   ///< Not implemented
+    SolutionFactory(const SolutionFactory &); ///< Not implemented.
+    const SolutionFactory& operator=(const SolutionFactory&); ///< Not implemented
 
 }; // class SolutionFactory
 
 #endif // pylith_problems_solutionfactory_hh
-
 
 // End of file

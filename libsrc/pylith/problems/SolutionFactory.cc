@@ -33,32 +33,27 @@
 #include <typeinfo> // USES typeid()
 #include <cassert>
 
-// ----------------------------------------------------------------------
-const char* pylith::problems::SolutionFactory::_genericComponent = "solutionfactory";
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::problems::SolutionFactory::SolutionFactory(pylith::topology::Field& solution,
                                                    const spatialdata::units::Nondimensional& normalizer) :
     _solution(solution),
     _normalizer(normalizer),
-    _spaceDim(solution.spaceDim())
-{ // constructor
-    GenericComponent::name(_genericComponent);
+    _spaceDim(solution.spaceDim()) {
+    GenericComponent::name("solutionfactory");
     assert(1 <= _spaceDim && _spaceDim <= 3);
 } // constructor
 
-// ----------------------------------------------------------------------
-// Destructor.
-pylith::problems::SolutionFactory::~SolutionFactory(void)
-{ // destructor
-} // destructor
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+// Destructor.
+pylith::problems::SolutionFactory::~SolutionFactory(void) {}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Add displacement field to solution field.
 void
-pylith::problems::SolutionFactory::displacement(const pylith::topology::Field::Discretization& discretization)
-{ // displacement
+pylith::problems::SolutionFactory::addDisplacement(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("displacement(discretization=typeid(discretization).name())");
 
@@ -80,14 +75,13 @@ pylith::problems::SolutionFactory::displacement(const pylith::topology::Field::D
     _solution.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // displacement
+} // addDisplacement
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Add time derivative of velocity field to solution field.
 void
-pylith::problems::SolutionFactory::velocity(const pylith::topology::Field::Discretization& discretization)
-{ // velocity
+pylith::problems::SolutionFactory::addVelocity(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("velocity(discretization=typeid(discretization).name())");
 
@@ -109,14 +103,13 @@ pylith::problems::SolutionFactory::velocity(const pylith::topology::Field::Discr
     _solution.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // velocity
+} // addVelocity
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Add time derivative of pressure field to solution field.
 void
-pylith::problems::SolutionFactory::pressure(const pylith::topology::Field::Discretization& discretization)
-{ // pressure
+pylith::problems::SolutionFactory::addPressure(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("pressure(discretization=typeid(discretization).name())");
 
@@ -136,14 +129,13 @@ pylith::problems::SolutionFactory::pressure(const pylith::topology::Field::Discr
     _solution.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // pressure
+} // addPressure
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Add fluid pressure field to solution field.
 void
-pylith::problems::SolutionFactory::fluidPressure(const pylith::topology::Field::Discretization& discretization)
-{ // fluidPressure
+pylith::problems::SolutionFactory::addFluidPressure(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("fluidPressure(discretization=typeid(discretization).name())");
 
@@ -163,14 +155,13 @@ pylith::problems::SolutionFactory::fluidPressure(const pylith::topology::Field::
     _solution.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // fluidPressure
+} // addFluidPressure
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Add temperature field to solution field.
 void
-pylith::problems::SolutionFactory::temperature(const pylith::topology::Field::Discretization& discretization)
-{ // temperature
+pylith::problems::SolutionFactory::addTemperature(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("temperature(discretization=typeid(discretization).name())");
 
@@ -190,14 +181,13 @@ pylith::problems::SolutionFactory::temperature(const pylith::topology::Field::Di
     _solution.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // temperature
+} // addTemperature
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Add time derivative of displacement field to solution field.
 void
-pylith::problems::SolutionFactory::displacementDot(const pylith::topology::Field::Discretization& discretization)
-{ // displacementDot
+pylith::problems::SolutionFactory::addDisplacementDot(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("displacementDot(discretization=typeid(discretization).name())");
 
@@ -219,14 +209,13 @@ pylith::problems::SolutionFactory::displacementDot(const pylith::topology::Field
     _solution.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // displacementDot
+} // addDisplacementDot
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Add time derivative of velocity field to solution field.
 void
-pylith::problems::SolutionFactory::velocityDot(const pylith::topology::Field::Discretization& discretization)
-{ // velocityDot
+pylith::problems::SolutionFactory::addVelocityDot(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("velocityDot(discretization=typeid(discretization).name())");
 
@@ -248,14 +237,13 @@ pylith::problems::SolutionFactory::velocityDot(const pylith::topology::Field::Di
     _solution.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // velocityDot
+} // addVelocityDot
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Add time derivative of pressure field to solution field.
 void
-pylith::problems::SolutionFactory::pressureDot(const pylith::topology::Field::Discretization& discretization)
-{ // pressureDot
+pylith::problems::SolutionFactory::addPressureDot(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("pressureDot(discretization=typeid(discretization).name())");
 
@@ -275,14 +263,13 @@ pylith::problems::SolutionFactory::pressureDot(const pylith::topology::Field::Di
     _solution.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // pressureDot
+} // addPressureDot
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Add time derivative of fluid pressure field to solution field.
 void
-pylith::problems::SolutionFactory::fluidPressureDot(const pylith::topology::Field::Discretization& discretization)
-{ // fluidPressureDot
+pylith::problems::SolutionFactory::addFluidPressureDot(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("fluidPressureDot(discretization=typeid(discretization).name())");
 
@@ -302,14 +289,13 @@ pylith::problems::SolutionFactory::fluidPressureDot(const pylith::topology::Fiel
     _solution.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // fluidPressureDot
+} // addFluidPressureDot
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Add time derivative of temperature field to solution field.
 void
-pylith::problems::SolutionFactory::temperatureDot(const pylith::topology::Field::Discretization& discretization)
-{ // temperatureDot
+pylith::problems::SolutionFactory::addTemperatureDot(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("temperatureDot(discretization=typeid(discretization).name())");
 
@@ -329,13 +315,12 @@ pylith::problems::SolutionFactory::temperatureDot(const pylith::topology::Field:
     _solution.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // temperatureDot
+} // addTemperatureDot
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 void
-pylith::problems::SolutionFactory::setValues(spatialdata::spatialdb::SpatialDB* db)
-{ // setValues
+pylith::problems::SolutionFactory::setValues(spatialdata::spatialdb::SpatialDB* db) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("setValues(db="<<typeid(*db).name()<<")");
 

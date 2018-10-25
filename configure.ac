@@ -114,7 +114,7 @@ CIT_HEADER_MPI
 
 # PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.10.0])
+CIT_PATH_PETSC([3.10.2])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -276,6 +276,8 @@ AC_CONFIG_FILES([Makefile
 		unittests/libtests/materials/Makefile
 		unittests/libtests/materials/data/Makefile
 		unittests/libtests/meshio/Makefile
+		unittests/libtests/problems/Makefile
+		unittests/libtests/problems/data/Makefile
 		unittests/libtests/meshio/data/Makefile
 		unittests/libtests/topology/Makefile
 		unittests/libtests/topology/data/Makefile

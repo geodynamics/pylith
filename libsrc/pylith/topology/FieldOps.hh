@@ -95,7 +95,7 @@ public:
      */
     static
     PylithReal checkFieldWithDB(const pylith::topology::Field& field,
-                                spatialdata::spatialdb::SpatialDB* fielDB,
+                                spatialdata::spatialdb::SpatialDB* fieldDB,
                                 const PylithReal lengthScale);
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
