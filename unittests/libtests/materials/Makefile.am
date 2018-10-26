@@ -30,11 +30,14 @@ check_PROGRAMS = $(TESTS)
 test_materials_SOURCES = \
 	TestAuxiliaryFactoryElasticity.cc \
 	TestAuxiliaryFactoryElasticity_Cases.cc \
+	TestAuxiliaryFactoryElastic.cc \
+	TestAuxiliaryFactoryElastic_Cases.cc \
 	test_materials.cc
 
 
 noinst_HEADERS = \
-	TestAuxiliaryFactoryElasticity.hh
+	TestAuxiliaryFactoryElasticity.hh \
+	TestAuxiliaryFactoryElastic.hh
 
 AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \

@@ -61,7 +61,7 @@ pylith::materials::AuxiliaryFactoryElastic::addShearModulus(void) {
     description.componentNames.resize(1);
     description.componentNames[0] = fieldName;
     description.scale = pressureScale;
-    description.validator = NULL;
+    description.validator = pylith::topology::FieldQuery::validatorNonnegative;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
     _setSubfieldQueryFn(fieldName, pylith::materials::Query::dbQueryShearModulus);
@@ -88,7 +88,7 @@ pylith::materials::AuxiliaryFactoryElastic::addBulkModulus(void) {
     description.componentNames.resize(1);
     description.componentNames[0] = fieldName;
     description.scale = pressureScale;
-    description.validator = NULL;
+    description.validator = pylith::topology::FieldQuery::validatorPositive;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
     _setSubfieldQueryFn(fieldName, pylith::materials::Query::dbQueryBulkModulus);
@@ -112,7 +112,7 @@ pylith::materials::AuxiliaryFactoryElastic::addReferenceStress(void) {
     pylith::topology::Field::Description description;
     description.label = fieldName;
     description.alias = fieldName;
-    description.vectorFieldType = pylith::topology::Field::OTHER;
+    description.vectorFieldType = (3 == _spaceDim) ? pylith::topology::Field::TENSOR : pylith::topology::Field::OTHER;
     description.numComponents = stressSize;
     description.componentNames.resize(stressSize);
     for (int i = 0; i < stressSize; ++i) {
@@ -142,7 +142,7 @@ pylith::materials::AuxiliaryFactoryElastic::addReferenceStrain(void) {
     pylith::topology::Field::Description description;
     description.label = fieldName;
     description.alias = fieldName;
-    description.vectorFieldType = pylith::topology::Field::OTHER;
+    description.vectorFieldType = (3 == _spaceDim) ? pylith::topology::Field::TENSOR : pylith::topology::Field::OTHER;
     description.numComponents = strainSize;
     description.componentNames.resize(strainSize);
     for (int i = 0; i < strainSize; ++i) {

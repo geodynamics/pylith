@@ -17,19 +17,19 @@
 //
 
 /**
- * @file unittests/libtests/materials/TestAuxiliaryFactoryElasticity.hh
+ * @file unittests/libtests/materials/TestAuxiliaryFactoryElastic.hh
  *
- * @brief C++ TestAuxiliaryFactoryElasticity object.
+ * @brief C++ TestAuxiliaryFactoryElastic object.
  *
- * C++ unit testing for AuxiliaryFactoryElasticity.
+ * C++ unit testing for AuxiliaryFactoryElastic.
  */
 
-#if !defined(pylith_materials_testauxiliaryfactoryelasticity_hh)
-#define pylith_materials_testauxiliaryfactoryelasticity_hh
+#if !defined(pylith_materials_testauxiliaryfactoryelastic_hh)
+#define pylith_materials_testauxiliaryfactoryelastic_hh
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "pylith/materials/materialsfwd.hh" // HOLDSA AuxiliaryFactoryElasticity
+#include "pylith/materials/materialsfwd.hh" // HOLDSA AuxiliaryFactoryElastic
 #include "pylith/topology/Field.hh" // HOLDSA Field::SubfieldInfo
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 #include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA Coordsys
@@ -40,14 +40,14 @@
 /// Namespace for pylith package
 namespace pylith {
     namespace materials {
-        class TestAuxiliaryFactoryElasticity;
-        class TestAuxiliaryFactoryElasticity_Data;
+        class TestAuxiliaryFactoryElastic;
+        class TestAuxiliaryFactoryElastic_Data;
     } // materials
 } // pylith
 
-class pylith::materials::TestAuxiliaryFactoryElasticity : public CppUnit::TestFixture {
+class pylith::materials::TestAuxiliaryFactoryElastic : public CppUnit::TestFixture {
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestAuxiliaryFactoryElasticity);
+    CPPUNIT_TEST_SUITE(TestAuxiliaryFactoryElastic);
 
     CPPUNIT_TEST(testAdd);
     CPPUNIT_TEST(testSetValuesFromDB);
@@ -63,7 +63,7 @@ public:
     /// Tear down testing data.
     void tearDown(void);
 
-    /// Test adding density, body force, and gravity subfields.
+    /// Test adding shear modulus, bulk modulus, and reference stress/strain subfields.
     void testAdd(void);
 
     /// Test setValuesFromDB().
@@ -78,24 +78,24 @@ protected:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    AuxiliaryFactoryElasticity* _factory; ///< Test subject.
-    TestAuxiliaryFactoryElasticity_Data* _data; ///< Test data.
+    AuxiliaryFactoryElastic* _factory; ///< Test subject.
+    TestAuxiliaryFactoryElastic_Data* _data; ///< Test data.
 
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
     pylith::topology::Field* _auxiliaryField; ///< Auxiliary field for test subject.
 
-}; // class TestAuxiliaryFactoryElasticity
+}; // class TestAuxiliaryFactoryElastic
 
 // =====================================================================================================================
-class pylith::materials::TestAuxiliaryFactoryElasticity_Data {
+class pylith::materials::TestAuxiliaryFactoryElastic_Data {
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    TestAuxiliaryFactoryElasticity_Data(void);
+    TestAuxiliaryFactoryElastic_Data(void);
 
     /// Destructor
-    ~TestAuxiliaryFactoryElasticity_Data(void);
+    ~TestAuxiliaryFactoryElastic_Data(void);
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -107,10 +107,9 @@ public:
 
     std::map<std::string, pylith::topology::Field::SubfieldInfo> subfields;
     spatialdata::spatialdb::UserFunctionDB* auxiliaryDB; ///< Spatial database with values for solution.
-    spatialdata::spatialdb::GravityField* gravityField; ///< Gravity field spatial database.
 
-}; // class TestAuxiliaryFactoryElasticity_Data
+}; // class TestAuxiliaryFactoryElastic_Data
 
-#endif // pylith_materials_testauxiliaryfactoryelasticity_hh
+#endif // pylith_materials_testauxiliaryfactoryelastic_hh
 
 // End of file

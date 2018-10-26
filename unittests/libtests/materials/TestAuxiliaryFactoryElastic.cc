@@ -18,9 +18,9 @@
 
 #include <portinfo>
 
-#include "TestAuxiliaryFactoryElasticity.hh" // Implementation of class methods
+#include "TestAuxiliaryFactoryElastic.hh" // Implementation of class methods
 
-#include "pylith/materials/AuxiliaryFactoryElasticity.hh" // Test subject
+#include "pylith/materials/AuxiliaryFactoryElastic.hh" // Test subject
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
@@ -36,9 +36,9 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::materials::TestAuxiliaryFactoryElasticity::setUp(void) {
+pylith::materials::TestAuxiliaryFactoryElastic::setUp(void) {
     PYLITH_METHOD_BEGIN;
-    _data = new TestAuxiliaryFactoryElasticity_Data();CPPUNIT_ASSERT(_data);
+    _data = new TestAuxiliaryFactoryElastic_Data();CPPUNIT_ASSERT(_data);
 
     CPPUNIT_ASSERT(_data->normalizer);
     _data->normalizer->lengthScale(1.0e+03);
@@ -63,48 +63,90 @@ pylith::materials::TestAuxiliaryFactoryElasticity::setUp(void) {
         pylith::topology::FieldQuery::validatorPositive
         );
     info.fe = pylith::topology::Field::Discretization(
-        1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 0;
     _data->subfields["density"] = info;
 
-    // body_force
-    componentNames.resize(3);
-    componentNames[0] = "body_force_x";
-    componentNames[1] = "body_force_y";
-    componentNames[2] = "body_force_z";
+    // shear_modulus
+    componentNames.resize(1);
+    componentNames[0] = "shear_modulus";
     info.description = pylith::topology::Field::Description(
-        "body_force",
-        "body_force",
+        "shear_modulus",
+        "shear_modulus",
         componentNames,
         componentNames.size(),
-        pylith::topology::Field::VECTOR,
-        _data->normalizer->pressureScale() / _data->normalizer->lengthScale()
+        pylith::topology::Field::SCALAR,
+        _data->normalizer->pressureScale(),
+        pylith::topology::FieldQuery::validatorNonnegative
+        );
+    info.fe = pylith::topology::Field::Discretization(
+        1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        );
+    info.index = 1;
+    _data->subfields["shear_modulus"] = info;
+
+    // bulk_modulus
+    componentNames.resize(1);
+    componentNames[0] = "bulk_modulus";
+    info.description = pylith::topology::Field::Description(
+        "bulk_modulus",
+        "bulk_modulus",
+        componentNames,
+        componentNames.size(),
+        pylith::topology::Field::SCALAR,
+        _data->normalizer->pressureScale(),
+        pylith::topology::FieldQuery::validatorPositive
+        );
+    info.fe = pylith::topology::Field::Discretization(
+        1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        );
+    info.index = 2;
+    _data->subfields["bulk_modulus"] = info;
+
+    // reference_stress
+    componentNames.resize(6);
+    componentNames[0] = "reference_stress_xx";
+    componentNames[1] = "reference_stress_yy";
+    componentNames[2] = "reference_stress_zz";
+    componentNames[3] = "reference_stress_xy";
+    componentNames[4] = "reference_stress_yz";
+    componentNames[5] = "reference_stress_xz";
+    info.description = pylith::topology::Field::Description(
+        "reference_stress",
+        "reference_stress",
+        componentNames,
+        componentNames.size(),
+        pylith::topology::Field::TENSOR,
+        _data->normalizer->pressureScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 2, false, pylith::topology::Field::POLYNOMIAL_SPACE
         );
-    info.index = 1;
-    _data->subfields["body_force"] = info;
+    info.index = 3;
+    _data->subfields["reference_stress"] = info;
 
-    // gravity_field
-    componentNames.resize(3);
-    componentNames[0] = "gravitational_acceleration_x";
-    componentNames[1] = "gravitational_acceleration_y";
-    componentNames[2] = "gravitational_acceleration_z";
+    // reference_strain
+    componentNames.resize(6);
+    componentNames[0] = "reference_strain_xx";
+    componentNames[1] = "reference_strain_yy";
+    componentNames[2] = "reference_strain_zz";
+    componentNames[3] = "reference_strain_xy";
+    componentNames[4] = "reference_strain_yz";
+    componentNames[5] = "reference_strain_xz";
     info.description = pylith::topology::Field::Description(
-        "gravitational_acceleration",
-        "gravitational_acceleration",
+        "reference_strain",
+        "reference_strain",
         componentNames,
         componentNames.size(),
-        pylith::topology::Field::VECTOR,
-        _data->normalizer->lengthScale() / pow(_data->normalizer->timeScale(), 2)
+        pylith::topology::Field::TENSOR,
+        1.0
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 2, false, pylith::topology::Field::POLYNOMIAL_SPACE
         );
-    info.index = 2;
-    _data->subfields["gravitational_acceleration"] = info;
+    info.index = 4;
+    _data->subfields["reference_strain"] = info;
 
     PYLITH_METHOD_END;
 } // setUp
@@ -113,7 +155,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::setUp(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::materials::TestAuxiliaryFactoryElasticity::tearDown(void) {
+pylith::materials::TestAuxiliaryFactoryElastic::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
     delete _factory;_factory = NULL;
@@ -126,28 +168,33 @@ pylith::materials::TestAuxiliaryFactoryElasticity::tearDown(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test adding density, body force, and gravity subfields.
+// Test adding shear modulus, bulk modulus, and reference stress/strain subfields.
 void
-pylith::materials::TestAuxiliaryFactoryElasticity::testAdd(void) {
+pylith::materials::TestAuxiliaryFactoryElastic::testAdd(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_factory);
     CPPUNIT_ASSERT(_data);
 
     CPPUNIT_ASSERT(!_auxiliaryField->hasSubfield("density"));
-    CPPUNIT_ASSERT(!_auxiliaryField->hasSubfield("body_force"));
-    CPPUNIT_ASSERT(!_auxiliaryField->hasSubfield("gravitational_acceleration"));
+    CPPUNIT_ASSERT(!_auxiliaryField->hasSubfield("shear_modulus"));
+    CPPUNIT_ASSERT(!_auxiliaryField->hasSubfield("bulk_modulus"));
+    CPPUNIT_ASSERT(!_auxiliaryField->hasSubfield("reference_stress"));
+    CPPUNIT_ASSERT(!_auxiliaryField->hasSubfield("reference_strain"));
 
     _factory->addDensity();
-    _factory->addBodyForce();
-    CPPUNIT_ASSERT(_data->gravityField);
-    _factory->addGravityField(_data->gravityField);
+    _factory->addShearModulus();
+    _factory->addBulkModulus();
+    _factory->addReferenceStress();
+    _factory->addReferenceStrain();
 
     CPPUNIT_ASSERT(_data->normalizer);
 
     pylith::topology::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["density"]);
-    pylith::topology::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["body_force"]);
-    pylith::topology::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["gravitational_acceleration"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["shear_modulus"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["bulk_modulus"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["reference_stress"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["reference_strain"]);
 
     PYLITH_METHOD_END;
 } // testAdd
@@ -156,15 +203,16 @@ pylith::materials::TestAuxiliaryFactoryElasticity::testAdd(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Test setValues().
 void
-pylith::materials::TestAuxiliaryFactoryElasticity::testSetValuesFromDB(void) {
+pylith::materials::TestAuxiliaryFactoryElastic::testSetValuesFromDB(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_factory);
 
     _factory->addDensity();
-    _factory->addBodyForce();
-    CPPUNIT_ASSERT(_data->gravityField);
-    _factory->addGravityField(_data->gravityField);
+    _factory->addShearModulus();
+    _factory->addBulkModulus();
+    _factory->addReferenceStress();
+    _factory->addReferenceStrain();
     _auxiliaryField->subfieldsSetup();
     _auxiliaryField->allocate();
 
@@ -180,7 +228,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::testSetValuesFromDB(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Initialze mesh, coordinate system, auxiliary field, and factory.
 void
-pylith::materials::TestAuxiliaryFactoryElasticity::_initialize(void) {
+pylith::materials::TestAuxiliaryFactoryElastic::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_data);
@@ -202,7 +250,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::_initialize(void) {
     _auxiliaryField = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_auxiliaryField);
     _auxiliaryField->label("auxiliary");
 
-    _factory = new AuxiliaryFactoryElasticity();
+    _factory = new AuxiliaryFactoryElastic();
     CPPUNIT_ASSERT(_data->auxiliaryDB);
     _factory->setQueryDB(_data->auxiliaryDB);
     typedef std::map<std::string, pylith::topology::Field::SubfieldInfo>::const_iterator subfield_iter;
@@ -219,21 +267,19 @@ pylith::materials::TestAuxiliaryFactoryElasticity::_initialize(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-pylith::materials::TestAuxiliaryFactoryElasticity_Data::TestAuxiliaryFactoryElasticity_Data(void) :
+pylith::materials::TestAuxiliaryFactoryElastic_Data::TestAuxiliaryFactoryElastic_Data(void) :
     meshFilename(NULL),
     cs(NULL),
     normalizer(new spatialdata::units::Nondimensional),
-    auxiliaryDB(new spatialdata::spatialdb::UserFunctionDB),
-    gravityField(new spatialdata::spatialdb::GravityField)
+    auxiliaryDB(new spatialdata::spatialdb::UserFunctionDB)
 {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-pylith::materials::TestAuxiliaryFactoryElasticity_Data::~TestAuxiliaryFactoryElasticity_Data(void) {
+pylith::materials::TestAuxiliaryFactoryElastic_Data::~TestAuxiliaryFactoryElastic_Data(void) {
     delete cs;cs = NULL;
     delete normalizer;normalizer = NULL;
     delete auxiliaryDB;auxiliaryDB = NULL;
-    delete gravityField;gravityField = NULL;
 } // destructor
 
 
