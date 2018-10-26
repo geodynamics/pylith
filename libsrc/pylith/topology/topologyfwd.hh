@@ -31,7 +31,6 @@
 
 namespace pylith {
     namespace topology {
-
         class Mesh;
         class MeshOps;
         class CoordsVisitor;
@@ -47,6 +46,7 @@ namespace pylith {
         class VecVisitorSubMesh;
 
         class FieldOps;
+        class FieldTester;
         class FieldQuery;
 
         class SolutionFields;
@@ -64,8 +64,6 @@ namespace pylith {
     } // topology
 } // pylith
 
-
 #endif // pylith_topology_topologyfwd_hh
-
 
 // End of file

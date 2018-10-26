@@ -86,18 +86,6 @@ public:
     bool layoutsMatch(const pylith::topology::Field& fieldA,
                       const pylith::topology::Field& fieldB);
 
-    /** Check to make sure field matches spatial database.
-     *
-     * @param[in] field Field to check.
-     * @param[in] fieldDB Spatial database describing field.
-     * @param[in] lengthScale Length scale for nondimensionalization.
-     * @returns L2 norm of difference between field and spatial database.
-     */
-    static
-    PylithReal checkFieldWithDB(const pylith::topology::Field& field,
-                                spatialdata::spatialdb::SpatialDB* fieldDB,
-                                const PylithReal lengthScale);
-
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 

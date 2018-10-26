@@ -157,5 +157,12 @@ if ENABLE_CUBIT
   libpylith_la_LIBADD += -lnetcdf
 endif
 
+if ENABLE_TESTING
+libpylith_la_SOURCES += \
+	topology/FieldTester.cc
+libpylith_la_LIBADD += -lcppunit
+endif
+
+
 
 # End of file

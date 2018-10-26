@@ -45,4 +45,11 @@ subpkginclude_HEADERS = \
 
 noinst_HEADERS =
 
+
+
+if ENABLE_TESTING
+subpkginclude_HEADERS = \
+	FieldTester.hh
+endif
+
 # End of file

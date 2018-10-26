@@ -25,31 +25,12 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldOps.hh" // USES FieldOps
+#include "pylith/topology/FieldTester.hh" // USES FieldTester
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
-
-// ---------------------------------------------------------------------------------------------------------------------
-namespace pylith {
-    namespace problems {
-        class _TestSolutionFactory {
-public:
-
-            /** Check subfield info created by factory.
-             *
-             * @param field Field with subfields created by factory.
-             * @param infoE Expected subfield info.
-             */
-            static
-            void checkSubfieldInfo(const pylith::topology::Field& field,
-                                   const pylith::topology::Field::SubfieldInfo& infoE);
-
-        }; // class _TestSolutionFactory
-    } // problems
-} // pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.
@@ -284,10 +265,10 @@ pylith::problems::TestSolutionFactory::testDispVel(void) {
 
     CPPUNIT_ASSERT(_data->normalizer);
 
-    _TestSolutionFactory::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
-    _TestSolutionFactory::checkSubfieldInfo(*_solution, _data->subfields["velocity"]);
-    _TestSolutionFactory::checkSubfieldInfo(*_solution, _data->subfields["displacement_dot"]);
-    _TestSolutionFactory::checkSubfieldInfo(*_solution, _data->subfields["velocity_dot"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["velocity"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement_dot"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["velocity_dot"]);
 
     PYLITH_METHOD_END;
 } // testDispVel
@@ -312,10 +293,10 @@ pylith::problems::TestSolutionFactory::testPressure(void) {
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->normalizer);
 
-    _TestSolutionFactory::checkSubfieldInfo(*_solution, _data->subfields["pressure"]);
-    _TestSolutionFactory::checkSubfieldInfo(*_solution, _data->subfields["fluid_pressure"]);
-    _TestSolutionFactory::checkSubfieldInfo(*_solution, _data->subfields["pressure_dot"]);
-    _TestSolutionFactory::checkSubfieldInfo(*_solution, _data->subfields["fluid_pressure_dot"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["pressure"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["fluid_pressure"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["pressure_dot"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["fluid_pressure_dot"]);
 
     PYLITH_METHOD_END;
 } // testPressure
@@ -340,10 +321,10 @@ pylith::problems::TestSolutionFactory::testDispTemp(void) {
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->normalizer);
 
-    _TestSolutionFactory::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
-    _TestSolutionFactory::checkSubfieldInfo(*_solution, _data->subfields["temperature"]);
-    _TestSolutionFactory::checkSubfieldInfo(*_solution, _data->subfields["displacement_dot"]);
-    _TestSolutionFactory::checkSubfieldInfo(*_solution, _data->subfields["temperature_dot"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["temperature"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement_dot"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["temperature_dot"]);
 
     PYLITH_METHOD_END;
 } // testTemperature
@@ -367,50 +348,10 @@ pylith::problems::TestSolutionFactory::testSetValues(void) {
 
     CPPUNIT_ASSERT(_data->solutionDB);
     _factory->setValues(_data->solutionDB);
-    pylith::topology::FieldOps::checkFieldWithDB(*_solution, _data->solutionDB, _data->normalizer->lengthScale());
+    pylith::topology::FieldTester::checkFieldWithDB(*_solution, _data->solutionDB, _data->normalizer->lengthScale());
 
     PYLITH_METHOD_END;
 } // testSetValues
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Test subfield info created by factory.
-void
-pylith::problems::_TestSolutionFactory::checkSubfieldInfo(const pylith::topology::Field& field,
-                                                          const pylith::topology::Field::SubfieldInfo& infoE) {
-    PYLITH_METHOD_BEGIN;
-
-    const pylith::topology::Field::SubfieldInfo& info = field.subfieldInfo(infoE.description.label.c_str());
-
-    CPPUNIT_ASSERT_EQUAL(infoE.index, info.index);
-
-    const std::string& msg = "Error checking subfield " + infoE.description.label;
-
-    // Description
-    const pylith::topology::Field::Description& descriptionE = infoE.description;
-    const pylith::topology::Field::Description& description = info.description;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.label, description.label);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.alias, description.alias);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.vectorFieldType, description.vectorFieldType);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.numComponents, description.numComponents);
-    for (size_t i = 0; i < descriptionE.numComponents; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.componentNames[i], description.componentNames[i]);
-    } // for
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.scale, description.scale);
-    CPPUNIT_ASSERT_MESSAGE(msg.c_str(), !description.validator);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.hasHistory, description.hasHistory);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.historySize, description.historySize);
-
-    // Discretization
-    const pylith::topology::Field::Discretization& feE = infoE.fe;
-    const pylith::topology::Field::Discretization& fe = info.fe;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.basisOrder, fe.basisOrder);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.quadOrder, fe.quadOrder);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.isBasisContinuous, fe.isBasisContinuous);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.feSpace, fe.feSpace);
-
-    PYLITH_METHOD_END;
-} // checkSubfieldInfo
 
 
 // ---------------------------------------------------------------------------------------------------------------------

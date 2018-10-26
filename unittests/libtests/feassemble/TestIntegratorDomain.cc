@@ -25,7 +25,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldOps.hh" // USES FieldOps
+#include "pylith/topology/FieldTester.hh" // USES FieldTester
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
@@ -127,17 +127,17 @@ pylith::feassemble::TestIntegratorDomain::testInitialize(void) {
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT(_data->normalizer);
     const PylithReal lengthScale = _data->normalizer->lengthScale();
-    PylithReal norm = pylith::topology::FieldOps::checkFieldWithDB(*auxiliaryField, _data->auxiliaryDB, lengthScale);
+    PylithReal norm = pylith::topology::FieldTester::checkFieldWithDB(*auxiliaryField, _data->auxiliaryDB, lengthScale);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Values in auxiliary field do not match spatial database.", 0.0, norm, tolerance);
 
     // Verify solution and perturbation fields can be exactly represented by discretization.
     CPPUNIT_ASSERT(_solutionFields);
     pylith::topology::Field& solution = _solutionFields->get("solution");
-    norm = pylith::topology::FieldOps::checkFieldWithDB(solution, _data->solutionDB, lengthScale);
+    norm = pylith::topology::FieldTester::checkFieldWithDB(solution, _data->solutionDB, lengthScale);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Solution field failed representation test.", 0.0, norm, tolerance);
 
     pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
-    norm = pylith::topology::FieldOps::checkFieldWithDB(perturbation, _data->perturbationDB, lengthScale);
+    norm = pylith::topology::FieldTester::checkFieldWithDB(perturbation, _data->perturbationDB, lengthScale);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Perturbation field failed representation test.", 0.0, norm, tolerance);
 
     PYLITH_METHOD_END;
@@ -182,8 +182,8 @@ pylith::feassemble::TestIntegratorDomain::testPoststep(void) {
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT(_data->normalizer);
     const PylithReal lengthScale = _data->normalizer->lengthScale();
-    PylithReal norm = pylith::topology::FieldOps::checkFieldWithDB(*_integrator->getAuxiliaryField(),
-                                                                   _data->auxiliaryUpdateDB, lengthScale);
+    PylithReal norm = pylith::topology::FieldTester::checkFieldWithDB(*_integrator->getAuxiliaryField(),
+                                                                      _data->auxiliaryUpdateDB, lengthScale);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Updated auxiliary field values do not match spatial database.", 0.0, norm, tolerance);
 
     PYLITH_METHOD_END;

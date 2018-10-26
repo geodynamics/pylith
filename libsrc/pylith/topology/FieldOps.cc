@@ -30,6 +30,8 @@
 #include "petscdm.h" // USES PetscDM
 #include "petscds.h" // USES PetscDS
 
+#include <cppunit/extensions/HelperMacros.h>
+
 // ----------------------------------------------------------------------
 // Create PetscFE object for discretization.
 PetscFE
@@ -213,27 +215,6 @@ pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
     // PYLITH_JOURNAL_DEBUG("layoutsMatch return value="<<isMatch<<".");
     PYLITH_METHOD_RETURN(isMatch);
 } // layoutsMatch
-
-
-// ----------------------------------------------------------------------
-// Check to make sure field matches spatial database.
-PylithReal
-pylith::topology::FieldOps::checkFieldWithDB(const pylith::topology::Field& field,
-                                             spatialdata::spatialdb::SpatialDB* fieldDB,
-                                             const PylithReal lengthScale) {
-    PYLITH_METHOD_BEGIN;
-    PylithReal norm = 0.0;
-    PylithReal t = 0.0;
-
-    const PetscDM dmField = field.dmMesh();assert(dmField);
-    pylith::topology::FieldQuery fieldQuery(field);
-    fieldQuery.initializeWithDefaultQueryFns();
-    fieldQuery.openDB(fieldDB, lengthScale);
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dmField, t, fieldQuery.functions(), (void**)fieldQuery.contextPtrs(), field.localVector(), &norm);assert(!err);
-    fieldQuery.closeDB(fieldDB);
-
-    PYLITH_METHOD_RETURN(norm);
-} // checkFieldWithDB
 
 
 // End of file
