@@ -267,7 +267,7 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
     auxiliaryField->zeroLocal();
 
     assert(_auxiliaryFactory);
-    _auxiliaryFactory->initializeSubfields();
+    _auxiliaryFactory->setValuesFromDB();
 
     PYLITH_METHOD_RETURN(auxiliaryField);
 } // createAuxiliaryField

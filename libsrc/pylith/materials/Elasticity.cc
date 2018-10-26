@@ -200,7 +200,7 @@ pylith::materials::Elasticity::createAuxiliaryField(const pylith::topology::Fiel
     auxiliaryField->zeroLocal();
 
     assert(auxiliaryFactory);
-    auxiliaryFactory->initializeSubfields();
+    auxiliaryFactory->setValuesFromDB();
 
     PYLITH_METHOD_RETURN(auxiliaryField);
 } // createAuxiliaryField

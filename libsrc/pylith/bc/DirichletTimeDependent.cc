@@ -259,7 +259,7 @@ pylith::bc::DirichletTimeDependent::createAuxiliaryField(const pylith::topology:
     auxiliaryField->zeroLocal();
 
     assert(_auxiliaryFactory);
-    _auxiliaryFactory->initializeSubfields();
+    _auxiliaryFactory->setValuesFromDB();
 
     PYLITH_METHOD_RETURN(auxiliaryField);
 } // createAuxiliaryField

@@ -173,7 +173,7 @@ pylith::bc::AbsorbingDampers::createAuxiliaryField(const pylith::topology::Field
     auxiliaryField->zeroLocal();
 
     assert(_auxiliaryFactory);
-    _auxiliaryFactory->initializeSubfields();
+    _auxiliaryFactory->setValuesFromDB();
 
     PYLITH_METHOD_RETURN(auxiliaryField);
 } // createAuxiliaryField

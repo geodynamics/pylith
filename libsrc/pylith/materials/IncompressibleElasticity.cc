@@ -181,7 +181,7 @@ pylith::materials::IncompressibleElasticity::createAuxiliaryField(const pylith::
     auxiliaryField->zeroLocal();
 
     assert(auxiliaryFactory);
-    auxiliaryFactory->initializeSubfields();
+    auxiliaryFactory->setValuesFromDB();
 
     PYLITH_METHOD_RETURN(auxiliaryField);
 } // createAuxiliaryField

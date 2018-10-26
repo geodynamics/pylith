@@ -172,9 +172,9 @@ pylith::feassemble::TestAuxiliaryFactory::testInitialize(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test initializeSubfields().
+// Test setValuesFromDB().
 void
-pylith::feassemble::TestAuxiliaryFactory::testInitializeSubfields(void) {
+pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     const int spaceDim = 2;
     spatialdata::units::Nondimensional normalizer;
     normalizer.lengthScale(10.0);
@@ -243,7 +243,7 @@ pylith::feassemble::TestAuxiliaryFactory::testInitializeSubfields(void) {
     auxiliaryField.allocate();
     auxiliaryField.zeroLocal();
 
-    _factory->initializeSubfields();
+    _factory->setValuesFromDB();
 
     // Verify auxiliary field
     PylithReal norm = 0.0;
@@ -256,7 +256,7 @@ pylith::feassemble::TestAuxiliaryFactory::testInitializeSubfields(void) {
     query.closeDB(&auxiliaryDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of auxiliary field values failed.", 0.0, norm, tolerance);
-} // testInitializeSubfields
+} // testSetValuesFromDB
 
 
 // End of file

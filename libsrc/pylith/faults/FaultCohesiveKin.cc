@@ -226,7 +226,7 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
     auxiliaryField->zeroLocal();
 
     assert(_auxiliaryFactory);
-    _auxiliaryFactory->initializeSubfields();
+    _auxiliaryFactory->setValuesFromDB();
 
     // Initialize auxiliary fields for kinematic ruptures.
     assert(auxiliaryField);

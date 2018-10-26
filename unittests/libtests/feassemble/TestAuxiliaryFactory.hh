@@ -45,7 +45,7 @@ class pylith::feassemble::TestAuxiliaryFactory : public CppUnit::TestFixture {
     CPPUNIT_TEST(testQueryDB);
     CPPUNIT_TEST(testSubfieldDiscretization);
     CPPUNIT_TEST(testInitialize);
-    CPPUNIT_TEST(testInitializeSubfields);
+    CPPUNIT_TEST(testSetValuesFromDB);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -67,8 +67,8 @@ public:
     /// Test initialize().
     void testInitialize(void);
 
-    /// Test initializeSubfields().
-    void testInitializeSubfields(void);
+    /// Test setValuesFromDB().
+    void testSetValuesFromDB(void);
 
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

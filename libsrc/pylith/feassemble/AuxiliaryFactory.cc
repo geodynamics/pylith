@@ -149,9 +149,9 @@ pylith::feassemble::AuxiliaryFactory::initialize(pylith::topology::Field* field,
 // ---------------------------------------------------------------------------------------------------------------------
 // Initialize subfields.
 void
-pylith::feassemble::AuxiliaryFactory::initializeSubfields(void) {
+pylith::feassemble::AuxiliaryFactory::setValuesFromDB(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("initializeSubfields()");
+    PYLITH_JOURNAL_DEBUG("setValuesFromDB()");
 
     assert(_normalizer);
 
@@ -168,10 +168,10 @@ pylith::feassemble::AuxiliaryFactory::initializeSubfields(void) {
     delete _fieldQuery;_fieldQuery = NULL;
     _field = NULL;
 
-    //this->view("AUXILIARY FIELDS"); // :DEBUGGING: TEMPORARY
+    // this->view("AUXILIARY FIELDS"); // :DEBUGGING: TEMPORARY
 
     PYLITH_METHOD_END;
-} // initializeSubfields
+} // setValuesFromDB
 
 
 // ---------------------------------------------------------------------------------------------------------------------

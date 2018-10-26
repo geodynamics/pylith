@@ -124,7 +124,7 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
     _auxField->allocate();
     _auxField->zeroLocal();
 
-    _auxFactory->initializeSubfields();
+    _auxFactory->setValuesFromDB();
 
     //_auxField->view("KINSRC AUXILIARY FIELD"); // :DEBUG: TEMPORARY
 

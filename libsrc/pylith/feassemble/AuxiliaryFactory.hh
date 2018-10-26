@@ -91,8 +91,8 @@ public:
                     const int spaceDim,
                     const pylith::topology::FieldBase::Description* defaultDescription=NULL);
 
-    /// Fill subfield values.
-    void initializeSubfields(void);
+    /// Set subfield values using spatial database.
+    void setValuesFromDB(void);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
