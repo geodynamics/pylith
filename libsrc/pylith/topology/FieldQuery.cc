@@ -335,4 +335,11 @@ pylith::topology::FieldQuery::validatorPositive(const PylithReal value) {
 } // validatorPositive
 
 
+// ----------------------------------------------------------------------
+const char*
+pylith::topology::FieldQuery::validatorNonnegative(const PylithReal value) {
+    return (value >= 0.0) ? "" : "Value must be nonnegative.";
+} // validatorNonnegative
+
+
 // End of file
