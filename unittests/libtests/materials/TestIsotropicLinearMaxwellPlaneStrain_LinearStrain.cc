@@ -598,7 +598,6 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP
     } // setUp
 
 }; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP4
-// Leave this out for now to shorten runtime.
 // Remove this test for now until higher order integration is done properly.
 // CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP4);
 
