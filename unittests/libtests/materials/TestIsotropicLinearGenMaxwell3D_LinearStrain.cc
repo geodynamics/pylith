@@ -928,8 +928,8 @@ protected:
             pylith::topology::Field::Discretization(0, 1), // bulk_modulus
             pylith::topology::Field::Discretization(0, 1), // maxwell_time
             pylith::topology::Field::Discretization(0, 1), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 1), // viscous_strain
-            pylith::topology::Field::Discretization(1, 1), // total_strain
+            pylith::topology::Field::Discretization(1, 1, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 1, false), // total_strain
             pylith::topology::Field::Discretization(0, 1), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1116,8 +1116,8 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP2 :
             pylith::topology::Field::Discretization(0, 2), // bulk_modulus
             pylith::topology::Field::Discretization(0, 2), // maxwell_time
             pylith::topology::Field::Discretization(0, 2), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 2), // viscous_strain
-            pylith::topology::Field::Discretization(1, 2), // total_strain
+            pylith::topology::Field::Discretization(1, 2, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 2, false), // total_strain
             pylith::topology::Field::Discretization(0, 2), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1155,8 +1155,8 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP3 :
             pylith::topology::Field::Discretization(0, 3), // bulk_modulus
             pylith::topology::Field::Discretization(0, 3), // maxwell_time
             pylith::topology::Field::Discretization(0, 3), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 3), // viscous_strain
-            pylith::topology::Field::Discretization(1, 3), // total_strain
+            pylith::topology::Field::Discretization(1, 3, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 3, false), // total_strain
             pylith::topology::Field::Discretization(0, 3), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1165,7 +1165,7 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP3 :
     } // setUp
 
 }; // TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP3
-// Leave this one out for now since it takes too long.
+// Remove this test for now until higher order integration is done properly.
 //CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP3);
 
 // ----------------------------------------------------------------------
@@ -1194,8 +1194,8 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP4 :
             pylith::topology::Field::Discretization(0, 4), // bulk_modulus
             pylith::topology::Field::Discretization(0, 4), // maxwell_time
             pylith::topology::Field::Discretization(0, 4), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 4), // viscous_strain
-            pylith::topology::Field::Discretization(1, 4), // total_strain
+            pylith::topology::Field::Discretization(1, 4, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 4, false), // total_strain
             pylith::topology::Field::Discretization(0, 4), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1204,7 +1204,7 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP4 :
     } // setUp
 
 }; // TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP4
-// Leave this one out for now since it takes too long.
+// Remove this test for now until higher order integration is done properly.
 // CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP4);
 
 // ----------------------------------------------------------------------
@@ -1233,8 +1233,8 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ1 :
             pylith::topology::Field::Discretization(0, 1), // bulk_modulus
             pylith::topology::Field::Discretization(0, 1), // maxwell_time
             pylith::topology::Field::Discretization(0, 1), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 1), // viscous_strain
-            pylith::topology::Field::Discretization(1, 1), // total_strain
+            pylith::topology::Field::Discretization(1, 1, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 1, false), // total_strain
             pylith::topology::Field::Discretization(0, 1), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1273,8 +1273,8 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ2 :
             pylith::topology::Field::Discretization(0, 2), // bulk_modulus
             pylith::topology::Field::Discretization(0, 2), // maxwell_time
             pylith::topology::Field::Discretization(0, 2), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 2), // viscous_strain
-            pylith::topology::Field::Discretization(1, 2), // total_strain
+            pylith::topology::Field::Discretization(1, 2, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 2, false), // total_strain
             pylith::topology::Field::Discretization(0, 2), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1312,8 +1312,8 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ3 :
             pylith::topology::Field::Discretization(0, 3), // bulk_modulus
             pylith::topology::Field::Discretization(0, 3), // maxwell_time
             pylith::topology::Field::Discretization(0, 3), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 3), // viscous_strain
-            pylith::topology::Field::Discretization(1, 3), // total_strain
+            pylith::topology::Field::Discretization(1, 3, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 3, false), // total_strain
             pylith::topology::Field::Discretization(0, 3), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1322,7 +1322,7 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ3 :
     } // setUp
 
 }; // TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ3
-// Leave this one out for now since it takes too long.
+// Remove this test for now until higher order integration is done properly.
 //CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ3);
 
 
@@ -1352,8 +1352,8 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ4 :
             pylith::topology::Field::Discretization(0, 4), // bulk_modulus
             pylith::topology::Field::Discretization(0, 4), // maxwell_time
             pylith::topology::Field::Discretization(0, 4), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 4), // viscous_strain
-            pylith::topology::Field::Discretization(1, 4), // total_strain
+            pylith::topology::Field::Discretization(1, 4, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 4, false), // total_strain
             pylith::topology::Field::Discretization(0, 4), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1362,7 +1362,7 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ4 :
     } // setUp
 
 }; // TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ4
-// Leave this one out for now since it takes too long.
+// Remove this test for now until higher order integration is done properly.
 //CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ4);
 
 
