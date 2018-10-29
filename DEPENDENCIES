@@ -16,7 +16,7 @@ spatialdata (https://geodynamics.org/cig/software/pylith)
 proj (https://trac.osgeo.org/proj/)
 numpy (http://www.numpy.org/)
 FIAT (https://bitbucket.org/fenics-project/fiat)
-nemesis (https://geodynamics.org/cig/software/pythia)
+nemesis (https://geodynamics.org/cig/software/nemesis)
 SWIG (if building from repository)
 
 OPTIONAL DEPENDENCIES
