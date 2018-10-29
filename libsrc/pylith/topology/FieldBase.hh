@@ -39,7 +39,6 @@
  * vertices or cells of a finite-element mesh.
  */
 class pylith::topology::FieldBase { // Field
-
     // PUBLIC ENUMS /////////////////////////////////////////////////////////
 public:
 
@@ -89,6 +88,7 @@ public:
             hasHistory(false),
             historySize(0) {}
 
+
         Description(const char* labelValue,
                     const char* aliasValue,
                     const pylith::string_vector& componentNamesValue,
@@ -107,23 +107,30 @@ public:
             validator(validatorValue),
             hasHistory(hasHistoryValue),
             historySize(historySizeValue) {}
+
+
     }; // Description
 
     struct Discretization {
         int basisOrder; ///< Order of basis functions.
         int quadOrder; ///< Order of quadrature scheme.
+        int dimension; ///< Dimension of point(s) for discretization.
         bool isBasisContinuous; ///< Is basis continuous?
         SpaceEnum feSpace; ///< Finite-element space.
 
         Discretization(const int basisOrderValue=1,
                        const int quadOrderValue=1,
+                       const int dimensionValue=-1,
                        const bool isBasisContinuousValue=true,
                        const SpaceEnum feSpaceValue=POLYNOMIAL_SPACE) :
             basisOrder(basisOrderValue),
             quadOrder(quadOrderValue),
+            dimension(dimensionValue),
             isBasisContinuous(isBasisContinuousValue),
             feSpace(feSpaceValue)
         {}
+
+
     }; // Discretization
 
     /// Mapping from field name to discretization (intended for subfields).
@@ -160,6 +167,5 @@ private:
 }; // FieldBase
 
 #endif // pylith_topology_fieldbase_hh
-
 
 // End of file

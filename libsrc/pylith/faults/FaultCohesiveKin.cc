@@ -45,7 +45,7 @@
 #include <stdexcept> // USES std::runtime_error
 #include <typeinfo> // USES typeid()
 
-//#define DETAILED_EVENT_LOGGING
+// #define DETAILED_EVENT_LOGGING
 
 // ---------------------------------------------------------------------------------------------------------------------
 typedef pylith::feassemble::IntegratorInterface::ResidualKernels ResidualKernels;
@@ -209,7 +209,7 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
     // Set default discretization of auxiliary subfields to match lagrange_multiplier_fault subfield in solution.
     assert(_auxiliaryFactory);
     const pylith::topology::FieldBase::Discretization& discretization = solution.subfieldInfo("lagrange_multiplier_fault").fe;
-    _auxiliaryFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder,
+    _auxiliaryFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder, -1,
                                                  discretization.isBasisContinuous, discretization.feSpace);
 
     assert(_auxiliaryFactory);
@@ -305,7 +305,7 @@ pylith::faults::_FaultCohesiveKin::setKernelsRHSResidual(pylith::feassemble::Int
                                                          const pylith::faults::FaultCohesiveKin& fault,
                                                          const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    //PYLITH_COMPONENT_DEBUG("setKernelsRHSResidual(integrator="<<integrator<<", fault="<<typeid(fault)<<",
+    // PYLITH_COMPONENT_DEBUG("setKernelsRHSResidual(integrator="<<integrator<<", fault="<<typeid(fault)<<",
     // solution="<<solution.label()<<")");
 
     const char* nameDispVel = (solution.hasSubfield("velocity")) ? "velocity" : "displacement";
@@ -354,7 +354,7 @@ pylith::faults::_FaultCohesiveKin::setKernelsRHSJacobian(pylith::feassemble::Int
                                                          const pylith::faults::FaultCohesiveKin& fault,
                                                          const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    //PYLITH_COMPONENT_DEBUG("setKernelsRHSJacobian(integrator="<<integrator<<", fault="<<typeid(fault)<<",
+    // PYLITH_COMPONENT_DEBUG("setKernelsRHSJacobian(integrator="<<integrator<<", fault="<<typeid(fault)<<",
     // solution="<<solution.label()<<")");
 
     const char* nameDispVel = (solution.hasSubfield("velocity")) ? "velocity" : "displacement";

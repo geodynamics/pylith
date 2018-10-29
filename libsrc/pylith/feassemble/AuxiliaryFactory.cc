@@ -76,6 +76,7 @@ void
 pylith::feassemble::AuxiliaryFactory::setSubfieldDiscretization(const char* subfieldName,
                                                                 const int basisOrder,
                                                                 const int quadOrder,
+                                                                const int dimension,
                                                                 const bool isBasisContinuous,
                                                                 const pylith::topology::FieldBase::SpaceEnum feSpace) {
     PYLITH_METHOD_BEGIN;
@@ -85,6 +86,7 @@ pylith::feassemble::AuxiliaryFactory::setSubfieldDiscretization(const char* subf
     feInfo.basisOrder = basisOrder;
     feInfo.quadOrder = quadOrder;
     feInfo.isBasisContinuous = isBasisContinuous;
+    feInfo.dimension = dimension;
     feInfo.feSpace = feSpace;
     _subfieldDiscretizations[subfieldName] = feInfo;
 

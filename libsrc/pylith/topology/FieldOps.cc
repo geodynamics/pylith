@@ -38,7 +38,7 @@ PetscFE
 pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
                                      const PetscDM dm,
                                      const bool isSimplex,
-                                     const int numComponents) { // createFE
+                                     const int numComponents) {
     PYLITH_METHOD_BEGIN;
 
     const int basisOrder = PetscMax(feinfo.basisOrder, 0);
@@ -51,6 +51,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
     // Get spatial dimension of mesh.
     int dim = 0;
     err = DMGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
+    dim = (feinfo.dimension < 0) ? dim : feinfo.dimension;
 
     // Create space
     PetscSpace space = NULL;

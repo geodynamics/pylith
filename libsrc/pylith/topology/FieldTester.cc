@@ -85,6 +85,7 @@ pylith::topology::FieldTester::checkSubfieldInfo(const pylith::topology::Field& 
     const pylith::topology::Field::Discretization& fe = info.fe;
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.basisOrder, fe.basisOrder);
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.quadOrder, fe.quadOrder);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.dimension, fe.dimension);
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.isBasisContinuous, fe.isBasisContinuous);
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.feSpace, fe.feSpace);
 

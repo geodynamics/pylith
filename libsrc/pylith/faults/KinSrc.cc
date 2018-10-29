@@ -39,7 +39,7 @@ pylith::faults::KinSrc::KinSrc(void) :
     _auxFactory(new pylith::faults::KinSrcAuxiliaryFactory),
     _slipFnKernel(NULL),
     _auxField(NULL),
-    _originTime(0.0){ // constructor
+    _originTime(0.0) { // constructor
 } // constructor
 
 
@@ -114,7 +114,8 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
     assert(_auxFactory);
     const pylith::topology::FieldBase::Discretization& discretization = faultAuxField.subfieldInfo("slip").fe;
     _auxFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder,
-                                           discretization.isBasisContinuous, discretization.feSpace);
+                                           discretization.dimension, discretization.isBasisContinuous,
+                                           discretization.feSpace);
 
     delete _auxField;_auxField = new pylith::topology::Field(faultAuxField.mesh());assert(_auxField);
     _auxField->label("kinsrc auxiliary");
@@ -126,7 +127,7 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
 
     _auxFactory->setValuesFromDB();
 
-    //_auxField->view("KINSRC AUXILIARY FIELD"); // :DEBUG: TEMPORARY
+    // _auxField->view("KINSRC AUXILIARY FIELD"); // :DEBUG: TEMPORARY
 
     PYLITH_METHOD_END;
 } // initialize

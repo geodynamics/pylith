@@ -122,6 +122,7 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
             feP1.isBasisContinuous = info.fe.isBasisContinuous;
             feP1.feSpace = info.fe.feSpace;
             feP1.quadOrder = info.fe.quadOrder;
+            feP1.dimension = info.fe.dimension;
 
             if (info.fe.quadOrder < _basisOrder) {
                 PYLITH_COMPONENT_WARNING(

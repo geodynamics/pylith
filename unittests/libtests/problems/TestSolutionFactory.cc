@@ -63,7 +63,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->lengthScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        1, 2, -1, true, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 0;
     _data->subfields["displacement"] = info;
@@ -82,7 +82,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->lengthScale() / _data->normalizer->timeScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 3, false, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 3, -1, false, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 1;
     _data->subfields["velocity"] = info;
@@ -101,7 +101,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->lengthScale() / _data->normalizer->timeScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 2, -1, true, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 2;
     _data->subfields["displacement_dot"] = info;
@@ -120,7 +120,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->lengthScale() / pow(_data->normalizer->timeScale(), 2)
         );
     info.fe = pylith::topology::Field::Discretization(
-        3, 3, true, pylith::topology::Field::POINT_SPACE
+        3, 3, -1, true, pylith::topology::Field::POINT_SPACE
         );
     info.index = 3;
     _data->subfields["velocity_dot"] = info;
@@ -137,7 +137,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->pressureScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 2, -1, true, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 0;
     _data->subfields["pressure"] = info;
@@ -154,7 +154,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->pressureScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 3, true, pylith::topology::Field::POINT_SPACE
+        2, 3, -1, true, pylith::topology::Field::POINT_SPACE
         );
     info.index = 1;
     _data->subfields["fluid_pressure"] = info;
@@ -171,7 +171,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->pressureScale() / _data->normalizer->timeScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 2, true, pylith::topology::Field::POINT_SPACE
+        2, 2, -1, true, pylith::topology::Field::POINT_SPACE
         );
     info.index = 2;
     _data->subfields["pressure_dot"] = info;
@@ -188,7 +188,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->pressureScale() / _data->normalizer->timeScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 3, true, pylith::topology::Field::POINT_SPACE
+        2, 3, -1, true, pylith::topology::Field::POINT_SPACE
         );
     info.index = 3;
     _data->subfields["fluid_pressure_dot"] = info;
@@ -205,7 +205,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->temperatureScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 3, true, pylith::topology::Field::POINT_SPACE
+        2, 3, -1, true, pylith::topology::Field::POINT_SPACE
         );
     info.index = 1;
     _data->subfields["temperature"] = info;
@@ -222,7 +222,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->temperatureScale() / _data->normalizer->timeScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 3, true, pylith::topology::Field::POINT_SPACE
+        2, 3, -1, true, pylith::topology::Field::POINT_SPACE
         );
     info.index = 3;
     _data->subfields["temperature_dot"] = info;

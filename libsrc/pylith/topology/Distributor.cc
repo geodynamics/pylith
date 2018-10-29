@@ -37,23 +37,22 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::topology::Distributor::Distributor(void)
-{ // constructor
+pylith::topology::Distributor::Distributor(void) { // constructor
 } // constructor
+
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::topology::Distributor::~Distributor(void)
-{ // destructor
+pylith::topology::Distributor::~Distributor(void) { // destructor
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Distribute mesh among processors.
 void
 pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
                                           const topology::Mesh& origMesh,
-                                          const char* partitionerName)
-{ // distribute
+                                          const char* partitionerName) { // distribute
     PYLITH_METHOD_BEGIN;
 
     assert(newMesh);
@@ -84,12 +83,12 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
     PYLITH_METHOD_END;
 } // distribute
 
+
 // ----------------------------------------------------------------------
 // Write partitioning info for distributed mesh.
 void
 pylith::topology::Distributor::write(meshio::DataWriter* const writer,
-                                     const topology::Mesh& mesh)
-{ // write
+                                     const topology::Mesh& mesh) { // write
     PYLITH_METHOD_BEGIN;
 
     journal::info_t info("mesh_distributor");
@@ -106,8 +105,9 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
     const int numComponents = 1;
     const int basisOrder = 0;
     const int quadOrder = 0;
+    const int dim = -1;
     const double scale = 1.0;
-    partition.subfieldAdd("partition", "partition", pylith::topology::Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder, true, pylith::topology::Field::POLYNOMIAL_SPACE);
+    partition.subfieldAdd("partition", "partition", pylith::topology::Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder, dim, true, pylith::topology::Field::POLYNOMIAL_SPACE);
     partition.subfieldsSetup();
     partition.allocate();
     partition.label("partition");
@@ -128,7 +128,7 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
         partitionArray[off] = rankReal;
     } // for
 
-    //partition->view("PARTITION");
+    // partition->view("PARTITION");
     const PylithScalar t = 0.0;
     const int numTimeSteps = 0;
     writer->open(mesh, numTimeSteps);
@@ -139,5 +139,6 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
 
     PYLITH_METHOD_END;
 } // write
+
 
 // End of file

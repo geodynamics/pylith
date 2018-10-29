@@ -79,13 +79,14 @@ void
 pylith::problems::Physics::setAuxiliarySubfieldDiscretization(const char* subfieldName,
                                                               const int basisOrder,
                                                               const int quadOrder,
+                                                              const int dimension,
                                                               const bool isBasisContinuous,
                                                               const pylith::topology::FieldBase::SpaceEnum feSpace) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setAuxiliarySubfieldDiscretization(subfieldName="<<subfieldName<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
+    PYLITH_COMPONENT_DEBUG("setAuxiliarySubfieldDiscretization(subfieldName="<<subfieldName<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", dimension="<<dimension<<", isBasisContinuous="<<isBasisContinuous<<")");
 
     pylith::feassemble::AuxiliaryFactory* factory = _getAuxiliaryFactory();assert(factory);
-    factory->setSubfieldDiscretization(subfieldName, basisOrder, quadOrder, isBasisContinuous, feSpace);
+    factory->setSubfieldDiscretization(subfieldName, basisOrder, quadOrder, dimension, isBasisContinuous, feSpace);
 
     PYLITH_METHOD_END;
 } // setAuxSubfieldDiscretization
