@@ -851,14 +851,36 @@ pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateTotalStrain(const
     std::cout << "x[0]:  " << x[0] << std::endl;
     std::cout << "x[1]:  " << x[1] << std::endl;
 	const PylithScalar* disp = &s[sOff[i_disp]];
-	const PylithScalar i_totalStrainPrevious = 1;
+	const PylithInt i_totalStrainPrevious = 1;
+    const PylithInt i_maxwellTime = 3;
+    const PylithInt i_shearModulusRatio = 4;
+	const PylithScalar maxwellTime_1 = a[aOff[i_maxwellTime]];
+	const PylithScalar maxwellTime_2 = a[aOff[i_maxwellTime] + 1];
+	const PylithScalar maxwellTime_3 = a[aOff[i_maxwellTime] + 2];
+	const PylithScalar shearModulusRatio_1 = a[aOff[i_shearModulusRatio]];
+	const PylithScalar shearModulusRatio_2 = a[aOff[i_shearModulusRatio] + 1];
+	const PylithScalar shearModulusRatio_3 = a[aOff[i_shearModulusRatio] + 2];
 	const PylithScalar* totalStrainPrevious = &s[sOff[i_totalStrainPrevious]];
-	 std::cout << "dispx:  " << disp[0] << std::endl;
+	const PylithScalar aa = 1.0e-4;
+	const PylithScalar b = 2.5e-4;
+	const PylithScalar c = 3.0e-4;
+	const PylithScalar d = 9.0e-8;
+	const PylithScalar dispxPredPrevious = (aa*x[0]*x[0] + 2.0*b*x[0]*x[1] + c*x[1]*x[1]) *
+		(shearModulusRatio_1*exp(-t/maxwellTime_1) +
+		 shearModulusRatio_2*exp(-t/maxwellTime_2) +
+		 shearModulusRatio_3*exp(-t/maxwellTime_3));
+	const PylithScalar dispxPred = dispxPredPrevious + d*x[0];
+	const PylithScalar totalStrainxxPredPrevious = (2.0*aa*x[0] + 2.0*b*x[1]) *
+		(shearModulusRatio_1*exp(-t/maxwellTime_1) +
+		 shearModulusRatio_2*exp(-t/maxwellTime_2) +
+		 shearModulusRatio_3*exp(-t/maxwellTime_3));
+	const PylithScalar totalStrainxxPred = totalStrainxxPredPrevious + d;
+	std::cout << "dispx:  " << disp[0] << std::endl;
     std::cout << "dispxPred  " << dispxPred << std::endl;
-    std::cout << "dispy:  " << disp[1] << std::endl;
-    std::cout << "dispyPred  " << dispyPred << std::endl;
     std::cout << "totalStrainxxPrevious:  " << totalStrainPrevious[0] << std::endl;
-	std::cout << "totalStrain[0]:  " << totalStrain[0] << std::endl;
+    std::cout << "totalStrainxxPredPrevious:  " << totalStrainxxPredPrevious << std::endl;
+	std::cout << "totalStrainxx:  " << totalStrain[0] << std::endl;
+	std::cout << "totalStrainxxPred:  " << totalStrainxxPred << std::endl;
 #endif
 
 } // updateTotalStrain
@@ -924,7 +946,7 @@ pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain(con
     const PylithScalar* viscousStrainPrevious_2 = &s[sOff[i_viscousStrainPrevious] + _strainSize];
     const PylithScalar* viscousStrainPrevious_3 = &s[sOff[i_viscousStrainPrevious] + 2*_strainSize];
     const PylithScalar* totalStrainPrevious = &s[sOff[i_totalStrainPrevious]];
-    const PylithScalar* disp_x = &s[sOff_x[i_disp]];
+    const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
 
 	const PylithScalar dt = constants[0];
 	
@@ -978,8 +1000,41 @@ pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain(con
 	std::cout << "x[0]:  " << x[0] << std::endl;
 	std::cout << "x[1]:  " << x[1] << std::endl;
 	const PylithScalar* disp = &s[sOff[i_disp]];
+    const PylithInt i_shearModulusRatio = 4;
+	const PylithScalar shearModulusRatio_1 = a[aOff[i_shearModulusRatio]];
+	const PylithScalar shearModulusRatio_2 = a[aOff[i_shearModulusRatio] + 1];
+	const PylithScalar shearModulusRatio_3 = a[aOff[i_shearModulusRatio] + 2];
+	const PylithScalar aa = 1.0e-4;
+	const PylithScalar b = 2.5e-4;
+	const PylithScalar c = 3.0e-4;
+	const PylithScalar d = 9.0e-8;
+	const PylithScalar viscousStrain_1_xxPredPrevious = 2.0*maxwellTime_1*(exp(t/maxwellTime_1) - 1.0) *
+		(shearModulusRatio_1*exp(t*(maxwellTime_2 + maxwellTime_3)/(maxwellTime_2*maxwellTime_3)) +
+		 shearModulusRatio_2*exp(t*(maxwellTime_1 + maxwellTime_3)/(maxwellTime_1*maxwellTime_3)) +
+		 shearModulusRatio_3*exp(t*(maxwellTime_1 + maxwellTime_2)/(maxwellTime_1*maxwellTime_2))) *
+		(aa*(2.0*x[0] - x[1]) + b*(2.0*x[1] - x[0])) *
+		exp(-t*(maxwellTime_1*maxwellTime_2 + maxwellTime_1*maxwellTime_3 + 2.0*maxwellTime_2*maxwellTime_3)/
+			(maxwellTime_1*maxwellTime_2*maxwellTime_3))/(3.0*t);
+	const PylithScalar viscousStrain_2_xxPredPrevious = 2.0*maxwellTime_2*(exp(t/maxwellTime_2) - 1.0) *
+		(shearModulusRatio_1*exp(t*(maxwellTime_2 + maxwellTime_3)/(maxwellTime_2*maxwellTime_3)) +
+		 shearModulusRatio_2*exp(t*(maxwellTime_1 + maxwellTime_3)/(maxwellTime_1*maxwellTime_3)) +
+		 shearModulusRatio_3*exp(t*(maxwellTime_1 + maxwellTime_2)/(maxwellTime_1*maxwellTime_2))) *
+		(aa*(2.0*x[0] - x[1]) + b*(2.0*x[1] - x[0])) *
+		exp(-t*(maxwellTime_1*maxwellTime_2 + 2.0*maxwellTime_1*maxwellTime_3 + maxwellTime_2*maxwellTime_3)/
+			(maxwellTime_1*maxwellTime_2*maxwellTime_3))/(3.0*t);
+	const PylithScalar totalStrainxxPredPrevious = (2.0*aa*x[0] + 2.0*b*x[1]) *
+		(shearModulusRatio_1*exp(-t/maxwellTime_1) +
+		 shearModulusRatio_2*exp(-t/maxwellTime_2) +
+		 shearModulusRatio_3*exp(-t/maxwellTime_3));
+	const PylithScalar totalStrainxxPred = totalStrainxxPredPrevious + d;
 	std::cout << "viscousStrainxxPrevious_1:  " << viscousStrainPrevious_1[0] << std::endl;
+	std::cout << "viscousStrain_1_xxPredPrevious:  " << viscousStrain_1_xxPredPrevious << std::endl;
+	std::cout << "viscousStrainxxPrevious_2:  " << viscousStrainPrevious_2[0] << std::endl;
+	std::cout << "viscousStrain_2_xxPredPrevious:  " << viscousStrain_2_xxPredPrevious << std::endl;
 	std::cout << "visStrainxx_1:  " << visStrain[0] << std::endl;
+	std::cout << "visStrainxx_2:  " << visStrain[0 + _strainSize] << std::endl;
+	std::cout << "totalStrainxx:  " << disp_x[0] << std::endl;
+	std::cout << "totalStrainxxPred  " << totalStrainxxPred << std::endl;
 #endif
 
 } // updateViscousStrain
