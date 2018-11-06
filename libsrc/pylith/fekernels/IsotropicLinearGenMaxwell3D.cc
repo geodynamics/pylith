@@ -972,7 +972,7 @@ pylith::fekernels::IsotropicLinearGenMaxwell3D::updateTotalStrain(const PylithIn
     totalStrain[4] = 0.5 * (disp_x[1*_dim+2] + disp_x[2*_dim+1]);
     totalStrain[5] = 0.5 * (disp_x[0*_dim+2] + disp_x[2*_dim+0]);
 
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
 	std::cout << "fekernels::IsotropicLinearGenMaxwell3D::updateTotalStrain" << std::endl;
 	std::cout << "dim:  " << dim << std::endl;
 	std::cout << "numS:  " << numS << std::endl;
@@ -1135,7 +1135,7 @@ pylith::fekernels::IsotropicLinearGenMaxwell3D::updateViscousStrain(const Pylith
 		visStrain[iComp + 2*_strainSize] = expFac_3*viscousStrainPrevious_3[iComp] + dq_3*strainDiff;
     } // for
 	 
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
 	std::cout << "fekernels::IsotropicLinearGenMaxwell3D::updateViscousStrain" << std::endl;
 	std::cout << "dim:  " << dim << std::endl;
 	std::cout << "numS:  " << numS << std::endl;
