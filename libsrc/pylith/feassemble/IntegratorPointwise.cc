@@ -220,13 +220,11 @@ pylith::feassemble::IntegratorPointwise::_updateStateVars(const PylithReal t,
     } // if
 
 #define DEBUG_OUTPUT 0
-#define MATT_CHARLES_GLOBAL_VECS 1
 
     assert(_auxField);
     //_auxField->view("AUXILIARY FIELD"); //:DEBUG:
 
     PetscErrorCode err = 0;
-#if MATT_CHARLES_GLOBAL_VECS
     PetscDM auxDM = _auxField->dmMesh(), solutionDM = solution.dmMesh(), stateVarDM, dms[2], superDM;
     PetscIS stateVarIS, *superIS;
 
@@ -299,68 +297,6 @@ pylith::feassemble::IntegratorPointwise::_updateStateVars(const PylithReal t,
     // Attach superDM data as auxiliary for updateStateVar kernel
     err = PetscObjectCompose((PetscObject) auxDM, "dmAux", (PetscObject) superDM);PYLITH_CHECK_ERROR(err);
     err = PetscObjectCompose((PetscObject) auxDM, "A",     (PetscObject) stateVarsSolutionLocal);PYLITH_CHECK_ERROR(err);
-
-#else // Use local vectors
-    const pylith::string_vector& subfieldNames = _auxField->subfieldNames();
-    const size_t numSubfields = subfieldNames.size();
-    pylith::int_array stateSubfieldIndices(numSubfields);
-
-    size_t numStateSubfields = 0;
-    for (size_t iSubfield = 0; iSubfield < numSubfields; ++iSubfield) {
-        const pylith::topology::Field::SubfieldInfo& info = _auxField->subfieldInfo(subfieldNames[iSubfield].c_str());
-        if (info.description.hasHistory) {
-            stateSubfieldIndices[numStateSubfields++] = info.index;
-        } // if
-    } // for
-
-    // HAPPEN ONCE
-    // Create subDM holding only the state vars
-    PetscDM auxDM = _auxField->dmMesh();
-    PetscDM stateVarDM = NULL;
-    PetscIS stateVarIS = NULL;
-    PetscVec stateVarVecLocal = NULL;
-    err = DMCreateSubDM(auxDM, numStateSubfields, &stateSubfieldIndices[0], &stateVarIS, &stateVarDM);PYLITH_CHECK_ERROR(err);
-    err = DMCreateLocalVector(stateVarDM, &stateVarVecLocal);PYLITH_CHECK_ERROR(err);
-
-    // Create stateVarSolnDM of {state vars, solution}
-    PetscDM solnDM = solution.dmMesh();
-    PetscDM dmPair[2] = { NULL, NULL };
-    dmPair[0] = stateVarDM; dmPair[1] = solnDM;
-
-    PetscDM stateVarSolnDM = NULL;
-    PetscIS* stateVarSolnIS = NULL;
-    PetscVec stateVarsSolutionLocal = NULL;
-    err = DMCreateSuperDM(dmPair, 2, &stateVarSolnIS, &stateVarSolnDM);PYLITH_CHECK_ERROR(err);
-    err = DMCreateLocalVector(stateVarSolnDM, &stateVarsSolutionLocal);PYLITH_CHECK_ERROR(err);
-    //err = DMView(stateVarSolnDM, PETSC_VIEWER_STDOUT_WORLD); //:DEBUG:
-
-    // Copy state vars from auxiliary vars
-    err = VecISCopy(_auxField->localVector(), stateVarIS, SCATTER_REVERSE, stateVarVecLocal);PYLITH_CHECK_ERROR(err);
-#if DEBUG_OUTPUT
-    std::cout << std::endl << "stateVarVecLocal" << std::endl; //:DEBUG:
-    err = VecView(stateVarVecLocal, PETSC_VIEWER_STDOUT_WORLD); //:DEBUG:
-#endif
-
-    // Copy current state vars and solution into stateVarSolnDM space
-#if DEBUG_OUTPUT
-    solution.view("SOLUTION FIELD");
-#endif
-    err = VecISCopy(stateVarsSolutionLocal, stateVarSolnIS[0], SCATTER_FORWARD, stateVarVecLocal);PYLITH_CHECK_ERROR(err);
-    err = VecISCopy(stateVarsSolutionLocal, stateVarSolnIS[1], SCATTER_FORWARD, solution.localVector());PYLITH_CHECK_ERROR(err);
-#if DEBUG_OUTPUT
-    PetscSection section = NULL;
-    std::cout << std::endl << "stateVarsSolutionLocal" << std::endl; //:DEBUG:
-    err = VecView(stateVarsSolutionLocal, PETSC_VIEWER_STDOUT_WORLD); //:DEBUG:
-    std::cout << std::endl << "stateVarSolnDMSection" << std::endl; //:DEBUG:
-    err = DMGetDefaultSection(stateVarSolnDM, &section); PYLITH_CHECK_ERROR(err); //:DEBUG:
-    err = PetscSectionView(section, PETSC_VIEWER_STDOUT_WORLD); PYLITH_CHECK_ERROR(err); //:DEBUG:
-#endif
-
-    // Attach stateVarSolnDM data as auxiliary for updateStateVar kernel
-    err = PetscObjectCompose((PetscObject) auxDM, "dmAux", (PetscObject) stateVarSolnDM);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) auxDM, "A",     (PetscObject) stateVarsSolutionLocal);PYLITH_CHECK_ERROR(err);
-#endif
-
     _setFEConstants(*_auxField, dt);
 
     // Set update kernel for each auxiliary subfield.
@@ -377,7 +313,6 @@ pylith::feassemble::IntegratorPointwise::_updateStateVars(const PylithReal t,
     err = DMProjectFieldLocal(auxDM, t, _auxField->localVector(), stateVarsKernels, INSERT_VALUES, _auxField->localVector());PYLITH_CHECK_ERROR(err);
     delete[] stateVarsKernels; stateVarsKernels = NULL;
 
-#if MATT_CHARLES_GLOBAL_VECS
     // HAPPEN ONCE
     // Destroy stateVarSolnDM stuff
     for (size_t i = 0; i < 2; ++i) {
@@ -392,19 +327,6 @@ pylith::feassemble::IntegratorPointwise::_updateStateVars(const PylithReal t,
     err = VecDestroy(&stateVarVecGlobal);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&auxFieldVecGlobal);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&solutionVecGlobal);PYLITH_CHECK_ERROR(err);
-#else // BRAD local vectors
-      // HAPPEN ONCE
-      // Destroy stateVarSolnDM stuff
-    for (size_t i = 0; i < 2; ++i) {
-        err = ISDestroy(&stateVarSolnIS[i]);PYLITH_CHECK_ERROR(err);
-    } // for
-    err = PetscFree(stateVarSolnIS);PYLITH_CHECK_ERROR(err);
-    err = DMDestroy(&stateVarSolnDM);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&stateVarIS);PYLITH_CHECK_ERROR(err);
-    err = DMDestroy(&stateVarDM);PYLITH_CHECK_ERROR(err);
-    err = VecDestroy(&stateVarsSolutionLocal);PYLITH_CHECK_ERROR(err);
-    err = VecDestroy(&stateVarVecLocal);PYLITH_CHECK_ERROR(err);
-#endif
 
     PYLITH_METHOD_END;
 } // _updateStateVars
