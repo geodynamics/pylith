@@ -54,12 +54,14 @@ public:
              * @param[in] subfieldName Name of auxiliary subfield.
              * @param[in] basisOrder Polynomial order for basis.
              * @param[in] quadOrder Order of quadrature rule.
+	     * @param[in] dimension Dimension of points for discretization.
              * @param[in] isBasisContinuous True if basis is continuous.
              * @param[in] feSpace Finite-element space.
              */
             void setAuxiliarySubfieldDiscretization(const char* subfieldName,
                                                     const int basisOrder,
                                                     const int quadOrder,
+						    const int dimension,
                                                     const bool isBasisContinuous,
                                                     const pylith::topology::FieldBase::SpaceEnum feSpace);
 

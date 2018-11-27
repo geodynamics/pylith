@@ -111,6 +111,7 @@ void cloneSection(const Field& src);
  * @param[in] numComponents Number of components in subfield.
  * @param[in] basisOrder Polynomial order for basis.
  * @param[in] quadOrder Order of quadrature rule.
+ * @param[in] dimension Dimension of points for discretization.
  * @param[in] isBasisContinuous True if basis is continuous.
  * @param[in] feSpace Finite-element space (polynomial or point).
  * @param[in] scale Scale for dimensionalizing field.
@@ -126,6 +127,7 @@ void subfieldAdd(const char *name,
                  const double scale,
                  const int basisOrder,
                  const int quadOrder,
+		 const int dimension,
                  const bool isBasisContinuous,
 		 const SpaceEnum feSpace);
 %clear(const char* components[], const int numComponents);

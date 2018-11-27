@@ -151,7 +151,7 @@ class Problem(PetscComponent, ModuleProblem):
 
         # Do minimal setup of solution.
         self.solution.preinitialize(mesh, self.normalizer)
-        ModuleProblem.solution(self, self.solution.field)
+        ModuleProblem.setSolution(self, self.solution.field)
 
         # Preinitialize materials
         for material in self.materials.components():

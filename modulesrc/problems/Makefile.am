@@ -32,7 +32,8 @@ swig_sources = \
 	../include/outputarray.i \
 	../include/scalartypemaps.i \
 	Problem.i \
-	TimeDependent.i
+	TimeDependent.i \
+	Physics.i
 
 
 swig_generated = \

@@ -23,6 +23,7 @@
 %{
 #include "pylith/problems/Problem.hh"
 #include "pylith/problems/TimeDependent.hh"
+#include "pylith/problems/Physics.hh"
 %}
 
 %include "exception.i"
@@ -53,5 +54,6 @@
 %include "../utils/PyreComponent.i"
 %include "Problem.i"
 %include "TimeDependent.i"
+%include "Physics.i"
 
 // End of file

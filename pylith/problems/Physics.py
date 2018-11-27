@@ -19,7 +19,7 @@
 # boundary condition, interface or constraint.
 
 from pylith.utils.PetscComponent import PetscComponent
-from pylith.problems import Physics as ModulePhysics
+from .problems import Physics as ModulePhysics
 
 
 class Physics(PetscComponent, ModulePhysics):

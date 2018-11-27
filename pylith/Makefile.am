@@ -77,6 +77,7 @@ nobase_pkgpyexec_PYTHON = \
 	mpi/__init__.py \
 	mpi/Communicator.py \
 	problems/__init__.py \
+	problems/Physics.py \
 	problems/Problem.py \
 	problems/TimeDependent.py \
 	problems/Solution.py \
