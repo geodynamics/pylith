@@ -265,6 +265,12 @@ private:
     /// Create array of constraints from materials, interfaces, and boundary conditions.
     void _createConstraints(void);
 
+    /** Setup field so Lagrange multiplier subfield is limited to degrees of freedom associated with the cohesive cells.
+     *
+     * @param[inout] solution Solution field.
+     */
+    void _setupLagrangeMultiplier(pylith::topology::Field* solution);
+
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 

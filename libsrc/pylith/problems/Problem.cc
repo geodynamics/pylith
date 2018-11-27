@@ -317,6 +317,9 @@ pylith::problems::Problem::initialize(void) {
     } // for
 
     // Initialize solution field.
+    if (_solution->hasSubfield("lagrange_multiplier_fault")) {
+        _setupLagrangeMultiplier(_solution);
+    } // if
     _solution->allocate();
     _solution->zeroLocal();
     _solution->createScatter(_solution->mesh(), "global");
@@ -358,7 +361,7 @@ pylith::problems::Problem::setSolutionLocal(const PylithReal t,
         _constraints[i]->setSolution(_solution, t);
     } // for
 
-    //_solution->view("SOLUTION AFTER SETTING VALUES");
+    // _solution->view("SOLUTION AFTER SETTING VALUES");
 
     PYLITH_METHOD_END;
 } // setSolutionLocal
@@ -675,7 +678,46 @@ pylith::problems::Problem::_createConstraints(void) {
     } // for
 
     _constraints.resize(count);
+
+    PYLITH_METHOD_END;
 } // _createConstraints
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Setup field so Lagrange multiplier subfield is limited to degrees of freedom associated with the cohesive cells.
+void
+pylith::problems::Problem::_setupLagrangeMultiplier(pylith::topology::Field* solution) {
+    PYLITH_METHOD_BEGIN;
+
+    assert(_solution->hasSubfield("lagrange_multiplier_fault"));
+
+    PetscDMLabel cohesiveLabel = NULL;
+    PylithInt dim = 0;
+    PylithInt pStart = 0;
+    PylithInt pEnd = 0;
+    PetscErrorCode err;
+
+    PetscDM dmSoln = _solution->dmMesh();assert(dmSoln);
+    err = DMGetDimension(dmSoln, &dim);PYLITH_CHECK_ERROR(err);
+    PylithInt* pMax = dim+1 > 0 ? new PylithInt[dim+1] : NULL;
+    err = DMPlexGetHybridBounds(dmSoln, dim > 0 ? &pMax[dim] : NULL, dim > 1 ? &pMax[dim-1] : NULL, dim > 2 ? &pMax[1] : NULL, &pMax[0]);PYLITH_CHECK_ERROR(err);
+    err = DMCreateLabel(dmSoln, "cohesive interface");PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmSoln, "cohesive interface", &cohesiveLabel);PYLITH_CHECK_ERROR(err);
+    for (PylithInt iDim = 0; iDim <= dim; ++iDim) {
+        err = DMPlexGetDepthStratum(dmSoln, iDim, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+        pStart = pMax[iDim] < 0 ? pEnd : pMax[iDim];
+        for (PylithInt p = pStart; p < pEnd; ++p) {
+            err = DMLabelSetValue(cohesiveLabel, p, 1);PYLITH_CHECK_ERROR(err);
+        } // for
+    } // for
+    delete[] pMax;pMax = NULL;
+
+    PetscDS prob = NULL;
+    err = DMGetDS(dmSoln, &prob);
+    err = PetscDSSetLabel(prob, 1, cohesiveLabel);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+} // _setupLagrangeMultiplier
 
 
 // End of file
