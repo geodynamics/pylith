@@ -39,8 +39,6 @@ nobase_pkgpyexec_PYTHON = \
 	faults/KinSrcConstRate.py \
 	faults/SingleRupture.py \
 	feassemble/__init__.py \
-	feassemble/IntegratorPointwise.py \
-	feassemble/ConstraintPointwise.py \
 	feassemble/Observer.py \
 	feassemble/SingleObserver.py \
 	feassemble/Observers.py \
