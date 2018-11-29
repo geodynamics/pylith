@@ -20,6 +20,7 @@
 // Header files for module C++ code
 %{
 #include "pylith/materials/Material.hh"
+#include "pylith/materials/Elasticity.hh"
 #include "pylith/materials/RheologyElasticity.hh"
 #include "pylith/materials/IsotropicLinearElasticity.hh"
 #include "pylith/materials/IsotropicLinearMaxwell.hh"
@@ -56,6 +57,7 @@ import_array();
 %include "../problems/Physics.i"
 
 %include "Material.i"
+%include "Elasticity.i"
 %include "RheologyElasticity.i"
 %include "IsotropicLinearElasticity.i"
 %include "IsotropicLinearMaxwell.i"
