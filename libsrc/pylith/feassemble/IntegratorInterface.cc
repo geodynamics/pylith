@@ -20,9 +20,12 @@
 
 #include "IntegratorInterface.hh" // implementation of object methods
 
+#include "pylith/problems/Physics.hh" // USES Physics
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
+#include "pylith/faults/TopologyOps.hh" // USES TopologyOps
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 
 #include "spatialdata/spatialdb/GravityField.hh" // HASA GravityField
 #include "petscds.h" // USES PetscDS
@@ -276,12 +279,11 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
 
-#if 0
     const bool isSubMesh = true;
     delete _interfaceMesh;_interfaceMesh = new pylith::topology::Mesh(isSubMesh);assert(_interfaceMesh);
-    pylith::faults::TopologyOps::createFaultParallel(_interfaceMesh, solution.mesh(), _physics->getInterfaceId(), _physics->getSurfaceMarkerLabel());
+    pylith::faults::TopologyOps::createFaultParallel(_interfaceMesh, solution.mesh(), _interfaceId,
+                                                     _interfaceLabel.c_str());
     pylith::topology::MeshOps::checkTopology(*_interfaceMesh);
-#endif
 
     // Optimize closure for coordinates.
     PetscDM dmFault = _interfaceMesh->dmMesh();assert(dmFault);
