@@ -35,8 +35,8 @@ class Homogeneous(PetscComponent):
 
     import pyre.inventory
 
-    from IsotropicLinearElasticityPlaneStrain import IsotropicLinearElasticityPlaneStrain
-    material = pyre.inventory.facility("material", family="material", factory=IsotropicLinearElasticityPlaneStrain)
+    from IsotropicLinearElasticity import IsotropicLinearElasticity
+    material = pyre.inventory.facility("material", family="material", factory=IsotropicLinearElasticity)
     material.meta['tip'] = "Material in problem."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

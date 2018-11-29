@@ -32,6 +32,7 @@ class AuxSubfield(Component):
     Properties
       - *basis_order* Order of basis functions.
       - *quadrature_order* Order of numerical quadrature.
+      - *dimension* Topological dimension associated with subfield.
       - *basis_continuous* Is basis continuous?
       - *finite_element_space* Finite-element space [polynomial, point].
 
@@ -52,7 +53,11 @@ class AuxSubfield(Component):
     isBasisContinuous = pyre.inventory.bool("is_basis_continous", default=True)
     isBasisContinuous.meta['tip'] = "Is basis continuous?"
 
-    feSpaceStr = pyre.inventory.str("finite_element_space", default="polynomial", validator=pyre.inventory.choice(["polynomial", "point"]))
+    dimension = pyre.inventory.int("dimension", default=-1)
+    dimension.meta["tip"] = "Topological dimension associated with subfield (=-1 will use dimension of domain)."
+
+    feSpaceStr = pyre.inventory.str("finite_element_space", default="polynomial",
+                                    validator=pyre.inventory.choice(["polynomial", "point"]))
     feSpaceStr.meta['tip'] = "Finite-element space (polynomial or point). Point space corresponds to delta functions at quadrature points."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -71,14 +76,14 @@ class AuxSubfield(Component):
         """
         Set members based using inventory.
         """
-        from pylith.topology.topology import FieldBase
+        from .topology import FieldBase
 
         Component._configure(self)
-        spaceMapping = {
+        mapSpace = {
             "polynomial": FieldBase.POLYNOMIAL_SPACE,
             "point": FieldBase.POINT_SPACE,
         }
-        self.feSpace = spaceMapping[self.inventory.feSpaceStr]
+        self.feSpace = mapSpace[self.inventory.feSpaceStr]
         return
 
 

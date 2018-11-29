@@ -21,6 +21,18 @@
 from pylith.utils.PetscComponent import PetscComponent
 from .problems import Physics as ModulePhysics
 
+from pylith.meshio.OutputManager import OutputManager
+
+
+# Factories for items in facility arrays
+
+def observerFactory(name):
+    """
+    Factory for output items.
+    """
+    from pyre.inventory import facility
+    return facility(name, family="observer", factory=OutputManager)
+
 
 class Physics(PetscComponent, ModulePhysics):
     """
@@ -56,11 +68,11 @@ class Physics(PetscComponent, ModulePhysics):
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name):
+    def __init__(self, name, facility="physics"):
         """
         Constructor.
         """
-        PetscComponent.__init__(self, name, facility="physics")
+        PetscComponent.__init__(self, name, facility)
         return
 
     def preinitialize(self, mesh):
@@ -68,15 +80,17 @@ class Physics(PetscComponent, ModulePhysics):
         Do pre-initialization setup.
         """
         self._createModuleObj()
+        ModulePhysics.setIdentifier(self, self.aliases[-1])
 
-        self.observers.preinitialize(self)
+        for observer in self.observers.components():
+            observer.preinitialize(self)
 
         ModulePhysics.setAuxiliaryFieldDB(self, self.auxiliaryFieldDB)
 
         for subfield in self.auxiliarySubfields.components():
             fieldName = subfield.aliases[-1]
             ModulePhysics.setAuxiliarySubfieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder,
-                                                             subfield.isBasisContinuous, subfield.feSpace)
+                                                             subfield.dimension, subfield.isBasisContinuous, subfield.feSpace)
 
         for observer in self.observers.components():
             observer.preinitialize(self)

@@ -24,10 +24,9 @@ from .problems import Problem as ModuleProblem
 
 from pylith.utils.NullComponent import NullComponent
 from pylith.meshio.OutputSoln import OutputSoln
-from pylith.feassemble.Observers import Observers
 
-# ITEM FACTORIES ///////////////////////////////////////////////////////
 
+# Factories for items in facility arrays
 
 def materialFactory(name):
     """
@@ -161,12 +160,12 @@ class Problem(PetscComponent, ModuleProblem):
         # Preinitialize boundary conditions.
         for bc in self.bc.components():
             bc.preinitialize(mesh)
-        ModuleProblem.setBoundaryConditions(self, self.bc.comonents())
+        ModuleProblem.setBoundaryConditions(self, self.bc.components())
 
         # Preinitialize interfaces
         for interface in self.interfaces.components():
             interface.preinitialize(mesh)
-        ModuleProblem.setInterfaces(self.interfaces.components())
+        ModuleProblem.setInterfaces(self, self.interfaces.components())
 
         # Preinitialize observers.
         for observer in self.observers.components():

@@ -21,7 +21,7 @@
 # Factory: elasticity_rheology
 
 from .RheologyElasticity import RheologyElasticity
-from .materials import IsotropicLinearElastic as ModuleLinearElasticity
+from .materials import IsotropicLinearElasticity as ModuleLinearElasticity
 
 
 class IsotropicLinearElasticity(RheologyElasticity, ModuleLinearElasticity):

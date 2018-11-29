@@ -24,8 +24,6 @@ from pylith.problems.Physics import Physics
 from .materials import Material as ModuleMaterial
 
 
-# VALIDATORS ///////////////////////////////////////////////////////////
-
 def validateLabel(value):
     """
     Validate descriptive label.
@@ -59,8 +57,6 @@ class Material(Physics, ModuleMaterial):
     label = pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Descriptive label for material."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="material"):
         """
         Constructor.
@@ -75,7 +71,7 @@ class Material(Physics, ModuleMaterial):
         Physics.preinitialize(self, mesh)
 
         ModuleMaterial.setMaterialId(self, self.materialId)
-        ModuleMaterial.setDescriptiveLabelabel(self, self.label)
+        ModuleMaterial.setDescriptiveLabel(self, self.label)
 
         return
 

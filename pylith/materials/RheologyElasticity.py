@@ -54,6 +54,7 @@ class RheologyElasticity(PetscComponent, ModuleRheology):
         if 0 == comm.rank:
             self._info.log("Performing minimal initialization of elasticity rheology '%s'." % self.aliases[-1])
 
+        self._createModuleObj()
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
