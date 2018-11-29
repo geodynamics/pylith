@@ -324,6 +324,13 @@ pylith::problems::Problem::initialize(void) {
     _solution->zeroLocal();
     _solution->createScatter(_solution->mesh(), "global");
 
+    journal::debug_t debug(PyreComponent::getName());
+    if (debug.state()) {
+        debug << journal::at(__HERE__)
+              << "Component '"<<PyreComponent::getIdentifier()<<"': viewing solution field." << journal::endl;
+        _solution->view("Problem solution field", pylith::topology::Field::VIEW_LAYOUT);
+    } // if
+
     // Initialize residual.
     delete _residual;_residual = new pylith::topology::Field(_solution->mesh());assert(_residual);
     _residual->cloneSection(*_solution);
