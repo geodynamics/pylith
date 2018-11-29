@@ -29,23 +29,19 @@
 
 #include <cassert> // USES assert()
 
-// ----------------------------------------------------------------------
-const char* pylith::faults::KinSrcStep::_pyreComponent = "kinsrcstep";
-
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::faults::KinSrcStep::KinSrcStep(void)
-{ // constructor
-    pylith::utils::PyreComponent::name(_pyreComponent);
+pylith::faults::KinSrcStep::KinSrcStep(void) {
+    pylith::utils::PyreComponent::setName("kinsrcstep");
 } // constructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::faults::KinSrcStep::~KinSrcStep(void) {}
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Slip time function kernel.
 void
 pylith::faults::KinSrcStep::slipFn(const PylithInt dim,
@@ -90,7 +86,8 @@ pylith::faults::KinSrcStep::slipFn(const PylithInt dim,
 
 } // slipFn
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Preinitialize earthquake source. Set names/sizes of auxiliary subfields.
 void
 pylith::faults::KinSrcStep::_auxFieldSetup(const spatialdata::units::Nondimensional& normalizer,
@@ -102,7 +99,8 @@ pylith::faults::KinSrcStep::_auxFieldSetup(const spatialdata::units::Nondimensio
     assert(cs);
     _auxFactory->initialize(_auxField, normalizer, cs->spaceDim());
 
-    // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the slip time function kernel.
+    // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the slip time function
+    // kernel.
 
     _auxFactory->initiationTime(); // 0
     _auxFactory->finalSlip(); // 1

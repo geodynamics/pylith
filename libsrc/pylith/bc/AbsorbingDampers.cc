@@ -69,7 +69,7 @@ public:
 pylith::bc::AbsorbingDampers::AbsorbingDampers(void) :
     _auxiliaryFactory(new pylith::bc::AbsorbingDampersAuxiliaryFactory),
     _boundaryLabel("") {
-    PyreComponent::name("absorbingdampers");
+    PyreComponent::setName("absorbingdampers");
 
     _subfieldName = "velocity";
 } // constructor

@@ -84,7 +84,7 @@ pylith::feassemble::Constraint::setConstrainedDOF(const int* flags,
         if (flags[i] < 0) {
             std::ostringstream msg;
             assert(_physics);
-            msg << "Constrained DOF '" << flags[i] << "' must be nonnegative in constraint component '" << _physics->identifier() << "'.";
+            msg << "Constrained DOF '" << flags[i] << "' must be nonnegative in constraint component '" << _physics->getIdentifier() << "'.";
             throw std::runtime_error(msg.str());
         } // if
         _constrainedDOF[i] = flags[i];
@@ -129,7 +129,7 @@ pylith::feassemble::Constraint::setSubfieldName(const char* value) {
     if (!value || (0 == strlen(value))) {
         std::ostringstream msg;
         assert(_physics);
-        msg << "Empty string given for name of solution subfield for constraint '" << _physics->identifier()
+        msg << "Empty string given for name of solution subfield for constraint '" << _physics->getIdentifier()
             <<"'.";
         throw std::runtime_error(msg.str());
     } // if
@@ -269,7 +269,7 @@ pylith::feassemble::Constraint::setSolution(pylith::topology::Field* solution,
                                                    _kernelConstraint, context, solution->localVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
 
-    //solution->view("SOLUTION at end of setSolution()"); // :DEBUG: TEMPORARY
+    // solution->view("SOLUTION at end of setSolution()"); // :DEBUG: TEMPORARY
 
     PYLITH_METHOD_END;
 } // setSolution

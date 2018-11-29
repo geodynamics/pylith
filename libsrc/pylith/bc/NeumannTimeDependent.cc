@@ -76,7 +76,7 @@ pylith::bc::NeumannTimeDependent::NeumannTimeDependent(void) :
     _useInitial(true),
     _useRate(false),
     _useTimeHistory(false) {
-    PyreComponent::name("neumanntimedependent");
+    PyreComponent::setName("neumanntimedependent");
 } // constructor
 
 

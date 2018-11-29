@@ -91,7 +91,7 @@ public:
 // Default constructor.
 pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
     _auxiliaryFactory(new pylith::faults::AuxiliaryFactoryKinematic) {
-    pylith::utils::PyreComponent::name("faultcohesivekin");
+    pylith::utils::PyreComponent::setName("faultcohesivekin");
 } // constructor
 
 
@@ -150,14 +150,14 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Fi
     if (!solution.hasSubfield("displacement")) {
         std::ostringstream msg;
         msg << "Cannot find 'displacement' subfield in solution field for fault implementation in component '"
-            << PyreComponent::identifier() << "'.";
+            << PyreComponent::getIdentifier() << "'.";
         throw std::runtime_error(msg.str());
     } // if
 
     if (!solution.hasSubfield("lagrange_multiplier_fault")) {
         std::ostringstream msg;
         msg << "Cannot find 'lagrange_multiplier_fault' subfield in solution field for fault implementation in component '"
-            << PyreComponent::identifier() << "'.";
+            << PyreComponent::getIdentifier() << "'.";
         throw std::runtime_error(msg.str());
     } // if
 

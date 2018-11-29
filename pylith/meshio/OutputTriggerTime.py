@@ -56,7 +56,7 @@ class OutputTriggerTime(OutputTrigger, ModuleOutputTriggerTime):
         Setup output trigger.
         """
         ModuleOutputTriggerTime.__init__(self)
-        ModuleOutputTriggerTime.identifier(self, self.aliases[-1])
+        ModuleOutputTriggerTime.setIdentifier(self, self.aliases[-1])
         ModuleOutputTriggerTime.timeSkip(self, self.timeSkip)
         return
 

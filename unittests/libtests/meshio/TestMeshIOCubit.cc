@@ -39,7 +39,7 @@ pylith::meshio::TestMeshIOCubit::setUp(void)
     _data = NULL;
 
     _io->PyreComponent::identifier("TestMeshIOCubit");
-    const char* journalName = _io->PyreComponent::name();
+    const char* journalName = _io->PyreComponent::getName();
     journal::debug_t debug(journalName);
     //debug.activate(); // DEBUGGING
 } // setUp
@@ -50,7 +50,7 @@ pylith::meshio::TestMeshIOCubit::setUp(void)
 void
 pylith::meshio::TestMeshIOCubit::tearDown(void)
 { // tearDown
-    const char* journalName = _io->PyreComponent::name();
+    const char* journalName = _io->PyreComponent::getName();
     journal::debug_t debug(journalName);
     debug.deactivate(); // DEBUGGING
 

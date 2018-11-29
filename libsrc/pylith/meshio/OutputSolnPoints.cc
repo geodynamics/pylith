@@ -42,7 +42,7 @@ pylith::meshio::OutputSolnPoints::OutputSolnPoints(pylith::problems::Problem* co
     OutputSoln(problem),
     _stationsMesh(NULL),
     _interpolator(NULL) { // constructor
-    PyreComponent::name("outputsoln");
+    PyreComponent::setName("outputsoln");
 } // constructor
 
 

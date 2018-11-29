@@ -389,7 +389,7 @@ macros:
 \item[PYLITH\_COMPONENT\_DEBUG] Use this macro immediately after
   PYLITH\_METHOD\_BEGIN in methods of all objects that inherit from
   \object{PyreComponent}.  Non-abstract classes should call
-  \object{PyreComponent::name()} in the constructor. We recommend
+  \object{PyreComponent::getName()} in the constructor. We recommend
   using a static data member for the name with the lowercase name
   matching the Pyre component, e.g., timedependent.
 \end{description}
@@ -771,7 +771,7 @@ class Problem(PetscComponent, ModuleProblem):
         # For all calls to the C++ interaface, call using the
         # class name and pass self as an argument to make it clear
         # that this is calling a C++ method and not a Python method.
-        ModuleProblem.identifier(self, self.aliases[-1])
+        ModuleProblem.setIdentifier(self, self.aliases[-1])
 
         if self.solverTypeStr == "linear":
             ModuleProblem.solverType(self, ModuleProblem.LINEAR)

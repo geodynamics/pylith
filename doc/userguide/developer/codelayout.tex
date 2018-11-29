@@ -172,7 +172,7 @@ class Material(PetscComponent, ModuleMaterial):
         self._createModuleObj()
 
         # Pass name of Pyre component to C++
-        ModuleMaterial.identifier(self, self.aliases[-1])
+        ModuleMaterial.setIdentifier(self, self.aliases[-1])
 
         # Pass Pyre inventory to C++
         ModuleMaterial.id(self, self.materialId)
@@ -264,13 +264,11 @@ private: // Methods not implemented by design to avoid expensive copies.
 
 #include "Material.hh" // implementation of object methods
 
-const char* pylith::materials::Material::_pyreComponent = "material";
-
 pylith::materials::Material::Material(const int dimension) :
      _dimension(dimension),
      _id(0),
      _label("") {
-    pylith::utils::PyreComponent::name(_pyreComponent);
+    pylith::utils::PyreComponent::setName("material");
 } // constructor
 
 pylith::materials::Material::~Material(void) {

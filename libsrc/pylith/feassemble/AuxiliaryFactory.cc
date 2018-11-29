@@ -162,7 +162,7 @@ pylith::feassemble::AuxiliaryFactory::setValuesFromDB(void) {
         _fieldQuery->openDB(_queryDB, _normalizer->lengthScale());
         _fieldQuery->queryDB();
         _fieldQuery->closeDB(_queryDB);
-    } else { // else
+    } else {
         PYLITH_JOURNAL_ERROR("Unknown case for filling auxiliary subfields.");
         throw std::logic_error("Unknown case for filling auxiliary subfields.");
     } // if/else

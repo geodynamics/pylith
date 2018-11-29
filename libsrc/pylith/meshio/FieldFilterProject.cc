@@ -31,7 +31,7 @@ pylith::meshio::FieldFilterProject::FieldFilterProject(void) :
     _fieldP1(NULL),
     _passThruFns(NULL),
     _basisOrder(1) { // constructor
-    PyreComponent::name("fieldfilterproject");
+    PyreComponent::setName("fieldfilterproject");
 } // constructor
 
 

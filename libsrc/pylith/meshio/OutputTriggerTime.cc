@@ -29,7 +29,7 @@
 pylith::meshio::OutputTriggerTime::OutputTriggerTime(void) :
     _timeSkip(0.0),
     _timeWrote(-PYLITH_MAXSCALAR) {
-    PyreComponent::name("outputtriggertime");
+    PyreComponent::setName("outputtriggertime");
 } // constructor
 
 

@@ -53,7 +53,7 @@ pylith::meshio::DataWriterHDF5::DataWriterHDF5(void) :
     _viewer(0),
     _tstamp(0),
     _tstampIndex(0) {
-    PyreComponent::name("datawriterhdf5");
+    PyreComponent::setName("datawriterhdf5");
 } // constructor
 
 

@@ -35,7 +35,7 @@
 pylith::materials::IsotropicLinearElasticity::IsotropicLinearElasticity(void) :
     _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryElastic),
     _useReferenceState(false) {
-    pylith::utils::PyreComponent::name("isotropiclinearelasticity");
+    pylith::utils::PyreComponent::setName("isotropiclinearelasticity");
 } // constructor
 
 

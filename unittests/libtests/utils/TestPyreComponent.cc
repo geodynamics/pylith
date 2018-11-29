@@ -60,8 +60,8 @@ pylith::utils::TestPyreComponent::testIdentifier(void)
     CPPUNIT_ASSERT_EQUAL(std::string("unknown"), std::string(component._identifier));
 
     const std::string& identifier = "my identifier";
-    component.identifier(identifier.c_str());
-    CPPUNIT_ASSERT_EQUAL(identifier, std::string(component.identifier()));
+    component.setIdentifier(identifier.c_str());
+    CPPUNIT_ASSERT_EQUAL(identifier, std::string(component.setIdentifier()));
 } // testIdentifier
 
 // ----------------------------------------------------------------------
@@ -92,7 +92,7 @@ pylith::utils::TestPyreComponent::testJournals(void)
 
     TestComponentJournals journals;
     journals.name("test");
-    journals.identifier("TestJournals");
+    journals.setIdentifier("TestJournals");
     journals.test();
 } // testJournals
 

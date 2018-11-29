@@ -56,7 +56,7 @@ public:
 pylith::meshio::MeshIOAscii::MeshIOAscii(void) :
     _filename(""),
     _useIndexZero(true) { // constructor
-    PyreComponent::name("meshioascii");
+    PyreComponent::setName("meshioascii");
 } // constructor
 
 

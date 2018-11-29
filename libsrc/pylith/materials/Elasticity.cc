@@ -47,7 +47,7 @@ pylith::materials::Elasticity::Elasticity(void) :
     _useInertia(false),
     _useBodyForce(false),
     _rheology(NULL) {
-    pylith::utils::PyreComponent::name("elasticity");
+    pylith::utils::PyreComponent::setName("elasticity");
 } // constructor
 
 
@@ -222,6 +222,7 @@ pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field&
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
 pylith::materials::Elasticity::_getAuxiliaryFactory(void) {
+    assert(_rheology);
     return _rheology->getAuxiliaryFactory();
 } // _getAuxiliaryFactory
 

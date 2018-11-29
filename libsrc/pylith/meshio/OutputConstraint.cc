@@ -33,7 +33,7 @@
 // Constructor
 pylith::meshio::OutputConstraint::OutputConstraint(pylith::feassemble::Constraint* const constraint) :
     _constraint(constraint) { // constructor
-    PyreComponent::name("outputconstraint");
+    PyreComponent::setName("outputconstraint");
 } // constructor
 
 

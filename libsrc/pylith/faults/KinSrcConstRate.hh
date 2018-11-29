@@ -109,11 +109,6 @@ protected:
      */
     void _setSlipFnKernel(const pylith::topology::Field& auxField) const;
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
-    static const char* _pyreComponent; ///< Name of Pyre component.
-
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
@@ -123,6 +118,5 @@ private:
 }; // class KinSrcConstRate
 
 #endif // pylith_faults_kinsrcconstrate_hh
-
 
 // End of file

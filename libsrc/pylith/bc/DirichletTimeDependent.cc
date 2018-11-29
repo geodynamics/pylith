@@ -69,7 +69,7 @@ pylith::bc::DirichletTimeDependent::DirichletTimeDependent(void) :
     _useInitial(true),
     _useRate(false),
     _useTimeHistory(false) {
-    PyreComponent::name("dirichlettimedependent");
+    PyreComponent::setName("dirichlettimedependent");
 } // constructor
 
 
@@ -175,7 +175,7 @@ pylith::bc::DirichletTimeDependent::verifyConfiguration(const pylith::topology::
     if (!solution.hasSubfield(_subfieldName.c_str())) {
         std::ostringstream msg;
         msg << "Cannot constrain field '"<< _subfieldName
-            << "' in component '" << PyreComponent::identifier() << "'"
+            << "' in component '" << PyreComponent::getIdentifier() << "'"
             << "; field is not in solution.";
         throw std::runtime_error(msg.str());
     } // if
@@ -187,7 +187,7 @@ pylith::bc::DirichletTimeDependent::verifyConfiguration(const pylith::topology::
         if (_constrainedDOF[iConstrained] >= numComponents) {
             std::ostringstream msg;
             msg << "Cannot constrain degree of freedom '" << _constrainedDOF[iConstrained] << "'"
-                << " in component '" << PyreComponent::identifier() << "'"
+                << " in component '" << PyreComponent::getIdentifier() << "'"
                 << "; solution field '" << _subfieldName << "' contains only " << numComponents << " components.";
             throw std::runtime_error(msg.str());
         } // if

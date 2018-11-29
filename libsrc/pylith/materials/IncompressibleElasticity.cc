@@ -47,7 +47,7 @@ typedef pylith::feassemble::IntegratorDomain::JacobianKernels JacobianKernels;
 pylith::materials::IncompressibleElasticity::IncompressibleElasticity(void) :
     _useBodyForce(false),
     _rheology(NULL) {
-    pylith::utils::PyreComponent::name("incompressibleelasticity");
+    pylith::utils::PyreComponent::setName("incompressibleelasticity");
 } // constructor
 
 

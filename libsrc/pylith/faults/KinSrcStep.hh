@@ -24,11 +24,11 @@
 #if !defined(pylith_faults_kinsrcstep_hh)
 #define pylith_faults_kinsrcstep_hh
 
-// Include directives ---------------------------------------------------
 #include "KinSrc.hh"
 
-// KinSrcStep ------------------------------------------------------
-/** @brief Step slip-time function.
+/** KinSrcStep
+ *
+ * @brief Step slip-time function.
  *
  * Slip time function is a step function at the time of slip.
  *
@@ -39,7 +39,7 @@
 class pylith::faults::KinSrcStep : public KinSrc {
     friend class TestKinSrcStep; // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -91,7 +91,7 @@ public:
                 const PylithScalar constants[],
                 PylithScalar slip[]);
 
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Setup auxiliary subfields (discretization and query fns).
@@ -108,12 +108,7 @@ protected:
      */
     void _setSlipFnKernel(const pylith::topology::Field& auxField) const;
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
-    static const char* _pyreComponent; ///< Name of Pyre component.
-
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     KinSrcStep(const KinSrcStep&); ///< Not implemented
@@ -122,6 +117,5 @@ private:
 }; // class KinSrcStep
 
 #endif // pylith_faults_kinsrcstep_hh
-
 
 // End of file

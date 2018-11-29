@@ -29,7 +29,7 @@
 pylith::meshio::OutputTriggerStep::OutputTriggerStep(void) :
     _numStepsSkip(0),
     _stepWrote(PYLITH_MININT+10) { // constructor
-    PyreComponent::name("outputtriggerstep");
+    PyreComponent::setName("outputtriggerstep");
 } // constructor
 
 

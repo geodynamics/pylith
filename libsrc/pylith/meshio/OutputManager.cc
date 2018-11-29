@@ -43,7 +43,7 @@ pylith::meshio::OutputManager::OutputManager(void) :
     _trigger(NULL),
     _label(""),
     _labelId(0) { // constructor
-    PyreComponent::name("outputmanager");
+    PyreComponent::setName("outputmanager");
 } // constructor
 
 

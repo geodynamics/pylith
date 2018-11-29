@@ -32,7 +32,7 @@ pylith::meshio::OutputSolnBoundary::OutputSolnBoundary(pylith::problems::Problem
     OutputSoln(problem),
     _label(""),
     _boundaryMesh(NULL) { // constructor
-    PyreComponent::name("outputsoln");
+    PyreComponent::setName("outputsoln");
 } // constructor
 
 

@@ -57,7 +57,7 @@ class OutputTriggerStep(OutputTrigger, ModuleOutputTriggerStep):
         Setup output trigger.
         """
         ModuleOutputTriggerStep.__init__(self)
-        ModuleOutputTriggerStep.identifier(self, self.aliases[-1])
+        ModuleOutputTriggerStep.setIdentifier(self, self.aliases[-1])
         ModuleOutputTriggerStep.numStepsSkip(self, self.numSkip)
         return
 

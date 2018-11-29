@@ -52,25 +52,25 @@ public:
      *
      * @param value Name of component.
      */
-    void name(const char* value);
+    void setName(const char* value);
 
     /** Get name of component.
      *
      * @returns Name of component.
      */
-    const char* name(void) const;
+    const char* getName(void) const;
 
     /** Set component identifier (identifies object in component hierarchy).
      *
      * @param value Component identifier.
      */
-    void identifier(const char* value);
+    void setIdentifier(const char* value);
 
     /** Get component identifier (identifies object in component hierarchy).
      *
      * @returns Component identifier.
      */
-    const char* identifier(void) const;
+    const char* getIdentifier(void) const;
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
 private:
@@ -81,12 +81,11 @@ private:
     // PRIVATE METHODS //////////////////////////////////////////////////////
 private:
 
-    PyreComponent(const PyreComponent&);     ///< Not implemented
-    const PyreComponent& operator=(const PyreComponent&);     ///< Not implemented
+    PyreComponent(const PyreComponent&); ///< Not implemented
+    const PyreComponent& operator=(const PyreComponent&); ///< Not implemented
 
-};      // PyreComponent
+}; // PyreComponent
 
 #endif // pylith_utils_pyrecomponent_hh
-
 
 // End of file

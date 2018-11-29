@@ -31,8 +31,7 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include <cassert> \
-    // USES assert()
+#include <cassert> // USES assert()
 
 // ---------------------------------------------------------------------------------------------------------------------
 namespace pylith {
@@ -56,7 +55,7 @@ pylith::problems::TimeDependent::TimeDependent(void) :
     _maxTimeSteps(0),
     _ts(0),
     _formulationType(IMPLICIT) {
-    PyreComponent::name(_TimeDependent::pyreComponent);
+    PyreComponent::setName(_TimeDependent::pyreComponent);
 } // constructor
 
 

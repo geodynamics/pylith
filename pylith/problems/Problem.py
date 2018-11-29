@@ -137,7 +137,7 @@ class Problem(PetscComponent, ModuleProblem):
             self._info.log("Performing minimal initialization before verifying configuration.")
 
         self._createModuleObj()
-        self.observers.preinitialize(self)
+        ModuleProblem.setIdentifier(self, self.aliases[-1])
 
         if self.solverChoice == "linear":
             ModuleProblem.setSolverType(self, ModuleProblem.LINEAR)

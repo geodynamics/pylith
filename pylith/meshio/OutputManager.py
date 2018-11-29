@@ -76,8 +76,8 @@ class OutputManager(Observer, ModuleOutputManager):
         Setup output manager.
         """
         self._createModuleObj(observers)
+        ModuleOutputManager.setIdentifier(self, self.aliases[-1])
 
-        ModuleOutputManager.identifier(self, self.aliases[-1])
         ModuleOutputManager.infoFields(self, self.infoFields)
         ModuleOutputManager.dataFields(self, self.dataFields)
 

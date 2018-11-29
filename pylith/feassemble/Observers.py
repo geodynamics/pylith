@@ -41,7 +41,7 @@ class Observers(PetscComponent, ModuleObservers):
 
     def preinitialize(self):
         """Do minimal initialization. Mostly setup low-level C++ object."""
-        ModuleObservers.identifier(self, self.aliases[-1])
+        ModuleObservers.setIdentifier(self, self.aliases[-1])
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

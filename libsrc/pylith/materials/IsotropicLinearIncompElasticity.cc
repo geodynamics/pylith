@@ -38,7 +38,7 @@
 pylith::materials::IsotropicLinearIncompElasticity::IsotropicLinearIncompElasticity(void) :
     _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryElastic),
     _useReferenceState(false) {
-    pylith::utils::PyreComponent::name("isotopiclinearincomplinearelasticity");
+    pylith::utils::PyreComponent::setName("isotopiclinearincomplinearelasticity");
 } // constructor
 
 

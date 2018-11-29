@@ -42,7 +42,7 @@ pylith::meshio::MeshIOLagrit::MeshIOLagrit(void) :
     _flipEndian(false),
     _ioInt32(true),
     _isRecordHeader32Bit(true) {
-    PyreComponent::name("meshiolagrit");
+    PyreComponent::setName("meshiolagrit");
 } // constructor
 
 

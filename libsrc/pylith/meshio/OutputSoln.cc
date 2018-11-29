@@ -31,7 +31,7 @@
 // Constructor
 pylith::meshio::OutputSoln::OutputSoln(pylith::problems::Problem* const problem) :
     _problem(problem) { // constructor
-    PyreComponent::name("outputsoln");
+    PyreComponent::setName("outputsoln");
 } // constructor
 
 

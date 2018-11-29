@@ -35,7 +35,7 @@
 // Constructor
 pylith::meshio::OutputIntegrator::OutputIntegrator(pylith::feassemble::Integrator* const integrator) :
     _integrator(integrator) {
-    PyreComponent::name("outputintegrator");
+    PyreComponent::setName("outputintegrator");
 
 } // constructor
 

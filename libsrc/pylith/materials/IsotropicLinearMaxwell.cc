@@ -37,7 +37,7 @@ typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 pylith::materials::IsotropicLinearMaxwell::IsotropicLinearMaxwell(void) :
     _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryViscoelastic),
     _useReferenceState(false) {
-    pylith::utils::PyreComponent::name("isotropiclinearmaxwell");
+    pylith::utils::PyreComponent::setName("isotropiclinearmaxwell");
 } // constructor
 
 
