@@ -19,12 +19,12 @@
 #
 # Factory: boundary_condition
 
-from .IntegratorBoundary import IntegratorBoundary
+from .Neumann import Neumann
 from .bc import NeumannTimeDependent as ModuleNeumannTimeDependent
 from pylith.utils.NullComponent import NullComponent
 
 
-class NeumannTimeDependent(IntegratorBoundary, ModuleNeumannTimeDependent):
+class NeumannTimeDependent(Neumann, ModuleNeumannTimeDependent):
     """
     Python object for managing a time-dependent Neumann (natural) boundary condition.
 
@@ -61,13 +61,11 @@ class NeumannTimeDependent(IntegratorBoundary, ModuleNeumannTimeDependent):
         "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsTimeDependent)
     auxSubfields.meta['tip'] = "Discretization of time-dependent Neumann parameters."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="neumanntimedependent"):
         """
         Constructor.
         """
-        IntegratorBoundary.__init__(self, name)
+        Neumann.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
@@ -80,7 +78,7 @@ class NeumannTimeDependent(IntegratorBoundary, ModuleNeumannTimeDependent):
             self._info.log(
                 "Performing minimal initialization of time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
 
-        IntegratorBoundary.preinitialize(self, mesh)
+        Neumann.preinitialize(self, mesh)
 
         ModuleNeumannTimeDependent.useInitial(self, self.useInitial)
         ModuleNeumannTimeDependent.useRate(self, self.useRate)
@@ -88,8 +86,6 @@ class NeumannTimeDependent(IntegratorBoundary, ModuleNeumannTimeDependent):
         if not isinstance(self.dbTimeHistory, NullComponent):
             ModuleNeumannTimeDependent.dbTimeHistory(self.dbTimeHistory)
         return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """
@@ -102,7 +98,7 @@ class NeumannTimeDependent(IntegratorBoundary, ModuleNeumannTimeDependent):
             self._warning.log(
                 "Ignoring time history database setting for time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
 
-        IntegratorBoundary._configure(self)
+        Neumann._configure(self)
         return
 
     def _createModuleObj(self):
@@ -112,8 +108,8 @@ class NeumannTimeDependent(IntegratorBoundary, ModuleNeumannTimeDependent):
         ModuleNeumannTimeDependent.__init__(self)
         return
 
-# FACTORIES ////////////////////////////////////////////////////////////
 
+# Factories
 
 def boundary_condition():
     """

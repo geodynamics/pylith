@@ -19,11 +19,11 @@
 #
 # Factory: boundary_condition
 
-from pylith.feassemble.IntegratorBoundary import IntegratorBoundary
+from .BoundaryCondition import BoundaryCondition
 from .bc import Neumann as ModuleNeumann
 
 
-class Neumann(IntegratorBoundary, ModuleNeumann):
+class Neumann(BoundaryCondition, ModuleNeumann):
     """
     Python object for managing a Neumann (natural) boundary condition.
 
@@ -44,31 +44,27 @@ class Neumann(IntegratorBoundary, ModuleNeumann):
                                    validator=pyre.inventory.choice(["length", "time", "pressure", "density", "velocity"]))
     scaleName.meta['tip'] = "Type of scale for nondimensionalizing Neumann boundary condition ('pressure' for elasticity)."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="neumann"):
         """
         Constructor.
         """
-        IntegratorBoundary.__init__(self, name)
+        BoundaryCondition.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
         """
         Do pre-initialization setup.
         """
-        IntegratorBoundary.preinitialize(self, mesh)
+        BoundaryCondition.preinitialize(self, mesh)
 
         ModuleNeumann.scaleName(self, self.scaleName)
         return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """
         Setup members using inventory.
         """
-        IntegratorBoundary._configure(self)
+        BoundaryCondition._configure(self)
         return
 
 
