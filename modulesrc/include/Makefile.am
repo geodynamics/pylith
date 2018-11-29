@@ -24,7 +24,7 @@ dist_subpkgdata_DATA = \
 	chararray.i \
 	scalartypemaps.i \
 	kinsrcarray.i \
-	integratorarray.i
+	physicsarray.i
 
 
 # End of file 

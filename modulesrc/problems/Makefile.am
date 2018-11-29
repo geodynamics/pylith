@@ -27,8 +27,8 @@ subpkgpyexec_PYTHON = problems.py
 swig_sources = \
 	problems.i \
 	../utils/PyreComponent.i \
-	../include/integratorarray.i \
-	../include/constraintarray.i \
+	../topology/FieldBase.i \
+	../include/physicsarray.i \
 	../include/outputarray.i \
 	../include/scalartypemaps.i \
 	Problem.i \

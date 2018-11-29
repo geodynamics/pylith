@@ -36,8 +36,7 @@
  } // exception
 
 %include "typemaps.i"
-%include "../include/integratorarray.i"
-%include "../include/constraintarray.i"
+%include "../include/physicsarray.i"
 %include "../include/outputarray.i"
 %include "../include/scalartypemaps.i"
 
