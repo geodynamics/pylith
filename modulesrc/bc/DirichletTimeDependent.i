@@ -44,8 +44,13 @@ public:
              * @param[in] dof Array of indices for constrained degrees of freedom.
              * @param[in] size Size of array
              */
+	    %apply(int* INPLACE_ARRAY1, int DIM1) {
+		(const int* flags, 
+		 const int size)
+		    };
             void setConstrainedDOF(const int* flags,
                                    const int size);
+	    %clear(const int* flags, const int size);
 
             /** Get indices of constrained degrees of freedom.
              *
