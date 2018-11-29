@@ -28,12 +28,14 @@ swig_sources = \
 	materials.i \
 	../problems/Physics.i \
 	Material.i \
+	Elasticity.i \
 	RheologyElasticity.i \
 	IsotropicLinearElasticity.i \
 	IsotropicLinearMaxwell.i \
 	IsotropicLinearGenMaxwell.i \
 	RheologyIncompressibleElasticity.i \
-	IsotropicLinearIncompElasticity.i
+	IsotropicLinearIncompElasticity.i \
+	../utils/PyreComponent.i
 
 swigincludedir = $(pkgdatadir)/swig/$(subpackage)
 swiginclude_HEADERS = \

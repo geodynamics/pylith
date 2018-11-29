@@ -26,6 +26,7 @@ subpkgpyexec_PYTHON = faults.py
 
 swig_sources = \
 	faults.i \
+	../utils/PyreComponent.i \
 	../problems/Physics.i \
 	FaultCohesive.i \
 	FaultCohesiveKin.i \

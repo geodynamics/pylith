@@ -25,7 +25,8 @@ subpkgpyexec_LTLIBRARIES = _frictionmodule.la
 subpkgpyexec_PYTHON = friction.py
 
 swig_sources = \
-	friction.i 
+	friction.i \
+	../utils/PyreComponent.i
 
 swigincludedir = $(pkgdatadir)/swig/$(subpackage)
 #swiginclude_HEADERS = \
