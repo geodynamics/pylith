@@ -96,6 +96,27 @@ pylith::bc::DirichletTimeDependent::deallocate(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Set indices of constrained degrees of freedom at each location.
+void
+pylith::bc::DirichletTimeDependent::setConstrainedDOF(const int* flags,
+                                                      const int size) {
+    assert((flags && size > 0) || (!flags && 0 == size) );
+    _constrainedDOF.resize(size);
+    for (int i = 0; i < size; ++i) {
+        _constrainedDOF[i] = flags[i];
+    } // for
+} // setConstrainedDOF
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get indices of constrained degrees of freedom.
+const pylith::int_array&
+pylith::bc::DirichletTimeDependent::getConstrainedDOF(void) const {
+    return _constrainedDOF;
+} // getConstrainedDOF
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set time history database.
 void
 pylith::bc::DirichletTimeDependent::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th) {
