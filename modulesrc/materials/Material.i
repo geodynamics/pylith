@@ -70,9 +70,15 @@ public:
              */
             void setGravityField(spatialdata::spatialdb::GravityField* const g);
 
-        };
+	    /** Create constraint and set kernels.
+	     *
+	     * @param[in] solution Solution field.
+	     * @returns Constraint if applicable, otherwise NULL.
+	     */
+	    virtual
+	    pylith::feassemble::Constraint* createConstraint(const pylith::topology::Field& solution);
 
-        // class Material
+        }; // class Material
 
     } // materials
 } // pylith
