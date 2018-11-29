@@ -177,6 +177,12 @@ public:
      */
     void setKernelsDerivedField(const std::vector<ProjectKernels>& kernels);
 
+    /** Initialize integration domain, auxiliary field, and derived field. Update observers.
+     *
+     * @param[in] solution Solution field (layout).
+     */
+    void initialize(const pylith::topology::Field& solution);
+
     /** Compute RHS residual for G(t,s).
      *
      * @param[out] residual Field for residual.
@@ -315,12 +321,13 @@ private:
     std::vector<ResidualKernels> _kernelsLHSResidual; ///< kernels for LHS residual.
 
     std::vector<JacobianKernels> _kernelsRHSJacobian; ///< kernels for RHS Jacobian.
-    std::vector<JacobianKernels> _kernelsLHSJacobian; ///> kernels for LHS Jacobian.
+    std::vector<JacobianKernels> _kernelsLHSJacobian; /// > kernels for LHS Jacobian.
 
     std::vector<ProjectKernels> _kernelsUpdateStateVars; ///< kernels for updating state variables.
     std::vector<ProjectKernels> _kernelsDerivedField; ///< kernels for computing derived field.
 
     int _materialId;
+    pylith::topology::Mesh* _materialMesh; ///< Mesh associated with material.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

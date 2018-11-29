@@ -22,6 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
 #include "spatialdata/spatialdb/GravityField.hh" // HASA GravityField
 #include "petscds.h" // USES PetscDS
@@ -53,7 +54,8 @@ extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(PetscDM dm,
 // Default constructor.
 pylith::feassemble::IntegratorDomain::IntegratorDomain(pylith::problems::Physics* const physics) :
     Integrator(physics),
-    _materialId(0) {}
+    _materialId(0),
+    _materialMesh(NULL) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -70,6 +72,9 @@ pylith::feassemble::IntegratorDomain::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     pylith::feassemble::Integrator::deallocate();
+
+    _materialMesh = NULL; // :TODO: Currently using shared pointer. Delete when we have mesh associated with material
+                          // subDM.
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -97,8 +102,8 @@ pylith::feassemble::IntegratorDomain::getMaterialId(void) const {
 // Get mesh associated with integration domain.
 const pylith::topology::Mesh&
 pylith::feassemble::IntegratorDomain::getIntegrationDomainMesh(void) const {
-    assert(_auxiliaryField);
-    return _auxiliaryField->mesh();
+    assert(_materialMesh);
+    return *_materialMesh;
 } // domainMesh
 
 
@@ -172,6 +177,24 @@ pylith::feassemble::IntegratorDomain::setKernelsDerivedField(const std::vector<P
 
     PYLITH_METHOD_END;
 } // setKernelsDerivedField
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Initialize integration domain, auxiliary field, and derived field. Update observers.
+void
+pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
+
+    // :TODO: @brad @matt Update this to create a mesh with the material subDM.
+    delete _materialMesh;_materialMesh = (pylith::topology::Mesh*) &solution.mesh();
+
+    pylith::topology::CoordsVisitor::optimizeClosure(_materialMesh->dmMesh());
+
+    Integrator::initialize(solution);
+
+    PYLITH_METHOD_END;
+} // initialize
 
 
 // ---------------------------------------------------------------------------------------------------------------------
