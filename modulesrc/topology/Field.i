@@ -25,9 +25,18 @@
 namespace pylith {
 namespace topology {
 
-class Field : public FieldBase
-{     // Field
+class Field : public FieldBase {
 
+    // PUBLIC ENUMS ///////////////////////////////////////////////////////
+public:
+    
+    enum ViewOptions {
+        VIEW_METADATA=0, ///< View metadata only.
+        VIEW_LAYOUT=1, ///< View metadata and section.
+        VIEW_VALUES=2, ///< View metadata and vector.
+        VIEW_ALL=3, ///< View metadata, section, and vector.
+    };
+    
 // PUBLIC MEMBERS /////////////////////////////////////////////////
 public:
 
@@ -170,7 +179,8 @@ void dimensionalize(void);
  *
  * @param label Label for output.
  */
-void view(const char* label);
+    void view(const char* label,
+	const ViewOptions options=VIEW_ALL);
 
 /** Create PETSc vector scatter for field. This is used to transfer
  * information from the "global" PETSc vector view to the "local"

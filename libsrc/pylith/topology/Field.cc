@@ -481,7 +481,8 @@ pylith::topology::Field::dimensionalize(void) const { // dimensionalize
 // ----------------------------------------------------------------------
 // Print field to standard out.
 void
-pylith::topology::Field::view(const char* label) const { // view
+pylith::topology::Field::view(const char* label,
+                              const ViewOptions options) const {
     PYLITH_METHOD_BEGIN;
 
     std::cout << "Viewing field '" << _label << "' "<< label << ".\n";
@@ -514,16 +515,20 @@ pylith::topology::Field::view(const char* label) const { // view
         PetscErrorCode err;
 
         err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);
-        err = DMView(_dm, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionView(section, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
-        err = MPI_Comm_size(PetscObjectComm((PetscObject) _dm), &numProcs);PYLITH_CHECK_ERROR(err);
-        err = MPI_Comm_rank(PetscObjectComm((PetscObject) _dm), &rank);PYLITH_CHECK_ERROR(err);
-        for (PetscInt p = 0; p < numProcs; ++p) {
-            err = PetscPrintf(PetscObjectComm((PetscObject) _dm), "Proc %d local vector\n", p);PYLITH_CHECK_ERROR(err);
-            if (p == rank) {err = VecView(_localVec, PETSC_VIEWER_STDOUT_SELF);PYLITH_CHECK_ERROR(err); }
-            err = PetscBarrier((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
-        }
-    }
+        if ((VIEW_LAYOUT == options) || (VIEW_ALL == options)) {
+            err = DMView(_dm, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+            err = PetscSectionView(section, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+        } // if
+        if ((VIEW_VALUES == options) || (VIEW_ALL == options)) {
+            err = MPI_Comm_size(PetscObjectComm((PetscObject) _dm), &numProcs);PYLITH_CHECK_ERROR(err);
+            err = MPI_Comm_rank(PetscObjectComm((PetscObject) _dm), &rank);PYLITH_CHECK_ERROR(err);
+            for (PetscInt p = 0; p < numProcs; ++p) {
+                err = PetscPrintf(PetscObjectComm((PetscObject) _dm), "Proc %d local vector\n", p);PYLITH_CHECK_ERROR(err);
+                if (p == rank) {err = VecView(_localVec, PETSC_VIEWER_STDOUT_SELF);PYLITH_CHECK_ERROR(err); }
+                err = PetscBarrier((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
+            } // for
+        } // if
+    } // if
 
     PYLITH_METHOD_END;
 } // view

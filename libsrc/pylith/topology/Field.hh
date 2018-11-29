@@ -59,6 +59,16 @@ class pylith::topology::Field : public pylith::topology::FieldBase, public pylit
     friend class TestFieldMesh; // unit testing
     friend class TestFieldSubMesh; // unit testing
 
+    // PUBLIC ENUMS ///////////////////////////////////////////////////////
+public:
+
+    enum ViewOptions {
+        VIEW_METADATA=0, ///< View metadata only.
+        VIEW_LAYOUT=1, ///< View metadata and section.
+        VIEW_VALUES=2, ///< View metadata and vector.
+        VIEW_ALL=3, ///< View metadata, section, and vector.
+    };
+
     // PUBLIC STRUCTS ///////////////////////////////////////////////////////
 public:
 
@@ -281,9 +291,11 @@ public:
 
     /** Print field to standard out.
      *
-     * @param label Label for output.
+     * @param[in] label Label for output.
+     * @param[in] options Viewing options.
      */
-    void view(const char* label) const;
+    void view(const char* label,
+              const ViewOptions options=VIEW_ALL) const;
 
     /** Create PETSc vector scatter for field. This is used to transfer
      * information from the "global" PETSc vector view to the "local"
