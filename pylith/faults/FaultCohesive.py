@@ -22,7 +22,7 @@
 #
 # Factory: fault
 
-from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
+from pylith.problems.Physics import Physics
 from .faults import FaultCohesive as ModuleFaultCohesive
 
 
@@ -51,7 +51,7 @@ def validateDir(value):
     return nums
 
 
-class FaultCohesive(IntegratorPointwise, ModuleFaultCohesive):
+class FaultCohesive(Physics, ModuleFaultCohesive):
     """
     Python abstract base class for a fault surface implemeted with
     cohesive elements.
@@ -71,8 +71,6 @@ class FaultCohesive(IntegratorPointwise, ModuleFaultCohesive):
     FACTORY: fault
     """
 
-    # INVENTORY //////////////////////////////////////////////////////////
-
     import pyre.inventory
 
     matId = pyre.inventory.int("id", default=100)
@@ -90,24 +88,24 @@ class FaultCohesive(IntegratorPointwise, ModuleFaultCohesive):
     refDir2 = pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
     refDir2.meta['tip'] = "Second choice for reference direction to discriminate among tangential directions in 3-D."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="fault"):
         """
         Constructor.
         """
-        IntegratorPointwise.__init__(self, name)
+        Physics.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
         """
         Setup fault.
         """
-        ModuleFaultCohesive.id(self, self.matId)
-        ModuleFaultCohesive.label(self, self.label)
-        ModuleFaultCohesive.edge(self, self.edge)
-        ModuleFaultCohesive.refDir1(self, self.refDir1)
-        ModuleFaultCohesive.refDir2(self, self.refDir2)
+        Physics.preinitialize(self, mesh)
+
+        ModuleFaultCohesive.setInterfaceId(self, self.matId)
+        ModuleFaultCohesive.setSurfaceMarkerLabel(self, self.label)
+        ModuleFaultCohesive.setBuriedEdgesMarkerLabel(self, self.edge)
+        ModuleFaultCohesive.setRefDir1(self, self.refDir1)
+        ModuleFaultCohesive.setRefDir2(self, self.refDir2)
         return
 
     def verifyConfiguration(self):
@@ -116,13 +114,11 @@ class FaultCohesive(IntegratorPointwise, ModuleFaultCohesive):
         """
         return
 
-    # PRIVATE METHODS ////////////////////////////////////////////////////
-
     def _configure(self):
         """
         Setup members using inventory.
         """
-        IntegratorPointwise._configure(self)
+        Physics._configure(self)
         return
 
     def _createModuleObj(self):
