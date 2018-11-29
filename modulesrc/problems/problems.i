@@ -51,6 +51,7 @@
 
 // Interfaces
 %include "../utils/PyreComponent.i"
+%include "../topology/FieldBase.i"
 %include "Problem.i"
 %include "TimeDependent.i"
 %include "Physics.i"
