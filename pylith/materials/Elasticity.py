@@ -22,8 +22,8 @@
 from .Material import Material
 from .materials import Elasticity as ModuleElasticity
 
+from .IsotropicLinearElasticity import IsotropicLinearElasticity
 
-# VALIDATORS ///////////////////////////////////////////////////////////
 
 class Elasticity(Material, ModuleElasticity):
     """
@@ -49,8 +49,7 @@ class Elasticity(Material, ModuleElasticity):
     useBodyForce = pyre.inventory.bool("use_body_force", default=False)
     useBodyForce.meta['tip'] = "Include body force term in elasticity equation."
 
-    rheology = pyre.inventory.facility("bulk_rheology", familty="elasticity_rheology",
-                                       factory=IsotropicLinearElasticity)
+    rheology = pyre.inventory.facility("bulk_rheology", family="elasticity_rheology", factory=IsotropicLinearElasticity)
     rheology.meta['tip'] = "Bulk rheology for elastic material."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -66,12 +65,30 @@ class Elasticity(Material, ModuleElasticity):
         """
         Setup material.
         """
+        self.rheology.preinitialize(mesh)
         Material.preinitialize(self, mesh)
 
-        ModuleElasticity.useIntertia(self, self.userInertia)
+        ModuleElasticity.useInertia(self, self.useInertia)
         ModuleElasticity.useBodyForce(self, self.useBodyForce)
-        ModuleElasticity.setBulkRheology(self, self.rheology)
 
         return
+
+    def _createModuleObj(self):
+        """
+        Create handle to C++ Elasticity.
+        """
+        ModuleElasticity.__init__(self)
+        ModuleElasticity.setBulkRheology(self, self.rheology)  # Material sets auxiliary db in rheology.
+        return
+
+
+# Factories
+
+def material():
+    """
+    Factory associated with Elasticity.
+    """
+    return Elasticity()
+
 
 # End of file

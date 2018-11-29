@@ -66,12 +66,31 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
         """
         Setup material.
         """
+        self.rheology.preinitialize(mesh)
         Material.preinitialize(self, mesh)
 
-        ModuleIncompressibleElasticity.useIntertia(self, self.userInertia)
+        ModuleIncompressibleElasticity.useInertia(self, self.useInertia)
         ModuleIncompressibleElasticity.useBodyForce(self, self.useBodyForce)
         ModuleIncompressibleElasticity.setBulkRheology(self, self.rheology)
 
         return
+
+    def _createModuleObj(self):
+        """
+        Create handle to C++ IncompressibleElasticity.
+        """
+        ModuleElasticity.__init__(self)
+        ModuleElasticity.setBulkRheology(self, self.rheology)  # Material sets auxiliary db in rheology.
+        return
+
+
+# Factories
+
+def material():
+    """
+    Factory associated with IncompressibleElasticity.
+    """
+    return IncompressibleElasticity()
+
 
 # End of file
