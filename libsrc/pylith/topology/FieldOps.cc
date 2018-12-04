@@ -51,7 +51,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
     // Get spatial dimension of mesh.
     int dim = 0;
     err = DMGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
-    dim = (feinfo.dimension < 0) ? dim : feinfo.dimension;
+    dim = (feinfo.dimension < 0) ? dim : feinfo.dimension;assert(dim > 0);
 
     // Create space
     PetscSpace space = NULL;
@@ -61,8 +61,8 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
     err = PetscSpaceSetDegree(space, basisOrder, PETSC_DETERMINE);
     if (feinfo.feSpace == FieldBase::POLYNOMIAL_SPACE) {
         err = PetscSpacePolynomialSetTensor(space, useTensor);PYLITH_CHECK_ERROR(err);
-        err = PetscSpaceSetNumVariables(space, dim);PYLITH_CHECK_ERROR(err);
     } // if
+    err = PetscSpaceSetNumVariables(space, dim);PYLITH_CHECK_ERROR(err);
     err = PetscSpaceSetUp(space);PYLITH_CHECK_ERROR(err);
 
     // Create dual space
