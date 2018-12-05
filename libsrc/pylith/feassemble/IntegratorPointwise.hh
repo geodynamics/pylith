@@ -272,6 +272,13 @@ protected:
     void _setFEConstants(const pylith::topology::Field& solution,
                          const PylithReal dt) const;
 
+    /** Initialization for updating state variables.
+     *
+     * @param[in] solution Field with current trial solution.
+     */
+    virtual
+    void _updateStateVarsInit(const pylith::topology::Field& solution);
+
     /** Update state variables as needed.
      *
      * @param[in] t Current time.
@@ -312,6 +319,18 @@ protected:
 
     typedef std::map<std::string, PetscPointFunc> UpdateStateVarsMap;
     UpdateStateVarsMap _updateStateVarsKernels;
+
+    // Stuff for updateStateVars.
+    PetscIS *_superIS;
+    PetscDM _superDM;
+    PetscIS _stateVarIS;
+    PetscDM _stateVarDM;
+    PetscVec _stateVarsSolutionLocal;
+    PetscVec _stateVarsSolutionGlobal;
+    PetscVec _stateVarVecGlobal;
+    PetscVec _auxFieldVecGlobal;
+    PetscVec _solutionVecGlobal;
+    PetscVec _solutionVecLocal;
 
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
