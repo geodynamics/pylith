@@ -24,16 +24,13 @@
 #if !defined(pylith_faults_kinsrcauxiliaryfactory_hh)
 #define pylith_faults_kinsrcauxiliaryfactory_hh
 
-// Include directives ---------------------------------------------------
 #include "faultsfwd.hh" // forward declarations
 #include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
 
-// KinSrcAuxiliaryFactory-----------------------------------------------
-/// @brief C++ helper class for setting up auxiliary fields for faults.
 class pylith::faults::KinSrcAuxiliaryFactory : public pylith::feassemble::AuxiliaryFactory {
-    friend class TestSlipFnAuxiliaryFactory;   // unit testing
+    friend class TestSlipFnAuxiliaryFactory; // unit testing
 
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -43,31 +40,25 @@ public:
     ~KinSrcAuxiliaryFactory(void);
 
     /// Add slip initiation time (relative to origin time) subfield to auxiliary fields.
-    void initiationTime(void);
+    void addInitiationTime(void);
 
     /// Add rise time subfield to auxiliary fields.
-    void riseTime(void);
+    void addRiseTime(void);
 
     /// Add finalSlip to auxiliary fields.
-    void finalSlip(void);
+    void addFinalSlip(void);
 
     /// Add slipRate to auxiliary fields.
-    void slipRate(void);
+    void addSlipRate(void);
 
-    // PRIVATE MEMBERS ////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    static const char* _genericComponent; ///< Name of generic component.
-
-    // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private:
-
-    KinSrcAuxiliaryFactory(const KinSrcAuxiliaryFactory &);   ///< Not implemented.
-    const KinSrcAuxiliaryFactory& operator=(const KinSrcAuxiliaryFactory&);   ///< Not implemented
+    KinSrcAuxiliaryFactory(const KinSrcAuxiliaryFactory&); ///< Not implemented.
+    const KinSrcAuxiliaryFactory& operator=(const KinSrcAuxiliaryFactory&); ///< Not implemented
 
 }; // class KinSrcAuxiliaryFactory
 
 #endif // pylith_faults_kinsrcauxiliaryfactory_hh
-
 
 // End of file

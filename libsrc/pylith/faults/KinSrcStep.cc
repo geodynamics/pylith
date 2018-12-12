@@ -102,8 +102,8 @@ pylith::faults::KinSrcStep::_auxFieldSetup(const spatialdata::units::Nondimensio
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the slip time function
     // kernel.
 
-    _auxFactory->initiationTime(); // 0
-    _auxFactory->finalSlip(); // 1
+    _auxFactory->addInitiationTime(); // 0
+    _auxFactory->addFinalSlip(); // 1
 
     _slipFnKernel = pylith::faults::KinSrcStep::slipFn;
 
