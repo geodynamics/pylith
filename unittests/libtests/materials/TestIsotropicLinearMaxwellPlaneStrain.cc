@@ -43,7 +43,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::setUp(void) {
     _mymaterial = new IsotropicLinearMaxwellPlaneStrain();CPPUNIT_ASSERT(_mymaterial);
     _mydata = NULL;
 
-    GenericComponent::name("TestIsotropicLinearMaxwellPlaneStrain");
+    GenericComponent::setName("TestIsotropicLinearMaxwellPlaneStrain");
 
     _mymaterial->PyreComponent::identifier("TestIsotropicLinearMaxwellPlaneStrain");
     const char* journal = _mymaterial->PyreComponent::getName();

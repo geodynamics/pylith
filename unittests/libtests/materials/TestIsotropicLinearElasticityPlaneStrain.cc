@@ -43,7 +43,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void) {
     _mymaterial = new IsotropicLinearElasticityPlaneStrain(); CPPUNIT_ASSERT(_mymaterial);
     _mydata = NULL;
 
-    GenericComponent::name("TestIsotropicLinearElasticityPlaneStrain");
+    GenericComponent::setName("TestIsotropicLinearElasticityPlaneStrain");
 
     _mymaterial->PyreComponent::identifier("TestIsotropicLinearElasticityPlaneStrain");
     const char* journal = _mymaterial->PyreComponent::getName();
