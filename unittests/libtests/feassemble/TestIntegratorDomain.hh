@@ -71,7 +71,7 @@ public:
     /// Deallocate testing data.
     void tearDown(void);
 
-    /// Test getIntegrationDomainMesh(), getAuxiliaryField(), getDerivedField(), getMaterialId(), setMaterialId().
+    /// Test getPhysicsDomainMesh(), getAuxiliaryField(), getDerivedField(), getMaterialId(), setMaterialId().
     void testAccessors(void);
 
     /// Test setKernelsRHSResidual(), setKernelsRHSJacobian(), setKernelsLHSResidual(), setKernelsLHSJacobian().

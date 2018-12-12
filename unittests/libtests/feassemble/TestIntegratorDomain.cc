@@ -65,7 +65,7 @@ pylith::feassemble::TestIntegratorDomain::tearDown(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test getIntegrationDomainMesh(), getAuxiliaryField(), getDerivedField(), getMaterialId(), setMaterialId().
+// Test getPhysicsDomainMesh(), getAuxiliaryField(), getDerivedField(), getMaterialId(), setMaterialId().
 void
 pylith::feassemble::TestIntegratorDomain::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
@@ -73,7 +73,7 @@ pylith::feassemble::TestIntegratorDomain::testAccessors(void) {
     _initializeMin();
 
     CPPUNIT_ASSERT(_integrator);
-    const pylith::topology::Mesh& meshIntegrator = _integrator->getIntegrationDomainMesh();
+    const pylith::topology::Mesh& meshIntegrator = _integrator->getPhysicsDomainMesh();
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT_EQUAL(_mesh->dimension(), meshIntegrator.dimension());
     CPPUNIT_ASSERT_EQUAL(_mesh->numCorners(), meshIntegrator.numCorners());
