@@ -36,7 +36,7 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::AuxiliaryFactoryViscoelastic::AuxiliaryFactoryViscoelastic(void) {
-    GenericComponent::name("auxiliaryfactoryviscoelastic");
+    GenericComponent::setName("auxiliaryfactoryviscoelastic");
 } // constructor
 
 

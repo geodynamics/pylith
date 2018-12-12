@@ -60,7 +60,7 @@ public:
 // Default constructor.
 pylith::bc::TimeDependentAuxiliaryFactory::TimeDependentAuxiliaryFactory(const ReferenceEnum reference) :
     _auxComponents(reference) { // constructor
-    GenericComponent::name("timedependentauxiliaryfactory");
+    GenericComponent::setName("timedependentauxiliaryfactory");
 } // constructor
 
 

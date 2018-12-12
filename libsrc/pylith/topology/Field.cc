@@ -37,9 +37,6 @@
 #include <iostream>
 
 // ----------------------------------------------------------------------
-const char* pylith::topology::Field::_genericComponent = "field";
-
-// ----------------------------------------------------------------------
 // Default constructor.
 pylith::topology::Field::Field(const Mesh& mesh) :
     _mesh(mesh),
@@ -47,7 +44,7 @@ pylith::topology::Field::Field(const Mesh& mesh) :
     _localVec(NULL) { // constructor
     PYLITH_METHOD_BEGIN;
 
-    GenericComponent::name(_genericComponent);
+    GenericComponent::setName("field");
 
     _dimsOkay = false;
 
@@ -85,32 +82,6 @@ pylith::topology::Field::Field(const Mesh& mesh) :
 } // constructor
 
 
-#if 0
-// ----------------------------------------------------------------------
-// Constructor with mesh, DM, and metadata
-pylith::topology::Field::Field(const Mesh& mesh,
-                               PetscDM dm,
-                               const char* label) :
-    _mesh(mesh),
-    _dm(dm),
-    _localVec(NULL) { // constructor
-    PYLITH_METHOD_BEGIN;
-
-    GenericComponent::name(_genericComponent);
-
-    assert(dm);
-    PetscErrorCode err;
-    err = DMCreateLocalVector(_dm, &_localVec);PYLITH_CHECK_ERROR(err);
-
-    assert(label);
-    this->label(label);
-
-    PYLITH_METHOD_END;
-} // constructor
-
-
-#endif
-
 // ----------------------------------------------------------------------
 // Constructor with mesh, DM, local data, and metadata
 pylith::topology::Field::Field(const Mesh& mesh,
@@ -123,7 +94,7 @@ pylith::topology::Field::Field(const Mesh& mesh,
     _localVec(NULL) { // constructor
     PYLITH_METHOD_BEGIN;
 
-    GenericComponent::name(_genericComponent);
+    GenericComponent::setName("field");
 
     assert(dm);
     assert(localVec);
@@ -147,7 +118,7 @@ pylith::topology::Field::Field(const Mesh& mesh,
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::topology::Field::~Field(void) { // destructor
+pylith::topology::Field::~Field(void) {
     deallocate();
 } // destructor
 
@@ -155,7 +126,7 @@ pylith::topology::Field::~Field(void) { // destructor
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::topology::Field::deallocate(void) { // deallocate
+pylith::topology::Field::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     clear();
@@ -168,7 +139,7 @@ pylith::topology::Field::deallocate(void) { // deallocate
 // ----------------------------------------------------------------------
 // Set label for field.
 void
-pylith::topology::Field::label(const char* value) { // label
+pylith::topology::Field::label(const char* value) {
     PYLITH_METHOD_BEGIN;
 
     PetscErrorCode err;
@@ -194,7 +165,7 @@ pylith::topology::Field::label(const char* value) { // label
 // ----------------------------------------------------------------------
 // Get spatial dimension of domain.
 int
-pylith::topology::Field::spaceDim(void) const { // spaceDim
+pylith::topology::Field::spaceDim(void) const {
     const spatialdata::geocoords::CoordSys* cs = _mesh.coordsys();
     return (cs) ? cs->spaceDim() : 0;
 } // spaceDim
@@ -203,7 +174,7 @@ pylith::topology::Field::spaceDim(void) const { // spaceDim
 // ----------------------------------------------------------------------
 // Get vector field type.
 pylith::topology::Field::VectorFieldEnum
-pylith::topology::Field::vectorFieldType(void) const { // vectorFieldType
+pylith::topology::Field::vectorFieldType(void) const {
     VectorFieldEnum value = OTHER;
     if (1 == _subfields.size()) {
         value = _subfields.begin()->second.description.vectorFieldType;
@@ -216,7 +187,7 @@ pylith::topology::Field::vectorFieldType(void) const { // vectorFieldType
 // ----------------------------------------------------------------------
 // Get the chart size.
 PylithInt
-pylith::topology::Field::chartSize(void) const { // chartSize
+pylith::topology::Field::chartSize(void) const {
     PYLITH_METHOD_BEGIN;
 
     assert(_dm);
@@ -234,7 +205,7 @@ pylith::topology::Field::chartSize(void) const { // chartSize
 // ----------------------------------------------------------------------
 // Get the number of degrees of freedom.
 PylithInt
-pylith::topology::Field::sectionSize(void) const { // sectionSize
+pylith::topology::Field::sectionSize(void) const {
     PYLITH_METHOD_BEGIN;
 
     PylithInt size = 0;
@@ -254,7 +225,7 @@ pylith::topology::Field::sectionSize(void) const { // sectionSize
 // ----------------------------------------------------------------------
 // Create section with same layout as another section.
 void
-pylith::topology::Field::cloneSection(const Field& src) { // cloneSection
+pylith::topology::Field::cloneSection(const Field& src) {
     PYLITH_METHOD_BEGIN;
 
     const std::string& origLabel = _label;
@@ -323,7 +294,7 @@ pylith::topology::Field::cloneSection(const Field& src) { // cloneSection
 // ----------------------------------------------------------------------
 // Clear variables associated with section.
 void
-pylith::topology::Field::clear(void) { // clear
+pylith::topology::Field::clear(void) {
     PYLITH_METHOD_BEGIN;
 
     PetscErrorCode err;
@@ -351,7 +322,7 @@ pylith::topology::Field::clear(void) { // clear
 // ----------------------------------------------------------------------
 // Allocate PETSc section.
 void
-pylith::topology::Field::allocate(void) { // allocate
+pylith::topology::Field::allocate(void) {
     PYLITH_METHOD_BEGIN;
 
     PetscSection s = NULL;
@@ -382,7 +353,7 @@ pylith::topology::Field::allocate(void) { // allocate
 // ----------------------------------------------------------------------
 // Zero local vector values (including constrained DOF).
 void
-pylith::topology::Field::zeroLocal(void) { // zeroLocal
+pylith::topology::Field::zeroLocal(void) {
     PYLITH_METHOD_BEGIN;
 
     assert(_localVec);
@@ -395,7 +366,7 @@ pylith::topology::Field::zeroLocal(void) { // zeroLocal
 // ----------------------------------------------------------------------
 // Copy field values and metadata.
 void
-pylith::topology::Field::copy(const Field& field) { // copy
+pylith::topology::Field::copy(const Field& field) {
     PYLITH_METHOD_BEGIN;
 
     // Check compatibility of sections
@@ -426,7 +397,7 @@ pylith::topology::Field::copy(const Field& field) { // copy
 // ----------------------------------------------------------------------
 // Dimensionalize field.
 void
-pylith::topology::Field::dimensionalize(void) const { // dimensionalize
+pylith::topology::Field::dimensionalize(void) const {
     PYLITH_METHOD_BEGIN;
 
     if (!_dimsOkay) {
@@ -540,7 +511,7 @@ pylith::topology::Field::view(const char* label,
 // PETSc section view.
 void
 pylith::topology::Field::createScatter(const Mesh& mesh,
-                                       const char* context) { // createScatter
+                                       const char* context) {
     PYLITH_METHOD_BEGIN;
 
     assert(context);
@@ -573,7 +544,7 @@ pylith::topology::Field::createScatter(const Mesh& mesh,
 // the PETSc vector.
 void
 pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
-                                             const char* context) { // createScatterWithBC
+                                             const char* context) {
     PYLITH_METHOD_BEGIN;
 
     assert(context);
@@ -620,7 +591,7 @@ void
 pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
                                              const std::string& labelName,
                                              PetscInt labelValue,
-                                             const char* context) { // createScatterWithBC
+                                             const char* context) {
     PYLITH_METHOD_BEGIN;
 
     assert(context);
@@ -723,7 +694,7 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
 // ----------------------------------------------------------------------
 // Get PETSc vector associated with field.
 PetscVec
-pylith::topology::Field::scatterVector(const char* context) { // scatterVector
+pylith::topology::Field::scatterVector(const char* context) {
     PYLITH_METHOD_BEGIN;
 
     ScatterInfo& sinfo = _getScatter(context);
@@ -735,7 +706,7 @@ pylith::topology::Field::scatterVector(const char* context) { // scatterVector
 // ----------------------------------------------------------------------
 // Get PETSc vector associated with field.
 const PetscVec
-pylith::topology::Field::scatterVector(const char* context) const { // scatterVector
+pylith::topology::Field::scatterVector(const char* context) const {
     PYLITH_METHOD_BEGIN;
 
     const ScatterInfo& sinfo = _getScatter(context);
@@ -749,7 +720,7 @@ pylith::topology::Field::scatterVector(const char* context) const { // scatterVe
 // PETSc vector view of the field.
 void
 pylith::topology::Field::scatterLocalToContext(const char* context,
-                                               InsertMode mode) const { // scatterLocalToContext
+                                               InsertMode mode) const {
     PYLITH_METHOD_BEGIN;
 
     assert(context);
@@ -770,7 +741,7 @@ pylith::topology::Field::scatterLocalToContext(const char* context,
 // PETSc vector view of the field.
 void
 pylith::topology::Field::scatterLocalToVector(const PetscVec vector,
-                                              InsertMode mode) const { // scatterLocalToVector
+                                              InsertMode mode) const {
     PYLITH_METHOD_BEGIN;
 
     assert(vector);
@@ -790,7 +761,7 @@ pylith::topology::Field::scatterLocalToVector(const PetscVec vector,
 // section view of the field.
 void
 pylith::topology::Field::scatterContextToLocal(const char* context,
-                                               InsertMode mode) const { // scatterContextToLocal
+                                               InsertMode mode) const {
     PYLITH_METHOD_BEGIN;
 
     assert(context);
@@ -811,7 +782,7 @@ pylith::topology::Field::scatterContextToLocal(const char* context,
 // section view of the field.
 void
 pylith::topology::Field::scatterVectorToLocal(const PetscVec vector,
-                                              InsertMode mode) const { // scatterVectorToLocal
+                                              InsertMode mode) const {
     PYLITH_METHOD_BEGIN;
 
     assert(vector);
@@ -830,7 +801,7 @@ pylith::topology::Field::scatterVectorToLocal(const PetscVec vector,
 // Get scatter for given context.
 pylith::topology::Field::ScatterInfo&
 pylith::topology::Field::_getScatter(const char* context,
-                                     const bool createOk) { // _getScatter
+                                     const bool createOk) {
     PYLITH_METHOD_BEGIN;
 
     assert(context);
@@ -873,7 +844,7 @@ pylith::topology::Field::_getScatter(const char* context,
 // ----------------------------------------------------------------------
 // Get scatter for given context.
 const pylith::topology::Field::ScatterInfo&
-pylith::topology::Field::_getScatter(const char* context) const { // _getScatter
+pylith::topology::Field::_getScatter(const char* context) const {
     PYLITH_METHOD_BEGIN;
 
     assert(context);
@@ -903,7 +874,7 @@ pylith::topology::Field::subfieldAdd(const char *name,
                                      const int quadOrder,
                                      const int dimension,
                                      const bool isBasisContinuous,
-                                     const SpaceEnum feSpace) { // subfieldAdd
+                                     const SpaceEnum feSpace) {
     assert(numComponents > 0);
 
     Description description;
@@ -933,7 +904,7 @@ pylith::topology::Field::subfieldAdd(const char *name,
 // Add subfield.
 void
 pylith::topology::Field::subfieldAdd(const Description& description,
-                                     const Discretization& discretization) { // subfieldAdd
+                                     const Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
 
     assert(0 == _subfields.count(description.label));
@@ -952,7 +923,7 @@ pylith::topology::Field::subfieldAdd(const Description& description,
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::Field::subfieldsSetup(void) { // subfieldsSetup
+pylith::topology::Field::subfieldsSetup(void) {
     PYLITH_METHOD_BEGIN;
 
     assert(_dm);
@@ -999,7 +970,7 @@ pylith::topology::Field::subfieldsSetup(void) { // subfieldsSetup
 // ----------------------------------------------------------------------
 // Does field have given auxiliary subfield?
 bool
-pylith::topology::Field::hasSubfield(const char* name) const { // hasSubfield
+pylith::topology::Field::hasSubfield(const char* name) const {
     PYLITH_METHOD_BEGIN;
 
     subfields_type::const_iterator iter = _subfields.find(name);
@@ -1010,7 +981,7 @@ pylith::topology::Field::hasSubfield(const char* name) const { // hasSubfield
 // ----------------------------------------------------------------------
 // Get names of subfields.
 pylith::string_vector
-pylith::topology::Field::subfieldNames(void) const { // subfieldNames
+pylith::topology::Field::subfieldNames(void) const {
     PYLITH_METHOD_BEGIN;
 
     const size_t numSubfields = _subfields.size();
@@ -1027,7 +998,7 @@ pylith::topology::Field::subfieldNames(void) const { // subfieldNames
 // ----------------------------------------------------------------------
 // Get metadata for subfield.
 const pylith::topology::Field::SubfieldInfo&
-pylith::topology::Field::subfieldInfo(const char* name) const { // subfieldInfo
+pylith::topology::Field::subfieldInfo(const char* name) const {
     PYLITH_METHOD_BEGIN;
 
     subfields_type::const_iterator iter = _subfields.find(name);
@@ -1051,7 +1022,7 @@ pylith::topology::Field::subfieldInfo(const char* name) const { // subfieldInfo
 // Copy subfield values to field.
 void
 pylith::topology::Field::copySubfield(const Field& field,
-                                      const char* name) { // copySubfield
+                                      const char* name) {
     PYLITH_METHOD_BEGIN;
 
     PetscErrorCode err;
@@ -1106,7 +1077,7 @@ pylith::topology::Field::copySubfield(const Field& field,
 // Extract subfield.
 void
 pylith::topology::Field::_extractSubfield(const Field& field,
-                                          const char* name) { // _extractSubfield
+                                          const char* name) {
     PYLITH_METHOD_BEGIN;
 
     clear();

@@ -40,7 +40,7 @@ pylith::problems::SolutionFactory::SolutionFactory(pylith::topology::Field& solu
     _solution(solution),
     _normalizer(normalizer),
     _spaceDim(solution.spaceDim()) {
-    GenericComponent::name("solutionfactory");
+    GenericComponent::setName("solutionfactory");
     assert(1 <= _spaceDim && _spaceDim <= 3);
 } // constructor
 

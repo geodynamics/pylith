@@ -30,7 +30,6 @@
 #include "journal/warning.h"
 #include "journal/error.h"
 
-
 #define PYLITH_COMPONENT_DEBUG(msg) \
     do { \
         journal::debug_t debug(PyreComponent::getName()); \
@@ -65,28 +64,28 @@
 
 #define PYLITH_JOURNAL_DEBUG(msg) \
     do { \
-        journal::debug_t debug(GenericComponent::name()); \
+        journal::debug_t debug(GenericComponent::getName()); \
         debug << journal::at(__HERE__) \
               << msg << journal::endl; \
     } while (0)
 
 #define PYLITH_JOURNAL_INFO(msg) \
     do { \
-        journal::info_t info(GenericComponent::name()); \
+        journal::info_t info(GenericComponent::getName()); \
         info << journal::at(__HERE__) \
              << msg << journal::endl; \
     } while (0)
 
 #define PYLITH_JOURNAL_WARNING(msg) \
     do { \
-        journal::warning_t warning(GenericComponent::name()); \
+        journal::warning_t warning(GenericComponent::getName()); \
         warning << journal::at(__HERE__) \
                 << msg << journal::endl; \
     } while (0)
 
 #define PYLITH_JOURNAL_ERROR(msg) \
     do { \
-        journal::error_t error(GenericComponent::name()); \
+        journal::error_t error(GenericComponent::getName()); \
         error << journal::at(__HERE__) \
               << msg << journal::endl; \
     } while (0)

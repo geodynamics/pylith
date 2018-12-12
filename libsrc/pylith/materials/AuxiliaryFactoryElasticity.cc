@@ -35,7 +35,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::AuxiliaryFactoryElasticity::AuxiliaryFactoryElasticity(void) {
-    GenericComponent::name("auxiliaryfactoryelasticity");
+    GenericComponent::setName("auxiliaryfactoryelasticity");
 } // constructor
 
 

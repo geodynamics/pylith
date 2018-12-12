@@ -32,7 +32,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::bc::AbsorbingDampersAuxiliaryFactory::AbsorbingDampersAuxiliaryFactory(void) {
-    GenericComponent::name("absorbingdampersauxiliaryfactory");
+    GenericComponent::setName("absorbingdampersauxiliaryfactory");
 } // constructor
 
 

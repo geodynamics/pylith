@@ -443,8 +443,6 @@ private:
     PetscDM _dm; ///< Manages the PetscSection.
     PetscVec _localVec; ///< Local PETSc vector.
 
-    static const char* _genericComponent; ///< Name of generic component.
-
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 

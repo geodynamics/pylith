@@ -52,13 +52,13 @@ public:
      *
      * @param value Name of component.
      */
-    void name(const char* value);
+    void setName(const char* value);
 
     /** Get name of component.
      *
      * @returns Name of component.
      */
-    const char* name(void) const;
+    const char* getName(void) const;
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
 private:
@@ -68,12 +68,11 @@ private:
     // PRIVATE METHODS //////////////////////////////////////////////////////
 private:
 
-    GenericComponent(const GenericComponent&);     ///< Not implemented
-    const GenericComponent& operator=(const GenericComponent&);     ///< Not implemented
+    GenericComponent(const GenericComponent&); ///< Not implemented
+    const GenericComponent& operator=(const GenericComponent&); ///< Not implemented
 
 }; // GenericComponent
 
 #endif // pylith_utils_genericcomponent_hh
-
 
 // End of file

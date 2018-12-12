@@ -32,7 +32,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::faults::AuxiliaryFactoryKinematic::AuxiliaryFactoryKinematic(void) {
-    GenericComponent::name("auxiliaryfactorykinematic");
+    GenericComponent::setName("auxiliaryfactorykinematic");
 } // constructor
 
 
