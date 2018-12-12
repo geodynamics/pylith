@@ -17,51 +17,64 @@
 //
 
 /**
- * @file modulesrc/meshio/OutputSoln.i
+ * @file modulesrc/meshio/OutputPhysics.i
  *
- * @brief Python interface to C++ OutputSoln object.
+ * @brief Python interface to C++ OutputPhysics object.
  */
 
 namespace pylith {
     namespace meshio {
-        class pylith::meshio::OutputSoln :
-            public pylith::problems::ObserverSoln,
+        class pylith::meshio::OutputPhysics :
+            public pylith::problems::ObserverPhysics,
             public pylith::meshio::OutputObserver {
             // PUBLIC METHODS ///////////////////////////////////////////////
 public:
 
             /// Constructor
-            OutputSoln(void);
+            OutputPhysics(void);
 
             /// Destructor
-            virtual ~OutputSoln(void);
+            virtual ~OutputPhysics(void);
 
             /// Deallocate PETSc and local data structures.
             virtual
             void deallocate(void);
 
-            /** Set names of solution subfields requested for output.
+            /** Set names of information fields requested for output.
              *
-             * @param[in] names Array of subfield names.
+             * @param[in] names Array of field names.
              * @param[in] numNames Length of array.
              */
-            void setOutputSubfields(const char* names[],
-                                    const int numNames);
+            void setInfoFields(const char* names[],
+                               const int numNames);
 
-            /** Get names of solution subfields requested for output.
+            /** Get names of information fields requested for output.
              *
-             * @returns Array of subfield names.
+             * @returns Array of field names.
              */
-            const pylith::string_vector& getOutputSubfields(void) const;
+            const pylith::string_vector& getInfoFields(void) const;
 
-            /** Verify observer is compatible with solution.
+            /** Set names of data fields requested for output.
+             *
+             * @param[in] names Array of field names.
+             * @param[in] numNames Length of array.
+             */
+            void setDataFields(const char* names[],
+                               const int numNames);
+
+            /** Get names of data fields requested for output.
+             *
+             * @returns Array of field names.
+             */
+            const pylith::string_vector& getDataFields(void) const;
+
+            /** Verify configuration.
              *
              * @param[in] solution Solution field.
              */
-            virtual
             void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-            /** Receive update from subject.
+            /** Receive update (subject of observer).
              *
              * @param[in] t Current time.
              * @param[in] tindex Current time step.
@@ -71,9 +84,10 @@ public:
              */
             void update(const PylithReal t,
                         const PylithInt tindex,
-                        const pylith::topology::Field& solution);
+                        const pylith::topology::Field& solution,
+                        const bool infoOnly);
 
-        }; // OutputSoln
+        }; // OutputPhysics
 
     } // meshio
 } // pylith

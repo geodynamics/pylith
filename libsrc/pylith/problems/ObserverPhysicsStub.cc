@@ -18,16 +18,16 @@
 
 #include <portinfo>
 
-#include "ObserverStub.hh" // Implementation of class methods
+#include "ObserverPhysicsStub.hh" // Implementation of class methods
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::feassemble::ObserverStub::ObserverStub(void) {}
+pylith::problems::ObserverPhysicsStub::ObserverPhysicsStub(void) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::feassemble::ObserverStub::~ObserverStub(void) {
+pylith::problems::ObserverPhysicsStub::~ObserverPhysicsStub(void) {
     deallocate();
 } // destructor
 
@@ -35,37 +35,37 @@ pylith::feassemble::ObserverStub::~ObserverStub(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Verify observer is compatible with solution.
 void
-pylith::feassemble::ObserverStub::verifyConfiguration(const pylith::topology::Field& solution) const {
-    throw ObserverStubException(ObserverStubException::VERIFIED);
+pylith::problems::ObserverPhysicsStub::verifyConfiguration(const pylith::topology::Field& solution) const {
+    throw ObserverPhysicsStubException(ObserverPhysicsStubException::VERIFIED);
 } // verifyConfiguration
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Receive update (subject of observer).
 void
-pylith::feassemble::ObserverStub::update(const PylithReal t,
-                                         const PylithInt tindex,
-                                         const pylith::topology::Field& solution,
-                                         const bool infoOnly) {
-    throw ObserverStubException(ObserverStubException::UPDATED);
+pylith::problems::ObserverPhysicsStub::update(const PylithReal t,
+                                              const PylithInt tindex,
+                                              const pylith::topology::Field& solution,
+                                              const bool infoOnly) {
+    throw ObserverPhysicsStubException(ObserverPhysicsStubException::UPDATED);
 } // update
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::feassemble::ObserverStubException::ObserverStubException(const MethodEnum value) :
+pylith::problems::ObserverPhysicsStubException::ObserverPhysicsStubException(const MethodEnum value) :
     _methodCalled(value) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::feassemble::ObserverStubException::~ObserverStubException(void) {}
+pylith::problems::ObserverPhysicsStubException::~ObserverPhysicsStubException(void) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get method called.
-pylith::feassemble::ObserverStubException::MethodEnum
-pylith::feassemble::ObserverStubException::getMethodCalled(void) const {
+pylith::problems::ObserverPhysicsStubException::MethodEnum
+pylith::problems::ObserverPhysicsStubException::getMethodCalled(void) const {
     return _methodCalled;
 } // getMethodCalled
 

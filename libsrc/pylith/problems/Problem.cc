@@ -28,7 +28,7 @@
 #include "pylith/bc/BoundaryCondition.hh" // USES BoundaryCondition
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/feassemble/Constraint.hh" // USES Constraint
-#include "pylith/feassemble/Observers.hh" // USES Observers
+#include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
 
@@ -51,7 +51,7 @@ pylith::problems::Problem::Problem() :
     _jacobianLHSLumpedInv(NULL),
     _normalizer(NULL),
     _gravityField(NULL),
-    _observers(new pylith::feassemble::Observers),
+    _observers(new pylith::problems::ObserversSoln),
     _solverType(LINEAR) { // constructor
 } // constructor
 
@@ -125,7 +125,7 @@ pylith::problems::Problem::setGravityField(spatialdata::spatialdb::GravityField*
 // ----------------------------------------------------------------------
 // Register observer to receive notifications.
 void
-pylith::problems::Problem::registerObserver(pylith::feassemble::Observer* observer) {
+pylith::problems::Problem::registerObserver(pylith::problems::ObserverSoln* observer) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("registerObserver(observer="<<typeid(observer).name()<<")");
 
@@ -139,7 +139,7 @@ pylith::problems::Problem::registerObserver(pylith::feassemble::Observer* observ
 // ----------------------------------------------------------------------
 // Remove observer from receiving notifications.
 void
-pylith::problems::Problem::removeObserver(pylith::feassemble::Observer* observer) {
+pylith::problems::Problem::removeObserver(pylith::problems::ObserverSoln* observer) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("removeObserver(observer="<<typeid(observer).name()<<")");
 

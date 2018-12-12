@@ -99,13 +99,13 @@ public:
      *
      * @param[in] observer Observer to receive notifications.
      */
-    void registerObserver(pylith::feassemble::Observer* observer);
+    void registerObserver(pylith::problems::ObserverSoln* observer);
 
     /** Remove observer from receiving notifications.
      *
      * @param[in] observer Observer to remove.
      */
-    void removeObserver(pylith::feassemble::Observer* observer);
+    void removeObserver(pylith::problems::ObserverSoln* observer);
 
     /** Set solution field.
      *
@@ -249,7 +249,7 @@ protected:
 
     std::vector<pylith::feassemble::Integrator*> _integrators; ///< Array of integrators.
     std::vector<pylith::feassemble::Constraint*> _constraints; ///< Array of constraints.
-    pylith::feassemble::Observers* _observers; ///< Subscribers of updates.
+    pylith::problems::ObserversSoln* _observers; ///< Subscribers of solution updates.
 
     SolverTypeEnum _solverType; ///< Problem (solver) type.
 

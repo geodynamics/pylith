@@ -39,9 +39,6 @@ nobase_pkgpyexec_PYTHON = \
 	faults/KinSrcConstRate.py \
 	faults/SingleRupture.py \
 	feassemble/__init__.py \
-	feassemble/Observer.py \
-	feassemble/SingleObserver.py \
-	feassemble/Observers.py \
 	friction/__init__.py \
 	materials/__init__.py \
 	materials/Homogeneous.py \
@@ -66,11 +63,12 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/FieldFilter.py \
 	meshio/FieldFilterNone.py \
 	meshio/FieldFilterProject.py \
-	meshio/OutputManager.py \
+	meshio/OutputObserver.py \
 	meshio/OutputSoln.py \
+	meshio/OutputSolnDomain.py \
 	meshio/OutputSolnBoundary.py \
-	meshio/OutputIntegrator.py \
-	meshio/OutputConstraint.py \
+	meshio/OutputSolnPoints.py \
+	meshio/OutputPhysics.py \
 	meshio/OutputTrigger.py \
 	meshio/OutputTriggerStep.py \
 	meshio/OutputTriggerTime.py \
@@ -93,6 +91,7 @@ nobase_pkgpyexec_PYTHON = \
 	problems/SubfieldPressure.py \
 	problems/SubfieldTemperature.py \
 	problems/SubfieldLagrangeFault.py \
+	problems/SingleObserver.py \
 	topology/__init__.py \
 	topology/Distributor.py \
 	topology/Mesh.py \

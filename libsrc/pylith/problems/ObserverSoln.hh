@@ -17,30 +17,30 @@
 //
 
 /**
- * @file libsrc/feassemble/Observer.hh
+ * @file libsrc/problems/ObserverSoln.hh
  *
- * @brief Observer of subject.
+ * @brief ObserverSoln of subject.
  */
 
-#if !defined(pylith_feassemble_observer_hh)
-#define pylith_feassemble_observer_hh
+#if !defined(pylith_problems_observersoln_hh)
+#define pylith_problems_observersoln_hh
 
-#include "feassemblefwd.hh" // forward declarations
+#include "problemsfwd.hh" // forward declarations
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/types.hh" // USES PylithReal, PylithInt
 
-class pylith::feassemble::Observer {
-    friend class TestObserver; // unit testing
+class pylith::problems::ObserverSoln {
+    friend class TestObserverSoln; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor.
-    Observer(void);
+    ObserverSoln(void);
 
     /// Destructor
-    virtual ~Observer(void);
+    virtual ~ObserverSoln(void);
 
     /// Deallocate PETSc and local data structures.
     virtual
@@ -63,17 +63,16 @@ public:
     virtual
     void update(const PylithReal t,
                 const PylithInt tindex,
-                const pylith::topology::Field& solution,
-                const bool infoOnly=false) = 0;
+                const pylith::topology::Field& solution) = 0;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    Observer(const Observer&); ///< Not implemented.
-    const Observer& operator=(const Observer&); ///< Not implemented
+    ObserverSoln(const ObserverSoln&); ///< Not implemented.
+    const ObserverSoln& operator=(const ObserverSoln&); ///< Not implemented
 
-}; // Observer
+}; // ObserverSoln
 
-#endif // pylith_feassemble_observer_hh
+#endif // pylith_problems_observersoln_hh
 
 // End of file

@@ -22,7 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/feassemble/Observers.hh" // USES Observers
+#include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 #include "pylith/problems/Physics.hh" // USES Physics
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
@@ -30,20 +30,15 @@
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
-#include <stdexcept> \
-    // USES std::runtime_error
+#include <stdexcept> // USES std::runtime_error
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::feassemble::Constraint::Constraint(pylith::problems::Physics* const physics) :
+    PhysicsImplementation(physics),
     _constraintLabel(""),
     _subfieldName(""),
-    _kernelConstraint(NULL),
-    _physics(physics),
-    _auxiliaryField(NULL),
-    _derivedField(NULL),
-    _observers(NULL),
-    _logger(NULL)
+    _kernelConstraint(NULL)
 {}
 
 
@@ -52,21 +47,6 @@ pylith::feassemble::Constraint::Constraint(pylith::problems::Physics* const phys
 pylith::feassemble::Constraint::~Constraint(void) {
     deallocate();
 } // destructor
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Deallocate PETSc and local data structures.
-void
-pylith::feassemble::Constraint::deallocate(void) {
-    PYLITH_METHOD_BEGIN;
-
-    delete _auxiliaryField;_auxiliaryField = NULL;
-    delete _derivedField;_derivedField = NULL;
-    delete _observers;_observers = NULL;
-    delete _logger;_logger = NULL;
-
-    PYLITH_METHOD_END;
-} // deallocate
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -146,22 +126,6 @@ pylith::feassemble::Constraint::getSubfieldName(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get auxiliary field.
-const pylith::topology::Field*
-pylith::feassemble::Constraint::getAuxiliaryField(void) const {
-    return _auxiliaryField;
-} // getAuxiliaryField
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get derived field.
-const pylith::topology::Field*
-pylith::feassemble::Constraint::getDerivedField(void) const {
-    return _derivedField;
-} // getDerivedField
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Set constraint kernel.
 void
 pylith::feassemble::Constraint::setKernelConstraint(const PetscPointFunc kernel) {
@@ -178,10 +142,10 @@ pylith::feassemble::Constraint::initialize(const pylith::topology::Field& soluti
 
     assert(_physics);
 
-    const pylith::topology::Mesh& constraintDomainMesh = getConstraintDomainMesh();
+    const pylith::topology::Mesh& physicsDomainMesh = getPhysicsDomainMesh();
 
-    delete _auxiliaryField;_auxiliaryField = _physics->createAuxiliaryField(solution, constraintDomainMesh);
-    delete _derivedField;_derivedField = _physics->createDerivedField(solution, constraintDomainMesh);
+    delete _auxiliaryField;_auxiliaryField = _physics->createAuxiliaryField(solution, physicsDomainMesh);
+    delete _derivedField;_derivedField = _physics->createDerivedField(solution, physicsDomainMesh);
     _observers = _physics->getObservers();assert(_observers); // Memory managed by Python
 
     const bool infoOnly = true;

@@ -25,10 +25,7 @@ subpkgpyexec_LTLIBRARIES = _feassemblemodule.la
 subpkgpyexec_PYTHON = feassemble.py
 
 swig_sources = \
-	feassemble.i \
-	Observer.i \
-	Observers.i \
-	../utils/PyreComponent.i
+	feassemble.i
 
 swig_generated = \
 	feassemble_wrap.cxx \

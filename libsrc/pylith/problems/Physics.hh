@@ -85,19 +85,19 @@ public:
      *
      * @param[in] observer Observer to receive notifications.
      */
-    void registerObserver(pylith::feassemble::Observer* observer);
+    void registerObserver(pylith::problems::ObserverPhysics* observer);
 
     /** Remove observer from receiving notifications.
      *
      * @param[in] observer Observer to remove.
      */
-    void removeObserver(pylith::feassemble::Observer* observer);
+    void removeObserver(pylith::problems::ObserverPhysics* observer);
 
     /** Get observers receiving notifications of physics updates.
      *
      * @returns Observers receiving notifications.
      */
-    pylith::feassemble::Observers* getObservers(void);
+    pylith::problems::ObserversPhysics* getObservers(void);
 
     /** Get constants used in kernels (point-wise functions).
      *
@@ -179,7 +179,7 @@ protected:
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-    pylith::feassemble::Observers* _observers; ///< Subscribers of updates.
+    pylith::problems::ObserversPhysics* _observers; ///< Subscribers of updates.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

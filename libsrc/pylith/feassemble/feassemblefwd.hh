@@ -29,6 +29,8 @@
 
 namespace pylith {
     namespace feassemble {
+	class PhysicsImplementation; ///< Abstract base class for constraints and integrators.
+	
         class Integrator; ///< Abstract base class for finite-element integration.
         class IntegratorDomain; ///< Abstract base class for finite-element integration over portions on the domain.
         class IntegratorBoundary; ///< Abstract base class for finite-element integration over a boundary.
@@ -39,11 +41,11 @@ namespace pylith {
 
         class AuxiliaryFactory; ///< Creates auxiliary subfields.
 
-        class Observer; ///< Observer of subject.
-        class ObserverStub; ///< Minimal implementation of observer for unit testing.
-        class ObserverStubException;
-        class Observers; ///< Subject being Observers.
-
+	class ObserverConstraint;
+	class ObserversConstraint;
+	class ObserverIntegrator;
+	class ObserversIntegrator;
+	
     } // feassemble
 } // pylith
 

@@ -162,7 +162,7 @@ pylith::feassemble::IntegratorInterface::getSurfaceMarkerLabel(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Get mesh associated with integration domain.
 const pylith::topology::Mesh&
-pylith::feassemble::IntegratorInterface::getIntegrationDomainMesh(void) const {
+pylith::feassemble::IntegratorInterface::getPhysicsDomainMesh(void) const {
     assert(_interfaceMesh);
     return *_interfaceMesh;
 } // domainMesh

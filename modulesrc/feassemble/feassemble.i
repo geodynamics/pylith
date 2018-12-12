@@ -19,8 +19,7 @@
 
 // Header files for module C++ code
 %{
-#include "pylith/feassemble/Observer.hh"
-#include "pylith/feassemble/Observers.hh"
+#include "pylith/utils/types.hh"
 %}
 
 %include "exception.i"
@@ -44,8 +43,5 @@
 import_array();
 %}
 
-%include "../utils/PyreComponent.i"
-%include "Observer.i"
-%include "Observers.i"
 
 // End of file

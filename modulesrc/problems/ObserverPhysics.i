@@ -17,51 +17,41 @@
 //
 
 /**
- * @file modulesrc/meshio/OutputSoln.i
+ * @file modulesrc/problems/ObserverPhysics.i
  *
- * @brief Python interface to C++ OutputSoln object.
+ * @brief Observer of physics (e.g., material, boundary condition, or interface condition).
  */
 
 namespace pylith {
-    namespace meshio {
-        class pylith::meshio::OutputSoln :
-            public pylith::problems::ObserverSoln,
-            public pylith::meshio::OutputObserver {
-            // PUBLIC METHODS ///////////////////////////////////////////////
+    namespace problems {
+        class ObserverPhysics {
+            // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
-            /// Constructor
-            OutputSoln(void);
+            /// Constructor.
+            ObserverPhysics(void);
 
             /// Destructor
-            virtual ~OutputSoln(void);
+            virtual ~ObserverPhysics(void);
 
             /// Deallocate PETSc and local data structures.
             virtual
             void deallocate(void);
 
-            /** Set names of solution subfields requested for output.
+            /** Set physics implementation to observe.
              *
-             * @param[in] names Array of subfield names.
-             * @param[in] numNames Length of array.
+             * @param[in] physics Physics implementation to observe.
              */
-            void setOutputSubfields(const char* names[],
-                                    const int numNames);
-
-            /** Get names of solution subfields requested for output.
-             *
-             * @returns Array of subfield names.
-             */
-            const pylith::string_vector& getOutputSubfields(void) const;
+            void setPhysicsImplementation(const pylith::feassemble::PhysicsImplementation* const physics);
 
             /** Verify observer is compatible with solution.
              *
              * @param[in] solution Solution field.
              */
             virtual
-            void verifyConfiguration(const pylith::topology::Field& solution) const;
+            void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
 
-            /** Receive update from subject.
+            /** Receive update (subject of observer).
              *
              * @param[in] t Current time.
              * @param[in] tindex Current time step.
@@ -69,13 +59,15 @@ public:
              * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after
              *initialization).
              */
+            virtual
             void update(const PylithReal t,
                         const PylithInt tindex,
-                        const pylith::topology::Field& solution);
+                        const pylith::topology::Field& solution,
+                        const bool infoOnly) = 0;
 
-        }; // OutputSoln
+        }; // ObserverPhysics
 
-    } // meshio
+    } // problems
 } // pylith
 
 // End of file

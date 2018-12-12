@@ -54,14 +54,14 @@ public:
              * @param[in] subfieldName Name of auxiliary subfield.
              * @param[in] basisOrder Polynomial order for basis.
              * @param[in] quadOrder Order of quadrature rule.
-	     * @param[in] dimension Dimension of points for discretization.
+             * @param[in] dimension Dimension of points for discretization.
              * @param[in] isBasisContinuous True if basis is continuous.
              * @param[in] feSpace Finite-element space.
              */
             void setAuxiliarySubfieldDiscretization(const char* subfieldName,
                                                     const int basisOrder,
                                                     const int quadOrder,
-						    const int dimension,
+                                                    const int dimension,
                                                     const bool isBasisContinuous,
                                                     const pylith::topology::FieldBase::SpaceEnum feSpace);
 
@@ -71,19 +71,19 @@ public:
              *
              * @param[in] observer Observer to receive notifications.
              */
-            void registerObserver(pylith::feassemble::Observer* observer);
+            void registerObserver(pylith::problems::ObserverPhysics* observer);
 
             /** Remove observer from receiving notifications.
              *
              * @param[in] observer Observer to remove.
              */
-            void removeObserver(pylith::feassemble::Observer* observer);
+            void removeObserver(pylith::problems::ObserverPhysics* observer);
 
             /** Get observers receiving notifications of physics updates.
              *
              * @returns Observers receiving notifications.
              */
-            pylith::feassemble::Observers* getObservers(void);
+            pylith::problems::ObserversPhysics* getObservers(void);
 
             /** Get constants used in kernels (point-wise functions).
              *

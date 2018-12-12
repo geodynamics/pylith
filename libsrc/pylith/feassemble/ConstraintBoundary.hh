@@ -50,7 +50,7 @@ public:
      *
      * @returns Mesh associated with constrained boundary.
      */
-    const pylith::topology::Mesh& getConstraintDomainMesh(void) const;
+    const pylith::topology::Mesh& getPhysicsDomainMesh(void) const;
 
     /** Initialize boundary condition.
      *

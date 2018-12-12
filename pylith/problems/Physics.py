@@ -21,7 +21,7 @@
 from pylith.utils.PetscComponent import PetscComponent
 from .problems import Physics as ModulePhysics
 
-from pylith.meshio.OutputManager import OutputManager
+from pylith.meshio.OutputPhysics import OutputPhysics
 
 
 # Factories for items in facility arrays
@@ -31,7 +31,8 @@ def observerFactory(name):
     Factory for output items.
     """
     from pyre.inventory import facility
-    return facility(name, family="observer", factory=OutputManager)
+    from pylith.meshio.OutputPhysics import OutputPhysics
+    return facility(name, family="observer", factory=OutputPhysics)
 
 
 class Physics(PetscComponent, ModulePhysics):
@@ -63,7 +64,8 @@ class Physics(PetscComponent, ModulePhysics):
     auxiliaryFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
     auxiliaryFieldDB.meta['tip'] = "Database for physical property parameters."
 
-    observers = pyre.inventory.facilityArray("observers", itemFactory=observerFactory, factory=EmptyBin)
+    from pylith.feassemble.SingleObserver import SinglePhysicsObserver
+    observers = pyre.inventory.facilityArray("observers", itemFactory=observerFactory, factory=SinglePhysicsObserver)
     observers.meta['tip'] = "Observers (e.g., output)."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

@@ -13,30 +13,56 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/OutputConstraint.py
+# @file pyre/meshio/OutputPhysics.py
 #
 # @brief Python object for managing output over points with constrained degrees of freedom.
 #
 # Factory: output_manager
 
-from .OutputManager import OutputManager
-from .meshio import OutputConstraint as ModuleOutputConstraint
+from .OutputObserver import OutputObserver
+from .meshio import OutputPhysics as ModuleOutputPhysics
 
 
-class OutputConstraint(OutputManager, ModuleOutputConstraint):
+class OutputPhysics(OutputObserver, ModuleOutputPhysics):
     """
     Python object for managing output over points with constrained degrees of freedom.
+
+    INVENTORY
+
+    Properties
+      - *info_fields* Names of info fields to output.
+      - *data_fields* Names of data fields to output.
+
+    Facilities
+      - None
 
     Factory: observer
     """
 
+    import pyre.inventory
+
+    infoFields = pyre.inventory.list("info_fields", default=["all"])
+    infoFields.meta['tip'] = "Names of info fields to output."
+
+    dataFields = pyre.inventory.list("data_fields", default=["all"])
+    dataFields.meta['tip'] = "Names of data fields to output."
+
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="outputconstraint"):
+    def __init__(self, name="outputphysics"):
         """
         Constructor.
         """
-        OutputManager.__init__(self, name)
+        OutputObserver.__init__(self, name)
+        return
+
+    def preinitialize(self, problem):
+        """
+        Do mimimal initialization.
+        """
+        OutputObserver.preinitialize(self, problem)
+        ModuleOutputSoln.setInfoFieldNames(self, self.infoFields)
+        ModuleOutputSoln.setDataFieldNames(self, self.dataFields)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -45,7 +71,7 @@ class OutputConstraint(OutputManager, ModuleOutputConstraint):
         """
         Create handle to C++ object.
         """
-        ModuleOutputConstraint.__init__(self, integrator)
+        ModuleOutputPhysics.__init__(self, integrator)
         return
 
 
@@ -53,9 +79,9 @@ class OutputConstraint(OutputManager, ModuleOutputConstraint):
 
 def observer():
     """
-    Factory associated with OutputManager.
+    Factory associated with OutputObserver.
     """
-    return OutputConstraint()
+    return OutputPhysics()
 
 
 # End of file

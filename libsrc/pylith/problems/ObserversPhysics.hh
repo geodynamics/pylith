@@ -17,33 +17,34 @@
 //
 
 /**
- * @file libsrc/feassemble/Observers.hh
+ * @file libsrc/problems/ObserversPhysics.hh
  *
  * @brief Collection of observers for an object.
  */
 
-#if !defined(pylith_feassemble_observers_hh)
-#define pylith_feassemble_observers_hh
+#if !defined(pylith_problems_observersphysics_hh)
+#define pylith_problems_observersphysics_hh
 
-#include "feassemblefwd.hh" // forward declarations
+#include "problemsfwd.hh" // forward declarations
 
-#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
+#include "pylith/feassemble/feassemblefwd.hh" // USES PhysicsImplementation
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/types.hh" // USES PylithReal, PylithInt
 
 #include <set> // USES std::set
 
-class pylith::feassemble::Observers : public pylith::utils::PyreComponent {
+class pylith::problems::ObserversPhysics : public pylith::utils::GenericComponent {
     friend class TestObservers; // unit testing
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor.
-    Observers(void);
+    ObserversPhysics(void);
 
     /// Destructor
-    virtual ~Observers(void);
+    virtual ~ObserversPhysics(void);
 
     /// Deallocate PETSc and local data structures.
     virtual
@@ -51,17 +52,23 @@ public:
 
     /** Register observer to receive notifications.
      *
-     * Observers are used for output.
+     * ObserversPhysics are used for output.
      *
      * @param[in] observer Observer to receive notifications.
      */
-    void registerObserver(pylith::feassemble::Observer* observer);
+    void registerObserver(pylith::problems::ObserverPhysics* observer);
 
     /** Remove observer from receiving notifications.
      *
      * @param[in] observer Observer to remove.
      */
-    void removeObserver(pylith::feassemble::Observer* observer);
+    void removeObserver(pylith::problems::ObserverPhysics* observer);
+
+    /** Set physics implementation in observers (for callbacks)
+     *
+     * @param[in] physics Physics implementation being observed.
+     */
+    void setPhysicsImplementation(const pylith::feassemble::PhysicsImplementation* const physics);
 
     /** Verify observers are compatible.
      *
@@ -79,24 +86,24 @@ public:
     void notifyObservers(const PylithReal t,
                          const PylithInt tindex,
                          const pylith::topology::Field& solution,
-                         const bool infoOnly=false);
+                         const bool infoOnly);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    typedef std::set<pylith::feassemble::Observer*>::iterator iterator; ///< Iterator.
-    std::set<pylith::feassemble::Observer*> _observers; ///< Subscribers of updates.
+    typedef std::set<pylith::problems::ObserverPhysics*>::iterator iterator; ///< Iterator.
+    std::set<pylith::problems::ObserverPhysics*> _observers; ///< Subscribers of updates.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    Observers(const Observers&); ///< Not implemented.
-    const Observers& operator=(const Observers&); ///< Not implemented
+    ObserversPhysics(const ObserversPhysics&); ///< Not implemented.
+    const ObserversPhysics& operator=(const ObserversPhysics&); ///< Not implemented
 
 };
 
-// Observers
+// ObserversPhysics
 
-#endif // pylith_feassemble_observers_hh
+#endif // pylith_problems_observersphysics_hh
 
 // End of file

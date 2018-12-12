@@ -47,15 +47,13 @@ libpylith_la_SOURCES = \
 	faults/KinSrcConstRate.cc \
 	faults/KinSrcAuxiliaryFactory.cc \
 	faults/TopologyOps.cc \
+	feassemble/PhysicsImplementation.cc \
 	feassemble/Integrator.cc \
 	feassemble/IntegratorDomain.cc \
 	feassemble/IntegratorBoundary.cc \
 	feassemble/IntegratorInterface.cc \
 	feassemble/Constraint.cc \
 	feassemble/ConstraintBoundary.cc \
-	feassemble/Observer.cc \
-	feassemble/ObserverStub.cc \
-	feassemble/Observers.cc \
 	feassemble/AuxiliaryFactory.cc \
 	fekernels/Elasticity.cc \
 	fekernels/IsotropicLinearElasticity.cc \
@@ -98,19 +96,25 @@ libpylith_la_SOURCES = \
 	meshio/FieldFilterProject.cc \
 	meshio/DataWriter.cc \
 	meshio/DataWriterVTK.cc \
-	meshio/OutputManager.cc \
-	meshio/OutputIntegrator.cc \
-	meshio/OutputConstraint.cc \
+	meshio/OutputObserver.cc \
 	meshio/OutputSoln.cc \
+	meshio/OutputSolnDomain.cc \
 	meshio/OutputSolnBoundary.cc \
 	meshio/OutputSolnPoints.cc \
+	meshio/OutputPhysics.cc \
 	meshio/OutputTrigger.cc \
 	meshio/OutputTriggerStep.cc \
 	meshio/OutputTriggerTime.cc \
 	problems/Problem.cc \
 	problems/TimeDependent.cc \
 	problems/SolutionFactory.cc \
+	problems/ObserverSoln.cc \
+	problems/ObserverSolnStub.cc \
+	problems/ObserversSoln.cc \
 	problems/Physics.cc \
+	problems/ObserverPhysics.cc \
+	problems/ObserverPhysicsStub.cc \
+	problems/ObserversPhysics.cc \
 	topology/FieldBase.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \

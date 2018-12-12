@@ -18,16 +18,22 @@
 
 #include <portinfo>
 
-#include "Observer.hh" // Implementation of class methods
+#include "ObserverPhysics.hh" // Implementation of class methods
+
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::feassemble::Observer::Observer(void) {}
+pylith::problems::ObserverPhysics::ObserverPhysics(void) :
+    _physics(NULL) {
+    GenericComponent::setName("observerphysics");
+} // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::feassemble::Observer::~Observer(void) {
+pylith::problems::ObserverPhysics::~ObserverPhysics(void) {
     deallocate();
 } // destructor
 
@@ -35,7 +41,22 @@ pylith::feassemble::Observer::~Observer(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::feassemble::Observer::deallocate(void) {}
+pylith::problems::ObserverPhysics::deallocate(void) {
+    _physics = NULL; // :TODO: Use shared pointer.
+} // deallocate
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set physics implementation to observe.
+void
+pylith::problems::ObserverPhysics::setPhysicsImplementation(const pylith::feassemble::PhysicsImplementation* const physics) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("setPhysicsImplementation(physics="<<physics<<")");
+
+    _physics = physics;
+
+    PYLITH_METHOD_END;
+} // setPhysicsImplemetation
 
 
 // End of file

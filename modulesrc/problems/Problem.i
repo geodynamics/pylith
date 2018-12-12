@@ -75,13 +75,13 @@ public:
              *
              * @param[in] observer Observer to receive notifications.
              */
-            void registerObserver(pylith::feassemble::Observer* observer);
+            void registerObserver(pylith::problems::ObserverSoln* observer);
 
             /** Remove observer from receiving notifications.
              *
              * @param[in] observer Observer to remove.
              */
-            void removeObserver(pylith::feassemble::Observer* observer);
+            void removeObserver(pylith::problems::ObserverSoln* observer);
 
             /** Set solution field.
              *

@@ -23,7 +23,13 @@ subpkginclude_HEADERS = \
 	Problem.hh \
 	TimeDependent.hh \
 	SolutionFactory.hh \
+	ObserverSoln.hh \
+	ObserversSoln.hh \
+	ObserverSolnStub.hh \
 	Physics.hh \
+	ObserverPhysics.hh \
+	ObserversPhysics.hh \
+	ObserverPhysicsStub.hh \
 	problemsfwd.hh
 
 noinst_HEADERS =

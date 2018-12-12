@@ -133,7 +133,7 @@ public:
      *
      * @returns Mesh associated with integrator domain.
      */
-    const pylith::topology::Mesh& getIntegrationDomainMesh(void) const;
+    const pylith::topology::Mesh& getPhysicsDomainMesh(void) const;
 
     /** Set kernels for RHS residual for the positive side of the interface.
      *

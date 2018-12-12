@@ -17,110 +17,90 @@
 //
 
 /**
- * @file libsrc/meshio/OutputManager.hh
+ * @file libsrc/meshio/OutputPhysics.hh
  *
- * @brief Manager for output of finite-element data.
+ * @brief Manager for output of finite-element data (e.g., material, boundary condition, interface condition).
  */
 
-#if !defined(pylith_meshio_OutputManager_hh)
-#define pylith_meshio_OutputManager_hh
+#if !defined(pylith_meshio_outputphysics_hh)
+#define pylith_meshio_outputphysics_hh
 
 #include "meshiofwd.hh" // forward declarations
 
-#include "pylith/feassemble/Observer.hh" // ISA Observer
-#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
+#include "pylith/problems/ObserverPhysics.hh" // ISA ObserverPhysics
+#include "pylith/meshio/OutputObserver.hh" // ISA OutputObserver
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/array.hh" // HASA string_vector
 
-class pylith::meshio::OutputManager :
-    public pylith::utils::PyreComponent,
-    public pylith::feassemble::Observer {
-    friend class TestOutputManager; // unit testing
+class pylith::meshio::OutputPhysics :
+    public pylith::problems::ObserverPhysics,
+    public pylith::meshio::OutputObserver {
+    friend class TestOutputPhysics; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    OutputManager(void);
+    OutputPhysics(void);
 
     /// Destructor
-    virtual ~OutputManager(void);
+    virtual ~OutputPhysics(void);
 
     /// Deallocate PETSc and local data structures.
     virtual
     void deallocate(void);
-
-    /** Set output trigger for how often to write output.
-     *
-     * @param[in] otrigger Output trigger.
-     */
-    void trigger(pylith::meshio::OutputTrigger* const otrigger);
-
-    /** Get trigger for how often to write otuput.
-     *
-     * @returns Output trigger.
-     */
-    const pylith::meshio::OutputTrigger* trigger(void) const;
-
-    /** Set writer to write data to file.
-     *
-     * @param[in] datawriter Writer for data.
-     */
-    void writer(pylith::meshio::DataWriter* const datawriter);
-
-    /** Set filter for vertex data.
-     *
-     * @param[in] filter Filter to apply to vertex data before writing.
-     */
-    void fieldFilter(pylith::meshio::FieldFilter* const filter);
 
     /** Set names of information fields requested for output.
      *
      * @param[in] names Array of field names.
      * @param[in] numNames Length of array.
      */
-    void infoFields(const char* names[],
-                    const int numNames);
+    void setInfoFields(const char* names[],
+                       const int numNames);
 
     /** Get names of information fields requested for output.
      *
      * @returns Array of field names.
      */
-    const pylith::string_vector& infoFields(void) const;
+    const pylith::string_vector& getInfoFields(void) const;
 
     /** Set names of data fields requested for output.
      *
      * @param[in] names Array of field names.
      * @param[in] numNames Length of array.
      */
-    void dataFields(const char* names[],
-                    const int numNames);
+    void setDataFields(const char* names[],
+                       const int numNames);
 
     /** Get names of data fields requested for output.
      *
      * @returns Array of field names.
      */
-    const pylith::string_vector& dataFields(void) const;
+    const pylith::string_vector& getDataFields(void) const;
 
-    /** Receive update from subject.
+    /** Verify configuration.
+     *
+     * @param[in] solution Solution field.
+     */
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
+
+    /** Receive update (subject of observer).
      *
      * @param[in] t Current time.
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
      * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after initialization).
      */
-    virtual
     void update(const PylithReal t,
                 const PylithInt tindex,
                 const pylith::topology::Field& solution,
-                const bool infoOnly=false);
+                const bool infoOnly);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Write diagnostic information.
-    virtual
     void _writeInfo(void);
 
     /** Prepare for output.
@@ -128,12 +108,10 @@ protected:
      * @param[in] mesh Finite-element mesh object.
      * @param[in] isInfo True if only writing info values.
      */
-    virtual
     void _open(const pylith::topology::Mesh& mesh,
                const bool isInfo);
 
     /// Close output files.
-    virtual
     void _close(void);
 
     /** Prepare for output at this solution step.
@@ -141,12 +119,10 @@ protected:
      * @param[in] t Time associated with field.
      * @param[in] mesh Mesh for output.
      */
-    virtual
     void _openDataStep(const PylithReal t,
                        const pylith::topology::Mesh& mesh);
 
     /// Finalize output at this solution step.
-    virtual
     void _closeDataStep(void);
 
     /** Write output for step in solution.
@@ -155,18 +131,16 @@ protected:
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
      */
-    virtual
     void _writeDataStep(const PylithReal t,
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
 
-    /** Append finite-element vertex field to file.
+    /** Append field to file.
      *
      * @param[in] t Time associated with field.
      * @param[in] field Field to output.
      * @param[in] mesh Mesh for output.
      */
-    virtual
     void _appendField(const PylithReal t,
                       pylith::topology::Field* field,
                       const pylith::topology::Mesh& mesh);
@@ -177,7 +151,7 @@ protected:
      *
      * @param[in] auxField Auxiliary field.
      */
-    pylith::string_vector _infoNamesExpanded(const pylith::topology::Field* auxField) const;
+    pylith::string_vector _expandInfoFieldNames(const pylith::topology::Field* auxField) const;
 
     /** Names of data fields for output.
      *
@@ -188,34 +162,9 @@ protected:
      * @param[in] auxField Auxiliary field.
      * @param[in] derivedField Derived field.
      */
-    pylith::string_vector _dataNamesExpanded(const pylith::topology::Field& solution,
-                                             const pylith::topology::Field* auxField,
-                                             const pylith::topology::Field* derivedField) const;
-
-    /** Get buffer for field.
-     *
-     * Find the most appropriate buffer that matches field, reusing and reallocating as necessary.
-     *
-     * @param[in] fieldIn Input field.
-     * @param[in] name Name of subfield (optional).
-     * @returns Field to use as buffer for outputting field.
-     */
-    pylith::topology::Field* _getBuffer(const pylith::topology::Field& fieldIn,
-                                        const char* name=NULL);
-
-    /** Dimension field.
-     *
-     * @param[in] fieldIn Field to dimensionalize.
-     */
-    pylith::topology::Field* _dimension(pylith::topology::Field* fieldIn);
-
-    /** Get basis order of field.
-     *
-     * @param[in] field Field with one subfield for output.
-     *
-     * @returns Basis order if field contains single subfield, otherwise -1;
-     */
-    int _basisOrder(const pylith::topology::Field& field);
+    pylith::string_vector _expandDataFieldNames(const pylith::topology::Field& solution,
+                                                const pylith::topology::Field* auxField,
+                                                const pylith::topology::Field* derivedField) const;
 
     /** TEMPOARY Set label and label id.
      *
@@ -228,16 +177,8 @@ protected:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::topology::Fields* _fields; ///< Container with field buffers used for output.
-    DataWriter* _writer; ///< Writer for data.
-    FieldFilter* _fieldFilter; ///< Filter applied to fields.
-    OutputTrigger* _trigger; ///< Trigger for deciding how often to write output.
-
-    pylith::string_vector _infoFields;
-    pylith::string_vector _dataFields;
-
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
+    pylith::string_vector _infoFieldNames;
+    pylith::string_vector _dataFieldNames;
 
     // :TODO: Remove _label and _labelId once materials use their own PetscDM.
     std::string _label; ///< Name of label defining cells to include in output (=0 means use all cells in mesh).
@@ -246,11 +187,11 @@ private:
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    OutputManager(const OutputManager&); ///< Not implemented.
-    const OutputManager& operator=(const OutputManager&); ///< Not implemented
+    OutputPhysics(const OutputPhysics&); ///< Not implemented.
+    const OutputPhysics& operator=(const OutputPhysics&); ///< Not implemented
 
-}; // OutputManager
+}; // OutputPhysics
 
-#endif // pylith_meshio_OutputManager_hh
+#endif // pylith_meshio_outputphysics_hh
 
 // End of file

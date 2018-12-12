@@ -22,7 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/feassemble/Observers.hh" // USES Observers
+#include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 #include "pylith/problems/Physics.hh" // USES Physics
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
@@ -30,17 +30,12 @@
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
-#include <stdexcept> \
-    // USES std::runtime_error
+#include <stdexcept> // USES std::runtime_error
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::feassemble::Integrator::Integrator(pylith::problems::Physics* const physics) :
-    _physics(physics),
-    _auxiliaryField(NULL),
-    _derivedField(NULL),
-    _observers(NULL),
-    _logger(NULL),
+    PhysicsImplementation(physics),
     _needNewRHSJacobian(true),
     _needNewLHSJacobian(true)
 {}
@@ -51,37 +46,6 @@ pylith::feassemble::Integrator::Integrator(pylith::problems::Physics* const phys
 pylith::feassemble::Integrator::~Integrator(void) {
     deallocate();
 } // destructor
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Deallocate PETSc and local data structures.
-void
-pylith::feassemble::Integrator::deallocate(void) {
-    PYLITH_METHOD_BEGIN;
-
-    delete _auxiliaryField;_auxiliaryField = NULL;
-    delete _derivedField;_derivedField = NULL;
-    delete _observers;_observers = NULL;
-    delete _logger;_logger = NULL;
-
-    PYLITH_METHOD_END;
-} // deallocate
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get auxiliary field.
-const pylith::topology::Field*
-pylith::feassemble::Integrator::getAuxiliaryField(void) const {
-    return _auxiliaryField;
-} // getAuxiliaryField
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get derived field.
-const pylith::topology::Field*
-pylith::feassemble::Integrator::getDerivedField(void) const {
-    return _derivedField;
-} // getDerivedField
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -107,13 +71,14 @@ pylith::feassemble::Integrator::initialize(const pylith::topology::Field& soluti
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
 
-    const pylith::topology::Mesh& integrationDomainMesh = getIntegrationDomainMesh();
+    const pylith::topology::Mesh& physicsDomainMesh = getPhysicsDomainMesh();
 
-    delete _auxiliaryField;_auxiliaryField = _physics->createAuxiliaryField(solution, integrationDomainMesh);
-    delete _derivedField;_derivedField = _physics->createDerivedField(solution, integrationDomainMesh);
+    delete _auxiliaryField;_auxiliaryField = _physics->createAuxiliaryField(solution, physicsDomainMesh);
+    delete _derivedField;_derivedField = _physics->createDerivedField(solution, physicsDomainMesh);
     _observers = _physics->getObservers();assert(_observers); // Memory managed by Python
+    _observers->setPhysicsImplementation(this);
 
-    //_auxiliaryField->view("MATERIAL AUXILIARY FIELD"); // :DEBUG: TEMPORARY
+    // _auxiliaryField->view("MATERIAL AUXILIARY FIELD"); // :DEBUG: TEMPORARY
     const bool infoOnly = true;
     _observers->notifyObservers(0.0, 0, solution, infoOnly);
 
@@ -268,11 +233,13 @@ pylith::feassemble::Integrator::_updateStateVars(const PylithReal t,
 // ---------------------------------------------------------------------------------------------------------------------
 // Compute field derived from solution and auxiliary field.
 void
-pylith::feassemble::Integrator::_computeDerivedFields(const PylithReal t,
-                                                      const PylithReal dt,
-                                                      const pylith::topology::Field& solution) {
+pylith::feassemble::Integrator::_computeDerivedField(const PylithReal t,
+                                                     const PylithReal dt,
+                                                     const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_computeDerivedFields(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("_computeDerivedField(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
+
+    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement Integrator::_computeDerivedField().");
 
     PYLITH_METHOD_END;
 } // _computeDerivedFields

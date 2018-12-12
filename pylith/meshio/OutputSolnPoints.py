@@ -67,34 +67,12 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
 
         # Convert to mesh coordinate system
         from spatialdata.geocoords.Converter import convert
-        convert(points, problem.mesh.coordsys(), reaer.coordsys)
+        convert(points, problem.mesh.coordsys(), reader.coordsys)
 
         # Nondimensionalize
         stationsCoords /= problem.normalizer.lengthScale.value
 
         ModuleOutputSolnPoints.stations(stationCoords, stationNames)
-        return
-
-    def initialize(self, mesh, normalizer):
-        """
-        Initialize output manager.
-        """
-        logEvent = "%sinit" % self._loggingPrefix
-        self._eventLogger.eventBegin(logEvent)
-
-        OutputSoln.initialize(self, normalizer)
-
-        # Read points
-        stations, points = self.reader.read()
-
-        # Convert to mesh coordinate system
-        from spatialdata.geocoords.Converter import convert
-        convert(points, mesh.coordsys(), self.coordsys)
-
-        ModuleOutputSolnPoints.setupInterpolator(self, mesh, points, stations, normalizer)
-        self.mesh = ModuleOutputSolnPoints.pointsMesh(self)
-
-        self._eventLogger.eventEnd(logEvent)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -106,11 +84,11 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
         OutputSoln._configure(self)
         return
 
-    def _createModuleObj(self, problem):
+    def _createModuleObj(self):
         """
         Create handle to C++ object.
         """
-        ModuleOutputSolnPoints.__init__(self, problem)
+        ModuleOutputSolnPoints.__init__(self)
         return
 
 # FACTORIES ////////////////////////////////////////////////////////////

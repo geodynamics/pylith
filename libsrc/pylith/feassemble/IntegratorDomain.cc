@@ -101,7 +101,7 @@ pylith::feassemble::IntegratorDomain::getMaterialId(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Get mesh associated with integration domain.
 const pylith::topology::Mesh&
-pylith::feassemble::IntegratorDomain::getIntegrationDomainMesh(void) const {
+pylith::feassemble::IntegratorDomain::getPhysicsDomainMesh(void) const {
     assert(_materialMesh);
     return *_materialMesh;
 } // domainMesh

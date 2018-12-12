@@ -19,8 +19,7 @@
 /**
  * @file libsrc/meshio/OutputSolnBoundary.hh
  *
- * @brief C++ object for managing output of finite-element data over a
- * boundary.
+ * @brief C++ object for managing solution output over a boundary.
  */
 
 #if !defined(pylith_meshio_outputsolnboundary_hh)
@@ -40,11 +39,8 @@ class pylith::meshio::OutputSolnBoundary : public pylith::meshio::OutputSoln {
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /** Constructor
-     *
-     * @param[in] problem Problem to observe.
-     */
-    OutputSolnBoundary(pylith::problems::Problem* const problem);
+    /// Constructor.
+    OutputSolnBoundary(void);
 
     /// Destructor
     ~OutputSolnBoundary(void);
@@ -56,7 +52,7 @@ public:
      *
      * @param[in] value Label of subdomain.
      */
-    void label(const char* value);
+    void setLabel(const char* value);
 
     /** Verify configuration.
      *
@@ -73,7 +69,7 @@ protected:
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
      */
-    void _writeDataStep(const PylithReal t,
+    void _writeSolnStep(const PylithReal t,
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
 

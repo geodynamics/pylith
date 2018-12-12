@@ -13,17 +13,17 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/meshio/OutputManager.py
+# @file pylith/meshio/OutputObserver.py
 #
 # @brief Python class for managing output of finite-element information.
 #
 # Factory: observer
 
-from pylith.feassemble.Observer import Observer
-from .meshio import OutputManager as ModuleOutputManager
+from pylith.utils.PetscComponent import PetscComponent
+from .meshio import OutputObserver as ModuleOutputObserver
 
 
-class OutputManager(Observer, ModuleOutputManager):
+class OutputObserver(PetscComponent, ModuleOutputObserver):
     """
     Python abstract base class for managing output of finite-element
     information.
@@ -31,8 +31,7 @@ class OutputManager(Observer, ModuleOutputManager):
     INVENTORY
 
     Properties
-      - *info_fields* Names of information fields to output.
-      - *data_fields* Names of data fields to output.
+      - None
 
     Facilities
       - *trigger* Trigger for defining how often output is written.
@@ -43,12 +42,6 @@ class OutputManager(Observer, ModuleOutputManager):
     """
 
     import pyre.inventory
-
-    infoFields = pyre.inventory.list("info_fields", default=["all"])
-    infoFields.meta['tip'] = "Names of information fields to output."
-
-    dataFields = pyre.inventory.list("data_fields", default=["all"])
-    dataFields.meta['tip'] = "Names of data fields to output."
 
     from .OutputTriggerStep import OutputTriggerStep
     trigger = pyre.inventory.facility("trigger", family="output_trigger", factory=OutputTriggerStep)
@@ -71,26 +64,22 @@ class OutputManager(Observer, ModuleOutputManager):
         Observer.__init__(self, name)
         return
 
-    def preinitialize(self, observers):
+    def preinitialize(self, problem):
         """
         Setup output manager.
         """
         self._createModuleObj(observers)
-        ModuleOutputManager.setIdentifier(self, self.aliases[-1])
-
-        ModuleOutputManager.infoFields(self, self.infoFields)
-        ModuleOutputManager.dataFields(self, self.dataFields)
+        ModuleOutputObserver.setIdentifier(self, self.aliases[-1])
 
         self.trigger.preinitialize()
-        ModuleOutputManager.trigger(self, self.trigger)
+        ModuleOutputObserver.trigger(self, self.trigger)
 
         self.fieldFilter.preinitialize()
-        ModuleOutputManager.fieldFilter(self, self.fieldFilter)
+        ModuleOutputObserver.fieldFilter(self, self.fieldFilter)
 
         self.writer.preinitialize()
-        ModuleOutputManager.writer(self, self.writer)
+        ModuleOutputObserver.writer(self, self.writer)
 
-        observers.registerObserver(self)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

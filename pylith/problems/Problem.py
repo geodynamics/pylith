@@ -23,7 +23,6 @@ from pylith.utils.PetscComponent import PetscComponent
 from .problems import Problem as ModuleProblem
 
 from pylith.utils.NullComponent import NullComponent
-from pylith.meshio.OutputSoln import OutputSoln
 
 
 # Factories for items in facility arrays
@@ -60,7 +59,8 @@ def observerFactory(name):
     Factory for output items.
     """
     from pyre.inventory import facility
-    return facility(name, family="observer", factory=OutputSoln)
+    from pylith.meshio.OutputSolnDomain import OutputSolnDomain
+    return facility(name, family="observer", factory=OutputSolnDomain)
 
 
 class Problem(PetscComponent, ModuleProblem):

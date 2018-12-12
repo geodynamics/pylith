@@ -7,56 +7,41 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2017 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/OutputSolnBoundary.py
+# @file pyre/meshio/OutputSoln.py
 #
-# @brief Python object for managing output of finite-element solution
-# information over a subdomain.
+# @brief Python object for managing output of solution information over the domain.
 #
 # Factory: observer
 
 from .OutputSoln import OutputSoln
-from .meshio import OutputSolnBoundary as ModuleOutputSolnBoundary
+from .meshio import OutputSolnDomain as ModuleOutputSolnDomain
 
 
-def validateLabel(value):
-    """
-    Validate label for group/nodeset/pset.
-    """
-    if 0 == len(value):
-        raise ValueError("Label for group/nodeset/pset in mesh not specified.")
-    return value
-
-
-class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
+class OutputSolnDomain(OutputSoln, ModuleOutputSolnDomain):
     """
     Python object for managing output of finite-element solution
-    information over a boundary.
+    information.
 
     INVENTORY
 
     Properties
-      - *label* Name identifier for subdomain.
+      - None
 
     Facilities
       - None
 
-    Factory: observer
+    FACTORY: observer
     """
-
-    import pyre.inventory
-
-    label = pyre.inventory.str("label", default="", validator=validateLabel)
-    label.meta['tip'] = "Label identifier for boundary."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="outputsolnsubset"):
+    def __init__(self, name="outputsolndomain"):
         """
         Constructor.
         """
@@ -68,7 +53,6 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
         Do mimimal initialization.
         """
         OutputSoln.preinitialize(self, problem)
-        ModuleOutputSolnBoundary.label(self, self.label)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -84,7 +68,7 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
         """
         Create handle to C++ object.
         """
-        ModuleOutputSolnBoundary.__init__(self)
+        ModuleOutputSoln.__init__(self)
         return
 
 
@@ -94,7 +78,7 @@ def observer():
     """
     Factory associated with OutputSoln.
     """
-    return OutputSolnBoundary()
+    return OutputSoln()
 
 
 # End of file

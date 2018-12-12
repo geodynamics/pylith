@@ -63,7 +63,7 @@ pylith::feassemble::ConstraintBoundary::deallocate(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Get mesh associated with constrained domain.
 const pylith::topology::Mesh&
-pylith::feassemble::ConstraintBoundary::getConstraintDomainMesh(void) const {
+pylith::feassemble::ConstraintBoundary::getPhysicsDomainMesh(void) const {
     assert(_boundaryMesh);
     return *_boundaryMesh;
 } // domainMesh

@@ -119,7 +119,7 @@ pylith::feassemble::IntegratorBoundary::getMarkerLabel(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Get mesh associated with integration domain.
 const pylith::topology::Mesh&
-pylith::feassemble::IntegratorBoundary::getIntegrationDomainMesh(void) const {
+pylith::feassemble::IntegratorBoundary::getPhysicsDomainMesh(void) const {
     assert(_boundaryMesh);
     return *_boundaryMesh;
 } // domainMesh

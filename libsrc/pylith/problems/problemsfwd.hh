@@ -31,9 +31,19 @@ namespace pylith {
     namespace problems {
         class Problem;
         class TimeDependent;
+
         class SolutionFactory;
+	class ObserversSoln;
+	class ObserverSoln;
+	class ObserverSolnStub;
+        class ObserverSolnStubException;
 
         class Physics;
+	class ObserversPhysics;
+	class ObserverPhysics;
+	class ObserverPhysicsStub;
+	class ObserverPhysicsStubException;
+
 
     } // problems
 } // pylith

@@ -18,32 +18,34 @@
 
 #include <portinfo>
 
-#include "Observers.hh" // Implementation of class methods
+#include "ObserversSoln.hh" // Implementation of class methods
 
-#include "pylith/feassemble/Observer.hh" // USES Observer
+#include "pylith/problems/ObserverSoln.hh" // USES ObserverSoln
 #include "pylith/topology/Field.hh" // USES Field
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
-//#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_DEBUG
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_DEBUG
 
-#include <typeinfo> \
-    // USES typeid()
+#include <typeinfo> // USES typeid()
 
 // ----------------------------------------------------------------------
 // Constructor.
-pylith::feassemble::Observers::Observers(void) {}
+pylith::problems::ObserversSoln::ObserversSoln(void) {
+    GenericComponent::setName("observerssoln");
+} // constructor
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::feassemble::Observers::~Observers(void) {
+pylith::problems::ObserversSoln::~ObserversSoln(void) {
     deallocate();
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::feassemble::Observers::deallocate(void) {
+pylith::problems::ObserversSoln::deallocate(void) {
     _observers.clear(); // Memory allocation of Observer* managed elsewhere.
 } // deallocate
 
@@ -51,9 +53,9 @@ pylith::feassemble::Observers::deallocate(void) {
 // ----------------------------------------------------------------------
 // Register observer to receive notifications.
 void
-pylith::feassemble::Observers::registerObserver(pylith::feassemble::Observer* observer) {
+pylith::problems::ObserversSoln::registerObserver(pylith::problems::ObserverSoln* observer) {
     PYLITH_METHOD_BEGIN;
-    //PYLITH_COMPONENT_DEBUG("registerObserver(observer="<<typeid(observer).name()<<")");
+    PYLITH_JOURNAL_DEBUG("registerObserver(observer="<<typeid(observer).name()<<")");
 
     if (observer) {
         _observers.insert(observer);
@@ -66,9 +68,9 @@ pylith::feassemble::Observers::registerObserver(pylith::feassemble::Observer* ob
 // ----------------------------------------------------------------------
 // Remove observer from receiving notifications.
 void
-pylith::feassemble::Observers::removeObserver(pylith::feassemble::Observer* observer) {
+pylith::problems::ObserversSoln::removeObserver(pylith::problems::ObserverSoln* observer) {
     PYLITH_METHOD_BEGIN;
-    //PYLITH_COMPONENT_DEBUG("removeObserver(observer="<<typeid(observer).name()<<")");
+    PYLITH_JOURNAL_DEBUG("removeObserver(observer="<<typeid(observer).name()<<")");
 
     if (observer) {
         _observers.erase(observer);
@@ -81,9 +83,9 @@ pylith::feassemble::Observers::removeObserver(pylith::feassemble::Observer* obse
 // ----------------------------------------------------------------------
 // Verify observers.
 void
-pylith::feassemble::Observers::verifyObservers(const pylith::topology::Field& solution) const {
+pylith::problems::ObserversSoln::verifyObservers(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    //PYLITH_COMPONENT_DEBUG("verifyObservers(solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("verifyObservers(solution="<<solution.label()<<")");
 
     for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);
@@ -97,21 +99,19 @@ pylith::feassemble::Observers::verifyObservers(const pylith::topology::Field& so
 // ----------------------------------------------------------------------
 // Notify observers.
 void
-pylith::feassemble::Observers::notifyObservers(const PylithReal t,
-                                                       const PylithInt tindex,
-                                                       const pylith::topology::Field& solution,
-                                                       const bool infoOnly) {
+pylith::problems::ObserversSoln::notifyObservers(const PylithReal t,
+                                                 const PylithInt tindex,
+                                                 const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    //PYLITH_COMPONENT_DEBUG("notifyObservers(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("notifyObservers(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
     for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);
-        (*iter)->update(t, tindex, solution, infoOnly);
+        (*iter)->update(t, tindex, solution);
     } // for
 
     PYLITH_METHOD_END;
 } // notifyObservers
-
 
 
 // End of file

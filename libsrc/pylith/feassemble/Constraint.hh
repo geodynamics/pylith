@@ -24,9 +24,7 @@
 #if !defined(pylith_feassemble_constraint_hh)
 #define pylith_feassemble_constraint_hh
 
-#include "pylith/feassemble/feassemblefwd.hh"
-
-#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
+#include "pylith/feassemble/PhysicsImplementation.hh" // ISA PhysicsImplementation
 
 #include "pylith/problems/problemsfwd.hh" // HASA Physics
 #include "pylith/topology/topologyfwd.hh" // USES Field
@@ -34,7 +32,7 @@
 #include "pylith/utils/array.hh" // HASA int_array
 #include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
 
-class pylith::feassemble::Constraint : public pylith::utils::GenericComponent {
+class pylith::feassemble::Constraint : public pylith::feassemble::PhysicsImplementation {
     friend class TestConstraint; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,10 +46,6 @@ public:
 
     /// Destructor.
     virtual ~Constraint(void);
-
-    /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
 
     /** Set indices of constrained degrees of freedom at each location.
      *
@@ -93,25 +87,6 @@ public:
      * @preturn Name of solution subfield.
      */
     const char* getSubfieldName(void) const;
-
-    /** Get mesh associated with constrained domain.
-     *
-     * @returns Mesh associated with constrained domain.
-     */
-    virtual
-    const pylith::topology::Mesh& getConstraintDomainMesh(void) const = 0;
-
-    /** Get auxiliary field.
-     *
-     * @returns field Field over boundary.
-     */
-    const pylith::topology::Field* getAuxiliaryField(void) const;
-
-    /** Get derived field.
-     *
-     * @return field Field over integrator domain.
-     */
-    const pylith::topology::Field* getDerivedField(void) const;
 
     /** Set constraint kernel.
      *
@@ -176,19 +151,13 @@ protected:
     std::string _constraintLabel; ///< Label marking constrained degrees of freedom.
     std::string _subfieldName; ///< Name of solution subfield that is constrained.
     PetscPointFunc _kernelConstraint; ///< Kernel for computing constrained values from auxiliary field.
-    pylith::problems::Physics* const _physics; ///< Physics associated with constraint.
-    pylith::topology::Field* _auxiliaryField; ///< Auxiliary field for this constraint.
-    pylith::topology::Field* _derivedField; ///< Derived field for this constraint.
-    pylith::feassemble::Observers* _observers; ///< Observers component.
-
-    pylith::utils::EventLogger* _logger; ///< Event logger.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     Constraint(void); /// Not implemented.
-    Constraint(const Constraint &m); ///< Not implemented
-    const Constraint& operator=(const Constraint& m); ///< Not implemented
+    Constraint(const Constraint &); ///< Not implemented
+    const Constraint& operator=(const Constraint&); ///< Not implemented
 
 }; // class Constraint
 

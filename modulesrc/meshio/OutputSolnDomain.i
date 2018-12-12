@@ -17,34 +17,22 @@
 //
 
 /**
- * @file modulesrc/meshio/OutputSolnBoundary.i
+ * @file modulesrc/meshio/OutputSolnDomain.i
  *
- * @brief Python interface to C++ OutputSolnBoundary object.
+ * @brief Python interface to C++ OutputSolnDomain object.
  */
 
 namespace pylith {
     namespace meshio {
-        class OutputSolnBoundary {
+        class OutputSolnDomain {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
             /// Constructor.
-            OutputSolnBoundary(void);
+            OutputSolnDomain(void);
 
             /// Destructor
-            virtual ~OutputSolnBoundary(void);
-
-            /** Set label identifier for subdomain.
-             *
-             * @param[in] value Label of subdomain.
-             */
-            void setLabel(const char* value);
-
-            /** Verify configuration.
-             *
-             * @param[in] solution Solution field.
-             */
-            void verifyConfiguration(const pylith::topology::Field& solution) const;
+            virtual ~OutputSolnDomain(void);
 
             // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////
 protected:
@@ -59,7 +47,7 @@ protected:
                                 const PylithInt tindex,
                                 const pylith::topology::Field& solution);
 
-        }; // OutputSolnBoundary
+        }; // OutputSolnDomain
 
     } // meshio
 } // pylith

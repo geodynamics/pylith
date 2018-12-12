@@ -30,12 +30,12 @@ subpkginclude_HEADERS = \
 	MeshIOAscii.icc \
 	MeshIOLagrit.hh \
 	MeshIOLagrit.icc \
-	OutputManager.hh \
-	OutputIntegrator.hh \
-	OutputConstraint.hh \
+	OutputObserver.hh \
 	OutputSoln.hh \
+	OutputSolnDomain.hh \
 	OutputSolnBoundary.hh \
 	OutputSolnPoints.hh \
+	OutputPhysics.hh \
 	FieldFilter.hh \
 	FieldFilterNone.hh \
 	FieldFilterProject.hh \

@@ -21,21 +21,20 @@
 #include "Physics.hh" // implementation of class methods
 
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
-#include "pylith/feassemble/Observers.hh" // USES Observers
+#include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
-#include <stdexcept> \
-    // USES std::runtime_error
+#include <stdexcept> // USES std::runtime_error
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::problems::Physics::Physics(void) :
     _normalizer(new spatialdata::units::Nondimensional),
-    _observers(new pylith::feassemble::Observers)
+    _observers(new pylith::problems::ObserversPhysics)
 {}
 
 
@@ -95,7 +94,7 @@ pylith::problems::Physics::setAuxiliarySubfieldDiscretization(const char* subfie
 // ----------------------------------------------------------------------
 // Register observer to receive notifications.
 void
-pylith::problems::Physics::registerObserver(pylith::feassemble::Observer* observer) {
+pylith::problems::Physics::registerObserver(pylith::problems::ObserverPhysics* observer) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("registerObserver(observer="<<typeid(observer).name()<<")");
 
@@ -109,7 +108,7 @@ pylith::problems::Physics::registerObserver(pylith::feassemble::Observer* observ
 // ----------------------------------------------------------------------
 // Remove observer from receiving notifications.
 void
-pylith::problems::Physics::removeObserver(pylith::feassemble::Observer* observer) {
+pylith::problems::Physics::removeObserver(pylith::problems::ObserverPhysics* observer) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("removeObserver(observer="<<typeid(observer).name()<<")");
 
@@ -122,7 +121,7 @@ pylith::problems::Physics::removeObserver(pylith::feassemble::Observer* observer
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get observers receiving notifications of physics updates.
-pylith::feassemble::Observers*
+pylith::problems::ObserversPhysics*
 pylith::problems::Physics::getObservers(void) {
     return _observers;
 } // getObservers

@@ -17,27 +17,27 @@
 //
 
 /**
- * @file libsrc/feassemble/ObserverStub.hh
+ * @file libsrc/problems/ObserverSolnStub.hh
  *
- * @brief Minimal C++ implementation of Observer to allow unit tests using Observer objects.
+ * @brief Minimal C++ implementation of ObserverSoln to allow unit tests using ObserverSoln objects.
  */
 
-#if !defined(pylith_feassemble_observerstub_hh)
-#define pylith_feassemble_observerstub_hh
+#if !defined(pylith_feassemble_observersolnstub_hh)
+#define pylith_feassemble_observersolnstub_hh
 
-#include "pylith/feassemble/Observer.hh" // ISA Observer
+#include "pylith/problems/ObserverSoln.hh" // ISA ObserverSoln
 
-class pylith::feassemble::ObserverStub : public pylith::feassemble::Observer {
-    friend class TestObserverStub; // unit testing
+class pylith::problems::ObserverSolnStub : public pylith::problems::ObserverSoln {
+    friend class TestObserverSolnStub; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor.
-    ObserverStub(void);
+    ObserverSolnStub(void);
 
     /// Destructor
-    virtual ~ObserverStub(void);
+    virtual ~ObserverSolnStub(void);
 
     /** Verify observer is compatible with solution.
      *
@@ -60,12 +60,12 @@ public:
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    ObserverStub(const ObserverStub&); ///< Not implemented.
-    const ObserverStub& operator=(const ObserverStub&); ///< Not implemented
+    ObserverSolnStub(const ObserverSolnStub&); ///< Not implemented.
+    const ObserverSolnStub& operator=(const ObserverSolnStub&); ///< Not implemented
 
-}; // ObserverStub
+}; // ObserverSolnStub
 
-class pylith::feassemble::ObserverStubException {
+class pylith::problems::ObserverSolnStubException {
     // PUBLIC ENUMS ////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -81,10 +81,10 @@ public:
      *
      * @param[in] value Method called.
      */
-    ObserverStubException(const MethodEnum value);
+    ObserverSolnStubException(const MethodEnum value);
 
     /// Destructor
-    ~ObserverStubException(void);
+    ~ObserverSolnStubException(void);
 
     /** Get method called.
      *
@@ -96,8 +96,8 @@ public:
 private:
 
     MethodEnum _methodCalled;
-}; // ObserverStubException
+}; // ObserverSolnStubException
 
-#endif // pylith_feassemble_observerstub_hh
+#endif // pylith_feassemble_observersolnstub_hh
 
 // End of file

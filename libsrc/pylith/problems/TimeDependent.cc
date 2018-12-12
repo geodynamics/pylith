@@ -25,7 +25,7 @@
 
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/feassemble/Constraint.hh" // USES Constraint
-#include "pylith/feassemble/Observers.hh" // USES Observers
+#include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 
 #include "petscts.h" // USES PetscTS
 

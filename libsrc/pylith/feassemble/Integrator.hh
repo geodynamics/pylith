@@ -25,9 +25,7 @@
 #if !defined(pylith_feassemble_integrator_hh)
 #define pylith_feassemble_integrator_hh
 
-#include "feassemblefwd.hh" // forward declarations
-
-#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
+#include "pylith/feassemble/PhysicsImplementation.hh" // ISA PhysicsImplementation
 
 #include "pylith/problems/problemsfwd.hh" // HASA Physics
 #include "pylith/topology/topologyfwd.hh" // USES Field
@@ -35,7 +33,7 @@
 #include "pylith/utils/petscfwd.h" // USES PetscMat, PetscVec
 #include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
 
-class pylith::feassemble::Integrator : public pylith::utils::GenericComponent {
+class pylith::feassemble::Integrator : public pylith::feassemble::PhysicsImplementation {
     friend class TestIntegrator; // unit testing
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,29 +47,6 @@ public:
 
     /// Destructor
     virtual ~Integrator(void);
-
-    /// Deallocate PETSc and local data structures.
-    virtual
-    void deallocate(void);
-
-    /** Get mesh associated with integrator domain.
-     *
-     * @returns Mesh associated with integrator domain.
-     */
-    virtual
-    const pylith::topology::Mesh& getIntegrationDomainMesh(void) const = 0;
-
-    /** Get auxiliary field.
-     *
-     * @return field Field over integrator domain.
-     */
-    const pylith::topology::Field* getAuxiliaryField(void) const;
-
-    /** Get derived field.
-     *
-     * @return field Field over integrator domain.
-     */
-    const pylith::topology::Field* getDerivedField(void) const;
 
     /** Check whether RHS Jacobian needs to be recomputed.
      *
@@ -219,19 +194,12 @@ protected:
      * @param[in] dt Current time step.
      * @param[in] solution Field with current trial solution.
      */
-    void _computeDerivedFields(const PylithReal t,
-                               const PylithReal dt,
-                               const pylith::topology::Field& solution);
+    void _computeDerivedField(const PylithReal t,
+                              const PylithReal dt,
+                              const pylith::topology::Field& solution);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
-
-    pylith::problems::Physics* const _physics; ///< Physics associated with integrator.
-    pylith::topology::Field* _auxiliaryField; ///< Auxiliary field for this integrator.
-    pylith::topology::Field* _derivedField; ///< Derived field for this integrator.
-    pylith::feassemble::Observers* _observers; ///< Observers component.
-
-    pylith::utils::EventLogger* _logger; ///< Event logger.
 
     /// True if we need to recompute Jacobian for operator, false otherwise.
     /// Default is false;
