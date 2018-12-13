@@ -24,7 +24,7 @@
 
 namespace pylith {
     namespace meshio {
-        class OutputSolnDomain {
+        class OutputSolnDomain : public pylith::meshio::OutputSoln {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 

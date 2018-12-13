@@ -68,7 +68,7 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
         Do mimimal initialization.
         """
         OutputSoln.preinitialize(self, problem)
-        ModuleOutputSolnBoundary.label(self, self.label)
+        ModuleOutputSolnBoundary.setLabel(self, self.label)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

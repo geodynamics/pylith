@@ -68,7 +68,7 @@ class OutputSolnDomain(OutputSoln, ModuleOutputSolnDomain):
         """
         Create handle to C++ object.
         """
-        ModuleOutputSoln.__init__(self)
+        ModuleOutputSolnDomain.__init__(self)
         return
 
 

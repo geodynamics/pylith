@@ -59,7 +59,7 @@ class OutputSoln(OutputObserver, ModuleOutputSoln):
         Do mimimal initialization.
         """
         OutputObserver.preinitialize(self, problem)
-        ModuleOutputSoln.setDataFieldNames(self, self.dataFields)
+        ModuleOutputSoln.setOutputSubfields(self, self.dataFields)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
