@@ -61,17 +61,17 @@ class OutputPhysics(OutputObserver, ModuleOutputPhysics):
         Do mimimal initialization.
         """
         OutputObserver.preinitialize(self, problem)
-        ModuleOutputSoln.setInfoFieldNames(self, self.infoFields)
-        ModuleOutputSoln.setDataFieldNames(self, self.dataFields)
+        ModuleOutputPhysics.setInfoFields(self, self.infoFields)
+        ModuleOutputPhysics.setDataFields(self, self.dataFields)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
-    def _createModuleObj(self, integrator):
+    def _createModuleObj(self):
         """
         Create handle to C++ object.
         """
-        ModuleOutputPhysics.__init__(self, integrator)
+        ModuleOutputPhysics.__init__(self)
         return
 
 

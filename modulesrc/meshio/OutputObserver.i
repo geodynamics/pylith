@@ -24,7 +24,7 @@
 
 namespace pylith {
     namespace meshio {
-        class OutputObserver {
+        class OutputObserver : public pylith::utils::PyreComponent {
             // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 

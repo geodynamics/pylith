@@ -64,7 +64,7 @@ class Physics(PetscComponent, ModulePhysics):
     auxiliaryFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
     auxiliaryFieldDB.meta['tip'] = "Database for physical property parameters."
 
-    from pylith.feassemble.SingleObserver import SinglePhysicsObserver
+    from pylith.problems.SingleObserver import SinglePhysicsObserver
     observers = pyre.inventory.facilityArray("observers", itemFactory=observerFactory, factory=SinglePhysicsObserver)
     observers.meta['tip'] = "Observers (e.g., output)."
 

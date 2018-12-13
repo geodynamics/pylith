@@ -108,7 +108,7 @@ class Problem(PetscComponent, ModuleProblem):
     interfaces = pyre.inventory.facilityArray("interfaces", itemFactory=faultFactory, factory=EmptyBin)
     interfaces.meta['tip'] = "Interior surfaces with constraints or constitutive models."
 
-    from pylith.feassemble.SingleObserver import SingleSolnObserver
+    from pylith.problems.SingleObserver import SingleSolnObserver
     observers = pyre.inventory.facilityArray(
         "solution_observers", itemFactory=observerFactory, factory=SingleSolnObserver)
     observers.meta['tip'] = "Observers (e.g., output) for solution."

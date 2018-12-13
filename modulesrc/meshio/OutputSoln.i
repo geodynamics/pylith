@@ -45,8 +45,13 @@ public:
              * @param[in] names Array of subfield names.
              * @param[in] numNames Length of array.
              */
+	    %apply(const char* const* string_list, const int list_len) {
+	      (const char* names[],
+	       const int numNames)
+		};
             void setOutputSubfields(const char* names[],
                                     const int numNames);
+	    %clear(const char* names[], const int numNames);
 
             /** Get names of solution subfields requested for output.
              *

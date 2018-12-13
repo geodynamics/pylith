@@ -45,8 +45,13 @@ public:
              * @param[in] names Array of field names.
              * @param[in] numNames Length of array.
              */
-            void setInfoFields(const char* names[],
-                               const int numNames);
+	    %apply(const char* const* string_list, const int list_len) {
+	      (const char* names[],
+	       const int numNames)
+		};
+	    void setInfoFields(const char* names[],
+	                       const int numNames);
+	    %clear(const char* names[], const int numNames);
 
             /** Get names of information fields requested for output.
              *
@@ -59,8 +64,13 @@ public:
              * @param[in] names Array of field names.
              * @param[in] numNames Length of array.
              */
+	    %apply(const char* const* string_list, const int list_len) {
+	      (const char* names[],
+	       const int numNames)
+		};
             void setDataFields(const char* names[],
                                const int numNames);
+	    %clear(const char* names[], const int numNames);
 
             /** Get names of data fields requested for output.
              *

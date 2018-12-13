@@ -57,28 +57,28 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="outputmanager"):
+    def __init__(self, name="outputobserver"):
         """
         Constructor.
         """
-        Observer.__init__(self, name)
+        PetscComponent.__init__(self, name, facility="outputobserver")
         return
 
     def preinitialize(self, problem):
         """
         Setup output manager.
         """
-        self._createModuleObj(observers)
+        self._createModuleObj()
         ModuleOutputObserver.setIdentifier(self, self.aliases[-1])
 
         self.trigger.preinitialize()
-        ModuleOutputObserver.trigger(self, self.trigger)
+        ModuleOutputObserver.setTrigger(self, self.trigger)
 
         self.fieldFilter.preinitialize()
-        ModuleOutputObserver.fieldFilter(self, self.fieldFilter)
+        ModuleOutputObserver.setFieldFilter(self, self.fieldFilter)
 
         self.writer.preinitialize()
-        ModuleOutputObserver.writer(self, self.writer)
+        ModuleOutputObserver.setWriter(self, self.writer)
 
         return
 
@@ -88,10 +88,10 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
         """
         Set members based using inventory.
         """
-        Observer._configure(self)
+        PetscComponent._configure(self)
         return
 
-    def _createModuleObj(self, observers):
+    def _createModuleObj(self):
         """
         Create handle to C++ object.
         """
