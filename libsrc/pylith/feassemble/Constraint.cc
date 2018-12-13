@@ -147,6 +147,7 @@ pylith::feassemble::Constraint::initialize(const pylith::topology::Field& soluti
     delete _auxiliaryField;_auxiliaryField = _physics->createAuxiliaryField(solution, physicsDomainMesh);
     delete _derivedField;_derivedField = _physics->createDerivedField(solution, physicsDomainMesh);
     _observers = _physics->getObservers();assert(_observers); // Memory managed by Python
+    _observers->setPhysicsImplementation(this);
 
     const bool infoOnly = true;
     _observers->notifyObservers(0.0, 0, solution, infoOnly);
