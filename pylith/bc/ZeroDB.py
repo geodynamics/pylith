@@ -63,6 +63,8 @@ class ZeroDB(UniformDB):
         """
         Set members based on inventory.
         """
+        self.inventory.values = self.values
+        self.inventory.data = self.data
         UniformDB._configure(self)
         return
 

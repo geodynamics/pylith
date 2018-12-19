@@ -15,15 +15,15 @@
 #
 # @file pylith/bc/AbsorbingDampers.py
 #
-# @brief Python object for managing absorbing dampers condition.
+# @brief Python object for managing absorbing dampers boundary condition.
 #
 # Factory: boundary_condition
 
-from pylith.bc.IntegratorBoundary import IntegratorBoundary
+from pylith.bc.BoundaryCondition import BoundaryCondition
 from .bc import AbsorbingDampers as ModuleAbsorbingDampers
 
 
-class AbsorbingDampers(IntegratorBoundary, ModuleAbsorbingDampers):
+class AbsorbingDampers(BoundaryCondition, ModuleAbsorbingDampers):
     """
     Python object for managing absorbing dampers condition.
 
@@ -36,14 +36,14 @@ class AbsorbingDampers(IntegratorBoundary, ModuleAbsorbingDampers):
         """
         Constructor.
         """
-        IntegratorBoundary.__init__(self, name)
+        BoundaryCondition.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
         """
         Do pre-initialization setup.
         """
-        IntegratorBoundary.preinitialize(self, mesh)
+        BoundaryCondition.preinitialize(self, mesh)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ class AbsorbingDampers(IntegratorBoundary, ModuleAbsorbingDampers):
         """
         Setup members using inventory.
         """
-        IntegratorBoundary._configure(self)
+        BoundaryCondition._configure(self)
         return
 
     def _createModuleObj(self):
@@ -61,5 +61,15 @@ class AbsorbingDampers(IntegratorBoundary, ModuleAbsorbingDampers):
         """
         ModuleAbsorbingDampers.__init__(self)
         return
+
+
+# Factories
+
+def boundary_condition():
+    """
+    Factory associated with AbsorbingDampers.
+    """
+    return AbsorbingDampers()
+
 
 # End of file

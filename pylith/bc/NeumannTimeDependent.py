@@ -19,18 +19,19 @@
 #
 # Factory: boundary_condition
 
-from .Neumann import Neumann
+from .BoundaryCondition import BoundaryCondition
 from .bc import NeumannTimeDependent as ModuleNeumannTimeDependent
 from pylith.utils.NullComponent import NullComponent
 
 
-class NeumannTimeDependent(Neumann, ModuleNeumannTimeDependent):
+class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
     """
     Python object for managing a time-dependent Neumann (natural) boundary condition.
 
     INVENTORY
 
     Properties
+      - *scale_name* Type of scale for nondimenaionlizing Neumann boundary condition (e.g., "pressure" for elasticity").
       - *use_initial* Use initial term in time-dependent expression.
       - *use_rate* Use rate term in time-dependent expression.
       - *use_time_history* Use time history term in time-dependent expression.
@@ -42,6 +43,10 @@ class NeumannTimeDependent(Neumann, ModuleNeumannTimeDependent):
     """
 
     import pyre.inventory
+
+    scaleName = pyre.inventory.str("scale_name", default="pressure",
+                                   validator=pyre.inventory.choice(["length", "time", "pressure", "density", "velocity"]))
+    scaleName.meta['tip'] = "Type of scale for nondimensionalizing Neumann boundary condition ('pressure' for elasticity)."
 
     useInitial = pyre.inventory.bool("use_initial", default=True)
     useInitial.meta['tip'] = "Use initial term in time-dependent expression."
@@ -78,8 +83,9 @@ class NeumannTimeDependent(Neumann, ModuleNeumannTimeDependent):
             self._info.log(
                 "Performing minimal initialization of time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
 
-        Neumann.preinitialize(self, mesh)
+        BoundaryCondition.preinitialize(self, mesh)
 
+        ModuleNeumannTimeDependent.setScaleName(self, self.scaleName)
         ModuleNeumannTimeDependent.useInitial(self, self.useInitial)
         ModuleNeumannTimeDependent.useRate(self, self.useRate)
         ModuleNeumannTimeDependent.useTimeHistory(self, self.useTimeHistory)
@@ -98,7 +104,7 @@ class NeumannTimeDependent(Neumann, ModuleNeumannTimeDependent):
             self._warning.log(
                 "Ignoring time history database setting for time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
 
-        Neumann._configure(self)
+        BoundaryCondition._configure(self)
         return
 
     def _createModuleObj(self):

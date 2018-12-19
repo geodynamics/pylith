@@ -21,9 +21,6 @@
 # @brief Python PyLith finite-element assembler module initialization
 
 __all__ = [
-    "Observers",
-    "Observer",
-    "SingleObserver",
 ]
 
 

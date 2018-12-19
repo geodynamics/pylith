@@ -24,9 +24,7 @@ nobase_pkgpyexec_PYTHON = \
 	apps/EqInfoApp.py \
 	bc/__init__.py \
 	bc/BoundaryCondition.py \
-	bc/ConstraintBoundary.py \
 	bc/DirichletTimeDependent.py \
-	bc/IntegratorBoundary.py \
 	bc/NeumannTimeDependent.py \
 	bc/AuxFieldsTimeDependent.py \
 	bc/AbsorbingDampers.py \
