@@ -66,11 +66,11 @@ class Elasticity(Material, ModuleElasticity):
         Setup material.
         """
         self.rheology.preinitialize(mesh)
+        # :TODO: :NOW: @brad Need to set auxiliarySubfields from rheology.
         Material.preinitialize(self, mesh)
 
         ModuleElasticity.useInertia(self, self.useInertia)
         ModuleElasticity.useBodyForce(self, self.useBodyForce)
-
         return
 
     def _createModuleObj(self):

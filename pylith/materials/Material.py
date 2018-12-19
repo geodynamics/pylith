@@ -72,7 +72,6 @@ class Material(Physics, ModuleMaterial):
 
         ModuleMaterial.setMaterialId(self, self.materialId)
         ModuleMaterial.setDescriptiveLabel(self, self.label)
-
         return
 
 

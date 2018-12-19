@@ -70,7 +70,7 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
         """
         Constructor.
         """
-        Neumann.__init__(self, name)
+        BoundaryCondition.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
