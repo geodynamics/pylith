@@ -62,9 +62,9 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
 
     from .AuxFieldsTimeDependent import AuxFieldsTimeDependent
     from pylith.topology.AuxSubfield import subfieldFactory
-    auxSubfields = pyre.inventory.facilityArray(
+    auxiliarySubfields = pyre.inventory.facilityArray(
         "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsTimeDependent)
-    auxSubfields.meta['tip'] = "Discretization of time-dependent Neumann parameters."
+    auxiliarySubfields.meta['tip'] = "Discretization of time-dependent Neumann parameters."
 
     def __init__(self, name="neumanntimedependent"):
         """

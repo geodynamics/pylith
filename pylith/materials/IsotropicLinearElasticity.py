@@ -46,9 +46,9 @@ class IsotropicLinearElasticity(RheologyElasticity, ModuleLinearElasticity):
 
     from .AuxFieldsIsotropicLinearElasticity import AuxFieldsIsotropicLinearElasticity
     from pylith.topology.AuxSubfield import subfieldFactory
-    auxSubfields = pyre.inventory.facilityArray(
+    auxiliarySubfields = pyre.inventory.facilityArray(
         "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsIsotropicLinearElasticity)
-    auxSubfields.meta['tip'] = "Discretization of physical properties and state variables."
+    auxiliarySubfields.meta['tip'] = "Discretization of physical properties and state variables."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -63,7 +63,6 @@ class IsotropicLinearElasticity(RheologyElasticity, ModuleLinearElasticity):
         RheologyElasticity.preinitialize(self, mesh)
 
         ModuleLinearElasticity.useReferenceState(self, self.useReferenceState)
-
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

@@ -48,9 +48,9 @@ class IsotropicLinearGenMaxwell(RheologyElasticity, ModuleLinearElasticity):
 
     from .AuxFieldsIsotropicLinearGenMaxwell import AuxFieldsIsotropicLinearGenMaxwell
     from pylith.topology.AuxSubfield import subfieldFactory
-    auxSubfields = pyre.inventory.facilityArray(
+    auxiliarySubfields = pyre.inventory.facilityArray(
         "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsIsotropicLinearGenMaxwell)
-    auxSubfields.meta['tip'] = "Discretization of physical properties and state variables."
+    auxiliarySubfields.meta['tip'] = "Discretization of physical properties and state variables."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

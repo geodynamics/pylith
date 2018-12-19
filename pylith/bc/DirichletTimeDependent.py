@@ -79,9 +79,9 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
 
     from .AuxFieldsTimeDependent import AuxFieldsTimeDependent
     from pylith.topology.AuxSubfield import subfieldFactory
-    auxSubfields = pyre.inventory.facilityArray(
+    auxiliarySubfields = pyre.inventory.facilityArray(
         "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsTimeDependent)
-    auxSubfields.meta['tip'] = "Discretization of constraint parameters."
+    auxiliarySubfields.meta['tip'] = "Discretization of constraint parameters."
 
     def __init__(self, name="dirichlettimedependent"):
         """
