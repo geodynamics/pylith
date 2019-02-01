@@ -80,7 +80,7 @@ pylith::feassemble::IntegratorPointwise::deallocate(void) {
 
 	if (_stateVarVecGlobal) {
 		PetscErrorCode err = 0;
-		// STuff from updateStateVarsInit goes in here.
+		// Stuff from updateStateVarsInit goes in here.
 		// HAPPEN ONCE
 		// This goes in deallocation routine.
 		// Destroy stateVarSolnDM stuff
@@ -96,7 +96,7 @@ pylith::feassemble::IntegratorPointwise::deallocate(void) {
 		err = VecDestroy(&_stateVarVecGlobal);PYLITH_CHECK_ERROR(err);
 		err = VecDestroy(&_auxFieldVecGlobal);PYLITH_CHECK_ERROR(err);
 		err = VecDestroy(&_solutionVecGlobal);PYLITH_CHECK_ERROR(err);
-		err = VecDestroy(&_solutionVecLocal);PYLITH_CHECK_ERROR(err);
+		// err = VecDestroy(&_solutionVecLocal);PYLITH_CHECK_ERROR(err);
 	} // if
 
     _gravityField = NULL; // :KLUDGE: Memory managed by Python object. :TODO: Use shared pointer.
@@ -267,25 +267,22 @@ pylith::feassemble::IntegratorPointwise::_updateStateVarsInit(const pylith::topo
     } // for
 
     // Create subDM holding only the state vars
-    PetscVec _stateVarVecGlobal = NULL;
     err = DMCreateSubDM(auxDM, numStateSubfields, &stateSubfieldIndices[0], &_stateVarIS, &_stateVarDM);PYLITH_CHECK_ERROR(err);
     err = DMCreateGlobalVector(_stateVarDM, &_stateVarVecGlobal);PYLITH_CHECK_ERROR(err);
 
     // Create superDM of {state vars, solution}
-    PetscVec _stateVarsSolutionGlobal = NULL, _stateVarsSolutionLocal = NULL;
     dms[0] = _stateVarDM; dms[1] = solutionDM;
     err = DMCreateSuperDM(dms, 2, &_superIS, &_superDM);PYLITH_CHECK_ERROR(err);
     err = DMCreateGlobalVector(_superDM, &_stateVarsSolutionGlobal);PYLITH_CHECK_ERROR(err);
     err = DMCreateLocalVector(_superDM, &_stateVarsSolutionLocal);PYLITH_CHECK_ERROR(err);
 
     // Copy state vars from auxiliary vars
-    PetscVec _auxFieldVecGlobal = NULL;
     err = DMCreateGlobalVector(auxDM, &_auxFieldVecGlobal);
 
     // Copy current state vars and solution into superDM space
     // these 2 lines in initialization.
-    PetscVec _solutionVecGlobal = NULL, _solutionVecLocal = solution.localVector();
     err = DMCreateGlobalVector(solutionDM, &_solutionVecGlobal);
+	_solutionVecLocal = solution.localVector();
 
     PYLITH_METHOD_END;
 } // _updateStateVarsInit
