@@ -55,15 +55,16 @@ pylith::feassemble::IntegratorPointwise::IntegratorPointwise(void) :
     _stateVarsSolutionGlobal(NULL),
     _stateVarVecGlobal(NULL),
     _auxFieldVecGlobal(NULL),
-    _solutionVecGlobal(NULL),
-    _solutionVecLocal(NULL)
+    _solutionVecGlobal(NULL)
 {}
+
 
 // ----------------------------------------------------------------------
 // Destructor
 pylith::feassemble::IntegratorPointwise::~IntegratorPointwise(void) {
     deallocate();
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
@@ -73,36 +74,32 @@ pylith::feassemble::IntegratorPointwise::deallocate(void) {
 
     ObservedComponent::deallocate();
 
-    delete _normalizer; _normalizer = NULL;
-    delete _logger; _logger = NULL;
-    delete _auxField; _auxField = NULL;
-    delete _derivedField; _derivedField = NULL;
+    delete _normalizer;_normalizer = NULL;
+    delete _logger;_logger = NULL;
+    delete _auxField;_auxField = NULL;
+    delete _derivedField;_derivedField = NULL;
 
-	if (_stateVarVecGlobal) {
-		PetscErrorCode err = 0;
-		// Stuff from updateStateVarsInit goes in here.
-		// HAPPEN ONCE
-		// This goes in deallocation routine.
-		// Destroy stateVarSolnDM stuff
-		for (size_t i = 0; i < 2; ++i) {
-			err = ISDestroy(&_superIS[i]);PYLITH_CHECK_ERROR(err);
-		}
-		err = PetscFree(_superIS);PYLITH_CHECK_ERROR(err);
-		err = DMDestroy(&_superDM);PYLITH_CHECK_ERROR(err);
-		err = ISDestroy(&_stateVarIS);PYLITH_CHECK_ERROR(err);
-		err = DMDestroy(&_stateVarDM);PYLITH_CHECK_ERROR(err);
-		err = VecDestroy(&_stateVarsSolutionLocal);PYLITH_CHECK_ERROR(err);
-		err = VecDestroy(&_stateVarsSolutionGlobal);PYLITH_CHECK_ERROR(err);
-		err = VecDestroy(&_stateVarVecGlobal);PYLITH_CHECK_ERROR(err);
-		err = VecDestroy(&_auxFieldVecGlobal);PYLITH_CHECK_ERROR(err);
-		err = VecDestroy(&_solutionVecGlobal);PYLITH_CHECK_ERROR(err);
-		// err = VecDestroy(&_solutionVecLocal);PYLITH_CHECK_ERROR(err);
-	} // if
+    PetscErrorCode err = 0;
+    if (_superIS) {
+        for (size_t i = 0; i < 2; ++i) {
+            err = ISDestroy(&_superIS[i]);PYLITH_CHECK_ERROR(err);
+        } // for
+    } // if
+    err = PetscFree(_superIS);PYLITH_CHECK_ERROR(err);
+    err = DMDestroy(&_superDM);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&_stateVarIS);PYLITH_CHECK_ERROR(err);
+    err = DMDestroy(&_stateVarDM);PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&_stateVarsSolutionLocal);PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&_stateVarsSolutionGlobal);PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&_stateVarVecGlobal);PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&_auxFieldVecGlobal);PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&_solutionVecGlobal);PYLITH_CHECK_ERROR(err);
 
     _gravityField = NULL; // :KLUDGE: Memory managed by Python object. :TODO: Use shared pointer.
 
     PYLITH_METHOD_END;
 } // deallocate
+
 
 // ----------------------------------------------------------------------
 // Get auxiliary field.
@@ -111,12 +108,14 @@ pylith::feassemble::IntegratorPointwise::auxField(void) const {
     return _auxField;
 } // auxField
 
+
 // ----------------------------------------------------------------------
 // Get derived field.
 const pylith::topology::Field*
 pylith::feassemble::IntegratorPointwise::derivedField(void) const {
     return _derivedField;
 } // derivedField
+
 
 // ----------------------------------------------------------------------
 // Set database for auxiliary fields.
@@ -125,7 +124,7 @@ pylith::feassemble::IntegratorPointwise::auxFieldDB(spatialdata::spatialdb::Spat
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("auxFieldDB(value="<<value<<")");
 
-    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory();assert(factory);
     factory->queryDB(value);
 
     PYLITH_METHOD_END;
@@ -143,7 +142,7 @@ pylith::feassemble::IntegratorPointwise::auxSubfieldDiscretization(const char* n
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("auxSubfieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
 
-    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory();assert(factory);
     factory->subfieldDiscretization(name, basisOrder, quadOrder, isBasisContinuous, feSpace);
 
     PYLITH_METHOD_END;
@@ -157,12 +156,14 @@ pylith::feassemble::IntegratorPointwise::needNewRHSJacobian(void) const {
     return _needNewRHSJacobian;
 } // needNewRHSJacobian
 
+
 // ----------------------------------------------------------------------
 // Check whether LHS Jacobian needs to be recomputed.
 bool
 pylith::feassemble::IntegratorPointwise::needNewLHSJacobian(void) const {
     return _needNewLHSJacobian;
 } // needNewLHSJacobian
+
 
 // ----------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
@@ -228,20 +229,20 @@ pylith::feassemble::IntegratorPointwise::_setFEConstants(const pylith::topology:
     PYLITH_COMPONENT_DEBUG("_setFEConstants(solution="<<solution.label()<<", dt="<<dt<<")");
 
     PetscDS prob = NULL;
-    PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
+    PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
 
     // Pointwise functions have been set in DS
-    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err); assert(prob);
-    err = PetscDSSetConstants(prob, 0, NULL); PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
+    err = PetscDSSetConstants(prob, 0, NULL);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setFEConstants
+
 
 // ----------------------------------------------------------------------
 // Initialization for _updateStateVars.
 void
 pylith::feassemble::IntegratorPointwise::_updateStateVarsInit(const pylith::topology::Field& solution) {
-
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateStateVarsInit(solution="<<solution.label()<<")");
 
@@ -271,7 +272,7 @@ pylith::feassemble::IntegratorPointwise::_updateStateVarsInit(const pylith::topo
     err = DMCreateGlobalVector(_stateVarDM, &_stateVarVecGlobal);PYLITH_CHECK_ERROR(err);
 
     // Create superDM of {state vars, solution}
-    dms[0] = _stateVarDM; dms[1] = solutionDM;
+    dms[0] = _stateVarDM;dms[1] = solutionDM;
     err = DMCreateSuperDM(dms, 2, &_superIS, &_superDM);PYLITH_CHECK_ERROR(err);
     err = DMCreateGlobalVector(_superDM, &_stateVarsSolutionGlobal);PYLITH_CHECK_ERROR(err);
     err = DMCreateLocalVector(_superDM, &_stateVarsSolutionLocal);PYLITH_CHECK_ERROR(err);
@@ -282,10 +283,10 @@ pylith::feassemble::IntegratorPointwise::_updateStateVarsInit(const pylith::topo
     // Copy current state vars and solution into superDM space
     // these 2 lines in initialization.
     err = DMCreateGlobalVector(solutionDM, &_solutionVecGlobal);
-	_solutionVecLocal = solution.localVector();
 
     PYLITH_METHOD_END;
 } // _updateStateVarsInit
+
 
 // ----------------------------------------------------------------------
 // Update state variables as needed.
@@ -302,10 +303,10 @@ pylith::feassemble::IntegratorPointwise::_updateStateVars(const PylithReal t,
 
 #define DEBUG_OUTPUT 0
 
-	// Initialize if not already done.
-	if (!_stateVarVecGlobal) {
-		_updateStateVarsInit(solution);
-   } // if
+    // Initialize if not already done.
+    if (!_stateVarVecGlobal) {
+        _updateStateVarsInit(solution);
+    } // if
 
     assert(_auxField);
     //_auxField->view("AUXILIARY FIELD"); //:DEBUG:
@@ -322,9 +323,9 @@ pylith::feassemble::IntegratorPointwise::_updateStateVars(const PylithReal t,
     err = DMLocalToGlobalEnd(auxDM, _auxField->localVector(), INSERT_VALUES, _auxFieldVecGlobal);PYLITH_CHECK_ERROR(err);
     err = VecISCopy(_auxFieldVecGlobal, _stateVarIS, SCATTER_REVERSE, _stateVarVecGlobal);PYLITH_CHECK_ERROR(err);
 
-//****  This stays in here.
-    err = DMLocalToGlobalBegin(solutionDM, _solutionVecLocal, INSERT_VALUES, _solutionVecGlobal);PYLITH_CHECK_ERROR(err);
-    err = DMLocalToGlobalEnd(solutionDM, _solutionVecLocal, INSERT_VALUES, _solutionVecGlobal);PYLITH_CHECK_ERROR(err);
+    //****  This stays in here.
+    err = DMLocalToGlobalBegin(solutionDM, solution.localVector(), INSERT_VALUES, _solutionVecGlobal);PYLITH_CHECK_ERROR(err);
+    err = DMLocalToGlobalEnd(solutionDM, solution.localVector(), INSERT_VALUES, _solutionVecGlobal);PYLITH_CHECK_ERROR(err);
     err = VecISCopy(_stateVarsSolutionGlobal, _superIS[0], SCATTER_FORWARD, _stateVarVecGlobal);PYLITH_CHECK_ERROR(err);
     err = VecISCopy(_stateVarsSolutionGlobal, _superIS[1], SCATTER_FORWARD, _solutionVecGlobal);PYLITH_CHECK_ERROR(err);
 
@@ -349,23 +350,23 @@ pylith::feassemble::IntegratorPointwise::_updateStateVars(const PylithReal t,
     } // for
 
     err = DMProjectFieldLocal(auxDM, t, _auxField->localVector(), stateVarsKernels, INSERT_VALUES, _auxField->localVector());PYLITH_CHECK_ERROR(err);
-//****  This stays in here end.
+    //****  This stays in here end.
 
 #if DEBUG_OUTPUT
     std::cout << std::endl << "_stateVarVecGlobal" << std::endl; //:DEBUG:
     err = VecView(_stateVarVecGlobal, PETSC_VIEWER_STDOUT_WORLD); //:DEBUG:
-    std::cout << std::endl << "_solutionVecLocal" << std::endl; //:DEBUG:
-    err = VecView(_solutionVecLocal, PETSC_VIEWER_STDOUT_WORLD); //:DEBUG:
+    std::cout << std::endl << "solution.localVector" << std::endl; //:DEBUG:
+    err = VecView(solution.localVector(), PETSC_VIEWER_STDOUT_WORLD); //:DEBUG:
     std::cout << std::endl << "_solutionVecGlobal" << std::endl; //:DEBUG:
     err = VecView(_solutionVecGlobal, PETSC_VIEWER_STDOUT_WORLD); //:DEBUG:
     PetscSection section = NULL;
     std::cout << std::endl << "_stateVarsSolutionGlobal" << std::endl; //:DEBUG:
     err = VecView(_stateVarsSolutionGlobal, PETSC_VIEWER_STDOUT_WORLD); //:DEBUG:
     std::cout << std::endl << "superDMSection" << std::endl; //:DEBUG:
-    err = DMGetDefaultSection(_superDM, &section); PYLITH_CHECK_ERROR(err); //:DEBUG:
-    err = PetscSectionView(section, PETSC_VIEWER_STDOUT_WORLD); PYLITH_CHECK_ERROR(err); //:DEBUG:
+    err = DMGetDefaultSection(_superDM, &section);PYLITH_CHECK_ERROR(err); //:DEBUG:
+    err = PetscSectionView(section, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err); //:DEBUG:
 #endif
-    delete[] stateVarsKernels; stateVarsKernels = NULL;
+    delete[] stateVarsKernels;stateVarsKernels = NULL;
 
     PYLITH_METHOD_END;
 } // _updateStateVars
@@ -380,9 +381,8 @@ pylith::feassemble::IntegratorPointwise::_computeDerivedFields(const PylithReal 
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_computeDerivedFields(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
-
-
     PYLITH_METHOD_END;
 } // _computeDerivedFields
+
 
 // End of file
