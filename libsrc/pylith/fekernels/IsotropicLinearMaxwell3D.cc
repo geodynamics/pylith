@@ -807,52 +807,56 @@ pylith::fekernels::IsotropicLinearMaxwell3D::updateTotalStrain(const PylithInt d
 															   const PylithScalar x[],
 															   const PylithInt numConstants,
 															   const PylithScalar constants[],
-															   PylithScalar totalStrainTpdt[]) {
+															   PylithScalar totalStrain[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-#if 0 // :DEBUG:
-    std::cout << "dim:  " << dim << std::endl;
-    std::cout << "numS:  " << numS << std::endl;
-    std::cout << "numA:  " << numA << std::endl;
-    std::cout << "sOff[0]:  " << sOff[0] << std::endl;
-    std::cout << "sOff_x[0]:  " << sOff_x[0] << std::endl;
-    std::cout << "s[0]:  " << s[0] << std::endl;
-    std::cout << "aOff[0]:  " << aOff[0] << std::endl;
-    std::cout << "a[0]:  " << a[0] << std::endl;
-    std::cout << "t:  " << t << std::endl;
-    std::cout << "x[0]:  " << x[0] << std::endl;
-    std::cout << "numConstants:  " << numConstants << std::endl;
-    std::cout << "totalStrainTpdt[0]:  " << totalStrainTpdt[0] << std::endl;
-#endif
+    const PylithInt i_disp = 2;
 
     assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
+    assert(3 <= numS);
     assert(6 <= numA && 10 >= numA);
-    assert(sOff);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
     assert(aOff);
     assert(s_x);
     assert(a);
-    assert(totalStrainTpdt);
+    assert(totalStrain);
+    const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
 
-    const PylithScalar* disp_x = &s_x[sOff[i_disp]];
+    totalStrain[0] = disp_x[0*_dim+0];
+    totalStrain[1] = disp_x[1*_dim+1];
+    totalStrain[2] = disp_x[2*_dim+2];
+    totalStrain[3] = 0.5 * (disp_x[0*_dim+1] + disp_x[1*_dim+0]);
+    totalStrain[4] = 0.5 * (disp_x[1*_dim+2] + disp_x[2*_dim+1]);
+    totalStrain[5] = 0.5 * (disp_x[0*_dim+2] + disp_x[2*_dim+0]);
+
 #if 0 // :DEBUG:
-    const PylithInt i_totalStrain = 5;
-    const PylithScalar* totalStrain = &a[aOff[i_totalStrain]];
 	std::cout << "fekernels::IsotropicLinearMaxwell3D::updateTotalStrain" << std::endl;
-    std::cout << "totalStrain[0]:  " << totalStrain[0] << std::endl;
-#endif
-
-    totalStrainTpdt[0] = disp_x[0*_dim+0];
-    totalStrainTpdt[1] = disp_x[1*_dim+1];
-    totalStrainTpdt[2] = disp_x[2*_dim+2];
-    totalStrainTpdt[3] = 0.5 * (disp_x[0*_dim+1] + disp_x[1*_dim+0]);
-    totalStrainTpdt[4] = 0.5 * (disp_x[1*_dim+2] + disp_x[2*_dim+1]);
-    totalStrainTpdt[5] = 0.5 * (disp_x[0*_dim+2] + disp_x[2*_dim+0]);
-#if 0 // :DEBUG:
-    std::cout << "totalStrainTpdt[0]:  " << totalStrainTpdt[0] << std::endl;
+    std::cout << "dim:  " << dim << std::endl;
+    std::cout << "numS:  " << numS << std::endl;
+    std::cout << "numA:  " << numA << std::endl;
+    std::cout << "t:  " << t << std::endl;
+    std::cout << "x[0]:  " << x[0] << std::endl;
+    std::cout << "x[1]:  " << x[1] << std::endl;
+    std::cout << "x[2]:  " << x[2] << std::endl;
+	const PylithScalar* disp = &s[sOff[i_disp]];
+	const PylithInt i_totalStrainPrevious = 1;
+    const PylithScalar* totalStrainPrevious = &s[sOff[i_totalStrainPrevious]];
+	std::cout << "dispx:  " << disp[0] << std::endl;
+	std::cout << "dispy:  " << disp[1] << std::endl;
+	std::cout << "dispz:  " << disp[2] << std::endl;
+	std::cout << "totalStrainxxPrevious:  " << totalStrainPrevious[0] << std::endl;
+	std::cout << "totalStrainxx:  " << totalStrain[0] << std::endl;
+	std::cout << "disp_x[0]:  " << disp_x[0] << std::endl;
+    std::cout << "disp_x[1]:  " << disp_x[1] << std::endl;
+    std::cout << "disp_x[2]:  " << disp_x[2] << std::endl;
+    std::cout << "disp_x[3]:  " << disp_x[3] << std::endl;
+    std::cout << "disp_x[4]:  " << disp_x[4] << std::endl;
+    std::cout << "disp_x[5]:  " << disp_x[5] << std::endl;
+    std::cout << "disp_x[6]:  " << disp_x[6] << std::endl;
+    std::cout << "disp_x[7]:  " << disp_x[7] << std::endl;
+    std::cout << "disp_x[8]:  " << disp_x[8] << std::endl;
 #endif
 
 } // updateTotalStrain
@@ -880,44 +884,48 @@ pylith::fekernels::IsotropicLinearMaxwell3D::updateViscousStrain(const PylithInt
 																 const PylithScalar x[],
 																 const PylithInt numConstants,
 																 const PylithScalar constants[],
-																 PylithScalar visStrainTpdt[]) {
+																 PylithScalar visStrain[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
-    const PylithInt i_disp = 0;
+	const PylithInt i_viscousStrainPrevious = 0;
+    const PylithInt i_totalStrainPrevious = 1;
+    const PylithInt i_disp = 2;
 
     // Incoming auxiliary fields.
     const PylithInt i_maxwellTime = 3;
     const PylithInt i_viscousStrain = 4;
     const PylithInt i_totalStrain = 5;
 
-#if 0 // :DEBUG:
-    std::cout << "dim:  " << dim << std::endl;
-    std::cout << "numS:  " << numS << std::endl;
-    std::cout << "numA:  " << numA << std::endl;
-    std::cout << "sOff[0]:  " << sOff[0] << std::endl;
-    std::cout << "sOff_x[0]:  " << sOff_x[0] << std::endl;
-    std::cout << "s[0]:  " << s[0] << std::endl;
-    std::cout << "aOff[0]:  " << aOff[0] << std::endl;
-    std::cout << "a[0]:  " << a[0] << std::endl;
-    std::cout << "t:  " << t << std::endl;
-    std::cout << "x[0]:  " << x[0] << std::endl;
-    std::cout << "numConstants:  " << numConstants << std::endl;
-    std::cout << "visStrainTpdt[0]:  " << visStrainTpdt[0] << std::endl;
-#endif
+	// Assertions.
+	assert(_dim == dim);
+	assert(numS == 3);
+	assert(numA >= 6);
+	assert(sOff);
+	assert(sOff[i_viscousStrainPrevious] >= 0);
+	assert(sOff[i_totalStrainPrevious] >= 0);
+	assert(sOff[i_disp] >= 0);
+	assert(aOff);
+	assert(aOff[i_maxwellTime] >= 0);
+	assert(aOff[i_viscousStrain] >= 0);
+	assert(aOff[i_totalStrain] >= 0);
+	assert(s_x);
+	assert(a);
+	assert(visStrain);
 
-    assert(_dim == dim);
-    assert(1 == numS || 2 == numS);
-    assert(numA >= 6);
-    assert(sOff);
-    assert(aOff);
-    assert(s_x);
-    assert(a);
-    assert(visStrainTpdt);
-#if 0 // :DEBUG:
-    const PylithScalar* totalStrain = &a[aOff[i_totalStrain]];
-    const PylithScalar* disp_x = &s_x[sOff[i_disp]];
-    const PylithScalar totalStrainTpdt[6] = {
+	// Compute strain, deviatoric strain, etc.
+    const PylithScalar* viscousStrainPrevious = &s[sOff[i_viscousStrainPrevious]];
+    const PylithScalar* totalStrainPrevious = &s[sOff[i_totalStrainPrevious]];
+    const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
+
+	const PylithScalar maxwellTime = a[aOff[i_maxwellTime]];
+
+    const PylithScalar dt = constants[0];
+
+	const PylithScalar dq = pylith::fekernels::Viscoelastic::maxwellViscousStrainCoeff(dt, maxwellTime);
+    const PylithScalar expFac = exp(-dt/maxwellTime);
+
+    const PylithScalar strain[6] = {
         disp_x[0*_dim+0],
         disp_x[1*_dim+1],
         disp_x[2*_dim+2],
@@ -925,25 +933,45 @@ pylith::fekernels::IsotropicLinearMaxwell3D::updateViscousStrain(const PylithInt
         0.5 * (disp_x[1*_dim+2] + disp_x[2*_dim+1]),
         0.5 * (disp_x[0*_dim+2] + disp_x[2*_dim+0])
     };
+	const PylithReal meanStrain = (strain[0] + strain[1] + strain[2])/3.0;
+
+    const PylithScalar devStrain[6] = {
+        strain[0] - meanStrain,
+        strain[1] - meanStrain,
+        strain[2] - meanStrain,
+        strain[3],
+        strain[4],
+        strain[5]
+    };
+
+	const PylithReal meanStrainPrevious = (totalStrainPrevious[0] + totalStrainPrevious[1] + totalStrainPrevious[2])/3.0;
+
+    const PylithScalar devStrainPrevious[6] = {
+        totalStrainPrevious[0] - meanStrainPrevious,
+        totalStrainPrevious[1] - meanStrainPrevious,
+        totalStrainPrevious[2] - meanStrainPrevious,
+        totalStrainPrevious[3],
+        totalStrainPrevious[4],
+        totalStrainPrevious[5]
+    };
+
+	// Compute viscous strain.
+	for (int iComp = 0; iComp < 6; ++iComp) {
+        visStrain[iComp] = expFac * viscousStrainPrevious[iComp] + dq * (devStrain[iComp] - devStrainPrevious[iComp]);
+    } // for
+
+#if 0 // :DEBUG:
 	std::cout << "fekernels::IsotropicLinearMaxwell3D::updateViscousStrain" << std::endl;
-    std::cout << "totalStrain[0]:  " << totalStrain[0] << std::endl;
-    std::cout << "totalStrainTpdt[0]:  " << totalStrainTpdt[0] << std::endl;
+    std::cout << "dim:  " << dim << std::endl;
+    std::cout << "numS:  " << numS << std::endl;
+    std::cout << "numA:  " << numA << std::endl;
+    std::cout << "t:  " << t << std::endl;
+    std::cout << "x[0]:  " << x[0] << std::endl;
+    std::cout << "x[1]:  " << x[1] << std::endl;
+    std::cout << "x[2]:  " << x[2] << std::endl;
+	std::cout << "visStrainxx:  " << visStrain[0] << std::endl;
+	std::cout << "totalStrainxx:  " << disp_x[0] << std::endl;
 #endif
-
-    const PylithInt _numS = 1; // Number passed on to statevars kernel.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAVis = 3; // Number passed on to viscous strain kernel.
-    const PylithInt aOffVis[3] = { aOff[i_maxwellTime], aOff[i_viscousStrain],
-								   aOff[i_totalStrain] };
-    const PylithInt aOffVis_x[3] = { aOff_x[i_maxwellTime], aOff_x[i_viscousStrain],
-                                     aOff_x[i_totalStrain] };
-
-    computeViscousStrain(_dim, _numS, numAVis, sOffDisp, sOffDisp_x, s, s_t, s_x,
-						 aOffVis, aOffVis_x, a, a_t, a_x,
-                         t, x, numConstants, constants, visStrainTpdt);
-
 
 } // updateViscousStrain
 

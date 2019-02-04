@@ -44,20 +44,20 @@
  */
 class pylith::feassemble::IntegratorPointwise :
     public pylith::feassemble::ObservedComponent {
-    friend class TestIntegratorPointwise;   // unit testing
+    friend class TestIntegratorPointwise; // unit testing
 
     // PUBLIC ENUMS /////////////////////////////////////////////////////////
 public:
 
-enum FEKernelKeys {
-    KERNELS_RHS_RESIDUAL=0,
-    KERNELS_LHS_RESIDUAL=1,
-    KERNELS_RHS_JACOBIAN=2,
-    KERNELS_LHS_JACOBIAN=3,
-    KERNELS_LHS_JACOBIAN_LUMPEDINV=4,
-    KERNELS_UPDATE_STATE_VARS=5,
-    KERNELS_DERIVED_FIELDS=6,
-};
+    enum FEKernelKeys {
+        KERNELS_RHS_RESIDUAL=0,
+        KERNELS_LHS_RESIDUAL=1,
+        KERNELS_RHS_JACOBIAN=2,
+        KERNELS_LHS_JACOBIAN=3,
+        KERNELS_LHS_JACOBIAN_LUMPEDINV=4,
+        KERNELS_UPDATE_STATE_VARS=5,
+        KERNELS_DERIVED_FIELDS=6,
+    };
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
@@ -173,7 +173,6 @@ public:
                   const PylithReal dt,
                   const pylith::topology::Field& solution);
 
-
     /** Compute RHS residual for G(t,s).
      *
      * @param[out] residual Field for residual.
@@ -236,7 +235,6 @@ public:
                                     const pylith::topology::Field& solution,
                                     const pylith::topology::Field& solutionDot) = 0;
 
-
     /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
      *
      * @param[out] jacobianInv Inverse of lumped Jacobian as a field.
@@ -251,7 +249,6 @@ public:
                                      const PylithReal dt,
                                      const PylithReal s_tshift,
                                      const pylith::topology::Field& solution) = 0;
-
 
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
@@ -271,6 +268,13 @@ protected:
     virtual
     void _setFEConstants(const pylith::topology::Field& solution,
                          const PylithReal dt) const;
+
+    /** Initialization for updating state variables.
+     *
+     * @param[in] solution Field with current trial solution.
+     */
+    virtual
+    void _updateStateVarsInit(const pylith::topology::Field& solution);
 
     /** Update state variables as needed.
      *
@@ -297,13 +301,13 @@ protected:
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
 
-    spatialdata::units::Nondimensional* _normalizer;   ///< Nondimensionalizer.
+    spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer.
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
     pylith::topology::Field* _auxField; ///< Auxiliary field for this integrator.
     pylith::topology::Field* _derivedField; ///< Derived field for this integrator.
 
-    pylith::utils::EventLogger* _logger;   ///< Event logger.
+    pylith::utils::EventLogger* _logger; ///< Event logger.
 
     /// True if we need to recompute Jacobian for operator, false otherwise.
     /// Default is false;
@@ -313,6 +317,16 @@ protected:
     typedef std::map<std::string, PetscPointFunc> UpdateStateVarsMap;
     UpdateStateVarsMap _updateStateVarsKernels;
 
+    // Stuff for updateStateVars.
+    PetscIS *_superIS;
+    PetscDM _superDM;
+    PetscIS _stateVarIS;
+    PetscDM _stateVarDM;
+    PetscVec _stateVarsSolutionLocal;
+    PetscVec _stateVarsSolutionGlobal;
+    PetscVec _stateVarVecGlobal;
+    PetscVec _auxFieldVecGlobal;
+    PetscVec _solutionVecGlobal;
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
@@ -320,9 +334,10 @@ private:
     IntegratorPointwise(const IntegratorPointwise&); ///< Not implemented.
     const IntegratorPointwise& operator=(const IntegratorPointwise&); ///< Not implemented.
 
-}; // IntegratorPointwise
+};
+
+// IntegratorPointwise
 
 #endif // pylith_feassemble_integratorpointwise_hh
-
 
 // End of file

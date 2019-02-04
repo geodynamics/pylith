@@ -59,22 +59,22 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain :
                           const double z) {
         return 4000.0;
     } // density
-
+	
     static const char* density_units(void) {
         return "kg/m**3";
     } // density_units
-
+	
     // Vs
     static double vs(const double x,
                      const double y,
                      const double z) {
         return 5600.0;
     } // vs
-
+	
     static const char* vs_units(void) {
         return "m/s";
     } // vs_units
-
+	
     // Vp
     static double vp(const double x,
                      const double y,
@@ -198,57 +198,75 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain :
                                  const double y,
                                  const double z) {
         return (2.0*constants.a*x + 2.0*constants.b*y + 2.0*constants.d*z) *
-               (shearModulusRatio_1(x,y,z) * exp(-constants.t/maxwellTime_1(x,y,z)) +
-                shearModulusRatio_2(x,y,z) * exp(-constants.t/maxwellTime_2(x,y,z)) +
-                shearModulusRatio_3(x,y,z) * exp(-constants.t/maxwellTime_3(x,y,z)));
+			(shearModulusRatio_1(x,y,z) * exp(-constants.t/maxwellTime_1(x,y,z)) +
+			 shearModulusRatio_2(x,y,z) * exp(-constants.t/maxwellTime_2(x,y,z)) +
+			 shearModulusRatio_3(x,y,z) * exp(-constants.t/maxwellTime_3(x,y,z)));
     } // totalStrain_xx
 
     static double totalStrain_yy(const double x,
                                  const double y,
                                  const double z) {
         return (2.0*constants.a*y + 2.0*constants.b*x + 2.0*constants.e*z) *
-               (shearModulusRatio_1(x,y,z) * exp(-constants.t/maxwellTime_1(x,y,z)) +
-                shearModulusRatio_2(x,y,z) * exp(-constants.t/maxwellTime_2(x,y,z)) +
-                shearModulusRatio_3(x,y,z) * exp(-constants.t/maxwellTime_3(x,y,z)));
+			(shearModulusRatio_1(x,y,z) * exp(-constants.t/maxwellTime_1(x,y,z)) +
+			 shearModulusRatio_2(x,y,z) * exp(-constants.t/maxwellTime_2(x,y,z)) +
+			 shearModulusRatio_3(x,y,z) * exp(-constants.t/maxwellTime_3(x,y,z)));
     } // totalStrain_yy
 
     static double totalStrain_zz(const double x,
                                  const double y,
                                  const double z) {
         return (2.0*constants.a*z + 2.0*constants.d*x + 2.0*constants.e*y) *
-               (shearModulusRatio_1(x,y,z) * exp(-constants.t/maxwellTime_1(x,y,z)) +
-                shearModulusRatio_2(x,y,z) * exp(-constants.t/maxwellTime_2(x,y,z)) +
-                shearModulusRatio_3(x,y,z) * exp(-constants.t/maxwellTime_3(x,y,z)));
+			(shearModulusRatio_1(x,y,z) * exp(-constants.t/maxwellTime_1(x,y,z)) +
+			 shearModulusRatio_2(x,y,z) * exp(-constants.t/maxwellTime_2(x,y,z)) +
+			 shearModulusRatio_3(x,y,z) * exp(-constants.t/maxwellTime_3(x,y,z)));
     } // totalStrain_zz
 
     static double totalStrain_xy(const double x,
                                  const double y,
                                  const double z) {
-        return (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
-               (constants.b * (x + y) + constants.c * (x + y) + z * (constants.d + constants.e)) *
-               exp(-constants.t*(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)));
+        return (constants.b * (x + y) + constants.c * (x + y) + z * (constants.d + constants.e)) *
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
+			exp(-constants.t*
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)));
     } // totalStrain_xy
 
     static double totalStrain_yz(const double x,
                                  const double y,
                                  const double z) {
-        return (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
-               (x * (constants.b + constants.d) + y * (constants.c + constants.e) + z * (constants.e + constants.f)) *
-               exp(-constants.t*(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)));
+        return (x*(constants.b + constants.d) + y*(constants.c + constants.e) + z*(constants.e + constants.f))*
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
+			exp(-constants.t*
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)));
     } // totalStrain_yz
 
     static double totalStrain_xz(const double x,
                                  const double y,
                                  const double z) {
-        return (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
-               (y * (constants.b + constants.e) + constants.d * (x + z) + constants.f * (x + z)) *
-               exp(-constants.t*(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)));
+        return (y*(constants.b + constants.e) + constants.d*(x + z) + constants.f*(x + z))*
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
+			exp(-constants.t*
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)));
     } // totalStrain_xz
 
     // Viscous strain 1
@@ -256,73 +274,103 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain :
     static double viscousStrain_1_xx(const double x,
                                      const double y,
                                      const double z) {
-        return 2.0*maxwellTime_1(x,y,z)*(exp(constants.t/maxwellTime_1(x,y,z)) - 1)*
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
-               (constants.a*(2.0*x - y - z) + constants.b*(2.0*y - x) + constants.d*(2.0*z - x) -constants.e*(y+z))*
-               exp(-constants.t*
-                   (maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + 2.0*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
+        return 2.0*maxwellTime_1(x,y,z)*(exp(constants.t/maxwellTime_1(x,y,z)) - 1.0)*
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
+			(constants.a*(2.0*x - y - z) + constants.b*(2.0*y - x) + constants.d*(2.0*z - x) -constants.e*(y + z))*
+			exp(-constants.t*
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 2.0*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
     } // viscousStrain_1_xx
 
     static double viscousStrain_1_yy(const double x,
                                      const double y,
                                      const double z) {
         return -2.0*maxwellTime_1(x,y,z)*(exp(constants.t/maxwellTime_1(x,y,z)) - 1.0)*
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
-               (constants.a*(x - 2.0*y + z) - constants.b*(2.0*x - y) + constants.d*(x + z) + constants.e*(y - 2.0*z))*
-               exp(-constants.t*
-                   (maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + 2.0*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
+			(constants.a*(x - 2.0*y + z) - constants.b*(2.0*x - y) + constants.d*(x + z) + constants.e*(y - 2.0*z))*
+			exp(-constants.t*
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 2.0*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
     } // viscousStrain_1_yy
 
     static double viscousStrain_1_zz(const double x,
                                      const double y,
                                      const double z) {
         return -2.0*maxwellTime_1(x,y,z)*(exp(constants.t/maxwellTime_1(x,y,z)) - 1.0)*
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
-               (constants.a*(x + y - 2.0*z) + constants.b*(x + y) -constants.d*(2.0*x - z) - constants.e*(2.0*y - z))*
-               exp(-constants.t*
-                   (maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + 2.0*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
+			(constants.a*(x + y - 2.0*z) + constants.b*(x + y) -constants.d*(2.0*x - z) - constants.e*(2.0*y - z))*
+			exp(-constants.t*
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 2.0*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
     } // viscousStrain_1_zz
 
     static double viscousStrain_1_xy(const double x,
                                      const double y,
                                      const double z) {
         return maxwellTime_1(x,y,z)*(exp(constants.t/maxwellTime_1(x,y,z)) - 1.0)*
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
-               (constants.b*(x + y) + constants.c*(x + y) + z*(constants.d + constants.e))*
-               exp(-constants.t*
-                   (maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + 2.0*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
+			(constants.b*(x + y) + constants.c*(x + y) + z*(constants.d + constants.e))*
+			exp(-constants.t*
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 2.0*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
     } // viscousStrain_1_xy
 
     static double viscousStrain_1_yz(const double x,
                                      const double y,
                                      const double z) {
         return maxwellTime_1(x,y,z)*(exp(constants.t/maxwellTime_1(x,y,z)) - 1.0)*
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
-               (x*(constants.b + constants.d) + y*(constants.c + constants.e) + z*(constants.e + constants.f))*
-               exp(-constants.t*
-                   (maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + 2.0*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
+			(x*(constants.b + constants.d) + y*(constants.c + constants.e) + z*(constants.e + constants.f))*
+			exp(-constants.t*
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 2.0*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
     } // viscousStrain_1_yz
 
     static double viscousStrain_1_xz(const double x,
                                      const double y,
                                      const double z) {
         return maxwellTime_1(x,y,z)*(exp(constants.t/maxwellTime_1(x,y,z)) - 1.0)*
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
-               (y*(constants.b + constants.e) + constants.d*(x + z) + constants.f*(x + z))*
-               exp(-constants.t*
-                   (maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + 2.0*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
+			(y*(constants.b + constants.e) + constants.d*(x + z) + constants.f*(x + z))*
+			exp(-constants.t*
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 2.0*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
     } // viscousStrain_1_xz
 
     // Viscous strain 2
@@ -331,72 +379,102 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain :
                                      const double y,
                                      const double z) {
         return 2.0*maxwellTime_2(x,y,z)*(exp(constants.t/maxwellTime_2(x,y,z)) - 1.0)*
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
-               (constants.a*(2.0*x - y - z) + constants.b*(2.0*y - x) + constants.d*(2.0*z - x) -constants.e*(y + z))*
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
+			(constants.a*(2.0*x - y - z) + constants.b*(2.0*y - x) + constants.d*(2.0*z - x) -constants.e*(y + z))*
                exp(-constants.t*
-                   (maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + 2.0*maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
+                   (maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + 2.0*maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+					maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				   (maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
     } // viscousStrain_2_xx
 
     static double viscousStrain_2_yy(const double x,
                                      const double y,
                                      const double z) {
         return -2.0*maxwellTime_2(x,y,z)*(exp(constants.t/maxwellTime_2(x,y,z)) - 1.0)*
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
-               (constants.a*(x - 2.0*y + z) - constants.b*(2.0*x - y) + constants.d*(x + z) - constants.e*(2.0*z - y))*
-               exp(-constants.t*
-                   (maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + 2.0*maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
+			(constants.a*(x - 2.0*y + z) - constants.b*(2.0*x - y) + constants.d*(x + z) - constants.e*(2.0*z - y))*
+			exp(-constants.t*
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + 2.0*maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
     } // viscousStrain_2_yy
 
     static double viscousStrain_2_zz(const double x,
                                      const double y,
                                      const double z) {
         return -2.0*maxwellTime_2(x,y,z)*(exp(constants.t/maxwellTime_2(x,y,z)) - 1.0) *
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
-               (constants.a*(x + y - 2.0*z) + constants.b*(x + y) + constants.d*(z - 2.0*x) + constants.e*(z - 2.0*y))*
-               exp(-constants.t*
-                   (maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + 2.0*maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
+			(constants.a*(x + y - 2.0*z) + constants.b*(x + y) + constants.d*(z - 2.0*x) + constants.e*(z - 2.0*y))*
+			exp(-constants.t*
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + 2.0*maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
     } // viscousStrain_2_zz
 
     static double viscousStrain_2_xy(const double x,
                                      const double y,
                                      const double z) {
         return maxwellTime_2(x,y,z)*(exp(constants.t/maxwellTime_2(x,y,z)) - 1.0) *
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
-               (constants.b*(x + y) + constants.c*(x + y) + z*(constants.d + constants.e))*
-               exp(-constants.t*
-                   (maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + 2.0*maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
+			(constants.b*(x + y) + constants.c*(x + y) + z*(constants.d + constants.e))*
+			exp(-constants.t*
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + 2.0*maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
     } // viscousStrain_2_xy
 
     static double viscousStrain_2_yz(const double x,
                                      const double y,
                                      const double z) {
         return maxwellTime_2(x,y,z)*(exp(constants.t/maxwellTime_2(x,y,z)) - 1.0) *
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
-               (x*(constants.b + constants.d) + y*(constants.c + constants.e) + z*(constants.e + constants.f))*
-               exp(-constants.t*
-                   (maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + 2.0*maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
+			(x*(constants.b + constants.d) + y*(constants.c + constants.e) + z*(constants.e + constants.f))*
+			exp(-constants.t*
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + 2.0*maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
     } // viscousStrain_2_yz
 
     static double viscousStrain_2_xz(const double x,
                                      const double y,
                                      const double z) {
         return maxwellTime_2(x,y,z)*(exp(constants.t/maxwellTime_2(x,y,z)) - 1.0) *
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
-               (y*(constants.b + constants.e) + constants.d*(x + z) + constants.f*(x + z))*
-               exp(-constants.t*
-                   (maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + 2.0*maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
+			(y*(constants.b + constants.e) + constants.d*(x + z) + constants.f*(x + z))*
+			exp(-constants.t*
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + 2.0*maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
     } // viscousStrain_2_xz
 
     // Viscous strain 3
@@ -405,72 +483,102 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain :
                                      const double y,
                                      const double z) {
         return 2.0*maxwellTime_3(x,y,z)*(exp(constants.t/maxwellTime_3(x,y,z)) - 1.0) *
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
-               (constants.a*(2.0*x - y - z) + constants.b*(2.0*y - x) + constants.d*(2.0*z - x) -constants.e*(y + z))*
-               exp(-constants.t*
-                   (2.0*maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
+			(constants.a*(2.0*x - y - z) + constants.b*(2.0*y - x) + constants.d*(2.0*z - x) -constants.e*(y + z))*
+			exp(-constants.t*
+				(2.0*maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
     } // viscousStrain_3_xx
 
     static double viscousStrain_3_yy(const double x,
                                      const double y,
                                      const double z) {
         return -2.0*maxwellTime_3(x,y,z)*(exp(constants.t/maxwellTime_3(x,y,z)) - 1.0) *
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
-               (constants.a*(x - 2.0*y + z) - constants.b*(2.0*x - y) + constants.d*(x + z) - constants.e*(2.0*z - y))*
-               exp(-constants.t*
-                   (2.0*maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
+			(constants.a*(x - 2.0*y + z) - constants.b*(2.0*x - y) + constants.d*(x + z) - constants.e*(2.0*z - y))*
+			exp(-constants.t*
+				(2.0*maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
     } // viscousStrain_3_yy
 
     static double viscousStrain_3_zz(const double x,
                                      const double y,
                                      const double z) {
         return -2.0*maxwellTime_3(x,y,z)*(exp(constants.t/maxwellTime_3(x,y,z)) - 1.0) *
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
-               (constants.a*(x + y - 2.0*z) + constants.b*(x + y) + constants.d*(z - 2.0*x) + constants.e*(z - 2.0*y))*
-               exp(-constants.t*
-                   (2.0*maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
+			(constants.a*(x + y - 2.0*z) + constants.b*(x + y) + constants.d*(z - 2.0*x) + constants.e*(z - 2.0*y))*
+			exp(-constants.t*
+				(2.0*maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/(3.0*constants.t);
     } // viscousStrain_3_zz
 
     static double viscousStrain_3_xy(const double x,
                                      const double y,
                                      const double z) {
         return maxwellTime_3(x,y,z)*(exp(constants.t/maxwellTime_3(x,y,z)) - 1.0) *
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
-               (constants.b*(x + y) + constants.c*(x + y) + z*(constants.d + constants.e))*
-               exp(-constants.t*
-                   (2.0*maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
+			(constants.b*(x + y) + constants.c*(x + y) + z*(constants.d + constants.e))*
+			exp(-constants.t*
+				(2.0*maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
     } // viscousStrain_3_xy
 
     static double viscousStrain_3_yz(const double x,
                                      const double y,
                                      const double z) {
         return maxwellTime_3(x,y,z)*(exp(constants.t/maxwellTime_3(x,y,z)) - 1.0) *
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
-               (x*(constants.b + constants.d) + y*(constants.c + constants.e) + z*(constants.e + constants.f))*
-               exp(-constants.t*
-                   (2.0*maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
+			(x*(constants.b + constants.d) + y*(constants.c + constants.e) + z*(constants.e + constants.f))*
+			exp(-constants.t*
+				(2.0*maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
     } // viscousStrain_3_yz
 
     static double viscousStrain_3_xz(const double x,
                                      const double y,
                                      const double z) {
         return maxwellTime_3(x,y,z)*(exp(constants.t/maxwellTime_3(x,y,z)) - 1.0) *
-               (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
-               (y*(constants.b + constants.e) + constants.d*(x + z) + constants.f*(x + z))*
-               exp(-constants.t*
-                   (2.0*maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
+			(shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
+			 shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/
+											(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)))) *
+			(y*(constants.b + constants.e) + constants.d*(x + z) + constants.f*(x + z))*
+			exp(-constants.t*
+				(2.0*maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) +
+				 maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/
+				(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)))/constants.t;
     } // viscousStrain_3_xz
 
     // Total strain for perturbed solution.
@@ -478,71 +586,37 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain :
     static double totalStrainUpdate_xx(const double x,
                                        const double y,
                                        const double z) {
-        return (2.0*constants.a*x + 2.0*constants.b*y + 2.0*constants.d*z) *
-               (shearModulusRatio_1(x,y,z) * exp(-constants.t/maxwellTime_1(x,y,z)) +
-                shearModulusRatio_2(x,y,z) * exp(-constants.t/maxwellTime_2(x,y,z)) +
-                shearModulusRatio_3(x,y,z) * exp(-constants.t/maxwellTime_3(x,y,z))) + constants.g;
+		return totalStrain_xx(x,y,z) + constants.g;
     } // totalStrainUpdate_xx
 
     static double totalStrainUpdate_yy(const double x,
                                        const double y,
                                        const double z) {
-        return (2.0*constants.a*y + 2.0*constants.b*x + 2.0*constants.e*z) *
-               (shearModulusRatio_1(x,y,z) * exp(-constants.t/maxwellTime_1(x,y,z)) +
-                shearModulusRatio_2(x,y,z) * exp(-constants.t/maxwellTime_2(x,y,z)) +
-                shearModulusRatio_3(x,y,z) * exp(-constants.t/maxwellTime_3(x,y,z)));
+		return totalStrain_yy(x,y,z);
     } // totalStrainUpdate_yy
 
     static double totalStrainUpdate_zz(const double x,
                                        const double y,
                                        const double z) {
-        return (2.0*constants.a*z + 2.0*constants.d*x + 2.0*constants.e*y) *
-               (shearModulusRatio_1(x,y,z) * exp(-constants.t/maxwellTime_1(x,y,z)) +
-                shearModulusRatio_2(x,y,z) * exp(-constants.t/maxwellTime_2(x,y,z)) +
-                shearModulusRatio_3(x,y,z) * exp(-constants.t/maxwellTime_3(x,y,z)));
+		return totalStrain_zz(x,y,z);
     } // totalStrainUpdate_zz
 
     static double totalStrainUpdate_xy(const double x,
                                        const double y,
                                        const double z) {
-        return (constants.g*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)))/2.0 +
-                (constants.b*x + constants.c*y + constants.e*z)*
-                (shearModulusRatio_1(x,y,z)*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z))) +
-                 shearModulusRatio_2(x,y,z)*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_1(x,y,z))) +
-                 shearModulusRatio_3(x,y,z)*exp(constants.t*(1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)))) +
-                (constants.b*y + constants.c*x + constants.d*z)*
-                (shearModulusRatio_1(x,y,z)*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z))) +
-                 shearModulusRatio_2(x,y,z)*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_1(x,y,z))) +
-                 shearModulusRatio_3(x,y,z)*exp(constants.t*(1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)))))*
-               exp(-constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)));
-
+		return totalStrain_xy(x,y,z) + constants.g/2.0;
     } // totalStrainUpdate_xy
 
     static double totalStrainUpdate_yz(const double x,
                                        const double y,
                                        const double z) {
-        return (shearModulusRatio_1(x,y,z)*exp(constants.t*(maxwellTime_2(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_2(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z))) +
-                shearModulusRatio_3(x,y,z)*exp(constants.t*(maxwellTime_1(x,y,z) + maxwellTime_2(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z))))*
-               (constants.b*x + constants.c*y + constants.d*x + constants.e*y + constants.e*z + constants.f*z)*
-               exp(-constants.t*(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z) + maxwellTime_1(x,y,z)*maxwellTime_3(x,y,z) + maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)));
-
+		return totalStrain_yz(x,y,z);
     } // totalStrainUpdate_yz
 
     static double totalStrainUpdate_xz(const double x,
                                        const double y,
                                        const double z) {
-        return (constants.g*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)))/2.0 +
-                (constants.b*y + constants.d*z + constants.f*x)*
-                (shearModulusRatio_1(x,y,z)*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z))) +
-                 shearModulusRatio_2(x,y,z)*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_1(x,y,z))) +
-                 shearModulusRatio_3(x,y,z)*exp(constants.t*(1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)))) +
-                (constants.d*x + constants.e*y + constants.f*z)*
-                (shearModulusRatio_1(x,y,z)*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z))) +
-                 shearModulusRatio_2(x,y,z)*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_1(x,y,z))) +
-                 shearModulusRatio_3(x,y,z)*exp(constants.t*(1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)))))*
-               exp(-constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)));
-
+		return totalStrain_xz(x,y,z) + constants.g/2.0;
     } // totalStrainUpdate_xz
 
     // Values needed to compute viscous strain for perturbed solution.
@@ -615,19 +689,19 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain :
     static double devStrainTplusDt_xy(const double x,
                                       const double y,
                                       const double z) {
-        return totalStrain_xy(x,y,z);
+        return totalStrainUpdate_xy(x,y,z);
     }
 
     static double devStrainTplusDt_yz(const double x,
                                       const double y,
                                       const double z) {
-        return totalStrain_yz(x,y,z);
+        return totalStrainUpdate_yz(x,y,z);
     }
 
     static double devStrainTplusDt_xz(const double x,
                                       const double y,
                                       const double z) {
-        return totalStrain_xz(x,y,z);
+        return totalStrainUpdate_xz(x,y,z);
     }
 
     static double dq_1(const double x,
@@ -653,136 +727,163 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain :
     static double viscousStrainUpdate_1_xx(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_1(x,y,z)) * viscousStrain_1_xx(x,y,z) + dq_1(x,y,z) * (devStrainTplusDt_xx(x,y,z) - devStrainT_xx(x,y,z));
+        return exp(-constants.dt/maxwellTime_1(x,y,z))*viscousStrain_1_xx(x,y,z) +
+			dq_1(x,y,z)*(devStrainTplusDt_xx(x,y,z) - devStrainT_xx(x,y,z));
     } // viscousStrainUpdate_1_xx
 
     static double viscousStrainUpdate_1_yy(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_1(x,y,z)) * viscousStrain_1_yy(x,y,z) + dq_1(x,y,z) * (devStrainTplusDt_yy(x,y,z) - devStrainT_yy(x,y,z));
+        return exp(-constants.dt/maxwellTime_1(x,y,z))*viscousStrain_1_yy(x,y,z) +
+			dq_1(x,y,z)*(devStrainTplusDt_yy(x,y,z) - devStrainT_yy(x,y,z));
     } // viscousStrainUpdate_1_yy
 
     static double viscousStrainUpdate_1_zz(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_1(x,y,z)) * viscousStrain_1_zz(x,y,z) + dq_1(x,y,z) * (devStrainTplusDt_zz(x,y,z) - devStrainT_zz(x,y,z));
+        return exp(-constants.dt/maxwellTime_1(x,y,z))*viscousStrain_1_zz(x,y,z) +
+			dq_1(x,y,z)*(devStrainTplusDt_zz(x,y,z) - devStrainT_zz(x,y,z));
     } // viscousStrainUpdate_1_zz
 
     static double viscousStrainUpdate_1_xy(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_1(x,y,z)) * viscousStrain_1_xy(x,y,z) + dq_1(x,y,z) * (devStrainTplusDt_xy(x,y,z) - devStrainT_xy(x,y,z));
+        return exp(-constants.dt/maxwellTime_1(x,y,z))*viscousStrain_1_xy(x,y,z) +
+			dq_1(x,y,z)*(devStrainTplusDt_xy(x,y,z) - devStrainT_xy(x,y,z));
     } // viscousStrainUpdate_1_xy
 
     static double viscousStrainUpdate_1_yz(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_1(x,y,z)) * viscousStrain_1_yz(x,y,z) + dq_1(x,y,z) * (devStrainTplusDt_yz(x,y,z) - devStrainT_yz(x,y,z));
+        return exp(-constants.dt/maxwellTime_1(x,y,z))*viscousStrain_1_yz(x,y,z) +
+			dq_1(x,y,z)*(devStrainTplusDt_yz(x,y,z) - devStrainT_yz(x,y,z));
     } // viscousStrainUpdate_1_yz
 
     static double viscousStrainUpdate_1_xz(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_1(x,y,z)) * viscousStrain_1_xz(x,y,z) + dq_1(x,y,z) * (devStrainTplusDt_xz(x,y,z) - devStrainT_xz(x,y,z));
+        return exp(-constants.dt/maxwellTime_1(x,y,z))*viscousStrain_1_xz(x,y,z) +
+			dq_1(x,y,z)*(devStrainTplusDt_xz(x,y,z) - devStrainT_xz(x,y,z));
     } // viscousStrainUpdate_1_xz
 
     static double viscousStrainUpdate_2_xx(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_2(x,y,z)) * viscousStrain_2_xx(x,y,z) + dq_2(x,y,z) * (devStrainTplusDt_xx(x,y,z) - devStrainT_xx(x,y,z));
+        return exp(-constants.dt/maxwellTime_2(x,y,z))*viscousStrain_2_xx(x,y,z) +
+			dq_2(x,y,z)*(devStrainTplusDt_xx(x,y,z) - devStrainT_xx(x,y,z));
     } // viscousStrainUpdate_2_xx
 
     static double viscousStrainUpdate_2_yy(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_2(x,y,z)) * viscousStrain_2_yy(x,y,z) + dq_2(x,y,z) * (devStrainTplusDt_yy(x,y,z) - devStrainT_yy(x,y,z));
+        return exp(-constants.dt/maxwellTime_2(x,y,z))*viscousStrain_2_yy(x,y,z) +
+			dq_2(x,y,z)*(devStrainTplusDt_yy(x,y,z) - devStrainT_yy(x,y,z));
     } // viscousStrainUpdate_2_yy
 
     static double viscousStrainUpdate_2_zz(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_2(x,y,z)) * viscousStrain_2_zz(x,y,z) + dq_2(x,y,z) * (devStrainTplusDt_zz(x,y,z) - devStrainT_zz(x,y,z));
+        return exp(-constants.dt/maxwellTime_2(x,y,z))*viscousStrain_2_zz(x,y,z) +
+			dq_2(x,y,z)*(devStrainTplusDt_zz(x,y,z) - devStrainT_zz(x,y,z));
     } // viscousStrainUpdate_2_zz
 
     static double viscousStrainUpdate_2_xy(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_2(x,y,z)) * viscousStrain_2_xy(x,y,z) + dq_2(x,y,z) * (devStrainTplusDt_xy(x,y,z) - devStrainT_xy(x,y,z));
+        return exp(-constants.dt/maxwellTime_2(x,y,z))*viscousStrain_2_xy(x,y,z) +
+			dq_2(x,y,z)*(devStrainTplusDt_xy(x,y,z) - devStrainT_xy(x,y,z));
     } // viscousStrainUpdate_2_xy
 
     static double viscousStrainUpdate_2_yz(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_2(x,y,z)) * viscousStrain_2_yz(x,y,z) + dq_2(x,y,z) * (devStrainTplusDt_yz(x,y,z) - devStrainT_yz(x,y,z));
+        return exp(-constants.dt/maxwellTime_2(x,y,z))*viscousStrain_2_yz(x,y,z) +
+			dq_2(x,y,z)*(devStrainTplusDt_yz(x,y,z) - devStrainT_yz(x,y,z));
     } // viscousStrainUpdate_2_yz
 
     static double viscousStrainUpdate_2_xz(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_2(x,y,z)) * viscousStrain_2_xz(x,y,z) + dq_2(x,y,z) * (devStrainTplusDt_xz(x,y,z) - devStrainT_xz(x,y,z));
-    } // viscousStrainUpdate_2_yz
+        return exp(-constants.dt/maxwellTime_2(x,y,z))*viscousStrain_2_xz(x,y,z) +
+			dq_2(x,y,z)*(devStrainTplusDt_xz(x,y,z) - devStrainT_xz(x,y,z));
+    } // viscousStrainUpdate_2_xz
 
     static double viscousStrainUpdate_3_xx(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_3(x,y,z)) * viscousStrain_3_xx(x,y,z) + dq_3(x,y,z) * (devStrainTplusDt_xx(x,y,z) - devStrainT_xx(x,y,z));
+        return exp(-constants.dt/maxwellTime_3(x,y,z))*viscousStrain_3_xx(x,y,z) +
+			dq_3(x,y,z)*(devStrainTplusDt_xx(x,y,z) - devStrainT_xx(x,y,z));
     } // viscousStrainUpdate_3_xx
 
     static double viscousStrainUpdate_3_yy(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_3(x,y,z)) * viscousStrain_3_yy(x,y,z) + dq_3(x,y,z) * (devStrainTplusDt_yy(x,y,z) - devStrainT_yy(x,y,z));
+        return exp(-constants.dt/maxwellTime_3(x,y,z))*viscousStrain_3_yy(x,y,z) +
+			dq_3(x,y,z)*(devStrainTplusDt_yy(x,y,z) - devStrainT_yy(x,y,z));
     } // viscousStrainUpdate_3_yy
 
     static double viscousStrainUpdate_3_zz(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_3(x,y,z)) * viscousStrain_3_zz(x,y,z) + dq_3(x,y,z) * (devStrainTplusDt_zz(x,y,z) - devStrainT_zz(x,y,z));
+        return exp(-constants.dt/maxwellTime_3(x,y,z))*viscousStrain_3_zz(x,y,z) +
+			dq_3(x,y,z)*(devStrainTplusDt_zz(x,y,z) - devStrainT_zz(x,y,z));
     } // viscousStrainUpdate_3_zz
 
     static double viscousStrainUpdate_3_xy(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_3(x,y,z)) * viscousStrain_3_xy(x,y,z) + dq_3(x,y,z) * (devStrainTplusDt_xy(x,y,z) - devStrainT_xy(x,y,z));
+        return exp(-constants.dt/maxwellTime_3(x,y,z))*viscousStrain_3_xy(x,y,z) +
+			dq_3(x,y,z)*(devStrainTplusDt_xy(x,y,z) - devStrainT_xy(x,y,z));
     } // viscousStrainUpdate_3_xy
 
     static double viscousStrainUpdate_3_yz(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_3(x,y,z)) * viscousStrain_3_yz(x,y,z) + dq_3(x,y,z) * (devStrainTplusDt_yz(x,y,z) - devStrainT_yz(x,y,z));
+        return exp(-constants.dt/maxwellTime_3(x,y,z))*viscousStrain_3_yz(x,y,z) +
+			dq_3(x,y,z)*(devStrainTplusDt_yz(x,y,z) - devStrainT_yz(x,y,z));
     } // viscousStrainUpdate_3_yz
 
     static double viscousStrainUpdate_3_xz(const double x,
                                            const double y,
                                            const double z) {
-        return exp(-constants.dt/maxwellTime_3(x,y,z)) * viscousStrain_3_xz(x,y,z) + dq_3(x,y,z) * (devStrainTplusDt_xz(x,y,z) - devStrainT_xz(x,y,z));
+        return exp(-constants.dt/maxwellTime_3(x,y,z))*viscousStrain_3_xz(x,y,z) +
+			dq_3(x,y,z)*(devStrainTplusDt_xz(x,y,z) - devStrainT_xz(x,y,z));
     } // viscousStrainUpdate_3_xz
 
     // Body force
     static double bodyforce_x(const double x,
                               const double y,
                               const double z) {
-        return 6.0*(constants.a + constants.b + constants.d)* bulkModulus(x,y,z)*shearModulusRatio_1(x,y,z)*exp(-constants.t/maxwellTime_1(x,y,z)) +
-               6.0*(constants.a + constants.b + constants.d)* bulkModulus(x,y,z)*shearModulusRatio_2(x,y,z)*exp(-constants.t/maxwellTime_2(x,y,z)) +
-               6.0*(constants.a + constants.b + constants.d)* bulkModulus(x,y,z)*shearModulusRatio_3(x,y,z)*exp(-constants.t/maxwellTime_3(x,y,z));
+        return 6.0*(constants.a + constants.b + constants.d)*
+			bulkModulus(x,y,z)*shearModulusRatio_1(x,y,z)*exp(-constants.t/maxwellTime_1(x,y,z)) +
+			6.0*(constants.a + constants.b + constants.d)*
+			bulkModulus(x,y,z)*shearModulusRatio_2(x,y,z)*exp(-constants.t/maxwellTime_2(x,y,z)) +
+			6.0*(constants.a + constants.b + constants.d)*
+			bulkModulus(x,y,z)*shearModulusRatio_3(x,y,z)*exp(-constants.t/maxwellTime_3(x,y,z));
 
     } // bodyforce_x
 
     static double bodyforce_y(const double x,
                               const double y,
                               const double z) {
-        return 6.0*(constants.a + constants.b + constants.e)* bulkModulus(x,y,z)*shearModulusRatio_1(x,y,z)*exp(-constants.t/maxwellTime_1(x,y,z)) +
-               6.0*(constants.a + constants.b + constants.e)* bulkModulus(x,y,z)*shearModulusRatio_2(x,y,z)*exp(-constants.t/maxwellTime_2(x,y,z)) +
-               6.0*(constants.a + constants.b + constants.e)* bulkModulus(x,y,z)*shearModulusRatio_3(x,y,z)*exp(-constants.t/maxwellTime_3(x,y,z));
+        return 6.0*(constants.a + constants.b + constants.e)*
+			bulkModulus(x,y,z)*shearModulusRatio_1(x,y,z)*exp(-constants.t/maxwellTime_1(x,y,z)) +
+			6.0*(constants.a + constants.b + constants.e)*
+			bulkModulus(x,y,z)*shearModulusRatio_2(x,y,z)*exp(-constants.t/maxwellTime_2(x,y,z)) +
+			6.0*(constants.a + constants.b + constants.e)*
+			bulkModulus(x,y,z)*shearModulusRatio_3(x,y,z)*exp(-constants.t/maxwellTime_3(x,y,z));
 
     } // bodyforce_y
 
     static double bodyforce_z(const double x,
                               const double y,
                               const double z) {
-        return 6.0*(constants.a + constants.d + constants.e)* bulkModulus(x,y,z)*shearModulusRatio_1(x,y,z)*exp(-constants.t/maxwellTime_1(x,y,z)) +
-               6.0*(constants.a + constants.d + constants.e)* bulkModulus(x,y,z)*shearModulusRatio_2(x,y,z)*exp(-constants.t/maxwellTime_2(x,y,z)) +
-               6.0*(constants.a + constants.d + constants.e)* bulkModulus(x,y,z)*shearModulusRatio_3(x,y,z)*exp(-constants.t/maxwellTime_3(x,y,z));
+        return 6.0*(constants.a + constants.d + constants.e)*
+			bulkModulus(x,y,z)*shearModulusRatio_1(x,y,z)*exp(-constants.t/maxwellTime_1(x,y,z)) +
+			6.0*(constants.a + constants.d + constants.e)*
+			bulkModulus(x,y,z)*shearModulusRatio_2(x,y,z)*exp(-constants.t/maxwellTime_2(x,y,z)) +
+			6.0*(constants.a + constants.d + constants.e)*
+			bulkModulus(x,y,z)*shearModulusRatio_3(x,y,z)*exp(-constants.t/maxwellTime_3(x,y,z));
 
     } // bodyforce_z
 
@@ -799,8 +900,9 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain :
         return (shearModulusRatio_1(x,y,z)*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z))) +
                 shearModulusRatio_2(x,y,z)*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_1(x,y,z))) +
                 shearModulusRatio_3(x,y,z)*exp(constants.t*(1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z))))*
-               (constants.a*x*x + 2.0*constants.b*x*y + constants.c*y*y + 2.0*constants.d*x*z + 2.0*constants.e*y*z + constants.f*z*z)*
-               exp(-constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)));
+			(constants.a*x*x + 2.0*constants.b*x*y + constants.c*y*y + 2.0*constants.d*x*z + 2.0*constants.e*y*z +
+			 constants.f*z*z)*
+			exp(-constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)));
 
     } // disp_x
 
@@ -810,8 +912,9 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain :
         return (shearModulusRatio_1(x,y,z)*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z))) +
                 shearModulusRatio_2(x,y,z)*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_1(x,y,z))) +
                 shearModulusRatio_3(x,y,z)*exp(constants.t*(1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z))))*
-               (constants.a*y*y + 2.0*constants.b*x*y + constants.c*x*x + 2.0*constants.d*x*z + 2.0*constants.e*y*z + constants.f*z*z)*
-               exp(-constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)));
+			(constants.a*y*y + 2.0*constants.b*x*y + constants.c*x*x + 2.0*constants.d*x*z + 2.0*constants.e*y*z +
+			 constants.f*z*z)*
+			exp(-constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)));
 
     } // disp_y
 
@@ -821,8 +924,9 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain :
         return (shearModulusRatio_1(x,y,z)*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z))) +
                 shearModulusRatio_2(x,y,z)*exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_1(x,y,z))) +
                 shearModulusRatio_3(x,y,z)*exp(constants.t*(1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z))))*
-               (constants.a*z*z + 2.0*constants.b*x*y + constants.c*y*y + 2.0*constants.d*x*z + 2.0*constants.e*y*z + constants.f*x*x)*
-               exp(-constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)));
+			(constants.a*z*z + 2.0*constants.b*x*y + constants.c*y*y + 2.0*constants.d*x*z + 2.0*constants.e*y*z +
+			 constants.f*x*x)*
+			exp(-constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)));
 
     } // disp_z
 
@@ -839,8 +943,10 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain :
                  exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_1(x,y,z))) +
                  maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)*shearModulusRatio_1(x,y,z)*
                  exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z))))*
-               (constants.a*x*x + 2.0*constants.b*x*y + constants.c*y*y + 2.0*constants.d*x*z + 2.0*constants.e*y*z + constants.f*z*z)*
-               exp(-constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z));
+			(constants.a*x*x + 2.0*constants.b*x*y + constants.c*y*y + 2.0*constants.d*x*z + 2.0*constants.e*y*z +
+			 constants.f*z*z)*
+			exp(-constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)))/
+			(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z));
 
     } // disp_dot_x
 
@@ -853,8 +959,10 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain :
                  exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_1(x,y,z))) +
                  maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)*shearModulusRatio_1(x,y,z)*
                  exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z))))*
-               (constants.a*y*y + 2.0*constants.b*x*y + constants.c*x*x + 2.0*constants.d*x*z + 2.0*constants.e*y*z + constants.f*z*z)*
-               exp(-constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z));
+			(constants.a*y*y + 2.0*constants.b*x*y + constants.c*x*x + 2.0*constants.d*x*z + 2.0*constants.e*y*z +
+			 constants.f*z*z)*
+			exp(-constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)))/
+			(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z));
 
     } // disp_dot_y
 
@@ -867,8 +975,10 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain :
                  exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_1(x,y,z))) +
                  maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z)*shearModulusRatio_1(x,y,z)*
                  exp(constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z))))*
-               (constants.a*z*z + 2.0*constants.b*x*y + constants.c*y*y + 2.0*constants.d*x*z + 2.0*constants.e*y*z + constants.f*x*x)*
-               exp(-constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)))/(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z));
+			(constants.a*z*z + 2.0*constants.b*x*y + constants.c*y*y + 2.0*constants.d*x*z + 2.0*constants.e*y*z +
+			 constants.f*x*x)*
+			exp(-constants.t*(1.0/maxwellTime_3(x,y,z) + 1.0/maxwellTime_2(x,y,z) + 1.0/maxwellTime_1(x,y,z)))/
+			(maxwellTime_1(x,y,z)*maxwellTime_2(x,y,z)*maxwellTime_3(x,y,z));
 
     } // disp_dot_z
 
@@ -908,7 +1018,7 @@ protected:
         _mydata->normalizer->lengthScale(1.0e+03);
         _mydata->normalizer->timeScale(2.0e+7);
         _mydata->normalizer->densityScale(3.0e+3);
-        _mydata->normalizer->pressureScale(2.25e+10);
+        _mydata->normalizer->pressureScale(1.25e+11);
 
         _mydata->t = constants.t/_mydata->normalizer->timeScale();
         _mydata->dt = constants.dt/_mydata->normalizer->timeScale();
@@ -928,8 +1038,8 @@ protected:
             pylith::topology::Field::Discretization(0, 1), // bulk_modulus
             pylith::topology::Field::Discretization(0, 1), // maxwell_time
             pylith::topology::Field::Discretization(0, 1), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 1), // viscous_strain
-            pylith::topology::Field::Discretization(1, 1), // total_strain
+            pylith::topology::Field::Discretization(1, 1, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 1, false), // total_strain
             pylith::topology::Field::Discretization(0, 1), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1116,8 +1226,8 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP2 :
             pylith::topology::Field::Discretization(0, 2), // bulk_modulus
             pylith::topology::Field::Discretization(0, 2), // maxwell_time
             pylith::topology::Field::Discretization(0, 2), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 2), // viscous_strain
-            pylith::topology::Field::Discretization(1, 2), // total_strain
+            pylith::topology::Field::Discretization(1, 2, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 2, false), // total_strain
             pylith::topology::Field::Discretization(0, 2), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1155,8 +1265,8 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP3 :
             pylith::topology::Field::Discretization(0, 3), // bulk_modulus
             pylith::topology::Field::Discretization(0, 3), // maxwell_time
             pylith::topology::Field::Discretization(0, 3), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 3), // viscous_strain
-            pylith::topology::Field::Discretization(1, 3), // total_strain
+            pylith::topology::Field::Discretization(1, 3, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 3, false), // total_strain
             pylith::topology::Field::Discretization(0, 3), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1165,7 +1275,7 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP3 :
     } // setUp
 
 }; // TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP3
-// Leave this one out for now since it takes too long.
+// Remove this test for now until higher order integration is done properly.
 //CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP3);
 
 // ----------------------------------------------------------------------
@@ -1194,8 +1304,8 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP4 :
             pylith::topology::Field::Discretization(0, 4), // bulk_modulus
             pylith::topology::Field::Discretization(0, 4), // maxwell_time
             pylith::topology::Field::Discretization(0, 4), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 4), // viscous_strain
-            pylith::topology::Field::Discretization(1, 4), // total_strain
+            pylith::topology::Field::Discretization(1, 4, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 4, false), // total_strain
             pylith::topology::Field::Discretization(0, 4), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1204,7 +1314,7 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP4 :
     } // setUp
 
 }; // TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP4
-// Leave this one out for now since it takes too long.
+// Remove this test for now until higher order integration is done properly.
 // CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_TetP4);
 
 // ----------------------------------------------------------------------
@@ -1233,8 +1343,8 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ1 :
             pylith::topology::Field::Discretization(0, 1), // bulk_modulus
             pylith::topology::Field::Discretization(0, 1), // maxwell_time
             pylith::topology::Field::Discretization(0, 1), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 1), // viscous_strain
-            pylith::topology::Field::Discretization(1, 1), // total_strain
+            pylith::topology::Field::Discretization(1, 1, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 1, false), // total_strain
             pylith::topology::Field::Discretization(0, 1), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1273,8 +1383,8 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ2 :
             pylith::topology::Field::Discretization(0, 2), // bulk_modulus
             pylith::topology::Field::Discretization(0, 2), // maxwell_time
             pylith::topology::Field::Discretization(0, 2), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 2), // viscous_strain
-            pylith::topology::Field::Discretization(1, 2), // total_strain
+            pylith::topology::Field::Discretization(1, 2, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 2, false), // total_strain
             pylith::topology::Field::Discretization(0, 2), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1312,8 +1422,8 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ3 :
             pylith::topology::Field::Discretization(0, 3), // bulk_modulus
             pylith::topology::Field::Discretization(0, 3), // maxwell_time
             pylith::topology::Field::Discretization(0, 3), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 3), // viscous_strain
-            pylith::topology::Field::Discretization(1, 3), // total_strain
+            pylith::topology::Field::Discretization(1, 3, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 3, false), // total_strain
             pylith::topology::Field::Discretization(0, 3), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1322,7 +1432,7 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ3 :
     } // setUp
 
 }; // TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ3
-// Leave this one out for now since it takes too long.
+// Remove this test for now until higher order integration is done properly.
 //CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ3);
 
 
@@ -1352,8 +1462,8 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ4 :
             pylith::topology::Field::Discretization(0, 4), // bulk_modulus
             pylith::topology::Field::Discretization(0, 4), // maxwell_time
             pylith::topology::Field::Discretization(0, 4), // shear_modulus_ratio
-            pylith::topology::Field::Discretization(1, 4), // viscous_strain
-            pylith::topology::Field::Discretization(1, 4), // total_strain
+            pylith::topology::Field::Discretization(1, 4, false), // viscous_strain
+            pylith::topology::Field::Discretization(1, 4, false), // total_strain
             pylith::topology::Field::Discretization(0, 4), // body_force
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -1362,7 +1472,7 @@ class pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ4 :
     } // setUp
 
 }; // TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ4
-// Leave this one out for now since it takes too long.
+// Remove this test for now until higher order integration is done properly.
 //CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearGenMaxwell3D_LinearStrain_HexQ4);
 
 

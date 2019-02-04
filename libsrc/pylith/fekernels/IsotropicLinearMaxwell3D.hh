@@ -359,7 +359,7 @@ public:
                               const PylithScalar x[],
                               const PylithInt numConstants,
                               const PylithScalar constants[],
-                              PylithScalar visStrainTpdt[]);
+                              PylithScalar visStrain[]);
 
 
     /** Update total strain for 3-D isotropic linear
@@ -386,7 +386,7 @@ public:
                            const PylithScalar x[],
                            const PylithInt numConstants,
                            const PylithScalar constants[],
-                           PylithScalar totalStrainTpdt[]);
+                           PylithScalar totalStrain[]);
 
 
     /** Update viscous strain for 3-D isotropic linear
@@ -419,7 +419,7 @@ public:
                              const PylithScalar x[],
                              const PylithInt numConstants,
                              const PylithScalar constants[],
-                             PylithScalar visStrainTpdt[]);
+                             PylithScalar visStrain[]);
 
 }; // IsotropicLinearMaxwell3D
 
