@@ -313,35 +313,18 @@ pylith::faults::_FaultCohesiveKin::setKernelsRHSResidual(pylith::feassemble::Int
 
     std::vector<ResidualKernels> kernels(2);
 
-    { // Positive side of the fault
-      // Elasticity equation (displacement/velocity).
-        const PetscBdPointFunc g0u = pylith::fekernels::FaultCohesiveKin::g0u_pos;
-        const PetscBdPointFunc g1u = NULL;
+    // Elasticity equation (displacement/velocity).
+    const PetscBdPointFunc g0u = pylith::fekernels::FaultCohesiveKin::g0u;
+    const PetscBdPointFunc g1u = NULL;
 
-        // Fault slip constraint equation.
-        const PetscBdPointFunc g0l = pylith::fekernels::FaultCohesiveKin::g0l_pos;
-        const PetscBdPointFunc g1l = NULL;
+    // Fault slip constraint equation.
+    const PetscBdPointFunc g0l = pylith::fekernels::FaultCohesiveKin::g0l;
+    const PetscBdPointFunc g1l = NULL;
 
-        kernels[0] = ResidualKernels(nameDispVel, g0u, g1u);
-        kernels[1] = ResidualKernels("lagrange_multiplier_fault", g0l, g1l);
-        assert(integrator);
-        integrator->setKernelsRHSResidualPos(kernels);
-    } // positive side of the fault
-
-    { // Negative side of the fault
-      // Elasticity equation (displacement/velocity).
-        const PetscBdPointFunc g0u = pylith::fekernels::FaultCohesiveKin::g0u_neg;
-        const PetscBdPointFunc g1u = NULL;
-
-        // Fault slip constraint equation.
-        const PetscBdPointFunc g0l = pylith::fekernels::FaultCohesiveKin::g0l_neg;
-        const PetscBdPointFunc g1l = NULL;
-
-        kernels[0] = ResidualKernels(nameDispVel, g0u, g1u);
-        kernels[1] = ResidualKernels(nameLagrangeMultiplier, g0l, g1l);
-        assert(integrator);
-        integrator->setKernelsRHSResidualNeg(kernels);
-    } // negative side of the fault
+    kernels[0] = ResidualKernels(nameDispVel, g0u, g1u);
+    kernels[1] = ResidualKernels(nameLagrangeMultiplier, g0l, g1l);
+    assert(integrator);
+    integrator->setKernelsRHSResidual(kernels);
 
     PYLITH_METHOD_END;
 } // setKernelsRHSResidual
@@ -362,39 +345,20 @@ pylith::faults::_FaultCohesiveKin::setKernelsRHSJacobian(pylith::feassemble::Int
 
     std::vector<JacobianKernels> kernels(2);
 
-    { // Positive side of the fault
-        const PetscBdPointJac Jg0ul = pylith::fekernels::FaultCohesiveKin::Jg0ul_pos;
-        const PetscBdPointJac Jg1ul = NULL;
-        const PetscBdPointJac Jg2ul = NULL;
-        const PetscBdPointJac Jg3ul = NULL;
+    const PetscBdPointJac Jg0ul = pylith::fekernels::FaultCohesiveKin::Jg0ul;
+    const PetscBdPointJac Jg1ul = NULL;
+    const PetscBdPointJac Jg2ul = NULL;
+    const PetscBdPointJac Jg3ul = NULL;
 
-        const PetscBdPointJac Jg0lu = pylith::fekernels::FaultCohesiveKin::Jg0lu_pos;
-        const PetscBdPointJac Jg1lu = NULL;
-        const PetscBdPointJac Jg2lu = NULL;
-        const PetscBdPointJac Jg3lu = NULL;
+    const PetscBdPointJac Jg0lu = pylith::fekernels::FaultCohesiveKin::Jg0lu;
+    const PetscBdPointJac Jg1lu = NULL;
+    const PetscBdPointJac Jg2lu = NULL;
+    const PetscBdPointJac Jg3lu = NULL;
 
-        kernels[0] = JacobianKernels(nameDispVel, nameLagrangeMultiplier, Jg0ul, Jg1ul, Jg2ul, Jg3ul);
-        kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameDispVel, Jg0lu, Jg1lu, Jg2lu, Jg3lu);
-        assert(integrator);
-        integrator->setKernelsRHSJacobianPos(kernels);
-    } // positive side of the fault
-
-    { // Negative side of the fault
-        const PetscBdPointJac Jg0ul = pylith::fekernels::FaultCohesiveKin::Jg0ul_neg;
-        const PetscBdPointJac Jg1ul = NULL;
-        const PetscBdPointJac Jg2ul = NULL;
-        const PetscBdPointJac Jg3ul = NULL;
-
-        const PetscBdPointJac Jg0lu = pylith::fekernels::FaultCohesiveKin::Jg0lu_neg;
-        const PetscBdPointJac Jg1lu = NULL;
-        const PetscBdPointJac Jg2lu = NULL;
-        const PetscBdPointJac Jg3lu = NULL;
-
-        kernels[0] = JacobianKernels(nameDispVel, nameLagrangeMultiplier, Jg0ul, Jg1ul, Jg2ul, Jg3ul);
-        kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameDispVel, Jg0lu, Jg1lu, Jg2lu, Jg3lu);
-        assert(integrator);
-        integrator->setKernelsRHSJacobianNeg(kernels);
-    } // negative side of the fault
+    kernels[0] = JacobianKernels(nameDispVel, nameLagrangeMultiplier, Jg0ul, Jg1ul, Jg2ul, Jg3ul);
+    kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameDispVel, Jg0lu, Jg1lu, Jg2lu, Jg3lu);
+    assert(integrator);
+    integrator->setKernelsRHSJacobian(kernels);
 
     PYLITH_METHOD_END;
 } // setKernelsRHSJacobian

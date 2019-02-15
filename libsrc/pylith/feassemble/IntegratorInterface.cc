@@ -35,6 +35,18 @@
 
 #include <stdexcept> // USES std::runtime_error
 
+extern "C" {
+    PetscErrorCode DMPlexComputeResidual_Hybrid_Internal(DM dm,
+                                                         IS cellIS,
+                                                         PetscReal time,
+                                                         Vec locX,
+                                                         Vec locX_t,
+                                                         PetscReal t,
+                                                         Vec locF,
+                                                         void *user);
+
+} // extern "C"
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Local "private" functions.
 namespace pylith {
@@ -47,7 +59,6 @@ public:
              * @param[out] residual Field for residual.
              * @param[in] integrator Integrator for boundary.
              * @param[in] kernels Kernels for computing residual.
-             * @param[in] labelValue Value of label for interface cells for kernels;
              * @param[in] t Current time.
              * @param[in] dt Current time step.
              * @param[in] solution Field with current trial solution.
@@ -57,7 +68,6 @@ public:
             void computeResidual(pylith::topology::Field* residual,
                                  const pylith::feassemble::IntegratorInterface* integrator,
                                  const std::vector<pylith::feassemble::IntegratorInterface::ResidualKernels>& kernels,
-                                 const PylithInt labelValue,
                                  const PylithReal t,
                                  const PylithReal dt,
                                  const pylith::topology::Field& solution,
@@ -69,7 +79,6 @@ public:
              * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
              * @param[in] integrator Integrator for boundary.
              * @param[in] kernels Kernels for computing Jacobian.
-             * @param[in] labelValue Value of label for interface cells for kernels;
              * @param[in] t Current time.
              * @param[in] dt Current time step.
              * @param[in] s_tshift Scale for time derivative.
@@ -81,7 +90,6 @@ public:
                                  PetscMat precondMat,
                                  const pylith::feassemble::IntegratorInterface* integrator,
                                  const std::vector<pylith::feassemble::IntegratorInterface::JacobianKernels>& kernels,
-                                 const PylithInt labelValue,
                                  const PylithReal t,
                                  const PylithReal dt,
                                  const PylithReal s_tshift,
@@ -169,107 +177,55 @@ pylith::feassemble::IntegratorInterface::getPhysicsDomainMesh(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for RHS residual for the positive side of the interface.
+// Set kernels for RHS residual.
 void
-pylith::feassemble::IntegratorInterface::setKernelsRHSResidualPos(const std::vector<ResidualKernels>& kernels) {
+pylith::feassemble::IntegratorInterface::setKernelsRHSResidual(const std::vector<ResidualKernels>& kernels) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("setKernelsRHSResidual(# kernels="<<kernels.size()<<")");
 
-    _kernelsRHSResidualPos = kernels;
+    _kernelsRHSResidual = kernels;
 
     PYLITH_METHOD_END;
 } // setKernelsRHSResidual
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for RHS residual for the negative side of the interface.
+// Set kernels for RHS Jacobian.
 void
-pylith::feassemble::IntegratorInterface::setKernelsRHSResidualNeg(const std::vector<ResidualKernels>& kernels) {
+pylith::feassemble::IntegratorInterface::setKernelsRHSJacobian(const std::vector<JacobianKernels>& kernels) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setKernelsRHSResidualNeg(# kernels="<<kernels.size()<<")");
+    PYLITH_JOURNAL_DEBUG("setKernelsRHSJacobian(# kernels="<<kernels.size()<<")");
 
-    _kernelsRHSResidualNeg = kernels;
+    _kernelsRHSJacobian = kernels;
 
     PYLITH_METHOD_END;
-} // setKernelsRHSResidualNeg
+} // setKernelsRHSJacobian
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for RHS Jacobian for the positive side of the interface.
+// Set kernels for LHS residual.
 void
-pylith::feassemble::IntegratorInterface::setKernelsRHSJacobianPos(const std::vector<JacobianKernels>& kernels) {
+pylith::feassemble::IntegratorInterface::setKernelsLHSResidual(const std::vector<ResidualKernels>& kernels) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setKernelsRHSJacobianPos(# kernels="<<kernels.size()<<")");
+    PYLITH_JOURNAL_DEBUG("setKernelsLHSResidual(# kernels="<<kernels.size()<<")");
 
-    _kernelsRHSJacobianPos = kernels;
+    _kernelsLHSResidual = kernels;
 
     PYLITH_METHOD_END;
-} // setKernelsRHSJacobianPOs
+} // setKernelsLHSResidual
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for RHS Jacobian for the negative side of the interface.
+// Set kernels for LHS Jacobian.
 void
-pylith::feassemble::IntegratorInterface::setKernelsRHSJacobianNeg(const std::vector<JacobianKernels>& kernels) {
+pylith::feassemble::IntegratorInterface::setKernelsLHSJacobian(const std::vector<JacobianKernels>& kernels) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setKernelsRHSJacobianNeg(# kernels="<<kernels.size()<<")");
+    PYLITH_JOURNAL_DEBUG("setKernelsLHSJacobian(# kernels="<<kernels.size()<<")");
 
-    _kernelsRHSJacobianNeg = kernels;
+    _kernelsLHSJacobian = kernels;
 
     PYLITH_METHOD_END;
-} // setKernelsRHSJacobianNegative
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for LHS residual for the positive side of the interface.
-void
-pylith::feassemble::IntegratorInterface::setKernelsLHSResidualPos(const std::vector<ResidualKernels>& kernels) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setKernelsLHSResidualPos(# kernels="<<kernels.size()<<")");
-
-    _kernelsLHSResidualPos = kernels;
-
-    PYLITH_METHOD_END;
-} // setKernelsLHSResidualPos
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for LHS residual for the negative side of the interface.
-void
-pylith::feassemble::IntegratorInterface::setKernelsLHSResidualNeg(const std::vector<ResidualKernels>& kernels) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setKernelsLHSResidualNeg(# kernels="<<kernels.size()<<")");
-
-    _kernelsLHSResidualNeg = kernels;
-
-    PYLITH_METHOD_END;
-} // setKernelsLHSResidualNeg
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for LHS Jacobian for the positive side of the interface.
-void
-pylith::feassemble::IntegratorInterface::setKernelsLHSJacobianPos(const std::vector<JacobianKernels>& kernels) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setKernelsLHSJacobianPos(# kernels="<<kernels.size()<<")");
-
-    _kernelsLHSJacobianPos = kernels;
-
-    PYLITH_METHOD_END;
-} // setKernelsLHSJacobianPos
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for LHS Jacobian for the negative side of the interface.
-void
-pylith::feassemble::IntegratorInterface::setKernelsLHSJacobianNeg(const std::vector<JacobianKernels>& kernels) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setKernelsLHSJacobianNeg(# kernels="<<kernels.size()<<")");
-
-    _kernelsLHSJacobianNeg = kernels;
-
-    PYLITH_METHOD_END;
-} // setKernelsLHSJacobianNeg
+} // setKernelsLHSJacobian
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -305,22 +261,14 @@ pylith::feassemble::IntegratorInterface::computeRHSResidual(pylith::topology::Fi
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
-    if ((0 == _kernelsRHSResidualPos.size()) && (0 == _kernelsRHSResidualNeg.size())) { PYLITH_METHOD_END;}
+    if (0 == _kernelsRHSResidual.size()) { PYLITH_METHOD_END;}
 
     _setKernelConstants(solution, dt);
 
     pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
     solutionDot.label("solution_dot");
 
-    const PylithInt faceDim = solution.mesh().dimension() - 1;
-
-    const PylithInt labelValuePos = 100 + faceDim;
-    _IntegratorInterface::computeResidual(residual, this, _kernelsRHSResidualPos, labelValuePos,
-                                          t, dt, solution, solutionDot);
-
-    const PylithInt labelValueNeg = -(100 + faceDim);
-    _IntegratorInterface::computeResidual(residual, this, _kernelsRHSResidualPos, labelValueNeg,
-                                          t, dt, solution, solutionDot);
+    _IntegratorInterface::computeResidual(residual, this, _kernelsRHSResidual, t, dt, solution, solutionDot);
 
     PYLITH_METHOD_END;
 } // computeRHSResidual
@@ -337,7 +285,7 @@ pylith::feassemble::IntegratorInterface::computeRHSJacobian(PetscMat jacobianMat
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<") empty method");
 
-    if ((0 == _kernelsRHSJacobianPos.size()) && (0 == _kernelsRHSJacobianNeg.size())) { PYLITH_METHOD_END;}
+    if (0 == _kernelsRHSJacobian.size()) { PYLITH_METHOD_END;}
 
     _setKernelConstants(solution, dt);
 
@@ -345,15 +293,8 @@ pylith::feassemble::IntegratorInterface::computeRHSJacobian(PetscMat jacobianMat
     solutionDot.label("solution_dot");
     const PylithReal s_tshift = 0.0; // No dependence on time derivative of solution in RHS, so shift isn't applicable.
 
-    const PylithInt faceDim = solution.mesh().dimension() - 1;
-
-    const PylithInt labelValuePos = 100 + faceDim;
-    _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsRHSJacobianPos, labelValuePos,
-                                          t, dt, s_tshift, solution, solutionDot);
-
-    const PylithInt labelValueNeg = -(100 + faceDim);
-    _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsRHSJacobianPos, labelValueNeg,
-                                          t, dt, s_tshift, solution, solutionDot);
+    _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsRHSJacobian, t, dt, s_tshift,
+                                          solution, solutionDot);
 
     _needNewRHSJacobian = false;
 
@@ -372,19 +313,11 @@ pylith::feassemble::IntegratorInterface::computeLHSResidual(pylith::topology::Fi
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
-    if ((0 == _kernelsLHSResidualPos.size()) && (0 == _kernelsLHSResidualNeg.size())) { PYLITH_METHOD_END;}
+    if (0 == _kernelsLHSResidual.size()) { PYLITH_METHOD_END;}
 
     _setKernelConstants(solution, dt);
 
-    const PylithInt faceDim = solution.mesh().dimension() - 1;
-
-    const PylithInt labelValuePos = 100 + faceDim;
-    _IntegratorInterface::computeResidual(residual, this, _kernelsLHSResidualPos, labelValuePos,
-                                          t, dt, solution, solutionDot);
-
-    const PylithInt labelValueNeg = -(100 + faceDim);
-    _IntegratorInterface::computeResidual(residual, this, _kernelsLHSResidualPos, labelValueNeg,
-                                          t, dt, solution, solutionDot);
+    _IntegratorInterface::computeResidual(residual, this, _kernelsLHSResidual, t, dt, solution, solutionDot);
 
     PYLITH_METHOD_END;
 } // computeLHSResidual
@@ -403,19 +336,12 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobian(PetscMat jacobianMat
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
-    if ((0 == _kernelsLHSJacobianPos.size()) && (0 == _kernelsLHSJacobianNeg.size())) { PYLITH_METHOD_END;}
+    if (0 == _kernelsLHSJacobian.size()) { PYLITH_METHOD_END;}
 
     _setKernelConstants(solution, dt);
 
-    const PylithInt faceDim = solution.mesh().dimension() - 1;
-
-    const PylithInt labelValuePos = 100 + faceDim;
-    _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsLHSJacobianPos, labelValuePos,
-                                          t, dt, s_tshift, solution, solutionDot);
-
-    const PylithInt labelValueNeg = -(100 + faceDim);
-    _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsLHSJacobianPos, labelValueNeg,
-                                          t, dt, s_tshift, solution, solutionDot);
+    _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsLHSJacobian, t, dt, s_tshift,
+                                          solution, solutionDot);
 
     _needNewLHSJacobian = false;
 
@@ -446,7 +372,6 @@ void
 pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Field* residual,
                                                           const pylith::feassemble::IntegratorInterface* integrator,
                                                           const std::vector<pylith::feassemble::IntegratorInterface::ResidualKernels>& kernels,
-                                                          const PylithInt labelValue,
                                                           const PylithReal t,
                                                           const PylithReal dt,
                                                           const pylith::topology::Field& solution,
@@ -465,16 +390,22 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     PetscDM dmSoln = solution.dmMesh();
     PetscDM dmAux = auxiliaryField->dmMesh();
 
+    PetscDMLabel dmLabel = NULL;
+    PetscIS cohesiveCells = NULL;
+    PetscInt cStart = 0, cEnd = 0;
+    err = DMGetLabel(dmSoln, "material-id", &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumBounds(dmLabel, integrator->getInterfaceId(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cohesiveCells);PYLITH_CHECK_ERROR(err);
+
     PetscDS prob = NULL;
-    err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
+    PetscInt cMax = 0;
+    err = DMPlexGetHeightStratum(dmSoln, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHybridBounds(dmSoln, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
+    err = DMGetCellDS(dmSoln, cMax, &prob);PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
     err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
-
-    std::string interfaceLabelName = std::string(integrator->getSurfaceMarkerLabel()) + std::string("-interface");
-    PetscDMLabel interfaceDMLabel = NULL;
-    err = DMGetLabel(dmSoln, interfaceLabelName.c_str(), &interfaceDMLabel);PYLITH_CHECK_ERROR(err);assert(interfaceDMLabel);
 
 #if 0 // DEBUGGING
     std::cout << "DOMAIN MESH" << std::endl;
@@ -482,8 +413,6 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
 
     std::cout << "FAULT MESH" << std::endl;
     auxiliaryField->mesh().view("::ascii_info_detail");
-
-    err = DMLabelView(interfaceDMLabel, PETSC_VIEWER_STDOUT_SELF);
 #endif // DEBUGGING
 
     // Compute the local residual
@@ -492,8 +421,11 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
         err = PetscDSSetBdResidual(prob, i_field, kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
-        err = DMPlexComputeBdResidualSingle(dmSoln, t, interfaceDMLabel, 1, &labelValue, i_field, solution.localVector(), solutionDot.localVector(), residual->localVector());PYLITH_CHECK_ERROR(err);
     } // for
+    err = DMPlexComputeResidual_Hybrid_Internal(dmSoln, cohesiveCells, t, solution.localVector(),
+                                                solutionDot.localVector(), t,
+                                                residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&cohesiveCells);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeResidual
@@ -506,7 +438,6 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
                                                           PetscMat precondMat,
                                                           const pylith::feassemble::IntegratorInterface* integrator,
                                                           const std::vector<pylith::feassemble::IntegratorInterface::JacobianKernels>& kernels,
-                                                          const PylithInt labelValue,
                                                           const PylithReal t,
                                                           const PylithReal dt,
                                                           const PylithReal s_tshift,
@@ -533,10 +464,6 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
     err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
-    std::string interfaceLabelName = std::string(integrator->getSurfaceMarkerLabel()) + std::string("-interface");
-    PetscDMLabel interfaceDMLabel = NULL;
-    err = DMGetLabel(dmSoln, interfaceLabelName.c_str(), &interfaceDMLabel);PYLITH_CHECK_ERROR(err);assert(interfaceDMLabel);
-
     // Compute the local Jacobian
     assert(solution.localVector());
 
@@ -544,10 +471,12 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
         const PetscInt i_fieldTrial = solution.subfieldInfo(kernels[i].subfieldTrial.c_str()).index;
         const PetscInt i_fieldBasis = solution.subfieldInfo(kernels[i].subfieldBasis.c_str()).index;
         err = PetscDSSetBdJacobian(prob, i_fieldTrial, i_fieldBasis, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
-
-        err = DMPlexComputeBdJacobianSingle(dmSoln, t, interfaceDMLabel, 1, &labelValue, i_fieldTrial, solution.localVector(),
-                                            solutionDot.localVector(), s_tshift, jacobianMat, precondMat);PYLITH_CHECK_ERROR(err);
     } // for
+
+    journal::error_t error("integratorinterface");
+    error << journal::at(__HERE__)
+          <<":TODO: @matt Need to implement DMPlexComputeJacobian_Hybrid_Internal() or _Single()." << journal::endl;
+    throw std::logic_error(":TODO: @brad Finish implementing _IntegratorInterface::computeJacobian().");
 
     PYLITH_METHOD_END;
 } // computeJacobian

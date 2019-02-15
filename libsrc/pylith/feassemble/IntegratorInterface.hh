@@ -135,53 +135,29 @@ public:
      */
     const pylith::topology::Mesh& getPhysicsDomainMesh(void) const;
 
-    /** Set kernels for RHS residual for the positive side of the interface.
+    /** Set kernels for RHS residual.
      *
      * @param kernels Array of kernels for computing the RHS residual.
      */
-    void setKernelsRHSResidualPos(const std::vector<ResidualKernels>& kernels);
+    void setKernelsRHSResidual(const std::vector<ResidualKernels>& kernels);
 
-    /** Set kernels for RHS residual for the negative side of the interface.
-     *
-     * @param kernels Array of kernels for computing the RHS residual.
-     */
-    void setKernelsRHSResidualNeg(const std::vector<ResidualKernels>& kernels);
-
-    /** Set kernels for RHS Jacobian for the positive side of the interface.
+    /** Set kernels for RHS Jacobian.
      *
      * @param kernels Array of kernels for computing the RHS Jacobian.
      */
-    void setKernelsRHSJacobianPos(const std::vector<JacobianKernels>& kernels);
+    void setKernelsRHSJacobian(const std::vector<JacobianKernels>& kernels);
 
-    /** Set kernels for RHS Jacobian for the negative side of the interface.
-     *
-     * @param kernels Array of kernels for computing the RHS Jacobian.
-     */
-    void setKernelsRHSJacobianNeg(const std::vector<JacobianKernels>& kernels);
-
-    /** Set kernels for LHS residual for the positive side of the interface.
+    /** Set kernels for LHS residual.
      *
      * @param kernels Array of kernels for computing the LHS residual.
      */
-    void setKernelsLHSResidualPos(const std::vector<ResidualKernels>& kernels);
+    void setKernelsLHSResidual(const std::vector<ResidualKernels>& kernels);
 
-    /** Set kernels for LHS residual for the negative side of the interface.
-     *
-     * @param kernels Array of kernels for computing the LHS residual.
-     */
-    void setKernelsLHSResidualNeg(const std::vector<ResidualKernels>& kernels);
-
-    /** Set kernels for LHS Jacobian for the positive side of the interface.
+    /** Set kernels for LHS Jacobian.
      *
      * @param kernels Array of kernels for computing the LHS Jacobian.
      */
-    void setKernelsLHSJacobianPos(const std::vector<JacobianKernels>& kernels);
-
-    /** Set kernels for LHS Jacobian for the negative side of the interface.
-     *
-     * @param kernels Array of kernels for computing the LHS Jacobian.
-     */
-    void setKernelsLHSJacobianNeg(const std::vector<JacobianKernels>& kernels);
+    void setKernelsLHSJacobian(const std::vector<JacobianKernels>& kernels);
 
     /** Initialize integration domain, auxiliary field, and derived field. Update observers.
      *
@@ -287,15 +263,11 @@ protected:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    std::vector<ResidualKernels> _kernelsRHSResidualPos; ///< kernels for RHS residual for positive side of interface.
-    std::vector<ResidualKernels> _kernelsRHSResidualNeg; ///< kernels for RHS residual for negative side of interface.
-    std::vector<ResidualKernels> _kernelsLHSResidualPos; ///< kernels for LHS residual for positive side of interface.
-    std::vector<ResidualKernels> _kernelsLHSResidualNeg; ///< kernels for LHS residual for negative side of interface.
+    std::vector<ResidualKernels> _kernelsRHSResidual; ///< kernels for RHS residual.
+    std::vector<ResidualKernels> _kernelsLHSResidual; ///< kernels for LHS residual.
 
-    std::vector<JacobianKernels> _kernelsRHSJacobianPos; ///< kernels for RHS Jacobian for positive side of interface.
-    std::vector<JacobianKernels> _kernelsRHSJacobianNeg; ///< kernels for RHS Jacobian for negative side of interface.
-    std::vector<JacobianKernels> _kernelsLHSJacobianPos; /// > kernels for LHS Jacobian for positive side of interface.
-    std::vector<JacobianKernels> _kernelsLHSJacobianNeg; /// > kernels for LHS Jacobian for negative side of interface.
+    std::vector<JacobianKernels> _kernelsRHSJacobian; ///< kernels for RHS Jacobian.
+    std::vector<JacobianKernels> _kernelsLHSJacobian; /// > kernels for LHS Jacobian.
 
     pylith::topology::Mesh* _interfaceMesh; ///< Boundary mesh.
 
