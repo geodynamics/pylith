@@ -48,7 +48,7 @@ noinst_HEADERS =
 
 
 if ENABLE_TESTING
-subpkginclude_HEADERS = \
+subpkginclude_HEADERS += \
 	FieldTester.hh
 endif
 
