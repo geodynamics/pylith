@@ -30,15 +30,15 @@ pylith::meshio::DataWriter::DataWriter(void) :
     _timeScale(1.0),
     _context(""),
     _isInfo(false),
-    _isOpen(false)
-{ // constructor
-} // constructor
+    _isOpen(false) {}
+
 
 // ----------------------------------------------------------------------
 // Destructor
 pylith::meshio::DataWriter::~DataWriter(void) {
     deallocate();
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
@@ -63,12 +63,14 @@ pylith::meshio::DataWriter::timeScale(const PylithScalar value) {
     PYLITH_METHOD_END;
 } // timeScale
 
+
 // ----------------------------------------------------------------------
 // Is data writer open, i.e., ready for openTimeStep()/closeTimeStep()?
 bool
 pylith::meshio::DataWriter::isOpen(void) const {
     return _isOpen;
 } // isOpen
+
 
 // ----------------------------------------------------------------------
 // Prepare for writing files.
@@ -82,7 +84,7 @@ pylith::meshio::DataWriter::open(const topology::Mesh& mesh,
     _isInfo = isInfo;
     _isOpen = true;
 
-    PetscDM dmMesh = mesh.dmMesh(); assert(dmMesh);
+    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
     const char* meshName = NULL;
     PetscObjectGetName((PetscObject) dmMesh, &meshName);
 
@@ -97,6 +99,7 @@ pylith::meshio::DataWriter::open(const topology::Mesh& mesh,
     PYLITH_METHOD_END;
 } // open
 
+
 // ----------------------------------------------------------------------
 // Close output files.
 void
@@ -104,6 +107,7 @@ pylith::meshio::DataWriter::close(void) {
     _context = "";
     _isOpen = false;
 } // close
+
 
 // ----------------------------------------------------------------------
 // Prepare file for data at a new time step.
@@ -115,6 +119,7 @@ pylith::meshio::DataWriter::openTimeStep(const PylithScalar t,
     // Default: no implementation.
 } // openTimeStep
 
+
 // ----------------------------------------------------------------------
 // Cleanup after writing data for a time step.
 void
@@ -122,24 +127,21 @@ pylith::meshio::DataWriter::closeTimeStep(void) {
     // Default: no implementation.
 } // closeTimeStep
 
+
 // ----------------------------------------------------------------------
 // Copy constructor.
 pylith::meshio::DataWriter::DataWriter(const DataWriter& w) :
     _context(w._context),
     _isInfo(w._isInfo),
-    _isOpen(w._isOpen)
-{ // copy constructor
-} // copy constructor
+    _isOpen(w._isOpen) {}
 
 
 // ----------------------------------------------------------------------
 // Write dataset with names of points to file.
 void
 pylith::meshio::DataWriter::writePointNames(const pylith::string_vector& names,
-                                            const topology::Mesh& mesh)
-{ // writePointNames
-
-    // Default: no implementation.
+                                            const topology::Mesh& mesh) { // writePointNames
+                                                                          // Default: no implementation.
 
 } // writePointNames
 
@@ -153,7 +155,7 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
 
     assert(coordsGlobalVec);
 
-    PetscDM dmMesh = mesh.dmMesh(); assert(dmMesh);
+    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
     PetscDM dmCoord = NULL;
 
     PetscSection section = NULL;
@@ -167,49 +169,49 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
     PylithInt dim, dimF, pStart, pEnd, qStart, qEnd, cEnd, cMax, vEnd, vMax;
     PetscErrorCode err;
 
-    err = DMGetCoordinateDM(dmMesh, &dmCoord); PYLITH_CHECK_ERROR(err); assert(dmCoord);
-    err = DMPlexGetHeightStratum(dmCoord, 0, NULL, &cEnd); PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetDepthStratum(dmCoord, 0, NULL, &vEnd); PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetHybridBounds(dmCoord, &cMax, NULL, NULL, &vMax); PYLITH_CHECK_ERROR(err);
+    err = DMGetCoordinateDM(dmMesh, &dmCoord);PYLITH_CHECK_ERROR(err);assert(dmCoord);
+    err = DMPlexGetHeightStratum(dmCoord, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetDepthStratum(dmCoord, 0, NULL, &vEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHybridBounds(dmCoord, &cMax, NULL, NULL, &vMax);PYLITH_CHECK_ERROR(err);
     PylithInt excludeRanges[4] = {cMax, cEnd, vMax, vEnd};
     PylithInt numExcludes = (cMax >= 0 ? 1 : 0) + (vMax >= 0 ? 1 : 0);
 
-    err = DMGetDefaultSection(dmCoord, &section); PYLITH_CHECK_ERROR(err);
-    err = DMGetDimension(dmMesh,  &dim); PYLITH_CHECK_ERROR(err);
-    err = DMGetDimension(dmCoord, &dimF); PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetChart(dmMesh,  &pStart, &pEnd); PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetChart(dmCoord, &qStart, &qEnd); PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetSubpointMap(dmMesh,  &subpointMap); PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetSubpointMap(dmCoord, &subpointMapF); PYLITH_CHECK_ERROR(err);
+    err = DMGetDefaultSection(dmCoord, &section);PYLITH_CHECK_ERROR(err);
+    err = DMGetDimension(dmMesh,  &dim);PYLITH_CHECK_ERROR(err);
+    err = DMGetDimension(dmCoord, &dimF);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetChart(dmMesh,  &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetChart(dmCoord, &qStart, &qEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetSubpointMap(dmMesh,  &subpointMap);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetSubpointMap(dmCoord, &subpointMapF);PYLITH_CHECK_ERROR(err);
     if (((dim != dimF) || ((pEnd-pStart) < (qEnd-qStart))) && subpointMap && !subpointMapF) {
         const PylithInt *indices = NULL;
         PetscIS subpointIS = NULL;
         PylithInt n = 0;
 
-        err = PetscSectionGetChart(section, &qStart, &qEnd); PYLITH_CHECK_ERROR(err);
-        err = DMPlexCreateSubpointIS(dmMesh, &subpointIS); PYLITH_CHECK_ERROR(err);
+        err = PetscSectionGetChart(section, &qStart, &qEnd);PYLITH_CHECK_ERROR(err);
+        err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);PYLITH_CHECK_ERROR(err);
         if (subpointIS) {
-            err = ISGetLocalSize(subpointIS, &n); PYLITH_CHECK_ERROR(err);
-            err = ISGetIndices(subpointIS, &indices); PYLITH_CHECK_ERROR(err);
+            err = ISGetLocalSize(subpointIS, &n);PYLITH_CHECK_ERROR(err);
+            err = ISGetIndices(subpointIS, &indices);PYLITH_CHECK_ERROR(err);
         } // if
-        err = PetscSectionCreate(mesh.comm(), &subSection); PYLITH_CHECK_ERROR(err);
-        err = PetscSectionSetChart(subSection, pStart, pEnd); PYLITH_CHECK_ERROR(err);
+        err = PetscSectionCreate(mesh.comm(), &subSection);PYLITH_CHECK_ERROR(err);
+        err = PetscSectionSetChart(subSection, pStart, pEnd);PYLITH_CHECK_ERROR(err);
         for (PylithInt q = qStart; q < qEnd; ++q) {
             PylithInt dof, off, p;
 
-            err = PetscSectionGetDof(section, q, &dof); PYLITH_CHECK_ERROR(err);
+            err = PetscSectionGetDof(section, q, &dof);PYLITH_CHECK_ERROR(err);
             if (dof) {
-                err = PetscFindInt(q, n, indices, &p); PYLITH_CHECK_ERROR(err);
+                err = PetscFindInt(q, n, indices, &p);PYLITH_CHECK_ERROR(err);
                 if ((p >= pStart) && (p < pEnd)) {
-                    err = PetscSectionSetDof(subSection, p, dof); PYLITH_CHECK_ERROR(err);
-                    err = PetscSectionGetOffset(section, q, &off); PYLITH_CHECK_ERROR(err);
-                    err = PetscSectionSetOffset(subSection, p, off); PYLITH_CHECK_ERROR(err);
+                    err = PetscSectionSetDof(subSection, p, dof);PYLITH_CHECK_ERROR(err);
+                    err = PetscSectionGetOffset(section, q, &off);PYLITH_CHECK_ERROR(err);
+                    err = PetscSectionSetOffset(subSection, p, off);PYLITH_CHECK_ERROR(err);
                 } // if
             } // if
         } // for
         if (subpointIS) {
-            err = ISRestoreIndices(subpointIS, &indices); PYLITH_CHECK_ERROR(err);
-            err = ISDestroy(&subpointIS); PYLITH_CHECK_ERROR(err);
+            err = ISRestoreIndices(subpointIS, &indices);PYLITH_CHECK_ERROR(err);
+            err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
         } // if
           /* No need to setup section */
         section = subSection;
@@ -217,37 +219,34 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
         numExcludes = 0;
     } // if
 
-    PetscDS prob = NULL;
     PetscSF sf = NULL;
     PetscDM dmCoordGlobal = NULL;
-    err = DMClone(dmCoord, &dmCoordGlobal); PYLITH_CHECK_ERROR(err);
-    err = DMGetDS(dmCoord, &prob); PYLITH_CHECK_ERROR(err);
-    err = DMSetDS(dmCoordGlobal, prob); PYLITH_CHECK_ERROR(err);
-    err = PetscSectionClone(section, &newSection); PYLITH_CHECK_ERROR(err);
-    err = DMSetDefaultSection(dmCoordGlobal, newSection); PYLITH_CHECK_ERROR(err);
-    err = PetscSectionDestroy(&newSection); PYLITH_CHECK_ERROR(err);
-    err = DMGetPointSF(dmCoordGlobal, &sf); PYLITH_CHECK_ERROR(err);
+    err = DMClone(dmCoord, &dmCoordGlobal);PYLITH_CHECK_ERROR(err);
+    err = DMCopyDisc(dmCoord, dmCoordGlobal);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionClone(section, &newSection);PYLITH_CHECK_ERROR(err);
+    err = DMSetDefaultSection(dmCoordGlobal, newSection);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionDestroy(&newSection);PYLITH_CHECK_ERROR(err);
+    err = DMGetPointSF(dmCoordGlobal, &sf);PYLITH_CHECK_ERROR(err);
     err = PetscSectionCreateGlobalSectionCensored(section, sf, PETSC_TRUE, numExcludes, excludeRanges, &gsection);PYLITH_CHECK_ERROR(err);
-    err = DMSetDefaultGlobalSection(dmCoordGlobal, gsection); PYLITH_CHECK_ERROR(err);
-    err = PetscSectionDestroy(&gsection); PYLITH_CHECK_ERROR(err);
+    err = DMSetDefaultGlobalSection(dmCoordGlobal, gsection);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionDestroy(&gsection);PYLITH_CHECK_ERROR(err);
 
-    err = VecDestroy(coordsGlobalVec); PYLITH_CHECK_ERROR(err);
-    err = DMCreateGlobalVector(dmCoordGlobal, coordsGlobalVec); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) *coordsGlobalVec, "vertices"); PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(coordsGlobalVec);PYLITH_CHECK_ERROR(err);
+    err = DMCreateGlobalVector(dmCoordGlobal, coordsGlobalVec);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject) *coordsGlobalVec, "vertices");PYLITH_CHECK_ERROR(err);
 
-    err = PetscSectionDestroy(&subSection); PYLITH_CHECK_ERROR(err);
-
+    err = PetscSectionDestroy(&subSection);PYLITH_CHECK_ERROR(err);
 
     InsertMode mode = INSERT_VALUES;
     PetscVec coordsLocalVec = NULL;
-    err = DMGetCoordinatesLocal(dmMesh, &coordsLocalVec); PYLITH_CHECK_ERROR(err);
-    err = DMLocalToGlobalBegin(dmCoordGlobal, coordsLocalVec, mode, *coordsGlobalVec); PYLITH_CHECK_ERROR(err);
-    err = DMLocalToGlobalEnd(dmCoordGlobal, coordsLocalVec, mode, *coordsGlobalVec); PYLITH_CHECK_ERROR(err);
+    err = DMGetCoordinatesLocal(dmMesh, &coordsLocalVec);PYLITH_CHECK_ERROR(err);
+    err = DMLocalToGlobalBegin(dmCoordGlobal, coordsLocalVec, mode, *coordsGlobalVec);PYLITH_CHECK_ERROR(err);
+    err = DMLocalToGlobalEnd(dmCoordGlobal, coordsLocalVec, mode, *coordsGlobalVec);PYLITH_CHECK_ERROR(err);
 
     PylithReal lengthScale = 1.0;
-    err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale); PYLITH_CHECK_ERROR(err);
-    err = VecScale(*coordsGlobalVec, lengthScale); PYLITH_CHECK_ERROR(err);
-    err = DMDestroy(&dmCoordGlobal); PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
+    err = VecScale(*coordsGlobalVec, lengthScale);PYLITH_CHECK_ERROR(err);
+    err = DMDestroy(&dmCoordGlobal);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // getCoordsGlobalVec

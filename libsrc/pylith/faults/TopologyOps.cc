@@ -42,7 +42,7 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
     PetscDM subdm = NULL;
     const char *groupName = "";
 
-    if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
+    if (groupField) {err = PetscObjectGetName((PetscObject)groupField, &groupName);PYLITH_CHECK_ERROR(err);}
     err = DMPlexCreateSubmesh(dmMesh, groupField, 1, PETSC_FALSE, &subdm);PYLITH_CHECK_ERROR(err);
     // Check that no cell have all vertices on the fault
     if (groupField) {
@@ -193,7 +193,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
             /* Eliminate hybrid cells on the boundary of the split from cohesive label,
              * they are marked with -(cell number) since the hybrid cell number aliases vertices in the old mesh */
             err = DMLabelGetValue(label, -cell, &onBd);PYLITH_CHECK_ERROR(err);
-            //if (onBd == dim) continue;
+            // if (onBd == dim) continue;
             err = DMLabelSetValue(mlabel, cell, materialId);PYLITH_CHECK_ERROR(err);
         }
     }
@@ -301,7 +301,7 @@ pylith::faults::TopologyOps::classifyCellsDM(PetscDM dmMesh,
                 if (debug) { std::cout << "  already a cohesive cell" << std::endl;}
                 continue;
             } // if
-             // If neighbor shares a face with anyone in replaceCells, then add
+              // If neighbor shares a face with anyone in replaceCells, then add
             for (PointSet::const_iterator c_iter = vReplaceCells.begin(); c_iter != vReplaceCells.end(); ++c_iter) {
                 const PetscInt *coveringPoints;
                 PetscInt numCoveringPoints, points[2];

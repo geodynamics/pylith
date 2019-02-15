@@ -719,9 +719,11 @@ pylith::problems::Problem::_setupLagrangeMultiplier(pylith::topology::Field* sol
     } // for
     delete[] pMax;pMax = NULL;
 
-    PetscDS prob = NULL;
-    err = DMGetDS(dmSoln, &prob);
-    err = PetscDSSetLabel(prob, 1, cohesiveLabel);PYLITH_CHECK_ERROR(err);
+    const pylith::topology::Field::SubfieldInfo& lagrangeMultiplierInfo = _solution->subfieldInfo("lagrange_multiplier_fault");
+    PetscFE fe = NULL;
+    err = DMGetField(dmSoln, lagrangeMultiplierInfo.index, NULL, (PetscObject*)&fe);PYLITH_CHECK_ERROR(err);assert(fe);
+    err = PetscObjectReference((PetscObject)fe);PYLITH_CHECK_ERROR(err);
+    err = DMSetField(dmSoln, lagrangeMultiplierInfo.index, cohesiveLabel, (PetscObject)fe);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setupLagrangeMultiplier

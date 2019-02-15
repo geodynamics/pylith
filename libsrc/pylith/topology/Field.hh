@@ -237,7 +237,10 @@ public:
 
     /** Setup sections for subfields.
      *
-     * Should be preceded by calls to subfieldAdd() and followed by calls to subfieldSetDof().
+     * Should be preceded by calls to subfieldAdd() and followed by calls to allocate().
+     *
+     * Additional setup of the field, such as customization of the discretization, can be done after calling this
+     * routine.
      */
     void subfieldsSetup(void);
 
