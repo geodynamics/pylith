@@ -269,6 +269,12 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
     assert(_auxiliaryFactory);
     _auxiliaryFactory->setValuesFromDB();
 
+    journal::debug_t debug(PyreComponent::getName());
+    if (debug.state()) {
+        PYLITH_COMPONENT_DEBUG("Displaying auxiliary field");
+        auxiliaryField->view("Neumann auxiliary field");
+    } // if
+
     PYLITH_METHOD_RETURN(auxiliaryField);
 } // createAuxiliaryField
 
@@ -337,7 +343,7 @@ pylith::bc::_NeumannTimeDependent::setKernelsRHSResidual(pylith::feassemble::Int
                                                          const pylith::bc::NeumannTimeDependent& bc,
                                                          const topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    //PYLITH_COMPONENT_DEBUG("setKernelsRHSResidual(integrator="<<integrator<<", solution="<<solution.label()<<")");
+    // PYLITH_COMPONENT_DEBUG("setKernelsRHSResidual(integrator="<<integrator<<", solution="<<solution.label()<<")");
 
     PetscBdPointFunc g0 = NULL;
     PetscBdPointFunc g1 = NULL;
@@ -379,7 +385,7 @@ pylith::bc::_NeumannTimeDependent::setKernelsRHSResidual(pylith::feassemble::Int
              pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_vector;
         break;
     case 0x0:
-        //PYLITH_COMPONENT_WARNING("Neumann time-dependent BC provides no values.");
+        // PYLITH_COMPONENT_WARNING("Neumann time-dependent BC provides no values.");
         break;
     default:
         throw std::logic_error("Unknown combination of flags for Neumann time-dependent BC terms.");
