@@ -43,6 +43,12 @@ class Elasticity(Material, ModuleElasticity):
 
     import pyre.inventory
 
+    from pylith.topology.AuxSubfield import subfieldFactory
+    from .AuxSubfieldsElasticity import AuxSubfieldsElasticity
+    auxiliarySubfields = pyre.inventory.facilityArray(
+        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsElasticity)
+    auxiliarySubfields.meta['tip'] = "Discretization of elasticity properties."
+
     useInertia = pyre.inventory.bool("use_inertia", default=False)
     useInertia.meta['tip'] = "Include inertial term in elasticity equation."
 
@@ -66,8 +72,9 @@ class Elasticity(Material, ModuleElasticity):
         Setup material.
         """
         self.rheology.preinitialize(mesh)
-        # :TODO: :NOW: @brad Need to set auxiliarySubfields from rheology.
         Material.preinitialize(self, mesh)
+
+        self.rheology.addAuxiliarySubfields(self)
 
         ModuleElasticity.useInertia(self, self.useInertia)
         ModuleElasticity.useBodyForce(self, self.useBodyForce)

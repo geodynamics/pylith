@@ -19,7 +19,7 @@
 
 __all__ = [
     "AbsorbingDampers",
-    "AuxFieldsTimeDependent",
+    "AuxSubfieldsTimeDependent",
     "BoundaryCondition",
     "DirichletTimeDependent",
     "NeumannTimeDependent",

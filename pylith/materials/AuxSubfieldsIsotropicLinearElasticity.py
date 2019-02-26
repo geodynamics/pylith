@@ -13,17 +13,16 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/materials/AuxFieldsIsotropicLinearElasticity.py
+# @file pylith/materials/AuxSubfieldsIsotropicLinearElasticity.py
 #
-# @brief Python subfields container for isotropic, linear elasticity
-# subfields.
+# @brief Python container for isotropic, linear elasticity subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
 
 
-class AuxFieldsIsotropicLinearElasticity(PetscComponent):
+class AuxSubfieldsIsotropicLinearElasticity(PetscComponent):
     """
-    Python subfields container for isotropic, linear elasticity subfields.
+    Python container for isotropic, linear elasticity subfields.
 
     INVENTORY
 
@@ -31,21 +30,15 @@ class AuxFieldsIsotropicLinearElasticity(PetscComponent):
       - None
 
     Facilities
-      - *density* Density subfield.
       - *shear_modulus* Shear modulus subfield.
       - *bulk_modulus* Bulk modulus subfield.
-      - *body_force* Body force.
       - *reference_stress* Reference stress subfield.
       - *references_strain* Reference strain.
-      - *gravitational_acceleration* Gravitational acceleration subfield.
     """
 
     import pyre.inventory
 
     from pylith.topology.AuxSubfield import AuxSubfield
-
-    density = pyre.inventory.facility("density", family="auxiliary_subfield", factory=AuxSubfield)
-    density.meta['tip'] = "Density subfield."
 
     shearModulus = pyre.inventory.facility("shear_modulus", family="auxiliary_subfield", factory=AuxSubfield)
     shearModulus.meta['tip'] = "Shear modulus subfield."
@@ -53,25 +46,19 @@ class AuxFieldsIsotropicLinearElasticity(PetscComponent):
     bulkModulus = pyre.inventory.facility("bulk_modulus", family="auxiliary_subfield", factory=AuxSubfield)
     bulkModulus.meta['tip'] = "Bulk modulus subfield."
 
-    bodyForce = pyre.inventory.facility("body_force", family="auxiliary_subfield", factory=AuxSubfield)
-    bodyForce.meta['tip'] = "Body force subfield."
-
     referenceStress = pyre.inventory.facility("reference_stress", family="auxiliary_subfield", factory=AuxSubfield)
     referenceStress.meta['tip'] = "Reference stress subfield."
 
     referenceStrain = pyre.inventory.facility("reference_strain", family="auxiliary_subfield", factory=AuxSubfield)
     referenceStrain.meta['tip'] = "Reference strain subfield."
 
-    gravitationalAcceleration = pyre.inventory.facility("gravitational_acceleration", family="auxiliary_subfield", factory=AuxSubfield)
-    gravitationalAcceleration.meta['tip'] = "Gravitational acceleration subfield."
-
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="auxfieldsisotropiclinearelasticity"):
+    def __init__(self, name="auxsubfieldsisotropiclinearelasticity"):
         """
         Constructor.
         """
-        PetscComponent.__init__(self, name, facility="auxiliary_fields")
+        PetscComponent.__init__(self, name, facility="auxiliary_subfields")
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -79,6 +66,15 @@ class AuxFieldsIsotropicLinearElasticity(PetscComponent):
     def _configure(self):
         PetscComponent._configure(self)
         return
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def auxiliary_subfields():
+    """
+    Factory associated with AuxSubfieldsIsotropicLinearElasticity.
+    """
+    return AuxSubfieldsIsotropicLinearElasticity()
 
 
 # End of file

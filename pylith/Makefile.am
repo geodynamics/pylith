@@ -26,7 +26,7 @@ nobase_pkgpyexec_PYTHON = \
 	bc/BoundaryCondition.py \
 	bc/DirichletTimeDependent.py \
 	bc/NeumannTimeDependent.py \
-	bc/AuxFieldsTimeDependent.py \
+	bc/AuxSubfieldsTimeDependent.py \
 	bc/AbsorbingDampers.py \
 	bc/ZeroDB.py \
 	faults/__init__.py \
@@ -42,13 +42,14 @@ nobase_pkgpyexec_PYTHON = \
 	materials/Homogeneous.py \
 	materials/Material.py \
 	materials/Elasticity.py \
+	materials/AuxSubfieldsElasticity.py \
 	materials/RheologyElasticity.py \
 	materials/IsotropicLinearElasticity.py \
 	materials/IsotropicLinearMaxwell.py \
 	materials/IsotropicLinearGenMaxwell.py \
-	materials/AuxFieldsIsotropicLinearElasticity.py \
-	materials/AuxFieldsIsotropicLinearMaxwell.py \
-	materials/AuxFieldsIsotropicLinearGenMaxwell.py \
+	materials/AuxSubfieldsIsotropicLinearElasticity.py \
+	materials/AuxSubfieldsIsotropicLinearMaxwell.py \
+	materials/AuxSubfieldsIsotropicLinearGenMaxwell.py \
 	materials/RheologyIncompressibleElasticity.py \
 	materials/IsotropicLinearIncompElasticity.py \
 	meshio/__init__.py \

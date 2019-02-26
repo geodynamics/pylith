@@ -44,10 +44,10 @@ class IsotropicLinearIncompElasticity(RheologyIncompressibleElasticity, ModuleLi
     useReferenceState = pyre.inventory.bool("use_reference_state", default=False)
     useReferenceState.meta['tip'] = "Use reference stress/strain state."
 
-    from .AuxFieldsIsotropicLinearElasticity import AuxFieldsIsotropicLinearElasticity
+    from .AuxSubfieldsIsotropicLinearElasticity import AuxSubfieldsIsotropicLinearElasticity
     from pylith.topology.AuxSubfield import subfieldFactory
     auxiliarySubfields = pyre.inventory.facilityArray(
-        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsIsotropicLinearElasticity)
+        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsIsotropicLinearElasticity)
     auxiliarySubfields.meta['tip'] = "Discretization of physical properties and state variables."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

@@ -45,7 +45,6 @@ class Physics(PetscComponent, ModulePhysics):
       - None
 
     Facilities
-      - *auxiliary_subfields* Discretization of physical properties and state variables.
       - *db_auxiliary_field* Database for physical property parameters.
       - *observers* Observers of integrator (e.g., output).
 
@@ -53,12 +52,6 @@ class Physics(PetscComponent, ModulePhysics):
     """
 
     import pyre.inventory
-
-    from pylith.topology.AuxSubfield import subfieldFactory
-    from pylith.utils.EmptyBin import EmptyBin
-    auxiliarySubfields = pyre.inventory.facilityArray(
-        "auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin)
-    auxiliarySubfields.meta['tip'] = "Discretization of physical properties and state variables."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     auxiliaryFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)

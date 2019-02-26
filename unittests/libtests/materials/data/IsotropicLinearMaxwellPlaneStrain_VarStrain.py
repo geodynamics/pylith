@@ -75,7 +75,7 @@ cs._configure()
 cs.setSpaceDim(2)
 
 # ----------------------------------------------------------------------
-def generateAuxFields():
+def generateAuxSubfields():
     totalStrain_11 = (2.0*A*PX + B*PY)*math.exp(-TIME/maxwellTime)
     totalStrain_12 = (B*PX/2.0 + B*PY/2.0 + C*PX + C*PY)*math.exp(-TIME/maxwellTime)
     totalStrain_22 = (2.0*A*PY + B*PX)*math.exp(-TIME/maxwellTime)
@@ -183,7 +183,7 @@ def generatePerturbation():
 
 # ======================================================================
 def generate():
-    generateAuxFields()
+    generateAuxSubfields()
     generateSolution()
     generatePerturbation()
 

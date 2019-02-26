@@ -77,10 +77,10 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
     dbTimeHistory = pyre.inventory.facility("time_history", factory=NullComponent, family="temporal_database")
     dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
 
-    from .AuxFieldsTimeDependent import AuxFieldsTimeDependent
+    from .AuxSubfieldsTimeDependent import AuxSubfieldsTimeDependent
     from pylith.topology.AuxSubfield import subfieldFactory
     auxiliarySubfields = pyre.inventory.facilityArray(
-        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsTimeDependent)
+        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsTimeDependent)
     auxiliarySubfields.meta['tip'] = "Discretization of constraint parameters."
 
     def __init__(self, name="dirichlettimedependent"):

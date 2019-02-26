@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/materials/AuxFieldsTimeDependent.py
+# @file pylith/materials/AuxSubfieldsTimeDependent.py
 #
 # @brief Python subfields container for isotropic, linear elasticity
 # subfields.
@@ -21,7 +21,7 @@
 from pylith.utils.PetscComponent import PetscComponent
 
 
-class AuxFieldsTimeDependent(PetscComponent):
+class AuxSubfieldsTimeDependent(PetscComponent):
     """
     Python subfields container for time dependent boundary conditions.
 
