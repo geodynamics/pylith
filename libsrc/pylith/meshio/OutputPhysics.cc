@@ -374,8 +374,8 @@ pylith::meshio::OutputPhysics::_appendField(const PylithReal t,
 
     default:
         PYLITH_COMPONENT_ERROR(
-            "Unsupported basis order for output ("
-                << basisOrder <<"). Use FieldFilterProject with basis order of 0 or 1. Skipping output of '"
+            "Unsupported basis order ("
+                << basisOrder <<") for output. Use FieldFilterProject with basis order of 0 or 1. Skipping output of '"
                 << field->label() << "' field."
             );
     } // switch
