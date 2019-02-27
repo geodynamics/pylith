@@ -72,16 +72,17 @@ pylith::materials::ElasticMaterial::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
-  Material::deallocate();
-  delete _initialFields; _initialFields = 0;
-
   delete _propertiesVisitor; _propertiesVisitor = 0;
   delete _stateVarsVisitor; _stateVarsVisitor = 0;
   delete _stressVisitor; _stressVisitor = 0;
   delete _strainVisitor; _strainVisitor = 0;
 
+  delete _initialFields; _initialFields = 0;
+
   _dbInitialStress = 0; // :TODO: Use shared pointer.
   _dbInitialStrain = 0; // :TODO: Use shared pointer.
+
+  Material::deallocate();
 
   PYLITH_METHOD_END;
 } // deallocate
