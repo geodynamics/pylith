@@ -59,7 +59,9 @@ public:
                                        const pylith::bc::AbsorbingDampers& bc,
                                        const pylith::topology::Field& solution);
 
+            static const char* pyreComponent;
         };
+        const char* _AbsorbingDampers::pyreComponent = "absorbingdampers";
 
     } // bc
 } // pylith
@@ -69,7 +71,7 @@ public:
 pylith::bc::AbsorbingDampers::AbsorbingDampers(void) :
     _auxiliaryFactory(new pylith::bc::AbsorbingDampersAuxiliaryFactory),
     _boundaryLabel("") {
-    PyreComponent::setName("absorbingdampers");
+    PyreComponent::setName(_AbsorbingDampers::pyreComponent);
 
     _subfieldName = "velocity";
 } // constructor
@@ -225,7 +227,10 @@ pylith::bc::_AbsorbingDampers::setKernelsRHSResidual(pylith::feassemble::Integra
                                                      const pylith::bc::AbsorbingDampers& bc,
                                                      const topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    //PYLITH_COMPONENT_DEBUG("_setKernelsRHSResidual(integrator="<<integrator<<", solution="<<solution.label()<<")");
+    journal::debug_t debug(_AbsorbingDampers::pyreComponent);
+    debug << journal::at(__HERE__)
+          << "_AbsorbingDampers::_setKernelsRHSResidual(integrator="<<integrator<<", bc="<<typeid(bc).name()
+          <<", solution="<<solution.label()<<")"<<journal::endl;
 
     PetscBdPointFunc g0 = pylith::fekernels::AbsorbingDampers::g0;
     PetscBdPointFunc g1 = NULL;

@@ -46,21 +46,22 @@ public:
             ///< Names of field components in 3-D tangential/normal coordinate system.
             static const char* componentsTTN[3];
 
-        };
+            static const char* genericComponent;
+        }; // _TimeDependentAuxiliaryFactory
 
-        // _TimeDependentAuxiliaryFactory
+        const char* _TimeDependentAuxiliaryFactory::componentsXYZ[3] = { "_x", "_y", "_z" };
+        const char* _TimeDependentAuxiliaryFactory::componentsTN[2] = { "_tangential", "_normal" };
+        const char* _TimeDependentAuxiliaryFactory::componentsTTN[3] = { "_tangential_1", "_tangential_2", "_normal" };
 
-        const char* pylith::bc::_TimeDependentAuxiliaryFactory::componentsXYZ[3] = { "_x", "_y", "_z" };
-        const char* pylith::bc::_TimeDependentAuxiliaryFactory::componentsTN[2] = { "_tangential", "_normal" };
-        const char* pylith::bc::_TimeDependentAuxiliaryFactory::componentsTTN[3] = { "_tangential_1", "_tangential_2", "_normal" };
+        const char* _TimeDependentAuxiliaryFactory::genericComponent = "timedependentauxiliaryfactory";
     } // bc
 } // pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::bc::TimeDependentAuxiliaryFactory::TimeDependentAuxiliaryFactory(const ReferenceEnum reference) :
-    _auxComponents(reference) { // constructor
-    GenericComponent::setName("timedependentauxiliaryfactory");
+    _auxComponents(reference) {
+    GenericComponent::setName(_TimeDependentAuxiliaryFactory::genericComponent);
 } // constructor
 
 
@@ -307,6 +308,13 @@ pylith::bc::TimeDependentAuxiliaryFactory::updateAuxiliaryField(pylith::topology
                                                                 const PylithReal t,
                                                                 const PylithReal timeScale,
                                                                 spatialdata::spatialdb::TimeHistory* const dbTimeHistory) {
+    PYLITH_METHOD_BEGIN;
+    journal::debug_t debug(_TimeDependentAuxiliaryFactory::genericComponent);
+    debug << journal::at(__HERE__)
+          << "TimeDependentAuxiliaryFactory::updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t
+          <<", timeScale="<<timeScale<<", dbTimeHistory="<<dbTimeHistory<<")"
+          << journal::endl;
+
     assert(auxiliaryField);
     assert(dbTimeHistory);
 
@@ -349,6 +357,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::updateAuxiliaryField(pylith::topology
         auxiliaryFieldArray[offValue] = value;
     } // for
 
+    PYLITH_METHOD_END;
 } // updateAuilixaryField
 
 

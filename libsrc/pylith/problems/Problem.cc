@@ -590,6 +590,9 @@ pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
 // Check material and interface ids.
 void
 pylith::problems::Problem::_checkMaterialIds(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("Problem::_checkMaterials()");
+
     const size_t numMaterials = _materials.size();
     const size_t numInterfaces = _interfaces.size();
 
@@ -605,6 +608,8 @@ pylith::problems::Problem::_checkMaterialIds(void) {
     } // for
 
     pylith::topology::MeshOps::checkMaterialIds(_solution->mesh(), materialIds);
+
+    PYLITH_METHOD_END;
 } // _checkMaterialIds
 
 
@@ -613,6 +618,7 @@ pylith::problems::Problem::_checkMaterialIds(void) {
 void
 pylith::problems::Problem::_createIntegrators(void) {
     PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("Problem::_createIntegrators()");
 
     const size_t numMaterials = _materials.size();
     const size_t numInterfaces = _interfaces.size();
@@ -655,6 +661,7 @@ pylith::problems::Problem::_createIntegrators(void) {
 void
 pylith::problems::Problem::_createConstraints(void) {
     PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("Problem::_createConstraints()");
 
     const size_t numMaterials = _materials.size();
     const size_t numInterfaces = _interfaces.size();
@@ -696,6 +703,7 @@ pylith::problems::Problem::_createConstraints(void) {
 void
 pylith::problems::Problem::_setupLagrangeMultiplier(pylith::topology::Field* solution) {
     PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("Problem::_setupLagrangeMultiplier(solution="<<solution<<")");
 
     assert(_solution->hasSubfield("lagrange_multiplier_fault"));
 

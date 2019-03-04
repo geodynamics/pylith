@@ -37,7 +37,7 @@ pylith::feassemble::AuxiliaryFactory::AuxiliaryFactory(void) :
     _normalizer(new spatialdata::units::Nondimensional),
     _spaceDim(0),
     _queryDB(NULL),
-    _fieldQuery(NULL) { // constructor
+    _fieldQuery(NULL) {
     _subfieldDiscretizations["default"] = pylith::topology::FieldBase::Discretization();
 } // constructor
 

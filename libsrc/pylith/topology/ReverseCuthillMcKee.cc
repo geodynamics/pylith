@@ -26,8 +26,7 @@
 // ----------------------------------------------------------------------
 // Reorder vertices and cells in mesh.
 void
-pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
-{ // reorder
+pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh) {
     assert(mesh);
     DMLabel dmLabel = NULL;
     PetscIS permutation = NULL;

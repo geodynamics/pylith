@@ -32,33 +32,30 @@
 #include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
-#include <cassert> \
-    // USES assert()
+#include <cassert> // USES assert()
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor
-pylith::topology::Distributor::Distributor(void) { // constructor
-} // constructor
+pylith::topology::Distributor::Distributor(void) {}
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::topology::Distributor::~Distributor(void) { // destructor
-} // destructor
+pylith::topology::Distributor::~Distributor(void) {}
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Distribute mesh among processors.
 void
 pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
                                           const topology::Mesh& origMesh,
-                                          const char* partitionerName) { // distribute
+                                          const char* partitionerName) {
     PYLITH_METHOD_BEGIN;
+    journal::info_t info("mesh_distributor");
 
     assert(newMesh);
     newMesh->coordsys(origMesh.coordsys());
 
-    journal::info_t info("mesh_distributor");
     const int commRank = origMesh.commRank();
     if (0 == commRank) {
         info << journal::at(__HERE__)
@@ -84,17 +81,16 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
 } // distribute
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Write partitioning info for distributed mesh.
 void
 pylith::topology::Distributor::write(meshio::DataWriter* const writer,
-                                     const topology::Mesh& mesh) { // write
+                                     const topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
-
-    journal::info_t info("mesh_distributor");
 
     const int commRank = mesh.commRank();
     if (0 == commRank) {
+        journal::info_t info("mesh_distributor");
         info << journal::at(__HERE__)
              << "Writing partition." << journal::endl;
     } // if

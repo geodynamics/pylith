@@ -90,6 +90,8 @@ pylith::materials::IncompressibleElasticity::useBodyForce(void) const {
 // Set bulk rheology.
 void
 pylith::materials::IncompressibleElasticity::setBulkRheology(pylith::materials::RheologyIncompressibleElasticity* const rheology) {
+    PYLITH_COMPONENT_DEBUG("setBulkRheology(rheology="<<rheology<<")");
+
     _rheology = rheology;
 } // setBulkRheology
 

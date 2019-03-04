@@ -55,7 +55,9 @@ extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(PetscDM dm,
 pylith::feassemble::IntegratorDomain::IntegratorDomain(pylith::problems::Physics* const physics) :
     Integrator(physics),
     _materialId(0),
-    _materialMesh(NULL) {}
+    _materialMesh(NULL) {
+    GenericComponent::setName("integratordomain");
+} // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------

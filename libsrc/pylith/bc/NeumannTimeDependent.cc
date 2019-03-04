@@ -60,9 +60,10 @@ public:
                                        const pylith::bc::NeumannTimeDependent& bc,
                                        const pylith::topology::Field& solution);
 
-        };
+            static const char* pyreComponent;
 
-        // _NeumannTimeDependent
+        }; // _NeumannTimeDependent
+        const char* _NeumannTimeDependent::pyreComponent = "neumanntimedependent";
 
     } // bc
 } // pylith
@@ -76,7 +77,7 @@ pylith::bc::NeumannTimeDependent::NeumannTimeDependent(void) :
     _useInitial(true),
     _useRate(false),
     _useTimeHistory(false) {
-    PyreComponent::setName("neumanntimedependent");
+    PyreComponent::setName(_NeumannTimeDependent::pyreComponent);
 } // constructor
 
 
@@ -106,6 +107,8 @@ pylith::bc::NeumannTimeDependent::deallocate(void) {
 // Set time history database.
 void
 pylith::bc::NeumannTimeDependent::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th) {
+    PYLITH_COMPONENT_DEBUG("setTimeHistoryDB(th"<<th<<")");
+
     _dbTimeHistory = th;
 } // setTimeHistoryDB
 
@@ -121,7 +124,7 @@ pylith::bc::NeumannTimeDependent::getTimeHistoryDB(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Use initial value term in time history expression.
 void
-pylith::bc::NeumannTimeDependent::useInitial(const bool value) { // useInitial
+pylith::bc::NeumannTimeDependent::useInitial(const bool value) {
     PYLITH_COMPONENT_DEBUG("useInitial(value="<<value<<")");
 
     _useInitial = value;
@@ -131,7 +134,7 @@ pylith::bc::NeumannTimeDependent::useInitial(const bool value) { // useInitial
 // ---------------------------------------------------------------------------------------------------------------------
 // Get flag associated with using initial value term in time history expression.
 bool
-pylith::bc::NeumannTimeDependent::useInitial(void) const { // useInitial
+pylith::bc::NeumannTimeDependent::useInitial(void) const {
     return _useInitial;
 } // useInitial
 
@@ -139,7 +142,7 @@ pylith::bc::NeumannTimeDependent::useInitial(void) const { // useInitial
 // ---------------------------------------------------------------------------------------------------------------------
 // Use rate value term in time history expression.
 void
-pylith::bc::NeumannTimeDependent::useRate(const bool value) { // useRate
+pylith::bc::NeumannTimeDependent::useRate(const bool value) {
     PYLITH_COMPONENT_DEBUG("useRate(value="<<value<<")");
 
     _useRate = value;
@@ -149,7 +152,7 @@ pylith::bc::NeumannTimeDependent::useRate(const bool value) { // useRate
 // ---------------------------------------------------------------------------------------------------------------------
 // Get flag associated with using rate value term in time history expression.
 bool
-pylith::bc::NeumannTimeDependent::useRate(void) const { // useRate
+pylith::bc::NeumannTimeDependent::useRate(void) const {
     return _useRate;
 } // useRate
 
@@ -157,7 +160,7 @@ pylith::bc::NeumannTimeDependent::useRate(void) const { // useRate
 // ---------------------------------------------------------------------------------------------------------------------
 // Use time history term in time history expression.
 void
-pylith::bc::NeumannTimeDependent::useTimeHistory(const bool value) { // useTimeHistory
+pylith::bc::NeumannTimeDependent::useTimeHistory(const bool value) {
     PYLITH_COMPONENT_DEBUG("useTimeHistory(value="<<value<<")");
 
     _useTimeHistory = value;
@@ -176,6 +179,8 @@ pylith::bc::NeumannTimeDependent::useTimeHistory(void) const { // useTimeHistory
 // Name of scale associated with Neumann boundary condition (e.g., pressure for elasticity).
 void
 pylith::bc::NeumannTimeDependent::setScaleName(const char* value) {
+    PYLITH_COMPONENT_DEBUG("setScaleName(value"<<value<<")");
+
     if (( value == std::string("length")) ||
         ( value == std::string("time")) ||
         ( value == std::string("pressure")) ||
@@ -210,6 +215,8 @@ pylith::bc::NeumannTimeDependent::createIntegrator(const pylith::topology::Field
 // Create constraint and set kernels.
 pylith::feassemble::Constraint*
 pylith::bc::NeumannTimeDependent::createConstraint(const pylith::topology::Field& solution) {
+    PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.label()<<") empty method");
+
     return NULL;
 } // createConstraint
 
@@ -322,7 +329,7 @@ pylith::bc::NeumannTimeDependent::_getAuxiliaryFactory(void) {
 void
 pylith::bc::NeumannTimeDependent::_updateKernelConstants(const PylithReal dt) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelConstants(dt="<<dt<<")");
+    PYLITH_COMPONENT_DEBUG("_updateKernelConstants(dt="<<dt<<")");
 
     if (6 != _kernelConstants.size()) { _kernelConstants.resize(6);}
     _kernelConstants[0] = _refDir1[0];
@@ -343,7 +350,11 @@ pylith::bc::_NeumannTimeDependent::setKernelsRHSResidual(pylith::feassemble::Int
                                                          const pylith::bc::NeumannTimeDependent& bc,
                                                          const topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_COMPONENT_DEBUG("setKernelsRHSResidual(integrator="<<integrator<<", solution="<<solution.label()<<")");
+    journal::debug_t debug(_NeumannTimeDependent::pyreComponent);
+    debug << journal::at(__HERE__)
+          << "setKernelsRHSResidual(integrator="<<integrator<<", bc="<<typeid(bc).name()<<", solution="
+          << solution.label()<<")"
+          << journal::endl;
 
     PetscBdPointFunc g0 = NULL;
     PetscBdPointFunc g1 = NULL;
@@ -384,11 +395,21 @@ pylith::bc::_NeumannTimeDependent::setKernelsRHSResidual(pylith::feassemble::Int
         g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_scalar :
              pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_vector;
         break;
-    case 0x0:
-        // PYLITH_COMPONENT_WARNING("Neumann time-dependent BC provides no values.");
+    case 0x0: {
+        journal::warning_t warning(_NeumannTimeDependent::pyreComponent);
+        warning << journal::at(__HERE__)
+                << "Neumann time-dependent BC provides no values."
+                << journal::endl;
         break;
-    default:
+    } // case 0x0
+    default: {
+        journal::error_t error(_NeumannTimeDependent::pyreComponent);
+        error << journal::at(__HERE__)
+              << "Unknown combination of flags for Neumann BC terms (useInitial="<<bc.useInitial()
+              << ", useRate="<<bc.useRate()<<", useTimeHistory="<<bc.useTimeHistory()<<")."
+              << journal::endl;
         throw std::logic_error("Unknown combination of flags for Neumann time-dependent BC terms.");
+    } // default
     } // switch
 
     std::vector<ResidualKernels> kernels(1);

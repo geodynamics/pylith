@@ -59,7 +59,9 @@ public:
                                  const pylith::topology::Field& solution,
                                  const pylith::topology::Field& solutionDot);
 
+            static const char* genericComponent;
         }; // _IntegratorBoundary
+        const char* _IntegratorBoundary::genericComponent = "integratorboundary";
 
     } // feassemble
 } // pylith
@@ -70,6 +72,7 @@ pylith::feassemble::IntegratorBoundary::IntegratorBoundary(pylith::problems::Phy
     Integrator(physics),
     _boundaryMesh(NULL),
     _boundaryLabel("") {
+    GenericComponent::setName(_IntegratorBoundary::genericComponent);
     _needNewRHSJacobian = false;
     _needNewLHSJacobian = false;
 } // constructor
@@ -100,6 +103,8 @@ pylith::feassemble::IntegratorBoundary::deallocate(void) {
 // Set label marking boundary associated with boundary condition surface.
 void
 pylith::feassemble::IntegratorBoundary::setMarkerLabel(const char* value) {
+    PYLITH_JOURNAL_DEBUG("setMarkerLabel(value="<<value<<")");
+
     if (strlen(value) == 0) {
         throw std::runtime_error("Empty string given for boundary condition integrator label.");
     } // if
@@ -271,8 +276,12 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
                                                          const pylith::topology::Field& solution,
                                                          const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_COMPONENT_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<",
-    // solution="<<solution.label()<<")");
+    journal::debug_t debug(_IntegratorBoundary::genericComponent);
+    debug << journal::at(__HERE__)
+          << "_IntegratorBoundary::computeRHSResidual(residual="<<residual<<", integrator="<<integrator
+          <<", # kernels"<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()
+          <<", solutionDot="<<solutionDot.label()<<")"
+          << journal::endl;
 
     assert(integrator);
     assert(residual);
@@ -301,7 +310,6 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
 
     // solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
 
-    // PYLITH_COMPONENT_DEBUG("DMPlexComputeBdResidualSingle() for boundary '"<<label()<<"')");
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
         err = PetscDSSetBdResidual(prob, i_field, kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);

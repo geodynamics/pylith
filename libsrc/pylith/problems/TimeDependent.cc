@@ -412,7 +412,6 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
                                                     PetscVec residualVec,
                                                     void* context) {
     PYLITH_METHOD_BEGIN;
-
     journal::debug_t debug(_TimeDependent::pyreComponent);
     debug << journal::at(__HERE__)
           << "computeRHSResidual(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", residualVec="<<residualVec<<", context="<<context<<")" << journal::endl;
@@ -447,7 +446,6 @@ pylith::problems::TimeDependent::computeRHSJacobian(PetscTS ts,
                                                     PetscMat precondMat,
                                                     void* context) {
     PYLITH_METHOD_BEGIN;
-
     journal::debug_t debug(_TimeDependent::pyreComponent);
     debug << journal::at(__HERE__)
           << "computeRHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" << journal::endl;
@@ -473,7 +471,6 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
                                                     PetscVec residualVec,
                                                     void* context) {
     PYLITH_METHOD_BEGIN;
-
     journal::debug_t debug(_TimeDependent::pyreComponent);
     debug << journal::at(__HERE__)
           << "computeLHSResidual(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", residualVec="<<residualVec<<", context="<<context<<")" << journal::endl;
@@ -501,7 +498,6 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
                                                     PetscMat precondMat,
                                                     void* context) {
     PYLITH_METHOD_BEGIN;
-
     journal::debug_t debug(_TimeDependent::pyreComponent);
     debug << journal::at(__HERE__)
           << "computeLHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", s_tshift="<<s_tshift<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" <<
@@ -523,7 +519,6 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
 PetscErrorCode
 pylith::problems::TimeDependent::prestep(PetscTS ts) {
     PYLITH_METHOD_BEGIN;
-
     journal::debug_t debug(_TimeDependent::pyreComponent);
     debug << journal::at(__HERE__)
           << "prestep(ts="<<ts<<")" << journal::endl;
@@ -541,7 +536,6 @@ pylith::problems::TimeDependent::prestep(PetscTS ts) {
 PetscErrorCode
 pylith::problems::TimeDependent::poststep(PetscTS ts) {
     PYLITH_METHOD_BEGIN;
-
     journal::debug_t debug(_TimeDependent::pyreComponent);
     debug << journal::at(__HERE__)
           << "poststep(ts="<<ts<<")" << journal::endl;

@@ -86,6 +86,8 @@ pylith::feassemble::Constraint::getConstrainedDOF(void) const {
 // Set label marking constrained degrees of freedom.
 void
 pylith::feassemble::Constraint::setMarkerLabel(const char* value) {
+    PYLITH_JOURNAL_DEBUG("setMarkerLabel(value="<<value<<")");
+
     if (strlen(value) == 0) {
         throw std::runtime_error("Empty string given for boundary condition integrator label.");
     } // if
@@ -106,6 +108,8 @@ pylith::feassemble::Constraint::getMarkerLabel(void) const {
 // Set name of constrained solution subfield.
 void
 pylith::feassemble::Constraint::setSubfieldName(const char* value) {
+    PYLITH_JOURNAL_DEBUG("setSubfieldName(value="<<value<<")");
+
     if (!value || (0 == strlen(value))) {
         std::ostringstream msg;
         assert(_physics);

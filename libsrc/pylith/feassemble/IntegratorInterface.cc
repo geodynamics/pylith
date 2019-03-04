@@ -96,7 +96,9 @@ public:
                                  const pylith::topology::Field& solution,
                                  const pylith::topology::Field& solutionDot);
 
+            static const char* genericComponent;
         }; // _IntegratorInterface
+        const char* _IntegratorInterface::genericComponent = "integratorinterface";
 
     } // feassemble
 } // pylith
@@ -107,7 +109,9 @@ pylith::feassemble::IntegratorInterface::IntegratorInterface(pylith::problems::P
     Integrator(physics),
     _interfaceMesh(NULL),
     _interfaceId(100),
-    _interfaceLabel("") {}
+    _interfaceLabel("") {
+    GenericComponent::setName(_IntegratorInterface::genericComponent);
+} // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -135,6 +139,8 @@ pylith::feassemble::IntegratorInterface::deallocate(void) {
 // Set value of label material-id used to identify interface cells.
 void
 pylith::feassemble::IntegratorInterface::setInterfaceId(const int value) {
+    PYLITH_JOURNAL_DEBUG("setInterfaceId(value="<<value<<")");
+
     _interfaceId = value;
 } // setInterfaceId
 
@@ -151,6 +157,8 @@ pylith::feassemble::IntegratorInterface::getInterfaceId(void) const {
 // Set label marking boundary associated with boundary condition surface.
 void
 pylith::feassemble::IntegratorInterface::setSurfaceMarkerLabel(const char* value) {
+    PYLITH_JOURNAL_DEBUG("setSurfaceMarkerLabel(value="<<value<<")");
+
     if (strlen(value) == 0) {
         throw std::runtime_error("Empty string given for boundary condition label.");
     } // if
@@ -377,8 +385,12 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
                                                           const pylith::topology::Field& solution,
                                                           const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_COMPONENT_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<",
-    // solution="<<solution.label()<<")");
+    journal::debug_t debug(_IntegratorInterface::genericComponent);
+    debug << journal::at(__HERE__)
+          << "_IntegratorInterface::computeResidual(residual="<<residual<<", integrator"<<integrator
+          <<"# kernels="<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="
+          <<solutionDot.label()<<")"
+          << journal::endl;
 
     assert(integrator);
     assert(residual);
@@ -444,8 +456,12 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
                                                           const pylith::topology::Field& solution,
                                                           const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<",
-    // dt="<<dt<<", solution="<<solution.label()<<")");
+    journal::debug_t debug(_IntegratorInterface::genericComponent);
+    debug << journal::at(__HERE__)
+          << "_IntegratorInterface::computeJacobian(jacobianMat="<<jacobianMat<<", precondMat"<<precondMat
+          <<", integrator"<<integrator<<"# kernels="<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="
+          <<solution.label()<<", solutionDot="<<solutionDot.label()<<")"
+          << journal::endl;
 
     assert(jacobianMat);
     assert(precondMat);
@@ -474,7 +490,7 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
         err = PetscDSSetBdJacobian(prob, i_fieldTrial, i_fieldBasis, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
     } // for
 
-    journal::error_t error("integratorinterface");
+    journal::error_t error(_IntegratorInterface::genericComponent);
     error << journal::at(__HERE__)
           <<":TODO: @matt Need to implement DMPlexComputeJacobian_Hybrid_Internal() or _Single()." << journal::endl;
     throw std::logic_error(":TODO: @brad Finish implementing _IntegratorInterface::computeJacobian().");

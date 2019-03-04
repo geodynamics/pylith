@@ -61,6 +61,8 @@ pylith::bc::BoundaryCondition::deallocate(void) {
 // Set label marking boundary associated with boundary condition surface.
 void
 pylith::bc::BoundaryCondition::setMarkerLabel(const char* value) {
+    PYLITH_COMPONENT_DEBUG("setMarkerLabel(value="<<value<<")");
+
     if (strlen(value) == 0) {
         throw std::runtime_error("Empty string given for boundary condition label.");
     } // if
@@ -81,6 +83,8 @@ pylith::bc::BoundaryCondition::getMarkerLabel(void) const {
 // Set name of solution subfield associated with boundary condition.
 void
 pylith::bc::BoundaryCondition::setSubfieldName(const char* value) {
+    PYLITH_COMPONENT_DEBUG("setSubfieldName(value="<<value<<")");
+
     if (!value || (0 == strlen(value))) {
         std::ostringstream msg;
         msg << "Empty string given for name of solution subfield for boundary condition '" << _boundaryLabel
@@ -103,6 +107,8 @@ pylith::bc::BoundaryCondition::getSubfieldName(void) const {
 // Set first choice for reference direction to discriminate among tangential directions in 3-D.
 void
 pylith::bc::BoundaryCondition::setRefDir1(const PylithReal vec[3]) {
+    PYLITH_COMPONENT_DEBUG("setRefDir1(vec="<<vec[0]<<","<<vec[1]<<","<<vec[2]<<")");
+
     // Set reference direction, insuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
@@ -121,6 +127,8 @@ pylith::bc::BoundaryCondition::setRefDir1(const PylithReal vec[3]) {
 // Set second choice for reference direction to discriminate among tangential directions in 3-D.
 void
 pylith::bc::BoundaryCondition::setRefDir2(const PylithReal vec[3]) {
+    PYLITH_COMPONENT_DEBUG("setRefDir2(vec="<<vec[0]<<","<<vec[1]<<","<<vec[2]<<")");
+
     // Set reference direction, insuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {

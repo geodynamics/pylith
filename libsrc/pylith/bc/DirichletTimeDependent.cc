@@ -56,7 +56,10 @@ public:
                                      const pylith::bc::DirichletTimeDependent& bc,
                                      const pylith::topology::Field& solution);
 
+            static const char* pyreComponent;
+
         }; // _DirichletTimeDependent
+        const char* _DirichletTimeDependent::pyreComponent = "dirichlettimedependent";
 
     } // bc
 } // pylith
@@ -69,7 +72,7 @@ pylith::bc::DirichletTimeDependent::DirichletTimeDependent(void) :
     _useInitial(true),
     _useRate(false),
     _useTimeHistory(false) {
-    PyreComponent::setName("dirichlettimedependent");
+    PyreComponent::setName(_DirichletTimeDependent::pyreComponent);
 } // constructor
 
 
@@ -100,6 +103,8 @@ pylith::bc::DirichletTimeDependent::deallocate(void) {
 void
 pylith::bc::DirichletTimeDependent::setConstrainedDOF(const int* flags,
                                                       const int size) {
+    PYLITH_COMPONENT_DEBUG("setConstrainedDOF(flags="<<flags<<", size"<<size<<")");
+
     assert((flags && size > 0) || (!flags && 0 == size) );
     _constrainedDOF.resize(size);
     for (int i = 0; i < size; ++i) {
@@ -120,6 +125,8 @@ pylith::bc::DirichletTimeDependent::getConstrainedDOF(void) const {
 // Set time history database.
 void
 pylith::bc::DirichletTimeDependent::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th) {
+    PYLITH_COMPONENT_DEBUG("setTimeHistoryDB(th"<<th<<")");
+
     _dbTimeHistory = th;
 } // setTimeHistoryDB
 
@@ -222,6 +229,8 @@ pylith::bc::DirichletTimeDependent::verifyConfiguration(const pylith::topology::
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
 pylith::bc::DirichletTimeDependent::createIntegrator(const pylith::topology::Field& solution) {
+    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.label()<<") empty method");
+
     return NULL;
 } // createIntegrator
 
@@ -338,8 +347,10 @@ pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::Con
                                                          const pylith::bc::DirichletTimeDependent& bc,
                                                          const topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_COMPONENT_DEBUG("setKernelConstraint(integrator="<<integrator<<", bc="<<bc<<",
-    // solution="<<solution.label()<<")");
+    journal::debug_t debug(_DirichletTimeDependent::pyreComponent);
+    debug << journal::at(__HERE__)
+          << "setKernelConstraint(constraint="<<constraint<<", bc="<<typeid(bc).name()<<", solution="<<solution.label()
+          <<")" << journal::endl;
 
     PetscPointFunc bcKernel = NULL;
 
@@ -379,13 +390,21 @@ pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::Con
         bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::initialRateTimeHistory_scalar :
                    pylith::fekernels::TimeDependentFn::initialRateTimeHistory_vector;
         break;
-    case 0x0:
-        // PYLITH_COMPONENT_WARNING("Dirichlet BC provides no constraints.");
+    case 0x0: {
+        journal::warning_t warning(_DirichletTimeDependent::pyreComponent);
+        warning << journal::at(__HERE__)
+                << "Dirichlet BC provides no constraints."
+                << journal::endl;
         break;
-    default:
-        // PYLITH_COMPONENT_ERROR("Unknown combination of flags for Dirichlet BC terms (useInitial="<<_useInitial<<",
-        // useRate="<<_useRate<<", useTimeHistory="<<_useTimeHistory<<").");
+    } // case 0x0
+    default: {
+        journal::error_t error(_DirichletTimeDependent::pyreComponent);
+        error << journal::at(__HERE__)
+              << "Unknown combination of flags for Dirichlet BC terms (useInitial="<<bc.useInitial()
+              << ", useRate="<<bc.useRate()<<", useTimeHistory="<<bc.useTimeHistory()<<")."
+              << journal::endl;
         throw std::logic_error("Unknown combination of flags for Dirichlet BC terms.");
+    } // default
     } // switch
 
     assert(constraint);

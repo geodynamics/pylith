@@ -140,8 +140,8 @@ pylith::meshio::DataWriter::DataWriter(const DataWriter& w) :
 // Write dataset with names of points to file.
 void
 pylith::meshio::DataWriter::writePointNames(const pylith::string_vector& names,
-                                            const topology::Mesh& mesh) { // writePointNames
-                                                                          // Default: no implementation.
+                                            const topology::Mesh& mesh) {
+    // Default: no implementation.
 
 } // writePointNames
 
