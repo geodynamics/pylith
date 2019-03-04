@@ -41,7 +41,7 @@
 pylith::topology::Field::Field(const Mesh& mesh) :
     _mesh(mesh),
     _dm(NULL),
-    _localVec(NULL) { // constructor
+    _localVec(NULL) {
     PYLITH_METHOD_BEGIN;
 
     GenericComponent::setName("field");
@@ -52,7 +52,6 @@ pylith::topology::Field::Field(const Mesh& mesh) :
     if (mesh.dmMesh()) {
         PetscDM dm = mesh.dmMesh();assert(dm);
         PetscVec coordVec = NULL;
-        PetscSection s = NULL;
         PetscErrorCode err;
 
         err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
@@ -71,11 +70,6 @@ pylith::topology::Field::Field(const Mesh& mesh) :
             err = DMSetCoordinatesLocal(_dm, coordVec);PYLITH_CHECK_ERROR(err);
         } // if
 
-#if 1 // :TEMPORARY: These 3 lines go away once we have everything converted to using PetscDS.
-        err = PetscSectionCreate(mesh.comm(), &s);PYLITH_CHECK_ERROR(err);
-        err = DMSetDefaultSection(_dm, s);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionDestroy(&s);PYLITH_CHECK_ERROR(err);
-#endif
     } // if
 
     PYLITH_METHOD_END;
@@ -91,7 +85,7 @@ pylith::topology::Field::Field(const Mesh& mesh,
     _label(description.label),
     _mesh(mesh),
     _dm(dm),
-    _localVec(NULL) { // constructor
+    _localVec(NULL) {
     PYLITH_METHOD_BEGIN;
 
     GenericComponent::setName("field");
@@ -926,13 +920,11 @@ pylith::topology::Field::subfieldsSetup(void) {
     assert(_dm);
 
     // Setup section now that we know the total number of sub-fields and components.
-    PetscDS prob = NULL;
+    // PetscDS prob = NULL;
     PetscErrorCode err;
 
-    err = DMGetDS(_dm, &prob);PYLITH_CHECK_ERROR(err);
     err = DMSetDefaultSection(_dm, NULL);PYLITH_CHECK_ERROR(err); // :TODO: @brad Remove when using PetscDS for all
                                                                   // fields.
-    err = DMSetNumFields(_dm, _subfields.size());PYLITH_CHECK_ERROR(err);
 
     bool quadOrderSet = false;
     int quadOrder = -999;
