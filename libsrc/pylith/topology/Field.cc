@@ -923,9 +923,6 @@ pylith::topology::Field::subfieldsSetup(void) {
     // PetscDS prob = NULL;
     PetscErrorCode err;
 
-    err = DMSetDefaultSection(_dm, NULL);PYLITH_CHECK_ERROR(err); // :TODO: @brad Remove when using PetscDS for all
-                                                                  // fields.
-
     bool quadOrderSet = false;
     int quadOrder = -999;
     for (subfields_type::const_iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {

@@ -78,7 +78,6 @@ class Solution(PetscComponent):
             self.field.subfieldAdd(subfield.fieldName, subfield.userAlias, subfield.vectorFieldType, subfield.componentNames,
                                    subfield.scale.value, subfield.basisOrder, subfield.quadOrder, subfield.dimension,
                                    subfield.isBasisContinuous, subfield.feSpace)
-        self.field.subfieldsSetup()
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

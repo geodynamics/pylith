@@ -295,14 +295,18 @@ pylith::problems::Problem::initialize(void) {
 
     assert(_solution);
 
-    _createIntegrators();
-    _createConstraints();
+    // Initialize solution field.
+    _solution->subfieldsSetup();
+    if (_solution->hasSubfield("lagrange_multiplier_fault")) {
+        _setupLagrangeMultiplier(_solution);
+    } // if
 
     const pylith::topology::Mesh& mesh = _solution->mesh();
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
     pylith::topology::CoordsVisitor::optimizeClosure(dmMesh);
 
     // Initialize integrators.
+    _createIntegrators();
     const size_t numIntegrators = _integrators.size();
     for (size_t i = 0; i < numIntegrators; ++i) {
         assert(_integrators[i]);
@@ -310,16 +314,13 @@ pylith::problems::Problem::initialize(void) {
     } // for
 
     // Initialize constraints.
+    _createConstraints();
     const size_t numConstraints = _constraints.size();
     for (size_t i = 0; i < numConstraints; ++i) {
         assert(_constraints[i]);
         _constraints[i]->initialize(*_solution);
     } // for
 
-    // Initialize solution field.
-    if (_solution->hasSubfield("lagrange_multiplier_fault")) {
-        _setupLagrangeMultiplier(_solution);
-    } // if
     _solution->allocate();
     _solution->zeroLocal();
     _solution->createScatter(_solution->mesh(), "global");
