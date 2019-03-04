@@ -152,6 +152,8 @@ pylith::feassemble::Constraint::initialize(const pylith::topology::Field& soluti
     const bool infoOnly = true;
     _observers->notifyObservers(0.0, 0, solution, infoOnly);
 
+    // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
+    // the correct one.
     PetscDS prob = NULL;
     PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
     PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
@@ -254,6 +256,8 @@ pylith::feassemble::Constraint::_setKernelConstants(const pylith::topology::Fiel
     PetscDS prob = NULL;
     PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
 
+    // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
+    // the correct one.
     PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
     if (constants.size() > 0) {
         err = PetscDSSetConstants(prob, constants.size(), const_cast<double*>(&constants[0]));PYLITH_CHECK_ERROR(err);

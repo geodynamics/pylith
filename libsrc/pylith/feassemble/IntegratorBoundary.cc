@@ -271,7 +271,7 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
                                                          const pylith::topology::Field& solution,
                                                          const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    //PYLITH_COMPONENT_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<",
+    // PYLITH_COMPONENT_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<",
     // solution="<<solution.label()<<")");
 
     assert(integrator);
@@ -281,26 +281,27 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
 
     PetscErrorCode err;
 
-    PetscDM dmSoln = solution.dmMesh();
-    PetscDM dmAux = auxiliaryField->dmMesh();
-    PetscDMLabel dmLabel = NULL;
-
+    // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
+    // the correct one.
     PetscDS prob = NULL;
-    err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
+    PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
+    err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
 
     // Get auxiliary data
+    PetscDM dmAux = auxiliaryField->dmMesh();assert(dmAux);
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
     err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
     // Compute the local residual
     assert(solution.localVector());
     assert(residual->localVector());
+    PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmSoln, integrator->getMarkerLabel(), &dmLabel);PYLITH_CHECK_ERROR(err);
     const int labelId = 1;
 
-    //solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
+    // solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
 
-    //PYLITH_COMPONENT_DEBUG("DMPlexComputeBdResidualSingle() for boundary '"<<label()<<"')");
+    // PYLITH_COMPONENT_DEBUG("DMPlexComputeBdResidualSingle() for boundary '"<<label()<<"')");
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
         err = PetscDSSetBdResidual(prob, i_field, kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);

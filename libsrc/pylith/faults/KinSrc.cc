@@ -177,11 +177,13 @@ pylith::faults::KinSrc::_setFEConstants(const pylith::topology::Field& faultAuxF
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEConstants(faultAuxField="<<faultAuxField.label()<<")");
 
+    // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
+    // the correct one.
     PetscDS prob = NULL;
     PetscDM dmAux = faultAuxField.dmMesh();assert(dmAux);
+    PetscErrorCode err = DMGetDS(dmAux, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
 
     // Pointwise functions have been set in DS
-    PetscErrorCode err = DMGetDS(dmAux, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
     const int numConstants = 1;
     PylithScalar constants[numConstants];
     constants[0] = _originTime;

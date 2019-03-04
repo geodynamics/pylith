@@ -454,13 +454,14 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
 
     PetscErrorCode err;
 
-    PetscDM dmSoln = solution.dmMesh();
-    PetscDM dmAux = auxiliaryField->dmMesh();
-
+    // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
+    // the correct one.
     PetscDS prob = NULL;
+    PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
     err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data
+    PetscDM dmAux = auxiliaryField->dmMesh();assert(dmAux);
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
     err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 

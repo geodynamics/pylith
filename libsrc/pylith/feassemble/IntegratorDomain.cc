@@ -302,14 +302,15 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
 
     _setKernelConstants(solution, dt);
 
-    PetscDS prob = NULL;
     PetscErrorCode err;
 
-    PetscDM dmSoln = solution.dmMesh();
-    PetscDM dmAux = _auxiliaryField->dmMesh();
+    // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
+    // the correct one.
+    PetscDS prob = NULL;
+    PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
+    err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
 
     // Set pointwise function (kernels) in DS
-    err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
     const std::vector<JacobianKernels>& kernels = _kernelsLHSJacobian;
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_fieldTrial = solution.subfieldInfo(kernels[i].subfieldTrial.c_str()).index;
@@ -318,6 +319,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
     } // for
 
     // Get auxiliary data
+    PetscDM dmAux = _auxiliaryField->dmMesh();assert(dmAux);
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
     err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
@@ -368,6 +370,9 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     PetscDM dmSoln = solution.dmMesh();
     PetscDM dmAux = _auxiliaryField->dmMesh();
     PetscDMLabel dmLabel = NULL;
+
+    // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
+    // the correct one.
 
     // Set pointwise function (kernels) in DS
     err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
@@ -421,6 +426,9 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
     PetscDM dmMesh = solution.dmMesh();
     PetscDM dmAux = _auxiliaryField->dmMesh();
     PetscDMLabel dmLabel = NULL;
+
+    // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
+    // the correct one.
 
     // Set pointwise function (kernels) in DS
     err = DMGetDS(solution.dmMesh(), &prob);PYLITH_CHECK_ERROR(err);
