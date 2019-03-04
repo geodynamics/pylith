@@ -82,10 +82,8 @@ class Physics(PetscComponent, ModulePhysics):
 
         ModulePhysics.setAuxiliaryFieldDB(self, self.auxiliaryFieldDB)
 
-        print("Component: {}, auxiliarySubfields: {}".format(self.aliases[-1], self.auxiliarySubfields.components()))
         for subfield in self.auxiliarySubfields.components():
             fieldName = subfield.aliases[-1]
-            print("Component: {}, field: {}, quad order: {}".format(self.aliases[-1], fieldName, subfield.quadOrder))
             ModulePhysics.setAuxiliarySubfieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder,
                                                              subfield.dimension, subfield.isBasisContinuous, subfield.feSpace)
 

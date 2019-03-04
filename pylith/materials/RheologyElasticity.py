@@ -58,10 +58,8 @@ class RheologyElasticity(PetscComponent, ModuleRheology):
         return
 
     def addAuxiliarySubfields(self, material):
-        print("Component: {}, auxiliarySubfields: {}".format(self.aliases[-1], self.auxiliarySubfields.components()))
         for subfield in self.auxiliarySubfields.components():
             fieldName = subfield.aliases[-1]
-            print("Component: {}, field: {}, quad order: {}".format(self.aliases[-1], fieldName, subfield.quadOrder))
             material.setAuxiliarySubfieldDiscretization(fieldName, subfield.basisOrder, subfield.quadOrder,
                                                         subfield.dimension, subfield.isBasisContinuous, subfield.feSpace)
         return
