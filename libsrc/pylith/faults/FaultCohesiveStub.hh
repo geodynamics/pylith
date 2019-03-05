@@ -39,98 +39,60 @@ public:
     /// Destructor.
     ~FaultCohesiveStub(void);
 
-    /** Compute RHS residual for G(t,s).
+    /** Verify configuration is acceptable.
      *
-     * @param[out] residual Field for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
+     * @param[in] solution Solution field.
      */
-    void computeRHSResidual(pylith::topology::Field* residual,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution);
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-    /** Compute RHS Jacobian and preconditioner for G(t,s).
+    /** Create integrator and set kernels.
      *
-     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
-     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
+     * @param[in] solution Solution field.
+     * @returns Integrator if applicable, otherwise NULL.
      */
-    void computeRHSJacobian(PetscMat jacobianMat,
-                            PetscMat preconMat,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution);
+    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution);
 
-    /** Compute LHS residual for F(t,s,\dot{s}).
+    /** Create constraint and set kernels.
      *
-     * @param[out] residual Field for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
-     * @param[in] solutionDot Field with time derivative of current trial solution.
+     * @param[in] solution Solution field.
+     * @returns Constraint if applicable, otherwise NULL.
      */
-    void computeLHSResidual(pylith::topology::Field* residual,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution,
-                            const pylith::topology::Field& solutionDot);
+    pylith::feassemble::Constraint* createConstraint(const pylith::topology::Field& solution);
 
-    /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
+    /** Create auxiliary field.
      *
-     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
-     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] s_tshift Scale for time derivative.
-     * @param[in] solution Field with current trial solution.
-     * @param[in] solutionDot Field with time derivative of current trial solution.
+     * @param[in] solution Solution field.
+     * @param[in\ physicsMesh Finite-element mesh associated with physics.
+     *
+     * @returns Auxiliary field if applicable, otherwise NULL.
      */
-    void computeLHSJacobianImplicit(PetscMat jacobianMat,
-                                    PetscMat precondMat,
-                                    const PylithReal t,
-                                    const PylithReal dt,
-                                    const PylithReal s_tshift,
-                                    const pylith::topology::Field& solution,
-                                    const pylith::topology::Field& solutionDot);
+    pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
+                                                  const pylith::topology::Mesh& physicsMesh);
 
-    /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
+    /** Create derived field.
      *
-     * @param[out] jacobianInv Inverse of lumped Jacobian as a field.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] s_tshift Scale for time derivative.
-     * @param[in] solution Field with current trial solution.
+     * @param[in] solution Solution field.
+     * @param[in\ physicsMesh Finite-element mesh associated with physics.
+     *
+     * @returns Derived field if applicable, otherwise NULL.
      */
-    void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                     const PylithReal t,
-                                     const PylithReal dt,
-                                     const PylithReal s_tshift,
-                                     const pylith::topology::Field& solution);
+    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
+                                                const pylith::topology::Mesh& physicsMesh);
 
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
-    /** Get factory for setting up auxliary fields.
+    /** Get auxiliary factory associated with physics.
      *
-     * @returns Factor for auxiliary fields.
+     * @return Auxiliary factory for physics object.
      */
-    pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
+    pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
-    /** Setup auxiliary subfields (discretization and query fns).
+    /** Update kernel constants.
      *
-     * Create subfields in auxiliary fields (includes name of the field,
-     * vector field type, discretization, and scale for
-     * nondimensionalization) and set query functions for filling them
-     * from a spatial database.
-     *
-     * @attention The order of the calls to subfieldAdd() must match the
-     * order of the auxiliary fields in the FE kernels.
+     * @param[in] dt Current time step.
      */
-    void _auxFieldSetup(void);
+    void _updateKernelConstants(const PylithReal dt);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
@@ -139,6 +101,42 @@ private:
     const FaultCohesiveStub& operator=(const FaultCohesiveStub&); ///< Not implemented.
 
 }; // class FaultCohesiveStub
+
+class pylith::faults::FaultCohesiveStubException {
+    // PUBLIC ENUMS ////////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+
+    enum MethodEnum {
+        VERIFY_CONFIGURATION=0,
+        CREATE_INTEGRATOR=1,
+        CREATE_CONSTRAINT=2,
+        CREATE_AUXILIARY_FIELD=3,
+        CREATE_DERIVED_FIELD=4,
+    }; // MethodEnum
+
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+
+    /** Constructor.
+     *
+     * @param[in] value Method called.
+     */
+    FaultCohesiveStubException(const MethodEnum value);
+
+    /// Destructor
+    ~FaultCohesiveStubException(void);
+
+    /** Get method called.
+     *
+     * @returns Method called.
+     */
+    MethodEnum getMethodCalled(void) const;
+
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+private:
+
+    MethodEnum _methodCalled;
+}; // FaultCohesiveStubException
 
 #endif // pylith_faults_faultcohesivestub_hh
 
