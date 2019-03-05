@@ -163,11 +163,13 @@ pylith::topology::Fields::copyLayout(const char* name) {
     for (map_type::iterator iter = begin; iter != end; ++iter) {
         if (iter != src) {
             iter->second->cloneSection(*src->second);
+            iter->second->allocate();
         } // if
     } // for
 
     PYLITH_METHOD_END;
 } // copyLayout
+
 
 // ----------------------------------------------------------------------
 // Get mesh associated with fields.
