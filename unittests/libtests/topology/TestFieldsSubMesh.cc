@@ -33,8 +33,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestFieldsSubMesh);
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::TestFieldsSubMesh::setUp(void)
-{ // setUp
+pylith::topology::TestFieldsSubMesh::setUp(void) { // setUp
     PYLITH_METHOD_BEGIN;
 
     _mesh = new Mesh;
@@ -47,23 +46,23 @@ pylith::topology::TestFieldsSubMesh::setUp(void)
     PYLITH_METHOD_END;
 } // setUp
 
+
 // ----------------------------------------------------------------------
 void
-pylith::topology::TestFieldsSubMesh::tearDown(void)
-{ // tearDown
+pylith::topology::TestFieldsSubMesh::tearDown(void) { // tearDown
     PYLITH_METHOD_BEGIN;
 
-    delete _mesh; _mesh = NULL;
-    delete _submesh; _submesh = NULL;
+    delete _mesh;_mesh = NULL;
+    delete _submesh;_submesh = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
 
+
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::topology::TestFieldsSubMesh::testConstructor(void)
-{ // testConstructor
+pylith::topology::TestFieldsSubMesh::testConstructor(void) { // testConstructor
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_submesh);
@@ -72,11 +71,11 @@ pylith::topology::TestFieldsSubMesh::testConstructor(void)
     PYLITH_METHOD_END;
 } // testConstructor
 
+
 // ----------------------------------------------------------------------
 // Test add().
 void
-pylith::topology::TestFieldsSubMesh::testAdd(void)
-{ // testAdd
+pylith::topology::TestFieldsSubMesh::testAdd(void) { // testAdd
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_submesh);
@@ -91,11 +90,11 @@ pylith::topology::TestFieldsSubMesh::testAdd(void)
     PYLITH_METHOD_END;
 } // testAdd
 
+
 // ----------------------------------------------------------------------
 // Test del().
 void
-pylith::topology::TestFieldsSubMesh::testDelete(void)
-{ // testDelete
+pylith::topology::TestFieldsSubMesh::testDelete(void) { // testDelete
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_submesh);
@@ -120,11 +119,11 @@ pylith::topology::TestFieldsSubMesh::testDelete(void)
     PYLITH_METHOD_END;
 } // testDelete
 
+
 // ----------------------------------------------------------------------
 // Test get().
 void
-pylith::topology::TestFieldsSubMesh::testGet(void)
-{ // testGet
+pylith::topology::TestFieldsSubMesh::testGet(void) { // testGet
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_submesh);
@@ -139,11 +138,11 @@ pylith::topology::TestFieldsSubMesh::testGet(void)
     PYLITH_METHOD_END;
 } // testGet
 
+
 // ----------------------------------------------------------------------
 // Test get() const.
 void
-pylith::topology::TestFieldsSubMesh::testGetConst(void)
-{ // testGetConst
+pylith::topology::TestFieldsSubMesh::testGetConst(void) { // testGetConst
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_submesh);
@@ -161,11 +160,11 @@ pylith::topology::TestFieldsSubMesh::testGetConst(void)
     PYLITH_METHOD_END;
 } // testGetConst
 
+
 // ----------------------------------------------------------------------
 // Test hasField().
 void
-pylith::topology::TestFieldsSubMesh::testHasField(void)
-{ // testHasField
+pylith::topology::TestFieldsSubMesh::testHasField(void) { // testHasField
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_submesh);
@@ -186,11 +185,11 @@ pylith::topology::TestFieldsSubMesh::testHasField(void)
     PYLITH_METHOD_END;
 } // testHasField
 
+
 // ----------------------------------------------------------------------
 // Test copyLayout().
 void
-pylith::topology::TestFieldsSubMesh::testCopyLayout(void)
-{ // testCopyLayout
+pylith::topology::TestFieldsSubMesh::testCopyLayout(void) { // testCopyLayout
     PYLITH_METHOD_BEGIN;
 
     const int fiberDim = 3;
@@ -202,11 +201,12 @@ pylith::topology::TestFieldsSubMesh::testCopyLayout(void)
     fields.add(labelA, "velocity");
     Field& fieldA = fields.get(labelA);
     const int numComponents = 3;
+    const int dim = 3;
     const char* components[3] = {"x", "y", "z"};
     const int basisOrder = 1;
     const int quadOrder = 1;
     const double scale = 1.2;
-    fieldA.subfieldAdd("velocity", "velocity", Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder, true, Field::POLYNOMIAL_SPACE);
+    fieldA.subfieldAdd("velocity", "velocity", Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder, dim, true, Field::POLYNOMIAL_SPACE);
     fieldA.subfieldsSetup();
     fieldA.allocate();
 
@@ -218,7 +218,7 @@ pylith::topology::TestFieldsSubMesh::testCopyLayout(void)
     CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
     const Field& field = fields.get(labelB);
 
-    PetscDM dmMesh = _submesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = _submesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PetscInt vStart = depthStratum.begin();
     const PetscInt vEnd = depthStratum.end();
