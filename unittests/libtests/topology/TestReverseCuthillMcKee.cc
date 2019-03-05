@@ -33,34 +33,33 @@
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::topology::TestReverseCuthillMcKee::setUp(void)
-{ // setUp
+pylith::topology::TestReverseCuthillMcKee::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
-    _data = new TestReverseCuthillMcKee_Data; CPPUNIT_ASSERT(_data);
+    _data = new TestReverseCuthillMcKee_Data;CPPUNIT_ASSERT(_data);
     _mesh = NULL;
 
     PYLITH_METHOD_END;
 } // setUp
 
+
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::topology::TestReverseCuthillMcKee::tearDown(void)
-{ // tearDown
+pylith::topology::TestReverseCuthillMcKee::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _data; _data = NULL;
-    delete _mesh; _mesh = NULL;
+    delete _data;_data = NULL;
+    delete _mesh;_mesh = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
 
+
 // ----------------------------------------------------------------------
 // Test reorder().
 void
-pylith::topology::TestReverseCuthillMcKee::testReorder(void)
-{ // testReorder
+pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     PYLITH_METHOD_BEGIN;
 
     _initialize();
@@ -74,7 +73,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void)
 
     ReverseCuthillMcKee::reorder(_mesh);
 
-    const PetscDM& dmMesh = _mesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
+    const PetscDM& dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
 
     // Check vertices (size only)
     topology::Stratum verticesStratumE(dmOrig, topology::Stratum::DEPTH, 0);
@@ -89,17 +88,17 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void)
     // Check groups
     PetscInt numGroupsE, numGroups;
     PetscErrorCode err;
-    err = DMGetNumLabels(dmOrig, &numGroupsE); CPPUNIT_ASSERT(!err);
-    err = DMGetNumLabels(dmMesh, &numGroups); CPPUNIT_ASSERT(!err);
+    err = DMGetNumLabels(dmOrig, &numGroupsE);CPPUNIT_ASSERT(!err);
+    err = DMGetNumLabels(dmMesh, &numGroups);CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_EQUAL(numGroupsE, numGroups);
 
     for (PetscInt iGroup = 0; iGroup < numGroups; ++iGroup) {
         const char *name = NULL;
-        err = DMGetLabelName(dmMesh, iGroup, &name); CPPUNIT_ASSERT(!err);
+        err = DMGetLabelName(dmMesh, iGroup, &name);CPPUNIT_ASSERT(!err);
 
         PetscInt numPointsE, numPoints;
-        err = DMGetStratumSize(dmOrig, name, 1, &numPointsE); CPPUNIT_ASSERT(!err);
-        err = DMGetStratumSize(dmMesh, name, 1, &numPoints); CPPUNIT_ASSERT(!err);
+        err = DMGetStratumSize(dmOrig, name, 1, &numPointsE);CPPUNIT_ASSERT(!err);
+        err = DMGetStratumSize(dmMesh, name, 1, &numPoints);CPPUNIT_ASSERT(!err);
         CPPUNIT_ASSERT_EQUAL(numPointsE, numPoints);
     } // for
 
@@ -164,18 +163,18 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void)
     fieldOrig.allocate();
     PetscMat matrix = NULL;
     PetscInt bandwidthOrig = 0;
-    err = DMCreateMatrix(fieldOrig.dmMesh(), &matrix); CPPUNIT_ASSERT(!err);
-    err = MatComputeBandwidth(matrix, 0.0, &bandwidthOrig); CPPUNIT_ASSERT(!err);
-    err = MatDestroy(&matrix); CPPUNIT_ASSERT(!err);
+    err = DMCreateMatrix(fieldOrig.dmMesh(), &matrix);CPPUNIT_ASSERT(!err);
+    err = MatComputeBandwidth(matrix, 0.0, &bandwidthOrig);CPPUNIT_ASSERT(!err);
+    err = MatDestroy(&matrix);CPPUNIT_ASSERT(!err);
 
     Field field(*_mesh);
     field.subfieldAdd(description, discretization);
     field.subfieldsSetup();
     field.allocate();
     PetscInt bandwidth = 0;
-    err = DMCreateMatrix(field.dmMesh(), &matrix); CPPUNIT_ASSERT(!err);
-    err = MatComputeBandwidth(matrix, 0.0, &bandwidth); CPPUNIT_ASSERT(!err);
-    err = MatDestroy(&matrix); CPPUNIT_ASSERT(!err);
+    err = DMCreateMatrix(field.dmMesh(), &matrix);CPPUNIT_ASSERT(!err);
+    err = MatComputeBandwidth(matrix, 0.0, &bandwidth);CPPUNIT_ASSERT(!err);
+    err = MatDestroy(&matrix);CPPUNIT_ASSERT(!err);
 
     CPPUNIT_ASSERT(bandwidthOrig > 0);
     CPPUNIT_ASSERT(bandwidth > 0);
@@ -187,12 +186,11 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void)
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::TestReverseCuthillMcKee::_initialize()
-{ // _initialize
+pylith::topology::TestReverseCuthillMcKee::_initialize() {
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_data);
 
-    delete _mesh; _mesh = new Mesh; CPPUNIT_ASSERT(_mesh);
+    delete _mesh;_mesh = new Mesh;CPPUNIT_ASSERT(_mesh);
 
     meshio::MeshIOAscii iohandler;
     iohandler.filename(_data->filename);
@@ -203,28 +201,25 @@ pylith::topology::TestReverseCuthillMcKee::_initialize()
     // Adjust topology if necessary.
     if (_data->faultLabel) {
         pylith::faults::FaultCohesiveStub fault;
-        fault.id(100);
-        fault.label(_data->faultLabel);
+        fault.setInterfaceId(100);
+        fault.setSurfaceMarkerLabel(_data->faultLabel);
         fault.adjustTopology(_mesh);
     } // if
 
     PYLITH_METHOD_END;
 } // _initialize
 
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::topology::TestReverseCuthillMcKee_Data::TestReverseCuthillMcKee_Data(void) :
     filename(NULL),
-    faultLabel(NULL)
-{   // constructor
-}   // constructor
+    faultLabel(NULL) {} // constructor
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::topology::TestReverseCuthillMcKee_Data::~TestReverseCuthillMcKee_Data(void)
-{   // destructor
-}   // destructor
+pylith::topology::TestReverseCuthillMcKee_Data::~TestReverseCuthillMcKee_Data(void) {} // destructor
 
 
 // End of file
