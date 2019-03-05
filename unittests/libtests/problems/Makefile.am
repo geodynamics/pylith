@@ -28,6 +28,8 @@ check_PROGRAMS = testproblems
 
 # Primary source files
 testproblems_SOURCES = \
+	TestObserversSoln.cc \
+	TestObserversPhysics.cc \
 	TestSolutionFactory.cc \
 	TestSolutionFactory_Cases.cc \
 	test_problems.cc
@@ -35,13 +37,16 @@ testproblems_SOURCES = \
 
 
 noinst_HEADERS = \
+	TestObserversSoln.hh \
+	TestObserversPhysics.hh \
 	TestSolutionFactory.hh
-
-
 
 AM_CPPFLAGS += \
 	$(PETSC_CC_INCLUDES) \
 	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
+
+testproblems_LDFLAGS = \
+	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
 testproblems_LDADD = \
 	-lcppunit -ldl \

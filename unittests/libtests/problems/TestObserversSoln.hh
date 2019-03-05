@@ -17,30 +17,30 @@
 //
 
 /**
- * @file unittests/libtests/feassemble/TestObservers.hh
+ * @file unittests/libtests/problems/TestObserversSoln.hh
  *
- * @brief C++ TestObservers object.
+ * @brief C++ TestObserversSoln object.
  *
- * C++ unit testing for Observers.
+ * C++ unit testing for Observers of solution.
  */
 
-#if !defined(pylith_feassemble_testobservers_hh)
-#define pylith_feassemble_testobservers_hh
+#if !defined(pylith_problems_testobserverssoln_hh)
+#define pylith_problems_testobserverssoln_hh
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Observers
+#include "pylith/problems/problemsfwd.hh" // HOLDSA ObserversSoln
 
 /// Namespace for pylith package
 namespace pylith {
-    namespace feassemble {
-        class TestObservers;
-    } // feassemble
+    namespace problems {
+        class TestObserversSoln;
+    } // problems
 } // pylith
 
-class pylith::feassemble::TestObservers : public CppUnit::TestFixture {
+class pylith::problems::TestObserversSoln : public CppUnit::TestFixture {
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestObservers);
+    CPPUNIT_TEST_SUITE(TestObserversSoln);
 
     CPPUNIT_TEST(testRegisterObserver);
     CPPUNIT_TEST(testRemoveObserver);
@@ -73,10 +73,10 @@ public:
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    pylith::feassemble::Observers* _observers; ///< Test subject.
+    pylith::problems::ObserversSoln* _observers; ///< Test subject.
 
-}; // class TestObservers
+}; // class TestObserversSoln
 
-#endif // pylith_feassemble_testobservers_hh
+#endif // pylith_problems_testobserverssoln_hh
 
 // End of file

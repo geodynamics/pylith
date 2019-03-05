@@ -33,7 +33,7 @@
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/types.hh" // USES PylithReal, PylithInt
 
-class pylith::problems::ObserverPhysics : private pylith::utils::GenericComponent {
+class pylith::problems::ObserverPhysics {
     friend class TestObserverPhysics; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////

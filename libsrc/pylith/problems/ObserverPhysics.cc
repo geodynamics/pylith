@@ -21,14 +21,11 @@
 #include "ObserverPhysics.hh" // Implementation of class methods
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::problems::ObserverPhysics::ObserverPhysics(void) :
-    _physics(NULL) {
-    GenericComponent::setName("observerphysics");
-} // constructor
+    _physics(NULL) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -51,7 +48,6 @@ pylith::problems::ObserverPhysics::deallocate(void) {
 void
 pylith::problems::ObserverPhysics::setPhysicsImplementation(const pylith::feassemble::PhysicsImplementation* const physics) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setPhysicsImplementation(physics="<<physics<<")");
 
     _physics = physics;
 

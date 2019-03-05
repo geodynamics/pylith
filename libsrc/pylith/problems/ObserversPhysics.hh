@@ -36,7 +36,7 @@
 #include <set> // USES std::set
 
 class pylith::problems::ObserversPhysics : public pylith::utils::GenericComponent {
-    friend class TestObservers; // unit testing
+    friend class TestObserversPhysics; // unit testing
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 

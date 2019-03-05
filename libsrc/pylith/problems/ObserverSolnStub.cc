@@ -45,8 +45,7 @@ pylith::problems::ObserverSolnStub::verifyConfiguration(const pylith::topology::
 void
 pylith::problems::ObserverSolnStub::update(const PylithReal t,
                                            const PylithInt tindex,
-                                           const pylith::topology::Field& solution,
-                                           const bool infoOnly) {
+                                           const pylith::topology::Field& solution) {
     throw ObserverSolnStubException(ObserverSolnStubException::UPDATED);
 } // update
 

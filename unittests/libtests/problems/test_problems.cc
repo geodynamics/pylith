@@ -44,8 +44,7 @@ main(int argc,
         err = PetscOptionsSetValue(NULL, "-malloc_dump", "");CHKERRQ(err);
 #endif
 
-        // Initialize Python (to eliminate need to initialize when
-        // parsing units in spatial databases).
+        // Initialize Python (use journals).
         Py_Initialize();
 
         // Create event manager and test controller

@@ -18,43 +18,43 @@
 
 #include <portinfo>
 
-#include "TestObservers.hh" // Implementation of class methods
+#include "TestObserversSoln.hh" // Implementation of class methods
 
-#include "pylith/feassemble/Observers.hh" // USES Observers
-#include "pylith/feassemble/ObserverStub.hh" // USES ObserverStub
+#include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
+#include "pylith/problems/ObserverSolnStub.hh" // USES ObserverSolnStub
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
 namespace pylith {
-    namespace feassemble {
-        class _TestObservers {
+    namespace problems {
+        class _TestObserversSoln {
 public:
 
-            static ObserverStub observerA;
-            static ObserverStub observerB;
-        }; // _TestObservers
-        ObserverStub _TestObservers::observerA;
-        ObserverStub _TestObservers::observerB;
-    } // feassemble
+            static ObserverSolnStub observerA;
+            static ObserverSolnStub observerB;
+        }; // _TestObserversSoln
+        ObserverSolnStub _TestObserversSoln::observerA;
+        ObserverSolnStub _TestObserversSoln::observerB;
+    } // problems
 } // pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::feassemble::TestObservers);
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::problems::TestObserversSoln);
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::feassemble::TestObservers::setUp(void) {
-    _observers = new Observers();CPPUNIT_ASSERT(_observers);
-    _observers->registerObserver(&_TestObservers::observerA);
-    _observers->registerObserver(&_TestObservers::observerB);
+pylith::problems::TestObserversSoln::setUp(void) {
+    _observers = new ObserversSoln();CPPUNIT_ASSERT(_observers);
+    _observers->registerObserver(&_TestObserversSoln::observerA);
+    _observers->registerObserver(&_TestObserversSoln::observerB);
 } // setUp
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::feassemble::TestObservers::tearDown(void) {
+pylith::problems::TestObserversSoln::tearDown(void) {
     delete _observers;_observers = NULL;
 } // tearDown
 
@@ -62,42 +62,42 @@ pylith::feassemble::TestObservers::tearDown(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Test registerObserver().
 void
-pylith::feassemble::TestObservers::testRegisterObserver(void) {
+pylith::problems::TestObserversSoln::testRegisterObserver(void) {
     CPPUNIT_ASSERT(_observers);
-    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObservers::observerA));
-    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObservers::observerB));
+    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObserversSoln::observerA));
+    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObserversSoln::observerB));
 } // testRegisterObserver
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Test removeObserver().
 void
-pylith::feassemble::TestObservers::testRemoveObserver(void) {
+pylith::problems::TestObserversSoln::testRemoveObserver(void) {
     CPPUNIT_ASSERT(_observers);
-    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObservers::observerA));
-    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObservers::observerB));
+    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObserversSoln::observerA));
+    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObserversSoln::observerB));
 
-    _observers->removeObserver(&_TestObservers::observerA);
-    CPPUNIT_ASSERT_EQUAL(size_t(0), _observers->_observers.count(&_TestObservers::observerA));
-    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObservers::observerB));
+    _observers->removeObserver(&_TestObserversSoln::observerA);
+    CPPUNIT_ASSERT_EQUAL(size_t(0), _observers->_observers.count(&_TestObserversSoln::observerA));
+    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObserversSoln::observerB));
 
-    _observers->removeObserver(&_TestObservers::observerB);
-    CPPUNIT_ASSERT_EQUAL(size_t(0), _observers->_observers.count(&_TestObservers::observerA));
-    CPPUNIT_ASSERT_EQUAL(size_t(0), _observers->_observers.count(&_TestObservers::observerB));
+    _observers->removeObserver(&_TestObserversSoln::observerB);
+    CPPUNIT_ASSERT_EQUAL(size_t(0), _observers->_observers.count(&_TestObserversSoln::observerA));
+    CPPUNIT_ASSERT_EQUAL(size_t(0), _observers->_observers.count(&_TestObserversSoln::observerB));
 } // testRegisterObserver
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Test verifyObservers().
 void
-pylith::feassemble::TestObservers::testVerifyObservers(void) {
+pylith::problems::TestObserversSoln::testVerifyObservers(void) {
     CPPUNIT_ASSERT(_observers);
     try {
         pylith::topology::Mesh mesh;
         pylith::topology::Field solution(mesh);
         _observers->verifyObservers(solution);
-    } catch (ObserverStubException err) {
-        CPPUNIT_ASSERT_EQUAL(ObserverStubException::VERIFIED, err.getMethodCalled());
+    } catch (ObserverSolnStubException err) {
+        CPPUNIT_ASSERT_EQUAL(ObserverSolnStubException::VERIFIED, err.getMethodCalled());
     } // try/catch
 } // testVerifyObservers
 
@@ -105,7 +105,7 @@ pylith::feassemble::TestObservers::testVerifyObservers(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Test notifyObservers().
 void
-pylith::feassemble::TestObservers::testNotifyObservers(void) {
+pylith::problems::TestObserversSoln::testNotifyObservers(void) {
     CPPUNIT_ASSERT(_observers);
     try {
         const PylithReal t = 1.0;
@@ -113,8 +113,8 @@ pylith::feassemble::TestObservers::testNotifyObservers(void) {
         pylith::topology::Mesh mesh;
         pylith::topology::Field solution(mesh);
         _observers->notifyObservers(t, tindex, solution);
-    } catch (ObserverStubException err) {
-        CPPUNIT_ASSERT_EQUAL(ObserverStubException::UPDATED, err.getMethodCalled());
+    } catch (ObserverSolnStubException err) {
+        CPPUNIT_ASSERT_EQUAL(ObserverSolnStubException::UPDATED, err.getMethodCalled());
     } // try/catch
 } // testNotifyObservers
 

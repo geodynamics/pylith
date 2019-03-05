@@ -31,7 +31,9 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::problems::ObserversPhysics::ObserversPhysics(void) {}
+pylith::problems::ObserversPhysics::ObserversPhysics(void) {
+    // GenericComponent::setName("observersphysics");
+} // constructor
 
 
 // ----------------------------------------------------------------------
