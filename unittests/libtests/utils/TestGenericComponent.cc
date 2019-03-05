@@ -30,25 +30,25 @@ CPPUNIT_TEST_SUITE_REGISTRATION(pylith::utils::TestGenericComponent);
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::utils::TestGenericComponent::testConstructor(void)
-{ // testConstructor
+pylith::utils::TestGenericComponent::testConstructor(void) {
     GenericComponent component;
 
     CPPUNIT_ASSERT_EQUAL(std::string(""), component._name);
 } // testConstructor
 
+
 // ----------------------------------------------------------------------
 // Test name().
 void
-pylith::utils::TestGenericComponent::testName(void)
-{ // testName
+pylith::utils::TestGenericComponent::testName(void) {
     GenericComponent component;
-    CPPUNIT_ASSERT_EQUAL(std::string(""), std::string(component.name()));
+    CPPUNIT_ASSERT_EQUAL(std::string(""), std::string(component.getName()));
 
     const std::string& name = "my name";
-    component.name(name.c_str());
-    CPPUNIT_ASSERT_EQUAL(name, std::string(component.name()));
+    component.setName(name.c_str());
+    CPPUNIT_ASSERT_EQUAL(name, std::string(component.getName()));
 } // testName
+
 
 // ----------------------------------------------------------------------
 // Test PYLITH_JOURNAL_*.
@@ -56,6 +56,7 @@ namespace pylith {
     namespace utils {
         class TestGenericJournals : public GenericComponent {
 public:
+
             void test(void) {
                 PYLITH_JOURNAL_DEBUG("CORRECT: This is a debug message.");
                 PYLITH_JOURNAL_INFO("CORRECT: This is an info mesasge.");
@@ -68,16 +69,15 @@ public:
 } // pylith
 
 void
-pylith::utils::TestGenericComponent::testJournals(void)
-{ // testJournals
+pylith::utils::TestGenericComponent::testJournals(void) {
     const char* name = "test";
-    journal::info_t info(name); info.activate();
-    journal::debug_t debug(name); debug.activate();
-    journal::warning_t warning(name); warning.activate();
-    journal::error_t error(name); error.activate();
+    journal::info_t info(name);info.activate();
+    journal::debug_t debug(name);debug.activate();
+    journal::warning_t warning(name);warning.activate();
+    journal::error_t error(name);error.activate();
 
     TestGenericJournals journals;
-    journals.name("test");
+    journals.setName("test");
     journals.test();
 } // testJournals
 
