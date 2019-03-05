@@ -33,13 +33,12 @@
 #include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestMeshOps );
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestMeshOps);
 
 // ----------------------------------------------------------------------
 // Test nondimensionalize().
 void
-pylith::topology::TestMeshOps::testNondimensionalize(void)
-{ // testNondimensionalize
+pylith::topology::TestMeshOps::testNondimensionalize(void) {
     PYLITH_METHOD_BEGIN;
 
     const PylithScalar lengthScale = 2.0;
@@ -65,20 +64,20 @@ pylith::topology::TestMeshOps::testNondimensionalize(void)
     MeshOps::nondimensionalize(&mesh, normalizer);
 
     // Get vertices
-    PetscDM dmMesh = mesh.dmMesh(); CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PetscInt vStart = depthStratum.begin();
     const PetscInt vEnd = depthStratum.end();
 
     // Check nondimensional coordinates
     CoordsVisitor coordsVisitor(dmMesh);
-    const PetscScalar* coordsArray = coordsVisitor.localArray(); CPPUNIT_ASSERT(coordsArray);
+    const PetscScalar* coordsArray = coordsVisitor.localArray();CPPUNIT_ASSERT(coordsArray);
 
     const PylithScalar tolerance = 1.0e-06;
-    for(PetscInt v = vStart, i = 0; v < vEnd; ++v) {
+    for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
         CPPUNIT_ASSERT_EQUAL(spaceDim, coordsVisitor.sectionDof(v));
         const PetscInt off = coordsVisitor.sectionOffset(v);
-        for (int iDim=0; iDim < spaceDim; ++iDim, ++i) {
+        for (int iDim = 0; iDim < spaceDim; ++iDim, ++i) {
             const PylithScalar coordE = coordinates[i] / lengthScale;
             if (fabs(coordE) < 1.0) {
                 CPPUNIT_ASSERT_DOUBLES_EQUAL(coordE, coordsArray[off+iDim], tolerance);
@@ -95,8 +94,7 @@ pylith::topology::TestMeshOps::testNondimensionalize(void)
 // ----------------------------------------------------------------------
 // Test checkTopology().
 void
-pylith::topology::TestMeshOps::testCheckTopology(void)
-{ // testCheckTopology
+pylith::topology::TestMeshOps::testCheckTopology(void) {
     PYLITH_METHOD_BEGIN;
 
     const int numFiles = 4;
@@ -107,7 +105,7 @@ pylith::topology::TestMeshOps::testCheckTopology(void)
         "data/twohex8.mesh",
     };
 
-    for (int i=0; i < numFiles; ++i) {
+    for (int i = 0; i < numFiles; ++i) {
         const char* filename = filenames[i];
         Mesh mesh;
         meshio::MeshIOAscii iohandler;
@@ -123,8 +121,7 @@ pylith::topology::TestMeshOps::testCheckTopology(void)
 // ----------------------------------------------------------------------
 // Test isSimplexMesh().
 void
-pylith::topology::TestMeshOps::testIsSimplexMesh(void)
-{ // testIsSimplexMesh
+pylith::topology::TestMeshOps::testIsSimplexMesh(void) {
     PYLITH_METHOD_BEGIN;
 
     const int numFiles = 4;
@@ -141,7 +138,7 @@ pylith::topology::TestMeshOps::testIsSimplexMesh(void)
         false,
     };
 
-    for (int i=0; i < numFiles; ++i) {
+    for (int i = 0; i < numFiles; ++i) {
         const char* filename = filenames[i];
         const bool isSimplex = results[i];
         Mesh mesh;
@@ -158,8 +155,7 @@ pylith::topology::TestMeshOps::testIsSimplexMesh(void)
 // ----------------------------------------------------------------------
 // Test checkMaterialIds().
 void
-pylith::topology::TestMeshOps::testCheckMaterialIds(void)
-{ // testCheckMaterialIds
+pylith::topology::TestMeshOps::testCheckMaterialIds(void) {
     PYLITH_METHOD_BEGIN;
 
     Mesh mesh;
@@ -167,39 +163,17 @@ pylith::topology::TestMeshOps::testCheckMaterialIds(void)
     iohandler.filename("data/tri3.mesh");
     iohandler.read(&mesh);
 
-    const int numMaterials = 2;
-    int materialIds[numMaterials];
+    pylith::int_array materialIds(2);
     materialIds[0] = 4;
     materialIds[1] = 3;
 
-    MeshOps::checkMaterialIds(mesh, materialIds, numMaterials);
+    MeshOps::checkMaterialIds(mesh, materialIds);
 
     materialIds[0] = 99;
-    CPPUNIT_ASSERT_THROW(MeshOps::checkMaterialIds(mesh, materialIds, numMaterials), std::runtime_error);
+    CPPUNIT_ASSERT_THROW(MeshOps::checkMaterialIds(mesh, materialIds), std::runtime_error);
 
     PYLITH_METHOD_END;
 } // testCheckMaterialIds
-
-
-// ----------------------------------------------------------------------
-// Test numMaterialCells().
-void
-pylith::topology::TestMeshOps::testNumMaterialCells(void)
-{ // testNumMaterialCells
-    PYLITH_METHOD_BEGIN;
-
-    Mesh mesh;
-    meshio::MeshIOAscii iohandler;
-    iohandler.filename("data/fourquad4.mesh");
-    iohandler.read(&mesh);
-
-    CPPUNIT_ASSERT_EQUAL(0, MeshOps::numMaterialCells(mesh, 0));
-    CPPUNIT_ASSERT_EQUAL(2, MeshOps::numMaterialCells(mesh, 1));
-    CPPUNIT_ASSERT_EQUAL(2, MeshOps::numMaterialCells(mesh, 2));
-    CPPUNIT_ASSERT_EQUAL(0, MeshOps::numMaterialCells(mesh, 3));
-
-    PYLITH_METHOD_END;
-} // testNumMaterialCells
 
 
 // End of file
