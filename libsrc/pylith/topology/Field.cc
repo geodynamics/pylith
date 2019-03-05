@@ -229,12 +229,12 @@ pylith::topology::Field::cloneSection(const Field& src) {
 
     label(origLabel.c_str());
 
-    PetscSection section = src.localSection();
-    PetscSection newSection = NULL;
     PetscErrorCode err;
 
     assert(_dm);
-    err = PetscSectionClone(section, &newSection);PYLITH_CHECK_ERROR(err);
+    PetscSection srcSection = src.localSection();
+    PetscSection newSection = NULL;
+    err = PetscSectionClone(srcSection, &newSection);PYLITH_CHECK_ERROR(err);
     err = DMSetDefaultSection(_dm, newSection);PYLITH_CHECK_ERROR(err);
     err = PetscSectionDestroy(&newSection);PYLITH_CHECK_ERROR(err);
 
