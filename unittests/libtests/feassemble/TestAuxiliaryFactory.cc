@@ -26,6 +26,7 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/utils/journals.hh"
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -131,6 +132,15 @@ pylith::feassemble::TestAuxiliaryFactory::testSubfieldDiscretization(void) {
         CPPUNIT_ASSERT_EQUAL(feVel.isBasisContinuous, feTest.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(feVel.feSpace, feTest.feSpace);
     } // Check velocity discretization
+
+    { // default for unknown discretization
+        const pylith::topology::FieldBase::Discretization& feTest = _factory->getSubfieldDiscretization("xyz");
+        CPPUNIT_ASSERT_EQUAL(1, feTest.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(1, feTest.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(-1, feTest.dimension);
+        CPPUNIT_ASSERT_EQUAL(true, feTest.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::FieldBase::POLYNOMIAL_SPACE, feTest.feSpace);
+    }
 } // testSubfieldDiscretization
 
 
@@ -260,6 +270,11 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     query.closeDB(&auxiliaryDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of auxiliary field values failed.", 0.0, norm, tolerance);
+
+    AuxiliaryFactory emptyFactory;
+    journal::error_t error("auxiliaryfactory");
+    error.deactivate();
+    CPPUNIT_ASSERT_THROW(emptyFactory.setValuesFromDB(), std::logic_error);
 } // testSetValuesFromDB
 
 

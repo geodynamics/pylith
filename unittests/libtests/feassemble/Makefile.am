@@ -28,7 +28,6 @@ check_PROGRAMS = testfeassemble
 
 # Primary source files
 testfeassemble_SOURCES = \
-	TestObservers.cc \
 	TestAuxiliaryFactory.cc \
 	TestIntegratorDomain.cc \
 	test_feassemble.cc

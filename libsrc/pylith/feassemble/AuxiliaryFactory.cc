@@ -38,6 +38,7 @@ pylith::feassemble::AuxiliaryFactory::AuxiliaryFactory(void) :
     _spaceDim(0),
     _queryDB(NULL),
     _fieldQuery(NULL) {
+    GenericComponent::setName("auxiliaryfactory");
     _subfieldDiscretizations["default"] = pylith::topology::FieldBase::Discretization();
 } // constructor
 
