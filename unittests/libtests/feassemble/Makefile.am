@@ -34,13 +34,12 @@ testfeassemble_SOURCES = \
 
 
 noinst_HEADERS =
-	TestObservers.hh \
 	TestAuxiliaryFactory.hh \
 	TestIntegratorDomain.hh
 
 AM_CPPFLAGS += \
-	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
-	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES)
+	$(PETSC_CC_INCLUDES) \
+	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
 
 testfeassemble_LDFLAGS = \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
@@ -54,10 +53,6 @@ testfeassemble_LDADD = \
 if ENABLE_CUBIT
   testfeassemble_LDADD += -lnetcdf
 endif
-
-
-leakcheck: testfeassemble
-	valgrind --log-file=valgrind_feassemble.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testfeassemble
 
 
 # End of file
