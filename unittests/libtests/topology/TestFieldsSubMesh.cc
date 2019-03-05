@@ -201,7 +201,7 @@ pylith::topology::TestFieldsSubMesh::testCopyLayout(void) { // testCopyLayout
     fields.add(labelA, "velocity");
     Field& fieldA = fields.get(labelA);
     const int numComponents = 3;
-    const int dim = 3;
+    const int dim = _submesh->dimension();
     const char* components[3] = {"x", "y", "z"};
     const int basisOrder = 1;
     const int quadOrder = 1;

@@ -205,7 +205,7 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void) { // testCopyLayout
     const char* labelA = "field A";
     fields.add(labelA, "displacement");
     Field& fieldA = fields.get(labelA);
-    const int dim = 3;
+    const int dim = _mesh->dimension();
     const int numComponents = 3;
     const char* components[3] = {"x", "y", "z"};
     const int basisOrder = 1;
