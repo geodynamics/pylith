@@ -31,15 +31,16 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::topology::Fields::Fields(const Mesh& mesh) :
-    _mesh(mesh)
-{ // constructor
+    _mesh(mesh) { // constructor
 } // constructor
+
 
 // ----------------------------------------------------------------------
 // Destructor.
 pylith::topology::Fields::~Fields(void) {
     deallocate();
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
@@ -50,12 +51,13 @@ pylith::topology::Fields::deallocate(void) {
     const map_type::iterator begin = _fields.begin();
     const map_type::iterator end = _fields.end();
     for (map_type::iterator iter = begin; iter != end; ++iter) {
-        delete iter->second; iter->second = NULL;
+        delete iter->second;iter->second = NULL;
     } // for
     _fields.clear();
 
     PYLITH_METHOD_END;
 } // deallocate
+
 
 // ----------------------------------------------------------------------
 // Check if fields contains a given field.
@@ -68,6 +70,7 @@ pylith::topology::Fields::hasField(const char* name) const {
 
     PYLITH_METHOD_RETURN(iter != _fields.end());
 } // hasField
+
 
 // ----------------------------------------------------------------------
 // Add field.
@@ -104,11 +107,12 @@ pylith::topology::Fields::del(const char* name) {
         msg << "Could not find field '" << name << "' in fields manager to delete.";
         throw std::runtime_error(msg.str());
     } // if
-    delete iter->second; iter->second = 0;
+    delete iter->second;iter->second = 0;
     _fields.erase(name);
 
     PYLITH_METHOD_END;
 } // del
+
 
 // ----------------------------------------------------------------------
 // Get field.
@@ -127,6 +131,7 @@ pylith::topology::Fields::get(const char* name) const {
     PYLITH_METHOD_RETURN(*iter->second);
 } // get
 
+
 // ----------------------------------------------------------------------
 // Get field.
 pylith::topology::Field&
@@ -143,6 +148,7 @@ pylith::topology::Fields::get(const char* name) {
 
     PYLITH_METHOD_RETURN(*iter->second);
 } // get
+
 
 // ----------------------------------------------------------------------
 // Copy layout to other fields.
