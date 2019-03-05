@@ -365,17 +365,18 @@ pylith::topology::Field::copy(const Field& field) {
     PYLITH_METHOD_BEGIN;
 
     // Check compatibility of sections
-    const int srcSize = field.chartSize();
-    const int dstSize = chartSize();
-    if ((field.spaceDim() != spaceDim()) ||
-        ( srcSize != dstSize) ) {
+    const PylithInt srcChartSize = field.chartSize();
+    const PylithInt dstChartSize = chartSize();
+    const PylithInt srcSectionSize = field.sectionSize();
+    const PylithInt dstSectionSize = sectionSize();
+    if ((field.spaceDim() != spaceDim()) || (srcChartSize != dstChartSize) || (srcSectionSize != dstSectionSize) ) {
         std::ostringstream msg;
 
-        msg << "Cannot copy values from section '" << _label
-            << "' to section '" << _label
+        msg << "Cannot copy values from section '" << _label << "' to section '" << _label
             << "'. Sections are incompatible.\n"
-            << "  Source section size: " << srcSize << "\n"
-            << "  Destination section size: " << dstSize;
+            << "  Source space dim: " << field.spaceDim() << ", Destination space dim: " << spaceDim() << "\n"
+            << "  Source chart size: " << srcChartSize << ", Destination chart size: " << dstChartSize << "\n"
+            << "  Source section size: " << srcSectionSize << ", Destination section size: " << dstSectionSize << "\n";
         throw std::runtime_error(msg.str());
     } // if
     assert(_localVec && field._localVec);
