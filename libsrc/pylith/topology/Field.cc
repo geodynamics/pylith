@@ -261,19 +261,15 @@ pylith::topology::Field::cloneSection(const Field& src) {
 
     // Reuse subfields in clone
     _subfields.clear();
+    PetscDMLabel dmLabel = NULL;
+    PetscFE fe = NULL;
     const subfields_type::const_iterator subfieldsEnd = src._subfields.end();
-    PetscDS prob = NULL;
-    err = DMGetDS(_dm, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
     for (subfields_type::const_iterator s_iter = src._subfields.begin(); s_iter != subfieldsEnd; ++s_iter) {
         SubfieldInfo& sinfo = _subfields[s_iter->first];
         sinfo.description = s_iter->second.description;
         sinfo.index = s_iter->second.index;
-
-        sinfo.fe = s_iter->second.fe;
-        PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, _mesh.isSimplex(), sinfo.description.numComponents);assert(fe);
-        err = PetscObjectSetName((PetscObject) fe, s_iter->first.c_str());PYLITH_CHECK_ERROR(err);
-        err = PetscDSSetDiscretization(prob, sinfo.index, (PetscObject) fe);PYLITH_CHECK_ERROR(err);
-        err = PetscFEDestroy(&fe);PYLITH_CHECK_ERROR(err);
+        err = DMGetField(src._dm, sinfo.index, &dmLabel, (PetscObject*)&fe);PYLITH_CHECK_ERROR(err);assert(fe);
+        err = DMSetField(_dm, sinfo.index, dmLabel, (PetscObject)fe);PYLITH_CHECK_ERROR(err);
 
         sinfo.dm = s_iter->second.dm;
         if (sinfo.dm) {
