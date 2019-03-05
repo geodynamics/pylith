@@ -37,12 +37,10 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestDataWriterSubMesh::setUp(void)
-{ // setUp
+pylith::meshio::TestDataWriterSubMesh::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
     _mesh = NULL;
@@ -51,29 +49,29 @@ pylith::meshio::TestDataWriterSubMesh::setUp(void)
     PYLITH_METHOD_END;
 } // setUp
 
+
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::meshio::TestDataWriterSubMesh::tearDown(void)
-{ // tearDown
+pylith::meshio::TestDataWriterSubMesh::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _mesh; _mesh = NULL;
-    delete _submesh; _submesh = NULL;
+    delete _mesh;_mesh = NULL;
+    delete _submesh;_submesh = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
 
+
 // ----------------------------------------------------------------------
 // Initialize mesh.
 void
-pylith::meshio::TestDataWriterSubMesh::_initialize(void)
-{ // _initialize
+pylith::meshio::TestDataWriterSubMesh::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
     const TestDataWriterSubMesh_Data* data = _getData();CPPUNIT_ASSERT(data);
 
-    delete _mesh; _mesh = new pylith::topology::Mesh;CPPUNIT_ASSERT(_mesh);
+    delete _mesh;_mesh = new pylith::topology::Mesh;CPPUNIT_ASSERT(_mesh);
     MeshIOAscii iohandler;
     iohandler.filename(data->meshFilename);
     iohandler.read(_mesh);
@@ -88,22 +86,22 @@ pylith::meshio::TestDataWriterSubMesh::_initialize(void)
 
     if (data->faultLabel) {
         faults::FaultCohesiveStub fault;
-        fault.label(data->faultLabel);
-        fault.id(data->faultId);
+        fault.setSurfaceMarkerLabel(data->faultLabel);
+        fault.setInterfaceId(data->faultId);
         fault.adjustTopology(_mesh);
     } // if
 
     CPPUNIT_ASSERT(data->bcLabel);
-    delete _submesh; _submesh = new topology::Mesh(*_mesh, data->bcLabel);CPPUNIT_ASSERT(_submesh);
+    delete _submesh;_submesh = new topology::Mesh(*_mesh, data->bcLabel);CPPUNIT_ASSERT(_submesh);
 
     PYLITH_METHOD_END;
 } // _initialize
 
+
 // ----------------------------------------------------------------------
 // Create vertex fields.
 void
-pylith::meshio::TestDataWriterSubMesh::_createVertexFields(topology::Fields* fields)
-{ // _createVertexFields
+pylith::meshio::TestDataWriterSubMesh::_createVertexFields(topology::Fields* fields) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(fields);
@@ -120,11 +118,11 @@ pylith::meshio::TestDataWriterSubMesh::_createVertexFields(topology::Fields* fie
     PYLITH_METHOD_END;
 } // _createVertexFields
 
+
 // ----------------------------------------------------------------------
 // Create cell fields.
 void
-pylith::meshio::TestDataWriterSubMesh::_createCellFields(topology::Fields* fields)
-{ // _createCellFields
+pylith::meshio::TestDataWriterSubMesh::_createCellFields(topology::Fields* fields) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(fields);
@@ -158,10 +156,7 @@ pylith::meshio::TestDataWriterSubMesh::_setDataTri(void) {
 
     // Vertex fields ------------------------------
     data->vertexNumPoints = 6;
-    data->vertexDiscretization.basisOrder = 1;
-    data->vertexDiscretization.quadOrder = 1;
-    data->vertexDiscretization.isBasisContinuous = true;
-    data->vertexDiscretization.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
+    data->vertexDiscretization = pylith::topology::FieldBase::Discretization(1, 1);
 
     // Scalar
     data->vertexScalarNumComponents = 1;
@@ -208,10 +203,7 @@ pylith::meshio::TestDataWriterSubMesh::_setDataTri(void) {
 
     // Cell fields ------------------------------
     data->cellNumPoints = 1;
-    data->cellDiscretization.basisOrder = 0;
-    data->cellDiscretization.quadOrder = 0;
-    data->cellDiscretization.isBasisContinuous = true;
-    data->cellDiscretization.feSpace = pylith::topology::FieldBase::POINT_SPACE;
+    data->cellDiscretization = pylith::topology::FieldBase::Discretization(0, 0);
 
     // Scalar
     data->cellScalarNumComponents = 1;
@@ -260,10 +252,7 @@ pylith::meshio::TestDataWriterSubMesh::_setDataQuad(void) {
 
     // Vertex fields ------------------------------
     data->vertexNumPoints = 6;
-    data->vertexDiscretization.basisOrder = 1;
-    data->vertexDiscretization.quadOrder = 1;
-    data->vertexDiscretization.isBasisContinuous = true;
-    data->vertexDiscretization.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
+    data->vertexDiscretization = pylith::topology::FieldBase::Discretization(1, 1);
 
     // Scalar
     data->vertexScalarNumComponents = 1;
@@ -310,10 +299,7 @@ pylith::meshio::TestDataWriterSubMesh::_setDataQuad(void) {
 
     // Cell fields ------------------------------
     data->cellNumPoints = 2;
-    data->cellDiscretization.basisOrder = 0;
-    data->cellDiscretization.quadOrder = 0;
-    data->cellDiscretization.isBasisContinuous = true;
-    data->cellDiscretization.feSpace = pylith::topology::FieldBase::POINT_SPACE;
+    data->cellDiscretization = pylith::topology::FieldBase::Discretization(0, 0);
 
     // Scalar
     data->cellScalarNumComponents = 1;
@@ -364,10 +350,7 @@ pylith::meshio::TestDataWriterSubMesh::_setDataTet(void) {
 
     // Vertex fields ------------------------------
     data->vertexNumPoints = 5;
-    data->vertexDiscretization.basisOrder = 1;
-    data->vertexDiscretization.quadOrder = 1;
-    data->vertexDiscretization.isBasisContinuous = true;
-    data->vertexDiscretization.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
+    data->vertexDiscretization = pylith::topology::FieldBase::Discretization(1, 1);
 
     // Scalar
     data->vertexScalarNumComponents = 1;
@@ -411,10 +394,7 @@ pylith::meshio::TestDataWriterSubMesh::_setDataTet(void) {
 
     // Cell fields ------------------------------
     data->cellNumPoints = 2;
-    data->cellDiscretization.basisOrder = 0;
-    data->cellDiscretization.quadOrder = 0;
-    data->cellDiscretization.isBasisContinuous = true;
-    data->cellDiscretization.feSpace = pylith::topology::FieldBase::POINT_SPACE;
+    data->cellDiscretization = pylith::topology::FieldBase::Discretization(0, 0);
 
     // Scalar
     data->cellScalarNumComponents = 1;
@@ -465,10 +445,7 @@ pylith::meshio::TestDataWriterSubMesh::_setDataHex(void) {
 
     // Vertex fields ------------------------------
     data->vertexNumPoints = 12;
-    data->vertexDiscretization.basisOrder = 1;
-    data->vertexDiscretization.quadOrder = 1;
-    data->vertexDiscretization.isBasisContinuous = true;
-    data->vertexDiscretization.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
+    data->vertexDiscretization = pylith::topology::FieldBase::Discretization(1, 1);
 
     // Scalar
     data->vertexScalarNumComponents = 1;
@@ -534,10 +511,7 @@ pylith::meshio::TestDataWriterSubMesh::_setDataHex(void) {
 
     // Cell fields ------------------------------
     data->cellNumPoints = 2;
-    data->cellDiscretization.basisOrder = 0;
-    data->cellDiscretization.quadOrder = 0;
-    data->cellDiscretization.isBasisContinuous = true;
-    data->cellDiscretization.feSpace = pylith::topology::FieldBase::POINT_SPACE;
+    data->cellDiscretization = pylith::topology::FieldBase::Discretization(0, 0);
 
     // Scalar
     data->cellScalarNumComponents = 1;
@@ -576,16 +550,12 @@ pylith::meshio::TestDataWriterSubMesh::_setDataHex(void) {
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::TestDataWriterSubMesh_Data::TestDataWriterSubMesh_Data(void) :
-    bcLabel(NULL)
-{ // constructor
-} // constructor
+    bcLabel(NULL) {}
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestDataWriterSubMesh_Data::~TestDataWriterSubMesh_Data(void)
-{ // destructor
-} // destructor
+pylith::meshio::TestDataWriterSubMesh_Data::~TestDataWriterSubMesh_Data(void) {}
 
 
 // End of file
