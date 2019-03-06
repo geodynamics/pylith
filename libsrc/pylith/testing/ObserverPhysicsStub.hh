@@ -17,27 +17,29 @@
 //
 
 /**
- * @file libsrc/problems/ObserverSolnStub.hh
+ * @file libsrc/problems/ObserverPhysicsStub.hh
  *
- * @brief Minimal C++ implementation of ObserverSoln to allow unit tests using ObserverSoln objects.
+ * @brief Minimal C++ implementation of Observer to allow unit tests using Observer objects.
  */
 
-#if !defined(pylith_feassemble_observersolnstub_hh)
-#define pylith_feassemble_observersolnstub_hh
+#if !defined(pylith_problems_observerphysicsstub_hh)
+#define pylith_problems_observerphysicsstub_hh
 
-#include "pylith/problems/ObserverSoln.hh" // ISA ObserverSoln
+#include "pylith/testing/testingfwd.hh" // forward declarations
 
-class pylith::problems::ObserverSolnStub : public pylith::problems::ObserverSoln {
-    friend class TestObserverSolnStub; // unit testing
+#include "pylith/problems/ObserverPhysics.hh" // ISA ObserverPhysics
+
+class pylith::problems::ObserverPhysicsStub : public pylith::problems::ObserverPhysics {
+    friend class TestObserverPhysicsStub; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor.
-    ObserverSolnStub(void);
+    ObserverPhysicsStub(void);
 
     /// Destructor
-    virtual ~ObserverSolnStub(void);
+    virtual ~ObserverPhysicsStub(void);
 
     /** Verify observer is compatible with solution.
      *
@@ -50,20 +52,22 @@ public:
      * @param[in] t Current time.
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
+     * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after initialization).
      */
     void update(const PylithReal t,
                 const PylithInt tindex,
-                const pylith::topology::Field& solution);
+                const pylith::topology::Field& solution,
+                const bool infoOnly);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    ObserverSolnStub(const ObserverSolnStub&); ///< Not implemented.
-    const ObserverSolnStub& operator=(const ObserverSolnStub&); ///< Not implemented
+    ObserverPhysicsStub(const ObserverPhysicsStub&); ///< Not implemented.
+    const ObserverPhysicsStub& operator=(const ObserverPhysicsStub&); ///< Not implemented
 
-}; // ObserverSolnStub
+}; // ObserverPhysicsStub
 
-class pylith::problems::ObserverSolnStubException {
+class pylith::problems::ObserverPhysicsStubException {
     // PUBLIC ENUMS ////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -79,10 +83,10 @@ public:
      *
      * @param[in] value Method called.
      */
-    ObserverSolnStubException(const MethodEnum value);
+    ObserverPhysicsStubException(const MethodEnum value);
 
     /// Destructor
-    ~ObserverSolnStubException(void);
+    ~ObserverPhysicsStubException(void);
 
     /** Get method called.
      *
@@ -94,8 +98,8 @@ public:
 private:
 
     MethodEnum _methodCalled;
-}; // ObserverSolnStubException
+}; // ObserverPhysicsStubException
 
-#endif // pylith_feassemble_observersolnstub_hh
+#endif // pylith_problems_observerphysicsstub_hh
 
 // End of file

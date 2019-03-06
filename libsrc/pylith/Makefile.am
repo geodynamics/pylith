@@ -19,14 +19,15 @@
 SUBDIRS = \
 	utils \
 	topology \
+	feassemble \
+	problems \
 	meshio \
 	materials \
 	bc \
 	faults \
 	friction \
-	feassemble \
 	fekernels \
-	problems
+	testing
 
 
 lib_LTLIBRARIES = libpylith.la
@@ -39,7 +40,6 @@ libpylith_la_SOURCES = \
 	bc/AbsorbingDampers.cc \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
 	faults/FaultCohesive.cc \
-	faults/FaultCohesiveStub.cc \
 	faults/FaultCohesiveKin.cc \
 	faults/AuxiliaryFactoryKinematic.cc \
 	faults/KinSrc.cc \
@@ -109,11 +109,9 @@ libpylith_la_SOURCES = \
 	problems/TimeDependent.cc \
 	problems/SolutionFactory.cc \
 	problems/ObserverSoln.cc \
-	problems/ObserverSolnStub.cc \
 	problems/ObserversSoln.cc \
 	problems/Physics.cc \
 	problems/ObserverPhysics.cc \
-	problems/ObserverPhysicsStub.cc \
 	problems/ObserversPhysics.cc \
 	topology/FieldBase.cc \
 	topology/Mesh.cc \
@@ -163,7 +161,11 @@ endif
 
 if ENABLE_TESTING
 libpylith_la_SOURCES += \
-	topology/FieldTester.cc
+	testing/FieldTester.cc \
+	testing/ObserverPhysicsStub.cc \
+	testing/ObserverSolnStub.cc \
+	testing/FaultCohesiveStub.cc
+
 libpylith_la_LIBADD += -lcppunit
 endif
 

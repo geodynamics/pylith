@@ -30,8 +30,6 @@
 namespace pylith {
     namespace faults {
         class FaultCohesive;
-        class FaultCohesiveStub;
-        class FaultCohesiveStubException;
         class FaultCohesiveKin;
         class AuxiliaryFactoryKinematic;
 

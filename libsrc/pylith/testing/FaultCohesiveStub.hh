@@ -25,6 +25,8 @@
 #if !defined(pylith_faults_faultcohesivestub_hh)
 #define pylith_faults_faultcohesivestub_hh
 
+#include "pylith/testing/testingfwd.hh" // forward declarations
+
 #include "pylith/faults/FaultCohesive.hh" // ISA FaultCohesive
 
 class pylith::faults::FaultCohesiveStub : public pylith::faults::FaultCohesive {

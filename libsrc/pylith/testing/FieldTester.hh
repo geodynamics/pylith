@@ -27,7 +27,7 @@
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
-#include "Field.hh" // USES Field::SubfieldInfo
+#include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/utils/petscfwd.h" // USES PetscFE
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB

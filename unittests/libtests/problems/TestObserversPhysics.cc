@@ -21,7 +21,7 @@
 #include "TestObserversPhysics.hh" // Implementation of class methods
 
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
-#include "pylith/problems/ObserverPhysicsStub.hh" // USES ObserverPhysicsStub
+#include "pylith/testing/ObserverPhysicsStub.hh" // USES ObserverPhysicsStub
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 

@@ -9,40 +9,39 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2019 University of California, Davis
 //
 // See COPYING for license information.
 //
 // ======================================================================
 //
 
-/** @file libsrc/problems/problemsfwd.hh
+/** @file libsrc/testing/testingfwd.hh
  *
- * @brief Forward declarations for PyLith problems objects.
+ * @brief Forward declarations for stubs of PyLith objects used in unit testing.
  *
  * Including this header file eliminates the need to use separate
  * forward declarations.
  */
 
-#if !defined(pylith_problems_problemsfwd_hh)
-#define pylith_problems_problemsfwd_hh
+#if !defined(pylith_testing_testingfwd_hh)
+#define pylith_testing_testingfwd_hh
 
 namespace pylith {
+    namespace faults {
+	class FaultCohesiveStub;
+	class FaultCohesiveStubException;
+    } // faults
+
     namespace problems {
-        class Problem;
-        class TimeDependent;
-
-        class SolutionFactory;
-        class ObserversSoln;
-        class ObserverSoln;
-
-        class Physics;
-        class ObserversPhysics;
-        class ObserverPhysics;
-
+	class ObserverSolnStub;
+	class ObserverSolnStubException;
+	class ObserverPhysicsStub;
+	class ObserverPhysicsStubException;
     } // problems
+
 } // pylith
 
-#endif // pylith_problems_problemsfwd_hh
+#endif // pylith_testing_testingfwd_hh
 
 // End of file

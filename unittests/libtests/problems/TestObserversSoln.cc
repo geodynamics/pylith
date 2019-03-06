@@ -21,7 +21,7 @@
 #include "TestObserversSoln.hh" // Implementation of class methods
 
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
-#include "pylith/problems/ObserverSolnStub.hh" // USES ObserverSolnStub
+#include "pylith/testing/ObserverSolnStub.hh" // USES ObserverSolnStub
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
