@@ -39,6 +39,12 @@ public:
     /// Constructor.
     StubMethodTracker(void);
 
+    /** Constructor with method name.
+     *
+     * @param[in] methodName Full namespace method name.
+     */
+    StubMethodTracker(const char* name);
+
     /// Destructor
     ~StubMethodTracker(void);
 

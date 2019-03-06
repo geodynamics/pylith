@@ -20,6 +20,8 @@
 
 #include "FaultCohesiveStub.hh" // implementation of object methods
 
+#include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesiveStub::FaultCohesiveStub(void)
@@ -37,7 +39,7 @@ pylith::faults::FaultCohesiveStub::~FaultCohesiveStub(void) {
 // Verify configuration is acceptable.
 void
 pylith::faults::FaultCohesiveStub::verifyConfiguration(const pylith::topology::Field& solution) const {
-    throw FaultCohesiveStubException(FaultCohesiveStubException::VERIFY_CONFIGURATION);
+    pylith::testing::StubMethodTracker tracker("pylith::faults::FaultCohesiveStub::verifyConfiguration");
 } // verifyConfiguration
 
 
@@ -45,7 +47,9 @@ pylith::faults::FaultCohesiveStub::verifyConfiguration(const pylith::topology::F
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
 pylith::faults::FaultCohesiveStub::createIntegrator(const pylith::topology::Field& solution) {
-    throw FaultCohesiveStubException(FaultCohesiveStubException::CREATE_INTEGRATOR);
+    pylith::testing::StubMethodTracker tracker("pylith::faults::FaultCohesiveStub::createIntegrator");
+
+    return NULL;
 } // createIntegrator
 
 
@@ -53,7 +57,9 @@ pylith::faults::FaultCohesiveStub::createIntegrator(const pylith::topology::Fiel
 // Create constraint and set kernels.
 pylith::feassemble::Constraint*
 pylith::faults::FaultCohesiveStub::createConstraint(const pylith::topology::Field& solution) {
-    throw FaultCohesiveStubException(FaultCohesiveStubException::CREATE_CONSTRAINT);
+    pylith::testing::StubMethodTracker tracker("pylith::faults::FaultCohesiveStub::createConstraint");
+
+    return NULL;
 } // createConstraint
 
 
@@ -62,7 +68,9 @@ pylith::faults::FaultCohesiveStub::createConstraint(const pylith::topology::Fiel
 pylith::topology::Field*
 pylith::faults::FaultCohesiveStub::createAuxiliaryField(const pylith::topology::Field& solution,
                                                         const pylith::topology::Mesh& physicsMesh) {
-    throw FaultCohesiveStubException(FaultCohesiveStubException::CREATE_AUXILIARY_FIELD);
+    pylith::testing::StubMethodTracker tracker("pylith::faults::FaultCohesiveStub::createAuxiliaryField");
+
+    return NULL;
 } // createAuxiliaryField
 
 
@@ -71,7 +79,9 @@ pylith::faults::FaultCohesiveStub::createAuxiliaryField(const pylith::topology::
 pylith::topology::Field*
 pylith::faults::FaultCohesiveStub::createDerivedField(const pylith::topology::Field& solution,
                                                       const pylith::topology::Mesh& physicsMesh) {
-    throw FaultCohesiveStubException(FaultCohesiveStubException::CREATE_DERIVED_FIELD);
+    pylith::testing::StubMethodTracker tracker("pylith::faults::FaultCohesiveStub::createDerivedField");
+
+    return NULL;
 } // createDerivedField
 
 
@@ -87,25 +97,6 @@ pylith::faults::FaultCohesiveStub::_getAuxiliaryFactory(void) {
 // Update kernel constants.
 void
 pylith::faults::FaultCohesiveStub::_updateKernelConstants(const PylithReal dt) {}
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Constructor.
-pylith::faults::FaultCohesiveStubException::FaultCohesiveStubException(const MethodEnum value) :
-    _methodCalled(value) {}
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Destructor
-pylith::faults::FaultCohesiveStubException::~FaultCohesiveStubException(void) {}
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get method called.
-pylith::faults::FaultCohesiveStubException::MethodEnum
-pylith::faults::FaultCohesiveStubException::getMethodCalled(void) const {
-    return _methodCalled;
-} // getMethodCalled
 
 
 // End of file

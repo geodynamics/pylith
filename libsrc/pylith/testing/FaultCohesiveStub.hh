@@ -104,42 +104,6 @@ private:
 
 }; // class FaultCohesiveStub
 
-class pylith::faults::FaultCohesiveStubException {
-    // PUBLIC ENUMS ////////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
-    enum MethodEnum {
-        VERIFY_CONFIGURATION=0,
-        CREATE_INTEGRATOR=1,
-        CREATE_CONSTRAINT=2,
-        CREATE_AUXILIARY_FIELD=3,
-        CREATE_DERIVED_FIELD=4,
-    }; // MethodEnum
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
-    /** Constructor.
-     *
-     * @param[in] value Method called.
-     */
-    FaultCohesiveStubException(const MethodEnum value);
-
-    /// Destructor
-    ~FaultCohesiveStubException(void);
-
-    /** Get method called.
-     *
-     * @returns Method called.
-     */
-    MethodEnum getMethodCalled(void) const;
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    MethodEnum _methodCalled;
-}; // FaultCohesiveStubException
-
 #endif // pylith_faults_faultcohesivestub_hh
 
 // End of file

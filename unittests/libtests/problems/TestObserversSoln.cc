@@ -25,6 +25,8 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
+#include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
+
 namespace pylith {
     namespace problems {
         class _TestObserversSoln {
@@ -92,13 +94,15 @@ pylith::problems::TestObserversSoln::testRemoveObserver(void) {
 void
 pylith::problems::TestObserversSoln::testVerifyObservers(void) {
     CPPUNIT_ASSERT(_observers);
-    try {
-        pylith::topology::Mesh mesh;
-        pylith::topology::Field solution(mesh);
-        _observers->verifyObservers(solution);
-    } catch (ObserverSolnStubException err) {
-        CPPUNIT_ASSERT_EQUAL(ObserverSolnStubException::VERIFIED, err.getMethodCalled());
-    } // try/catch
+
+    pylith::testing::StubMethodTracker tracker;
+    tracker.clear();
+
+    pylith::topology::Mesh mesh;
+    pylith::topology::Field solution(mesh);
+    _observers->verifyObservers(solution);
+
+    CPPUNIT_ASSERT_EQUAL(size_t(2), tracker.getMethodCount("pylith::problems::ObserverPhysicsStub::verifyConfiguration"));
 } // testVerifyObservers
 
 
@@ -107,15 +111,17 @@ pylith::problems::TestObserversSoln::testVerifyObservers(void) {
 void
 pylith::problems::TestObserversSoln::testNotifyObservers(void) {
     CPPUNIT_ASSERT(_observers);
-    try {
-        const PylithReal t = 1.0;
-        const PylithInt tindex = 1;
-        pylith::topology::Mesh mesh;
-        pylith::topology::Field solution(mesh);
-        _observers->notifyObservers(t, tindex, solution);
-    } catch (ObserverSolnStubException err) {
-        CPPUNIT_ASSERT_EQUAL(ObserverSolnStubException::UPDATED, err.getMethodCalled());
-    } // try/catch
+
+    pylith::testing::StubMethodTracker tracker;
+    tracker.clear();
+
+    const PylithReal t = 1.0;
+    const PylithInt tindex = 1;
+    pylith::topology::Mesh mesh;
+    pylith::topology::Field solution(mesh);
+    _observers->notifyObservers(t, tindex, solution);
+
+    CPPUNIT_ASSERT_EQUAL(size_t(2), tracker.getMethodCount("pylith::problems::ObserverPhysicsStub::update"));
 } // testNotifyObservers
 
 

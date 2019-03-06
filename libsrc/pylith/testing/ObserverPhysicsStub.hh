@@ -67,39 +67,6 @@ private:
 
 }; // ObserverPhysicsStub
 
-class pylith::problems::ObserverPhysicsStubException {
-    // PUBLIC ENUMS ////////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
-    enum MethodEnum {
-        VERIFIED=0,
-        UPDATED=1,
-    }; // MethodEnum
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
-    /** Constructor.
-     *
-     * @param[in] value Method called.
-     */
-    ObserverPhysicsStubException(const MethodEnum value);
-
-    /// Destructor
-    ~ObserverPhysicsStubException(void);
-
-    /** Get method called.
-     *
-     * @returns Method called.
-     */
-    MethodEnum getMethodCalled(void) const;
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    MethodEnum _methodCalled;
-}; // ObserverPhysicsStubException
-
 #endif // pylith_problems_observerphysicsstub_hh
 
 // End of file

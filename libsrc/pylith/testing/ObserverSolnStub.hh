@@ -65,39 +65,6 @@ private:
 
 }; // ObserverSolnStub
 
-class pylith::problems::ObserverSolnStubException {
-    // PUBLIC ENUMS ////////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
-    enum MethodEnum {
-        VERIFIED=0,
-        UPDATED=1,
-    }; // MethodEnum
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
-    /** Constructor.
-     *
-     * @param[in] value Method called.
-     */
-    ObserverSolnStubException(const MethodEnum value);
-
-    /// Destructor
-    ~ObserverSolnStubException(void);
-
-    /** Get method called.
-     *
-     * @returns Method called.
-     */
-    MethodEnum getMethodCalled(void) const;
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    MethodEnum _methodCalled;
-}; // ObserverSolnStubException
-
 #endif // pylith_feassemble_observersolnstub_hh
 
 // End of file

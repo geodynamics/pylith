@@ -28,6 +28,13 @@ pylith::testing::StubMethodTracker::StubMethodTracker(void) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Add to count for method.
+pylith::testing::StubMethodTracker::StubMethodTracker(const char* methodName) {
+    methodCalled(methodName);
+} // constructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor
 pylith::testing::StubMethodTracker::~StubMethodTracker(void) {}
 

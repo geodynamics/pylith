@@ -20,6 +20,8 @@
 
 #include "ObserverSolnStub.hh" // Implementation of class methods
 
+#include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::problems::ObserverSolnStub::ObserverSolnStub(void) {}
@@ -36,7 +38,7 @@ pylith::problems::ObserverSolnStub::~ObserverSolnStub(void) {
 // Verify observer is compatible with solution.
 void
 pylith::problems::ObserverSolnStub::verifyConfiguration(const pylith::topology::Field& solution) const {
-    throw ObserverSolnStubException(ObserverSolnStubException::VERIFIED);
+    pylith::testing::StubMethodTracker tracker("pylith::problems::ObserverPhysicsStub::verifyConfiguration");
 } // verifyConfiguration
 
 
@@ -46,27 +48,8 @@ void
 pylith::problems::ObserverSolnStub::update(const PylithReal t,
                                            const PylithInt tindex,
                                            const pylith::topology::Field& solution) {
-    throw ObserverSolnStubException(ObserverSolnStubException::UPDATED);
+    pylith::testing::StubMethodTracker tracker("pylith::problems::ObserverPhysicsStub::update");
 } // update
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Constructor.
-pylith::problems::ObserverSolnStubException::ObserverSolnStubException(const MethodEnum value) :
-    _methodCalled(value) {}
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Destructor
-pylith::problems::ObserverSolnStubException::~ObserverSolnStubException(void) {}
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get method called.
-pylith::problems::ObserverSolnStubException::MethodEnum
-pylith::problems::ObserverSolnStubException::getMethodCalled(void) const {
-    return _methodCalled;
-} // getMethodCalled
 
 
 // End of file

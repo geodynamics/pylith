@@ -49,6 +49,10 @@ pylith::testing::TestStubMethodTracker::testMethodCount(void) {
     CPPUNIT_ASSERT_EQUAL(size_t(2), tracker.getMethodCount(methodA));
     CPPUNIT_ASSERT_EQUAL(size_t(1), tracker.getMethodCount(methodB));
 
+    StubMethodTracker trackerB(methodB);
+    CPPUNIT_ASSERT_EQUAL(size_t(2), tracker.getMethodCount(methodA));
+    CPPUNIT_ASSERT_EQUAL(size_t(2), tracker.getMethodCount(methodB));
+
     tracker.clear();
     CPPUNIT_ASSERT_EQUAL(size_t(0), tracker.getMethodCount(methodA));
     CPPUNIT_ASSERT_EQUAL(size_t(0), tracker.getMethodCount(methodB));

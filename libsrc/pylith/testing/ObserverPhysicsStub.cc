@@ -20,6 +20,8 @@
 
 #include "ObserverPhysicsStub.hh" // Implementation of class methods
 
+#include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::problems::ObserverPhysicsStub::ObserverPhysicsStub(void) {}
@@ -36,7 +38,7 @@ pylith::problems::ObserverPhysicsStub::~ObserverPhysicsStub(void) {
 // Verify observer is compatible with solution.
 void
 pylith::problems::ObserverPhysicsStub::verifyConfiguration(const pylith::topology::Field& solution) const {
-    throw ObserverPhysicsStubException(ObserverPhysicsStubException::VERIFIED);
+    pylith::testing::StubMethodTracker tracker("pylith::problems::ObserverPhysicsStub::verifyConfiguration");
 } // verifyConfiguration
 
 
@@ -47,27 +49,8 @@ pylith::problems::ObserverPhysicsStub::update(const PylithReal t,
                                               const PylithInt tindex,
                                               const pylith::topology::Field& solution,
                                               const bool infoOnly) {
-    throw ObserverPhysicsStubException(ObserverPhysicsStubException::UPDATED);
+    pylith::testing::StubMethodTracker tracker("pylith::problems::ObserverPhysicsStub::update");
 } // update
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Constructor.
-pylith::problems::ObserverPhysicsStubException::ObserverPhysicsStubException(const MethodEnum value) :
-    _methodCalled(value) {}
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Destructor
-pylith::problems::ObserverPhysicsStubException::~ObserverPhysicsStubException(void) {}
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get method called.
-pylith::problems::ObserverPhysicsStubException::MethodEnum
-pylith::problems::ObserverPhysicsStubException::getMethodCalled(void) const {
-    return _methodCalled;
-} // getMethodCalled
 
 
 // End of file

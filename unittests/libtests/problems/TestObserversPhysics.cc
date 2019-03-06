@@ -25,6 +25,8 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
+#include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
+
 namespace pylith {
     namespace problems {
         class _TestObserversPhysics {
@@ -100,13 +102,15 @@ pylith::problems::TestObserversPhysics::testSetPhysicsImplementation(void) {
 void
 pylith::problems::TestObserversPhysics::testVerifyObservers(void) {
     CPPUNIT_ASSERT(_observers);
-    try {
-        pylith::topology::Mesh mesh;
-        pylith::topology::Field solution(mesh);
-        _observers->verifyObservers(solution);
-    } catch (ObserverPhysicsStubException err) {
-        CPPUNIT_ASSERT_EQUAL(ObserverPhysicsStubException::VERIFIED, err.getMethodCalled());
-    } // try/catch
+
+    pylith::testing::StubMethodTracker tracker;
+    tracker.clear();
+
+    pylith::topology::Mesh mesh;
+    pylith::topology::Field solution(mesh);
+    _observers->verifyObservers(solution);
+
+    CPPUNIT_ASSERT_EQUAL(size_t(2), tracker.getMethodCount("pylith::problems::ObserverPhysicsStub::verifyConfiguration"));
 } // testVerifyObservers
 
 
@@ -115,16 +119,18 @@ pylith::problems::TestObserversPhysics::testVerifyObservers(void) {
 void
 pylith::problems::TestObserversPhysics::testNotifyObservers(void) {
     CPPUNIT_ASSERT(_observers);
-    try {
-        const PylithReal t = 1.0;
-        const PylithInt tindex = 1;
-        pylith::topology::Mesh mesh;
-        pylith::topology::Field solution(mesh);
-        _observers->notifyObservers(t, tindex, solution, true);
-        _observers->notifyObservers(t, tindex, solution, false);
-    } catch (ObserverPhysicsStubException err) {
-        CPPUNIT_ASSERT_EQUAL(ObserverPhysicsStubException::UPDATED, err.getMethodCalled());
-    } // try/catch
+
+    pylith::testing::StubMethodTracker tracker;
+    tracker.clear();
+
+    const PylithReal t = 1.0;
+    const PylithInt tindex = 1;
+    pylith::topology::Mesh mesh;
+    pylith::topology::Field solution(mesh);
+    _observers->notifyObservers(t, tindex, solution, true);
+    _observers->notifyObservers(t, tindex, solution, false);
+
+    CPPUNIT_ASSERT_EQUAL(size_t(4), tracker.getMethodCount("pylith::problems::ObserverPhysicsStub::update"));
 } // testNotifyObservers
 
 
