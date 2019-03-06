@@ -25,6 +25,7 @@ SUBDIRS = \
 	meshio \
 	problems \
 	topology \
+	testing \
 	utils
 
 

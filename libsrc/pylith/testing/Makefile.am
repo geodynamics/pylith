@@ -21,6 +21,7 @@ include $(top_srcdir)/subpackage.am
 
 if ENABLE_TESTING
 subpkginclude_HEADERS = \
+	StubMethodTracker.hh \
 	FaultCohesiveStub.hh \
 	FieldTester.hh \
 	ObserverPhysicsStub.hh \

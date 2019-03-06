@@ -28,6 +28,11 @@
 #define pylith_testing_testingfwd_hh
 
 namespace pylith {
+
+  namespace testing {
+    class StubMethodTracker;
+  } // testing
+  
     namespace faults {
 	class FaultCohesiveStub;
 	class FaultCohesiveStubException;

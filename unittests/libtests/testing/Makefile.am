@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = utils
+subpackage = testing
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/check.am
 
@@ -26,21 +26,11 @@ check_PROGRAMS = testutils
 
 # Primary source files
 testutils_SOURCES = \
-	TestEventLogger.cc \
-	TestPyreComponent.cc \
-	TestGenericComponent.cc \
-	TestPylithVersion.cc \
-	TestPetscVersion.cc \
-	TestDependenciesVersion.cc \
-	test_utils.cc
+	TestStubMethodTracker.cc \
+	test_testing.cc
 
 noinst_HEADERS = \
-	TestEventLogger.hh \
-	TestPyreComponent.hh \
-	TestGenericComponent.hh \
-	TestPylithVersion.hh \
-	TestPetscVersion.hh \
-	TestDependenciesVersion.hh
+	TestStubMethodTracker.hh
 
 AM_CPPFLAGS += $(PETSC_CC_INCLUDES)
 AM_CPPFLAGS += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR)

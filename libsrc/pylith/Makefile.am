@@ -161,6 +161,7 @@ endif
 
 if ENABLE_TESTING
 libpylith_la_SOURCES += \
+	testing/StubMethodTracker.cc \
 	testing/FieldTester.cc \
 	testing/ObserverPhysicsStub.cc \
 	testing/ObserverSolnStub.cc \
