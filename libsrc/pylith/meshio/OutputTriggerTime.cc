@@ -41,19 +41,19 @@ pylith::meshio::OutputTriggerTime::~OutputTriggerTime(void) {}
 // ---------------------------------------------------------------------------------------------------------------------
 // Set elapsed time between writes.
 void
-pylith::meshio::OutputTriggerTime::timeSkip(const double value) {
-    PYLITH_COMPONENT_DEBUG("OutputTriggerTime::timeSkip(value="<<value<<")");
+pylith::meshio::OutputTriggerTime::setTimeSkip(const double value) {
+    PYLITH_COMPONENT_DEBUG("OutputTriggerTime::setTimeSkip(value="<<value<<")");
 
     _timeSkip = (value >= 0.0) ? value : 0.0;
-} // timeSkip
+} // setTimeSkip
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get elapsed time between writes.
 double
-pylith::meshio::OutputTriggerTime::timeSkip(void) const {
+pylith::meshio::OutputTriggerTime::getTimeSkip(void) const {
     return _timeSkip;
-} // timeSkip
+} // getTimeSkip
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -64,13 +64,13 @@ pylith::meshio::OutputTriggerTime::shouldWrite(const PylithReal t,
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("OutputTriggerTime::shouldWrite(t="<<t<<", timeStep="<<timeStep<<")");
 
-    bool shouldWrite = false;
+    bool isWrite = false;
     if (t - _timeWrote >= _timeSkip) {
-        shouldWrite = true;
+        isWrite = true;
         _timeWrote = t;
     } // if
 
-    PYLITH_METHOD_RETURN(shouldWrite);
+    PYLITH_METHOD_RETURN(isWrite);
 } // shouldWrite
 
 

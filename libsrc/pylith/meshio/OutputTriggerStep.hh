@@ -35,7 +35,7 @@ class pylith::meshio::OutputTriggerStep : public pylith::meshio::OutputTrigger {
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Constructor
+    /// Construlibctor
     OutputTriggerStep(void);
 
     /// Destructor
@@ -54,13 +54,13 @@ public:
      *
      * @param[in] Number of steps to skip between writes.
      */
-    void numStepsSkip(const int value);
+    void setNumStepsSkip(const int value);
 
     /** Get number of steps to skip between writes.
      *
      * @returns Number of steps to skip between writes.
      */
-    int numStepsSkip(void) const;
+    int getNumStepsSkip(void) const;
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

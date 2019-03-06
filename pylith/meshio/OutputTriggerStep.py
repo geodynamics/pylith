@@ -58,7 +58,7 @@ class OutputTriggerStep(OutputTrigger, ModuleOutputTriggerStep):
         """
         ModuleOutputTriggerStep.__init__(self)
         ModuleOutputTriggerStep.setIdentifier(self, self.aliases[-1])
-        ModuleOutputTriggerStep.numStepsSkip(self, self.numSkip)
+        ModuleOutputTriggerStep.setNumStepsSkip(self, self.numSkip)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

@@ -26,16 +26,16 @@ namespace pylith {
     namespace meshio {
 
         class pylith::meshio::OutputTriggerStep : public pylith::meshio::OutputTrigger {
-	  
+
 	  // PUBLIC METHODS ///////////////////////////////////////////////////////
 	public:
-	  
+
 	  /// Constructor
 	  OutputTriggerStep(void);
-	  
+
 	  /// Destructor
 	  ~OutputTriggerStep(void);
-	  
+
 	  /** Check whether we want to write output at time t.
 	   *
 	   * @param[in] t Time of proposed write.
@@ -44,18 +44,18 @@ namespace pylith {
 	   */
 	  bool shouldWrite(const PylithReal t,
 			   const PylithInt tindex);
-	  
+
 	  /** Set number of steps to skip between writes.
 	   *
 	   * @param[in] Number of steps to skip between writes.
 	   */
-	  void numStepsSkip(const int value);
-	  
+	  void setNumStepsSkip(const int value);
+
 	  /** Get number of steps to skip between writes.
 	   *
 	   * @returns Number of steps to skip between writes.
 	   */
-	  int numStepsSkip(void) const;
+	  int getNumStepsSkip(void) const;
 
 	}; // OutputTriggerStep
 

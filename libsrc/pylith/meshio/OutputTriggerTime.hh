@@ -54,13 +54,13 @@ public:
      *
      * @param[in] Elapsed time between writes.
      */
-    void timeSkip(const double value);
+    void setTimeSkip(const double value);
 
     /** Get elapsed time between writes.
      *
      * @returns Elapsed time between writes.
      */
-    double timeSkip(void) const;
+    double getTimeSkip(void) const;
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

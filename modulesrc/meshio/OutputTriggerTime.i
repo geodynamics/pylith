@@ -26,16 +26,16 @@ namespace pylith {
     namespace meshio {
 
         class pylith::meshio::OutputTriggerTime : public pylith::meshio::OutputTrigger {
-	  
+
 	  // PUBLIC METHODS ///////////////////////////////////////////////////////
 	public:
-	  
+
 	  /// Constructor
 	  OutputTriggerTime(void);
-	  
+
 	  /// Destructor
 	  ~OutputTriggerTime(void);
-	  
+
 	  /** Check whether we want to write output at time t.
 	   *
 	   * @param[in] t Time of proposed write.
@@ -44,18 +44,18 @@ namespace pylith {
 	   */
 	  bool shouldWrite(const PylithReal t,
 			   const PylithInt tindex);
-	  
+
 	  /** Set elapsed time between writes.
 	   *
 	   * @param[in] Elapsed time between writes.
 	   */
-	  void timeSkip(const double value);
-	  
+	  void setTimeSkip(const double value);
+
 	  /** Get elapsed time between writes.
 	   *
 	   * @returns Elapsed time between writes.
 	   */
-	  double timeSkip(void) const;
+	  double getTimeSkip(void) const;
 	}; // OutputTriggerTime
 
     } // meshio
