@@ -31,31 +31,28 @@
 
 /// Namespace for pylith package
 namespace pylith {
-  namespace testing {
-    class TestStubMethodTracker;
-  } // utils
+    namespace testing {
+        class TestStubMethodTracker;
+    } // utils
 } // pylith
 
 /// C++ unit testing for TestStubMethodTracker
-class pylith::testing::TestStubMethodTracker : public CppUnit::TestFixture
-{ // class TestStubMethodTracker
+class pylith::testing::TestStubMethodTracker : public CppUnit::TestFixture {
+    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    CPPUNIT_TEST_SUITE(TestStubMethodTracker);
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestStubMethodTracker );
+    CPPUNIT_TEST(testMethodCount);
 
-  CPPUNIT_TEST( testMethodCount );
+    CPPUNIT_TEST_SUITE_END();
 
-  CPPUNIT_TEST_SUITE_END();
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
-public :
-
-  /// Test methodCount().
-  void testMethodCount(void);
+    /// Test methodCount().
+    void testMethodCount(void);
 
 }; // class TestStubMethodTracker
 
 #endif // pylith_utils_teststubmethodtracker_hh
 
-
-// End of file 
+// End of file

@@ -46,17 +46,17 @@ public:
      *
      * @param[in] methodName Full namespace method name.
      */
-  void methodCalled(const char* methodName);
+    void methodCalled(const char* methodName);
 
-  /// Reset method counts.
-void clear(void);
-  
+    /// Reset method counts.
+    void clear(void);
+
     /** How many times was method called?
      *
      * @param[in] methodName Full namespace method name.
      * @returns Number of times method was called.
      */
-  size_t getMethodCount(const char* methodName);
+    size_t getMethodCount(const char* methodName);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
@@ -64,11 +64,10 @@ private:
     StubMethodTracker(const StubMethodTracker&); ///< Not implemented.
     const StubMethodTracker& operator=(const StubMethodTracker&); ///< Not implemented
 
-  typedef std::map<std::string, int> map_type;
-  static map_type _methodCount; ///< Number of times method was called.
-  
-}; // StubMethodTracker
+    typedef std::map<std::string, int> map_type;
+    static map_type _methodCount; ///< Number of times method was called.
 
+}; // StubMethodTracker
 
 #endif // pylith_testing_stubmethodtrack_hh
 

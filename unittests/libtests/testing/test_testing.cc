@@ -33,14 +33,13 @@
 
 int
 main(int argc,
-     char* argv[])
-{ // main
+     char* argv[]) { // main
     CppUnit::TestResultCollector result;
 
     try {
         // Initialize PETSc
-        PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(err);
-        err = PetscOptionsSetValue(NULL, "-malloc_dump", ""); CHKERRQ(err);
+        PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);CHKERRQ(err);
+        err = PetscOptionsSetValue(NULL, "-malloc_dump", "");CHKERRQ(err);
 
         Py_Initialize();
 

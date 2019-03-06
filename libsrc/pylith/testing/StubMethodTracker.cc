@@ -31,37 +31,40 @@ pylith::testing::StubMethodTracker::StubMethodTracker(void) {}
 // Destructor
 pylith::testing::StubMethodTracker::~StubMethodTracker(void) {}
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Add to count for method.
 void
 pylith::testing::StubMethodTracker::methodCalled(const char* methodName) {
-  map_type::iterator iter = _methodCount.find(std::string(methodName));
-  if (iter != _methodCount.end()) {
-    iter->second++;
-  } else {
-    _methodCount[std::string(methodName)] = 1;
-  } // if/else
+    map_type::iterator iter = _methodCount.find(std::string(methodName));
+    if (iter != _methodCount.end()) {
+        iter->second++;
+    } else {
+        _methodCount[std::string(methodName)] = 1;
+    } // if/else
 } // methodCalled
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Reset method counts.
 void
 pylith::testing::StubMethodTracker::clear(void) {
-  _methodCount.clear();
+    _methodCount.clear();
 } // clear
-  
+
+
 // ---------------------------------------------------------------------------------------------------------------------
 // How many times was method called?
 size_t
 pylith::testing::StubMethodTracker::getMethodCount(const char* methodName) {
-  size_t count = 0;
-  
-  const map_type::iterator iter = _methodCount.find(std::string(methodName));
-  if (iter != _methodCount.end()) {
-    count = iter->second;
-  } // if
+    size_t count = 0;
 
-  return count;
+    const map_type::iterator iter = _methodCount.find(std::string(methodName));
+    if (iter != _methodCount.end()) {
+        count = iter->second;
+    } // if
+
+    return count;
 } // getMethodCount
 
 
