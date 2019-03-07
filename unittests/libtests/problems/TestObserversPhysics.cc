@@ -25,6 +25,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
+#include "pylith/testing/PhysicsImplementationStub.hh" // USES PhysicsImplementationStub
 #include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
 
 namespace pylith {
@@ -93,7 +94,10 @@ pylith::problems::TestObserversPhysics::testRemoveObserver(void) {
 // Test setPhysicsImplementation().
 void
 pylith::problems::TestObserversPhysics::testSetPhysicsImplementation(void) {
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement test.", false);
+    pylith::feassemble::PhysicsImplementationStub physics;
+
+    CPPUNIT_ASSERT(_observers);
+    _observers->setPhysicsImplementation(&physics);
 } // testSetPhysicsImplementation
 
 
