@@ -28,6 +28,7 @@ check_PROGRAMS = testproblems
 
 # Primary source files
 testproblems_SOURCES = \
+	TestPhysics.cc \
 	TestObserversSoln.cc \
 	TestObserversPhysics.cc \
 	TestSolutionFactory.cc \
@@ -37,6 +38,7 @@ testproblems_SOURCES = \
 
 
 noinst_HEADERS = \
+	TestPhysics.hh \
 	TestObserversSoln.hh \
 	TestObserversPhysics.hh \
 	TestSolutionFactory.hh
