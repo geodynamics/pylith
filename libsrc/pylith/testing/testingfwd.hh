@@ -28,21 +28,22 @@
 #define pylith_testing_testingfwd_hh
 
 namespace pylith {
+    namespace testing {
+        class StubMethodTracker;
+    } // testing
 
-  namespace testing {
-    class StubMethodTracker;
-  } // testing
-  
     namespace faults {
-	class FaultCohesiveStub;
-	class FaultCohesiveStubException;
+        class FaultCohesiveStub;
     } // faults
 
+    namespace feassemble {
+        class PhysicsImplementationStub;
+    } // feassemble
+
     namespace problems {
-	class ObserverSolnStub;
-	class ObserverSolnStubException;
-	class ObserverPhysicsStub;
-	class ObserverPhysicsStubException;
+        class PhysicsStub;
+        class ObserverSolnStub;
+        class ObserverPhysicsStub;
     } // problems
 
 } // pylith

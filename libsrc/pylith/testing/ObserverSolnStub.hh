@@ -39,7 +39,7 @@ public:
     ObserverSolnStub(void);
 
     /// Destructor
-    virtual ~ObserverSolnStub(void);
+    ~ObserverSolnStub(void);
 
     /** Verify observer is compatible with solution.
      *

@@ -24,6 +24,8 @@ subpkginclude_HEADERS = \
 	StubMethodTracker.hh \
 	FaultCohesiveStub.hh \
 	FieldTester.hh \
+	PhysicsStub.hh \
+	PhysicsImplementationStub.hh \
 	ObserverPhysicsStub.hh \
 	ObserverSolnStub.hh
 	testingfwd.hh

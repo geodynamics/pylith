@@ -39,7 +39,7 @@ public:
     ObserverPhysicsStub(void);
 
     /// Destructor
-    virtual ~ObserverPhysicsStub(void);
+    ~ObserverPhysicsStub(void);
 
     /** Verify observer is compatible with solution.
      *
