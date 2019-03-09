@@ -44,8 +44,6 @@ class pylith::problems::TestPhysics : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE(TestPhysics);
 
     CPPUNIT_TEST(testSetNormalizer);
-    CPPUNIT_TEST(testSetAuxiliaryFieldDB);
-    CPPUNIT_TEST(testSetAuxiliarySubfieldDiscretization);
     CPPUNIT_TEST(testObservers);
     CPPUNIT_TEST(testGetKernelConstants);
     CPPUNIT_TEST(testVerifyConfiguration);
@@ -68,8 +66,9 @@ public:
     /// Test setNormalizer().
     void testSetNormalizer(void);
 
-    /// Test setAuxiliaryFieldDB().
-    void testSetAuxiliaryFieldDB(void);
+    // Cannot test setAuxiliaryFieldDB(). No AuxiliaryFactory in stub.
+
+    // Cannot test setAuxSubfieldDiscretization(). No AuxiliaryFactory in stub.
 
     /// Test setAuxiliarySubfieldDiscretization().
     void testSetAuxiliarySubfieldDiscretization(void);

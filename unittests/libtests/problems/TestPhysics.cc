@@ -23,7 +23,12 @@
 #include "pylith/testing/PhysicsStub.hh" // USES PhysicsStub
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 
+#include "pylith/testing/ObserverPhysicsStub.hh" // USES ObserversPhysicsStub
+#include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
+
+#include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
@@ -68,26 +73,29 @@ pylith::problems::TestPhysics::testSetNormalizer(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test setAuxiliaryFieldDB().
-void
-pylith::problems::TestPhysics::testSetAuxiliaryFieldDB(void) {
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement test.", false);
-} // testSetAuxiliaryFieldDB
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Test setAuxiliarySubfieldDiscretization().
-void
-pylith::problems::TestPhysics::testSetAuxiliarySubfieldDiscretization(void) {
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement test.", false);
-} // testSetAuxiliarySubfieldDiscretization
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Test registerObserver(), removeObserver(), getObservers().
 void
 pylith::problems::TestPhysics::testObservers(void) {
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement test.", false);
+    pylith::problems::ObserverPhysicsStub observerA;
+    pylith::problems::ObserverPhysicsStub observerB;
+
+    CPPUNIT_ASSERT(_physics);
+    CPPUNIT_ASSERT_EQUAL(size_t(0), _physics->getObservers()->size());
+
+    _physics->registerObserver(&observerA);
+    CPPUNIT_ASSERT_EQUAL(size_t(1), _physics->getObservers()->size());
+
+    _physics->registerObserver(&observerB);
+    CPPUNIT_ASSERT_EQUAL(size_t(2), _physics->getObservers()->size());
+
+    _physics->removeObserver(&observerB);
+    CPPUNIT_ASSERT_EQUAL(size_t(1), _physics->getObservers()->size());
+
+    _physics->removeObserver(&observerA);
+    CPPUNIT_ASSERT_EQUAL(size_t(0), _physics->getObservers()->size());
+
+    _physics->removeObserver(&observerA);
+    CPPUNIT_ASSERT_EQUAL(size_t(0), _physics->getObservers()->size());
 } // testObservers
 
 
