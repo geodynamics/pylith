@@ -64,6 +64,12 @@ public:
      */
     void removeObserver(pylith::problems::ObserverPhysics* observer);
 
+    /** Get number of observers.
+     *
+     * @returns Number of observers.
+     */
+    size_t size(void) const;
+
     /** Set physics implementation in observers (for callbacks)
      *
      * @param[in] physics Physics implementation being observed.

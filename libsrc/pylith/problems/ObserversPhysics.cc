@@ -82,6 +82,14 @@ pylith::problems::ObserversPhysics::removeObserver(pylith::problems::ObserverPhy
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Get number of observers.
+size_t
+pylith::problems::ObserversPhysics::size(void) const {
+    return _observers.size();
+} // count`
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set physics implementation in observers (for callbacks)
 void
 pylith::problems::ObserversPhysics::setPhysicsImplementation(const pylith::feassemble::PhysicsImplementation* const physics) {

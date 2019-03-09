@@ -69,6 +69,7 @@ pylith::problems::TestObserversPhysics::testRegisterObserver(void) {
     CPPUNIT_ASSERT(_observers);
     CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObserversPhysics::observerA));
     CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObserversPhysics::observerB));
+    CPPUNIT_ASSERT_EQUAL(size_t(2), _observers->size());
 } // testRegisterObserver
 
 
@@ -79,14 +80,17 @@ pylith::problems::TestObserversPhysics::testRemoveObserver(void) {
     CPPUNIT_ASSERT(_observers);
     CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObserversPhysics::observerA));
     CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObserversPhysics::observerB));
+    CPPUNIT_ASSERT_EQUAL(size_t(2), _observers->size());
 
     _observers->removeObserver(&_TestObserversPhysics::observerA);
     CPPUNIT_ASSERT_EQUAL(size_t(0), _observers->_observers.count(&_TestObserversPhysics::observerA));
     CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObserversPhysics::observerB));
+    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->size());
 
     _observers->removeObserver(&_TestObserversPhysics::observerB);
     CPPUNIT_ASSERT_EQUAL(size_t(0), _observers->_observers.count(&_TestObserversPhysics::observerA));
     CPPUNIT_ASSERT_EQUAL(size_t(0), _observers->_observers.count(&_TestObserversPhysics::observerB));
+    CPPUNIT_ASSERT_EQUAL(size_t(0), _observers->size());
 } // testRegisterObserver
 
 
