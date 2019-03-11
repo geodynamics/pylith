@@ -55,7 +55,7 @@ public:
      *
      * @returns Pointer to database.
      */
-    const spatialdata::spatialdb::SpatialDB* getQueryDB(void);
+    const spatialdata::spatialdb::SpatialDB* getQueryDB(void) const;
 
     /** Set discretization information for auxiliary subfield.
      *

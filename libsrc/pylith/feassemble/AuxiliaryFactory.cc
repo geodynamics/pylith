@@ -66,7 +66,7 @@ pylith::feassemble::AuxiliaryFactory::setQueryDB(spatialdata::spatialdb::Spatial
 // ---------------------------------------------------------------------------------------------------------------------
 // Get database for filling auxiliary subfields.
 const spatialdata::spatialdb::SpatialDB*
-pylith::feassemble::AuxiliaryFactory::getQueryDB(void) {
+pylith::feassemble::AuxiliaryFactory::getQueryDB(void) const {
     return _queryDB;
 } // getQueryDB
 

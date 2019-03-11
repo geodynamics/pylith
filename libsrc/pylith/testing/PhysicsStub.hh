@@ -42,6 +42,9 @@ public:
     /// Destructor
     ~PhysicsStub(void);
 
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
+
     /** Verify configuration is acceptable.
      *
      * @param[in] solution Solution field.
@@ -90,6 +93,11 @@ protected:
      * @return Auxiliary factory for physics object.
      */
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
+
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+private:
+
+    pylith::feassemble::AuxiliaryFactory* _auxiliaryFactory; ///< Factory for creating auxiliary subfields.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

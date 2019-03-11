@@ -20,11 +20,13 @@
 
 #include "PhysicsStub.hh" // Implementation of class methods
 
+#include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::problems::PhysicsStub::PhysicsStub(void) {}
+pylith::problems::PhysicsStub::PhysicsStub(void) :
+    _auxiliaryFactory(new pylith::feassemble::AuxiliaryFactory) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -32,6 +34,19 @@ pylith::problems::PhysicsStub::PhysicsStub(void) {}
 pylith::problems::PhysicsStub::~PhysicsStub(void) {
     deallocate();
 } // destructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::problems::PhysicsStub::deallocate(void) {
+    PYLITH_METHOD_BEGIN;
+
+    delete _auxiliaryFactory;_auxiliaryFactory = NULL;
+    Physics::deallocate();
+
+    PYLITH_METHOD_END;
+} // deallocate
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -88,9 +103,7 @@ pylith::problems::PhysicsStub::createDerivedField(const pylith::topology::Field&
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
 pylith::problems::PhysicsStub::_getAuxiliaryFactory(void) {
-    pylith::testing::StubMethodTracker tracker("pylith::problems::PhysicsStub::_getAuxiliaryFactory");
-
-    return NULL;
+    return _auxiliaryFactory;
 } // _getAuxiliaryFactory
 
 
