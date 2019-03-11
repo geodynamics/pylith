@@ -434,9 +434,11 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
         const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
         err = PetscDSSetBdResidual(prob, i_field, kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
     } // for
+#if 0
     err = DMPlexComputeResidual_Hybrid_Internal(dmSoln, cohesiveCells, t, solution.localVector(),
                                                 solutionDot.localVector(), t,
                                                 residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
+#endif
     err = ISDestroy(&cohesiveCells);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
