@@ -174,7 +174,7 @@ pylith::problems::TestPhysics::testGetKernelConstants(void) {
     const pylith::real_array& constants = _physics->getKernelConstants(dt);
 
     CPPUNIT_ASSERT_EQUAL(numConstants, constants.size());
-    for (int i = 0; i < numConstants; ++i) {
+    for (size_t i = 0; i < numConstants; ++i) {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(constantsE[i], constants[i], 1.0e-6);
     } // for
 
