@@ -98,7 +98,7 @@ public:
              * @param[in] ic Array of initial conditions.
              * @param[in] numIC Number of initial conditions.
              */
-            void setInitialConditions(pylith::problems::BoundaryCondition* ic[],
+            void setInitialConditions(pylith::problems::InitialConditions* ic[],
                                       const int numIC);
 
             /// Initialize.
