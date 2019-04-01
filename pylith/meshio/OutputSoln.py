@@ -20,11 +20,11 @@
 #
 # Factory: observer
 
-from .OutputManager import OutputManager
+from .OutputObserver import OutputObserver
 from .meshio import OutputSoln as ModuleOutputSoln
 
 
-class OutputSoln(OutputManager, ModuleOutputSoln):
+class OutputSoln(OutputObserver, ModuleOutputSoln):
     """
     Python object for managing output of finite-element solution
     information.
@@ -32,7 +32,7 @@ class OutputSoln(OutputManager, ModuleOutputSoln):
     INVENTORY
 
     Properties
-      - None
+      - *data_fields* Names of data fields to output.
 
     Facilities
       - None
@@ -40,20 +40,26 @@ class OutputSoln(OutputManager, ModuleOutputSoln):
     FACTORY: observer
     """
 
+    import pyre.inventory
+
+    dataFields = pyre.inventory.list("data_fields", default=["all"])
+    dataFields.meta['tip'] = "Names of data fields to output."
+
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="outputsoln"):
         """
         Constructor.
         """
-        OutputManager.__init__(self, name)
+        OutputObserver.__init__(self, name)
         return
 
     def preinitialize(self, problem):
         """
         Do mimimal initialization.
         """
-        OutputManager.preinitialize(self, problem)
+        OutputObserver.preinitialize(self, problem)
+        ModuleOutputSoln.setOutputSubfields(self, self.dataFields)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -62,24 +68,7 @@ class OutputSoln(OutputManager, ModuleOutputSoln):
         """
         Set members based using inventory.
         """
-        OutputManager._configure(self)
+        OutputObserver._configure(self)
         return
-
-    def _createModuleObj(self, problem):
-        """
-        Create handle to C++ object.
-        """
-        ModuleOutputSoln.__init__(self, problem)
-        return
-
-
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def observer():
-    """
-    Factory associated with OutputSoln.
-    """
-    return OutputSoln()
-
 
 # End of file

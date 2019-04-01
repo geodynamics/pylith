@@ -19,6 +19,7 @@
 #include <portinfo>
 
 #include <petsc.h>
+#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 #include <Python.h>
 
 #include <cppunit/extensions/TestFactoryRegistry.h>
@@ -36,55 +37,54 @@
 
 int
 main(int argc,
-     char* argv[])
-{ // main
-  CppUnit::TestResultCollector result;
+     char* argv[]) { // main
+    CppUnit::TestResultCollector result;
 
-  try {
-    // Initialize PETSc
-    PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);CHKERRQ(err);
+    try {
+        // Initialize PETSc
+        PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);CHKERRQ(err);
 #if defined(MALLOC_DUMP)
-    err = PetscOptionsSetValue(NULL, "-malloc_dump", "");CHKERRQ(err);
+        err = PetscOptionsSetValue(NULL, "-malloc_dump", "");CHKERRQ(err);
 #endif
 
-    // Initialize Python (to eliminate need to initialize when
-    // parsing units in spatial databases).
-    Py_Initialize();
+        // Initialize Python (to eliminate need to initialize when
+        // parsing units in spatial databases).
+        Py_Initialize();
 
-    // Create event manager and test controller
-    CppUnit::TestResult controller;
+        // Create event manager and test controller
+        CppUnit::TestResult controller;
 
-    // Add listener to collect test results
-    controller.addListener(&result);
+        // Add listener to collect test results
+        controller.addListener(&result);
 
-    // Add listener to show progress as tests run
-    CppUnit::BriefTestProgressListener progress;
-    controller.addListener(&progress);
+        // Add listener to show progress as tests run
+        CppUnit::BriefTestProgressListener progress;
+        controller.addListener(&progress);
 
-    // Add top suite to test runner
-    CppUnit::TestRunner runner;
-    runner.addTest(CppUnit::TestFactoryRegistry::getRegistry().makeTest());
-    runner.run(controller);
+        // Add top suite to test runner
+        CppUnit::TestRunner runner;
+        runner.addTest(CppUnit::TestFactoryRegistry::getRegistry().makeTest());
+        runner.run(controller);
 
-    // Print tests
-    CppUnit::TextOutputter outputter(&result, std::cerr);
-    outputter.write();
+        // Print tests
+        CppUnit::TextOutputter outputter(&result, std::cerr);
+        outputter.write();
 
-    // Finalize Python
-    Py_Finalize();
+        // Finalize Python
+        Py_Finalize();
 
-    // Finalize PETSc
-    err = PetscFinalize();
-    CHKERRQ(err);
-  } catch (...) {
-    abort();
-  } // catch
+        // Finalize PETSc
+        err = PetscFinalize();PYLITH_CHECK_ERROR(err);
+    } catch (...) {
+        abort();
+    } // catch
 
 #if !defined(MALLOC_DUMP)
-  std::cout << "WARNING -malloc dump is OFF\n" << std::endl;
+    std::cout << "WARNING -malloc dump is OFF\n" << std::endl;
 #endif
 
-  return (result.wasSuccessful() ? 0 : 1);
+    return (result.wasSuccessful() ? 0 : 1);
 } // main
+
 
 // End of file

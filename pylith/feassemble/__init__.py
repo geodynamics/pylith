@@ -21,11 +21,6 @@
 # @brief Python PyLith finite-element assembler module initialization
 
 __all__ = [
-    "ConstraintPointwise",
-    "IntegratorPointwise",
-    "ObservedComponent",
-    "Observer",
-    "SingleObserver",
 ]
 
 

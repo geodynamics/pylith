@@ -31,37 +31,32 @@
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
-
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error()
 
-// ----------------------------------------------------------------------
-const char* pylith::meshio::MeshIOLagrit::_pyreComponent = "meshiolagrit";
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIOLagrit::MeshIOLagrit(void) :
     _filenameGmv(""),
     _filenamePset(""),
     _flipEndian(false),
     _ioInt32(true),
-    _isRecordHeader32Bit(true)
-{ // constructor
-    PyreComponent::name(_pyreComponent);
+    _isRecordHeader32Bit(true) {
+    PyreComponent::setName("meshiolagrit");
 } // constructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::MeshIOLagrit::~MeshIOLagrit(void)
-{ // destructor
+pylith::meshio::MeshIOLagrit::~MeshIOLagrit(void) {
     deallocate();
 } // destructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::MeshIOLagrit::deallocate(void)
-{ // deallocate
+pylith::meshio::MeshIOLagrit::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     MeshIO::deallocate();
@@ -69,11 +64,11 @@ pylith::meshio::MeshIOLagrit::deallocate(void)
     PYLITH_METHOD_END;
 } // deallocate
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Unpickle mesh
 void
-pylith::meshio::MeshIOLagrit::_read(void)
-{ // _read
+pylith::meshio::MeshIOLagrit::_read(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_read()");
 
@@ -117,31 +112,32 @@ pylith::meshio::MeshIOLagrit::_read(void)
         } // if/else
         GroupPtType type = VERTEX;
         const int numGroups = groups.size();
-        for (int iGroup = 0; iGroup < numGroups; ++iGroup)
+        for (int iGroup = 0; iGroup < numGroups; ++iGroup) {
             _setGroup(groups[iGroup].name, type, groups[iGroup].points);
+        }
     }
     _distributeGroups();
 
     PYLITH_METHOD_END;
 } // _read
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Pickle mesh
 void
-pylith::meshio::MeshIOLagrit::_write(void) const
-{ // _write
+pylith::meshio::MeshIOLagrit::_write(void) const {
     throw std::logic_error("MeshIOLagrit::_write not implemented.");
 } // _write
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Reorder vertices in cells from ASCII GMV file to match PyLith
 // conventions.
 void
 pylith::meshio::MeshIOLagrit::_orientCellsAscii(int_array* const cells,
                                                 const int numCells,
                                                 const int numCorners,
-                                                const int meshDim)
-{ // _orientCellsAscii
+                                                const int meshDim) {
     PYLITH_METHOD_BEGIN;
 
     assert(cells);
@@ -154,30 +150,29 @@ pylith::meshio::MeshIOLagrit::_orientCellsAscii(int_array* const cells,
             const int tmp = (*cells)[i1];
             (*cells)[i1] = (*cells)[i2];
             (*cells)[i2] = tmp;
-        }                                  // for
+        } // for
 
-    }
+    } // if
     PYLITH_METHOD_END;
 } // _orientCellsAscii
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Reorder vertices in cells from binary GMV file to match PyLith
 // conventions.
 void
 pylith::meshio::MeshIOLagrit::_orientCellsBinary(int_array* const cells,
                                                  const int numCells,
                                                  const int numCorners,
-                                                 const int meshDim)
-{ // _orientCellsBinary
+                                                 const int meshDim) {
     PYLITH_METHOD_BEGIN;
 
     assert(cells);
     assert(cells->size() == size_t(numCells*numCorners));
 
     if ((3 == meshDim) && (4 == numCorners)) { // TET
-        ;                                      // do nothing
-
-    }
+        // do nothing
+    } // if
     PYLITH_METHOD_END;
 } // _orientCellsBinary
 

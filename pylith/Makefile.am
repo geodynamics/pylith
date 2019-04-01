@@ -24,11 +24,9 @@ nobase_pkgpyexec_PYTHON = \
 	apps/EqInfoApp.py \
 	bc/__init__.py \
 	bc/BoundaryCondition.py \
-	bc/ConstraintBoundary.py \
 	bc/DirichletTimeDependent.py \
-	bc/IntegratorBoundary.py \
 	bc/NeumannTimeDependent.py \
-	bc/AuxFieldsTimeDependent.py \
+	bc/AuxSubfieldsTimeDependent.py \
 	bc/AbsorbingDampers.py \
 	bc/ZeroDB.py \
 	faults/__init__.py \
@@ -39,24 +37,21 @@ nobase_pkgpyexec_PYTHON = \
 	faults/KinSrcConstRate.py \
 	faults/SingleRupture.py \
 	feassemble/__init__.py \
-	feassemble/IntegratorPointwise.py \
-	feassemble/ConstraintPointwise.py \
-	feassemble/Observer.py \
-	feassemble/SingleObserver.py \
-	feassemble/ObservedComponent.py \
 	friction/__init__.py \
 	materials/__init__.py \
 	materials/Homogeneous.py \
 	materials/Material.py \
-	materials/IsotropicLinearElasticityPlaneStrain.py \
-	materials/IsotropicLinearMaxwellPlaneStrain.py \
-	materials/IsotropicLinearGenMaxwellPlaneStrain.py \
-	materials/AuxFieldsIsotropicLinearElasticity.py \
-	materials/AuxFieldsIsotropicLinearMaxwell.py \
-	materials/AuxFieldsIsotropicLinearGenMaxwell.py \
-	materials/IsotropicLinearElasticity3D.py \
-	materials/IsotropicLinearMaxwell3D.py \
-	materials/IsotropicLinearGenMaxwell3D.py \
+	materials/Elasticity.py \
+	materials/AuxSubfieldsElasticity.py \
+	materials/RheologyElasticity.py \
+	materials/IsotropicLinearElasticity.py \
+	materials/IsotropicLinearMaxwell.py \
+	materials/IsotropicLinearGenMaxwell.py \
+	materials/AuxSubfieldsIsotropicLinearElasticity.py \
+	materials/AuxSubfieldsIsotropicLinearMaxwell.py \
+	materials/AuxSubfieldsIsotropicLinearGenMaxwell.py \
+	materials/RheologyIncompressibleElasticity.py \
+	materials/IsotropicLinearIncompElasticity.py \
 	meshio/__init__.py \
 	meshio/DataWriter.py \
 	meshio/DataWriterVTK.py \
@@ -67,17 +62,19 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/FieldFilter.py \
 	meshio/FieldFilterNone.py \
 	meshio/FieldFilterProject.py \
-	meshio/OutputManager.py \
+	meshio/OutputObserver.py \
 	meshio/OutputSoln.py \
+	meshio/OutputSolnDomain.py \
 	meshio/OutputSolnBoundary.py \
-	meshio/OutputIntegrator.py \
-	meshio/OutputConstraint.py \
+	meshio/OutputSolnPoints.py \
+	meshio/OutputPhysics.py \
 	meshio/OutputTrigger.py \
 	meshio/OutputTriggerStep.py \
 	meshio/OutputTriggerTime.py \
 	mpi/__init__.py \
 	mpi/Communicator.py \
 	problems/__init__.py \
+	problems/Physics.py \
 	problems/Problem.py \
 	problems/TimeDependent.py \
 	problems/Solution.py \
@@ -93,6 +90,7 @@ nobase_pkgpyexec_PYTHON = \
 	problems/SubfieldPressure.py \
 	problems/SubfieldTemperature.py \
 	problems/SubfieldLagrangeFault.py \
+	problems/SingleObserver.py \
 	topology/__init__.py \
 	topology/Distributor.py \
 	topology/Mesh.py \

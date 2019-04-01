@@ -20,10 +20,14 @@ subpackage = feassemble
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	IntegratorPointwise.hh \
-	ConstraintPointwise.hh \
-	Observer.hh \
-	ObservedComponent.hh \
+	PhysicsImplementation.hh \
+	Integrator.hh \
+	IntegratorDomain.hh \
+	IntegratorBoundary.hh \
+	IntegratorInterface.hh \
+	UpdateStateVars.hh \
+	Constraint.hh \
+	ConstraintBoundary.hh \
 	AuxiliaryFactory.hh \
 	feassemblefwd.hh
 

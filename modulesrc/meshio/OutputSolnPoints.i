@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -24,49 +24,31 @@
 
 namespace pylith {
     namespace meshio {
-
-        class pylith::meshio::OutputSolnPoints : public OutputSoln { // OutputSolnPoints
-
-            // PUBLIC METHODS ///////////////////////////////////////////////////
+        class OutputSolnPoints : public pylith::meshio::OutputSoln {
+            // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-            /** Constructor
-             *
-             * @param[in] problem Problem to observe.
-             */
-            OutputSolnPoints(pylith::problems::Problem* const problem);
+            /// Constructor.
+            OutputSolnPoints(void);
 
             /// Destructor
-            ~OutputSolnPoints(void);
+            virtual ~OutputSolnPoints(void);
 
-            /// Deallocate PETSc and local data structures.
-            void deallocate(void);
-
-            /** Set station coordinates and names.
+            /** Set coordinates and names of points.
              *
-             * @param[in] points Array of station coordinates [numStations * spaceDim].
-             * @param[in] numStations Number of stations.
+             * @param[in] points Array of coordinates [numPoints * spaceDim].
+             * @param[in] numPoints Number of points.
              * @param[in] spaceDim Spatial dimension for coordinates.
-             * @param[in] stationNames Array with station names.
-             * @param[in] numStationNames Number of station banes.
+             * @param[in] pointNames Array with point names.
+             * @param[in] numPointNames Number of point banes.
              */
-            %apply(PylithReal* IN_ARRAY2, int DIM1, int DIM2) {
-                (const PylithReal* stationCoords,
-                 const PylithInt numStations,
-                 const PylithInt spaceDim)
-            };
-            %apply(const char* const* string_list, const int list_len){
-                (const char* const* stationNames, const int numStationNames)
-            };
-            void stations(const PylithReal* stationCooords,
-                          const PylithInt numStations,
-                          const PylithInt spaceDim,
-                          const char* const* stationNames,
-                          const PylithInt numStationNames);
-            %clear(const PylithReal* stationCoords, const PylthInt numStations, const PylithInt spaceDim);
-            %clear(const char* const* stationNames, const PylithInt numStationNames);
+            void setPoints(const PylithReal* pointCoords,
+                           const PylithInt numPoints,
+                           const PylithInt spaceDim,
+                           const char* const* pointNames,
+                           const PylithInt numPointNames);
 
-            // PROTECTED MEMBERS ////////////////////////////////////////////////////
+            // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////
 protected:
 
             /** Write solution at time step.
@@ -75,7 +57,7 @@ protected:
              * @param[in] tindex Current time step.
              * @param[in] solution Solution at time t.
              */
-            void _writeDataStep(const PylithReal t,
+            void _writeSolnStep(const PylithReal t,
                                 const PylithInt tindex,
                                 const pylith::topology::Field& solution);
 
@@ -83,6 +65,5 @@ protected:
 
     } // meshio
 } // pylith
-
 
 // End of file

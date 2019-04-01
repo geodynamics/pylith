@@ -33,52 +33,49 @@
 #include <algorithm> // USES std::sort, std::find
 #include <map> // USES std::map
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Nondimensionalize the finite-element mesh.
 void
 pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
-                                             const spatialdata::units::Nondimensional& normalizer)
-{ // nondimensionalize
+                                             const spatialdata::units::Nondimensional& normalizer) {
     PYLITH_METHOD_BEGIN;
 
     PetscVec coordVec;
     const PylithScalar lengthScale = normalizer.lengthScale();
     PetscErrorCode err;
 
-    PetscDM dmMesh = mesh->dmMesh(); assert(dmMesh);
-    err = DMGetCoordinatesLocal(dmMesh, &coordVec); PYLITH_CHECK_ERROR(err); assert(coordVec);
+    PetscDM dmMesh = mesh->dmMesh();assert(dmMesh);
+    err = DMGetCoordinatesLocal(dmMesh, &coordVec);PYLITH_CHECK_ERROR(err);assert(coordVec);
     // There does not seem to be an advantage to calling nondimensionalize()
-    err = VecScale(coordVec, 1.0/lengthScale); PYLITH_CHECK_ERROR(err);
-    err = DMPlexSetScale(dmMesh, PETSC_UNIT_LENGTH, lengthScale); PYLITH_CHECK_ERROR(err);
-    err = DMViewFromOptions(dmMesh, NULL, "-pylith_nondim_dm_view"); PYLITH_CHECK_ERROR(err);
+    err = VecScale(coordVec, 1.0/lengthScale);PYLITH_CHECK_ERROR(err);
+    err = DMPlexSetScale(dmMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+    err = DMViewFromOptions(dmMesh, NULL, "-pylith_nondim_dm_view");PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // nondimensionalize
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Check topology of mesh.
 void
-pylith::topology::MeshOps::checkTopology(const Mesh& mesh)
-{ // checkTopology
-    PetscDM dmMesh = mesh.dmMesh(); assert(dmMesh);
+pylith::topology::MeshOps::checkTopology(const Mesh& mesh) {
+    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
 
     DMLabel subpointMap;
-    PetscErrorCode ierr = DMPlexGetSubpointMap(dmMesh, &subpointMap); PYLITH_CHECK_ERROR(ierr);
+    PetscErrorCode ierr = DMPlexGetSubpointMap(dmMesh, &subpointMap);PYLITH_CHECK_ERROR(ierr);
     PetscInt cellHeight = subpointMap ? 1 : 0;
 
     PetscErrorCode err;
-    err = DMViewFromOptions(dmMesh, NULL, "-pylith_checktopo_dm_view"); PYLITH_CHECK_ERROR(err);
-    err = DMPlexCheckSymmetry(dmMesh); PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh associated with symmetry of adjacency information.");
+    err = DMViewFromOptions(dmMesh, NULL, "-pylith_checktopo_dm_view");PYLITH_CHECK_ERROR(err);
+    err = DMPlexCheckSymmetry(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh associated with symmetry of adjacency information.");
 
-    err = DMPlexCheckSkeleton(dmMesh, mesh.isSimplex() ? PETSC_TRUE : PETSC_FALSE, cellHeight); PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
+    err = DMPlexCheckSkeleton(dmMesh, mesh.isSimplex() ? PETSC_TRUE : PETSC_FALSE, cellHeight);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
 } // checkTopology
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 bool
-pylith::topology::MeshOps::isSimplexMesh(const Mesh& mesh)
-{ // isSimplexMesh
+pylith::topology::MeshOps::isSimplexMesh(const Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
 
     bool isSimplex = false;
@@ -88,10 +85,10 @@ pylith::topology::MeshOps::isSimplexMesh(const Mesh& mesh)
     PetscInt* closure = NULL;
     PetscErrorCode err;
     const int dim = mesh.dimension();
-    err = DMPlexGetDepthStratum(dm, 0, &vStart, &vEnd); PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetDepthStratum(dm, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     PetscInt numVertices = 0;
-    for (PetscInt c = 0; c < closureSize*2; c+=2) {
+    for (PetscInt c = 0; c < closureSize*2; c += 2) {
         if ((closure[c] >= vStart) && (closure[c] < vEnd)) {
             ++numVertices;
         } // if
@@ -99,48 +96,46 @@ pylith::topology::MeshOps::isSimplexMesh(const Mesh& mesh)
     if (numVertices == dim+1) {
         isSimplex = PETSC_TRUE;
     } // if
-    err = DMPlexRestoreTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_RETURN(isSimplex);
 } // isSimplexMesh
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 void
-pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
-                                            int* const materialIds,
-                                            const int numMaterials)
-{ // checkMaterialIds
+pylith::topology::MeshOps::checkMaterialIds(const pylith::topology::Mesh& mesh,
+                                            pylith::int_array& materialIds) {
     PYLITH_METHOD_BEGIN;
 
-    assert((!numMaterials && !materialIds) || (numMaterials && materialIds));
     PetscErrorCode err;
 
     // Create map with indices for each material
+    const size_t numIds = materialIds.size();
     std::map<int, int> materialIndex;
-    for (int i=0; i < numMaterials; ++i) {
+    for (size_t i = 0; i < numIds; ++i) {
         materialIndex[materialIds[i]] = i;
     } // for
 
-    int_array matCellCounts(numMaterials);
+    int_array matCellCounts(numIds);
     matCellCounts = 0;
 
-    PetscDM dmMesh = mesh.dmMesh(); assert(dmMesh);
+    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
     Stratum cellsStratum(dmMesh, Stratum::HEIGHT, 0);
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();
 
     PetscDMLabel materialsLabel = NULL;
-    err = DMGetLabel(dmMesh, "material-id", &materialsLabel); PYLITH_CHECK_ERROR(err); assert(materialsLabel);
+    err = DMGetLabel(dmMesh, "material-id", &materialsLabel);PYLITH_CHECK_ERROR(err);assert(materialsLabel);
 
-    int *matBegin = materialIds;
-    int *matEnd = materialIds + numMaterials;
+    int *matBegin = &materialIds[0];
+    int *matEnd = &materialIds[0] + materialIds.size();
     std::sort(matBegin, matEnd);
 
     for (PetscInt c = cStart; c < cEnd; ++c) {
         PetscInt matId;
 
-        err = DMLabelGetValue(materialsLabel, c, &matId); PYLITH_CHECK_ERROR(err);
+        err = DMLabelGetValue(materialsLabel, c, &matId);PYLITH_CHECK_ERROR(err);
         if (matId < 0) {
             // :KLUDGE: Skip cells that are probably hybrid cells in halo
             // around fault that we currently ignore when looping over
@@ -155,19 +150,19 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
             throw std::runtime_error(msg.str());
         } // if
 
-        const int matIndex = materialIndex[matId];
-        assert(0 <= matIndex && matIndex < numMaterials);
+        const size_t matIndex = materialIndex[matId];
+        assert(0 <= matIndex && matIndex < numIds);
         ++matCellCounts[matIndex];
     } // for
 
     // Make sure each material has cells.
     int_array matCellCountsAll(matCellCounts.size());
     err = MPI_Allreduce(&matCellCounts[0], &matCellCountsAll[0],
-                        matCellCounts.size(), MPI_INT, MPI_SUM, mesh.comm()); PYLITH_CHECK_ERROR(err);
-    for (int i=0; i < numMaterials; ++i) {
+                        matCellCounts.size(), MPI_INT, MPI_SUM, mesh.comm());PYLITH_CHECK_ERROR(err);
+    for (size_t i = 0; i < numIds; ++i) {
         const int matId = materialIds[i];
-        const int matIndex = materialIndex[matId];
-        assert(0 <= matIndex && matIndex < numMaterials);
+        const size_t matIndex = materialIndex[matId];
+        assert(0 <= matIndex && matIndex < numIds);
         if (matCellCountsAll[matIndex] <= 0) {
             std::ostringstream msg;
             msg << "No cells associated with material with id '" << matId << "'.";
@@ -177,22 +172,6 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
 
     PYLITH_METHOD_END;
 } // checkMaterialIds
-
-
-// ----------------------------------------------------------------------
-int
-pylith::topology::MeshOps::numMaterialCells(const Mesh& mesh,
-                                            int materialId)
-{ // numMaterialCells
-    PYLITH_METHOD_BEGIN;
-
-    PetscInt ncells = 0;
-
-    PetscDM dmMesh = mesh.dmMesh(); assert(dmMesh);
-    PetscErrorCode err = DMGetStratumSize(dmMesh, "material-id", materialId, &ncells); PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_RETURN(ncells);
-} // numMaterialCells
 
 
 // End of file

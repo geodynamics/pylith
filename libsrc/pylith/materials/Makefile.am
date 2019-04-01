@@ -21,13 +21,17 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	Material.hh \
-	AuxiliaryFactory.hh \
-	IsotropicLinearElasticityPlaneStrain.hh \
-	IsotropicLinearMaxwellPlaneStrain.hh \
-	IsotropicLinearIncompElasticityPlaneStrain.hh \
-	IsotropicLinearElasticity3D.hh \
-	IsotropicLinearMaxwell3D.hh \
-	IsotropicLinearGenMaxwell3D.hh \
+	Elasticity.hh \
+	RheologyElasticity.hh \
+	AuxiliaryFactoryElasticity.hh \
+	IsotropicLinearElasticity.hh \
+	IsotropicLinearMaxwell.hh \
+	IsotropicLinearGenMaxwell.hh \
+	IsotropicLinearIncompElasticity.hh \
+	AuxiliaryFactoryElastic.hh \
+	AuxiliaryFactoryViscoelastic.hh \
+	IncompressibleElasticity.hh \
+	RheologyIncompressibleElasticity.hh \
 	Query.hh \
 	materialsfwd.hh
 

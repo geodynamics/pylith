@@ -23,6 +23,9 @@
 %{
 #include "pylith/problems/Problem.hh"
 #include "pylith/problems/TimeDependent.hh"
+#include "pylith/problems/Physics.hh"
+#include "pylith/problems/ObserverSoln.hh"
+#include "pylith/problems/ObserverPhysics.hh"
 %}
 
 %include "exception.i"
@@ -35,8 +38,7 @@
  } // exception
 
 %include "typemaps.i"
-%include "../include/integratorarray.i"
-%include "../include/constraintarray.i"
+%include "../include/physicsarray.i"
 %include "../include/outputarray.i"
 %include "../include/scalartypemaps.i"
 
@@ -51,8 +53,11 @@
 
 // Interfaces
 %include "../utils/PyreComponent.i"
-%include "../feassemble/ObservedComponent.i"
+%include "../topology/FieldBase.i"
 %include "Problem.i"
 %include "TimeDependent.i"
+%include "Physics.i"
+%include "ObserverSoln.i"
+%include "ObserverPhysics.i"
 
 // End of file

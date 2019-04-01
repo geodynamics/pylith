@@ -35,7 +35,6 @@
 #include <map> // HOLDSA std::map
 #include <string> // USES std::string
 
-
 // FieldQuery ----------------------------------------------------------------
 /** @brief Set field via query of spatial database, etc.
  *
@@ -49,7 +48,12 @@ class pylith::topology::FieldQuery { // FieldQuery
 public:
 
     /// Function prototype for query functions.
-    typedef PetscErrorCode (*queryfn_type)(PylithInt, PylithReal, const PylithReal[], PylithInt, PylithScalar*, void*);
+    typedef PetscErrorCode (*queryfn_type)(PylithInt,
+                                           PylithReal,
+                                           const PylithReal[],
+                                           PylithInt,
+                                           PylithScalar*,
+                                           void*);
 
     // PUBLIC STRUCT ////////////////////////////////////////////////////////
 public:
@@ -64,7 +68,6 @@ public:
         pylith::string_vector componentNames; ///< Names of components to query (optional).
         pylith::topology::FieldBase::validatorfn_type validator; ///< Function to validate values (optional).
     }; // DBQueryStruct
-
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
@@ -127,7 +130,6 @@ public:
     void openDB(spatialdata::spatialdb::SpatialDB* db,
                 const PylithReal lengthScale);
 
-
     /// Query spatial database to set values in field.
     void queryDB(void);
 
@@ -136,7 +138,6 @@ public:
      * @param db Spatial database to query.
      */
     void closeDB(spatialdata::spatialdb::SpatialDB* db);
-
 
     /** Generic query of values from spatial database.
      *
@@ -166,13 +167,19 @@ public:
     static
     const char* validatorPositive(const PylithReal value);
 
+    /** Validator for nonnegative values.
+     *
+     * @param[in] value Value to validate.
+     * @returns Error message if negative, NULL otherwise.
+     */
+    static
+    const char* validatorNonnegative(const PylithReal value);
 
     // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
 private:
 
     typedef std::map<std::string, queryfn_type> queryfn_map_type;
     typedef std::map<std::string, spatialdata::spatialdb::SpatialDB*> querydb_map_type;
-
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
@@ -195,6 +202,5 @@ private:
 }; // FieldQuery
 
 #endif // pylith_topology_fieldquery_hh
-
 
 // End of file

@@ -18,8 +18,8 @@
 
 // ----------------------------------------------------------------------
 // List of earthquake sources.
-%typemap(in) (pylith::faults::KinSrc** sources,
-	      const int numSources)
+%typemap(in) (pylith::faults::KinSrc** ruptures,
+	      const int numRuptures)
 {
   // Check to make sure input is a list.
   if (PyList_Check($input)) {
@@ -49,8 +49,8 @@
 } // typemap(in) [List of kinematic earthquake sources.]
 
 // This cleans up the array we malloc'd before the function call
-%typemap(freearg) (pylith::faults::KinSrc** sources, 
-		   const int numSources) {
+%typemap(freearg) (pylith::faults::KinSrc** ruptures, 
+		   const int numRuptures) {
   delete[] $1;
 }
 

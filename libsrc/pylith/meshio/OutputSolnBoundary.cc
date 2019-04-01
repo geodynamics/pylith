@@ -26,27 +26,23 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
-
-// ----------------------------------------------------------------------
-const char* pylith::meshio::OutputSolnBoundary::_pyreComponent = "outputsoln";
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor
-pylith::meshio::OutputSolnBoundary::OutputSolnBoundary(pylith::problems::Problem* const problem) :
-    OutputSoln(problem),
+pylith::meshio::OutputSolnBoundary::OutputSolnBoundary(void) :
     _label(""),
-    _boundaryMesh(NULL)
-{ // constructor
-    PyreComponent::name(_pyreComponent);
+    _boundaryMesh(NULL) {
+    PyreComponent::setName("outputsolnboundary");
 } // constructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor
 pylith::meshio::OutputSolnBoundary::~OutputSolnBoundary(void) {
     deallocate();
 } // destructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::meshio::OutputSolnBoundary::deallocate(void) {
@@ -54,23 +50,25 @@ pylith::meshio::OutputSolnBoundary::deallocate(void) {
 
     OutputSoln::deallocate();
 
-    delete _boundaryMesh; _boundaryMesh = NULL;
+    delete _boundaryMesh;_boundaryMesh = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set label identifier for subdomain.
 void
-pylith::meshio::OutputSolnBoundary::label(const char* value) {
+pylith::meshio::OutputSolnBoundary::setLabel(const char* value) {
     PYLITH_METHOD_BEGIN;
 
     _label = value;
 
     PYLITH_METHOD_END;
-} // label
+} // setLabel
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::Field& solution) const {
@@ -84,7 +82,8 @@ pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::
     PetscErrorCode err = DMHasLabel(dmMesh, _label.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel) {
         std::ostringstream msg;
-        msg << "Mesh missing group of vertices '" << _label << " for subdomain output.";
+        msg << "Mesh missing group of vertices '" << _label << " for output using solution boundary observer '"
+            << PyreComponent::getIdentifier() << "'.";
         throw std::runtime_error(msg.str());
     } // if
 
@@ -92,40 +91,37 @@ pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::
 } // verifyConfiguration
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Write data for step in solution.
 void
-pylith::meshio::OutputSolnBoundary::_writeDataStep(const PylithReal t,
+pylith::meshio::OutputSolnBoundary::_writeSolnStep(const PylithReal t,
                                                    const PylithInt tindex,
                                                    const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
     if (!_boundaryMesh) {
-        _boundaryMesh = new pylith::topology::Mesh(solution.mesh(), _label.c_str()); assert(_boundaryMesh);
+        _boundaryMesh = new pylith::topology::Mesh(solution.mesh(), _label.c_str());assert(_boundaryMesh);
     } // if
 
-    const pylith::topology::Field* auxField = NULL;
-    const pylith::topology::Field* derivedField = NULL;
+    const pylith::string_vector& subfieldNames = _expandSubfieldNames(solution);
 
-    const pylith::string_vector& dataNames = _dataNamesExpanded(solution, auxField, derivedField);
-
-    _openDataStep(t, *_boundaryMesh);
-    const size_t numDataFields = dataNames.size();
-    for (size_t iField = 0; iField < numDataFields; iField++) {
-        if (!solution.hasSubfield(dataNames[iField].c_str())) {
+    _openSolnStep(t, *_boundaryMesh);
+    const size_t numSubfieldNames = subfieldNames.size();
+    for (size_t iField = 0; iField < numSubfieldNames; iField++) {
+        if (!solution.hasSubfield(subfieldNames[iField].c_str())) {
             std::ostringstream msg;
-            msg << "Could not find field '" << dataNames[iField] << "' in solution for output.";
+            msg << "Internal Error: Could not find field '" << subfieldNames[iField] << "' in solution for output.";
             throw std::runtime_error(msg.str());
         } // if
 
-        pylith::topology::Field* fieldBuffer = _getBuffer(solution, dataNames[iField].c_str()); assert(fieldBuffer);
+        pylith::topology::Field* fieldBuffer = _getBuffer(solution, subfieldNames[iField].c_str());assert(fieldBuffer);
         _appendField(t, fieldBuffer, *_boundaryMesh);
     } // for
-    _closeDataStep();
+    _closeSolnStep();
 
     PYLITH_METHOD_END;
-} // _writeDataStep
+} // _writeSolnStep
 
 
 // End of file

@@ -29,22 +29,22 @@
 
 namespace pylith {
     namespace feassemble {
-
-        class IntegratorPointwise; ///< Integration of terms in governing equation.
-
-        class ConstraintPointwise; ///< Constrained degrees of freedom.
-
         class AuxiliaryFactory; ///< Creates auxiliary subfields.
 
-        class Observer; ///< Observer of subject.
-        class ObservedComponent; ///< Subject being observed.
-        class IntegratorObserver; //< Observes integrator.
+        class PhysicsImplementation; ///< Abstract base class for constraints and integrators.
+
+        class Integrator; ///< Abstract base class for finite-element integration.
+        class IntegratorDomain; ///< Abstract base class for finite-element integration over portions on the domain.
+        class IntegratorBoundary; ///< Abstract base class for finite-element integration over a boundary.
+        class IntegratorInterface; ///< Abstract base class for finite-element integration over an interior interface.
+        class UpdateStateVars; ///< Manager for updating state variables.
+
+        class Constraint; ///< Abstract base class for finite-element constraints.
+        class ConstraintBoundary; ///< Abstract base class for finite-element constraints on a boundary.
 
     } // feassemble
 } // pylith
 
-
 #endif // pylith_feassemble_feassemblefwd_hh
-
 
 // End of file

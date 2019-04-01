@@ -29,50 +29,30 @@
 
 namespace pylith {
     namespace materials {
-
-        class Metadata;
-        class ElasticMetadata;
-
-        class Material;
-
-        class ElasticMaterial;
-        class ElasticStrain1D;
-        class ElasticStress1D;
-        class ElasticPlaneStrain;
-        class ElasticPlaneStress;
-        class ElasticIsotropic3D;
-        class MaxwellIsotropic3D;
-        class MaxwellPlaneStrain;
-        class GenMaxwellIsotropic3D;
-        class GenMaxwellPlaneStrain;
-        class GenMaxwellQpQsIsotropic3D;
-        class PowerLaw3D;
-        class PowerLawPlaneStrain;
-        class DruckerPrager3D;
-        class DruckerPragerPlaneStrain;
-
-        class EffectiveStress;
-        class ViscoelasticMaxwell;
-
         // New stuff
         class Material;
-        class AuxiliaryFactory;
 
-        class IsotropicLinearElasticityPlaneStrain;
-        class IsotropicLinearMaxwellPlaneStrain;
-        class IsotropicLinearGenMaxwellPlaneStrain;
-        class IsotropicLinearIncompElasticityPlaneStrain;
-        class IsotropicLinearElasticity3D;
-        class IsotropicLinearMaxwell3D;
-        class IsotropicLinearGenMaxwell3D;
+        class Elasticity;
+        class AuxiliaryFactoryElasticity;
+
+        class RheologyElasticity;
+        class IsotropicLinearElasticity;
+        class IsotropicLinearMaxwell;
+        class IsotropicLinearGenMaxwell;
+        class IsotropicLinearIncompElasticity;
+        class AuxiliaryFactoryElastic;
+        class AuxiliaryFactoryViscoelastic;
+
+        class IncompressibleElasticity;
+
+        class RheologyIncompressibleElasticity;
+        class IsotropicLinearIncompElasticity;
 
         class Query;
 
     } // materials
 } // pylith
 
-
 #endif // pylith_materials_materialsfwd_hh
-
 
 // End of file

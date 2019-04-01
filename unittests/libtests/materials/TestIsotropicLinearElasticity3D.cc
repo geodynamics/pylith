@@ -43,10 +43,10 @@ pylith::materials::TestIsotropicLinearElasticity3D::setUp(void) {
     _mymaterial = new IsotropicLinearElasticity3D();CPPUNIT_ASSERT(_mymaterial);
     _mydata = NULL;
 
-    GenericComponent::name("TestIsotropicLinearElasticity3D");
+    GenericComponent::setName("TestIsotropicLinearElasticity3D");
 
     _mymaterial->PyreComponent::identifier("TestIsotropicLinearElasticity3D");
-    const char* journal = _mymaterial->PyreComponent::name();
+    const char* journal = _mymaterial->PyreComponent::getName();
     journal::debug_t debug(journal);
     //debug.activate(); // DEBUGGING
 } // setUp
@@ -56,7 +56,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::setUp(void) {
 // Deallocate testing data.
 void
 pylith::materials::TestIsotropicLinearElasticity3D::tearDown(void) {
-    const char* journal = _mymaterial->PyreComponent::name();
+    const char* journal = _mymaterial->PyreComponent::getName();
     journal::debug_t debug(journal);
     debug.deactivate(); // DEBUGGING
 

@@ -38,15 +38,15 @@ swig_sources = \
 	OutputTriggerTime.i \
 	DataWriter.i \
 	DataWriterVTK.i \
-	OutputManager.i \
+	OutputObserver.i \
+	OutputSoln.i \
+	OutputSolnDomain.i \
 	OutputSolnBoundary.i \
 	OutputSolnPoints.i \
 	../utils/PyreComponent.i \
-	../feassemble/Observer.i \
-	OutputManager.i \
-	OutputSoln.i \
-	OutputIntegrator.i \
-	OutputConstraint.i
+	../problems/ObserverSoln.i \
+	OutputPhysics.i \
+	../problems/ObserverPhysics.i
 
 swig_generated = \
 	meshio_wrap.cxx \

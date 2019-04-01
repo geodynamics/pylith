@@ -59,6 +59,7 @@ class SubfieldLagrangeFault(SolutionSubfield):
         Initialize subfield metadata.
         """
         from pylith.topology.Field import Field
+        self.dimension = spaceDim - 1
         self.vectorFieldType = Field.VECTOR
         self.scale = normalizer.pressureScale()
         self._setComponents(spaceDim)

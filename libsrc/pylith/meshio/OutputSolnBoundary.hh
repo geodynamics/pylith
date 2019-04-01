@@ -19,14 +19,12 @@
 /**
  * @file libsrc/meshio/OutputSolnBoundary.hh
  *
- * @brief C++ object for managing output of finite-element data over a
- * boundary.
+ * @brief C++ object for managing solution output over a boundary.
  */
 
 #if !defined(pylith_meshio_outputsolnboundary_hh)
 #define pylith_meshio_outputsolnboundary_hh
 
-// Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
 #include "pylith/meshio/OutputSoln.hh" // ISA OutputSoln
@@ -35,22 +33,14 @@
 
 #include <string> // HASA std::string
 
-// OutputSolnBoundary -----------------------------------------------------
-/** @brief C++ object for managing output of finite-element data over
- * a boundary.
- */
 class pylith::meshio::OutputSolnBoundary : public pylith::meshio::OutputSoln {
-
     friend class TestOutputSolnBoundary; // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /** Constructor
-     *
-     * @param[in] problem Problem to observe.
-     */
-    OutputSolnBoundary(pylith::problems::Problem* const problem);
+    /// Constructor.
+    OutputSolnBoundary(void);
 
     /// Destructor
     ~OutputSolnBoundary(void);
@@ -62,7 +52,7 @@ public:
      *
      * @param[in] value Label of subdomain.
      */
-    void label(const char* value);
+    void setLabel(const char* value);
 
     /** Verify configuration.
      *
@@ -70,7 +60,7 @@ public:
      */
     void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-    // PROTECTED METHODS ////////////////////////////////////////////////////
+    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Write solution at time step.
@@ -79,19 +69,17 @@ protected:
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
      */
-    void _writeDataStep(const PylithReal t,
+    void _writeSolnStep(const PylithReal t,
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     std::string _label; ///< Label of subdomain.
     pylith::topology::Mesh* _boundaryMesh; ///< Mesh of subdomain.
 
-    static const char* _pyreComponent; ///< Name of Pyre component.
-
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     OutputSolnBoundary(const OutputSolnBoundary&); ///< Not implemented.

@@ -25,15 +25,10 @@
 #if !defined(pylith_meshio_fieldfilterproject_hh)
 #define pylith_meshio_fieldfilterproject_hh
 
-// Include directives ---------------------------------------------------
 #include "FieldFilter.hh" // ISA FieldFilter
 
-// FieldFilterProject --------------------------------------------------
-/** @brief C++ object for projecting a field to another basis.
- */
 class pylith::meshio::FieldFilterProject : public FieldFilter {
-
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -107,8 +102,7 @@ public:
                       const PylithScalar constants[],
                       PylithScalar field[]);
 
-
-    // PROTECTED METHODS ////////////////////////////////////////////////////
+    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Copy constructor.
@@ -118,24 +112,21 @@ protected:
      */
     FieldFilterProject(const FieldFilterProject& f);
 
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
-    /// Not implemented.
-    const FieldFilterProject& operator=(const FieldFilterProject&);
-
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     pylith::topology::Field* _fieldP1; ///< Filtered field.
     PetscPointFunc* _passThruFns; ///< Pass through point functions.
     int _basisOrder; ///< Basis order for projected field.
 
-    static const char* _pyreComponent; ///< Name of Pyre component.
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+private:
+
+    /// Not implemented.
+    const FieldFilterProject& operator=(const FieldFilterProject&);
 
 }; // FieldFilterProject
 
 #endif // pylith_meshio_fieldfilterproject_hh
-
 
 // End of file

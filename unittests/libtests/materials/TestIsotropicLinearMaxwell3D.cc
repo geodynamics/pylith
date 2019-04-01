@@ -43,10 +43,10 @@ pylith::materials::TestIsotropicLinearMaxwell3D::setUp(void) {
     _mymaterial = new IsotropicLinearMaxwell3D();CPPUNIT_ASSERT(_mymaterial);
     _mydata = NULL;
 
-    GenericComponent::name("TestIsotropicLinearMaxwell3D");
+    GenericComponent::setName("TestIsotropicLinearMaxwell3D");
 
     _mymaterial->PyreComponent::identifier("TestIsotropicLinearMaxwell3D");
-    const char* journal = _mymaterial->PyreComponent::name();
+    const char* journal = _mymaterial->PyreComponent::getName();
     journal::debug_t debug(journal);
     //debug.activate(); // DEBUGGING
 } // setUp
@@ -56,7 +56,7 @@ pylith::materials::TestIsotropicLinearMaxwell3D::setUp(void) {
 // Deallocate testing data.
 void
 pylith::materials::TestIsotropicLinearMaxwell3D::tearDown(void) {
-    const char* journal = _mymaterial->PyreComponent::name();
+    const char* journal = _mymaterial->PyreComponent::getName();
     journal::debug_t debug(journal);
     debug.deactivate(); // DEBUGGING
 

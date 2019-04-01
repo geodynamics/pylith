@@ -20,17 +20,6 @@
  *
  * @brief C++ implementation of Neumann (e.g., traction) boundary condition
  * with time-dependent expression for value.
- */
-
-#if !defined(pylith_bc_neumanntimedependent_hh)
-#define pylith_bc_neumanntimedependent_hh
-
-// Include directives ---------------------------------------------------
-#include "IntegratorBoundary.hh" // ISA IntegratorBoundary
-
-// NeumannTimeDependent ----------------------------------------------------
-/** @brief Neumann (e.g., traction) boundary
- * condition with a time-depdnent expression.
  *
  * f(x,t) = f_0(x) + \dot{f}_1(x)*(t-t_1(x)) + f_2(x)*a(t-t_2(x)).
  *
@@ -45,10 +34,18 @@
  *        time history start (scalar) t_2(x)
  *        time history value (scalar) a(t-t_2(x))
  */
-class pylith::bc::NeumannTimeDependent : public pylith::bc::IntegratorBoundary {
-    friend class TestNeumannTimeDependent;   // unit testing
 
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+#if !defined(pylith_bc_neumanntimedependent_hh)
+#define pylith_bc_neumanntimedependent_hh
+
+#include "pylith/bc/BoundaryCondition.hh" // ISA BoundaryCondition
+
+#include "pylith/topology/topologyfwd.hh" // USES Field
+
+class pylith::bc::NeumannTimeDependent : public pylith::bc::BoundaryCondition {
+    friend class TestNeumannTimeDependent; // unit testing
+
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -64,13 +61,13 @@ public:
      *
      * @param[in] db Time history database.
      */
-    void dbTimeHistory(spatialdata::spatialdb::TimeHistory* th);
+    void setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th);
 
     /** Get time history database.
      *
      * @preturns Time history database.
      */
-    const spatialdata::spatialdb::TimeHistory* dbTimeHistory(void);
+    const spatialdata::spatialdb::TimeHistory* getTimeHistoryDB(void);
 
     /** Use initial value term in time history expression.
      *
@@ -108,7 +105,7 @@ public:
      */
     bool useTimeHistory(void) const;
 
-    /** Name of scale associated with Neumann boundary
+    /** Set name of scale associated with Neumann boundary
      * condition (e.g., 'pressure' for elasticity).
      *
      * A Neumann boundary condition constrains the gradient in
@@ -119,68 +116,78 @@ public:
      *
      * @param value Name of scale for nondimensionalizing Neumann boundary condition.
      */
-    void scaleName(const char* value);
+    void setScaleName(const char* value);
 
-    /** Update auxiliary fields at beginning of time step.
+    /** Create integrator and set kernels.
      *
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
+     * @param[in] solution Solution field.
+     * @returns Integrator if applicable, otherwise NULL.
      */
-    void prestep(const double t,
-                 const double dt);
+    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution);
 
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    /** Create constraint and set kernels.
+     *
+     * @param[in] solution Solution field.
+     * @returns Constraint if applicable, otherwise NULL.
+     */
+    pylith::feassemble::Constraint* createConstraint(const pylith::topology::Field& solution);
+
+    /** Create auxiliary field.
+     *
+     * @param[in] solution Solution field.
+     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+     *
+     * @returns Auxiliary field if applicable, otherwise NULL.
+     */
+    pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
+                                                  const pylith::topology::Mesh& domainMesh);
+
+    /** Create derived field.
+     *
+     * @param[in] solution Solution field.
+     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+     *
+     * @returns Derived field if applicable, otherwise NULL.
+     */
+    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
+                                                const pylith::topology::Mesh& domainMesh);
+
+    /** Update auxiliary subfields at beginning of time step.
+     *
+     * @param[out] auxiliaryField Auxiliary field.
+     * @param[in] t Current time.
+     */
+    void prestep(pylith::topology::Field* auxiliaryField,
+                 const double t);
+
+    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    /** Setup auxiliary subfields (discretization and query fns).
+    /** Get auxiliary factory associated with physics.
      *
-     * Create subfields in auxiliary fields (includes name of the field,
-     * vector field type, discretization, and scale for
-     * nondimensionalization) and set query functions for filling them
-     * from a spatial database.
-     *
-     * @attention The order of the calls to subfieldAdd() must match the
-     * order of the auxiliary fields in the FE kernels.
-     *
-     * @param[in] solution Solution field.
+     * @return Auxiliary factory for physics object.
      */
-    void _auxFieldSetup(const pylith::topology::Field& solution);
+    pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
-    /** Get factory for setting up auxliary fields.
+    /** Update kernel constants.
      *
-     * @returns Factor for auxiliary fields.
+     * @param[in] dt Current time step.
      */
-    pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
+    void _updateKernelConstants(const PylithReal dt);
 
-    /** Has point-wise functions (kernels) for integration/projection?
-     *
-     * @param[in] kernelsKey Set of kernels.
-     * @returns True if we have kernels for that operation, otherwise false.
-     */
-    bool _hasFEKernels(const pylith::feassemble::IntegratorPointwise::FEKernelKeys kernelsKey) const;
-
-    /** Set point-wise functions (kernels) for integration/projection.
-     *
-     * @param[in] solution Solution field.
-     * @param[in] kernelsKey Set of kernels.
-     */
-    void _setFEKernels(const pylith::topology::Field& solution,
-                       const pylith::feassemble::IntegratorPointwise::FEKernelKeys kernelsKey) const;
-
-    // PRIVATE MEMBERS ////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
-    pylith::bc::TimeDependentAuxiliaryFactory* _auxTimeDependentFactory; ///< Factory for auxiliary subfields.
+    pylith::bc::TimeDependentAuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
     std::string _scaleName; ///< Name of scale associated with Neumann boundary condition.
 
     bool _useInitial; ///< Use initial value term.
     bool _useRate; ///< Use rate term.
     bool _useTimeHistory; ///< Use time history term.
 
-    static const char* _pyreComponent; ///< Name of Pyre component.
-
-    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+    // NOT IMPLEMENTED
+    // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     NeumannTimeDependent(const NeumannTimeDependent&); ///< Not implemented.
@@ -189,6 +196,5 @@ private:
 }; // class NeumannTimeDependent
 
 #endif // pylith_bc_neumanntimedependent_hh
-
 
 // End of file

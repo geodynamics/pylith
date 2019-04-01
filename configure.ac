@@ -114,7 +114,7 @@ CIT_HEADER_MPI
 
 # PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.10.2])
+CIT_PATH_PETSC([3.10.4])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -240,25 +240,26 @@ AC_CONFIG_FILES([Makefile
 		libsrc/Makefile
 		libsrc/pylith/Makefile
 		libsrc/pylith/bc/Makefile
-                libsrc/pylith/feassemble/Makefile
-                libsrc/pylith/fekernels/Makefile
+        libsrc/pylith/feassemble/Makefile
+        libsrc/pylith/fekernels/Makefile
 		libsrc/pylith/faults/Makefile
 		libsrc/pylith/friction/Makefile
-                libsrc/pylith/materials/Makefile
-                libsrc/pylith/meshio/Makefile
-                libsrc/pylith/problems/Makefile
+        libsrc/pylith/materials/Makefile
+        libsrc/pylith/meshio/Makefile
+        libsrc/pylith/problems/Makefile
+		libsrc/pylith/testing/Makefile
 		libsrc/pylith/topology/Makefile
 		libsrc/pylith/utils/Makefile
-                modulesrc/Makefile
-                modulesrc/include/Makefile
-                modulesrc/bc/Makefile
-                modulesrc/faults/Makefile
-                modulesrc/feassemble/Makefile
+        modulesrc/Makefile
+        modulesrc/include/Makefile
+        modulesrc/bc/Makefile
+        modulesrc/faults/Makefile
+        modulesrc/feassemble/Makefile
 		modulesrc/friction/Makefile
-                modulesrc/materials/Makefile
-                modulesrc/meshio/Makefile
-                modulesrc/mpi/Makefile
-                modulesrc/problems/Makefile
+        modulesrc/materials/Makefile
+        modulesrc/meshio/Makefile
+        modulesrc/mpi/Makefile
+        modulesrc/problems/Makefile
 		modulesrc/topology/Makefile
 		modulesrc/utils/Makefile
 		applications/Makefile
@@ -276,9 +277,12 @@ AC_CONFIG_FILES([Makefile
 		unittests/libtests/materials/Makefile
 		unittests/libtests/materials/data/Makefile
 		unittests/libtests/meshio/Makefile
+		unittests/libtests/problems/Makefile
+		unittests/libtests/problems/data/Makefile
 		unittests/libtests/meshio/data/Makefile
 		unittests/libtests/topology/Makefile
 		unittests/libtests/topology/data/Makefile
+		unittests/libtests/testing/Makefile
 		unittests/libtests/utils/Makefile
 		unittests/pytests/Makefile
 		unittests/pytests/bc/Makefile
@@ -324,7 +328,7 @@ AC_CONFIG_FILES([Makefile
 		tests/3d/plasticity/Makefile
 		tests/3d/plasticity/dynamic/Makefile
 		tests/3d/plasticity/initialstress/Makefile
-                doc/Makefile
+        doc/Makefile
 		doc/developer/Makefile
 		doc/install/Makefile
 		doc/refguide/Makefile

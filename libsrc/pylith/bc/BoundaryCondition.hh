@@ -19,24 +19,21 @@
 /** @file libsrc/bc/BoundaryCondition.hh
  *
  * @brief C++ abstract base class for BoundaryCondition object.
- *
- * Interface definition for boundary conditions.
  */
 
 #if !defined(pylith_bc_boundarycondition_hh)
 #define pylith_bc_boundarycondition_hh
 
-// Include directives ---------------------------------------------------
 #include "bcfwd.hh" // forward declarations
+
+#include "pylith/problems/Physics.hh" // ISA Physics
 
 #include <string> // HASA std::string
 
-// BoundaryCondition ----------------------------------------------------
-/// Abstract base class for boundary conditions.
-class pylith::bc::BoundaryCondition { // class BoundaryCondition
-    friend class TestBoundaryCondition;   // unit testing
+class pylith::bc::BoundaryCondition : public pylith::problems::Physics {
+    friend class TestBoundaryCondition; // unit testing
 
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -49,37 +46,58 @@ public:
     virtual
     void deallocate(void);
 
-    /** Set mesh label associated with boundary condition surface.
+    /** Set label marking boundary associated with boundary condition surface.
      *
      * @param[in] value Label of surface (from mesh generator).
      */
-    void label(const char* value);
+    void setMarkerLabel(const char* value);
 
-    /** Get mesh label associated with boundary condition surface.
+    /** Get label marking boundary associated with boundary condition surface.
      *
      * @returns Label of surface (from mesh generator).
      */
-    const char* label(void) const;
+    const char* getMarkerLabel(void) const;
 
-    /** Set name of field in solution to constrain.
+    /** Set name of solution subfield associated with boundary condition.
      *
-     * @param[in] value Name of field in solution to constrain.
+     * @param[in] value Name of solution subfield.
      */
-    void field(const char* value);
+    void setSubfieldName(const char* value);
 
-    /** Get name of field in solution to constrain.
+    /** Get name of solution subfield associated with boundary condition.
      *
-     * @returns Name of field in solution to constrain.
+     * @preturn Name of solution subfield.
      */
-    const char* field(void) const;
+    const char* getSubfieldName(void) const;
 
-    // PROTECTED MEMBERS //////////////////////////////////////////////////
+    /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
+     *
+     * @param vec Reference direction unit vector.
+     */
+    void setRefDir1(const PylithReal vec[3]);
+
+    /** Set second choice for reference direction to discriminate among tangential directions in 3-D.
+     *
+     * @param vec Reference direction unit vector.
+     */
+    void setRefDir2(const PylithReal vec[3]);
+
+    /** Verify configuration is acceptable.
+     *
+     * @param[in] solution Solution field.
+     */
+    virtual
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
+
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    std::string _label;   ///< Label to identify boundary condition points in mesh.
-    std::string _field; ///< Name of solution field for boundary condition.
+    PylithReal _refDir1[3]; ///< First choice reference direction used to compute boundary tangential directions.
+    PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
+    std::string _boundaryLabel; ///< Label to identify boundary condition points in mesh.
+    std::string _subfieldName; ///< Name of solution subfield for boundary condition.
 
-    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     BoundaryCondition(const BoundaryCondition&); ///< Not implemented.
@@ -88,6 +106,5 @@ private:
 }; // class BoundaryCondition
 
 #endif // pylith_bc_boundarycondition_hh
-
 
 // End of file

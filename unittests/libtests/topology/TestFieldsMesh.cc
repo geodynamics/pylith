@@ -33,8 +33,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestFieldsMesh);
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::TestFieldsMesh::setUp(void)
-{ // setUp
+pylith::topology::TestFieldsMesh::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
     _mesh = new Mesh;
@@ -45,22 +44,22 @@ pylith::topology::TestFieldsMesh::setUp(void)
     PYLITH_METHOD_END;
 } // setUp
 
+
 // ----------------------------------------------------------------------
 void
-pylith::topology::TestFieldsMesh::tearDown(void)
-{ // tearDown
+pylith::topology::TestFieldsMesh::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _mesh; _mesh = NULL;
+    delete _mesh;_mesh = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
 
+
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::topology::TestFieldsMesh::testConstructor(void)
-{ // testConstructor
+pylith::topology::TestFieldsMesh::testConstructor(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mesh);
@@ -69,11 +68,11 @@ pylith::topology::TestFieldsMesh::testConstructor(void)
     PYLITH_METHOD_END;
 } // testConstructor
 
+
 // ----------------------------------------------------------------------
 // Test add().
 void
-pylith::topology::TestFieldsMesh::testAdd(void)
-{ // testAdd
+pylith::topology::TestFieldsMesh::testAdd(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mesh);
@@ -89,11 +88,11 @@ pylith::topology::TestFieldsMesh::testAdd(void)
     PYLITH_METHOD_END;
 } // testAdd
 
+
 // ----------------------------------------------------------------------
 // Test del().
 void
-pylith::topology::TestFieldsMesh::testDelete(void)
-{ // testDelete
+pylith::topology::TestFieldsMesh::testDelete(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mesh);
@@ -120,11 +119,11 @@ pylith::topology::TestFieldsMesh::testDelete(void)
     PYLITH_METHOD_END;
 } // testDelete
 
+
 // ----------------------------------------------------------------------
 // Test get().
 void
-pylith::topology::TestFieldsMesh::testGet(void)
-{ // testGet
+pylith::topology::TestFieldsMesh::testGet(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mesh);
@@ -144,11 +143,11 @@ pylith::topology::TestFieldsMesh::testGet(void)
     PYLITH_METHOD_END;
 } // testGet
 
+
 // ----------------------------------------------------------------------
 // Test get() const.
 void
-pylith::topology::TestFieldsMesh::testGetConst(void)
-{ // testGetConst
+pylith::topology::TestFieldsMesh::testGetConst(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mesh);
@@ -166,11 +165,11 @@ pylith::topology::TestFieldsMesh::testGetConst(void)
     PYLITH_METHOD_END;
 } // testGetConst
 
+
 // ----------------------------------------------------------------------
 // Test hasField().
 void
-pylith::topology::TestFieldsMesh::testHasField(void)
-{ // testHasField
+pylith::topology::TestFieldsMesh::testHasField(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mesh);
@@ -191,11 +190,11 @@ pylith::topology::TestFieldsMesh::testHasField(void)
     PYLITH_METHOD_END;
 } // testHasField
 
+
 // ----------------------------------------------------------------------
 // Test copyLayout().
 void
-pylith::topology::TestFieldsMesh::testCopyLayout(void)
-{ // testCopyLayout
+pylith::topology::TestFieldsMesh::testCopyLayout(void) {
     PYLITH_METHOD_BEGIN;
 
     const int fiberDim = 3;
@@ -206,12 +205,13 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void)
     const char* labelA = "field A";
     fields.add(labelA, "displacement");
     Field& fieldA = fields.get(labelA);
+    const int dim = _mesh->dimension();
     const int numComponents = 3;
     const char* components[3] = {"x", "y", "z"};
     const int basisOrder = 1;
     const int quadOrder = 1;
     const double scale = 1.2;
-    fieldA.subfieldAdd("displacement", "displacement", Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder, true, Field::POLYNOMIAL_SPACE);
+    fieldA.subfieldAdd("displacement", "displacement", Field::SCALAR, components, numComponents, scale, basisOrder, dim, quadOrder, true, Field::POLYNOMIAL_SPACE);
     fieldA.subfieldsSetup();
     fieldA.allocate();
 
@@ -222,7 +222,7 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void)
     const size_t size = 2;
     CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 
-    PetscDM dmMesh = _mesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PetscInt vStart = depthStratum.begin();
     const PetscInt vEnd = depthStratum.end();

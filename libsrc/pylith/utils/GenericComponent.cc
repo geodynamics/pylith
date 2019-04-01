@@ -30,39 +30,35 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::utils::GenericComponent::GenericComponent(void) :
-    _name("")
-{ // constructor
+    _name("") {
     if (!Py_IsInitialized()) {
         throw std::logic_error("Python must be initialized to use GenericComponent in C++.");
     } // if
 } // constructor
 
+
 // ----------------------------------------------------------------------
 // Destructor
-pylith::utils::GenericComponent::~GenericComponent(void)
-{ // destructor
-} // destructor
+pylith::utils::GenericComponent::~GenericComponent(void) {}
 
 
 // ----------------------------------------------------------------------
 // Set name of component.
 void
-pylith::utils::GenericComponent::name(const char* value)
-{ // name
+pylith::utils::GenericComponent::setName(const char* value) {
     if (!strlen(value)) {
         throw std::logic_error("Cannot set name of Generic component to empty string.");
     } // if
     _name = value;
-} // name
+} // setName
 
 
 // ----------------------------------------------------------------------
 // Get name of component.
 const char*
-pylith::utils::GenericComponent::name(void) const
-{ // name
+pylith::utils::GenericComponent::getName(void) const {
     return _name.c_str();
-} // name
+} // getName
 
 
 // End of file

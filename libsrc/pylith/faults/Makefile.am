@@ -21,9 +21,8 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	FaultCohesive.hh \
-	FaultCohesiveStub.hh \
 	FaultCohesiveKin.hh \
-	AuxiliaryFactory.hh \
+	AuxiliaryFactoryKinematic.hh \
 	KinSrc.hh \
 	KinSrcStep.hh \
 	KinSrcConstRate.hh \
@@ -34,4 +33,4 @@ noinst_HEADERS = \
 	TopologyOps.hh
 
 
-# End of file 
+# End of file

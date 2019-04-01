@@ -23,7 +23,9 @@ SUBDIRS = \
 	friction \
 	materials \
 	meshio \
+	problems \
 	topology \
+	testing \
 	utils
 
 

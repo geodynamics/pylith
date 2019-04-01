@@ -45,7 +45,6 @@
 #if !defined(pylith_meshio_datawriterhdf5_hh)
 #define pylith_meshio_datawriterhdf5_hh
 
-// Include directives ---------------------------------------------------
 #include "DataWriter.hh" // ISA DataWriter
 
 #include "pylith/utils/petscfwd.h" // HASA PetscVec
@@ -53,16 +52,15 @@
 #include <string> // USES std::string
 #include <map> // HASA std::map
 
-// DataWriterHDF5 --------------------------------------------------------
-/// Object for writing finite-element data to HDF5 file.
 class pylith::meshio::DataWriterHDF5 : public DataWriter {
-    friend class TestDataWriterHDF5Mesh;   // unit testing
-    friend class TestDataWriterHDF5SubMesh;   // unit testing
-    friend class TestDataWriterHDF5Points;   // unit testing
-    friend class TestDataWriterHDF5BCMesh;   // unit testing
-    friend class TestDataWriterHDF5FaultMesh;   // unit testing
+    friend class TestDataWriterHDF5Mesh; // unit testing
+    friend class TestDataWriterHDF5SubMesh; // unit testing
+    friend class TestDataWriterHDF5Points; // unit testing
+    friend class TestDataWriterHDF5BCMesh; // unit testing
+    friend class TestDataWriterHDF5FaultMesh; // unit testing
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -117,7 +115,7 @@ public:
      *
      * @param[in] t Time associated with field.
      * @param[in] field Field over vertices.
-
+     *
      * @param[in] mesh Mesh associated with output.
      */
     void writeVertexField(const PylithScalar t,
@@ -147,7 +145,7 @@ public:
     void writePointNames(const pylith::string_vector& names,
                          const topology::Mesh& mesh);
 
-    // PRIVATE METHODS //////////////////////////////////////////////////////
+    // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     /** Copy constructor.
@@ -164,28 +162,25 @@ private:
     void _writeTimeStamp(const PylithScalar t,
                          const int commRank);
 
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    const DataWriterHDF5& operator=(const DataWriterHDF5&);   ///< Not implemented
+    std::string _filename; ///< Name of HDF5 file.
+    PetscViewer _viewer; ///< Output file.
+    PetscVec _tstamp; ///< Single value vector holding time stamp.
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    std::map<std::string, int> _timesteps; ///< # of time steps written per field.
+    int _tstampIndex; ///< Index of last time stamp written.
+
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    std::string _filename;   ///< Name of HDF5 file.
-    PetscViewer _viewer;   ///< Output file.
-    PetscVec _tstamp;   ///< Single value vector holding time stamp.
-
-    std::map<std::string, int> _timesteps;   ///< # of time steps written per field.
-    int _tstampIndex;   ///< Index of last time stamp written.
-
-    static const char* _pyreComponent; ///< Name of Pyre component.
+    const DataWriterHDF5& operator=(const DataWriterHDF5&); ///< Not implemented
 
 }; // DataWriterHDF5
 
 #include "DataWriterHDF5.icc" // inline methods
 
 #endif // pylith_meshio_datawriterhdf5_hh
-
 
 // End of file

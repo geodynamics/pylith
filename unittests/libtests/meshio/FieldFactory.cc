@@ -30,15 +30,13 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::meshio::FieldFactory::FieldFactory(pylith::topology::Fields& fields) :
-    _fields(fields)
-{ // constructor
-} // constructor
+    _fields(fields) {}
+
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::meshio::FieldFactory::~FieldFactory(void)
-{ // destructor
-} // destructor
+pylith::meshio::FieldFactory::~FieldFactory(void) {}
+
 
 // ----------------------------------------------------------------------
 // Add scalar field.
@@ -71,6 +69,7 @@ pylith::meshio::FieldFactory::scalar(const pylith::topology::FieldBase::Discreti
 
     PYLITH_METHOD_END;
 } // scalar
+
 
 // ----------------------------------------------------------------------
 // Add vector field.
@@ -108,6 +107,7 @@ pylith::meshio::FieldFactory::vector(const pylith::topology::FieldBase::Discreti
     PYLITH_METHOD_END;
 } // vector
 
+
 // ----------------------------------------------------------------------
 // Add tensor field.
 void
@@ -115,7 +115,6 @@ pylith::meshio::FieldFactory::tensor(const pylith::topology::FieldBase::Discreti
                                      const PylithScalar* values,
                                      const PylithInt numPoints,
                                      const PylithInt numComponents) {
-
     const char* fieldName = "tensor";
 
     _fields.add(fieldName, fieldName);
@@ -156,6 +155,7 @@ pylith::meshio::FieldFactory::tensor(const pylith::topology::FieldBase::Discreti
 
     PYLITH_METHOD_END;
 } // tensor
+
 
 // ----------------------------------------------------------------------
 // Add other field.
@@ -202,6 +202,8 @@ pylith::meshio::FieldFactory::setField(pylith::topology::Field* field,
 
     CPPUNIT_ASSERT(field);
 
+    // field->view("setField()", pylith::topology::Field::VIEW_LAYOUT); // DEBUGGING
+
     pylith::topology::VecVisitorMesh fieldVisitor(*field);
     PylithScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
     const PylithInt fieldSize = numPoints * numComponents;
@@ -210,7 +212,7 @@ pylith::meshio::FieldFactory::setField(pylith::topology::Field* field,
         fieldArray[i] = values[i];
     } // for
 
-    //field->view("values set"); // DEBUGGING
+    // field->view("values set"); // DEBUGGING
 
     PYLITH_METHOD_END;
 } // setField

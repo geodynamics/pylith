@@ -25,26 +25,20 @@
 #if !defined(pylith_problems_timedependent_hh)
 #define pylith_problems_timedependent_hh
 
-// Include directives ---------------------------------------------------
 #include "Problem.hh" // ISA Problem
 
-// TimeDependent ---------------------------------------------------------
-/** @brief Object for time dependent problem.
- *
- * TimeDependent uses the PETSc TS object for time stepping.
- */
 class pylith::problems::TimeDependent : public pylith::problems::Problem {
-    friend class TestTimeDependent;   // unit testing
+    friend class TestTimeDependent; // unit testing
 
-    // PUBLIC ENUM //////////////////////////////////////////////////////////
+    // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     enum FormulationTypeEnum {
         IMPLICIT, // Implicit time stepping.
         EXPLICIT, // Explicit time stepping.
-    };   // FormulationTypeEnum
+    }; // FormulationTypeEnum
 
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -60,49 +54,49 @@ public:
      *
      * @param[in] value Start time (nondimensional).
      */
-    void startTime(const double value);
+    void setStartTime(const double value);
 
     /** Get start time for problem.
      *
      * @returns Start time (nondimensional).
      */
-    double startTime(void) const;
+    double getStartTime(void) const;
 
     /** Set total time for problem.
      *
      * @param[in] value Total time (nondimensional).
      */
-    void totalTime(const double value);
+    void setTotalTime(const double value);
 
     /** Get total time for problem.
      *
      * @returns Total time (nondimensional).
      */
-    double totalTime(void) const;
+    double getTotalTime(void) const;
 
     /** Set maximum number of time steps.
      *
      * @param[in] value Maximum number of time steps.
      */
-    void maxTimeSteps(const size_t value);
+    void setMaxTimeSteps(const size_t value);
 
     /** Get maximum number of time steps.
      *
      * @returns Maximum number of time steps.
      */
-    size_t maxTimeSteps(void) const;
+    size_t getMaxTimeSteps(void) const;
 
     /** Set initial time step for problem.
      *
      * @param[in] value Initial time step (nondimensional).
      */
-    void dtInitial(const double value);
+    void setInitialTimeStep(const double value);
 
     /** Get initial time step for problem.
      *
      * @returns Initial time step (nondimensional).
      */
-    double dtInitial(void) const;
+    double getInitialTimeStep(void) const;
 
     /// Initialize.
     void initialize(void);
@@ -201,26 +195,24 @@ public:
     static
     PetscErrorCode poststep(PetscTS ts);
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    double _startTime;   ///< Starting time.
-    double _dtInitial;   ///< Initial time step.
-    double _totalTime;   ///< Total time (duration) of problem.
-    size_t _maxTimeSteps;   ///< Maximum number of time steps for problem.
-    PetscTS _ts;   ///< PETSc time stepper.
-    FormulationTypeEnum _formulationType;   ///< Type of time stepping.
+    double _startTime; ///< Starting time.
+    double _dtInitial; ///< Initial time step.
+    double _totalTime; ///< Total time (duration) of problem.
+    size_t _maxTimeSteps; ///< Maximum number of time steps for problem.
+    PetscTS _ts; ///< PETSc time stepper.
+    FormulationTypeEnum _formulationType; ///< Type of time stepping.
 
-    static const char* _pyreComponent; ///< Name of Pyre component.
-
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    TimeDependent(const TimeDependent&);   ///< Not implemented
-    const TimeDependent& operator=(const TimeDependent&);   ///< Not implemented
+    TimeDependent(const TimeDependent&); ///< Not implemented
+    const TimeDependent& operator=(const TimeDependent&); ///< Not implemented
+
 }; // TimeDependent
 
 #endif // pylith_problems_timedependent_hh
-
 
 // End of file

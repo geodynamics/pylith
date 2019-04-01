@@ -19,10 +19,7 @@
 
 // Header files for module C++ code
 %{
-#include "pylith/feassemble/Observer.hh"
-#include "pylith/feassemble/ObservedComponent.hh"
-#include "pylith/feassemble/IntegratorPointwise.hh"
-#include "pylith/feassemble/ConstraintPointwise.hh"
+#include "pylith/utils/types.hh"
 %}
 
 %include "exception.i"
@@ -46,11 +43,5 @@
 import_array();
 %}
 
-%include "../utils/PyreComponent.i"
-%include "../topology/FieldBase.i"
-%include "Observer.i"
-%include "ObservedComponent.i"
-%include "IntegratorPointwise.i"
-%include "ConstraintPointwise.i"
 
 // End of file

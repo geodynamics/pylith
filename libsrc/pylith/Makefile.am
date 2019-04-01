@@ -19,14 +19,15 @@
 SUBDIRS = \
 	utils \
 	topology \
+	feassemble \
+	problems \
 	meshio \
 	materials \
 	bc \
 	faults \
 	friction \
-	feassemble \
 	fekernels \
-	problems
+	testing
 
 
 lib_LTLIBRARIES = libpylith.la
@@ -34,52 +35,51 @@ lib_LTLIBRARIES = libpylith.la
 libpylith_la_SOURCES = \
 	bc/BoundaryCondition.cc \
 	bc/TimeDependentAuxiliaryFactory.cc \
-	bc/ConstraintBoundary.cc \
 	bc/DirichletTimeDependent.cc \
-	bc/IntegratorBoundary.cc \
 	bc/NeumannTimeDependent.cc \
 	bc/AbsorbingDampers.cc \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
 	faults/FaultCohesive.cc \
-	faults/FaultCohesiveStub.cc \
 	faults/FaultCohesiveKin.cc \
-	faults/AuxiliaryFactory.cc \
+	faults/AuxiliaryFactoryKinematic.cc \
 	faults/KinSrc.cc \
 	faults/KinSrcStep.cc \
 	faults/KinSrcConstRate.cc \
 	faults/KinSrcAuxiliaryFactory.cc \
 	faults/TopologyOps.cc \
-	feassemble/IntegratorPointwise.cc \
-	feassemble/ConstraintPointwise.cc \
-	feassemble/Observer.cc \
-	feassemble/ObservedComponent.cc \
+	feassemble/PhysicsImplementation.cc \
+	feassemble/Integrator.cc \
+	feassemble/IntegratorDomain.cc \
+	feassemble/IntegratorBoundary.cc \
+	feassemble/IntegratorInterface.cc \
+	feassemble/UpdateStateVars.cc \
+	feassemble/Constraint.cc \
+	feassemble/ConstraintBoundary.cc \
 	feassemble/AuxiliaryFactory.cc \
 	fekernels/Elasticity.cc \
-	fekernels/ElasticityPlaneStrain.cc \
-	fekernels/IsotropicLinearElasticityPlaneStrain.cc \
-	fekernels/Viscoelastic.cc \
-	fekernels/IsotropicLinearMaxwellPlaneStrain.cc \
-	fekernels/IsotropicLinearGenMaxwellPlaneStrain.cc \
+	fekernels/IsotropicLinearElasticity.cc \
+	fekernels/Viscoelasticity.cc \
+	fekernels/IsotropicLinearMaxwell.cc \
+	fekernels/IsotropicLinearGenMaxwell.cc \
 	fekernels/IncompressibleElasticity.cc \
-	fekernels/IsotropicLinearIncompElasticityPlaneStrain.cc \
-	fekernels/Elasticity3D.cc \
-	fekernels/IsotropicLinearElasticity3D.cc \
-	fekernels/IsotropicLinearMaxwell3D.cc \
-	fekernels/IsotropicLinearGenMaxwell3D.cc \
+	fekernels/IsotropicLinearIncompElasticity.cc \
 	fekernels/DispVel.cc \
 	fekernels/TimeDependentFn.cc \
 	fekernels/NeumannTimeDependent.cc \
 	fekernels/AbsorbingDampers.cc \
 	fekernels/FaultCohesiveKin.cc \
 	materials/Material.cc \
-	materials/AuxiliaryFactory.cc \
-	materials/IsotropicLinearElasticityPlaneStrain.cc \
-	materials/IsotropicLinearMaxwellPlaneStrain.cc \
-	materials/IsotropicLinearGenMaxwellPlaneStrain.cc \
-	materials/IsotropicLinearIncompElasticityPlaneStrain.cc \
-	materials/IsotropicLinearElasticity3D.cc \
-	materials/IsotropicLinearMaxwell3D.cc \
-	materials/IsotropicLinearGenMaxwell3D.cc \
+	materials/Elasticity.cc \
+	materials/RheologyElasticity.cc \
+	materials/AuxiliaryFactoryElasticity.cc \
+	materials/IsotropicLinearElasticity.cc \
+	materials/IsotropicLinearMaxwell.cc \
+	materials/IsotropicLinearGenMaxwell.cc \
+	materials/AuxiliaryFactoryElastic.cc \
+	materials/AuxiliaryFactoryViscoelastic.cc \
+	materials/IncompressibleElasticity.cc \
+	materials/RheologyIncompressibleElasticity.cc \
+	materials/IsotropicLinearIncompElasticity.cc \
 	materials/Query.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \
@@ -97,18 +97,23 @@ libpylith_la_SOURCES = \
 	meshio/FieldFilterProject.cc \
 	meshio/DataWriter.cc \
 	meshio/DataWriterVTK.cc \
-	meshio/OutputManager.cc \
-	meshio/OutputIntegrator.cc \
-	meshio/OutputConstraint.cc \
+	meshio/OutputObserver.cc \
 	meshio/OutputSoln.cc \
+	meshio/OutputSolnDomain.cc \
 	meshio/OutputSolnBoundary.cc \
 	meshio/OutputSolnPoints.cc \
+	meshio/OutputPhysics.cc \
 	meshio/OutputTrigger.cc \
 	meshio/OutputTriggerStep.cc \
 	meshio/OutputTriggerTime.cc \
 	problems/Problem.cc \
 	problems/TimeDependent.cc \
 	problems/SolutionFactory.cc \
+	problems/ObserverSoln.cc \
+	problems/ObserversSoln.cc \
+	problems/Physics.cc \
+	problems/ObserverPhysics.cc \
+	problems/ObserversPhysics.cc \
 	topology/FieldBase.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
@@ -137,7 +142,7 @@ libpylith_la_LIBADD = \
 AM_CPPFLAGS = -I$(top_srcdir)/libsrc
 AM_CPPFLAGS += $(PETSC_CC_INCLUDES)
 
-AM_CPPFLAGS += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_SIEVE_FLAGS)
+AM_CPPFLAGS += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR)
 
 if ENABLE_HDF5
   libpylith_la_SOURCES += \
@@ -154,6 +159,20 @@ if ENABLE_CUBIT
 	meshio/MeshIOCubit.cc
   libpylith_la_LIBADD += -lnetcdf
 endif
+
+if ENABLE_TESTING
+libpylith_la_SOURCES += \
+	testing/StubMethodTracker.cc \
+	testing/FieldTester.cc \
+	testing/PhysicsStub.cc \
+	testing/PhysicsImplementationStub.cc \
+	testing/ObserverPhysicsStub.cc \
+	testing/ObserverSolnStub.cc \
+	testing/FaultCohesiveStub.cc
+
+libpylith_la_LIBADD += -lcppunit
+endif
+
 
 
 # End of file

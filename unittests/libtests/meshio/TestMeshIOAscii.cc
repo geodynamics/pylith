@@ -32,40 +32,37 @@
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestMeshIOAscii::setUp(void)
-{ // setUp
+pylith::meshio::TestMeshIOAscii::setUp(void) {
     TestMeshIO::setUp();
     _io = new MeshIOAscii();CPPUNIT_ASSERT(_io);
     _data = NULL;
 
-    _io->PyreComponent::identifier("TestMeshIOAscii");
-    const char* journalName = _io->PyreComponent::name();
+    _io->PyreComponent::setIdentifier("TestMeshIOAscii");
+    const char* journalName = _io->PyreComponent::getName();
     journal::debug_t debug(journalName);
-    //debug.activate(); // DEBUGGING
+    // debug.activate(); // DEBUGGING
 } // setUp
 
 
 // ----------------------------------------------------------------------
 // Deallocate testing data.
 void
-pylith::meshio::TestMeshIOAscii::tearDown(void)
-{ // tearDown
-    const char* journalName = _io->PyreComponent::name();
+pylith::meshio::TestMeshIOAscii::tearDown(void) {
+    const char* journalName = _io->PyreComponent::getName();
     journal::debug_t debug(journalName);
     debug.deactivate(); // DEBUGGING
 
     TestMeshIO::tearDown();
 
-    delete _io; _io = NULL;
-    delete _data; _data = NULL;
+    delete _io;_io = NULL;
+    delete _data;_data = NULL;
 } // tearDown
 
 
 // ----------------------------------------------------------------------
 // Test constructor
 void
-pylith::meshio::TestMeshIOAscii::testConstructor(void)
-{ // testConstructor
+pylith::meshio::TestMeshIOAscii::testConstructor(void) {
     PYLITH_METHOD_BEGIN;
 
     MeshIOAscii iohandler;
@@ -73,11 +70,11 @@ pylith::meshio::TestMeshIOAscii::testConstructor(void)
     PYLITH_METHOD_END;
 } // testConstructor
 
+
 // ----------------------------------------------------------------------
 // Test debug()
 void
-pylith::meshio::TestMeshIOAscii::testDebug(void)
-{ // testDebug
+pylith::meshio::TestMeshIOAscii::testDebug(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_io);
@@ -87,11 +84,11 @@ pylith::meshio::TestMeshIOAscii::testDebug(void)
     PYLITH_METHOD_END;
 } // testDebug
 
+
 // ----------------------------------------------------------------------
 // Test filename()
 void
-pylith::meshio::TestMeshIOAscii::testFilename(void)
-{ // testFilename
+pylith::meshio::TestMeshIOAscii::testFilename(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_io);
@@ -103,11 +100,11 @@ pylith::meshio::TestMeshIOAscii::testFilename(void)
     PYLITH_METHOD_END;
 } // testFilename
 
+
 // ----------------------------------------------------------------------
 // Test write() and read().
 void
-pylith::meshio::TestMeshIOAscii::testWriteRead(void)
-{ // testWriteRead1D
+pylith::meshio::TestMeshIOAscii::testWriteRead(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_io);
@@ -121,7 +118,7 @@ pylith::meshio::TestMeshIOAscii::testWriteRead(void)
     _io->write(_mesh);
 
     // Read mesh
-    delete _mesh; _mesh = new pylith::topology::Mesh;
+    delete _mesh;_mesh = new pylith::topology::Mesh;
     _io->read(_mesh);
 
     // Make sure meshIn matches data
@@ -130,18 +127,18 @@ pylith::meshio::TestMeshIOAscii::testWriteRead(void)
     PYLITH_METHOD_END;
 } // testWriteRead1D
 
+
 // ----------------------------------------------------------------------
 // Test read().
 void
-pylith::meshio::TestMeshIOAscii::testRead(void)
-{ // testRead3IndexDOne
+pylith::meshio::TestMeshIOAscii::testRead(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_io);
     CPPUNIT_ASSERT(_data);
 
     // Read mesh
-    delete _mesh; _mesh = new pylith::topology::Mesh;
+    delete _mesh;_mesh = new pylith::topology::Mesh;
     CPPUNIT_ASSERT(_data->filename);
     _io->filename(_data->filename);
     _io->read(_mesh);
@@ -152,25 +149,24 @@ pylith::meshio::TestMeshIOAscii::testRead(void)
     PYLITH_METHOD_END;
 } // testRead3DIndexOne
 
+
 // ----------------------------------------------------------------------
 // Get test data.
 pylith::meshio::TestMeshIO_Data*
-pylith::meshio::TestMeshIOAscii::_getData(void)
-{ // _data
+pylith::meshio::TestMeshIOAscii::_getData(void) {
     return _data;
 } // _data
+
 
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::TestMeshIOAscii_Data::TestMeshIOAscii_Data(void) :
-    filename(NULL)
-{ // constructor
-} // constructor
+    filename(NULL) {} // constructor
+
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestMeshIOAscii_Data::~TestMeshIOAscii_Data(void)
-{ // destructor
-} // destructor
+pylith::meshio::TestMeshIOAscii_Data::~TestMeshIOAscii_Data(void) {}
+
 
 // End of file

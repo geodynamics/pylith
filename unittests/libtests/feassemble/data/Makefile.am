@@ -17,9 +17,7 @@
 #
 
 dist_noinst_DATA = \
-	elasticstrain1d.spatialdb \
-	elasticplanestrain.spatialdb \
-	elasticisotropic3d.spatialdb
+	tri.mesh
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/unittests/libtests/feassemble/data
@@ -33,4 +31,4 @@ BUILT_SOURCES = export-data
 clean-local: clean-data
 
 
-# End of file 
+# End of file

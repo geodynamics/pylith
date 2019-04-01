@@ -21,7 +21,7 @@
 # Factory: observer
 
 from .OutputSoln import OutputSoln
-from .meshio import OutputSolnBoundary as ModuleOutputSolnSubset
+from .meshio import OutputSolnBoundary as ModuleOutputSolnBoundary
 
 
 def validateLabel(value):
@@ -33,7 +33,7 @@ def validateLabel(value):
     return value
 
 
-class OutputSolnBoundary(OutputSoln, ModuleOutputSolnSubset):
+class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
     """
     Python object for managing output of finite-element solution
     information over a boundary.
@@ -68,7 +68,7 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnSubset):
         Do mimimal initialization.
         """
         OutputSoln.preinitialize(self, problem)
-        ModuleOutputSolnSubset.label(self, self.label)
+        ModuleOutputSolnBoundary.setLabel(self, self.label)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -80,11 +80,11 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnSubset):
         OutputSoln._configure(self)
         return
 
-    def _createModuleObj(self, problem):
+    def _createModuleObj(self):
         """
         Create handle to C++ object.
         """
-        ModuleOutputSolnSubset.__init__(self, problem)
+        ModuleOutputSolnBoundary.__init__(self)
         return
 
 

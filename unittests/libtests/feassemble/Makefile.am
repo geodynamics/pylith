@@ -28,15 +28,18 @@ check_PROGRAMS = testfeassemble
 
 # Primary source files
 testfeassemble_SOURCES = \
+	TestAuxiliaryFactory.cc \
+	TestIntegratorDomain.cc \
 	test_feassemble.cc
 
 
-
-noinst_HEADERS = 
+noinst_HEADERS =
+	TestAuxiliaryFactory.hh \
+	TestIntegratorDomain.hh
 
 AM_CPPFLAGS += \
-	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
-	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES)
+	$(PETSC_CC_INCLUDES) \
+	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
 
 testfeassemble_LDFLAGS = \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
@@ -52,8 +55,4 @@ if ENABLE_CUBIT
 endif
 
 
-leakcheck: testfeassemble
-	valgrind --log-file=valgrind_feassemble.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testfeassemble
-
-
-# End of file 
+# End of file

@@ -28,10 +28,10 @@ check_PROGRAMS = testfriction
 
 # Primary source files
 testfriction_SOURCES = \
-	test_friction.cc 
+	test_friction.cc
 
 
-noinst_HEADERS = 
+noinst_HEADERS =
 
 AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
@@ -51,8 +51,4 @@ if ENABLE_CUBIT
 endif
 
 
-leakcheck: testfriction
-	valgrind --log-file=valgrind_friction.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testfriction
-
-
-# End of file 
+# End of file

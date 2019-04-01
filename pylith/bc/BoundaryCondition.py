@@ -22,7 +22,7 @@
 #
 # Factory: boundary_condition
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.problems.Physics import Physics
 from .bc import BoundaryCondition as ModuleBoundaryCondition
 
 
@@ -35,8 +35,7 @@ def validateLabel(value):
     return value
 
 
-# BoundaryCondition class
-class BoundaryCondition(PetscComponent,
+class BoundaryCondition(Physics,
                         ModuleBoundaryCondition):
     """
     Python abstract base class for managing a boundary condition.
@@ -64,38 +63,28 @@ class BoundaryCondition(PetscComponent,
     label = pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Label identifier for boundary."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="boundarycondition"):
         """
         Constructor.
         """
-        PetscComponent.__init__(self, name, facility="boundary_condition")
+        Physics.__init__(self, name, facility="boundary_condition")
         return
 
     def preinitialize(self, mesh):
         """
         Setup boundary condition.
         """
-        self._createModuleObj()
-        ModuleBoundaryCondition.label(self, self.label)
-        ModuleBoundaryCondition.field(self, self.field)
-        return
+        Physics.preinitialize(self, mesh)
 
-    # PRIVATE METHODS ////////////////////////////////////////////////////
+        ModuleBoundaryCondition.setMarkerLabel(self, self.label)
+        ModuleBoundaryCondition.setSubfieldName(self, self.field)
+        return
 
     def _configure(self):
         """
         Setup members using inventory.
         """
-        PetscComponent._configure(self)
+        Physics._configure(self)
         return
-
-    def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
-        """
-        raise NotImplementedError("Please implement _createModuleObj() in derived class.")
-
 
 # End of file

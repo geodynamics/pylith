@@ -46,6 +46,21 @@ namespace pylith {
         class PsetFileBinary;
         class ExodusII;
 
+	class OutputObserver;
+        class OutputSoln;
+	class OutputSolnDomain;
+        class OutputSolnBoundary;
+        class OutputSolnPoints;
+
+	class OutputPhysics;
+        class OutputIntegrator;
+        class OutputConstraint;
+
+	class ObserverOutput;
+        class OutputTrigger;
+        class OutputTriggerStep;
+        class OutputTriggerTime;
+
         class DataWriter;
         class DataWriterVTK;
         class DataWriterHDF5;
@@ -53,17 +68,6 @@ namespace pylith {
         class FieldFilter;
         class FieldFilterNone;
         class FieldFilterProject;
-
-        class OutputManager;
-        class OutputIntegrator;
-        class OutputConstraint;
-        class OutputSoln;
-        class OutputSolnBoundary;
-        class OutputSolnPoints;
-
-        class OutputTrigger;
-        class OutputTriggerStep;
-        class OutputTriggerTime;
 
         class HDF5;
         class Xdmf;

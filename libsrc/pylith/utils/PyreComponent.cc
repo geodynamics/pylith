@@ -25,15 +25,13 @@
 #include <Python.h>
 
 #include <stdexcept> // USES std::logic_error
-#include <iostream> \
-    // USES std::cerr
+#include <iostream> // USES std::cerr
 
 // ----------------------------------------------------------------------
 // Constructor
 pylith::utils::PyreComponent::PyreComponent(void) :
     _name(""),
-    _identifier("unknown")
-{ // constructor
+    _identifier("unknown") { // constructor
     if (!Py_IsInitialized()) {
         throw std::logic_error("Python must be initialized to use PyreComponent in C++.");
     } // if
@@ -42,51 +40,45 @@ pylith::utils::PyreComponent::PyreComponent(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::utils::PyreComponent::~PyreComponent(void)
-{ // destructor
-} // destructor
+pylith::utils::PyreComponent::~PyreComponent(void) {}
 
 
 // ----------------------------------------------------------------------
 // Set name of component.
 void
-pylith::utils::PyreComponent::name(const char* value)
-{ // name
+pylith::utils::PyreComponent::setName(const char* value) {
     if (!strlen(value)) {
         throw std::logic_error("Cannot set name of Pyre component to empty string.");
     } // if
     _name = value;
-} // name
+} // setName
 
 
 // ----------------------------------------------------------------------
 // Get name of component.
 const char*
-pylith::utils::PyreComponent::name(void) const
-{ // name
+pylith::utils::PyreComponent::getName(void) const {
     return _name.c_str();
-} // name
+} // getName
 
 
 // ----------------------------------------------------------------------
 // Set component identifier (identifies object in component hierarchy).
 void
-pylith::utils::PyreComponent::identifier(const char* value)
-{ // identifier
+pylith::utils::PyreComponent::setIdentifier(const char* value) {
     if (!strlen(value)) {
         throw std::logic_error("Cannot set name of Pyre identifier to empty string.");
     } // if
     _identifier = value;
-} // identifier
+} // setIdentifier
 
 
 // ----------------------------------------------------------------------
 // Get component identifier (identifies object in component hierarchy).
 const char*
-pylith::utils::PyreComponent::identifier(void) const
-{ // identifier
+pylith::utils::PyreComponent::getIdentifier(void) const {
     return _identifier.c_str();
-} // identifier
+} // getIdentifier
 
 
 // End of file

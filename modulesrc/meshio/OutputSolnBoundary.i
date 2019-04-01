@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -24,39 +24,29 @@
 
 namespace pylith {
     namespace meshio {
-
-        class pylith::meshio::OutputSolnBoundary : public pylith::meshio::OutputSoln {
-
-            // PUBLIC METHODS /////////////////////////////////////////////////
+        class OutputSolnBoundary : public pylith::meshio::OutputSoln {
+            // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-            /** Constructor
-             *
-             * @param[in] problem Problem to observe.
-             */
-            OutputSolnBoundary(pylith::problems::Problem* const problem);
+            /// Constructor.
+            OutputSolnBoundary(void);
 
             /// Destructor
             virtual ~OutputSolnBoundary(void);
-
-            /// Deallocate PETSc and local data structures.
-            virtual
-            void deallocate(void);
 
             /** Set label identifier for subdomain.
              *
              * @param[in] value Label of subdomain.
              */
-            void label(const char* value);
+            void setLabel(const char* value);
 
             /** Verify configuration.
              *
              * @param[in] solution Solution field.
              */
-            virtual
             void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-            // PROTECTED METHODS ////////////////////////////////////////////////////
+            // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////
 protected:
 
             /** Write solution at time step.
@@ -65,8 +55,7 @@ protected:
              * @param[in] tindex Current time step.
              * @param[in] solution Solution at time t.
              */
-            virtual
-            void _writeDataStep(const PylithReal t,
+            void _writeSolnStep(const PylithReal t,
                                 const PylithInt tindex,
                                 const pylith::topology::Field& solution);
 
@@ -74,6 +63,5 @@ protected:
 
     } // meshio
 } // pylith
-
 
 // End of file

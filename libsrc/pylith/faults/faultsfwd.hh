@@ -29,11 +29,10 @@
 
 namespace pylith {
     namespace faults {
-
         class FaultCohesive;
-        class FaultCohesiveStub;
         class FaultCohesiveKin;
-        class AuxiliaryFactory;
+        class AuxiliaryFactoryKinematic;
+
         class KinSrc;
         class KinSrcConstRate;
         class KinSrcStep;
@@ -45,8 +44,6 @@ namespace pylith {
     } // faults
 } // pylith
 
-
 #endif // pylith_faults_bcfwd_hh
-
 
 // End of file

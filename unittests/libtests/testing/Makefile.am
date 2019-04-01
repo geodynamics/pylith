@@ -1,0 +1,50 @@
+# -*- Makefile -*-
+#
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2017 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+
+subpackage = testing
+include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/check.am
+
+TESTS = testutils
+
+check_PROGRAMS = testutils
+
+# Primary source files
+testutils_SOURCES = \
+	TestStubMethodTracker.cc \
+	test_testing.cc
+
+noinst_HEADERS = \
+	TestStubMethodTracker.hh
+
+AM_CPPFLAGS += $(PETSC_CC_INCLUDES)
+AM_CPPFLAGS += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR)
+
+testutils_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+testutils_LDADD = \
+	-lcppunit -ldl \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
+	-lspatialdata \
+	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+
+if ENABLE_CUBIT
+  testutils_LDADD += -lnetcdf
+endif
+
+
+# End of file

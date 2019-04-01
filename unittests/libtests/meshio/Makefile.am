@@ -33,6 +33,8 @@ testmeshio_SOURCES = \
 	TestMeshIOAscii_Cases.cc \
 	TestMeshIOLagrit.cc \
 	TestMeshIOLagrit_Cases.cc \
+	TestOutputTriggerStep.cc \
+	TestOutputTriggerTime.cc \
 	FieldFactory.cc \
 	TestDataWriter.cc \
 	TestDataWriterMesh.cc \
@@ -75,6 +77,8 @@ noinst_HEADERS = \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh \
+	TestOutputTriggerStep.hh \
+	TestOutputTriggerTime.hh \
 	FieldFactory.hh \
 	TestOutputManager.hh \
 	TestOutputSolnSubset.hh \
@@ -144,7 +148,7 @@ noinst_HEADERS = \
 # 	data/DataWriterHDF5DataPointsTri3.cc \
 # 	data/DataWriterHDF5DataPointsQuad4.cc \
 # 	data/DataWriterHDF5DataPointsTet4.cc \
-# 	data/DataWriterHDF5DataPointsHex8.cc 
+# 	data/DataWriterHDF5DataPointsHex8.cc
 
 # noinst_HEADERS += \
 # 	data/DataWriterVTKDataSubMeshTri3.hh \
@@ -265,7 +269,7 @@ if ENABLE_HDF5
 # TestDataWriterHDF5ExtBCMesh.hh \
 # TestDataWriterHDF5ExtBCMeshCases.hh \
 # TestDataWriterHDF5ExtFaultMesh.hh \
-# TestDataWriterHDF5ExtFaultMeshCases.hh 
+# TestDataWriterHDF5ExtFaultMeshCases.hh
 
 
   testmeshio_LDADD += -lhdf5
@@ -288,4 +292,4 @@ clean-local: clean-local-tmp
 clean-local-tmp:
 	-rm *.vtk *.dat *.dat.info *.h5 *.xmf
 
-# End of file 
+# End of file

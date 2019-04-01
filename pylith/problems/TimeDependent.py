@@ -46,13 +46,15 @@ class TimeDependent(Problem, ModuleTimeDependent):
     import pyre.inventory
     from pyre.units.time import year
 
-    dtInitial = pyre.inventory.dimensional("initial_dt", default=1.0 * year, validator=pyre.inventory.greater(0.0 * year))
+    dtInitial = pyre.inventory.dimensional("initial_dt", default=1.0 * year,
+                                           validator=pyre.inventory.greater(0.0 * year))
     dtInitial.meta['tip'] = "Initial time step."
 
     startTime = pyre.inventory.dimensional("start_time", default=0.0 * year)
     startTime.meta['tip'] = "Start time for problem."
 
-    totalTime = pyre.inventory.dimensional("total_time", default=0.1 * year, validator=pyre.inventory.greaterEqual(0.0 * year))
+    totalTime = pyre.inventory.dimensional("total_time", default=0.1 * year,
+                                           validator=pyre.inventory.greaterEqual(0.0 * year))
     totalTime.meta['tip'] = "Time duration of problem."
 
     maxTimeSteps = pyre.inventory.int("max_timesteps", default=20000, validator=pyre.inventory.greater(0))
@@ -83,10 +85,10 @@ class TimeDependent(Problem, ModuleTimeDependent):
 
         Problem.preinitialize(self, mesh)
 
-        ModuleTimeDependent.startTime(self, self.startTime.value)
-        ModuleTimeDependent.dtInitial(self, self.dtInitial.value)
-        ModuleTimeDependent.totalTime(self, self.totalTime.value)
-        ModuleTimeDependent.maxTimeSteps(self, self.maxTimeSteps)
+        ModuleTimeDependent.setStartTime(self, self.startTime.value)
+        ModuleTimeDependent.setInitialTimeStep(self, self.dtInitial.value)
+        ModuleTimeDependent.setTotalTime(self, self.totalTime.value)
+        ModuleTimeDependent.setMaxTimeSteps(self, self.maxTimeSteps)
 
         return
 

@@ -19,13 +19,13 @@
 dist_noinst_DATA = \
 	tri_onecell.mesh \
 	tri_fourcells.mesh \
-	tri_small.mesh \
+	tri.mesh \
 	quad_onecell.mesh \
 	quad_fourcells.mesh \
 	quad_small.mesh \
 	quad_aligned.mesh \
 	tet_small.mesh \
-	hex_small.mesh
+	hex.mesh
 
 noinst_DATA =
 

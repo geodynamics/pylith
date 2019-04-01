@@ -25,9 +25,18 @@
 namespace pylith {
 namespace topology {
 
-class Field : public FieldBase
-{     // Field
+class Field : public FieldBase {
 
+    // PUBLIC ENUMS ///////////////////////////////////////////////////////
+public:
+    
+    enum ViewOptions {
+        VIEW_METADATA=0, ///< View metadata only.
+        VIEW_LAYOUT=1, ///< View metadata and section.
+        VIEW_VALUES=2, ///< View metadata and vector.
+        VIEW_ALL=3, ///< View metadata, section, and vector.
+    };
+    
 // PUBLIC MEMBERS /////////////////////////////////////////////////
 public:
 
@@ -111,6 +120,7 @@ void cloneSection(const Field& src);
  * @param[in] numComponents Number of components in subfield.
  * @param[in] basisOrder Polynomial order for basis.
  * @param[in] quadOrder Order of quadrature rule.
+ * @param[in] dimension Dimension of points for discretization.
  * @param[in] isBasisContinuous True if basis is continuous.
  * @param[in] feSpace Finite-element space (polynomial or point).
  * @param[in] scale Scale for dimensionalizing field.
@@ -126,6 +136,7 @@ void subfieldAdd(const char *name,
                  const double scale,
                  const int basisOrder,
                  const int quadOrder,
+		 const int dimension,
                  const bool isBasisContinuous,
 		 const SpaceEnum feSpace);
 %clear(const char* components[], const int numComponents);
@@ -168,7 +179,8 @@ void dimensionalize(void);
  *
  * @param label Label for output.
  */
-void view(const char* label);
+    void view(const char* label,
+	const ViewOptions options=VIEW_ALL);
 
 /** Create PETSc vector scatter for field. This is used to transfer
  * information from the "global" PETSc vector view to the "local"

@@ -40,12 +40,12 @@
 #include "pylith/meshio/DataWriterHDF5.hh"
 #include "pylith/meshio/DataWriterHDF5Ext.hh"
 #endif
-#include "pylith/meshio/OutputManager.hh"
+#include "pylith/meshio/OutputObserver.hh"
 #include "pylith/meshio/OutputSoln.hh"
+#include "pylith/meshio/OutputSolnDomain.hh"
 #include "pylith/meshio/OutputSolnBoundary.hh"
 #include "pylith/meshio/OutputSolnPoints.hh"
-#include "pylith/meshio/OutputIntegrator.hh"
-#include "pylith/meshio/OutputConstraint.hh"
+#include "pylith/meshio/OutputPhysics.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -75,7 +75,8 @@ import_array();
 
 // Interfaces
 %include "../utils/PyreComponent.i"
-%include "../feassemble/Observer.i"
+%include "../problems/ObserverSoln.i"
+%include "../problems/ObserverPhysics.i"
 %include "MeshIOObj.i"
 %include "MeshIOAscii.i"
 %include "MeshIOLagrit.i"
@@ -95,12 +96,12 @@ import_array();
 %include "DataWriterHDF5.i"
 %include "DataWriterHDF5Ext.i"
 #endif
-%include "OutputManager.i"
+%include "OutputObserver.i"
 %include "OutputSoln.i"
+%include "OutputSolnDomain.i"
 %include "OutputSolnBoundary.i"
 %include "OutputSolnPoints.i"
-%include "OutputIntegrator.i"
-%include "OutputConstraint.i"
+%include "OutputPhysics.i"
 
 
 // End of file

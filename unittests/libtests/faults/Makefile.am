@@ -31,7 +31,7 @@ testfaults_SOURCES = \
 	test_faults.cc
 
 
-noinst_HEADERS = 
+noinst_HEADERS =
 
 AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
@@ -49,10 +49,6 @@ testfaults_LDADD = \
 if ENABLE_CUBIT
   testfaults_LDADD += -lnetcdf
 endif
-
-
-leakcheck: testfaults
-	valgrind --log-file=valgrind_faults.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testfaults
 
 
 # End of file 

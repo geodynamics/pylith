@@ -192,7 +192,7 @@ public:
      * Solution fields: [disp(dim), vel(dim)]
      */
     static
-    void Jf0uu_utshift(const PylithInt dim,
+    void Jf0uu_stshift(const PylithInt dim,
                        const PylithInt numS,
                        const PylithInt numA,
                        const PylithInt sOff[],

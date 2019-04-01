@@ -54,10 +54,20 @@
  * DMAddBoundary is called.
  */
 class pylith::topology::Field : public pylith::topology::FieldBase, public pylith::utils::GenericComponent {
-    friend class FieldQuery;   // Fill field using data.
+    friend class FieldQuery; // Fill field using data.
 
-    friend class TestFieldMesh;   // unit testing
-    friend class TestFieldSubMesh;   // unit testing
+    friend class TestFieldMesh; // unit testing
+    friend class TestFieldSubMesh; // unit testing
+
+    // PUBLIC ENUMS ///////////////////////////////////////////////////////
+public:
+
+    enum ViewOptions {
+        VIEW_METADATA=0, ///< View metadata only.
+        VIEW_LAYOUT=1, ///< View metadata and section.
+        VIEW_VALUES=2, ///< View metadata and vector.
+        VIEW_ALL=3, ///< View metadata, section, and vector.
+    };
 
     // PUBLIC STRUCTS ///////////////////////////////////////////////////////
 public:
@@ -68,7 +78,7 @@ public:
         Discretization fe; ///< Discretization information for subfield.
         int index; ///< Index of subfield in field.
         PetscDM dm; ///< PETSc DM associated with subfield.
-    };   // SubfieldInfo
+    }; // SubfieldInfo
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
@@ -199,6 +209,7 @@ public:
      * @param[in] scale Dimensional scale associated with field.
      * @param[in] basisOrder Order of basis functions for discretization.
      * @param[in] quadOrder Order of numerical quadrature for discretization.
+     * @param[in] dimension Dimension of points for discretization.
      * @param[in] isBasisContinuous True if basis is continuous.
      * @param[in] feSpace Finite-element space (POLYNOMIAL_SPACE or POINT_SPACE).
      */
@@ -210,6 +221,7 @@ public:
                      const double scale,
                      const int basisOrder,
                      const int quadOrder,
+                     const int dimension,
                      const bool isBasisContinuous,
                      const SpaceEnum feSpace);
 
@@ -225,7 +237,10 @@ public:
 
     /** Setup sections for subfields.
      *
-     * Should be preceded by calls to subfieldAdd() and followed by calls to subfieldSetDof().
+     * Should be preceded by calls to subfieldAdd() and followed by calls to allocate().
+     *
+     * Additional setup of the field, such as customization of the discretization, can be done after calling this
+     * routine.
      */
     void subfieldsSetup(void);
 
@@ -279,9 +294,11 @@ public:
 
     /** Print field to standard out.
      *
-     * @param label Label for output.
+     * @param[in] label Label for output.
+     * @param[in] options Viewing options.
      */
-    void view(const char* label) const;
+    void view(const char* label,
+              const ViewOptions options=VIEW_ALL) const;
 
     /** Create PETSc vector scatter for field. This is used to transfer
      * information from the "global" PETSc vector view to the "local"
@@ -295,7 +312,6 @@ public:
     void createScatter(const Mesh& mesh,
                        const char* context);
 
-
     /** Create PETSc vector scatter for field. This is used to transfer
      * information from the "global" PETSc vector view to the "local"
      * PETSc section view. The PETSc vector includes constrained
@@ -307,7 +323,6 @@ public:
      */
     void createScatterWithBC(const Mesh& mesh,
                              const char* context);
-
 
     /** Create PETSc vector scatter for field. This is used to transfer
      * information from the "global" PETSc vector view to the "local"
@@ -384,14 +399,13 @@ private:
     struct ScatterInfo {
         PetscDM dm; ///< PETSc DM defining the communication pattern
         PetscVec vector; ///< PETSc vector associated with field.
-    };   // ScatterInfo
+    }; // ScatterInfo
 
     // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
 private:
 
     typedef std::map<std::string, ScatterInfo> scatter_map_type;
     typedef std::map<std::string, SubfieldInfo> subfields_type;
-
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
 private:
@@ -423,28 +437,25 @@ private:
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-    subfields_type _subfields;   ///< Map of subfields in field.
+    subfields_type _subfields; ///< Map of subfields in field.
     std::string _label; ///< Label for field.
     bool _dimsOkay; ///< Ok to replace nondimensionalized values with dimensionalized values.
 
-    const Mesh& _mesh;   ///< Mesh associated with section.
-    scatter_map_type _scatters;   ///< Collection of scatters.
-    PetscDM _dm;   ///< Manages the PetscSection.
-    PetscVec _localVec;   ///< Local PETSc vector.
-
-    static const char* _genericComponent; ///< Name of generic component.
+    const Mesh& _mesh; ///< Mesh associated with section.
+    scatter_map_type _scatters; ///< Collection of scatters.
+    PetscDM _dm; ///< Manages the PetscSection.
+    PetscVec _localVec; ///< Local PETSc vector.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    Field(const Field&);   ///< Not implemented
-    const Field& operator=(const Field&);   ///< Not implemented
+    Field(const Field&); ///< Not implemented
+    const Field& operator=(const Field&); ///< Not implemented
 
 }; // Field
 
 #include "Field.icc" // inline methods
 
 #endif // pylith_topology_field_hh
-
 
 // End of file

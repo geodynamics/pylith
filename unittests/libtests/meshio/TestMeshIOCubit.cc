@@ -32,40 +32,37 @@
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestMeshIOCubit::setUp(void)
-{ // setUp
+pylith::meshio::TestMeshIOCubit::setUp(void) {
     TestMeshIO::setUp();
     _io = new MeshIOCubit();CPPUNIT_ASSERT(_io);
     _data = NULL;
 
-    _io->PyreComponent::identifier("TestMeshIOCubit");
-    const char* journalName = _io->PyreComponent::name();
+    _io->PyreComponent::setIdentifier("TestMeshIOCubit");
+    const char* journalName = _io->PyreComponent::getName();
     journal::debug_t debug(journalName);
-    //debug.activate(); // DEBUGGING
+    // debug.activate(); // DEBUGGING
 } // setUp
 
 
 // ----------------------------------------------------------------------
 // Deallocate testing data.
 void
-pylith::meshio::TestMeshIOCubit::tearDown(void)
-{ // tearDown
-    const char* journalName = _io->PyreComponent::name();
+pylith::meshio::TestMeshIOCubit::tearDown(void) {
+    const char* journalName = _io->PyreComponent::getName();
     journal::debug_t debug(journalName);
     debug.deactivate(); // DEBUGGING
 
     TestMeshIO::tearDown();
 
-    delete _io; _io = NULL;
-    delete _data; _data = NULL;
+    delete _io;_io = NULL;
+    delete _data;_data = NULL;
 } // tearDown
 
 
 // ----------------------------------------------------------------------
 // Test constructor
 void
-pylith::meshio::TestMeshIOCubit::testConstructor(void)
-{ // testConstructor
+pylith::meshio::TestMeshIOCubit::testConstructor(void) {
     PYLITH_METHOD_BEGIN;
 
     MeshIOCubit iohandler;
@@ -73,11 +70,11 @@ pylith::meshio::TestMeshIOCubit::testConstructor(void)
     PYLITH_METHOD_END;
 } // testConstructor
 
+
 // ----------------------------------------------------------------------
 // Test debug()
 void
-pylith::meshio::TestMeshIOCubit::testDebug(void)
-{ // testDebug
+pylith::meshio::TestMeshIOCubit::testDebug(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_io);
@@ -86,11 +83,11 @@ pylith::meshio::TestMeshIOCubit::testDebug(void)
     PYLITH_METHOD_END;
 } // testDebug
 
+
 // ----------------------------------------------------------------------
 // Test filename()
 void
-pylith::meshio::TestMeshIOCubit::testFilename(void)
-{ // testFilename
+pylith::meshio::TestMeshIOCubit::testFilename(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_io);
@@ -102,11 +99,11 @@ pylith::meshio::TestMeshIOCubit::testFilename(void)
     PYLITH_METHOD_END;
 } // testFilename
 
+
 // ----------------------------------------------------------------------
 // Test read().
 void
-pylith::meshio::TestMeshIOCubit::testRead(void)
-{ // testRead
+pylith::meshio::TestMeshIOCubit::testRead(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_io);
@@ -116,7 +113,7 @@ pylith::meshio::TestMeshIOCubit::testRead(void)
     _io->useNodesetNames(true);
 
     // Read mesh
-    delete _mesh; _mesh = new topology::Mesh;CPPUNIT_ASSERT(_mesh);
+    delete _mesh;_mesh = new topology::Mesh;CPPUNIT_ASSERT(_mesh);
     _io->read(_mesh);
 
     // Make sure mesh matches data
@@ -129,23 +126,20 @@ pylith::meshio::TestMeshIOCubit::testRead(void)
 // ----------------------------------------------------------------------
 // Get test data.
 pylith::meshio::TestMeshIO_Data*
-pylith::meshio::TestMeshIOCubit::_getData(void)
-{ // _data
+pylith::meshio::TestMeshIOCubit::_getData(void) {
     return _data;
 } // _data
+
 
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::TestMeshIOCubit_Data::TestMeshIOCubit_Data(void) :
-    filename(NULL)
-{ // constructor
-} // constructor
+    filename(NULL) {} // constructor
+
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestMeshIOCubit_Data::~TestMeshIOCubit_Data(void)
-{ // destructor
-} // destructor
+pylith::meshio::TestMeshIOCubit_Data::~TestMeshIOCubit_Data(void) {}
 
 
 // End of file

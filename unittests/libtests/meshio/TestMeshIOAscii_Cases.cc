@@ -23,7 +23,6 @@
 // ----------------------------------------------------------------------
 namespace pylith {
     namespace meshio {
-
         // --------------------------------------------------------------
         class TestMeshIOAscii_Line1D : public TestMeshIOAscii {
             CPPUNIT_TEST_SUB_SUITE(TestMeshIOAscii_Line1D, TestMeshIOAscii);
@@ -78,9 +77,9 @@ namespace pylith {
                 };
                 _data->groupTypes = const_cast<char**>(groupTypes);
             } // setUp
+
         }; // class TestMeshIOAscii_Line1D
         CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOAscii_Line1D);
-
 
         // --------------------------------------------------------------
         class TestMeshIOAscii_Line2D : public TestMeshIOAscii {
@@ -135,6 +134,7 @@ namespace pylith {
                 };
                 _data->groupTypes = const_cast<char**>(groupTypes);
             } // setUp
+
         }; // class TestMeshIOAscii_Line2D
         CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOAscii_Line2D);
 
@@ -191,6 +191,7 @@ namespace pylith {
                 };
                 _data->groupTypes = const_cast<char**>(groupTypes);
             } // setUp
+
         }; // class TestMeshIOAscii_Line3D
         CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOAscii_Line3D);
 
@@ -255,6 +256,7 @@ namespace pylith {
                 };
                 _data->groupTypes = const_cast<char**>(groupTypes);
             } // setUp
+
         }; // class TestMeshIOAscii_Quad2D
         CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOAscii_Quad2D);
 
@@ -265,6 +267,7 @@ namespace pylith {
             CPPUNIT_TEST_SUITE_END();
 
 public:
+
             void setUp(void) {
                 TestMeshIOAscii::setUp();
                 _data = new TestMeshIOAscii_Data();CPPUNIT_ASSERT(_data);
@@ -321,6 +324,7 @@ public:
                 };
                 _data->groupTypes = const_cast<char**>(groupTypes);
             } // setUp
+
         }; // class TestMeshIOAscii_Quad2D_Comments
         CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOAscii_Quad2D_Comments);
 
@@ -379,6 +383,7 @@ public:
                 };
                 _data->groupTypes = const_cast<char**>(groupTypes);
             } // setUp
+
         }; // class TestMeshIOAscii_Quad3D
         CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOAscii_Quad3D);
 
@@ -447,6 +452,7 @@ public:
                 };
                 _data->groupTypes = const_cast<char**>(groupTypes);
             } // setUp
+
         }; // class TestMeshIOAscii_Hex3D
         CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOAscii_Hex3D);
 
@@ -457,6 +463,7 @@ public:
             CPPUNIT_TEST_SUITE_END();
 
 public:
+
             void setUp(void) {
                 TestMeshIOAscii::setUp();
                 _data = new TestMeshIOAscii_Data();CPPUNIT_ASSERT(_data);
@@ -491,7 +498,7 @@ public:
                 };
                 _data->cells = const_cast<PylithInt*>(cells);
                 static const PylithInt materialIds[2] = {
-                    1, 0,
+                    2, 1,
                 };
                 _data->materialIds = const_cast<PylithInt*>(materialIds);
 
@@ -514,6 +521,7 @@ public:
                 };
                 _data->groupTypes = const_cast<char**>(groupTypes);
             } // setUp
+
         }; // class TestMeshIOAscii_Hex3D_Index1
         CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOAscii_Hex3D_Index1);
 

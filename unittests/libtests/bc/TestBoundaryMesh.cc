@@ -26,7 +26,7 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorSubMesh.hh" // USES SubMeshIS
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/faults/FaultCohesiveStub.hh" // USES FaultCohesiveStub
+#include "pylith/testing/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional

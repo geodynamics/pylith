@@ -30,19 +30,17 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
-#include "pylith/faults/FaultCohesiveStub.hh" // USES FaultCohesiveStub
+#include "pylith/testing/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <cppunit/extensions/HelperMacros.h>
 
-
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestDataWriterMaterial::setUp(void)
-{ // setUp
+pylith::meshio::TestDataWriterMaterial::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
     _mesh = NULL;
@@ -50,28 +48,28 @@ pylith::meshio::TestDataWriterMaterial::setUp(void)
     PYLITH_METHOD_END;
 } // setUp
 
+
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::meshio::TestDataWriterMaterial::tearDown(void)
-{ // tearDown
+pylith::meshio::TestDataWriterMaterial::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _mesh; _mesh = NULL;
+    delete _mesh;_mesh = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
 
+
 // ----------------------------------------------------------------------
 // Initialize mesh.
 void
-pylith::meshio::TestDataWriterMaterial::_initialize(void)
-{ // _initialize
+pylith::meshio::TestDataWriterMaterial::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
     const TestDataWriterMaterial_Data* data = _getData();CPPUNIT_ASSERT(data);
 
-    delete _mesh; _mesh = new topology::Mesh;CPPUNIT_ASSERT(_mesh);
+    delete _mesh;_mesh = new topology::Mesh;CPPUNIT_ASSERT(_mesh);
     MeshIOAscii iohandler;
     iohandler.filename(data->meshFilename);
     iohandler.read(_mesh);
@@ -85,20 +83,20 @@ pylith::meshio::TestDataWriterMaterial::_initialize(void)
     pylith::topology::MeshOps::nondimensionalize(_mesh, normalizer);
 
     if (data->faultLabel) {
-        faults::FaultCohesiveStub fault;
-        fault.label(data->faultLabel);
-        fault.id(data->faultId);
+	pylith::faults::FaultCohesiveStub fault;
+        fault.setSurfaceMarkerLabel(data->faultLabel);
+        fault.setInterfaceId(data->faultId);
         fault.adjustTopology(_mesh);
     } // if
 
     PYLITH_METHOD_END;
 } // _initialize
 
+
 // ----------------------------------------------------------------------
 // Create vertex fields.
 void
-pylith::meshio::TestDataWriterMaterial::_createVertexFields(pylith::topology::Fields* fields)
-{ // _createVertexFields
+pylith::meshio::TestDataWriterMaterial::_createVertexFields(pylith::topology::Fields* fields) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(fields);
@@ -114,11 +112,11 @@ pylith::meshio::TestDataWriterMaterial::_createVertexFields(pylith::topology::Fi
     PYLITH_METHOD_END;
 } // _createVertexFields
 
+
 // ----------------------------------------------------------------------
 // Create cell fields.
 void
-pylith::meshio::TestDataWriterMaterial::_createCellFields(pylith::topology::Fields* fields)
-{ // _createCellFields
+pylith::meshio::TestDataWriterMaterial::_createCellFields(pylith::topology::Fields* fields) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(fields);
@@ -591,16 +589,12 @@ pylith::meshio::TestDataWriterMaterial::_setDataHex(void) {
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::TestDataWriterMaterial_Data::TestDataWriterMaterial_Data(void) :
-    materialId(0)
-{ // constructor
-} // constructor
+    materialId(0) {}
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestDataWriterMaterial_Data::~TestDataWriterMaterial_Data(void)
-{ // destructor
-} // destructor
+pylith::meshio::TestDataWriterMaterial_Data::~TestDataWriterMaterial_Data(void) {}
 
 
 // End of file

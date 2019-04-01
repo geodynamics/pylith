@@ -38,40 +38,37 @@
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestMeshIOLagrit::setUp(void)
-{ // setUp
+pylith::meshio::TestMeshIOLagrit::setUp(void) {
     TestMeshIO::setUp();
     _io = new MeshIOLagrit();CPPUNIT_ASSERT(_io);
     _data = NULL;
 
-    _io->PyreComponent::identifier("TestMeshIOLagrit");
-    const char* journalName = _io->PyreComponent::name();
+    _io->PyreComponent::setIdentifier("TestMeshIOLagrit");
+    const char* journalName = _io->PyreComponent::getName();
     journal::debug_t debug(journalName);
-    //debug.activate(); // DEBUGGING
+    // debug.activate(); // DEBUGGING
 } // setUp
 
 
 // ----------------------------------------------------------------------
 // Deallocate testing data.
 void
-pylith::meshio::TestMeshIOLagrit::tearDown(void)
-{ // tearDown
-    const char* journalName = _io->PyreComponent::name();
+pylith::meshio::TestMeshIOLagrit::tearDown(void) {
+    const char* journalName = _io->PyreComponent::getName();
     journal::debug_t debug(journalName);
     debug.deactivate(); // DEBUGGING
 
     TestMeshIO::tearDown();
 
-    delete _io; _io = NULL;
-    delete _data; _data = NULL;
+    delete _io;_io = NULL;
+    delete _data;_data = NULL;
 } // tearDown
 
 
 // ----------------------------------------------------------------------
 // Test constructor
 void
-pylith::meshio::TestMeshIOLagrit::testConstructor(void)
-{ // testConstructor
+pylith::meshio::TestMeshIOLagrit::testConstructor(void) {
     PYLITH_METHOD_BEGIN;
 
     MeshIOLagrit iohandler;
@@ -79,11 +76,11 @@ pylith::meshio::TestMeshIOLagrit::testConstructor(void)
     PYLITH_METHOD_END;
 } // testConstructor
 
+
 // ----------------------------------------------------------------------
 // Test debug()
 void
-pylith::meshio::TestMeshIOLagrit::testDebug(void)
-{ // testDebug
+pylith::meshio::TestMeshIOLagrit::testDebug(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_io);
@@ -93,11 +90,11 @@ pylith::meshio::TestMeshIOLagrit::testDebug(void)
     PYLITH_METHOD_END;
 } // testDebug
 
+
 // ----------------------------------------------------------------------
 // Test filename()
 void
-pylith::meshio::TestMeshIOLagrit::testFilename(void)
-{ // testFilename
+pylith::meshio::TestMeshIOLagrit::testFilename(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_io);
@@ -113,11 +110,11 @@ pylith::meshio::TestMeshIOLagrit::testFilename(void)
     PYLITH_METHOD_END;
 } // testFilename
 
+
 // ----------------------------------------------------------------------
 // Test read().
 void
-pylith::meshio::TestMeshIOLagrit::testRead(void)
-{ // testRead
+pylith::meshio::TestMeshIOLagrit::testRead(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_io);
@@ -128,7 +125,6 @@ pylith::meshio::TestMeshIOLagrit::testRead(void)
     _io->ioInt32(_data->ioInt32);
     _io->isRecordHeader32Bit(_data->isRecordHeader32Bit);
 
-
     // LaGriT file was created on little endian machine, so flip endian if
     // running test on big endian machine.
 #if defined(NATIVE_LITTLE_ENDIAN)
@@ -138,7 +134,7 @@ pylith::meshio::TestMeshIOLagrit::testRead(void)
 #endif
 
     // Read mesh
-    delete _mesh; _mesh = new topology::Mesh;
+    delete _mesh;_mesh = new topology::Mesh;
     _io->read(_mesh);
 
     // Make sure mesh matches data
@@ -147,27 +143,25 @@ pylith::meshio::TestMeshIOLagrit::testRead(void)
     PYLITH_METHOD_END;
 } // testReadTetAscii
 
+
 // ----------------------------------------------------------------------
 // Get test data.
 pylith::meshio::TestMeshIO_Data*
-pylith::meshio::TestMeshIOLagrit::_getData(void)
-{ // _data
+pylith::meshio::TestMeshIOLagrit::_getData(void) {
     return _data;
 } // _data
+
 
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::TestMeshIOLagrit_Data::TestMeshIOLagrit_Data(void) :
     filenameGmv(NULL),
-    filenamePset(NULL)
-{ // constructor
-} // constructor
+    filenamePset(NULL) {} // constructor
+
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestMeshIOLagrit_Data::~TestMeshIOLagrit_Data(void)
-{ // destructor
-} // destructor
+pylith::meshio::TestMeshIOLagrit_Data::~TestMeshIOLagrit_Data(void) {}
 
 
 // End of file

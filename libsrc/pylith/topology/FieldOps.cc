@@ -21,12 +21,16 @@
 #include "FieldOps.hh" // implementation of class methods
 
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+
+#include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include "petscdm.h" // USES PetscDM
 #include "petscds.h" // USES PetscDS
 
+#include <cppunit/extensions/HelperMacros.h>
 
 // ----------------------------------------------------------------------
 // Create PetscFE object for discretization.
@@ -34,8 +38,7 @@ PetscFE
 pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
                                      const PetscDM dm,
                                      const bool isSimplex,
-                                     const int numComponents)
-{ // createFE
+                                     const int numComponents) {
     PYLITH_METHOD_BEGIN;
 
     const int basisOrder = PetscMax(feinfo.basisOrder, 0);
@@ -47,44 +50,45 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
 
     // Get spatial dimension of mesh.
     int dim = 0;
-    err = DMGetDimension(dm, &dim); PYLITH_CHECK_ERROR(err);
+    err = DMGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
+    dim = (feinfo.dimension < 0) ? dim : feinfo.dimension;assert(dim > 0);
 
     // Create space
     PetscSpace space = NULL;
-    err = PetscSpaceCreate(PetscObjectComm((PetscObject) dm), &space); PYLITH_CHECK_ERROR(err); assert(space);
-    err = PetscSpaceSetType(space, feinfo.feSpace == FieldBase::POLYNOMIAL_SPACE ? PETSCSPACEPOLYNOMIAL : PETSCSPACEPOINT); PYLITH_CHECK_ERROR(err);
-    err = PetscSpaceSetNumComponents(space, numComponents); PYLITH_CHECK_ERROR(err);
+    err = PetscSpaceCreate(PetscObjectComm((PetscObject) dm), &space);PYLITH_CHECK_ERROR(err);assert(space);
+    err = PetscSpaceSetType(space, feinfo.feSpace == FieldBase::POLYNOMIAL_SPACE ? PETSCSPACEPOLYNOMIAL : PETSCSPACEPOINT);PYLITH_CHECK_ERROR(err);
+    err = PetscSpaceSetNumComponents(space, numComponents);PYLITH_CHECK_ERROR(err);
     err = PetscSpaceSetDegree(space, basisOrder, PETSC_DETERMINE);
     if (feinfo.feSpace == FieldBase::POLYNOMIAL_SPACE) {
-        err = PetscSpacePolynomialSetTensor(space, useTensor); PYLITH_CHECK_ERROR(err);
-        err = PetscSpaceSetNumVariables(space, dim); PYLITH_CHECK_ERROR(err);
+        err = PetscSpacePolynomialSetTensor(space, useTensor);PYLITH_CHECK_ERROR(err);
     } // if
-    err = PetscSpaceSetUp(space); PYLITH_CHECK_ERROR(err);
+    err = PetscSpaceSetNumVariables(space, dim);PYLITH_CHECK_ERROR(err);
+    err = PetscSpaceSetUp(space);PYLITH_CHECK_ERROR(err);
 
     // Create dual space
     PetscDualSpace dualspace = NULL;
     PetscDM dmCell = NULL;
-    err = PetscDualSpaceCreate(PetscObjectComm((PetscObject) dm), &dualspace); PYLITH_CHECK_ERROR(err);
-    err = PetscDualSpaceCreateReferenceCell(dualspace, dim, isSimplex ? PETSC_TRUE : PETSC_FALSE, &dmCell); PYLITH_CHECK_ERROR(err);
-    err = PetscDualSpaceSetDM(dualspace, dmCell); PYLITH_CHECK_ERROR(err);
-    err = DMDestroy(&dmCell); PYLITH_CHECK_ERROR(err);
-    err = PetscDualSpaceSetNumComponents(dualspace, numComponents); PYLITH_CHECK_ERROR(err);
-    err = PetscDualSpaceSetType(dualspace, PETSCDUALSPACELAGRANGE); PYLITH_CHECK_ERROR(err);
-    err = PetscDualSpaceLagrangeSetTensor(dualspace, useTensor); PYLITH_CHECK_ERROR(err);
-    err = PetscDualSpaceSetOrder(dualspace, basisOrder); PYLITH_CHECK_ERROR(err);
+    err = PetscDualSpaceCreate(PetscObjectComm((PetscObject) dm), &dualspace);PYLITH_CHECK_ERROR(err);
+    err = PetscDualSpaceCreateReferenceCell(dualspace, dim, isSimplex ? PETSC_TRUE : PETSC_FALSE, &dmCell);PYLITH_CHECK_ERROR(err);
+    err = PetscDualSpaceSetDM(dualspace, dmCell);PYLITH_CHECK_ERROR(err);
+    err = DMDestroy(&dmCell);PYLITH_CHECK_ERROR(err);
+    err = PetscDualSpaceSetNumComponents(dualspace, numComponents);PYLITH_CHECK_ERROR(err);
+    err = PetscDualSpaceSetType(dualspace, PETSCDUALSPACELAGRANGE);PYLITH_CHECK_ERROR(err);
+    err = PetscDualSpaceLagrangeSetTensor(dualspace, useTensor);PYLITH_CHECK_ERROR(err);
+    err = PetscDualSpaceSetOrder(dualspace, basisOrder);PYLITH_CHECK_ERROR(err);
     err = PetscDualSpaceLagrangeSetContinuity(dualspace, basisContinuity);
-    err = PetscDualSpaceSetUp(dualspace); PYLITH_CHECK_ERROR(err);
+    err = PetscDualSpaceSetUp(dualspace);PYLITH_CHECK_ERROR(err);
 
     // Create element
     PetscFE fe = NULL;
-    err = PetscFECreate(PetscObjectComm((PetscObject) dm), &fe); PYLITH_CHECK_ERROR(err);
-    err = PetscFESetType(fe, PETSCFEBASIC); PYLITH_CHECK_ERROR(err);
-    err = PetscFESetBasisSpace(fe, space); PYLITH_CHECK_ERROR(err);
-    err = PetscFESetDualSpace(fe, dualspace); PYLITH_CHECK_ERROR(err);
-    err = PetscFESetNumComponents(fe, numComponents); PYLITH_CHECK_ERROR(err);
-    err = PetscFESetUp(fe); PYLITH_CHECK_ERROR(err);
-    err = PetscSpaceDestroy(&space); PYLITH_CHECK_ERROR(err);
-    err = PetscDualSpaceDestroy(&dualspace); PYLITH_CHECK_ERROR(err);
+    err = PetscFECreate(PetscObjectComm((PetscObject) dm), &fe);PYLITH_CHECK_ERROR(err);
+    err = PetscFESetType(fe, PETSCFEBASIC);PYLITH_CHECK_ERROR(err);
+    err = PetscFESetBasisSpace(fe, space);PYLITH_CHECK_ERROR(err);
+    err = PetscFESetDualSpace(fe, dualspace);PYLITH_CHECK_ERROR(err);
+    err = PetscFESetNumComponents(fe, numComponents);PYLITH_CHECK_ERROR(err);
+    err = PetscFESetUp(fe);PYLITH_CHECK_ERROR(err);
+    err = PetscSpaceDestroy(&space);PYLITH_CHECK_ERROR(err);
+    err = PetscDualSpaceDestroy(&dualspace);PYLITH_CHECK_ERROR(err);
 
     // Create quadrature
     PetscQuadrature quadrature = NULL;
@@ -93,22 +97,22 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
     const PylithReal xRefMin = -1.0;
     const PylithReal xRefMax = +1.0;
     if (isSimplex) {
-        err = PetscDTGaussJacobiQuadrature(dim, basisNumComponents, numPoints, xRefMin, xRefMax, &quadrature); PYLITH_CHECK_ERROR(err);
+        err = PetscDTGaussJacobiQuadrature(dim, basisNumComponents, numPoints, xRefMin, xRefMax, &quadrature);PYLITH_CHECK_ERROR(err);
     } else {
-        err = PetscDTGaussTensorQuadrature(dim, basisNumComponents, numPoints, xRefMin, xRefMax, &quadrature); PYLITH_CHECK_ERROR(err);
+        err = PetscDTGaussTensorQuadrature(dim, basisNumComponents, numPoints, xRefMin, xRefMax, &quadrature);PYLITH_CHECK_ERROR(err);
     }
-    err = PetscFESetQuadrature(fe, quadrature); PYLITH_CHECK_ERROR(err);
-    err = PetscQuadratureDestroy(&quadrature); PYLITH_CHECK_ERROR(err);
+    err = PetscFESetQuadrature(fe, quadrature);PYLITH_CHECK_ERROR(err);
+    err = PetscQuadratureDestroy(&quadrature);PYLITH_CHECK_ERROR(err);
     if (feinfo.feSpace == FieldBase::POLYNOMIAL_SPACE) {
         PetscQuadrature faceQuadrature = NULL;
-        err = PetscDTGaussJacobiQuadrature(dim-1, basisNumComponents, numPoints, xRefMin, xRefMax, &faceQuadrature); PYLITH_CHECK_ERROR(err);
-        err = PetscFESetFaceQuadrature(fe, faceQuadrature); PYLITH_CHECK_ERROR(err);
-        err = PetscQuadratureDestroy(&faceQuadrature); PYLITH_CHECK_ERROR(err);
+        err = PetscDTGaussJacobiQuadrature(dim-1, basisNumComponents, numPoints, xRefMin, xRefMax, &faceQuadrature);PYLITH_CHECK_ERROR(err);
+        err = PetscFESetFaceQuadrature(fe, faceQuadrature);PYLITH_CHECK_ERROR(err);
+        err = PetscQuadratureDestroy(&faceQuadrature);PYLITH_CHECK_ERROR(err);
     } else {
         PetscQuadrature faceQuadrature = NULL;
-        err = PetscDTGaussJacobiQuadrature(dim-1, basisNumComponents, 0, xRefMin, xRefMax, &faceQuadrature); PYLITH_CHECK_ERROR(err);
-        err = PetscFESetFaceQuadrature(fe, faceQuadrature); PYLITH_CHECK_ERROR(err);
-        err = PetscQuadratureDestroy(&faceQuadrature); PYLITH_CHECK_ERROR(err);
+        err = PetscDTGaussJacobiQuadrature(dim-1, basisNumComponents, 0, xRefMin, xRefMax, &faceQuadrature);PYLITH_CHECK_ERROR(err);
+        err = PetscFESetFaceQuadrature(fe, faceQuadrature);PYLITH_CHECK_ERROR(err);
+        err = PetscQuadratureDestroy(&faceQuadrature);PYLITH_CHECK_ERROR(err);
     }
 
     PYLITH_METHOD_RETURN(fe);
@@ -121,7 +125,7 @@ void
 pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& target,
                                                 const pylith::topology::Field& auxiliary) {
     PYLITH_METHOD_BEGIN;
-    //PYLITH_JOURNAL_DEBUG("checkDiscretization(target="<<target.label()<<", auxiliary="<<auxiliary.label()<<")");
+    // PYLITH_JOURNAL_DEBUG("checkDiscretization(target="<<target.label()<<", auxiliary="<<auxiliary.label()<<")");
 
     // Verify that the quadrature order of the target subfields all
     // match and that they match the quadrature order of the auxiliary
@@ -173,13 +177,14 @@ pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& t
     PYLITH_METHOD_END;
 } // checkDiscretization
 
+
 // ----------------------------------------------------------------------
 // Check to see if fields have the same subfields and match in size.
 bool
 pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
                                          const pylith::topology::Field& fieldB) {
     PYLITH_METHOD_BEGIN;
-    //PYLITH_JOURNAL_DEBUG("layoutsMatch(fieldA="<<fieldA.label()<<", fieldB="<<fieldB.label()<<")");
+    // PYLITH_JOURNAL_DEBUG("layoutsMatch(fieldA="<<fieldA.label()<<", fieldB="<<fieldB.label()<<")");
 
     bool isMatch = true;
 
@@ -205,10 +210,10 @@ pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
     // Must match across all processors.
     PetscInt matchLocal = isMatch;
     PetscInt matchGlobal = 0;
-    PetscErrorCode err = MPI_Allreduce(&matchLocal, &matchGlobal, 1, MPIU_INT, MPI_LOR, fieldA.mesh().comm()); PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = MPI_Allreduce(&matchLocal, &matchGlobal, 1, MPIU_INT, MPI_LOR, fieldA.mesh().comm());PYLITH_CHECK_ERROR(err);
     isMatch = matchGlobal == 1;
 
-    //PYLITH_JOURNAL_DEBUG("layoutsMatch return value="<<isMatch<<".");
+    // PYLITH_JOURNAL_DEBUG("layoutsMatch return value="<<isMatch<<".");
     PYLITH_METHOD_RETURN(isMatch);
 } // layoutsMatch
 

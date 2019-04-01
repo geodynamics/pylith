@@ -1,0 +1,84 @@
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2016 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# @file pyre/meshio/OutputSoln.py
+#
+# @brief Python object for managing output of solution information over the domain.
+#
+# Factory: observer
+
+from .OutputSoln import OutputSoln
+from .meshio import OutputSolnDomain as ModuleOutputSolnDomain
+
+
+class OutputSolnDomain(OutputSoln, ModuleOutputSolnDomain):
+    """
+    Python object for managing output of finite-element solution
+    information.
+
+    INVENTORY
+
+    Properties
+      - None
+
+    Facilities
+      - None
+
+    FACTORY: observer
+    """
+
+    # PUBLIC METHODS /////////////////////////////////////////////////////
+
+    def __init__(self, name="outputsolndomain"):
+        """
+        Constructor.
+        """
+        OutputSoln.__init__(self, name)
+        return
+
+    def preinitialize(self, problem):
+        """
+        Do mimimal initialization.
+        """
+        OutputSoln.preinitialize(self, problem)
+        return
+
+    # PRIVATE METHODS ////////////////////////////////////////////////////
+
+    def _configure(self):
+        """
+        Set members based using inventory.
+        """
+        OutputSoln._configure(self)
+        return
+
+    def _createModuleObj(self):
+        """
+        Create handle to C++ object.
+        """
+        ModuleOutputSolnDomain.__init__(self)
+        return
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def observer():
+    """
+    Factory associated with OutputSoln.
+    """
+    return OutputSoln()
+
+
+# End of file

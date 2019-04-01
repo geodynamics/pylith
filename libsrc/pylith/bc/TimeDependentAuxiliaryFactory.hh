@@ -24,16 +24,15 @@
 #if !defined(pylith_bc_timedependentauxiliaryfactory_hh)
 #define pylith_bc_timedependentauxiliaryfactory_hh
 
-// Include directives ---------------------------------------------------
 #include "bcfwd.hh" // forward declarations
 #include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
 
-// TimeDependentAuxiliaryFactory-----------------------------------------------
-/// @brief C++ helper class for setting up auxiliary fields for time-dependent boundary conditions.
-class pylith::bc::TimeDependentAuxiliaryFactory : public pylith::feassemble::AuxiliaryFactory {
-    friend class TestDirichletAuxiliaryFactory;   // unit testing
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES TimeHistory
 
-    // PUBLIC ENUMS ///////////////////////////////////////////////////////
+class pylith::bc::TimeDependentAuxiliaryFactory : public pylith::feassemble::AuxiliaryFactory {
+    friend class TestDirichletAuxiliaryFactory; // unit testing
+
+    // PUBLIC ENUMS ////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     enum ReferenceEnum {
@@ -41,7 +40,7 @@ public:
         TANGENTIAL_NORMAL=1, ///< Directions tangential and normal to the boundary (tangential_1, tangential_2, normal).
     };
 
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /** Default constructor.
@@ -53,29 +52,39 @@ public:
     /// Destructor.
     ~TimeDependentAuxiliaryFactory(void);
 
-    // PUBLIC METHODS /////////////////////////////////////////////////////
-public:
-
     /// Add initial amplitude field to auxiliary fields.
-    void initialAmplitude(void);
+    void addInitialAmplitude(void);
 
     /// Add rate amplitude field to auxiliary fields.
-    void rateAmplitude(void);
+    void addRateAmplitude(void);
 
     /// Add rate start time amplitude field to auxiliary fields.
-    void rateStartTime(void);
+    void addRateStartTime(void);
 
     /// Add time history amplitude field to auxiliary fields.
-    void timeHistoryAmplitude(void);
+    void addTimeHistoryAmplitude(void);
 
     /// Add time history start time field to auxiliary fields.
-    void timeHistoryStartTime(void);
+    void addTimeHistoryStartTime(void);
 
     /// Add time history value field to auxiliary fields.
-    void timeHistoryValue(void);
+    void addTimeHistoryValue(void);
 
-    // PRIVATE MEMBERS ////////////////////////////////////////////////////
-public:
+    /** Update auxiliary field for current time.
+     *
+     * @param[inout] auxiliaryField Auxiliary field to update.
+     * @param[in] t Current time.
+     * @param[in] timeScale Time scale for nondimensionalization.
+     * @param[in] dbTimeHistory Time history database.
+     */
+    static
+    void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                              const PylithReal t,
+                              const PylithReal timeScale,
+                              spatialdata::spatialdb::TimeHistory* const dbTimeHistory);
+
+    // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
+private:
 
     /** Set names of vector field components in auxiliary subfield.
      *
@@ -83,26 +92,19 @@ public:
      */
     void _setVectorFieldComponentNames(pylith::topology::FieldBase::Description* description);
 
-    // PRIVATE MEMBERS ////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
-
-    static const char* _genericComponent; ///< Name of generic component.
-
-    static const char* _componentsXYZ[3]; ///< Names of field components in XYZ coordinate system.
-    static const char* _componentsTN[2]; ///< Names of field components in 2-D tangential/normal coordinate system.
-    static const char* _componentsTTN[3]; ///< Names of field components in 3-D tangential/normal coordinate system.
 
     ReferenceEnum _auxComponents; ///< Coordinate system reference for field components.
 
-    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    TimeDependentAuxiliaryFactory(const TimeDependentAuxiliaryFactory &);   ///< Not implemented.
-    const TimeDependentAuxiliaryFactory& operator=(const TimeDependentAuxiliaryFactory&);   ///< Not implemented
+    TimeDependentAuxiliaryFactory(const TimeDependentAuxiliaryFactory &); ///< Not implemented.
+    const TimeDependentAuxiliaryFactory& operator=(const TimeDependentAuxiliaryFactory&); ///< Not implemented
 
 }; // class TimeDependentAuxiliaryFactory
 
 #endif // pylith_bc_timedependentauxiliaryfactory_hh
-
 
 // End of file

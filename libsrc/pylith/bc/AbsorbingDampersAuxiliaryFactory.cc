@@ -29,26 +29,24 @@
 
 #include <cassert>
 
-// ----------------------------------------------------------------------
-const char* pylith::bc::AbsorbingDampersAuxiliaryFactory::_genericComponent = "absorbingdampersauxiliaryfactory";
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::bc::AbsorbingDampersAuxiliaryFactory::AbsorbingDampersAuxiliaryFactory(void)
-{ // constructor
-    GenericComponent::name(_genericComponent);
+pylith::bc::AbsorbingDampersAuxiliaryFactory::AbsorbingDampersAuxiliaryFactory(void) {
+    GenericComponent::setName("absorbingdampersauxiliaryfactory");
 } // constructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::bc::AbsorbingDampersAuxiliaryFactory::~AbsorbingDampersAuxiliaryFactory(void) {}
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Add density field to auxiliary fields.
 void
-pylith::bc::AbsorbingDampersAuxiliaryFactory::density(void) {
+pylith::bc::AbsorbingDampersAuxiliaryFactory::addDensity(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("density(void)");
+    PYLITH_JOURNAL_DEBUG("addDensity(void)");
 
     const char* fieldName = "density";
     const PylithReal densityScale = _normalizer->densityScale();
@@ -63,19 +61,19 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::density(void) {
     description.scale = densityScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
-    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
-} // density
+} // addDensity
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Add shear wave speed field to auxiliary fields.
 void
-pylith::bc::AbsorbingDampersAuxiliaryFactory::vs(void) {
+pylith::bc::AbsorbingDampersAuxiliaryFactory::addVs(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("vs(void)");
+    PYLITH_JOURNAL_DEBUG("addVs(void)");
 
     const char* fieldName = "vs";
     const PylithReal velocityScale = _normalizer->lengthScale() / _normalizer->timeScale();
@@ -90,19 +88,19 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::vs(void) {
     description.scale = velocityScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
-} // vs
+} // addVs
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Add dilatational wave speed field to auxiliary fields.
 void
-pylith::bc::AbsorbingDampersAuxiliaryFactory::vp(void) {
+pylith::bc::AbsorbingDampersAuxiliaryFactory::addVp(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("vp(void)");
+    PYLITH_JOURNAL_DEBUG("addVp(void)");
 
     const char* fieldName = "vp";
     const PylithReal velocityScale = _normalizer->lengthScale() / _normalizer->timeScale();
@@ -117,11 +115,11 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::vp(void) {
     description.scale = velocityScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
-    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
-} // vp
+} // addVp
 
 
 // End of file

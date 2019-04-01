@@ -35,27 +35,25 @@ pylith::topology::FieldQuery::FieldQuery(const Field& field) :
     _field(field),
     _functions(NULL),
     _contexts(NULL),
-    _contextPtrs(NULL)
-{ // constructor
-} // constructor
+    _contextPtrs(NULL) {}
+
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::topology::FieldQuery::~FieldQuery(void)
-{ // destructor
+pylith::topology::FieldQuery::~FieldQuery(void) {
     deallocate();
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::topology::FieldQuery::deallocate(void)
-{ // deallocate
+pylith::topology::FieldQuery::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete[] _functions; _functions = NULL;
-    delete[] _contexts; _contexts = NULL;
-    delete[] _contextPtrs; _contextPtrs = NULL;
+    delete[] _functions;_functions = NULL;
+    delete[] _contexts;_contexts = NULL;
+    delete[] _contextPtrs;_contextPtrs = NULL;
 
     _queryFns.clear();
     _queryDBs.clear();
@@ -69,8 +67,7 @@ pylith::topology::FieldQuery::deallocate(void)
 void
 pylith::topology::FieldQuery::queryFn(const char* subfield,
                                       const queryfn_type fn,
-                                      spatialdata::spatialdb::SpatialDB* db)
-{ // queryFn
+                                      spatialdata::spatialdb::SpatialDB* db) {
     PYLITH_METHOD_BEGIN;
 
     assert(subfield);
@@ -85,8 +82,7 @@ pylith::topology::FieldQuery::queryFn(const char* subfield,
 // ----------------------------------------------------------------------
 // Get query function information for subfield.
 const pylith::topology::FieldQuery::queryfn_type
-pylith::topology::FieldQuery::queryFn(const char* subfield) const
-{ // queryFn
+pylith::topology::FieldQuery::queryFn(const char* subfield) const {
     PYLITH_METHOD_BEGIN;
 
     assert(subfield);
@@ -99,6 +95,7 @@ pylith::topology::FieldQuery::queryFn(const char* subfield) const
 
     PYLITH_METHOD_RETURN(*iter->second);
 } // queryFn
+
 
 // ----------------------------------------------------------------------
 // Initialize query with default query functions.
@@ -123,8 +120,7 @@ pylith::topology::FieldQuery::initializeWithDefaultQueryFns(void) {
 // ----------------------------------------------------------------------
 // Get spatial database used to get values for subfield.
 const spatialdata::spatialdb::SpatialDB*
-pylith::topology::FieldQuery::queryDB(const char* subfield) const
-{ // queryDB
+pylith::topology::FieldQuery::queryDB(const char* subfield) const {
     PYLITH_METHOD_BEGIN;
 
     assert(subfield);
@@ -142,8 +138,7 @@ pylith::topology::FieldQuery::queryDB(const char* subfield) const
 // ----------------------------------------------------------------------
 // Get array of query functions.
 pylith::topology::FieldQuery::queryfn_type*
-pylith::topology::FieldQuery::functions(void) const
-{ // functions
+pylith::topology::FieldQuery::functions(void) const {
     return _functions;
 } // functions
 
@@ -151,17 +146,16 @@ pylith::topology::FieldQuery::functions(void) const
 // ----------------------------------------------------------------------
 // Get array of pointers to contexts.
 const pylith::topology::FieldQuery::DBQueryContext* const*
-pylith::topology::FieldQuery::contextPtrs(void) const
-{ // contextPtrs
+pylith::topology::FieldQuery::contextPtrs(void) const {
     return _contextPtrs;
 } // contextPtrs
+
 
 // ----------------------------------------------------------------------
 // Query spatial database to set values in field.
 void
 pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
-                                     const PylithReal lengthScale)
-{ // openDB
+                                     const PylithReal lengthScale) {
     PYLITH_METHOD_BEGIN;
 
     // Create contexts and funcs. Need to put contexts into an array of
@@ -170,9 +164,9 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
     const Field::subfields_type& subfields = _field._subfields;
     const unsigned size = subfields.size();
     assert(_queryFns.size() == size);
-    delete[] _functions; _functions = (size > 0) ? new queryfn_type[size] : NULL;
-    delete[] _contexts; _contexts = (size > 0) ? new DBQueryContext[size] : NULL;
-    delete[] _contextPtrs; _contextPtrs = (size > 0) ? new DBQueryContext*[size] : NULL;
+    delete[] _functions;_functions = (size > 0) ? new queryfn_type[size] : NULL;
+    delete[] _contexts;_contexts = (size > 0) ? new DBQueryContext[size] : NULL;
+    delete[] _contextPtrs;_contextPtrs = (size > 0) ? new DBQueryContext*[size] : NULL;
 
     int i = 0;
     for (Field::subfields_type::const_iterator iter = subfields.begin(); iter != subfields.end(); ++iter, ++i) {
@@ -212,14 +206,14 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
 // ----------------------------------------------------------------------
 // Query spatial database to set values in field.
 void
-pylith::topology::FieldQuery::queryDB(void)
-{ // queryDB
+pylith::topology::FieldQuery::queryDB(void) {
     PYLITH_METHOD_BEGIN;
 
     PetscErrorCode err = 0;
     PetscReal dummyTime = 0.0;
-    err = DMProjectFunctionLocal(_field.dmMesh(), dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES, _field.localVector()); PYLITH_CHECK_ERROR(err);
-    //err = PetscObjectCompose((PetscObject) dm, "A", (PetscObject) fieldVec);CHKERRQ(ierr); // :MATT: Which dm is this? Do we need this?
+    err = DMProjectFunctionLocal(_field.dmMesh(), dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES, _field.localVector());PYLITH_CHECK_ERROR(err);
+    // err = PetscObjectCompose((PetscObject) dm, "A", (PetscObject) fieldVec);CHKERRQ(ierr); // :MATT: Which dm is
+    // this? Do we need this?
 
     PYLITH_METHOD_END;
 } // queryDB
@@ -228,13 +222,12 @@ pylith::topology::FieldQuery::queryDB(void)
 // ----------------------------------------------------------------------
 // Query spatial database to set values in field.
 void
-pylith::topology::FieldQuery::closeDB(spatialdata::spatialdb::SpatialDB* db)
-{ // queryDB
+pylith::topology::FieldQuery::closeDB(spatialdata::spatialdb::SpatialDB* db) {
     PYLITH_METHOD_BEGIN;
 
-    delete[] _functions; _functions = NULL;
-    delete[] _contexts; _contexts = NULL;
-    delete[] _contextPtrs; _contextPtrs = NULL;
+    delete[] _functions;_functions = NULL;
+    delete[] _contexts;_contexts = NULL;
+    delete[] _contextPtrs;_contextPtrs = NULL;
 
     // Close spatial database.
     if (db) {
@@ -253,15 +246,14 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
                                              const PylithReal x[],
                                              PylithInt nvalues,
                                              PylithScalar* values,
-                                             void* context)
-{ // dbQueryPositive
+                                             void* context) {
     PYLITH_METHOD_BEGIN;
 
     assert(x);
     assert(values);
     assert(context);
 
-    const pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context; assert(queryctx);
+    const pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context;assert(queryctx);
     if (!queryctx->db) {
         PYLITH_METHOD_RETURN(0);
     } // if
@@ -277,7 +269,7 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
     try {
         queryctx->db->queryVals(queryValueNames, numQueryValues);
     } catch (const std::runtime_error& err) {
-        delete[] queryValueNames; queryValueNames = NULL;
+        delete[] queryValueNames;queryValueNames = NULL;
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, err.what());
         PYLITH_METHOD_RETURN(1);
     } // try/catch
@@ -294,11 +286,12 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
     const int err = queryctx->db->query(values, nvalues, xDim, dim, queryctx->cs);
 
     if (err) {
-        delete[] queryValueNames; queryValueNames = NULL;
+        delete[] queryValueNames;queryValueNames = NULL;
         std::ostringstream msg;
         msg << "Could not find " << queryctx->description << " at (";
-        for (int i = 0; i < dim; ++i)
+        for (int i = 0; i < dim; ++i) {
             msg << "  " << xDim[i];
+        }
         msg << ") in spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
         PYLITH_METHOD_RETURN(1);
@@ -309,14 +302,14 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
         for (int i = 0; i < nvalues; ++i) {
             const std::string& invalidMsg = queryctx->validator(values[i]);
             if (invalidMsg.length() > 0) {
-                delete[] queryValueNames; queryValueNames = NULL;
-
                 std::ostringstream msg;
                 msg << "Found invalid " << queryValueNames[i] << " (" << values[i] << ") at location (";
-                for (int i = 0; i < dim; ++i)
+                for (int i = 0; i < dim; ++i) {
                     msg << "  " << xDim[i];
+                }
                 msg << ") in spatial database '" << queryctx->db->label() << "'. ";
                 msg << invalidMsg;
+                delete[] queryValueNames;queryValueNames = NULL;
                 PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
                 PYLITH_METHOD_RETURN(1);
             } // if
@@ -329,7 +322,7 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
         values[i] /= queryctx->valueScale;
     } // for
 
-    delete[] queryValueNames; queryValueNames = NULL;
+    delete[] queryValueNames;queryValueNames = NULL;
 
     PYLITH_METHOD_RETURN(0);
 } // dbQueryGeneric
@@ -337,10 +330,16 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
 
 // ----------------------------------------------------------------------
 const char*
-pylith::topology::FieldQuery::validatorPositive(const PylithReal value)
-{ // validatorPositive
+pylith::topology::FieldQuery::validatorPositive(const PylithReal value) {
     return (value > 0.0) ? "" : "Value must be positive.";
 } // validatorPositive
+
+
+// ----------------------------------------------------------------------
+const char*
+pylith::topology::FieldQuery::validatorNonnegative(const PylithReal value) {
+    return (value >= 0.0) ? "" : "Value must be nonnegative.";
+} // validatorNonnegative
 
 
 // End of file

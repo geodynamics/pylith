@@ -23,8 +23,9 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
-#include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
-#include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
+#include "pylith/feassemble/Integrator.hh" // USES Integrator
+#include "pylith/feassemble/Constraint.hh" // USES Constraint
+#include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 
 #include "petscts.h" // USES PetscTS
 
@@ -32,10 +33,20 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include <cassert> // USES assert()
 
-// ----------------------------------------------------------------------
-const char* pylith::problems::TimeDependent::_pyreComponent = "timedependent";
+// ---------------------------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace problems {
+        class _TimeDependent {
+public:
 
-// ----------------------------------------------------------------------
+            static const char* pyreComponent;
+        }; // _TimeDependent
+
+        const char* _TimeDependent::pyreComponent = "timedependent";
+    } // problems
+} // pylith
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::problems::TimeDependent::TimeDependent(void) :
     _startTime(0.0),
@@ -43,22 +54,22 @@ pylith::problems::TimeDependent::TimeDependent(void) :
     _totalTime(0.0),
     _maxTimeSteps(0),
     _ts(0),
-    _formulationType(IMPLICIT) { // constructor
-    PyreComponent::name(_pyreComponent);
+    _formulationType(IMPLICIT) {
+    PyreComponent::setName(_TimeDependent::pyreComponent);
 } // constructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::problems::TimeDependent::~TimeDependent(void) { // destructor
+pylith::problems::TimeDependent::~TimeDependent(void) {
     deallocate();
 } // destructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::problems::TimeDependent::deallocate(void) { // deallocate
+pylith::problems::TimeDependent::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     Problem::deallocate();
@@ -69,28 +80,28 @@ pylith::problems::TimeDependent::deallocate(void) { // deallocate
 } // deallocate
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Set start time for problem.
 void
-pylith::problems::TimeDependent::startTime(const double value) { // startTime
+pylith::problems::TimeDependent::setStartTime(const double value) {
     PYLITH_COMPONENT_DEBUG("startTime(value="<<value<<")");
 
     _startTime = value;
-} // startTime
+} // setStartTime
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Get start time for problem.
 double
-pylith::problems::TimeDependent::startTime(void) const { // startTime
+pylith::problems::TimeDependent::getStartTime(void) const {
     return _startTime;
-} // startTime
+} // getStartTime
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Set total time for problem.
 void
-pylith::problems::TimeDependent::totalTime(const double value) { // totalTime
+pylith::problems::TimeDependent::setTotalTime(const double value) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("totalTime(value="<<value<<")");
 
@@ -102,21 +113,21 @@ pylith::problems::TimeDependent::totalTime(const double value) { // totalTime
     _totalTime = value;
 
     PYLITH_METHOD_END;
-} // totalTime
+} // setTotalTime
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Get total time for problem.
 double
-pylith::problems::TimeDependent::totalTime(void) const { // totalTime
+pylith::problems::TimeDependent::getTotalTime(void) const {
     return _totalTime;
-} // totalTime
+} // getTotalTime
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Set maximum number of time steps.
 void
-pylith::problems::TimeDependent::maxTimeSteps(const size_t value) { // maxTimeSteps
+pylith::problems::TimeDependent::setMaxTimeSteps(const size_t value) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("maxTimeSteps(value="<<value<<")");
 
@@ -128,23 +139,23 @@ pylith::problems::TimeDependent::maxTimeSteps(const size_t value) { // maxTimeSt
     _maxTimeSteps = value;
 
     PYLITH_METHOD_END;
-} // maxTimeSteps
+} // setMaxTimeSteps
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Get maximum number of time steps.
 size_t
-pylith::problems::TimeDependent::maxTimeSteps(void) const { // maxTimeSteps
+pylith::problems::TimeDependent::getMaxTimeSteps(void) const {
     return _maxTimeSteps;
-} // maxTimeSteps
+} // getMaxTimeSteps
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Set initial time step for problem.
 void
-pylith::problems::TimeDependent::dtInitial(const double value) { // dtInitial
+pylith::problems::TimeDependent::setInitialTimeStep(const double value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("dtInitial(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("setInitialTimeStep(value="<<value<<")");
 
     if (value < 0.0) {
         std::ostringstream msg;
@@ -154,21 +165,21 @@ pylith::problems::TimeDependent::dtInitial(const double value) { // dtInitial
     _dtInitial = value;
 
     PYLITH_METHOD_END;
-} // dtInitial
+} // setInitialTimeStep
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Get initial time step for problem.
 PetscReal
-pylith::problems::TimeDependent::dtInitial(void) const { // dtInitial
+pylith::problems::TimeDependent::getInitialTimeStep(void) const {
     return _dtInitial;
-} // dtInitial
+} // getInitialTimeStep
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Initialize.
 void
-pylith::problems::TimeDependent::initialize(void) { // initialize
+pylith::problems::TimeDependent::initialize(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("initialize()");
 
@@ -248,7 +259,7 @@ pylith::problems::TimeDependent::initialize(void) { // initialize
 #endif
 
     // Set time stepping paramters.
-    switch (this->solverType()) {
+    switch (getSolverType()) {
     case LINEAR:
         PYLITH_COMPONENT_DEBUG("Setting PetscTS problem type to 'linear'.");
         err = TSSetProblemType(_ts, TS_LINEAR);PYLITH_CHECK_ERROR(err);
@@ -272,7 +283,7 @@ pylith::problems::TimeDependent::initialize(void) { // initialize
     _solution->zeroLocal();
     PYLITH_COMPONENT_ERROR(":TODO: @brad Implement setting initial solution.");
     // :TODO: Set initial conditions.
-    PetscVec solutionVec;
+    PetscVec solutionVec = NULL;
     err = DMCreateGlobalVector(_solution->dmMesh(), &solutionVec);PYLITH_CHECK_ERROR(err);
     _solution->scatterLocalToVector(solutionVec);
     PYLITH_COMPONENT_DEBUG("Setting PetscTS initial conditions using global vector for solution.");
@@ -307,10 +318,10 @@ pylith::problems::TimeDependent::initialize(void) { // initialize
 } // initialize
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Solve time-dependent problem.
 void
-pylith::problems::TimeDependent::solve(void) { // solve
+pylith::problems::TimeDependent::solve(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("solve()");
 
@@ -320,10 +331,10 @@ pylith::problems::TimeDependent::solve(void) { // solve
 } // solve
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Perform operations before advancing solution one time step.
 void
-pylith::problems::TimeDependent::prestep(void) { // prestep
+pylith::problems::TimeDependent::prestep(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("prestep()");
 
@@ -350,10 +361,10 @@ pylith::problems::TimeDependent::prestep(void) { // prestep
 } // prestep
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Perform operations after advancing solution one time step.
 void
-pylith::problems::TimeDependent::poststep(void) { // poststep
+pylith::problems::TimeDependent::poststep(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("poststep()");
 
@@ -385,23 +396,23 @@ pylith::problems::TimeDependent::poststep(void) { // poststep
     } // for
 
     // Send problem observers updated solution.
-    notifyObservers(t, tindex, *_solution);
+    assert(_observers);
+    _observers->notifyObservers(t, tindex, *_solution);
 
     PYLITH_METHOD_END;
 } // poststep
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Callback static method for computing residual for RHS, G(t,s).
 PetscErrorCode
 pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
                                                     PetscReal t,
                                                     PetscVec solutionVec,
                                                     PetscVec residualVec,
-                                                    void* context) { // computeRHSResidual
+                                                    void* context) {
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug(_pyreComponent);
+    journal::debug_t debug(_TimeDependent::pyreComponent);
     debug << journal::at(__HERE__)
           << "computeRHSResidual(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", residualVec="<<residualVec<<", context="<<context<<")" << journal::endl;
 
@@ -425,7 +436,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
 } // computeRHSResidual
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Callback static method for computing Jacobian for RHS, Jacobian of G(t,s).
 PetscErrorCode
 pylith::problems::TimeDependent::computeRHSJacobian(PetscTS ts,
@@ -433,10 +444,9 @@ pylith::problems::TimeDependent::computeRHSJacobian(PetscTS ts,
                                                     PetscVec solutionVec,
                                                     PetscMat jacobianMat,
                                                     PetscMat precondMat,
-                                                    void* context) { // computeRHSJacobian
+                                                    void* context) {
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug(_pyreComponent);
+    journal::debug_t debug(_TimeDependent::pyreComponent);
     debug << journal::at(__HERE__)
           << "computeRHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" << journal::endl;
 
@@ -451,7 +461,7 @@ pylith::problems::TimeDependent::computeRHSJacobian(PetscTS ts,
 } // computeRHSJacobian
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Callback static method for computing residual for LHS, F(t,s,\dot{s}).
 PetscErrorCode
 pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
@@ -459,10 +469,9 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
                                                     PetscVec solutionVec,
                                                     PetscVec solutionDotVec,
                                                     PetscVec residualVec,
-                                                    void* context) { // computeLHSResidual
+                                                    void* context) {
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug(_pyreComponent);
+    journal::debug_t debug(_TimeDependent::pyreComponent);
     debug << journal::at(__HERE__)
           << "computeLHSResidual(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", residualVec="<<residualVec<<", context="<<context<<")" << journal::endl;
 
@@ -477,7 +486,7 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
 } // computeLHSResidual
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Callback static method for computing Jacobian for LHS, Jacobian of F(t,s,\dot{s}).
 PetscErrorCode
 pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
@@ -487,10 +496,9 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
                                                     PetscReal s_tshift,
                                                     PetscMat jacobianMat,
                                                     PetscMat precondMat,
-                                                    void* context) { // computeLHSJacobian
+                                                    void* context) {
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug(_pyreComponent);
+    journal::debug_t debug(_TimeDependent::pyreComponent);
     debug << journal::at(__HERE__)
           << "computeLHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", s_tshift="<<s_tshift<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" <<
         journal::endl;
@@ -500,19 +508,18 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
     PetscErrorCode err = TSGetTimeStep(ts, &dt);PYLITH_CHECK_ERROR(err);
 
     pylith::problems::TimeDependent* problem = (pylith::problems::TimeDependent*)context;
-    problem->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, s_tshift, solutionVec, solutionDotVec);
+    problem->Problem::computeLHSJacobian(jacobianMat, precondMat, t, dt, s_tshift, solutionVec, solutionDotVec);
 
     PYLITH_METHOD_RETURN(0);
 } // computeLHSJacobian
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Callback static method for operations before advancing solution one time step.
 PetscErrorCode
-pylith::problems::TimeDependent::prestep(PetscTS ts) { // prestep
+pylith::problems::TimeDependent::prestep(PetscTS ts) {
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug(_pyreComponent);
+    journal::debug_t debug(_TimeDependent::pyreComponent);
     debug << journal::at(__HERE__)
           << "prestep(ts="<<ts<<")" << journal::endl;
 
@@ -524,13 +531,12 @@ pylith::problems::TimeDependent::prestep(PetscTS ts) { // prestep
 } // prestep
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Callback static method for operations after advancing solution one time step.
 PetscErrorCode
-pylith::problems::TimeDependent::poststep(PetscTS ts) { // poststep
+pylith::problems::TimeDependent::poststep(PetscTS ts) {
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug(_pyreComponent);
+    journal::debug_t debug(_TimeDependent::pyreComponent);
     debug << journal::at(__HERE__)
           << "poststep(ts="<<ts<<")" << journal::endl;
 

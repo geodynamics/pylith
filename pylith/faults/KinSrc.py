@@ -66,6 +66,8 @@ class KinSrc(PetscComponent, ModuleKinSrc):
         Do pre-initialization setup.
         """
         self._createModuleObj()
+
+        ModuleKinSrc.setIdentifier(self, self.aliases[-1])
         ModuleKinSrc.auxFieldDB(self, self.auxFieldDB)
         ModuleKinSrc.originTime(self, self.originTime.value)
         return

@@ -24,39 +24,39 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
-// ----------------------------------------------------------------------
-const char* pylith::meshio::OutputTriggerStep::_pyreComponent = "outputtriggerstep";
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputTriggerStep::OutputTriggerStep(void) :
     _numStepsSkip(0),
-    _stepWrote(PYLITH_MININT+10)
-{ // constructor
-    PyreComponent::name(_pyreComponent);
+    _stepWrote(PYLITH_MININT+10) { // constructor
+    PyreComponent::setName("outputtriggerstep");
 } // constructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor
 pylith::meshio::OutputTriggerStep::~OutputTriggerStep(void) {}
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set number of steps to skip between writes.
 void
-pylith::meshio::OutputTriggerStep::numStepsSkip(const int value) {
-    PYLITH_COMPONENT_DEBUG("OutputTriggerStep::numStepsSkip(value="<<value<<")");
+pylith::meshio::OutputTriggerStep::setNumStepsSkip(const int value) {
+    PYLITH_COMPONENT_DEBUG("OutputTriggerStep::setNumStepsSkip(value="<<value<<")");
 
     _numStepsSkip = (value >= 0) ? value : 0;
-} // numStepsSkip
+} // setNumStepsSkip
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Get number of steps to skip between writes.
 int
-pylith::meshio::OutputTriggerStep::numStepsSkip(void) const {
+pylith::meshio::OutputTriggerStep::getNumStepsSkip(void) const {
     return _numStepsSkip;
-} // numStepsSkip
+} // getNumStepsSkip
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Check whether we want to write output at time t.
 bool
 pylith::meshio::OutputTriggerStep::shouldWrite(const PylithReal t,
@@ -64,13 +64,13 @@ pylith::meshio::OutputTriggerStep::shouldWrite(const PylithReal t,
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("OutputTriggerStep::shouldWrite(t="<<t<<", tindex="<<tindex<<")");
 
-    bool shouldWrite = false;
+    bool isWrite = false;
     if (tindex - _stepWrote > _numStepsSkip) {
-        shouldWrite = true;
+        isWrite = true;
         _stepWrote = tindex;
     } // if
 
-    PYLITH_METHOD_RETURN(shouldWrite);
+    PYLITH_METHOD_RETURN(isWrite);
 } // shouldWrite
 
 

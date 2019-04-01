@@ -31,6 +31,8 @@
 #include "FieldBase.hh" // USES FieldBase::Discretization
 #include "pylith/utils/petscfwd.h" // USES PetscFE
 
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
+
 // FieldOps -------------------------------------------------------------
 /// @brief C++ class for simple operations for a Field object.
 class pylith::topology::FieldOps { // FieldOps
@@ -94,6 +96,5 @@ private:
 }; // FieldOps
 
 #endif // pylith_topology_fieldOps_hh
-
 
 // End of file

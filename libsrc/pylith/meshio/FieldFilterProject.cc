@@ -25,26 +25,24 @@
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
-// ----------------------------------------------------------------------
-const char* pylith::meshio::FieldFilterProject::_pyreComponent = "fieldfilterproject";
-
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::FieldFilterProject::FieldFilterProject(void) :
     _fieldP1(NULL),
     _passThruFns(NULL),
-    _basisOrder(1)
-{ // constructor
-    PyreComponent::name(_pyreComponent);
+    _basisOrder(1) { // constructor
+    PyreComponent::setName("fieldfilterproject");
 } // constructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Destructor
 pylith::meshio::FieldFilterProject::~FieldFilterProject(void) {
     deallocate();
 } // destructor
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::meshio::FieldFilterProject::deallocate(void) {
@@ -52,13 +50,14 @@ pylith::meshio::FieldFilterProject::deallocate(void) {
 
     FieldFilter::deallocate();
 
-    delete _fieldP1; _fieldP1 = NULL;
-    delete _passThruFns; _passThruFns = NULL;
+    delete _fieldP1;_fieldP1 = NULL;
+    delete _passThruFns;_passThruFns = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Copy constructor.
 pylith::meshio::FieldFilterProject::FieldFilterProject(const FieldFilterProject& f) :
     FieldFilter(f),
@@ -67,14 +66,16 @@ pylith::meshio::FieldFilterProject::FieldFilterProject(const FieldFilterProject&
     _basisOrder(f._basisOrder)
 {}
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Create copy of filter.
 pylith::meshio::FieldFilter*
 pylith::meshio::FieldFilterProject::clone(void) const {
     return new FieldFilterProject(*this);
 } // clone
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set basis order for projected field.
 void
 pylith::meshio::FieldFilterProject::basisOrder(const int value) {
@@ -91,7 +92,8 @@ pylith::meshio::FieldFilterProject::basisOrder(const int value) {
     PYLITH_METHOD_END;
 } // basisOrder
 
-// ----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Filter field.
 pylith::topology::Field*
 pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
@@ -103,11 +105,11 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
 
     assert(fieldIn);
     if (_fieldP1 && !pylith::topology::FieldOps::layoutsMatch(*fieldIn, *_fieldP1)) {
-        delete _fieldP1; _fieldP1 = NULL;
-        delete _passThruFns; _passThruFns = NULL;
+        delete _fieldP1;_fieldP1 = NULL;
+        delete _passThruFns;_passThruFns = NULL;
     } // if
     if (!_fieldP1) {
-        _fieldP1 = new pylith::topology::Field(fieldIn->mesh()); assert(_fieldP1);
+        _fieldP1 = new pylith::topology::Field(fieldIn->mesh());assert(_fieldP1);
 
         // Set discretization of all subfields to basis order.
         pylith::topology::Field::Discretization feP1;
@@ -120,14 +122,15 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
             feP1.isBasisContinuous = info.fe.isBasisContinuous;
             feP1.feSpace = info.fe.feSpace;
             feP1.quadOrder = info.fe.quadOrder;
+            feP1.dimension = info.fe.dimension;
 
             if (info.fe.quadOrder < _basisOrder) {
                 PYLITH_COMPONENT_WARNING(
                     "Projecting subfield '"
-                    << info.description.label << "' in field ''" << fieldIn->label() << "'' from basis order "
-                    << info.fe.basisOrder << " to basis order " << _basisOrder
-                    << " with quadrature order " << info.fe.quadOrder << " will result in under integration of the "
-                    << "subfield. Accurate projection requires a quadrature order of at least " << _basisOrder << "."
+                        << info.description.label << "' in field ''" << fieldIn->label() << "'' from basis order "
+                        << info.fe.basisOrder << " to basis order " << _basisOrder
+                        << " with quadrature order " << info.fe.quadOrder << " will result in under integration of the "
+                        << "subfield. Accurate projection requires a quadrature order of at least " << _basisOrder << "."
                     );
             } // if
 
@@ -155,7 +158,7 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
 } // filter
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Identify function kernel.
 void
 pylith::meshio::FieldFilterProject::passThruSoln(const PylithInt dim,

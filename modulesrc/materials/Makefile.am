@@ -26,16 +26,16 @@ subpkgpyexec_PYTHON = materials.py
 
 swig_sources = \
 	materials.i \
-	../feassemble/IntegratorPointwise.i \
-	../feassemble/ObservedComponent.i \
+	../problems/Physics.i \
 	Material.i \
-	IsotropicLinearElasticityPlaneStrain.i \
-	IsotropicLinearGenMaxwellPlaneStrain.i \
-	IsotropicLinearMaxwellPlaneStrain.i \
-	IsotropicLinearIncompElasticityPlaneStrain.i \
-	IsotropicLinearElasticity3D.i \
-	IsotropicLinearMaxwell3D.i \
-	IsotropicLinearGenMaxwell3D.i
+	Elasticity.i \
+	RheologyElasticity.i \
+	IsotropicLinearElasticity.i \
+	IsotropicLinearMaxwell.i \
+	IsotropicLinearGenMaxwell.i \
+	RheologyIncompressibleElasticity.i \
+	IsotropicLinearIncompElasticity.i \
+	../utils/PyreComponent.i
 
 swigincludedir = $(pkgdatadir)/swig/$(subpackage)
 swiginclude_HEADERS = \

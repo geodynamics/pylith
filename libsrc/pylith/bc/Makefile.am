@@ -22,9 +22,7 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	BoundaryCondition.hh \
 	TimeDependentAuxiliaryFactory.hh \
-	ConstraintBoundary.hh \
 	DirichletTimeDependent.hh \
-	IntegratorBoundary.hh \
 	NeumannTimeDependent.hh \
 	AbsorbingDampers.hh \
 	AbsorbingDampersAuxiliaryFactory.hh \

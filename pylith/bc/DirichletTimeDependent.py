@@ -20,12 +20,29 @@
 #
 # Factory: boundary_condition
 
-from .ConstraintBoundary import ConstraintBoundary
+from .BoundaryCondition import BoundaryCondition
 from .bc import DirichletTimeDependent as ModuleDirichletTimeDependent
 from pylith.utils.NullComponent import NullComponent
 
 
-class DirichletTimeDependent(ConstraintBoundary, ModuleDirichletTimeDependent):
+def validateDOF(value):
+    """
+    Validate list of constrained degrees of freedom.
+    """
+    try:
+        size = len(value)
+        num = map(int, value)
+        for v in num:
+            if v < 0:
+                raise ValueError
+    except:
+        raise ValueError, \
+            "'constrained_dof' must be a zero based list of indices of degrees of " \
+            "freedom at a vertex."
+    return num
+
+
+class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
     """
     Python object for managing a time-dependent Dirichlet (prescribed values)
     boundary condition.
@@ -45,6 +62,9 @@ class DirichletTimeDependent(ConstraintBoundary, ModuleDirichletTimeDependent):
 
     import pyre.inventory
 
+    constrainedDOF = pyre.inventory.list("constrained_dof", default=[], validator=validateDOF)
+    constrainedDOF.meta['tip'] = "Constrained degrees of freedom (0=1st DOF, 1=2nd DOF, etc)."
+
     useInitial = pyre.inventory.bool("use_initial", default=True)
     useInitial.meta['tip'] = "Use initial term in time-dependent expression."
 
@@ -57,33 +77,34 @@ class DirichletTimeDependent(ConstraintBoundary, ModuleDirichletTimeDependent):
     dbTimeHistory = pyre.inventory.facility("time_history", factory=NullComponent, family="temporal_database")
     dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
 
-    from .AuxFieldsTimeDependent import AuxFieldsTimeDependent
+    from .AuxSubfieldsTimeDependent import AuxSubfieldsTimeDependent
     from pylith.topology.AuxSubfield import subfieldFactory
-    auxSubfields = pyre.inventory.facilityArray(
-        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsTimeDependent)
-    auxSubfields.meta['tip'] = "Discretization of constraint parameters."
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    auxiliarySubfields = pyre.inventory.facilityArray(
+        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsTimeDependent)
+    auxiliarySubfields.meta['tip'] = "Discretization of constraint parameters."
 
     def __init__(self, name="dirichlettimedependent"):
         """
         Constructor.
         """
-        ConstraintBoundary.__init__(self, name)
+        BoundaryCondition.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
         """
         Do pre-initialization setup.
         """
+        import numpy
+
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
         if 0 == comm.rank:
             self._info.log(
                 "Performing minimal initialization of time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
 
-        ConstraintBoundary.preinitialize(self, mesh)
+        BoundaryCondition.preinitialize(self, mesh)
 
+        ModuleDirichletTimeDependent.setConstrainedDOF(self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
         ModuleDirichletTimeDependent.useInitial(self, self.useInitial)
         ModuleDirichletTimeDependent.useRate(self, self.useRate)
         ModuleDirichletTimeDependent.useTimeHistory(self, self.useTimeHistory)
@@ -95,15 +116,13 @@ class DirichletTimeDependent(ConstraintBoundary, ModuleDirichletTimeDependent):
         """
         Verify compatibility of configuration.
         """
-        ConstraintBoundary.verifyConfiguration(self, self.mesh())
+        BoundaryCondition.verifyConfiguration(self, self.mesh())
         spaceDim = self.mesh().coordsys().spaceDim()
         for d in self.bcDOF:
             if d < 0 or d >= spaceDim:
                 raise ValueError("Attempting to constrain DOF (%d) that doesn't exist for time-dependent Dirichlet boundary condition '%s'. Space dimension is %d." %
                                  (d, self.aliases[-1], spaceDim))
         return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """
@@ -116,7 +135,7 @@ class DirichletTimeDependent(ConstraintBoundary, ModuleDirichletTimeDependent):
             self._warning.log(
                 "Ignoring time history database setting for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
 
-        ConstraintBoundary._configure(self)
+        BoundaryCondition._configure(self)
         return
 
     def _createModuleObj(self):
@@ -126,8 +145,8 @@ class DirichletTimeDependent(ConstraintBoundary, ModuleDirichletTimeDependent):
         ModuleDirichletTimeDependent.__init__(self)
         return
 
-# FACTORIES ////////////////////////////////////////////////////////////
 
+# Factories
 
 def boundary_condition():
     """

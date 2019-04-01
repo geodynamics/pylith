@@ -18,13 +18,12 @@
 
 /** @file libsrc/bc/AuxiliaryFactory.hh
  *
- * @brief C++ helper class for setting up auxiliary fields for boundary conditions.
+ * @brief C++ helper class for setting up auxiliary subfields.
  */
 
 #if !defined(pylith_feassemble_auxiliaryfactory_hh)
 #define pylith_feassemble_auxiliaryfactory_hh
 
-// Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -34,12 +33,10 @@
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 #include "spatialdata/units/unitsfwd.hh" // HOLDSA Normalizer
 
-// AuxiliaryFactory-----------------------------------------------
-/// @brief C++ helper class for setting up auxiliary fields.
 class pylith::feassemble::AuxiliaryFactory : public pylith::utils::GenericComponent {
-    friend class TestAuxiliaryFactory;   // unit testing
+    friend class TestAuxiliaryFactory; // unit testing
 
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -52,35 +49,37 @@ public:
      *
      * @param[in] value Pointer to database.
      */
-    void queryDB(spatialdata::spatialdb::SpatialDB* value);
+    void setQueryDB(spatialdata::spatialdb::SpatialDB* value);
 
     /** Get spatial database for filling auxiliary subfields.
      *
      * @returns Pointer to database.
      */
-    const spatialdata::spatialdb::SpatialDB* queryDB(void);
+    const spatialdata::spatialdb::SpatialDB* getQueryDB(void) const;
 
     /** Set discretization information for auxiliary subfield.
      *
-     * @param[in] name Name of auxiliary subfield.
+     * @param[in] subfieldName Name of auxiliary subfield.
      * @param[in] basisOrder Polynomial order for basis.
      * @param[in] quadOrder Order of quadrature rule.
+     * @param[in] dimension Dimension of points for discretization.
      * @param[in] isBasisContinuous True if basis is continuous.
      * @param[in] feSpace Finite-element space.
      */
-    void subfieldDiscretization(const char* name,
-                                const int basisOrder,
-                                const int quadOrder,
-                                const bool isBasisContinuous,
-                                const pylith::topology::FieldBase::SpaceEnum feSpace);
+    void setSubfieldDiscretization(const char* subfieldName,
+                                   const int basisOrder,
+                                   const int quadOrder,
+                                   const int dimension,
+                                   const bool isBasisContinuous,
+                                   const pylith::topology::FieldBase::SpaceEnum feSpace);
 
     /** Get discretization information for subfield.
      *
-     * @param[in] name Name of subfield.
+     * @param[in] subfieldName Name of subfield.
      * @return Discretization information for auxiliary subfield. If
      * discretization information was not set, then use "default".
      */
-    const pylith::topology::FieldBase::Discretization& subfieldDiscretization(const char* name) const;
+    const pylith::topology::FieldBase::Discretization& getSubfieldDiscretization(const char* subfieldName) const;
 
     /** Initialize factory for setting up auxiliary subfields.
      *
@@ -94,23 +93,23 @@ public:
                     const int spaceDim,
                     const pylith::topology::FieldBase::Description* defaultDescription=NULL);
 
-    /// Fill subfield values.
-    void initializeSubfields(void);
+    /// Set subfield values using spatial database.
+    void setValuesFromDB(void);
 
-    // PROTECTED METHODS ////////////////////////////////////////////////////
+    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Set query function for subfield.
      *
-     * @param[in] name Name of subfield.
+     * @param[in] subfieldName Name of subfield.
      * @param[in] fn Function used for query spatial database.
      * @param[in] db Spatial database to query.
      */
-    void _subfieldQueryFn(const char* name,
-                          pylith::topology::FieldQuery::queryfn_type,
-                          spatialdata::spatialdb::SpatialDB* db = NULL);
+    void _setSubfieldQueryFn(const char* subfieldName,
+                             pylith::topology::FieldQuery::queryfn_type,
+                             spatialdata::spatialdb::SpatialDB* db = NULL);
 
-    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     pylith::topology::Field* _field; ///< Auxiliary field.
@@ -129,15 +128,14 @@ protected:
     /// Field query for filling subfield values via spatial database.
     pylith::topology::FieldQuery* _fieldQuery;
 
-    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    AuxiliaryFactory(const AuxiliaryFactory &);   ///< Not implemented.
-    const AuxiliaryFactory& operator=(const AuxiliaryFactory&);   ///< Not implemented
+    AuxiliaryFactory(const AuxiliaryFactory &); ///< Not implemented.
+    const AuxiliaryFactory& operator=(const AuxiliaryFactory&); ///< Not implemented
 
 }; // class AuxiliaryFactory
 
 #endif // pylith_feassemble_auxiliaryfactory_hh
-
 
 // End of file
