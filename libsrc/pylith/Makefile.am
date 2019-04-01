@@ -114,6 +114,9 @@ libpylith_la_SOURCES = \
 	problems/Physics.cc \
 	problems/ObserverPhysics.cc \
 	problems/ObserversPhysics.cc \
+	problems/InitialConditions.cc \
+	problems/InitialConditionsDomain.cc \
+	problems/InitialConditionsPatch.cc \
 	topology/FieldBase.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \

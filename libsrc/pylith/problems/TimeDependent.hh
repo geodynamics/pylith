@@ -98,6 +98,14 @@ public:
      */
     double getInitialTimeStep(void) const;
 
+    /** Set initial conditions.
+     *
+     * @param[in] ic Array of initial conditions.
+     * @param[in] numIC Number of initial conditions.
+     */
+    void setInitialConditions(pylith::problems::InitialConditions* ic[],
+                              const int numIC);
+
     /// Initialize.
     void initialize(void);
 
@@ -203,6 +211,7 @@ private:
     double _totalTime; ///< Total time (duration) of problem.
     size_t _maxTimeSteps; ///< Maximum number of time steps for problem.
     PetscTS _ts; ///< PETSc time stepper.
+    std::vector<pylith::problems::InitialConditions*> _ic; ///< Array of initial conditions.
     FormulationTypeEnum _formulationType; ///< Type of time stepping.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////

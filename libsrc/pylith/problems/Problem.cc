@@ -180,7 +180,7 @@ pylith::problems::Problem::setMaterials(pylith::materials::Material* materials[]
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set materials.
+// Set boundary conditions.
 void
 pylith::problems::Problem::setBoundaryConditions(pylith::bc::BoundaryCondition* bc[],
                                                  const int numBC) {

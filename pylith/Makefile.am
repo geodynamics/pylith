@@ -91,6 +91,9 @@ nobase_pkgpyexec_PYTHON = \
 	problems/SubfieldTemperature.py \
 	problems/SubfieldLagrangeFault.py \
 	problems/SingleObserver.py \
+	problems/InitialConditions.py \
+	problems/InitialConditionsDomain.py \
+	problems/InitialConditionsPatch.py \
 	topology/__init__.py \
 	topology/Distributor.py \
 	topology/Mesh.py \

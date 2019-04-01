@@ -28,6 +28,9 @@ subpkginclude_HEADERS = \
 	Physics.hh \
 	ObserverPhysics.hh \
 	ObserversPhysics.hh \
+	InitialConditions.hh \
+	InitialConditionsDomain.hh \
+	InitialConditionsPatch.hh \
 	problemsfwd.hh
 
 noinst_HEADERS =

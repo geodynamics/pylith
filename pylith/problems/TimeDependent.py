@@ -24,6 +24,15 @@ from .Problem import Problem
 from .problems import TimeDependent as ModuleTimeDependent
 
 
+def icFactory(name):
+    """
+    Factory for initial conditions items.
+    """
+    from pyre.inventory import facility
+    from pylith.problems.InitialConditionsDomain import InitialConditionsDomain
+    return facility(name, family="initial_conditions", factory=InitialConditionsDomain)
+
+
 class TimeDependent(Problem, ModuleTimeDependent):
     """
     Python class for time dependent crustal dynamics problems.
@@ -37,8 +46,9 @@ class TimeDependent(Problem, ModuleTimeDependent):
       - *max_timesteps* Maximum number of time steps.
 
     Facilities
-      - *initializer* Problem initializer.
+      - *initial_conditions* Initial conditions for problem.
       - *progress_monitor* Simple progress monitor via text file.
+
 
     FACTORY: problem.
     """
@@ -59,6 +69,9 @@ class TimeDependent(Problem, ModuleTimeDependent):
 
     maxTimeSteps = pyre.inventory.int("max_timesteps", default=20000, validator=pyre.inventory.greater(0))
     maxTimeSteps.meta['tip'] = "Maximum number of time steps."
+
+    ic = pyre.inventory.facilityArray("ic", itemFactory=icFactory, factory=EmptyBin)
+    ic.meta['tip'] = "Initial conditions."
 
     #from ProgressMonitorTime import ProgressMonitorTime
     #progressMonitor = pyre.inventory.facility("progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
@@ -90,6 +103,10 @@ class TimeDependent(Problem, ModuleTimeDependent):
         ModuleTimeDependent.setTotalTime(self, self.totalTime.value)
         ModuleTimeDependent.setMaxTimeSteps(self, self.maxTimeSteps)
 
+        # Preinitialize initial conditions.
+        for ic in self.ic.components():
+            ic.preinitialize(mesh)
+        ModuleProblem.setInitialConditions(self, self.ic.components())
         return
 
     def run(self, app):

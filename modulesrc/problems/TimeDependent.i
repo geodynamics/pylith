@@ -93,6 +93,14 @@ public:
              */
             double getInitialTimeStep(void) const;
 
+            /** Set initial conditions.
+             *
+             * @param[in] ic Array of initial conditions.
+             * @param[in] numIC Number of initial conditions.
+             */
+            void setInitialConditions(pylith::problems::BoundaryCondition* ic[],
+                                      const int numIC);
+
             /// Initialize.
             void initialize(void);
 

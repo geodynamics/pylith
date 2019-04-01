@@ -40,6 +40,10 @@ namespace pylith {
         class ObserversPhysics;
         class ObserverPhysics;
 
+        class InitialConditions;
+        class InitialConditionsDomain;
+        class InitialConditionsPatch;
+
     } // problems
 } // pylith
 
