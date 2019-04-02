@@ -239,11 +239,9 @@ pylith::topology::FieldQuery::queryDB(void) {
         PetscDMLabel dmLabel = NULL;
         err = DMGetLabel(_field.dmMesh(), _label.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
         const PylithInt labelId = 1;
-#if 0
-        err = DMProjectFunctionLabelLocal(_field.dmMesh(), dummyTime, dmLabel, 1, &labelId, PetscInt Nc, const PetscI
-                                          nt comps[], _functions, (void**)_contextPtrs, INSERT_ALL_VALUES,
+        err = DMProjectFunctionLabelLocal(_field.dmMesh(), dummyTime, dmLabel, 1, &labelId, 0, NULL, _functions,
+                                          (void**)_contextPtrs, INSERT_ALL_VALUES,
                                           _field.localVector());PYLITH_CHECK_ERROR(err);
-#endif
     } // if/else
 
     PYLITH_METHOD_END;
