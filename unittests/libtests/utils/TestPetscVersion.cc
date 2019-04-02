@@ -58,7 +58,6 @@ void
 pylith::utils::TestPetscVersion::testGitRevision(void)
 { // testGitRevision
 #if PETSC_VERSION_RELEASE
-  CPPUNIT_ASSERT_EQUAL(std::string("unknown"), std::string(PetscVersion::gitRevision()));
 #else
   // Git revision should be of the form vX.X.X-gXXXXX.
   const char* rev = PetscVersion::gitRevision();
@@ -71,12 +70,8 @@ pylith::utils::TestPetscVersion::testGitRevision(void)
 void
 pylith::utils::TestPetscVersion::testGitDate(void)
 { // testGitDate
-#if PETSC_VERSION_RELEASE
-  CPPUNIT_ASSERT_EQUAL(std::string("unknown"), std::string(PetscVersion::gitDate()));
-#else
   const char* datetime = PetscVersion::gitDate();
   CPPUNIT_ASSERT(strlen(datetime) > 0);
-#endif
 } // testGitDate
 
 // ----------------------------------------------------------------------
@@ -85,7 +80,6 @@ void
 pylith::utils::TestPetscVersion::testGitBranch(void)
 { // testGitBranch
 #if PETSC_VERSION_RELEASE
-  CPPUNIT_ASSERT_EQUAL(std::string("unknown"), std::string(PetscVersion::gitBranch()));
 #else
   const char* branch = PetscVersion::gitBranch();
   CPPUNIT_ASSERT(strlen(branch) > 0);
