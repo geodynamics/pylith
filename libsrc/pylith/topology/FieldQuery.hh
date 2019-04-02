@@ -33,7 +33,7 @@
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 
 #include <map> // HOLDSA std::map
-#include <string> // USES std::string
+#include <string> // HASA std::string
 
 // FieldQuery ----------------------------------------------------------------
 /** @brief Set field via query of spatial database, etc.
@@ -83,6 +83,18 @@ public:
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
+
+    /** Set label used to restrict projection to a subset of points.
+     *
+     * @param[in] value Label associated with points.
+     */
+    void setMarkerLabel(const char* value);
+
+    /** Get label used to restrict projection to a subset of points.
+     *
+     * @returns Label associated with points.
+     */
+    const char* getMarkerLabel(void) const;
 
     /** Set query function information for subfield.
      *
@@ -192,6 +204,8 @@ private:
     queryfn_type* _functions; ///< Functions implementing queries.
     DBQueryContext* _contexts; ///< Contexts for performing query for each subfield.
     DBQueryContext** _contextPtrs; ///< Array of pointers to contexts.
+
+    std::string _label; ///< Label used in restricting points for projection.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:

@@ -103,21 +103,14 @@ pylith::problems::InitialConditionsPatch::setValues(pylith::topology::Field* sol
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("setValues(solution="<<solution<<", normalizer)");
 
-#if 0 // InitialConditionsDomain approach
-
-    // This won't work because FieldQuery uses the solution DM and we want just a patch.
-
     assert(solution);
 
     pylith::topology::FieldQuery fieldQuery(*solution);
     fieldQuery.initializeWithDefaultQueryFns();
+    fieldQuery.setMarkerLabel(_patchLabel.c_str());
     fieldQuery.openDB(_db, normalizer.lengthScale());
     fieldQuery.queryDB();
     fieldQuery.closeDB(_db);
-#else
-    PYLITH_COMPONENT_ERROR(":TODO: @brad @matt Implement InitialConditionsPatch::setValues().");
-    throw std::logic_error(":TODO: @brad @matt Implement InitialConditionsPatch::setValues().");
-#endif
 
     PYLITH_METHOD_END;
 } // setValues
