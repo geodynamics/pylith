@@ -18,19 +18,19 @@
 
 #include <portinfo>
 
-#include "InitialConditions.hh" // implementation of class methods
+#include "InitialCondition.hh" // implementation of class methods
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::problems::InitialConditions::InitialConditions(void)
+pylith::problems::InitialCondition::InitialCondition(void)
 {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::problems::InitialConditions::~InitialConditions(void) {
+pylith::problems::InitialCondition::~InitialCondition(void) {
     deallocate();
 } // destructor
 
@@ -38,7 +38,7 @@ pylith::problems::InitialConditions::~InitialConditions(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::problems::InitialConditions::deallocate(void) {
+pylith::problems::InitialCondition::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     PYLITH_METHOD_END;

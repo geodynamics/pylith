@@ -17,7 +17,7 @@
 //
 
 /**
- * @file libsrc/problems/InitialConditions.hh
+ * @file libsrc/problems/InitialCondition.hh
  *
  * @brief C++ abstract base class for specifying initial conditions.
  */
@@ -31,17 +31,17 @@
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "spatialdata/units/unitsfwd.hh" // HASA Nondimensional
 
-class pylith::problems::InitialConditions : public pylith::utils::PyreComponent {
-    friend class TestInitialConditions; // unit testing
+class pylith::problems::InitialCondition : public pylith::utils::PyreComponent {
+    friend class TestInitialCondition; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    InitialConditions(void);
+    InitialCondition(void);
 
     /// Destructor
-    virtual ~InitialConditions(void);
+    virtual ~InitialCondition(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -58,10 +58,10 @@ public:
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    InitialConditions(const InitialConditions&); ///< Not implemented
-    const InitialConditions& operator=(const InitialConditions&); ///< Not implemented
+    InitialCondition(const InitialCondition&); ///< Not implemented
+    const InitialCondition& operator=(const InitialCondition&); ///< Not implemented
 
-}; // InitialConditions
+}; // InitialCondition
 
 #endif // pylith_problems_initialconditions_hh
 

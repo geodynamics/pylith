@@ -232,7 +232,7 @@ pylith::topology::FieldQuery::queryDB(void) {
 
     PetscErrorCode err = 0;
     PetscReal dummyTime = 0.0;
-    if (_label.length() > 0) {
+    if (_label.length() == 0) {
         err = DMProjectFunctionLocal(_field.dmMesh(), dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES,
                                      _field.localVector());PYLITH_CHECK_ERROR(err);
     } else {

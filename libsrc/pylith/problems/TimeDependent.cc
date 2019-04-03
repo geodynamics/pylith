@@ -26,7 +26,7 @@
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/feassemble/Constraint.hh" // USES Constraint
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
-#include "pylith/problems/InitialConditions.hh" // USES InitialConditions
+#include "pylith/problems/InitialCondition.hh" // USES InitialCondition
 
 #include "petscts.h" // USES PetscTS
 
@@ -180,10 +180,10 @@ pylith::problems::TimeDependent::getInitialTimeStep(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set initial conditions.
 void
-pylith::problems::TimeDependent::setInitialConditions(pylith::problems::InitialConditions* ic[],
+pylith::problems::TimeDependent::setInitialCondition(pylith::problems::InitialCondition* ic[],
                                                       const int numIC) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setInitialConditions(ic="<<ic<<", numIC="<<numIC<<")");
+    PYLITH_COMPONENT_DEBUG("setInitialCondition(ic="<<ic<<", numIC="<<numIC<<")");
 
     assert( (!ic && 0 == numIC) || (ic && 0 < numIC) );
 
@@ -193,7 +193,7 @@ pylith::problems::TimeDependent::setInitialConditions(pylith::problems::InitialC
     } // for
 
     PYLITH_METHOD_END;
-} // setInitialConditions
+} // setInitialCondition
 
 
 // ---------------------------------------------------------------------------------------------------------------------

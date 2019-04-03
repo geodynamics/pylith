@@ -17,43 +17,31 @@
 //
 
 /**
- * @file libsrc/problems/InitialConditionsPatch.hh
+ * @file libsrc/problems/InitialConditionDomain.hh
  *
- * @brief C++ object for specifying initial conditions over a portion of the domain (patch).
+ * @brief C++ object for specifying initial conditions over the entire domain.
  */
-#if !defined(pylith_problems_initialconditionspatch_hh)
-#define pylith_problems_initialconditionspatch_hh
+#if !defined(pylith_problems_initialconditionsdomain_hh)
+#define pylith_problems_initialconditionsdomain_hh
 
-#include "InitialConditions.hh" // ISA InitialConditions
+#include "InitialCondition.hh" // ISA InitialCondition
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 
-class pylith::problems::InitialConditionsPatch : public pylith::problems::InitialConditions {
-    friend class TestInitialConditionsPatch; // unit testing
+class pylith::problems::InitialConditionDomain : public pylith::problems::InitialCondition {
+    friend class TestInitialConditionDomain; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    InitialConditionsPatch(void);
+    InitialConditionDomain(void);
 
     /// Destructor
-    virtual ~InitialConditionsPatch(void);
+    virtual ~InitialConditionDomain(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
-
-    /** Set label for marker associated with patch.
-     *
-     * @param[in] value Label for marker associated with patch.
-     */
-    void setMarkerLabel(const char* value);
-
-    /** Get label for marker associated with patch.
-     *
-     * @returns Label for marker associated with patch.
-     */
-    const char* getMarkerLabel(void) const;
 
     /** Set spatial database holding initial conditions.
      *
@@ -69,21 +57,19 @@ public:
     void setValues(pylith::topology::Field* solution,
                    const spatialdata::units::Nondimensional& normalizer);
 
-    // PRIVATE MEMEBRS
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMEBRS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    std::string _patchLabel; ///< Marker label associated with patch.
     spatialdata::spatialdb::SpatialDB* _db; ///< Spatial database with values for initial condition.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    InitialConditionsPatch(const InitialConditionsPatch&); ///< Not implemented
-    const InitialConditionsPatch& operator=(const InitialConditionsPatch&); ///< Not implemented
+    InitialConditionDomain(const InitialConditionDomain&); ///< Not implemented
+    const InitialConditionDomain& operator=(const InitialConditionDomain&); ///< Not implemented
 
-}; // InitialConditionsPatch
+}; // InitialConditionDomain
 
-#endif // pylith_problems_initialconditionspatch_hh
+#endif // pylith_problems_initialconditionsdomain_hh
 
 // End of file

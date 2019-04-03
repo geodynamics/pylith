@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "InitialConditionsDomain.hh" // implementation of class methods
+#include "InitialConditionPatch.hh" // implementation of class methods
 
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 
@@ -31,15 +31,16 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::problems::InitialConditionsDomain::InitialConditionsDomain(void) :
+pylith::problems::InitialConditionPatch::InitialConditionPatch(void) :
+    _patchLabel(""),
     _db(NULL) {
-    PyreComponent::setName("initialconditionsdomain");
+    PyreComponent::setName("initialconditionspatch");
 } // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::problems::InitialConditionsDomain::~InitialConditionsDomain(void) {
+pylith::problems::InitialConditionPatch::~InitialConditionPatch(void) {
     deallocate();
 } // destructor
 
@@ -47,7 +48,7 @@ pylith::problems::InitialConditionsDomain::~InitialConditionsDomain(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::problems::InitialConditionsDomain::deallocate(void) {
+pylith::problems::InitialConditionPatch::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     _db = NULL; // :KLLUDGE: Should use shared pointer.
@@ -57,9 +58,34 @@ pylith::problems::InitialConditionsDomain::deallocate(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Set label for marker associated with patch.
+void
+pylith::problems::InitialConditionPatch::setMarkerLabel(const char* value) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("setMarkerLabel(value="<<value<<")");
+
+    if (strlen(value) == 0) {
+        throw std::runtime_error("Empty string given for initial conditions patch label.");
+    } // if
+
+    _patchLabel = value;
+
+    PYLITH_METHOD_END;
+} // setMarkerLabel
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get label marking constrained degrees of freedom.
+const char*
+pylith::problems::InitialConditionPatch::getMarkerLabel(void) const {
+    return _patchLabel.c_str();
+} // getMarkerLabel
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set spatial database holding initial conditions.
 void
-pylith::problems::InitialConditionsDomain::setDB(spatialdata::spatialdb::SpatialDB* db) {
+pylith::problems::InitialConditionPatch::setDB(spatialdata::spatialdb::SpatialDB* db) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("setDB(db="<<db<<")");
 
@@ -72,8 +98,8 @@ pylith::problems::InitialConditionsDomain::setDB(spatialdata::spatialdb::Spatial
 // ---------------------------------------------------------------------------------------------------------------------
 // Set solver type.
 void
-pylith::problems::InitialConditionsDomain::setValues(pylith::topology::Field* solution,
-                                                     const spatialdata::units::Nondimensional& normalizer) {
+pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solution,
+                                                    const spatialdata::units::Nondimensional& normalizer) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("setValues(solution="<<solution<<", normalizer)");
 
@@ -81,6 +107,7 @@ pylith::problems::InitialConditionsDomain::setValues(pylith::topology::Field* so
 
     pylith::topology::FieldQuery fieldQuery(*solution);
     fieldQuery.initializeWithDefaultQueryFns();
+    fieldQuery.setMarkerLabel(_patchLabel.c_str());
     fieldQuery.openDB(_db, normalizer.lengthScale());
     fieldQuery.queryDB();
     fieldQuery.closeDB(_db);

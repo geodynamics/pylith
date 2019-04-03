@@ -29,8 +29,8 @@ def icFactory(name):
     Factory for initial conditions items.
     """
     from pyre.inventory import facility
-    from pylith.problems.InitialConditionsDomain import InitialConditionsDomain
-    return facility(name, family="initial_conditions", factory=InitialConditionsDomain)
+    from pylith.problems.InitialConditionDomain import InitialConditionDomain
+    return facility(name, family="initial_conditions", factory=InitialConditionDomain)
 
 
 class TimeDependent(Problem, ModuleTimeDependent):
@@ -55,6 +55,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
 
     import pyre.inventory
     from pyre.units.time import year
+    from pylith.utils.EmptyBin import EmptyBin
 
     dtInitial = pyre.inventory.dimensional("initial_dt", default=1.0 * year,
                                            validator=pyre.inventory.greater(0.0 * year))
@@ -106,7 +107,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
         # Preinitialize initial conditions.
         for ic in self.ic.components():
             ic.preinitialize(mesh)
-        ModuleProblem.setInitialConditions(self, self.ic.components())
+        ModuleTimeDependent.setInitialCondition(self, self.ic.components())
         return
 
     def run(self, app):

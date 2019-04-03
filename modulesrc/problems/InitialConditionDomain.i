@@ -24,30 +24,18 @@
 
 namespace pylith {
     namespace problems {
-        class InitialConditionsPatch : public pylith::problems::InitialConditions {
+        class InitialConditionDomain : public pylith::problems::InitialCondition {
             // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
             /// Constructor
-            InitialConditionsPatch(void);
+            InitialConditionDomain(void);
 
             /// Destructor
-            virtual ~InitialConditionsPatch(void);
+            virtual ~InitialConditionDomain(void);
 
             /// Deallocate PETSc and local data structures.
             void deallocate(void);
-
-            /** Set label for marker associated with patch.
-             *
-             * @param[in] value Label for marker associated with patch.
-             */
-            void setMarkerLabel(const char* value);
-
-            /** Get label for marker associated with patch.
-             *
-             * @returns Label for marker associated with patch.
-             */
-            const char* getMarkerLabel(void) const;
 
             /** Set spatial database holding initial conditions.
              *
@@ -63,7 +51,7 @@ public:
             void setValues(pylith::topology::Field* solution,
                            const spatialdata::units::Nondimensional& normalizer);
 
-        }; // InitialConditionsPatch
+        }; // InitialConditionDomain
 
     } // problems
 } // pylith

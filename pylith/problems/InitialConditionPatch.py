@@ -13,14 +13,14 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/problems/InitialConditionsPatch.py
+# @file pylith/problems/InitialConditionPatch.py
 #
 # @brief Python object for specifying initial conditions over a portion of the domain (patch).
 #
 # Factory: initial_conditions.
 
-from pylith.problems.InitialConditions import InitialConditions
-from .problems import InitialConditionsPatch as ModuleInitialConditions
+from pylith.problems.InitialCondition import InitialCondition
+from .problems import InitialConditionPatch as ModuleInitialCondition
 
 
 def validateLabel(value):
@@ -32,7 +32,7 @@ def validateLabel(value):
     return value
 
 
-class InitialConditionsPatch(InitialConditions, ModuleInitialConditions):
+class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
     """
     Python object for specifying initial conditions over a portion of the domain (patch).
 
@@ -59,24 +59,24 @@ class InitialConditionsPatch(InitialConditions, ModuleInitialConditions):
         """
         Constructor.
         """
-        InitialConditions.__init__(self, name)
+        InitialCondition.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
         """
         Setup initial conditions.
         """
-        InitialConditions.preinitialize(self, mesh)
+        InitialCondition.preinitialize(self, mesh)
 
-        ModuleInitialConditions.setMarkerLabel(self, self.label)
-        ModuleInitialConditions.setDB(self, self.db)
+        ModuleInitialCondition.setMarkerLabel(self, self.label)
+        ModuleInitialCondition.setDB(self, self.db)
         return
 
     def _configure(self):
         """
         Setup members using inventory.
         """
-        InitialConditions._configure(self)
+        InitialCondition._configure(self)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -85,16 +85,16 @@ class InitialConditionsPatch(InitialConditions, ModuleInitialConditions):
         """
         Call constructor for module object for access to C++ object.
         """
-        ModuleInitialConditionsPatch.__init__(self)
+        ModuleInitialConditionPatch.__init__(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def initial_conditions():
     """
-    Factory associated with InitialConditionsPatch.
+    Factory associated with InitialConditionPatch.
     """
-    return InitialConditionsPatch()
+    return InitialConditionPatch()
 
 
 # End of file

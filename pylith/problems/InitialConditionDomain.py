@@ -13,17 +13,17 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/problems/InitialConditionsDomain.py
+# @file pylith/problems/InitialConditionDomain.py
 #
 # @brief Python object for specifying initial conditions over the entire domain.
 #
 # Factory: initial_conditions.
 
-from pylith.problems.InitialConditions import InitialConditions
-from .problems import InitialConditionsDomain as ModuleInitialConditions
+from pylith.problems.InitialCondition import InitialCondition
+from .problems import InitialConditionDomain as ModuleInitialCondition
 
 
-class InitialConditionsDomain(InitialConditions, ModuleInitialConditions):
+class InitialConditionDomain(InitialCondition, ModuleInitialCondition):
     """
     Python object for specifying initial conditions over the entire domain.
 
@@ -37,8 +37,9 @@ class InitialConditionsDomain(InitialConditions, ModuleInitialConditions):
     """
 
     import pyre.inventory
+    from spatialdata.spatialdb.SimpleDB import SimpleDB
 
-    db = pyre.inventory.facility("db", default=SimpleDB, factory="spatial_database")
+    db = pyre.inventory.facility("db", family="spatial_database", factory=SimpleDB)
     db.meta["tip"] = "Spatial database with values for initial condition."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -47,23 +48,23 @@ class InitialConditionsDomain(InitialConditions, ModuleInitialConditions):
         """
         Constructor.
         """
-        InitialConditions.__init__(self, name)
+        InitialCondition.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
         """
         Setup initial conditions.
         """
-        InitialConditions.preinitialize(self, mesh)
+        InitialCondition.preinitialize(self, mesh)
 
-        ModuleInitialConditions.setDB(self, self.db)
+        ModuleInitialCondition.setDB(self, self.db)
         return
 
     def _configure(self):
         """
         Setup members using inventory.
         """
-        InitialConditions._configure(self)
+        InitialCondition._configure(self)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -72,16 +73,16 @@ class InitialConditionsDomain(InitialConditions, ModuleInitialConditions):
         """
         Call constructor for module object for access to C++ object.
         """
-        ModuleInitialConditionsPatch.__init__(self)
+        ModuleInitialCondition.__init__(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def initial_conditions():
     """
-    Factory associated with InitialConditionsDomain.
+    Factory associated with InitialConditionDomain.
     """
-    return InitialConditionsDomain()
+    return InitialConditionDomain()
 
 
 # End of file

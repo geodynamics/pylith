@@ -90,6 +90,42 @@
 }
 
 // ----------------------------------------------------------------------
+// List of initial conditions.
+%typemap(in) (pylith::problems::InitialCondition* ic[],
+	      const int numIC)
+{
+  // Check to make sure input is a list.
+  if (PyList_Check($input)) {
+    const int size = PyList_Size($input);
+    $2 = size;
+    $1 = (size > 0) ? new pylith::problems::InitialCondition*[size] : 0;
+    for (int i = 0; i < size; i++) {
+      PyObject* s = PyList_GetItem($input,i);
+      pylith::problems::InitialCondition* ic = 0;
+      int err = SWIG_ConvertPtr(s, (void**) &ic,
+				$descriptor(pylith::problems::InitialCondition*),
+				0);
+      if (SWIG_IsOK(err))
+	$1[i] = (pylith::problems::InitialCondition*) ic;
+      else {
+	PyErr_SetString(PyExc_TypeError, "List must contain boundary conditions.");
+	delete[] $1;
+	return NULL;
+      } // if
+    } // for
+  } else {
+    PyErr_SetString(PyExc_TypeError, "Expected list of boundary conditions.");
+    return NULL;
+  } // if/else
+} // typemap(in) [List of ics.]
+
+// This cleans up the array we malloc'd before the function call
+%typemap(freearg) (pylith::problems::InitialCondition* ic[],
+		   const int numIC) {
+  delete[] $1;
+}
+
+// ----------------------------------------------------------------------
 // List of interfaces.
 %typemap(in) (pylith::faults::FaultCohesive* faults[],
 	      const int numFaults)

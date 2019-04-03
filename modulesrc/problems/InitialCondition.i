@@ -24,15 +24,15 @@
 
 namespace pylith {
     namespace problems {
-        class InitialConditions : public pylith::utils::PyreComponent {
+        class InitialCondition : public pylith::utils::PyreComponent {
             // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
             /// Constructor
-            InitialConditions(void);
+            InitialCondition(void);
 
             /// Destructor
-            virtual ~InitialConditions(void);
+            virtual ~InitialCondition(void);
 
             /// Deallocate PETSc and local data structures.
             void deallocate(void);
@@ -46,7 +46,7 @@ public:
             void setValues(pylith::topology::Field* solution,
                            const spatialdata::units::Nondimensional& normalizer) = 0;
 
-        }; // InitialConditions
+        }; // InitialCondition
 
     } // problems
 } // pylith

@@ -13,17 +13,17 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/problems/InitialConditionsPatch.py
+# @file pylith/problems/InitialConditionPatch.py
 #
 # @brief Python abstract basae class for specifying initial conditions.
 #
 # Factory: initial_conditions.
 
 from pylith.utils.PetscComponent import PetscComponent
-from .problems import InitialConditions as ModuleInitialConditions
+from .problems import InitialCondition as ModuleInitialCondition
 
 
-class InitialConditionsPatch(InitialConditions, ModuleInitialConditions):
+class InitialCondition(PetscComponent, ModuleInitialCondition):
     """
     Python abstract base class for specifying initial conditions.
 
@@ -50,7 +50,7 @@ class InitialConditionsPatch(InitialConditions, ModuleInitialConditions):
         Setup initial conditions.
         """
         self._createModuleObj()
-        ModuleInitialConditions.setIdentifier(self, self.aliases[-1])
+        ModuleInitialCondition.setIdentifier(self, self.aliases[-1])
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
