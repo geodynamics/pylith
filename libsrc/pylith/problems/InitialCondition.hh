@@ -21,8 +21,8 @@
  *
  * @brief C++ abstract base class for specifying initial conditions.
  */
-#if !defined(pylith_problems_initialconditions_hh)
-#define pylith_problems_initialconditions_hh
+#if !defined(pylith_problems_initialcondition_hh)
+#define pylith_problems_initialcondition_hh
 
 #include "problemsfwd.hh" // forward declarations
 
@@ -46,7 +46,14 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Set solver type.
+    /** Verify configuration is acceptable.
+     *
+     * @param[in] solution Solution field.
+     */
+    virtual
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
+
+    /** Set solution to values for initial condition.
      *
      * @param[out] solution Solution field.
      * @param[in] normalizer Nondimensionalization.
@@ -63,6 +70,6 @@ private:
 
 }; // InitialCondition
 
-#endif // pylith_problems_initialconditions_hh
+#endif // pylith_problems_initialcondition_hh
 
 // End of file

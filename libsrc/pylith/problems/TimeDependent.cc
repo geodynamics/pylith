@@ -181,7 +181,7 @@ pylith::problems::TimeDependent::getInitialTimeStep(void) const {
 // Set initial conditions.
 void
 pylith::problems::TimeDependent::setInitialCondition(pylith::problems::InitialCondition* ic[],
-                                                      const int numIC) {
+                                                     const int numIC) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("setInitialCondition(ic="<<ic<<", numIC="<<numIC<<")");
 
@@ -194,6 +194,28 @@ pylith::problems::TimeDependent::setInitialCondition(pylith::problems::InitialCo
 
     PYLITH_METHOD_END;
 } // setInitialCondition
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Verify configuration.
+void
+pylith::problems::TimeDependent::verifyConfiguration(void) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("Problem::verifyConfiguration(void)");
+
+    Problem::verifyConfiguration();
+
+    assert(_solution);
+
+    // Check to make sure initial conditions are compatible with the solution.
+    const size_t numIC = _ic.size();
+    for (size_t i = 0; i < numIC; ++i) {
+        assert(_ic[i]);
+        _ic[i]->verifyConfiguration(*_solution);
+    } // for
+
+    PYLITH_METHOD_END;
+} // verifyConfiguration
 
 
 // ---------------------------------------------------------------------------------------------------------------------

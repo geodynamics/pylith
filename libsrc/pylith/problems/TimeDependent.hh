@@ -104,7 +104,10 @@ public:
      * @param[in] numIC Number of initial conditions.
      */
     void setInitialCondition(pylith::problems::InitialCondition* ic[],
-                              const int numIC);
+                             const int numIC);
+
+    /// Verify configuration.
+    void verifyConfiguration(void) const;
 
     /// Initialize.
     void initialize(void);

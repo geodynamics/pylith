@@ -73,7 +73,7 @@ pylith::problems::InitialConditionDomain::setDB(spatialdata::spatialdb::SpatialD
 // Set solver type.
 void
 pylith::problems::InitialConditionDomain::setValues(pylith::topology::Field* solution,
-                                                     const spatialdata::units::Nondimensional& normalizer) {
+                                                    const spatialdata::units::Nondimensional& normalizer) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("setValues(solution="<<solution<<", normalizer)");
 

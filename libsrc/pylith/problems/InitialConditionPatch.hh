@@ -55,6 +55,12 @@ public:
      */
     const char* getMarkerLabel(void) const;
 
+    /** Verify configuration is acceptable.
+     *
+     * @param[in] solution Solution field.
+     */
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
+
     /** Set spatial database holding initial conditions.
      *
      * @param[in] db Spatial database holding initial conditions.

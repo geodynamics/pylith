@@ -22,6 +22,7 @@
 
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 
+#include "pylith/topology/Field.hh" // USES Field
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -96,10 +97,31 @@ pylith::problems::InitialConditionPatch::setDB(spatialdata::spatialdb::SpatialDB
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Verify configuration is acceptable.
+void
+pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+
+    const PetscDM dmSoln = solution.dmMesh();
+    PetscBool hasLabel = PETSC_FALSE;
+    PetscErrorCode err = DMHasLabel(dmSoln, _patchLabel.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
+    if (!hasLabel) {
+        std::ostringstream msg;
+        msg << "Could not find group of points '" << _patchLabel << "' in initial condition '"
+            << PyreComponent::getIdentifier() << "'.";
+        throw std::runtime_error(msg.str());
+    } // if
+
+    PYLITH_METHOD_END;
+} // verifyConfiguration
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set solver type.
 void
 pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solution,
-                                                    const spatialdata::units::Nondimensional& normalizer) {
+                                                   const spatialdata::units::Nondimensional& normalizer) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("setValues(solution="<<solution<<", normalizer)");
 

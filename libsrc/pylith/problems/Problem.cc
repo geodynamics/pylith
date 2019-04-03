@@ -271,6 +271,7 @@ pylith::problems::Problem::verifyConfiguration(void) const {
         assert(_interfaces[i]);
         _interfaces[i]->verifyConfiguration(*_solution);
     } // for
+    _checkMaterialIds();
 
     // Check to make sure boundary conditions are compatible with the solution.
     const size_t numBC = _bc.size();
@@ -589,9 +590,9 @@ pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
 // ---------------------------------------------------------------------------------------------------------------------
 // Check material and interface ids.
 void
-pylith::problems::Problem::_checkMaterialIds(void) {
+pylith::problems::Problem::_checkMaterialIds(void) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::_checkMaterials()");
+    PYLITH_COMPONENT_DEBUG("Problem::_checkMaterialIds()");
 
     const size_t numMaterials = _materials.size();
     const size_t numInterfaces = _interfaces.size();

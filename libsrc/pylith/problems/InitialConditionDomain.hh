@@ -49,7 +49,7 @@ public:
      */
     void setDB(spatialdata::spatialdb::SpatialDB* db);
 
-    /** Set solver type.
+    /** Set solution to values for initial condition.
      *
      * @param[out] solution Solution field.
      * @param[in] normalizer Nondimensionalization.

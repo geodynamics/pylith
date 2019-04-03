@@ -20,7 +20,10 @@
 
 #include "InitialCondition.hh" // implementation of class methods
 
+#include "pylith/topology/Field.hh" // USES Field
+
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -43,6 +46,17 @@ pylith::problems::InitialCondition::deallocate(void) {
 
     PYLITH_METHOD_END;
 } // deallocate
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Verify configuration is acceptable.
+void
+pylith::problems::InitialCondition::verifyConfiguration(const pylith::topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<") empty method");
+
+    PYLITH_METHOD_END;
+} // verityConfiguration
 
 
 // End of file

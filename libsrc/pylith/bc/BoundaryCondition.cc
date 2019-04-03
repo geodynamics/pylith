@@ -157,6 +157,16 @@ pylith::bc::BoundaryCondition::verifyConfiguration(const pylith::topology::Field
         throw std::runtime_error(msg.str());
     } // if
 
+    const PetscDM dmSoln = solution.dmMesh();
+    PetscBool hasLabel = PETSC_FALSE;
+    PetscErrorCode err = DMHasLabel(dmSoln, _boundaryLabel.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
+    if (!hasLabel) {
+        std::ostringstream msg;
+        msg << "Could not find group of points '" << _boundaryLabel << "' in boundary condition '"
+            << PyreComponent::getIdentifier() <<"'.";
+        throw std::runtime_error(msg.str());
+    } // if
+
     PYLITH_METHOD_END;
 } // verifyConfiguration
 
