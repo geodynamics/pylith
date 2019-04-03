@@ -39,8 +39,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()
-#include <typeinfo> \
-    // USES typeid()
+#include <typeinfo> // USES typeid()
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -329,7 +328,7 @@ pylith::problems::Problem::initialize(void) {
     journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
         debug << journal::at(__HERE__)
-              << "Component '"<<PyreComponent::getIdentifier()<<"': viewing solution field." << journal::endl;
+              << "Component '"<<PyreComponent::getIdentifier()<<"': viewing solution field layout." << journal::endl;
         _solution->view("Problem solution field", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 

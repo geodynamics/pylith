@@ -35,7 +35,7 @@
 pylith::problems::InitialConditionPatch::InitialConditionPatch(void) :
     _patchLabel(""),
     _db(NULL) {
-    PyreComponent::setName("initialconditionspatch");
+    PyreComponent::setName("initialconditionpatch");
 } // constructor
 
 
@@ -113,6 +113,19 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
         throw std::runtime_error(msg.str());
     } // if
 
+    PetscDMLabel dmLabel = NULL;
+    err = DMGetLabel(solution.dmMesh(), _patchLabel.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
+    PetscInt numValues = 0;
+    err = DMLabelGetNumValues(dmLabel, &numValues);PYLITH_CHECK_ERROR(err);
+    if (0 == numValues) {
+        std::ostringstream msg;
+        msg << "No values for label '" << _patchLabel << "' in mesh for initial condition '"
+            << PyreComponent::getIdentifier() << "'.";
+        throw std::runtime_error(msg.str());
+    } // if
+
+    // DMLabelView(dmLabel, PETSC_VIEWER_STDOUT_SELF); // :DEBUG:
+
     PYLITH_METHOD_END;
 } // verifyConfiguration
 
@@ -133,6 +146,13 @@ pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solu
     fieldQuery.openDB(_db, normalizer.lengthScale());
     fieldQuery.queryDB();
     fieldQuery.closeDB(_db);
+
+    journal::debug_t debug(PyreComponent::getName());
+    if (debug.state()) {
+        debug << journal::at(__HERE__)
+              << "Component '"<<PyreComponent::getIdentifier()<<"': viewing solution field." << journal::endl;
+        solution->view("Solution field with initial values", pylith::topology::Field::VIEW_ALL);
+    } // if
 
     PYLITH_METHOD_END;
 } // setValues

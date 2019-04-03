@@ -21,6 +21,7 @@
 #include "InitialConditionDomain.hh" // implementation of class methods
 
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/topology/Field.hh" // USES Field
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -33,7 +34,7 @@
 // Constructor
 pylith::problems::InitialConditionDomain::InitialConditionDomain(void) :
     _db(NULL) {
-    PyreComponent::setName("initialconditionsdomain");
+    PyreComponent::setName("initialconditiondomain");
 } // constructor
 
 
@@ -84,6 +85,13 @@ pylith::problems::InitialConditionDomain::setValues(pylith::topology::Field* sol
     fieldQuery.openDB(_db, normalizer.lengthScale());
     fieldQuery.queryDB();
     fieldQuery.closeDB(_db);
+
+    journal::debug_t debug(PyreComponent::getName());
+    if (debug.state()) {
+        debug << journal::at(__HERE__)
+              << "Component '"<<PyreComponent::getIdentifier()<<"': viewing solution field." << journal::endl;
+        solution->view("Solution field with initial values", pylith::topology::Field::VIEW_ALL);
+    } // if
 
     PYLITH_METHOD_END;
 } // setValues

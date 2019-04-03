@@ -167,6 +167,17 @@ pylith::bc::BoundaryCondition::verifyConfiguration(const pylith::topology::Field
         throw std::runtime_error(msg.str());
     } // if
 
+    PetscDMLabel dmLabel = NULL;
+    err = DMGetLabel(solution.dmMesh(), _boundaryLabel.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
+    PetscInt numValues = 0;
+    err = DMLabelGetNumValues(dmLabel, &numValues);PYLITH_CHECK_ERROR(err);
+    if (0 == numValues) {
+        std::ostringstream msg;
+        msg << "No values for label '" << _boundaryLabel << "' in mesh for boundary condition '"
+            << PyreComponent::getIdentifier() << "'.";
+        throw std::runtime_error(msg.str());
+    } // if
+
     PYLITH_METHOD_END;
 } // verifyConfiguration
 
