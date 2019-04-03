@@ -56,7 +56,7 @@ public:
     void testDiscretization(void);
 
     /// Verify residual evaluated for solution is below specified tolerance.
-    void testDiscretization(void);
+    void testResidual(void);
 
     /** Verify Jacobian via Taylor series.
      *
