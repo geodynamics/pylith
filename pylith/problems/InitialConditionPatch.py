@@ -46,11 +46,12 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
     """
 
     import pyre.inventory
+    from spatialdata.spatialdb.SimpleDB import SimpleDB
 
     label = pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta["tip"] = "Label identifier for boundary."
 
-    db = pyre.inventory.facility("db", default=SimpleDB, factory="spatial_database")
+    db = pyre.inventory.facility("db", family="spatial_database", factory=SimpleDB)
     db.meta["tip"] = "Spatial database with values for initial condition."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -85,7 +86,7 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
         """
         Call constructor for module object for access to C++ object.
         """
-        ModuleInitialConditionPatch.__init__(self)
+        ModuleInitialCondition.__init__(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
