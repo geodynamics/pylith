@@ -402,7 +402,7 @@ pylith::problems::Problem::computeRHSResidual(PetscVec residualVec,
     } // for
 
     // Assemble residual values across processes.
-    PetscErrorCode err = VecSet(residualVec, 0.0);PYLITH_CHECK_ERROR(err); // Move to TSComputeIFunction()?
+    PetscErrorCode err = VecSet(residualVec, 0.0);PYLITH_CHECK_ERROR(err);
     _residual->scatterLocalToVector(residualVec, ADD_VALUES);
 
     PYLITH_METHOD_END;
