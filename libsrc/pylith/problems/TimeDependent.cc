@@ -26,6 +26,7 @@
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/feassemble/Constraint.hh" // USES Constraint
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
+#include "pylith/problems/InitialCondition.hh" // USES InitialCondition
 
 #include "petscts.h" // USES PetscTS
 
@@ -177,6 +178,47 @@ pylith::problems::TimeDependent::getInitialTimeStep(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Set initial conditions.
+void
+pylith::problems::TimeDependent::setInitialCondition(pylith::problems::InitialCondition* ic[],
+                                                     const int numIC) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("setInitialCondition(ic="<<ic<<", numIC="<<numIC<<")");
+
+    assert( (!ic && 0 == numIC) || (ic && 0 < numIC) );
+
+    _ic.resize(numIC);
+    for (int i = 0; i < numIC; ++i) {
+        _ic[i] = ic[i];
+    } // for
+
+    PYLITH_METHOD_END;
+} // setInitialCondition
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Verify configuration.
+void
+pylith::problems::TimeDependent::verifyConfiguration(void) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("Problem::verifyConfiguration(void)");
+
+    Problem::verifyConfiguration();
+
+    assert(_solution);
+
+    // Check to make sure initial conditions are compatible with the solution.
+    const size_t numIC = _ic.size();
+    for (size_t i = 0; i < numIC; ++i) {
+        assert(_ic[i]);
+        _ic[i]->verifyConfiguration(*_solution);
+    } // for
+
+    PYLITH_METHOD_END;
+} // verifyConfiguration
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Initialize.
 void
 pylith::problems::TimeDependent::initialize(void) {
@@ -281,8 +323,11 @@ pylith::problems::TimeDependent::initialize(void) {
 
     // Set initial solution.
     _solution->zeroLocal();
-    PYLITH_COMPONENT_ERROR(":TODO: @brad Implement setting initial solution.");
-    // :TODO: Set initial conditions.
+    const size_t numIC = _ic.size();
+    for (size_t i = 0; i < numIC; ++i) {
+        assert(_ic[i]);
+        _ic[i]->setValues(_solution, *_normalizer);
+    } // for
     PetscVec solutionVec = NULL;
     err = DMCreateGlobalVector(_solution->dmMesh(), &solutionVec);PYLITH_CHECK_ERROR(err);
     _solution->scatterLocalToVector(solutionVec);

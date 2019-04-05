@@ -257,7 +257,7 @@ protected:
 private:
 
     /// Check material and interface ids.
-    void _checkMaterialIds(void);
+    void _checkMaterialIds(void) const;
 
     /// Create array of integrators from materials, interfaces, and boundary conditions.
     void _createIntegrators(void);

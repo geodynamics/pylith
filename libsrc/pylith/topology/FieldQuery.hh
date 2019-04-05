@@ -33,7 +33,7 @@
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 
 #include <map> // HOLDSA std::map
-#include <string> // USES std::string
+#include <string> // HASA std::string
 
 // FieldQuery ----------------------------------------------------------------
 /** @brief Set field via query of spatial database, etc.
@@ -132,6 +132,14 @@ public:
 
     /// Query spatial database to set values in field.
     void queryDB(void);
+
+    /** Query spatial database for points in label to set values in field.
+     *
+     * @param[in] name Name of label.
+     * @param[in] value Value of label.
+     */
+    void queryDBLabel(const char* name,
+                      const PylithInt value=1);
 
     /** Close spatial database query for setting values in field.
      *

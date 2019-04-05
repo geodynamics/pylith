@@ -71,7 +71,13 @@ class GenerateDB(object):
 
         from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
         io = SimpleIOAscii()
-        io.inventory.filename = "axialdisp.spatialdb"
+        io.inventory.filename = "axialdisp_bc.spatialdb"
+        io._configure()
+        io.write(data)
+
+        data["values"][0]["name"] = "displacement_x"
+        data["values"][1]["name"] = "displacement_y"
+        io.inventory.filename = "axialdisp_ic.spatialdb"
         io._configure()
         io.write(data)
         return

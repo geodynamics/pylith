@@ -39,8 +39,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()
-#include <typeinfo> \
-    // USES typeid()
+#include <typeinfo> // USES typeid()
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -180,7 +179,7 @@ pylith::problems::Problem::setMaterials(pylith::materials::Material* materials[]
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set materials.
+// Set boundary conditions.
 void
 pylith::problems::Problem::setBoundaryConditions(pylith::bc::BoundaryCondition* bc[],
                                                  const int numBC) {
@@ -271,6 +270,7 @@ pylith::problems::Problem::verifyConfiguration(void) const {
         assert(_interfaces[i]);
         _interfaces[i]->verifyConfiguration(*_solution);
     } // for
+    _checkMaterialIds();
 
     // Check to make sure boundary conditions are compatible with the solution.
     const size_t numBC = _bc.size();
@@ -328,7 +328,7 @@ pylith::problems::Problem::initialize(void) {
     journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
         debug << journal::at(__HERE__)
-              << "Component '"<<PyreComponent::getIdentifier()<<"': viewing solution field." << journal::endl;
+              << "Component '"<<PyreComponent::getIdentifier()<<"': viewing solution field layout." << journal::endl;
         _solution->view("Problem solution field", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
@@ -402,7 +402,7 @@ pylith::problems::Problem::computeRHSResidual(PetscVec residualVec,
     } // for
 
     // Assemble residual values across processes.
-    PetscErrorCode err = VecSet(residualVec, 0.0);PYLITH_CHECK_ERROR(err); // Move to TSComputeIFunction()?
+    PetscErrorCode err = VecSet(residualVec, 0.0);PYLITH_CHECK_ERROR(err);
     _residual->scatterLocalToVector(residualVec, ADD_VALUES);
 
     PYLITH_METHOD_END;
@@ -589,9 +589,9 @@ pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
 // ---------------------------------------------------------------------------------------------------------------------
 // Check material and interface ids.
 void
-pylith::problems::Problem::_checkMaterialIds(void) {
+pylith::problems::Problem::_checkMaterialIds(void) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::_checkMaterials()");
+    PYLITH_COMPONENT_DEBUG("Problem::_checkMaterialIds()");
 
     const size_t numMaterials = _materials.size();
     const size_t numInterfaces = _interfaces.size();

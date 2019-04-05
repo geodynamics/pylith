@@ -89,7 +89,7 @@ pylith::feassemble::Constraint::setMarkerLabel(const char* value) {
     PYLITH_JOURNAL_DEBUG("setMarkerLabel(value="<<value<<")");
 
     if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for boundary condition integrator label.");
+        throw std::runtime_error("Empty string given for boundary condition constraint label.");
     } // if
 
     _constraintLabel = value;

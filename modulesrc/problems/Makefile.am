@@ -35,7 +35,10 @@ swig_sources = \
 	TimeDependent.i \
 	Physics.i \
 	ObserverSoln.i \
-	ObserverPhysics.i
+	ObserverPhysics.i \
+	InitialCondition.i \
+	InitialConditionDomain.i \
+	InitialConditionPatch.i
 
 
 swig_generated = \

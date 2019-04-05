@@ -26,6 +26,9 @@
 #include "pylith/problems/Physics.hh"
 #include "pylith/problems/ObserverSoln.hh"
 #include "pylith/problems/ObserverPhysics.hh"
+#include "pylith/problems/InitialCondition.hh"
+#include "pylith/problems/InitialConditionDomain.hh"
+#include "pylith/problems/InitialConditionPatch.hh"
 %}
 
 %include "exception.i"
@@ -59,5 +62,8 @@
 %include "Physics.i"
 %include "ObserverSoln.i"
 %include "ObserverPhysics.i"
+%include "InitialCondition.i"
+%include "InitialConditionDomain.i"
+%include "InitialConditionPatch.i"
 
 // End of file

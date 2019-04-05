@@ -211,9 +211,28 @@ pylith::topology::FieldQuery::queryDB(void) {
 
     PetscErrorCode err = 0;
     PetscReal dummyTime = 0.0;
-    err = DMProjectFunctionLocal(_field.dmMesh(), dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES, _field.localVector());PYLITH_CHECK_ERROR(err);
-    // err = PetscObjectCompose((PetscObject) dm, "A", (PetscObject) fieldVec);CHKERRQ(ierr); // :MATT: Which dm is
-    // this? Do we need this?
+    err = DMProjectFunctionLocal(_field.dmMesh(), dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES,
+                                 _field.localVector());PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+} // queryDB
+
+
+// ----------------------------------------------------------------------
+// Query spatial database to set values in field.
+void
+pylith::topology::FieldQuery::queryDBLabel(const char* name,
+                                           const PylithInt value) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscErrorCode err = 0;
+    PetscReal dummyTime = 0.0;
+
+    PetscDMLabel dmLabel = NULL;
+    err = DMGetLabel(_field.dmMesh(), name, &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMProjectFunctionLabelLocal(_field.dmMesh(), dummyTime, dmLabel, 1, &value, 0, NULL, _functions,
+                                      (void**)_contextPtrs, INSERT_ALL_VALUES,
+                                      _field.localVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // queryDB
