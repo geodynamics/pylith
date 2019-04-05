@@ -31,6 +31,15 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include <cassert> // USES assert()
 
+extern "C" {
+    PetscErrorCode DMSNESCheckFromOptions_Internal(PetscSNES snes,
+                                                   PetscDM dm,
+                                                   PetscVec u,
+                                                   PetscErrorCode(**exactFuncs)(PetscInt, PetscReal, const PetscReal x[], PetscInt, PetscScalar *u, void *ctx),
+                                                   void **ctxs);
+
+} // extern "C"
+
 // ---------------------------------------------------------------------------------------------------------------------
 /// Setup testing data.
 void
@@ -64,8 +73,24 @@ void
 pylith::testing::MMSTest::testDiscretization(void) {
     PYLITH_METHOD_BEGIN;
 
+    _initialize();
+
+#if 0
     // Call function for discretization test refactored from DMSNESCheckFromOptions_Internal().
     CPPUNIT_ASSERT_MESSAGE(":TODO: @brad @matt Implement test.", false);
+#else
+    CPPUNIT_ASSERT(_problem);
+    CPPUNIT_ASSERT(_problem->_ts);
+    PetscTS ts = _problem->_ts;
+    PetscDM dm = NULL;
+    PetscSNES snes = NULL;
+    PetscErrorCode err = 0;
+    err = TSGetDM(ts, &dm);CPPUNIT_ASSERT(!err);
+    err = TSGetSNES(ts, &snes);CPPUNIT_ASSERT(!err);
+
+    CPPUNIT_ASSERT(_solution);
+    err = DMSNESCheckFromOptions_Internal(snes, dm, _solution->scatterVector("global"), NULL, NULL);CPPUNIT_ASSERT(!err);
+#endif
 
     PYLITH_METHOD_END;
 } // testDiscretization
@@ -129,27 +154,24 @@ pylith::testing::MMSTest::_initialize(void) {
     _problem->setSolverType(pylith::problems::Problem::NONLINEAR);
     _problem->setMaxTimeSteps(1);
     _problem->preinitialize(*_mesh);
-    _problem->verifyConfiguration();
 
     _setExactSolution();
     _solution->allocate();
 
+    _problem->verifyConfiguration();
     _problem->initialize();
 
-    PetscErrorCode err = 0;
-    PetscVec solutionVec = NULL;
-    err = DMCreateGlobalVector(_solution->dmMesh(), &solutionVec);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(solutionVec);
-    _solution->scatterLocalToVector(solutionVec);
-    err = TSSetSolution(_problem->_ts, solutionVec);CPPUNIT_ASSERT(!err);
-    err = VecDestroy(&solutionVec);CPPUNIT_ASSERT(!err);
+    _solution->createScatter(_solution->mesh(), "global");
+    _solution->scatterLocalToContext("global");
+    PetscErrorCode err = TSSetSolution(_problem->_ts, _solution->scatterVector("global"));CPPUNIT_ASSERT(!err);
 
-    err = TSSetUp(_problem->_ts);PYLITH_CHECK_ERROR(err);
+    err = TSSetUp(_problem->_ts);CPPUNIT_ASSERT(!err);
 #if 0
-    err = SNESSetSolution(snes, u);PYLITH_CHECK_ERROR(err);
+    err = SNESSetSolution(snes, u);CPPUNIT_ASSERT(!err);
 
-    err = TSGetDM(ts, &dm);PYLITH_CHECK_ERROR(err);
-    err = TSGetSNES(ts, &snes);PYLITH_CHECK_ERROR(err);
-    err = DMSNESCheckFromOptions_Internal(snes, dm, sol, exactFuncs, ctxs);PYLITH_CHECK_ERROR(err);
+    err = TSGetDM(ts, &dm);CPPUNIT_ASSERT(!err);
+    err = TSGetSNES(ts, &snes);CPPUNIT_ASSERT(!err);
+    err = DMSNESCheckFromOptions_Internal(snes, dm, sol, exactFuncs, ctxs);CPPUNIT_ASSERT(!err);
 #endif
 
     /**

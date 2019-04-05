@@ -115,7 +115,7 @@ pylith::problems::Problem::setNormalizer(const spatialdata::units::Nondimensiona
 // Set gravity field.
 void
 pylith::problems::Problem::setGravityField(spatialdata::spatialdb::GravityField* const g) {
-    PYLITH_COMPONENT_DEBUG("Problem::setGravityField(g="<<typeid(*g).name()<<")");
+    PYLITH_COMPONENT_DEBUG("Problem::setGravityField(g="<<typeid(g).name()<<")");
 
     _gravityField = g;
 } // setGravityField

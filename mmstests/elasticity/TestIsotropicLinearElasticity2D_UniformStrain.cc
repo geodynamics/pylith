@@ -184,6 +184,7 @@ protected:
 
         _material->setDescriptiveLabel("Isotropic Linear Elascitity Plane Strain");
         _material->setMaterialId(24);
+
     } // setUp
 
     // Set exact solution.
@@ -216,7 +217,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_TriP1 :
         TestIsotropicLinearElasticity2D_UniformStrain::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/tri_small.mesh";
+        _data->meshFilename = "data/tri.mesh";
 
         _data->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {

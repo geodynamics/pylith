@@ -67,7 +67,7 @@ void
 pylith::mmstests::TestElasticity::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT(!_mesh);
+    CPPUNIT_ASSERT(_mesh);
     pylith::meshio::MeshIOAscii iohandler;
     CPPUNIT_ASSERT(_data->meshFilename);
     iohandler.filename(_data->meshFilename);
@@ -115,6 +115,7 @@ pylith::mmstests::TestElasticity::_initialize(void) {
         factory.addVelocity(_data->solnDiscretizations[1]);
     } // if
     _solution->subfieldsSetup();
+    _problem->setSolution(_solution);
 
     pylith::testing::MMSTest::_initialize();
 
