@@ -171,7 +171,8 @@ libpylith_la_SOURCES += \
 	testing/PhysicsImplementationStub.cc \
 	testing/ObserverPhysicsStub.cc \
 	testing/ObserverSolnStub.cc \
-	testing/FaultCohesiveStub.cc
+	testing/FaultCohesiveStub.cc \
+	testing/MMSTest.cc
 
 libpylith_la_LIBADD += -lcppunit
 endif

@@ -15,37 +15,8 @@
 #
 # ----------------------------------------------------------------------
 
-ACLOCAL_AMFLAGS = -I m4
-
 SUBDIRS = \
-	libsrc \
-	modulesrc \
-	pylith \
-	applications \
-	templates \
-	share
+	elasticity
 
-if ENABLE_TESTING
-  SUBDIRS += \
-	unittests \
-	mmstests
-endif
-if ENABLE_FULL_TESTING
-  SUBDIRS += \
-	tests_auto
-endif
-
-DIST_SUBDIRS = $(SUBDIRS) \
-	examples \
-	tests \
-	doc
-
-if ENABLE_DOCUMENTATION
-  SUBDIRS += doc
-endif
-
-EXTRA_DIST = \
-	CHANGES \
-	DEPENDENCIES
 
 # End of file 

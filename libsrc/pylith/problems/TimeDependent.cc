@@ -54,7 +54,7 @@ pylith::problems::TimeDependent::TimeDependent(void) :
     _dtInitial(1.0),
     _totalTime(0.0),
     _maxTimeSteps(0),
-    _ts(0),
+    _ts(NULL),
     _formulationType(IMPLICIT) {
     PyreComponent::setName(_TimeDependent::pyreComponent);
 } // constructor

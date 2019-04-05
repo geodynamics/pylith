@@ -41,15 +41,17 @@ class pylith::testing::MMSTest : public CppUnit::TestFixture {
     CPPUNIT_TEST(testJacobianTaylorSeries);
     CPPUNIT_TEST(testJacobianFiniteDiff);
 
-    CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST_SUITE_END_ABSTRACT();
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Setup testing data.
+    virtual
     void setUp(void);
 
     /// Tear down testing data.
+    virtual
     void tearDown(void);
 
     /// Verify discretization can represent solution field.
@@ -70,17 +72,23 @@ public:
      */
     void testJacobianFiniteDiff(void);
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
+    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+protected:
 
-    pylith::topology::TimeDependent* _problem; ///< Time-dependent problem.
+    /// Initialize objects for test.
+    virtual
+    void _initialize(void);
+
+    /// Set exact solution.
+    virtual
+    void _setExactSolution(void) = 0;
+
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+protected:
+
+    pylith::problems::TimeDependent* _problem; ///< Time-dependent problem.
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
-
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    MMSTest(const MMSTest&); ///< Not implemented
-    const MMSTest& operator=(const MMSTest&); ///< Not implemented
+    pylith::topology::Field* _solution; ///< Solution field.
 
 }; // MMSTest
 

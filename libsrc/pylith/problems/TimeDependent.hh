@@ -26,9 +26,11 @@
 #define pylith_problems_timedependent_hh
 
 #include "Problem.hh" // ISA Problem
+#include "pylith/testing/testingfwd.hh" // USES MMSTest
 
 class pylith::problems::TimeDependent : public pylith::problems::Problem {
     friend class TestTimeDependent; // unit testing
+    friend class pylith::testing::MMSTest; // Testing with Method of Manufactured Solutions
 
     // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////////////
 public:

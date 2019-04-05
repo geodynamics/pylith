@@ -20,6 +20,8 @@
 
 #include "MMSTest.hh" // implementation of class methods
 
+#include "pylith/problems/TimeDependent.hh" // USES TimeDependent
+
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
@@ -33,25 +35,9 @@
 /// Setup testing data.
 void
 pylith::testing::MMSTest::setUp(void) {
-    _problem = NULL;
-    _mesh = NULL;
-
-    err = VecDuplicate(u, &sol);PYLITH_CHECK_ERROR(err);
-    err = VecCopy(u, sol);PYLITH_CHECK_ERROR(err);
-    err = TSSetSolution(ts, u);PYLITH_CHECK_ERROR(err);
-    err = TSSetUp(ts);PYLITH_CHECK_ERROR(err);
-    err = SNESSetSolution(snes, u);PYLITH_CHECK_ERROR(err);
-
-#if 0
-    err = TSGetDM(ts, &dm);PYLITH_CHECK_ERROR(err);
-    err = TSGetSNES(ts, &snes);PYLITH_CHECK_ERROR(err);
-    err = DMSNESCheckFromOptions_Internal(snes, dm, sol, exactFuncs, ctxs);PYLITH_CHECK_ERROR(err);
-
-https: // bitbucket.org/petsc/petsc/src/4db401632e1443d930e54234abe1842a0bc30a81/src/ts/utils/dmplexts.c?fileviewer=file-view-default#lines-266
-https: // bitbucket.org/petsc/petsc/src/4db401632e1443d930e54234abe1842a0bc30a81/src/snes/utils/dmplexsnes.c?fileviewer=file-view-default#lines-2470
-https: // bitbucket.org/petsc/petsc/src/4db401632e1443d930e54234abe1842a0bc30a81/src/snes/examples/tutorials/ex17.c?fileviewer=file-view-default#lines-352
-#endif
-
+    _problem = new pylith::problems::TimeDependent;CPPUNIT_ASSERT(_problem);
+    _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
+    _solution = NULL;
 } // setUp
 
 
@@ -61,10 +47,12 @@ void
 pylith::testing::MMSTest::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
-    err = VecDestroy(&sol);PYLITH_CHECK_ERROR(err);
+    journal::debug_t debug(_problem->PyreComponent::getName());
+    debug.deactivate(); // DEBUGGING
 
     delete _problem;_problem = NULL;
     delete _mesh;_mesh = NULL;
+    delete _solution;_solution = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -77,7 +65,7 @@ pylith::testing::MMSTest::testDiscretization(void) {
     PYLITH_METHOD_BEGIN;
 
     // Call function for discretization test refactored from DMSNESCheckFromOptions_Internal().
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad @matt Implement test.");
+    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad @matt Implement test.", false);
 
     PYLITH_METHOD_END;
 } // testDiscretization
@@ -90,7 +78,7 @@ pylith::testing::MMSTest::testResidual(void) {
     PYLITH_METHOD_BEGIN;
 
     // Call function for residual test refactored from DMSNESCheckFromOptions_Internal().
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad @matt Implement test.");
+    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad @matt Implement test.", false);
 
     PYLITH_METHOD_END;
 } // testResidual
@@ -105,7 +93,7 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
     PYLITH_METHOD_BEGIN;
 
     // Call function for Jacobian test refactored from DMSNESCheckFromOptions_Internal().
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad @matt Implement test.");
+    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad @matt Implement test.", false);
 
     PYLITH_METHOD_END;
 } // testJacobianTaylorSeries
@@ -118,7 +106,7 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     PYLITH_METHOD_BEGIN;
 
     // Call SNESSolve with appropriate options.
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad @matt Implement test.");
+    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad @matt Implement test.", false);
 
 #if 0
     err = SNESSetFromOptions("-snes_test_jacobian");
@@ -130,62 +118,48 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Initialize.
+// Initialize objects for test.
 void
-pylith::problems::MMSTest::initialize(void) {
+pylith::testing::MMSTest::_initialize(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("initialize()");
 
-    Problem::initialize();
+    CPPUNIT_ASSERT(_problem);
+    CPPUNIT_ASSERT(_solution);
 
-    // Set solution to initial conditions.
-    assert(_solution);
-    _solution->zeroLocal();
-    const size_t numIC = _ic.size();
-    for (size_t i = 0; i < numIC; ++i) {
-        assert(_ic[i]);
-        _ic[i]->setValues(_solution, *_normalizer);
-    } // for
+    _problem->setSolverType(pylith::problems::Problem::NONLINEAR);
+    _problem->setMaxTimeSteps(1);
+    _problem->preinitialize(*_mesh);
+    _problem->verifyConfiguration();
 
-#if USE_SNES
-    PetscErrorCode err = SNESDestroy(&_snes);PYLITH_CHECK_ERROR(err);assert(!_snes);
-    const pylith::topology::Mesh& mesh = _solution->mesh();
-    err = SNESCreate(mesh.comm(), &_snes);PYLITH_CHECK_ERROR(err);assert(_snes);
-    err = SNESSetType(_snes, TSBEULER);PYLITH_CHECK_ERROR(err); // Backward Euler is default time stepping method.
-    err = SNESSetFromOptions(_snes);PYLITH_CHECK_ERROR(err);
-    err = SNESSetApplicationContext(_snes, (void*)this);PYLITH_CHECK_ERROR(err);
+    _setExactSolution();
+    _solution->allocate();
 
-    PYLITH_COMPONENT_DEBUG("Setting SNES initial conditions using global vector for solution.");
+    _problem->initialize();
+
+    PetscErrorCode err = 0;
     PetscVec solutionVec = NULL;
-    err = DMCreateGlobalVector(_solution->dmMesh(), &solutionVec);PYLITH_CHECK_ERROR(err);
+    err = DMCreateGlobalVector(_solution->dmMesh(), &solutionVec);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(solutionVec);
     _solution->scatterLocalToVector(solutionVec);
-    err = SNESSetSolution(_snes, solutionVec);PYLITH_CHECK_ERROR(err);
-    err = VecDestroy(&solutionVec);PYLITH_CHECK_ERROR(err);
+    err = TSSetSolution(_problem->_ts, solutionVec);CPPUNIT_ASSERT(!err);
+    err = VecDestroy(&solutionVec);CPPUNIT_ASSERT(!err);
 
-    PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks prestep(), poststep(), computeRHSJacobian(), and computeRHSFunction().");
-    err = SNESSetRHSJacobian(_snes, NULL, NULL, computeRHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
-    err = SNESSetRHSFunction(_snes, NULL, computeRHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
+    err = TSSetUp(_problem->_ts);PYLITH_CHECK_ERROR(err);
+#if 0
+    err = SNESSetSolution(snes, u);PYLITH_CHECK_ERROR(err);
 
-    if (IMPLICIT == _formulationType) {
-        PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks computeLHSJacobian(), and computeLHSFunction().");
-        err = TSSetIFunction(_snes, NULL, computeLHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
-        err = TSSetIJacobian(_snes, NULL, NULL, computeLHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
-    } // if
-
-    // Setup time stepper.
-    err = TSSetUp(_snes);PYLITH_CHECK_ERROR(err);
-
-    // Setup field to hold inverse of lumped LHS Jacobian (if explicit).
-    if (EXPLICIT == _formulationType) {
-        PYLITH_COMPONENT_DEBUG("Setting up field for inverse of lumped LHS Jacobian.");
-
-        delete _jacobianLHSLumpedInv;_jacobianLHSLumpedInv = new pylith::topology::Field(_solution->mesh());assert(_jacobianLHSLumpedInv);
-        _jacobianLHSLumpedInv->cloneSection(*_solution);
-    } // if
+    err = TSGetDM(ts, &dm);PYLITH_CHECK_ERROR(err);
+    err = TSGetSNES(ts, &snes);PYLITH_CHECK_ERROR(err);
+    err = DMSNESCheckFromOptions_Internal(snes, dm, sol, exactFuncs, ctxs);PYLITH_CHECK_ERROR(err);
 #endif
 
+    /**
+     * https://bitbucket.org/petsc/petsc/src/4db401632e1443d930e54234abe1842a0bc30a81/src/ts/utils/dmplexts.c?fileviewer=file-view-default#lines-266
+     * https://bitbucket.org/petsc/petsc/src/4db401632e1443d930e54234abe1842a0bc30a81/src/snes/utils/dmplexsnes.c?fileviewer=file-view-default#lines-2470
+     * https://bitbucket.org/petsc/petsc/src/4db401632e1443d930e54234abe1842a0bc30a81/src/snes/examples/tutorials/ex17.c?fileviewer=file-view-default#lines-352
+     **/
+
     PYLITH_METHOD_END;
-} // initialize
+} // _initialize
 
 
 // End of file
