@@ -30,10 +30,18 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include <cassert> // USES assert()
 
-// ----------------------------------------------------------------------
+namespace pylith {
+    namespace problems {
+        namespace _InitialConditionPatch {
+            static const char* labelName = "material-id";
+        } // _InitialConditionPatch
+    } // problems
+} // pylith
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::problems::InitialConditionPatch::InitialConditionPatch(void) :
-    _patchLabel(""),
+    _patchId(0),
     _db(NULL) {
     PyreComponent::setName("initialconditionpatch");
 } // constructor
@@ -59,28 +67,24 @@ pylith::problems::InitialConditionPatch::deallocate(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set label for marker associated with patch.
+// Set material id associated with patch.
 void
-pylith::problems::InitialConditionPatch::setMarkerLabel(const char* value) {
+pylith::problems::InitialConditionPatch::setMaterialId(const int value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setMarkerLabel(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("setMaterialId(value="<<value<<")");
 
-    if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for initial conditions patch label.");
-    } // if
-
-    _patchLabel = value;
+    _patchId = value;
 
     PYLITH_METHOD_END;
-} // setMarkerLabel
+} // setMaterialId
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get label marking constrained degrees of freedom.
-const char*
-pylith::problems::InitialConditionPatch::getMarkerLabel(void) const {
-    return _patchLabel.c_str();
-} // getMarkerLabel
+// Get material id associated with patch.
+int
+pylith::problems::InitialConditionPatch::getMaterialId(void) const {
+    return _patchId;
+} // getMaterialId
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -105,21 +109,21 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
 
     const PetscDM dmSoln = solution.dmMesh();
     PetscBool hasLabel = PETSC_FALSE;
-    PetscErrorCode err = DMHasLabel(dmSoln, _patchLabel.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMHasLabel(dmSoln, _InitialConditionPatch::labelName, &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel) {
         std::ostringstream msg;
-        msg << "Could not find group of points '" << _patchLabel << "' in initial condition '"
+        msg << "Could not find label '" << _InitialConditionPatch::labelName << "' for setting patch for initial condition '"
             << PyreComponent::getIdentifier() << "'.";
         throw std::runtime_error(msg.str());
     } // if
 
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(solution.dmMesh(), _patchLabel.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
-    PetscInt numValues = 0;
-    err = DMLabelGetNumValues(dmLabel, &numValues);PYLITH_CHECK_ERROR(err);
-    if (0 == numValues) {
+    err = DMGetLabel(solution.dmMesh(), _InitialConditionPatch::labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
+    PetscBool hasValue = PETSC_FALSE;
+    err = DMLabelHasValue(dmLabel, _patchId, &hasValue);PYLITH_CHECK_ERROR(err);
+    if (!hasValue) {
         std::ostringstream msg;
-        msg << "No values for label '" << _patchLabel << "' in mesh for initial condition '"
+        msg << "Label '" << _InitialConditionPatch::labelName << "' missing value '" << _patchId << "' for initial condition '"
             << PyreComponent::getIdentifier() << "'.";
         throw std::runtime_error(msg.str());
     } // if
@@ -142,9 +146,8 @@ pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solu
 
     pylith::topology::FieldQuery fieldQuery(*solution);
     fieldQuery.initializeWithDefaultQueryFns();
-    fieldQuery.setMarkerLabel(_patchLabel.c_str());
     fieldQuery.openDB(_db, normalizer.lengthScale());
-    fieldQuery.queryDB();
+    fieldQuery.queryDBLabel(_InitialConditionPatch::labelName, _patchId);
     fieldQuery.closeDB(_db);
 
     journal::debug_t debug(PyreComponent::getName());

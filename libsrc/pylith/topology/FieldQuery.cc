@@ -35,8 +35,7 @@ pylith::topology::FieldQuery::FieldQuery(const Field& field) :
     _field(field),
     _functions(NULL),
     _contexts(NULL),
-    _contextPtrs(NULL),
-    _label("") {}
+    _contextPtrs(NULL) {}
 
 
 // ----------------------------------------------------------------------
@@ -61,26 +60,6 @@ pylith::topology::FieldQuery::deallocate(void) {
 
     PYLITH_METHOD_END;
 } // deallocate
-
-
-// ----------------------------------------------------------------------
-// Set label used to restrict projection to a subset of points.
-void
-pylith::topology::FieldQuery::setMarkerLabel(const char* value) {
-    PYLITH_METHOD_BEGIN;
-
-    _label = value;
-
-    PYLITH_METHOD_END;
-} // setMarkerLabel
-
-
-// ----------------------------------------------------------------------
-// Get label used to restrict projection to a subset of points.
-const char*
-pylith::topology::FieldQuery::getMarkerLabel(void) const {
-    return _label.c_str();
-} // getMarkerLabel
 
 
 // ----------------------------------------------------------------------
@@ -232,17 +211,28 @@ pylith::topology::FieldQuery::queryDB(void) {
 
     PetscErrorCode err = 0;
     PetscReal dummyTime = 0.0;
-    if (_label.length() == 0) {
-        err = DMProjectFunctionLocal(_field.dmMesh(), dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES,
-                                     _field.localVector());PYLITH_CHECK_ERROR(err);
-    } else {
-        PetscDMLabel dmLabel = NULL;
-        err = DMGetLabel(_field.dmMesh(), _label.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
-        const PylithInt labelId = 1;
-        err = DMProjectFunctionLabelLocal(_field.dmMesh(), dummyTime, dmLabel, 1, &labelId, 0, NULL, _functions,
-                                          (void**)_contextPtrs, INSERT_ALL_VALUES,
-                                          _field.localVector());PYLITH_CHECK_ERROR(err);
-    } // if/else
+    err = DMProjectFunctionLocal(_field.dmMesh(), dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES,
+                                 _field.localVector());PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+} // queryDB
+
+
+// ----------------------------------------------------------------------
+// Query spatial database to set values in field.
+void
+pylith::topology::FieldQuery::queryDBLabel(const char* name,
+                                           const PylithInt value) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscErrorCode err = 0;
+    PetscReal dummyTime = 0.0;
+
+    PetscDMLabel dmLabel = NULL;
+    err = DMGetLabel(_field.dmMesh(), name, &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMProjectFunctionLabelLocal(_field.dmMesh(), dummyTime, dmLabel, 1, &value, 0, NULL, _functions,
+                                      (void**)_contextPtrs, INSERT_ALL_VALUES,
+                                      _field.localVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // queryDB

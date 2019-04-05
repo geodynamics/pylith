@@ -37,17 +37,17 @@ public:
             /// Deallocate PETSc and local data structures.
             void deallocate(void);
 
-            /** Set label for marker associated with patch.
+            /** Set material id associated with patch.
              *
-             * @param[in] value Label for marker associated with patch.
+             * @param[in] value Material id associated with patch.
              */
-            void setMarkerLabel(const char* value);
+            void setMaterialId(const int value);
 
-            /** Get label for marker associated with patch.
+            /** Get material id associated with patch.
              *
-             * @returns Label for marker associated with patch.
+             * @returns Material id associated with patch.
              */
-            const char* getMarkerLabel(void) const;
+            int getMaterialId(void) const;
 
             /** Set spatial database holding initial conditions.
              *

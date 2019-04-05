@@ -84,18 +84,6 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Set label used to restrict projection to a subset of points.
-     *
-     * @param[in] value Label associated with points.
-     */
-    void setMarkerLabel(const char* value);
-
-    /** Get label used to restrict projection to a subset of points.
-     *
-     * @returns Label associated with points.
-     */
-    const char* getMarkerLabel(void) const;
-
     /** Set query function information for subfield.
      *
      * The default is to use the database passed in the call to openDB().
@@ -144,6 +132,14 @@ public:
 
     /// Query spatial database to set values in field.
     void queryDB(void);
+
+    /** Query spatial database for points in label to set values in field.
+     *
+     * @param[in] name Name of label.
+     * @param[in] value Value of label.
+     */
+    void queryDBLabel(const char* name,
+                      const PylithInt value=1);
 
     /** Close spatial database query for setting values in field.
      *
@@ -204,8 +200,6 @@ private:
     queryfn_type* _functions; ///< Functions implementing queries.
     DBQueryContext* _contexts; ///< Contexts for performing query for each subfield.
     DBQueryContext** _contextPtrs; ///< Array of pointers to contexts.
-
-    std::string _label; ///< Label used in restricting points for projection.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:

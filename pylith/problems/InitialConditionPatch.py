@@ -23,15 +23,6 @@ from pylith.problems.InitialCondition import InitialCondition
 from .problems import InitialConditionPatch as ModuleInitialCondition
 
 
-def validateLabel(value):
-    """
-    Validate label for group/nodeset/pset.
-    """
-    if 0 == len(value):
-        raise ValueError("Label for initial condition group/nodeset/pset in mesh not specified.")
-    return value
-
-
 class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
     """
     Python object for specifying initial conditions over a portion of the domain (patch).
@@ -39,7 +30,7 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
     INVENTORY
 
     Properties
-      - *label* Label marking subdomain.
+      - *id* Material id associated with patch.
 
     Facilities
       - *db* Spatial database with values for initial conditions.
@@ -48,8 +39,8 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
     import pyre.inventory
     from spatialdata.spatialdb.SimpleDB import SimpleDB
 
-    label = pyre.inventory.str("label", default="", validator=validateLabel)
-    label.meta["tip"] = "Label identifier for boundary."
+    matId = pyre.inventory.int("id", default=0)
+    matId.meta["tip"] = "Material id associated with patch."
 
     db = pyre.inventory.facility("db", family="spatial_database", factory=SimpleDB)
     db.meta["tip"] = "Spatial database with values for initial condition."
@@ -69,7 +60,7 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
         """
         InitialCondition.preinitialize(self, mesh)
 
-        ModuleInitialCondition.setMarkerLabel(self, self.label)
+        ModuleInitialCondition.setMaterialId(self, self.matId)
         ModuleInitialCondition.setDB(self, self.db)
         return
 

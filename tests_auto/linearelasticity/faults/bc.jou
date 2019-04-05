@@ -58,16 +58,3 @@ group "edge_yneg_nofault" remove node in fault_x
 nodeset 24 group edge_yneg_nofault
 nodeset 24 name "edge_yneg_nofault"
 
-# ----------------------------------------------------------------------
-# Create nodeset for +x patch
-# ----------------------------------------------------------------------
-group "patch_xpos" add node in surface 3
-nodeset 30 group patch_xpos
-nodeset 30 name "patch_xpos"
-
-# ----------------------------------------------------------------------
-# Create nodeset for -x patch
-# ----------------------------------------------------------------------
-group "patch_xneg" add node in surface 4 5
-nodeset 31 group patch_xneg
-nodeset 31 name "patch_xneg"
