@@ -318,7 +318,13 @@ pylith::topology::Field::allocate(void) {
     PetscSection s = NULL;
     PetscErrorCode err;
 
+    /* Ideally, we should create the DS *before* adding the boundary conditions to the DS. For now, this does work.
+     *
+     * We cannot create the DS until after setting the discretizations for each field in subfieldsSetup() and
+     * _setupLagrangeMultiplier().
+     */
     err = DMCreateDS(_dm);PYLITH_CHECK_ERROR(err);
+
     err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);assert(s); // Creates local section
     err = DMSetDefaultGlobalSection(_dm, NULL);PYLITH_CHECK_ERROR(err); // Creates global section
     err = PetscSectionSetUp(s);PYLITH_CHECK_ERROR(err);
