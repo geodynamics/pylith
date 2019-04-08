@@ -58,7 +58,7 @@ pylith::feassemble::PhysicsImplementation::deallocate(void) {
 
     delete _auxiliaryField;_auxiliaryField = NULL;
     delete _derivedField;_derivedField = NULL;
-    delete _observers;_observers = NULL;
+    _observers = NULL; // :KLUDGE: Use shared pointer. _observers held by physics.
     delete _logger;_logger = NULL;
 
     PYLITH_METHOD_END;
