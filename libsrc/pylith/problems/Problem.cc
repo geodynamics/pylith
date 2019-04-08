@@ -68,6 +68,16 @@ void
 pylith::problems::Problem::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
+    const size_t numIntegrators = _integrators.size();
+    for (size_t i = 0; i < numIntegrators; ++i) {
+        delete _integrators[i];_integrators[i] = NULL;
+    } // for
+
+    const size_t numConstraints = _constraints.size();
+    for (size_t i = 0; i < numConstraints; ++i) {
+        delete _constraints[i];_constraints[i] = NULL;
+    } // for
+
     _solution = NULL; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
     delete _solutionDot;_solutionDot = NULL;
     delete _residual;_residual = NULL;
