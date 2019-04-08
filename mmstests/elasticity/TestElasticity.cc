@@ -58,6 +58,8 @@ pylith::mmstests::TestElasticity::setUp(void) {
 void
 pylith::mmstests::TestElasticity::tearDown(void) {
     delete _material;_material = NULL;
+
+    MMSTest::tearDown();
 } // tearDown
 
 

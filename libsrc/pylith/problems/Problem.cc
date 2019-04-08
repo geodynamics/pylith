@@ -332,7 +332,6 @@ pylith::problems::Problem::initialize(void) {
     } // for
 
     _solution->allocate();
-    _solution->zeroLocal();
     _solution->createScatter(_solution->mesh(), "global");
 
     journal::debug_t debug(PyreComponent::getName());
@@ -346,7 +345,6 @@ pylith::problems::Problem::initialize(void) {
     delete _residual;_residual = new pylith::topology::Field(_solution->mesh());assert(_residual);
     _residual->cloneSection(*_solution);
     _residual->label("residual");
-    _solution->zeroLocal();
 
     PYLITH_METHOD_END;
 } // initialize

@@ -322,18 +322,15 @@ pylith::problems::TimeDependent::initialize(void) {
     err = TSSetDM(_ts, _solution->dmMesh());PYLITH_CHECK_ERROR(err);
 
     // Set initial solution.
+    PYLITH_COMPONENT_DEBUG("Setting PetscTS initial conditions using global vector for solution.");
     _solution->zeroLocal();
     const size_t numIC = _ic.size();
     for (size_t i = 0; i < numIC; ++i) {
         assert(_ic[i]);
         _ic[i]->setValues(_solution, *_normalizer);
     } // for
-    PetscVec solutionVec = NULL;
-    err = DMCreateGlobalVector(_solution->dmMesh(), &solutionVec);PYLITH_CHECK_ERROR(err);
-    _solution->scatterLocalToVector(solutionVec);
-    PYLITH_COMPONENT_DEBUG("Setting PetscTS initial conditions using global vector for solution.");
-    err = TSSetSolution(_ts, solutionVec);PYLITH_CHECK_ERROR(err);
-    err = VecDestroy(&solutionVec);PYLITH_CHECK_ERROR(err);
+    _solution->scatterLocalToContext("global");
+    err = TSSetSolution(_ts, _solution->scatterVector("global"));PYLITH_CHECK_ERROR(err);
 
     // Set callbacks.
     PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks prestep(), poststep(), computeRHSJacobian(), and computeRHSFunction().");

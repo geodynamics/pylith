@@ -154,18 +154,12 @@ pylith::testing::MMSTest::_initialize(void) {
     _problem->setSolverType(pylith::problems::Problem::NONLINEAR);
     _problem->setMaxTimeSteps(1);
     _problem->preinitialize(*_mesh);
-
-    _setExactSolution();
-    _solution->allocate();
-
     _problem->verifyConfiguration();
+
+    _setExactSolutionBC();
     _problem->initialize();
+    _setExactSolution();
 
-    _solution->createScatter(_solution->mesh(), "global");
-    _solution->scatterLocalToContext("global");
-    PetscErrorCode err = TSSetSolution(_problem->_ts, _solution->scatterVector("global"));CPPUNIT_ASSERT(!err);
-
-    err = TSSetUp(_problem->_ts);CPPUNIT_ASSERT(!err);
 #if 0
     err = SNESSetSolution(snes, u);CPPUNIT_ASSERT(!err);
 
@@ -173,12 +167,6 @@ pylith::testing::MMSTest::_initialize(void) {
     err = TSGetSNES(ts, &snes);CPPUNIT_ASSERT(!err);
     err = DMSNESCheckFromOptions_Internal(snes, dm, sol, exactFuncs, ctxs);CPPUNIT_ASSERT(!err);
 #endif
-
-    /**
-     * https://bitbucket.org/petsc/petsc/src/4db401632e1443d930e54234abe1842a0bc30a81/src/ts/utils/dmplexts.c?fileviewer=file-view-default#lines-266
-     * https://bitbucket.org/petsc/petsc/src/4db401632e1443d930e54234abe1842a0bc30a81/src/snes/utils/dmplexsnes.c?fileviewer=file-view-default#lines-2470
-     * https://bitbucket.org/petsc/petsc/src/4db401632e1443d930e54234abe1842a0bc30a81/src/snes/examples/tutorials/ex17.c?fileviewer=file-view-default#lines-352
-     **/
 
     PYLITH_METHOD_END;
 } // _initialize

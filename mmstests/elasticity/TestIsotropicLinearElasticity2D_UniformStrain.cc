@@ -176,6 +176,7 @@ protected:
         _data->auxDB->addValue("density", density, density_units());
         _data->auxDB->addValue("vp", vp, vp_units());
         _data->auxDB->addValue("vs", vs, vs_units());
+        _data->auxDB->coordsys(*_data->cs);
 
         CPPUNIT_ASSERT(_material);
         _material->useInertia(false);
@@ -187,7 +188,21 @@ protected:
 
     } // setUp
 
-    // Set exact solution.
+    // Set Dirichlet boundary condition with exact solution on boundary.
+    void _setExactSolutionBC(void) {
+        CPPUNIT_ASSERT(_solution);
+
+        PetscErrorCode err = 0;
+        PetscDS prob = NULL;
+        void* context = NULL;
+        const PylithInt id = 1;
+        PylithInt iField = 0;
+        err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
+        err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL, "boundary", _data->boundaryLabel, iField, 0, NULL,
+                                 (void (*)(void))solnkernel_disp, 1, &id, context);CPPUNIT_ASSERT(!err);
+    } // _setExactSolution
+
+    // Set exact solution in domain.
     void _setExactSolution(void) {
         CPPUNIT_ASSERT(_solution);
 
@@ -195,12 +210,6 @@ protected:
         PetscDS prob = NULL;
         err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(prob, 0, solnkernel_disp);CPPUNIT_ASSERT(!err);
-
-        void* context = NULL;
-        const PylithInt id = 1;
-        PylithInt iField = 0;
-        err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL, "boundary", _data->boundaryLabel, iField, 0, NULL,
-                                 (void (*)(void))solnkernel_disp, 1, &id, context);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
 
 }; // TestIsotropicLinearElasticity2D_UniformStrain
