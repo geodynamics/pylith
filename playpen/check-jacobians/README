@@ -1,0 +1,20 @@
+This directory contains files that are meant to test PyLith Jacobians
+for both Drucker-Prager and Power-law. All the problems have been run
+but you can run them again by using the run_all.sh script.  There are
+two cases for each problem:
+
+1.  A case where we actually solve the problem (*solve.cfg files).
+2.  A case where we compute the Jacobians using snes_compare_explicit.
+
+The reason there are two cases is because the solutions don't converge
+when computing the Jacobians (not sure why).
+
+The results are puzzling, because the computed Jacobians appear to be
+virtually identical no matter what rheology is used. For example, the
+PyLith Jacobians for associated and non-associated Drucker-Prager are
+identical. The PyLith Jacobians for Drucker-Prager and power-law are
+identical until row 32. I can't think of any reason this would be true.
+
+I am running this using willic3/fix-plastic-jacobian, which should be
+virtually identical to master, except I have set _isJacobianSymmetric
+to always be false.

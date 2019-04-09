@@ -1,0 +1,28 @@
+// -*- C++ -*- (syntax highlighting)
+//
+// This spatial database specifies the parameters for the continental
+// crust material, which is a Drucker-Prager elastoplastic solid.
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 6
+  value-names =  density vs vp friction-angle cohesion dilatation-angle
+  value-units =  kg/m**3  m/s  m/s degree kPa degree // units
+  num-locs = 1 // number of locations
+  data-dim = 0
+  space-dim = 2
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 2
+  }
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) density (kg/m^3)
+// (4) vs (m/s)
+// (5) vp (m/s)
+// (6) friction-angle (degree)
+// (7) cohesion (kPa)
+// (8) dilatation-angle (degree)
+0.0  0.0  4000.0  5600.0  10000.0 10.0 0.1 10.0

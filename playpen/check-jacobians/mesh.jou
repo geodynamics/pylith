@@ -1,0 +1,60 @@
+reset
+
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+
+# Block is 3 km x 3 km x 2 km
+# -1.5 km <= x <= 1.5 km
+# -1.5 km <= y <= 1.5 km
+# -2 km <= z <= 0 km
+
+brick x 3000 y 3000 z 2000
+
+# Move block so top is at z=0
+volume 1 move x 0 y 0 z -1000
+
+# ----------------------------------------------------------------------
+# Set mesh size and mesh the volume.
+# ----------------------------------------------------------------------
+volume all size 1000
+mesh volume all
+
+# ----------------------------------------------------------------------
+# Create single block consisting of entire volume.
+# ----------------------------------------------------------------------
+block 1 volume all
+block 1 name "inelastic"
+
+# ----------------------------------------------------------------------
+# Create nodesets on all external boundaries.
+# ----------------------------------------------------------------------
+group "face_xneg" add node in surface 4
+nodeset 11 face_xneg
+nodeset 11 name "face_xneg"
+
+group "face_xpos" add node in surface 6
+nodeset 12 face_xpos
+nodeset 12 name "face_xpos"
+
+group "face_yneg" add node in surface 3
+nodeset 13 face_yneg
+nodeset 13 name "face_yneg"
+
+group "face_ypos" add node in surface 5
+nodeset 14 face_ypos
+nodeset 14 name "face_ypos"
+
+group "face_zneg" add node in surface 2
+nodeset 15 face_zneg
+nodeset 15 name "face_zneg"
+
+group "face_zpos" add node in surface 1
+nodeset 16 face_zpos
+nodeset 16 name "face_zpos"
+
+# ----------------------------------------------------------------------
+# Export exodus file.
+# ----------------------------------------------------------------------
+export mesh "flat_box_hex8_1000m.exo" dimension 3 overwrite
+
