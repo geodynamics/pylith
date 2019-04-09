@@ -49,6 +49,25 @@ pylith::problems::InitialCondition::deallocate(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Set fields for initial condition.
+void
+pylith::problems::InitialCondition::setFields(const char* fields[],
+                                              const int numFields) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("setFields(fields="<<fields<<", numFields="<<numFields<<")");
+
+    if (numFields > 0) {
+        _fields.resize(numFields);
+        for (int i = 0; i < numFields; ++i) {
+            _fields[i] = fields[i];
+        } // for
+    } // if
+
+    PYLITH_METHOD_END;
+} // setFields
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::problems::InitialCondition::verifyConfiguration(const pylith::topology::Field& solution) const {
