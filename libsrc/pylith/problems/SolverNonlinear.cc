@@ -43,6 +43,9 @@
 #include <petsc/private/snesimpl.h>
 #include <petsc/private/linesearchimpl.h>
 
+#include <iostream> // USES std::cout
+#include <stdexcept> // USES std::runtime_error
+
 struct PetscSNESLineSearch_BT {
   PetscReal        alpha; /* sufficient decrease parameter */
 };
@@ -161,6 +164,16 @@ pylith::problems::SolverNonlinear::solve(topology::Field* solution,
 
   // Update rate fields to be consistent with current solution.
   _formulation->calcRateFields();
+#ifdef DEBUG_SNES_JACOBIAN
+  jacobian->topology::Jacobian::view();
+  try {
+    jacobian->topology::Jacobian::verifySymmetry();
+  }
+  catch (const std::runtime_error& error) {
+    std::cout << "Jacobian is not symmetric!" << std::endl;
+  }
+  solution->topology::Field::view("SOLUTION");
+#endif
 
   PYLITH_METHOD_END;
 } // solve

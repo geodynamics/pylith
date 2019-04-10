@@ -250,8 +250,8 @@ pylith::materials::DruckerPragerPlaneStrain::_dbToProperties(
     throw std::runtime_error(msg.str());
   } // if
 
-  if (fabs(frictionAngle - dilatationAngle) > 1.0e-6)
-    _isJacobianSymmetric = false;
+  // if (fabs(frictionAngle - dilatationAngle) > 1.0e-6)
+  _isJacobianSymmetric = false;
 
   const PylithScalar mu = density * vs*vs;
   const PylithScalar lambda = density * vp*vp - 2.0*mu;
