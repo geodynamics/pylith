@@ -7,8 +7,15 @@ SimpleDB {
   data-dim =    0
   space-dim =    3
   cs-data = cartesian {
-  to-meters = 1
-  space-dim = 3
+    to-meters = 1
+    space-dim = 3
+  }
 }
-}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) z coordinate (m)
+// (4) Reference stress (Pa)
+// (5) Reference strain rate (1/s)
+// (6) Power-law exponent (none)
   0.000000e+00  0.000000e+00 0.000000e+00  2000.0  1200.0  2078.460969082653 1.0e+07  1.000000e-06  3.500

@@ -1,0 +1,22 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values =      4
+  value-names =  density vs vp viscosity
+  value-units =  kg/m**3  m/s  m/s Pa*s
+  num-locs =     1
+  data-dim =    0
+  space-dim =    3
+  cs-data = cartesian {
+    to-meters = 1
+    space-dim = 3
+  }
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) z coordinate (m)
+// (4) density (kg/m^3)
+// (5) vs (m/s)
+// (6) vp (m/s)
+// (7) viscosity (Pa-s)
+  0.000000e+00  0.000000e+00 0.000000e+00  2000.0  1200.0  2078.460969082653  7.10046e+18

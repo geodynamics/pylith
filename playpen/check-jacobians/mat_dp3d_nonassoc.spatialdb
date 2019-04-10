@@ -1,8 +1,5 @@
 // -*- C++ -*- (syntax highlighting)
 //
-// This spatial database specifies the parameters for the continental
-// crust material, which is a Drucker-Prager elastoplastic solid.
-//
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 6
