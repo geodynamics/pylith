@@ -50,6 +50,7 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
     INVENTORY
 
     Properties
+      - *constrained_dof* Constrained degrees of freedom (0=1st DOF, 1=2nd DOF, etc).
       - *use_initial* Use initial term in time-dependent expression.
       - *use_rate* Use rate term in time-dependent expression.
       - *use_time_history* Use time history term in time-dependent expression.
