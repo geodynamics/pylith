@@ -22,4 +22,4 @@ SimpleDB {
 // (6) friction-angle (degree)
 // (7) cohesion (kPa)
 // (8) dilatation-angle (degree)
-0.0  0.0  4000.0  5600.0  10000.0 10.0 0.1 10.0
+0.0  0.0   2000.0  1200.0  2078.460969082653 25.0 10.0 10.0
