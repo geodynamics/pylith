@@ -163,7 +163,6 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
     // context.
     const Field::subfields_type& subfields = _field._subfields;
     const size_t size = subfields.size();
-    assert(_queryFns.size() == size);
     delete[] _functions;_functions = (size > 0) ? new queryfn_type[size] : NULL;
     delete[] _contexts;_contexts = (size > 0) ? new DBQueryContext[size] : NULL;
     delete[] _contextPtrs;_contextPtrs = (size > 0) ? new DBQueryContext*[size] : NULL;
@@ -171,18 +170,18 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
     int i = 0;
     for (Field::subfields_type::const_iterator iter = subfields.begin(); iter != subfields.end(); ++iter, ++i) {
         const std::string& name = iter->first;
-        if (_queryFns.find(name) == _queryFns.end()) { // if
-            std::ostringstream msg;
-            msg << "FieldQuery for field '" << _field.label() << "' missing query function for subfield '" << name << "'";
-            throw std::logic_error(msg.str());
-        } // if/else
         const PylithInt index = iter->second.index;
         assert(size_t(index) < subfields.size());
+        if (_queryFns.find(name) != _queryFns.end()) {
+            _functions[index] = (db || _queryDBs[name]) ? _queryFns[name] : NULL;
 
-        _functions[index] = (db || _queryDBs[name]) ? _queryFns[name] : NULL;
-
-        _contexts[index].db = (_queryDBs[name]) ? _queryDBs[name] : db;
-        _contexts[index].cs = _field.mesh().coordsys();
+            _contexts[index].db = (_queryDBs[name]) ? _queryDBs[name] : db;
+            _contexts[index].cs = _field.mesh().coordsys();
+        } else {
+            _functions[index] = NULL;
+            _contexts[index].db = NULL;
+            _contexts[index].cs = NULL;
+        } // if/else
         _contexts[index].lengthScale = lengthScale;
 
         const pylith::topology::Field::Description& description = iter->second.description;

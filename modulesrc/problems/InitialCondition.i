@@ -37,6 +37,18 @@ public:
             /// Deallocate PETSc and local data structures.
             void deallocate(void);
 
+	    /** Set fields for initial condition.
+	     *
+	     * @param[in] subfields Array of names of solution subfields.
+	     * @param[in] numSubfields Number of subfields.
+	     */
+	    %apply(const char* const* string_list, const int list_len){
+		(const char* subfields[], const int numSubfields)
+	    };
+	    void setSubfields(const char* subfields[],
+			   const int numSubfields);
+	    %clear(const char* subfields[], const int numSubfields);
+
             /** Set solver type.
              *
              * @param[out] solution Solution field.

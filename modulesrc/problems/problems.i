@@ -43,6 +43,7 @@
 %include "typemaps.i"
 %include "../include/physicsarray.i"
 %include "../include/outputarray.i"
+%include "../include/chararray.i"
 %include "../include/scalartypemaps.i"
 
 // Numpy interface stuff

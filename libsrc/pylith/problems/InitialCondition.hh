@@ -48,13 +48,13 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Set fields for initial condition.
+    /** Set solution subfields for initial condition.
      *
-     * @param[in] fields Array of names of fields.
-     * @param[in] numFields Number of fields.
+     * @param[in] subfields Array of names of solution subfields.
+     * @param[in] numSubfields Number of subfields.
      */
-    void setFields(const char* fields[],
-                   const int numFields);
+    void setSubfields(const char* subfields[],
+                      const int numSubfields);
 
     /** Verify configuration is acceptable.
      *
@@ -75,7 +75,7 @@ public:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::string_vector _fields; ///< Names of fields for initial conditions.
+    pylith::string_vector _subfields; ///< Names of fields for initial conditions.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
