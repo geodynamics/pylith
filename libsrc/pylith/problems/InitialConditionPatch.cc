@@ -107,6 +107,8 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
 
+    InitialCondition::verifyConfiguration(solution);
+
     const PetscDM dmSoln = solution.dmMesh();
     PetscBool hasLabel = PETSC_FALSE;
     PetscErrorCode err = DMHasLabel(dmSoln, _InitialConditionPatch::labelName, &hasLabel);PYLITH_CHECK_ERROR(err);
@@ -145,7 +147,12 @@ pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solu
     assert(solution);
 
     pylith::topology::FieldQuery fieldQuery(*solution);
-    fieldQuery.initializeWithDefaultQueryFns();
+
+    const size_t numSubfields = _subfields.size();
+    for (size_t i = 0; i < numSubfields; ++i) {
+        fieldQuery.queryFn(_subfields[i].c_str(), pylith::topology::FieldQuery::dbQueryGeneric, _db);
+    } // for
+
     fieldQuery.openDB(_db, normalizer.lengthScale());
     fieldQuery.queryDBLabel(_InitialConditionPatch::labelName, _patchId);
     fieldQuery.closeDB(_db);

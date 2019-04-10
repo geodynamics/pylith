@@ -30,11 +30,16 @@ class InitialCondition(PetscComponent, ModuleInitialCondition):
     INVENTORY
 
     Properties
-      - None
+      - subfields Names of solution subfields for initial condition.
 
     Facilities
       - None
     """
+
+    import pyre.inventory
+
+    subfields = pyre.inventory.list("subfields", default=["displacement"])
+    subfields.meta["tip"] = "Names of solution subfields for initial condition."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -51,6 +56,7 @@ class InitialCondition(PetscComponent, ModuleInitialCondition):
         """
         self._createModuleObj()
         ModuleInitialCondition.setIdentifier(self, self.aliases[-1])
+        ModuleInitialCondition.setSubfields(self, self.subfields)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

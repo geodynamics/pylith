@@ -28,6 +28,8 @@
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
+#include "pylith/utils/arrayfwd.hh" // USES string_vector
+
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "spatialdata/units/unitsfwd.hh" // HASA Nondimensional
 
@@ -46,6 +48,14 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
+    /** Set solution subfields for initial condition.
+     *
+     * @param[in] subfields Array of names of solution subfields.
+     * @param[in] numSubfields Number of subfields.
+     */
+    void setSubfields(const char* subfields[],
+                      const int numSubfields);
+
     /** Verify configuration is acceptable.
      *
      * @param[in] solution Solution field.
@@ -61,6 +71,11 @@ public:
     virtual
     void setValues(pylith::topology::Field* solution,
                    const spatialdata::units::Nondimensional& normalizer) = 0;
+
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+protected:
+
+    pylith::string_vector _subfields; ///< Names of fields for initial conditions.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

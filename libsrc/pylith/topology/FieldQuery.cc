@@ -162,8 +162,7 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
     // pointers, since Petsc function doesn't know the size of the
     // context.
     const Field::subfields_type& subfields = _field._subfields;
-    const unsigned size = subfields.size();
-    assert(_queryFns.size() == size);
+    const size_t size = subfields.size();
     delete[] _functions;_functions = (size > 0) ? new queryfn_type[size] : NULL;
     delete[] _contexts;_contexts = (size > 0) ? new DBQueryContext[size] : NULL;
     delete[] _contextPtrs;_contextPtrs = (size > 0) ? new DBQueryContext*[size] : NULL;
@@ -171,18 +170,18 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
     int i = 0;
     for (Field::subfields_type::const_iterator iter = subfields.begin(); iter != subfields.end(); ++iter, ++i) {
         const std::string& name = iter->first;
-        if (_queryFns.find(name) == _queryFns.end()) { // if
-            std::ostringstream msg;
-            msg << "FieldQuery for field '" << _field.label() << "' missing query function for subfield '" << name << "'";
-            throw std::logic_error(msg.str());
-        } // if/else
         const PylithInt index = iter->second.index;
         assert(size_t(index) < subfields.size());
+        if (_queryFns.find(name) != _queryFns.end()) {
+            _functions[index] = (db || _queryDBs[name]) ? _queryFns[name] : NULL;
 
-        _functions[index] = (db || _queryDBs[name]) ? _queryFns[name] : NULL;
-
-        _contexts[index].db = (_queryDBs[name]) ? _queryDBs[name] : db;
-        _contexts[index].cs = _field.mesh().coordsys();
+            _contexts[index].db = (_queryDBs[name]) ? _queryDBs[name] : db;
+            _contexts[index].cs = _field.mesh().coordsys();
+        } else {
+            _functions[index] = NULL;
+            _contexts[index].db = NULL;
+            _contexts[index].cs = NULL;
+        } // if/else
         _contexts[index].lengthScale = lengthScale;
 
         const pylith::topology::Field::Description& description = iter->second.description;
@@ -221,18 +220,26 @@ pylith::topology::FieldQuery::queryDB(void) {
 // ----------------------------------------------------------------------
 // Query spatial database to set values in field.
 void
-pylith::topology::FieldQuery::queryDBLabel(const char* name,
-                                           const PylithInt value) {
+pylith::topology::FieldQuery::queryDBLabel(const char* labelName,
+                                           const PylithInt labelValue) {
     PYLITH_METHOD_BEGIN;
 
     PetscErrorCode err = 0;
     PetscReal dummyTime = 0.0;
 
+    const Field::subfields_type& subfields = _field._subfields;
+    const size_t numSubfields = subfields.size();
+    pylith::int_array subfieldIndices(numSubfields);
+    size_t i = 0;
+    for (Field::subfields_type::const_iterator iter = subfields.begin(); iter != subfields.end(); ++iter, ++i) {
+        subfieldIndices[i] = iter->second.index;
+    } // for
+
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(_field.dmMesh(), name, &dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMProjectFunctionLabelLocal(_field.dmMesh(), dummyTime, dmLabel, 1, &value, 0, NULL, _functions,
-                                      (void**)_contextPtrs, INSERT_ALL_VALUES,
-                                      _field.localVector());PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(_field.dmMesh(), labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMProjectFunctionLabelLocal(_field.dmMesh(), dummyTime, dmLabel, 1, &labelValue,
+                                      numSubfields, &subfieldIndices[0], _functions, (void**)_contextPtrs,
+                                      INSERT_ALL_VALUES, _field.localVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // queryDB

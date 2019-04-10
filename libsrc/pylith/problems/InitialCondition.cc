@@ -49,11 +49,41 @@ pylith::problems::InitialCondition::deallocate(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Set fields for initial condition.
+void
+pylith::problems::InitialCondition::setSubfields(const char* subfields[],
+                                                 const int numSubfields) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("setFields(subfields="<<subfields<<", numSubfields="<<numSubfields<<")");
+
+    if (numSubfields > 0) {
+        _subfields.resize(numSubfields);
+        for (int i = 0; i < numSubfields; ++i) {
+            _subfields[i] = subfields[i];
+        } // for
+    } // if
+
+    PYLITH_METHOD_END;
+} // setFields
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::problems::InitialCondition::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+
+    const size_t numSubfields = _subfields.size();
+    for (size_t i = 0; i < numSubfields; ++i) {
+        if (!solution.hasSubfield(_subfields[i].c_str())) {
+            std::ostringstream msg;
+            msg << "Cannot specify initial conditions for solution subfield '"<< _subfields[i]
+                << "' in component '" << PyreComponent::getIdentifier() << "'"
+                << "; field is not in solution.";
+            throw std::runtime_error(msg.str());
+        } // if
+    } // for
 
     PYLITH_METHOD_END;
 } // verityConfiguration

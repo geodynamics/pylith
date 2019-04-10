@@ -81,7 +81,12 @@ pylith::problems::InitialConditionDomain::setValues(pylith::topology::Field* sol
     assert(solution);
 
     pylith::topology::FieldQuery fieldQuery(*solution);
-    fieldQuery.initializeWithDefaultQueryFns();
+
+    const size_t numSubfields = _subfields.size();
+    for (size_t i = 0; i < numSubfields; ++i) {
+        fieldQuery.queryFn(_subfields[i].c_str(), pylith::topology::FieldQuery::dbQueryGeneric, _db);
+    } // for
+
     fieldQuery.openDB(_db, normalizer.lengthScale());
     fieldQuery.queryDB();
     fieldQuery.closeDB(_db);
