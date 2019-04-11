@@ -122,9 +122,12 @@ def checkModel(modelNum, modelType, numEquations):
 	print "  Number of Jacobian arrays:                     %d" % numJacobians
 	for jacobianNum in range(numJacobians):
 		print "    Jacobian number                   %d:" % jacobianNum
-		(pySymmetry, maxDiff, maxDiffPct) = checkJacobian(
+		(pySymmetry, maxDiff, maxDiffPct,
+		 meanDiff, meanDiffPct) = checkJacobian(
 			pyJacobians[jacobianNum], diffJacobians[jacobianNum])
 		print "      Symmetry from numpy:                       %s" % pySymmetry
+		print "      Mean difference from PyLith:               %g" % meanDiff
+		print "      Mean percentage difference from PyLith:    %g" % meanDiffPct
 		print "      Maximum difference from PyLith:            %g" % maxDiff
 		print "      Maximum percentage difference from PyLith: %g" % maxDiffPct
 		
@@ -145,8 +148,10 @@ def checkJacobian(pyJacobian, diffJacobian):
 	maxDiff = numpy.amax(absDiff)
 	pctDiff = 100.0*(absDiff[useInds]/absJac[useInds])
 	maxDiffPercent = numpy.amax(pctDiff)
+	meanDiff = numpy.mean(absDiff[useInds])
+	meanDiffPct = numpy.mean(pctDiff)
 
-	return (numpySymmetry, maxDiff, maxDiffPercent)
+	return (numpySymmetry, maxDiff, maxDiffPercent, meanDiff, meanDiffPct)
 	
 	
 #------------------------------------------------------------------------------

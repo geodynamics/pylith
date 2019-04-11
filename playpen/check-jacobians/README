@@ -28,9 +28,10 @@ Current results:
     and the D-P models where we allow (and create) tensile yield.
 2.  Most of the PyLith Jacobians are in good agreement with the
     finite difference Jacobians from PETSc.  The exceptions are:
-    a.  Power-law 2d:  maximum difference is 56.25%.
-    b.  Drucker-Prager 3d tensile:  Maximum difference is 520.34%.
-    c.  Power-law 3d:  maximum difference is 5.73%.
+    a.  Drucker-Prager 2d tensile:  Maximum difference is 290%
+    b.  Power-law 2d:  maximum difference is 5.7%.
+    c.  Drucker-Prager 3d tensile:  Maximum difference is 520%.
+    d.  Power-law 3d:  maximum difference is 5.7%.
 
 It is probably worthwhile to try the models with and without
 initial stresses, to see if this changes anything.
