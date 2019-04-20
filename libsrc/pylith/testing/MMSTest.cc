@@ -32,11 +32,22 @@
 #include <cassert> // USES assert()
 
 extern "C" {
-    PetscErrorCode DMSNESCheckFromOptions_Internal(PetscSNES snes,
-                                                   PetscDM dm,
-                                                   PetscVec u,
-                                                   PetscErrorCode(**exactFuncs)(PetscInt, PetscReal, const PetscReal x[], PetscInt, PetscScalar *u, void *ctx),
-                                                   void **ctxs);
+PetscErrorCode DMSNESCheckDiscretization(SNES snes,
+                                         DM dm,
+                                         Vec u,
+                                         PetscErrorCode(**exactFuncs)(PetscInt, PetscReal, const PetscReal x[], PetscInt, PetscScalar *u, void *ctx),
+                                         void **ctxs,
+                                         PetscReal tol);
+
+PetscErrorCode DMSNESCheckResidual(SNES snes,
+                                   DM dm,
+                                   Vec u,
+                                   PetscReal tol);
+
+PetscErrorCode DMSNESCheckJacobian(SNES snes,
+                                   DM dm,
+                                   Vec u,
+                                   PetscReal tol);
 
 } // extern "C"
 
@@ -75,9 +86,19 @@ pylith::testing::MMSTest::testDiscretization(void) {
 
     _initialize();
 
-#if 0
-    // Call function for discretization test refactored from DMSNESCheckFromOptions_Internal().
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad @matt Implement test.", false);
+#if 1
+    CPPUNIT_ASSERT(_problem);
+    CPPUNIT_ASSERT(_problem->_ts);
+    PetscTS ts = _problem->_ts;
+    PetscDM dm = NULL;
+    PetscSNES snes = NULL;
+    PetscErrorCode err = 0;
+    err = TSGetDM(ts, &dm);CPPUNIT_ASSERT(!err);
+    err = TSGetSNES(ts, &snes);CPPUNIT_ASSERT(!err);
+
+    CPPUNIT_ASSERT(_solution);
+    const PylithReal tolerance = -1.0;
+    err = DMSNESCheckDiscretization(snes, dm, _solution->scatterVector("global"), NULL, NULL, tolerance);
 #else
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_problem->_ts);
@@ -102,8 +123,18 @@ void
 pylith::testing::MMSTest::testResidual(void) {
     PYLITH_METHOD_BEGIN;
 
-    // Call function for residual test refactored from DMSNESCheckFromOptions_Internal().
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad @matt Implement test.", false);
+    CPPUNIT_ASSERT(_problem);
+    CPPUNIT_ASSERT(_problem->_ts);
+    PetscTS ts = _problem->_ts;
+    PetscDM dm = NULL;
+    PetscSNES snes = NULL;
+    PetscErrorCode err = 0;
+    err = TSGetDM(ts, &dm);CPPUNIT_ASSERT(!err);
+    err = TSGetSNES(ts, &snes);CPPUNIT_ASSERT(!err);
+
+    CPPUNIT_ASSERT(_solution);
+    const PylithReal tolerance = -1.0;
+    err = DMSNESCheckResidual(snes, dm, _solution->scatterVector("global"), tolerance);
 
     PYLITH_METHOD_END;
 } // testResidual
@@ -117,8 +148,18 @@ void
 pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
     PYLITH_METHOD_BEGIN;
 
-    // Call function for Jacobian test refactored from DMSNESCheckFromOptions_Internal().
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad @matt Implement test.", false);
+    CPPUNIT_ASSERT(_problem);
+    CPPUNIT_ASSERT(_problem->_ts);
+    PetscTS ts = _problem->_ts;
+    PetscDM dm = NULL;
+    PetscSNES snes = NULL;
+    PetscErrorCode err = 0;
+    err = TSGetDM(ts, &dm);CPPUNIT_ASSERT(!err);
+    err = TSGetSNES(ts, &snes);CPPUNIT_ASSERT(!err);
+
+    CPPUNIT_ASSERT(_solution);
+    const PylithReal tolerance = -1.0;
+    err = DMSNESCheckJacobian(snes, dm, _solution->scatterVector("global"), tolerance);
 
     PYLITH_METHOD_END;
 } // testJacobianTaylorSeries
