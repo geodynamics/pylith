@@ -108,6 +108,18 @@ public:
     void setInitialCondition(pylith::problems::InitialCondition* ic[],
                              const int numIC);
 
+    /** Get Petsc DM for problem.
+     *
+     * @returns PETSc DM for problem.
+     */
+    PetscDM getPetscDM(void);
+
+    /** Get nonlinear solver for problem.
+     *
+     * @returns PETSc SNES for problem.
+     */
+    PetscSNES getPetscSNES(void);
+
     /// Verify configuration.
     void verifyConfiguration(void) const;
 

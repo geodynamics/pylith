@@ -197,6 +197,35 @@ pylith::problems::TimeDependent::setInitialCondition(pylith::problems::InitialCo
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Get Petsc DM associated with problem.
+PetscDM
+pylith::problems::TimeDependent::getPetscDM(void) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscDM dm = NULL;
+    PetscErrorCode err = TSGetDM(_ts, &dm);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_RETURN(dm);
+} // getPetscTS
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+/** Get nonlinear solver for problem.
+ *
+ * @returns PETSc SNES for problem.
+ */
+PetscSNES
+pylith::problems::TimeDependent::getPetscSNES(void) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscSNES snes = NULL;
+    PetscErrorCode err = TSGetSNES(_ts, &snes);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_RETURN(snes);
+} // getPetscSNES
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration.
 void
 pylith::problems::TimeDependent::verifyConfiguration(void) const {
