@@ -129,6 +129,7 @@ pylith::testing::MMSTest::testResidual(void) {
 
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
+    _solution->view("SOLUTION");
     PetscErrorCode err = 0;
     const PylithReal tolerance = -1.0;
     PylithReal norm = 0.0;
@@ -137,6 +138,8 @@ pylith::testing::MMSTest::testResidual(void) {
     CPPUNIT_ASSERT_MESSAGE("L2 normal of residual is exactly zero, which suggests suspicious case with all residuals "
                            "entries exactly zero.", norm > 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of F(s) - G(s) == 0 failed.", 0.0, norm, 1.0e-6);
+
+    // "-res_vec_view"
 
     PYLITH_METHOD_END;
 } // testResidual
