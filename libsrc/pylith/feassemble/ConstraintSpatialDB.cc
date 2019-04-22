@@ -1,0 +1,195 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2016 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ----------------------------------------------------------------------
+//
+
+#include <portinfo>
+
+#include "pylith/feassemble/ConstraintSpatialDB.hh" // implementation of object methods
+
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
+#include "pylith/problems/Physics.hh" // USES Physics
+
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+
+#include <cassert> // USES assert()
+#include <typeinfo> // USES typeid()
+#include <stdexcept> // USES std::runtime_error
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Default constructor.
+pylith::feassemble::ConstraintSpatialDB::ConstraintSpatialDB(pylith::problems::Physics* const physics) :
+    Constraint(physics),
+    _kernelConstraintSpatialDB(NULL)
+{}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Destructor.
+pylith::feassemble::ConstraintSpatialDB::~ConstraintSpatialDB(void) {
+    deallocate();
+} // destructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set constraint kernel.
+void
+pylith::feassemble::ConstraintSpatialDB::setKernelConstraintSpatialDB(const PetscPointFunc kernel) {
+    _kernelConstraintSpatialDB = kernel;
+} // setKernelConstraintSpatialDB
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Initialize constraint domain, auxiliary field, and derived field. Update observers.
+void
+pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
+
+    assert(_physics);
+
+    const pylith::topology::Mesh& physicsDomainMesh = getPhysicsDomainMesh();
+
+    delete _auxiliaryField;_auxiliaryField = _physics->createAuxiliaryField(solution, physicsDomainMesh);
+    delete _derivedField;_derivedField = _physics->createDerivedField(solution, physicsDomainMesh);
+    _observers = _physics->getObservers();assert(_observers); // Memory managed by Python
+    _observers->setPhysicsImplementation(this);
+
+    const bool infoOnly = true;
+    _observers->notifyObservers(0.0, 0, solution, infoOnly);
+
+    // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
+    // the correct one.
+    PetscDS prob = NULL;
+    PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
+    PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
+
+    void* context = NULL;
+    const int labelId = 1;
+    const PylithInt numConstrained = _constrainedDOF.size();
+    const PetscInt i_field = solution.subfieldInfo(_subfieldName.c_str()).index;
+    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_FIELD, _constraintLabel.c_str(), _constraintLabel.c_str(), i_field,
+                             numConstrained, &_constrainedDOF[0], (void (*)())_kernelConstraintSpatialDB, 1, &labelId, context);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+} // initialize
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Update at beginning of time step.
+void
+pylith::feassemble::ConstraintSpatialDB::prestep(const double t,
+                                                 const double dt) { // prestep
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<") empty method");
+
+    assert(_physics);
+    _physics->prestep(_auxiliaryField, t);
+
+    PYLITH_METHOD_END;
+} // prestep
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Update at end of time step.
+void
+pylith::feassemble::ConstraintSpatialDB::poststep(const PylithReal t,
+                                                  const PylithInt tindex,
+                                                  const PylithReal dt,
+                                                  const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("poststep(t="<<t<<", dt="<<dt<<") empty method");
+
+    const bool infoOnly = false;
+    assert(_observers);
+    _observers->notifyObservers(t, tindex, solution, infoOnly);
+
+    PYLITH_METHOD_END;
+} // poststep
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set constrained values in solution field.
+void
+pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::topology::Field* solution,
+                                                     const double t) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("setSolution(solution="<<solution->label()<<", t="<<t<<")");
+
+    assert(solution);
+    assert(_auxiliaryField);
+    assert(_physics);
+
+    PetscErrorCode err = 0;
+    PetscDM dmSoln = solution->dmMesh();
+    PetscDM dmAux = _auxiliaryField->dmMesh();
+
+    // Get label for constraint.
+    PetscDMLabel dmLabel = NULL;
+    err = DMGetLabel(dmSoln, _constraintLabel.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
+
+    // Set auxiliary data
+    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+
+    void* context = NULL;
+    const int labelId = 1;
+    const int fieldIndex = solution->subfieldInfo(_subfieldName.c_str()).index;
+    const PylithInt numConstrained = _constrainedDOF.size();
+    assert(solution->localVector());
+    err = DMPlexLabelAddCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMPlexInsertBoundaryValuesEssentialField(dmSoln, t, solution->localVector(), fieldIndex,
+                                                   numConstrained, &_constrainedDOF[0], dmLabel, 1, &labelId,
+                                                   _kernelConstraintSpatialDB, context, solution->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMPlexLabelClearCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
+
+    // solution->view("SOLUTION at end of setSolution()"); // :DEBUG: TEMPORARY
+
+    PYLITH_METHOD_END;
+} // setSolution
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set constants used in finite-element kernels (point-wise functions).
+void
+pylith::feassemble::ConstraintSpatialDB::_setKernelConstants(const pylith::topology::Field& solution,
+                                                             const PylithReal dt) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_setKernelConstants(solution="<<solution.label()<<", dt="<<dt<<")");
+
+    assert(_physics);
+    const pylith::real_array& constants = _physics->getKernelConstants(dt);
+
+    PetscDS prob = NULL;
+    PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
+
+    // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
+    // the correct one.
+    PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
+    if (constants.size() > 0) {
+        err = PetscDSSetConstants(prob, constants.size(), const_cast<double*>(&constants[0]));PYLITH_CHECK_ERROR(err);
+    } else {
+        err = PetscDSSetConstants(prob, 0, NULL);PYLITH_CHECK_ERROR(err);
+    } // if/else
+
+    PYLITH_METHOD_END;
+} // _setKernelConstants
+
+
+// End of file

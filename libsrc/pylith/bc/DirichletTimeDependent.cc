@@ -246,6 +246,7 @@ pylith::bc::DirichletTimeDependent::createConstraint(const pylith::topology::Fie
     constraint->setMarkerLabel(getMarkerLabel());
     constraint->setConstrainedDOF(&_constrainedDOF[0], _constrainedDOF.size());
     constraint->setSubfieldName(_subfieldName.c_str());
+    // constraint->setDomainMeshFactory(pylith::topology::MeshOps::createBoundaryMesh);
 
     _DirichletTimeDependent::setKernelConstraint(constraint, *this, solution);
 

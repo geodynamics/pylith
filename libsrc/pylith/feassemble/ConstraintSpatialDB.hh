@@ -18,13 +18,14 @@
 
 /** @file libsrc/feassemble/Constraint.hh
  *
- * @brief C++ abstract base class for constraining degrees of freedom in the solution.
+ * @brief C++ class for constraining degrees of freedom in the solution via an auxiliary field constructed from
+ *  spatial database(s).
  */
 
-#if !defined(pylith_feassemble_constraint_hh)
-#define pylith_feassemble_constraint_hh
+#if !defined(pylith_feassemble_constraintspatialdb_hh)
+#define pylith_feassemble_constraintspatialdb_hh
 
-#include "pylith/feassemble/PhysicsImplementation.hh" // ISA PhysicsImplementation
+#include "pylith/feassemble/Constraint.hh" // ISA Constraint
 
 #include "pylith/problems/problemsfwd.hh" // HASA Physics
 #include "pylith/topology/topologyfwd.hh" // USES Field
@@ -32,8 +33,8 @@
 #include "pylith/utils/array.hh" // HASA int_array
 #include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
 
-class pylith::feassemble::Constraint : public pylith::feassemble::PhysicsImplementation {
-    friend class TestConstraint; // unit testing
+class pylith::feassemble::ConstraintSpatialDB : public pylith::feassemble::Constraint {
+    friend class TestConstraintSpatialDB; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -42,58 +43,23 @@ public:
      *
      * @param[in] physics Physics implemented by constraint.
      */
-    Constraint(pylith::problems::Physics* const physics);
+    ConstraintSpatialDB(pylith::problems::Physics* const physics);
 
     /// Destructor.
-    virtual ~Constraint(void);
+    virtual ~ConstraintSpatialDB(void);
 
-    /** Set indices of constrained degrees of freedom at each location.
+    /** Set constraint kernel.
      *
-     * Example: [0, 1] to apply forces to x and y degrees of freedom in
-     * a Cartesian coordinate system.
-     *
-     * @param[in] dof Array of indices for constrained degrees of freedom.
-     * @param[in] size Size of array
+     * @param kernel Kernel to compute constrained value from auxiliary field.
      */
-    void setConstrainedDOF(const int* flags,
-                           const int size);
-
-    /** Get indices of constrained degrees of freedom.
-     *
-     * @returns Array of indices for constrained degrees of freedom.
-     */
-    const pylith::int_array& getConstrainedDOF(void) const;
-
-    /** Set label marking constrained degrees of freedom.
-     *
-     * @param[in] value Label of constrained degrees of freedom (from mesh generator).
-     */
-    void setMarkerLabel(const char* value);
-
-    /** Get label marking constrained degrees of freedom.
-     *
-     * @returns Label of constrained degrees of freedom (from mesh generator).
-     */
-    const char* getMarkerLabel(void) const;
-
-    /** Set name of constrained solution subfield.
-     *
-     * @param[in] value Name of solution subfield.
-     */
-    void setSubfieldName(const char* value);
-
-    /** Get name of constrained solution subfield.
-     *
-     * @preturn Name of solution subfield.
-     */
-    const char* getSubfieldName(void) const;
+    void setKernelConstraint(const PetscPointFunc kernel);
 
     /** Initialize constraint.
      *
      * @param[in] solution Solution field (layout).
      */
     virtual
-    void initialize(const pylith::topology::Field& solution) = 0;
+    void initialize(const pylith::topology::Field& solution);
 
     /** Update auxiliary field at beginning of time step.
      *
@@ -124,7 +90,7 @@ public:
      */
     virtual
     void setSolution(pylith::topology::Field* solution,
-                     const double t) = 0;
+                     const double t);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
@@ -141,19 +107,17 @@ protected:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    int_array _constrainedDOF; ///< List of constrained degrees of freedom at each location.
-    std::string _constraintLabel; ///< Label marking constrained degrees of freedom.
-    std::string _subfieldName; ///< Name of solution subfield that is constrained.
+    PetscPointFunc _kernelConstraint; ///< Kernel for computing constrained values from auxiliary field.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    Constraint(void); /// Not implemented.
-    Constraint(const Constraint &); ///< Not implemented
-    const Constraint& operator=(const Constraint&); ///< Not implemented
+    ConstraintSpatialDB(void); /// Not implemented.
+    ConstraintSpatialDB(const ConstraintSpatialDB &); ///< Not implemented
+    const ConstraintSpatialDB& operator=(const ConstraintSpatialDB&); ///< Not implemented
 
 }; // class Constraint
 
-#endif // pylith_feassemble_constraint_hh
+#endif // pylith_feassemble_constraintspatialdb_hh
 
 // End of file

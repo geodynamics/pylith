@@ -152,15 +152,12 @@ pylith::bc::DirichletUserFn::createConstraint(const pylith::topology::Field& sol
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.label()<<")");
 
-    PetscErrorCode err = 0;
-    PetscDS prob = NULL;
-    void* context = NULL;
-    const PylithInt labelId = 1;
-    err = DMGetDS(solution.dmMesh(), &prob);PYLITH_CHECK_ERROR(err);
-    const PetscInt i_field = solution.subfieldInfo(_subfieldName.c_str()).index;
-    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL, _boundaryLabel.c_str(), _boundaryLabel.c_str(), i_field,
-                             _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void))_fn, 1, &labelId, context);
-    PYLITH_CHECK_ERROR(err);
+    pylith::feassemble::ConstraintUserFn* constraint = new pylith::feassemble::ConstraintUserFn(this);assert(constraint);
+    constraint->setMarkerLabel(getMarkerLabel());
+    constraint->setConstrainedDOF(&_constrainedDOF[0], _constrainedDOF.size());
+    constraint->setSubfieldName(_subfieldName.c_str());
+    constraint->setUserFn(fn);
+    // constraint->setDomainMeshFactory(pylith::topology::MeshOps::createBoundaryMesh);
 
     PYLITH_METHOD_RETURN(NULL);
 } // createConstraint
