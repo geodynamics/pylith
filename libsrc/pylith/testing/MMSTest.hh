@@ -79,10 +79,6 @@ protected:
     virtual
     void _initialize(void);
 
-    /// Set Dirichlet boundary condition with exact solution on boundary.
-    virtual
-    void _setExactSolutionBC(void) = 0;
-
     /// Set exact solution in domain.
     virtual
     void _setExactSolution(void) = 0;

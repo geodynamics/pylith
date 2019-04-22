@@ -34,6 +34,7 @@
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
@@ -50,6 +51,7 @@ pylith::mmstests::TestElasticity::setUp(void) {
     MMSTest::setUp();
 
     _material = new pylith::materials::Elasticity;CPPUNIT_ASSERT(_material);
+    _bc = new pylith::bc::DirichletUserFn;CPPUNIT_ASSERT(_bc);
 } // setUp
 
 
@@ -58,6 +60,7 @@ pylith::mmstests::TestElasticity::setUp(void) {
 void
 pylith::mmstests::TestElasticity::tearDown(void) {
     delete _material;_material = NULL;
+    delete _bc;_bc = NULL;
 
     MMSTest::tearDown();
 } // tearDown
@@ -100,6 +103,8 @@ pylith::mmstests::TestElasticity::_initialize(void) {
     _problem->setGravityField(_data->gravityField);
     pylith::materials::Material* materials[1] = { _material };
     _problem->setMaterials(materials, 1);
+    pylith::bc::BoundaryCondition* bcs[1] = { _bc };
+    _problem->setBoundaryConditions(bcs, 1);
     _problem->setStartTime(_data->startTime);
     _problem->setTotalTime(_data->totalTime);
     _problem->setInitialTimeStep(_data->timeStep);

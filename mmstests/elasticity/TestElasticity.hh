@@ -29,6 +29,7 @@
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
+#include "pylith/bc/bcfwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
 
@@ -67,6 +68,7 @@ protected:
 protected:
 
     pylith::materials::Elasticity* _material; ///< Material for testing.
+    pylith::bc::DirichletUserFn* _bc; ///< Dirichlet boundary condition.
     TestElasticity_Data* _data; ///< Test parameters.
 
 }; // class TestElasticity

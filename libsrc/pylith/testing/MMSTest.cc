@@ -172,17 +172,9 @@ pylith::testing::MMSTest::_initialize(void) {
     _problem->preinitialize(*_mesh);
     _problem->verifyConfiguration();
 
-    _setExactSolutionBC();
     _problem->initialize();
     _setExactSolution();
 
-#if 0
-    err = SNESSetSolution(snes, u);CPPUNIT_ASSERT(!err);
-
-    err = TSGetDM(ts, &dm);CPPUNIT_ASSERT(!err);
-    err = TSGetSNES(ts, &snes);CPPUNIT_ASSERT(!err);
-    err = DMSNESCheckFromOptions_Internal(snes, dm, sol, exactFuncs, ctxs);CPPUNIT_ASSERT(!err);
-#endif
     // Global vector to use for solution in MMS tests.
     _solution->createScatter(_solution->dmMesh(), "mmstest");
 

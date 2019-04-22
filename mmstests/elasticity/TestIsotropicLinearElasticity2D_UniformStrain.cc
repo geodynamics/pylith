@@ -23,6 +23,7 @@
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/materials/Elasticity.hh" // USES Elasticity
 #include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
+#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
 
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES journal::debug_t
@@ -186,21 +187,14 @@ protected:
         _material->setDescriptiveLabel("Isotropic Linear Elascitity Plane Strain");
         _material->setMaterialId(24);
 
+        static const PylithInt constrainedDOF[2] = {0, 1};
+        static const PylithInt numConstrained = 2;
+        _bc->setConstrainedDOF(constrainedDOF, numConstrained);
+        _bc->setMarkerLabel("boundary");
+        _bc->setSubfieldName("displacement");
+        _bc->setUserFn(solnkernel_disp);
+
     } // setUp
-
-    // Set Dirichlet boundary condition with exact solution on boundary.
-    void _setExactSolutionBC(void) {
-        CPPUNIT_ASSERT(_solution);
-
-        PetscErrorCode err = 0;
-        PetscDS prob = NULL;
-        void* context = NULL;
-        const PylithInt id = 1;
-        PylithInt iField = 0;
-        err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
-        err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL, "boundary", _data->boundaryLabel, iField, 0, NULL,
-                                 (void (*)(void))solnkernel_disp, 1, &id, context);CPPUNIT_ASSERT(!err);
-    } // _setExactSolution
 
     // Set exact solution in domain.
     void _setExactSolution(void) {
@@ -209,7 +203,7 @@ protected:
         PetscErrorCode err = 0;
         PetscDS prob = NULL;
         err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(prob, 0, solnkernel_disp);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
 
 }; // TestIsotropicLinearElasticity2D_UniformStrain

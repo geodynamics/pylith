@@ -306,6 +306,7 @@ pylith::problems::Problem::initialize(void) {
     assert(_solution);
 
     // Initialize solution field.
+    PetscErrorCode err = DMSetFromOptions(_solution->dmMesh());PYLITH_CHECK_ERROR(err);
     _solution->subfieldsSetup();
     if (_solution->hasSubfield("lagrange_multiplier_fault")) {
         _setupLagrangeMultiplier(_solution);
