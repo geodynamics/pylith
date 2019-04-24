@@ -146,13 +146,13 @@ public:
             pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
                                                         const pylith::topology::Mesh& domainMesh);
 
-            /** Update auxiliary subfields at beginning of time step.
+            /** Update time-dependent auxiliary field.
              *
              * @param[out] auxiliaryField Auxiliary field.
              * @param[in] t Current time.
              */
-            void prestep(pylith::topology::Field* auxiliaryField,
-                         const double t);
+            void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+				      const double t);
 
             // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////
 protected:

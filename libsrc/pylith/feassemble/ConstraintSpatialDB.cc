@@ -103,8 +103,7 @@ pylith::feassemble::ConstraintSpatialDB::prestep(const double t,
     PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<") empty method");
 
     assert(_physics);
-    assert(0);
-    //_physics->prestep(_auxiliaryField, t);
+    _physics->updateAuxiliaryField(_auxiliaryField, t);
 
     PYLITH_METHOD_END;
 } // prestep

@@ -152,6 +152,18 @@ pylith::problems::Physics::getKernelConstants(const PylithReal dt) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Update auxiliary field for given time.
+void
+pylith::problems::Physics::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                                                const double t) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<") empty method");
+
+    PYLITH_METHOD_END;
+} // updateAuxiliaryField
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Update kernel constants.
 void
 pylith::problems::Physics::_updateKernelConstants(const PylithReal dt) {

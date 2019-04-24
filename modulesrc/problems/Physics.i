@@ -139,6 +139,15 @@ public:
             pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
                                                         const pylith::topology::Mesh& physicsMesh) = 0;
 
+            /** Update time-dependent auxiliary field.
+             *
+             * @param[inout] auxiliaryField Auxiliary field.
+             * @param[in] t Current time.
+             */
+            virtual
+            void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                                      const double t);
+
             // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////
 protected:
 

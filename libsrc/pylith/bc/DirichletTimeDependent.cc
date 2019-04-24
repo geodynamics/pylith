@@ -311,10 +311,10 @@ pylith::bc::DirichletTimeDependent::createDerivedField(const pylith::topology::F
 // ---------------------------------------------------------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
-pylith::bc::DirichletTimeDependent::prestep(pylith::topology::Field* auxiliaryField,
-                                            const double t) {
+pylith::bc::DirichletTimeDependent::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                                                         const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("prestep(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
+    PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
     if (_useTimeHistory) {
         assert(_normalizer);
@@ -323,7 +323,7 @@ pylith::bc::DirichletTimeDependent::prestep(pylith::topology::Field* auxiliaryFi
     } // if
 
     PYLITH_METHOD_END;
-} // prestep
+} // updateAuxiliaryField
 
 
 // ---------------------------------------------------------------------------------------------------------------------
