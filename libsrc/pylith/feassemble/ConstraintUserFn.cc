@@ -36,8 +36,9 @@
 // Default constructor.
 pylith::feassemble::ConstraintUserFn::ConstraintUserFn(pylith::problems::Physics* const physics) :
     Constraint(physics),
-    _fn(NULL)
-{}
+    _fn(NULL) {
+    GenericComponent::setName("constraintuserfn");
+} // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -50,7 +51,7 @@ pylith::feassemble::ConstraintUserFn::~ConstraintUserFn(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set constraint kernel.
 void
-pylith::feassemble::ConstraintUserFn::setUserFn(const PetscSolnFunc fn) {
+pylith::feassemble::ConstraintUserFn::setUserFn(const PetscUserFieldFunc fn) {
     _fn = fn;
 } // setUserFn
 
@@ -62,9 +63,7 @@ pylith::feassemble::ConstraintUserFn::initialize(const pylith::topology::Field& 
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
 
-    assert(_physics);
-
-    const pylith::topology::Mesh& physicsDomainMesh = getPhysicsDomainMesh();
+    Constraint::initialize(solution);
 
     _observers = _physics->getObservers();assert(_observers); // Memory managed by Python
     _observers->setPhysicsImplementation(this);
@@ -80,7 +79,7 @@ pylith::feassemble::ConstraintUserFn::initialize(const pylith::topology::Field& 
     const PylithInt labelId = 1;
     err = DMGetDS(solution.dmMesh(), &prob);PYLITH_CHECK_ERROR(err);
     const PetscInt i_field = solution.subfieldInfo(_subfieldName.c_str()).index;
-    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL, _boundaryLabel.c_str(), _boundaryLabel.c_str(), i_field,
+    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL, _constraintLabel.c_str(), _constraintLabel.c_str(), i_field,
                              _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void))_fn, 1, &labelId, context);
     PYLITH_CHECK_ERROR(err);
 
@@ -97,8 +96,6 @@ pylith::feassemble::ConstraintUserFn::setSolution(pylith::topology::Field* solut
     PYLITH_JOURNAL_DEBUG("setSolution(solution="<<solution->label()<<", t="<<t<<")");
 
     assert(solution);
-    assert(_auxiliaryField);
-    assert(_physics);
 
     PetscErrorCode err = 0;
     PetscDM dmSoln = solution->dmMesh();
@@ -113,12 +110,15 @@ pylith::feassemble::ConstraintUserFn::setSolution(pylith::topology::Field* solut
     const PylithInt numConstrained = _constrainedDOF.size();
     assert(solution->localVector());
     err = DMPlexLabelAddCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMPlexInsertBoundaryValuesEssential(dmSoln, t, solution->localVector(), fieldIndex,
-                                              numConstrained, &_constrainedDOF[0], dmLabel, 1, &labelId,
-                                              _fn, context, solution->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMPlexInsertBoundaryValuesEssential(dmSoln, t, fieldIndex, numConstrained, &_constrainedDOF[0], dmLabel, 1,
+                                              &labelId, _fn, context, solution->localVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
 
-    // solution->view("SOLUTION at end of setSolution()"); // :DEBUG: TEMPORARY
+    journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        debug << journal::at(__HERE__);
+        solution->view("SOLUTION at end of ConstraintUserFn::setSolution()");
+    } // if
 
     PYLITH_METHOD_END;
 } // setSolution

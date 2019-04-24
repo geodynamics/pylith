@@ -40,7 +40,8 @@ namespace pylith {
         class UpdateStateVars; ///< Manager for updating state variables.
 
         class Constraint; ///< Abstract base class for finite-element constraints.
-        class ConstraintBoundary; ///< Abstract base class for finite-element constraints on a boundary.
+        class ConstraintSpatialDB; ///< Finite-element constraints via auxiliary field from spatial database.
+        class ConstraintUserFn; ///< Finite-element constraints via user-specified function (testing).
 
     } // feassemble
 } // pylith

@@ -27,7 +27,8 @@ subpkginclude_HEADERS = \
 	IntegratorInterface.hh \
 	UpdateStateVars.hh \
 	Constraint.hh \
-	ConstraintBoundary.hh \
+	ConstraintSpatialDB.hh \
+	ConstraintUserFn.hh \
 	AuxiliaryFactory.hh \
 	feassemblefwd.hh
 

@@ -24,6 +24,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 #include "pylith/problems/Physics.hh" // USES Physics
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
@@ -37,7 +38,8 @@
 pylith::feassemble::Constraint::Constraint(pylith::problems::Physics* const physics) :
     PhysicsImplementation(physics),
     _constraintLabel(""),
-    _subfieldName("")
+    _subfieldName(""),
+    _boundaryMesh(NULL)
 {}
 
 
@@ -46,6 +48,18 @@ pylith::feassemble::Constraint::Constraint(pylith::problems::Physics* const phys
 pylith::feassemble::Constraint::~Constraint(void) {
     deallocate();
 } // destructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::feassemble::Constraint::deallocate(void) {
+    PYLITH_METHOD_BEGIN;
+
+    delete _boundaryMesh;_boundaryMesh = NULL;
+
+    PYLITH_METHOD_END;
+} // deallocate
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -129,11 +143,27 @@ pylith::feassemble::Constraint::getSubfieldName(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set constraint kernel.
+// Get mesh associated with constrained boundary.
+const pylith::topology::Mesh&
+pylith::feassemble::Constraint::getPhysicsDomainMesh(void) const {
+    assert(_boundaryMesh);
+    return *_boundaryMesh;
+} // getPhysicsDomainMesh
+
+
+// ----------------------------------------------------------------------
+// Initialize boundary condition.
 void
-pylith::feassemble::Constraint::setKernelConstraint(const PetscPointFunc kernel) {
-    _kernelConstraint = kernel;
-} // setKernelConstraint
+pylith::feassemble::Constraint::initialize(const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("initialize(solution="<<solution.label()<<")");
+
+    delete _boundaryMesh;_boundaryMesh = new pylith::topology::Mesh(solution.mesh(), _constraintLabel.c_str());assert(_boundaryMesh);
+    PetscDM dmBoundary = _boundaryMesh->dmMesh();assert(dmBoundary);
+    pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
+
+    PYLITH_METHOD_END;
+} // initialize
 
 
 // ---------------------------------------------------------------------------------------------------------------------

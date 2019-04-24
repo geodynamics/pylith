@@ -27,20 +27,12 @@
 
 #include "pylith/bc/BoundaryCondition.hh" // ISA BoundaryCondition
 
+#include "pylith/utils/types.hh" // HASA PetscUserFieldFunc
+
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
 class pylith::bc::DirichletUserFn : public pylith::bc::BoundaryCondition {
     friend class TestDirichletUserFn; // unit testing
-
-    // PUBLIC TYPEDEFS /////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
-    typedef PetscErrorCode (*PetscSolnFunc)(PetscInt,
-                                            PetscReal,
-                                            const PetscReal x[],
-                                            PetscInt,
-                                            PetscScalar *u,
-                                            void *ctx);
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -75,13 +67,13 @@ public:
      *
      * @param[in] fn Function specifying field on boundary.
      */
-    void setUserFn(PetscSolnFunc fn);
+    void setUserFn(PetscUserFieldFunc fn);
 
     /** Get user function specifying field on boundary
      *
      * @preturns Function specifying field on boundary.
      */
-    PetscSolnFunc getUserFn(void) const;
+    PetscUserFieldFunc getUserFn(void) const;
 
     /** Verify configuration is acceptable.
      *
@@ -136,7 +128,7 @@ protected:
 private:
 
     int_array _constrainedDOF; ///< List of constrained degrees of freedom at each location.
-    PetscSolnFunc _fn; ///< Function specifying field on boundary.
+    PetscUserFieldFunc _fn; ///< Function specifying field on boundary.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

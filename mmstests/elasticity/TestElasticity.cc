@@ -115,7 +115,8 @@ pylith::mmstests::TestElasticity::_initialize(void) {
     CPPUNIT_ASSERT(_data->solnDiscretizations);
 
     CPPUNIT_ASSERT(!_solution);
-    _solution = new pylith::topology::Field(*_mesh);
+    _solution = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_solution);
+    _solution->label("solution");
     pylith::problems::SolutionFactory factory(*_solution, *_data->normalizer);
     factory.addDisplacement(_data->solnDiscretizations[0]);
     if (_data->isExplicit) {

@@ -26,7 +26,6 @@
 #define pylith_mmstests_testelasticity_hh
 
 #include "pylith/testing/MMSTest.hh" // ISA MMSTEST
-#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/bc/bcfwd.hh" // forward declarations
@@ -46,7 +45,7 @@ namespace pylith {
 } // pylith
 
 /// C++ abstract base class for testing Elasticity with various rheologies.
-class pylith::mmstests::TestElasticity : public pylith::testing::MMSTest, public pylith::utils::GenericComponent {
+class pylith::mmstests::TestElasticity : public pylith::testing::MMSTest {
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 

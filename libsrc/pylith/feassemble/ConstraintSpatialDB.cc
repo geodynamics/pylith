@@ -36,8 +36,9 @@
 // Default constructor.
 pylith::feassemble::ConstraintSpatialDB::ConstraintSpatialDB(pylith::problems::Physics* const physics) :
     Constraint(physics),
-    _kernelConstraintSpatialDB(NULL)
-{}
+    _kernelConstraint(NULL) {
+    GenericComponent::setName("constraintspatialdb");
+} // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -50,9 +51,9 @@ pylith::feassemble::ConstraintSpatialDB::~ConstraintSpatialDB(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set constraint kernel.
 void
-pylith::feassemble::ConstraintSpatialDB::setKernelConstraintSpatialDB(const PetscPointFunc kernel) {
-    _kernelConstraintSpatialDB = kernel;
-} // setKernelConstraintSpatialDB
+pylith::feassemble::ConstraintSpatialDB::setKernelConstraint(const PetscPointFunc kernel) {
+    _kernelConstraint = kernel;
+} // setkernelConstraint
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -63,6 +64,8 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
     PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
 
     assert(_physics);
+
+    Constraint::initialize(solution);
 
     const pylith::topology::Mesh& physicsDomainMesh = getPhysicsDomainMesh();
 
@@ -85,7 +88,7 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
     const PylithInt numConstrained = _constrainedDOF.size();
     const PetscInt i_field = solution.subfieldInfo(_subfieldName.c_str()).index;
     err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_FIELD, _constraintLabel.c_str(), _constraintLabel.c_str(), i_field,
-                             numConstrained, &_constrainedDOF[0], (void (*)())_kernelConstraintSpatialDB, 1, &labelId, context);PYLITH_CHECK_ERROR(err);
+                             numConstrained, &_constrainedDOF[0], (void (*)())_kernelConstraint, 1, &labelId, context);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // initialize
@@ -100,28 +103,11 @@ pylith::feassemble::ConstraintSpatialDB::prestep(const double t,
     PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<") empty method");
 
     assert(_physics);
-    _physics->prestep(_auxiliaryField, t);
+    assert(0);
+    //_physics->prestep(_auxiliaryField, t);
 
     PYLITH_METHOD_END;
 } // prestep
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Update at end of time step.
-void
-pylith::feassemble::ConstraintSpatialDB::poststep(const PylithReal t,
-                                                  const PylithInt tindex,
-                                                  const PylithReal dt,
-                                                  const pylith::topology::Field& solution) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("poststep(t="<<t<<", dt="<<dt<<") empty method");
-
-    const bool infoOnly = false;
-    assert(_observers);
-    _observers->notifyObservers(t, tindex, solution, infoOnly);
-
-    PYLITH_METHOD_END;
-} // poststep
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -156,7 +142,7 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::topology::Field* so
     err = DMPlexLabelAddCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
     err = DMPlexInsertBoundaryValuesEssentialField(dmSoln, t, solution->localVector(), fieldIndex,
                                                    numConstrained, &_constrainedDOF[0], dmLabel, 1, &labelId,
-                                                   _kernelConstraintSpatialDB, context, solution->localVector());PYLITH_CHECK_ERROR(err);
+                                                   _kernelConstraint, context, solution->localVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
 
     // solution->view("SOLUTION at end of setSolution()"); // :DEBUG: TEMPORARY

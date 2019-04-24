@@ -70,19 +70,6 @@ public:
     void prestep(const double t,
                  const double dt);
 
-    /** Update at end of time step.
-     *
-     * @param[in] t Current time.
-     * @param[in] tindex Current time step.
-     * @param[in] dt Current time step.
-     * @param[in] solution Solution at time t.
-     */
-    virtual
-    void poststep(const PylithReal t,
-                  const PylithInt tindex,
-                  const PylithReal dt,
-                  const pylith::topology::Field& solution);
-
     /** Set constrained values in solution field.
      *
      * @param[out] solution Solution field.

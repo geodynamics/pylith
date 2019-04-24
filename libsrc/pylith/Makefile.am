@@ -55,7 +55,8 @@ libpylith_la_SOURCES = \
 	feassemble/IntegratorInterface.cc \
 	feassemble/UpdateStateVars.cc \
 	feassemble/Constraint.cc \
-	feassemble/ConstraintBoundary.cc \
+	feassemble/ConstraintSpatialDB.cc \
+	feassemble/ConstraintUserFn.cc \
 	feassemble/AuxiliaryFactory.cc \
 	fekernels/Elasticity.cc \
 	fekernels/IsotropicLinearElasticity.cc \

@@ -51,7 +51,7 @@ public:
      *
      * @param[in] fn Function specifying contrained values.
      */
-    void setUserFn(const PetscSolnFunc fn);
+    void setUserFn(const PetscUserFieldFunc fn);
 
     /** Initialize constraint.
      *
@@ -72,7 +72,7 @@ public:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    PetscSolnFunc _fn; ///< Function for computing constrained values.
+    PetscUserFieldFunc _fn; ///< Function for computing constrained values.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

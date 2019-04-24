@@ -136,10 +136,8 @@ protected:
 
         // Overwrite component names for control of debugging info at test level.
         GenericComponent::setName("TestIsotropicLinearElasticity2D_UniformStrain");
-        CPPUNIT_ASSERT(_problem);
-        _problem->PyreComponent::setIdentifier("TestIsotropicLinearElasticity2D_UniformStrain");
-        journal::debug_t debug(_problem->PyreComponent::getName());
-        // debug.activate(); // DEBUGGING
+        journal::debug_t debug(GenericComponent::getName());
+        //debug.activate(); // DEBUGGING
 
         _data = new TestElasticity_Data();CPPUNIT_ASSERT(_data);
 

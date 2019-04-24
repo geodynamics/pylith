@@ -32,32 +32,11 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include <cassert> // USES assert()
 
-#if 0
-extern "C" {
-    PetscErrorCode DMSNESCheckDiscretization(SNES snes,
-                                             DM dm,
-                                             Vec u,
-                                             PetscErrorCode(**exactFuncs)(PetscInt, PetscReal, const PetscReal x[], PetscInt, PetscScalar *u, void *ctx),
-                                             void **ctxs,
-                                             PetscReal tol);
-
-    PetscErrorCode DMSNESCheckResidual(SNES snes,
-                                       DM dm,
-                                       Vec u,
-                                       PetscReal tol);
-
-    PetscErrorCode DMSNESCheckJacobian(SNES snes,
-                                       DM dm,
-                                       Vec u,
-                                       PetscReal tol);
-
-} // extern "C"
-#endif
-
 // ---------------------------------------------------------------------------------------------------------------------
 /// Setup testing data.
 void
 pylith::testing::MMSTest::setUp(void) {
+    GenericComponent::setName("mmstest");
     _problem = new pylith::problems::TimeDependent;CPPUNIT_ASSERT(_problem);
     _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
     _solution = NULL;
@@ -70,7 +49,7 @@ void
 pylith::testing::MMSTest::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
-    journal::debug_t debug(_problem->PyreComponent::getName());
+    journal::debug_t debug(GenericComponent::getName());
     debug.deactivate(); // DEBUGGING
 
     delete _problem;_problem = NULL;
@@ -122,14 +101,17 @@ void
 pylith::testing::MMSTest::testResidual(void) {
     PYLITH_METHOD_BEGIN;
 
-    PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2"); // :DEBUG:
-    PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2"); // :DEBUG:
-
     _initialize();
+
+    journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");
+        PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2");
+        //PetscOptionsSetValue(NULL, "-res_vec_view", "true");
+    } // if
 
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
-    _solution->view("SOLUTION");
     PetscErrorCode err = 0;
     const PylithReal tolerance = -1.0;
     PylithReal norm = 0.0;
@@ -138,8 +120,6 @@ pylith::testing::MMSTest::testResidual(void) {
     CPPUNIT_ASSERT_MESSAGE("L2 normal of residual is exactly zero, which suggests suspicious case with all residuals "
                            "entries exactly zero.", norm > 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of F(s) - G(s) == 0 failed.", 0.0, norm, 1.0e-6);
-
-    // "-res_vec_view"
 
     PYLITH_METHOD_END;
 } // testResidual

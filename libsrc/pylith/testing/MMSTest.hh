@@ -25,14 +25,17 @@
 #if !defined(pylith_testing_mmstest_hh)
 #define pylith_testing_mmstest_hh
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
+#include <cppunit/extensions/HelperMacros.h> /// ISA Cppunit::TestFixture
 
 #include "pylith/testing/testingfwd.hh" // forward declaration
 
 #include "pylith/problems/problemsfwd.hh" // HOLDSA TimeDependent
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh
 
-class pylith::testing::MMSTest : public CppUnit::TestFixture {
+class pylith::testing::MMSTest :
+    public pylith::utils::GenericComponent,
+    public CppUnit::TestFixture {
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(MMSTest);
 

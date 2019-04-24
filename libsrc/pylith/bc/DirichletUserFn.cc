@@ -20,7 +20,7 @@
 
 #include "DirichletUserFn.hh" // implementation of object methods
 
-#include "pylith/feassemble/ConstraintBoundary.hh" // USES ConstraintBoundary
+#include "pylith/feassemble/ConstraintUserFn.hh" // USES ConstraintBoundary
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "pylith/topology/Mesh.hh" // USES Mesh
@@ -88,7 +88,7 @@ pylith::bc::DirichletUserFn::getConstrainedDOF(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set time history database.
 void
-pylith::bc::DirichletUserFn::setUserFn(PetscSolnFunc fn) {
+pylith::bc::DirichletUserFn::setUserFn(PetscUserFieldFunc fn) {
     PYLITH_COMPONENT_DEBUG("setUserFn(fn="<<fn<<")");
 
     _fn = fn;
@@ -97,7 +97,7 @@ pylith::bc::DirichletUserFn::setUserFn(PetscSolnFunc fn) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get time history database.
-pylith::bc::DirichletUserFn::PetscSolnFunc
+PetscUserFieldFunc
 pylith::bc::DirichletUserFn::getUserFn(void) const {
     return _fn;
 } // getUserFn
@@ -156,10 +156,9 @@ pylith::bc::DirichletUserFn::createConstraint(const pylith::topology::Field& sol
     constraint->setMarkerLabel(getMarkerLabel());
     constraint->setConstrainedDOF(&_constrainedDOF[0], _constrainedDOF.size());
     constraint->setSubfieldName(_subfieldName.c_str());
-    constraint->setUserFn(fn);
-    // constraint->setDomainMeshFactory(pylith::topology::MeshOps::createBoundaryMesh);
+    constraint->setUserFn(_fn);
 
-    PYLITH_METHOD_RETURN(NULL);
+    PYLITH_METHOD_RETURN(constraint);
 } // createConstraint
 
 
