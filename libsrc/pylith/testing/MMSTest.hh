@@ -92,6 +92,8 @@ protected:
     pylith::problems::TimeDependent* _problem; ///< Time-dependent problem.
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
     pylith::topology::Field* _solution; ///< Solution field.
+    bool _isJacobianLinear; ///< Jacobian is should be linear.
+    PylithReal _jacobianConvergenceRate; ///< Expected convergence rate for Jacobiab (when not linear).
 
 }; // MMSTest
 

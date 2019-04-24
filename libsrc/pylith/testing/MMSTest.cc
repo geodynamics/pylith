@@ -36,10 +36,12 @@
 /// Setup testing data.
 void
 pylith::testing::MMSTest::setUp(void) {
-    GenericComponent::setName("mmstest");
+    GenericComponent::setName("mmstest"); // Override in child class for finer control of journal output.
     _problem = new pylith::problems::TimeDependent;CPPUNIT_ASSERT(_problem);
     _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
     _solution = NULL;
+    _isJacobianLinear = false;
+    _jacobianConvergenceRate = 0.0;
 } // setUp
 
 
@@ -82,7 +84,7 @@ pylith::testing::MMSTest::testDiscretization(void) {
     std::ostringstream msg;
     for (size_t i_field = 0; i_field < numSubfields; ++i_field) {
         msg << "Discretization test failed for subfield(s): ";
-        if (error[i_field] > 1.0e-6) {
+        if (error[i_field] > 1.0e-10) {
             fail = true;
             msg << " " << subfieldNames[i_field] << " (" << error[i_field] << ")";
         } // if
@@ -119,7 +121,7 @@ pylith::testing::MMSTest::testResidual(void) {
                               tolerance, &norm);CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_MESSAGE("L2 normal of residual is exactly zero, which suggests suspicious case with all residuals "
                            "entries exactly zero.", norm > 0.0);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of F(s) - G(s) == 0 failed.", 0.0, norm, 1.0e-6);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of F(s) - G(s) == 0 failed.", 0.0, norm, 1.0e-10);
 
     PYLITH_METHOD_END;
 } // testResidual
@@ -143,6 +145,14 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
     PylithReal convergenceRate = 0.0;
     err = DMSNESCheckJacobian(_problem->getPetscSNES(), _problem->getPetscDM(), _solution->scatterVector("mmstest"),
                               tolerance, &isLinear, &convergenceRate);CPPUNIT_ASSERT(!err);
+
+    if (_isJacobianLinear) {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE("Expected linear Jacobian.", PETSC_TRUE, isLinear);
+    } else {
+        const PylithReal tolerance = 1.0e-2;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Error in convergence rate for Jacobian.",
+                                             _jacobianConvergenceRate, convergenceRate, tolerance);
+    } // if/else
 
     PYLITH_METHOD_END;
 } // testJacobianTaylorSeries
