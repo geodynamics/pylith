@@ -105,16 +105,17 @@ pylith::testing::MMSTest::testResidual(void) {
 
     _initialize();
 
+    PetscErrorCode err = 0;
+
     journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");
-        PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2");
-        //PetscOptionsSetValue(NULL, "-res_vec_view", "true");
+        err = PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");CPPUNIT_ASSERT(!err);
+        err = PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2");CPPUNIT_ASSERT(!err);
+        // err = PetscOptionsSetValue(NULL, "-res_vec_view", "true");CPPUNIT_ASSERT(!err);
     } // if
 
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
-    PetscErrorCode err = 0;
     const PylithReal tolerance = -1.0;
     PylithReal norm = 0.0;
     err = DMSNESCheckResidual(_problem->getPetscSNES(), _problem->getPetscDM(), _solution->scatterVector("mmstest"),
@@ -164,13 +165,15 @@ void
 pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     PYLITH_METHOD_BEGIN;
 
-    // Call SNESSolve with appropriate options.
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad @matt Implement test.", false);
+    _initialize();
 
-#if 0
-    err = SNESSetFromOptions("-snes_test_jacobian");
-    err = SNESComputeJacobian(snes, solution, jacobian, preconditioner);
-#endif
+    CPPUNIT_ASSERT(_problem);
+    CPPUNIT_ASSERT(_solution);
+    PetscErrorCode err = 0;
+    // err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", "true");CPPUNIT_ASSERT(!err);
+    err = PetscOptionsSetValue(NULL, "-snes_test_jacobian", "1.0e-6");CPPUNIT_ASSERT(!err);
+    err = SNESSetFromOptions(_problem->getPetscSNES());CPPUNIT_ASSERT(!err);
+    _problem->solve();
 
     PYLITH_METHOD_END;
 } // testJacobianFiniteDiff
