@@ -62,8 +62,8 @@ pylith::topology::TestSubMesh::testConstructor(void) {
     PYLITH_METHOD_BEGIN;
 
     Mesh submesh;
-    CPPUNIT_ASSERT_EQUAL(0, _submesh->dimension());
-    CPPUNIT_ASSERT_EQUAL(false, _submesh->debug());
+    CPPUNIT_ASSERT_EQUAL(0, submesh.dimension());
+    CPPUNIT_ASSERT_EQUAL(false, submesh.debug());
 
     PYLITH_METHOD_END;
 } // testConstructor
@@ -107,7 +107,7 @@ pylith::topology::TestSubMesh::testConstructorMesh(void) {
         CPPUNIT_ASSERT_EQUAL(_data->submeshCells[iC], c);
     } // for
 
-    CPPUNIT_ASSERT_THROW(MeshOps::createLowerDimMesh(_mesh, "zzyyxx"), std::runtime_error);
+    CPPUNIT_ASSERT_THROW(MeshOps::createLowerDimMesh(*_mesh, "zzyyxx"), std::runtime_error);
 
     PYLITH_METHOD_END;
 } // testConstructorMesh
