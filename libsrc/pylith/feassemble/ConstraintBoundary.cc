@@ -21,6 +21,7 @@
 #include "ConstraintBoundary.hh" // implementation of object methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES createLowerDimMesh()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
@@ -76,7 +77,9 @@ pylith::feassemble::ConstraintBoundary::initialize(const pylith::topology::Field
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("initialize(solution="<<solution.label()<<")");
 
-    delete _boundaryMesh;_boundaryMesh = new pylith::topology::Mesh(solution.mesh(), _constraintLabel.c_str());assert(_boundaryMesh);
+    delete _boundaryMesh;
+    _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.mesh(), _constraintLabel.c_str());
+    assert(_boundaryMesh);
     PetscDM dmBoundary = _boundaryMesh->dmMesh();assert(dmBoundary);
     pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 

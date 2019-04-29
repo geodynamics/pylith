@@ -31,11 +31,37 @@
 
 #include "spatialdata/units/unitsfwd.hh" // forward declarations
 
-class pylith::topology::MeshOps { // MeshOps
+class pylith::topology::MeshOps {
     friend class TestMeshOps; // unit testing
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
+
+    /** Create subdomain mesh using label.
+     *
+     * @param[in] mesh Mesh for domain.
+     * @param[in] label Name of label marking subdomain.
+     * @param[in] labelValue Value of label marking subdomain.
+     * @param[in] descriptiveLabel Descriptive label for subdomain.
+     *
+     * @returns Mesh for subdomain.
+     */
+    static
+    pylith::topology::Mesh* createSubdomainMesh(const pylith::topology::Mesh& mesh,
+                                                const char* label,
+                                                const int labelValue,
+                                                const char* descriptiveLabel);
+
+    /** Create lower dimension mesh using label.
+     *
+     * @param[in] mesh Mesh for domain.
+     * @param[in] label Label for vertices marking lower dimension domain.
+     *
+     * @returns Lower dimension mesh.
+     */
+    static
+    pylith::topology::Mesh* createLowerDimMesh(const pylith::topology::Mesh& mesh,
+                                               const char* label);
 
     /** Nondimensionalize the finite-element mesh.
      *

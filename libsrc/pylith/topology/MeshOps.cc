@@ -34,6 +34,129 @@
 #include <map> // USES std::map
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Create subdomain mesh using label.
+pylith::topology::Mesh*
+pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mesh,
+                                               const char* label,
+                                               const int labelValue,
+                                               const char* descriptiveLabel) {
+    PYLITH_METHOD_BEGIN;
+
+    assert(label);
+
+    PetscDM dmDomain = mesh.dmMesh();assert(dmDomain);
+    PetscErrorCode err = 0;
+
+    PetscBool hasLabel = PETSC_FALSE;
+    err = DMHasLabel(dmDomain, label, &hasLabel);PYLITH_CHECK_ERROR(err);
+    if (!hasLabel) {
+        std::ostringstream msg;
+        msg << "Could not find group of points '" << label << "' in PETSc DM mesh.";
+        throw std::runtime_error(msg.str());
+    } // if
+
+    /* TODO: Add creation of pointSF for submesh */
+    PetscDMLabel dmLabel = NULL;
+    err = DMGetLabel(dmDomain, label, &dmLabel);PYLITH_CHECK_ERROR(err);
+
+    PetscDM dmSubdomain = NULL;
+    err = DMPlexFilter(dmDomain, dmLabel, labelValue, &dmSubdomain);PYLITH_CHECK_ERROR(err);
+
+    PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
+    err = DMPlexGetMaxSizes(dmSubdomain, &maxConeSizeLocal, NULL);PYLITH_CHECK_ERROR(err);
+    err = MPI_Allreduce(&maxConeSizeLocal, &maxConeSize, 1, MPI_INT, MPI_MAX,
+                        PetscObjectComm((PetscObject) dmSubdomain));PYLITH_CHECK_ERROR(err);
+
+    if (maxConeSize <= 0) {
+        err = DMDestroy(&dmSubdomain);PYLITH_CHECK_ERROR(err);
+        std::ostringstream msg;
+        msg << "Error while creating mesh of subdomain. Subdomain mesh '" << label << "' does not contain any cells.\n";
+        throw std::runtime_error(msg.str());
+    } // if
+
+    // Set name
+    err = PetscObjectSetName((PetscObject) dmSubdomain, descriptiveLabel);PYLITH_CHECK_ERROR(err);
+
+    // Set lengthscale
+    PylithScalar lengthScale;
+    err = DMPlexGetScale(dmDomain, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
+    err = DMPlexSetScale(dmSubdomain, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+
+    pylith::topology::Mesh* submesh = new pylith::topology::Mesh(true);assert(submesh);
+    submesh->coordsys(mesh.coordsys());
+    submesh->dmMesh(dmSubdomain);
+
+    // Check topology
+    MeshOps::checkTopology(*submesh);
+
+    PYLITH_METHOD_RETURN(submesh);
+} // createSubdomainMesh
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Create lower dimension mesh using label.
+pylith::topology::Mesh*
+pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh,
+                                              const char* label) {
+    PYLITH_METHOD_BEGIN;
+
+    assert(label);
+
+    PetscDM dmDomain = mesh.dmMesh();assert(dmDomain);
+    PetscErrorCode err = 0;
+
+    PetscBool hasLabel = PETSC_FALSE;
+    err = DMHasLabel(dmDomain, label, &hasLabel);PYLITH_CHECK_ERROR(err);
+    if (!hasLabel) {
+        std::ostringstream msg;
+        msg << "Could not find group of points '" << label << "' in PETSc DM mesh.";
+        throw std::runtime_error(msg.str());
+    } // if
+
+    if (mesh.dimension() < 1) {
+        throw std::logic_error("INTERNAL ERROR in MeshOps::createLowerDimMesh()\n"
+                               "Cannot create submesh for mesh with dimension < 1.");
+    } // if
+
+    /* TODO: Add creation of pointSF for submesh */
+    PetscDM dmSubmesh = NULL;
+    PetscDMLabel dmLabel = NULL;
+    err = DMGetLabel(dmDomain, label, &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateSubmesh(dmDomain, dmLabel, 1, PETSC_FALSE, &dmSubmesh);PYLITH_CHECK_ERROR(err);
+
+    PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
+    err = DMPlexGetMaxSizes(dmSubmesh, &maxConeSizeLocal, NULL);PYLITH_CHECK_ERROR(err);
+    err = MPI_Allreduce(&maxConeSizeLocal, &maxConeSize, 1, MPI_INT, MPI_MAX,
+                        PetscObjectComm((PetscObject) dmSubmesh));PYLITH_CHECK_ERROR(err);
+
+    if (maxConeSize <= 0) {
+        err = DMDestroy(&dmSubmesh);PYLITH_CHECK_ERROR(err);
+        std::ostringstream msg;
+        msg << "Error while creating lower dimension mesh. Submesh '" << label << "' does not contain any cells.\n";
+        throw std::runtime_error(msg.str());
+    } // if
+
+    // Set name
+    std::string meshLabel = "subdomain_" + std::string(label);
+    err = PetscObjectSetName((PetscObject) dmSubmesh, meshLabel.c_str());PYLITH_CHECK_ERROR(err);
+
+    // Set lengthscale
+    PylithScalar lengthScale;
+    err = DMPlexGetScale(dmDomain, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
+    err = DMPlexSetScale(dmSubmesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+
+    pylith::topology::Mesh* submesh = new pylith::topology::Mesh(true);assert(submesh);
+    submesh->coordsys(mesh.coordsys());
+    submesh->dmMesh(dmSubmesh);
+
+    // Check topology
+    MeshOps::checkTopology(*submesh);
+
+    PYLITH_METHOD_RETURN(submesh);
+} // createLowerDimMesh
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Nondimensionalize the finite-element mesh.
 void
 pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,

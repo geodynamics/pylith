@@ -23,112 +23,100 @@
  */
 
 namespace pylith {
-  namespace topology {
+    namespace topology {
+        // Mesh -------------------------------------------------------------
+        class Mesh { // Mesh
+                     // PUBLIC METHODS /////////////////////////////////////////////////
+public:
 
-    // Mesh -------------------------------------------------------------
-    class Mesh
-    { // Mesh
+            /// Default constructor.
+            Mesh(void);
 
-      // PUBLIC METHODS /////////////////////////////////////////////////
-    public :
+            /** Constructor with dimension and communicator.
+             *
+             * @param dim Dimension associated with mesh cells.
+             * @param comm MPI communicator for mesh.
+             */
+            Mesh(const int dim,
+                 const MPI_Comm& comm=PETSC_COMM_WORLD);
 
-      /// Default constructor.
-      Mesh(void);
+            /// Default destructor
+            ~Mesh(void);
 
-      /** Constructor with dimension and communicator.
-       *
-       * @param dim Dimension associated with mesh cells.
-       * @param comm MPI communicator for mesh.
-       */
-      Mesh(const int dim,
-	   const MPI_Comm& comm =PETSC_COMM_WORLD); 
+            /// Deallocate PETSc and local data structures.
+            virtual
+            void deallocate(void);
 
-      /** Create submesh.
-       *
-       * @param mesh Mesh over domain.
-       * @param label Label of vertices on boundary.
-       */
-      Mesh(const Mesh& mesh,
-	   const char* label);
+            /** Set coordinate system.
+             *
+             * @param cs Coordinate system.
+             */
+            void coordsys(const spatialdata::geocoords::CoordSys* cs);
 
-      /// Default destructor
-      ~Mesh(void);
-      
-      /// Deallocate PETSc and local data structures.
-      virtual
-      void deallocate(void);
+            /** Get coordinate system.
+             *
+             * @returns Coordinate system.
+             */
+            const spatialdata::geocoords::CoordSys* coordsys(void) const;
 
-      /** Set coordinate system.
-       *
-       * @param cs Coordinate system.
-       */
-      void coordsys(const spatialdata::geocoords::CoordSys* cs);
-      
-      /** Get coordinate system.
-       *
-       * @returns Coordinate system.
-       */
-      const spatialdata::geocoords::CoordSys* coordsys(void) const;
-      
-      /** Set debug flag.
-       *
-       * @param value Turn on debugging if true.
-       */
-      void debug(const bool value);
-      
-      /** Get debug flag.
-       *
-       * @param Get debugging flag.
-       */
-      bool debug(void) const;
+            /** Set debug flag.
+             *
+             * @param value Turn on debugging if true.
+             */
+            void debug(const bool value);
 
-      /** Get dimension of mesh.
-       *
-       * @returns Dimension of mesh.
-       */
-      int dimension(void) const;
+            /** Get debug flag.
+             *
+             * @param Get debugging flag.
+             */
+            bool debug(void) const;
 
-      /** Get the number of vertices per cell
-       *
-       * @returns Number of vertices per cell.
-       */
-      int numCorners(void) const;
-      
-      /** Get number of vertices in mesh.
-       *
-       * @returns Number of vertices in mesh.
-       */
-      int numVertices(void) const;
-      
-      /** Get number of cells in mesh.
-       *
-       * @returns Number of cells in mesh.
-       */
-      int numCells(void) const;
-      
-      /** Get MPI communicator associated with mesh.
-       *
-       * @returns MPI communicator.
-       */
-      const MPI_Comm comm(void) const;
-    
-      /** View mesh.
-       *
-       * @param viewOption PETSc DM view option.
-       *
-       * PETSc mesh view options include:
-       *   short summary [empty]
-       *   detail summary ::ascii_info_detail
-       *   detail in a file :refined.mesh:ascii_info_detail
-       *   latex in a file  :refined.tex:ascii_latex
-       *   VTK vtk:refined.vtk:ascii_vtk
-       */
-      void view(const char* viewOption ="") const;
+            /** Get dimension of mesh.
+             *
+             * @returns Dimension of mesh.
+             */
+            int dimension(void) const;
 
-    }; // Mesh
+            /** Get the number of vertices per cell
+             *
+             * @returns Number of vertices per cell.
+             */
+            int numCorners(void) const;
 
-  } // topology
+            /** Get number of vertices in mesh.
+             *
+             * @returns Number of vertices in mesh.
+             */
+            int numVertices(void) const;
+
+            /** Get number of cells in mesh.
+             *
+             * @returns Number of cells in mesh.
+             */
+            int numCells(void) const;
+
+            /** Get MPI communicator associated with mesh.
+             *
+             * @returns MPI communicator.
+             */
+            const MPI_Comm comm(void) const;
+
+            /** View mesh.
+             *
+             * @param viewOption PETSc DM view option.
+             *
+             * PETSc mesh view options include:
+             *   short summary [empty]
+             *   detail summary ::ascii_info_detail
+             *   detail in a file :refined.mesh:ascii_info_detail
+             *   latex in a file  :refined.tex:ascii_latex
+             *   VTK vtk:refined.vtk:ascii_vtk
+             */
+            void view(const char* viewOption="") const;
+
+        }; // Mesh
+
+    } // topology
 } // pylith
-
 
 // End of file
