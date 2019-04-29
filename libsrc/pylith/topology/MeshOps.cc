@@ -86,9 +86,6 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     submesh->coordsys(mesh.coordsys());
     submesh->dmMesh(dmSubdomain);
 
-    // Check topology
-    MeshOps::checkTopology(*submesh);
-
     PYLITH_METHOD_RETURN(submesh);
 } // createSubdomainMesh
 
