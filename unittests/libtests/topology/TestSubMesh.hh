@@ -37,25 +37,19 @@ namespace pylith {
     namespace topology {
         class TestSubMesh;
         class TestSubMesh_Data;
-    }   // topology
-}   // pylith
+    } // topology
+} // pylith
 
 // TestSubMesh -----------------------------------------------------------------
 /// C++ unit testing for Mesh.
 class pylith::topology::TestSubMesh : public CppUnit::TestFixture {
-
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE( TestSubMesh );
+    CPPUNIT_TEST_SUITE(TestSubMesh);
 
-    CPPUNIT_TEST( testConstructor );
-    CPPUNIT_TEST( testConstructorMesh );
-    CPPUNIT_TEST( testCoordsys );
-    CPPUNIT_TEST( testDebug );
-    CPPUNIT_TEST( testDimension );
-    CPPUNIT_TEST( testNumCorners );
-    CPPUNIT_TEST( testNumVertices );
-    CPPUNIT_TEST( testNumCells );
-    CPPUNIT_TEST( testComm );
+    CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testConstructorMesh);
+    CPPUNIT_TEST(testAccessors);
+    CPPUNIT_TEST(testSizes);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -74,47 +68,29 @@ public:
     /// Test constructor w/mesh.
     void testConstructorMesh(void);
 
-    /// Test coordsys().
-    void testCoordsys(void);
+    /// Test coordsys(), debug(), comm().
+    void testAccessors(void);
 
-    /// Test debug().
-    void testDebug(void);
-
-    /// Test dimension().
-    void testDimension(void);
-
-    /// Test numCorners().
-    void testNumCorners(void);
-
-    /// Test numVertices().
-    void testNumVertices(void);
-
-    /// Test numCells().
-    void testNumCells(void);
-
-    /// Test comm().
-    void testComm(void);
+    /// Test dimension(), numCorners(), numVertices(), numCells(),
+    void testSizes(void);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////
 protected:
 
-    /** Build mesh.
-     *
-     * @param mesh Finite-element mesh.
-     */
-    void _buildMesh(Mesh* mesh);
+    // Build lower dimension mesh.
+    void _buildMesh(void);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////
 protected:
 
     TestSubMesh_Data* _data; ///< Data for testing.
+    Mesh* _mesh; ///< Mesh holding lower dimension mesh.
+    Mesh* _submesh; ///< Test subject, lower dimension mesh.
 
-};  // class TestSubMesh
-
+}; // class TestSubMesh
 
 // TestSubMesh_Data-------------------------------------------------------------
 class pylith::topology::TestSubMesh_Data {
-
     // PUBLIC METHODS //////////////////////////////////////////////////////////
 public:
 
@@ -133,28 +109,26 @@ public:
     /// @{
     int cellDim; ///< Cell dimension (matches space dimension).
     int numVertices; ///< Number of vertices.
-    int numCells;   ///< Number of cells.
+    int numCells; ///< Number of cells.
     int numCorners; ///< Number of vertices per cell.
     int* cells; ///< Array of vertices in cells [numCells*numCorners].
-    PylithScalar* coordinates;  ///< Coordinates of vertices [numVertices*cellDim].
-    const char* label;  ///< Label of group associated with submesh.
-    int groupSize;  ///< Number of vertices in group.
+    PylithScalar* coordinates; ///< Coordinates of vertices [numVertices*cellDim].
+    const char* label; ///< Label of group associated with submesh.
+    int groupSize; ///< Number of vertices in group.
     int* groupVertices; ///< Array of vertices in group.
     /// @}
 
     /// @defgroup SubMesh information.
     /// @{
-    int submeshNumCorners;  ///< Number of vertices per cell.
+    int submeshNumCorners; ///< Number of vertices per cell.
     int submeshNumVertices; ///< Number of vertices in submesh.
-    int* submeshVertices;   ///< Vertices in submesh.
+    int* submeshVertices; ///< Vertices in submesh.
     int submeshNumCells; ///< Number of cells in submesh.
-    int* submeshCells;  ///< Array of vertices in cells [submeshNumCells*submeshNumCorners].
+    int* submeshCells; ///< Array of vertices in cells [submeshNumCells*submeshNumCorners].
     /// @}
 
-};  // TestSubMesh_Data
+}; // TestSubMesh_Data
 
-
-#endif  // pylith_topology_testsubmesh_hh
-
+#endif // pylith_topology_testsubmesh_hh
 
 // End of file

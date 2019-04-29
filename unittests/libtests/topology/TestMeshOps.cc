@@ -32,10 +32,34 @@
 
 #include <stdexcept> // USES std::runtime_error
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestMeshOps);
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+// Test createSubdomainMesh().
+void
+pylith::topology::TestMeshOps::testCreateSubdomainMesh(void) {
+    PYLITH_METHOD_BEGIN;
+
+    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement test.", false);
+
+    PYLITH_METHOD_END;
+} // testCreateSubdomainMesh
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Test createLowerDimMesh().
+void
+pylith::topology::TestMeshOps::testCreateLowerDimMesh(void) {
+    PYLITH_METHOD_BEGIN;
+
+    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement test.", false);
+
+    PYLITH_METHOD_END;
+} // testCreateLowerDimMesh
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Test nondimensionalize().
 void
 pylith::topology::TestMeshOps::testNondimensionalize(void) {
@@ -91,7 +115,7 @@ pylith::topology::TestMeshOps::testNondimensionalize(void) {
 } // testNondimensionalize
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Test checkTopology().
 void
 pylith::topology::TestMeshOps::testCheckTopology(void) {
@@ -118,7 +142,7 @@ pylith::topology::TestMeshOps::testCheckTopology(void) {
 } // testCheckTopology
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Test isSimplexMesh().
 void
 pylith::topology::TestMeshOps::testIsSimplexMesh(void) {
@@ -152,7 +176,7 @@ pylith::topology::TestMeshOps::testIsSimplexMesh(void) {
 } // testIsSimplexMesh
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Test checkMaterialIds().
 void
 pylith::topology::TestMeshOps::testCheckMaterialIds(void) {

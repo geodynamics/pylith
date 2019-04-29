@@ -41,6 +41,8 @@ class pylith::topology::TestMeshOps : public CppUnit::TestFixture {
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestMeshOps);
 
+    CPPUNIT_TEST(testCreateSubdomainMesh);
+    CPPUNIT_TEST(testCreateLowerDimMesh);
     CPPUNIT_TEST(testNondimensionalize);
     CPPUNIT_TEST(testCheckTopology);
     CPPUNIT_TEST(testIsSimplexMesh);
@@ -50,6 +52,12 @@ class pylith::topology::TestMeshOps : public CppUnit::TestFixture {
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
+
+    /// Test createSubdomainMesh().
+    void testCreateSubdomainMesh(void);
+
+    /// Test createLowerDimMesh().
+    void testCreateLowerDimMesh(void);
 
     /// Test nondimensionalize().
     void testNondimensionalize(void);

@@ -21,6 +21,7 @@
 #include "TestFieldsSubMesh.hh" // Implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES createLowerDimMesh()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Stratum.hh" // USES Stratum
@@ -36,12 +37,12 @@ void
 pylith::topology::TestFieldsSubMesh::setUp(void) { // setUp
     PYLITH_METHOD_BEGIN;
 
-    _mesh = new Mesh;
+    _mesh = new Mesh();
     meshio::MeshIOAscii importer;
     importer.filename("data/tri3.mesh");
     importer.read(_mesh);
 
-    _submesh = new Mesh(*_mesh, "bc");
+    _submesh = MeshOps::createLowerDimMesh(*_mesh, "bc");CPPUNIT_ASSERT(_submesh);
 
     PYLITH_METHOD_END;
 } // setUp
