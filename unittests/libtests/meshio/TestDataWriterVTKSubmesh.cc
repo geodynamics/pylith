@@ -30,8 +30,7 @@
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestDataWriterVTKSubmesh::setUp(void)
-{ // setUp
+pylith::meshio::TestDataWriterVTKSubmesh::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
     TestDataWriterSubmesh::setUp();
@@ -40,24 +39,24 @@ pylith::meshio::TestDataWriterVTKSubmesh::setUp(void)
     PYLITH_METHOD_END;
 } // setUp
 
+
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::meshio::TestDataWriterVTKSubmesh::tearDown(void)
-{ // tearDown
+pylith::meshio::TestDataWriterVTKSubmesh::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
     TestDataWriterSubmesh::tearDown();
-    delete _data; _data = NULL;
+    delete _data;_data = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
 
+
 // ----------------------------------------------------------------------
 // Test openTimeStep() and closeTimeStep()
 void
-pylith::meshio::TestDataWriterVTKSubmesh::testTimeStep(void)
-{ // testTimeStep
+pylith::meshio::TestDataWriterVTKSubmesh::testTimeStep(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_submesh);
@@ -90,11 +89,11 @@ pylith::meshio::TestDataWriterVTKSubmesh::testTimeStep(void)
     PYLITH_METHOD_END;
 } // testTimeStep
 
+
 // ----------------------------------------------------------------------
 // Test writeVertexField.
 void
-pylith::meshio::TestDataWriterVTKSubmesh::testWriteVertexField(void)
-{ // testWriteVertexField
+pylith::meshio::TestDataWriterVTKSubmesh::testWriteVertexField(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mesh);
@@ -134,11 +133,11 @@ pylith::meshio::TestDataWriterVTKSubmesh::testWriteVertexField(void)
     PYLITH_METHOD_END;
 } // testWriteVertexField
 
+
 // ----------------------------------------------------------------------
 // Test writeCellField.
 void
-pylith::meshio::TestDataWriterVTKSubmesh::testWriteCellField(void)
-{ // testWriteCellField
+pylith::meshio::TestDataWriterVTKSubmesh::testWriteCellField(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_submesh);
@@ -181,8 +180,7 @@ pylith::meshio::TestDataWriterVTKSubmesh::testWriteCellField(void)
 // ----------------------------------------------------------------------
 // Get test data.
 pylith::meshio::TestDataWriterSubmesh_Data*
-pylith::meshio::TestDataWriterVTKSubmesh::_getData(void)
-{ // _getData
+pylith::meshio::TestDataWriterVTKSubmesh::_getData(void) {
     return _data;
 } // _getData
 

@@ -43,7 +43,8 @@ void
 pylith::meshio::TestDataWriterMaterial::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
-    _mesh = NULL;
+    _domainMesh = NULL;
+    _materialMesh = NULL;
 
     PYLITH_METHOD_END;
 } // setUp
@@ -55,7 +56,8 @@ void
 pylith::meshio::TestDataWriterMaterial::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _mesh;_mesh = NULL;
+    delete _domainMesh;_domainMesh = NULL;
+    delete _materialMesh;_materialMesh = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -69,25 +71,29 @@ pylith::meshio::TestDataWriterMaterial::_initialize(void) {
 
     const TestDataWriterMaterial_Data* data = _getData();CPPUNIT_ASSERT(data);
 
-    delete _mesh;_mesh = new topology::Mesh;CPPUNIT_ASSERT(_mesh);
+    delete _domainMesh;_domainMesh = new topology::Mesh;CPPUNIT_ASSERT(_domainMesh);
     MeshIOAscii iohandler;
     iohandler.filename(data->meshFilename);
-    iohandler.read(_mesh);
+    iohandler.read(_domainMesh);
 
     spatialdata::geocoords::CSCart cs;
-    cs.setSpaceDim(_mesh->dimension());
-    _mesh->coordsys(&cs);
+    cs.setSpaceDim(_domainMesh->dimension());
+    _domainMesh->coordsys(&cs);
 
     spatialdata::units::Nondimensional normalizer;
     normalizer.lengthScale(data->lengthScale);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, normalizer);
+    pylith::topology::MeshOps::nondimensionalize(_domainMesh, normalizer);
 
     if (data->faultLabel) {
-	pylith::faults::FaultCohesiveStub fault;
+        pylith::faults::FaultCohesiveStub fault;
         fault.setSurfaceMarkerLabel(data->faultLabel);
         fault.setInterfaceId(data->faultId);
-        fault.adjustTopology(_mesh);
+        fault.adjustTopology(_domainMesh);
     } // if
+
+    delete _materialMesh;
+    _materialMesh = pylith::topology::MeshOps::createSubdomainMesh(*_domainMesh, "material-id", data->materialId, ":UNKNOWN:");
+    CPPUNIT_ASSERT(_materialMesh);
 
     PYLITH_METHOD_END;
 } // _initialize
@@ -122,8 +128,6 @@ pylith::meshio::TestDataWriterMaterial::_createCellFields(pylith::topology::Fiel
     CPPUNIT_ASSERT(fields);
 
     const TestDataWriterMaterial_Data* data = _getData();CPPUNIT_ASSERT(data);
-
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Need to restrict field section/chart to points associated with material.", false);
 
     FieldFactory factory(*fields);
     factory.scalar(data->cellDiscretization, data->cellScalarValues, data->cellNumPoints, data->cellScalarNumComponents);

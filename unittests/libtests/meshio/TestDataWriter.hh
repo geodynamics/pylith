@@ -30,7 +30,6 @@
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::VectorFieldEnum
 #include "pylith/utils/types.hh" // HASA PylithScalar
 
-/// Namespace for pylith package
 namespace pylith {
     namespace meshio {
         class TestDataWriter_Data;
@@ -38,8 +37,7 @@ namespace pylith {
 } // pylith
 
 class pylith::meshio::TestDataWriter_Data {
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -48,7 +46,7 @@ public:
     /// Destructor
     ~TestDataWriter_Data(void);
 
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////
+    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     const char* meshFilename; ///< Name of mesh input file.
@@ -82,11 +80,8 @@ public:
     PylithInt cellTensorNumComponents; ///< Number of components for tensor cell field.
     PylithInt cellOtherNumComponents; ///< Number of components for other cell field.
 
-
 }; // class TestDataWriter_Data
 
-
 #endif // pylith_meshio_testdatawriter_hh
-
 
 // End of file

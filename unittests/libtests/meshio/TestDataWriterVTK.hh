@@ -29,7 +29,6 @@
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
 
-/// Namespace for pylith package
 namespace pylith {
     namespace meshio {
         class TestDataWriterVTK;
@@ -38,11 +37,9 @@ namespace pylith {
     } // meshio
 } // pylith
 
-// ======================================================================
-/// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTK { // class TestDataWriterVTK
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+// =====================================================================================================================
+class pylith::meshio::TestDataWriterVTK {
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /** Check VTK file against archived file.
@@ -58,10 +55,9 @@ public:
 
 }; // class TestDataWriterVTK
 
-// ======================================================================
+// =====================================================================================================================
 class pylith::meshio::TestDataWriterVTK_Data {
-
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -70,17 +66,15 @@ public:
     /// Destructor
     ~TestDataWriterVTK_Data(void);
 
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     const char* timestepFilename; ///< Name of file with no data fields.
     const char* vertexFilename; ///< Name of file with vertex fields.
     const char* cellFilename; ///< Name of file with cell fields.
 
-};
-
+}; // TestDataWriterVTK_Data
 
 #endif // pylith_meshio_testdatawritervtk_hh
-
 
 // End of file

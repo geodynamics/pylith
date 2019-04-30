@@ -220,12 +220,15 @@ if ENABLE_HDF5
 	TestDataWriterHDF5.cc \
 	TestDataWriterHDF5Mesh.cc \
 	TestDataWriterHDF5Mesh_Cases.cc \
-	TestDataWriterHDF5Material.cc \
-	TestDataWriterHDF5Material_Cases.cc \
 	TestDataWriterHDF5ExtMesh.cc \
-	TestDataWriterHDF5ExtMesh_Cases.cc \
-	TestDataWriterHDF5ExtMaterial.cc \
-	TestDataWriterHDF5ExtMaterial_Cases.cc
+	TestDataWriterHDF5ExtMesh_Cases.cc 
+
+
+#	TestDataWriterHDF5Material.cc \
+#	TestDataWriterHDF5Material_Cases.cc \
+#	TestDataWriterHDF5ExtMaterial.cc \
+#	TestDataWriterHDF5ExtMaterial_Cases.cc
+
 
 # TestDataWriterHDF5Submesh.cc \
 # TestDataWriterHDF5SubmeshCases.cc \

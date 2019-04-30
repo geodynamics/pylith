@@ -14,7 +14,6 @@
 // See COPYING for license information.
 //
 // ----------------------------------------------------------------------
-//
 
 /**
  * @file unittests/libtests/meshio/TestDataWriterVTKMaterial.hh
@@ -46,7 +45,6 @@ namespace pylith {
 // ======================================================================
 /// C++ unit testing for DataWriterVTK
 class pylith::meshio::TestDataWriterVTKMaterial : public TestDataWriterVTK, public TestDataWriterMaterial, public CppUnit::TestFixture {
-
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestDataWriterVTKMaterial);
 
@@ -83,7 +81,6 @@ protected:
      */
     TestDataWriterMaterial_Data* _getData(void);
 
-
     // PROTECTED MEMBDERS /////////////////////////////////////////////////
 protected:
 
@@ -91,11 +88,9 @@ protected:
 
 }; // class TestDataWriterVTKMaterial
 
-
 // ======================================================================
 class pylith::meshio::TestDataWriterVTKMaterial_Data : public TestDataWriterVTK_Data, public TestDataWriterMaterial_Data {};
 
 #endif // pylith_meshio_testdatawritervtkmaterial_hh
-
 
 // End of file
