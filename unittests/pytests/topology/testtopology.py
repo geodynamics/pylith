@@ -47,8 +47,8 @@ class TestApp(UnitTestApp):
     from TestMesh import TestMesh
     suite.addTest(unittest.makeSuite(TestMesh))
 
-    from TestSubMesh import TestSubMesh
-    suite.addTest(unittest.makeSuite(TestSubMesh))
+    from TestSubmesh import TestSubmesh
+    suite.addTest(unittest.makeSuite(TestSubmesh))
 
     from TestFieldBase import TestFieldBase
     suite.addTest(unittest.makeSuite(TestFieldBase))

@@ -16,27 +16,27 @@
 // ======================================================================
 //
 
-#if !defined(pylith_meshio_datawriterhdf5datasubmeshhex8_hh)
-#define pylith_meshio_datawriterhdf5datasubmeshhex8_hh
+#if !defined(pylith_meshio_datawriterhdf5datasubmeshtet4_hh)
+#define pylith_meshio_datawriterhdf5datasubmeshtet4_hh
 
 #include "DataWriterData.hh" // ISA DataWriterData
 
 namespace pylith {
   namespace meshio {
-     class DataWriterHDF5DataSubMeshHex8;
+     class DataWriterHDF5DataSubmeshTet4;
   } // meshio
 } // pylith
 
-class pylith::meshio::DataWriterHDF5DataSubMeshHex8 : public DataWriterData
-{ // DataWriterHDF5DataSubMeshHex8
+class pylith::meshio::DataWriterHDF5DataSubmeshTet4 : public DataWriterData
+{ // DataWriterHDF5DataSubmeshTet4
 
 public: 
 
   /// Constructor
-  DataWriterHDF5DataSubMeshHex8(void);
+  DataWriterHDF5DataSubmeshTet4(void);
 
   /// Destructor
-  ~DataWriterHDF5DataSubMeshHex8(void);
+  ~DataWriterHDF5DataSubmeshTet4(void);
 
 private:
 
@@ -76,8 +76,8 @@ private:
   static const PylithScalar _cellFieldOther[]; ///< Values for other cell field.
   //@}
 
-}; // DataWriterHDF5DataSubMeshHex8
+}; // DataWriterHDF5DataSubmeshTet4
 
-#endif // pylith_meshio_datawriterhdf5datasubmeshhex8_hh
+#endif // pylith_meshio_datawriterhdf5datasubmeshtet4_hh
 
 // End of file

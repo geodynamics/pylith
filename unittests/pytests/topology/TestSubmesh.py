@@ -16,7 +16,7 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/topology/TestSubMesh.py
+## @file unittests/pytests/topology/TestSubmesh.py
 
 ## @brief Unit testing of Mesh object.
 
@@ -25,7 +25,7 @@ import unittest
 from pylith.topology.Mesh import Mesh
 
 # ----------------------------------------------------------------------
-class TestSubMesh(unittest.TestCase):
+class TestSubmesh(unittest.TestCase):
   """
   Unit testing of Mesh object.
   """

@@ -17,11 +17,11 @@
 //
 
 /**
- * @file unittests/libtests/meshio/TestDataWriterSubMesh.hh
+ * @file unittests/libtests/meshio/TestDataWriterSubmesh.hh
  *
- * @brief C++ TestDataWriterSubMesh object
+ * @brief C++ TestDataWriterSubmesh object
  *
- * C++ unit testing for DataWriter<SubMesh>.
+ * C++ unit testing for DataWriter<Submesh>.
  */
 
 #if !defined(pylith_meshio_testdatawritersubmesh_hh)
@@ -34,14 +34,14 @@
 /// Namespace for pylith package
 namespace pylith {
     namespace meshio {
-        class TestDataWriterSubMesh;
+        class TestDataWriterSubmesh;
 
-        class TestDataWriterSubMesh_Data;
+        class TestDataWriterSubmesh_Data;
     } // meshio
 } // pylith
 
-/// C++ unit testing for DataWriter<SubMesh>.
-class pylith::meshio::TestDataWriterSubMesh {
+/// C++ unit testing for DataWriter<Submesh>.
+class pylith::meshio::TestDataWriterSubmesh {
 
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
@@ -84,7 +84,7 @@ protected:
      * @returns Test data.
      */
     virtual
-    TestDataWriterSubMesh_Data* _getData(void) = 0;
+    TestDataWriterSubmesh_Data* _getData(void) = 0;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
@@ -92,26 +92,26 @@ protected:
     pylith::topology::Mesh* _mesh; ///< Mesh for domain
     pylith::topology::Mesh* _submesh; ///< Mesh for subdomain.
 
-}; // class TestDataWriterSubMesh
+}; // class TestDataWriterSubmesh
 
 // ======================================================================
-class pylith::meshio::TestDataWriterSubMesh_Data : public TestDataWriter_Data {
+class pylith::meshio::TestDataWriterSubmesh_Data : public TestDataWriter_Data {
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    TestDataWriterSubMesh_Data(void);
+    TestDataWriterSubmesh_Data(void);
 
     /// Destructor
-    ~TestDataWriterSubMesh_Data(void);
+    ~TestDataWriterSubmesh_Data(void);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////
 public:
 
     const char* bcLabel; ///< Label marking submesh.
 
-}; // class TestDataWriterSubMesh_Data
+}; // class TestDataWriterSubmesh_Data
 
 
 #endif // pylith_meshio_testdatawritersubmesh_hh

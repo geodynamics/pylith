@@ -18,20 +18,20 @@
 
 #include <portinfo>
 
-#include "TestSubMesh.hh"   // Implementation of class methods
+#include "TestSubmesh.hh"   // Implementation of class methods
 
 // -----------------------------------------------------------------------------
 namespace pylith {
     namespace topology {
 
         // ---------------------------------------------------------------------
-        class TestSubMesh_Tri : public TestSubMesh {
+        class TestSubmesh_Tri : public TestSubmesh {
 
-            CPPUNIT_TEST_SUB_SUITE( TestSubMesh_Tri, TestSubMesh );
+            CPPUNIT_TEST_SUB_SUITE( TestSubmesh_Tri, TestSubmesh );
             CPPUNIT_TEST_SUITE_END();
 
             void setUp(void) {
-                TestSubMesh::setUp();
+                TestSubmesh::setUp();
 
                 _data->cellDim = 2;
                 _data->numVertices = 4;
@@ -68,8 +68,8 @@ namespace pylith {
                 _data->submeshCells = const_cast<int*>(_submeshCells);
             }   // setUp
 
-        };  // _TestSubMesh_Tri
-        CPPUNIT_TEST_SUITE_REGISTRATION( TestSubMesh_Tri );
+        };  // _TestSubmesh_Tri
+        CPPUNIT_TEST_SUITE_REGISTRATION( TestSubmesh_Tri );
 
     }   // topology
 }   // pylith

@@ -57,7 +57,7 @@ class pylith::topology::Field : public pylith::topology::FieldBase, public pylit
     friend class FieldQuery; // Fill field using data.
 
     friend class TestFieldMesh; // unit testing
-    friend class TestFieldSubMesh; // unit testing
+    friend class TestFieldSubmesh; // unit testing
 
     // PUBLIC ENUMS ///////////////////////////////////////////////////////
 public:

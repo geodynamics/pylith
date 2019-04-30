@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "TestDataWriterSubMesh.hh" // Implementation of class methods
+#include "TestDataWriterSubmesh.hh" // Implementation of class methods
 
 #include "FieldFactory.hh" // USES FieldFactory
 
@@ -40,7 +40,7 @@
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestDataWriterSubMesh::setUp(void) {
+pylith::meshio::TestDataWriterSubmesh::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
     _mesh = NULL;
@@ -53,7 +53,7 @@ pylith::meshio::TestDataWriterSubMesh::setUp(void) {
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::meshio::TestDataWriterSubMesh::tearDown(void) {
+pylith::meshio::TestDataWriterSubmesh::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
     delete _mesh;_mesh = NULL;
@@ -66,10 +66,10 @@ pylith::meshio::TestDataWriterSubMesh::tearDown(void) {
 // ----------------------------------------------------------------------
 // Initialize mesh.
 void
-pylith::meshio::TestDataWriterSubMesh::_initialize(void) {
+pylith::meshio::TestDataWriterSubmesh::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
-    const TestDataWriterSubMesh_Data* data = _getData();CPPUNIT_ASSERT(data);
+    const TestDataWriterSubmesh_Data* data = _getData();CPPUNIT_ASSERT(data);
 
     delete _mesh;_mesh = new pylith::topology::Mesh;CPPUNIT_ASSERT(_mesh);
     MeshIOAscii iohandler;
@@ -101,13 +101,13 @@ pylith::meshio::TestDataWriterSubMesh::_initialize(void) {
 // ----------------------------------------------------------------------
 // Create vertex fields.
 void
-pylith::meshio::TestDataWriterSubMesh::_createVertexFields(topology::Fields* fields) {
+pylith::meshio::TestDataWriterSubmesh::_createVertexFields(topology::Fields* fields) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(fields);
     CPPUNIT_ASSERT(_mesh);
 
-    const TestDataWriterSubMesh_Data* data = _getData();CPPUNIT_ASSERT(data);
+    const TestDataWriterSubmesh_Data* data = _getData();CPPUNIT_ASSERT(data);
 
     FieldFactory factory(*fields);
     factory.scalar(data->vertexDiscretization, data->vertexScalarValues, data->vertexNumPoints, data->vertexScalarNumComponents);
@@ -122,12 +122,12 @@ pylith::meshio::TestDataWriterSubMesh::_createVertexFields(topology::Fields* fie
 // ----------------------------------------------------------------------
 // Create cell fields.
 void
-pylith::meshio::TestDataWriterSubMesh::_createCellFields(topology::Fields* fields) {
+pylith::meshio::TestDataWriterSubmesh::_createCellFields(topology::Fields* fields) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(fields);
 
-    const TestDataWriterSubMesh_Data* data = _getData();CPPUNIT_ASSERT(data);
+    const TestDataWriterSubmesh_Data* data = _getData();CPPUNIT_ASSERT(data);
 
     FieldFactory factory(*fields);
     factory.scalar(data->cellDiscretization, data->cellScalarValues, data->cellNumPoints, data->cellScalarNumComponents);
@@ -141,8 +141,8 @@ pylith::meshio::TestDataWriterSubMesh::_createCellFields(topology::Fields* field
 
 // ----------------------------------------------------------------------
 void
-pylith::meshio::TestDataWriterSubMesh::_setDataTri(void) {
-    TestDataWriterSubMesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterSubmesh::_setDataTri(void) {
+    TestDataWriterSubmesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
 
     data->meshFilename = "data/tri3.mesh";
     data->bcLabel = "bc";
@@ -238,8 +238,8 @@ pylith::meshio::TestDataWriterSubMesh::_setDataTri(void) {
 
 // ----------------------------------------------------------------------
 void
-pylith::meshio::TestDataWriterSubMesh::_setDataQuad(void) {
-    TestDataWriterSubMesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterSubmesh::_setDataQuad(void) {
+    TestDataWriterSubmesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
 
     // We do not use a fault in this test case.
     data->meshFilename = "data/quad4.mesh";
@@ -337,8 +337,8 @@ pylith::meshio::TestDataWriterSubMesh::_setDataQuad(void) {
 
 // ----------------------------------------------------------------------
 void
-pylith::meshio::TestDataWriterSubMesh::_setDataTet(void) {
-    TestDataWriterSubMesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterSubmesh::_setDataTet(void) {
+    TestDataWriterSubmesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
 
     data->meshFilename = "data/tet4.mesh";
     data->bcLabel = "boundary";
@@ -432,8 +432,8 @@ pylith::meshio::TestDataWriterSubMesh::_setDataTet(void) {
 
 // ----------------------------------------------------------------------
 void
-pylith::meshio::TestDataWriterSubMesh::_setDataHex(void) {
-    TestDataWriterSubMesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterSubmesh::_setDataHex(void) {
+    TestDataWriterSubmesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
 
     data->meshFilename = "data/hex8.mesh";
     data->bcLabel = "top";
@@ -549,13 +549,13 @@ pylith::meshio::TestDataWriterSubMesh::_setDataHex(void) {
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshio::TestDataWriterSubMesh_Data::TestDataWriterSubMesh_Data(void) :
+pylith::meshio::TestDataWriterSubmesh_Data::TestDataWriterSubmesh_Data(void) :
     bcLabel(NULL) {}
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestDataWriterSubMesh_Data::~TestDataWriterSubMesh_Data(void) {}
+pylith::meshio::TestDataWriterSubmesh_Data::~TestDataWriterSubmesh_Data(void) {}
 
 
 // End of file

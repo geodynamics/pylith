@@ -34,11 +34,11 @@
 
 // ----------------------------------------------------------------------
 // Default constructor
-pylith::topology::Mesh::Mesh(const bool isSubMesh) :
+pylith::topology::Mesh::Mesh(const bool isSubmesh) :
     _dmMesh(NULL),
     _coordsys(0),
     _debug(false),
-    _isSubMesh(isSubMesh),
+    _isSubmesh(isSubmesh),
     _isSimplex(true) {}
 
 
@@ -49,7 +49,7 @@ pylith::topology::Mesh::Mesh(const int dim,
     _dmMesh(NULL),
     _coordsys(0),
     _debug(false),
-    _isSubMesh(false),
+    _isSubmesh(false),
     _isSimplex(true) {
     PYLITH_METHOD_BEGIN;
 

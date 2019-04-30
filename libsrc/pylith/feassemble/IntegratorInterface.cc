@@ -243,8 +243,8 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
 
-    const bool isSubMesh = true;
-    delete _interfaceMesh;_interfaceMesh = new pylith::topology::Mesh(isSubMesh);assert(_interfaceMesh);
+    const bool isSubmesh = true;
+    delete _interfaceMesh;_interfaceMesh = new pylith::topology::Mesh(isSubmesh);assert(_interfaceMesh);
     pylith::faults::TopologyOps::createFaultParallel(_interfaceMesh, solution.mesh(), _interfaceId,
                                                      _interfaceLabel.c_str());
     pylith::topology::MeshOps::checkTopology(*_interfaceMesh);

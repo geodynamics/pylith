@@ -17,7 +17,7 @@
 //
 
 /**
- * @file unittests/libtests/topology/TestSubMesh.hh
+ * @file unittests/libtests/topology/TestSubmesh.hh
  *
  * @brief C++ unit testing for Mesh.
  */
@@ -35,16 +35,16 @@
 /// Namespace for pylith package
 namespace pylith {
     namespace topology {
-        class TestSubMesh;
-        class TestSubMesh_Data;
+        class TestSubmesh;
+        class TestSubmesh_Data;
     } // topology
 } // pylith
 
-// TestSubMesh -----------------------------------------------------------------
+// TestSubmesh -----------------------------------------------------------------
 /// C++ unit testing for Mesh.
-class pylith::topology::TestSubMesh : public CppUnit::TestFixture {
+class pylith::topology::TestSubmesh : public CppUnit::TestFixture {
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestSubMesh);
+    CPPUNIT_TEST_SUITE(TestSubmesh);
 
     CPPUNIT_TEST(testConstructor);
     CPPUNIT_TEST(testConstructorMesh);
@@ -83,22 +83,22 @@ protected:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////
 protected:
 
-    TestSubMesh_Data* _data; ///< Data for testing.
+    TestSubmesh_Data* _data; ///< Data for testing.
     Mesh* _mesh; ///< Mesh holding lower dimension mesh.
     Mesh* _submesh; ///< Test subject, lower dimension mesh.
 
-}; // class TestSubMesh
+}; // class TestSubmesh
 
-// TestSubMesh_Data-------------------------------------------------------------
-class pylith::topology::TestSubMesh_Data {
+// TestSubmesh_Data-------------------------------------------------------------
+class pylith::topology::TestSubmesh_Data {
     // PUBLIC METHODS //////////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    TestSubMesh_Data(void);
+    TestSubmesh_Data(void);
 
     /// Destructor
-    ~TestSubMesh_Data(void);
+    ~TestSubmesh_Data(void);
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////
 public:
@@ -118,7 +118,7 @@ public:
     int* groupVertices; ///< Array of vertices in group.
     /// @}
 
-    /// @defgroup SubMesh information.
+    /// @defgroup Submesh information.
     /// @{
     int submeshNumCorners; ///< Number of vertices per cell.
     int submeshNumVertices; ///< Number of vertices in submesh.
@@ -127,7 +127,7 @@ public:
     int* submeshCells; ///< Array of vertices in cells [submeshNumCells*submeshNumCorners].
     /// @}
 
-}; // TestSubMesh_Data
+}; // TestSubmesh_Data
 
 #endif // pylith_topology_testsubmesh_hh
 

@@ -16,34 +16,32 @@
 // ======================================================================
 //
 
-#if !defined(pylith_meshio_datawriterhdf5datasubmeshtet4_hh)
-#define pylith_meshio_datawriterhdf5datasubmeshtet4_hh
+#if !defined(pylith_meshio_datawriterhdf5datasubmeshquad4_hh)
+#define pylith_meshio_datawriterhdf5datasubmeshquad4_hh
 
 #include "DataWriterData.hh" // ISA DataWriterData
 
 namespace pylith {
   namespace meshio {
-     class DataWriterHDF5DataSubMeshTet4;
+     class DataWriterHDF5DataSubmeshQuad4;
   } // meshio
 } // pylith
 
-class pylith::meshio::DataWriterHDF5DataSubMeshTet4 : public DataWriterData
-{ // DataWriterHDF5DataSubMeshTet4
+class pylith::meshio::DataWriterHDF5DataSubmeshQuad4 : public DataWriterData
+{ // DataWriterHDF5DataSubmeshQuad4
 
 public: 
 
   /// Constructor
-  DataWriterHDF5DataSubMeshTet4(void);
+  DataWriterHDF5DataSubmeshQuad4(void);
 
   /// Destructor
-  ~DataWriterHDF5DataSubMeshTet4(void);
+  ~DataWriterHDF5DataSubmeshQuad4(void);
 
 private:
 
   static const char* _meshFilename; ///< Name of mesh file.
-  static const char* _bcLabel; ///< Label defining boundary vertices.
-  static const char* _faultLabel; ///< Name of group of vertices for fault.
-  static const int _faultId; ///< Material identifier for fault.
+  static const char* _bcLabel; ///< Label defining group of vertices for bc.
 
   static const char* _timestepFilename; ///< Name of HDF5 file without fields.
   static const char* _vertexFilename; ///< Name of HDF5 file for vertex fields.
@@ -76,8 +74,8 @@ private:
   static const PylithScalar _cellFieldOther[]; ///< Values for other cell field.
   //@}
 
-}; // DataWriterHDF5DataSubMeshTet4
+}; // DataWriterHDF5DataSubmeshQuad4
 
-#endif // pylith_meshio_datawriterhdf5datasubmeshtet4_hh
+#endif // pylith_meshio_datawriterhdf5datasubmeshquad4_hh
 
 // End of file

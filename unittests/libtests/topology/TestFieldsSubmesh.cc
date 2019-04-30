@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "TestFieldsSubMesh.hh" // Implementation of class methods
+#include "TestFieldsSubmesh.hh" // Implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES createLowerDimMesh()
@@ -30,11 +30,11 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestFieldsSubMesh);
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestFieldsSubmesh);
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::TestFieldsSubMesh::setUp(void) { // setUp
+pylith::topology::TestFieldsSubmesh::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
     _mesh = new Mesh();
@@ -50,7 +50,7 @@ pylith::topology::TestFieldsSubMesh::setUp(void) { // setUp
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::TestFieldsSubMesh::tearDown(void) { // tearDown
+pylith::topology::TestFieldsSubmesh::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
     delete _mesh;_mesh = NULL;
@@ -63,7 +63,7 @@ pylith::topology::TestFieldsSubMesh::tearDown(void) { // tearDown
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::topology::TestFieldsSubMesh::testConstructor(void) { // testConstructor
+pylith::topology::TestFieldsSubmesh::testConstructor(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_submesh);
@@ -76,7 +76,7 @@ pylith::topology::TestFieldsSubMesh::testConstructor(void) { // testConstructor
 // ----------------------------------------------------------------------
 // Test add().
 void
-pylith::topology::TestFieldsSubMesh::testAdd(void) { // testAdd
+pylith::topology::TestFieldsSubmesh::testAdd(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_submesh);
@@ -95,7 +95,7 @@ pylith::topology::TestFieldsSubMesh::testAdd(void) { // testAdd
 // ----------------------------------------------------------------------
 // Test del().
 void
-pylith::topology::TestFieldsSubMesh::testDelete(void) { // testDelete
+pylith::topology::TestFieldsSubmesh::testDelete(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_submesh);
@@ -124,7 +124,7 @@ pylith::topology::TestFieldsSubMesh::testDelete(void) { // testDelete
 // ----------------------------------------------------------------------
 // Test get().
 void
-pylith::topology::TestFieldsSubMesh::testGet(void) { // testGet
+pylith::topology::TestFieldsSubmesh::testGet(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_submesh);
@@ -143,7 +143,7 @@ pylith::topology::TestFieldsSubMesh::testGet(void) { // testGet
 // ----------------------------------------------------------------------
 // Test get() const.
 void
-pylith::topology::TestFieldsSubMesh::testGetConst(void) { // testGetConst
+pylith::topology::TestFieldsSubmesh::testGetConst(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_submesh);
@@ -165,7 +165,7 @@ pylith::topology::TestFieldsSubMesh::testGetConst(void) { // testGetConst
 // ----------------------------------------------------------------------
 // Test hasField().
 void
-pylith::topology::TestFieldsSubMesh::testHasField(void) { // testHasField
+pylith::topology::TestFieldsSubmesh::testHasField(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_submesh);
@@ -190,7 +190,7 @@ pylith::topology::TestFieldsSubMesh::testHasField(void) { // testHasField
 // ----------------------------------------------------------------------
 // Test copyLayout().
 void
-pylith::topology::TestFieldsSubMesh::testCopyLayout(void) { // testCopyLayout
+pylith::topology::TestFieldsSubmesh::testCopyLayout(void) {
     PYLITH_METHOD_BEGIN;
 
     const int fiberDim = 3;

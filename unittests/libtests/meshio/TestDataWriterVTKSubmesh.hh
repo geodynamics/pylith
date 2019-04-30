@@ -17,18 +17,18 @@
 //
 
 /**
- * @file unittests/libtests/meshio/TestDataWriterVTKSubMesh.hh
+ * @file unittests/libtests/meshio/TestDataWriterVTKSubmesh.hh
  *
- * @brief C++ TestDataWriterVTKSubMesh object
+ * @brief C++ TestDataWriterVTKSubmesh object
  *
- * C++ unit testing for DataWriterVTKSubMesh.
+ * C++ unit testing for DataWriterVTKSubmesh.
  */
 
 #if !defined(pylith_meshio_testdatawritervtksubmesh_hh)
 #define pylith_meshio_testdatawritervtksubmesh_hh
 
 #include "TestDataWriterVTK.hh"
-#include "TestDataWriterSubMesh.hh"
+#include "TestDataWriterSubmesh.hh"
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
@@ -37,17 +37,17 @@
 /// Namespace for pylith package
 namespace pylith {
     namespace meshio {
-        class TestDataWriterVTKSubMesh;
+        class TestDataWriterVTKSubmesh;
 
-        class TestDataWriterVTKSubMesh_Data;
+        class TestDataWriterVTKSubmesh_Data;
     } // meshio
 } // pylith
 
 /// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKSubMesh : public TestDataWriterVTK, public TestDataWriterSubMesh, public CppUnit::TestFixture {
+class pylith::meshio::TestDataWriterVTKSubmesh : public TestDataWriterVTK, public TestDataWriterSubmesh, public CppUnit::TestFixture {
 
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestDataWriterVTKSubMesh);
+    CPPUNIT_TEST_SUITE(TestDataWriterVTKSubmesh);
 
     CPPUNIT_TEST(testTimeStep);
     CPPUNIT_TEST(testWriteVertexField);
@@ -80,19 +80,19 @@ protected:
      *
      * @returns Test data.
      */
-    TestDataWriterSubMesh_Data* _getData(void);
+    TestDataWriterSubmesh_Data* _getData(void);
 
 
     // PROTECTED MEMBDERS /////////////////////////////////////////////////
 protected:
 
-    TestDataWriterVTKSubMesh_Data* _data; ///< Data for testing.
+    TestDataWriterVTKSubmesh_Data* _data; ///< Data for testing.
 
-}; // class TestDataWriterVTKSubMesh
+}; // class TestDataWriterVTKSubmesh
 
 
 // ======================================================================
-class pylith::meshio::TestDataWriterVTKSubMesh_Data : public TestDataWriterVTK_Data, public TestDataWriterSubMesh_Data {};
+class pylith::meshio::TestDataWriterVTKSubmesh_Data : public TestDataWriterVTK_Data, public TestDataWriterSubmesh_Data {};
 
 
 #endif // pylith_meshio_testdatawritervtksubmesh_hh

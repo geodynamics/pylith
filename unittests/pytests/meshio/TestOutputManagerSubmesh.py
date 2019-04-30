@@ -16,9 +16,9 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/meshio/TestOutputManagerSubMesh.py
+## @file unittests/pytests/meshio/TestOutputManagerSubmesh.py
 
-## @brief Unit testing of Python OutputManagerSubMesh object.
+## @brief Unit testing of Python OutputManagerSubmesh object.
 
 import unittest
 
@@ -123,7 +123,7 @@ class TestProvider(object):
 
 
 # ----------------------------------------------------------------------
-class TestOutputManagerSubMesh(unittest.TestCase):
+class TestOutputManagerSubmesh(unittest.TestCase):
   """
   Unit testing of Python MeshOutputManager object.
   """

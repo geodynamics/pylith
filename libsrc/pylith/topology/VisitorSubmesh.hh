@@ -17,7 +17,7 @@
 //
 
 /**
- * @file libsrc/topology/VisitorSubMesh.hh
+ * @file libsrc/topology/VisitorSubmesh.hh
  *
  * @brief C++ helper class for accessing field and matrix values at
  * points in a submesh within a finite-element mesh.
@@ -39,13 +39,13 @@
 
 #include "pylith/utils/petscfwd.h" // HASA PetscVec, PetscSection
 
-// VecVisitorSubMesh -------------------------------------------------------
+// VecVisitorSubmesh -------------------------------------------------------
 /** @brief Helper class for accessing field values at points in a
  *  finite-element mesh.
  */
-class pylith::topology::VecVisitorSubMesh
-{ // VecVisitorSubMesh
-  friend class TestVecVisitorSubMesh; // unit testing
+class pylith::topology::VecVisitorSubmesh
+{ // VecVisitorSubmesh
+  friend class TestVecVisitorSubmesh; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -55,17 +55,17 @@ public :
    * @param field Field associated with visitor.
    * @param submeshIS Submesh index set associated with visitor.
    */
-  VecVisitorSubMesh(const Field& field,
-		    const SubMeshIS& submeshIS);
+  VecVisitorSubmesh(const Field& field,
+		    const SubmeshIS& submeshIS);
 
   /// Default destructor
-  ~VecVisitorSubMesh(void);
+  ~VecVisitorSubmesh(void);
 
   /* Initialize cached data.
    *
    * @param submeshIS Submesh index set associated with visitor.
    */
-  void initialize(const SubMeshIS& submeshIS);
+  void initialize(const SubmeshIS& submeshIS);
 
   /// Clear cached data.
   void clear(void);
@@ -148,19 +148,19 @@ private :
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  VecVisitorSubMesh(const VecVisitorSubMesh&); ///< Not implemented
-  const VecVisitorSubMesh& operator=(const VecVisitorSubMesh&); ///< Not implemented
+  VecVisitorSubmesh(const VecVisitorSubmesh&); ///< Not implemented
+  const VecVisitorSubmesh& operator=(const VecVisitorSubmesh&); ///< Not implemented
 
-}; // VecVisitorSubMesh
+}; // VecVisitorSubmesh
 
 
-// MatVisitorSubMesh -------------------------------------------------------
+// MatVisitorSubmesh -------------------------------------------------------
 /** @brief Helper class for accessing field values at points in a
  *  finite-element mesh.
  */
-class pylith::topology::MatVisitorSubMesh
-{ // MatVisitorSubMesh
-  friend class TestMatVisitorSubMesh; // unit testing
+class pylith::topology::MatVisitorSubmesh
+{ // MatVisitorSubmesh
+  friend class TestMatVisitorSubmesh; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -171,12 +171,12 @@ public :
    * @param field Field associated with visitor.
    * @param submeshIS Submesh index set associated with visitor.
    */
-  MatVisitorSubMesh(const PetscMat mat,
+  MatVisitorSubmesh(const PetscMat mat,
 		    const Field& field,
-		    const SubMeshIS& submeshIS);
+		    const SubmeshIS& submeshIS);
 
   /// Default destructor
-  ~MatVisitorSubMesh(void);
+  ~MatVisitorSubmesh(void);
 
   // Initialize.
   void initialize(void);
@@ -228,16 +228,16 @@ private :
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  MatVisitorSubMesh(const MatVisitorSubMesh&); ///< Not implemented
-  const MatVisitorSubMesh& operator=(const MatVisitorSubMesh&); ///< Not implemented
+  MatVisitorSubmesh(const MatVisitorSubmesh&); ///< Not implemented
+  const MatVisitorSubmesh& operator=(const MatVisitorSubmesh&); ///< Not implemented
 
-}; // MatVisitorSubMesh
+}; // MatVisitorSubmesh
 
-// SubMeshIS ------------------------------------------------------------
+// SubmeshIS ------------------------------------------------------------
 /// Index set associated with submesh.
-class pylith::topology::SubMeshIS
-{ // SubMeshIS
-  friend class TestSubMeshIS; // unit testing
+class pylith::topology::SubmeshIS
+{ // SubmeshIS
+  friend class TestSubmeshIS; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -246,10 +246,10 @@ public :
    * 
    * @param submesh Submesh associated with index set.
    */
-  SubMeshIS(const Mesh& submesh);
+  SubmeshIS(const Mesh& submesh);
 
   /// Default destructor.
-  ~SubMeshIS(void);
+  ~SubmeshIS(void);
 
   /// Deallocate.
   void deallocate(void);
@@ -286,10 +286,10 @@ private :
   PetscInt _size; ///< Size of index set.
   const PetscInt* _points; ///< Array of points in index set.
 
-}; // SubMeshIS
+}; // SubmeshIS
 
 
-#include "VisitorSubMesh.icc"
+#include "VisitorSubmesh.icc"
 
 #endif // pylith_topology_visitorsubmesh_hh
 

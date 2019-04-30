@@ -30,35 +30,35 @@ check_PROGRAMS = testtopology
 testtopology_SOURCES = \
 	TestMesh.cc \
 	TestMeshOps.cc \
-	TestSubMesh.cc \
-	TestSubMesh_Cases.cc \
+	TestSubmesh.cc \
+	TestSubmesh_Cases.cc \
 	TestFieldBase.cc \
 	TestFieldMesh.cc \
 	TestFieldMesh_Cases.cc \
 	TestFieldQuery.cc \
 	TestFieldQuery_Cases.cc \
 	TestFieldsMesh.cc \
-	TestFieldsSubMesh.cc \
+	TestFieldsSubmesh.cc \
 	TestRefineUniform.cc \
 	TestRefineUniform_Cases.cc \
 	TestReverseCuthillMcKee.cc \
 	TestReverseCuthillMcKee_Cases.cc \
 	test_topology.cc
 
-#	TestFieldSubMesh.cc
+#	TestFieldSubmesh.cc
 
 
 
 noinst_HEADERS = \
 	TestMesh.hh \
-	TestSubMesh.hh \
+	TestSubmesh.hh \
 	TestMeshOps.hh \
 	TestFieldBase.hh \
 	TestFieldMesh.hh \
-	TestFieldSubMesh.hh \
+	TestFieldSubmesh.hh \
 	TestFieldQuery.hh \
 	TestFieldsMesh.hh \
-	TestFieldsSubMesh.hh \
+	TestFieldsSubmesh.hh \
 	TestSolutionFields.hh \
 	TestRefineUniform.hh \
 	TestReverseCuthillMcKee.hh \

@@ -23,20 +23,20 @@
 
 namespace pylith {
   namespace meshio {
-     class DataWriterHDF5DataSubMeshTri3;
+     class DataWriterHDF5DataSubmeshTri3;
   } // meshio
 } // pylith
 
-class pylith::meshio::DataWriterHDF5DataSubMeshTri3 : public DataWriterData
-{ // DataWriterHDF5DataSubMeshTri3
+class pylith::meshio::DataWriterHDF5DataSubmeshTri3 : public DataWriterData
+{ // DataWriterHDF5DataSubmeshTri3
 
 public: 
 
   /// Constructor
-  DataWriterHDF5DataSubMeshTri3(void);
+  DataWriterHDF5DataSubmeshTri3(void);
 
   /// Destructor
-  ~DataWriterHDF5DataSubMeshTri3(void);
+  ~DataWriterHDF5DataSubmeshTri3(void);
 
 private:
 
@@ -76,7 +76,7 @@ private:
   static const PylithScalar _cellFieldOther[]; ///< Values for other cell field.
   //@}
 
-}; // DataWriterHDF5DataSubMeshTri3
+}; // DataWriterHDF5DataSubmeshTri3
 
 #endif // pylith_meshio_datawriterhdf5datasubmeshtri3_hh
 

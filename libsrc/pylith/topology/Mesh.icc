@@ -80,7 +80,7 @@ pylith::topology::Mesh::numCorners(void) const {
     if (_dmMesh) {
         PetscInt cStart, cEnd, vStart, vEnd, closureSize, *closure = NULL;
         PetscErrorCode err;
-        const int cellHeight = _isSubMesh ? 1 : 0;
+        const int cellHeight = _isSubmesh ? 1 : 0;
         err = DMPlexGetHeightStratum(_dmMesh, cellHeight, &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
         err = DMPlexGetDepthStratum(_dmMesh, 0, &vStart, &vEnd); PYLITH_CHECK_ERROR(err);
         if (cEnd > cStart) {
@@ -122,7 +122,7 @@ pylith::topology::Mesh::numCells(void) const {
     PetscInt ncells = 0;
     if (_dmMesh) {
         PetscInt begin=0, end=0;
-        const int cellHeight = _isSubMesh ? 1 : 0;
+        const int cellHeight = _isSubmesh ? 1 : 0;
         PetscErrorCode err = DMPlexGetHeightStratum(_dmMesh, cellHeight, &begin, &end); PYLITH_CHECK_ERROR(err);
         ncells = end-begin;
     } // if

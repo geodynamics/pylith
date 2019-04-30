@@ -22,7 +22,6 @@
 
 __all__ = ['Distributor',
            'Mesh',
-           'SubMesh',
            'Field',
            'MeshGenSimple',
            'MeshGenerator',

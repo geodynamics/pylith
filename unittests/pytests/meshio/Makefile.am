@@ -30,7 +30,7 @@ noinst_PYTHON = \
 	TestVertexFilterVecNorm.py \
 	TestCellFilterAvg.py \
 	TestOutputManagerMesh.py \
-	TestOutputManagerSubMesh.py \
+	TestOutputManagerSubmesh.py \
 	TestOutputSolnSubset.py \
 	TestOutputSolnPoints.py \
 	TestDataWriterVTK.py \

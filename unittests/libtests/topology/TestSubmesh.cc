@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "TestSubMesh.hh" // Implementation of class methods
+#include "TestSubmesh.hh" // Implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES createLowerDimMesh()
@@ -30,12 +30,12 @@
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::topology::TestSubMesh::setUp(void) {
+pylith::topology::TestSubmesh::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
     _mesh = NULL;
     _submesh = NULL;
-    _data = new TestSubMesh_Data;CPPUNIT_ASSERT(_data);
+    _data = new TestSubmesh_Data;CPPUNIT_ASSERT(_data);
 
     PYLITH_METHOD_END;
 } // setUp
@@ -44,7 +44,7 @@ pylith::topology::TestSubMesh::setUp(void) {
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::topology::TestSubMesh::tearDown(void) {
+pylith::topology::TestSubmesh::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
     delete _mesh;_mesh = NULL;
@@ -58,7 +58,7 @@ pylith::topology::TestSubMesh::tearDown(void) {
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::topology::TestSubMesh::testConstructor(void) {
+pylith::topology::TestSubmesh::testConstructor(void) {
     PYLITH_METHOD_BEGIN;
 
     Mesh submesh;
@@ -72,7 +72,7 @@ pylith::topology::TestSubMesh::testConstructor(void) {
 // ----------------------------------------------------------------------
 // Test constructor w/mesh.
 void
-pylith::topology::TestSubMesh::testConstructorMesh(void) {
+pylith::topology::TestSubmesh::testConstructorMesh(void) {
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_data);
 
@@ -116,7 +116,7 @@ pylith::topology::TestSubMesh::testConstructorMesh(void) {
 // ----------------------------------------------------------------------
 // Test coordsys(), debug(), comm().
 void
-pylith::topology::TestSubMesh::testAccessors(void) {
+pylith::topology::TestSubmesh::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_data);
 
@@ -139,7 +139,7 @@ pylith::topology::TestSubMesh::testAccessors(void) {
 // ----------------------------------------------------------------------
 // Test dimension(), numCorners(), numVertices(), numCells().
 void
-pylith::topology::TestSubMesh::testSizes(void) {
+pylith::topology::TestSubmesh::testSizes(void) {
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_data);
 
@@ -158,7 +158,7 @@ pylith::topology::TestSubMesh::testSizes(void) {
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::TestSubMesh::_buildMesh(void) {
+pylith::topology::TestSubmesh::_buildMesh(void) {
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(!_mesh);
@@ -205,7 +205,7 @@ pylith::topology::TestSubMesh::_buildMesh(void) {
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::topology::TestSubMesh_Data::TestSubMesh_Data(void) :
+pylith::topology::TestSubmesh_Data::TestSubmesh_Data(void) :
     cellDim(0),
     numVertices(0),
     numCells(0),
@@ -225,7 +225,7 @@ pylith::topology::TestSubMesh_Data::TestSubMesh_Data(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::topology::TestSubMesh_Data::~TestSubMesh_Data(void) {}
+pylith::topology::TestSubmesh_Data::~TestSubmesh_Data(void) {}
 
 
 // End of file

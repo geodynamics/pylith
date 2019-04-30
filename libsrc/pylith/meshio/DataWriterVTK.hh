@@ -42,7 +42,7 @@
 class pylith::meshio::DataWriterVTK : public DataWriter {
     friend class TestDataWriterVTKMesh;   // unit testing
     friend class TestDataWriterVTKMaterial;   // unit testing
-    friend class TestDataWriterVTKSubMesh;   // unit testing
+    friend class TestDataWriterVTKSubmesh;   // unit testing
     friend class TestDataWriterVTKBCMesh;   // unit testing
     friend class TestDataWriterVTKFaultMesh;   // unit testing
     friend class TestDataWriterVTKPoints;   // unit testing

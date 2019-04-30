@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "TestDataWriterVTKSubMesh.hh" // Implementation of class methods
+#include "TestDataWriterVTKSubmesh.hh" // Implementation of class methods
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
@@ -26,96 +26,96 @@ namespace pylith {
     namespace meshio {
 
         // --------------------------------------------------------------
-        class TestDataWriterVTKSubMesh_Tri : public TestDataWriterVTKSubMesh {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterVTKSubMesh_Tri, TestDataWriterVTKSubMesh);
+        class TestDataWriterVTKSubmesh_Tri : public TestDataWriterVTKSubmesh {
+            CPPUNIT_TEST_SUB_SUITE(TestDataWriterVTKSubmesh_Tri, TestDataWriterVTKSubmesh);
             CPPUNIT_TEST_SUITE_END();
 
             void setUp(void) {
                 PYLITH_METHOD_BEGIN;
 
-                TestDataWriterVTKSubMesh::setUp();
-                _data = new TestDataWriterVTKSubMesh_Data();CPPUNIT_ASSERT(_data);
+                TestDataWriterVTKSubmesh::setUp();
+                _data = new TestDataWriterVTKSubmesh_Data();CPPUNIT_ASSERT(_data);
 
                 _data->timestepFilename = "tri3_surf.vtk";
                 _data->vertexFilename = "tri3_surf_vertex.vtk";
                 _data->cellFilename = "tri3_surf_cell.vtk";
 
-                TestDataWriterSubMesh::_setDataTri();
-                TestDataWriterSubMesh::_initialize();
+                TestDataWriterSubmesh::_setDataTri();
+                TestDataWriterSubmesh::_initialize();
 
                 PYLITH_METHOD_END;
             } // setUp
-        }; // class TestDataWriterVTKSubMesh_Tri
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterVTKSubMesh_Tri);
+        }; // class TestDataWriterVTKSubmesh_Tri
+        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterVTKSubmesh_Tri);
 
         // --------------------------------------------------------------
-        class TestDataWriterVTKSubMesh_Quad : public TestDataWriterVTKSubMesh {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterVTKSubMesh_Quad, TestDataWriterVTKSubMesh);
+        class TestDataWriterVTKSubmesh_Quad : public TestDataWriterVTKSubmesh {
+            CPPUNIT_TEST_SUB_SUITE(TestDataWriterVTKSubmesh_Quad, TestDataWriterVTKSubmesh);
             CPPUNIT_TEST_SUITE_END();
 
             void setUp(void) {
                 PYLITH_METHOD_BEGIN;
 
-                TestDataWriterVTKSubMesh::setUp();
-                _data = new TestDataWriterVTKSubMesh_Data();CPPUNIT_ASSERT(_data);
+                TestDataWriterVTKSubmesh::setUp();
+                _data = new TestDataWriterVTKSubmesh_Data();CPPUNIT_ASSERT(_data);
 
                 _data->timestepFilename = "quad4_surf.vtk";
                 _data->vertexFilename = "quad4_surf_vertex.vtk";
                 _data->cellFilename = "quad4_surf_cell.vtk";
 
-                TestDataWriterSubMesh::_setDataQuad();
-                TestDataWriterSubMesh::_initialize();
+                TestDataWriterSubmesh::_setDataQuad();
+                TestDataWriterSubmesh::_initialize();
 
                 PYLITH_METHOD_END;
             } // setUp
-        }; // class TestDataWriterVTKSubMesh_Quad
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterVTKSubMesh_Quad);
+        }; // class TestDataWriterVTKSubmesh_Quad
+        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterVTKSubmesh_Quad);
 
         // --------------------------------------------------------------
-        class TestDataWriterVTKSubMesh_Tet : public TestDataWriterVTKSubMesh {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterVTKSubMesh_Tet, TestDataWriterVTKSubMesh);
+        class TestDataWriterVTKSubmesh_Tet : public TestDataWriterVTKSubmesh {
+            CPPUNIT_TEST_SUB_SUITE(TestDataWriterVTKSubmesh_Tet, TestDataWriterVTKSubmesh);
             CPPUNIT_TEST_SUITE_END();
 
             void setUp(void) {
                 PYLITH_METHOD_BEGIN;
 
-                TestDataWriterVTKSubMesh::setUp();
-                _data = new TestDataWriterVTKSubMesh_Data();CPPUNIT_ASSERT(_data);
+                TestDataWriterVTKSubmesh::setUp();
+                _data = new TestDataWriterVTKSubmesh_Data();CPPUNIT_ASSERT(_data);
 
                 _data->timestepFilename = "tet4_surf.vtk";
                 _data->vertexFilename = "tet4_surf_vertex.vtk";
                 _data->cellFilename = "tet4_surf_cell.vtk";
 
-                TestDataWriterSubMesh::_setDataTet();
-                TestDataWriterSubMesh::_initialize();
+                TestDataWriterSubmesh::_setDataTet();
+                TestDataWriterSubmesh::_initialize();
 
                 PYLITH_METHOD_END;
             } // setUp
-        }; // class TestDataWriterVTKSubMesh_Tet
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterVTKSubMesh_Tet);
+        }; // class TestDataWriterVTKSubmesh_Tet
+        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterVTKSubmesh_Tet);
 
         // --------------------------------------------------------------
-        class TestDataWriterVTKSubMesh_Hex : public TestDataWriterVTKSubMesh {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterVTKSubMesh_Hex, TestDataWriterVTKSubMesh);
+        class TestDataWriterVTKSubmesh_Hex : public TestDataWriterVTKSubmesh {
+            CPPUNIT_TEST_SUB_SUITE(TestDataWriterVTKSubmesh_Hex, TestDataWriterVTKSubmesh);
             CPPUNIT_TEST_SUITE_END();
 
             void setUp(void) {
                 PYLITH_METHOD_BEGIN;
 
-                TestDataWriterVTKSubMesh::setUp();
-                _data = new TestDataWriterVTKSubMesh_Data();CPPUNIT_ASSERT(_data);
+                TestDataWriterVTKSubmesh::setUp();
+                _data = new TestDataWriterVTKSubmesh_Data();CPPUNIT_ASSERT(_data);
 
                 _data->timestepFilename = "hex8_surf.vtk";
                 _data->vertexFilename = "hex8_surf_vertex.vtk";
                 _data->cellFilename = "hex8_surf_cell.vtk";
 
-                TestDataWriterSubMesh::_setDataHex();
-                TestDataWriterSubMesh::_initialize();
+                TestDataWriterSubmesh::_setDataHex();
+                TestDataWriterSubmesh::_initialize();
 
                 PYLITH_METHOD_END;
             } // setUp
-        }; // class TestDataWriterVTKSubMesh_Hex
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterVTKSubMesh_Hex);
+        }; // class TestDataWriterVTKSubmesh_Hex
+        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterVTKSubmesh_Hex);
 
     } // meshio
 } // pylith

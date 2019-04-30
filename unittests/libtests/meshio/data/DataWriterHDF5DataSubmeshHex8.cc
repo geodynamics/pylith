@@ -16,46 +16,46 @@
 // ======================================================================
 //
 
-#include "DataWriterHDF5DataSubMeshHex8.hh"
+#include "DataWriterHDF5DataSubmeshHex8.hh"
 
 #include <assert.h> // USES assert()
 
-const char* pylith::meshio::DataWriterHDF5DataSubMeshHex8::_meshFilename = 
+const char* pylith::meshio::DataWriterHDF5DataSubmeshHex8::_meshFilename = 
   "data/hex8.mesh";
 
-const char* pylith::meshio::DataWriterHDF5DataSubMeshHex8::_bcLabel = 
+const char* pylith::meshio::DataWriterHDF5DataSubmeshHex8::_bcLabel = 
   "top";
 
-const char* pylith::meshio::DataWriterHDF5DataSubMeshHex8::_faultLabel = 0;
-const int pylith::meshio::DataWriterHDF5DataSubMeshHex8::_faultId = 0;
+const char* pylith::meshio::DataWriterHDF5DataSubmeshHex8::_faultLabel = 0;
+const int pylith::meshio::DataWriterHDF5DataSubmeshHex8::_faultId = 0;
 
-const char* pylith::meshio::DataWriterHDF5DataSubMeshHex8::_timestepFilename = 
+const char* pylith::meshio::DataWriterHDF5DataSubmeshHex8::_timestepFilename = 
   "hex8_surf.h5";
 
-const char* pylith::meshio::DataWriterHDF5DataSubMeshHex8::_vertexFilename = 
+const char* pylith::meshio::DataWriterHDF5DataSubmeshHex8::_vertexFilename = 
   "hex8_surf_vertex.h5";
 
-const char* pylith::meshio::DataWriterHDF5DataSubMeshHex8::_cellFilename = 
+const char* pylith::meshio::DataWriterHDF5DataSubmeshHex8::_cellFilename = 
   "hex8_surf_cell.h5";
 
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshHex8::_time = 1.0;
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshHex8::_time = 1.0;
 
-const char* pylith::meshio::DataWriterHDF5DataSubMeshHex8::_timeFormat = 
+const char* pylith::meshio::DataWriterHDF5DataSubmeshHex8::_timeFormat = 
   "%3.1f";
 
-const int pylith::meshio::DataWriterHDF5DataSubMeshHex8::_numVertices = 12;
+const int pylith::meshio::DataWriterHDF5DataSubmeshHex8::_numVertices = 12;
 
 const pylith::meshio::DataWriterData::FieldStruct
-pylith::meshio::DataWriterHDF5DataSubMeshHex8::_vertexFields[4] = {
+pylith::meshio::DataWriterHDF5DataSubmeshHex8::_vertexFields[4] = {
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "displacement", topology::FieldBase::VECTOR, 3 },
   { "stress", topology::FieldBase::TENSOR, 6 },
   { "other", topology::FieldBase::OTHER, 2 },
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshHex8::_vertexFieldScalar[12*1] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshHex8::_vertexFieldScalar[12*1] = {
   2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8, 10.9, 11.8, 12.7, 13.6
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshHex8::_vertexFieldVector[12*3] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshHex8::_vertexFieldVector[12*3] = {
   1.1, 2.2, 3.3,
   4.4, 5.5, 6.6,
   7.7, 8.8, 9.9,
@@ -69,7 +69,7 @@ const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshHex8::_vertexFieldVe
   7.9, 8.1, 9.2,
   10.3, 11.4, 12.5,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshHex8::_vertexFieldTensor[12*6] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshHex8::_vertexFieldTensor[12*6] = {
   1.1, 1.2, 1.3, 1.4, 1.5, 1.6,
   2.1, 2.2, 2.3, 2.4, 2.5, 2.6,
   3.1, 3.2, 3.3, 3.4, 3.5, 3.6,
@@ -83,7 +83,7 @@ const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshHex8::_vertexFieldTe
   11.1, 11.2, 11.3, 11.4, 11.5, 11.6,
   12.1, 12.2, 12.3, 12.4, 12.5, 12.6,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshHex8::_vertexFieldOther[12*2] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshHex8::_vertexFieldOther[12*2] = {
   1.2, 2.3,
   3.4, 4.5,
   5.6, 6.7,
@@ -98,32 +98,32 @@ const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshHex8::_vertexFieldOt
   11.5, 11.6,
 };
 
-const int pylith::meshio::DataWriterHDF5DataSubMeshHex8::_numCells = 2;
+const int pylith::meshio::DataWriterHDF5DataSubmeshHex8::_numCells = 2;
 
 const pylith::meshio::DataWriterData::FieldStruct
-pylith::meshio::DataWriterHDF5DataSubMeshHex8::_cellFields[4] = {
+pylith::meshio::DataWriterHDF5DataSubmeshHex8::_cellFields[4] = {
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "traction", topology::FieldBase::VECTOR, 3 },
   { "stress", topology::FieldBase::TENSOR, 6 },
   { "other", topology::FieldBase::OTHER, 3 },
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshHex8::_cellFieldScalar[2*1] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshHex8::_cellFieldScalar[2*1] = {
   2.1, 3.2,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshHex8::_cellFieldVector[2*3] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshHex8::_cellFieldVector[2*3] = {
   1.1, 2.2, 3.3,
   4.4, 5.5, 6.6,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshHex8::_cellFieldTensor[2*6] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshHex8::_cellFieldTensor[2*6] = {
   1.2, 2.3, 3.4, 4.5, 5.6, 6.7,
   7.8, 8.9, 9.0, 10.1, 11.2, 12.3,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshHex8::_cellFieldOther[2*3] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshHex8::_cellFieldOther[2*3] = {
   1.2, 2.3, 3.4,
   7.8, 8.9, 9.0,
 };
 
-pylith::meshio::DataWriterHDF5DataSubMeshHex8::DataWriterHDF5DataSubMeshHex8(void)
+pylith::meshio::DataWriterHDF5DataSubmeshHex8::DataWriterHDF5DataSubmeshHex8(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
   bcLabel = const_cast<char*>(_bcLabel);
@@ -154,7 +154,7 @@ pylith::meshio::DataWriterHDF5DataSubMeshHex8::DataWriterHDF5DataSubMeshHex8(voi
   cellFields[3] = const_cast<PylithScalar*>(_cellFieldOther);
 } // constructor
 
-pylith::meshio::DataWriterHDF5DataSubMeshHex8::~DataWriterHDF5DataSubMeshHex8(void)
+pylith::meshio::DataWriterHDF5DataSubmeshHex8::~DataWriterHDF5DataSubmeshHex8(void)
 {}
 
 

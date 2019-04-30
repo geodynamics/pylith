@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "TestFieldSubMesh.hh" // Implementation of class methods
+#include "TestFieldSubmesh.hh" // Implementation of class methods
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
@@ -31,12 +31,12 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldSubMesh );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldSubmesh );
 
 // ----------------------------------------------------------------------
 namespace pylith {
   namespace topology {
-    namespace _TestFieldSubMesh {
+    namespace _TestFieldSubmesh {
       const int cellDim = 2;
       const int nvertices = 4;
       const int ncells = 2;
@@ -59,20 +59,20 @@ namespace pylith {
       const int submeshVertices[] = {
 	3, 4, 5
       };
-    } // _TestFieldSubMesh
+    } // _TestFieldSubmesh
   } // topology
 } // pylith
 
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::topology::TestFieldSubMesh::testConstructor(void)
+pylith::topology::TestFieldSubmesh::testConstructor(void)
 { // testConstructor
   PYLITH_METHOD_BEGIN;
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   Field field(submesh);
 
@@ -82,13 +82,13 @@ pylith::topology::TestFieldSubMesh::testConstructor(void)
 // ----------------------------------------------------------------------
 // Test section().
 void
-pylith::topology::TestFieldSubMesh::testSection(void)
+pylith::topology::TestFieldSubmesh::testSection(void)
 { // testSection
   PYLITH_METHOD_BEGIN;
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
   Field field(submesh);
 
   PetscSection section = field.localSection();
@@ -100,17 +100,17 @@ pylith::topology::TestFieldSubMesh::testSection(void)
 // ----------------------------------------------------------------------
 // Test mesh().
 void
-pylith::topology::TestFieldSubMesh::testMesh(void)
+pylith::topology::TestFieldSubmesh::testMesh(void)
 { // testMesh
   PYLITH_METHOD_BEGIN;
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
   Field field(submesh);
 
   const Mesh& mesh2 = field.mesh();
-  CPPUNIT_ASSERT_EQUAL(_TestFieldSubMesh::cellDim-1, mesh2.dimension());  
+  CPPUNIT_ASSERT_EQUAL(_TestFieldSubmesh::cellDim-1, mesh2.dimension());  
 
   PYLITH_METHOD_END;
 } // testMesh
@@ -118,16 +118,16 @@ pylith::topology::TestFieldSubMesh::testMesh(void)
 // ----------------------------------------------------------------------
 // Test spaceDim().
 void
-pylith::topology::TestFieldSubMesh::testSpaceDim(void)
+pylith::topology::TestFieldSubmesh::testSpaceDim(void)
 { // testSpaceDim
   PYLITH_METHOD_BEGIN;
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
   Field field(submesh);
 
-  CPPUNIT_ASSERT_EQUAL(_TestFieldSubMesh::cellDim, field.spaceDim());
+  CPPUNIT_ASSERT_EQUAL(_TestFieldSubmesh::cellDim, field.spaceDim());
 
   PYLITH_METHOD_END;
 } // testSpaceDim
@@ -135,7 +135,7 @@ pylith::topology::TestFieldSubMesh::testSpaceDim(void)
 // ----------------------------------------------------------------------
 // Test newSection(points).
 void
-pylith::topology::TestFieldSubMesh::testNewSectionPoints(void)
+pylith::topology::TestFieldSubmesh::testNewSectionPoints(void)
 { // testNewSectionPoints
   PYLITH_METHOD_BEGIN;
 
@@ -143,7 +143,7 @@ pylith::topology::TestFieldSubMesh::testNewSectionPoints(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   Field field(submesh);
   field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
@@ -165,7 +165,7 @@ pylith::topology::TestFieldSubMesh::testNewSectionPoints(void)
 // ----------------------------------------------------------------------
 // Test newSection(domain).
 void
-pylith::topology::TestFieldSubMesh::testNewSectionDomain(void)
+pylith::topology::TestFieldSubmesh::testNewSectionDomain(void)
 { // testNewSectionDomain
   PYLITH_METHOD_BEGIN;
 
@@ -173,7 +173,7 @@ pylith::topology::TestFieldSubMesh::testNewSectionDomain(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   Field field(submesh);
   field.newSection(Field::VERTICES_FIELD, fiberDim);
@@ -195,7 +195,7 @@ pylith::topology::TestFieldSubMesh::testNewSectionDomain(void)
 // ----------------------------------------------------------------------
 // Test newSection(field).
 void
-pylith::topology::TestFieldSubMesh::testNewSectionField(void)
+pylith::topology::TestFieldSubmesh::testNewSectionField(void)
 { // testNewSectionField
   PYLITH_METHOD_BEGIN;
 
@@ -203,7 +203,7 @@ pylith::topology::TestFieldSubMesh::testNewSectionField(void)
     
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   // Create field with atlas to use to create new field
   Field fieldSrc(submesh);
@@ -231,7 +231,7 @@ pylith::topology::TestFieldSubMesh::testNewSectionField(void)
 // ----------------------------------------------------------------------
 // Test cloneSection().
 void
-pylith::topology::TestFieldSubMesh::testCloneSection(void)
+pylith::topology::TestFieldSubmesh::testCloneSection(void)
 { // testCloneSection
   PYLITH_METHOD_BEGIN;
 
@@ -246,7 +246,7 @@ pylith::topology::TestFieldSubMesh::testCloneSection(void)
     
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   PetscErrorCode err = 0;
@@ -292,13 +292,13 @@ pylith::topology::TestFieldSubMesh::testCloneSection(void)
 // ----------------------------------------------------------------------
 // Test clear().
 void
-pylith::topology::TestFieldSubMesh::testClear(void)
+pylith::topology::TestFieldSubmesh::testClear(void)
 { // testClear
   PYLITH_METHOD_BEGIN;
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
   Field field(submesh);
 
   field.scale(2.0);
@@ -317,7 +317,7 @@ pylith::topology::TestFieldSubMesh::testClear(void)
 // ----------------------------------------------------------------------
 // Test allocate().
 void
-pylith::topology::TestFieldSubMesh::testAllocate(void)
+pylith::topology::TestFieldSubmesh::testAllocate(void)
 { // testAllocate
   PYLITH_METHOD_BEGIN;
 
@@ -331,7 +331,7 @@ pylith::topology::TestFieldSubMesh::testAllocate(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   Field field(submesh);
   field.newSection(Field::VERTICES_FIELD, fiberDim);
@@ -368,7 +368,7 @@ pylith::topology::TestFieldSubMesh::testAllocate(void)
 // ----------------------------------------------------------------------
 // Test zero().
 void
-pylith::topology::TestFieldSubMesh::testZero(void)
+pylith::topology::TestFieldSubmesh::testZero(void)
 { // testZero
   PYLITH_METHOD_BEGIN;
 
@@ -382,7 +382,7 @@ pylith::topology::TestFieldSubMesh::testZero(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   Field field(submesh);
   field.newSection(Field::VERTICES_FIELD, fiberDim);
@@ -421,7 +421,7 @@ pylith::topology::TestFieldSubMesh::testZero(void)
 // ----------------------------------------------------------------------
 // Test complete().
 void
-pylith::topology::TestFieldSubMesh::testComplete(void)
+pylith::topology::TestFieldSubmesh::testComplete(void)
 { // testComplete
   PYLITH_METHOD_BEGIN;
 
@@ -435,7 +435,7 @@ pylith::topology::TestFieldSubMesh::testComplete(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
@@ -474,7 +474,7 @@ pylith::topology::TestFieldSubMesh::testComplete(void)
 // ----------------------------------------------------------------------
 // Test copy().
 void
-pylith::topology::TestFieldSubMesh::testCopy(void)
+pylith::topology::TestFieldSubmesh::testCopy(void)
 { // testCopy
   PYLITH_METHOD_BEGIN;
 
@@ -488,7 +488,7 @@ pylith::topology::TestFieldSubMesh::testCopy(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
@@ -530,7 +530,7 @@ pylith::topology::TestFieldSubMesh::testCopy(void)
 // ----------------------------------------------------------------------
 // Test operator+=().
 void
-pylith::topology::TestFieldSubMesh::testOperatorAdd(void)
+pylith::topology::TestFieldSubmesh::testOperatorAdd(void)
 { // testOperateAdd
   PYLITH_METHOD_BEGIN;
 
@@ -549,7 +549,7 @@ pylith::topology::TestFieldSubMesh::testOperatorAdd(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
@@ -602,7 +602,7 @@ pylith::topology::TestFieldSubMesh::testOperatorAdd(void)
 // ----------------------------------------------------------------------
 // Test dimensionalize().
 void
-pylith::topology::TestFieldSubMesh::testDimensionalize(void)
+pylith::topology::TestFieldSubmesh::testDimensionalize(void)
 { // testDimensionalize
   PYLITH_METHOD_BEGIN;
 
@@ -616,7 +616,7 @@ pylith::topology::TestFieldSubMesh::testDimensionalize(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
@@ -657,7 +657,7 @@ pylith::topology::TestFieldSubMesh::testDimensionalize(void)
 // ----------------------------------------------------------------------
 // Test view().
 void
-pylith::topology::TestFieldSubMesh::testView(void)
+pylith::topology::TestFieldSubmesh::testView(void)
 { // testView
   PYLITH_METHOD_BEGIN;
 
@@ -671,7 +671,7 @@ pylith::topology::TestFieldSubMesh::testView(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
@@ -697,7 +697,7 @@ pylith::topology::TestFieldSubMesh::testView(void)
 // ----------------------------------------------------------------------
 // Test createScatter().
 void
-pylith::topology::TestFieldSubMesh::testCreateScatter(void)
+pylith::topology::TestFieldSubmesh::testCreateScatter(void)
 { // testCreateScatter
   PYLITH_METHOD_BEGIN;
 
@@ -705,7 +705,7 @@ pylith::topology::TestFieldSubMesh::testCreateScatter(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   Field field(submesh);
   field.newSection(FieldBase::VERTICES_FIELD, fiberDim);
@@ -758,7 +758,7 @@ pylith::topology::TestFieldSubMesh::testCreateScatter(void)
 // ----------------------------------------------------------------------
 // Test createScatterWithBC().
 void
-pylith::topology::TestFieldSubMesh::testCreateScatterWithBC(void)
+pylith::topology::TestFieldSubmesh::testCreateScatterWithBC(void)
 { // testCreateScatterWithBC
   PYLITH_METHOD_BEGIN;
 
@@ -766,7 +766,7 @@ pylith::topology::TestFieldSubMesh::testCreateScatterWithBC(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   Field field(submesh);
   field.newSection(FieldBase::VERTICES_FIELD, fiberDim);
@@ -819,7 +819,7 @@ pylith::topology::TestFieldSubMesh::testCreateScatterWithBC(void)
 // ----------------------------------------------------------------------
 // Test vector().
 void
-pylith::topology::TestFieldSubMesh::testVector(void)
+pylith::topology::TestFieldSubmesh::testVector(void)
 { // testVector
   PYLITH_METHOD_BEGIN;
 
@@ -827,7 +827,7 @@ pylith::topology::TestFieldSubMesh::testVector(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   Field field(submesh);
   field.newSection(FieldBase::VERTICES_FIELD, fiberDim);
@@ -857,7 +857,7 @@ pylith::topology::TestFieldSubMesh::testVector(void)
 // ----------------------------------------------------------------------
 // Test scatterLocalToGlobal().
 void
-pylith::topology::TestFieldSubMesh::testScatterLocalToGlobal(void)
+pylith::topology::TestFieldSubmesh::testScatterLocalToGlobal(void)
 { // testScatterLocalToGlobal
   PYLITH_METHOD_BEGIN;
 
@@ -871,7 +871,7 @@ pylith::topology::TestFieldSubMesh::testScatterLocalToGlobal(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
@@ -915,7 +915,7 @@ pylith::topology::TestFieldSubMesh::testScatterLocalToGlobal(void)
 // ----------------------------------------------------------------------
 // Test scatterGlobalToLocal().
 void
-pylith::topology::TestFieldSubMesh::testScatterGlobalToLocal(void)
+pylith::topology::TestFieldSubmesh::testScatterGlobalToLocal(void)
 { // testScatterGlobalToLocal
   PYLITH_METHOD_BEGIN;
 
@@ -929,7 +929,7 @@ pylith::topology::TestFieldSubMesh::testScatterGlobalToLocal(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
+  Mesh submesh(mesh, _TestFieldSubmesh::label);
 
   PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
@@ -971,24 +971,24 @@ pylith::topology::TestFieldSubMesh::testScatterGlobalToLocal(void)
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::TestFieldSubMesh::_buildMesh(Mesh* mesh)
+pylith::topology::TestFieldSubmesh::_buildMesh(Mesh* mesh)
 { // _buildMesh
   PYLITH_METHOD_BEGIN;
 
   assert(mesh);
 
-  const int cellDim = _TestFieldSubMesh::cellDim;
-  const int ncells = _TestFieldSubMesh::ncells;
-  const int* cells = _TestFieldSubMesh::cells;
-  const int nvertices = _TestFieldSubMesh::nvertices;
-  const int ncorners = _TestFieldSubMesh::ncorners;
-  const int spaceDim = _TestFieldSubMesh::cellDim;
-  const PylithScalar* coordinates = _TestFieldSubMesh::coordinates;
+  const int cellDim = _TestFieldSubmesh::cellDim;
+  const int ncells = _TestFieldSubmesh::ncells;
+  const int* cells = _TestFieldSubmesh::cells;
+  const int nvertices = _TestFieldSubmesh::nvertices;
+  const int ncorners = _TestFieldSubmesh::ncorners;
+  const int spaceDim = _TestFieldSubmesh::cellDim;
+  const PylithScalar* coordinates = _TestFieldSubmesh::coordinates;
   const bool interpolate = false;
 
   PetscErrorCode err = 0;
 
-  MeshOps::createDMMesh(mesh, _TestFieldSubMesh::cellDim);
+  MeshOps::createDMMesh(mesh, _TestFieldSubmesh::cellDim);
   PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);  
   err = DMPlexSetChart(dmMesh, 0, ncells+nvertices);PYLITH_CHECK_ERROR(err);
   for(PetscInt c = 0; c < ncells; ++c) {
@@ -1034,9 +1034,9 @@ pylith::topology::TestFieldSubMesh::_buildMesh(Mesh* mesh)
   err = DMSetCoordinatesLocal(dmMesh, coordVec);PYLITH_CHECK_ERROR(err);
   err = VecDestroy(&coordVec);PYLITH_CHECK_ERROR(err);
 
-  const int numPoints = _TestFieldSubMesh::groupSize;
+  const int numPoints = _TestFieldSubmesh::groupSize;
   for(PetscInt i = 0; i < numPoints; ++i) {
-    err = DMSetLabelValue(dmMesh, _TestFieldSubMesh::label, ncells+_TestFieldSubMesh::groupVertices[i], 1);PYLITH_CHECK_ERROR(err);
+    err = DMSetLabelValue(dmMesh, _TestFieldSubmesh::label, ncells+_TestFieldSubmesh::groupVertices[i], 1);PYLITH_CHECK_ERROR(err);
   } // for
 
   spatialdata::geocoords::CSCart cs;

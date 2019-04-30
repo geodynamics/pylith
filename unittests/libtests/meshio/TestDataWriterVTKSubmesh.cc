@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "TestDataWriterVTKSubMesh.hh" // Implementation of class methods
+#include "TestDataWriterVTKSubmesh.hh" // Implementation of class methods
 
 #include "data/DataWriterData.hh" // USES DataWriterData
 
@@ -30,11 +30,11 @@
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestDataWriterVTKSubMesh::setUp(void)
+pylith::meshio::TestDataWriterVTKSubmesh::setUp(void)
 { // setUp
     PYLITH_METHOD_BEGIN;
 
-    TestDataWriterSubMesh::setUp();
+    TestDataWriterSubmesh::setUp();
     _data = NULL;
 
     PYLITH_METHOD_END;
@@ -43,11 +43,11 @@ pylith::meshio::TestDataWriterVTKSubMesh::setUp(void)
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::meshio::TestDataWriterVTKSubMesh::tearDown(void)
+pylith::meshio::TestDataWriterVTKSubmesh::tearDown(void)
 { // tearDown
     PYLITH_METHOD_BEGIN;
 
-    TestDataWriterSubMesh::tearDown();
+    TestDataWriterSubmesh::tearDown();
     delete _data; _data = NULL;
 
     PYLITH_METHOD_END;
@@ -56,7 +56,7 @@ pylith::meshio::TestDataWriterVTKSubMesh::tearDown(void)
 // ----------------------------------------------------------------------
 // Test openTimeStep() and closeTimeStep()
 void
-pylith::meshio::TestDataWriterVTKSubMesh::testTimeStep(void)
+pylith::meshio::TestDataWriterVTKSubmesh::testTimeStep(void)
 { // testTimeStep
     PYLITH_METHOD_BEGIN;
 
@@ -93,7 +93,7 @@ pylith::meshio::TestDataWriterVTKSubMesh::testTimeStep(void)
 // ----------------------------------------------------------------------
 // Test writeVertexField.
 void
-pylith::meshio::TestDataWriterVTKSubMesh::testWriteVertexField(void)
+pylith::meshio::TestDataWriterVTKSubmesh::testWriteVertexField(void)
 { // testWriteVertexField
     PYLITH_METHOD_BEGIN;
 
@@ -137,7 +137,7 @@ pylith::meshio::TestDataWriterVTKSubMesh::testWriteVertexField(void)
 // ----------------------------------------------------------------------
 // Test writeCellField.
 void
-pylith::meshio::TestDataWriterVTKSubMesh::testWriteCellField(void)
+pylith::meshio::TestDataWriterVTKSubmesh::testWriteCellField(void)
 { // testWriteCellField
     PYLITH_METHOD_BEGIN;
 
@@ -180,8 +180,8 @@ pylith::meshio::TestDataWriterVTKSubMesh::testWriteCellField(void)
 
 // ----------------------------------------------------------------------
 // Get test data.
-pylith::meshio::TestDataWriterSubMesh_Data*
-pylith::meshio::TestDataWriterVTKSubMesh::_getData(void)
+pylith::meshio::TestDataWriterSubmesh_Data*
+pylith::meshio::TestDataWriterVTKSubmesh::_getData(void)
 { // _getData
     return _data;
 } // _getData

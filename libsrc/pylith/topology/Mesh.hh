@@ -45,9 +45,9 @@ public:
 
     /** Default constructor.
      *
-     * @param isSubMesh True if mesh is a submesh of another mesh.
+     * @param isSubmesh True if mesh is a submesh of another mesh.
      */
-    Mesh(const bool isSubMesh=false);
+    Mesh(const bool isSubmesh=false);
 
     /** Constructor with dimension and communicator.
      *
@@ -163,7 +163,7 @@ private:
 
     spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
     bool _debug; ///< Debugging flag for mesh.
-    const bool _isSubMesh; ///< True if mesh is a submesh of another mesh.
+    const bool _isSubmesh; ///< True if mesh is a submesh of another mesh.
     bool _isSimplex; ///< True if mesh has simplex cells (line, tri, tet).
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////

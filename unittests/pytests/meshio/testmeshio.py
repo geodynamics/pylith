@@ -62,8 +62,8 @@ class TestApp(UnitTestApp):
     from TestOutputManagerMesh import TestOutputManagerMesh
     suite.addTest(unittest.makeSuite(TestOutputManagerMesh))
 
-    from TestOutputManagerSubMesh import TestOutputManagerSubMesh
-    suite.addTest(unittest.makeSuite(TestOutputManagerSubMesh))
+    from TestOutputManagerSubmesh import TestOutputManagerSubmesh
+    suite.addTest(unittest.makeSuite(TestOutputManagerSubmesh))
 
     from TestOutputSolnSubset import TestOutputSolnSubset
     suite.addTest(unittest.makeSuite(TestOutputSolnSubset))

@@ -16,47 +16,47 @@
 // ======================================================================
 //
 
-#include "DataWriterHDF5DataSubMeshTri3.hh"
+#include "DataWriterHDF5DataSubmeshTri3.hh"
 
 #include <assert.h> // USES assert()
 
-const char* pylith::meshio::DataWriterHDF5DataSubMeshTri3::_meshFilename = 
+const char* pylith::meshio::DataWriterHDF5DataSubmeshTri3::_meshFilename = 
   "data/tri3.mesh";
 
-const char* pylith::meshio::DataWriterHDF5DataSubMeshTri3::_bcLabel = 
+const char* pylith::meshio::DataWriterHDF5DataSubmeshTri3::_bcLabel = 
   "bc";
 
-const char* pylith::meshio::DataWriterHDF5DataSubMeshTri3::_faultLabel = 
+const char* pylith::meshio::DataWriterHDF5DataSubmeshTri3::_faultLabel = 
   "fault";
-const int pylith::meshio::DataWriterHDF5DataSubMeshTri3::_faultId = 100;
+const int pylith::meshio::DataWriterHDF5DataSubmeshTri3::_faultId = 100;
 
-const char* pylith::meshio::DataWriterHDF5DataSubMeshTri3::_timestepFilename = 
+const char* pylith::meshio::DataWriterHDF5DataSubmeshTri3::_timestepFilename = 
   "tri3_surf.h5";
 
-const char* pylith::meshio::DataWriterHDF5DataSubMeshTri3::_vertexFilename = 
+const char* pylith::meshio::DataWriterHDF5DataSubmeshTri3::_vertexFilename = 
   "tri3_surf_vertex.h5";
 
-const char* pylith::meshio::DataWriterHDF5DataSubMeshTri3::_cellFilename = 
+const char* pylith::meshio::DataWriterHDF5DataSubmeshTri3::_cellFilename = 
   "tri3_surf_cell.h5";
 
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_time = 1.0;
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshTri3::_time = 1.0;
 
-const char* pylith::meshio::DataWriterHDF5DataSubMeshTri3::_timeFormat = 
+const char* pylith::meshio::DataWriterHDF5DataSubmeshTri3::_timeFormat = 
   "%3.1f";
 
-const int pylith::meshio::DataWriterHDF5DataSubMeshTri3::_numVertices = 6;
+const int pylith::meshio::DataWriterHDF5DataSubmeshTri3::_numVertices = 6;
 
 const pylith::meshio::DataWriterData::FieldStruct
-pylith::meshio::DataWriterHDF5DataSubMeshTri3::_vertexFields[] = {
+pylith::meshio::DataWriterHDF5DataSubmeshTri3::_vertexFields[] = {
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "displacement", topology::FieldBase::VECTOR, 2 },
   { "stress", topology::FieldBase::TENSOR, 3 },
   { "other", topology::FieldBase::OTHER, 2 },
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_vertexFieldScalar[6*1] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshTri3::_vertexFieldScalar[6*1] = {
   2.1, 3.2, 4.3, 5.4, 6.5, 7.6,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_vertexFieldVector[6*2] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshTri3::_vertexFieldVector[6*2] = {
   1.1, 2.2,
   3.3, 4.4,
   5.5, 6.6,
@@ -64,7 +64,7 @@ const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_vertexFieldVe
   9.9, 10.0,
   11.1, 12.2,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_vertexFieldTensor[6*3] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshTri3::_vertexFieldTensor[6*3] = {
   1.1, 1.2, 1.3,
   2.1, 2.2, 2.3,
   3.1, 3.2, 3.3,
@@ -72,7 +72,7 @@ const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_vertexFieldTe
   5.1, 5.2, 5.3,
   6.1, 6.2, 6.3,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_vertexFieldOther[6*2] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshTri3::_vertexFieldOther[6*2] = {
   1.2, 2.3,
   3.4, 4.5,
   5.6, 6.7,
@@ -81,29 +81,29 @@ const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_vertexFieldOt
   11.2, 12.3,
 };
 
-const int pylith::meshio::DataWriterHDF5DataSubMeshTri3::_numCells = 1;
+const int pylith::meshio::DataWriterHDF5DataSubmeshTri3::_numCells = 1;
 
 const pylith::meshio::DataWriterData::FieldStruct
-pylith::meshio::DataWriterHDF5DataSubMeshTri3::_cellFields[4] = {
+pylith::meshio::DataWriterHDF5DataSubmeshTri3::_cellFields[4] = {
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "traction", topology::FieldBase::VECTOR, 2 },
   { "stress", topology::FieldBase::TENSOR, 3 },
   { "other", topology::FieldBase::OTHER, 2 },
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_cellFieldVector[1*2] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshTri3::_cellFieldVector[1*2] = {
   1.1, 2.2,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_cellFieldScalar[1*1] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshTri3::_cellFieldScalar[1*1] = {
   2.1,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_cellFieldTensor[1*3] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshTri3::_cellFieldTensor[1*3] = {
   1.2, 2.3, 3.4,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_cellFieldOther[1*2] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataSubmeshTri3::_cellFieldOther[1*2] = {
   1.2, 2.3,
 };
 
-pylith::meshio::DataWriterHDF5DataSubMeshTri3::DataWriterHDF5DataSubMeshTri3(void)
+pylith::meshio::DataWriterHDF5DataSubmeshTri3::DataWriterHDF5DataSubmeshTri3(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
   bcLabel = const_cast<char*>(_bcLabel);
@@ -134,7 +134,7 @@ pylith::meshio::DataWriterHDF5DataSubMeshTri3::DataWriterHDF5DataSubMeshTri3(voi
   cellFields[3] = const_cast<PylithScalar*>(_cellFieldOther);
 } // constructor
 
-pylith::meshio::DataWriterHDF5DataSubMeshTri3::~DataWriterHDF5DataSubMeshTri3(void)
+pylith::meshio::DataWriterHDF5DataSubmeshTri3::~DataWriterHDF5DataSubmeshTri3(void)
 {}
 
 
