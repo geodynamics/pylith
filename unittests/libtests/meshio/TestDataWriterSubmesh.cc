@@ -85,14 +85,14 @@ pylith::meshio::TestDataWriterSubmesh::_initialize(void) {
     pylith::topology::MeshOps::nondimensionalize(_mesh, normalizer);
 
     if (data->faultLabel) {
-	pylith::faults::FaultCohesiveStub fault;
+        pylith::faults::FaultCohesiveStub fault;
         fault.setSurfaceMarkerLabel(data->faultLabel);
         fault.setInterfaceId(data->faultId);
         fault.adjustTopology(_mesh);
     } // if
 
     CPPUNIT_ASSERT(data->bcLabel);
-    delete _submesh;_submesh = new topology::Mesh(*_mesh, data->bcLabel);CPPUNIT_ASSERT(_submesh);
+    delete _submesh;_submesh = pylith::topology::MeshOps::createLowerDimMesh(*_mesh, data->bcLabel);CPPUNIT_ASSERT(_submesh);
 
     PYLITH_METHOD_END;
 } // _initialize
