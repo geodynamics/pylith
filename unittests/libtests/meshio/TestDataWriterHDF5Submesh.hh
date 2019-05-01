@@ -17,18 +17,18 @@
 //
 
 /**
- * @file unittests/libtests/meshio/TestDataWriterHDF5ExtMaterial.hh
+ * @file unittests/libtests/meshio/TestDataWriterHDF5Submesh.hh
  *
- * @brief C++ TestDataWriterHDF5ExtMaterial object
+ * @brief C++ TestDataWriterHDF5Submesh object
  *
- * C++ unit testing for DataWriterHDF5ExtMaterial.
+ * C++ unit testing for DataWriterHDF5Submesh.
  */
 
-#if !defined(pylith_meshio_testdatawriterhdf5extmaterial_hh)
-#define pylith_meshio_testdatawriterhdf5extmaterial_hh
+#if !defined(pylith_meshio_testdatawriterhdf5submesh_hh)
+#define pylith_meshio_testdatawriterhdf5submesh_hh
 
-#include "TestDataWriterHDF5.hh" // ISA TestDataWriterHDF5
-#include "TestDataWriterMaterial.hh" // ISA TestDataWriterMaterial
+#include "TestDataWriterHDF5.hh"
+#include "TestDataWriterSubmesh.hh"
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
@@ -37,17 +37,17 @@
 /// Namespace for pylith package
 namespace pylith {
     namespace meshio {
-        class TestDataWriterHDF5ExtMaterial;
+        class TestDataWriterHDF5Submesh;
 
-        class TestDataWriterHDF5ExtMaterial_Data;
+        class TestDataWriterHDF5Submesh_Data;
     } // meshio
 } // pylith
 
-// ======================================================================
-/// C++ unit testing for DataWriterHDF5Ext
-class pylith::meshio::TestDataWriterHDF5ExtMaterial : public TestDataWriterHDF5, public TestDataWriterMaterial, public CppUnit::TestFixture {
+/// C++ unit testing for DataWriterHDF5
+class pylith::meshio::TestDataWriterHDF5Submesh :
+    public TestDataWriterHDF5, public TestDataWriterSubmesh, public CppUnit::TestFixture {
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestDataWriterHDF5ExtMaterial);
+    CPPUNIT_TEST_SUITE(TestDataWriterHDF5Submesh);
 
     CPPUNIT_TEST(testOpenClose);
     CPPUNIT_TEST(testWriteVertexField);
@@ -80,18 +80,20 @@ protected:
      *
      * @returns Test data.
      */
-    TestDataWriterMaterial_Data* _getData(void);
+    TestDataWriterSubmesh_Data* _getData(void);
 
     // PROTECTED MEMBDERS /////////////////////////////////////////////////
 protected:
 
-    TestDataWriterHDF5ExtMaterial_Data* _data; ///< Data for testing.
+    TestDataWriterHDF5Submesh_Data* _data; ///< Data for testing.
 
-}; // class TestDataWriterHDF5ExtMaterial
+}; // class TestDataWriterVTKSubmesh
 
 // ======================================================================
-class pylith::meshio::TestDataWriterHDF5ExtMaterial_Data : public TestDataWriterHDF5_Data, public TestDataWriterMaterial_Data {};
+class pylith::meshio::TestDataWriterHDF5Submesh_Data :
+    public TestDataWriterHDF5_Data,
+    public TestDataWriterSubmesh_Data {};
 
-#endif // pylith_meshio_testdatawriterhdf5extmaterial_hh
+#endif // pylith_meshio_testdatawriterhdf5submesh_hh
 
 // End of file
