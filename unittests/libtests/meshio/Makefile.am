@@ -22,32 +22,35 @@ include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
-TESTS = testmeshio
+TESTS = testmeshio testvtk
 
-check_PROGRAMS = testmeshio
+check_PROGRAMS = testmeshio testvtk
 
-# Primary source files
+# general meshio 
 testmeshio_SOURCES = \
+	test_meshio.cc \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
 	TestMeshIOAscii_Cases.cc \
 	TestMeshIOLagrit.cc \
 	TestMeshIOLagrit_Cases.cc \
 	TestOutputTriggerStep.cc \
-	TestOutputTriggerTime.cc \
+	TestOutputTriggerTime.cc
+
+testvtk_SOURCES = \
+	test_meshio.cc \
 	FieldFactory.cc \
 	TestDataWriter.cc \
 	TestDataWriterMesh.cc \
+	TestDataWriterMaterial.cc \
+	TestDataWriterSubmesh.cc \
 	TestDataWriterVTK.cc \
 	TestDataWriterVTKMesh.cc \
 	TestDataWriterVTKMesh_Cases.cc \
-	TestDataWriterMaterial.cc \
 	TestDataWriterVTKMaterial.cc \
 	TestDataWriterVTKMaterial_Cases.cc \
-	TestDataWriterSubmesh.cc \
 	TestDataWriterVTKSubmesh.cc \
-	TestDataWriterVTKSubmesh_Cases.cc \
-	test_meshio.cc
+	TestDataWriterVTKSubmesh_Cases.cc
 
 
 #TestCellFilterAvg.cc \
@@ -86,11 +89,11 @@ noinst_HEADERS = \
 	TestVertexFilterVecNorm.hh \
 	TestDataWriter.hh \
 	TestDataWriterMesh.hh \
+	TestDataWriterMaterial.hh \
+	TestDataWriterSubmesh.hh \
 	TestDataWriterVTK.hh \
 	TestDataWriterVTKMesh.hh \
-	TestDataWriterMaterial.hh \
 	TestDataWriterVTKMaterial.hh \
-	TestDataWriterSubmesh.hh \
 	TestDataWriterVTKSubmesh.hh
 
 # TestDataWriterSubmesh.hh \
@@ -203,6 +206,15 @@ testmeshio_LDADD = \
 	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
+testvtk_LDFLAGS = \
+	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+
+testvtk_LDADD = \
+	-lcppunit -ldl \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
+	-lspatialdata \
+	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+
 if ENABLE_CUBIT
   testmeshio_SOURCES += \
 	TestExodusII.cc \
@@ -212,22 +224,33 @@ if ENABLE_CUBIT
 	TestExodusII.hh \
 	TestMeshIOCubit.hh
   testmeshio_LDADD += -lnetcdf
+  testvtk_LDADD += -lnetcdf
 endif
 
 if ENABLE_HDF5
-  testmeshio_SOURCES += \
+  TESTS += testhdf5
+
+  check_PROGRAMS += testhdf5
+
+  testhdf5_SOURCES = \
+	test_meshio.cc \
+	FieldFactory.cc \
+	TestDataWriter.cc \
+	TestDataWriterMesh.cc \
+	TestDataWriterMaterial.cc \
+	TestDataWriterSubmesh.cc \
 	TestHDF5.cc \
 	TestDataWriterHDF5.cc \
 	TestDataWriterHDF5Mesh.cc \
 	TestDataWriterHDF5Mesh_Cases.cc \
 	TestDataWriterHDF5ExtMesh.cc \
-	TestDataWriterHDF5ExtMesh_Cases.cc 
+	TestDataWriterHDF5ExtMesh_Cases.cc \
+	TestDataWriterHDF5Material.cc \
+	TestDataWriterHDF5Material_Cases.cc \
+	TestDataWriterHDF5ExtMaterial.cc \
+	TestDataWriterHDF5ExtMaterial_Cases.cc
 
 
-#	TestDataWriterHDF5Material.cc \
-#	TestDataWriterHDF5Material_Cases.cc \
-#	TestDataWriterHDF5ExtMaterial.cc \
-#	TestDataWriterHDF5ExtMaterial_Cases.cc
 
 
 # TestDataWriterHDF5Submesh.cc \
@@ -275,7 +298,20 @@ if ENABLE_HDF5
 # TestDataWriterHDF5ExtFaultMeshCases.hh
 
 
-  testmeshio_LDADD += -lhdf5
+  testhdf5_LDFLAGS = \
+	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+
+  testhdf5_LDADD = \
+	-lcppunit -ldl \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
+	-lspatialdata \
+	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS) \
+	-lhdf5
+
+if ENABLE_CUBIT
+  testhdf5_LDADD += -lnetcdf
+endif
+
 endif
 
 
