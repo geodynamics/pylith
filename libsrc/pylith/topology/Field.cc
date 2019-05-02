@@ -535,8 +535,7 @@ pylith::topology::Field::createScatter(const Mesh& mesh,
 // DOF. Use createScatterWithBC() to include the constrained DOF in
 // the PETSc vector.
 void
-pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
-                                             const char* context) {
+pylith::topology::Field::createScatterWithBC(const char* context) {
     PYLITH_METHOD_BEGIN;
 
     assert(context);
@@ -579,8 +578,6 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
 // vector.
 void
 pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
-                                             const std::string& labelName,
-                                             PetscInt labelValue,
                                              const char* context) {
     PYLITH_METHOD_BEGIN;
 
@@ -657,16 +654,8 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
     err = DMSetDefaultSection(sinfo.dm, newSection);PYLITH_CHECK_ERROR(err);
     err = PetscSectionDestroy(&newSection);PYLITH_CHECK_ERROR(err);
     err = DMGetPointSF(sinfo.dm, &sf);PYLITH_CHECK_ERROR(err);
-    if (labelName.empty()) {
-        err = PetscSectionCreateGlobalSectionCensored(section, sf, PETSC_TRUE, numExcludes, excludeRanges, &gsection);
-        PYLITH_CHECK_ERROR(err);
-    } else {
-        DMLabel label;
-
-        err = DMGetLabel(sinfo.dm, labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionCreateGlobalSectionLabel(section, sf, PETSC_TRUE, label, labelValue, &gsection);
-        PYLITH_CHECK_ERROR(err);
-    } // if/else
+    err = PetscSectionCreateGlobalSectionCensored(section, sf, PETSC_TRUE, numExcludes, excludeRanges,
+                                                  &gsection);PYLITH_CHECK_ERROR(err);
     err = DMSetDefaultGlobalSection(sinfo.dm, gsection);PYLITH_CHECK_ERROR(err);
     err = PetscSectionDestroy(&gsection);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);

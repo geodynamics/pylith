@@ -157,7 +157,7 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteCellField(void) {
     const char* fieldNames[4] = {"scalar", "vector", "tensor", "other"};
     for (int i = 0; i < numFields; ++i) {
         pylith::topology::Field& field = cellFields.get(fieldNames[i]);
-        writer.writeCellField(t, field, "material-id", _data->materialId);
+        writer.writeCellField(t, field);
         CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
         CPPUNIT_ASSERT(writer._wroteCellHeader);
     } // for

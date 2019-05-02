@@ -256,7 +256,7 @@ pylith::meshio::OutputPhysics::_open(const pylith::topology::Mesh& mesh,
     } // if
 
     assert(_writer);
-    _writer->open(mesh, isInfo, _label.length() ? _label.c_str() : NULL, _labelId);
+    _writer->open(mesh, isInfo);
 
     PYLITH_METHOD_END;
 } // _open
@@ -287,9 +287,9 @@ pylith::meshio::OutputPhysics::_openDataStep(const PylithReal t,
     assert(_writer);
     if (!_writer->isOpen()) {
         bool infoOnly = false;
-        _writer->open(mesh, infoOnly, _label.length() ? _label.c_str() : NULL, _labelId);
+        _writer->open(mesh, infoOnly);
     } // if
-    _writer->openTimeStep(t, mesh, _label.length() ? _label.c_str() : NULL, _labelId);
+    _writer->openTimeStep(t, mesh);
 
     PYLITH_METHOD_END;
 } // _openDataStep
@@ -365,7 +365,7 @@ pylith::meshio::OutputPhysics::_appendField(const PylithReal t,
     const int basisOrder = _getBasisOrder(*fieldDimensioned);
     switch (basisOrder) {
     case 0:
-        _writer->writeCellField(t, *fieldDimensioned, _label.c_str(), _labelId);
+        _writer->writeCellField(t, *fieldDimensioned);
         break;
 
     case 1:

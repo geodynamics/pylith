@@ -318,11 +318,9 @@ public:
      * DOF. Use createScatter() if constrained DOF should be omitted
      * from the PETSc vector.
      *
-     * @param mesh Mesh associated with scatter.
      * @param context Label for context associated with vector.
      */
-    void createScatterWithBC(const Mesh& mesh,
-                             const char* context);
+    void createScatterWithBC(const char* context);
 
     /** Create PETSc vector scatter for field. This is used to transfer
      * information from the "global" PETSc vector view to the "local"
@@ -331,13 +329,9 @@ public:
      * from the PETSc vector.
      *
      * @param mesh Mesh associated with scatter.
-     * @param labelName The name of the label defining the point set, or PETSC_NULL
-     * @param labelValue The label stratum defining the point set
      * @param context Label for context associated with vector.
      */
     void createScatterWithBC(const Mesh& mesh,
-                             const std::string& labelName,
-                             PetscInt labelValue,
                              const char* context);
 
     /** Get PETSc vector associated with scatter for field.

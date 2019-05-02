@@ -26,7 +26,7 @@
  *
  * / - root group
  *   geometry - group
-       coordsys - attribute string with coordinate system
+ *     coordsys - attribute string with coordinate system
  *     vertices - dataset [nvertices, spacedim]
  *   topology - group
  *     cell_type - attribute string with cell type
@@ -50,145 +50,132 @@
 
 // DataWriterHDF5Ext ----------------------------------------------------
 /// Object for writing finite-element data to HDF5 file.
-class pylith::meshio::DataWriterHDF5Ext : public DataWriter
-{ // DataWriterHDF5Ext
-friend class TestDataWriterHDF5ExtMesh;   // unit testing
-friend class TestDataWriterHDF5ExtSubmesh;   // unit testing
-friend class TestDataWriterHDF5ExtPoints;   // unit testing
-friend class TestDataWriterHDF5ExtBCMesh;   // unit testing
-friend class TestDataWriterHDF5ExtFaultMesh;   // unit testing
+class pylith::meshio::DataWriterHDF5Ext : public DataWriter { // DataWriterHDF5Ext
+    friend class TestDataWriterHDF5ExtMesh; // unit testing
+    friend class TestDataWriterHDF5ExtSubmesh; // unit testing
+    friend class TestDataWriterHDF5ExtPoints; // unit testing
+    friend class TestDataWriterHDF5ExtBCMesh; // unit testing
+    friend class TestDataWriterHDF5ExtFaultMesh; // unit testing
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
-/// Constructor
-DataWriterHDF5Ext(void);
+    /// Constructor
+    DataWriterHDF5Ext(void);
 
-/// Destructor
-~DataWriterHDF5Ext(void);
+    /// Destructor
+    ~DataWriterHDF5Ext(void);
 
-/** Make copy of this object.
- *
- * @returns Copy of this.
- */
-DataWriter* clone(void) const;
+    /** Make copy of this object.
+     *
+     * @returns Copy of this.
+     */
+    DataWriter* clone(void) const;
 
-/// Deallocate PETSc and local data structures.
-void deallocate(void);
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
 
-/** Set filename for HDF5 file.
- *
- * @param[in] filename Name of HDF5 file.
- */
-void filename(const char* filename);
+    /** Set filename for HDF5 file.
+     *
+     * @param[in] filename Name of HDF5 file.
+     */
+    void filename(const char* filename);
 
-/** Generate filename for HDF5 file.
- *
- * Appends _info if only writing parameters.
- *
- * :KLUDGE: We should separate generating "info" files from the
- * DataWriter interface.
- *
- * @returns String for HDF5 filename.
- */
-std::string hdf5Filename(void) const;
+    /** Generate filename for HDF5 file.
+     *
+     * Appends _info if only writing parameters.
+     *
+     * :KLUDGE: We should separate generating "info" files from the
+     * DataWriter interface.
+     *
+     * @returns String for HDF5 filename.
+     */
+    std::string hdf5Filename(void) const;
 
-/** Prepare for writing files.
- *
- * @param[in] mesh Finite-element mesh.
- * @param[in] isInfo True if only writing info values.
- * @param[in] label Name of label defining cells to include in output
- *   (=0 means use all cells in mesh).
- * @param[in] labelId Value of label defining which cells to include.
- */
-void open(const topology::Mesh& mesh,
-          const bool isInfo,
-          const char* label =0,
-          const int labelId =0);
+    /** Prepare for writing files.
+     *
+     * @param[in] mesh Finite-element mesh.
+     * @param[in] isInfo True if only writing info values. */
+    void open(const topology::Mesh& mesh,
+              const bool isInfo);
 
-/// Close output files.
-void close(void);
+    /// Close output files.
+    void close(void);
 
-/** Write field over vertices to file.
- *
- * @param[in] t Time associated with field.
- * @param[in] field Field over vertices.
- * @param[in] mesh Mesh associated with output.
- */
-void writeVertexField(const PylithScalar t,
-                      topology::Field& field,
-                      const topology::Mesh& mesh);
+    /** Write field over vertices to file.
+     *
+     * @param[in] t Time associated with field.
+     * @param[in] field Field over vertices.
+     * @param[in] mesh Mesh associated with output.
+     */
+    void writeVertexField(const PylithScalar t,
+                          topology::Field& field,
+                          const topology::Mesh& mesh);
 
-/** Write field over cells to file.
- *
- * @param[in] t Time associated with field.
- * @param[in] field Field over cells.
- * @param[in] label Name of label defining cells to include in output
- *   (=0 means use all cells in mesh).
- * @param[in] labelId Value of label defining which cells to include.
- */
-void writeCellField(const PylithScalar t,
-                    topology::Field& field,
-                    const char* label =0,
-                    const int labelId =0);
+    /** Write field over cells to file.
+     *
+     * @param[in] t Time associated with field.
+     * @param[in] field Field over cells.
+     */
+    void writeCellField(const PylithScalar t,
+                        topology::Field& field);
 
-/** Write dataset with names of points to file.
- *
- * @param[in] names Array with name for each point, e.g., station name.
- * @param[in] mesh Finite-element mesh.
- *
- * Primarily used with OutputSolnPoints.
- */
-void writePointNames(const pylith::string_vector& names,
-                     const topology::Mesh& mesh);
+    /** Write dataset with names of points to file.
+     *
+     * @param[in] names Array with name for each point, e.g., station name.
+     * @param[in] mesh Finite-element mesh.
+     *
+     * Primarily used with OutputSolnPoints.
+     */
+    void writePointNames(const pylith::string_vector& names,
+                         const topology::Mesh& mesh);
 
-// PRIVATE METHODS //////////////////////////////////////////////////////
+    // PRIVATE METHODS //////////////////////////////////////////////////////
 private:
 
-/** Copy constructor.
- *
- * @param[in] w Object to copy.
- */
-DataWriterHDF5Ext(const DataWriterHDF5Ext& w);
+    /** Copy constructor.
+     *
+     * @param[in] w Object to copy.
+     */
+    DataWriterHDF5Ext(const DataWriterHDF5Ext& w);
 
-/// Generate filename for external dataset file.
-std::string _datasetFilename(const char* field) const;
+    /// Generate filename for external dataset file.
+    std::string _datasetFilename(const char* field) const;
 
-/** Write time stamp to file.
- *
- * @param[in] t Time in seconds.
- */
-void _writeTimeStamp(const PylithScalar t);
+    /** Write time stamp to file.
+     *
+     * @param[in] t Time in seconds.
+     */
+    void _writeTimeStamp(const PylithScalar t);
 
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-const DataWriterHDF5Ext& operator=(const DataWriterHDF5Ext&);   ///< Not implemented
+    const DataWriterHDF5Ext& operator=(const DataWriterHDF5Ext&); ///< Not implemented
 
-// PRIVATE STRUCTS //////////////////////////////////////////////////////
+    // PRIVATE STRUCTS //////////////////////////////////////////////////////
 private:
 
-struct ExternalDataset {
-    PetscViewer viewer;
-    PetscInt numTimeSteps;
-    PetscInt numPoints;
-    PetscInt fiberDim;
-};
-typedef std::map<std::string, ExternalDataset> dataset_type;
+    struct ExternalDataset {
+        PetscViewer viewer;
+        PetscInt numTimeSteps;
+        PetscInt numPoints;
+        PetscInt fiberDim;
+    };
+    typedef std::map<std::string, ExternalDataset> dataset_type;
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-std::string _filename;   ///< Name of HDF5 file.
-HDF5* _h5;   ///< HDF5 file
-dataset_type _datasets;   ///< Datasets
-int _tstampIndex;   ///< Index of last time stamp written.
+    std::string _filename; ///< Name of HDF5 file.
+    HDF5* _h5; ///< HDF5 file
+    dataset_type _datasets; ///< Datasets
+    int _tstampIndex; ///< Index of last time stamp written.
 
 }; // DataWriterHDF5Ext
 
 #include "DataWriterHDF5Ext.icc" // inline methods
 
 #endif // pylith_meshio_datawriterhdf5ext_hh
-
 
 // End of file
