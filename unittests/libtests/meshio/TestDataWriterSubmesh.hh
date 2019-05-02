@@ -21,7 +21,7 @@
  *
  * @brief C++ TestDataWriterSubmesh object
  *
- * C++ unit testing for DataWriter<Submesh>.
+ * C++ unit testing for DataWriter for submesh.
  */
 
 #if !defined(pylith_meshio_testdatawritersubmesh_hh)
@@ -40,9 +40,7 @@ namespace pylith {
     } // meshio
 } // pylith
 
-/// C++ unit testing for DataWriter<Submesh>.
 class pylith::meshio::TestDataWriterSubmesh {
-
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
@@ -96,7 +94,6 @@ protected:
 
 // ======================================================================
 class pylith::meshio::TestDataWriterSubmesh_Data : public TestDataWriter_Data {
-
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
 
@@ -113,8 +110,6 @@ public:
 
 }; // class TestDataWriterSubmesh_Data
 
-
 #endif // pylith_meshio_testdatawritersubmesh_hh
-
 
 // End of file

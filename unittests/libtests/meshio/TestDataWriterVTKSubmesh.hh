@@ -44,8 +44,10 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKSubmesh : public TestDataWriterVTK, public TestDataWriterSubmesh, public CppUnit::TestFixture {
-
+class pylith::meshio::TestDataWriterVTKSubmesh :
+    public TestDataWriterVTK,
+    public TestDataWriterSubmesh,
+    public CppUnit::TestFixture {
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestDataWriterVTKSubmesh);
 
@@ -82,7 +84,6 @@ protected:
      */
     TestDataWriterSubmesh_Data* _getData(void);
 
-
     // PROTECTED MEMBDERS /////////////////////////////////////////////////
 protected:
 
@@ -90,12 +91,9 @@ protected:
 
 }; // class TestDataWriterVTKSubmesh
 
-
 // ======================================================================
 class pylith::meshio::TestDataWriterVTKSubmesh_Data : public TestDataWriterVTK_Data, public TestDataWriterSubmesh_Data {};
 
-
 #endif // pylith_meshio_testdatawritervtksubmesh_hh
-
 
 // End of file
