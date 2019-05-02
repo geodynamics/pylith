@@ -9,12 +9,11 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2017 University of California, Davis
+# Copyright (c) 2010-2019 University of California, Davis
 #
 # See COPYING for license information.
 #
 # ----------------------------------------------------------------------
-#
 
 subpackage = meshio
 include $(top_srcdir)/subpackage.am
@@ -37,6 +36,11 @@ testmeshio_SOURCES = \
 	TestOutputTriggerStep.cc \
 	TestOutputTriggerTime.cc
 
+# :TODO: @brad
+#TestFieldFilterProject.cc 
+#TestFieldFilterNone.cc 
+
+# VTK data writer
 testvtk_SOURCES = \
 	test_meshio.cc \
 	FieldFactory.cc \
@@ -52,25 +56,17 @@ testvtk_SOURCES = \
 	TestDataWriterVTKSubmesh.cc \
 	TestDataWriterVTKSubmesh_Cases.cc
 
-
-#TestCellFilterAvg.cc \
-#TestVertexFilterVecNorm.cc
-
-#TestDataWriterBCMesh.cc \
-# TestDataWriterVTKBCMesh.cc \
-# TestDataWriterVTKBCMeshCases.cc \
+# :TODO: @brad
 # TestDataWriterPoints.cc \
 # TestDataWriterVTKPoints.cc \
-# TestDataWriterVTKPointsCases.cc \
+# TestDataWriterVTKPoints_Cases.cc \
 # TestDataWriterFaultMesh.cc \
 # TestDataWriterVTKFaultMesh.cc \
-# TestDataWriterVTKFaultMeshCases.cc \
-# TestOutputManager.cc \
-# TestOutputSolnSubset.cc \
+# TestDataWriterVTKFaultMesh_Cases.cc \
+# TestOutputObserver.cc \
+# TestOutputSolnDomain.cc \
+# TestOutputSolnBoundary.cc \
 # TestOutputSolnPoints.cc \
-# test_meshio.cc
-
-
 
 
 noinst_HEADERS = \
@@ -93,13 +89,11 @@ noinst_HEADERS = \
 	TestDataWriterVTKMaterial.hh \
 	TestDataWriterVTKSubmesh.hh
 
-# TestDataWriterBCMesh.hh \
-# TestDataWriterFaultMesh.hh \
-# TestDataWriterVTKFaultMesh.hh \
-# TestDataWriterVTKBCMesh.hh \
+# :TODO: @brad
 # TestDataWriterPoints.hh \
 # TestDataWriterVTKPoints.hh
-
+# TestDataWriterFaultMesh.hh \
+# TestDataWriterVTKFaultMesh.hh 
 
 
 AM_CPPFLAGS += \
@@ -141,6 +135,7 @@ if ENABLE_HDF5
 
   check_PROGRAMS += testhdf5
 
+  # HDF5 data writer
   testhdf5_SOURCES = \
 	test_meshio.cc \
 	FieldFactory.cc \
@@ -165,15 +160,11 @@ if ENABLE_HDF5
 
 
 # TestDataWriterHDF5Points.cc \
-# TestDataWriterHDF5PointsCases.cc \
-# TestDataWriterHDF5BCMesh.cc \
-# TestDataWriterHDF5BCMeshCases.cc \
+# TestDataWriterHDF5Point_Cases.cc \
 # TestDataWriterHDF5FaultMesh.cc \
 # TestDataWriterHDF5FaultMeshCases.cc \
 # TestDataWriterHDF5ExtPoints.cc \
-# TestDataWriterHDF5ExtPointsCases.cc \
-# TestDataWriterHDF5ExtBCMesh.cc \
-# TestDataWriterHDF5ExtBCMeshCases.cc \
+# TestDataWriterHDF5ExtPoints_Cases.cc \
 # TestDataWriterHDF5ExtFaultMesh.cc \
 # TestDataWriterHDF5ExtFaultMeshCases.cc
 
@@ -189,17 +180,9 @@ if ENABLE_HDF5
 	TestDataWriterHDF5ExtSubmesh.hh
 
 # TestDataWriterHDF5Points.hh \
-# TestDataWriterHDF5PointsCases.hh \
-# TestDataWriterHDF5BCMesh.hh \
-# TestDataWriterHDF5BCMeshCases.hh \
 # TestDataWriterHDF5FaultMesh.hh \
-# TestDataWriterHDF5FaultMeshCases.hh \
 # TestDataWriterHDF5ExtPoints.hh \
-# TestDataWriterHDF5ExtPointsCases.hh \
-# TestDataWriterHDF5ExtBCMesh.hh \
-# TestDataWriterHDF5ExtBCMeshCases.hh \
-# TestDataWriterHDF5ExtFaultMesh.hh \
-# TestDataWriterHDF5ExtFaultMeshCases.hh
+# TestDataWriterHDF5ExtFaultMesh.hh
 
 
   testhdf5_LDFLAGS = \
