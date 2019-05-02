@@ -20,65 +20,42 @@
 
 #include "TestDataWriterVTKPoints.hh" // Implementation of class methods
 
-#include "data/DataWriterDataPoints.hh" // USES DataWriterDataPoints
-
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
-#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/meshio/OutputSolnPoints.hh" // USES OutputSolnPoints
 #include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
-
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
-
-// ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::meshio::TestDataWriterVTKPoints);
 
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestDataWriterVTKPoints::setUp(void)
-{ // setUp
+pylith::meshio::TestDataWriterVTKPoints::setUp(void) { // setUp
     PYLITH_METHOD_BEGIN;
 
     TestDataWriterPoints::setUp();
+    _data = NULL;
 
     PYLITH_METHOD_END;
 } // setUp
 
+
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::meshio::TestDataWriterVTKPoints::tearDown(void)
-{ // tearDown
+pylith::meshio::TestDataWriterVTKPoints::tearDown(void) { // tearDown
     PYLITH_METHOD_BEGIN;
 
     TestDataWriterPoints::tearDown();
+    delete _data;_data = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
 
-// ----------------------------------------------------------------------
-// Test constructor
-void
-pylith::meshio::TestDataWriterVTKPoints::testConstructor(void)
-{ // testConstructor
-    PYLITH_METHOD_BEGIN;
-
-    DataWriterVTK writer;
-
-    CPPUNIT_ASSERT(!writer._viewer);
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
-
-    PYLITH_METHOD_END;
-} // testConstructor
 
 // ----------------------------------------------------------------------
 // Test openTimeStep() and closeTimeStep()
 void
-pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void)
-{ // testTimeStep
+pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void) { // testTimeStep
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mesh);
@@ -115,11 +92,11 @@ pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void)
     PYLITH_METHOD_END;
 } // testTimeStep
 
+
 // ----------------------------------------------------------------------
 // Test writeVertexField.
 void
-pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
-{ // testWriteVertexField
+pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void) { // testWriteVertexField
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mesh);
@@ -168,6 +145,14 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
 
     PYLITH_METHOD_END;
 } // testWriteVertexField
+
+
+// ----------------------------------------------------------------------
+// Get test data.
+pylith::meshio::TestDataWriterPoints_Data*
+pylith::meshio::TestDataWriterVTKPoints::_getData(void) {
+    return _data;
+} // _getData
 
 
 // End of file
