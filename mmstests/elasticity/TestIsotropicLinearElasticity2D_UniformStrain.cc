@@ -153,8 +153,8 @@ protected:
         CPPUNIT_ASSERT(_data->normalizer);
         _data->normalizer->lengthScale(1.0e+03);
         _data->normalizer->timeScale(2.0);
-        _data->normalizer->densityScale(3.0e+3);
         _data->normalizer->pressureScale(2.25e+10);
+        _data->normalizer->computeDensityScale();
 
         _data->startTime = 0.0;
         _data->totalTime = 0.1;
