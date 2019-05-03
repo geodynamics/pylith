@@ -29,7 +29,7 @@ test_isotropiclinearelasticity_SOURCES = \
 	TestElasticity.cc \
 	TestIsotropicLinearElasticity.cc \
 	TestIsotropicLinearElasticity2D_UniformStrain.cc \
-	test_material.cc
+	test_driver.cc
 
 
 noinst_HEADERS = 
@@ -75,6 +75,11 @@ clean-data:
 
 BUILT_SOURCES = export-data
 clean-local: clean-data
+
+
+leakcheck-isotropiclinearelasticity: 
+	valgrind --log-file=valgrind_isotropiclinearelasticity.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/test_isotropiclinearelasticity
+
 
 
 # End of file
