@@ -5,15 +5,21 @@ import numpy
 # pdb.set_trace()
 
 logFilePrefs2D = ['drucker_prager_2d','drucker_prager_2d_nonassoc',
-				  'drucker_prager_2d_tensile','elastic_2d','gen_max_2d',
-				  'maxwell_2d','power_law_2d']
-jacobianNames2D = ['dp_2d','dp_2d_nonassoc','dp_2d_tensile','el_2d','gm_2d',
-				   'mx_2d','pl_2d']
+				  'elastic_2d','gen_max_2d', 'maxwell_2d','power_law_2d']
+# logFilePrefs2D = ['drucker_prager_2d','drucker_prager_2d_nonassoc',
+# 				  'drucker_prager_2d_tensile','elastic_2d','gen_max_2d',
+# 				  'maxwell_2d','power_law_2d']
+jacobianNames2D = ['dp_2d','dp_2d_nonassoc','el_2d','gm_2d','mx_2d','pl_2d']
+# jacobianNames2D = ['dp_2d','dp_2d_nonassoc','dp_2d_tensile','el_2d','gm_2d',
+# 				   'mx_2d','pl_2d']
 logFilePrefs3D = ['drucker_prager_3d','drucker_prager_3d_nonassoc',
-				  'drucker_prager_3d_tensile','elastic_3d','gen_max_3d',
-				  'maxwell_3d','power_law_3d']
-jacobianNames3D = ['dp_3d','dp_3d_nonassoc','dp_3d_tensile','el_3d','gm_3d',
-				   'mx_3d','pl_3d']
+				  'elastic_3d','gen_max_3d','maxwell_3d','power_law_3d']
+# logFilePrefs3D = ['drucker_prager_3d','drucker_prager_3d_nonassoc',
+# 				  'drucker_prager_3d_tensile','elastic_3d','gen_max_3d',
+# 				  'maxwell_3d','power_law_3d']
+jacobianNames3D = ['dp_3d','dp_3d_nonassoc','el_3d','gm_3d','mx_3d','pl_3d']
+# jacobianNames3D = ['dp_3d','dp_3d_nonassoc','dp_3d_tensile','el_3d','gm_3d',
+# 				   'mx_3d','pl_3d']
 
 solveSuff = '_solve'
 jacobianSuff = '_jacobian'
@@ -122,10 +128,12 @@ def checkModel(modelNum, modelType, numEquations):
 	print "  Number of Jacobian arrays:                     %d" % numJacobians
 	for jacobianNum in range(numJacobians):
 		print "    Jacobian number                   %d:" % jacobianNum
-		(pySymmetry, maxDiff, maxDiffPct,
+		(pySymmetry, fdSymmetry, maxDiff, maxDiffPct,
 		 meanDiff, meanDiffPct) = checkJacobian(
-			pyJacobians[jacobianNum], diffJacobians[jacobianNum])
-		print "      Symmetry from numpy:                       %s" % pySymmetry
+			pyJacobians[jacobianNum], diffJacobians[jacobianNum],
+			fdJacobians[jacobianNum])
+		print "      PyLith symmetry from numpy:                %s" % pySymmetry
+		print "      Finite difference symmetry from numpy:     %s" % fdSymmetry
 		print "      Mean difference from PyLith:               %g" % meanDiff
 		print "      Mean percentage difference from PyLith:    %g" % meanDiffPct
 		print "      Maximum difference from PyLith:            %g" % maxDiff
@@ -134,14 +142,16 @@ def checkModel(modelNum, modelType, numEquations):
 	return
 
 
-def checkJacobian(pyJacobian, diffJacobian):
+def checkJacobian(pyJacobian, diffJacobian, fdJacobian):
 	"""
 	Function to check Jacobian symmetry and find max differences between
 	PyLith Jacobian and finite difference Jacobian.
 	"""
 
-	numpySymmetry = numpy.allclose(pyJacobian, pyJacobian.transpose(),
-								   atol=tolSymmetric)
+	pySymmetry = numpy.allclose(pyJacobian, pyJacobian.transpose(),
+								atol=tolSymmetric)
+	fdSymmetry = numpy.allclose(fdJacobian, fdJacobian.transpose(),
+								atol=tolSymmetric)
 	absDiff = numpy.absolute(diffJacobian)
 	absJac = numpy.absolute(pyJacobian)
 	useInds = numpy.where(absJac > tolZero)
@@ -151,7 +161,8 @@ def checkJacobian(pyJacobian, diffJacobian):
 	meanDiff = numpy.mean(absDiff[useInds])
 	meanDiffPct = numpy.mean(pctDiff)
 
-	return (numpySymmetry, maxDiff, maxDiffPercent, meanDiff, meanDiffPct)
+	return (pySymmetry, fdSymmetry, maxDiff, maxDiffPercent,
+			meanDiff, meanDiffPct)
 	
 	
 #------------------------------------------------------------------------------

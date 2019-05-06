@@ -22,6 +22,9 @@ To run all tests and check the Jacobians, do:
 ./run_all_3d.sh
 check_jacobians.py > check_jacobians.log 2>&1 &
 
+or just do:
+./run_all.sh
+
 Current results:
 1.  All symmetries are as expected. The only Jacobians that are not
     symmetric are the Drucker-Prager models for non-associated flow
@@ -29,9 +32,15 @@ Current results:
 2.  Most of the PyLith Jacobians are in good agreement with the
     finite difference Jacobians from PETSc.  The exceptions are:
     a.  Drucker-Prager 2d tensile:  Maximum difference is 290%
-    b.  Power-law 2d:  maximum difference is 5.7%.
+    b.  Power-law 2d:  maximum difference is 6.3%.
     c.  Drucker-Prager 3d tensile:  Maximum difference is 520%.
-    d.  Power-law 3d:  maximum difference is 5.7%.
+    d.  Power-law 3d:  maximum difference is 6.3%.
+
+For now, I am skipping the DP tensile cases, because I don't think
+we have a consistent formulation.
+For Power-law, the Jacobians are in reasonable agreement, and the
+agreement is actually better than when we try alpha=1.0 (backward
+difference) as opposed to our default value of 0.5.
 
 It is probably worthwhile to try the models with and without
 initial stresses, to see if this changes anything.
