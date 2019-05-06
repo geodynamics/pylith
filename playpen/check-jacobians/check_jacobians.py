@@ -4,22 +4,22 @@ import numpy
 # import pdb
 # pdb.set_trace()
 
-logFilePrefs2D = ['drucker_prager_2d','drucker_prager_2d_nonassoc',
-				  'elastic_2d','gen_max_2d', 'maxwell_2d','power_law_2d']
 # logFilePrefs2D = ['drucker_prager_2d','drucker_prager_2d_nonassoc',
-# 				  'drucker_prager_2d_tensile','elastic_2d','gen_max_2d',
-# 				  'maxwell_2d','power_law_2d']
-jacobianNames2D = ['dp_2d','dp_2d_nonassoc','el_2d','gm_2d','mx_2d','pl_2d']
-# jacobianNames2D = ['dp_2d','dp_2d_nonassoc','dp_2d_tensile','el_2d','gm_2d',
-# 				   'mx_2d','pl_2d']
-logFilePrefs3D = ['drucker_prager_3d','drucker_prager_3d_nonassoc',
-				  'elastic_3d','gen_max_3d','maxwell_3d','power_law_3d']
+# 				  'elastic_2d','gen_max_2d', 'maxwell_2d','power_law_2d']
+logFilePrefs2D = ['drucker_prager_2d','drucker_prager_2d_nonassoc',
+				  'drucker_prager_2d_tensile','elastic_2d','gen_max_2d',
+				  'maxwell_2d','power_law_2d']
+# jacobianNames2D = ['dp_2d','dp_2d_nonassoc','el_2d','gm_2d','mx_2d','pl_2d']
+jacobianNames2D = ['dp_2d','dp_2d_nonassoc','dp_2d_tensile','el_2d','gm_2d',
+				   'mx_2d','pl_2d']
 # logFilePrefs3D = ['drucker_prager_3d','drucker_prager_3d_nonassoc',
-# 				  'drucker_prager_3d_tensile','elastic_3d','gen_max_3d',
-# 				  'maxwell_3d','power_law_3d']
-jacobianNames3D = ['dp_3d','dp_3d_nonassoc','el_3d','gm_3d','mx_3d','pl_3d']
-# jacobianNames3D = ['dp_3d','dp_3d_nonassoc','dp_3d_tensile','el_3d','gm_3d',
-# 				   'mx_3d','pl_3d']
+# 				  'elastic_3d','gen_max_3d','maxwell_3d','power_law_3d']
+logFilePrefs3D = ['drucker_prager_3d','drucker_prager_3d_nonassoc',
+				  'drucker_prager_3d_tensile','elastic_3d','gen_max_3d',
+				  'maxwell_3d','power_law_3d']
+# jacobianNames3D = ['dp_3d','dp_3d_nonassoc','el_3d','gm_3d','mx_3d','pl_3d']
+jacobianNames3D = ['dp_3d','dp_3d_nonassoc','dp_3d_tensile','el_3d','gm_3d',
+				   'mx_3d','pl_3d']
 
 solveSuff = '_solve'
 jacobianSuff = '_jacobian'
