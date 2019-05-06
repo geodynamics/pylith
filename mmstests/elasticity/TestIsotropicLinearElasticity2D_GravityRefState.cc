@@ -292,6 +292,40 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP2 :
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP2);
 
 // ---------------------------------------------------------------------------------------------------------------------
+class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP3 :
+    public pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_GravityRefState_TriP3,
+                           TestIsotropicLinearElasticity);
+    CPPUNIT_TEST_SUITE_END();
+
+    void setUp(void) {
+        TestIsotropicLinearElasticity2D_GravityRefState::setUp();
+        CPPUNIT_ASSERT(_data);
+
+        _data->meshFilename = "data/tri.mesh";
+
+        _data->numSolnSubfields = 1;
+        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+            pylith::topology::Field::Discretization(3, 3), // disp
+        };
+        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+
+        static const pylith::topology::Field::Discretization _auxDiscretizations[6] = {
+            pylith::topology::Field::Discretization(0, 3), // density
+            pylith::topology::Field::Discretization(0, 3), // gravitational_acceleration
+            pylith::topology::Field::Discretization(1, 3), // reference_stress
+            pylith::topology::Field::Discretization(1, 3), // reference_strain
+            pylith::topology::Field::Discretization(0, 3), // shear_modulus
+            pylith::topology::Field::Discretization(0, 3), // bulk_modulus
+        };
+        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+
+    } // setUp
+
+}; // TestIsotropicLinearElasticity2D_GravityRefState_TriP3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP3);
+
+// ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2 :
     public pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState {
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2,  TestIsotropicLinearElasticity);
@@ -323,5 +357,38 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2 :
 
 }; // TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2);
+
+// ---------------------------------------------------------------------------------------------------------------------
+class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3 :
+    public pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3,  TestIsotropicLinearElasticity);
+    CPPUNIT_TEST_SUITE_END();
+
+    void setUp(void) {
+        TestIsotropicLinearElasticity2D_GravityRefState::setUp();
+        CPPUNIT_ASSERT(_data);
+
+        _data->meshFilename = "data/quad_aligned.mesh";
+
+        _data->numSolnSubfields = 1;
+        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+            pylith::topology::Field::Discretization(3, 3), // disp
+        };
+        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+
+        static const pylith::topology::Field::Discretization _auxDiscretizations[6] = {
+            pylith::topology::Field::Discretization(0, 3), // density
+            pylith::topology::Field::Discretization(0, 3), // gravitational_acceleration
+            pylith::topology::Field::Discretization(1, 3), // reference_stress
+            pylith::topology::Field::Discretization(1, 3), // reference_strain
+            pylith::topology::Field::Discretization(0, 3), // shear_modulus
+            pylith::topology::Field::Discretization(0, 3), // bulk_modulus
+        };
+        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+
+    } // setUp
+
+}; // TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3);
 
 // End of file

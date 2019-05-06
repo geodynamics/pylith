@@ -103,8 +103,6 @@ void
 pylith::testing::MMSTest::testResidual(void) {
     PYLITH_METHOD_BEGIN;
 
-    _initialize();
-
     PetscErrorCode err = 0;
 
     journal::debug_t debug(GenericComponent::getName());
@@ -113,6 +111,8 @@ pylith::testing::MMSTest::testResidual(void) {
         err = PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2");CPPUNIT_ASSERT(!err);
         // err = PetscOptionsSetValue(NULL, "-res_vec_view", "true");CPPUNIT_ASSERT(!err);
     } // if
+
+    _initialize();
 
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
@@ -165,6 +165,7 @@ void
 pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     PYLITH_METHOD_BEGIN;
 
+#if 0
     _initialize();
 
     CPPUNIT_ASSERT(_problem);
@@ -174,6 +175,8 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     err = PetscOptionsSetValue(NULL, "-snes_test_jacobian", "1.0e-6");CPPUNIT_ASSERT(!err);
     err = SNESSetFromOptions(_problem->getPetscSNES());CPPUNIT_ASSERT(!err);
     _problem->solve();
+    err = PetscOptionsClearValue(NULL, "-snes_test_jacobian");CPPUNIT_ASSERT(!err);
+#endif
 
     PYLITH_METHOD_END;
 } // testJacobianFiniteDiff

@@ -294,6 +294,37 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_TriP3 :
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_TriP3);
 
 // ---------------------------------------------------------------------------------------------------------------------
+class pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_TriP4 :
+    public pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_UniformStrain_TriP4,
+                           TestIsotropicLinearElasticity);
+    CPPUNIT_TEST_SUITE_END();
+
+    void setUp(void) {
+        TestIsotropicLinearElasticity2D_UniformStrain::setUp();
+        CPPUNIT_ASSERT(_data);
+
+        _data->meshFilename = "data/tri.mesh";
+
+        static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
+            pylith::topology::Field::Discretization(0, 4), // density
+            pylith::topology::Field::Discretization(0, 4), // shear_modulus
+            pylith::topology::Field::Discretization(0, 4), // bulk_modulus
+        };
+        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+
+        _data->numSolnSubfields = 1;
+        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+            pylith::topology::Field::Discretization(4, 4), // disp
+        };
+        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+
+    } // setUp
+
+}; // TestIsotropicLinearElasticity2D_UniformStrain_TriP4
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_TriP4);
+
+// ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_QuadQ1 :
     public pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain {
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_UniformStrain_QuadQ1,
@@ -378,5 +409,36 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_QuadQ3 :
 
 }; // TestIsotropicLinearElasticity2D_UniformStrain_QuadQ3
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_QuadQ3);
+
+// ---------------------------------------------------------------------------------------------------------------------
+class pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_QuadQ4 :
+    public pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_UniformStrain_QuadQ4,
+                           TestIsotropicLinearElasticity);
+    CPPUNIT_TEST_SUITE_END();
+
+    void setUp(void) {
+        TestIsotropicLinearElasticity2D_UniformStrain::setUp();
+        CPPUNIT_ASSERT(_data);
+
+        _data->meshFilename = "data/quad_aligned.mesh";
+
+        static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
+            pylith::topology::Field::Discretization(0, 4), // density
+            pylith::topology::Field::Discretization(0, 4), // shear_modulus
+            pylith::topology::Field::Discretization(0, 4), // bulk_modulus
+        };
+        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+
+        _data->numSolnSubfields = 1;
+        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+            pylith::topology::Field::Discretization(4, 4), // disp
+        };
+        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+
+    } // setUp
+
+}; // TestIsotropicLinearElasticity2D_UniformStrain_QuadQ4
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_QuadQ4);
 
 // End of file
