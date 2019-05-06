@@ -137,7 +137,7 @@ protected:
         // Overwrite component names for control of debugging info at test level.
         GenericComponent::setName("TestIsotropicLinearElasticity2D_UniformStrain");
         journal::debug_t debug(GenericComponent::getName());
-        // debug.activate(); // DEBUGGING
+        debug.activate(); // DEBUGGING
 
         _data = new TestElasticity_Data();CPPUNIT_ASSERT(_data);
         _isJacobianLinear = true;
@@ -273,7 +273,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_TriP3 :
         TestIsotropicLinearElasticity2D_UniformStrain::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/tri.mesh";
+        _data->meshFilename = "data/tri_twocells.mesh";
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 3), // density
