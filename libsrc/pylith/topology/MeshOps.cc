@@ -59,6 +59,14 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmDomain, label, &dmLabel);PYLITH_CHECK_ERROR(err);
 
+    PetscBool hasLabelValue = PETSC_FALSE;
+    err = DMLabelHasValue(dmLabel, labelValue, &hasLabelValue);PYLITH_CHECK_ERROR(err);
+    if (!hasLabelValue) {
+        std::ostringstream msg;
+        msg << "Could not find value " << labelValue << " in label '" << label << "' in PETSc DM mesh.";
+        throw std::runtime_error(msg.str());
+    } // if
+
     PetscDM dmSubdomain = NULL;
     err = DMPlexFilter(dmDomain, dmLabel, labelValue, &dmSubdomain);PYLITH_CHECK_ERROR(err);
 
@@ -119,6 +127,14 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     PetscDM dmSubmesh = NULL;
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmDomain, label, &dmLabel);PYLITH_CHECK_ERROR(err);
+    PetscBool hasLabelValue = PETSC_FALSE;
+    err = DMLabelHasValue(dmLabel, 1, &hasLabelValue);PYLITH_CHECK_ERROR(err);
+    if (!hasLabelValue) {
+        std::ostringstream msg;
+        msg << "Could not find value 1 in label for group of points '" << label << "' in PETSc DM mesh.";
+        throw std::logic_error(msg.str());
+    } // if
+
     err = DMPlexCreateSubmesh(dmDomain, dmLabel, 1, PETSC_FALSE, &dmSubmesh);PYLITH_CHECK_ERROR(err);
 
     PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
