@@ -203,7 +203,7 @@ pylith::meshio::TestDataWriterSubmesh::_setDataTri(void) {
 
     // Cell fields ------------------------------
     data->cellNumPoints = 1;
-    data->cellDiscretization = pylith::topology::FieldBase::Discretization(0, 0);
+    data->cellDiscretization = pylith::topology::FieldBase::Discretization(0, 0, 1);
 
     // Scalar
     data->cellScalarNumComponents = 1;
@@ -299,7 +299,7 @@ pylith::meshio::TestDataWriterSubmesh::_setDataQuad(void) {
 
     // Cell fields ------------------------------
     data->cellNumPoints = 2;
-    data->cellDiscretization = pylith::topology::FieldBase::Discretization(0, 0);
+    data->cellDiscretization = pylith::topology::FieldBase::Discretization(0, 0, 1);
 
     // Scalar
     data->cellScalarNumComponents = 1;

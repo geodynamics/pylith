@@ -25,7 +25,7 @@ TESTS = testmeshio testvtk
 
 check_PROGRAMS = testmeshio testvtk
 
-# general meshio 
+# general meshio
 testmeshio_SOURCES = \
 	test_meshio.cc \
 	TestMeshIO.cc \
@@ -37,8 +37,8 @@ testmeshio_SOURCES = \
 	TestOutputTriggerTime.cc
 
 # :TODO: @brad
-#TestFieldFilterProject.cc 
-#TestFieldFilterNone.cc 
+#TestFieldFilterProject.cc
+#TestFieldFilterNone.cc
 
 # VTK data writer
 testvtk_SOURCES = \
@@ -66,7 +66,7 @@ testvtk_SOURCES = \
 # TestOutputObserver.cc \
 # TestOutputSolnDomain.cc \
 # TestOutputSolnBoundary.cc \
-# TestOutputSolnPoints.cc \
+# TestOutputSolnPoints.cc 
 
 
 noinst_HEADERS = \
@@ -93,7 +93,7 @@ noinst_HEADERS = \
 # TestDataWriterPoints.hh \
 # TestDataWriterVTKPoints.hh
 # TestDataWriterFaultMesh.hh \
-# TestDataWriterVTKFaultMesh.hh 
+# TestDataWriterVTKFaultMesh.hh
 
 
 AM_CPPFLAGS += \
