@@ -157,6 +157,50 @@
 }
 
 {
+   LEAK/mpi_init_thread
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:orte_init
+   fun:ompi_mpi_init
+}
+
+{
+   LEAK/PMPI_Init_thread
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   ...
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   ...
+}
+
+{
+   LEAK/clone-malloc
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:start_thread
+   fun:clone
+   ...
+}
+
+{
+   LEAK/clone-realloc
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:realloc
+   ...
+   fun:start_thread
+   fun:clone
+   ...
+}
+
+{
    HDF5Chunk/Use of uninitialised value of size 8
    Memcheck:Value8
    fun:H5D__chunk_lookup
