@@ -46,8 +46,8 @@ class pylith::topology::TestSubmesh : public CppUnit::TestFixture {
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestSubmesh);
 
-    CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testConstructorMesh);
+    CPPUNIT_TEST(testCreateLowerDimMesh);
+    CPPUNIT_TEST(testCreateSubdomainMesh);
     CPPUNIT_TEST(testAccessors);
     CPPUNIT_TEST(testSizes);
 
@@ -62,11 +62,11 @@ public:
     /// Deallocate testing data.
     void tearDown(void);
 
-    /// Test constructor.
-    void testConstructor(void);
+    /// Test MeshOps::createLowerDimMesh().
+    void testCreateLowerDimMesh(void);
 
-    /// Test constructor w/mesh.
-    void testConstructorMesh(void);
+    /// Test MeshOps::testCreateSubdomainMesh().
+    void testCreateSubdomainMesh(void);
 
     /// Test coordsys(), debug(), comm().
     void testAccessors(void);
@@ -84,8 +84,8 @@ protected:
 protected:
 
     TestSubmesh_Data* _data; ///< Data for testing.
-    Mesh* _mesh; ///< Mesh holding lower dimension mesh.
-    Mesh* _submesh; ///< Test subject, lower dimension mesh.
+    Mesh* _domainMesh; ///< Mesh holding domain mesh.
+    Mesh* _testMesh; ///< Test subject.
 
 }; // class TestSubmesh
 
@@ -113,18 +113,30 @@ public:
     int numCorners; ///< Number of vertices per cell.
     int* cells; ///< Array of vertices in cells [numCells*numCorners].
     PylithScalar* coordinates; ///< Coordinates of vertices [numVertices*cellDim].
-    const char* label; ///< Label of group associated with submesh.
-    int groupSize; ///< Number of vertices in group.
-    int* groupVertices; ///< Array of vertices in group.
     /// @}
 
     /// @defgroup Submesh information.
     /// @{
+    const char* groupLabel; ///< Label of group associated with submesh.
+    int groupSize; ///< Number of vertices in submesh group.
+    int* groupVertices; ///< Array of vertices in submesh group.
     int submeshNumCorners; ///< Number of vertices per cell.
     int submeshNumVertices; ///< Number of vertices in submesh.
     int* submeshVertices; ///< Vertices in submesh.
     int submeshNumCells; ///< Number of cells in submesh.
     int* submeshCells; ///< Array of vertices in cells [submeshNumCells*submeshNumCorners].
+    /// @}
+
+    /// @defgroup Subdomain information.
+    /// @{
+    const char* subdomainLabel; ///< Label defining subdomains.
+    int* subdomainLabelValues; ///< Label values defining subdomains.
+    int subdomainLabelValue; ///< Label value for target subdomain.
+    int subdomainNumCorners; ///< Number of vertices per cell.
+    int subdomainNumVertices; ///< Number of vertices in subdomain.
+    int* subdomainVertices; ///< Vertices in subdomain.
+    int subdomainNumCells; ///< Number of cells in subdomain.
+    int* subdomainCells; ///< Array of vertices in cells [subdomainNumCells*subdomainNumCorners].
     /// @}
 
 }; // TestSubmesh_Data

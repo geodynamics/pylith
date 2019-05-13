@@ -36,30 +36,6 @@
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestMeshOps);
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test createSubdomainMesh().
-void
-pylith::topology::TestMeshOps::testCreateSubdomainMesh(void) {
-    PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement test.", false);
-
-    PYLITH_METHOD_END;
-} // testCreateSubdomainMesh
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Test createLowerDimMesh().
-void
-pylith::topology::TestMeshOps::testCreateLowerDimMesh(void) {
-    PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement test.", false);
-
-    PYLITH_METHOD_END;
-} // testCreateLowerDimMesh
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Test nondimensionalize().
 void
 pylith::topology::TestMeshOps::testNondimensionalize(void) {
