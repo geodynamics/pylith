@@ -84,6 +84,7 @@ pylith::problems::Problem::deallocate(void) {
     delete _jacobianLHSLumpedInv;_jacobianLHSLumpedInv = NULL;
     delete _normalizer;_normalizer = NULL;
     _gravityField = NULL; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
+    delete _observers;_observers = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate

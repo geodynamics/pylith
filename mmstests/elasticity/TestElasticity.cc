@@ -52,6 +52,7 @@ pylith::mmstests::TestElasticity::setUp(void) {
 
     _material = new pylith::materials::Elasticity;CPPUNIT_ASSERT(_material);
     _bc = new pylith::bc::DirichletUserFn;CPPUNIT_ASSERT(_bc);
+    _data = NULL;
 } // setUp
 
 
@@ -61,6 +62,7 @@ void
 pylith::mmstests::TestElasticity::tearDown(void) {
     delete _material;_material = NULL;
     delete _bc;_bc = NULL;
+    delete _data;_data = NULL;
 
     MMSTest::tearDown();
 } // tearDown
