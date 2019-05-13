@@ -116,9 +116,12 @@ pylith::testing::MMSTest::testResidual(void) {
 
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
+    if (debug.state()) {
+        _solution->view("SOLUTION FOR RESIDUAL CHECK", pylith::topology::Field::VIEW_LAYOUT);
+    } // if
+
     const PylithReal tolerance = -1.0;
     PylithReal norm = 0.0;
-    _solution->view("SOLUTION FOR RESIDUAL CHECK", pylith::topology::Field::VIEW_LAYOUT);
     err = DMSNESCheckResidual(_problem->getPetscSNES(), _problem->getPetscDM(), _solution->scatterVector("mmstest"),
                               tolerance, &norm);CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_MESSAGE("L2 normal of residual is exactly zero, which suggests suspicious case with all residuals "

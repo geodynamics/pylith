@@ -137,7 +137,7 @@ protected:
         // Overwrite component names for control of debugging info at test level.
         GenericComponent::setName("TestIsotropicLinearElasticity2D_UniformStrain");
         journal::debug_t debug(GenericComponent::getName());
-        debug.activate(); // DEBUGGING
+        // debug.activate(); // DEBUGGING
 
         _data = new TestElasticity_Data();CPPUNIT_ASSERT(_data);
         _isJacobianLinear = true;
