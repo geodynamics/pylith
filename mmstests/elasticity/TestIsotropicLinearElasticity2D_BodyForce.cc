@@ -29,31 +29,29 @@
 #include "pylith/utils/journals.hh" // USES journal::debug_t
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 namespace pylith {
     namespace mmstests {
-        class TestIsotropicLinearElasticity2D_GravityRefState;
+        class TestIsotropicLinearElasticity2D_BodyForce;
 
-        class TestIsotropicLinearElasticity2D_GravityRefState_TriP2;
-        class TestIsotropicLinearElasticity2D_GravityRefState_TriP3;
-        class TestIsotropicLinearElasticity2D_GravityRefState_TriP4;
+        class TestIsotropicLinearElasticity2D_BodyForce_TriP2;
+        class TestIsotropicLinearElasticity2D_BodyForce_TriP3;
+        class TestIsotropicLinearElasticity2D_BodyForce_TriP4;
 
-        class TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2;
-        class TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3;
-        class TestIsotropicLinearElasticity2D_GravityRefState_QuadQ4;
+        class TestIsotropicLinearElasticity2D_BodyForce_QuadQ2;
+        class TestIsotropicLinearElasticity2D_BodyForce_QuadQ3;
+        class TestIsotropicLinearElasticity2D_BodyForce_QuadQ4;
 
     } // materials
 } // pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState :
+class pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce :
     public pylith::mmstests::TestIsotropicLinearElasticity {
     /// Spatial database user functions for auxiiliary subfields (includes derived fields).
-    static const double GACC;
-    static const double YMAX;
+    static const double BODYFORCE;
 
     // Density
     static double density(const double x,
@@ -85,47 +83,26 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState :
         return "m/s";
     } // vp_units
 
-    static double referenceMeanStress(const double x,
-                                      const double y) {
-        return -density(x,y) * GACC * (YMAX-y);
-    } // referenceMeanStress
+    static double bodyforce_x(const double x,
+                              const double y) {
+        return BODYFORCE;
+    } // bodyforce_x
 
-    static double referenceShearStress(const double x,
-                                       const double y) {
+    static double bodyforce_y(const double x,
+                              const double y) {
         return 0.0;
-    } // referenceShearStress
+    } // bodyforce_y
 
-    static const char* stress_units(void) {
-        return "Pa";
-    } // stress_units
-
-    static double referenceStrain(const double x,
-                                  const double y) {
-        return 0.0;
-    } // referencStrain
-
-    static const char* strain_units(void) {
-        return "none";
-    } // strain_units
-
-    static double gravityAcc_x(const double x,
-                               const double y) {
-        return 0.0;
-    } // gravityAcc_x
-
-    static double gravityAcc_y(const double x,
-                               const double y) {
-        return -GACC;
-    } // gravityAcc_y
-
-    static const char* acc_units(void) {
-        return "m/s**2";
-    } // acc_units
+    static const char* bodyforce_units(void) {
+        return "kg/(m**2*s**2)";
+    } // bodyforce_units
 
     // Displacement
     static double disp_x(const double x,
                          const double y) {
-        return 0.0;
+        const double mu = density(x,y) * vs(x,y) * vs(x,y);
+        const double lambda = density(x,y) * vp(x,y) * vp(x,y) - 2.0*mu;
+        return -0.5*BODYFORCE*x*x / (lambda + 2.0*mu) + 10.0;
     } // disp_x
 
     static double disp_y(const double x,
@@ -146,7 +123,6 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState :
         CPPUNIT_ASSERT(2 == spaceDim);
         CPPUNIT_ASSERT(2 == numComponents);
         CPPUNIT_ASSERT(s);
-        CPPUNIT_ASSERT(x);
 
         s[0] = disp_x(x[0], x[1]);
         s[1] = disp_y(x[0], x[1]);
@@ -160,7 +136,7 @@ protected:
         TestIsotropicLinearElasticity::setUp();
 
         // Overwrite component names for control of debugging info at test level.
-        GenericComponent::setName("TestIsotropicLinearElasticity2D_GravityRefState");
+        GenericComponent::setName("TestIsotropicLinearElasticity2D_BodyForce");
         journal::debug_t debug(GenericComponent::getName());
         // debug.activate(); // DEBUGGING
 
@@ -181,31 +157,23 @@ protected:
         _data->normalizer->pressureScale(2.25e+10);
         _data->normalizer->computeDensityScale();
 
-        delete _data->gravityField;_data->gravityField = new spatialdata::spatialdb::GravityField();
-        _data->gravityField->gravityDir(0.0, -1.0, 0.0);
-        _data->gravityField->gravityAcc(GACC);
-
         _data->startTime = 0.0;
         _data->totalTime = 0.1;
         _data->timeStep = 0.05;
 
         // solnDiscretizations set in derived class.
 
-        _data->numAuxSubfields = 6;
-        static const char* _auxSubfields[6] = { // order must match order of subfields in auxiliary field
+        _data->numAuxSubfields = 4;
+        static const char* _auxSubfields[4] = { // order must match order of subfields in auxiliary field
             "density",
-            "gravitational_acceleration",
-            "reference_stress",
-            "reference_strain",
+            "body_force",
             "shear_modulus",
             "bulk_modulus",
         };
         _data->auxSubfields = _auxSubfields;
-        static const pylith::topology::Field::Discretization _auxDiscretizations[6] = {
+        static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
             pylith::topology::Field::Discretization(0, 1), // density
-            pylith::topology::Field::Discretization(0, 1), // gravitational_acceleration
-            pylith::topology::Field::Discretization(1, 1), // reference_stress
-            pylith::topology::Field::Discretization(1, 1), // reference_strain
+            pylith::topology::Field::Discretization(0, 1), // body_force
             pylith::topology::Field::Discretization(0, 1), // shear_modulus
             pylith::topology::Field::Discretization(0, 1), // bulk_modulus
         };
@@ -215,20 +183,14 @@ protected:
         _data->auxDB->addValue("density", density, density_units());
         _data->auxDB->addValue("vp", vp, vp_units());
         _data->auxDB->addValue("vs", vs, vs_units());
-        _data->auxDB->addValue("reference_stress_xx", referenceMeanStress, stress_units());
-        _data->auxDB->addValue("reference_stress_yy", referenceMeanStress, stress_units());
-        _data->auxDB->addValue("reference_stress_zz", referenceMeanStress, stress_units());
-        _data->auxDB->addValue("reference_stress_xy", referenceShearStress, stress_units());
-        _data->auxDB->addValue("reference_strain_xx", referenceStrain, strain_units());
-        _data->auxDB->addValue("reference_strain_yy", referenceStrain, strain_units());
-        _data->auxDB->addValue("reference_strain_zz", referenceStrain, strain_units());
-        _data->auxDB->addValue("reference_strain_xy", referenceStrain, strain_units());
+        _data->auxDB->addValue("body_force_x", bodyforce_x, bodyforce_units());
+        _data->auxDB->addValue("body_force_y", bodyforce_y, bodyforce_units());
         _data->auxDB->coordsys(*_data->cs);
 
         CPPUNIT_ASSERT(_material);
         _material->useInertia(false);
-        _material->useBodyForce(false);
-        _rheology->useReferenceState(true);
+        _material->useBodyForce(true);
+        _rheology->useReferenceState(false);
 
         _material->setDescriptiveLabel("Isotropic Linear Elascitity Plane Strain");
         _material->setMaterialId(24);
@@ -252,19 +214,18 @@ protected:
         err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
 
-}; // TestIsotropicLinearElasticity2D_GravityRefState
-const double pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState::GACC = 9.80665;
-const double pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState::YMAX = +4.0e+3;
+}; // TestIsotropicLinearElasticity2D_BodyForce
+const double pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce::BODYFORCE = 5.0;
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP2 :
-    public pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_GravityRefState_TriP2,
+class pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce_TriP2 :
+    public pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_BodyForce_TriP2,
                            TestIsotropicLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity2D_GravityRefState::setUp();
+        TestIsotropicLinearElasticity2D_BodyForce::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
@@ -275,11 +236,9 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP2 :
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[6] = {
+        static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
             pylith::topology::Field::Discretization(0, 2), // density
-            pylith::topology::Field::Discretization(0, 2), // gravitational_acceleration
-            pylith::topology::Field::Discretization(1, 2), // reference_stress
-            pylith::topology::Field::Discretization(1, 2), // reference_strain
+            pylith::topology::Field::Discretization(0, 2), // body_force
             pylith::topology::Field::Discretization(0, 2), // shear_modulus
             pylith::topology::Field::Discretization(0, 2), // bulk_modulus
         };
@@ -287,18 +246,18 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP2 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity2D_GravityRefState_TriP2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP2);
+}; // TestIsotropicLinearElasticity2D_BodyForce_TriP2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce_TriP2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP3 :
-    public pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_GravityRefState_TriP3,
+class pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce_TriP3 :
+    public pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_BodyForce_TriP3,
                            TestIsotropicLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity2D_GravityRefState::setUp();
+        TestIsotropicLinearElasticity2D_BodyForce::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
@@ -309,11 +268,9 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP3 :
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[6] = {
+        static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
             pylith::topology::Field::Discretization(0, 3), // density
-            pylith::topology::Field::Discretization(0, 3), // gravitational_acceleration
-            pylith::topology::Field::Discretization(1, 3), // reference_stress
-            pylith::topology::Field::Discretization(1, 3), // reference_strain
+            pylith::topology::Field::Discretization(0, 3), // body_force
             pylith::topology::Field::Discretization(0, 3), // shear_modulus
             pylith::topology::Field::Discretization(0, 3), // bulk_modulus
         };
@@ -321,17 +278,17 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP3 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity2D_GravityRefState_TriP3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP3);
+}; // TestIsotropicLinearElasticity2D_BodyForce_TriP3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce_TriP3);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2 :
-    public pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2,  TestIsotropicLinearElasticity);
+class pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce_QuadQ2 :
+    public pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_BodyForce_QuadQ2,  TestIsotropicLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity2D_GravityRefState::setUp();
+        TestIsotropicLinearElasticity2D_BodyForce::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad_aligned.mesh";
@@ -342,11 +299,9 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2 :
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[6] = {
+        static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
             pylith::topology::Field::Discretization(0, 2), // density
-            pylith::topology::Field::Discretization(0, 2), // gravitational_acceleration
-            pylith::topology::Field::Discretization(1, 2), // reference_stress
-            pylith::topology::Field::Discretization(1, 2), // reference_strain
+            pylith::topology::Field::Discretization(0, 2), // body_force
             pylith::topology::Field::Discretization(0, 2), // shear_modulus
             pylith::topology::Field::Discretization(0, 2), // bulk_modulus
         };
@@ -354,17 +309,17 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2);
+}; // TestIsotropicLinearElasticity2D_BodyForce_QuadQ2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce_QuadQ2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3 :
-    public pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3,  TestIsotropicLinearElasticity);
+class pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce_QuadQ3 :
+    public pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_BodyForce_QuadQ3,  TestIsotropicLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity2D_GravityRefState::setUp();
+        TestIsotropicLinearElasticity2D_BodyForce::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad_aligned.mesh";
@@ -375,11 +330,9 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3 :
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[6] = {
+        static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
             pylith::topology::Field::Discretization(0, 3), // density
-            pylith::topology::Field::Discretization(0, 3), // gravitational_acceleration
-            pylith::topology::Field::Discretization(1, 3), // reference_stress
-            pylith::topology::Field::Discretization(1, 3), // reference_strain
+            pylith::topology::Field::Discretization(0, 3), // body_force
             pylith::topology::Field::Discretization(0, 3), // shear_modulus
             pylith::topology::Field::Discretization(0, 3), // bulk_modulus
         };
@@ -387,7 +340,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3);
+}; // TestIsotropicLinearElasticity2D_BodyForce_QuadQ3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce_QuadQ3);
 
 // End of file

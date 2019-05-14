@@ -30,10 +30,11 @@ test_isotropiclinearelasticity_SOURCES = \
 	TestIsotropicLinearElasticity.cc \
 	TestIsotropicLinearElasticity2D_UniformStrain.cc \
 	TestIsotropicLinearElasticity2D_GravityRefState.cc \
+	TestIsotropicLinearElasticity2D_BodyForce.cc \
 	test_driver.cc
 
 
-noinst_HEADERS = 
+noinst_HEADERS =
 
 
 AM_CPPFLAGS += \
@@ -79,7 +80,7 @@ BUILT_SOURCES = export-data
 clean-local: clean-data
 
 
-leakcheck-isotropiclinearelasticity: 
+leakcheck-isotropiclinearelasticity:
 	valgrind --log-file=valgrind_isotropiclinearelasticity.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/test_isotropiclinearelasticity
 
 
