@@ -304,7 +304,8 @@ AC_CONFIG_FILES([Makefile
 		unittests/pytests/topology/data/Makefile
 		unittests/pytests/utils/Makefile
 		mmstests/Makefile
-		mmstests/elasticity/Makefile
+        mmstests/elasticity/Makefile
+		mmstests/faults/Makefile
 		tests_auto/Makefile
 		tests_auto/2d/Makefile
 		tests_auto/2d/tri3/Makefile
