@@ -281,7 +281,6 @@ pylith::problems::Problem::verifyConfiguration(void) const {
         assert(_interfaces[i]);
         _interfaces[i]->verifyConfiguration(*_solution);
     } // for
-    _checkMaterialIds();
 
     // Check to make sure boundary conditions are compatible with the solution.
     const size_t numBC = _bc.size();
@@ -289,6 +288,8 @@ pylith::problems::Problem::verifyConfiguration(void) const {
         assert(_bc[i]);
         _bc[i]->verifyConfiguration(*_solution);
     } // for
+
+    _checkMaterialIds();
 
     assert(_observers);
     _observers->verifyObservers(*_solution);
