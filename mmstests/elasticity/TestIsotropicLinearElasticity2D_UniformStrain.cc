@@ -139,6 +139,7 @@ protected:
         journal::debug_t debug(GenericComponent::getName());
         // debug.activate(); // DEBUGGING
 
+        CPPUNIT_ASSERT(!_data);
         _data = new TestElasticity_Data();CPPUNIT_ASSERT(_data);
         _isJacobianLinear = true;
 
@@ -146,6 +147,7 @@ protected:
         _data->meshFilename = ":UNKNOWN:"; // Set in child class.
         _data->boundaryLabel = "boundary";
 
+        CPPUNIT_ASSERT(!_data->cs);
         _data->cs = new spatialdata::geocoords::CSCart;CPPUNIT_ASSERT(_data->cs);
         _data->cs->setSpaceDim(_data->spaceDim);
         _data->cs->initialize();

@@ -28,6 +28,7 @@
 void
 pylith::mmstests::TestIsotropicLinearElasticity::setUp(void) {
     TestElasticity::setUp();
+
     _rheology = new pylith::materials::IsotropicLinearElasticity();CPPUNIT_ASSERT(_rheology);
 
     CPPUNIT_ASSERT(_material);
