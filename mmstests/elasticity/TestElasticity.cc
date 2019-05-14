@@ -124,7 +124,6 @@ pylith::mmstests::TestElasticity::_initialize(void) {
     if (_data->isExplicit) {
         factory.addVelocity(_data->solnDiscretizations[1]);
     } // if
-    _solution->subfieldsSetup();
     _problem->setSolution(_solution);
 
     pylith::testing::MMSTest::_initialize();
