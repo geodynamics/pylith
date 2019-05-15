@@ -16,6 +16,13 @@
 // ----------------------------------------------------------------------
 //
 
+/** @file mmstests/faults/TestFaultKin2D_RigidBlocksStatic.cc
+ *
+ * Square domain of sides 8.0 km with a through-going fault running
+ * through the center in the y-direction. The two opposing sides each
+ * move as rigid blocks with 3.0 m of right-lateral slip.
+ */
+
 #include <portinfo>
 
 #include "TestFaultKin.hh" // ISA TestFaultKin
