@@ -52,15 +52,9 @@ endif
 
 
 dist_noinst_DATA = \
-	data/tri_onecell.mesh \
-	data/tri_twocells.mesh \
-	data/tri_fourcells.mesh \
 	data/tri.mesh \
-	data/quad_onecell.mesh \
-	data/quad_fourcells.mesh \
-	data/quad_small.mesh \
-	data/quad_aligned.mesh \
-	data/tet_small.mesh \
+	data/quad.mesh \
+	data/tet.mesh \
 	data/hex.mesh
 
 noinst_TMP =
