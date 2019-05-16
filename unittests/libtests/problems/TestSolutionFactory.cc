@@ -87,44 +87,6 @@ pylith::problems::TestSolutionFactory::setUp(void) {
     info.index = 1;
     _data->subfields["velocity"] = info;
 
-    // displacement_dot
-    componentNames.resize(3);
-    componentNames[0] = "displacement_dot_x";
-    componentNames[1] = "displacement_dot_y";
-    componentNames[2] = "displacement_dot_z";
-    info.description = pylith::topology::Field::Description(
-        "displacement_dot",
-        "displacement_dot",
-        componentNames,
-        componentNames.size(),
-        pylith::topology::Field::VECTOR,
-        _data->normalizer->lengthScale() / _data->normalizer->timeScale()
-        );
-    info.fe = pylith::topology::Field::Discretization(
-        2, 2, -1, true, pylith::topology::Field::POLYNOMIAL_SPACE
-        );
-    info.index = 2;
-    _data->subfields["displacement_dot"] = info;
-
-    // velocity_dot
-    componentNames.resize(3);
-    componentNames[0] = "velocity_dot_x";
-    componentNames[1] = "velocity_dot_y";
-    componentNames[2] = "velocity_dot_z";
-    info.description = pylith::topology::Field::Description(
-        "velocity_dot",
-        "velocity_dot",
-        componentNames,
-        componentNames.size(),
-        pylith::topology::Field::VECTOR,
-        _data->normalizer->lengthScale() / pow(_data->normalizer->timeScale(), 2)
-        );
-    info.fe = pylith::topology::Field::Discretization(
-        3, 3, -1, true, pylith::topology::Field::POINT_SPACE
-        );
-    info.index = 3;
-    _data->subfields["velocity_dot"] = info;
-
     // pressure
     componentNames.resize(1);
     componentNames[0] = "pressure";
@@ -159,39 +121,24 @@ pylith::problems::TestSolutionFactory::setUp(void) {
     info.index = 1;
     _data->subfields["fluid_pressure"] = info;
 
-    // pressure_dot
-    componentNames.resize(1);
-    componentNames[0] = "pressure_dot";
+    // pressure
+    componentNames.resize(3);
+    componentNames[0] = "lagrange_multiplier_fault_x";
+    componentNames[1] = "lagrange_multiplier_fault_y";
+    componentNames[2] = "lagrange_multiplier_fault_z";
     info.description = pylith::topology::Field::Description(
-        "pressure_dot",
-        "pressure_dot",
+        "lagrange_multiplier_fault",
+        "lagrange_multiplier_fault",
         componentNames,
         componentNames.size(),
-        pylith::topology::Field::SCALAR,
-        _data->normalizer->pressureScale() / _data->normalizer->timeScale()
+        pylith::topology::Field::VECTOR,
+        _data->normalizer->pressureScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 2, -1, true, pylith::topology::Field::POINT_SPACE
+        2, 2, -1, true, pylith::topology::Field::POLYNOMIAL_SPACE
         );
-    info.index = 2;
-    _data->subfields["pressure_dot"] = info;
-
-    // fluid_pressure_dot
-    componentNames.resize(1);
-    componentNames[0] = "fluid_pressure_dot";
-    info.description = pylith::topology::Field::Description(
-        "fluid_pressure_dot",
-        "fluid_pressure_dot",
-        componentNames,
-        componentNames.size(),
-        pylith::topology::Field::SCALAR,
-        _data->normalizer->pressureScale() / _data->normalizer->timeScale()
-        );
-    info.fe = pylith::topology::Field::Discretization(
-        2, 3, -1, true, pylith::topology::Field::POINT_SPACE
-        );
-    info.index = 3;
-    _data->subfields["fluid_pressure_dot"] = info;
+    info.index = 1;
+    _data->subfields["lagrange_multiplier_fault"] = info;
 
     // temperature
     componentNames.resize(1);
@@ -209,23 +156,6 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         );
     info.index = 1;
     _data->subfields["temperature"] = info;
-
-    // temperature_dot
-    componentNames.resize(1);
-    componentNames[0] = "temperature_dot";
-    info.description = pylith::topology::Field::Description(
-        "temperature_dot",
-        "temperature_dot",
-        componentNames,
-        componentNames.size(),
-        pylith::topology::Field::SCALAR,
-        _data->normalizer->temperatureScale() / _data->normalizer->timeScale()
-        );
-    info.fe = pylith::topology::Field::Discretization(
-        2, 3, -1, true, pylith::topology::Field::POINT_SPACE
-        );
-    info.index = 3;
-    _data->subfields["temperature_dot"] = info;
 
     PYLITH_METHOD_END;
 } // setUp
@@ -260,15 +190,35 @@ pylith::problems::TestSolutionFactory::testDispVel(void) {
 
     _factory->addDisplacement(_data->subfields["displacement"].fe);
     _factory->addVelocity(_data->subfields["velocity"].fe);
-    _factory->addDisplacementDot(_data->subfields["displacement_dot"].fe);
-    _factory->addVelocityDot(_data->subfields["velocity_dot"].fe);
 
     CPPUNIT_ASSERT(_data->normalizer);
 
     pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
     pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["velocity"]);
-    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement_dot"]);
-    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["velocity_dot"]);
+
+    PYLITH_METHOD_END;
+} // testDispVel
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Test adding displacement and fault Lagrange multiplier subfields.
+void
+pylith::problems::TestSolutionFactory::testDispLagrangeFault(void) {
+    PYLITH_METHOD_BEGIN;
+
+    CPPUNIT_ASSERT(_factory);
+    CPPUNIT_ASSERT(_data);
+
+    CPPUNIT_ASSERT(!_solution->hasSubfield("displacement"));
+    CPPUNIT_ASSERT(!_solution->hasSubfield("lagrange_multiplier_fault"));
+
+    _factory->addDisplacement(_data->subfields["displacement"].fe);
+    _factory->addLagrangeMultiplierFault(_data->subfields["lagrange_multiplier_fault"].fe);
+
+    CPPUNIT_ASSERT(_data->normalizer);
+
+    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
+    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["lagrange_multiplier_fault"]);
 
     PYLITH_METHOD_END;
 } // testDispVel
@@ -287,16 +237,12 @@ pylith::problems::TestSolutionFactory::testPressure(void) {
 
     _factory->addPressure(_data->subfields["pressure"].fe);
     _factory->addFluidPressure(_data->subfields["fluid_pressure"].fe);
-    _factory->addPressureDot(_data->subfields["pressure_dot"].fe);
-    _factory->addFluidPressureDot(_data->subfields["fluid_pressure_dot"].fe);
 
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->normalizer);
 
     pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["pressure"]);
     pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["fluid_pressure"]);
-    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["pressure_dot"]);
-    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["fluid_pressure_dot"]);
 
     PYLITH_METHOD_END;
 } // testPressure
@@ -315,16 +261,12 @@ pylith::problems::TestSolutionFactory::testDispTemp(void) {
 
     _factory->addDisplacement(_data->subfields["displacement"].fe);
     _factory->addTemperature(_data->subfields["temperature"].fe);
-    _factory->addDisplacementDot(_data->subfields["displacement_dot"].fe);
-    _factory->addTemperatureDot(_data->subfields["temperature_dot"].fe);
 
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->normalizer);
 
     pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
     pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["temperature"]);
-    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement_dot"]);
-    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["temperature_dot"]);
 
     PYLITH_METHOD_END;
 } // testTemperature

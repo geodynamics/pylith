@@ -50,6 +50,7 @@ class pylith::problems::TestSolutionFactory : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE(TestSolutionFactory);
 
     CPPUNIT_TEST(testDispVel);
+    CPPUNIT_TEST(testDispLagrangeFault);
     CPPUNIT_TEST(testPressure);
     CPPUNIT_TEST(testDispTemp);
     CPPUNIT_TEST(testSetValues);
@@ -67,6 +68,9 @@ public:
 
     /// Test adding displacement and velocity subfields.
     void testDispVel(void);
+
+    /// Test adding displacement and fault Lagrange multiplier subfields.
+    void testDispLagrangeFault(void);
 
     /// Test adding pressure and fluid pressure subfields.
     void testPressure(void);

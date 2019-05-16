@@ -89,36 +89,6 @@ public:
      */
     void addTemperature(const pylith::topology::FieldBase::Discretization& discretization);
 
-    /** Add time derivative of displacement subfield to solution field.
-     *
-     * @param[in] discretization Discretization for time derivative of displacement subfield.
-     */
-    void addDisplacementDot(const pylith::topology::FieldBase::Discretization& discretization);
-
-    /** Add time derivative of velocity subfield to solution field.
-     *
-     * @param[in] discretization Discretization for time derivative of velocity subfield.
-     */
-    void addVelocityDot(const pylith::topology::FieldBase::Discretization& discretization);
-
-    /** Add time derivative of pressure subfield to solution field.
-     *
-     * @param[in] discretization Discretization for time derivative of pressure subfield.
-     */
-    void addPressureDot(const pylith::topology::FieldBase::Discretization& discretization);
-
-    /** Add time derivative of fluid pressure subfield to solution field.
-     *
-     * @param[in] discretization Discretization for time derivative of fluid pressure subfield.
-     */
-    void addFluidPressureDot(const pylith::topology::FieldBase::Discretization& discretization);
-
-    /** Add time derivative of temperature subfield to solution field.
-     *
-     * @param[in] discretization Discretization for time derivative of temperature subfield.
-     */
-    void addTemperatureDot(const pylith::topology::FieldBase::Discretization& discretization);
-
     /** Allocate and populate subfield with values using spatial database.
      *
      * @param[in] db Spatial database.
