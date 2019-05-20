@@ -29,6 +29,7 @@ test_isotropiclinearelasticity_SOURCES = \
 	TestIncompressibleElasticity.cc \
 	TestIsotropicLinearIncompElasticity.cc \
 	TestIsotropicLinearIncompElasticity2D_UniformPressure.cc \
+	TestIsotropicLinearIncompElasticity2D_UniformShear.cc \
 	test_driver.cc
 
 

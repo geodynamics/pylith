@@ -34,22 +34,22 @@
 
 namespace pylith {
     namespace mmstests {
-        class TestIsotropicLinearIncompElasticity2D_UniformPressure;
+        class TestIsotropicLinearIncompElasticity2D_UniformShear;
 
-        class TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP1;
-        class TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP2;
-        class TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP3;
-        class TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP4;
+        class TestIsotropicLinearIncompElasticity2D_UniformShear_TriP1;
+        class TestIsotropicLinearIncompElasticity2D_UniformShear_TriP2;
+        class TestIsotropicLinearIncompElasticity2D_UniformShear_TriP3;
+        class TestIsotropicLinearIncompElasticity2D_UniformShear_TriP4;
 
-        class TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ1;
-        class TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ2;
-        class TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ3;
-        class TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ4;
+        class TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ1;
+        class TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ2;
+        class TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ3;
+        class TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ4;
     } // mmstests
 } // pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure :
+class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear :
     public pylith::mmstests::TestIsotropicLinearIncompElasticity {
     // Spatial database user functions for auxiiliary subfields (includes derived fields).
 
@@ -85,29 +85,41 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure :
 
     // Solution subfields.
 
-    static double pressure(const double x,
-                           const double y) {
-        return 5.0;
-    } // pressure
+    static double strain_xx(void) {
+        return 0;
+    } // strain_xx
 
-    static const char* pressure_units(void) {
-        return "MPa";
-    } // pressure_units
+    static double strain_yy(void) {
+        return 0;
+    } // strain_yy
+
+    static double strain_xy(void) {
+        return 0.3;
+    } // strain_xy
 
     // Displacement
     static double disp_x(const double x,
                          const double y) {
-        return 0.0;
+        return strain_xx()*x + strain_xy()*y;
     } // disp_x
 
     static double disp_y(const double x,
                          const double y) {
-        return 0.0;
+        return strain_xy()*x + strain_yy()*y;
     } // disp_y
 
     static const char* disp_units(void) {
         return "m";
     } // disp_units
+
+    static double pressure(const double x,
+                           const double y) {
+        return 0.0;
+    } // pressure
+
+    static const char* pressure_units(void) {
+        return "MPa";
+    } // pressure_units
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
                                           PetscReal t,
@@ -148,7 +160,7 @@ protected:
         TestIsotropicLinearIncompElasticity::setUp();
 
         // Overwrite component names for control of debugging info at test level.
-        GenericComponent::setName("TestIsotropicLinearIncompElasticity2D_UniformPressure");
+        GenericComponent::setName("TestIsotropicLinearIncompElasticity2D_UniformShear");
         journal::debug_t debug(GenericComponent::getName());
         // debug.activate(); // DEBUGGING
 
@@ -228,17 +240,17 @@ protected:
         err = PetscDSSetExactSolution(prob, 1, solnkernel_pressure, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
 
-}; // TestIsotropicLinearIncompElasticity2D_UniformPressure
+}; // TestIsotropicLinearIncompElasticity2D_UniformShear
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP1 :
-    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP1,
+class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_TriP1 :
+    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformShear_TriP1,
                            TestIsotropicLinearIncompElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearIncompElasticity2D_UniformPressure::setUp();
+        TestIsotropicLinearIncompElasticity2D_UniformShear::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
@@ -252,18 +264,18 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Tr
 
     } // setUp
 
-}; // TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP1);
+}; // TestIsotropicLinearIncompElasticity2D_UniformShear_TriP1
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_TriP1);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP2 :
-    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP2,
+class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_TriP2 :
+    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformShear_TriP2,
                            TestIsotropicLinearIncompElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearIncompElasticity2D_UniformPressure::setUp();
+        TestIsotropicLinearIncompElasticity2D_UniformShear::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
@@ -284,18 +296,18 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Tr
 
     } // setUp
 
-}; // TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP2);
+}; // TestIsotropicLinearIncompElasticity2D_UniformShear_TriP2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_TriP2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP3 :
-    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP3,
+class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_TriP3 :
+    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformShear_TriP3,
                            TestIsotropicLinearIncompElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearIncompElasticity2D_UniformPressure::setUp();
+        TestIsotropicLinearIncompElasticity2D_UniformShear::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
@@ -316,18 +328,18 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Tr
 
     } // setUp
 
-}; // TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP3);
+}; // TestIsotropicLinearIncompElasticity2D_UniformShear_TriP3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_TriP3);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP4 :
-    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP4,
+class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_TriP4 :
+    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformShear_TriP4,
                            TestIsotropicLinearIncompElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearIncompElasticity2D_UniformPressure::setUp();
+        TestIsotropicLinearIncompElasticity2D_UniformShear::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
@@ -348,18 +360,18 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Tr
 
     } // setUp
 
-}; // TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP4
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP4);
+}; // TestIsotropicLinearIncompElasticity2D_UniformShear_TriP4
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_TriP4);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ1 :
-    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ1,
+class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ1 :
+    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ1,
                            TestIsotropicLinearIncompElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearIncompElasticity2D_UniformPressure::setUp();
+        TestIsotropicLinearIncompElasticity2D_UniformShear::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad_aligned.mesh";
@@ -373,18 +385,18 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Qu
 
     } // setUp
 
-}; // TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ1);
+}; // TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ1
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ1);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ2 :
-    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ2,
+class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ2 :
+    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ2,
                            TestIsotropicLinearIncompElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearIncompElasticity2D_UniformPressure::setUp();
+        TestIsotropicLinearIncompElasticity2D_UniformShear::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad_aligned.mesh";
@@ -405,18 +417,18 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Qu
 
     } // setUp
 
-}; // TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ2);
+}; // TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ3 :
-    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ3,
+class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ3 :
+    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ3,
                            TestIsotropicLinearIncompElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearIncompElasticity2D_UniformPressure::setUp();
+        TestIsotropicLinearIncompElasticity2D_UniformShear::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad_aligned.mesh";
@@ -437,18 +449,18 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Qu
 
     } // setUp
 
-}; // TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ3);
+}; // TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ3);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ4 :
-    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ4,
+class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ4 :
+    public pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ4,
                            TestIsotropicLinearIncompElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearIncompElasticity2D_UniformPressure::setUp();
+        TestIsotropicLinearIncompElasticity2D_UniformShear::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad_aligned.mesh";
@@ -469,7 +481,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Qu
 
     } // setUp
 
-}; // TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ4
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ4);
+}; // TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ4
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ4);
 
 // End of file
