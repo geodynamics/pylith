@@ -163,6 +163,7 @@ protected:
         GenericComponent::setName("TestIsotropicLinearElasticity2D_GravityRefState");
         journal::debug_t debug(GenericComponent::getName());
         // debug.activate(); // DEBUGGING
+        _disableFiniteDifferenceCheck = true;
 
         CPPUNIT_ASSERT(!_data);
         _data = new TestElasticity_Data();CPPUNIT_ASSERT(_data);
