@@ -40,8 +40,9 @@ pylith::testing::MMSTest::setUp(void) {
     _problem = new pylith::problems::TimeDependent;CPPUNIT_ASSERT(_problem);
     _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
     _solution = NULL;
-    _isJacobianLinear = false;
     _jacobianConvergenceRate = 0.0;
+    _isJacobianLinear = false;
+    _disableFiniteDifferenceCheck = false;
 } // setUp
 
 
@@ -109,7 +110,7 @@ pylith::testing::MMSTest::testResidual(void) {
     if (debug.state()) {
         err = PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");CPPUNIT_ASSERT(!err);
         err = PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2");CPPUNIT_ASSERT(!err);
-        // err = PetscOptionsSetValue(NULL, "-res_vec_view", "true");CPPUNIT_ASSERT(!err);
+        err = PetscOptionsSetValue(NULL, "-res_vec_view", "::ascii_info_detail");CPPUNIT_ASSERT(!err);
     } // if
 
     _initialize();
@@ -169,18 +170,26 @@ void
 pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     PYLITH_METHOD_BEGIN;
 
-#if 0
+    if (_disableFiniteDifferenceCheck) {
+        CPPUNIT_ASSERT_MESSAGE("Skipping Jacobian finite-difference check.", false);
+        PYLITH_METHOD_END;
+    } // if
+
     _initialize();
 
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
     PetscErrorCode err = 0;
-    err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_display", "::ascii_info_detail");CPPUNIT_ASSERT(!err);
+
+    journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_display", "::ascii_info_detail");CPPUNIT_ASSERT(!err);
+    } // if
     err = PetscOptionsSetValue(NULL, "-snes_test_jacobian", "1.0e-6");CPPUNIT_ASSERT(!err);
     err = SNESSetFromOptions(_problem->getPetscSNES());CPPUNIT_ASSERT(!err);
     _problem->solve();
     err = PetscOptionsClearValue(NULL, "-snes_test_jacobian");CPPUNIT_ASSERT(!err);
-#endif
+    err = PetscOptionsClearValue(NULL, "-snes_test_jacobian_display");CPPUNIT_ASSERT(!err);
 
     PYLITH_METHOD_END;
 } // testJacobianFiniteDiff
