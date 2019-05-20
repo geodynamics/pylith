@@ -240,26 +240,26 @@ AC_CONFIG_FILES([Makefile
 		libsrc/Makefile
 		libsrc/pylith/Makefile
 		libsrc/pylith/bc/Makefile
-        libsrc/pylith/feassemble/Makefile
-        libsrc/pylith/fekernels/Makefile
+    libsrc/pylith/feassemble/Makefile
+    libsrc/pylith/fekernels/Makefile
 		libsrc/pylith/faults/Makefile
 		libsrc/pylith/friction/Makefile
-        libsrc/pylith/materials/Makefile
-        libsrc/pylith/meshio/Makefile
-        libsrc/pylith/problems/Makefile
+    libsrc/pylith/materials/Makefile
+    libsrc/pylith/meshio/Makefile
+    libsrc/pylith/problems/Makefile
 		libsrc/pylith/testing/Makefile
 		libsrc/pylith/topology/Makefile
 		libsrc/pylith/utils/Makefile
-        modulesrc/Makefile
-        modulesrc/include/Makefile
-        modulesrc/bc/Makefile
-        modulesrc/faults/Makefile
-        modulesrc/feassemble/Makefile
+    modulesrc/Makefile
+    modulesrc/include/Makefile
+    modulesrc/bc/Makefile
+    modulesrc/faults/Makefile
+    modulesrc/feassemble/Makefile
 		modulesrc/friction/Makefile
-        modulesrc/materials/Makefile
-        modulesrc/meshio/Makefile
-        modulesrc/mpi/Makefile
-        modulesrc/problems/Makefile
+    modulesrc/materials/Makefile
+    modulesrc/meshio/Makefile
+    modulesrc/mpi/Makefile
+    modulesrc/problems/Makefile
 		modulesrc/topology/Makefile
 		modulesrc/utils/Makefile
 		applications/Makefile
@@ -304,7 +304,8 @@ AC_CONFIG_FILES([Makefile
 		unittests/pytests/topology/data/Makefile
 		unittests/pytests/utils/Makefile
 		mmstests/Makefile
-        mmstests/elasticity/Makefile
+    mmstests/elasticity/Makefile
+    mmstests/incompressibleelasticity/Makefile
 		mmstests/faults/Makefile
 		tests_auto/Makefile
 		tests_auto/2d/Makefile

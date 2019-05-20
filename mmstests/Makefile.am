@@ -16,7 +16,8 @@
 # ----------------------------------------------------------------------
 
 SUBDIRS = \
-	elasticity
+	elasticity \
+	faults
 
 
 # End of file 

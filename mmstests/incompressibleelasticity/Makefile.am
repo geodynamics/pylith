@@ -16,18 +16,19 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = faults
+subpackage = incompressibleelasticity
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/check.am
 
-TESTS = test_faultkin
+TESTS = test_isotropiclinearelasticity
 
 check_PROGRAMS = $(TESTS)
 
 
-test_faultkin_SOURCES = \
-	TestFaultKin.cc \
-	TestFaultKin2D_RigidBlocksStatic.cc \
+test_isotropiclinearelasticity_SOURCES = \
+	TestIncompressibleElasticity.cc \
+	TestIsotropicLinearIncompElasticity.cc \
+	TestIsotropicLinearIncompElasticity2D_UniformPressure.cc \
 	test_driver.cc
 
 
@@ -53,14 +54,14 @@ endif
 
 dist_noinst_DATA = \
 	data/tri.mesh \
-	data/quad.mesh \
+	data/quad_aligned.mesh \
 	data/tet.mesh \
 	data/hex.mesh
 
 noinst_TMP =
 
 # 'export' the input files by performing a mock install
-export_datadir = $(top_builddir)/mmstests/faults/data
+export_datadir = $(top_builddir)/mmstests/incompressibleelasticity/data
 export-data: $(dist_noinst_DATA)
 	if [ "X$(top_srcdir)" != "X$(top_builddir)" ]; then mkdir $(export_datadir);  for f in $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done; fi
 
@@ -71,8 +72,8 @@ BUILT_SOURCES = export-data
 clean-local: clean-data
 
 
-leakcheck-faultkin: test_faultkin
-	valgrind --log-file=valgrind_faultkin.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/test_faultkin
+leakcheck-isotropiclinearelasticity:
+	valgrind --log-file=valgrind_isotropiclinearelasticity.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/test_isotropiclinearelasticity
 
 
 
