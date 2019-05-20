@@ -154,7 +154,7 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
     if (_isJacobianLinear) {
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Expected linear Jacobian.", PETSC_TRUE, isLinear);
     } else {
-        const PylithReal tolerance = 1.0e-2;
+        const PylithReal tolerance = 1.0e-3;
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Error in convergence rate for Jacobian.",
                                              _jacobianConvergenceRate, convergenceRate, tolerance);
     } // if/else
@@ -175,7 +175,7 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
     PetscErrorCode err = 0;
-    // err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", "true");CPPUNIT_ASSERT(!err);
+    err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_display", "::ascii_info_detail");CPPUNIT_ASSERT(!err);
     err = PetscOptionsSetValue(NULL, "-snes_test_jacobian", "1.0e-6");CPPUNIT_ASSERT(!err);
     err = SNESSetFromOptions(_problem->getPetscSNES());CPPUNIT_ASSERT(!err);
     _problem->solve();
