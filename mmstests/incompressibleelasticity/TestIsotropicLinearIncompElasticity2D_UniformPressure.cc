@@ -76,7 +76,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure :
     // Vp
     static double vp(const double x,
                      const double y) {
-        return sqrt(3.0)*vs(x,y);
+        return 1.0e+15;
     } // vp
 
     static const char* vp_units(void) {
@@ -134,10 +134,10 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure :
                                               void* context) {
         CPPUNIT_ASSERT(2 == spaceDim);
         CPPUNIT_ASSERT(x);
-        CPPUNIT_ASSERT(2 == numComponents);
+        CPPUNIT_ASSERT(1 == numComponents);
         CPPUNIT_ASSERT(s);
 
-        s[2] = pressure(x[0], x[1]);
+        s[0] = pressure(x[0], x[1]);
 
         return 0;
     } // solnkernel_pressure
@@ -154,7 +154,8 @@ protected:
 
         CPPUNIT_ASSERT(!_data);
         _data = new TestIncompressibleElasticity_Data();CPPUNIT_ASSERT(_data);
-        _isJacobianLinear = true;
+        _isJacobianLinear = false;
+        _jacobianConvergenceRate = 1.0;
 
         _data->spaceDim = 2;
         _data->meshFilename = ":UNKNOWN:"; // Set in child class.

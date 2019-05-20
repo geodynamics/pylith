@@ -358,28 +358,20 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::Jg3uu(const Pylit
 
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = numA-2;
-    const PylithInt i_bulkModulus = numA-1;
 
     assert(_dim == dim);
     assert(numS >= 1);
     assert(numA >= 2);
     assert(aOff);
     assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
     assert(a);
     assert(Jg3);
 
     const PylithScalar shearModulus = a[aOff[i_shearModulus]];
-    const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
 
-    const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
-    const PylithScalar lambda2mu = lambda + 2.0*shearModulus;
-
-    const PylithScalar Cmm = (3.0*lambda + 2.0*shearModulus); // C1111 + C2211 + C3311
-
-    const PylithReal C1111 = lambda2mu - Cmm/3.0;
-    const PylithReal C2222 = lambda2mu - Cmm/3.0;
-    const PylithReal C1122 = lambda - Cmm/3.0;
+    const PylithReal C1111 = 4.0 / 3.0 * shearModulus;
+    const PylithReal C2222 = C1111;
+    const PylithReal C1122 = -2.0 / 3.0 * shearModulus;
     const PylithReal C1212 = shearModulus;
 
     /* j(f,g,df,dg) = C(f,df,g,dg)
@@ -844,43 +836,42 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::Jg3uu(const PylithInt dim,
 
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = numA-2;
-    const PylithInt i_bulkModulus = numA-1;
 
     assert(_dim == dim);
     assert(numA >= 2);
     assert(aOff);
     assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
     assert(a);
     assert(Jg3);
 
     const PylithScalar shearModulus = a[aOff[i_shearModulus]];
-    const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
-
-    const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
-    const PylithScalar lambda2mu = lambda + 2.0*shearModulus;
-
-    const PylithScalar Cmm = 3.0*lambda + 2.0*shearModulus; // C1111 + C2211 + C3311
 
     // All other values are either zero or equal to one of these.
-    const PylithReal C1111 = lambda2mu - Cmm/3.0;
-    const PylithReal C1122 = lambda - Cmm/3.0;
+    const PylithReal C1111 = 4.0 / 3.0 * shearModulus;
+    const PylithReal C2222 = C1111;
+    const PylithReal C3333 = C1111;
+    const PylithReal C1122 = -2.0 / 3.0 * shearModulus;
+    const PylithReal C1133 = C1122;
+    const PylithReal C2233 = C1122;
     const PylithReal C1212 = shearModulus;
+    const PylithReal C1313 = C1212;
+    const PylithReal C2323 = C1212;
+
     /* j(f,g,df,dg) = C(f,df,g,dg)
      *
-     *  0:  j0000 = C1111 = lambda + 2.0*shearModulus
+     *  0:  j0000 = C1111
      *  1:  j0001 = C1112 = 0
      *  2:  j0002 = C1113 = 0
      *  3:  j0010 = C1211 = 0
-     *  4:  j0011 = C1212 = shearModulus
+     *  4:  j0011 = C1212
      *  5:  j0012 = C1213 = 0
      *  6:  j0020 = C1311 = 0
      *  7:  j0021 = C1312 = 0
-     *  8:  j0022 = C1313 = shearModulus
+     *  8:  j0022 = C1313
      *  9:  j0100 = C1121 = 0
-     * 10:  j0101 = C1122 = lambda
+     * 10:  j0101 = C1122
      * 11:  j0102 = C1123 = 0
-     * 12:  j0110 = C1221 = shearModulus
+     * 12:  j0110 = C1221 = C1212
      * 13:  j0111 = C1222 = 0
      * 14:  j0112 = C1223 = 0
      * 15:  j0120 = C1321 = 0
@@ -888,47 +879,47 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::Jg3uu(const PylithInt dim,
      * 17:  j0122 = C1323 = 0
      * 18:  j0200 = C1131 = 0
      * 19:  j0201 = C1132 = 0
-     * 20:  j0202 = C1133 = lambda
+     * 20:  j0202 = C1133
      * 21:  j0210 = C1231 = 0
      * 22:  j0211 = C1232 = 0
      * 23:  j0212 = C1233 = 0
-     * 24:  j0220 = C1331 = shearModulus
+     * 24:  j0220 = C1331 = C1313
      * 25:  j0221 = C1332 = 0
      * 26:  j0222 = C1333 = 0
      * 27:  j1000 = C2111 = 0
-     * 28:  j1001 = C2112 = shearModulus
+     * 28:  j1001 = C2112 = C1212
      * 29:  j1002 = C2113 = 0
-     * 30:  j1010 = C2211 = lambda
+     * 30:  j1010 = C2211 = C1122
      * 31:  j1011 = C2212 = 0
      * 32:  j1012 = C2213 = 0
      * 33:  j1020 = C2311 = 0
      * 34:  j1021 = C2312 = 0
      * 35:  j1022 = C2313 = 0
-     * 36:  j1100 = C2121 = shearModulus
+     * 36:  j1100 = C2121 = C1212
      * 37:  j1101 = C2122 = 0
      * 38:  j1102 = C2123 = 0
      * 39:  j1110 = C2221 = 0
-     * 40:  j1111 = C2222 = lambda + 2.0*shearModulus
+     * 40:  j1111 = C2222
      * 41:  j1112 = C2223 = 0
      * 42:  j1120 = C2321 = 0
      * 43:  j1121 = C2322 = 0
-     * 44:  j1122 = C2323 = shearModulus
+     * 44:  j1122 = C2323
      * 45:  j1200 = C2131 = 0
      * 46:  j1201 = C2132 = 0
      * 47:  j1202 = C2133 = 0
      * 48:  j1210 = C2231 = 0
      * 49:  j1211 = C2232 = 0
-     * 50:  j1212 = C2233 = lambda
+     * 50:  j1212 = C2233
      * 51:  j1220 = C2331 = 0
-     * 52:  j1221 = C2332 = shearModulus
+     * 52:  j1221 = C2332 = C2323
      * 53:  j1222 = C2333 = 0
      * 54:  j2000 = C3111 = 0
      * 55:  j2001 = C3112 = 0
-     * 56:  j2002 = C3113 = shearModulus
+     * 56:  j2002 = C3113 = C1313
      * 57:  j2010 = C3211 = 0
      * 58:  j2011 = C3212 = 0
      * 59:  j2012 = C3213 = 0
-     * 60:  j2020 = C3311 = lambda
+     * 60:  j2020 = C3311 = C1133
      * 61:  j2021 = C3312 = 0
      * 62:  j2022 = C3313 = 0
      * 63:  j2100 = C3121 = 0
@@ -936,43 +927,43 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::Jg3uu(const PylithInt dim,
      * 65:  j2102 = C3123 = 0
      * 66:  j2110 = C3221 = 0
      * 67:  j2111 = C3222 = 0
-     * 68:  j2112 = C3223 = shearModulus
+     * 68:  j2112 = C3223 = C2323
      * 69:  j2120 = C3321 = 0
-     * 70:  j2121 = C3322 = lambda
+     * 70:  j2121 = C3322 = C2233
      * 71:  j2122 = C3323 = 0
-     * 72:  j2200 = C3131 = shearModulus
+     * 72:  j2200 = C3131 = C1313
      * 73:  j2201 = C3132 = 0
      * 74:  j2202 = C3133 = 0
      * 75:  j2210 = C3231 = 0
-     * 76:  j2211 = C3232 = shearModulus
+     * 76:  j2211 = C3232 = C2323
      * 77:  j2212 = C3233 = 0
      * 78:  j2220 = C3331 = 0
      * 79:  j2221 = C3332 = 0
-     * 80:  j2222 = C3333 = lambda + 2.0*shearModulus
+     * 80:  j2222 = C3333
      */
 
     // Nonzero Jacobian entries.
     Jg3[ 0] -= C1111; // j0000
     Jg3[ 4] -= C1212; // j0011
-    Jg3[ 8] -= C1212; // j0022
+    Jg3[ 8] -= C1313; // j0022
     Jg3[10] -= C1122; // j0101
     Jg3[12] -= C1212; // j0110
-    Jg3[20] -= C1122; // j0202
-    Jg3[24] -= C1212; // j0220
+    Jg3[20] -= C1133; // j0202
+    Jg3[24] -= C1313; // j0220
     Jg3[28] -= C1212; // j1001
     Jg3[30] -= C1122; // j1010
     Jg3[36] -= C1212; // j1100
-    Jg3[40] -= C1111; // j1111
-    Jg3[44] -= C1212; // j1122
-    Jg3[50] -= C1122; // j1212
-    Jg3[52] -= C1212; // j1221
-    Jg3[56] -= C1212; // j2002
-    Jg3[60] -= C1122; // j2020
-    Jg3[68] -= C1212; // j2112
-    Jg3[70] -= C1122; // j2121
-    Jg3[72] -= C1212; // j2200
-    Jg3[76] -= C1212; // j2211
-    Jg3[80] -= C1111; // j2222
+    Jg3[40] -= C2222; // j1111
+    Jg3[44] -= C2323; // j1122
+    Jg3[50] -= C2233; // j1212
+    Jg3[52] -= C2323; // j1221
+    Jg3[56] -= C1313; // j2002
+    Jg3[60] -= C1133; // j2020
+    Jg3[68] -= C2323; // j2112
+    Jg3[70] -= C2233; // j2121
+    Jg3[72] -= C1313; // j2200
+    Jg3[76] -= C2323; // j2211
+    Jg3[80] -= C3333; // j2222
 } // Jg3uu
 
 
