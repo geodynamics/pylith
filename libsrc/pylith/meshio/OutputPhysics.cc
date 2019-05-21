@@ -38,9 +38,7 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
-pylith::meshio::OutputPhysics::OutputPhysics(void) :
-    _label(""),
-    _labelId(0) {}
+pylith::meshio::OutputPhysics::OutputPhysics(void) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -204,14 +202,6 @@ pylith::meshio::OutputPhysics::_writeInfo(void) {
     if (!_physics) { PYLITH_METHOD_END;}
 
     assert(_physics);
-
-    // :KLUDGE: Temporary code to set _label and _labelId if physics ISA Material. This will go away when each
-    // material has its own PetscDM.
-    const pylith::materials::Material* const material = dynamic_cast<const pylith::materials::Material* const>(_physics);
-    if (material) {
-        _temporarySetLabel("material-id", material->getMaterialId());
-        PYLITH_COMPONENT_DEBUG("Setting label='material-id' and label id="<<material->getMaterialId()<<".");
-    } // if
 
     const pylith::topology::Field* auxiliaryField = _physics->getAuxiliaryField();
     if (!auxiliaryField) { PYLITH_METHOD_END;}
@@ -423,16 +413,6 @@ pylith::meshio::OutputPhysics::_expandDataFieldNames(const pylith::topology::Fie
 
     PYLITH_METHOD_RETURN(_dataFieldNames);
 } // _expandDataFieldNames
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// TEMPOARY Set label and label id.
-void
-pylith::meshio::OutputPhysics::_temporarySetLabel(const char* label,
-                                                  const PylithInt labelId) {
-    _label = label;
-    _labelId = labelId;
-} // _temporarySetLabel
 
 
 // End of file

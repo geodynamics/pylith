@@ -166,23 +166,11 @@ protected:
                                                 const pylith::topology::Field* auxField,
                                                 const pylith::topology::Field* derivedField) const;
 
-    /** TEMPOARY Set label and label id.
-     *
-     * @param[in] label Name of label.
-     * @param[in] labelId Label value.
-     */
-    void _temporarySetLabel(const char* label,
-                            const PylithInt labelId);
-
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     pylith::string_vector _infoFieldNames;
     pylith::string_vector _dataFieldNames;
-
-    // :TODO: Remove _label and _labelId once materials use their own PetscDM.
-    std::string _label; ///< Name of label defining cells to include in output (=0 means use all cells in mesh).
-    PylithInt _labelId; ///< Value of label defining which cells to include.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
