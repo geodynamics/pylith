@@ -186,6 +186,7 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
         err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_display", "::ascii_info_detail");CPPUNIT_ASSERT(!err);
     } // if
     err = PetscOptionsSetValue(NULL, "-snes_test_jacobian", "1.0e-6");CPPUNIT_ASSERT(!err);
+    err = PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false");CPPUNIT_ASSERT(!err);
     err = SNESSetFromOptions(_problem->getPetscSNES());CPPUNIT_ASSERT(!err);
     _problem->solve();
     err = PetscOptionsClearValue(NULL, "-snes_test_jacobian");CPPUNIT_ASSERT(!err);
