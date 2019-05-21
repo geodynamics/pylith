@@ -18,7 +18,7 @@
 
 /** @file libsrc/feassemble/Constraint.hh
  *
- * @brief C++ abstract base class defining interface for constraining degrees of freedom in the solution.
+ * @brief C++ abstract base class for constraining degrees of freedom in the solution.
  */
 
 #if !defined(pylith_feassemble_constraint_hh)
@@ -30,6 +30,7 @@
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
 #include "pylith/utils/array.hh" // HASA int_array
+#include "pylith/utils/types.hh" // HASA PetscUserFieldFunc
 #include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
 
 class pylith::feassemble::Constraint : public pylith::feassemble::PhysicsImplementation {
@@ -46,6 +47,10 @@ public:
 
     /// Destructor.
     virtual ~Constraint(void);
+
+    /// Deallocate PETSc and local data structures.
+    virtual
+    void deallocate(void);
 
     /** Set indices of constrained degrees of freedom at each location.
      *
@@ -88,13 +93,13 @@ public:
      */
     const char* getSubfieldName(void) const;
 
-    /** Set constraint kernel.
+    /** Get mesh associated with constrained boundary.
      *
-     * @param kernel Kernel to compute constrained value from auxiliary field.
+     * @returns Mesh associated with constrained boundary.
      */
-    void setKernelConstraint(const PetscPointFunc kernel);
+    const pylith::topology::Mesh& getPhysicsDomainMesh(void) const;
 
-    /** Initialize integrator.
+    /** Initialize constraint.
      *
      * @param[in] solution Solution field (layout).
      */
@@ -130,19 +135,7 @@ public:
      */
     virtual
     void setSolution(pylith::topology::Field* solution,
-                     const double t);
-
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
-    /** Set constants used in finite-element kernels.
-     *
-     * @param[in] solution Solution field.
-     * @param[in] dt Current time step.
-     */
-    virtual
-    void _setKernelConstants(const pylith::topology::Field& solution,
-                             const PylithReal dt) const;
+                     const double t) = 0;
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
@@ -150,7 +143,7 @@ protected:
     int_array _constrainedDOF; ///< List of constrained degrees of freedom at each location.
     std::string _constraintLabel; ///< Label marking constrained degrees of freedom.
     std::string _subfieldName; ///< Name of solution subfield that is constrained.
-    PetscPointFunc _kernelConstraint; ///< Kernel for computing constrained values from auxiliary field.
+    pylith::topology::Mesh* _boundaryMesh; ///< Boundary mesh.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

@@ -54,7 +54,7 @@ pylith::problems::TimeDependent::TimeDependent(void) :
     _dtInitial(1.0),
     _totalTime(0.0),
     _maxTimeSteps(0),
-    _ts(0),
+    _ts(NULL),
     _formulationType(IMPLICIT) {
     PyreComponent::setName(_TimeDependent::pyreComponent);
 } // constructor
@@ -197,6 +197,35 @@ pylith::problems::TimeDependent::setInitialCondition(pylith::problems::InitialCo
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Get Petsc DM associated with problem.
+PetscDM
+pylith::problems::TimeDependent::getPetscDM(void) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscDM dm = NULL;
+    PetscErrorCode err = TSGetDM(_ts, &dm);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_RETURN(dm);
+} // getPetscTS
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+/** Get nonlinear solver for problem.
+ *
+ * @returns PETSc SNES for problem.
+ */
+PetscSNES
+pylith::problems::TimeDependent::getPetscSNES(void) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscSNES snes = NULL;
+    PetscErrorCode err = TSGetSNES(_ts, &snes);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_RETURN(snes);
+} // getPetscSNES
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration.
 void
 pylith::problems::TimeDependent::verifyConfiguration(void) const {
@@ -322,18 +351,15 @@ pylith::problems::TimeDependent::initialize(void) {
     err = TSSetDM(_ts, _solution->dmMesh());PYLITH_CHECK_ERROR(err);
 
     // Set initial solution.
+    PYLITH_COMPONENT_DEBUG("Setting PetscTS initial conditions using global vector for solution.");
     _solution->zeroLocal();
     const size_t numIC = _ic.size();
     for (size_t i = 0; i < numIC; ++i) {
         assert(_ic[i]);
         _ic[i]->setValues(_solution, *_normalizer);
     } // for
-    PetscVec solutionVec = NULL;
-    err = DMCreateGlobalVector(_solution->dmMesh(), &solutionVec);PYLITH_CHECK_ERROR(err);
-    _solution->scatterLocalToVector(solutionVec);
-    PYLITH_COMPONENT_DEBUG("Setting PetscTS initial conditions using global vector for solution.");
-    err = TSSetSolution(_ts, solutionVec);PYLITH_CHECK_ERROR(err);
-    err = VecDestroy(&solutionVec);PYLITH_CHECK_ERROR(err);
+    _solution->scatterLocalToContext("global");
+    err = TSSetSolution(_ts, _solution->scatterVector("global"));PYLITH_CHECK_ERROR(err);
 
     // Set callbacks.
     PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks prestep(), poststep(), computeRHSJacobian(), and computeRHSFunction().");

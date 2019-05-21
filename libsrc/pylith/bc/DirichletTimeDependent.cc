@@ -21,7 +21,7 @@
 #include "DirichletTimeDependent.hh" // implementation of object methods
 
 #include "pylith/bc/TimeDependentAuxiliaryFactory.hh" // USES TimeDependentAuxiliaryFactory
-#include "pylith/feassemble/ConstraintBoundary.hh" // USES ConstraintBoundary
+#include "pylith/feassemble/ConstraintSpatialDB.hh" // USES ConstraintSoatialDB
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "pylith/topology/Mesh.hh" // USES Mesh
@@ -52,7 +52,7 @@ public:
              * @param[in] solution Solution field.
              */
             static
-            void setKernelConstraint(pylith::feassemble::ConstraintBoundary* constraint,
+            void setKernelConstraint(pylith::feassemble::ConstraintSpatialDB* constraint,
                                      const pylith::bc::DirichletTimeDependent& bc,
                                      const pylith::topology::Field& solution);
 
@@ -242,7 +242,7 @@ pylith::bc::DirichletTimeDependent::createConstraint(const pylith::topology::Fie
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.label()<<")");
 
-    pylith::feassemble::ConstraintBoundary* constraint = new pylith::feassemble::ConstraintBoundary(this);assert(constraint);
+    pylith::feassemble::ConstraintSpatialDB* constraint = new pylith::feassemble::ConstraintSpatialDB(this);assert(constraint);
     constraint->setMarkerLabel(getMarkerLabel());
     constraint->setConstrainedDOF(&_constrainedDOF[0], _constrainedDOF.size());
     constraint->setSubfieldName(_subfieldName.c_str());
@@ -311,10 +311,10 @@ pylith::bc::DirichletTimeDependent::createDerivedField(const pylith::topology::F
 // ---------------------------------------------------------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
-pylith::bc::DirichletTimeDependent::prestep(pylith::topology::Field* auxiliaryField,
-                                            const double t) {
+pylith::bc::DirichletTimeDependent::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                                                         const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("prestep(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
+    PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
     if (_useTimeHistory) {
         assert(_normalizer);
@@ -323,7 +323,7 @@ pylith::bc::DirichletTimeDependent::prestep(pylith::topology::Field* auxiliaryFi
     } // if
 
     PYLITH_METHOD_END;
-} // prestep
+} // updateAuxiliaryField
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -343,7 +343,7 @@ pylith::bc::DirichletTimeDependent::_updateKernelConstants(const PylithReal dt) 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for computing constraint value.
 void
-pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::ConstraintBoundary* constraint,
+pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::ConstraintSpatialDB* constraint,
                                                          const pylith::bc::DirichletTimeDependent& bc,
                                                          const topology::Field& solution) {
     PYLITH_METHOD_BEGIN;

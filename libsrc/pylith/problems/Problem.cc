@@ -68,12 +68,23 @@ void
 pylith::problems::Problem::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
+    const size_t numIntegrators = _integrators.size();
+    for (size_t i = 0; i < numIntegrators; ++i) {
+        delete _integrators[i];_integrators[i] = NULL;
+    } // for
+
+    const size_t numConstraints = _constraints.size();
+    for (size_t i = 0; i < numConstraints; ++i) {
+        delete _constraints[i];_constraints[i] = NULL;
+    } // for
+
     _solution = NULL; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
     delete _solutionDot;_solutionDot = NULL;
     delete _residual;_residual = NULL;
     delete _jacobianLHSLumpedInv;_jacobianLHSLumpedInv = NULL;
     delete _normalizer;_normalizer = NULL;
     _gravityField = NULL; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
+    delete _observers;_observers = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -115,7 +126,7 @@ pylith::problems::Problem::setNormalizer(const spatialdata::units::Nondimensiona
 // Set gravity field.
 void
 pylith::problems::Problem::setGravityField(spatialdata::spatialdb::GravityField* const g) {
-    PYLITH_COMPONENT_DEBUG("Problem::setGravityField(g="<<typeid(*g).name()<<")");
+    PYLITH_COMPONENT_DEBUG("Problem::setGravityField(g="<<typeid(g).name()<<")");
 
     _gravityField = g;
 } // setGravityField
@@ -270,7 +281,6 @@ pylith::problems::Problem::verifyConfiguration(void) const {
         assert(_interfaces[i]);
         _interfaces[i]->verifyConfiguration(*_solution);
     } // for
-    _checkMaterialIds();
 
     // Check to make sure boundary conditions are compatible with the solution.
     const size_t numBC = _bc.size();
@@ -278,6 +288,8 @@ pylith::problems::Problem::verifyConfiguration(void) const {
         assert(_bc[i]);
         _bc[i]->verifyConfiguration(*_solution);
     } // for
+
+    _checkMaterialIds();
 
     assert(_observers);
     _observers->verifyObservers(*_solution);
@@ -296,6 +308,7 @@ pylith::problems::Problem::initialize(void) {
     assert(_solution);
 
     // Initialize solution field.
+    PetscErrorCode err = DMSetFromOptions(_solution->dmMesh());PYLITH_CHECK_ERROR(err);
     _solution->subfieldsSetup();
     if (_solution->hasSubfield("lagrange_multiplier_fault")) {
         _setupLagrangeMultiplier(_solution);
@@ -322,7 +335,6 @@ pylith::problems::Problem::initialize(void) {
     } // for
 
     _solution->allocate();
-    _solution->zeroLocal();
     _solution->createScatter(_solution->mesh(), "global");
 
     journal::debug_t debug(PyreComponent::getName());
@@ -336,7 +348,6 @@ pylith::problems::Problem::initialize(void) {
     delete _residual;_residual = new pylith::topology::Field(_solution->mesh());assert(_residual);
     _residual->cloneSection(*_solution);
     _residual->label("residual");
-    _solution->zeroLocal();
 
     PYLITH_METHOD_END;
 } // initialize

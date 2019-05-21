@@ -23,6 +23,7 @@ subpkginclude_HEADERS = \
 	BoundaryCondition.hh \
 	TimeDependentAuxiliaryFactory.hh \
 	DirichletTimeDependent.hh \
+	DirichletUserFn.hh \
 	NeumannTimeDependent.hh \
 	AbsorbingDampers.hh \
 	AbsorbingDampersAuxiliaryFactory.hh \

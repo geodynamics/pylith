@@ -86,9 +86,8 @@ protected:
         _data->solutionDB->coordsys(*_data->cs);
 
         _data->subfields["displacement"].description.numComponents = 2;
-        _data->subfields["displacement_dot"].description.numComponents = 2;
         _data->subfields["velocity"].description.numComponents = 2;
-        _data->subfields["velocity_dot"].description.numComponents = 2;
+        _data->subfields["lagrange_multiplier_fault"].description.numComponents = 2;
 
         _initialize();
     } // setUp

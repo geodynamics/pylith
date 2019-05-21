@@ -27,7 +27,8 @@ subpkginclude_HEADERS = \
 	PhysicsStub.hh \
 	PhysicsImplementationStub.hh \
 	ObserverPhysicsStub.hh \
-	ObserverSolnStub.hh
+	ObserverSolnStub.hh \
+	MMSTest.hh \
 	testingfwd.hh
 
 noinst_HEADERS =

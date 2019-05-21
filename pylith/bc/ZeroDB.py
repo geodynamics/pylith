@@ -42,8 +42,8 @@ class ZeroDB(UniformDB):
     import pyre.inventory
 
     from pyre.units.length import m
-    values = ["initial_amplitude_x", "initial_amplitude_y", "initial_amplitude_z"]
-    data = [0.0 * m, 0.0 * m, 0.0 * m]
+    values = ["initial_amplitude", "initial_amplitude_x", "initial_amplitude_y", "initial_amplitude_z"]
+    data = [0.0, 0.0, 0.0, 0.0]
 
     label = pyre.inventory.str("label", default="Zero initial amplitude spatial database.")
     label.meta["tip"] = "Label for ZeroDB spatial database."

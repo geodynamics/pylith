@@ -192,8 +192,11 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
 
-    // :TODO: @brad @matt Update this to create a mesh with the material subDM.
+#if 1 // :KLUDGE: :TODO: @brad @matt Update this to create a mesh with the material subDM.
     delete _materialMesh;_materialMesh = (pylith::topology::Mesh*) &solution.mesh();
+#else
+    delete _materialMesh;_materialMesh = ?
+#endif
 
     pylith::topology::CoordsVisitor::optimizeClosure(_materialMesh->dmMesh());
 

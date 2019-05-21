@@ -35,6 +35,7 @@ namespace pylith {
         class ConstraintBoundary;
         class Dirichlet;
         class DirichletTimeDependent;
+        class DirichletUserFn;
 
         class NeumannTimeDependent;
         class AbsorbingDampers;

@@ -31,6 +31,13 @@ typedef PetscScalar PylithScalar;
 typedef PetscReal PylithReal;
 typedef PetscInt PylithInt;
 
+typedef PetscErrorCode (*PetscUserFieldFunc)(PetscInt,
+                                             PetscReal,
+                                             const PetscReal x[],
+                                             PetscInt,
+                                             PetscScalar *u,
+                                             void *ctx);
+
 #endif // pylith_utils_pylithtypes_h
 
 

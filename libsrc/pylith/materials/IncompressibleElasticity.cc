@@ -306,7 +306,7 @@ pylith::materials::IncompressibleElasticity::_setKernelsLHSJacobian(pylith::feas
     kernels[0] = JacobianKernels("displacement", "displacement", Jf0, Jf1, Jf2, Jf3);
     kernels[1] = JacobianKernels("displacement", "pressure", Jf0, Jf1, Jf2, Jf3);
     kernels[2] = JacobianKernels("pressure", "displacement", Jf0, Jf1, Jf2, Jf3);
-    kernels[3] = JacobianKernels("pressure]", "pressure]", Jf0, Jf1, Jf2, Jf3);
+    kernels[3] = JacobianKernels("pressure", "pressure", Jf0, Jf1, Jf2, Jf3);
 
     assert(integrator);
     integrator->setKernelsLHSJacobian(kernels);

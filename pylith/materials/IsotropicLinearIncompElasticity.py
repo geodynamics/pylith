@@ -62,6 +62,7 @@ class IsotropicLinearIncompElasticity(RheologyIncompressibleElasticity, ModuleLi
     def preinitialize(self, mesh):
         RheologyIncompressibleElasticity.preinitialize(self, mesh)
 
+        print(self)
         ModuleLinearElasticity.useReferenceState(self, self.useReferenceState)
 
         return

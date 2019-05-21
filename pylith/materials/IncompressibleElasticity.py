@@ -22,8 +22,8 @@
 from .Material import Material
 from .materials import IncompressibleElasticity as ModuleIncompressibleElasticity
 
+from .IsotropicLinearIncompElasticity import IsotropicLinearIncompElasticity
 
-# VALIDATORS ///////////////////////////////////////////////////////////
 
 class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
     """
@@ -32,7 +32,6 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
     INVENTORY
 
     Properties
-      - *use_inertia* Include inertial term in elasticity equation.
       - *use_body_force* Include body force term in elasticity equation.
 
     Facilities
@@ -43,14 +42,17 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
 
     import pyre.inventory
 
-    useInertia = pyre.inventory.bool("use_inertia", default=False)
-    useInertia.meta['tip'] = "Include inertial term in elasticity equation."
+    from pylith.topology.AuxSubfield import subfieldFactory
+    from .AuxSubfieldsElasticity import AuxSubfieldsElasticity
+    auxiliarySubfields = pyre.inventory.facilityArray(
+        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsElasticity)
+    auxiliarySubfields.meta['tip'] = "Discretization of incompressible elasticity properties."
 
     useBodyForce = pyre.inventory.bool("use_body_force", default=False)
     useBodyForce.meta['tip'] = "Include body force term in elasticity equation."
 
     rheology = pyre.inventory.facility(
-        "bulk_rheology", familty="incompressible_elasticity_rheology", factory=IsotropicLinearElasticity)
+        "bulk_rheology", family="incompressible_elasticity_rheology", factory=IsotropicLinearIncompElasticity)
     rheology.meta['tip'] = "Bulk rheology for elastic material."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -69,18 +71,17 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
         self.rheology.preinitialize(mesh)
         Material.preinitialize(self, mesh)
 
-        ModuleIncompressibleElasticity.useInertia(self, self.useInertia)
-        ModuleIncompressibleElasticity.useBodyForce(self, self.useBodyForce)
-        ModuleIncompressibleElasticity.setBulkRheology(self, self.rheology)
+        self.rheology.addAuxiliarySubfields(self)
 
+        ModuleIncompressibleElasticity.useBodyForce(self, self.useBodyForce)
         return
 
     def _createModuleObj(self):
         """
         Create handle to C++ IncompressibleElasticity.
         """
-        ModuleElasticity.__init__(self)
-        ModuleElasticity.setBulkRheology(self, self.rheology)  # Material sets auxiliary db in rheology.
+        ModuleIncompressibleElasticity.__init__(self)
+        ModuleIncompressibleElasticity.setBulkRheology(self, self.rheology)  # Material sets auxiliary db in rheology.
         return
 
 

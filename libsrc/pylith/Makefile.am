@@ -36,6 +36,7 @@ libpylith_la_SOURCES = \
 	bc/BoundaryCondition.cc \
 	bc/TimeDependentAuxiliaryFactory.cc \
 	bc/DirichletTimeDependent.cc \
+	bc/DirichletUserFn.cc \
 	bc/NeumannTimeDependent.cc \
 	bc/AbsorbingDampers.cc \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
@@ -54,7 +55,8 @@ libpylith_la_SOURCES = \
 	feassemble/IntegratorInterface.cc \
 	feassemble/UpdateStateVars.cc \
 	feassemble/Constraint.cc \
-	feassemble/ConstraintBoundary.cc \
+	feassemble/ConstraintSpatialDB.cc \
+	feassemble/ConstraintUserFn.cc \
 	feassemble/AuxiliaryFactory.cc \
 	fekernels/Elasticity.cc \
 	fekernels/IsotropicLinearElasticity.cc \
@@ -171,7 +173,8 @@ libpylith_la_SOURCES += \
 	testing/PhysicsImplementationStub.cc \
 	testing/ObserverPhysicsStub.cc \
 	testing/ObserverSolnStub.cc \
-	testing/FaultCohesiveStub.cc
+	testing/FaultCohesiveStub.cc \
+	testing/MMSTest.cc
 
 libpylith_la_LIBADD += -lcppunit
 endif
