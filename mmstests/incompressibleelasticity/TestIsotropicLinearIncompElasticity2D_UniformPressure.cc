@@ -96,19 +96,11 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure :
         return 0.0;
     } // disp_y
 
-    static const char* disp_units(void) {
-        return "m";
-    } // disp_units
-
     // Pressure
     static double pressure(const double x,
                            const double y) {
-        return 5.0;
+        return 5.0+6;
     } // pressure
-
-    static const char* pressure_units(void) {
-        return "MPa";
-    } // pressure_units
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
                                           PetscReal t,

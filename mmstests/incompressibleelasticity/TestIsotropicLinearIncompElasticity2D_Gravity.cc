@@ -53,6 +53,9 @@ namespace pylith {
 class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity :
     public pylith::mmstests::TestIsotropicLinearIncompElasticity {
     /// Spatial database user functions for auxiiliary subfields (includes derived fields).
+    static const double LENGTHSCALE;
+    static const double TIMESCALE;
+    static const double PRESSURESCALE;
     static const double GACC;
     static const double YMAX;
 
@@ -103,27 +106,21 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity :
     // Displacement
     static double disp_x(const double x,
                          const double y) {
-        return 0.0;
+        return 0.0 / LENGTHSCALE;
     } // disp_x
 
     static double disp_y(const double x,
                          const double y) {
-        return 0.0;
+        return 0.0 / LENGTHSCALE;
     } // disp_y
-
-    static const char* disp_units(void) {
-        return "m";
-    } // disp_units
 
     // Pressure
     static double pressure(const double x,
                            const double y) {
-        const double lengthScale = 1.0e+3;
-        const double timeScale = 2.0;
-        const double pressureScale = 2.25e+10;
-        const double velocityScale = lengthScale / timeScale;
-        const double densityScale = pressureScale / (velocityScale * velocityScale);
-        return density(x,y) / densityScale * GACC / (velocityScale / timeScale) * (YMAX/lengthScale-y);
+        const double velocityScale = LENGTHSCALE / TIMESCALE;
+        const double accelerationScale = LENGTHSCALE / (TIMESCALE * TIMESCALE);
+        const double densityScale = PRESSURESCALE / (velocityScale * velocityScale);
+        return density(x,y) / densityScale * GACC / (accelerationScale) * (YMAX/LENGTHSCALE-y);
     } // pressure
 
     static const char* pressure_units(void) {
@@ -171,7 +168,7 @@ protected:
         // Overwrite component names for control of debugging info at test level.
         GenericComponent::setName("TestIsotropicLinearIncompElasticity2D_Gravity");
         journal::debug_t debug(GenericComponent::getName());
-        debug.activate(); // DEBUGGING
+        // debug.activate(); // DEBUGGING
 
         CPPUNIT_ASSERT(!_data);
         _data = new TestIncompressibleElasticity_Data();CPPUNIT_ASSERT(_data);
@@ -187,9 +184,9 @@ protected:
         _data->cs->initialize();
 
         CPPUNIT_ASSERT(_data->normalizer);
-        _data->normalizer->lengthScale(1.0e+03);
-        _data->normalizer->timeScale(2.0);
-        _data->normalizer->pressureScale(2.25e+10);
+        _data->normalizer->lengthScale(LENGTHSCALE);
+        _data->normalizer->timeScale(TIMESCALE);
+        _data->normalizer->pressureScale(PRESSURESCALE);
         _data->normalizer->computeDensityScale();
 
         delete _data->gravityField;_data->gravityField = new spatialdata::spatialdb::GravityField();
@@ -259,6 +256,9 @@ protected:
     } // _setExactSolution
 
 }; // TestIsotropicLinearIncompElasticity2D_Gravity
+const double pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity::LENGTHSCALE = 1.0e+3;
+const double pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity::TIMESCALE = 2.0;
+const double pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity::PRESSURESCALE = 2.25e+10;
 const double pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity::GACC = 9.80665;
 const double pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity::YMAX = +4.0e+3; // nondimensional
 

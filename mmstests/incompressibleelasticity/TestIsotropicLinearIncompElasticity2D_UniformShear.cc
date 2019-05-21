@@ -108,18 +108,10 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear :
         return strain_xy()*x + strain_yy()*y;
     } // disp_y
 
-    static const char* disp_units(void) {
-        return "m";
-    } // disp_units
-
     static double pressure(const double x,
                            const double y) {
         return 0.0;
     } // pressure
-
-    static const char* pressure_units(void) {
-        return "MPa";
-    } // pressure_units
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
                                           PetscReal t,
