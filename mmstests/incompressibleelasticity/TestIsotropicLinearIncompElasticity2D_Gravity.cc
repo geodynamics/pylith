@@ -118,7 +118,12 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity :
     // Pressure
     static double pressure(const double x,
                            const double y) {
-        return density(x,y) * GACC * (YMAX-y);
+        const double lengthScale = 1.0e+3;
+        const double timeScale = 2.0;
+        const double pressureScale = 2.25e+10;
+        const double velocityScale = lengthScale / timeScale;
+        const double densityScale = pressureScale / (velocityScale * velocityScale);
+        return density(x,y) / densityScale * GACC / (velocityScale / timeScale) * (YMAX/lengthScale-y);
     } // pressure
 
     static const char* pressure_units(void) {
@@ -255,7 +260,7 @@ protected:
 
 }; // TestIsotropicLinearIncompElasticity2D_Gravity
 const double pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity::GACC = 9.80665;
-const double pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity::YMAX = +4.0e+3;
+const double pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity::YMAX = +4.0e+3; // nondimensional
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity_TriP1 :
