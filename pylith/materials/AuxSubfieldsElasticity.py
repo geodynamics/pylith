@@ -37,16 +37,16 @@ class AuxSubfieldsElasticity(PetscComponent):
 
     import pyre.inventory
 
-    from pylith.topology.AuxSubfield import AuxSubfield
+    from pylith.topology.Subfield import Subfield
 
-    density = pyre.inventory.facility("density", family="auxiliary_subfield", factory=AuxSubfield)
+    density = pyre.inventory.facility("density", family="auxiliary_subfield", factory=Subfield)
     density.meta['tip'] = "Density subfield."
 
-    bodyForce = pyre.inventory.facility("body_force", family="auxiliary_subfield", factory=AuxSubfield)
+    bodyForce = pyre.inventory.facility("body_force", family="auxiliary_subfield", factory=Subfield)
     bodyForce.meta['tip'] = "Body force subfield."
 
     gravitationalAcceleration = pyre.inventory.facility(
-        "gravitational_acceleration", family="auxiliary_subfield", factory=AuxSubfield)
+        "gravitational_acceleration", family="auxiliary_subfield", factory=Subfield)
     gravitationalAcceleration.meta['tip'] = "Gravitational acceleration subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

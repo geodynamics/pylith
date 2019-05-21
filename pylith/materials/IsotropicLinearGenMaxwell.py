@@ -47,7 +47,7 @@ class IsotropicLinearGenMaxwell(RheologyElasticity, ModuleLinearElasticity):
     useReferenceState.meta['tip'] = "Use reference stress/strain state."
 
     from .AuxSubfieldsIsotropicLinearGenMaxwell import AuxSubfieldsIsotropicLinearGenMaxwell
-    from pylith.topology.AuxSubfield import subfieldFactory
+    from pylith.topology.Subfield import subfieldFactory
     auxiliarySubfields = pyre.inventory.facilityArray(
         "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsIsotropicLinearGenMaxwell)
     auxiliarySubfields.meta['tip'] = "Discretization of physical properties and state variables."

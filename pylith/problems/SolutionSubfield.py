@@ -20,7 +20,7 @@
 #
 # Factory: soln_subfield.
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.topology.Subfield import Subfield
 
 
 def validateAlias(value):
@@ -35,7 +35,7 @@ def validateAlias(value):
     return value
 
 
-class SolutionSubfield(PetscComponent):
+class SolutionSubfield(Subfield):
     """
     Python object for defining attributes of a subfield within a field.
 
@@ -43,11 +43,6 @@ class SolutionSubfield(PetscComponent):
 
     Properties
       - *name* Name for subfield.
-      - *basis_order* Order of basis functions.
-      - *quadrature_order* Order of numerical quadrature.
-      - *dimension* Topological dimension associated with subfield (-1 means use dimension of domain).
-      - *is_basis_continuous* Is basis continuous?
-      - *feSpace* Finite-element space [polynomial, point).
 
     Facilities
       - None
@@ -61,29 +56,13 @@ class SolutionSubfield(PetscComponent):
     userAlias = pyre.inventory.str("alias", default="", validator=validateAlias)
     userAlias.meta['tip'] = "Name for subfield."
 
-    basisOrder = pyre.inventory.int("basis_order", default=1)
-    basisOrder.meta['tip'] = "Order of basis functions."
-
-    quadOrder = pyre.inventory.int("quadrature_order", default=1)
-    quadOrder.meta['tip'] = "Order of numerical quadrature."
-
-    dimension = pyre.inventory.int("dimension", default=-1)
-    dimension.meta['tip'] = "Topological dimension associated with subfiled (-1 means use dimension of domain)."
-
-    isBasisContinuous = pyre.inventory.bool("is_basis_continous", default=True)
-    isBasisContinuous.meta['tip'] = "Is basis continuous?"
-
-    feSpaceStr = pyre.inventory.str("finite_element_spave", default="polynomial",
-                                    validator=pyre.inventory.choice(["polynomial", "point"]))
-    feSpaceStr.meta['tip'] = "Finite-element space (polynomial or point). Point space corresponds to delta functions at quadrature points."
-
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="subfield"):
+    def __init__(self, name="solution_subfield"):
         """
         Constructor.
         """
-        PetscComponent.__init__(self, name, facility="solution_subfield")
+        Subfield.__init__(self, name)
 
         # Set in derived class initialize().
         self.fieldComponents = None
@@ -106,12 +85,7 @@ class SolutionSubfield(PetscComponent):
         """
         from pylith.topology.topology import FieldBase
 
-        PetscComponent._configure(self)
-        spaceMapping = {
-            "polynomial": FieldBase.POLYNOMIAL_SPACE,
-            "point": FieldBase.POINT_SPACE,
-        }
-        self.feSpace = spaceMapping[self.feSpaceStr]
+        Subfield._configure(self)
         return
 
     def _setComponents(self, spaceDim):
@@ -141,7 +115,7 @@ def subfieldFactory(name):
 
 def soln_subfield():
     """
-    Factory associated with Subfield.
+    Factory associated with SolutionSubfield.
     """
     return SolutionSubfield()
 

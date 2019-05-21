@@ -45,7 +45,7 @@ class IsotropicLinearElasticity(RheologyElasticity, ModuleLinearElasticity):
     useReferenceState.meta['tip'] = "Use reference stress/strain state."
 
     from .AuxSubfieldsIsotropicLinearElasticity import AuxSubfieldsIsotropicLinearElasticity
-    from pylith.topology.AuxSubfield import subfieldFactory
+    from pylith.topology.Subfield import subfieldFactory
     auxiliarySubfields = pyre.inventory.facilityArray(
         "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsIsotropicLinearElasticity)
     auxiliarySubfields.meta['tip'] = "Discretization of linear elastic rheology physical properties."

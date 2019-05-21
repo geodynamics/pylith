@@ -42,7 +42,7 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
 
     import pyre.inventory
 
-    from pylith.topology.AuxSubfield import subfieldFactory
+    from pylith.topology.Subfield import subfieldFactory
     from .AuxSubfieldsElasticity import AuxSubfieldsElasticity
     auxiliarySubfields = pyre.inventory.facilityArray(
         "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsElasticity)
