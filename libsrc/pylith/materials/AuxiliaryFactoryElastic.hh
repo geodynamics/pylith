@@ -37,7 +37,7 @@ public:
     AuxiliaryFactoryElastic(void);
 
     /// Destructor.
-    ~AuxiliaryFactoryElastic(void);
+    virtual ~AuxiliaryFactoryElastic(void);
 
     /// Add shear modulus subfield to auxiliary subfields.
     void addShearModulus(void);

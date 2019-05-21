@@ -49,9 +49,8 @@ typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 pylith::materials::Elasticity::Elasticity(void) :
     _useInertia(false),
     _useBodyForce(false),
-    _shouldComputeCauchyStress(false),
-    _shouldComputeCauchyStrain(false),
-    _rheology(NULL) {
+    _rheology(NULL),
+    _derivedFactory(new pylith::materials::DerivedFactoryElasticity) {
     pylith::utils::PyreComponent::setName("elasticity");
 } // constructor
 
@@ -69,6 +68,7 @@ void
 pylith::materials::Elasticity::deallocate(void) {
     Material::deallocate();
 
+    delete _derivedFactory;_derivedFactory = NULL;
     _rheology = NULL; // :TODO: Use shared pointer.
 } // deallocate
 
@@ -107,38 +107,6 @@ bool
 pylith::materials::Elasticity::useBodyForce(void) const {
     return _useBodyForce;
 } // useBodyForce
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Should compute Cauchy stress for observers?
-void
-pylith::materials::Elasticity::shouldComputeCauchyStress(const bool value) {
-    _shouldComputeCauchyStress = value;
-} // shouldComputeCauchyStress
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Should compute Cauchy stress for observers?
-bool
-pylith::materials::Elasticity::shouldComputeCauchyStress(void) const {
-    return _shouldComputeCauchyStress;
-} // shouldComputeCauchyStress
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Should compute Cauchy strain for observers.
-void
-pylith::materials::Elasticity::shouldComputeCauchyStrain(const bool value) {
-    _shouldComputeCauchyStrain = value;
-} // shouldComputeCauchyStrain
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Should compute Cauchy strain for observers?
-bool
-pylith::materials::Elasticity::shouldComputeCauchyStrain(void) const {
-    return _shouldComputeCauchyStrain;
-} // shouldComputeCauchyStrain
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -254,19 +222,10 @@ pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field&
     pylith::topology::Field* derivedField = new pylith::topology::Field(domainMesh);assert(derivedField);
     derivedField->label("Elasticity derived field");
 
-    DerivedFactoryElasticity derivedFactory;
-
     assert(_normalizer);
-    derivedFactory.initialize(derivedField, *_normalizer, domainMesh.dimension());
-
-    // :ATTENTION: The order for adding subfields must match the order of the derived fields in the FE kernels.
-
-    if (_shouldComputeCauchyStress) {
-        derivedFactory.addCauchyStress();
-    } // if
-    if (_shouldComputeCauchyStrain) {
-        derivedFactory.addCauchyStrain();
-    } // if
+    assert(_derivedFactory);
+    _derivedFactory->initialize(derivedField, *_normalizer, domainMesh.dimension());
+    _derivedFactory->addSubfields();
 
     derivedField->subfieldsSetup();
     pylith::topology::FieldOps::checkDiscretization(solution, *derivedField);
@@ -293,6 +252,14 @@ pylith::materials::Elasticity::_updateKernelConstants(const PylithReal dt) {
     assert(_rheology);
     _rheology->updateKernelConstants(&_kernelConstants, dt);
 } // _updateKernelConstants
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get derived factory associated with physics.
+pylith::topology::FieldFactory*
+pylith::materials::Elasticity::_getDerivedFactory(void) {
+    return _derivedFactory;
+} // _getDerivedFactory
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -491,30 +458,18 @@ pylith::materials::Elasticity::_setKernelsDerivedField(pylith::feassemble::Integ
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.label()<<")");
 
-    size_t count = 0;
-    if (_shouldComputeCauchyStress) {
-        count++;
-    } // if
-    if (_shouldComputeCauchyStrain) {
-        count++;
-    } // if
-
     const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().coordsys();
+    assert(coordsys);
 
-    std::vector<ProjectKernels> kernels(count);
-    count = 0;
-    if (_shouldComputeCauchyStress) {
-        kernels[count++] = ProjectKernels("stress", _rheology->getKernelDerivedCauchyStress(coordsys));
-    } // if
-    if (_shouldComputeCauchyStrain) {
-        assert(coordsys);
-        const int spaceDim = coordsys->spaceDim();
-        const PetscPointFunc strainKernel =
-            (3 == spaceDim) ? pylith::fekernels::Elasticity3D::cauchy_strain :
-            (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::cauchy_strain :
-            NULL;
-        kernels[count++] = ProjectKernels("strain", strainKernel);
-    } // if
+    std::vector<ProjectKernels> kernels(2);
+    kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelDerivedCauchyStress(coordsys));
+
+    const int spaceDim = coordsys->spaceDim();
+    const PetscPointFunc strainKernel =
+        (3 == spaceDim) ? pylith::fekernels::Elasticity3D::cauchy_strain :
+        (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::cauchy_strain :
+        NULL;
+    kernels[1] = ProjectKernels("cauchy_strain", strainKernel);
 
     assert(integrator);
     integrator->setKernelsDerivedField(kernels);

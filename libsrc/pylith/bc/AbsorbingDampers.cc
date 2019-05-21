@@ -194,7 +194,7 @@ pylith::bc::AbsorbingDampers::createDerivedField(const pylith::topology::Field& 
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get auxiliary factory associated with physics.
+// Get auxiliary field factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
 pylith::bc::AbsorbingDampers::_getAuxiliaryFactory(void) {
     return _auxiliaryFactory;

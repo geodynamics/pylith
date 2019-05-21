@@ -43,6 +43,7 @@ nobase_pkgpyexec_PYTHON = \
 	materials/Material.py \
 	materials/Elasticity.py \
 	materials/AuxSubfieldsElasticity.py \
+	materials/DerivedSubfieldsElasticity.py \
 	materials/RheologyElasticity.py \
 	materials/IsotropicLinearElasticity.py \
 	materials/IsotropicLinearMaxwell.py \
@@ -102,7 +103,7 @@ nobase_pkgpyexec_PYTHON = \
 	topology/Mesh.py \
 	topology/Field.py \
 	topology/Fields.py \
-	topology/AuxSubfield.py \
+	topology/Subfield.py \
 	topology/MeshGenerator.py \
 	topology/MeshImporter.py \
 	topology/MeshImporterDist.py \

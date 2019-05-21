@@ -40,11 +40,11 @@ namespace pylith {
 
         class FieldBase;
         class Field;
-        class AuxiliaryField;
         class Fields;
         class VecVisitorMesh;
         class VecVisitorSubmesh;
 
+        class FieldFactory;
         class FieldOps;
         class FieldTester;
         class FieldQuery;

@@ -37,7 +37,7 @@ public:
     KinSrcAuxiliaryFactory(void);
 
     /// Destructor.
-    ~KinSrcAuxiliaryFactory(void);
+    virtual ~KinSrcAuxiliaryFactory(void);
 
     /// Add slip initiation time (relative to origin time) subfield to auxiliary fields.
     void addInitiationTime(void);

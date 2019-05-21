@@ -37,7 +37,7 @@ public:
     AbsorbingDampersAuxiliaryFactory(void);
 
     /// Destructor.
-    ~AbsorbingDampersAuxiliaryFactory(void);
+    virtual ~AbsorbingDampersAuxiliaryFactory(void);
 
     /// Add density field to auxiliary fields.
     void addDensity(void);

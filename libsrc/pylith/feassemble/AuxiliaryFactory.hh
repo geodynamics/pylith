@@ -25,7 +25,7 @@
 #define pylith_feassemble_auxiliaryfactory_hh
 
 #include "feassemblefwd.hh" // forward declarations
-#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
+#include "pylith/topology/FieldFactory.hh" // ISA FieldFactory
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Discretization
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery::queryfn_type
@@ -33,7 +33,7 @@
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 #include "spatialdata/units/unitsfwd.hh" // HOLDSA Normalizer
 
-class pylith::feassemble::AuxiliaryFactory : public pylith::utils::GenericComponent {
+class pylith::feassemble::AuxiliaryFactory : public pylith::topology::FieldFactory {
     friend class TestAuxiliaryFactory; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ public:
     AuxiliaryFactory(void);
 
     /// Destructor.
-    ~AuxiliaryFactory(void);
+    virtual ~AuxiliaryFactory(void);
 
     /** Set spatial database for filling auxiliary subfields.
      *
@@ -56,30 +56,6 @@ public:
      * @returns Pointer to database.
      */
     const spatialdata::spatialdb::SpatialDB* getQueryDB(void) const;
-
-    /** Set discretization information for auxiliary subfield.
-     *
-     * @param[in] subfieldName Name of auxiliary subfield.
-     * @param[in] basisOrder Polynomial order for basis.
-     * @param[in] quadOrder Order of quadrature rule.
-     * @param[in] dimension Dimension of points for discretization.
-     * @param[in] isBasisContinuous True if basis is continuous.
-     * @param[in] feSpace Finite-element space.
-     */
-    void setSubfieldDiscretization(const char* subfieldName,
-                                   const int basisOrder,
-                                   const int quadOrder,
-                                   const int dimension,
-                                   const bool isBasisContinuous,
-                                   const pylith::topology::FieldBase::SpaceEnum feSpace);
-
-    /** Get discretization information for subfield.
-     *
-     * @param[in] subfieldName Name of subfield.
-     * @return Discretization information for auxiliary subfield. If
-     * discretization information was not set, then use "default".
-     */
-    const pylith::topology::FieldBase::Discretization& getSubfieldDiscretization(const char* subfieldName) const;
 
     /** Initialize factory for setting up auxiliary subfields.
      *
@@ -112,16 +88,10 @@ protected:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::topology::Field* _field; ///< Auxiliary field.
-    pylith::topology::FieldBase::discretizations_map _subfieldDiscretizations; ///< Discretization for each subfield.
-    pylith::topology::FieldBase::Description* _defaultDescription; ///< Description for default subfield.
-    spatialdata::units::Nondimensional* _normalizer; ///< Scales for nondimensionalization.
-    int _spaceDim; ///< Spatial dimension.
-
     /** Database of values for filling subfields.
      * Auxiliary subfields are not filled if NULL.
      *
-     * Currently, this is the only way to fill subfields.
+     * Currently, this is the only way to populate the auxiliary subfields.
      */
     spatialdata::spatialdb::SpatialDB* _queryDB;
 

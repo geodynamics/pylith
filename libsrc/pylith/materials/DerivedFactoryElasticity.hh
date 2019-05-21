@@ -25,9 +25,9 @@
 #define pylith_materials_derivedfactoryelasticity_hh
 
 #include "materialsfwd.hh" // forward declarations
-#include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
+#include "pylith/topology/FieldFactory.hh" // ISA AuxiliaryFactory
 
-class pylith::materials::DerivedFactoryElasticity : public pylith::feassemble::AuxiliaryFactory {
+class pylith::materials::DerivedFactoryElasticity : public pylith::topology::FieldFactory {
     friend class TestDerivedFactoryElasticity; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,13 +37,16 @@ public:
     DerivedFactoryElasticity(void);
 
     /// Destructor.
-    ~DerivedFactoryElasticity(void);
+    virtual ~DerivedFactoryElasticity(void);
 
     /// Add Cauchy stress subfield to derived field.
     void addCauchyStress(void);
 
     /// Add Cauchy (infinitesimal) strain subfield to derived field.
     void addCauchyStrain(void);
+
+    /// Add subfields using discretizations provided.
+    void addSubfields(void);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

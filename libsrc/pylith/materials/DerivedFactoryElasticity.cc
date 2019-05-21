@@ -47,7 +47,7 @@ pylith::materials::DerivedFactoryElasticity::addCauchyStress(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addCauchyStress(void)");
 
-    const char* fieldName = "stress";
+    const char* fieldName = "cauchy_stress";
     const char* componentNames[6] = { "stress_xx", "stress_yy", "stress_zz", "stress_xy", "stress_yz", "stress_xz" };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
     const PylithReal pressureScale = _normalizer->pressureScale();
@@ -77,7 +77,7 @@ pylith::materials::DerivedFactoryElasticity::addCauchyStrain(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addCauchyStrain(void)");
 
-    const char* fieldName = "strain";
+    const char* fieldName = "cauchy_strain";
     const char* componentNames[6] = { "strain_xx", "strain_yy", "strain_zz", "strain_xy", "strain_yz", "strain_xz" };
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
 
@@ -97,6 +97,25 @@ pylith::materials::DerivedFactoryElasticity::addCauchyStrain(void) {
 
     PYLITH_METHOD_END;
 } // addCauchyStrain
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Add subfields using discretizations provided.
+void
+pylith::materials::DerivedFactoryElasticity::addSubfields(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("addSubfields(void)");
+
+    if (_subfieldDiscretizations.find("cauchy_stress") != _subfieldDiscretizations.end()) {
+        addCauchyStress();
+    } // if
+    if (_subfieldDiscretizations.find("cauchy_strain") != _subfieldDiscretizations.end()) {
+        addCauchyStrain();
+    } // if
+
+    PYLITH_METHOD_END;
+
+}
 
 
 // End of file

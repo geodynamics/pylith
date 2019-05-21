@@ -122,13 +122,14 @@ libpylith_la_SOURCES = \
 	problems/InitialCondition.cc \
 	problems/InitialConditionDomain.cc \
 	problems/InitialConditionPatch.cc \
-	topology/FieldBase.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
+	topology/FieldBase.cc \
 	topology/Field.cc \
+	topology/Fields.cc \
+	topology/FieldFactory.cc \
 	topology/FieldOps.cc \
 	topology/FieldQuery.cc \
-	topology/Fields.cc \
 	topology/Distributor.cc \
 	topology/ReverseCuthillMcKee.cc \
 	topology/RefineUniform.cc \

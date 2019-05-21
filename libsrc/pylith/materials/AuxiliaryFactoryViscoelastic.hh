@@ -38,7 +38,7 @@ public:
     AuxiliaryFactoryViscoelastic(void);
 
     /// Destructor.
-    ~AuxiliaryFactoryViscoelastic(void);
+    virtual ~AuxiliaryFactoryViscoelastic(void);
 
     /// Add Maxwell time subfield to auxiliary subfields.
     void addMaxwellTime(void);
