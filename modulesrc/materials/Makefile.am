@@ -33,6 +33,7 @@ swig_sources = \
 	IsotropicLinearElasticity.i \
 	IsotropicLinearMaxwell.i \
 	IsotropicLinearGenMaxwell.i \
+	IncompressibleElasticity.i \
 	RheologyIncompressibleElasticity.i \
 	IsotropicLinearIncompElasticity.i \
 	../utils/PyreComponent.i

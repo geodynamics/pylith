@@ -55,6 +55,14 @@ class RheologyIncompressibleElasticity(PetscComponent, ModuleRheology):
             self._info.log("Performing minimal initialization of incompressible elasticity rheology '%s'." %
                            self.aliases[-1])
 
+        self._createModuleObj()
+        return
+
+    def addAuxiliarySubfields(self, material):
+        for subfield in self.auxiliarySubfields.components():
+            fieldName = subfield.aliases[-1]
+            material.setAuxiliarySubfieldDiscretization(fieldName, subfield.basisOrder, subfield.quadOrder,
+                                                        subfield.dimension, subfield.isBasisContinuous, subfield.feSpace)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

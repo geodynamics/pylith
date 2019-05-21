@@ -50,6 +50,7 @@ nobase_pkgpyexec_PYTHON = \
 	materials/AuxSubfieldsIsotropicLinearElasticity.py \
 	materials/AuxSubfieldsIsotropicLinearMaxwell.py \
 	materials/AuxSubfieldsIsotropicLinearGenMaxwell.py \
+	materials/IncompressibleElasticity.py \
 	materials/RheologyIncompressibleElasticity.py \
 	materials/IsotropicLinearIncompElasticity.py \
 	meshio/__init__.py \
