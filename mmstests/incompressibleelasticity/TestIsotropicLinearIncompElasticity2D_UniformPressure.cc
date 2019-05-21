@@ -85,15 +85,6 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure :
 
     // Solution subfields.
 
-    static double pressure(const double x,
-                           const double y) {
-        return 5.0;
-    } // pressure
-
-    static const char* pressure_units(void) {
-        return "MPa";
-    } // pressure_units
-
     // Displacement
     static double disp_x(const double x,
                          const double y) {
@@ -108,6 +99,16 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure :
     static const char* disp_units(void) {
         return "m";
     } // disp_units
+
+    // Pressure
+    static double pressure(const double x,
+                           const double y) {
+        return 5.0;
+    } // pressure
+
+    static const char* pressure_units(void) {
+        return "MPa";
+    } // pressure_units
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
                                           PetscReal t,
