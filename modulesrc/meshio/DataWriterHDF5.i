@@ -23,99 +23,85 @@
  */
 
 namespace pylith {
-  namespace meshio {
+    namespace meshio {
+        class pylith::meshio::DataWriterHDF5 : public DataWriter {
+            // PUBLIC METHODS /////////////////////////////////////////////////
+public:
 
-    class pylith::meshio::DataWriterHDF5 : public DataWriter
-    { // DataWriterHDF5
+            /// Constructor
+            DataWriterHDF5(void);
 
-      // PUBLIC METHODS /////////////////////////////////////////////////
-    public :
+            /// Destructor
+            ~DataWriterHDF5(void);
 
-      /// Constructor
-      DataWriterHDF5(void);
+            /** Make copy of this object.
+             *
+             * @returns Copy of this.
+             */
+            DataWriter* clone(void) const;
 
-      /// Destructor
-      ~DataWriterHDF5(void);
+            /// Deallocate PETSc and local data structures.
+            void deallocate(void);
 
-      /** Make copy of this object.
-       *
-       * @returns Copy of this.
-       */
-      DataWriter* clone(void) const;
+            /** Set filename for HDF5 file.
+             *
+             * @param filename Name of HDF5 file.
+             */
+            void filename(const char* filename);
 
-      /// Deallocate PETSc and local data structures.
-      void deallocate(void);
+            /** Generate filename for HDF5 file.
+             *
+             * Appends _info if only writing parameters.
+             *
+             * :KLUDGE: We should separate generating "info" files from the
+             * DataWriter interface.
+             *
+             * @returns String for HDF5 filename.
+             */
+            std::string hdf5Filename(void) const;
 
-      /** Set filename for HDF5 file.
-       *
-       * @param filename Name of HDF5 file.
-       */
-      void filename(const char* filename);
-      
-      /** Generate filename for HDF5 file.
-       *
-       * Appends _info if only writing parameters.
-       *
-       * :KLUDGE: We should separate generating "info" files from the
-       * DataWriter interface.
-       *
-       * @returns String for HDF5 filename.
-       */
-       std::string hdf5Filename(void) const;
+            /** Open output file.
+             *
+             * @param mesh Finite-element mesh.
+             * @param isInfo True if only writing info values.
+             */
+            void open(const pylith::topology::Mesh& mesh,
+                      const bool isInfo);
 
-      /** Open output file.
-       *
-       * @param mesh Finite-element mesh.
-       * @param isInfo True if only writing info values.
-       * @param label Name of label defining cells to include in output
-       *   (=0 means use all cells in mesh).
-       * @param labelId Value of label defining which cells to include.
-       */
-      void open(const pylith::topology::Mesh& mesh,
-		const bool isInfo,
-		const char* label =0,
-		const int labelId =0);
+            /// Close output files.
+            void close(void);
 
-      /// Close output files.
-      void close(void);
+            /** Write field over vertices to file.
+             *
+             * @param t Time associated with field.
+             * @param field Field over vertices.
+             * @param mesh Mesh for output.
+             */
+            void writeVertexField(const PylithScalar t,
+                                  pylith::topology::Field& field,
+                                  const pylith::topology::Mesh& mesh);
 
-      /** Write field over vertices to file.
-       *
-       * @param t Time associated with field.
-       * @param field Field over vertices.
-       * @param mesh Mesh for output.
-       */
-      void writeVertexField(const PylithScalar t,
-			    pylith::topology::Field& field,
-			    const pylith::topology::Mesh& mesh);
+            /** Write field over cells to file.
+             *
+             * @param t Time associated with field.
+             * @param field Field over cells.
+             */
+            void writeCellField(const PylithScalar t,
+                                pylith::topology::Field& field);
 
-      /** Write field over cells to file.
-       *
-       * @param t Time associated with field.
-       * @param field Field over cells.
-       * @param label Name of label defining cells to include in output
-       *   (=0 means use all cells in mesh).
-       * @param labelId Value of label defining which cells to include.
-       */
-      void writeCellField(const PylithScalar t,
-			  pylith::topology::Field& field,
-			  const char* label =0,
-			  const int labelId =0);
+            /** Write dataset with names of points to file.
+             *
+             * @param names Array with name for each point, e.g., station name.
+             * @param mesh Finite-element mesh.
+             *
+             * Primarily used with OutputSolnPoints.
+             */
+            void writePointNames(const pylith::string_vector& names,
+                                 const pylith::topology::Mesh& mesh);
 
-      /** Write dataset with names of points to file.
-       *
-       * @param names Array with name for each point, e.g., station name.
-       * @param mesh Finite-element mesh.
-       *
-       * Primarily used with OutputSolnPoints.
-       */
-      void writePointNames(const pylith::string_vector& names,
-			   const pylith::topology::Mesh& mesh);
+        }; // DataWriterHDF5
 
-    }; // DataWriterHDF5
-
-  } // meshio
+    } // meshio
 } // pylith
-
 
 // End of file

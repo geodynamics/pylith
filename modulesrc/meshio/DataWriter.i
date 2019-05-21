@@ -23,114 +23,100 @@
  */
 
 namespace pylith {
-  namespace meshio {
+    namespace meshio {
+        class pylith::meshio::DataWriter { // DataWriter
+                                           // PUBLIC METHODS /////////////////////////////////////////////////
+public:
 
-    class pylith::meshio::DataWriter
-    { // DataWriter
+            /// Constructor
+            DataWriter(void);
 
-      // PUBLIC METHODS /////////////////////////////////////////////////
-    public :
+            /// Destructor
+            virtual ~DataWriter(void);
 
-      /// Constructor
-      DataWriter(void);
+            /** Make copy of this object.
+             *
+             * @returns Copy of this.
+             */
+            virtual
+            DataWriter* clone(void) const = 0;
 
-      /// Destructor
-      virtual
-      ~DataWriter(void);
+            /// Deallocate PETSc and local data structures.
+            virtual
+            void deallocate(void);
 
-      /** Make copy of this object.
-       *
-       * @returns Copy of this.
-       */
-      virtual
-      DataWriter* clone(void) const = 0;
+            /** Set time scale for simulation time.
+             *
+             * @param value Time scale
+             */
+            void timeScale(const PylithScalar value);
 
-      /// Deallocate PETSc and local data structures.
-      virtual
-      void deallocate(void);
+            /** Is data writer open, i.e., ready for openTimeStep()/closeTimeStep()?
+             *
+             * @returns True if data writer is open, false otherwise.
+             */
+            bool isOpen(void) const;
 
-      /** Set time scale for simulation time.
-       *
-       * @param value Time scale
-       */
-      void timeScale(const PylithScalar value);
+            /** Prepare for writing files.
+             *
+             * @param mesh Finite-element mesh.
+             * @param isInfo True if only writing info values.
+             */
+            virtual
+            void open(const pylith::topology::Mesh& mesh,
+                      const bool isInfo);
 
-      /** Prepare for writing files.
-       *
-       * @param mesh Finite-element mesh.
-       * @param isInfo True if only writing info values.
-       * @param label Name of label defining cells to include in output
-       *   (=0 means use all cells in mesh).
-       * @param labelId Value of label defining which cells to include.
-       */
-      virtual
-      void open(const pylith::topology::Mesh& mesh,
-		const bool isInfo,
-		const char* label =0,
-		const int labelId =0);
+            /// Close output files.
+            virtual
+            void close(void);
 
-      /// Close output files.
-      virtual
-      void close(void);
+            /** Prepare file for data at a new time step.
+             *
+             * @param t Time stamp for new data
+             * @param mesh PETSc mesh object
+             */
+            virtual
+            void openTimeStep(const PylithScalar t,
+                              const pylith::topology::Mesh& mesh);
 
-      /** Prepare file for data at a new time step.
-       *
-       * @param t Time stamp for new data
-       * @param mesh PETSc mesh object
-       * @param label Name of label defining cells to include in output
-       *   (=0 means use all cells in mesh).
-       * @param labelId Value of label defining which cells to include.
-       */
-      virtual
-      void openTimeStep(const PylithScalar t,
-			const pylith::topology::Mesh& mesh,
-			const char* label =0,
-			const int labelId =0);
+            /// Cleanup after writing data for a time step.
+            virtual
+            void closeTimeStep(void);
 
-      /// Cleanup after writing data for a time step.
-      virtual
-      void closeTimeStep(void);
+            /** Write field over vertices to file.
+             *
+             * @param t Time associated with field.
+             * @param field Field over vertices.
+             * @param mesh Mesh for output.
+             */
+            virtual
+            void writeVertexField(const PylithScalar t,
+                                  pylith::topology::Field& field,
+                                  const pylith::topology::Mesh& mesh) = 0;
 
-      /** Write field over vertices to file.
-       *
-       * @param t Time associated with field.
-       * @param field Field over vertices.
-       * @param mesh Mesh for output.
-       */
-      virtual
-      void writeVertexField(const PylithScalar t,
-			    pylith::topology::Field& field,
-			    const pylith::topology::Mesh& mesh) = 0;
+            /** Write field over cells to file.
+             *
+             * @param t Time associated with field.
+             * @param field Field over cells.
+             */
+            virtual
+            void writeCellField(const PylithScalar t,
+                                pylith::topology::Field& field) = 0;
 
-      /** Write field over cells to file.
-       *
-       * @param t Time associated with field.
-       * @param field Field over cells.
-       * @param label Name of label defining cells to include in output
-       *   (=0 means use all cells in mesh).
-       * @param labelId Value of label defining which cells to include.
-       */
-      virtual
-      void writeCellField(const PylithScalar t,
-			  pylith::topology::Field& field,
-			  const char* label =0,
-			  const int labelId =0) = 0;
+            /** Write dataset with names of points to file.
+             *
+             * @param names Array with name for each point, e.g., station name.
+             * @param mesh Finite-element mesh.
+             *
+             * Primarily used with OutputSolnPoints.
+             */
+            virtual
+            void writePointNames(const pylith::string_vector& names,
+                                 const pylith::topology::Mesh& mesh);
 
-      /** Write dataset with names of points to file.
-       *
-       * @param names Array with name for each point, e.g., station name.
-       * @param mesh Finite-element mesh.
-       *
-       * Primarily used with OutputSolnPoints.
-       */
-      virtual
-      void writePointNames(const pylith::string_vector& names,
-			   const pylith::topology::Mesh& mesh);
+        }; // DataWriter
 
-    }; // DataWriter
-
-  } // meshio
+    } // meshio
 } // pylith
-
 
 // End of file

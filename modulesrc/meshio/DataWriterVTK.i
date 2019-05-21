@@ -23,115 +23,96 @@
  */
 
 namespace pylith {
-  namespace meshio {
+    namespace meshio {
+        class pylith::meshio::DataWriterVTK : public DataWriter {
+            // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
 
-    class pylith::meshio::DataWriterVTK : public DataWriter
-    { // DataWriterVTK
+            /// Constructor
+            DataWriterVTK(void);
 
-      // PUBLIC METHODS /////////////////////////////////////////////////
-    public :
+            /// Destructor
+            ~DataWriterVTK(void);
 
-      /// Constructor
-      DataWriterVTK(void);
+            /** Make copy of this object.
+             *
+             * @returns Copy of this.
+             */
+            DataWriter* clone(void) const;
 
-      /// Destructor
-      ~DataWriterVTK(void);
+            /// Deallocate PETSc and local data structures.
+            void deallocate(void);
 
-      /** Make copy of this object.
-       *
-       * @returns Copy of this.
-       */
-      DataWriter* clone(void) const;
+            /** Set filename for VTK file.
+             *
+             * @param filename Name of VTK file.
+             */
+            void filename(const char* filename);
 
-      /// Deallocate PETSc and local data structures.
-      void deallocate(void);
+            /** Set time format for time stamp in name of VTK file.
+             *
+             * @param format C style time format for filename.
+             */
+            void timeFormat(const char* format);
 
-      /** Set filename for VTK file.
-       *
-       * @param filename Name of VTK file.
-       */
-      void filename(const char* filename);
+            /** Set value used to normalize time stamp in name of VTK file.
+             *
+             * Time stamp is divided by this value (time in seconds).
+             *
+             * @param value Value (time in seconds) used to normalize time stamp in
+             * filename.
+             */
+            void timeConstant(const PylithScalar value);
 
-      /** Set time format for time stamp in name of VTK file.
-       *
-       * @param format C style time format for filename.
-       */
-      void timeFormat(const char* format);
+            /** Set precision of floating point values in output.
+             *
+             * @param value Precision for floating point values.
+             */
+            void precision(const int value);
 
-      /** Set value used to normalize time stamp in name of VTK file.
-       *
-       * Time stamp is divided by this value (time in seconds).
-       *
-       * @param value Value (time in seconds) used to normalize time stamp in
-       * filename.
-       */
-      void timeConstant(const PylithScalar value);
+            /** Prepare for writing files.
+             *
+             * @param mesh Finite-element mesh.
+             * @param isInfo True if only writing info values.
+             */
+            void open(const pylith::topology::Mesh& mesh,
+                      const bool isInfo);
 
-      /** Set precision of floating point values in output.
-       *
-       * @param value Precision for floating point values.
-       */
-      void precision(const int value);
+            /// Close output files.
+            void close(void);
 
-      /** Prepare for writing files.
-       *
-       * @param mesh Finite-element mesh.
-       * @param isInfo True if only writing info values.
-       * @param label Name of label defining cells to include in output
-       *   (=0 means use all cells in mesh).
-       * @param labelId Value of label defining which cells to include.
-       */
-      void open(const pylith::topology::Mesh& mesh,
-		const bool isInfo,
-		const char* label =0,
-		const int labelId =0);
+            /** Prepare file for data at a new time step.
+             *
+             * @param t Time stamp for new data
+             * @param mesh Finite-element mesh.
+             */
+            void openTimeStep(const PylithScalar t,
+                              const pylith::topology::Mesh& mesh);
 
-      /// Close output files.
-      void close(void);
+            /// Cleanup after writing data for a time step.
+            void closeTimeStep(void);
 
-      /** Prepare file for data at a new time step.
-       *
-       * @param t Time stamp for new data
-       * @param mesh Finite-element mesh.
-       * @param label Name of label defining cells to include in output
-       *   (=0 means use all cells in mesh).
-       * @param labelId Value of label defining which cells to include.
-       */
-      void openTimeStep(const PylithScalar t,
-			const pylith::topology::Mesh& mesh,
-			const char* label =0,
-			const int labelId =0);
+            /** Write field over vertices to file.
+             *
+             * @param t Time associated with field.
+             * @param field Field over vertices.
+             * @param mesh Mesh for output.
+             */
+            void writeVertexField(const PylithScalar t,
+                                  pylith::topology::Field& field,
+                                  const pylith::topology::Mesh& mesh);
 
-      /// Cleanup after writing data for a time step.
-      void closeTimeStep(void);
+            /** Write field over cells to file.
+             *
+             * @param t Time associated with field.
+             * @param field Field over cells.
+             */
+            void writeCellField(const PylithScalar t,
+                                pylith::topology::Field& field);
 
-      /** Write field over vertices to file.
-       *
-       * @param t Time associated with field.
-       * @param field Field over vertices.
-       * @param mesh Mesh for output.
-       */
-      void writeVertexField(const PylithScalar t,
-			    pylith::topology::Field& field,
-			    const pylith::topology::Mesh& mesh);
+        }; // DataWriterVTK
 
-      /** Write field over cells to file.
-       *
-       * @param t Time associated with field.
-       * @param field Field over cells.
-       * @param label Name of label defining cells to include in output
-       *   (=0 means use all cells in mesh).
-       * @param labelId Value of label defining which cells to include.
-       */
-      void writeCellField(const PylithScalar t,
-			  pylith::topology::Field& field,
-			  const char* label =0,
-			  const int labelId =0);
-
-    }; // DataWriterVTK
-
-  } // meshio
+    } // meshio
 } // pylith
-
 
 // End of file
