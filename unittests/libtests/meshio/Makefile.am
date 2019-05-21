@@ -9,12 +9,11 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2017 University of California, Davis
+# Copyright (c) 2010-2019 University of California, Davis
 #
 # See COPYING for license information.
 #
 # ----------------------------------------------------------------------
-#
 
 subpackage = meshio
 include $(top_srcdir)/subpackage.am
@@ -22,55 +21,52 @@ include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
-TESTS = testmeshio
+TESTS = testmeshio testvtk
 
-check_PROGRAMS = testmeshio
+check_PROGRAMS = testmeshio testvtk
 
-# Primary source files
+# general meshio
 testmeshio_SOURCES = \
+	test_meshio.cc \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
 	TestMeshIOAscii_Cases.cc \
 	TestMeshIOLagrit.cc \
 	TestMeshIOLagrit_Cases.cc \
 	TestOutputTriggerStep.cc \
-	TestOutputTriggerTime.cc \
+	TestOutputTriggerTime.cc
+
+# :TODO: @brad
+#TestFieldFilterProject.cc
+#TestFieldFilterNone.cc
+
+# VTK data writer
+testvtk_SOURCES = \
+	test_meshio.cc \
 	FieldFactory.cc \
 	TestDataWriter.cc \
 	TestDataWriterMesh.cc \
+	TestDataWriterMaterial.cc \
+	TestDataWriterSubmesh.cc \
 	TestDataWriterVTK.cc \
 	TestDataWriterVTKMesh.cc \
 	TestDataWriterVTKMesh_Cases.cc \
-	TestDataWriterMaterial.cc \
 	TestDataWriterVTKMaterial.cc \
 	TestDataWriterVTKMaterial_Cases.cc \
-	TestDataWriterSubMesh.cc \
-	TestDataWriterVTKSubMesh.cc \
-	TestDataWriterVTKSubMesh_Cases.cc \
-	test_meshio.cc
+	TestDataWriterVTKSubmesh.cc \
+	TestDataWriterVTKSubmesh_Cases.cc
 
-
-#TestCellFilterAvg.cc \
-#TestVertexFilterVecNorm.cc
-
-#TestDataWriterSubMesh.cc \
-#TestDataWriterBCMesh.cc \
-# TestDataWriterVTKSubMesh.cc \
-# TestDataWriterVTKSubMeshCases.cc \
-# TestDataWriterVTKBCMesh.cc \
-# TestDataWriterVTKBCMeshCases.cc \
+# :TODO: @brad
 # TestDataWriterPoints.cc \
 # TestDataWriterVTKPoints.cc \
-# TestDataWriterVTKPointsCases.cc \
+# TestDataWriterVTKPoints_Cases.cc \
 # TestDataWriterFaultMesh.cc \
 # TestDataWriterVTKFaultMesh.cc \
-# TestDataWriterVTKFaultMeshCases.cc \
-# TestOutputManager.cc \
-# TestOutputSolnSubset.cc \
-# TestOutputSolnPoints.cc \
-# test_meshio.cc
-
-
+# TestDataWriterVTKFaultMesh_Cases.cc \
+# TestOutputObserver.cc \
+# TestOutputSolnDomain.cc \
+# TestOutputSolnBoundary.cc \
+# TestOutputSolnPoints.cc 
 
 
 noinst_HEADERS = \
@@ -86,109 +82,19 @@ noinst_HEADERS = \
 	TestVertexFilterVecNorm.hh \
 	TestDataWriter.hh \
 	TestDataWriterMesh.hh \
+	TestDataWriterMaterial.hh \
+	TestDataWriterSubmesh.hh \
 	TestDataWriterVTK.hh \
 	TestDataWriterVTKMesh.hh \
-	TestDataWriterMaterial.hh \
 	TestDataWriterVTKMaterial.hh \
-	TestDataWriterSubMesh.hh \
-	TestDataWriterVTKSubMesh.hh
+	TestDataWriterVTKSubmesh.hh
 
-# TestDataWriterSubMesh.hh \
-# TestDataWriterBCMesh.hh \
-# TestDataWriterFaultMesh.hh \
-# TestDataWriterVTKMeshCases.hh \
-# TestDataWriterVTKSubMesh.hh \
-# TestDataWriterVTKSubMeshCases.hh \
-# TestDataWriterVTKFaultMesh.hh \
-# TestDataWriterVTKFaultMeshCases.hh \
-# TestDataWriterVTKBCMesh.hh \
-# TestDataWriterVTKBCMeshCases.hh \
+# :TODO: @brad
 # TestDataWriterPoints.hh \
-# TestDataWriterVTKPoints.hh \
-# TestDataWriterVTKPointsCases.hh
+# TestDataWriterVTKPoints.hh
+# TestDataWriterFaultMesh.hh \
+# TestDataWriterVTKFaultMesh.hh
 
-
-
-# Source files associated with testing data
-# testmeshio_SOURCES += \
-# 	data/DataWriterVTKDataSubMeshTri3.cc \
-# 	data/DataWriterVTKDataSubMeshQuad4.cc \
-# 	data/DataWriterVTKDataSubMeshTet4.cc \
-# 	data/DataWriterVTKDataSubMeshHex8.cc \
-# 	data/DataWriterVTKDataFaultMeshTri3.cc \
-# 	data/DataWriterVTKDataFaultMeshQuad4.cc \
-# 	data/DataWriterVTKDataFaultMeshTet4.cc \
-# 	data/DataWriterVTKDataFaultMeshHex8.cc \
-# 	data/DataWriterVTKDataBCMeshTri3.cc \
-# 	data/DataWriterVTKDataBCMeshQuad4.cc \
-# 	data/DataWriterVTKDataBCMeshTet4.cc \
-# 	data/DataWriterVTKDataBCMeshHex8.cc \
-# 	data/DataWriterHDF5DataSubMeshTri3.cc \
-# 	data/DataWriterHDF5DataSubMeshQuad4.cc \
-# 	data/DataWriterHDF5DataSubMeshTet4.cc \
-# 	data/DataWriterHDF5DataSubMeshHex8.cc \
-# 	data/DataWriterHDF5DataBCMeshTri3.cc \
-# 	data/DataWriterHDF5DataBCMeshQuad4.cc \
-# 	data/DataWriterHDF5DataBCMeshTet4.cc \
-# 	data/DataWriterHDF5DataBCMeshHex8.cc \
-# 	data/DataWriterHDF5DataFaultMeshTri3.cc \
-# 	data/DataWriterHDF5DataFaultMeshQuad4.cc \
-# 	data/DataWriterHDF5DataFaultMeshTet4.cc \
-# 	data/DataWriterHDF5DataFaultMeshHex8.cc \
-# 	data/OutputSolnPointsData.cc \
-# 	data/OutputSolnPointsDataTri3.cc \
-# 	data/OutputSolnPointsDataQuad4.cc \
-# 	data/OutputSolnPointsDataTet4.cc \
-# 	data/OutputSolnPointsDataHex8.cc \
-# 	data/DataWriterDataPoints.cc \
-# 	data/DataWriterVTKDataPointsTri3.cc \
-# 	data/DataWriterVTKDataPointsQuad4.cc \
-# 	data/DataWriterVTKDataPointsTet4.cc \
-# 	data/DataWriterVTKDataPointsHex8.cc \
-# 	data/DataWriterHDF5DataPointsTri3.cc \
-# 	data/DataWriterHDF5DataPointsQuad4.cc \
-# 	data/DataWriterHDF5DataPointsTet4.cc \
-# 	data/DataWriterHDF5DataPointsHex8.cc
-
-# noinst_HEADERS += \
-# 	data/DataWriterVTKDataSubMeshTri3.hh \
-# 	data/DataWriterVTKDataSubMeshQuad4.hh \
-# 	data/DataWriterVTKDataSubMeshTet4.hh \
-# 	data/DataWriterVTKDataSubMeshHex8.hh \
-# 	data/DataWriterVTKDataFaultMeshTri3.hh \
-# 	data/DataWriterVTKDataFaultMeshQuad4.hh \
-# 	data/DataWriterVTKDataFaultMeshTet4.hh \
-# 	data/DataWriterVTKDataFaultMeshHex8.hh \
-# 	data/DataWriterVTKDataBCMeshTri3.hh \
-# 	data/DataWriterVTKDataBCMeshQuad4.hh \
-# 	data/DataWriterVTKDataBCMeshTet4.hh \
-# 	data/DataWriterVTKDataBCMeshHex8.hh \
-# 	data/DataWriterHDF5DataSubMeshTri3.hh \
-# 	data/DataWriterHDF5DataSubMeshQuad4.hh \
-# 	data/DataWriterHDF5DataSubMeshTet4.hh \
-# 	data/DataWriterHDF5DataSubMeshHex8.hh \
-# 	data/DataWriterHDF5DataBCMeshTri3.hh \
-# 	data/DataWriterHDF5DataBCMeshQuad4.hh \
-# 	data/DataWriterHDF5DataBCMeshTet4.hh \
-# 	data/DataWriterHDF5DataBCMeshHex8.hh \
-# 	data/DataWriterHDF5DataFaultMeshTri3.hh \
-# 	data/DataWriterHDF5DataFaultMeshQuad4.hh \
-# 	data/DataWriterHDF5DataFaultMeshTet4.hh \
-# 	data/DataWriterHDF5DataFaultMeshHex8.hh \
-# 	data/OutputSolnPointsData.hh \
-# 	data/OutputSolnPointsDataTri3.hh \
-# 	data/OutputSolnPointsDataQuad4.hh \
-# 	data/OutputSolnPointsDataTet4.hh \
-# 	data/OutputSolnPointsDataHex8.hh \
-# 	data/DataWriterDataPoints.hh \
-# 	data/DataWriterVTKDataPointsTri3.hh \
-# 	data/DataWriterVTKDataPointsQuad4.hh \
-# 	data/DataWriterVTKDataPointsTet4.hh \
-# 	data/DataWriterVTKDataPointsHex8.hh \
-# 	data/DataWriterHDF5DataPointsTri3.hh \
-# 	data/DataWriterHDF5DataPointsQuad4.hh \
-# 	data/DataWriterHDF5DataPointsTet4.hh \
-# 	data/DataWriterHDF5DataPointsHex8.hh
 
 AM_CPPFLAGS += \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES) \
@@ -203,6 +109,15 @@ testmeshio_LDADD = \
 	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
+testvtk_LDFLAGS = \
+	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+
+testvtk_LDADD = \
+	-lcppunit -ldl \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
+	-lspatialdata \
+	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+
 if ENABLE_CUBIT
   testmeshio_SOURCES += \
 	TestExodusII.cc \
@@ -212,35 +127,44 @@ if ENABLE_CUBIT
 	TestExodusII.hh \
 	TestMeshIOCubit.hh
   testmeshio_LDADD += -lnetcdf
+  testvtk_LDADD += -lnetcdf
 endif
 
 if ENABLE_HDF5
-  testmeshio_SOURCES += \
+  TESTS += testhdf5
+
+  check_PROGRAMS += testhdf5
+
+  # HDF5 data writer
+  testhdf5_SOURCES = \
+	test_meshio.cc \
+	FieldFactory.cc \
+	TestDataWriter.cc \
+	TestDataWriterMesh.cc \
+	TestDataWriterMaterial.cc \
+	TestDataWriterSubmesh.cc \
 	TestHDF5.cc \
 	TestDataWriterHDF5.cc \
 	TestDataWriterHDF5Mesh.cc \
 	TestDataWriterHDF5Mesh_Cases.cc \
 	TestDataWriterHDF5Material.cc \
 	TestDataWriterHDF5Material_Cases.cc \
+	TestDataWriterHDF5Submesh.cc \
+	TestDataWriterHDF5Submesh_Cases.cc \
 	TestDataWriterHDF5ExtMesh.cc \
 	TestDataWriterHDF5ExtMesh_Cases.cc \
 	TestDataWriterHDF5ExtMaterial.cc \
-	TestDataWriterHDF5ExtMaterial_Cases.cc
+	TestDataWriterHDF5ExtMaterial_Cases.cc \
+	TestDataWriterHDF5ExtSubmesh.cc \
+	TestDataWriterHDF5ExtSubmesh_Cases.cc
 
-# TestDataWriterHDF5SubMesh.cc \
-# TestDataWriterHDF5SubMeshCases.cc \
+
 # TestDataWriterHDF5Points.cc \
-# TestDataWriterHDF5PointsCases.cc \
-# TestDataWriterHDF5BCMesh.cc \
-# TestDataWriterHDF5BCMeshCases.cc \
+# TestDataWriterHDF5Point_Cases.cc \
 # TestDataWriterHDF5FaultMesh.cc \
 # TestDataWriterHDF5FaultMeshCases.cc \
-# TestDataWriterHDF5ExtSubMesh.cc \
-# TestDataWriterHDF5ExtSubMeshCases.cc \
 # TestDataWriterHDF5ExtPoints.cc \
-# TestDataWriterHDF5ExtPointsCases.cc \
-# TestDataWriterHDF5ExtBCMesh.cc \
-# TestDataWriterHDF5ExtBCMeshCases.cc \
+# TestDataWriterHDF5ExtPoints_Cases.cc \
 # TestDataWriterHDF5ExtFaultMesh.cc \
 # TestDataWriterHDF5ExtFaultMeshCases.cc
 
@@ -250,29 +174,31 @@ if ENABLE_HDF5
 	TestDataWriterHDF5.hh \
 	TestDataWriterHDF5Mesh.hh \
 	TestDataWriterHDF5Material.hh \
+	TestDataWriterHDF5Submesh.hh \
 	TestDataWriterHDF5ExtMesh.hh \
-	TestDataWriterHDF5ExtMaterial.hh
+	TestDataWriterHDF5ExtMaterial.hh \
+	TestDataWriterHDF5ExtSubmesh.hh
 
-# TestDataWriterHDF5SubMesh.hh \
-# TestDataWriterHDF5SubMeshCases.hh \
 # TestDataWriterHDF5Points.hh \
-# TestDataWriterHDF5PointsCases.hh \
-# TestDataWriterHDF5BCMesh.hh \
-# TestDataWriterHDF5BCMeshCases.hh \
 # TestDataWriterHDF5FaultMesh.hh \
-# TestDataWriterHDF5FaultMeshCases.hh \
-# TestDataWriterHDF5ExtMesh.hh \
-# TestDataWriterHDF5ExtSubMesh.hh \
-# TestDataWriterHDF5ExtSubMeshCases.hh \
 # TestDataWriterHDF5ExtPoints.hh \
-# TestDataWriterHDF5ExtPointsCases.hh \
-# TestDataWriterHDF5ExtBCMesh.hh \
-# TestDataWriterHDF5ExtBCMeshCases.hh \
-# TestDataWriterHDF5ExtFaultMesh.hh \
-# TestDataWriterHDF5ExtFaultMeshCases.hh
+# TestDataWriterHDF5ExtFaultMesh.hh
 
 
-  testmeshio_LDADD += -lhdf5
+  testhdf5_LDFLAGS = \
+	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+
+  testhdf5_LDADD = \
+	-lcppunit -ldl \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
+	-lspatialdata \
+	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS) \
+	-lhdf5
+
+if ENABLE_CUBIT
+  testhdf5_LDADD += -lnetcdf
+endif
+
 endif
 
 

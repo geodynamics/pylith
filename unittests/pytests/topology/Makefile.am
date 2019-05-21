@@ -25,7 +25,7 @@ dist_check_SCRIPTS = testtopology.py
 
 noinst_PYTHON = \
 	TestMesh.py \
-	TestSubMesh.py \
+	TestSubmesh.py \
 	TestFieldBase.py \
 	TestMeshField.py \
 	TestMeshFields.py \

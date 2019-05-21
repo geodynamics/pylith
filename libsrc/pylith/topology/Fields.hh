@@ -38,7 +38,7 @@
 /// Container for managing multiple fields over a finite-element mesh.
 class pylith::topology::Fields { // Fields
     friend class TestFieldsMesh; // unit testing
-    friend class TestFieldsSubMesh; // unit testing
+    friend class TestFieldsSubmesh; // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:

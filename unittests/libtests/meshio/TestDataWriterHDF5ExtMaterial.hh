@@ -27,7 +27,7 @@
 #if !defined(pylith_meshio_testdatawriterhdf5extmaterial_hh)
 #define pylith_meshio_testdatawriterhdf5extmaterial_hh
 
-#include "TestDataWriterHDF5.hh" // ISA TestDataWriterHDF5Ext
+#include "TestDataWriterHDF5.hh" // ISA TestDataWriterHDF5
 #include "TestDataWriterMaterial.hh" // ISA TestDataWriterMaterial
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
@@ -46,7 +46,6 @@ namespace pylith {
 // ======================================================================
 /// C++ unit testing for DataWriterHDF5Ext
 class pylith::meshio::TestDataWriterHDF5ExtMaterial : public TestDataWriterHDF5, public TestDataWriterMaterial, public CppUnit::TestFixture {
-
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestDataWriterHDF5ExtMaterial);
 
@@ -83,7 +82,6 @@ protected:
      */
     TestDataWriterMaterial_Data* _getData(void);
 
-
     // PROTECTED MEMBDERS /////////////////////////////////////////////////
 protected:
 
@@ -91,11 +89,9 @@ protected:
 
 }; // class TestDataWriterHDF5ExtMaterial
 
-
 // ======================================================================
 class pylith::meshio::TestDataWriterHDF5ExtMaterial_Data : public TestDataWriterHDF5_Data, public TestDataWriterMaterial_Data {};
 
 #endif // pylith_meshio_testdatawriterhdf5extmaterial_hh
-
 
 // End of file

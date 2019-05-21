@@ -25,7 +25,6 @@
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-// forward declarations
 namespace pylith {
     namespace problems {
         class TestSolutionFactory_Tri;

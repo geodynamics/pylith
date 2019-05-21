@@ -27,12 +27,12 @@ class Mesh(ModuleMesh):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, dim=None, comm=None, mesh=None, label=None, isSubMesh=False):
+  def __init__(self, dim=None, comm=None, mesh=None, label=None, isSubmesh=False):
     """
     Constructor.
     """
     if comm is None and dim is None and label is None:
-      ModuleMesh.__init__(self, isSubMesh)
+      ModuleMesh.__init__(self, isSubmesh)
     elif comm is None and mesh is None and label is None:
       ModuleMesh.__init__(self, dim)
     elif label is None:

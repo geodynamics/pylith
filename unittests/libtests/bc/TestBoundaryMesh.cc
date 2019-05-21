@@ -24,7 +24,7 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/topology/VisitorSubMesh.hh" // USES SubMeshIS
+#include "pylith/topology/VisitorSubmesh.hh" // USES SubmeshIS
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/testing/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 

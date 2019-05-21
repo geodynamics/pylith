@@ -202,7 +202,8 @@ pylith::meshio::FieldFactory::setField(pylith::topology::Field* field,
 
     CPPUNIT_ASSERT(field);
 
-    // field->view("setField()", pylith::topology::Field::VIEW_LAYOUT); // DEBUGGING
+    field->mesh().view("::ascii_info_detail");
+    field->view("setField()", pylith::topology::Field::VIEW_LAYOUT); // DEBUGGING
 
     pylith::topology::VecVisitorMesh fieldVisitor(*field);
     PylithScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);

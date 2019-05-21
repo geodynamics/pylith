@@ -14,7 +14,6 @@
 // See COPYING for license information.
 //
 // ----------------------------------------------------------------------
-//
 
 /**
  * @file unittests/libtests/meshio/TestDataWriterMeshaterial
@@ -31,7 +30,6 @@
 
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh, USES Fields
 
-/// Namespace for pylith package
 namespace pylith {
     namespace meshio {
         class TestDataWriterMaterial;
@@ -40,10 +38,9 @@ namespace pylith {
     } // meshio
 } // pylith
 
-// ======================================================================
+// =====================================================================================================================
 class pylith::meshio::TestDataWriterMaterial {
-
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Setup testing data.
@@ -86,18 +83,17 @@ protected:
     virtual
     TestDataWriterMaterial_Data* _getData(void) = 0;
 
-    // PROTECTED MEMBERS //////////////////////////////////////////////////
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
+    pylith::topology::Mesh* _domainMesh; ///< Finite-element mesh.
+    pylith::topology::Mesh* _materialMesh; ///< Subdomain mesh over material.
 
 }; // class TestDataWriterMaterial
 
-
-// ======================================================================
+// =====================================================================================================================
 class pylith::meshio::TestDataWriterMaterial_Data : public TestDataWriter_Data {
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -106,15 +102,13 @@ public:
     /// Destructor
     ~TestDataWriterMaterial_Data(void);
 
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////
+    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     int materialId; ///< Id of material.
 
 }; // class TestDataWriterMaterial_Data
 
-
 #endif // pylith_meshio_testdatawritermaterial_hh
-
 
 // End of file

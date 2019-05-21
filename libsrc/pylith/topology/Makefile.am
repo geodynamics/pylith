@@ -37,8 +37,8 @@ subpkginclude_HEADERS = \
 	Stratum.icc \
 	VisitorMesh.hh \
 	VisitorMesh.icc \
-	VisitorSubMesh.hh \
-	VisitorSubMesh.icc \
+	VisitorSubmesh.hh \
+	VisitorSubmesh.icc \
 	RefineUniform.hh \
 	topologyfwd.hh
 

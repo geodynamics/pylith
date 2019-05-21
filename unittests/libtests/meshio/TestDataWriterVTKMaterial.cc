@@ -14,7 +14,6 @@
 // See COPYING for license information.
 //
 // ----------------------------------------------------------------------
-//
 
 #include <portinfo>
 
@@ -28,8 +27,7 @@
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestDataWriterVTKMaterial::setUp(void)
-{ // setUp
+pylith::meshio::TestDataWriterVTKMaterial::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
     TestDataWriterMaterial::setUp();
@@ -38,27 +36,27 @@ pylith::meshio::TestDataWriterVTKMaterial::setUp(void)
     PYLITH_METHOD_END;
 } // setUp
 
+
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::meshio::TestDataWriterVTKMaterial::tearDown(void)
-{ // tearDown
+pylith::meshio::TestDataWriterVTKMaterial::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
     TestDataWriterMaterial::tearDown();
-    delete _data; _data = NULL;
+    delete _data;_data = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
 
+
 // ----------------------------------------------------------------------
 // Test openTimeStep() and closeTimeStep()
 void
-pylith::meshio::TestDataWriterVTKMaterial::testTimeStep(void)
-{ // testTimeStep
+pylith::meshio::TestDataWriterVTKMaterial::testTimeStep(void) {
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_materialMesh);
     CPPUNIT_ASSERT(_data);
 
     DataWriterVTK writer;
@@ -71,8 +69,8 @@ pylith::meshio::TestDataWriterVTKMaterial::testTimeStep(void)
 
     const PylithScalar t = _data->time;
     const bool isInfo = false;
-    writer.open(*_mesh, isInfo, "material-id", _data->materialId);
-    writer.openTimeStep(t, *_mesh, "material-id", _data->materialId);
+    writer.open(*_materialMesh, isInfo);
+    writer.openTimeStep(t, *_materialMesh);
 
     CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
     CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
@@ -88,19 +86,20 @@ pylith::meshio::TestDataWriterVTKMaterial::testTimeStep(void)
     PYLITH_METHOD_END;
 } // testTimeStep
 
+
 // ----------------------------------------------------------------------
 // Test writeVertexField.
 void
-pylith::meshio::TestDataWriterVTKMaterial::testWriteVertexField(void)
-{ // testWriteVertexField
+pylith::meshio::TestDataWriterVTKMaterial::testWriteVertexField(void) {
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_domainMesh);
+    CPPUNIT_ASSERT(_materialMesh);
     CPPUNIT_ASSERT(_data);
 
     DataWriterVTK writer;
 
-    pylith::topology::Fields vertexFields(*_mesh);
+    pylith::topology::Fields vertexFields(*_domainMesh);
     _createVertexFields(&vertexFields);
 
     writer.filename(_data->vertexFilename);
@@ -108,14 +107,14 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteVertexField(void)
 
     const PylithScalar t = _data->time;
     const bool isInfo = false;
-    writer.open(*_mesh, isInfo, "material-id", _data->materialId);
-    writer.openTimeStep(t, *_mesh, "material-id", _data->materialId);
+    writer.open(*_materialMesh, isInfo);
+    writer.openTimeStep(t, *_materialMesh);
 
     const int numFields = 4;
     const char* fieldNames[4] = {"scalar", "vector", "tensor", "other"};
     for (int i = 0; i < numFields; ++i) {
         pylith::topology::Field& field = vertexFields.get(fieldNames[i]);
-        writer.writeVertexField(t, field, *_mesh);
+        writer.writeVertexField(t, field, *_materialMesh);
         CPPUNIT_ASSERT(writer._wroteVertexHeader);
         CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
     } // for
@@ -131,19 +130,19 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteVertexField(void)
     PYLITH_METHOD_END;
 } // testWriteVertexField
 
+
 // ----------------------------------------------------------------------
 // Test writeCellField.
 void
-pylith::meshio::TestDataWriterVTKMaterial::testWriteCellField(void)
-{ // testWriteCellField
+pylith::meshio::TestDataWriterVTKMaterial::testWriteCellField(void) {
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_materialMesh);
     CPPUNIT_ASSERT(_data);
 
     DataWriterVTK writer;
 
-    pylith::topology::Fields cellFields(*_mesh);
+    pylith::topology::Fields cellFields(*_materialMesh);
     _createCellFields(&cellFields);
 
     writer.filename(_data->cellFilename);
@@ -151,14 +150,14 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteCellField(void)
 
     const PylithScalar t = _data->time;
     const bool isInfo = false;
-    writer.open(*_mesh, isInfo, "material-id", _data->materialId);
-    writer.openTimeStep(t, *_mesh, "material-id", _data->materialId);
+    writer.open(*_materialMesh, isInfo);
+    writer.openTimeStep(t, *_materialMesh);
 
     const int numFields = 4;
     const char* fieldNames[4] = {"scalar", "vector", "tensor", "other"};
     for (int i = 0; i < numFields; ++i) {
         pylith::topology::Field& field = cellFields.get(fieldNames[i]);
-        writer.writeCellField(t, field, "material-id", _data->materialId);
+        writer.writeCellField(t, field);
         CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
         CPPUNIT_ASSERT(writer._wroteCellHeader);
     } // for
@@ -176,8 +175,7 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteCellField(void)
 // ----------------------------------------------------------------------
 // Get test data.
 pylith::meshio::TestDataWriterMaterial_Data*
-pylith::meshio::TestDataWriterVTKMaterial::_getData(void)
-{ // _getData
+pylith::meshio::TestDataWriterVTKMaterial::_getData(void) {
     return _data;
 } // _getData
 

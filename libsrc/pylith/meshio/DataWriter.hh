@@ -40,7 +40,6 @@
 // DataWriter -----------------------------------------------------------
 /// Abstract base class for writing finite-element data to file.
 class pylith::meshio::DataWriter : public pylith::utils::PyreComponent { // DataWriter
-
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
@@ -77,15 +76,10 @@ public:
      *
      * @param[in] mesh Finite-element mesh.
      * @param[in] isInfo True if only writing info values.
-     * @param[in] label Name of label defining cells to include in output
-     *   (=0 means use all cells in mesh).
-     * @param[in] labelId Value of label defining which cells to include.
      */
     virtual
     void open(const pylith::topology::Mesh& mesh,
-              const bool isInfo,
-              const char* label=NULL,
-              const int labelId=0);
+              const bool isInfo);
 
     /// Close output files.
     virtual
@@ -95,15 +89,10 @@ public:
      *
      * @param[in] t Time stamp for new data
      * @param[in] mesh PETSc mesh object
-     * @param[in] label Name of label defining cells to include in output
-     *   (=0 means use all cells in mesh).
-     * @param[in] labelId Value of label defining which cells to include.
      */
     virtual
     void openTimeStep(const PylithScalar t,
-                      const topology::Mesh& mesh,
-                      const char* label=NULL,
-                      const int labelId=0);
+                      const topology::Mesh& mesh);
 
     /// Cleanup after writing data for a time step.
     virtual
@@ -124,15 +113,10 @@ public:
      *
      * @param[in] t Time associated with field.
      * @param[in] field Field over cells.
-     * @param[in] label Name of label defining cells to include in output
-     *   (=0 means use all cells in mesh).
-     * @param[in] labelId Value of label defining which cells to include.
      */
     virtual
     void writeCellField(const PylithScalar t,
-                        pylith::topology::Field& field,
-                        const char* label=NULL,
-                        const int labelId=0) = 0;
+                        pylith::topology::Field& field) = 0;
 
     /** Write dataset with names of points to file.
      *
@@ -166,19 +150,18 @@ protected:
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    const DataWriter& operator=(const DataWriter&);   ///< Not implemented
+    const DataWriter& operator=(const DataWriter&); ///< Not implemented
 
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
 
-    PylithScalar _timeScale;   ///< Time scale for dimensioning time in output.
-    std::string _context;   ///< Context of scatters for DataWriter.
-    bool _isInfo;   ///< True if only writing info values.
+    PylithScalar _timeScale; ///< Time scale for dimensioning time in output.
+    std::string _context; ///< Context of scatters for DataWriter.
+    bool _isInfo; ///< True if only writing info values.
     bool _isOpen; ///< True if writer is ready for openTimeStep()/closeTimeStep().
 
 }; // DataWriter
 
 #endif // pylith_meshio_datawriter_hh
-
 
 // End of file

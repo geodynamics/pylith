@@ -40,12 +40,12 @@
 // DataWriterVTK --------------------------------------------------------
 /// Object for writing finite-element data to VTK file.
 class pylith::meshio::DataWriterVTK : public DataWriter {
-    friend class TestDataWriterVTKMesh;   // unit testing
-    friend class TestDataWriterVTKMaterial;   // unit testing
-    friend class TestDataWriterVTKSubMesh;   // unit testing
-    friend class TestDataWriterVTKBCMesh;   // unit testing
-    friend class TestDataWriterVTKFaultMesh;   // unit testing
-    friend class TestDataWriterVTKPoints;   // unit testing
+    friend class TestDataWriterVTKMesh; // unit testing
+    friend class TestDataWriterVTKMaterial; // unit testing
+    friend class TestDataWriterVTKSubmesh; // unit testing
+    friend class TestDataWriterVTKBCMesh; // unit testing
+    friend class TestDataWriterVTKFaultMesh; // unit testing
+    friend class TestDataWriterVTKPoints; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
@@ -96,14 +96,9 @@ public:
      *
      * @param[in] mesh Finite-element mesh.
      * @param[in] isInfo True if only writing info values.
-     * @param[in] label Name of label defining cells to include in output
-     *   (=0 means use all cells in mesh).
-     * @param[in] labelId Value of label defining which cells to include.
      */
     void open(const topology::Mesh& mesh,
-              const bool isInfo,
-              const char* label=NULL,
-              const int labelId=0);
+              const bool isInfo);
 
     /// Close output files.
     void close(void);
@@ -112,14 +107,9 @@ public:
      *
      * @param[in] t Time stamp for new data
      * @param[in] mesh Finite-element mesh.
-     * @param[in] label Name of label defining cells to include in output
-     *   (=0 means use all cells in mesh).
-     * @param[in] labelId Value of label defining which cells to include.
      */
     void openTimeStep(const PylithScalar t,
-                      const topology::Mesh& mesh,
-                      const char* label=NULL,
-                      const int labelId=0);
+                      const topology::Mesh& mesh);
 
     /// Cleanup after writing data for a time step.
     void closeTimeStep(void);
@@ -138,14 +128,9 @@ public:
      *
      * @param[in] t Time associated with field.
      * @param[in] field Field over cells.
-     * @param[in] label Name of label defining cells to include in output
-     *   (=0 means use all cells in mesh).
-     * @param[in] labelId Value of label defining which cells to include.
      */
     void writeCellField(const PylithScalar t,
-                        topology::Field& field,
-                        const char* label=NULL,
-                        const int labelId=0);
+                        topology::Field& field);
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
 private:
@@ -165,7 +150,7 @@ private:
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    const DataWriterVTK& operator=(const DataWriterVTK&);   ///< Not implemented
+    const DataWriterVTK& operator=(const DataWriterVTK&); ///< Not implemented
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
@@ -173,26 +158,25 @@ private:
     /// Time value (in seconds) used to normalize time stamp.
     PylithScalar _timeConstant;
 
-    std::string _filename;   ///< Name of VTK file.
-    std::string _timeFormat;   ///< C style time format for time stamp.
+    std::string _filename; ///< Name of VTK file.
+    std::string _timeFormat; ///< C style time format for time stamp.
 
-    PetscViewer _viewer;   ///< Output file
-    PetscDM _dm;   ///< Handle to PETSc DM for mesh
+    PetscViewer _viewer; ///< Output file
+    PetscDM _dm; ///< Handle to PETSc DM for mesh
 
-    topology::Fields* _vertexFieldCache;   ///< Cache for vertex fields.
-    topology::Fields* _cellFieldCache;   ///< Cache for cell fields.
+    topology::Fields* _vertexFieldCache; ///< Cache for vertex fields.
+    topology::Fields* _cellFieldCache; ///< Cache for cell fields.
 
-    int _precision;   ///< Precision of floating point values in output.
+    int _precision; ///< Precision of floating point values in output.
 
-    bool _isOpenTimeStep;   ///< true if called openTimeStep().
-    bool _wroteVertexHeader;   ///< True if wrote header for vertex data.
-    bool _wroteCellHeader;   ///< True if wrote header for cell data
+    bool _isOpenTimeStep; ///< true if called openTimeStep().
+    bool _wroteVertexHeader; ///< True if wrote header for vertex data.
+    bool _wroteCellHeader; ///< True if wrote header for cell data
 
 }; // DataWriterVTK
 
 #include "DataWriterVTK.icc" // inline methods
 
 #endif // pylith_meshio_datawritervtk_hh
-
 
 // End of file

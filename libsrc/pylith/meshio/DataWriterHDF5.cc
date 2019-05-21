@@ -38,8 +38,12 @@
 #include <stdexcept> // USES std::runtime_error
 
 extern "C" {
-    extern PetscErrorCode VecView_Seq(Vec, PetscViewer);
-    extern PetscErrorCode VecView_MPI(Vec, PetscViewer);
+    extern PetscErrorCode VecView_Seq(Vec,
+                                      PetscViewer);
+
+    extern PetscErrorCode VecView_MPI(Vec,
+                                      PetscViewer);
+
 }
 
 #if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8
@@ -95,12 +99,10 @@ pylith::meshio::DataWriterHDF5::DataWriterHDF5(const DataWriterHDF5& w) :
 // Prepare file for data at a new time step.
 void
 pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
-                                     const bool isInfo,
-                                     const char* label,
-                                     const int labelId) {
+                                     const bool isInfo) {
     PYLITH_METHOD_BEGIN;
 
-    DataWriter::open(mesh, isInfo, label, labelId);
+    DataWriter::open(mesh, isInfo);
 
     try {
         PetscErrorCode err = 0;
@@ -166,19 +168,7 @@ pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
         } // for
         err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPIU_INT, MPI_MAX, mesh.comm());PYLITH_CHECK_ERROR(err);
 
-        if (label) {
-            conesSize = 0;
-            for (PetscInt cell = cStart; cell < cEnd; ++cell) {
-                PetscInt value;
-                err = DMGetLabelValue(dmMesh, label, cell, &value);PYLITH_CHECK_ERROR(err);
-                if (value == labelId) {
-                    ++conesSize;
-                }
-            } // for
-            conesSize *= numCorners;
-        } else {
-            conesSize = (cEnd - cStart)*numCorners;
-        } // if/else
+        conesSize = (cEnd - cStart)*numCorners;
         PetscIS globalVertexNumbers = NULL;
         const PetscInt *gvertex = NULL;
         PetscVec cellVec = NULL;
@@ -196,12 +186,6 @@ pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
         for (PetscInt cell = cStart, v = 0; cell < cEnd; ++cell) {
             PetscInt *closure = NULL;
             PetscInt closureSize, nC = 0, p;
-
-            if (label) {
-                PetscInt value;
-                err = DMGetLabelValue(dmMesh, label, cell, &value);PYLITH_CHECK_ERROR(err);
-                if (value != labelId) {continue;}
-            } // if
 
             err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
             for (p = 0; p < closureSize*2; p += 2) {
@@ -291,7 +275,7 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
 
         const char* context = DataWriter::_context.c_str();
 
-        field.createScatterWithBC(mesh, "", 0, context);
+        field.createScatterWithBC(mesh, context);
         field.scatterLocalToContext(context);
         PetscVec vector = field.scatterVector(context);assert(vector);
 
@@ -353,9 +337,7 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
 // Write field over cells to file.
 void
 pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
-                                               pylith::topology::Field& field,
-                                               const char* label,
-                                               const int labelId) {
+                                               pylith::topology::Field& field) {
     PYLITH_METHOD_BEGIN;
 
     assert(_viewer);
@@ -364,7 +346,7 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
         const char* context = DataWriter::_context.c_str();
         PetscErrorCode err = 0;
 
-        field.createScatterWithBC(field.mesh(), label ? label : "", labelId, context);
+        field.createScatterWithBC(field.mesh(), context);
         field.scatterLocalToContext(context);
         PetscVec vector = field.scatterVector(context);assert(vector);
 

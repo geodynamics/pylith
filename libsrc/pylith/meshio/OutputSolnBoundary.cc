@@ -22,6 +22,7 @@
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES createLowerDimMesh()
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
@@ -101,7 +102,8 @@ pylith::meshio::OutputSolnBoundary::_writeSolnStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
     if (!_boundaryMesh) {
-        _boundaryMesh = new pylith::topology::Mesh(solution.mesh(), _label.c_str());assert(_boundaryMesh);
+        _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.mesh(), _label.c_str());
+        assert(_boundaryMesh);
     } // if
 
     const pylith::string_vector& subfieldNames = _expandSubfieldNames(solution);

@@ -37,8 +37,7 @@
  * Extends PETSc mesh to include coordinate system associated with
  * domain.
  */
-class pylith::topology::Mesh
-{ // Mesh
+class pylith::topology::Mesh { // Mesh
     friend class TestMesh; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
@@ -46,9 +45,9 @@ public:
 
     /** Default constructor.
      *
-     * @param isSubMesh True if mesh is a submesh of another mesh.
+     * @param isSubmesh True if mesh is a submesh of another mesh.
      */
-    Mesh(const bool isSubMesh =false);
+    Mesh(const bool isSubmesh=false);
 
     /** Constructor with dimension and communicator.
      *
@@ -56,15 +55,7 @@ public:
      * @param comm MPI communicator for mesh.
      */
     Mesh(const int dim,
-         const MPI_Comm& comm =PETSC_COMM_WORLD);
-
-    /** Create submesh.
-     *
-     * @param mesh Mesh over domain.
-     * @param label Label of vertices on boundary.
-     */
-    Mesh(const Mesh& mesh,
-         const char* label);
+         const MPI_Comm& comm=PETSC_COMM_WORLD);
 
     /// Default destructor
     ~Mesh(void);
@@ -84,7 +75,7 @@ public:
      * @param label Label for mesh.
      */
     void dmMesh(PetscDM dm,
-                const char* label ="domain");
+                const char* label="domain");
 
     /** Set coordinate system.
      *
@@ -163,7 +154,7 @@ public:
      *   latex in a file  :refined.tex:ascii_latex
      *   VTK vtk:refined.vtk:ascii_vtk
      */
-    void view(const char* viewOption ="") const;
+    void view(const char* viewOption="") const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
@@ -172,7 +163,7 @@ private:
 
     spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
     bool _debug; ///< Debugging flag for mesh.
-    const bool _isSubMesh; ///< True if mesh is a submesh of another mesh.
+    const bool _isSubmesh; ///< True if mesh is a submesh of another mesh.
     bool _isSimplex; ///< True if mesh has simplex cells (line, tri, tet).
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
@@ -186,6 +177,5 @@ private:
 #include "Mesh.icc"
 
 #endif // pylith_topology_mesh_hh
-
 
 // End of file

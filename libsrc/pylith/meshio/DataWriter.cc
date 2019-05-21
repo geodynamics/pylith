@@ -76,9 +76,7 @@ pylith::meshio::DataWriter::isOpen(void) const {
 // Prepare for writing files.
 void
 pylith::meshio::DataWriter::open(const topology::Mesh& mesh,
-                                 const bool isInfo,
-                                 const char* label,
-                                 const int labelId) {
+                                 const bool isInfo) {
     PYLITH_METHOD_BEGIN;
 
     _isInfo = isInfo;
@@ -91,9 +89,6 @@ pylith::meshio::DataWriter::open(const topology::Mesh& mesh,
     std::ostringstream s;
     s << "output_"
       << meshName;
-    if (label) {
-        s << "_" << label << labelId;
-    }
     _context = s.str();
 
     PYLITH_METHOD_END;
@@ -113,9 +108,7 @@ pylith::meshio::DataWriter::close(void) {
 // Prepare file for data at a new time step.
 void
 pylith::meshio::DataWriter::openTimeStep(const PylithScalar t,
-                                         const topology::Mesh& mesh,
-                                         const char* label,
-                                         const int labelId) {
+                                         const topology::Mesh& mesh) {
     // Default: no implementation.
 } // openTimeStep
 

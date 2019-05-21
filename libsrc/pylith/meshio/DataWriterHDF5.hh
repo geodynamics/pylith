@@ -54,7 +54,7 @@
 
 class pylith::meshio::DataWriterHDF5 : public DataWriter {
     friend class TestDataWriterHDF5Mesh; // unit testing
-    friend class TestDataWriterHDF5SubMesh; // unit testing
+    friend class TestDataWriterHDF5Submesh; // unit testing
     friend class TestDataWriterHDF5Points; // unit testing
     friend class TestDataWriterHDF5BCMesh; // unit testing
     friend class TestDataWriterHDF5FaultMesh; // unit testing
@@ -99,14 +99,9 @@ public:
      *
      * @param[in] mesh Finite-element mesh.
      * @param[in] isInfo True if only writing info values.
-     * @param[in] label Name of label defining cells to include in output
-     *   (=0 means use all cells in mesh).
-     * @param[in] labelId Value of label defining which cells to include.
      */
     void open(const topology::Mesh& mesh,
-              const bool isInfo,
-              const char* label=0,
-              const int labelId=0);
+              const bool isInfo);
 
     /// Close output files.
     void close(void);
@@ -126,14 +121,9 @@ public:
      *
      * @param[in] t Time associated with field.
      * @param[in] field Field over cells.
-     * @param[in] label Name of label defining cells to include in output
-     *   (=0 means use all cells in mesh).
-     * @param[in] labelId Value of label defining which cells to include.
      */
     void writeCellField(const PylithScalar t,
-                        topology::Field& field,
-                        const char* label=0,
-                        const int labelId=0);
+                        topology::Field& field);
 
     /** Write dataset with names of points to file.
      *

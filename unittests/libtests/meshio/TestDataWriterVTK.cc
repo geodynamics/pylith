@@ -34,8 +34,7 @@
 void
 pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
                                              const PylithScalar t,
-                                             const char* timeFormat)
-{ // checkFile
+                                             const char* timeFormat) { // checkFile
     PYLITH_METHOD_BEGIN;
 
     const std::string& fileroot = filenameRoot;
@@ -76,9 +75,11 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
         fileInE.getline(lineE, maxLen);
         fileIn.getline(line, maxLen);
         if (0 != strcmp(line, lineE)) {
-            std::cerr << "Line " << i << " of file '" << filename << "' is incorrect."
-                      << std::endl;
-            CPPUNIT_ASSERT(false);
+            std::ostringstream msg;
+            msg << "Mismatch in line " << i << " of file " << filename << ".\n"
+                << "Expected: '" << lineE << "'\n"
+                << "Actual: '" << line << "'";
+            CPPUNIT_ASSERT_MESSAGE(msg.str(), false);
         } // if
         ++i;
     } // while
@@ -95,15 +96,13 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
 pylith::meshio::TestDataWriterVTK_Data::TestDataWriterVTK_Data(void) :
     timestepFilename(NULL),
     vertexFilename(NULL),
-    cellFilename(NULL)
-{ // constructor
+    cellFilename(NULL) { // constructor
 } // constructor
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestDataWriterVTK_Data::~TestDataWriterVTK_Data(void)
-{ // destructor
+pylith::meshio::TestDataWriterVTK_Data::~TestDataWriterVTK_Data(void) { // destructor
 } // destructor
 
 

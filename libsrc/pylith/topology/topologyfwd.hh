@@ -34,7 +34,7 @@ namespace pylith {
         class Mesh;
         class MeshOps;
         class CoordsVisitor;
-        class SubMeshIS;
+        class SubmeshIS;
         class Stratum;
         class StratumIS;
 
@@ -43,7 +43,7 @@ namespace pylith {
         class AuxiliaryField;
         class Fields;
         class VecVisitorMesh;
-        class VecVisitorSubMesh;
+        class VecVisitorSubmesh;
 
         class FieldOps;
         class FieldTester;
@@ -53,7 +53,7 @@ namespace pylith {
 
         class Jacobian;
         class MatVisitorMesh;
-        class MatVisitorSubMesh;
+        class MatVisitorSubmesh;
 
         class Distributor;
 

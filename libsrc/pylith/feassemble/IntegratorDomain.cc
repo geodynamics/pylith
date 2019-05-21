@@ -22,6 +22,7 @@
 
 #include "pylith/feassemble/UpdateStateVars.hh" // HOLDSA UpdateStateVars
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES createSubdomainMesh()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
@@ -192,11 +193,8 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
 
-#if 1 // :KLUDGE: :TODO: @brad @matt Update this to create a mesh with the material subDM.
-    delete _materialMesh;_materialMesh = (pylith::topology::Mesh*) &solution.mesh();
-#else
-    delete _materialMesh;_materialMesh = ?
-#endif
+    delete _materialMesh;
+    _materialMesh = pylith::topology::MeshOps::createSubdomainMesh(solution.mesh(), "material-id", _materialId, ":UNKOWN:");
 
     pylith::topology::CoordsVisitor::optimizeClosure(_materialMesh->dmMesh());
 
