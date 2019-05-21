@@ -27,8 +27,7 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
-#include <typeinfo> \
-    // USES typeid()
+#include <typeinfo> // USES typeid()
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -144,9 +143,9 @@ pylith::materials::IsotropicLinearElasticity::getKernelRHSJacobianElasticConstan
 // ---------------------------------------------------------------------------------------------------------------------
 // Get stress kernel for derived field.
 PetscPointFunc
-pylith::materials::IsotropicLinearElasticity::getKernelDerivedStress(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearElasticity::getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelDerivedStress(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG("getKernelDerivedCauchyStress(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->spaceDim();
     PetscPointFunc kernel =
@@ -157,7 +156,7 @@ pylith::materials::IsotropicLinearElasticity::getKernelDerivedStress(const spati
         NULL;
 
     PYLITH_METHOD_RETURN(kernel);
-} // getKernelDerivedStress
+} // getKernelDerivedCauchyStress
 
 
 // End of file

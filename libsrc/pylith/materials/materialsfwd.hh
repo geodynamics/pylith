@@ -34,6 +34,7 @@ namespace pylith {
 
         class Elasticity;
         class AuxiliaryFactoryElasticity;
+        class DerivedFactoryElasticity;
 
         class RheologyElasticity;
         class IsotropicLinearElasticity;

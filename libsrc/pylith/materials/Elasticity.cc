@@ -22,6 +22,7 @@
 
 #include "pylith/materials/RheologyElasticity.hh" // HASA RheologyElasticity
 #include "pylith/materials/AuxiliaryFactoryElasticity.hh" // USES AuxiliaryFactoryElasticity
+#include "pylith/materials/DerivedFactoryElasticity.hh" // USES DerivedFactoryElasticity
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
@@ -33,6 +34,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <typeinfo> // USES typeid()
@@ -40,12 +42,15 @@
 // ---------------------------------------------------------------------------------------------------------------------
 typedef pylith::feassemble::IntegratorDomain::ResidualKernels ResidualKernels;
 typedef pylith::feassemble::IntegratorDomain::JacobianKernels JacobianKernels;
+typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::Elasticity::Elasticity(void) :
     _useInertia(false),
     _useBodyForce(false),
+    _shouldComputeCauchyStress(false),
+    _shouldComputeCauchyStrain(false),
     _rheology(NULL) {
     pylith::utils::PyreComponent::setName("elasticity");
 } // constructor
@@ -105,6 +110,38 @@ pylith::materials::Elasticity::useBodyForce(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Should compute Cauchy stress for observers?
+void
+pylith::materials::Elasticity::shouldComputeCauchyStress(const bool value) {
+    _shouldComputeCauchyStress = value;
+} // shouldComputeCauchyStress
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Should compute Cauchy stress for observers?
+bool
+pylith::materials::Elasticity::shouldComputeCauchyStress(void) const {
+    return _shouldComputeCauchyStress;
+} // shouldComputeCauchyStress
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Should compute Cauchy strain for observers.
+void
+pylith::materials::Elasticity::shouldComputeCauchyStrain(const bool value) {
+    _shouldComputeCauchyStrain = value;
+} // shouldComputeCauchyStrain
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Should compute Cauchy strain for observers?
+bool
+pylith::materials::Elasticity::shouldComputeCauchyStrain(void) const {
+    return _shouldComputeCauchyStrain;
+} // shouldComputeCauchyStrain
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set bulk rheology.
 void
 pylith::materials::Elasticity::setBulkRheology(pylith::materials::RheologyElasticity* const rheology) {
@@ -154,7 +191,7 @@ pylith::materials::Elasticity::createIntegrator(const pylith::topology::Field& s
     _setKernelsLHSResidual(integrator, solution);
     _setKernelsLHSJacobian(integrator, solution);
     // No state variables.
-    // _setKernelsDerivedFields(integrator, solution);
+    _setKernelsDerivedField(integrator, solution);
 
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
@@ -212,9 +249,31 @@ pylith::topology::Field*
 pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field& solution,
                                                   const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
-    PYLITH_METHOD_RETURN(NULL);
+    pylith::topology::Field* derivedField = new pylith::topology::Field(domainMesh);assert(derivedField);
+    derivedField->label("Elasticity derived field");
+
+    DerivedFactoryElasticity derivedFactory;
+
+    assert(_normalizer);
+    derivedFactory.initialize(derivedField, *_normalizer, domainMesh.dimension());
+
+    // :ATTENTION: The order for adding subfields must match the order of the derived fields in the FE kernels.
+
+    if (_shouldComputeCauchyStress) {
+        derivedFactory.addCauchyStress();
+    } // if
+    if (_shouldComputeCauchyStrain) {
+        derivedFactory.addCauchyStrain();
+    } // if
+
+    derivedField->subfieldsSetup();
+    pylith::topology::FieldOps::checkDiscretization(solution, *derivedField);
+    derivedField->allocate();
+    derivedField->zeroLocal();
+
+    PYLITH_METHOD_RETURN(derivedField);
 } // createDerivedField
 
 
@@ -242,7 +301,7 @@ void
 pylith::materials::Elasticity::_setKernelsRHSResidual(pylith::feassemble::IntegratorDomain* integrator,
                                                       const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSResidual(integrator="<<integrator<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsRHSResidual(integrator="<<integrator<<", solution="<<solution.label()<<")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().coordsys();
 
@@ -289,7 +348,7 @@ void
 pylith::materials::Elasticity::_setKernelsRHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
                                                       const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSJacobian(integrator="<<integrator<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsRHSJacobian(integrator="<<integrator<<", solution="<<solution.label()<<")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().coordsys();
 
@@ -335,7 +394,7 @@ pylith::materials::Elasticity::_setKernelsRHSJacobian(pylith::feassemble::Integr
     integrator->setKernelsRHSJacobian(kernels);
 
     PYLITH_METHOD_END;
-} // setKernelsRHSJacobian
+} // _setKernelsRHSJacobian
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -344,7 +403,7 @@ void
 pylith::materials::Elasticity::_setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
                                                       const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSResidual(integrator="<<integrator<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsLHSResidual(integrator="<<integrator<<", solution="<<solution.label()<<")");
 
     std::vector<ResidualKernels> kernels;
 
@@ -368,7 +427,7 @@ pylith::materials::Elasticity::_setKernelsLHSResidual(pylith::feassemble::Integr
     integrator->setKernelsLHSResidual(kernels);
 
     PYLITH_METHOD_END;
-} // setKernelsLHSResidual
+} // _setKernelsLHSResidual
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -377,7 +436,7 @@ void
 pylith::materials::Elasticity::_setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
                                                       const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSJacobian(integrator="<<integrator<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsLHSJacobian(integrator="<<integrator<<", solution="<<solution.label()<<")");
 
     std::vector<JacobianKernels> kernels;
 
@@ -421,7 +480,47 @@ pylith::materials::Elasticity::_setKernelsLHSJacobian(pylith::feassemble::Integr
     integrator->setKernelsLHSJacobian(kernels);
 
     PYLITH_METHOD_END;
-} // setKernelsLHSJacobian
+} // _setKernelsLHSJacobian
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set kernels for computing derived field.
+void
+pylith::materials::Elasticity::_setKernelsDerivedField(pylith::feassemble::IntegratorDomain* integrator,
+                                                       const topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.label()<<")");
+
+    size_t count = 0;
+    if (_shouldComputeCauchyStress) {
+        count++;
+    } // if
+    if (_shouldComputeCauchyStrain) {
+        count++;
+    } // if
+
+    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().coordsys();
+
+    std::vector<ProjectKernels> kernels(count);
+    count = 0;
+    if (_shouldComputeCauchyStress) {
+        kernels[count++] = ProjectKernels("stress", _rheology->getKernelDerivedCauchyStress(coordsys));
+    } // if
+    if (_shouldComputeCauchyStrain) {
+        assert(coordsys);
+        const int spaceDim = coordsys->spaceDim();
+        const PetscPointFunc strainKernel =
+            (3 == spaceDim) ? pylith::fekernels::Elasticity3D::cauchy_strain :
+            (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::cauchy_strain :
+            NULL;
+        kernels[count++] = ProjectKernels("strain", strainKernel);
+    } // if
+
+    assert(integrator);
+    integrator->setKernelsDerivedField(kernels);
+
+    PYLITH_METHOD_END;
+} // _setKernelsDerivedField
 
 
 // End of file

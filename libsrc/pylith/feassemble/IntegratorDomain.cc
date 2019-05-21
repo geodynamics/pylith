@@ -405,6 +405,41 @@ pylith::feassemble::IntegratorDomain::_updateStateVars(const PylithReal t,
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Compute field derived from solution and auxiliary field.
+void
+pylith::feassemble::IntegratorDomain::_computeDerivedField(const PylithReal t,
+                                                           const PylithReal dt,
+                                                           const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_computeDerivedField(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<") empty method");
+
+    if (0 == _kernelsDerivedField.size()) {
+        PYLITH_METHOD_END;
+    } // if
+
+    assert(_derivedField);
+    assert(_auxiliaryField);
+    PetscDM derivedDM = _derivedField->dmMesh();
+    _setKernelConstants(*_derivedField, dt);
+
+    const size_t numKernels = _kernelsDerivedField.size();
+    PetscPointFunc* kernelsArray = (numKernels > 0) ? new PetscPointFunc[numKernels] : NULL;
+    for (size_t iKernel = 0; iKernel < numKernels; ++iKernel) {
+        const pylith::topology::Field::SubfieldInfo& sinfo = _derivedField->subfieldInfo(_kernelsDerivedField[iKernel].subfield.c_str());
+        kernelsArray[sinfo.index] = _kernelsDerivedField[iKernel].f;
+    } // for
+
+    PetscErrorCode err = 0;
+    err = PetscObjectCompose((PetscObject) derivedDM, "dmAux", (PetscObject) _auxiliaryField->dmMesh());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) derivedDM, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMProjectFieldLocal(derivedDM, t, solution.localVector(), kernelsArray, INSERT_VALUES, _derivedField->localVector());PYLITH_CHECK_ERROR(err);
+    delete[] kernelsArray;kernelsArray = NULL;
+
+    PYLITH_METHOD_END;
+} // _computeDerivedField
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Compute residual using current kernels.
 void
 pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* residual,

@@ -268,6 +268,16 @@ protected:
                           const PylithReal dt,
                           const pylith::topology::Field& solution);
 
+    /** Compute field derived from solution and auxiliary field.
+     *
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    void _computeDerivedField(const PylithReal t,
+                              const PylithReal dt,
+                              const pylith::topology::Field& solution);
+
     /** Compute residual using current kernels.
      *
      * @param[out] residual Field for residual.
