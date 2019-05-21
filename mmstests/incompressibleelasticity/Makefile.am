@@ -30,7 +30,10 @@ test_isotropiclinearelasticity_SOURCES = \
 	TestIsotropicLinearIncompElasticity.cc \
 	TestIsotropicLinearIncompElasticity2D_UniformPressure.cc \
 	TestIsotropicLinearIncompElasticity2D_UniformShear.cc \
+	TestIsotropicLinearIncompElasticity2D_Gravity.cc \
 	test_driver.cc
+
+
 
 
 noinst_HEADERS =
