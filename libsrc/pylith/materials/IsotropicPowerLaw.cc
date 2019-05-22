@@ -159,10 +159,10 @@ pylith::materials::IsotropicPowerLaw::getKernelDerivedStress(const spatialdata::
 
     const int spaceDim = coordsys->spaceDim();
     PetscPointFunc kernel =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::stress :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::stress :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::stress_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::stress_refstate :
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::cauchyStress :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::cauchyStress_refstate :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress_refstate :
         NULL;
 
     PYLITH_METHOD_RETURN(kernel);
@@ -173,10 +173,10 @@ pylith::materials::IsotropicPowerLaw::getKernelDerivedStress(const spatialdata::
 // Update kernel constants.
 void
 pylith::materials::IsotropicPowerLaw::updateKernelConstants(pylith::real_array* kernelConstants,
-															const PylithReal dt) const {
+                                                            const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateKernelConstants(kernelConstants"<<kernelConstants<<", dt="<<dt<<")");
-	//******** Should alpha (time integration parameter) be included here?
+    // ******** Should alpha (time integration parameter) be included here?
 
     assert(kernelConstants);
 
@@ -191,7 +191,7 @@ pylith::materials::IsotropicPowerLaw::updateKernelConstants(pylith::real_array* 
 // Add kernels for updating state variables.
 void
 pylith::materials::IsotropicPowerLaw::addKernelsUpdateStateVars(std::vector<ProjectKernels>* kernels,
-																const spatialdata::geocoords::CoordSys* coordsys) const {
+                                                                const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<")");
 

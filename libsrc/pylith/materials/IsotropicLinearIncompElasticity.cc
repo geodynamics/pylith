@@ -179,10 +179,10 @@ pylith::materials::IsotropicLinearIncompElasticity::getKernelDerivedCauchyStress
 
     const int spaceDim = coordsys->spaceDim();
     PetscPointFunc kernel =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::stress :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::stress :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::stress_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::stress_refstate :
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::cauchyStress :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::cauchyStress :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::cauchyStress_refstate :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::cauchyStress_refstate :
         NULL;
 
     PYLITH_METHOD_RETURN(kernel);

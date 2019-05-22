@@ -246,24 +246,24 @@ public:
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void stress(const PylithInt dim,
-                const PylithInt numS,
-                const PylithInt numA,
-                const PylithInt sOff[],
-                const PylithInt sOff_x[],
-                const PylithScalar s[],
-                const PylithScalar s_t[],
-                const PylithScalar s_x[],
-                const PylithInt aOff[],
-                const PylithInt aOff_x[],
-                const PylithScalar a[],
-                const PylithScalar a_t[],
-                const PylithScalar a_x[],
-                const PylithReal t,
-                const PylithScalar x[],
-                const PylithInt numConstants,
-                const PylithScalar constants[],
-                PylithScalar stressVector[]);
+    void cauchyStress(const PylithInt dim,
+                      const PylithInt numS,
+                      const PylithInt numA,
+                      const PylithInt sOff[],
+                      const PylithInt sOff_x[],
+                      const PylithScalar s[],
+                      const PylithScalar s_t[],
+                      const PylithScalar s_x[],
+                      const PylithInt aOff[],
+                      const PylithInt aOff_x[],
+                      const PylithScalar a[],
+                      const PylithScalar a_t[],
+                      const PylithScalar a_x[],
+                      const PylithReal t,
+                      const PylithScalar x[],
+                      const PylithInt numConstants,
+                      const PylithScalar constants[],
+                      PylithScalar stressVector[]);
 
     /** Calculate stress for 2-D plane strain isotropic linear incompressible elasticity WITH a reference stress/strain.
      *
@@ -273,24 +273,24 @@ public:
      * Auxiliary fields: [..., refstress(4), refstrain(4), shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void stress_refstate(const PylithInt dim,
-                         const PylithInt numS,
-                         const PylithInt numA,
-                         const PylithInt sOff[],
-                         const PylithInt sOff_x[],
-                         const PylithScalar s[],
-                         const PylithScalar s_t[],
-                         const PylithScalar s_x[],
-                         const PylithInt aOff[],
-                         const PylithInt aOff_x[],
-                         const PylithScalar a[],
-                         const PylithScalar a_t[],
-                         const PylithScalar a_x[],
-                         const PylithReal t,
-                         const PylithScalar x[],
-                         const PylithInt numConstants,
-                         const PylithScalar constants[],
-                         PylithScalar stressVector[]);
+    void cauchyStress_refstate(const PylithInt dim,
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               PylithScalar stressVector[]);
 
     /** Calculate mean stress for 2-D plane strain isotropic linear incompressible elasticity WITHOUT reference stress
      * and strain.
@@ -435,24 +435,24 @@ public:
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void stress(const PylithInt dim,
-                const PylithInt numS,
-                const PylithInt numA,
-                const PylithInt sOff[],
-                const PylithInt sOff_x[],
-                const PylithScalar s[],
-                const PylithScalar s_t[],
-                const PylithScalar s_x[],
-                const PylithInt aOff[],
-                const PylithInt aOff_x[],
-                const PylithScalar a[],
-                const PylithScalar a_t[],
-                const PylithScalar a_x[],
-                const PylithReal t,
-                const PylithScalar x[],
-                const PylithInt numConstants,
-                const PylithScalar constants[],
-                PylithScalar stressVector[]);
+    void cauchyStress(const PylithInt dim,
+                      const PylithInt numS,
+                      const PylithInt numA,
+                      const PylithInt sOff[],
+                      const PylithInt sOff_x[],
+                      const PylithScalar s[],
+                      const PylithScalar s_t[],
+                      const PylithScalar s_x[],
+                      const PylithInt aOff[],
+                      const PylithInt aOff_x[],
+                      const PylithScalar a[],
+                      const PylithScalar a_t[],
+                      const PylithScalar a_x[],
+                      const PylithReal t,
+                      const PylithScalar x[],
+                      const PylithInt numConstants,
+                      const PylithScalar constants[],
+                      PylithScalar stressVector[]);
 
     /** Calculate stress for 3-D isotropic linear incompressible elasticity WITH a reference stress/strain.
      *
@@ -462,24 +462,24 @@ public:
      * Auxiliary fields: [..., refstress(4), refstrain(4), shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void stress_refstate(const PylithInt dim,
-                         const PylithInt numS,
-                         const PylithInt numA,
-                         const PylithInt sOff[],
-                         const PylithInt sOff_x[],
-                         const PylithScalar s[],
-                         const PylithScalar s_t[],
-                         const PylithScalar s_x[],
-                         const PylithInt aOff[],
-                         const PylithInt aOff_x[],
-                         const PylithScalar a[],
-                         const PylithScalar a_t[],
-                         const PylithScalar a_x[],
-                         const PylithReal t,
-                         const PylithScalar x[],
-                         const PylithInt numConstants,
-                         const PylithScalar constants[],
-                         PylithScalar stressVector[]);
+    void cauchyStress_refstate(const PylithInt dim,
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               PylithScalar stressVector[]);
 
     /** Calculate mean stress for 3-D isotropic linear incompressible elasticity WITHOUT reference stress and strain.
      *

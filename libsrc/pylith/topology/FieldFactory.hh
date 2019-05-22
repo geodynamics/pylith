@@ -43,6 +43,12 @@ public:
     /// Destructor.
     virtual ~FieldFactory(void);
 
+    /** Get number of subfield discretizations.
+     *
+     * @returns Number of subfield discretizations.
+     */
+    int getNumSubfields(void) const;
+
     /** Set discretization information for auxiliary subfield.
      *
      * @param[in] subfieldName Name of auxiliary subfield.

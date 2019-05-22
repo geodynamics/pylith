@@ -51,6 +51,14 @@ pylith::topology::FieldFactory::~FieldFactory(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Get number of subfield discretizations.
+int
+pylith::topology::FieldFactory::getNumSubfields(void) const {
+    return _subfieldDiscretizations.size();
+} // getNumSubfields
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set discretization information for auxiliary subfield.
 void
 pylith::topology::FieldFactory::setSubfieldDiscretization(const char* subfieldName,

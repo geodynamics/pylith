@@ -219,11 +219,15 @@ pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field&
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
+    assert(_derivedFactory);
+    if (_derivedFactory->getNumSubfields() == 1) {
+        PYLITH_METHOD_RETURN(NULL);
+    } // if
+
     pylith::topology::Field* derivedField = new pylith::topology::Field(domainMesh);assert(derivedField);
     derivedField->label("Elasticity derived field");
 
     assert(_normalizer);
-    assert(_derivedFactory);
     _derivedFactory->initialize(derivedField, *_normalizer, domainMesh.dimension());
     _derivedFactory->addSubfields();
 
@@ -466,8 +470,8 @@ pylith::materials::Elasticity::_setKernelsDerivedField(pylith::feassemble::Integ
 
     const int spaceDim = coordsys->spaceDim();
     const PetscPointFunc strainKernel =
-        (3 == spaceDim) ? pylith::fekernels::Elasticity3D::cauchy_strain :
-        (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::cauchy_strain :
+        (3 == spaceDim) ? pylith::fekernels::Elasticity3D::cauchyStrain :
+        (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::cauchyStrain :
         NULL;
     kernels[1] = ProjectKernels("cauchy_strain", strainKernel);
 

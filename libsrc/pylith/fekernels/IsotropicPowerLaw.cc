@@ -1350,24 +1350,24 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate(co
 // Calculate stress for 2-D plane strain isotropic power-law viscoelastic material WITHOUT a reference stress and
 // strain.
 void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::stress(const PylithInt dim,
-                                                        const PylithInt numS,
-                                                        const PylithInt numA,
-                                                        const PylithInt sOff[],
-                                                        const PylithInt sOff_x[],
-                                                        const PylithScalar s[],
-                                                        const PylithScalar s_t[],
-                                                        const PylithScalar s_x[],
-                                                        const PylithInt aOff[],
-                                                        const PylithInt aOff_x[],
-                                                        const PylithScalar a[],
-                                                        const PylithScalar a_t[],
-                                                        const PylithScalar a_x[],
-                                                        const PylithReal t,
-                                                        const PylithScalar x[],
-                                                        const PylithInt numConstants,
-                                                        const PylithScalar constants[],
-                                                        PylithScalar stressVector[]) {
+pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress(const PylithInt dim,
+                                                              const PylithInt numS,
+                                                              const PylithInt numA,
+                                                              const PylithInt sOff[],
+                                                              const PylithInt sOff_x[],
+                                                              const PylithScalar s[],
+                                                              const PylithScalar s_t[],
+                                                              const PylithScalar s_x[],
+                                                              const PylithInt aOff[],
+                                                              const PylithInt aOff_x[],
+                                                              const PylithScalar a[],
+                                                              const PylithScalar a_t[],
+                                                              const PylithScalar a_x[],
+                                                              const PylithReal t,
+                                                              const PylithScalar x[],
+                                                              const PylithInt numConstants,
+                                                              const PylithScalar constants[],
+                                                              PylithScalar stressVector[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -1427,24 +1427,24 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::stress(const PylithInt dim,
 // Calculate stress for 2-D plane strain isotropic linear power-law viscoelastic material WITH a reference
 // stress/strain.
 void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::stress_refstate(const PylithInt dim,
-                                                                 const PylithInt numS,
-                                                                 const PylithInt numA,
-                                                                 const PylithInt sOff[],
-                                                                 const PylithInt sOff_x[],
-                                                                 const PylithScalar s[],
-                                                                 const PylithScalar s_t[],
-                                                                 const PylithScalar s_x[],
-                                                                 const PylithInt aOff[],
-                                                                 const PylithInt aOff_x[],
-                                                                 const PylithScalar a[],
-                                                                 const PylithScalar a_t[],
-                                                                 const PylithScalar a_x[],
-                                                                 const PylithReal t,
-                                                                 const PylithScalar x[],
-                                                                 const PylithInt numConstants,
-                                                                 const PylithScalar constants[],
-                                                                 PylithScalar stressVector[]) {
+pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress_refstate(const PylithInt dim,
+                                                                       const PylithInt numS,
+                                                                       const PylithInt numA,
+                                                                       const PylithInt sOff[],
+                                                                       const PylithInt sOff_x[],
+                                                                       const PylithScalar s[],
+                                                                       const PylithScalar s_t[],
+                                                                       const PylithScalar s_x[],
+                                                                       const PylithInt aOff[],
+                                                                       const PylithInt aOff_x[],
+                                                                       const PylithScalar a[],
+                                                                       const PylithScalar a_t[],
+                                                                       const PylithScalar a_x[],
+                                                                       const PylithReal t,
+                                                                       const PylithScalar x[],
+                                                                       const PylithInt numConstants,
+                                                                       const PylithScalar constants[],
+                                                                       PylithScalar stressVector[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -2998,24 +2998,24 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate(const Pylit
 // ---------------------------------------------------------------------------------------------------------------------
 // Calculate stress for 3-D isotropic power-law viscoelastic material WITHOUT a reference stress and strain.
 void
-pylith::fekernels::IsotropicPowerLaw3D::stress(const PylithInt dim,
-                                               const PylithInt numS,
-                                               const PylithInt numA,
-                                               const PylithInt sOff[],
-                                               const PylithInt sOff_x[],
-                                               const PylithScalar s[],
-                                               const PylithScalar s_t[],
-                                               const PylithScalar s_x[],
-                                               const PylithInt aOff[],
-                                               const PylithInt aOff_x[],
-                                               const PylithScalar a[],
-                                               const PylithScalar a_t[],
-                                               const PylithScalar a_x[],
-                                               const PylithReal t,
-                                               const PylithScalar x[],
-                                               const PylithInt numConstants,
-                                               const PylithScalar constants[],
-                                               PylithScalar stressVector[]) {
+pylith::fekernels::IsotropicPowerLaw3D::cauchyStress(const PylithInt dim,
+                                                     const PylithInt numS,
+                                                     const PylithInt numA,
+                                                     const PylithInt sOff[],
+                                                     const PylithInt sOff_x[],
+                                                     const PylithScalar s[],
+                                                     const PylithScalar s_t[],
+                                                     const PylithScalar s_x[],
+                                                     const PylithInt aOff[],
+                                                     const PylithInt aOff_x[],
+                                                     const PylithScalar a[],
+                                                     const PylithScalar a_t[],
+                                                     const PylithScalar a_x[],
+                                                     const PylithReal t,
+                                                     const PylithScalar x[],
+                                                     const PylithInt numConstants,
+                                                     const PylithScalar constants[],
+                                                     PylithScalar stressVector[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
@@ -3078,24 +3078,24 @@ pylith::fekernels::IsotropicPowerLaw3D::stress(const PylithInt dim,
 // ---------------------------------------------------------------------------------------------------------------------
 // Calculate stress for 3-D isotropic power-law viscoelastic material WITH a reference stress/strain.
 void
-pylith::fekernels::IsotropicPowerLaw3D::stress_refstate(const PylithInt dim,
-                                                        const PylithInt numS,
-                                                        const PylithInt numA,
-                                                        const PylithInt sOff[],
-                                                        const PylithInt sOff_x[],
-                                                        const PylithScalar s[],
-                                                        const PylithScalar s_t[],
-                                                        const PylithScalar s_x[],
-                                                        const PylithInt aOff[],
-                                                        const PylithInt aOff_x[],
-                                                        const PylithScalar a[],
-                                                        const PylithScalar a_t[],
-                                                        const PylithScalar a_x[],
-                                                        const PylithReal t,
-                                                        const PylithScalar x[],
-                                                        const PylithInt numConstants,
-                                                        const PylithScalar constants[],
-                                                        PylithScalar stressVector[]) {
+pylith::fekernels::IsotropicPowerLaw3D::cauchyStress_refstate(const PylithInt dim,
+                                                              const PylithInt numS,
+                                                              const PylithInt numA,
+                                                              const PylithInt sOff[],
+                                                              const PylithInt sOff_x[],
+                                                              const PylithScalar s[],
+                                                              const PylithScalar s_t[],
+                                                              const PylithScalar s_x[],
+                                                              const PylithInt aOff[],
+                                                              const PylithInt aOff_x[],
+                                                              const PylithScalar a[],
+                                                              const PylithScalar a_t[],
+                                                              const PylithScalar a_x[],
+                                                              const PylithReal t,
+                                                              const PylithScalar x[],
+                                                              const PylithInt numConstants,
+                                                              const PylithScalar constants[],
+                                                              PylithScalar stressVector[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
@@ -3179,7 +3179,6 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::computeEffectiveStress(cons
                                                                             const PylithScalar powerLawReferenceStrainRate,
                                                                             const PylithScalar powerLawReferenceStress) { //
                                                                                                                           //
-                                                                                                                          //
                                                                                                                           // computeEffectiveStress
     // Check parameters
     assert(j2InitialGuess >= 0.0);
@@ -3251,7 +3250,6 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::_effStressFuncDerivFunc(Pyl
                                                                              const PylithScalar powerLawExponent,
                                                                              const PylithScalar powerLawReferenceStrainRate,
                                                                              const PylithScalar powerLawReferenceStress) { //
-                                                                                                                           //
                                                                                                                            //
                                                                                                                            // _effStressFuncDerivFunc
     PylithScalar y = *func;

@@ -411,15 +411,13 @@ pylith::feassemble::IntegratorDomain::_computeDerivedField(const PylithReal t,
                                                            const PylithReal dt,
                                                            const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_computeDerivedField(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<") empty method");
+    PYLITH_JOURNAL_DEBUG("_computeDerivedField(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
-    if (0 == _kernelsDerivedField.size()) {
+    if (!_derivedField) {
         PYLITH_METHOD_END;
     } // if
 
     assert(_derivedField);
-    assert(_auxiliaryField);
-    PetscDM derivedDM = _derivedField->dmMesh();
     _setKernelConstants(*_derivedField, dt);
 
     const size_t numKernels = _kernelsDerivedField.size();
@@ -430,8 +428,12 @@ pylith::feassemble::IntegratorDomain::_computeDerivedField(const PylithReal t,
     } // for
 
     PetscErrorCode err = 0;
+
+    PetscDM derivedDM = _derivedField->dmMesh();
+    assert(_auxiliaryField);
     err = PetscObjectCompose((PetscObject) derivedDM, "dmAux", (PetscObject) _auxiliaryField->dmMesh());PYLITH_CHECK_ERROR(err);
     err = PetscObjectCompose((PetscObject) derivedDM, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+
     err = DMProjectFieldLocal(derivedDM, t, solution.localVector(), kernelsArray, INSERT_VALUES, _derivedField->localVector());PYLITH_CHECK_ERROR(err);
     delete[] kernelsArray;kernelsArray = NULL;
 

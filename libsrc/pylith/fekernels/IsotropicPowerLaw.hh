@@ -180,24 +180,24 @@ public:
      */
     static
     void Jg3vu_refstate(const PylithInt dim,
-						const PylithInt numS,
-						const PylithInt numA,
-						const PylithInt sOff[],
-						const PylithInt sOff_x[],
-						const PylithScalar s[],
-						const PylithScalar s_t[],
-						const PylithScalar s_x[],
-						const PylithInt aOff[],
-						const PylithInt aOff_x[],
-						const PylithScalar a[],
-						const PylithScalar a_t[],
-						const PylithScalar a_x[],
-						const PylithReal t,
-						const PylithReal s_tshift,
-						const PylithScalar x[],
-						const PylithInt numConstants,
-						const PylithScalar constants[],
-						PylithScalar Jg3[]);
+                        const PylithInt numS,
+                        const PylithInt numA,
+                        const PylithInt sOff[],
+                        const PylithInt sOff_x[],
+                        const PylithScalar s[],
+                        const PylithScalar s_t[],
+                        const PylithScalar s_x[],
+                        const PylithInt aOff[],
+                        const PylithInt aOff_x[],
+                        const PylithScalar a[],
+                        const PylithScalar a_t[],
+                        const PylithScalar a_x[],
+                        const PylithReal t,
+                        const PylithReal s_tshift,
+                        const PylithScalar x[],
+                        const PylithInt numConstants,
+                        const PylithScalar constants[],
+                        PylithScalar Jg3[]);
 
     /** Calculate deviatoric stress for 2-D plane strain isotropic power-law
      * viscoelasticity WITHOUT reference stress and strain.
@@ -263,23 +263,23 @@ public:
      */
     static
     void deviatoricStress4(const PylithInt dim,
-						   const PylithInt numS,
-						   const PylithInt numA,
-						   const PylithInt sOff[],
-						   const PylithInt sOff_x[],
-						   const PylithScalar s[],
-						   const PylithScalar s_t[],
-						   const PylithScalar s_x[],
-						   const PylithInt aOff[],
-						   const PylithInt aOff_x[],
-						   const PylithScalar a[],
-						   const PylithScalar a_t[],
-						   const PylithScalar a_x[],
-						   const PylithReal t,
-						   const PylithScalar x[],
-						   const PylithInt numConstants,
-						   const PylithScalar constants[],
-						   PylithScalar devStressTpdt[]);
+                           const PylithInt numS,
+                           const PylithInt numA,
+                           const PylithInt sOff[],
+                           const PylithInt sOff_x[],
+                           const PylithScalar s[],
+                           const PylithScalar s_t[],
+                           const PylithScalar s_x[],
+                           const PylithInt aOff[],
+                           const PylithInt aOff_x[],
+                           const PylithScalar a[],
+                           const PylithScalar a_t[],
+                           const PylithScalar a_x[],
+                           const PylithReal t,
+                           const PylithScalar x[],
+                           const PylithInt numConstants,
+                           const PylithScalar constants[],
+                           PylithScalar devStressTpdt[]);
 
     /** Calculate deviatoric stress including stress_zz for 2-D plane strain isotropic power-law
      * viscoelasticity WITH reference stress and strain.
@@ -291,23 +291,23 @@ public:
      */
     static
     void deviatoricStress4_refstate(const PylithInt dim,
-									const PylithInt numS,
-									const PylithInt numA,
-									const PylithInt sOff[],
-									const PylithInt sOff_x[],
-									const PylithScalar s[],
-									const PylithScalar s_t[],
-									const PylithScalar s_x[],
-									const PylithInt aOff[],
-									const PylithInt aOff_x[],
-									const PylithScalar a[],
-									const PylithScalar a_t[],
-									const PylithScalar a_x[],
-									const PylithReal t,
-									const PylithScalar x[],
-									const PylithInt numConstants,
-									const PylithScalar constants[],
-									PylithScalar stress[]);
+                                    const PylithInt numS,
+                                    const PylithInt numA,
+                                    const PylithInt sOff[],
+                                    const PylithInt sOff_x[],
+                                    const PylithScalar s[],
+                                    const PylithScalar s_t[],
+                                    const PylithScalar s_x[],
+                                    const PylithInt aOff[],
+                                    const PylithInt aOff_x[],
+                                    const PylithScalar a[],
+                                    const PylithScalar a_t[],
+                                    const PylithScalar a_x[],
+                                    const PylithReal t,
+                                    const PylithScalar x[],
+                                    const PylithInt numConstants,
+                                    const PylithScalar constants[],
+                                    PylithScalar stress[]);
 
     /** Update stress for 2-D plane strain isotropic power-law
      * viscoelasticity WITHOUT reference stress/strain.
@@ -317,23 +317,23 @@ public:
      */
     static
     void updateStress(const PylithInt dim,
-					  const PylithInt numS,
-					  const PylithInt numA,
-					  const PylithInt sOff[],
-					  const PylithInt sOff_x[],
-					  const PylithScalar s[],
-					  const PylithScalar s_t[],
-					  const PylithScalar s_x[],
-					  const PylithInt aOff[],
-					  const PylithInt aOff_x[],
-					  const PylithScalar a[],
-					  const PylithScalar a_t[],
-					  const PylithScalar a_x[],
-					  const PylithReal t,
-					  const PylithScalar x[],
-					  const PylithInt numConstants,
-					  const PylithScalar constants[],
-					  PylithScalar stress[]);
+                      const PylithInt numS,
+                      const PylithInt numA,
+                      const PylithInt sOff[],
+                      const PylithInt sOff_x[],
+                      const PylithScalar s[],
+                      const PylithScalar s_t[],
+                      const PylithScalar s_x[],
+                      const PylithInt aOff[],
+                      const PylithInt aOff_x[],
+                      const PylithScalar a[],
+                      const PylithScalar a_t[],
+                      const PylithScalar a_x[],
+                      const PylithReal t,
+                      const PylithScalar x[],
+                      const PylithInt numConstants,
+                      const PylithScalar constants[],
+                      PylithScalar stress[]);
 
     /** Update stress for 2-D plane strain isotropic power-law
      * viscoelasticity WITH reference stress/strain.
@@ -343,23 +343,23 @@ public:
      */
     static
     void updateStress_refstate(const PylithInt dim,
-							   const PylithInt numS,
-							   const PylithInt numA,
-							   const PylithInt sOff[],
-							   const PylithInt sOff_x[],
-							   const PylithScalar s[],
-							   const PylithScalar s_t[],
-							   const PylithScalar s_x[],
-							   const PylithInt aOff[],
-							   const PylithInt aOff_x[],
-							   const PylithScalar a[],
-							   const PylithScalar a_t[],
-							   const PylithScalar a_x[],
-							   const PylithReal t,
-							   const PylithScalar x[],
-							   const PylithInt numConstants,
-							   const PylithScalar constants[],
-							   PylithScalar stress[]);
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               PylithScalar stress[]);
 
     /** Update viscous strain for plane strain isotropic power-law viscoelasticity WITHOUT reference stress/strain.
      *
@@ -396,23 +396,23 @@ public:
      */
     static
     void updateViscousStrain_refstate(const PylithInt dim,
-									  const PylithInt numS,
-									  const PylithInt numA,
-									  const PylithInt sOff[],
-									  const PylithInt sOff_x[],
-									  const PylithScalar s[],
-									  const PylithScalar s_t[],
-									  const PylithScalar s_x[],
-									  const PylithInt aOff[],
-									  const PylithInt aOff_x[],
-									  const PylithScalar a[],
-									  const PylithScalar a_t[],
-									  const PylithScalar a_x[],
-									  const PylithReal t,
-									  const PylithScalar x[],
-									  const PylithInt numConstants,
-									  const PylithScalar constants[],
-									  PylithScalar visStrain[]);
+                                      const PylithInt numS,
+                                      const PylithInt numA,
+                                      const PylithInt sOff[],
+                                      const PylithInt sOff_x[],
+                                      const PylithScalar s[],
+                                      const PylithScalar s_t[],
+                                      const PylithScalar s_x[],
+                                      const PylithInt aOff[],
+                                      const PylithInt aOff_x[],
+                                      const PylithScalar a[],
+                                      const PylithScalar a_t[],
+                                      const PylithScalar a_x[],
+                                      const PylithReal t,
+                                      const PylithScalar x[],
+                                      const PylithInt numConstants,
+                                      const PylithScalar constants[],
+                                      PylithScalar visStrain[]);
 
     /** Calculate stress for 2-D plane strain isotropic power-law
      * WITHOUT a reference stress and strain.
@@ -424,24 +424,24 @@ public:
      *                    power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), stress(4)]
      */
     static
-    void stress(const PylithInt dim,
-                const PylithInt numS,
-                const PylithInt numA,
-                const PylithInt sOff[],
-                const PylithInt sOff_x[],
-                const PylithScalar s[],
-                const PylithScalar s_t[],
-                const PylithScalar s_x[],
-                const PylithInt aOff[],
-                const PylithInt aOff_x[],
-                const PylithScalar a[],
-                const PylithScalar a_t[],
-                const PylithScalar a_x[],
-                const PylithReal t,
-                const PylithScalar x[],
-                const PylithInt numConstants,
-                const PylithScalar constants[],
-                PylithScalar stressVector[]);
+    void cauchyStress(const PylithInt dim,
+                      const PylithInt numS,
+                      const PylithInt numA,
+                      const PylithInt sOff[],
+                      const PylithInt sOff_x[],
+                      const PylithScalar s[],
+                      const PylithScalar s_t[],
+                      const PylithScalar s_x[],
+                      const PylithInt aOff[],
+                      const PylithInt aOff_x[],
+                      const PylithScalar a[],
+                      const PylithScalar a_t[],
+                      const PylithScalar a_x[],
+                      const PylithReal t,
+                      const PylithScalar x[],
+                      const PylithInt numConstants,
+                      const PylithScalar constants[],
+                      PylithScalar stressVector[]);
 
     /** Calculate stress for 2-D plane strain isotropic power-law
      * WITH a reference stress/strain.
@@ -454,24 +454,24 @@ public:
      *                    viscous_strain(4), stress(4)]
      */
     static
-    void stress_refstate(const PylithInt dim,
-                         const PylithInt numS,
-                         const PylithInt numA,
-                         const PylithInt sOff[],
-                         const PylithInt sOff_x[],
-                         const PylithScalar s[],
-                         const PylithScalar s_t[],
-                         const PylithScalar s_x[],
-                         const PylithInt aOff[],
-                         const PylithInt aOff_x[],
-                         const PylithScalar a[],
-                         const PylithScalar a_t[],
-                         const PylithScalar a_x[],
-                         const PylithReal t,
-                         const PylithScalar x[],
-                         const PylithInt numConstants,
-                         const PylithScalar constants[],
-                         PylithScalar stressVector[]);
+    void cauchyStress_refstate(const PylithInt dim,
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               PylithScalar stressVector[]);
 
 }; // IsotropicPowerLawPlaneStrain
 
@@ -572,24 +572,24 @@ public:
      */
     static
     void Jg3vu_refstate(const PylithInt dim,
-						const PylithInt numS,
-						const PylithInt numA,
-						const PylithInt sOff[],
-						const PylithInt sOff_x[],
-						const PylithScalar s[],
-						const PylithScalar s_t[],
-						const PylithScalar s_x[],
-						const PylithInt aOff[],
-						const PylithInt aOff_x[],
-						const PylithScalar a[],
-						const PylithScalar a_t[],
-						const PylithScalar a_x[],
-						const PylithReal t,
-						const PylithReal s_tshift,
-						const PylithScalar x[],
-						const PylithInt numConstants,
-						const PylithScalar constants[],
-						PylithScalar Jg3[]);
+                        const PylithInt numS,
+                        const PylithInt numA,
+                        const PylithInt sOff[],
+                        const PylithInt sOff_x[],
+                        const PylithScalar s[],
+                        const PylithScalar s_t[],
+                        const PylithScalar s_x[],
+                        const PylithInt aOff[],
+                        const PylithInt aOff_x[],
+                        const PylithScalar a[],
+                        const PylithScalar a_t[],
+                        const PylithScalar a_x[],
+                        const PylithReal t,
+                        const PylithReal s_tshift,
+                        const PylithScalar x[],
+                        const PylithInt numConstants,
+                        const PylithScalar constants[],
+                        PylithScalar Jg3[]);
 
     /** Calculate deviatoric stress for 3-D isotropic power-law
      * viscoelasticity WITHOUT reference stress and strain.
@@ -653,23 +653,23 @@ public:
      */
     static
     void updateStress(const PylithInt dim,
-					  const PylithInt numS,
-					  const PylithInt numA,
-					  const PylithInt sOff[],
-					  const PylithInt sOff_x[],
-					  const PylithScalar s[],
-					  const PylithScalar s_t[],
-					  const PylithScalar s_x[],
-					  const PylithInt aOff[],
-					  const PylithInt aOff_x[],
-					  const PylithScalar a[],
-					  const PylithScalar a_t[],
-					  const PylithScalar a_x[],
-					  const PylithReal t,
-					  const PylithScalar x[],
-					  const PylithInt numConstants,
-					  const PylithScalar constants[],
-					  PylithScalar stress[]);
+                      const PylithInt numS,
+                      const PylithInt numA,
+                      const PylithInt sOff[],
+                      const PylithInt sOff_x[],
+                      const PylithScalar s[],
+                      const PylithScalar s_t[],
+                      const PylithScalar s_x[],
+                      const PylithInt aOff[],
+                      const PylithInt aOff_x[],
+                      const PylithScalar a[],
+                      const PylithScalar a_t[],
+                      const PylithScalar a_x[],
+                      const PylithReal t,
+                      const PylithScalar x[],
+                      const PylithInt numConstants,
+                      const PylithScalar constants[],
+                      PylithScalar stress[]);
 
     /** Update stress for 3-D isotropic power-law viscoelasticity WITH reference stress and strain.
      *
@@ -678,23 +678,23 @@ public:
      */
     static
     void updateStress_refstate(const PylithInt dim,
-							   const PylithInt numS,
-							   const PylithInt numA,
-							   const PylithInt sOff[],
-							   const PylithInt sOff_x[],
-							   const PylithScalar s[],
-							   const PylithScalar s_t[],
-							   const PylithScalar s_x[],
-							   const PylithInt aOff[],
-							   const PylithInt aOff_x[],
-							   const PylithScalar a[],
-							   const PylithScalar a_t[],
-							   const PylithScalar a_x[],
-							   const PylithReal t,
-							   const PylithScalar x[],
-							   const PylithInt numConstants,
-							   const PylithScalar constants[],
-							   PylithScalar stress[]);
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               PylithScalar stress[]);
 
     /** Update viscous strain for 3-D isotropic power-law viscoelasticity WITHOUT reference stress and strain.
      *
@@ -728,23 +728,23 @@ public:
      */
     static
     void updateViscousStrain_refstate(const PylithInt dim,
-									  const PylithInt numS,
-									  const PylithInt numA,
-									  const PylithInt sOff[],
-									  const PylithInt sOff_x[],
-									  const PylithScalar s[],
-									  const PylithScalar s_t[],
-									  const PylithScalar s_x[],
-									  const PylithInt aOff[],
-									  const PylithInt aOff_x[],
-									  const PylithScalar a[],
-									  const PylithScalar a_t[],
-									  const PylithScalar a_x[],
-									  const PylithReal t,
-									  const PylithScalar x[],
-									  const PylithInt numConstants,
-									  const PylithScalar constants[],
-									  PylithScalar visStrain[]);
+                                      const PylithInt numS,
+                                      const PylithInt numA,
+                                      const PylithInt sOff[],
+                                      const PylithInt sOff_x[],
+                                      const PylithScalar s[],
+                                      const PylithScalar s_t[],
+                                      const PylithScalar s_x[],
+                                      const PylithInt aOff[],
+                                      const PylithInt aOff_x[],
+                                      const PylithScalar a[],
+                                      const PylithScalar a_t[],
+                                      const PylithScalar a_x[],
+                                      const PylithReal t,
+                                      const PylithScalar x[],
+                                      const PylithInt numConstants,
+                                      const PylithScalar constants[],
+                                      PylithScalar visStrain[]);
 
     /** Calculate stress for 3-D isotropic power-law viscoelasticity WITHOUT a reference stress and strain.
      *
@@ -755,24 +755,24 @@ public:
      *                    power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), stress(4)]
      */
     static
-    void stress(const PylithInt dim,
-                const PylithInt numS,
-                const PylithInt numA,
-                const PylithInt sOff[],
-                const PylithInt sOff_x[],
-                const PylithScalar s[],
-                const PylithScalar s_t[],
-                const PylithScalar s_x[],
-                const PylithInt aOff[],
-                const PylithInt aOff_x[],
-                const PylithScalar a[],
-                const PylithScalar a_t[],
-                const PylithScalar a_x[],
-                const PylithReal t,
-                const PylithScalar x[],
-                const PylithInt numConstants,
-                const PylithScalar constants[],
-                PylithScalar stressVector[]);
+    void cauchyStress(const PylithInt dim,
+                      const PylithInt numS,
+                      const PylithInt numA,
+                      const PylithInt sOff[],
+                      const PylithInt sOff_x[],
+                      const PylithScalar s[],
+                      const PylithScalar s_t[],
+                      const PylithScalar s_x[],
+                      const PylithInt aOff[],
+                      const PylithInt aOff_x[],
+                      const PylithScalar a[],
+                      const PylithScalar a_t[],
+                      const PylithScalar a_x[],
+                      const PylithReal t,
+                      const PylithScalar x[],
+                      const PylithInt numConstants,
+                      const PylithScalar constants[],
+                      PylithScalar stressVector[]);
 
     /** Calculate stress for 3-D isotropic power-law viscoelasticity WITH a reference stress/strain.
      *
@@ -784,24 +784,24 @@ public:
      *                    viscous_strain(4), stress(4)]
      */
     static
-    void stress_refstate(const PylithInt dim,
-                         const PylithInt numS,
-                         const PylithInt numA,
-                         const PylithInt sOff[],
-                         const PylithInt sOff_x[],
-                         const PylithScalar s[],
-                         const PylithScalar s_t[],
-                         const PylithScalar s_x[],
-                         const PylithInt aOff[],
-                         const PylithInt aOff_x[],
-                         const PylithScalar a[],
-                         const PylithScalar a_t[],
-                         const PylithScalar a_x[],
-                         const PylithReal t,
-                         const PylithScalar x[],
-                         const PylithInt numConstants,
-                         const PylithScalar constants[],
-                         PylithScalar stressVector[]);
+    void cauchyStress_refstate(const PylithInt dim,
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               PylithScalar stressVector[]);
 
 }; // IsotropicPowerLaw3D
 // ---------------------------------------------------------------------------------------------------------------------
@@ -810,106 +810,107 @@ class pylith::fekernels::IsotropicPowerLawEffectiveStress {
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-	/** Compute effective stress for power-law material, given an initial guess and the current parameters.
-	 *
-	 * Used to compute stress and viscous strain.
-	 *
-	 */
-	
-	static
-	PylithScalar computeEffectiveStress(const PylithScalar j2InitialGuess,
-										const PylithScalar stressScale,
-										const PylithScalar ae,
-										const PylithScalar b,
-										const PylithScalar c,
-										const PylithScalar d,
-										const PylithScalar powerLawAlpha,
-										const PylithScalar dt,
-										const PylithScalar j2T,
-										const PylithScalar powerLawExponent,
-										const PylithScalar powerLawReferenceStrainRate,
-										const PylithScalar powerLawReferenceStress);
+    /** Compute effective stress for power-law material, given an initial guess and the current parameters.
+     *
+     * Used to compute stress and viscous strain.
+     *
+     */
+
+    static
+    PylithScalar computeEffectiveStress(const PylithScalar j2InitialGuess,
+                                        const PylithScalar stressScale,
+                                        const PylithScalar ae,
+                                        const PylithScalar b,
+                                        const PylithScalar c,
+                                        const PylithScalar d,
+                                        const PylithScalar powerLawAlpha,
+                                        const PylithScalar dt,
+                                        const PylithScalar j2T,
+                                        const PylithScalar powerLawExponent,
+                                        const PylithScalar powerLawReferenceStrainRate,
+                                        const PylithScalar powerLawReferenceStress);
+
 private:
 
-	/** Calculate effective stress function for a power-law viscoelastic material.
-	 *
-	 * Used for bracketing.
-	 *
-	 */
-	
-	static
-	PylithScalar _effStressFunc(const PylithScalar j2Tpdt,
-								const PylithScalar ae,
-								const PylithScalar b,
-								const PylithScalar c,
-								const PylithScalar d,
-								const PylithScalar powerLawAlpha,
-								const PylithScalar dt,
-								const PylithScalar j2T,
-								const PylithScalar powerLawExponent,
-								const PylithScalar powerLawReferenceStrainRate,
-								const PylithScalar powerLawReferenceStress);
+    /** Calculate effective stress function for a power-law viscoelastic material.
+     *
+     * Used for bracketing.
+     *
+     */
 
-	/** Calculate effective stress function and its derivative for a power-law viscoelastic material.
-	 *
-	 * Used for root-finding.
-	 *
-	 */
-	
-	static
-	void _effStressFuncDerivFunc(PylithScalar* func,
-								 PylithScalar* dfunc,
-								 const PylithScalar j2Tpdt,
-								 const PylithScalar ae,
-								 const PylithScalar b,
-								 const PylithScalar c,
-								 const PylithScalar d,
-								 const PylithScalar powerLawAlpha,
-								 const PylithScalar dt,
-								 const PylithScalar j2T,
-								 const PylithScalar powerLawExponent,
-								 const PylithScalar powerLawReferenceStrainRate,
-								 const PylithScalar powerLawReferenceStress);
+    static
+    PylithScalar _effStressFunc(const PylithScalar j2Tpdt,
+                                const PylithScalar ae,
+                                const PylithScalar b,
+                                const PylithScalar c,
+                                const PylithScalar d,
+                                const PylithScalar powerLawAlpha,
+                                const PylithScalar dt,
+                                const PylithScalar j2T,
+                                const PylithScalar powerLawExponent,
+                                const PylithScalar powerLawReferenceStrainRate,
+                                const PylithScalar powerLawReferenceStress);
 
-	/** Bracket effective stress root.
-	 *
-	 * Used to place bounds on effective stress.
-	 *
-	 */
-	
-	static
-	void _bracket(PylithScalar* px1,
-				  PylithScalar* px2,
-				  const PylithScalar ae,
-				  const PylithScalar b,
-				  const PylithScalar c,
-				  const PylithScalar d,
-				  const PylithScalar powerLawAlpha,
-				  const PylithScalar dt,
-				  const PylithScalar j2T,
-				  const PylithScalar powerLawExponent,
-				  const PylithScalar powerLawReferenceStrainRate,
-				  const PylithScalar powerLawReferenceStress);
+    /** Calculate effective stress function and its derivative for a power-law viscoelastic material.
+     *
+     * Used for root-finding.
+     *
+     */
 
-	/** Find zero of effective stress function using Newton's method with bisection.
-	 *
-	 * Used to find the effective stress.
-	 *
-	 */
-	
-	static
-	PylithScalar _search(PylithScalar x1,
-						 PylithScalar x2,
-						 const PylithScalar ae,
-						 const PylithScalar b,
-						 const PylithScalar c,
-						 const PylithScalar d,
-						 const PylithScalar powerLawAlpha,
-						 const PylithScalar dt,
-						 const PylithScalar j2T,
-						 const PylithScalar powerLawExponent,
-						 const PylithScalar powerLawReferenceStrainRate,
-						 const PylithScalar powerLawReferenceStress);
+    static
+    void _effStressFuncDerivFunc(PylithScalar* func,
+                                 PylithScalar* dfunc,
+                                 const PylithScalar j2Tpdt,
+                                 const PylithScalar ae,
+                                 const PylithScalar b,
+                                 const PylithScalar c,
+                                 const PylithScalar d,
+                                 const PylithScalar powerLawAlpha,
+                                 const PylithScalar dt,
+                                 const PylithScalar j2T,
+                                 const PylithScalar powerLawExponent,
+                                 const PylithScalar powerLawReferenceStrainRate,
+                                 const PylithScalar powerLawReferenceStress);
+
+    /** Bracket effective stress root.
+     *
+     * Used to place bounds on effective stress.
+     *
+     */
+
+    static
+    void _bracket(PylithScalar* px1,
+                  PylithScalar* px2,
+                  const PylithScalar ae,
+                  const PylithScalar b,
+                  const PylithScalar c,
+                  const PylithScalar d,
+                  const PylithScalar powerLawAlpha,
+                  const PylithScalar dt,
+                  const PylithScalar j2T,
+                  const PylithScalar powerLawExponent,
+                  const PylithScalar powerLawReferenceStrainRate,
+                  const PylithScalar powerLawReferenceStress);
+
+    /** Find zero of effective stress function using Newton's method with bisection.
+     *
+     * Used to find the effective stress.
+     *
+     */
+
+    static
+    PylithScalar _search(PylithScalar x1,
+                         PylithScalar x2,
+                         const PylithScalar ae,
+                         const PylithScalar b,
+                         const PylithScalar c,
+                         const PylithScalar d,
+                         const PylithScalar powerLawAlpha,
+                         const PylithScalar dt,
+                         const PylithScalar j2T,
+                         const PylithScalar powerLawExponent,
+                         const PylithScalar powerLawReferenceStrainRate,
+                         const PylithScalar powerLawReferenceStress);
 
 }; // IsotropicPowerLaw
 

@@ -113,15 +113,9 @@ pylith::feassemble::Integrator::poststep(const PylithReal t,
     PYLITH_JOURNAL_DEBUG("poststep(t="<<t<<", dt="<<dt<<")");
 
     _updateStateVars(t, dt, solution);
-<<<<<<< HEAD
-    notifyObservers(t, tindex, solution);
-=======
 
-    const bool infoOnly = false;
-    assert(_observers);
     _computeDerivedField(t, dt, solution);
-    _observers->notifyObservers(t, tindex, solution, infoOnly);
->>>>>>> fe48c40b5... Start implementing computation of derived field.
+    notifyObservers(t, tindex, solution);
 
     PYLITH_METHOD_END;
 } // poststep
