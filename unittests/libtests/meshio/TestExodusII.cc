@@ -17,6 +17,7 @@
 //
 
 #include <portinfo>
+#include <stdexcept>
 
 #include "TestExodusII.hh" // Implementation of class methods
 
@@ -234,4 +235,4 @@ pylith::meshio::TestExodusII::testGetVarString(void)
 } // testGetVarString
 
 
-// End of file 
+// End of file
