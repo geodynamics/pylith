@@ -114,7 +114,7 @@ pylith::mmstests::TestFaultKin::_initialize(void) {
     for (int i = 0; i < _data->faultNumAuxSubfields; ++i) {
         const pylith::topology::FieldBase::Discretization& info = _data->faultAuxDiscretizations[i];
         _fault->setAuxiliarySubfieldDiscretization(_data->faultAuxSubfields[i], info.basisOrder, info.quadOrder,
-                                                   _data->spaceDim, info.isBasisContinuous, info.feSpace);
+                                                   _data->spaceDim-1, info.isBasisContinuous, info.feSpace);
     } // for
 
     // Set up problem.

@@ -92,6 +92,33 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic :
         return "m/s";
     } // vp_units
 
+    // Kinematic rupture auxiliary components.
+
+    // Initiation time
+    static double initiation_time(const double x,
+                                  const double y) {
+        return 0.0;
+    } // initiation_time
+
+    static const char* time_units(void) {
+        return "s";
+    } // time_units
+
+    // Slip
+    static double finalslip_opening(const double x,
+                                    const double y) {
+        return 0.0;
+    } // slip_opening
+
+    static double finalslip_leftlateral(const double x,
+                                        const double y) {
+        return -1.5;
+    } // slip_leftlateral
+
+    static const char* slip_units(void) {
+        return "m";
+    } // slip_units
+
     // Solution subfields.
 
     // Displacement
@@ -105,24 +132,15 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic :
         return (x < 0.0) ? +0.75 : -0.75;
     } // disp_y
 
-    static const char* disp_units(void) {
-        return "m";
-    } // disp_units
-
-    // Slip
-    static double slip_opening(const double x,
-                               const double y) {
+    static double faulttraction_x(const double x,
+                                  const double y) {
         return 0.0;
-    } // slip_opening
+    } // faulttraction_x
 
-    static double slip_leftlateral(const double x,
-                                   const double y) {
-        return -1.5;
-    } // slip_leftlateral
-
-    static const char* slip_units(void) {
-        return "m";
-    } // slip_units
+    static double faulttraction_y(const double x,
+                                  const double y) {
+        return 0.0;
+    } // faulttraction_y
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
                                           PetscReal t,
@@ -140,6 +158,23 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic :
 
         return 0;
     } // solnkernel_disp
+
+    static PetscErrorCode solnkernel_lagrangemultiplier(PetscInt spaceDim,
+                                                        PetscReal t,
+                                                        const PetscReal x[],
+                                                        PetscInt numComponents,
+                                                        PetscScalar* s,
+                                                        void* context) {
+        CPPUNIT_ASSERT(2 == spaceDim);
+        CPPUNIT_ASSERT(x);
+        CPPUNIT_ASSERT(2 == numComponents);
+        CPPUNIT_ASSERT(s);
+
+        s[0] = faulttraction_x(x[0], x[1]);
+        s[1] = faulttraction_y(x[0], x[1]);
+
+        return 0;
+    } // solnkernel_lagrangemultiplier
 
 protected:
 
@@ -198,8 +233,9 @@ protected:
         _data->kinsrc = new pylith::faults::KinSrcStep();CPPUNIT_ASSERT(_data->kinsrc);
         _data->kinsrc->originTime(0.0);
         CPPUNIT_ASSERT(_data->faultAuxDB);
-        _data->faultAuxDB->addValue("slip_opening", slip_opening, slip_units());
-        _data->faultAuxDB->addValue("slip_left_lateral", slip_leftlateral, slip_units());
+        _data->faultAuxDB->addValue("initiation_time", initiation_time, time_units());
+        _data->faultAuxDB->addValue("final_slip_opening", finalslip_opening, slip_units());
+        _data->faultAuxDB->addValue("final_slip_left_lateral", finalslip_leftlateral, slip_units());
         _data->faultAuxDB->coordsys(*_data->cs);
 
         _data->faultNumAuxSubfields = 1;
@@ -237,6 +273,7 @@ protected:
         PetscDS prob = NULL;
         err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolution(prob, 1, solnkernel_lagrangemultiplier, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
 
 }; // TestFaultKin2D_RigidBlocksStatic
