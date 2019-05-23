@@ -108,7 +108,7 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
                                    const spatialdata::units::Nondimensional& normalizer,
                                    const spatialdata::geocoords::CoordSys* cs) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("initialize(faultAuxField"<<faultAuxField.label()<<", normalizer="<<typeid(normalizer).name()<<", cs="<<cs<<")");
+    PYLITH_COMPONENT_DEBUG("initialize(faultAuxField"<<faultAuxField.label()<<", normalizer, cs="<<typeid(cs).name()<<")");
 
     // Set default discretization of auxiliary subfields to match slip subfield in integrator auxiliary field.
     assert(_auxFactory);
@@ -127,7 +127,11 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
 
     _auxFactory->setValuesFromDB();
 
-    // _auxField->view("KINSRC AUXILIARY FIELD"); // :DEBUG: TEMPORARY
+    journal::debug_t debug(PyreComponent::getName());
+    if (debug.state()) {
+        PYLITH_COMPONENT_DEBUG("Displaying kinematic earthquake source auxiliary field");
+        _auxField->view("KinSrc auxiliary field");
+    } // if
 
     PYLITH_METHOD_END;
 } // initialize
