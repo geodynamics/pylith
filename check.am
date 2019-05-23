@@ -24,7 +24,7 @@ check-local: check-TESTS
 
 
 leakcheck:
-	valgrind --log-file=valgrind_$(subpackage).log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/test$(subpackage)
+	valgrind --log-file=valgrind_$(subpackage).log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/test_$(subpackage)
 
 # Check test coverage. Only works with gcc and requires gcov. lcov provides a GUI for viewing coverage.
 # Requires compiling and linking (CFLAGS, CXXFLAGS, LDFLAGS) with --coverage.

@@ -22,12 +22,12 @@ include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
-TESTS = testfriction
+TESTS = test_friction
 
-check_PROGRAMS = testfriction
+check_PROGRAMS = test_friction
 
 # Primary source files
-testfriction_SOURCES = \
+test_friction_SOURCES = \
 	test_friction.cc
 
 
@@ -37,17 +37,17 @@ AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES)
 
-testfriction_LDFLAGS = \
+test_friction_LDFLAGS = \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-testfriction_LDADD = \
+test_friction_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
-  testfriction_LDADD += -lnetcdf
+  test_friction_LDADD += -lnetcdf
 endif
 
 

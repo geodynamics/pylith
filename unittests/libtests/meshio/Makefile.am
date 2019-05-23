@@ -21,12 +21,12 @@ include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
-TESTS = testmeshio testvtk
+TESTS = test_meshio test_vtk
 
-check_PROGRAMS = testmeshio testvtk
+check_PROGRAMS = test_meshio test_vtk
 
 # general meshio
-testmeshio_SOURCES = \
+test_meshio_SOURCES = \
 	test_meshio.cc \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
@@ -41,7 +41,7 @@ testmeshio_SOURCES = \
 #TestFieldFilterNone.cc
 
 # VTK data writer
-testvtk_SOURCES = \
+test_vtk_SOURCES = \
 	test_meshio.cc \
 	FieldFactory.cc \
 	TestDataWriter.cc \
@@ -66,7 +66,7 @@ testvtk_SOURCES = \
 # TestOutputObserver.cc \
 # TestOutputSolnDomain.cc \
 # TestOutputSolnBoundary.cc \
-# TestOutputSolnPoints.cc 
+# TestOutputSolnPoints.cc
 
 
 noinst_HEADERS = \
@@ -100,43 +100,43 @@ AM_CPPFLAGS += \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES) \
 	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
 
-testmeshio_LDFLAGS = \
+test_meshio_LDFLAGS = \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-testmeshio_LDADD = \
+test_meshio_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
-testvtk_LDFLAGS = \
+test_vtk_LDFLAGS = \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-testvtk_LDADD = \
+test_vtk_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
-  testmeshio_SOURCES += \
+  test_meshio_SOURCES += \
 	TestExodusII.cc \
 	TestMeshIOCubit.cc \
 	TestMeshIOCubit_Cases.cc
   noinst_HEADERS += \
 	TestExodusII.hh \
 	TestMeshIOCubit.hh
-  testmeshio_LDADD += -lnetcdf
-  testvtk_LDADD += -lnetcdf
+  test_meshio_LDADD += -lnetcdf
+  test_vtk_LDADD += -lnetcdf
 endif
 
 if ENABLE_HDF5
-  TESTS += testhdf5
+  TESTS += test_hdf5
 
-  check_PROGRAMS += testhdf5
+  check_PROGRAMS += test_hdf5
 
   # HDF5 data writer
-  testhdf5_SOURCES = \
+  test_hdf5_SOURCES = \
 	test_meshio.cc \
 	FieldFactory.cc \
 	TestDataWriter.cc \
@@ -185,10 +185,10 @@ if ENABLE_HDF5
 # TestDataWriterHDF5ExtFaultMesh.hh
 
 
-  testhdf5_LDFLAGS = \
+  test_hdf5_LDFLAGS = \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-  testhdf5_LDADD = \
+  test_hdf5_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
@@ -196,7 +196,7 @@ if ENABLE_HDF5
 	-lhdf5
 
 if ENABLE_CUBIT
-  testhdf5_LDADD += -lnetcdf
+  test_hdf5_LDADD += -lnetcdf
 endif
 
 endif

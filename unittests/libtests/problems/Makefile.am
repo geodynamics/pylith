@@ -22,12 +22,12 @@ include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
-TESTS = testproblems
+TESTS = test_problems
 
-check_PROGRAMS = testproblems
+check_PROGRAMS = test_problems
 
 # Primary source files
-testproblems_SOURCES = \
+test_problems_SOURCES = \
 	TestPhysics.cc \
 	TestObserversSoln.cc \
 	TestObserversPhysics.cc \
@@ -47,17 +47,17 @@ AM_CPPFLAGS += \
 	$(PETSC_CC_INCLUDES) \
 	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
 
-testproblems_LDFLAGS = \
+test_problems_LDFLAGS = \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-testproblems_LDADD = \
+test_problems_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
-  testproblems_LDADD += -lnetcdf
+  test_problems_LDADD += -lnetcdf
 endif
 
 #CLEANFILES = $(noinst_tmp)

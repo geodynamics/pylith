@@ -22,12 +22,12 @@ include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
-TESTS = testfeassemble
+TESTS = test_feassemble
 
-check_PROGRAMS = testfeassemble
+check_PROGRAMS = test_feassemble
 
 # Primary source files
-testfeassemble_SOURCES = \
+test_feassemble_SOURCES = \
 	TestAuxiliaryFactory.cc \
 	TestIntegratorDomain.cc \
 	test_feassemble.cc
@@ -41,17 +41,17 @@ AM_CPPFLAGS += \
 	$(PETSC_CC_INCLUDES) \
 	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
 
-testfeassemble_LDFLAGS = \
+test_feassemble_LDFLAGS = \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-testfeassemble_LDADD = \
+test_feassemble_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
-  testfeassemble_LDADD += -lnetcdf
+  test_feassemble_LDADD += -lnetcdf
 endif
 
 

@@ -20,12 +20,12 @@ subpackage = testing
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/check.am
 
-TESTS = testutils
+TESTS = test_utils
 
-check_PROGRAMS = testutils
+check_PROGRAMS = test_utils
 
 # Primary source files
-testutils_SOURCES = \
+test_utils_SOURCES = \
 	TestStubMethodTracker.cc \
 	test_testing.cc
 
@@ -35,15 +35,15 @@ noinst_HEADERS = \
 AM_CPPFLAGS += $(PETSC_CC_INCLUDES)
 AM_CPPFLAGS += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR)
 
-testutils_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
-testutils_LDADD = \
+test_utils_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+test_utils_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
-  testutils_LDADD += -lnetcdf
+  test_utils_LDADD += -lnetcdf
 endif
 
 

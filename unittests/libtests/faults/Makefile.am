@@ -22,12 +22,12 @@ include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
-TESTS = testfaults
+TESTS = test_faults
 
-check_PROGRAMS = testfaults
+check_PROGRAMS = test_faults
 
 # Primary source files
-testfaults_SOURCES = \
+test_faults_SOURCES = \
 	test_faults.cc
 
 
@@ -37,18 +37,18 @@ AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES)
 
-testfaults_LDFLAGS = \
+test_faults_LDFLAGS = \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-testfaults_LDADD = \
+test_faults_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
-  testfaults_LDADD += -lnetcdf
+  test_faults_LDADD += -lnetcdf
 endif
 
 
-# End of file 
+# End of file

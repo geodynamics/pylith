@@ -22,12 +22,12 @@ include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
-TESTS = testtopology
+TESTS = test_topology
 
-check_PROGRAMS = testtopology
+check_PROGRAMS = test_topology
 
 # Primary source files
-testtopology_SOURCES = \
+test_topology_SOURCES = \
 	TestMesh.cc \
 	TestMeshOps.cc \
 	TestSubmesh.cc \
@@ -70,14 +70,14 @@ AM_CPPFLAGS += \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES) \
 	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
 
-testtopology_LDADD = \
+test_topology_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
-  testtopology_LDADD += -lnetcdf
+  test_topology_LDADD += -lnetcdf
 endif
 
 noinst_tmp = \

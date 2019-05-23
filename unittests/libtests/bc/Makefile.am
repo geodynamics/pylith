@@ -22,12 +22,12 @@ include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
-TESTS = testbc
+TESTS = test_bc
 
-check_PROGRAMS = testbc
+check_PROGRAMS = test_bc
 
 # Primary source files
-testbc_SOURCES = \
+test_bc_SOURCES = \
 	TestBoundaryMesh.cc \
 	TestBoundaryMesh_Cases.cc \
 	TestDirichletTimeDependent.cc \
@@ -49,18 +49,18 @@ AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES)
 
-testbc_LDFLAGS = \
+test_bc_LDFLAGS = \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-testbc_LDADD = \
+test_bc_LDADD = \
 	-lcppunit \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
-  testbc_LDADD += -lnetcdf
+  test_bc_LDADD += -lnetcdf
 endif
 
 
-# End of file 
+# End of file
