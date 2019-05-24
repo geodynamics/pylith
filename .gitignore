@@ -27,11 +27,6 @@ examples/3d/subduction/mesh/*.sat
 examples/3d/subduction/spatialdb/fault_slabtop_slowslip.spatialdb
 examples/3d/subduction/spatialdb/fault_slabtop_slowslip.timedb
 examples/3d/subduction/spatialdb/mat_initial_stress_grav-*.spatialdb
-tests_auto/*/*/*.h5
-tests_auto/*/*/*.xmf
-tests_auto/*/*/*_disp.spatialdb
-tests_auto/*/*/output
-tests_auto/*/*/output
 doc/userguide/userguide.aux
 doc/userguide/userguide.fdb_latexmk
 doc/userguide/userguide.fls
@@ -41,4 +36,3 @@ doc/userguide/userguide.lof
 doc/userguide/userguide.log
 doc/userguide/userguide.lot
 doc/userguide/userguide.out
-/tests_auto/linearelasticity/nofaults/*.spatialdb
