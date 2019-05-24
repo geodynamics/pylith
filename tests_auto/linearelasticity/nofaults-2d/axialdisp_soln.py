@@ -15,22 +15,21 @@
 #
 # ----------------------------------------------------------------------
 #
-
-# @file tests_auto/linearelasticity/nofaults/axialdisp_soln.py
-##
+# @file tests_auto/linearelasticity/nofaults-2d/axialdisp_soln.py
+#
 # @brief Analytical solution to axial displacement problem.
-
+#
 # 2-D axial compression test with linear quadrilateral cells.
-##
-# Uy=-a
-# ----------
-# |        |
+#
+#             Uy=-a
+#          ----------
+#          |        |
 # Ux=-b    |        |
-# |        |
-# |        |
-# ----------
-# Uy=+a
-##
+#          |        |
+#          |        |
+#          ----------
+#            Uy=+a
+#
 # Dirichlet boundary conditions
 # Ux(x,0) = b
 # Uy(-4000,y) = -a
@@ -63,12 +62,11 @@ exy = 1.0 / (2 * p_mu) * (sxy)
 #print exx,eyy,exy,ezz
 #print -exx*p_lambda/(p_lambda+2*p_mu)
 
+
 # ----------------------------------------------------------------------
-
-
 class AnalyticalSoln(object):
     """
-    Analytical solution to axial/shear displacement problem.
+    Analytical solution to axial extension problem.
     """
     SPACE_DIM = 2
     TENSOR_SIZE = 4
@@ -79,8 +77,9 @@ class AnalyticalSoln(object):
             "density": self.density,
             "shear_modulus": self.shear_modulus,
             "bulk_modulus": self.bulk_modulus,
-            "cauchy_strain": self.cauchy_strain,
-            "cauchy_stress": self.cauchy_stress,
+            "cauchy_strain": self.strain,
+            "cauchy_stress": self.stress,
+            "initial_amplitude": self.displacement,
         }
         return
 
@@ -121,7 +120,7 @@ class AnalyticalSoln(object):
         bulk_modulus = (p_lambda + 2.0 / 3.0 * p_mu) * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return bulk_modulus
 
-    def cauchy_strain(self, locs):
+    def strain(self, locs):
         """
         Compute strain field at locations.
         """
@@ -133,7 +132,7 @@ class AnalyticalSoln(object):
         strain[0, :, 3] = exy
         return strain
 
-    def cauchy_stress(self, locs):
+    def stress(self, locs):
         """
         Compute stress field at locations.
         """

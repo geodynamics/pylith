@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 # @file tests_auto/linearelasticity/nofaults/TestAxialDisp.py
-##
+#
 # @brief Test suite for testing pylith with 2-D axial extension.
 
 import unittest
@@ -34,6 +34,7 @@ class TestCase(unittest.TestCase):
     Test suite for testing PyLith with 2-D axial extension.
     """
     NAME = None  # Set in child class.
+    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg"]
 
     def setUp(self):
         """
@@ -52,24 +53,35 @@ class TestCase(unittest.TestCase):
     def test_solution_domain(self):
         filename = "output/{}-domain.h5".format(self.NAME)
         vertexFields = ["displacement"]
-        cellFields = []
-        check_data(filename, vertexFields, cellFields, self, self.DOMAIN, self.verbosity)
+        check_data(filename, self, self.DOMAIN, vertexFields=vertexFields)
         return
 
     def test_material_info(self):
-        vertexFields = []
         cellFields = ["density", "bulk_modulus", "shear_modulus"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
-            check_data(filename, vertexFields, cellFields, self, self.MATERIALS[material], self.verbosity)
+            check_data(filename, self, self.MATERIALS[material], cellFields=cellFields)
         return
 
     def test_material_solution(self):
         vertexFields = ["displacement"]
-        cellFields = []
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}.h5".format(self.NAME, material)
-            check_data(filename, vertexFields, cellFields, self, self.MATERIALS[material], self.verbosity)
+            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields)
+        return
+
+    def test_bcdirichlet_info(self):
+        vertexFields = ["initial_amplitude"]
+        for bc in self.DIRICHLET_BOUNDARIES:
+            filename = "output/{}-{}_info.h5".format(self.NAME, bc)
+            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
+        return
+
+    def test_bcdirichlet_solution(self):
+        vertexFields = ["displacement"]
+        for bc in self.DIRICHLET_BOUNDARIES:
+            filename = "output/{}-{}.h5".format(self.NAME, bc)
+            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
         return
 
 
@@ -79,7 +91,7 @@ class TestQuad(TestCase, meshes.Quad):
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["axialdisp.cfg", "quad.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["axialdisp.cfg", "axialdisp_quad.cfg"])
         return
 
 
@@ -89,7 +101,7 @@ class TestTri(TestCase, meshes.Tri):
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["axialdisp.cfg", "tri.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["axialdisp.cfg", "axialdisp_tri.cfg"])
         return
 
 

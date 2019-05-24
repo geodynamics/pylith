@@ -42,8 +42,9 @@ class TestApp(TestDriver):
         for test in TestAxialDisp.test_cases():
             suite.addTest(unittest.makeSuite(test))
 
-        #from TestShearTraction import TestShearTraction
-        # suite.addTest(unittest.makeSuite(TestShearTraction))
+        import TestShearTraction
+        for test in TestShearTraction.test_cases():
+            suite.addTest(unittest.makeSuite(test))
 
         return suite
 

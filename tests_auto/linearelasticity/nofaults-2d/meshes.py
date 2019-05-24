@@ -41,6 +41,28 @@ class Tri(object):
             "nvertices": 43,
         }
     }
+    BOUNDARIES = {
+        "bc_xneg": {
+            "ncells": 8,
+            "ncorners": 2,
+            "nvertices": 9,
+        },
+        "bc_xpos": {
+            "ncells": 8,
+            "ncorners": 2,
+            "nvertices": 9,
+        },
+        "bc_yneg": {
+            "ncells": 8,
+            "ncorners": 2,
+            "nvertices": 9,
+        },
+        "bc_ypos": {
+            "ncells": 8,
+            "ncorners": 2,
+            "nvertices": 9,
+        },
+    }
 
 
 class Quad(object):
@@ -63,6 +85,28 @@ class Quad(object):
             "ncorners": 4,
             "nvertices": 45,
         }
+    }
+    BOUNDARIES = {
+        "bc_xneg": {
+            "ncells": 8,
+            "ncorners": 2,
+            "nvertices": 9,
+        },
+        "bc_xpos": {
+            "ncells": 8,
+            "ncorners": 2,
+            "nvertices": 9,
+        },
+        "bc_yneg": {
+            "ncells": 8,
+            "ncorners": 2,
+            "nvertices": 9,
+        },
+        "bc_ypos": {
+            "ncells": 8,
+            "ncorners": 2,
+            "nvertices": 9,
+        },
     }
 
 

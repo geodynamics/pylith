@@ -56,7 +56,7 @@ class TestDriver(object):
 # ----------------------------------------------------------------------------------------------------------------------
 class HDF5Checker(object):
 
-    def __init__(self, filename, testcase, mesh, verbosity):
+    def __init__(self, filename, testcase, mesh):
         """Constructor.
         """
         import h5py
@@ -64,7 +64,6 @@ class HDF5Checker(object):
         self.testcase = testcase
         self.exactsoln = testcase.exactsoln
         self.mesh = mesh
-        self.verbosity = verbosity
 
         self.vertices = None
         self.cellCentroids = None
@@ -109,7 +108,7 @@ class HDF5Checker(object):
         vertices = self._getVertices()
         (nvertices, spaceDim) = vertices.shape
         fieldE = self.exactsoln.getField(fieldName, vertices)
-        self._checkField(fieldName, fieldE, field)
+        self._checkField(fieldName, fieldE, field, vertices)
         return
 
     def checkCellField(self, fieldName):
@@ -123,10 +122,10 @@ class HDF5Checker(object):
         centroids = self._getCellCentroids()
         (ncells, spaceDim) = centroids.shape
         fieldE = self.exactsoln.getField(fieldName, centroids)
-        self._checkField(fieldName, fieldE, field)
+        self._checkField(fieldName, fieldE, field, centroids)
         return
 
-    def _checkField(self, fieldName, fieldE, field):
+    def _checkField(self, fieldName, fieldE, field, pts):
         (nstepsE, nptsE, ncompsE) = fieldE.shape
         (nsteps, npts, ncomps) = field.shape
         self.testcase.assertEqual(nstepsE, nsteps)
@@ -135,7 +134,7 @@ class HDF5Checker(object):
 
         toleranceAbsMask = 0.1
         tolerance = 1.0e-5
-        scale = numpy.mean(fieldE.ravel())
+        scale = numpy.mean(numpy.abs(fieldE.ravel()))
         for istep in xrange(nsteps):
             for icomp in xrange(ncomps):
                 okay = numpy.zeros((npts,), dtype=numpy.bool)
@@ -157,26 +156,26 @@ class HDF5Checker(object):
                     print("Expected values (not okay): ", fieldE[istep, ~okay, icomp])
                     print("Computed values (not okay): ", field[istep, ~okay, icomp])
                     print("Relative diff (not okay): ", diff[~okay])
-                    print("Coordinates (not okay): ", vertices[~okay, :])
-                    self.testcase.assertEqual(nvertices, numpy.sum(okay))
+                    print("Coordinates (not okay): ", pts[~okay, :])
+                    self.testcase.assertEqual(npts, numpy.sum(okay))
 
         return
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def check_data(filename, vertexFields, cellFields, testcase, mesh, verbosity=0):
+def check_data(filename, testcase, mesh, vertexFields=[], cellFields=[]):
     """Check vertex and cell fields in specified file.
     """
     if not has_h5py():
         return
 
-    checker = HDF5Checker(filename, testcase, mesh, verbosity)
+    checker = HDF5Checker(filename, testcase, mesh)
     for field in vertexFields:
-        if verbosity > 0:
+        if testcase.verbosity > 0:
             print("Checking vertex field '{}' in file {}.".format(field, filename))
         checker.checkVertexField(field)
     for field in cellFields:
-        if verbosity > 0:
+        if testcase.verbosity > 0:
             print("Checking cell field '{}' in file {}.".format(field, filename))
         checker.checkCellField(field)
     return

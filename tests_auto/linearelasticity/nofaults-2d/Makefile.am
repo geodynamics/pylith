@@ -35,18 +35,24 @@ dist_noinst_DATA = \
 	bc.jou \
 	mesh_tri.jou \
 	mesh_tri.exo \
-	tri.cfg \
 	mesh_quad.jou \
 	mesh_quad.exo \
-	quad.cfg \
 	pylithapp.cfg \
 	axialdisp.cfg \
+	axialdisp_tri.cfg \
+	axialdisp_quad.cfg \
 	sheartraction.cfg \
+	sheartraction_tri.cfg \
+	sheartraction_quad.cfg \
 	gravity.cfg \
 	gravity_nodisp.cfg \
 	gravity_incompressible.cfg
 
-noinst_TMP =
+noinst_TMP = \
+	axialdisp_bc.spatialdb \
+	axialdisp_ic.spatialdb \
+	sheartraction_disp.spatialdb
+
 
 
 # 'export' the input files by performing a mock install
@@ -63,7 +69,7 @@ BUILT_SOURCES = export-data
 clean-local: clean-local-tmp clean-data
 .PHONY: clean-local-tmp
 clean-local-tmp:
-	-rm *.h5 *.xmf *.pyc
+	-rm *.pyc output/*
 
 
 # End of file
