@@ -40,9 +40,12 @@ class TestCase(unittest.TestCase):
         Setup for test.
         """
         self.exactsoln = AnalyticalSoln()
+        self.verbosity = 0
         return
 
     def run_pylith(self, testName, args):
+        if self.verbosity > 0:
+            print("Running Pylith with args '{}' ...".format(" ".join(args)))
         run_pylith(testName, args, GenerateDB)
         return
 
@@ -50,13 +53,23 @@ class TestCase(unittest.TestCase):
         filename = "output/{}-domain.h5".format(self.NAME)
         vertexFields = ["displacement"]
         cellFields = []
-        check_data(filename, vertexFields, cellFields, self, self.DOMAIN)
+        check_data(filename, vertexFields, cellFields, self, self.DOMAIN, self.verbosity)
         return
 
     def test_material_info(self):
+        vertexFields = []
+        cellFields = ["density", "bulk_modulus", "shear_modulus"]
+        for material in self.MATERIALS.keys():
+            filename = "output/{}-{}_info.h5".format(self.NAME, material)
+            check_data(filename, vertexFields, cellFields, self, self.MATERIALS[material], self.verbosity)
         return
 
     def test_material_solution(self):
+        vertexFields = ["displacement"]
+        cellFields = []
+        for material in self.MATERIALS.keys():
+            filename = "output/{}-{}.h5".format(self.NAME, material)
+            check_data(filename, vertexFields, cellFields, self, self.MATERIALS[material], self.verbosity)
         return
 
 

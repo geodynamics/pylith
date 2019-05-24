@@ -71,11 +71,14 @@ class AnalyticalSoln(object):
     Analytical solution to axial/shear displacement problem.
     """
     SPACE_DIM = 2
-    TENSOR_SIZE = 3
+    TENSOR_SIZE = 4
 
     def __init__(self):
         self.fields = {
             "displacement": self.displacement,
+            "density": self.density,
+            "shear_modulus": self.shear_modulus,
+            "bulk_modulus": self.bulk_modulus,
             "cauchy_strain": self.cauchy_strain,
             "cauchy_stress": self.cauchy_stress,
         }
@@ -94,6 +97,30 @@ class AnalyticalSoln(object):
         disp[0, :, 1] = eyy * locs[:, 1] + exy * locs[:, 0]
         return disp
 
+    def density(self, locs):
+        """
+        Compute density field at locations.
+        """
+        (npts, dim) = locs.shape
+        density = p_density * numpy.ones((1, npts, 1), dtype=numpy.float64)
+        return density
+
+    def shear_modulus(self, locs):
+        """
+        Compute shear modulus field at locations.
+        """
+        (npts, dim) = locs.shape
+        shear_modulus = p_mu * numpy.ones((1, npts, 1), dtype=numpy.float64)
+        return shear_modulus
+
+    def bulk_modulus(self, locs):
+        """
+        Compute bulk modulus field at locations.
+        """
+        (npts, dim) = locs.shape
+        bulk_modulus = (p_lambda + 2.0 / 3.0 * p_mu) * numpy.ones((1, npts, 1), dtype=numpy.float64)
+        return bulk_modulus
+
     def cauchy_strain(self, locs):
         """
         Compute strain field at locations.
@@ -102,7 +129,8 @@ class AnalyticalSoln(object):
         strain = numpy.zeros((1, npts, self.TESNSOR_SIZE), dtype=numpy.float64)
         strain[0, :, 0] = exx
         strain[0, :, 1] = eyy
-        strain[0, :, 2] = exy
+        strain[0, :, 2] = ezz
+        strain[0, :, 3] = exy
         return strain
 
     def cauchy_stress(self, locs):
@@ -113,7 +141,8 @@ class AnalyticalSoln(object):
         stress = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
         stress[0, :, 0] = sxx
         stress[0, :, 1] = syy
-        stress[0, :, 2] = sxy
+        stress[0, :, 2] = szz
+        stress[0, :, 3] = sxy
         return stress
 
 

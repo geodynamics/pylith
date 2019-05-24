@@ -39,13 +39,14 @@ dist_noinst_DATA = \
 	mesh_quad.jou \
 	mesh_quad.exo \
 	quad.cfg \
+	pylithapp.cfg \
 	axialdisp.cfg \
 	sheartraction.cfg \
 	gravity.cfg \
 	gravity_nodisp.cfg \
 	gravity_incompressible.cfg
 
-noinst_TMP = 
+noinst_TMP =
 
 
 # 'export' the input files by performing a mock install
@@ -65,4 +66,4 @@ clean-local-tmp:
 	-rm *.h5 *.xmf *.pyc
 
 
-# End of file 
+# End of file

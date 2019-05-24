@@ -56,12 +56,12 @@ class Quad(object):
         "elastic_xpos": {
             "ncells": 32,
             "ncorners": 4,
-            "nvertices": 36,
+            "nvertices": 45,
         },
         "elastic_xneg": {
             "ncells": 32,
             "ncorners": 4,
-            "nvertices": 36,
+            "nvertices": 45,
         }
     }
 
