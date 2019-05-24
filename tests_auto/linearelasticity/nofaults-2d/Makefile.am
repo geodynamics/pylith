@@ -22,8 +22,7 @@ TESTS = test_pylith.py
 dist_check_SCRIPTS = test_pylith.py
 
 dist_noinst_PYTHON = \
-	TestTri.py \
-	TestQuad.py \
+	meshes.py \
 	TestAxialDisp.py \
 	axialdisp_soln.py \
 	axialdisp_gendb.py \
@@ -33,11 +32,13 @@ dist_noinst_PYTHON = \
 
 dist_noinst_DATA = \
 	geometry.jou \
-	bc.jou
+	bc.jou \
 	mesh_tri.jou \
 	mesh_tri.exo \
+	tri.cfg \
 	mesh_quad.jou \
 	mesh_quad.exo \
+	quad.cfg \
 	axialdisp.cfg \
 	sheartraction.cfg \
 	gravity.cfg \
@@ -48,7 +49,7 @@ noinst_TMP =
 
 
 # 'export' the input files by performing a mock install
-export_datadir = $(top_builddir)/tests_auto/linearelasticity/nofaults
+export_datadir = $(top_builddir)/tests_auto/linearelasticity/nofaults-2d
 export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 

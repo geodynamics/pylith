@@ -123,12 +123,7 @@ nobase_pkgpyexec_PYTHON = \
 	utils/testarray.py \
 	tests/__init__.py \
 	tests/UnitTestApp.py \
-	tests/FullTestApp.py \
-	tests/PhysicalProperties.py \
-	tests/Solution.py \
-	tests/SolutionPoints.py \
-	tests/StateVariables.py \
-	tests/Fault.py
+	tests/FullTestApp.py
 
 if ENABLE_CUBIT
   nobase_pkgpyexec_PYTHON += meshio/MeshIOCubit.py

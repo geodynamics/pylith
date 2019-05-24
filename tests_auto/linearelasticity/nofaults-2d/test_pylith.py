@@ -40,7 +40,7 @@ class TestApp(TestDriver):
 
         import TestAxialDisp
         for test in TestAxialDisp.test_cases():
-            suite.addTest(unittest.makeSuite(TestAxialDisp))
+            suite.addTest(unittest.makeSuite(test))
 
         #from TestShearTraction import TestShearTraction
         # suite.addTest(unittest.makeSuite(TestShearTraction))

@@ -16,9 +16,8 @@
 # ----------------------------------------------------------------------
 
 SUBDIRS = \
-	linearelasticity \
-	petsc \
-	eqinfo
+	nofaults-2d \
+	faults-2d
 
 
 # End of file 

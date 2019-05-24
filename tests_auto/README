@@ -17,32 +17,6 @@ PyLith features:
 
 
 ----------------------------------------------------------------------
-1-D tests
-----------------------------------------------------------------------
-
-line2 (linear cells)
-
-  * axialextension
-
-    - Dirichlet w/initial displacement, SimpleDB
-
-  * dislocation
-
-    - Dirichlet w/initial displacement, SimpleDB
-    - Fault slip (1 fault, 1 event)
-
-line3 (quadratic cells)
-
-  * axialextension
-
-    - Dirichlet w/initial displacement, SimpleDB
-
-  * dislocation
-
-    - Dirichlet w/initial displacement
-    - Fault slip (1 fault, 1 event)
-
-----------------------------------------------------------------------
 2-D tests
 ----------------------------------------------------------------------
 
