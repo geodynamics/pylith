@@ -56,7 +56,7 @@ class TestDriver(object):
 # ----------------------------------------------------------------------------------------------------------------------
 class HDF5Checker(object):
 
-    def __init__(self, filename, testcase, mesh):
+    def __init__(self, filename, testcase, mesh, verbosity):
         """Constructor.
         """
         import h5py
@@ -64,6 +64,8 @@ class HDF5Checker(object):
         self.testcase = testcase
         self.exactsoln = testcase.exactsoln
         self.mesh = mesh
+        self.verbosity = verbosity
+
         self.vertices = None
         self.cellCentroids = None
         return
@@ -72,6 +74,8 @@ class HDF5Checker(object):
         """Get vertices, reading from file if necessary.
         """
         if self.vertices is None:
+            self.testcase.assertTrue("geometry" in self.h5.keys())
+            self.testcase.assertTrue("vertices" in self.h5["geometry"].keys())
             vertices = self.h5["geometry/vertices"][:]
             (nvertices, spaceDim) = vertices.shape
             self.testcase.assertEqual(self.mesh['nvertices'], nvertices)
@@ -84,17 +88,41 @@ class HDF5Checker(object):
         """
         if self.cellCentroids is None:
             vertices = self._getVertices()
-            cells = self.h5["topology/cells"][:]
-            centroids = 1
+            self.testcase.assertTrue("topology" in self.h5.keys())
+            self.testcase.assertTrue("cells" in self.h5["topology"].keys())
+            cells = self.h5["topology/cells"][:].astype(numpy.int)
+            ncells, ncorners = cells.shape
+            centroids = numpy.zeros((ncells, self.exactsoln.SPACE_DIM), dtype=numpy.float64)
+            for icorner in range(ncorners):
+                centroids[:, :] += vertices[cells[:, icorner], :]
+            centroids /= float(ncorners)
             self.cellCentroids = centroids
         return self.cellCentroids
 
     def checkVertexField(self, fieldName):
+        self.testcase.assertTrue("vertex_fields" in self.h5.keys())
+        fieldsH5 = self.h5["vertex_fields"].keys()
+        self.testcase.assertTrue(fieldName in fieldsH5,
+                                 "Could not find field '{}' in vertex fields {}".format(fieldName, fieldsH5))
+        field = self.h5["vertex_fields/" + fieldName][:]
+
         vertices = self._getVertices()
         (nvertices, spaceDim) = vertices.shape
-
         fieldE = self.exactsoln.getField(fieldName, vertices)
-        field = self.h5["vertex_fields/" + fieldName][:]
+        self._checkField(fieldName, fieldE, field)
+        return
+
+    def checkCellField(self, fieldName):
+        self.testcase.assertTrue("cell_fields" in self.h5.keys(),
+                                 "Missing 'cell_fields'. Groups: {}".format(self.h5.keys()))
+        fieldsH5 = self.h5["cell_fields"].keys()
+        self.testcase.assertTrue(fieldName in fieldsH5,
+                                 "Could not find field '{}' in cell fields {}".format(fieldName, fieldsH5))
+        field = self.h5["cell_fields/" + fieldName][:]
+
+        centroids = self._getCellCentroids()
+        (ncells, spaceDim) = centroids.shape
+        fieldE = self.exactsoln.getField(fieldName, centroids)
         self._checkField(fieldName, fieldE, field)
         return
 
@@ -136,16 +164,20 @@ class HDF5Checker(object):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def check_data(filename, vertexFields, cellFields, testcase, mesh):
+def check_data(filename, vertexFields, cellFields, testcase, mesh, verbosity=0):
     """Check vertex and cell fields in specified file.
     """
     if not has_h5py():
         return
 
-    checker = HDF5Checker(filename, testcase, mesh)
+    checker = HDF5Checker(filename, testcase, mesh, verbosity)
     for field in vertexFields:
+        if verbosity > 0:
+            print("Checking vertex field '{}' in file {}.".format(field, filename))
         checker.checkVertexField(field)
     for field in cellFields:
+        if verbosity > 0:
+            print("Checking cell field '{}' in file {}.".format(field, filename))
         checker.checkCellField(field)
     return
 
