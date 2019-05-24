@@ -33,6 +33,7 @@ class TestCase(unittest.TestCase):
     """
     Test suite for testing PyLith with 2-D axial extension.
     """
+    NAME = None  # Set in child class.
 
     def setUp(self):
         """
