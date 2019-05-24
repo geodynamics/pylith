@@ -15,41 +15,42 @@
 #
 # ======================================================================
 
-from pylith.tests.FullTestApp import FullTestApp
+from pylith.tests.FullTestApp import TestDriver
 
 import unittest
 
-class TestApp(FullTestApp):
-  """
-  Test application.
-  """
 
-  def __init__(self):
+class TestApp(TestDriver):
     """
-    Constructor.
+    Driver application for full-scale tests.
     """
-    FullTestApp.__init__(self)
-    return
 
+    def __init__(self):
+        """
+        Constructor.
+        """
+        TestDriver.__init__(self)
+        return
 
-  def _suite(self):
-    """
-    Create test suite.
-    """
-    suite = unittest.TestSuite()
+    def _suite(self):
+        """
+        Create test suite.
+        """
+        suite = unittest.TestSuite()
 
-    from TestAxialDisp import TestAxialDisp
-    suite.addTest(unittest.makeSuite(TestAxialDisp))
+        import TestAxialDisp
+        for test in TestAxialDisp.test_cases():
+            suite.addTest(unittest.makeSuite(TestAxialDisp))
 
-    #from TestShearTraction import TestShearTraction
-    #suite.addTest(unittest.makeSuite(TestShearTraction))
+        #from TestShearTraction import TestShearTraction
+        # suite.addTest(unittest.makeSuite(TestShearTraction))
 
-    return suite
+        return suite
 
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
-  TestApp().main()
+    TestApp().main()
 
-  
-# End of file 
+
+# End of file

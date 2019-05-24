@@ -15,75 +15,85 @@
 #
 # ----------------------------------------------------------------------
 #
-
-## @file tests/2d/tri3/TestAxialDisp.py
+# @file tests_auto/linearelasticity/nofaults/TestAxialDisp.py
 ##
-## @brief Test suite for testing pylith with 2-D axial extension.
+# @brief Test suite for testing pylith with 2-D axial extension.
 
-import numpy
+import unittest
 
-from pylith.apps.PyLithApp import PyLithApp
-from pylith.tests import run_pylith
+from pylith.tests.FullTestApp import run_pylith, check_data
 
-from TestTri import TestTri
+import meshes
 from axialdisp_soln import AnalyticalSoln
 from axialdisp_gendb import GenerateDB
 
-class TestApp(PyLithApp):
-  """Local version of PyLithApp.
-  """
-  def __init__(self):
-    PyLithApp.__init__(self, name="axialdisp")
-    return
 
-
-class TestAxialDisp(TestTri):
-  """
-  Test suite for testing pylith with 2-D axial extension.
-  """
-
-  def setUp(self):
+# ----------------------------------------------------------------------------------------------------------------------
+class TestCase(unittest.TestCase):
     """
-    Setup for test.
+    Test suite for testing PyLith with 2-D axial extension.
     """
-    TestTri.setUp(self)
-    run_pylith(TestApp, GenerateDB)
-    self.outputRoot = "axialdisp"
 
-    self.soln = AnalyticalSoln()
-    return
+    def setUp(self):
+        """
+        Setup for test.
+        """
+        self.exactsoln = AnalyticalSoln()
+        return
 
+    def run_pylith(self, testName, args):
+        run_pylith(testName, args, GenerateDB)
+        return
 
-  def computeVertexField(self, name, vertices):
-    """
-    Calculate field given coordinates of vertices.
-    """
-    if name == "displacement":
-      return self.soln.displacement(vertices)
-    else:
-      raise ValueError("Unknown vertex field '{0}'.".format(name))
-    return
+    def test_solution_domain(self):
+        filename = "output/{}-domain.h5".format(self.NAME)
+        vertexFields = ["displacement"]
+        cellFields = []
+        check_data(filename, vertexFields, cellFields, self, self.DOMAIN)
+        return
 
+    def test_material_info(self):
+        return
 
-  def computeCellField(self, name, centroids):
-    """
-    Calculate field given coordinates of cell centroids.
-    """
-    if name == "displacement":
-      return self.soln.displacement(centroids)
-    else:
-      raise ValueError("Unknown cell field '{0}'.".format(name))
-    return
+    def test_material_solution(self):
+        return
 
 
-# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+class TestQuad(TestCase, meshes.Quad):
+    NAME = "axialdisp_quad"
+
+    def setUp(self):
+        TestCase.setUp(self)
+        TestCase.run_pylith(self, self.NAME, ["axialdisp.cfg", "quad.cfg"])
+        return
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+class TestTri(TestCase, meshes.Tri):
+    NAME = "axialdisp_tri"
+
+    def setUp(self):
+        TestCase.setUp(self)
+        TestCase.run_pylith(self, self.NAME, ["axialdisp.cfg", "tri.cfg"])
+        return
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+def test_cases():
+    return [
+        TestQuad,
+        TestTri,
+    ]
+
+
+# ----------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
-  import unittest
-  from .TestAxialDisp import TestAxialDisp as Tester
 
-  suite = unittest.TestSuite()
-  suite.addTest(unittest.makeSuite(Tester))
-  unittest.TextTestRunner(verbosity=2).run(suite)
+    suite = unittest.TestSuite()
+    for test in test_cases():
+        suite.addTest(unittest.makeSuite(test))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
-# End of file 
+# End of file

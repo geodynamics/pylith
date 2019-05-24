@@ -30,12 +30,6 @@ class GenerateDB(object):
     boundary conditions for the axial displacement test.
     """
 
-    def __init__(self):
-        """
-        Constructor.
-        """
-        return
-
     def run(self):
         """
         Generate the database.
@@ -82,10 +76,10 @@ class GenerateDB(object):
         io.write(data)
         return
 
+
 # ======================================================================
 if __name__ == "__main__":
-    app = GenerateDB()
-    app.run()
+    GenerateDB().run()
 
 
 # End of file
