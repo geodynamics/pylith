@@ -134,7 +134,8 @@ class HDF5Checker(object):
 
         toleranceAbsMask = 0.1
         tolerance = 1.0e-5
-        scale = numpy.mean(numpy.abs(fieldE.ravel()))
+        mask = fieldE != 0.0
+        scale = scale = numpy.mean(numpy.abs(fieldE[mask].ravel())) if numpy.sum(mask) > 0 else 1.0
         for istep in xrange(nsteps):
             for icomp in xrange(ncomps):
                 okay = numpy.zeros((npts,), dtype=numpy.bool)
@@ -150,12 +151,12 @@ class HDF5Checker(object):
                     okay[maskD] = diff < tolerance
 
                 if numpy.sum(okay) != npts:
-                    print("Error in component {} of field '' at time step {}.".format(icomp, field, istep))
+                    print("Error in component {} of field '{}' at time step {}.".format(icomp, fieldName, istep))
                     print("Expected values: ", fieldE[istep, :, :])
                     print("Output values: ", field[istep, :, :])
                     print("Expected values (not okay): ", fieldE[istep, ~okay, icomp])
                     print("Computed values (not okay): ", field[istep, ~okay, icomp])
-                    print("Relative diff (not okay): ", diff[~okay])
+                    print("Relative diff (not okay): ", diff[~okay[maskD]])
                     print("Coordinates (not okay): ", pts[~okay, :])
                     self.testcase.assertEqual(npts, numpy.sum(okay))
 
