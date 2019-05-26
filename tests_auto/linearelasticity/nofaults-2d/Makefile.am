@@ -45,6 +45,8 @@ dist_noinst_DATA = \
 	sheartraction_tri.cfg \
 	sheartraction_quad.cfg \
 	gravity.cfg \
+	gravity_tri.cfg \
+	gravity_quad.cfg \
 	gravity_nodisp.cfg \
 	gravity_incompressible.cfg
 
