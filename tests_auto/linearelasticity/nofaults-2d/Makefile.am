@@ -28,7 +28,9 @@ dist_noinst_PYTHON = \
 	axialdisp_gendb.py \
 	TestShearTraction.py \
 	sheartraction_soln.py \
-	sheartraction_gendb.py
+	sheartraction_gendb.py \
+	TestGravity.py \
+	gravity_soln.py
 
 dist_noinst_DATA = \
 	geometry.jou \
