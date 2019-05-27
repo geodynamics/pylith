@@ -213,32 +213,6 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawExponent(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Add power-law alpha integration parameter subfield to auxiliary fields.
-void
-pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawAlpha(void) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addPowerLawAlpha(void)");
-
-    const char* fieldName = "power_law_alpha";
-
-    pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
-    description.vectorFieldType = pylith::topology::Field::SCALAR;
-    description.numComponents = 1;
-    description.componentNames.resize(1);
-    description.componentNames[0] = fieldName;
-    description.scale = 1.0;
-    description.validator = pylith::topology::FieldQuery::validatorNonnegative;
-
-    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::materials::Query::dbQueryGeneric);
-
-    PYLITH_METHOD_END;
-} // addPowerLawAlpha
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Add total strain subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactoryViscoelastic::addTotalStrain(void) {

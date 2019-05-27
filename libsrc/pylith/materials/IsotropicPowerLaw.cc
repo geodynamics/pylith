@@ -101,7 +101,6 @@ pylith::materials::IsotropicPowerLaw::addAuxiliarySubfields(void) {
     _auxiliaryFactory->addPowerLawReferenceStrainRate();
     _auxiliaryFactory->addPowerLawReferenceStress();
     _auxiliaryFactory->addPowerLawExponenet();
-    _auxiliaryFactory->addPowerLawAlpha();
     _auxiliaryFactory->addViscousStrain();
     _auxiliaryFactory->addTotalStrain();
     _auxiliaryFactory->addStress();
@@ -142,8 +141,10 @@ pylith::materials::IsotropicPowerLaw::getKernelRHSJacobianElasticConstants(const
 
     const int spaceDim = coordsys->spaceDim();
     PetscPointJac Jg3uu =
-        (3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::Jg3vu :
-        (2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::Jg3vu :
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::Jg3vu :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::Jg3vu :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::Jg3vu_refstate :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::Jg3vu_refstate :
         NULL;
 
     PYLITH_METHOD_RETURN(Jg3uu);
@@ -173,9 +174,10 @@ pylith::materials::IsotropicPowerLaw::getKernelDerivedStress(const spatialdata::
 // Update kernel constants.
 void
 pylith::materials::IsotropicPowerLaw::updateKernelConstants(pylith::real_array* kernelConstants,
-                                                                 const PylithReal dt) const {
+															const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateKernelConstants(kernelConstants"<<kernelConstants<<", dt="<<dt<<")");
+	//******** Should alpha (time integration parameter) be included here?
 
     assert(kernelConstants);
 
@@ -190,11 +192,14 @@ pylith::materials::IsotropicPowerLaw::updateKernelConstants(pylith::real_array* 
 // Add kernels for updating state variables.
 void
 pylith::materials::IsotropicPowerLaw::addKernelsUpdateStateVars(std::vector<ProjectKernels>* kernels,
-                                                                     const spatialdata::geocoords::CoordSys* coordsys) const {
+																const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<")");
 
     const int spaceDim = coordsys->spaceDim();
+	//*********** There are two issues at present:
+	// 1.  We need functions with and without reference stress/strain.
+	// 2.  Both state variables need to be updated simultaneously (both viscous strain and stress).
     const PetscPointFunc funcViscousStrain =
         (3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain :
         (2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain :
