@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,9 +14,8 @@
 #
 # ----------------------------------------------------------------------
 #
-
-# @file tests_auto/linearelasticity/nofaults/gravity_nodeform_gendb.py
-##
+# @file tests_auto/linearelasticity/nofaults/gravity_refstate_gendb.py
+#
 # @brief Python script to generate spatial database with auxiliary
 # fields for test with gravitational body forces and initial
 # stress/strain but no displacement.
@@ -44,15 +42,15 @@ class GenerateDB(object):
         # Domain
         y = numpy.arange(-4000.0, 4000.1, 8000.0)
         x = numpy.zeros(y.shape)
+        npts = y.shape[0]
 
-        xy = numpy.vstack((x,y)).transpose()
+        xy = numpy.vstack((x, y)).transpose()
 
-        from gravity_nodeform_soln import AnalyticalSoln
+        from gravity_refstate_soln import AnalyticalSoln
+        from gravity_refstate_soln import p_density, p_vs, p_vp
         soln = AnalyticalSoln()
         stress = soln.stress(xy)
         strain = soln.strain(xy)
-        matprops = soln.matprops(xy)
-        
 
         from spatialdata.geocoords.CSCart import CSCart
         cs = CSCart()
@@ -66,44 +64,44 @@ class GenerateDB(object):
                 {
                     'name': "density",
                     'units': "kg/m**3",
-                    'data': numpy.ravel(matprops["density"]),
-                },{
+                    'data': p_density * numpy.ones((npts,)),
+                }, {
                     'name': "vs",
                     'units': "m/s",
-                    'data': numpy.ravel(matprops["vs"]),
-                },{
+                    'data': p_vs * numpy.ones((npts,)),
+                }, {
                     'name': "vp",
                     'units': "m/s",
-                    'data': numpy.ravel(matprops["vp"]),
-                },{
+                    'data': p_vp * numpy.ones((npts,)),
+                }, {
                     'name': "reference_stress_xx",
                     'units': "Pa",
                     'data': numpy.ravel(stress[0, :, 0]),
-                },{
+                }, {
                     'name': "reference_stress_yy",
                     'units': "Pa",
                     'data': numpy.ravel(stress[0, :, 1]),
-                },{
+                }, {
                     'name': "reference_stress_zz",
                     'units': "Pa",
                     'data': numpy.ravel(stress[0, :, 2]),
-                },{
+                }, {
                     'name': "reference_stress_xy",
                     'units': "Pa",
                     'data': numpy.ravel(stress[0, :, 3]),
-                },{
+                }, {
                     'name': "reference_strain_xx",
                     'units': "none",
                     'data': numpy.ravel(strain[0, :, 0]),
-                },{
+                }, {
                     'name': "reference_strain_yy",
                     'units': "none",
                     'data': numpy.ravel(strain[0, :, 1]),
-                },{
+                }, {
                     'name': "reference_strain_zz",
                     'units': "none",
                     'data': numpy.ravel(strain[0, :, 2]),
-                },{
+                }, {
                     'name': "reference_strain_xy",
                     'units': "none",
                     'data': numpy.ravel(strain[0, :, 3]),
@@ -113,10 +111,11 @@ class GenerateDB(object):
 
         from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
         io = SimpleIOAscii()
-        io.inventory.filename = "gravity_nodeform_matfields.spatialdb"
+        io.inventory.filename = "gravity_refstate_matfields.spatialdb"
         io._configure()
         io.write(data)
         return
+
 
 # ======================================================================
 if __name__ == "__main__":

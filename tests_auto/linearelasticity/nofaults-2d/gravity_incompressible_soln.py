@@ -13,10 +13,11 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults-2d/gravity_soln.py
+# @file tests_auto/linearelasticity/nofaults-2d/gravity_incompressible_soln.py
 #
-# @brief Analytical solution to gravitational body foces (no initial stress).
+# @brief Analytical solution to gravitational body foces for incompressible linear elasticity.
 #
+#          p=0
 #       ----------
 #       |        |
 # Ux=0  |        | Ux=0
@@ -28,6 +29,7 @@
 # Dirichlet boundary conditions
 # Ux(+-4000,0) = 0
 # Uy(x,-4000) = 0
+# p(x,+4000) = 0
 
 import numpy
 
@@ -35,7 +37,7 @@ import numpy
 # Physical properties
 p_density = 2500.0  # kg/m**3
 p_vs = 3000.0  # m/s
-p_vp = 5291.502622129181  # m/s
+p_vp = 1.0e+15  # m/s
 
 p_mu = p_density * p_vs**2
 p_lambda = p_density * p_vp**2 - 2 * p_mu
@@ -47,26 +49,37 @@ ymax = +4000.0  # m
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
     """
-    Analytical solution to gravitational body forces (no initial stress).
+    Analytical solution to gravitational body forces for incompssible linear elasticity.
     """
     SPACE_DIM = 2
     TENSOR_SIZE = 4
 
     def __init__(self):
         self.fields = {
-            "displacement": self.displacement,
+            "displacement": self.zero_vector,
+            "pressure": self.pressure,
             "density": self.density,
             "shear_modulus": self.shear_modulus,
             "bulk_modulus": self.bulk_modulus,
             "cauchy_strain": self.strain,
             "cauchy_stress": self.stress,
             "gravitational_acceleration": self.gacc,
-            "initial_amplitude": self.zero_vector,
+            "initial_amplitude": {
+                "bc_xneg": self.zero_vector,
+                "bc_xpos": self.zero_vector,
+                "bc_yneg": self.zero_vector,
+                "bc_ypos": self.zero_scalar,
+            },
         }
+        self.key = None
         return
 
     def getField(self, name, pts):
-        return self.fields[name](pts)
+        if self.key is None:
+            field = self.fields[name](pts)
+        else:
+            field = self.fields[name][self.key](pts)
+        return field
 
     def displacement(self, locs):
         """
@@ -80,9 +93,22 @@ class AnalyticalSoln(object):
         disp[:, :, 1] = strain[:, :, 3] * locs[:, 0] + strain[:, :, 1] * (ymax - locs[:, 1])
         return disp
 
+    def pressure(self, locs):
+        """
+        Compute pressure field at locations.
+        """
+        stress = self.stress(locs)
+        (npts, dim) = locs.shape
+        pressure = -stress[:, :, 1].reshape(1, npts, 1)
+        return pressure
+
     def zero_vector(self, locs):
         (npts, dim) = locs.shape
         return numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
+
+    def zero_scalar(self, locs):
+        (npts, dim) = locs.shape
+        return numpy.zeros((1, npts, 1), dtype=numpy.float64)
 
     def density(self, locs):
         """
@@ -112,18 +138,8 @@ class AnalyticalSoln(object):
         """
         Compute strain field at locations.
         """
-        stress = self.stress(locs)
-        sxx = stress[:, :, 0]
-        syy = stress[:, :, 1]
-        szz = stress[:, :, 2]
-        sxy = stress[:, :, 3]
-
         (npts, dim) = locs.shape
         strain = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        strain[:, :, 0] = 1.0 / (2 * p_mu) * (sxx - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
-        strain[:, :, 1] = 1.0 / (2 * p_mu) * (syy - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
-        strain[:, :, 2] = 1.0 / (2 * p_mu) * (szz - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
-        strain[:, :, 3] = 1.0 / (2 * p_mu) * (sxy)
         return strain
 
     def stress(self, locs):
@@ -131,9 +147,9 @@ class AnalyticalSoln(object):
         Compute stress field at locations.
         """
         syy = -p_density * gacc * (ymax - locs[:, 1])
-        sxx = p_lambda / (p_lambda + 2 * p_mu) * syy
+        sxx = syy
+        szz = syy
         sxy = 0.0
-        szz = p_lambda / (2 * p_lambda + 2 * p_mu) * (sxx + syy)
 
         (npts, dim) = locs.shape
         stress = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)

@@ -15,22 +15,24 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults-2d/TestGravity.py
+# @file tests_auto/linearelasticity/nofaults-2d/TestGravityRefState.py
 #
-# @brief Test suite for testing pylith with 2-D gravitational body forces (no initial stress).
+# @brief Test suite for testing pylith with 2-D gravitational body forces with initial stress and no displacement.
 
 import unittest
 
 from pylith.tests.FullTestApp import run_pylith, check_data
 
 import meshes
-from gravity_soln import AnalyticalSoln
-
+from gravity_refstate_soln import AnalyticalSoln
+from gravity_refstate_gendb import GenerateDB
 
 # ----------------------------------------------------------------------------------------------------------------------
+
+
 class TestCase(unittest.TestCase):
     """
-    Test suite for testing PyLith with gravitational body forces (no initial stress).
+    Test suite for testing PyLith with gravitational body forces with initial stress and no displacement.
     """
     NAME = None  # Set in child class.
     DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg"]
@@ -46,7 +48,7 @@ class TestCase(unittest.TestCase):
     def run_pylith(self, testName, args):
         if self.verbosity > 0:
             print("Running Pylith with args '{}' ...".format(" ".join(args)))
-        run_pylith(testName, args)
+        #run_pylith(testName, args, GenerateDB)
         return
 
     def test_domain_solution(self):
@@ -56,13 +58,13 @@ class TestCase(unittest.TestCase):
         return
 
     def test_material_info(self):
-        cellFields = ["density", "bulk_modulus", "shear_modulus", "gravitational_acceleration"]
+        cellFields = ["density", "bulk_modulus", "shear_modulus", "gravitational_acceleration", "reference_strain"]
+        vertexFields = ["reference_stress"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
             check_data(filename, self, self.MATERIALS[material], cellFields=cellFields)
         return
 
-    @unittest.expectedFailure
     def test_material_solution(self):
         vertexFields = ["displacement"]
         for material in self.MATERIALS.keys():
@@ -77,7 +79,6 @@ class TestCase(unittest.TestCase):
             check_data(filename, self, self.BOUNDARIES[bc], cellFields=cellFields)
         return
 
-    @unittest.expectedFailure
     def test_bcdirichlet_solution(self):
         vertexFields = ["displacement"]
         for bc in self.DIRICHLET_BOUNDARIES:
@@ -88,21 +89,21 @@ class TestCase(unittest.TestCase):
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestQuad(TestCase, meshes.Quad):
-    NAME = "gravity_quad"
+    NAME = "gravity_refstate_quad"
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["gravity.cfg", "gravity_quad.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["gravity_refstate.cfg", "gravity_refstate_quad.cfg"])
         return
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestTri(TestCase, meshes.Tri):
-    NAME = "gravity_tri"
+    NAME = "gravity_refstate_tri"
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["gravity.cfg", "gravity_tri.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["gravity_refstate.cfg", "gravity_refstate_tri.cfg"])
         return
 
 
@@ -110,7 +111,7 @@ class TestTri(TestCase, meshes.Tri):
 def test_cases():
     return [
         TestQuad,
-        TestTri,
+        # TestTri,
     ]
 
 

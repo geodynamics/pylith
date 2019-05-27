@@ -15,16 +15,16 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults-2d/TestGravity.py
+# @file tests_auto/linearelasticity/nofaults-2d/TestGravityIncompressible.py
 #
-# @brief Test suite for testing pylith with 2-D gravitational body forces (no initial stress).
+# @brief Test suite for testing pylith with 2-D gravitational body forces for incompssible elasticity.
 
 import unittest
 
 from pylith.tests.FullTestApp import run_pylith, check_data
 
 import meshes
-from gravity_soln import AnalyticalSoln
+from gravity_incompressible_soln import AnalyticalSoln
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ class TestCase(unittest.TestCase):
     Test suite for testing PyLith with gravitational body forces (no initial stress).
     """
     NAME = None  # Set in child class.
-    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg"]
+    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos"]
 
     def setUp(self):
         """
@@ -51,7 +51,7 @@ class TestCase(unittest.TestCase):
 
     def test_domain_solution(self):
         filename = "output/{}-domain.h5".format(self.NAME)
-        vertexFields = ["displacement"]
+        vertexFields = ["displacement", "pressure"]
         check_data(filename, self, self.DOMAIN, vertexFields=vertexFields)
         return
 
@@ -62,9 +62,8 @@ class TestCase(unittest.TestCase):
             check_data(filename, self, self.MATERIALS[material], cellFields=cellFields)
         return
 
-    @unittest.expectedFailure
     def test_material_solution(self):
-        vertexFields = ["displacement"]
+        vertexFields = ["displacement", "pressure"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}.h5".format(self.NAME, material)
             check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields)
@@ -73,13 +72,13 @@ class TestCase(unittest.TestCase):
     def test_bcdirichlet_info(self):
         cellFields = ["initial_amplitude"]
         for bc in self.DIRICHLET_BOUNDARIES:
+            self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
             check_data(filename, self, self.BOUNDARIES[bc], cellFields=cellFields)
         return
 
-    @unittest.expectedFailure
     def test_bcdirichlet_solution(self):
-        vertexFields = ["displacement"]
+        vertexFields = ["displacement", "pressure"]
         for bc in self.DIRICHLET_BOUNDARIES:
             filename = "output/{}-{}.h5".format(self.NAME, bc)
             check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
@@ -88,21 +87,21 @@ class TestCase(unittest.TestCase):
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestQuad(TestCase, meshes.Quad):
-    NAME = "gravity_quad"
+    NAME = "gravity_incompressible_quad"
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["gravity.cfg", "gravity_quad.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["gravity_incompressible.cfg", "gravity_incompressible_quad.cfg"])
         return
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestTri(TestCase, meshes.Tri):
-    NAME = "gravity_tri"
+    NAME = "gravity_incompressible_tri"
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["gravity.cfg", "gravity_tri.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["gravity_incompressible.cfg", "gravity_incompressible_tri.cfg"])
         return
 
 

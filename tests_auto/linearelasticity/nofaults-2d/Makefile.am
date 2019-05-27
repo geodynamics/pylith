@@ -1,5 +1,3 @@
-# -*- Makefile -*-
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -30,7 +28,12 @@ dist_noinst_PYTHON = \
 	sheartraction_soln.py \
 	sheartraction_gendb.py \
 	TestGravity.py \
-	gravity_soln.py
+	gravity_soln.py \
+	TestGravityRefState.py \
+	gravity_refstate_soln.py \
+	gravity_refstate_gendb.py \
+	TestGravityIncompressible.py \
+	gravity_incompressible_soln.py
 
 dist_noinst_DATA = \
 	geometry.jou \
@@ -49,13 +52,18 @@ dist_noinst_DATA = \
 	gravity.cfg \
 	gravity_tri.cfg \
 	gravity_quad.cfg \
-	gravity_nodisp.cfg \
-	gravity_incompressible.cfg
+	gravity_refstate.cfg \
+	gravity_refstate_tri.cfg \
+	gravity_refstate_quad.cfg \
+	gravity_incompressible.cfg \
+	gravity_incompressible_quad.cfg \
+	gravity_incompressible_tri.cfg
 
 noinst_TMP = \
 	axialdisp_bc.spatialdb \
 	axialdisp_ic.spatialdb \
-	sheartraction_disp.spatialdb
+	sheartraction_disp.spatialdb \
+	gravity_refstate_matfields.spatialdb
 
 
 

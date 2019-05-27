@@ -50,7 +50,7 @@ class TestCase(unittest.TestCase):
         run_pylith(testName, args, GenerateDB)
         return
 
-    def test_solution_domain(self):
+    def test_domain_solution(self):
         filename = "output/{}-domain.h5".format(self.NAME)
         vertexFields = ["displacement"]
         check_data(filename, self, self.DOMAIN, vertexFields=vertexFields)
