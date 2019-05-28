@@ -102,7 +102,6 @@ pylith::materials::IsotropicPowerLaw::addAuxiliarySubfields(void) {
     _auxiliaryFactory->addPowerLawReferenceStress();
     _auxiliaryFactory->addPowerLawExponenet();
     _auxiliaryFactory->addViscousStrain();
-    _auxiliaryFactory->addTotalStrain();
     _auxiliaryFactory->addStress();
     if (_useReferenceState) {
         _auxiliaryFactory->addReferenceStress();
@@ -197,16 +196,17 @@ pylith::materials::IsotropicPowerLaw::addKernelsUpdateStateVars(std::vector<Proj
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<")");
 
     const int spaceDim = coordsys->spaceDim();
-	//*********** There are two issues at present:
-	// 1.  We need functions with and without reference stress/strain.
-	// 2.  Both state variables need to be updated simultaneously (both viscous strain and stress).
     const PetscPointFunc funcViscousStrain =
-        (3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain :
-        (2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain :
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate :
         NULL;
     const PetscPointFunc funcStress =
-        (3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateStress :
-        (2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress :
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateStress :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateStress_refstate :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress_refstate :
         NULL;
 
     assert(kernels);

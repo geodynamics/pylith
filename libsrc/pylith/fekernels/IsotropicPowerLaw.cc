@@ -774,9 +774,9 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::deviatoricStress4(const PylithI
 	if (b != 0.0 || c != 0.0 || d != 0.0) {
 		const PylithScalar j2InitialGuess = j2T;
 		const PylithScalar stressScale = shearModulus;
-		j2Tpdt = IsotropicPowerLaw::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha, dt, j2T,
-														   powerLawExponent, powerLawReferenceStrainRate, powerLawReferenceStress,
-														   effStressFunc, effStressFuncDerivFunc);
+		j2Tpdt = IsotropicPowerLawEffectiveStress::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha,
+																		  dt, j2T, powerLawExponent, powerLawReferenceStrainRate,
+																		  powerLawReferenceStress);
 	} // if
 	// Compute deviatoric stresses from effective stress.
 	const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
@@ -911,9 +911,9 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::deviatoricStress4_refstate(cons
 	if (b != 0.0 || c != 0.0 || d != 0.0) {
 		const PylithScalar j2InitialGuess = j2T;
 		const PylithScalar stressScale = shearModulus;
-		j2Tpdt = IsotropicPowerLaw::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha, dt, j2T,
-														   powerLawExponent, powerLawReferenceStrainRate, powerLawReferenceStress,
-														   effStressFunc, effStressFuncDerivFunc);
+		j2Tpdt = IsotropicPowerLawEffectiveStress::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha,
+																		  dt, j2T, powerLawExponent, powerLawReferenceStrainRate,
+																		  powerLawReferenceStress);
 	} // if
 	// Compute deviatoric stresses from effective stress.
 	const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
@@ -2342,9 +2342,9 @@ pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress(const PylithInt dim,
 	if (b != 0.0 || c != 0.0 || d != 0.0) {
 		const PylithScalar j2InitialGuess = j2T;
 		const PylithScalar stressScale = shearModulus;
-		j2Tpdt = IsotropicPowerLaw::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha, dt, j2T,
-														   powerLawExponent, powerLawReferenceStrainRate, powerLawReferenceStress,
-														   effStressFunc, effStressFuncDerivFunc);
+		j2Tpdt = IsotropicPowerLawEffectiveStress::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha,
+																		  dt, j2T, powerLawExponent, powerLawReferenceStrainRate,
+																		  powerLawReferenceStress);
 	} // if
 	// Compute deviatoric stresses from effective stress.
 	const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
@@ -2492,9 +2492,9 @@ pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress_refstate(const PylithIn
 	if (b != 0.0 || c != 0.0 || d != 0.0) {
 		const PylithScalar j2InitialGuess = j2T;
 		const PylithScalar stressScale = shearModulus;
-		j2Tpdt = IsotropicPowerLaw::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha, dt, j2T,
-														   powerLawExponent, powerLawReferenceStrainRate, powerLawReferenceStress,
-														   effStressFunc, effStressFuncDerivFunc);
+		j2Tpdt = IsotropicPowerLawEffectiveStress::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha,
+																		  dt, j2T, powerLawExponent, powerLawReferenceStrainRate,
+																		  powerLawReferenceStress);
 	} // if
 	// Compute deviatoric stresses from effective stress.
 	const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
@@ -3111,22 +3111,19 @@ pylith::fekernels::IsotropicPowerLaw3D::stress_refstate(const PylithInt dim,
 // =====================================================================================================================
 // ---------------------------------------------------------------------------------------------------------------------
 // Get effective stress from initial guess.
-template<typename material_type>
 PylithScalar
-pylith::fekernels::IsotropicPowerLaw::computeEffectiveStress(const PylithScalar j2InitialGuess,
-															 const PylithScalar stressScale,
-															 const PylithScalar ae,
-															 const PylithScalar b,
-															 const PylithScalar c,
-															 const PylithScalar d,
-															 const PylithScalar powerLawAlpha,
-															 const PylithScalar dt,
-															 const PylithScalar j2T,
-															 const PylithScalar powerLawExponent,
-															 const PylithScalar powerLawReferenceStrainRate,
-															 const PylithScalar powerLawReferenceStress,
-															 const PylithScalar (*effStressFunc)
-															 const PylithScalar (*effStressFuncDerivFunc))
+pylith::fekernels::IsotropicPowerLawEffectiveStress::computeEffectiveStress(const PylithScalar j2InitialGuess,
+																			const PylithScalar stressScale,
+																			const PylithScalar ae,
+																			const PylithScalar b,
+																			const PylithScalar c,
+																			const PylithScalar d,
+																			const PylithScalar powerLawAlpha,
+																			const PylithScalar dt,
+																			const PylithScalar j2T,
+																			const PylithScalar powerLawExponent,
+																			const PylithScalar powerLawReferenceStrainRate,
+																			const PylithScalar powerLawReferenceStress)
 { // computeEffectiveStress
     // Check parameters
 	assert(j2InitialGuess >= 0.0);
@@ -3145,34 +3142,94 @@ pylith::fekernels::IsotropicPowerLaw::computeEffectiveStress(const PylithScalar 
 	} // else
 
 	_bracket(&x1, &x2, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent, powerLawReferenceStrainRate,
-			 powerLawReferenceStress, *effStressFunc);
+			 powerLawReferenceStress);
 
 	// Find effective stress using Newton's method with bisection.
 	const PylithScalar effStress = _search(x1, x2, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
-										   powerLawReferenceStrainRate, powerLawReferenceStress, *effStressFunc,
-										   *effStressFuncDerivFunc);
+										   powerLawReferenceStrainRate, powerLawReferenceStress);
 
 	PetscLogFlops(4); // Log flops
 	
 	return effStress;
 } // computeEffectiveStress
 
+
+// ----------------------------------------------------------------------
+// Calculate effective stress function for power-law material.
+PylithScalar
+pylith::fekernels::IsotropicPowerLawEffectiveStress::_effStressFunc(const PylithScalar j2Tpdt,
+																	const PylithScalar ae,
+																	const PylithScalar b,
+																	const PylithScalar c,
+																	const PylithScalar d,
+																	const PylithScalar powerLawAlpha,
+																	const PylithScalar dt,
+																	const PylithScalar j2T,
+																	const PylithScalar powerLawExponent,
+																	const PylithScalar powerLawReferenceStrainRate,
+																	const PylithScalar powerLawReferenceStress)
+{ // _effStressFunc
+	const PylithScalar factor1 = 1.0 - powerLawAlpha;
+	const PylithScalar j2Tau = factor1*j2T + powerLawAlpha*j2Tpdt;
+	const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress), (powerLawExponent - 1.0))/
+		powerLawReferenceStress;
+	const PylithScalar a = ae + powerLawAlpha*dt*gammaTau;
+	const PylithScalar y = a*a*j2Tpdt*j2Tpdt - b + c*gammaTau - d*d*gammaTau*gammaTau;
+
+	return y;
+} // _effStressFunc
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Calculate effective stress function and its derivative for power-law material.
+void
+pylith::fekernels::IsotropicPowerLawEffectiveStress::_effStressFuncDerivFunc(PylithScalar* func,
+																			 PylithScalar* dfunc,
+																			 const PylithScalar j2Tpdt,
+																			 const PylithScalar ae,
+																			 const PylithScalar b,
+																			 const PylithScalar c,
+																			 const PylithScalar d,
+																			 const PylithScalar powerLawAlpha,
+																			 const PylithScalar dt,
+																			 const PylithScalar j2T,
+																			 const PylithScalar powerLawExponent,
+																			 const PylithScalar powerLawReferenceStrainRate,
+																			 const PylithScalar powerLawReferenceStress)
+{ // _effStressFuncDerivFunc
+	PylithScalar y = *func;
+	PylithScalar dy = *dfunc;
+	
+	const PylithScalar factor1 = 1.0 - powerLawAlpha;
+	const PylithScalar j2Tau = factor1*j2T + powerLawAlpha*j2Tpdt;
+	const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress), (powerLawExponent - 1.0))/
+		powerLawReferenceStress;
+	const PylithScalar dGammaTau = powerLawReferenceStrainRate*powerLawAlpha*(powerLawExponent - 1.0)*
+    pow((j2Tau/powerLawReferenceStress), (powerLawExponent - 2.0))/(powerLawReferenceStress*powerLawReferenceStress);
+	const PylithScalar a = ae + powerLawAlpha*dt*gammaTau;
+	const PylithScalar y = a*a*j2Tpdt*j2Tpdt - b + c*gammaTau - d*d*gammaTau*gammaTau;
+	dy = 2.0*a*a*j2Tpdt + dGammaTau*(2.0*a*powerLawAlpha*dt*j2Tpdt*j2Tpdt + c - 2.0*d*d*gammaTau);
+  
+	*func = y;
+	*dfunc = dy;
+
+} // _effStressFuncDerivFunc
+
 // ----------------------------------------------------------------------
 // Bracket effective stress.
 void
-pylith::fekernels::IsotropicPowerLaw::_bracket(PylithScalar* px1,
-											   PylithScalar* px2,
-											   const PylithScalar ae,
-											   const PylithScalar b,
-											   const PylithScalar c,
-											   const PylithScalar d,
-											   const PylithScalar powerLawAlpha,
-											   const PylithScalar dt,
-											   const PylithScalar j2T,
-											   const PylithScalar powerLawExponent,
-											   const PylithScalar powerLawReferenceStrainRate,
-											   const PylithScalar powerLawReferenceStress,
-											   const PylithScalar (*effStressFunc))
+pylith::fekernels::IsotropicPowerLawEffectiveStress::_bracket(PylithScalar* px1,
+															  PylithScalar* px2,
+															  const PylithScalar ae,
+															  const PylithScalar b,
+															  const PylithScalar c,
+															  const PylithScalar d,
+															  const PylithScalar powerLawAlpha,
+															  const PylithScalar dt,
+															  const PylithScalar j2T,
+															  const PylithScalar powerLawExponent,
+															  const PylithScalar powerLawReferenceStrainRate,
+															  const PylithScalar powerLawReferenceStress)
 { // _bracket
     // Arbitrary number of iterations to bracket the root
 	const int maxIterations = 50;
@@ -3184,10 +3241,10 @@ pylith::fekernels::IsotropicPowerLaw::_bracket(PylithScalar* px1,
 	PylithScalar x1 = *px1;
 	PylithScalar x2 = *px2;
 
-	PylithScalar funcValue1 = effStressFunc(x1, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
-											powerLawReferenceStrainRate, powerLawReferenceStress);
-	PylithScalar funcValue2 = effStressFunc(x2, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
-											powerLawReferenceStrainRate, powerLawReferenceStress);
+	PylithScalar funcValue1 = _effStressFunc(x1, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
+											 powerLawReferenceStrainRate, powerLawReferenceStress);
+	PylithScalar funcValue2 = _effStressFunc(x2, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
+											 powerLawReferenceStrainRate, powerLawReferenceStress);
 
 	int iteration = 0;
 	bool bracketed = false;
@@ -3200,13 +3257,13 @@ pylith::fekernels::IsotropicPowerLaw::_bracket(PylithScalar* px1,
 		if (fabs(funcValue1) < fabs(funcValue2)) {
 			x1 += bracketFactor * (x1 - x2);
 			x1 = std::max(x1, xMin);
-			funcValue1 = effStressFunc(x1, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
-									   powerLawReferenceStrainRate, powerLawReferenceStress);
+			funcValue1 = _effStressFunc(x1, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
+										powerLawReferenceStrainRate, powerLawReferenceStress);
 		} else {
 			x2 += bracketFactor * (x1 - x2);
 			x2 = std::max(x2, xMin);
-			funcValue2 = effStressFunc(x2, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
-									   powerLawReferenceStrainRate, powerLawReferenceStress);
+			funcValue2 = _effStressFunc(x2, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
+										powerLawReferenceStrainRate, powerLawReferenceStress);
 		} // else
 		++iteration;
 	} // while
@@ -3222,20 +3279,18 @@ pylith::fekernels::IsotropicPowerLaw::_bracket(PylithScalar* px1,
 // ----------------------------------------------------------------------
 // Find root using Newton's method with bisection.
 PylithScalar
-pylith::fekernels::IsotropicPowerLaw::_search(const PylithScalar x1,
-											  const PylithScalar x2,
-											  const PylithScalar ae,
-											  const PylithScalar b,
-											  const PylithScalar c,
-											  const PylithScalar d,
-											  const PylithScalar powerLawAlpha,
-											  const PylithScalar dt,
-											  const PylithScalar j2T,
-											  const PylithScalar powerLawExponent,
-											  const PylithScalar powerLawReferenceStrainRate,
-											  const PylithScalar powerLawReferenceStress,
-											  const PylithScalar (*effStressFunc),
-											  const PylithScalar (*effStressFuncDerivFunc))
+pylith::fekernels::IsotropicPowerLawEffectiveStress::_search(const PylithScalar x1,
+															 const PylithScalar x2,
+															 const PylithScalar ae,
+															 const PylithScalar b,
+															 const PylithScalar c,
+															 const PylithScalar d,
+															 const PylithScalar powerLawAlpha,
+															 const PylithScalar dt,
+															 const PylithScalar j2T,
+															 const PylithScalar powerLawExponent,
+															 const PylithScalar powerLawReferenceStrainRate,
+															 const PylithScalar powerLawReferenceStress)
 { // _search
     // Arbitrary number of iterations to find the root
 	const int maxIterations = 100;
@@ -3243,11 +3298,11 @@ pylith::fekernels::IsotropicPowerLaw::_search(const PylithScalar x1,
 	// Desired accuracy for root. This is a bit arbitrary for now.
 	const PylithScalar accuracy = 1.0e-16;
 
-	// Organize search so that effStressFunc(xLow) is less than zero.
-	PylithScalar funcValueLow = effStressFunc(x1, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
-											  powerLawReferenceStrainRate, powerLawReferenceStress);
-	PylithScalar funcValueHigh = effStressFunc(x2, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
-											  powerLawReferenceStrainRate, powerLawReferenceStress);
+	// Organize search so that _effStressFunc(xLow) is less than zero.
+	PylithScalar funcValueLow = _effStressFunc(x1, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
+											   powerLawReferenceStrainRate, powerLawReferenceStress);
+	PylithScalar funcValueHigh = _effStressFunc(x2, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
+												powerLawReferenceStrainRate, powerLawReferenceStress);
 	assert(funcValueLow * funcValueHigh <= 0.0);
 
 	PylithScalar effStress = 0.0;
@@ -3270,8 +3325,8 @@ pylith::fekernels::IsotropicPowerLaw::_search(const PylithScalar x1,
 	PylithScalar funcDeriv = 0.0;
 	PylithScalar funcXHigh = 0.0;
 	PylithScalar funcXLow = 0.0;
-	effStressFuncDerivFunc(&funcValue, %funcDeriv, effStress, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
-						   powerLawReferenceStrainRate, powerLawReferenceStress);
+	_effStressFuncDerivFunc(&funcValue, &funcDeriv, effStress, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
+							powerLawReferenceStrainRate, powerLawReferenceStress);
 	int iteration = 0;
 
 	while (iteration < maxIterations) {
@@ -3290,8 +3345,8 @@ pylith::fekernels::IsotropicPowerLaw::_search(const PylithScalar x1,
 			dx = funcValue / funcDeriv;
 			effStress = effStress - dx;
 		} // else
-		effStressFuncDerivFunc(&funcValue, %funcDeriv, effStress, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
-							   powerLawReferenceStrainRate, powerLawReferenceStress);
+		_effStressFuncDerivFunc(&funcValue, &funcDeriv, effStress, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
+								powerLawReferenceStrainRate, powerLawReferenceStress);
 		if (funcValue < 0.0) {
 			xLow = effStress;
 		} else {
@@ -3307,68 +3362,6 @@ pylith::fekernels::IsotropicPowerLaw::_search(const PylithScalar x1,
 
 	return effStress;
 } // _search
-
-
-// ----------------------------------------------------------------------
-// Calculate effective stress function for power-law material.
-PylithScalar
-pylith::fekernels::IsotropicPowerLaw::effStressFunc(const PylithScalar j2InitialGuess,
-													const PylithScalar ae,
-													const PylithScalar b,
-													const PylithScalar c,
-													const PylithScalar d,
-													const PylithScalar powerLawAlpha,
-													const PylithScalar dt,
-													const PylithScalar j2T,
-													const PylithScalar powerLawExponent,
-													const PylithScalar powerLawReferenceStrainRate,
-													const PylithScalar powerLawReferenceStress)
-{ // effStressFunc
-	const PylithScalar factor1 = 1.0 - powerLawAlpha;
-	const PylithScalar j2Tau = factor1*j2T + powerLawAlpha*j2Tpdt;
-	const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress), (powerLawExponent - 1.0))/
-		powerLawReferenceStress;
-	const PylithScalar a = ae + powerLawAlpha*dt*gammaTau;
-	const PylithScalar y = a*a*j2Tpdt*j2Tpdt - b + c*gammaTau - d*d*gammaTau*gammaTau;
-
-	return y;
-} // effStressFunc
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Calculate effective stress function and its derivative for power-law material.
-void
-pylith::fekernels::IsotropicPowerLaw::effStressFuncDerivFunc(PylithScalar* func,
-															 PylithScalar* dfunc,
-															 const PylithScalar j2InitialGuess,
-															 const PylithScalar ae,
-															 const PylithScalar b,
-															 const PylithScalar c,
-															 const PylithScalar d,
-															 const PylithScalar powerLawAlpha,
-															 const PylithScalar dt,
-															 const PylithScalar j2T,
-															 const PylithScalar powerLawExponent,
-															 const PylithScalar powerLawReferenceStrainRate,
-															 const PylithScalar powerLawReferenceStress)
-{ // effStressFuncDerivFunc
-	PylithScalar y = *func;
-	PylithScalar dy = *dfunc;
-	
-	const PylithScalar factor1 = 1.0 - powerLawAlpha;
-	const PylithScalar j2Tau = factor1*j2T + powerLawAlpha*j2Tpdt;
-	const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress), (powerLawExponent - 1.0))/
-		powerLawReferenceStress;
-	const PylithScalar dGammaTau = powerLawReferenceStrainRate*powerLawAlpha*(powerLawExponent - 1.0)*
-    pow((j2Tau/powerLawReferenceStress), (powerLawExponent - 2.0))/(powerLawReferenceStress*powerLawReferenceStress);
-	const PylithScalar a = ae + powerLawAlpha*dt*gammaTau;
-	const PylithScalar y = a*a*j2Tpdt*j2Tpdt - b + c*gammaTau - d*d*gammaTau*gammaTau;
-	dy = 2.0*a*a*j2Tpdt + dGammaTau*(2.0*a*powerLawAlpha*dt*j2Tpdt*j2Tpdt + c - 2.0*d*d*gammaTau);
-  
-	*func = y;
-	*dfunc = dy;
-
-} // effStressFuncDerivFunc
 
 
 // End of file

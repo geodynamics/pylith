@@ -245,6 +245,38 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addTotalStrain(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Add stress subfield to auxiliary fields.
+void
+pylith::materials::AuxiliaryFactoryViscoelastic::addStress(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("addStress(void)");
+
+    const char* fieldName = "stress";
+    const char* componentNames[6] = { "stress_xx", "stress_yy", "stress_zz", "stress_xy", "stress_yz", "stress_xz" };
+    const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.alias = fieldName;
+    description.vectorFieldType = pylith::topology::Field::OTHER;
+    description.numComponents = stressSize;
+    description.componentNames.resize(stressSize);
+    description.hasHistory = true;
+    description.historySize = 1;
+    for (int i = 0; i < strainSize; ++i) {
+        description.componentNames[i] = componentNames[i];
+    } // for
+    description.scale = 1.0;
+    description.validator = NULL;
+
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+
+    PYLITH_METHOD_END;
+} // addStress
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Add viscous strain subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactoryViscoelastic::addViscousStrain(void) {
