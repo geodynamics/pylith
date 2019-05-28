@@ -52,12 +52,13 @@ namespace pylith {
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity :
     public pylith::mmstests::TestIsotropicLinearIncompElasticity {
-    /// Spatial database user functions for auxiiliary subfields (includes derived fields).
     static const double LENGTHSCALE;
     static const double TIMESCALE;
     static const double PRESSURESCALE;
     static const double GACC;
     static const double YMAX;
+
+    /// Spatial database user functions for auxiiliary subfields (includes derived fields).
 
     // Density
     static double density(const double x,
@@ -103,6 +104,8 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity :
         return "m/s**2";
     } // acc_units
 
+    // Solution fields (nondimensional)
+
     // Displacement
     static double disp_x(const double x,
                          const double y) {
@@ -122,10 +125,6 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity :
         const double densityScale = PRESSURESCALE / (velocityScale * velocityScale);
         return density(x,y) / densityScale * GACC / (accelerationScale) * (YMAX/LENGTHSCALE-y);
     } // pressure
-
-    static const char* pressure_units(void) {
-        return "Pa";
-    } // pressure_units
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
                                           PetscReal t,
