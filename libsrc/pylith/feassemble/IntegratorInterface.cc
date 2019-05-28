@@ -423,14 +423,6 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
     err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
-#if 0 // DEBUGGING
-    std::cout << "DOMAIN MESH" << std::endl;
-    solution.mesh().view("::ascii_info_detail");
-
-    std::cout << "FAULT MESH" << std::endl;
-    auxiliaryField->mesh().view("::ascii_info_detail");
-#endif // DEBUGGING
-
     // Compute the local residual
     assert(solution.localVector());
     assert(residual->localVector());

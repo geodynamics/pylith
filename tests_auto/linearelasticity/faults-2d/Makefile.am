@@ -24,22 +24,22 @@ dist_check_SCRIPTS = test_pylith.py
 dist_noinst_PYTHON = \
 	meshes.py \
 	TestTwoBlocks.py \
-	twoblocks_soln.py \
-	twoblocks_gendb.py
+	twoblocks_soln.py
 
 dist_noinst_DATA = \
 	geometry.jou \
-	bc.jou
+	bc.jou \
 	mesh_tri.jou \
 	mesh_tri.exo \
-	tri.cfg \
 	mesh_quad.jou \
 	mesh_quad.exo \
-	quad.cfg \
-	twoblocks.cfg
+	pylithapp.cfg \
+	twoblocks.cfg \
+	twoblocks_quad.cfg \
+	twoblocks_tri.cfg
 
 
-noinst_TMP = 
+noinst_TMP =
 
 
 # 'export' the input files by performing a mock install
@@ -59,4 +59,4 @@ clean-local-tmp:
 	-rm *.h5 *.xmf *.pyc
 
 
-# End of file 
+# End of file
