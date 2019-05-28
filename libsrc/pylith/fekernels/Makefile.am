@@ -26,6 +26,7 @@ subpkginclude_HEADERS = \
 	Viscoelasticity.hh \
 	IsotropicLinearMaxwell.hh \
 	IsotropicLinearGenMaxwell.hh \
+	IsotropicPowerLaw.hh \
 	IncompressibleElasticity.hh \
 	IsotropicLinearIncompElasticity.hh \
 	DispVel.hh \

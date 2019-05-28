@@ -48,6 +48,11 @@ namespace pylith {
         class IsotropicLinearGenMaxwellPlaneStrain;
         class IsotropicLinearGenMaxwell3D;
 
+        class IsotropicPowerLaw;
+        class IsotropicPowerLawPlaneStrain;
+        class IsotropicPowerLaw3D;
+        class IsotropicPowerLawEffectiveStress;
+
         class IncompressibleElasticity;
         class IsotropicLinearIncompElasticity;
         class IsotropicLinearIncompElasticityPlaneStrain;

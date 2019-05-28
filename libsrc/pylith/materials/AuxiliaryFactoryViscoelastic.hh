@@ -49,8 +49,20 @@ public:
     /// Add shear modulus ratio subfield for Generalized Maxwell to auxiliary subfields.
     void addShearModulusRatioGeneralizedMaxwell(void);
 
+    /// Add power-law reference strain rate subfield to auxiliary subfields.
+    void addPowerLawReferenceStrainRate(void);
+
+    /// Add power-law reference stress subfield to auxiliary subfields.
+    void addPowerLawReferenceStress(void);
+
+    /// Add power-law exponent subfield to auxiliary subfields.
+    void addPowerLawExponent(void);
+
     /// Add total strain subfield to auxiliary subfields.
     void addTotalStrain(void);
+
+    /// Add stress subfield to auxiliary subfields.
+    void addStress(void);
 
     /// Add viscous strain subfield to auxiliary subfields.
     void addViscousStrain(void);

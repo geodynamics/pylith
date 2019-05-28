@@ -77,4 +77,40 @@ pylith::fekernels::Viscoelasticity::maxwellViscousStrainCoeff(const PylithScalar
 } // maxwellViscousStrainCoef
 
 
+// Compute 2D scalar product of two tensors represented as vectors.
+// 6 FLOPs per call.
+PylithScalar
+pylith::fekernels::Viscoelasticity::scalarProduct2D(const PylithScalar* tensor1, const PylithScalar* tensor2)
+{ // scalarProduct2D
+	const PylithScalar scalarProduct = tensor1[0] * tensor2[0] + tensor1[1] * tensor2[1] + 2.0 * tensor1[2] * tensor2[2];
+
+	return scalarProduct;
+} // scalarProduct2D
+
+
+// Compute 2DPS scalar product of two tensors represented as vectors.
+// In this case all 3 normal components are present, but only one shear comp.
+// 8 FLOPs per call.
+PylithScalar
+pylith::fekernels::Viscoelasticity::scalarProduct2DPS(const PylithScalar* tensor1, const PylithScalar* tensor2)
+{ // scalarProduct2DPS
+	const PylithScalar scalarProduct = tensor1[0] * tensor2[0] + tensor1[1] * tensor2[1] + tensor1[2] * tensor2[2] + 
+		2.0 * tensor1[3] * tensor2[3];
+
+	return scalarProduct;
+} // scalarProduct2DPS
+
+
+// Compute 3D scalar product of two tensors represented as vectors.
+// 12 FLOPs per call.
+PylithScalar
+pylith::fekernels::Viscoelasticity::scalarProduct3D(const PylithScalar* tensor1, const PylithScalar* tensor2)
+{ // scalarProduct3D
+	const PylithScalar scalarProduct = tensor1[0] * tensor2[0] + tensor1[1] * tensor2[1] + tensor1[2] * tensor2[2] +
+		2.0 * (tensor1[3] * tensor2[3] + tensor1[4] * tensor2[4] + tensor1[5] * tensor2[5]);
+
+	return scalarProduct;
+} // scalarProduct3D
+
+
 // End of file

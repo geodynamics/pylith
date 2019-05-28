@@ -133,6 +133,86 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addShearModulusRatioGeneralized
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Add power-law reference strain rate subfield to auxiliary fields.
+void
+pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStrainRate(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("addPowerLawReferenceStrainRate(void)");
+
+    const char* fieldName = "power_law_reference_strain_rate";
+    const PylithReal strainRateScale = 1.0/_normalizer->timeScale();
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.alias = fieldName;
+    description.vectorFieldType = pylith::topology::Field::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = fieldName;
+    description.scale = strainRateScale;
+    description.validator = pylith::topology::FieldQuery::validatorPositive;
+
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+
+    PYLITH_METHOD_END;
+} // addPowerLawReferenceStrainRate
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Add power-law reference stress subfield to auxiliary fields.
+void
+pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStress(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("addPowerLawReferenceStress(void)");
+
+    const char* fieldName = "power_law_reference_stress";
+    const PylithReal pressureScale = _normalizer->pressureScale();
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.alias = fieldName;
+    description.vectorFieldType = pylith::topology::Field::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = fieldName;
+    description.scale = pressureScale;
+    description.validator = pylith::topology::FieldQuery::validatorPositive;
+
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+
+    PYLITH_METHOD_END;
+} // addPowerLawReferenceStress
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Add power-law exponenet subfield to auxiliary fields.
+void
+pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawExponent(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("addPowerLawExponent(void)");
+
+    const char* fieldName = "power_law_exponent";
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.alias = fieldName;
+    description.vectorFieldType = pylith::topology::Field::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = fieldName;
+    description.scale = 1.0;
+    description.validator = pylith::topology::FieldQuery::validatorPositive;
+
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+
+    PYLITH_METHOD_END;
+} // addPowerLawExponent
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Add total strain subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactoryViscoelastic::addTotalStrain(void) {
@@ -162,6 +242,38 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addTotalStrain(void) {
 
     PYLITH_METHOD_END;
 } // addTotalStrain
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Add stress subfield to auxiliary fields.
+void
+pylith::materials::AuxiliaryFactoryViscoelastic::addStress(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("addStress(void)");
+
+    const char* fieldName = "stress";
+    const char* componentNames[6] = { "stress_xx", "stress_yy", "stress_zz", "stress_xy", "stress_yz", "stress_xz" };
+    const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.alias = fieldName;
+    description.vectorFieldType = pylith::topology::Field::OTHER;
+    description.numComponents = stressSize;
+    description.componentNames.resize(stressSize);
+    description.hasHistory = true;
+    description.historySize = 1;
+    for (int i = 0; i < stressSize; ++i) {
+        description.componentNames[i] = componentNames[i];
+    } // for
+    description.scale = 1.0;
+    description.validator = NULL;
+
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+
+    PYLITH_METHOD_END;
+} // addStress
 
 
 // ---------------------------------------------------------------------------------------------------------------------
