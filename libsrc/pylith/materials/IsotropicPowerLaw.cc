@@ -100,7 +100,7 @@ pylith::materials::IsotropicPowerLaw::addAuxiliarySubfields(void) {
     _auxiliaryFactory->addBulkModulus();
     _auxiliaryFactory->addPowerLawReferenceStrainRate();
     _auxiliaryFactory->addPowerLawReferenceStress();
-    _auxiliaryFactory->addPowerLawExponenet();
+    _auxiliaryFactory->addPowerLawExponent();
     _auxiliaryFactory->addViscousStrain();
     _auxiliaryFactory->addStress();
     if (_useReferenceState) {

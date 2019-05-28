@@ -898,18 +898,18 @@ private:
 	 */
 	
 	static
-	void _search(PylithScalar x1,
-				 PylithScalar x2,
-				 const PylithScalar ae,
-				 const PylithScalar b,
-				 const PylithScalar c,
-				 const PylithScalar d,
-				 const PylithScalar powerLawAlpha,
-				 const PylithScalar dt,
-				 const PylithScalar j2T,
-				 const PylithScalar powerLawExponent,
-				 const PylithScalar powerLawReferenceStrainRate,
-				 const PylithScalar powerLawReferenceStress);
+	PylithScalar _search(PylithScalar x1,
+						 PylithScalar x2,
+						 const PylithScalar ae,
+						 const PylithScalar b,
+						 const PylithScalar c,
+						 const PylithScalar d,
+						 const PylithScalar powerLawAlpha,
+						 const PylithScalar dt,
+						 const PylithScalar j2T,
+						 const PylithScalar powerLawExponent,
+						 const PylithScalar powerLawReferenceStrainRate,
+						 const PylithScalar powerLawReferenceStress);
 
 }; // IsotropicPowerLaw
 

@@ -739,7 +739,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::deviatoricStress4(const PylithI
 
 	// Compute quantities based on stress at t = T.
 	const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy at t = T.
-	const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz, visStrain_xy at t = T.
+	const PylithScalar* visStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz, visStrain_xy at t = T.
 	const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
 	const PylithScalar devStressT[4] = {stressT[0] - meanStressT,
 										stressT[1] - meanStressT,
@@ -878,7 +878,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::deviatoricStress4_refstate(cons
 
 	// Compute quantities based on stress at t = T.
 	const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy at t = T.
-	const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz, visStrain_xy at t = T.
+	const PylithScalar* visStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz, visStrain_xy at t = T.
 	const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
 	const PylithScalar devStressT[4] = {stressT[0] - meanStressT,
 										stressT[1] - meanStressT,
@@ -1155,7 +1155,6 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain(const Pylit
     assert(aOff[i_stress] >= 0);
 
 	// Constants.
-    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
     const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
     const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
     const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
@@ -1163,15 +1162,10 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain(const Pylit
 	const PylithScalar powerLawAlpha = 0.5;
     // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
     const PylithScalar dt = constants[0];
-	const PylithScalar ae = 1.0/(2.0*shearModulus);
-	const PylithScalar timeFac = dt*(1.0 - powerLawAlpha);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
 
     const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
@@ -1186,7 +1180,6 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain(const Pylit
 
 	// Compute stress quantities at time T.
 	const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy at t = T.
-	const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz, visStrain_xy at t = T.
 	const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
 	const PylithScalar devStressT[4] = {stressT[0] - meanStressT,
 										stressT[1] - meanStressT,
@@ -1274,7 +1267,6 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate(co
     assert(aOff[i_rstrain] >= 0);
 
 	// Constants.
-    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
     const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
     const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
     const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
@@ -1282,15 +1274,10 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate(co
 	const PylithScalar powerLawAlpha = 0.5;
     // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
     const PylithScalar dt = constants[0];
-	const PylithScalar ae = 1.0/(2.0*shearModulus);
-	const PylithScalar timeFac = dt*(1.0 - powerLawAlpha);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 3; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
 
     const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
@@ -1306,7 +1293,6 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate(co
 
 	// Compute stress quantities at time T.
 	const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy at t = T.
-	const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz, visStrain_xy at t = T.
 	const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
 	const PylithScalar devStressT[4] = {stressT[0] - meanStressT,
 										stressT[1] - meanStressT,
@@ -1762,70 +1748,70 @@ pylith::fekernels::IsotropicPowerLaw3D::Jg3vu(const PylithInt dim,
 	/* Unique components of Jacobian. */
 	const PylithReal C1111 = bulkModulus -
 		2.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressTpdt[0]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau +
 				  powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressT[0]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) + 1.0/(2.0*shearModulus)));
+				  (2.0*j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
 	const PylithReal C1122 = bulkModulus +
 		1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressTpdt[1]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressT[1]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt)));
+				  (2.0*j2Tau*j2Tpdt)));
 	const PylithReal C1133 = bulkModulus +
 		1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressTpdt[2]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressT[2]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt)));
+				  (2.0*j2Tau*j2Tpdt)));
 	const PylithReal C1212 =
 		-1.0/(2.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[3]*devStressTpdt[3]*(powerLawExponent - 1.0)/
-				   (j2Tau*j2TplusDt) +
+				   (j2Tau*j2Tpdt) +
 				   powerLawAlpha*dt*gammaTau +
 				   powerLawAlpha*dt*gammaTau*devStressTpdt[3]*devStressT[3]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				   (j2Tau*j2TplusDt) + 1.0/(2.0*shearModulus)));
+				   (j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
 	const PylithReal C1313 =
 		-1.0/(2.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[5]*devStressTpdt[5]*(powerLawExponent - 1.0)/
-				   (j2Tau*j2TplusDt) +
+				   (j2Tau*j2Tpdt) +
 				   powerLawAlpha*dt*gammaTau +
 				   powerLawAlpha*dt*gammaTau*devStressTpdt[5]*devStressT[5]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				   (j2Tau*j2TplusDt) + 1.0/(2.0*shearModulus)));
+				   (j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
 	const PylithReal C2211 = bulkModulus +
 		1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressTpdt[1]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau*devStressT[0]*devStressTpdt[1]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt)));
+				  (2.0*j2Tau*j2Tpdt)));
 	const PylithReal C2222 = bulkModulus -
 		2.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[1]*devStressTpdt[1]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau +
 				  powerLawAlpha*dt*gammaTau*devStressTpdt[1]*devStressT[1]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) + 1.0/(2.0*shearModulus)));
+				  (2.0*j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
 	const PylithReal C2233 = bulkModulus +
 		1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[1]*devStressTpdt[2]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau*devStressTpdt[1]*devStressT[2]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt)));
+				  (2.0*j2Tau*j2Tpdt)));
 	const PylithReal C2323 =
 		-1.0/(2.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[4]*devStressTpdt[4]*(powerLawExponent - 1.0)/
-				   (j2Tau*j2TplusDt) +
+				   (j2Tau*j2Tpdt) +
 				   powerLawAlpha*dt*gammaTau +
 				   powerLawAlpha*dt*gammaTau*devStressTpdt[4]*devStressT[4]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				   (j2Tau*j2TplusDt) + 1.0/(2.0*shearModulus)));
+				   (j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
 	const PylithReal C3311 = bulkModulus +
 		1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressTpdt[2]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau*devStressT[0]*devStressTpdt[2]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt)));
+				  (2.0*j2Tau*j2Tpdt)));
 	const PylithReal C3322 = bulkModulus +
 		1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[1]*devStressTpdt[2]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau*devStressT[1]*devStressTpdt[2]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt)));
+				  (2.0*j2Tau*j2Tpdt)));
 	const PylithReal C3333 = bulkModulus -
 		2.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[2]*devStressTpdt[2]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau +
 				  powerLawAlpha*dt*gammaTau*devStressTpdt[2]*devStressT[2]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) + 1.0/(2.0*shearModulus)));
+				  (2.0*j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
     /* j(f,g,df,dg) = C(f,df,g,dg)
 
 	   0:  j0000 = C1111 = bulkModulus - 2/(3*(alpha**2*deltaT*gammaFTau*s11**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau + alpha*deltaT*gammaFTau*s11*s11T*(-alpha + 1)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*mu)))
@@ -2056,70 +2042,70 @@ pylith::fekernels::IsotropicPowerLaw3D::Jg3vu_refstate(const PylithInt dim,
 	/* Unique components of Jacobian. */
 	const PylithReal C1111 = bulkModulus -
 		2.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressTpdt[0]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau +
 				  powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressT[0]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) + 1.0/(2.0*shearModulus)));
+				  (2.0*j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
 	const PylithReal C1122 = bulkModulus +
 		1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressTpdt[1]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressT[1]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt)));
+				  (2.0*j2Tau*j2Tpdt)));
 	const PylithReal C1133 = bulkModulus +
 		1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressTpdt[2]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressT[2]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt)));
+				  (2.0*j2Tau*j2Tpdt)));
 	const PylithReal C1212 =
 		-1.0/(2.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[3]*devStressTpdt[3]*(powerLawExponent - 1.0)/
-				   (j2Tau*j2TplusDt) +
+				   (j2Tau*j2Tpdt) +
 				   powerLawAlpha*dt*gammaTau +
 				   powerLawAlpha*dt*gammaTau*devStressTpdt[3]*devStressT[3]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				   (j2Tau*j2TplusDt) + 1.0/(2.0*shearModulus)));
+				   (j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
 	const PylithReal C1313 =
 		-1.0/(2.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[5]*devStressTpdt[5]*(powerLawExponent - 1.0)/
-				   (j2Tau*j2TplusDt) +
+				   (j2Tau*j2Tpdt) +
 				   powerLawAlpha*dt*gammaTau +
 				   powerLawAlpha*dt*gammaTau*devStressTpdt[5]*devStressT[5]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				   (j2Tau*j2TplusDt) + 1.0/(2.0*shearModulus)));
+				   (j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
 	const PylithReal C2211 = bulkModulus +
 		1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressTpdt[1]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau*devStressT[0]*devStressTpdt[1]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt)));
+				  (2.0*j2Tau*j2Tpdt)));
 	const PylithReal C2222 = bulkModulus -
 		2.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[1]*devStressTpdt[1]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau +
 				  powerLawAlpha*dt*gammaTau*devStressTpdt[1]*devStressT[1]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) + 1.0/(2.0*shearModulus)));
+				  (2.0*j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
 	const PylithReal C2233 = bulkModulus +
 		1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[1]*devStressTpdt[2]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau*devStressTpdt[1]*devStressT[2]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt)));
+				  (2.0*j2Tau*j2Tpdt)));
 	const PylithReal C2323 =
 		-1.0/(2.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[4]*devStressTpdt[4]*(powerLawExponent - 1.0)/
-				   (j2Tau*j2TplusDt) +
+				   (j2Tau*j2Tpdt) +
 				   powerLawAlpha*dt*gammaTau +
 				   powerLawAlpha*dt*gammaTau*devStressTpdt[4]*devStressT[4]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				   (j2Tau*j2TplusDt) + 1.0/(2.0*shearModulus)));
+				   (j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
 	const PylithReal C3311 = bulkModulus +
 		1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressTpdt[2]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau*devStressT[0]*devStressTpdt[2]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt)));
+				  (2.0*j2Tau*j2Tpdt)));
 	const PylithReal C3322 = bulkModulus +
 		1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[1]*devStressTpdt[2]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau*devStressT[1]*devStressTpdt[2]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt)));
+				  (2.0*j2Tau*j2Tpdt)));
 	const PylithReal C3333 = bulkModulus -
 		2.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[2]*devStressTpdt[2]*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) +
+				  (2.0*j2Tau*j2Tpdt) +
 				  powerLawAlpha*dt*gammaTau +
 				  powerLawAlpha*dt*gammaTau*devStressTpdt[2]*devStressT[2]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-				  (2.0*j2Tau*j2TplusDt) + 1.0/(2.0*shearModulus)));
+				  (2.0*j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
     /* j(f,g,df,dg) = C(f,df,g,dg)
 
 	   0:  j0000 = C1111 = bulkModulus - 2/(3*(alpha**2*deltaT*gammaFTau*s11**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau + alpha*deltaT*gammaFTau*s11*s11T*(-alpha + 1)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*mu)))
@@ -2299,7 +2285,7 @@ pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress(const PylithInt dim,
 
 	// Compute quantities based on stress at t = T.
 	const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy, stress_yz, stress_xz at t = T.
-	const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz, visStrain_xy, visStrain_yz, visStrain_xz at t = T.
+	const PylithScalar* visStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz, visStrain_xy, visStrain_yz, visStrain_xz at t = T.
 	const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
 	const PylithScalar devStressT[6] = {stressT[0] - meanStressT,
 										stressT[1] - meanStressT,
@@ -2453,7 +2439,7 @@ pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress_refstate(const PylithIn
 
 	// Compute quantities based on stress at t = T.
 	const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy, stress_yz, stress_xz at t = T.
-	const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz, visStrain_xy at t = T.
+	const PylithScalar* visStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz, visStrain_xy at t = T.
 	const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
 	const PylithScalar devStressT[6] = {stressT[0] - meanStressT,
 										stressT[1] - meanStressT,
@@ -2679,8 +2665,8 @@ pylith::fekernels::IsotropicPowerLaw3D::updateStress_refstate(const PylithInt di
 													 a, a_t, NULL, t, x, numConstants, constants, stressTensor);
 
 	// Compute deviatoric stress tensor.
-    deviatoricStress4_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-							   t, x, numConstants, constants, stressTensor);
+    deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+							  t, x, numConstants, constants, stressTensor);
 
 	stress[0] += stressTensor[0];
 	stress[1] += stressTensor[4];
@@ -2749,7 +2735,6 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain(const PylithInt dim,
     assert(aOff[i_stress] >= 0);
 
 	// Constants.
-    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
     const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
     const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
     const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
@@ -2757,15 +2742,10 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain(const PylithInt dim,
 	const PylithScalar powerLawAlpha = 0.5;
     // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
     const PylithScalar dt = constants[0];
-	const PylithScalar ae = 1.0/(2.0*shearModulus);
-	const PylithScalar timeFac = dt*(1.0 - powerLawAlpha);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
 
     const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
@@ -2780,7 +2760,6 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain(const PylithInt dim,
 
 	// Compute stress quantities at time T.
 	const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy, stress_yz, stress_xz at t = T.
-	const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz, visStrain_xy, visStrain_yz, visStrain_xz at t = T.
 	const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
 	const PylithScalar devStressT[6] = {stressT[0] - meanStressT,
 										stressT[1] - meanStressT,
@@ -2874,7 +2853,6 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate(const Pylit
     assert(aOff[i_rstrain] >= 0);
 
 	// Constants.
-    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
     const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
     const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
     const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
@@ -2882,15 +2860,10 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate(const Pylit
 	const PylithScalar powerLawAlpha = 0.5;
     // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
     const PylithScalar dt = constants[0];
-	const PylithScalar ae = 1.0/(2.0*shearModulus);
-	const PylithScalar timeFac = dt*(1.0 - powerLawAlpha);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 3; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
 
     const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
@@ -2906,7 +2879,6 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate(const Pylit
 
 	// Compute stress quantities at time T.
 	const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy, stress_yz, stress_xz at t = T.
-	const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz, visStrain_xy, visStrain_yz, visStrain_xz at t = T.
 	const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
 	const PylithScalar devStressT[6] = {stressT[0] - meanStressT,
 										stressT[1] - meanStressT,
@@ -3145,9 +3117,9 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::computeEffectiveStress(cons
 			 powerLawReferenceStress);
 
 	// Find effective stress using Newton's method with bisection.
-	const PylithScalar effStress = _search(x1, x2, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
-										   powerLawReferenceStrainRate, powerLawReferenceStress);
-
+	PylithScalar effStress = _search(x1, x2, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
+									 powerLawReferenceStrainRate, powerLawReferenceStress);
+	
 	PetscLogFlops(4); // Log flops
 	
 	return effStress;
@@ -3207,7 +3179,7 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::_effStressFuncDerivFunc(Pyl
 	const PylithScalar dGammaTau = powerLawReferenceStrainRate*powerLawAlpha*(powerLawExponent - 1.0)*
     pow((j2Tau/powerLawReferenceStress), (powerLawExponent - 2.0))/(powerLawReferenceStress*powerLawReferenceStress);
 	const PylithScalar a = ae + powerLawAlpha*dt*gammaTau;
-	const PylithScalar y = a*a*j2Tpdt*j2Tpdt - b + c*gammaTau - d*d*gammaTau*gammaTau;
+	y = a*a*j2Tpdt*j2Tpdt - b + c*gammaTau - d*d*gammaTau*gammaTau;
 	dy = 2.0*a*a*j2Tpdt + dGammaTau*(2.0*a*powerLawAlpha*dt*j2Tpdt*j2Tpdt + c - 2.0*d*d*gammaTau);
   
 	*func = y;

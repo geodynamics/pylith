@@ -153,7 +153,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStrainRate(
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::materials::Query::dbQueryGeneric);
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // addPowerLawReferenceStrainRate
@@ -180,7 +180,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStress(void
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::materials::Query::dbQueryGeneric);
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // addPowerLawReferenceStress
@@ -206,7 +206,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawExponent(void) {
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::materials::Query::dbQueryGeneric);
+    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // addPowerLawExponent
@@ -263,7 +263,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addStress(void) {
     description.componentNames.resize(stressSize);
     description.hasHistory = true;
     description.historySize = 1;
-    for (int i = 0; i < strainSize; ++i) {
+    for (int i = 0; i < stressSize; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
     description.scale = 1.0;
