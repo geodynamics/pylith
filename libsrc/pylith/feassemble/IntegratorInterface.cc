@@ -35,17 +35,24 @@
 
 #include <stdexcept> // USES std::runtime_error
 
-extern "C" {
-    PetscErrorCode DMPlexComputeResidual_Hybrid_Internal(DM dm,
-                                                         IS cellIS,
-                                                         PetscReal time,
-                                                         Vec locX,
-                                                         Vec locX_t,
-                                                         PetscReal t,
-                                                         Vec locF,
-                                                         void *user);
+extern "C" PetscErrorCode DMPlexComputeResidual_Hybrid_Internal(DM dm,
+                                                                IS cellIS,
+                                                                PetscReal time,
+                                                                Vec locX,
+                                                                Vec locX_t,
+                                                                PetscReal t,
+                                                                Vec locF,
+                                                                void *user);
 
-} // extern "C"
+extern "C" PetscErrorCode DMPlexComputeJacobian_Hybrid_Internal(DM dm,
+                                                                IS cellIS,
+                                                                PetscReal t,
+                                                                PetscReal X_tShift,
+                                                                Vec locX,
+                                                                Vec locX_t,
+                                                                Mat Jac,
+                                                                Mat JacP,
+                                                                void *user);
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Local "private" functions.
@@ -384,7 +391,7 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     PYLITH_METHOD_BEGIN;
     journal::debug_t debug(_IntegratorInterface::genericComponent);
     debug << journal::at(__HERE__)
-          << "_IntegratorInterface::computeResidual(residual="<<residual<<", integrator"<<integrator
+          << "_IntegratorInterface::computeResidual(residual="<<typeid(residual).name()<<", integrator"<<typeid(integrator).name()
           <<"# kernels="<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="
           <<solutionDot.label()<<")"
           << journal::endl;
@@ -456,7 +463,7 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     journal::debug_t debug(_IntegratorInterface::genericComponent);
     debug << journal::at(__HERE__)
           << "_IntegratorInterface::computeJacobian(jacobianMat="<<jacobianMat<<", precondMat"<<precondMat
-          <<", integrator"<<integrator<<"# kernels="<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="
+          <<", integrator"<<typeid(integrator).name()<<"# kernels="<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="
           <<solution.label()<<", solutionDot="<<solutionDot.label()<<")"
           << journal::endl;
 
@@ -467,30 +474,38 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
 
     PetscErrorCode err;
 
-    // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
-    // the correct one.
+    PetscDM dmSoln = solution.dmMesh();
+    PetscDM dmAux = auxiliaryField->dmMesh();
+
+    PetscDMLabel dmLabel = NULL;
+    PetscIS cohesiveCells = NULL;
+    PetscInt cStart = 0, cEnd = 0;
+    err = DMGetLabel(dmSoln, "material-id", &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumBounds(dmLabel, integrator->getInterfaceId(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cohesiveCells);PYLITH_CHECK_ERROR(err);
+
     PetscDS prob = NULL;
-    PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
-    err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
+    PetscInt cMax = 0;
+    err = DMPlexGetHeightStratum(dmSoln, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHybridBounds(dmSoln, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
+    err = DMGetCellDS(dmSoln, cMax, &prob);PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data
-    PetscDM dmAux = auxiliaryField->dmMesh();assert(dmAux);
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
     err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
     // Compute the local Jacobian
-    assert(solution.localVector());
-
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_fieldTrial = solution.subfieldInfo(kernels[i].subfieldTrial.c_str()).index;
         const PetscInt i_fieldBasis = solution.subfieldInfo(kernels[i].subfieldBasis.c_str()).index;
         err = PetscDSSetBdJacobian(prob, i_fieldTrial, i_fieldBasis, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
     } // for
 
-    journal::error_t error(_IntegratorInterface::genericComponent);
-    error << journal::at(__HERE__)
-          <<":TODO: @matt Need to implement DMPlexComputeJacobian_Hybrid_Internal() or _Single()." << journal::endl;
-    throw std::logic_error(":TODO: @brad Finish implementing _IntegratorInterface::computeJacobian().");
+    assert(solution.localVector());
+    err = DMPlexComputeJacobian_Hybrid_Internal(dmSoln, cohesiveCells, t, s_tshift, solution.localVector(),
+                                                solutionDot.localVector(), jacobianMat, precondMat,
+                                                NULL);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&cohesiveCells);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeJacobian
