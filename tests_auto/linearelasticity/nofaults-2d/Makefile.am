@@ -27,6 +27,9 @@ dist_noinst_PYTHON = \
 	TestShearTraction.py \
 	sheartraction_soln.py \
 	sheartraction_gendb.py \
+	TestShearTractionRate.py \
+	sheartraction_rate_soln.py \
+	sheartraction_rate_gendb.py \
 	TestGravity.py \
 	gravity_soln.py \
 	TestGravityRefState.py \
@@ -49,6 +52,9 @@ dist_noinst_DATA = \
 	sheartraction.cfg \
 	sheartraction_tri.cfg \
 	sheartraction_quad.cfg \
+	sheartraction_rate.cfg \
+	sheartraction_rate_tri.cfg \
+	sheartraction_rate_quad.cfg \
 	gravity.cfg \
 	gravity_tri.cfg \
 	gravity_quad.cfg \
@@ -63,6 +69,7 @@ noinst_TMP = \
 	axialdisp_bc.spatialdb \
 	axialdisp_ic.spatialdb \
 	sheartraction_disp.spatialdb \
+	sheartraction_rate_disp.spatialdb \
 	gravity_refstate_matfields.spatialdb
 
 

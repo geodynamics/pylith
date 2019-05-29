@@ -15,19 +15,18 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults-2d/sheartraction_gendb.py
+# @file tests_auto/linearelasticity/nofaults-2d/sheartraction_rate_gendb.py
 #
-# @brief Python script to generate spatial database with displacement
-# boundary conditions for the shear test. The traction boundary
-# conditions use UniformDB in the .cfg file.
+# @brief Python script to generate spatial database with Dirichlet
+# boundary conditions for the time-dependent shear test. The traction
+# boundary conditions use UniformDB in the .cfg file.
 
 import numpy
 
 
 class GenerateDB(object):
-    """
-    Python object to generate spatial database with displacement
-    boundary conditions for the shear test.
+    """Python object to generate spatial database with Dirichlet
+    boundary conditions for the tim-dependent shear test.
     """
 
     def __init__(self):
@@ -51,9 +50,11 @@ class GenerateDB(object):
         xy[:, 0] = numpy.ravel(xx)
         xy[:, 1] = numpy.ravel(numpy.transpose(yy))
 
-        from sheartraction_soln import AnalyticalSoln
+        from sheartraction_rate_soln import AnalyticalSoln
         soln = AnalyticalSoln()
-        disp = soln.displacement(xy)
+        disp = soln.bc_initial_displacement(xy)
+        velocity_time = soln.bc_rate_time(xy)
+        velocity = soln.bc_velocity(xy)
 
         from spatialdata.geocoords.CSCart import CSCart
         cs = CSCart()
@@ -62,16 +63,27 @@ class GenerateDB(object):
         data = {'points': xy,
                 'coordsys': cs,
                 'data_dim': 2,
-                'values': [{'name': "initial_amplitude_x",
-                            'units': "m",
-                            'data': disp[0, :, 0].ravel()},
-                           {'name': "initial_amplitude_y",
-                            'units': "m",
-                            'data': disp[0, :, 1].ravel()}]}
+                'values': [
+                    {'name': "initial_amplitude_x",
+                     'units': "m",
+                     'data': disp[0, :, 0].ravel()},
+                    {'name': "initial_amplitude_y",
+                     'units': "m",
+                     'data': disp[0, :, 1].ravel()},
+                    {'name': "rate_amplitude_x",
+                     'units': "m/s",
+                     'data': velocity[0, :, 0].ravel()},
+                    {'name': "rate_amplitude_y",
+                     'units': "m/s",
+                     'data': velocity[0, :, 1].ravel()},
+                    {'name': "rate_time",
+                     'units': "s",
+                     'data': velocity_time[0, :, 0].ravel()},
+                ]}
 
         from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
         io = SimpleIOAscii()
-        io.inventory.filename = "sheartraction_disp.spatialdb"
+        io.inventory.filename = "sheartraction_rate_disp.spatialdb"
         io._configure()
         io.write(data)
         return
