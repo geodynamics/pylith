@@ -28,6 +28,8 @@
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 #include "pylith/problems/InitialCondition.hh" // USES InitialCondition
 
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 #include "petscts.h" // USES PetscTS
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
@@ -262,11 +264,11 @@ pylith::problems::TimeDependent::initialize(void) {
     const pylith::topology::Mesh& mesh = _solution->mesh();
     err = TSCreate(mesh.comm(), &_ts);PYLITH_CHECK_ERROR(err);assert(_ts);
     err = TSSetType(_ts, TSBEULER);PYLITH_CHECK_ERROR(err); // Backward Euler is default time stepping method.
+    err = TSSetEquationType(_ts, TS_EQ_IMPLICIT);PYLITH_CHECK_ERROR(err);
     err = TSSetExactFinalTime(_ts, TS_EXACTFINALTIME_STEPOVER);PYLITH_CHECK_ERROR(err); // Ok to step over final time.
     err = TSSetFromOptions(_ts);PYLITH_CHECK_ERROR(err);
     err = TSSetApplicationContext(_ts, (void*)this);PYLITH_CHECK_ERROR(err);
 
-#if 0
     TSEquationType eqType = TS_EQ_UNSPECIFIED;
     err = TSGetEquationType(_ts, &eqType);PYLITH_CHECK_ERROR(err);
     switch (eqType) {
@@ -297,37 +299,6 @@ pylith::problems::TimeDependent::initialize(void) {
         PYLITH_COMPONENT_DEBUG("Unknown PETSc time stepping equation type.");
         throw std::logic_error("Unknown PETSc time stepping equation type.");
     } // switch
-#else
-    TSType tsType = TSBEULER;
-    err = TSGetType(_ts, &tsType);PYLITH_CHECK_ERROR(err);
-    std::string tsString = tsType;
-    if ((tsString == std::string(TSEULER))
-        || (tsString == std::string(TSSSP))
-        || (tsString == std::string(TSRK))) {
-        PYLITH_COMPONENT_DEBUG("Recognized PetscTS as explicit time stepping.");
-        _formulationType = EXPLICIT;
-    } else if ((tsString == std::string(TSBEULER))
-               || (tsString == std::string(TSCN))
-               || (tsString == std::string(TSTHETA))
-               || (tsString == std::string(TSALPHA))
-               || (tsString == std::string(TSROSW))) {
-        PYLITH_COMPONENT_DEBUG("Recognized PetscTS as implicit time stepping.");
-        _formulationType = IMPLICIT;
-    } else {
-        // TSPSEUDO:
-        // TSSUNDIALS:
-        // TSPYTHON:
-        // TSALPHA2:
-        // TSGLLE:
-        // TSGLEE:
-        // TSARKIMEX:
-        // TSEIMEX:
-        // TSMIMEX:
-        // TSBDF:
-        PYLITH_COMPONENT_ERROR("Unable to determine if PETSc TS type '"<<tsType<<"' is implicit or explicit.");
-        throw std::logic_error("Unable to determine if PETSc TS type is implicit or explicit.");
-    } // if/else
-#endif
 
     // Set time stepping paramters.
     switch (getSolverType()) {
@@ -343,7 +314,10 @@ pylith::problems::TimeDependent::initialize(void) {
         PYLITH_COMPONENT_ERROR("Unknown problem type.");
         throw std::logic_error("Unknown problem type.");
     } // switch
-    PYLITH_COMPONENT_DEBUG("Setting PetscTS parameters: dtInitial="<<_dtInitial<<", startTime="<<_startTime<<", maxTimeSteps="<<_maxTimeSteps<<", totalTime="<<_totalTime);
+    PYLITH_COMPONENT_DEBUG("Setting PetscTS parameters: dtInitial="<<_dtInitial
+                                                                   <<", startTime="<<_startTime
+                                                                   <<", maxTimeSteps="<<_maxTimeSteps
+                                                                   <<", totalTime="<<_totalTime);
     err = TSSetTime(_ts, _startTime);PYLITH_CHECK_ERROR(err);
     err = TSSetTimeStep(_ts, _dtInitial);PYLITH_CHECK_ERROR(err);
     err = TSSetMaxSteps(_ts, _maxTimeSteps);PYLITH_CHECK_ERROR(err);
