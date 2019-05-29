@@ -152,9 +152,11 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateAmplitude(void) {
     const char* fieldName = "rate_amplitude";
 
     assert(_defaultDescription);
+    assert(_normalizer);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
     subfieldDescription.label = fieldName;
     subfieldDescription.alias = fieldName;
+    subfieldDescription.scale = _defaultDescription->scale / _normalizer->timeScale();
     subfieldDescription.validator = NULL;
     switch (subfieldDescription.vectorFieldType) {
     case pylith::topology::FieldBase::SCALAR: {
@@ -292,7 +294,6 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryValue(void) {
     subfieldDescription.numComponents = 1;
     subfieldDescription.componentNames.resize(1);
     subfieldDescription.componentNames[0] = fieldName;
-    subfieldDescription.scale = _normalizer->timeScale();
     subfieldDescription.validator = NULL;
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
