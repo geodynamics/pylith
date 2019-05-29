@@ -15,57 +15,59 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/eqinfo/TestEqInfoLine.py
+# @file tests_auto/eqinfo/TestEqInfoTri.py
 #
-# @brief Test suite for testing pylith_eqinfo with 1-D fault meshes.
+# @brief Test suite for testing pylith_eqinfo with tri fault meshes.
+
 
 import numpy
 
 from TestEqInfo import TestEqInfo, run_eqinfo
 
 
-class TestEqInfoLine(TestEqInfo):
+class TestEqInfoTri(TestEqInfo):
     """
-    Test suite for testing pylith_eqinfo with 1-D fault meshes.
+    Test suite for testing pylith_eqinfo with tri3 meshes.
     """
 
     def setUp(self):
         """
         Setup for test.
         """
-        run_eqinfo("line", ["line.cfg"])
+        run_eqinfo("tri", ["tri.cfg"])
         return
 
     def test_stats(self):
         """
         Check fault stats.
         """
-        import stats_line
+        import stats_tri
 
         timestamp = numpy.array([0.0, 1.0], dtype=numpy.float64)
 
-        oneE = stats_line.RuptureStats()
+        oneE = stats_tri.RuptureStats()
         oneE.timestamp = timestamp
-        oneE.ruparea = numpy.array([2.5, 1.5], dtype=numpy.float64)
-        oneE.potency = numpy.array([0.7 * 1.0 + 0.9 * 1.5, 0.4 * 1.5], dtype=numpy.float64)
-        oneE.moment = oneE.potency * 1.0e+10
-        self._check(oneE, stats_line.one)
+        oneE.ruparea = numpy.array([1.5 + 2.0, 1.5 + 2.0], dtype=numpy.float64)
+        slip0 = (0.2**2 + 0.5**2)**0.5
+        slip1 = (0.5**2 + 0.4**2)**0.5
+        oneE.potency = numpy.array([slip0 * 1.5 + slip1 * 2.0, 0.1 * 1.5 + 0.2 * 2.0], dtype=numpy.float64)
+        oneE.moment = numpy.array([slip0 * 1.5 * 1.0e+10 + slip1 * 2.0 * 2.0e+10,
+                                   0.1 * 1.5 * 1.0e+10 + 0.2 * 2.0 * 2.0e+10], dtype=numpy.float64)
+        self._check(oneE, stats_tri.one)
 
-        twoE = stats_line.RuptureStats()
+        twoE = stats_tri.RuptureStats()
         twoE.timestamp = timestamp
-        area0 = (1.5**2 + 1.0**2)**0.5
-        area1 = (1.0**2 + 1.0**2)**0.5
-        twoE.ruparea = numpy.array([area0 + area1, area0], dtype=numpy.float64)
-        twoE.potency = numpy.array([0.9 * area0 + 0.7 * area1, 0.3 * area0], dtype=numpy.float64)
-        twoE.moment = twoE.potency * 1.0e+10
-        self._check(twoE, stats_line.two)
+        twoE.ruparea = numpy.array([1.5, 0.0], dtype=numpy.float64)
+        twoE.potency = numpy.array([0.1 * 1.5, 0.0], dtype=numpy.float64)
+        twoE.moment = numpy.array([0.1 * 1.5 * 1.0e+10, 0.0], dtype=numpy.float64)
+        self._check(twoE, stats_tri.two)
 
-        allE = stats_line.RuptureStats()
+        allE = stats_tri.RuptureStats()
         allE.timestamp = timestamp
         allE.ruparea = oneE.ruparea + twoE.ruparea
         allE.potency = oneE.potency + twoE.potency
         allE.moment = oneE.moment + twoE.moment
-        self._check(allE, stats_line.all)
+        self._check(allE, stats_tri.all)
         return
 
 
@@ -74,7 +76,7 @@ if __name__ == '__main__':
     import unittest
 
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestEqInfoLine))
+    suite.addTest(unittest.makeSuite(TestEqInfoTri))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

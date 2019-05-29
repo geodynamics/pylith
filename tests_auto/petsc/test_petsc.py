@@ -16,9 +16,9 @@
 # ======================================================================
 #
 
-import unittest
-
 from pylith.tests.FullTestApp import TestDriver
+
+import unittest
 
 
 class TestApp(TestDriver):
@@ -39,14 +39,8 @@ class TestApp(TestDriver):
         """
         suite = unittest.TestSuite()
 
-        from TestEqInfoLine import TestEqInfoLine
-        suite.addTest(unittest.makeSuite(TestEqInfoLine))
-
-        from TestEqInfoTri import TestEqInfoTri
-        suite.addTest(unittest.makeSuite(TestEqInfoTri))
-
-        from TestEqInfoQuad import TestEqInfoQuad
-        suite.addTest(unittest.makeSuite(TestEqInfoQuad))
+        from TestPetscApp import TestPetscApp
+        suite.addTest(unittest.makeSuite(TestPetscApp))
 
         return suite
 
