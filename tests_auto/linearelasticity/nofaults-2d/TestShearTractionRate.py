@@ -24,8 +24,8 @@ import unittest
 from pylith.tests.FullTestApp import run_pylith, check_data
 
 import meshes
-from sheartraction_soln import AnalyticalSoln
-from sheartraction_gendb import GenerateDB
+from sheartraction_rate_soln import AnalyticalSoln
+from sheartraction_rate_gendb import GenerateDB
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ class TestCase(unittest.TestCase):
     def run_pylith(self, testName, args):
         if self.verbosity > 0:
             print("Running Pylith with args '{}' ...".format(" ".join(args)))
-        run_pylith(testName, args, GenerateDB)
+        #run_pylith(testName, args, GenerateDB)
         return
 
     def test_domain_solution(self):
@@ -72,7 +72,7 @@ class TestCase(unittest.TestCase):
         return
 
     def test_bcdirichlet_info(self):
-        vertexFields = ["initial_amplitude", "rate_time", "rate_amplitude"]
+        vertexFields = ["initial_amplitude", "rate_start_time", "rate_amplitude"]
         for bc in self.DIRICHLET_BOUNDARIES:
             self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
@@ -87,7 +87,7 @@ class TestCase(unittest.TestCase):
         return
 
     def test_bcneumann_info(self):
-        vertexFields = ["initial_amplitude", "rate_time", "rate_amplitude"]
+        vertexFields = ["initial_amplitude", "rate_start_time", "rate_amplitude"]
         for bc in self.NEUMANN_BOUNDARIES:
             self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
