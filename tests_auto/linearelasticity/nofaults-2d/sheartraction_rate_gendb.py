@@ -23,6 +23,8 @@
 
 import numpy
 
+from pyre.units.time import year
+
 
 class GenerateDB(object):
     """Python object to generate spatial database with Dirichlet
@@ -53,8 +55,8 @@ class GenerateDB(object):
         from sheartraction_rate_soln import AnalyticalSoln
         soln = AnalyticalSoln()
         disp = soln.bc_initial_displacement(xy)
-        velocity_time = soln.bc_rate_time(xy)
-        velocity = soln.bc_velocity(xy)
+        velocity_time = soln.bc_rate_time(xy) / year.value
+        velocity = soln.bc_velocity(xy) * year.value
 
         from spatialdata.geocoords.CSCart import CSCart
         cs = CSCart()

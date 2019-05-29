@@ -48,7 +48,7 @@ class TestCase(unittest.TestCase):
     def run_pylith(self, testName, args):
         if self.verbosity > 0:
             print("Running Pylith with args '{}' ...".format(" ".join(args)))
-        #run_pylith(testName, args, GenerateDB)
+        run_pylith(testName, args, GenerateDB)
         return
 
     def test_domain_solution(self):

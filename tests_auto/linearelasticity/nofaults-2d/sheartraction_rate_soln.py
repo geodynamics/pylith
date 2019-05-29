@@ -48,7 +48,7 @@ p_mu = p_density * p_vs**2
 p_lambda = p_density * p_vp**2 - 2 * p_mu
 
 # Time steps
-tsteps = numpy.arange(1.0, 5.01, 1.0)  # year
+tsteps = numpy.arange(0.0, 5.01, 1.0)  # year
 
 # Initial stress field (plane strain)
 s0xx = 0.0
@@ -167,10 +167,10 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
         maskRate = tsteps >= tR
-        sxx = s0xx + sRxx * maskRate * (tsteps - tR + 1.0)  # :KLUDGE: Offset in time values in output
-        syy = s0yy + sRyy * maskRate * (tsteps - tR + 1.0)
-        szz = s0zz + sRzz * maskRate * (tsteps - tR + 1.0)
-        sxy = s0xy + sRxy * maskRate * (tsteps - tR + 1.0)
+        sxx = s0xx + sRxx * maskRate * (tsteps - tR)
+        syy = s0yy + sRyy * maskRate * (tsteps - tR)
+        szz = s0zz + sRzz * maskRate * (tsteps - tR)
+        sxy = s0xy + sRxy * maskRate * (tsteps - tR)
 
         ones = numpy.ones((1, npts), dtype=numpy.float64)
         stress = numpy.zeros((ntpts, npts, self.TENSOR_SIZE), dtype=numpy.float64)
