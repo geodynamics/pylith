@@ -48,7 +48,7 @@ p_mu = p_density * p_vs**2
 p_lambda = p_density * p_vp**2 - 2 * p_mu
 
 # Time steps
-tsteps = numpy.arange(0.0, 5.01, 1.0)
+tsteps = numpy.arange(1.0, 5.01, 1.0)  # year
 
 # Initial stress field (plane strain)
 s0xx = 0.0
@@ -86,7 +86,12 @@ class AnalyticalSoln(object):
                 "bc_xpos": self.bc_xpos_initial_traction,
                 "bc_ypos": self.bc_ypos_initial_traction,
             },
-            "rate_time": self.bc_rate_time,
+            "rate_start_time": {
+                "bc_yneg": self.bc_rate_time,
+                "bc_xneg": self.bc_rate_time,
+                "bc_xpos": self.bc_rate_time,
+                "bc_ypos": self.bc_rate_time,
+            },
             "rate_amplitude": {
                 "bc_yneg": self.bc_velocity,
                 "bc_xneg": self.bc_velocity,
@@ -111,8 +116,8 @@ class AnalyticalSoln(object):
         strain = self.strain(locs)
         (ntpts, npts, tensorSize) = strain.shape
         disp = numpy.zeros((ntpts, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[0, :, 0] = strain[:, :, 0] * locs[:, 0] + strain[:, :, 3] * locs[:, 1]
-        disp[0, :, 1] = strain[:, :, 3] * locs[:, 0] + strain[:, :, 1] * locs[:, 1]
+        disp[:, :, 0] = strain[:, :, 0] * locs[:, 0] + strain[:, :, 3] * locs[:, 1]
+        disp[:, :, 1] = strain[:, :, 3] * locs[:, 0] + strain[:, :, 1] * locs[:, 1]
         return disp
 
     def density(self, locs):
@@ -149,10 +154,10 @@ class AnalyticalSoln(object):
         szz = stress[:, :, 2]
         sxy = stress[:, :, 3]
         strain = numpy.zeros(stress.shape, dtype=numpy.float64)
-        strain[0, :, 0] = 1.0 / (2 * p_mu) * (sxx - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
-        strain[0, :, 1] = 1.0 / (2 * p_mu) * (syy - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
-        strain[0, :, 2] = 1.0 / (2 * p_mu) * (szz - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
-        strain[0, :, 3] = 1.0 / (2 * p_mu) * (sxy)
+        strain[:, :, 0] = 1.0 / (2 * p_mu) * (sxx - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
+        strain[:, :, 1] = 1.0 / (2 * p_mu) * (syy - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
+        strain[:, :, 2] = 1.0 / (2 * p_mu) * (szz - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
+        strain[:, :, 3] = 1.0 / (2 * p_mu) * (sxy)
         return strain
 
     def stress(self, locs):
@@ -160,13 +165,19 @@ class AnalyticalSoln(object):
         Compute stress field at locations.
         """
         (npts, dim) = locs.shape
-        npts = t.shape[0]
+        ntpts = tsteps.shape[0]
         maskRate = tsteps >= tR
-        stress = numpy.zeros((ntpts, npts, self.TESNSOR_SIZE), dtype=numpy.float64)
-        stress[0, :, 0] = s0xx + sRxx * maskRate * (t - t1)
-        stress[0, :, 1] = s0yy + sRyy * maskRate * (t - t1)
-        stress[0, :, 2] = s0zz + sRzz * maskRate * (t - t1)
-        stress[0, :, 3] = s0xy + sRxy * maskRate * (t - t1)
+        sxx = s0xx + sRxx * maskRate * (tsteps - tR + 1.0)  # :KLUDGE: Offset in time values in output
+        syy = s0yy + sRyy * maskRate * (tsteps - tR + 1.0)
+        szz = s0zz + sRzz * maskRate * (tsteps - tR + 1.0)
+        sxy = s0xy + sRxy * maskRate * (tsteps - tR + 1.0)
+
+        ones = numpy.ones((1, npts), dtype=numpy.float64)
+        stress = numpy.zeros((ntpts, npts, self.TENSOR_SIZE), dtype=numpy.float64)
+        stress[:, :, 0] = numpy.dot(sxx.reshape((ntpts, 1)), ones)
+        stress[:, :, 1] = numpy.dot(syy.reshape((ntpts, 1)), ones)
+        stress[:, :, 2] = numpy.dot(szz.reshape((ntpts, 1)), ones)
+        stress[:, :, 3] = numpy.dot(sxy.reshape((ntpts, 1)), ones)
         return stress
 
     def bc_initial_displacement(self, locs):
@@ -189,8 +200,8 @@ class AnalyticalSoln(object):
         eRxy = 1.0 / (2 * p_mu) * (sRxy)
         (npts, dim) = locs.shape
         velocity = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        velocity[0, :, 0] = eRxx * locs[:, 0] + eRxy * locs[:, 1]
-        velocity[0, :, 1] = eRxy * locs[:, 0] + eRyy * locs[:, 1]
+        velocity[0, :, 0] = (eRxx * locs[:, 0] + eRxy * locs[:, 1]) / year.value
+        velocity[0, :, 1] = (eRxy * locs[:, 0] + eRyy * locs[:, 1]) / year.value
         return velocity
 
     def bc_xpos_initial_traction(self, locs):
@@ -215,14 +226,14 @@ class AnalyticalSoln(object):
         """Compute rate start time at locations.
         """
         (npts, dim) = locs.shape
-        return tR * numpy.ones((1, npts, 1), dtype=numpy.float64)
+        return tR * numpy.ones((1, npts, 1), dtype=numpy.float64) * year.value
 
     def bc_xpos_rate_traction(self, locs):
         """Compute rate of change in traction on +x boundary at locations.
         """
         (npts, dim) = locs.shape
         traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[0, :, 0] = sRxy
+        traction[0, :, 0] = sRxy / year.value
         traction[0, :, 1] = 0.0
         return traction
 
@@ -231,7 +242,7 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[0, :, 0] = -sRxy
+        traction[0, :, 0] = -sRxy / year.value
         traction[0, :, 1] = 0.0
         return traction
 
