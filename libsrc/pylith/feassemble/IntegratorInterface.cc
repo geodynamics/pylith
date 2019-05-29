@@ -248,10 +248,7 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
     pylith::faults::TopologyOps::createFaultParallel(_interfaceMesh, solution.mesh(), _interfaceId,
                                                      _interfaceLabel.c_str());
     pylith::topology::MeshOps::checkTopology(*_interfaceMesh);
-
-    // Optimize closure for coordinates.
-    PetscDM dmFault = _interfaceMesh->dmMesh();assert(dmFault);
-    pylith::topology::CoordsVisitor::optimizeClosure(dmFault);
+    pylith::topology::CoordsVisitor::optimizeClosure(_interfaceMesh->dmMesh());
 
     Integrator::initialize(solution);
 

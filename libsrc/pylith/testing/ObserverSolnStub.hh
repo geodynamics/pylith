@@ -41,6 +41,18 @@ public:
     /// Destructor
     ~ObserverSolnStub(void);
 
+    /** Set time scale.
+     *
+     * @param[in] value Time scale for dimensionalizing time.
+     */
+    void setTimeScale(const PylithReal value);
+
+    /** Get time scale.
+     *
+     * @returns Time scale for dimensionalizing time.
+     */
+    PylithReal getTimeScale(void) const;
+
     /** Verify observer is compatible with solution.
      *
      * @param[in] solution Solution field.
@@ -56,6 +68,11 @@ public:
     void update(const PylithReal t,
                 const PylithInt tindex,
                 const pylith::topology::Field& solution);
+
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+protected:
+
+    PylithReal _timeScale; ///< Time scale.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

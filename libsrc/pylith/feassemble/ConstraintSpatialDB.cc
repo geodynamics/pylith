@@ -71,8 +71,6 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
 
     delete _auxiliaryField;_auxiliaryField = _physics->createAuxiliaryField(solution, physicsDomainMesh);
     delete _derivedField;_derivedField = _physics->createDerivedField(solution, physicsDomainMesh);
-    _observers = _physics->getObservers();assert(_observers); // Memory managed by Python
-    _observers->setPhysicsImplementation(this);
 
     const bool infoOnly = true;
     _observers->notifyObservers(0.0, 0, solution, infoOnly);
@@ -103,7 +101,7 @@ pylith::feassemble::ConstraintSpatialDB::prestep(const double t,
     PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<")");
 
     assert(_physics);
-    _physics->updateAuxiliaryField(_auxiliaryField, t);
+    _physics->updateAuxiliaryField(_auxiliaryField, t+dt);
 
     journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {

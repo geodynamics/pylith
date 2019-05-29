@@ -65,9 +65,6 @@ pylith::feassemble::ConstraintUserFn::initialize(const pylith::topology::Field& 
 
     Constraint::initialize(solution);
 
-    _observers = _physics->getObservers();assert(_observers); // Memory managed by Python
-    _observers->setPhysicsImplementation(this);
-
     const bool infoOnly = true;
     _observers->notifyObservers(0.0, 0, solution, infoOnly);
 

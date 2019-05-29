@@ -45,6 +45,7 @@ class pylith::problems::TestObserversPhysics : public CppUnit::TestFixture {
     CPPUNIT_TEST(testRegisterObserver);
     CPPUNIT_TEST(testRemoveObserver);
     CPPUNIT_TEST(testSetPhysicsImplementation);
+    CPPUNIT_TEST(testTimeScale);
     CPPUNIT_TEST(testVerifyObservers);
     CPPUNIT_TEST(testNotifyObservers);
 
@@ -67,6 +68,9 @@ public:
 
     /// Test setPhysicsImplemetation().
     void testSetPhysicsImplementation(void);
+
+    /// Test setTimeScale().
+    void testTimeScale(void);
 
     /// Test verifyObservers().
     void testVerifyObservers(void);

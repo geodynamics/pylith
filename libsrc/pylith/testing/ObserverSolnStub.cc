@@ -24,7 +24,9 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-pylith::problems::ObserverSolnStub::ObserverSolnStub(void) {}
+pylith::problems::ObserverSolnStub::ObserverSolnStub(void) :
+    _timeScale(1.0)
+{}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -32,6 +34,22 @@ pylith::problems::ObserverSolnStub::ObserverSolnStub(void) {}
 pylith::problems::ObserverSolnStub::~ObserverSolnStub(void) {
     deallocate();
 } // destructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set time scale.
+void
+pylith::problems::ObserverSolnStub::setTimeScale(const PylithReal value) {
+    _timeScale = value;
+} // setTimeScale
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get time scale.
+PylithReal
+pylith::problems::ObserverSolnStub::getTimeScale(void) const {
+    return _timeScale;
+} // getTimeScale
 
 
 // ---------------------------------------------------------------------------------------------------------------------

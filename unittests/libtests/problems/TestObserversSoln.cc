@@ -90,6 +90,25 @@ pylith::problems::TestObserversSoln::testRemoveObserver(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Test setTimeScale().
+void
+pylith::problems::TestObserversSoln::testTimeScale(void) {
+    CPPUNIT_ASSERT(_observers);
+
+    // Check default
+    PylithReal value = 1.0;
+    CPPUNIT_ASSERT_EQUAL(value, _TestObserversSoln::observerA.getTimeScale());
+    CPPUNIT_ASSERT_EQUAL(value, _TestObserversSoln::observerB.getTimeScale());
+
+    // Check set value
+    value = 2.0;
+    _observers->setTimeScale(value);
+    CPPUNIT_ASSERT_EQUAL(value, _TestObserversSoln::observerA.getTimeScale());
+    CPPUNIT_ASSERT_EQUAL(value, _TestObserversSoln::observerB.getTimeScale());
+} // testTimeScale
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Test verifyObservers().
 void
 pylith::problems::TestObserversSoln::testVerifyObservers(void) {

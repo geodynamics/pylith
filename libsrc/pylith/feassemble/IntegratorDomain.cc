@@ -78,9 +78,7 @@ pylith::feassemble::IntegratorDomain::deallocate(void) {
 
     pylith::feassemble::Integrator::deallocate();
 
-    _materialMesh = NULL; // :TODO: Currently using shared pointer. Delete when we have mesh associated with material
-                          // subDM.
-
+    delete _materialMesh;_materialMesh = NULL;
     delete _updateState;_updateState = NULL;
 
     PYLITH_METHOD_END;
@@ -195,7 +193,6 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
 
     delete _materialMesh;
     _materialMesh = pylith::topology::MeshOps::createSubdomainMesh(solution.mesh(), "material-id", _materialId, ":UNKOWN:");
-
     pylith::topology::CoordsVisitor::optimizeClosure(_materialMesh->dmMesh());
 
     Integrator::initialize(solution);

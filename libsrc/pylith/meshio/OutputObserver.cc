@@ -37,10 +37,12 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputObserver::OutputObserver(void) :
+    _timeScale(1.0),
     _fields(NULL),
     _writer(NULL),
     _fieldFilter(NULL),
-    _trigger(NULL) {}
+    _trigger(NULL)
+{}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -110,6 +112,19 @@ pylith::meshio::OutputObserver::setFieldFilter(FieldFilter* const filter) {
 
     PYLITH_METHOD_END;
 } // setFieldFilter
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set time scale.
+void
+pylith::meshio::OutputObserver::setTimeScale(const PylithReal value) {
+    if (value <= 0.0) {
+        std::ostringstream msg;
+        msg << "Time scale ("<<value<<") for output observer is nonpositive.";
+        throw std::logic_error(msg.str());
+    } // if
+    _timeScale = value;
+} // setTimeScale
 
 
 // ---------------------------------------------------------------------------------------------------------------------

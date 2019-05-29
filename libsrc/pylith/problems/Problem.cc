@@ -140,7 +140,9 @@ pylith::problems::Problem::registerObserver(pylith::problems::ObserverSoln* obse
     PYLITH_COMPONENT_DEBUG("registerObserver(observer="<<typeid(observer).name()<<")");
 
     assert(_observers);
+    assert(_normalizer);
     _observers->registerObserver(observer);
+    _observers->setTimeScale(_normalizer->timeScale());
 
     PYLITH_METHOD_END;
 } // registerObserver
@@ -315,8 +317,7 @@ pylith::problems::Problem::initialize(void) {
     } // if
 
     const pylith::topology::Mesh& mesh = _solution->mesh();
-    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-    pylith::topology::CoordsVisitor::optimizeClosure(dmMesh);
+    pylith::topology::CoordsVisitor::optimizeClosure(mesh.dmMesh());
 
     // Initialize integrators.
     _createIntegrators();

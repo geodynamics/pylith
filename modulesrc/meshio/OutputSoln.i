@@ -45,19 +45,26 @@ public:
              * @param[in] names Array of subfield names.
              * @param[in] numNames Length of array.
              */
-	    %apply(const char* const* string_list, const int list_len) {
-	      (const char* names[],
-	       const int numNames)
-		};
+            %apply(const char* const* string_list, const int list_len) {
+                (const char* names[],
+                 const int numNames)
+            };
             void setOutputSubfields(const char* names[],
                                     const int numNames);
-	    %clear(const char* names[], const int numNames);
+
+            %clear(const char* names[], const int numNames);
 
             /** Get names of solution subfields requested for output.
              *
              * @returns Array of subfield names.
              */
             const pylith::string_vector& getOutputSubfields(void) const;
+
+            /** Set time scale.
+             *
+             * @param[in] value Time scale for dimensionalizing time.
+             */
+            void setTimeScale(const PylithReal value);
 
             /** Verify observer is compatible with solution.
              *
@@ -72,7 +79,7 @@ public:
              * @param[in] tindex Current time step.
              * @param[in] solution Solution at time t.
              * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after
-             *initialization).
+             * initialization).
              */
             void update(const PylithReal t,
                         const PylithInt tindex,

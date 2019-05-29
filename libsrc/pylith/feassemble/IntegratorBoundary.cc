@@ -165,8 +165,7 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
     delete _boundaryMesh;
     _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.mesh(), _boundaryLabel.c_str());
     assert(_boundaryMesh);
-    PetscDM dmBoundary = _boundaryMesh->dmMesh();assert(dmBoundary);
-    pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
+    pylith::topology::CoordsVisitor::optimizeClosure(_boundaryMesh->dmMesh());
 
     Integrator::initialize(solution);
 

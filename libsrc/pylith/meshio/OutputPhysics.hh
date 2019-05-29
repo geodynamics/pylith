@@ -79,6 +79,12 @@ public:
      */
     const pylith::string_vector& getDataFields(void) const;
 
+    /** Set time scale.
+     *
+     * @param[in] value Time scale for dimensionalizing time.
+     */
+    void setTimeScale(const PylithReal value);
+
     /** Verify configuration.
      *
      * @param[in] solution Solution field.

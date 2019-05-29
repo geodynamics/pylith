@@ -105,6 +105,22 @@ pylith::problems::ObserversPhysics::setPhysicsImplementation(const pylith::feass
 } // setPhysicsImplemetation
 
 
+// ----------------------------------------------------------------------
+// Set time scale in observers.
+void
+pylith::problems::ObserversPhysics::setTimeScale(const PylithReal value) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("setTimeScale(value="<<value<<")");
+
+    for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
+        assert(*iter);
+        (*iter)->setTimeScale(value);
+    } // for
+
+    PYLITH_METHOD_END;
+} // setTimeScale
+
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Verify observers.
 void

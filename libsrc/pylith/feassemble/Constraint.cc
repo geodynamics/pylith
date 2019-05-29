@@ -30,6 +30,8 @@
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
 #include <stdexcept> // USES std::runtime_error
@@ -163,6 +165,11 @@ pylith::feassemble::Constraint::initialize(const pylith::topology::Field& soluti
     PetscDM dmBoundary = _boundaryMesh->dmMesh();assert(dmBoundary);
     pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 
+    assert(_physics);
+    _observers = _physics->getObservers();assert(_observers); // Memory managed by Physics
+    _observers->setPhysicsImplementation(this);
+    _observers->setTimeScale(_physics->getNormalizer().timeScale());
+
     PYLITH_METHOD_END;
 } // initialize
 
@@ -191,9 +198,7 @@ pylith::feassemble::Constraint::poststep(const PylithReal t,
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("poststep(t="<<t<<", dt="<<dt<<")");
 
-    const bool infoOnly = false;
-    assert(_observers);
-    _observers->notifyObservers(t, tindex, solution, infoOnly);
+    notifyObservers(t, tindex, solution);
 
     PYLITH_METHOD_END;
 } // poststep

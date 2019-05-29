@@ -62,6 +62,12 @@ public:
              */
             void setFieldFilter(pylith::meshio::FieldFilter* const filter);
 
+            /** Set time scale.
+             *
+             * @param[in] value Time scale for dimensionalizing time.
+             */
+            void setTimeScale(const PylithReal value);
+
         }; // Observer
 
     } // meshio
