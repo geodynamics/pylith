@@ -71,13 +71,13 @@ class GenerateDB(object):
                      'units': "m",
                      'data': disp[0, :, 1].ravel()},
                     {'name': "rate_amplitude_x",
-                     'units': "m/s",
+                     'units': "m/year",
                      'data': velocity[0, :, 0].ravel()},
                     {'name': "rate_amplitude_y",
-                     'units': "m/s",
+                     'units': "m/year",
                      'data': velocity[0, :, 1].ravel()},
                     {'name': "rate_start_time",
-                     'units': "s",
+                     'units': "year",
                      'data': velocity_time[0, :, 0].ravel()},
                 ]}
 
