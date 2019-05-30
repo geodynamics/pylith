@@ -75,7 +75,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
     ic.meta['tip'] = "Initial conditions."
 
     shouldNotifyIC = pyre.inventory.bool("notify_observers_ic", default=False)
-    shouldNotifyIC["tip"] = "Notify observers of solution with initial conditions."
+    shouldNotifyIC.meta["tip"] = "Notify observers of solution with initial conditions."
 
     #from ProgressMonitorTime import ProgressMonitorTime
     #progressMonitor = pyre.inventory.facility("progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
