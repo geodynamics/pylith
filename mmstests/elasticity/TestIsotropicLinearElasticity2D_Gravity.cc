@@ -117,7 +117,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity :
         const double mu = density(x,y) * vs(x,y) * vs(x,y) / PRESSURESCALE;
         const double lambda = density(x,y) * vp(x,y) * vp(x,y) / PRESSURESCALE - 2.0*mu;
         const double yp = y - YMIN / LENGTHSCALE;
-        return 0.5 * density(x,y)/densityScale * GACC/accelerationScale * (yp*yp) / (lambda + 2.0*mu);
+        return -0.5 * density(x,y)/densityScale * GACC/accelerationScale * (yp*yp) / (lambda + 2.0*mu);
     } // disp_y
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
@@ -231,7 +231,7 @@ const double pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity::LENGTHSC
 const double pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity::TIMESCALE = 2.0;
 const double pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity::PRESSURESCALE = 2.25e+10;
 const double pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity::GACC = 9.80665;
-const double pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity::YMIN = +4.0e+3;
+const double pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity::YMIN = -4.0e+3;
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity_TriP2 :

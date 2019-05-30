@@ -56,13 +56,12 @@ class TestCase(unittest.TestCase):
         return
 
     def test_material_info(self):
-        cellFields = ["density", "bulk_modulus", "shear_modulus", "gravitational_acceleration"]
+        vertexFields = ["density", "bulk_modulus", "shear_modulus", "gravitational_acceleration"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], cellFields=cellFields)
+            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields)
         return
 
-    @unittest.expectedFailure
     def test_material_solution(self):
         vertexFields = ["displacement"]
         for material in self.MATERIALS.keys():
@@ -71,13 +70,12 @@ class TestCase(unittest.TestCase):
         return
 
     def test_bcdirichlet_info(self):
-        cellFields = ["initial_amplitude"]
+        vertexFields = ["initial_amplitude"]
         for bc in self.DIRICHLET_BOUNDARIES:
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], cellFields=cellFields)
+            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
         return
 
-    @unittest.expectedFailure
     def test_bcdirichlet_solution(self):
         vertexFields = ["displacement"]
         for bc in self.DIRICHLET_BOUNDARIES:

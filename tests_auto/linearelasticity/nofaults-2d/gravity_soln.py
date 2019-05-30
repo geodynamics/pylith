@@ -35,13 +35,14 @@ import numpy
 # Physical properties
 p_density = 2500.0  # kg/m**3
 p_vs = 3000.0  # m/s
-p_vp = 5291.502622129181  # m/s
+p_vp = 5291.5026  # m/s
 
 p_mu = p_density * p_vs**2
 p_lambda = p_density * p_vp**2 - 2 * p_mu
 
 gacc = 9.80665  # m/s
-ymax = +4000.0  # m
+ymax = +4000.0
+ymin = -4000.0  # m
 
 
 # ----------------------------------------------------------------------
@@ -76,8 +77,7 @@ class AnalyticalSoln(object):
 
         (npts, dim) = locs.shape
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[:, :, 0] = strain[:, :, 0] * locs[:, 0] + strain[:, :, 3] * locs[:, 1]
-        disp[:, :, 1] = strain[:, :, 3] * locs[:, 0] + strain[:, :, 1] * (ymax - locs[:, 1])
+        disp[:, :, 1] = -0.5 * p_density * gacc * (locs[:, 1] - ymin)**2 / (p_lambda + 2 * p_mu)
         return disp
 
     def zero_vector(self, locs):
@@ -112,25 +112,24 @@ class AnalyticalSoln(object):
         """
         Compute strain field at locations.
         """
-        stress = self.stress(locs)
-        sxx = stress[:, :, 0]
-        syy = stress[:, :, 1]
-        szz = stress[:, :, 2]
-        sxy = stress[:, :, 3]
+        eyy = p_density * gacc * (locs[:, 1] - ymax) / (3 * p_lambda + 2 * p_mu)
+        exx = 0
+        ezz = 0
+        exy = 0
 
         (npts, dim) = locs.shape
         strain = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        strain[:, :, 0] = 1.0 / (2 * p_mu) * (sxx - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
-        strain[:, :, 1] = 1.0 / (2 * p_mu) * (syy - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
-        strain[:, :, 2] = 1.0 / (2 * p_mu) * (szz - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
-        strain[:, :, 3] = 1.0 / (2 * p_mu) * (sxy)
+        strain[:, :, 0] = exx
+        strain[:, :, 1] = eyy
+        strain[:, :, 2] = ezz
+        strain[:, :, 3] = exy
         return strain
 
     def stress(self, locs):
         """
         Compute stress field at locations.
         """
-        syy = -p_density * gacc * (ymax - locs[:, 1])
+        syy = p_density * gacc * (locs[:, 1] - ymax)
         sxx = p_lambda / (p_lambda + 2 * p_mu) * syy
         sxy = 0.0
         szz = p_lambda / (2 * p_lambda + 2 * p_mu) * (sxx + syy)
