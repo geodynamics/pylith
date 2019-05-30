@@ -46,6 +46,22 @@ class TestApp(TestDriver):
         for test in TestShearTraction.test_cases():
             suite.addTest(unittest.makeSuite(test))
 
+        import TestShearTractionRate
+        for test in TestShearTractionRate.test_cases():
+            suite.addTest(unittest.makeSuite(test))
+
+        import TestGravity
+        for test in TestGravity.test_cases():
+            suite.addTest(unittest.makeSuite(test))
+
+        import TestGravityRefState
+        for test in TestGravityRefState.test_cases():
+            suite.addTest(unittest.makeSuite(test))
+
+        import TestGravityIncompressible
+        for test in TestGravityIncompressible.test_cases():
+            suite.addTest(unittest.makeSuite(test))
+
         return suite
 
 
