@@ -187,6 +187,7 @@ pylith::meshio::OutputObserver::_getBuffer(const pylith::topology::Field& fieldI
         throw std::logic_error("Unknown field type in OutputObserver::_getBuffer().");
     } // switch
 
+    delete _fields;_fields = NULL; // :KLUDGE: :TODO: @brad DS is not getting set when extracting subfield.
     if (!_fields) {
         _fields = new topology::Fields(fieldIn.mesh());assert(_fields);
     } // if

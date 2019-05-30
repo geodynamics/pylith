@@ -151,12 +151,9 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
     } // if
 
     PetscErrorCode err = 0;
-    PetscDM dmFieldProj = _fieldProj->dmMesh();
-    err = PetscObjectCompose((PetscObject) dmFieldProj, "dmAux", (PetscObject) fieldIn->dmMesh());PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmFieldProj, "A", (PetscObject) fieldIn->localVector());PYLITH_CHECK_ERROR(err);
-
     const PylithReal t = 0.0;
-    err = DMProjectFieldLocal(dmFieldProj, t, _fieldProj->localVector(), _passThruFns, INSERT_VALUES, _fieldProj->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMProjectFieldLocal(_fieldProj->dmMesh(), t, fieldIn->localVector(), _passThruFns, INSERT_VALUES,
+                              _fieldProj->localVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_RETURN(_fieldProj);
 } // filter
@@ -166,18 +163,18 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
 // Identify function kernel.
 void
 pylith::meshio::FieldFilterProject::passThruSoln(const PylithInt dim,
-                                                 const PylithInt numA,
                                                  const PylithInt numS,
-                                                 const PylithInt aOff[],
-                                                 const PylithInt aOff_x[],
-                                                 const PylithScalar a[],
-                                                 const PylithScalar a_t[],
-                                                 const PylithScalar a_x[],
+                                                 const PylithInt numA,
                                                  const PylithInt sOff[],
                                                  const PylithInt sOff_x[],
                                                  const PylithScalar s[],
                                                  const PylithScalar s_t[],
                                                  const PylithScalar s_x[],
+                                                 const PylithInt aOff[],
+                                                 const PylithInt aOff_x[],
+                                                 const PylithScalar a[],
+                                                 const PylithScalar a_t[],
+                                                 const PylithScalar a_x[],
                                                  const PylithReal t,
                                                  const PylithScalar x[],
                                                  const PylithInt numConstants,
@@ -185,9 +182,10 @@ pylith::meshio::FieldFilterProject::passThruSoln(const PylithInt dim,
                                                  PylithScalar field[]) {
     assert(s);
     assert(field);
+    assert(1 == numS);
 
-    const PylithInt sEnd = sOff[numS];
-    for (PylithInt i = 0; i < sEnd; ++i) {
+    const PylithInt sEnd = sOff[1];
+    for (PylithInt i = sOff[0]; i < sEnd; ++i) {
         field[i] = s[i];
     } // for
 } // passThruSoln
