@@ -64,6 +64,12 @@ public:
      */
     const pylith::string_vector& getOutputSubfields(void) const;
 
+    /** Set time scale.
+     *
+     * @param[in] value Time scale for dimensionalizing time.
+     */
+    void setTimeScale(const PylithReal value);
+
     /** Verify observer is compatible with solution.
      *
      * @param[in] solution Solution field.

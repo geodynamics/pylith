@@ -15,21 +15,20 @@
 #
 # ----------------------------------------------------------------------
 #
-
-# @file pylith/apps/PyLithApp.py
-##
+# @file pylith/apps/EqInfoApp.py
+#
 # @brief Python PyLith application
 
 from pyre.applications.Script import Script as Application
 
-import h5py
-import numpy
 import math
 import os
 
+import h5py
+import numpy
+
+
 # ======================================================================
-
-
 class RuptureStats(object):
     """
     Python object to hold rupture stats.
@@ -184,6 +183,8 @@ class EqInfoApp(Application):
                 # Get slip at snapshot
                 istep = self._findTimeStep(snapshot, timestamps)
                 slip = h5['vertex_fields/slip'][istep, :, :]
+                if len(slip.shape) > 2:
+                    slip = slip.squeeze(axis=0)
 
                 cellsSlip = self._ptsToCells(slip, cells)
                 cellsSlipMag = self._vectorMag(cellsSlip)

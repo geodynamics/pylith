@@ -188,6 +188,7 @@ pylith::fekernels::Elasticity::g0v_bodyforce(const PylithInt dim,
     assert(aOff);
     assert(aOff[i_bodyForce] >= 0);
     assert(a);
+    assert(g0);
 
     const PylithScalar* bodyForce = &a[aOff[i_bodyForce]];
 

@@ -76,6 +76,12 @@ public:
      */
     void setPhysicsImplementation(const pylith::feassemble::PhysicsImplementation* const physics);
 
+    /** Set time scale in observers.
+     *
+     * @param[in] value Time scale for dimensionalizing time.
+     */
+    void setTimeScale(const PylithReal value);
+
     /** Verify observers are compatible.
      *
      * @param[in] solution Solution field.

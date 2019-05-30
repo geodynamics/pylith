@@ -304,18 +304,13 @@ AC_CONFIG_FILES([Makefile
 		unittests/pytests/topology/data/Makefile
 		unittests/pytests/utils/Makefile
 		mmstests/Makefile
-    mmstests/elasticity/Makefile
-    mmstests/incompressibleelasticity/Makefile
+		mmstests/elasticity/Makefile
+		mmstests/incompressibleelasticity/Makefile
 		mmstests/faults/Makefile
 		tests_auto/Makefile
-		tests_auto/2d/Makefile
-		tests_auto/2d/tri3/Makefile
-		tests_auto/2d/quad4/Makefile
-		tests_auto/2d/slipdir/Makefile
-		tests_auto/2d/finitestrain/Makefile
-		tests_auto/3d/Makefile
-		tests_auto/3d/tet4/Makefile
-		tests_auto/3d/hex8/Makefile
+		tests_auto/linearelasticity/Makefile
+		tests_auto/linearelasticity/nofaults-2d/Makefile
+		tests_auto/linearelasticity/faults-2d/Makefile
 		tests_auto/petsc/Makefile
 		tests_auto/eqinfo/Makefile
 		tests/Makefile
@@ -332,7 +327,7 @@ AC_CONFIG_FILES([Makefile
 		tests/3d/plasticity/Makefile
 		tests/3d/plasticity/dynamic/Makefile
 		tests/3d/plasticity/initialstress/Makefile
-        doc/Makefile
+		doc/Makefile
 		doc/developer/Makefile
 		doc/install/Makefile
 		doc/refguide/Makefile

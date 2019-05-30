@@ -43,6 +43,12 @@ public:
     /// Destructor
     virtual ~OutputTrigger(void);
 
+    /** Set time scale for nondimensionalizing time.
+     *
+     * @param[in] value Time scale.
+     */
+    void setTimeScale(const PylithReal value);
+
     /** Check whether we want to write output at time t.
      *
      * @param[in] t Time of proposed write.
@@ -52,6 +58,11 @@ public:
     virtual
     bool shouldWrite(const PylithReal t,
                      const PylithInt tindex) = 0;
+
+    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+protected:
+
+    PylithReal _timeScale; ///< Time scale for nondimensionalizing time.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

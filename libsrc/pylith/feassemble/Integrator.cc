@@ -28,6 +28,8 @@
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
 #include <stdexcept> // USES std::runtime_error
@@ -75,12 +77,12 @@ pylith::feassemble::Integrator::initialize(const pylith::topology::Field& soluti
 
     delete _auxiliaryField;_auxiliaryField = _physics->createAuxiliaryField(solution, physicsDomainMesh);
     delete _derivedField;_derivedField = _physics->createDerivedField(solution, physicsDomainMesh);
-    _observers = _physics->getObservers();assert(_observers); // Memory managed by Python
+    _observers = _physics->getObservers();assert(_observers); // Memory managed by Physics
     _observers->setPhysicsImplementation(this);
 
-    // _auxiliaryField->view("MATERIAL AUXILIARY FIELD"); // :DEBUG: TEMPORARY
     const bool infoOnly = true;
     _observers->notifyObservers(0.0, 0, solution, infoOnly);
+    _observers->setTimeScale(_physics->getNormalizer().timeScale());
 
     PYLITH_METHOD_END;
 } // initialize
@@ -108,13 +110,10 @@ pylith::feassemble::Integrator::poststep(const PylithReal t,
                                          const PylithReal dt,
                                          const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("poststep(t="<<t<<", dt="<<dt<<") empty method");
+    PYLITH_JOURNAL_DEBUG("poststep(t="<<t<<", dt="<<dt<<")");
 
     _updateStateVars(t, dt, solution);
-
-    const bool infoOnly = false;
-    assert(_observers);
-    _observers->notifyObservers(t, tindex, solution, infoOnly);
+    notifyObservers(t, tindex, solution);
 
     PYLITH_METHOD_END;
 } // poststep

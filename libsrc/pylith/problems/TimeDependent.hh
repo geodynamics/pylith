@@ -108,6 +108,14 @@ public:
     void setInitialCondition(pylith::problems::InitialCondition* ic[],
                              const int numIC);
 
+    /** Should notify observers of solution with initial conditions.
+     *
+     * This will result in output being written at the starting time.
+     *
+     * @param[in] value True if observers should be notified of solution with initial conditions.
+     */
+    void setShouldNotifyIC(const bool value);
+
     /** Get Petsc DM for problem.
      *
      * @returns PETSc DM for problem.
@@ -223,6 +231,12 @@ public:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
+    /// Notify observers with solution corresponding to initial conditions.
+    void _notifyObserversInitialSoln(void);
+
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+private:
+
     double _startTime; ///< Starting time.
     double _dtInitial; ///< Initial time step.
     double _totalTime; ///< Total time (duration) of problem.
@@ -230,6 +244,7 @@ private:
     PetscTS _ts; ///< PETSc time stepper.
     std::vector<pylith::problems::InitialCondition*> _ic; ///< Array of initial conditions.
     FormulationTypeEnum _formulationType; ///< Type of time stepping.
+    bool _shouldNotifyIC;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

@@ -28,6 +28,8 @@
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 #include "pylith/problems/InitialCondition.hh" // USES InitialCondition
 
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 #include "petscts.h" // USES PetscTS
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
@@ -55,7 +57,8 @@ pylith::problems::TimeDependent::TimeDependent(void) :
     _totalTime(0.0),
     _maxTimeSteps(0),
     _ts(NULL),
-    _formulationType(IMPLICIT) {
+    _formulationType(IMPLICIT),
+    _shouldNotifyIC(false) {
     PyreComponent::setName(_TimeDependent::pyreComponent);
 } // constructor
 
@@ -197,6 +200,14 @@ pylith::problems::TimeDependent::setInitialCondition(pylith::problems::InitialCo
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Should notify observers of solution with initial conditions.
+void
+pylith::problems::TimeDependent::setShouldNotifyIC(const bool value) {
+    _shouldNotifyIC = value;
+} // setShouldNotifyIC
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Get Petsc DM associated with problem.
 PetscDM
 pylith::problems::TimeDependent::getPetscDM(void) {
@@ -262,11 +273,11 @@ pylith::problems::TimeDependent::initialize(void) {
     const pylith::topology::Mesh& mesh = _solution->mesh();
     err = TSCreate(mesh.comm(), &_ts);PYLITH_CHECK_ERROR(err);assert(_ts);
     err = TSSetType(_ts, TSBEULER);PYLITH_CHECK_ERROR(err); // Backward Euler is default time stepping method.
+    err = TSSetEquationType(_ts, TS_EQ_IMPLICIT);PYLITH_CHECK_ERROR(err);
     err = TSSetExactFinalTime(_ts, TS_EXACTFINALTIME_STEPOVER);PYLITH_CHECK_ERROR(err); // Ok to step over final time.
     err = TSSetFromOptions(_ts);PYLITH_CHECK_ERROR(err);
     err = TSSetApplicationContext(_ts, (void*)this);PYLITH_CHECK_ERROR(err);
 
-#if 0
     TSEquationType eqType = TS_EQ_UNSPECIFIED;
     err = TSGetEquationType(_ts, &eqType);PYLITH_CHECK_ERROR(err);
     switch (eqType) {
@@ -297,37 +308,6 @@ pylith::problems::TimeDependent::initialize(void) {
         PYLITH_COMPONENT_DEBUG("Unknown PETSc time stepping equation type.");
         throw std::logic_error("Unknown PETSc time stepping equation type.");
     } // switch
-#else
-    TSType tsType = TSBEULER;
-    err = TSGetType(_ts, &tsType);PYLITH_CHECK_ERROR(err);
-    std::string tsString = tsType;
-    if ((tsString == std::string(TSEULER))
-        || (tsString == std::string(TSSSP))
-        || (tsString == std::string(TSRK))) {
-        PYLITH_COMPONENT_DEBUG("Recognized PetscTS as explicit time stepping.");
-        _formulationType = EXPLICIT;
-    } else if ((tsString == std::string(TSBEULER))
-               || (tsString == std::string(TSCN))
-               || (tsString == std::string(TSTHETA))
-               || (tsString == std::string(TSALPHA))
-               || (tsString == std::string(TSROSW))) {
-        PYLITH_COMPONENT_DEBUG("Recognized PetscTS as implicit time stepping.");
-        _formulationType = IMPLICIT;
-    } else {
-        // TSPSEUDO:
-        // TSSUNDIALS:
-        // TSPYTHON:
-        // TSALPHA2:
-        // TSGLLE:
-        // TSGLEE:
-        // TSARKIMEX:
-        // TSEIMEX:
-        // TSMIMEX:
-        // TSBDF:
-        PYLITH_COMPONENT_ERROR("Unable to determine if PETSc TS type '"<<tsType<<"' is implicit or explicit.");
-        throw std::logic_error("Unable to determine if PETSc TS type is implicit or explicit.");
-    } // if/else
-#endif
 
     // Set time stepping paramters.
     switch (getSolverType()) {
@@ -343,11 +323,17 @@ pylith::problems::TimeDependent::initialize(void) {
         PYLITH_COMPONENT_ERROR("Unknown problem type.");
         throw std::logic_error("Unknown problem type.");
     } // switch
-    PYLITH_COMPONENT_DEBUG("Setting PetscTS parameters: dtInitial="<<_dtInitial<<", startTime="<<_startTime<<", maxTimeSteps="<<_maxTimeSteps<<", totalTime="<<_totalTime);
-    err = TSSetTime(_ts, _startTime);PYLITH_CHECK_ERROR(err);
-    err = TSSetTimeStep(_ts, _dtInitial);PYLITH_CHECK_ERROR(err);
+    PYLITH_COMPONENT_DEBUG("Setting PetscTS parameters: dtInitial="<<_dtInitial
+                                                                   <<", startTime="<<_startTime
+                                                                   <<", maxTimeSteps="<<_maxTimeSteps
+                                                                   <<", totalTime="<<_totalTime);
+
+    assert(_normalizer);
+    const PylithReal timeScale = _normalizer->timeScale();
+    err = TSSetTime(_ts, _startTime / timeScale);PYLITH_CHECK_ERROR(err);
+    err = TSSetTimeStep(_ts, _dtInitial / timeScale);PYLITH_CHECK_ERROR(err);
     err = TSSetMaxSteps(_ts, _maxTimeSteps);PYLITH_CHECK_ERROR(err);
-    err = TSSetMaxTime(_ts, _totalTime);PYLITH_CHECK_ERROR(err);
+    err = TSSetMaxTime(_ts, _totalTime / timeScale);PYLITH_CHECK_ERROR(err);
     err = TSSetDM(_ts, _solution->dmMesh());PYLITH_CHECK_ERROR(err);
 
     // Set initial solution.
@@ -360,6 +346,8 @@ pylith::problems::TimeDependent::initialize(void) {
     } // for
     _solution->scatterLocalToContext("global");
     err = TSSetSolution(_ts, _solution->scatterVector("global"));PYLITH_CHECK_ERROR(err);
+    assert(_observers);
+    _observers->setTimeScale(timeScale);
 
     // Set callbacks.
     PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks prestep(), poststep(), computeRHSJacobian(), and computeRHSFunction().");
@@ -383,6 +371,10 @@ pylith::problems::TimeDependent::initialize(void) {
 
         delete _jacobianLHSLumpedInv;_jacobianLHSLumpedInv = new pylith::topology::Field(_solution->mesh());assert(_jacobianLHSLumpedInv);
         _jacobianLHSLumpedInv->cloneSection(*_solution);
+    } // if
+
+    if (_shouldNotifyIC) {
+        _notifyObserversInitialSoln();
     } // if
 
     PYLITH_METHOD_END;
@@ -409,7 +401,7 @@ pylith::problems::TimeDependent::prestep(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("prestep()");
 
-    // Get time and time step
+    // Get time of last time step and current time step.
     PetscErrorCode err;
     PylithReal dt;
     PylithReal t;
@@ -439,8 +431,7 @@ pylith::problems::TimeDependent::poststep(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("poststep()");
 
-    // Get current solution.
-    // :QUESTION: :MATT: What time does this solution correspond to?
+    // Get current solution. After first time step, t==dt, and tindex==1.
     PetscErrorCode err;
     PylithReal t, dt;
     PylithInt tindex;
@@ -466,7 +457,7 @@ pylith::problems::TimeDependent::poststep(void) {
         _constraints[i]->poststep(t, tindex, dt, *_solution);
     } // for
 
-    // Send problem observers updated solution.
+    // Notify problem observers of updated solution.
     assert(_observers);
     _observers->notifyObservers(t, tindex, *_solution);
 
@@ -617,6 +608,35 @@ pylith::problems::TimeDependent::poststep(PetscTS ts) {
 
     PYLITH_METHOD_RETURN(0);
 } // poststep
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Notify observers with solution corresponding to initial conditions.
+void
+pylith::problems::TimeDependent::_notifyObserversInitialSoln(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_notifyObserversInitialSoln()");
+
+    assert(_normalizer);
+    const PylithReal timeScale = _normalizer->timeScale();
+    const PylithReal tStartNondim = _startTime / timeScale;
+    const PylithInt tindex = 0;
+    _observers->notifyObservers(tStartNondim, tindex, *_solution);
+
+    const size_t numIntegrators = _integrators.size();
+    for (size_t i = 0; i < numIntegrators; ++i) {
+        assert(_integrators[i]);
+        _integrators[i]->notifyObservers(tStartNondim, tindex, *_solution);
+    } // for
+
+    const size_t numConstraints = _constraints.size();
+    for (size_t i = 0; i < numConstraints; ++i) {
+        assert(_constraints[i]);
+        _constraints[i]->notifyObservers(tStartNondim, tindex, *_solution);
+    } // for
+
+    PYLITH_METHOD_END;
+} // _notifyObserversInitialSoln
 
 
 // End of file

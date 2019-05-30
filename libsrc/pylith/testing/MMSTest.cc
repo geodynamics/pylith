@@ -110,7 +110,6 @@ pylith::testing::MMSTest::testResidual(void) {
     if (debug.state()) {
         err = PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");CPPUNIT_ASSERT(!err);
         err = PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2");CPPUNIT_ASSERT(!err);
-        err = PetscOptionsSetValue(NULL, "-res_vec_view", "::ascii_info_detail");CPPUNIT_ASSERT(!err);
     } // if
 
     _initialize();

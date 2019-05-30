@@ -81,4 +81,16 @@ pylith::feassemble::PhysicsImplementation::getDerivedField(void) const {
 } // getDerivedField
 
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Notify observers of current solution.
+void
+pylith::feassemble::PhysicsImplementation::notifyObservers(const PylithReal t,
+                                                           const PylithInt tindex,
+                                                           const pylith::topology::Field& solution) {
+    assert(_observers);
+    const bool infoOnly = false;
+    _observers->notifyObservers(t, tindex, solution, infoOnly);
+} // _notifyObservers
+
+
 // End of file

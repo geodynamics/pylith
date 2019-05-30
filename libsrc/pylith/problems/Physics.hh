@@ -57,6 +57,12 @@ public:
      */
     void setNormalizer(const spatialdata::units::Nondimensional& dim);
 
+    /** Get manager of scales used to nondimensionalize problem.
+     *
+     * @param dim Nondimensionalizer.
+     */
+    const spatialdata::units::Nondimensional& getNormalizer(void) const;
+
     /** Set spatial database for populating auxiliary field.
      *
      * @param[in] value Spatial database with iniital values for auxiliary field.

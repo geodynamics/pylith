@@ -99,7 +99,15 @@ public:
              * @param[in] numIC Number of initial conditions.
              */
             void setInitialCondition(pylith::problems::InitialCondition* ic[],
-                                      const int numIC);
+                                     const int numIC);
+
+            /** Should notify observers of solution with initial conditions.
+             *
+             * This will result in output being written at the starting time.
+             *
+             * @param[in] value True if observers should be notified of solution with initial conditions.
+             */
+            void setShouldNotifyIC(const bool value);
 
             /// Initialize.
             void initialize(void);

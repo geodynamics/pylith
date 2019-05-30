@@ -38,6 +38,13 @@ public:
             virtual
             void deallocate(void);
 
+            /** Set time scale.
+             *
+             * @param[in] value Time scale for dimensionalizing time.
+             */
+            virtual
+            void setTimeScale(const PylithReal value) = 0;
+
             /** Verify observer is compatible with solution.
              *
              * @param[in] solution Solution field.

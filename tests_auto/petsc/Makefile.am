@@ -18,16 +18,16 @@
 
 include $(top_srcdir)/check.am
 
-TESTS = testpetsc.py
+TESTS = test_petsc.py
 
-dist_check_SCRIPTS = testpetsc.py
+dist_check_SCRIPTS = test_petsc.py
 
 dist_noinst_PYTHON = \
-	TestPetscApp.py 
+	TestPetscApp.py
 
-noinst_DATA = 
+noinst_DATA =
 
-noinst_TMP = 
+noinst_TMP =
 
 
 # 'export' the input files by performing a mock install
@@ -43,4 +43,4 @@ BUILT_SOURCES = export-data
 clean-local: clean-data
 CLEANFILES = *.pyc
 
-# End of file 
+# End of file
