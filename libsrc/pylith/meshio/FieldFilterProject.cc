@@ -28,7 +28,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::FieldFilterProject::FieldFilterProject(void) :
-    _fieldP1(NULL),
+    _fieldProj(NULL),
     _passThruFns(NULL),
     _basisOrder(1) { // constructor
     PyreComponent::setName("fieldfilterproject");
@@ -50,7 +50,7 @@ pylith::meshio::FieldFilterProject::deallocate(void) {
 
     FieldFilter::deallocate();
 
-    delete _fieldP1;_fieldP1 = NULL;
+    delete _fieldProj;_fieldProj = NULL;
     delete _passThruFns;_passThruFns = NULL;
 
     PYLITH_METHOD_END;
@@ -61,7 +61,7 @@ pylith::meshio::FieldFilterProject::deallocate(void) {
 // Copy constructor.
 pylith::meshio::FieldFilterProject::FieldFilterProject(const FieldFilterProject& f) :
     FieldFilter(f),
-    _fieldP1(NULL),
+    _fieldProj(NULL),
     _passThruFns(NULL),
     _basisOrder(f._basisOrder)
 {}
@@ -104,12 +104,12 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
     } // if
 
     assert(fieldIn);
-    if (_fieldP1 && !pylith::topology::FieldOps::layoutsMatch(*fieldIn, *_fieldP1)) {
-        delete _fieldP1;_fieldP1 = NULL;
+    if (_fieldProj && !pylith::topology::FieldOps::layoutsMatch(*fieldIn, *_fieldProj)) {
+        delete _fieldProj;_fieldProj = NULL;
         delete _passThruFns;_passThruFns = NULL;
     } // if
-    if (!_fieldP1) {
-        _fieldP1 = new pylith::topology::Field(fieldIn->mesh());assert(_fieldP1);
+    if (!_fieldProj) {
+        _fieldProj = new pylith::topology::Field(fieldIn->mesh());assert(_fieldProj);
 
         // Set discretization of all subfields to basis order.
         pylith::topology::Field::Discretization feP1;
@@ -134,27 +134,31 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
                     );
             } // if
 
-            _fieldP1->subfieldAdd(info.description, feP1);
+            _fieldProj->subfieldAdd(info.description, feP1);
         } // for
-        _fieldP1->subfieldsSetup();
-        _fieldP1->allocate();
+        _fieldProj->subfieldsSetup();
+        _fieldProj->allocate();
     } // if
-    _fieldP1->label(fieldIn->label());
-    _fieldP1->dimensionalizeOkay(true);
+    _fieldProj->label(fieldIn->label());
+    _fieldProj->dimensionalizeOkay(true);
 
     if (!_passThruFns) {
-        const size_t numSubfields = _fieldP1->subfieldNames().size();
+        const size_t numSubfields = _fieldProj->subfieldNames().size();
         _passThruFns = (numSubfields > 0) ? new PetscPointFunc[numSubfields] : NULL;
         for (size_t i = 0; i < numSubfields; ++i) {
             _passThruFns[i] = passThruSoln;
         } // for
     } // if
 
-    const PylithReal t = 0.0;
-    PetscDM dmFieldP1 = _fieldP1->dmMesh();
-    PetscErrorCode err = DMProjectFieldLocal(dmFieldP1, t, fieldIn->localVector(), _passThruFns, INSERT_VALUES, _fieldP1->localVector());PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = 0;
+    PetscDM dmFieldProj = _fieldProj->dmMesh();
+    err = PetscObjectCompose((PetscObject) dmFieldProj, "dmAux", (PetscObject) fieldIn->dmMesh());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmFieldProj, "A", (PetscObject) fieldIn->localVector());PYLITH_CHECK_ERROR(err);
 
-    PYLITH_METHOD_RETURN(_fieldP1);
+    const PylithReal t = 0.0;
+    err = DMProjectFieldLocal(dmFieldProj, t, _fieldProj->localVector(), _passThruFns, INSERT_VALUES, _fieldProj->localVector());PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_RETURN(_fieldProj);
 } // filter
 
 
@@ -162,18 +166,18 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
 // Identify function kernel.
 void
 pylith::meshio::FieldFilterProject::passThruSoln(const PylithInt dim,
-                                                 const PylithInt numS,
                                                  const PylithInt numA,
-                                                 const PylithInt sOff[],
-                                                 const PylithInt sOff_x[],
-                                                 const PylithScalar s[],
-                                                 const PylithScalar s_t[],
-                                                 const PylithScalar s_x[],
+                                                 const PylithInt numS,
                                                  const PylithInt aOff[],
                                                  const PylithInt aOff_x[],
                                                  const PylithScalar a[],
                                                  const PylithScalar a_t[],
                                                  const PylithScalar a_x[],
+                                                 const PylithInt sOff[],
+                                                 const PylithInt sOff_x[],
+                                                 const PylithScalar s[],
+                                                 const PylithScalar s_t[],
+                                                 const PylithScalar s_x[],
                                                  const PylithReal t,
                                                  const PylithScalar x[],
                                                  const PylithInt numConstants,
