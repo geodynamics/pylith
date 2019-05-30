@@ -46,13 +46,11 @@ class TestCase(unittest.TestCase):
         return
 
     def run_pylith(self, testName, args):
-        print("EXPECTED FAILURES due tp residual integration missing ability to use subpoint map for material auxiliary field (results in incorrect values for reference stress)")
         if self.verbosity > 0:
             print("Running Pylith with args '{}' ...".format(" ".join(args)))
         run_pylith(testName, args, GenerateDB)
         return
 
-    @unittest.expectedFailure
     def test_domain_solution(self):
         filename = "output/{}-domain.h5".format(self.NAME)
         vertexFields = ["displacement"]
@@ -67,7 +65,6 @@ class TestCase(unittest.TestCase):
             check_data(filename, self, self.MATERIALS[material], cellFields=cellFields)
         return
 
-    @unittest.expectedFailure
     def test_material_solution(self):
         vertexFields = ["displacement"]
         for material in self.MATERIALS.keys():
@@ -82,7 +79,6 @@ class TestCase(unittest.TestCase):
             check_data(filename, self, self.BOUNDARIES[bc], cellFields=cellFields)
         return
 
-    @unittest.expectedFailure
     def test_bcdirichlet_solution(self):
         vertexFields = ["displacement"]
         for bc in self.DIRICHLET_BOUNDARIES:
