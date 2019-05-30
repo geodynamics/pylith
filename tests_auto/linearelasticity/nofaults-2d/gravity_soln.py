@@ -77,7 +77,8 @@ class AnalyticalSoln(object):
 
         (npts, dim) = locs.shape
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[:, :, 1] = -0.5 * p_density * gacc * (locs[:, 1] - ymin)**2 / (p_lambda + 2 * p_mu)
+        disp[:, :, 1] = p_density * gacc / (p_lambda + 2 * p_mu) * \
+            (0.5 * (locs[:, 1]**2 - ymin**2) - ymax * (locs[:, 1] - ymin))
         return disp
 
     def zero_vector(self, locs):

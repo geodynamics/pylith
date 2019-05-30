@@ -54,6 +54,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity :
     static const double BODYFORCE;
     static const double GACC;
     static const double YMIN;
+    static const double YMAX;
 
     /// Spatial database user functions for auxiiliary subfields (includes derived fields).
 
@@ -114,10 +115,13 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity :
         const double velocityScale = LENGTHSCALE / TIMESCALE;
         const double densityScale = PRESSURESCALE / (velocityScale * velocityScale);
         const double accelerationScale = LENGTHSCALE / (TIMESCALE * TIMESCALE);
-        const double mu = density(x,y) * vs(x,y) * vs(x,y) / PRESSURESCALE;
-        const double lambda = density(x,y) * vp(x,y) * vp(x,y) / PRESSURESCALE - 2.0*mu;
-        const double yp = y - YMIN / LENGTHSCALE;
-        return -0.5 * density(x,y)/densityScale * GACC/accelerationScale * (yp*yp) / (lambda + 2.0*mu);
+        const double densityN = density(x,y) / densityScale;
+        const double muN = density(x,y) * vs(x,y) * vs(x,y) / PRESSURESCALE;
+        const double lambdaN = density(x,y) * vp(x,y) * vp(x,y) / PRESSURESCALE - 2.0*muN;
+        const double yminN = YMIN / LENGTHSCALE;
+        const double ymaxN = YMAX / LENGTHSCALE;
+        const double gaccN = GACC / accelerationScale;
+        return densityN * gaccN / (lambdaN + 2.0*muN) * (0.5*(y*y-yminN*yminN) - ymaxN*(y-yminN));
     } // disp_y
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
@@ -232,6 +236,7 @@ const double pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity::TIMESCAL
 const double pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity::PRESSURESCALE = 2.25e+10;
 const double pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity::GACC = 9.80665;
 const double pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity::YMIN = -4.0e+3;
+const double pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity::YMAX = +4.0e+3;
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity_TriP2 :
