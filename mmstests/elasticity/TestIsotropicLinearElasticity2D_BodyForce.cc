@@ -111,10 +111,11 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce :
         const double densityScale = PRESSURESCALE / (velocityScale * velocityScale);
         const double accelerationScale = LENGTHSCALE / (TIMESCALE * TIMESCALE);
         const double forceScale = densityScale * accelerationScale;
-        const double mu = density(x,y) * vs(x,y) * vs(x,y) / PRESSURESCALE;
-        const double lambda = density(x,y) * vp(x,y) * vp(x,y) / PRESSURESCALE - 2.0*mu;
+        const double bodyforceN = BODYFORCE / forceScale;
+        const double muN = density(x,y) * vs(x,y) * vs(x,y) / PRESSURESCALE;
+        const double lambdaN = density(x,y) * vp(x,y) * vp(x,y) / PRESSURESCALE - 2.0*muN;
         const double xp = x - XMAX / LENGTHSCALE;
-        return -0.5 * BODYFORCE/forceScale * (xp*xp) / (lambda + 2.0*mu);
+        return -0.5 * bodyforceN / (lambdaN + 2.0*muN) * (xp*xp);
     } // disp_x
 
     static double disp_y(const double x,
