@@ -228,6 +228,15 @@ pylith::materials::Elasticity::_getAuxiliaryFactory(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Update kernel constants.
+void
+pylith::materials::Elasticity::_updateKernelConstants(const PylithReal dt) {
+    assert(_rheology);
+    _rheology->updateKernelConstants(&_kernelConstants, dt);
+} // _updateKernelConstants
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for RHS residual G(t,s).
 void
 pylith::materials::Elasticity::_setKernelsRHSResidual(pylith::feassemble::IntegratorDomain* integrator,
