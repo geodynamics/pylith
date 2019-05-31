@@ -1,0 +1,54 @@
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+
+# Block is 6 km x 6 km x 4 km
+# -3 km <= x <= 3 km
+# -3 km <= y <= 3 km
+# -4 km <= z <= 0 km
+reset
+brick x 6000 y 6000 z 4000
+
+# Translate block so the top is at z=0
+volume 1 move x 0 y 0 z -2000
+
+# ----------------------------------------------------------------------
+# Set discretization size and generate mesh.
+# ----------------------------------------------------------------------
+volume all size 1000.0
+mesh volume all
+
+# ----------------------------------------------------------------------
+# Define blocks and nodesets.
+# ----------------------------------------------------------------------
+block 1 volume 1
+block 1 name "powerlaw"
+
+group "face_xpos" add node in surface 6
+nodeset 11 group face_xpos
+nodeset 11 name "face_xpos"
+
+group "face_xneg" add node in surface 4
+nodeset 12 group face_xneg
+nodeset 12 name "face_xneg"
+
+group "face_ypos" add node in surface 5
+nodeset 13 group face_ypos
+nodeset 13 name "face_ypos"
+
+group "face_yneg" add node in surface 3
+nodeset 14 group face_yneg
+nodeset 14 name "face_yneg"
+
+group "face_zpos" add node in surface 1
+nodeset 15 group face_zpos
+nodeset 15 name "face_zpos"
+
+group "face_zneg" add node in surface 2
+nodeset 16 group face_zneg
+nodeset 16 name "face_zneg"
+
+# ----------------------------------------------------------------------
+# Export Exodus file.
+# ----------------------------------------------------------------------
+export mesh "box_hex8_1000m.exo" dimension 3 overwrite

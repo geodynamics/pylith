@@ -1,0 +1,48 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values =      30
+  value-names = density vs vp power_law_reference_stress power_law_reference_strain_rate power_law_exponent reference_stress_xx reference_stress_yy reference_stress_zz reference_stress_xy reference_stress_yz reference_stress_xz reference_strain_xx reference_strain_yy reference_strain_zz reference_strain_xy reference_strain_yz reference_strain_xz viscous_strain_xx viscous_strain_yy viscous_strain_zz viscous_strain_xy viscous_strain_yz viscous_strain_xz stress_xx stress_yy stress_zz stress_xy stress_yz stress_xz
+  value-units = kg/m**3 m/s m/s Pa 1/s none Pa Pa Pa Pa Pa Pa none none none none none none none none none none none none Pa Pa Pa Pa Pa Pa
+  num-locs =     1
+  data-dim =    0
+  space-dim =    3
+  cs-data = cartesian {
+    to-meters = 1
+    space-dim = 3
+  }
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) z coordinate (m)
+// (4) density (kg/m**3)
+// (5) vs (m/s)
+// (6) vp (m/s)
+// (7) Power-law reference stress (Pa)
+// (8) Power-law reference strain rate (1/s)
+// (9) Power-law exponent (none)
+// (10) reference_stress_xx (Pa)
+// (11) reference_stress_yy (Pa)
+// (12) reference_stress_zz (Pa)
+// (13) reference_stress_xy (Pa)
+// (14) reference_stress_yz (Pa)
+// (15) reference_stress_xz (Pa)
+// (16) reference_strain_xx (none)
+// (17) reference_strain_yy (none)
+// (18) reference_strain_zz (none)
+// (19) reference_strain_xy (none)
+// (20) reference_strain_yz (none)
+// (21) reference_strain_xz (none)
+// (22) viscous_strain_xx (none)
+// (23) viscous_strain_yy (none)
+// (24) viscous_strain_zz (none)
+// (25) viscous_strain_xy (none)
+// (26) viscous_strain_yz (none)
+// (27) viscous_strain_xz (none)
+// (28) stress_xx (Pa)
+// (29) stress_yy (Pa)
+// (30) stress_zz (Pa)
+// (31) stress_xy (Pa)
+// (32) stress_yz (Pa)
+// (33) stress_xz (Pa)
+  0.0 0.0 0.0  2000.0 1200.0 2078.460969082653 1.0e+07 1.0e-06 3.5 -1.0e4 -1.0e5 -1.0e6 1.0e4 1.0e5 1.0e6 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0

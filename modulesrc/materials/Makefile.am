@@ -33,6 +33,7 @@ swig_sources = \
 	IsotropicLinearElasticity.i \
 	IsotropicLinearMaxwell.i \
 	IsotropicLinearGenMaxwell.i \
+	IsotropicPowerLaw.i \
 	IncompressibleElasticity.i \
 	RheologyIncompressibleElasticity.i \
 	IsotropicLinearIncompElasticity.i \

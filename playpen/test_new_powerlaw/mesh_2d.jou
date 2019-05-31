@@ -1,0 +1,50 @@
+reset
+
+# ----------------------------------------------------------------------
+# Create square
+# ----------------------------------------------------------------------
+
+# Square is 6 km x 6 km
+# -3 km <= x <= 3 km
+# -3 km <= y <= 3 km
+create surface rectangle width 6000 height 6000 zplane
+
+# ----------------------------------------------------------------------
+# Set mesh size and mesh the volume.
+# ----------------------------------------------------------------------
+surface all size 1000
+mesh surface all
+
+# ----------------------------------------------------------------------
+# Create single block consisting of entire surface.
+# ----------------------------------------------------------------------
+block 1 surface all
+block 1 name "powerlaw"
+
+# ----------------------------------------------------------------------
+# Create nodesets on all external boundaries.
+# ----------------------------------------------------------------------
+group "face_xneg" add node in curve 2
+nodeset 11 face_xneg
+nodeset 11 name "face_xneg"
+
+group "face_xpos" add node in curve 4
+nodeset 12 face_xpos
+nodeset 12 name "face_xpos"
+
+group "face_yneg" add node in curve 3
+nodeset 13 face_yneg
+nodeset 13 name "face_yneg"
+
+group "face_ypos" add node in curve 1
+nodeset 14 face_ypos
+nodeset 14 name "face_ypos"
+
+
+# ----------------------------------------------------------------------
+# Export exodus file.
+# ----------------------------------------------------------------------
+export mesh "square_quad4_1000m.exo" dimension 2 overwrite
+
+
+

@@ -1,0 +1,14 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values =     6
+  value-names =  stress-xx  stress-yy  stress-zz  stress-xy  stress-yz  stress-xz
+  value-units =  Pa  Pa  Pa  Pa  Pa  Pa
+  num-locs =      1
+  data-dim =    0
+  space-dim =    3
+  cs-data = cartesian {
+  to-meters = 1
+  space-dim = 3
+}
+}
+ 0.000000e+00 0.000000e+00 0.000000e+00  -1.0e4 -1.0e5 -1.0e6 1.0e4 1.0e5 1.0e6
