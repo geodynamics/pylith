@@ -119,7 +119,15 @@ pylith::meshio::OutputPhysics::getDataFields(void) const {
 } // getDataFields
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+// Set time scale.
+void
+pylith::meshio::OutputPhysics::setTimeScale(const PylithReal value) {
+    OutputObserver::setTimeScale(value);
+} // setTimeScale
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::meshio::OutputPhysics::verifyConfiguration(const pylith::topology::Field& solution) const {
@@ -192,7 +200,7 @@ pylith::meshio::OutputPhysics::update(const PylithReal t,
 } // update
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Write output for step in solution.
 void
 pylith::meshio::OutputPhysics::_writeInfo(void) {
@@ -245,7 +253,11 @@ pylith::meshio::OutputPhysics::_open(const pylith::topology::Mesh& mesh,
         PYLITH_COMPONENT_ERROR("Writer for physics output '" << PyreComponent::getIdentifier() << "' not set.");
     } // if
 
+    assert(_trigger);
+    _trigger->setTimeScale(_timeScale);
+
     assert(_writer);
+    _writer->timeScale(_timeScale);
     _writer->open(mesh, isInfo);
 
     PYLITH_METHOD_END;
@@ -277,7 +289,7 @@ pylith::meshio::OutputPhysics::_openDataStep(const PylithReal t,
     assert(_writer);
     if (!_writer->isOpen()) {
         bool infoOnly = false;
-        _writer->open(mesh, infoOnly);
+        _open(mesh, infoOnly);
     } // if
     _writer->openTimeStep(t, mesh);
 
@@ -295,7 +307,7 @@ pylith::meshio::OutputPhysics::_closeDataStep(void) {
 } // _closeDataStep
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Write output for step in solution.
 void
 pylith::meshio::OutputPhysics::_writeDataStep(const PylithReal t,

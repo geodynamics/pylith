@@ -18,17 +18,30 @@
 
 #include <portinfo>
 
-#include "OutputTrigger.hh" \
-    // Implementation of class methods
+#include "OutputTrigger.hh" // Implementation of class methods
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
-pylith::meshio::OutputTrigger::OutputTrigger(void) {}
+pylith::meshio::OutputTrigger::OutputTrigger(void) :
+    _timeScale(1.0) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
 pylith::meshio::OutputTrigger::~OutputTrigger(void) {}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set time scale.
+void
+pylith::meshio::OutputTrigger::setTimeScale(const PylithReal value) {
+    if (value <= 0.0) {
+        std::ostringstream msg;
+        msg << "Time scale ("<<value<<") for solution observer is nonpositive.";
+        throw std::logic_error(msg.str());
+    } // if
+    _timeScale = value;
+} // setTimeScale
 
 
 // End of file

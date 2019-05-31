@@ -44,6 +44,13 @@ public:
              */
             void setPhysicsImplementation(const pylith::feassemble::PhysicsImplementation* const physics);
 
+            /** Set time scale.
+             *
+             * @param[in] value Time scale for dimensionalizing time.
+             */
+            virtual
+            void setTimeScale(const PylithReal value) = 0;
+
             /** Verify observer is compatible with solution.
              *
              * @param[in] solution Solution field.
@@ -57,7 +64,7 @@ public:
              * @param[in] tindex Current time step.
              * @param[in] solution Solution at time t.
              * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after
-             *initialization).
+             * initialization).
              */
             virtual
             void update(const PylithReal t,

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -16,45 +16,44 @@
 # ======================================================================
 #
 
-from pylith.tests.FullTestApp import FullTestApp
-
 import unittest
 
-class TestApp(FullTestApp):
-  """
-  Test application.
-  """
+from pylith.tests.FullTestApp import TestDriver
 
-  def __init__(self):
+
+class TestApp(TestDriver):
     """
-    Constructor.
+    Driver application for full-scale tests.
     """
-    FullTestApp.__init__(self)
-    return
 
+    def __init__(self):
+        """
+        Constructor.
+        """
+        TestDriver.__init__(self)
+        return
 
-  def _suite(self):
-    """
-    Create test suite.
-    """
-    suite = unittest.TestSuite()
+    def _suite(self):
+        """
+        Create test suite.
+        """
+        suite = unittest.TestSuite()
 
-    from TestEqInfoLine import TestEqInfoLine
-    suite.addTest(unittest.makeSuite(TestEqInfoLine))
+        from TestEqInfoLine import TestEqInfoLine
+        suite.addTest(unittest.makeSuite(TestEqInfoLine))
 
-    from TestEqInfoTri3 import TestEqInfoTri3
-    suite.addTest(unittest.makeSuite(TestEqInfoTri3))
+        from TestEqInfoTri import TestEqInfoTri
+        suite.addTest(unittest.makeSuite(TestEqInfoTri))
 
-    from TestEqInfoQuad4 import TestEqInfoQuad4
-    suite.addTest(unittest.makeSuite(TestEqInfoQuad4))
+        from TestEqInfoQuad import TestEqInfoQuad
+        suite.addTest(unittest.makeSuite(TestEqInfoQuad))
 
-    return suite
+        return suite
 
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
-  app = TestApp()
-  app.main()
+    TestApp().main()
 
-  
-# End of file 
+
+# End of file

@@ -45,13 +45,14 @@ public:
              * @param[in] names Array of field names.
              * @param[in] numNames Length of array.
              */
-	    %apply(const char* const* string_list, const int list_len) {
-	      (const char* names[],
-	       const int numNames)
-		};
-	    void setInfoFields(const char* names[],
-	                       const int numNames);
-	    %clear(const char* names[], const int numNames);
+            %apply(const char* const* string_list, const int list_len) {
+                (const char* names[],
+                 const int numNames)
+            };
+            void setInfoFields(const char* names[],
+                               const int numNames);
+
+            %clear(const char* names[], const int numNames);
 
             /** Get names of information fields requested for output.
              *
@@ -64,19 +65,26 @@ public:
              * @param[in] names Array of field names.
              * @param[in] numNames Length of array.
              */
-	    %apply(const char* const* string_list, const int list_len) {
-	      (const char* names[],
-	       const int numNames)
-		};
+            %apply(const char* const* string_list, const int list_len) {
+                (const char* names[],
+                 const int numNames)
+            };
             void setDataFields(const char* names[],
                                const int numNames);
-	    %clear(const char* names[], const int numNames);
+
+            %clear(const char* names[], const int numNames);
 
             /** Get names of data fields requested for output.
              *
              * @returns Array of field names.
              */
             const pylith::string_vector& getDataFields(void) const;
+
+            /** Set time scale.
+             *
+             * @param[in] value Time scale for dimensionalizing time.
+             */
+            void setTimeScale(const PylithReal value);
 
             /** Verify configuration.
              *
@@ -90,7 +98,7 @@ public:
              * @param[in] tindex Current time step.
              * @param[in] solution Solution at time t.
              * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after
-             *initialization).
+             * initialization).
              */
             void update(const PylithReal t,
                         const PylithInt tindex,

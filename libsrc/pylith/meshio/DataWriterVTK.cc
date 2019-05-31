@@ -335,7 +335,7 @@ pylith::meshio::DataWriterVTK::_vtkFilename(const PylithScalar t) const { // _vt
     if (!DataWriter::_isInfo) {
         // If data with multiple time steps, then add time stamp to filename
         char sbuffer[256];
-        sprintf(sbuffer, _timeFormat.c_str(), t/_timeConstant);
+        sprintf(sbuffer, _timeFormat.c_str(), t * _timeScale / _timeConstant);
         std::string timestamp(sbuffer);
         const size_t pos = timestamp.find(".");
         if (pos != std::string::npos) {

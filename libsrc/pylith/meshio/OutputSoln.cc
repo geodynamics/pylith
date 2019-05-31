@@ -90,6 +90,14 @@ pylith::meshio::OutputSoln::getOutputSubfields(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Set time scale.
+void
+pylith::meshio::OutputSoln::setTimeScale(const PylithReal value) {
+    OutputObserver::setTimeScale(value);
+} // setTimeScale
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::meshio::OutputSoln::verifyConfiguration(const pylith::topology::Field& solution) const {
@@ -136,8 +144,12 @@ pylith::meshio::OutputSoln::_open(const pylith::topology::Mesh& mesh) {
         PYLITH_COMPONENT_ERROR("Writer for solution output observer '"<<getIdentifier()<<"'.");
     } // if
 
+    assert(_trigger);
+    _trigger->setTimeScale(_timeScale);
+
     assert(_writer);
     const bool isInfo = false;
+    _writer->timeScale(_timeScale);
     _writer->open(mesh, isInfo);
 
     PYLITH_METHOD_END;
@@ -168,8 +180,7 @@ pylith::meshio::OutputSoln::_openSolnStep(const PylithReal t,
 
     assert(_writer);
     if (!_writer->isOpen()) {
-        const bool isInfo = false;
-        _writer->open(mesh, isInfo);
+        _open(mesh);
     } // if
     _writer->openTimeStep(t, mesh);
 

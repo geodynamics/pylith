@@ -33,7 +33,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::problems::Physics::Physics(void) :
-    _normalizer(new spatialdata::units::Nondimensional),
+    _normalizer(NULL),
     _observers(new pylith::problems::ObserversPhysics)
 {}
 
@@ -56,6 +56,32 @@ pylith::problems::Physics::deallocate(void) {
 
     PYLITH_METHOD_END;
 } // deallocate
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set manager of scales used to nondimensionalize problem.
+void
+pylith::problems::Physics::setNormalizer(const spatialdata::units::Nondimensional& dim) {
+    PYLITH_COMPONENT_DEBUG("setNormalizer(dim="<<typeid(dim).name()<<")");
+
+    if (!_normalizer) {
+        _normalizer = new spatialdata::units::Nondimensional(dim);
+    } else {
+        *_normalizer = dim;
+    } // if/else
+} // setNormalizer
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+/** Get manager of scales used to nondimensionalize problem.
+ *
+ * @param dim Nondimensionalizer.
+ */
+const spatialdata::units::Nondimensional&
+pylith::problems::Physics::getNormalizer(void) const {
+    assert(_normalizer);
+    return *_normalizer;
+} // getNormalizer
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -125,20 +151,6 @@ pylith::problems::ObserversPhysics*
 pylith::problems::Physics::getObservers(void) {
     return _observers;
 } // getObservers
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set manager of scales used to nondimensionalize problem.
-void
-pylith::problems::Physics::setNormalizer(const spatialdata::units::Nondimensional& dim) {
-    PYLITH_COMPONENT_DEBUG("setNormalizer(dim="<<typeid(dim).name()<<")");
-
-    if (!_normalizer) {
-        _normalizer = new spatialdata::units::Nondimensional(dim);
-    } else {
-        *_normalizer = dim;
-    } // if/else
-} // setNormalizer
 
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -36,7 +36,7 @@ pylith::meshio::OutputSolnDomain::OutputSolnDomain(void) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::OutputSolnDomain::~OutputSolnDomain(void) {} // destructor
+pylith::meshio::OutputSolnDomain::~OutputSolnDomain(void) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

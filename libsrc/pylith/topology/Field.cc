@@ -1002,13 +1002,7 @@ pylith::topology::Field::copySubfield(const Field& field,
                                       const char* name) {
     PYLITH_METHOD_BEGIN;
 
-    PetscErrorCode err;
-
-    // Check compatibility of sections (section size and chart begin and end points).
-    PylithInt pStartSrc = 0, pEndSrc = 0, pStartDest = 0, pEndDest = 0;
-    err = PetscSectionGetChart(field.localSection(), &pStartSrc, &pEndSrc);
-    err = PetscSectionGetChart(localSection(), &pStartDest, &pEndDest);
-    if ((field.sectionSize() != sectionSize()) || (pStartSrc != pStartDest) || (pEndSrc != pEndDest)) {
+    if (!FieldOps::layoutsMatch(field, *this)) {
         _extractSubfield(field, name);
     } // if
     assert(_localVec && field._localVec);
@@ -1021,7 +1015,8 @@ pylith::topology::Field::copySubfield(const Field& field,
     const PetscSection& fieldSection = field.localSection();
     const PetscSection& subfieldSection = this->localSection();
 
-    PetscInt pStart, pEnd;
+    PetscErrorCode err;
+    PetscInt pStart = 0, pEnd = 0;
     err = PetscSectionGetChart(subfieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
 
     // Copy values from field
@@ -1070,8 +1065,9 @@ pylith::topology::Field::_extractSubfield(const Field& field,
     indicesSubfield[0] = subfieldIndex;
     err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
     if (subfieldInfo.dm) {
-        PetscSection s;
         err = DMClone(subfieldInfo.dm, &_dm);PYLITH_CHECK_ERROR(err);assert(_dm);
+        // :TODO: @brad These next 3 lines should disappear now that we use the PETSc DS.
+        PetscSection s = NULL;
         err = DMGetDefaultSection(subfieldInfo.dm, &s);PYLITH_CHECK_ERROR(err);
         err = DMSetDefaultSection(_dm, s);PYLITH_CHECK_ERROR(err);
     } else {
@@ -1107,7 +1103,7 @@ pylith::topology::Field::_extractSubfield(const Field& field,
             err = PetscSectionSetConstraintDof(subfieldSection, p, dof);PYLITH_CHECK_ERROR(err);
         } // if
     } // for
-    allocate();
+    allocate(); // We appear to get the wrong DS after this call. _dm->probs[0].ds->Nb[0] should match.
 
     for (PetscInt p = pStart; p < pEnd; ++p) {
         PetscInt dof;

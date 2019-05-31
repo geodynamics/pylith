@@ -28,7 +28,7 @@
 // Constructor
 pylith::meshio::OutputTriggerTime::OutputTriggerTime(void) :
     _timeSkip(0.0),
-    _timeWrote(-PYLITH_MAXSCALAR) {
+    _timeNondimWrote(-PYLITH_MAXSCALAR) {
     PyreComponent::setName("outputtriggertime");
 } // constructor
 
@@ -65,9 +65,9 @@ pylith::meshio::OutputTriggerTime::shouldWrite(const PylithReal t,
     PYLITH_COMPONENT_DEBUG("OutputTriggerTime::shouldWrite(t="<<t<<", timeStep="<<timeStep<<")");
 
     bool isWrite = false;
-    if (t - _timeWrote >= _timeSkip) {
+    if (t - _timeNondimWrote >= _timeSkip / _timeScale) {
         isWrite = true;
-        _timeWrote = t;
+        _timeNondimWrote = t;
     } // if
 
     PYLITH_METHOD_RETURN(isWrite);

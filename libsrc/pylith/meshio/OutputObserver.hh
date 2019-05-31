@@ -72,6 +72,13 @@ public:
      */
     void setFieldFilter(pylith::meshio::FieldFilter* const filter);
 
+    /** Set time scale.
+     *
+     * @param[in] value Time scale for dimensionalizing time.
+     */
+    virtual
+    void setTimeScale(const PylithReal value);
+
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
@@ -103,6 +110,7 @@ protected:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
+    PylithReal _timeScale; ///< Time scale for dimentionalizing time.
     pylith::topology::Fields* _fields; ///< Container with field buffers used for output.
     DataWriter* _writer; ///< Writer for data.
     FieldFilter* _fieldFilter; ///< Filter applied to fields.

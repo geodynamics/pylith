@@ -81,6 +81,22 @@ pylith::problems::ObserversSoln::removeObserver(pylith::problems::ObserverSoln* 
 
 
 // ----------------------------------------------------------------------
+// Set time scale in observers.
+void
+pylith::problems::ObserversSoln::setTimeScale(const PylithReal value) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("setTimeScale(value="<<value<<")");
+
+    for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
+        assert(*iter);
+        (*iter)->setTimeScale(value);
+    } // for
+
+    PYLITH_METHOD_END;
+} // setTimeScale
+
+
+// ----------------------------------------------------------------------
 // Verify observers.
 void
 pylith::problems::ObserversSoln::verifyObservers(const pylith::topology::Field& solution) const {

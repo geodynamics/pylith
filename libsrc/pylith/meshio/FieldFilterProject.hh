@@ -115,7 +115,7 @@ protected:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    pylith::topology::Field* _fieldP1; ///< Filtered field.
+    pylith::topology::Field* _fieldProj; ///< Projected field.
     PetscPointFunc* _passThruFns; ///< Pass through point functions.
     int _basisOrder; ///< Basis order for projected field.
 

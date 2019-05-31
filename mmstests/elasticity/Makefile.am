@@ -1,5 +1,3 @@
-# -*- Makefile -*-
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -14,7 +12,6 @@
 # See COPYING for license information.
 #
 # ----------------------------------------------------------------------
-#
 
 subpackage = elasticity
 include $(top_srcdir)/subpackage.am
@@ -29,6 +26,7 @@ test_isotropiclinearelasticity_SOURCES = \
 	TestElasticity.cc \
 	TestIsotropicLinearElasticity.cc \
 	TestIsotropicLinearElasticity2D_UniformStrain.cc \
+	TestIsotropicLinearElasticity2D_Gravity.cc \
 	TestIsotropicLinearElasticity2D_GravityRefState.cc \
 	TestIsotropicLinearElasticity2D_BodyForce.cc \
 	test_driver.cc

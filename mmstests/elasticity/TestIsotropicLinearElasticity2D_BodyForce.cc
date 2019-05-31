@@ -50,8 +50,13 @@ namespace pylith {
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce :
     public pylith::mmstests::TestIsotropicLinearElasticity {
-    /// Spatial database user functions for auxiiliary subfields (includes derived fields).
+    static const double LENGTHSCALE;
+    static const double TIMESCALE;
+    static const double PRESSURESCALE;
     static const double BODYFORCE;
+    static const double XMAX;
+
+    /// Spatial database user functions for auxiiliary subfields (includes derived fields).
 
     // Density
     static double density(const double x,
@@ -97,22 +102,26 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce :
         return "kg/(m**2*s**2)";
     } // bodyforce_units
 
+    // Solution subfields (nondimensional)
+
     // Displacement
     static double disp_x(const double x,
                          const double y) {
-        const double mu = density(x,y) * vs(x,y) * vs(x,y);
-        const double lambda = density(x,y) * vp(x,y) * vp(x,y) - 2.0*mu;
-        return -0.5*BODYFORCE*x*x / (lambda + 2.0*mu) + 10.0;
+        const double velocityScale = LENGTHSCALE / TIMESCALE;
+        const double densityScale = PRESSURESCALE / (velocityScale * velocityScale);
+        const double accelerationScale = LENGTHSCALE / (TIMESCALE * TIMESCALE);
+        const double forceScale = densityScale * accelerationScale;
+        const double bodyforceN = BODYFORCE / forceScale;
+        const double muN = density(x,y) * vs(x,y) * vs(x,y) / PRESSURESCALE;
+        const double lambdaN = density(x,y) * vp(x,y) * vp(x,y) / PRESSURESCALE - 2.0*muN;
+        const double xp = x - XMAX / LENGTHSCALE;
+        return -0.5 * bodyforceN / (lambdaN + 2.0*muN) * (xp*xp);
     } // disp_x
 
     static double disp_y(const double x,
                          const double y) {
         return 0.0;
     } // disp_y
-
-    static const char* disp_units(void) {
-        return "m";
-    } // disp_units
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
                                           PetscReal t,
@@ -138,7 +147,7 @@ protected:
         // Overwrite component names for control of debugging info at test level.
         GenericComponent::setName("TestIsotropicLinearElasticity2D_BodyForce");
         journal::debug_t debug(GenericComponent::getName());
-        // debug.activate(); // DEBUGGING
+        // ebug.activate(); // DEBUGGING
 
         CPPUNIT_ASSERT(!_data);
         _data = new TestElasticity_Data();CPPUNIT_ASSERT(_data);
@@ -154,9 +163,9 @@ protected:
         _data->cs->initialize();
 
         CPPUNIT_ASSERT(_data->normalizer);
-        _data->normalizer->lengthScale(1.0e+03);
-        _data->normalizer->timeScale(2.0);
-        _data->normalizer->pressureScale(2.25e+10);
+        _data->normalizer->lengthScale(LENGTHSCALE);
+        _data->normalizer->timeScale(TIMESCALE);
+        _data->normalizer->pressureScale(PRESSURESCALE);
         _data->normalizer->computeDensityScale();
 
         _data->startTime = 0.0;
@@ -217,7 +226,11 @@ protected:
     } // _setExactSolution
 
 }; // TestIsotropicLinearElasticity2D_BodyForce
-const double pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce::BODYFORCE = 5.0;
+const double pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce::LENGTHSCALE = 1.0e+3;
+const double pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce::TIMESCALE = 2.0;
+const double pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce::PRESSURESCALE = 2.25e+10;
+const double pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce::BODYFORCE = 5.0e+3;
+const double pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce::XMAX = 4.0e+3;
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearElasticity2D_BodyForce_TriP2 :

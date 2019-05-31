@@ -65,8 +65,8 @@ public:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    PylithReal _timeSkip; ///< Elapsed time between writes.
-    PylithReal _timeWrote; ///< Time when data was previously writtern.
+    PylithReal _timeSkip; ///< Elapsed (dimensional) time between writes.
+    PylithReal _timeNondimWrote; ///< Time (nondimensional) when data was previously writtern.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

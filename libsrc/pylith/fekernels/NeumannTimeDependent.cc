@@ -56,11 +56,13 @@ pylith::fekernels::NeumannTimeDependent::g0_initial_scalar(const PylithInt dim,
     assert(_numA == numA);
     assert(aOff);
     assert(a);
+    assert(g0);
 
     const PylithInt i_initial = aOff[0];
 
     g0[0] += a[i_initial];
 } // g0_initial_scalar
+
 
 /* ----------------------------------------------------------------------
  * Vector initial value term for time-dependent boundary condition.
@@ -94,6 +96,7 @@ pylith::fekernels::NeumannTimeDependent::g0_initial_vector(const PylithInt dim,
     assert(6 == numConstants);
     assert(constants);
     assert(2 == dim || 3 == dim);
+    assert(g0);
 
     const PylithInt i_initial = aOff[0];
 
@@ -124,6 +127,7 @@ pylith::fekernels::NeumannTimeDependent::g0_initial_vector(const PylithInt dim,
 
 } // g0_initial_vector
 
+
 /* ----------------------------------------------------------------------
  * Scalar rate term for time-dependent boundary condition.
  *
@@ -153,6 +157,7 @@ pylith::fekernels::NeumannTimeDependent::g0_rate_scalar(const PylithInt dim,
     assert(_numA == numA);
     assert(aOff);
     assert(a);
+    assert(g0);
 
     const PylithInt i_rate = aOff[0];
     const PylithInt i_start = aOff[1];
@@ -164,11 +169,12 @@ pylith::fekernels::NeumannTimeDependent::g0_rate_scalar(const PylithInt dim,
 
 } // g0_rate_scalar
 
+
 /* ----------------------------------------------------------------------
-** Vector rate term for time-dependent boundary condition.
-*
-* \dot{f}_1(x) * (t-t_1(x)) for t >= t_1(x).
-*/
+ * Vector rate term for time-dependent boundary condition.
+ *
+ * \dot{f}_1(x) * (t-t_1(x)) for t >= t_1(x).
+ */
 void
 pylith::fekernels::NeumannTimeDependent::g0_rate_vector(const PylithInt dim,
                                                         const PylithInt numS,
@@ -196,6 +202,7 @@ pylith::fekernels::NeumannTimeDependent::g0_rate_vector(const PylithInt dim,
     assert(6 == numConstants);
     assert(constants);
     assert(2 == dim || 3 == dim);
+    assert(g0);
 
     const PylithInt i_rate = aOff[0];
     const PylithInt i_start = aOff[1];
@@ -205,10 +212,11 @@ pylith::fekernels::NeumannTimeDependent::g0_rate_vector(const PylithInt dim,
         switch (dim) {
         case 2: {
             const PylithInt _dim = 2;
-            const PylithScalar tanDir[2] = {-n[0], n[1] };
+            const PylithScalar tanDir[2] = {-n[1], n[0] };
             for (PylithInt i = 0; i < _dim; ++i) {
                 g0[i] += tRel * (a[i_rate+0]*tanDir[i] + a[i_rate+1]*n[i]);
             } // for
+            break;
         } // case 2
         case 3: {
             const PylithInt _dim = 3;
@@ -220,6 +228,7 @@ pylith::fekernels::NeumannTimeDependent::g0_rate_vector(const PylithInt dim,
             for (PylithInt i = 0; i < _dim; ++i) {
                 g0[i] += tRel * (a[i_rate+0]*tanDir1[i] + a[i_rate+1]*tanDir2[i] + a[i_rate+2]*n[i]);
             } // for
+            break;
         } // case 3
         } // switch
     } // if
@@ -255,12 +264,14 @@ pylith::fekernels::NeumannTimeDependent::g0_timeHistory_scalar(const PylithInt d
     assert(_numA == numA);
     assert(aOff);
     assert(a);
+    assert(g0);
 
     const PylithInt i_amplitude = aOff[0];
     const PylithInt i_value = aOff[2];
 
     g0[0] += a[i_amplitude]*a[i_value];
 } // g0_timeHistory_scalar
+
 
 /* ----------------------------------------------------------------------
  * Vector time history term for time-dependent boundary condition.
@@ -294,6 +305,7 @@ pylith::fekernels::NeumannTimeDependent::g0_timeHistory_vector(const PylithInt d
     assert(6 == numConstants);
     assert(constants);
     assert(2 == dim || 3 == dim);
+    assert(g0);
 
     const PylithInt i_amplitude = aOff[0];
     const PylithInt i_value = aOff[2];
@@ -301,10 +313,11 @@ pylith::fekernels::NeumannTimeDependent::g0_timeHistory_vector(const PylithInt d
     switch (dim) {
     case 2: {
         const PylithInt _dim = 2;
-        const PylithScalar tanDir[2] = {-n[0], n[1] };
+        const PylithScalar tanDir[2] = {-n[1], n[0] };
         for (PylithInt i = 0; i < _dim; ++i) {
             g0[i] += a[i_amplitude] * (a[i_value+0]*tanDir[i] + a[i_value+1]*n[i]);
         } // for
+        break;
     } // case 2
     case 3: {
         const PylithInt _dim = 3;
@@ -316,13 +329,14 @@ pylith::fekernels::NeumannTimeDependent::g0_timeHistory_vector(const PylithInt d
         for (PylithInt i = 0; i < _dim; ++i) {
             g0[i] += a[i_amplitude] * (a[i_value+0]*tanDir1[i] + a[i_value+1]*tanDir2[i] + a[i_value+2]*n[i]);
         } // for
+        break;
     } // case 3
     } // switch
 } // g0_timeHistory_vector
 
-/* ----------------------------------------------------------------------
- * Compute boundary condition scalar value using initial and rate terms.
- */
+
+// ----------------------------------------------------------------------
+// Compute boundary condition scalar value using initial and rate terms.
 void
 pylith::fekernels::NeumannTimeDependent::g0_initialRate_scalar(const PylithInt dim,
                                                                const PylithInt numS,
@@ -347,6 +361,7 @@ pylith::fekernels::NeumannTimeDependent::g0_initialRate_scalar(const PylithInt d
     assert(_numA == numA);
     assert(aOff);
     assert(a);
+    assert(g0);
 
     const PylithInt i_initial = 0;
     const PylithInt i_rate = 1;
@@ -355,24 +370,20 @@ pylith::fekernels::NeumannTimeDependent::g0_initialRate_scalar(const PylithInt d
     const PylithInt numAInitial = 1;
     const PylithInt aOffInitial[1] = { aOff[i_initial] };
     const PylithInt* aOffInitial_x = NULL;
-    const PylithScalar aInitial[1] = { a[i_initial] };
-    const PylithScalar* aInitial_t = NULL;
-    const PylithScalar* aInitial_x = NULL;
 
     const PylithInt numARate = 2;
     const PylithInt aOffRate[2] = { aOff[i_rate], aOff[i_start] };
     const PylithInt* aOffRate_x = NULL;
-    const PylithScalar aRate[2] = { a[i_rate], a[i_start] };
-    const PylithScalar* aRate_t = NULL;
-    const PylithScalar* aRate_x = NULL;
 
-    pylith::fekernels::NeumannTimeDependent::g0_initial_scalar(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, n, numConstants, constants, g0);
-    pylith::fekernels::NeumannTimeDependent::g0_rate_scalar(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, n, numConstants, constants, g0);
+    g0_initial_scalar(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, a, a_t, a_x,
+                      t, x, n, numConstants, constants, g0);
+    g0_rate_scalar(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, a, a_t, a_x,
+                   t, x, n, numConstants, constants, g0);
 } // g0_initialRate_scalar
 
-/* ----------------------------------------------------------------------
- * Compute boundary condition vector value using initial and rate terms.
- */
+
+// ----------------------------------------------------------------------
+// Compute boundary condition vector value using initial and rate terms.
 void
 pylith::fekernels::NeumannTimeDependent::g0_initialRate_vector(const PylithInt dim,
                                                                const PylithInt numS,
@@ -397,6 +408,7 @@ pylith::fekernels::NeumannTimeDependent::g0_initialRate_vector(const PylithInt d
     assert(_numA == numA);
     assert(aOff);
     assert(a);
+    assert(g0);
 
     const PylithInt i_initial = 0;
     const PylithInt i_rate = 1;
@@ -405,24 +417,20 @@ pylith::fekernels::NeumannTimeDependent::g0_initialRate_vector(const PylithInt d
     const PylithInt numAInitial = 1;
     const PylithInt aOffInitial[1] = { aOff[i_initial] };
     const PylithInt* aOffInitial_x = NULL;
-    const PylithScalar aInitial[1] = { a[i_initial] };
-    const PylithScalar* aInitial_t = NULL;
-    const PylithScalar* aInitial_x = NULL;
 
     const PylithInt numARate = 2;
     const PylithInt aOffRate[2] = { aOff[i_rate], aOff[i_start] };
     const PylithInt* aOffRate_x = NULL;
-    const PylithScalar aRate[2] = { a[i_rate], a[i_start] };
-    const PylithScalar* aRate_t = NULL;
-    const PylithScalar* aRate_x = NULL;
 
-    pylith::fekernels::NeumannTimeDependent::g0_initial_vector(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, n, numConstants, constants, g0);
-    pylith::fekernels::NeumannTimeDependent::g0_rate_vector(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, n, numConstants, constants, g0);
+    g0_initial_vector(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, a, a_t, a_x,
+                      t, x, n, numConstants, constants, g0);
+    g0_rate_vector(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, a, a_t, a_x,
+                   t, x, n, numConstants, constants, g0);
 } // g0_initialRate_vector
 
-/* ----------------------------------------------------------------------
- * Compute boundary condition scalar value using initial and time history terms.
- */
+
+// ----------------------------------------------------------------------
+// Compute boundary condition scalar value using initial and time history terms.
 void
 pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_scalar(const PylithInt dim,
                                                                       const PylithInt numS,
@@ -447,6 +455,7 @@ pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_scalar(const Pyli
     assert(_numA == numA);
     assert(aOff);
     assert(a);
+    assert(g0);
 
     const PylithInt i_initial = 0;
     const PylithInt i_thAmp = 1;
@@ -456,25 +465,20 @@ pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_scalar(const Pyli
     const PylithInt numAInitial = 1;
     const PylithInt aOffInitial[1] = { aOff[i_initial] };
     const PylithInt* aOffInitial_x = NULL;
-    const PylithScalar aInitial[1] = { a[i_initial] };
-    const PylithScalar* aInitial_t = NULL;
-    const PylithScalar* aInitial_x = NULL;
 
     const PylithInt numATimeHistory = 3;
     const PylithInt aOffTimeHistory[3] = { aOff[i_thAmp], aOff[i_thStart], aOff[i_thValue] };
     const PylithInt* aOffTimeHistory_x = NULL;
-    const PylithScalar aTimeHistory[3] = { a[i_thAmp], a[i_thStart], a[i_thValue] };
-    const PylithScalar* aTimeHistory_t = NULL;
-    const PylithScalar* aTimeHistory_x = NULL;
 
-    pylith::fekernels::NeumannTimeDependent::g0_initial_scalar(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, n, numConstants, constants, g0);
-    pylith::fekernels::NeumannTimeDependent::g0_timeHistory_scalar(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, n, numConstants, constants,
-                                                                   g0);
+    g0_initial_scalar(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, a, a_t, a_x,
+                      t, x, n, numConstants, constants, g0);
+    g0_timeHistory_scalar(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x,
+                          aOffTimeHistory, aOffTimeHistory_x, a, a_t, a_x, t, x, n, numConstants, constants, g0);
 } // g0_initialTimeHistory_scalar
 
-/* ----------------------------------------------------------------------
- * Compute boundary condition vector value using initial and time history terms.
- */
+
+// ----------------------------------------------------------------------
+// Compute boundary condition vector value using initial and time history terms.
 void
 pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_vector(const PylithInt dim,
                                                                       const PylithInt numS,
@@ -499,6 +503,7 @@ pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_vector(const Pyli
     assert(_numA == numA);
     assert(aOff);
     assert(a);
+    assert(g0);
 
     const PylithInt i_initial = 0;
     const PylithInt i_thAmp = 1;
@@ -508,25 +513,20 @@ pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_vector(const Pyli
     const PylithInt numAInitial = 1;
     const PylithInt aOffInitial[1] = { aOff[i_initial] };
     const PylithInt* aOffInitial_x = NULL;
-    const PylithScalar aInitial[1] = { a[i_initial] };
-    const PylithScalar* aInitial_t = NULL;
-    const PylithScalar* aInitial_x = NULL;
 
     const PylithInt numATimeHistory = 3;
     const PylithInt aOffTimeHistory[3] = { aOff[i_thAmp], aOff[i_thStart], aOff[i_thValue] };
     const PylithInt* aOffTimeHistory_x = NULL;
-    const PylithScalar aTimeHistory[3] = { a[i_thAmp], a[i_thStart], a[i_thValue] };
-    const PylithScalar* aTimeHistory_t = NULL;
-    const PylithScalar* aTimeHistory_x = NULL;
 
-    pylith::fekernels::NeumannTimeDependent::g0_initial_vector(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, n, numConstants, constants, g0);
-    pylith::fekernels::NeumannTimeDependent::g0_timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, n, numConstants, constants,
-                                                                   g0);
+    g0_initial_vector(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, a, a_t, a_x,
+                      t, x, n, numConstants, constants, g0);
+    g0_timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x,
+                          aOffTimeHistory, aOffTimeHistory_x, a, a_t, a_x, t, x, n, numConstants, constants, g0);
 } // g0_initialTimeHistory_vector
 
-/* ----------------------------------------------------------------------
- * Compute boundary condition scalar value using rate and time history terms.
- */
+
+// ----------------------------------------------------------------------
+// Compute boundary condition scalar value using rate and time history terms.
 void
 pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_scalar(const PylithInt dim,
                                                                    const PylithInt numS,
@@ -551,6 +551,7 @@ pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_scalar(const PylithI
     assert(_numA == numA);
     assert(aOff);
     assert(a);
+    assert(g0);
 
     const PylithInt i_rateAmp = 0;
     const PylithInt i_rateStart = 0;
@@ -561,25 +562,20 @@ pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_scalar(const PylithI
     const PylithInt numARate = 1;
     const PylithInt aOffRate[2] = { aOff[i_rateAmp], aOff[i_rateStart] };
     const PylithInt* aOffRate_x = NULL;
-    const PylithScalar aRate[2] = { a[i_rateAmp], a[i_rateStart] };
-    const PylithScalar* aRate_t = NULL;
-    const PylithScalar* aRate_x = NULL;
 
     const PylithInt numATimeHistory = 3;
     const PylithInt aOffTimeHistory[3] = { aOff[i_thAmp], aOff[i_thStart], aOff[i_thValue] };
     const PylithInt* aOffTimeHistory_x = NULL;
-    const PylithScalar aTimeHistory[3] = { a[i_thAmp], a[i_thStart], a[i_thValue] };
-    const PylithScalar* aTimeHistory_t = NULL;
-    const PylithScalar* aTimeHistory_x = NULL;
 
-    pylith::fekernels::NeumannTimeDependent::g0_rate_scalar(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, n, numConstants, constants, g0);
-    pylith::fekernels::NeumannTimeDependent::g0_timeHistory_scalar(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, n, numConstants, constants,
-                                                                   g0);
+    g0_rate_scalar(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, a, a_t, a_x,
+                   t, x, n, numConstants, constants, g0);
+    g0_timeHistory_scalar(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x,
+                          aOffTimeHistory, aOffTimeHistory_x, a, a_t, a_x, t, x, n, numConstants, constants, g0);
 } // g0_rateTimeHistory_scalar
 
-/* ----------------------------------------------------------------------
- * Compute boundary condition vector value using rate and time history terms.
- */
+
+// ----------------------------------------------------------------------
+// Compute boundary condition vector value using rate and time history terms.
 void
 pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_vector(const PylithInt dim,
                                                                    const PylithInt numS,
@@ -604,6 +600,7 @@ pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_vector(const PylithI
     assert(_numA == numA);
     assert(aOff);
     assert(a);
+    assert(g0);
 
     const PylithInt i_rateAmp = 0;
     const PylithInt i_rateStart = 0;
@@ -614,25 +611,20 @@ pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_vector(const PylithI
     const PylithInt numARate = 1;
     const PylithInt aOffRate[2] = { aOff[i_rateAmp], aOff[i_rateStart] };
     const PylithInt* aOffRate_x = NULL;
-    const PylithScalar aRate[2] = { a[i_rateAmp], a[i_rateStart] };
-    const PylithScalar* aRate_t = NULL;
-    const PylithScalar* aRate_x = NULL;
 
     const PylithInt numATimeHistory = 3;
     const PylithInt aOffTimeHistory[3] = { aOff[i_thAmp], aOff[i_thStart], aOff[i_thValue] };
     const PylithInt* aOffTimeHistory_x = NULL;
-    const PylithScalar aTimeHistory[3] = { a[i_thAmp], a[i_thStart], a[i_thValue] };
-    const PylithScalar* aTimeHistory_t = NULL;
-    const PylithScalar* aTimeHistory_x = NULL;
 
-    pylith::fekernels::NeumannTimeDependent::g0_rate_vector(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, n, numConstants, constants, g0);
-    pylith::fekernels::NeumannTimeDependent::g0_timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, n, numConstants, constants,
-                                                                   g0);
+    g0_rate_vector(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, a, a_t, a_x,
+                   t, x, n, numConstants, constants, g0);
+    g0_timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x,
+                          aOffTimeHistory, aOffTimeHistory_x, a, a_t, a_x, t, x, n, numConstants, constants, g0);
 } // g0_rateTimeHistory_vector
 
-/* ----------------------------------------------------------------------
- * Compute boundary condition scalar value using initial, rate ,and time history terms.
- */
+
+// ----------------------------------------------------------------------
+// Compute boundary condition scalar value using initial, rate ,and time history terms.
 void
 pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_scalar(const PylithInt dim,
                                                                           const PylithInt numS,
@@ -657,6 +649,7 @@ pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_scalar(const 
     assert(_numA == numA);
     assert(aOff);
     assert(a);
+    assert(g0);
 
     const PylithInt i_valueAmp = 0;
     const PylithInt i_rateAmp = 1;
@@ -668,34 +661,26 @@ pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_scalar(const 
     const PylithInt numAInitial = 1;
     const PylithInt aOffInitial[1] = { aOff[i_valueAmp] };
     const PylithInt* aOffInitial_x = NULL;
-    const PylithScalar aInitial[1] = { a[i_valueAmp] };
-    const PylithScalar* aInitial_t = NULL;
-    const PylithScalar* aInitial_x = NULL;
 
     const PylithInt numARate = 1;
     const PylithInt aOffRate[2] = { aOff[i_rateAmp], aOff[i_rateStart] };
     const PylithInt* aOffRate_x = NULL;
-    const PylithScalar aRate[2] = { a[i_rateAmp], a[i_rateStart] };
-    const PylithScalar* aRate_t = NULL;
-    const PylithScalar* aRate_x = NULL;
 
     const PylithInt numATimeHistory = 3;
     const PylithInt aOffTimeHistory[3] = { aOff[i_thAmp], aOff[i_thStart], aOff[i_thValue] };
     const PylithInt* aOffTimeHistory_x = NULL;
-    const PylithScalar aTimeHistory[3] = { a[i_thAmp], a[i_thStart], a[i_thValue] };
-    const PylithScalar* aTimeHistory_t = NULL;
-    const PylithScalar* aTimeHistory_x = NULL;
 
-    pylith::fekernels::NeumannTimeDependent::g0_initial_scalar(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, n, numConstants, constants, g0);
-    pylith::fekernels::NeumannTimeDependent::g0_rate_scalar(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, n, numConstants, constants, g0);
-    pylith::fekernels::NeumannTimeDependent::g0_timeHistory_scalar(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, n, numConstants, constants,
-                                                                   g0);
+    g0_initial_scalar(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, a, a_t, a_x,
+                      t, x, n, numConstants, constants, g0);
+    g0_rate_scalar(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, a, a_t, a_x,
+                   t, x, n, numConstants, constants, g0);
+    g0_timeHistory_scalar(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x,
+                          aOffTimeHistory, aOffTimeHistory_x, a, a_t, a_x, t, x, n, numConstants, constants, g0);
 } // g0_initialRateTimeHistory_scalar
 
 
-/* ----------------------------------------------------------------------
- * Compute boundary condition vector value using initial, rate, and time history terms.
- */
+// ----------------------------------------------------------------------
+// Compute boundary condition vector value using initial, rate, and time history terms.
 void
 pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_vector(const PylithInt dim,
                                                                           const PylithInt numS,
@@ -720,6 +705,7 @@ pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_vector(const 
     assert(_numA == numA);
     assert(aOff);
     assert(a);
+    assert(g0);
 
     const PylithInt i_valueAmp = 0;
     const PylithInt i_rateAmp = 1;
@@ -731,33 +717,25 @@ pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_vector(const 
     const PylithInt numAInitial = 1;
     const PylithInt aOffInitial[1] = { aOff[i_valueAmp] };
     const PylithInt* aOffInitial_x = NULL;
-    const PylithScalar aInitial[1] = { a[i_valueAmp] };
-    const PylithScalar* aInitial_t = NULL;
-    const PylithScalar* aInitial_x = NULL;
 
     const PylithInt numARate = 1;
     const PylithInt aOffRate[2] = { aOff[i_rateAmp], aOff[i_rateStart] };
     const PylithInt* aOffRate_x = NULL;
-    const PylithScalar aRate[2] = { a[i_rateAmp], a[i_rateStart] };
-    const PylithScalar* aRate_t = NULL;
-    const PylithScalar* aRate_x = NULL;
 
     const PylithInt numATimeHistory = 3;
     const PylithInt aOffTimeHistory[3] = { aOff[i_thAmp], aOff[i_thStart], aOff[i_thValue] };
     const PylithInt* aOffTimeHistory_x = NULL;
-    const PylithScalar aTimeHistory[3] = { a[i_thAmp], a[i_thStart], a[i_thValue] };
-    const PylithScalar* aTimeHistory_t = NULL;
-    const PylithScalar* aTimeHistory_x = NULL;
 
-    pylith::fekernels::NeumannTimeDependent::g0_initial_vector(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, n, numConstants, constants, g0);
-    pylith::fekernels::NeumannTimeDependent::g0_rate_vector(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, n, numConstants, constants, g0);
-    pylith::fekernels::NeumannTimeDependent::g0_timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, n, numConstants, constants,
-                                                                   g0);
+    g0_initial_vector(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, a, a_t, a_x,
+                      t, x, n, numConstants, constants, g0);
+    g0_rate_vector(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, a, a_t, a_x,
+                   t, x, n, numConstants, constants, g0);
+    g0_timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x,
+                          aOffTimeHistory, aOffTimeHistory_x, a, a_t, a_x, t, x, n, numConstants, constants, g0);
 } // g0_initialRateTimeHistory_vector
 
 
-/* ----------------------------------------------------------------------
- */
+// ----------------------------------------------------------------------
 // Compute tangential directions from reference direction (first and second choice) and normal direction in 3-D.
 void
 pylith::fekernels::NeumannTimeDependent::_tangential_directions(const PylithInt dim,

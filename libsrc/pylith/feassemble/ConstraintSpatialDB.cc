@@ -71,8 +71,6 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
 
     delete _auxiliaryField;_auxiliaryField = _physics->createAuxiliaryField(solution, physicsDomainMesh);
     delete _derivedField;_derivedField = _physics->createDerivedField(solution, physicsDomainMesh);
-    _observers = _physics->getObservers();assert(_observers); // Memory managed by Python
-    _observers->setPhysicsImplementation(this);
 
     const bool infoOnly = true;
     _observers->notifyObservers(0.0, 0, solution, infoOnly);
@@ -98,12 +96,21 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
 // Update at beginning of time step.
 void
 pylith::feassemble::ConstraintSpatialDB::prestep(const double t,
-                                                 const double dt) { // prestep
+                                                 const double dt) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<") empty method");
+    PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<")");
 
     assert(_physics);
-    _physics->updateAuxiliaryField(_auxiliaryField, t);
+    _physics->updateAuxiliaryField(_auxiliaryField, t+dt);
+
+    journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        assert(_auxiliaryField);
+        debug << journal::at(__HERE__)
+              << "Constraint component '" << GenericComponent::getName() << "' for '"
+              <<_physics->getIdentifier()<<"': viewing auxiliary field." << journal::endl;
+        _auxiliaryField->view("Constraint auxiliary field", pylith::topology::Field::VIEW_ALL);
+    } // if
 
     PYLITH_METHOD_END;
 } // prestep
@@ -144,7 +151,14 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::topology::Field* so
                                                    _kernelConstraint, context, solution->localVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
 
-    // solution->view("SOLUTION at end of setSolution()"); // :DEBUG: TEMPORARY
+    journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        assert(_auxiliaryField);
+        debug << journal::at(__HERE__)
+              << "Constraint component '" << GenericComponent::getName() << "' for '"
+              <<_physics->getIdentifier()<<"': viewing solution field." << journal::endl;
+        solution->view("Solution field after setting constrained values", pylith::topology::Field::VIEW_ALL);
+    } // if
 
     PYLITH_METHOD_END;
 } // setSolution

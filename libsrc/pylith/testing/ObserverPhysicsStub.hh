@@ -41,6 +41,18 @@ public:
     /// Destructor
     ~ObserverPhysicsStub(void);
 
+    /** Set time scale.
+     *
+     * @param[in] value Time scale for dimensionalizing time.
+     */
+    void setTimeScale(const PylithReal value);
+
+    /** Get time scale.
+     *
+     * @returns Time scale for dimensionalizing time.
+     */
+    PylithReal getTimeScale(void) const;
+
     /** Verify observer is compatible with solution.
      *
      * @param[in] solution Solution field.
@@ -58,6 +70,11 @@ public:
                 const PylithInt tindex,
                 const pylith::topology::Field& solution,
                 const bool infoOnly);
+
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+protected:
+
+    PylithReal _timeScale; ///< Time scale.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

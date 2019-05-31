@@ -199,13 +199,15 @@ pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
 
     // Check to see if subfields have same number of components and discretizations.
     const size_t numSubfields = subfieldNamesA.size();
-    for (size_t i = 0; i < numSubfields; ++i) {
-        const pylith::topology::Field::SubfieldInfo& infoA = fieldA.subfieldInfo(subfieldNamesA[i].c_str());
-        const pylith::topology::Field::SubfieldInfo& infoB = fieldB.subfieldInfo(subfieldNamesB[i].c_str());
+    if (isMatch) {
+        for (size_t i = 0; i < numSubfields; ++i) {
+            const pylith::topology::Field::SubfieldInfo& infoA = fieldA.subfieldInfo(subfieldNamesA[i].c_str());
+            const pylith::topology::Field::SubfieldInfo& infoB = fieldB.subfieldInfo(subfieldNamesB[i].c_str());
 
-        if (infoA.description.numComponents != infoB.description.numComponents) { isMatch = false; }
-        if (infoA.fe.basisOrder != infoB.fe.basisOrder) { isMatch = false; }
-    } // for
+            if (infoA.description.numComponents != infoB.description.numComponents) { isMatch = false; }
+            if (infoA.fe.basisOrder != infoB.fe.basisOrder) { isMatch = false; }
+        } // for
+    } // if
 
     // Must match across all processors.
     PetscInt matchLocal = isMatch;

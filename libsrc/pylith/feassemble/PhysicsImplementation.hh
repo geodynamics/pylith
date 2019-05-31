@@ -72,6 +72,16 @@ public:
      */
     const pylith::topology::Field* getDerivedField(void) const;
 
+    /** Notify observers of current solution.
+     *
+     * @param[in] t Current time.
+     * @param[in] tindex Current time step.
+     * @param[in] solution Solution at time t.
+     */
+    void notifyObservers(const PylithReal t,
+                         const PylithInt tindex,
+                         const pylith::topology::Field& solution);
+
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 

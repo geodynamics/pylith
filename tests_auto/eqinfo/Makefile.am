@@ -1,5 +1,3 @@
-# -*- Makefile -*-
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -14,7 +12,6 @@
 # See COPYING for license information.
 #
 # ----------------------------------------------------------------------
-#
 
 include $(top_srcdir)/check.am
 
@@ -27,25 +24,25 @@ dist_check_SCRIPTS = test_eqinfo.py
 dist_noinst_PYTHON = \
 	TestEqInfo.py \
 	TestEqInfoLine.py \
-	TestEqInfoTri3.py \
-	TestEqInfoQuad4.py
+	TestEqInfoTri.py \
+	TestEqInfoQuad.py
 
 dist_noinst_DATA = \
 	mat_elastic.spatialdb \
 	line.cfg \
 	line_one.h5 \
 	line_two.h5 \
-	tri3.cfg \
-	tri3_one.h5 \
-	tri3_two.h5 \
-	quad4.cfg \
-	quad4_one.h5 \
-	quad4_two.h5
+	tri.cfg \
+	tri_one.h5 \
+	tri_two.h5 \
+	quad.cfg \
+	quad_one.h5 \
+	quad_two.h5
 
 noinst_TMP = \
 	stats_line.py \
-	stats_tri3.py \
-	stats_quad4.py
+	stats_tri.py \
+	stats_quad.py
 
 
 TESTS_ENVIRONMENT = PYTHONPATH='$(PYTHONPATH):$(abs_builddir)'
@@ -63,4 +60,4 @@ BUILT_SOURCES = export-data
 clean-local: clean-data
 CLEANFILES = *.pyc
 
-# End of file 
+# End of file

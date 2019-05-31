@@ -44,6 +44,7 @@ class pylith::problems::TestObserversSoln : public CppUnit::TestFixture {
 
     CPPUNIT_TEST(testRegisterObserver);
     CPPUNIT_TEST(testRemoveObserver);
+    CPPUNIT_TEST(testTimeScale);
     CPPUNIT_TEST(testVerifyObservers);
     CPPUNIT_TEST(testNotifyObservers);
 
@@ -63,6 +64,9 @@ public:
 
     /// Test removeObserver().
     void testRemoveObserver(void);
+
+    /// Test setTimeScale().
+    void testTimeScale(void);
 
     /// Test verifyObservers().
     void testVerifyObservers(void);

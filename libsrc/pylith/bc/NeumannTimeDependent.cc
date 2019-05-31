@@ -381,11 +381,11 @@ pylith::bc::_NeumannTimeDependent::setKernelsRHSResidual(pylith::feassemble::Int
         break;
     case 0x3:
         g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initialRate_scalar :
-             pylith::fekernels::NeumannTimeDependent::g0_initialRate_scalar;
+             pylith::fekernels::NeumannTimeDependent::g0_initialRate_vector;
         break;
     case 0x5:
         g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_scalar :
-             pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_scalar;
+             pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_vector;
         break;
     case 0x6:
         g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_scalar :
