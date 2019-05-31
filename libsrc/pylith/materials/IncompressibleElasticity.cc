@@ -205,8 +205,18 @@ pylith::materials::IncompressibleElasticity::createDerivedField(const pylith::to
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
 pylith::materials::IncompressibleElasticity::_getAuxiliaryFactory(void) {
+    assert(_rheology);
     return _rheology->getAuxiliaryFactory();
 } // _getAuxiliaryFactory
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Update kernel constants.
+void
+pylith::materials::IncompressibleElasticity::_updateKernelConstants(const PylithReal dt) {
+    assert(_rheology);
+    _rheology->updateKernelConstants(&_kernelConstants, dt);
+} // _updateKernelConstants
 
 
 // ---------------------------------------------------------------------------------------------------------------------

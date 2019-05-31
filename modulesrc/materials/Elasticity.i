@@ -106,14 +106,20 @@ public:
             pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
                                                         const pylith::topology::Mesh& domainMesh);
 
-	    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-	protected:
+            // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////
+protected:
 
-	    /** Get auxiliary factory associated with physics.
-	     *
-	     * @return Auxiliary factory for physics object.
-	     */
-	    pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
+            /** Get auxiliary factory associated with physics.
+             *
+             * @return Auxiliary factory for physics object.
+             */
+            pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
+
+            /** Update kernel constants.
+             *
+             * @param[in] dt Current time step.
+             */
+            void _updateKernelConstants(const PylithReal dt);
 
         }; // class Elasticity
 
