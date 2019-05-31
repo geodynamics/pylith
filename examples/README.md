@@ -18,14 +18,19 @@ All:
     Dirichlet BC (SimpleDB)
     Neumann BC (UniformDB)
     IsotropicLinearElasticity (SimpleDB)
-  Step03: time-dependent shear w/Dirichlet and Neumenn BC
+  Step04: simple shear w/Dirichlet + Neumann BC + initial conditions
+    Dirichlet BC (SimpleDB)
+    Neumann BC (UniformDB)
+    IsotropicLinearElasticity (SimpleDB)
+    IC: SimpleDB
+  Step03: time-dependent shear w/Dirichlet and Neumann BC
     Dirichlet BC (UniformDB)
     Neumann BC (UniformDB)
     IsotropicLinearElasticity (SimpleDB)
   Exercises
     Change to tri mesh
     Change material properties
-    Change BC to give axial compression in the +y direction
+1    Change BC to give axial compression in the +y direction
     Change basis and quadrature order
 
 3d/box
