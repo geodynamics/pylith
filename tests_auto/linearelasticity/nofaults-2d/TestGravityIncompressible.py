@@ -63,7 +63,7 @@ class TestCase(unittest.TestCase):
         return
 
     def test_material_solution(self):
-        vertexFields = ["displacement", "pressure"]
+        vertexFields = ["displacement", "pressure", "cauchy_strain", "cauchy_stress"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}.h5".format(self.NAME, material)
             check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields)
