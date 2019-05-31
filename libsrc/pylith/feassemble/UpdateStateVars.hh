@@ -48,34 +48,44 @@ public:
     virtual
     void deallocate(void);
 
+    /** Get PETSc DM associated with state variables.
+     *
+     * @returns PETSc DM for state variables.
+     */
+    PetscDM stateVarsDM(void);
+
+    /** Get PETSc local vector associated with state variables.
+     *
+     * @returns PETSc local vector with state variables.
+     */
+    PetscVec stateVarsLocalVector(void);
+
     /** Initialize layout for updating state variables.
      *
      * @param[in] auxiliaryField Auxiliary field containing state variables.
-     * @param[in] solution Solution field.
      */
-    void initialize(const pylith::topology::Field& auxiliaryField,
-                    const pylith::topology::Field& solution);
+    void initialize(const pylith::topology::Field& auxiliaryField);
 
-    /** Setup values for updating state variables.
+    /** Extract current state variables in auxiliary field in preparation for computing new ones.
      *
      * @param[inout] auxiliaryField Auxiliary field containing state variables.
-     * @param[in] solution Solution field.
      */
-    void prepareValues(pylith::topology::Field* auxiliaryField,
-                       const pylith::topology::Field& solution);
+    void prepare(pylith::topology::Field* auxiliaryField);
+
+    /** Update state variables in auxiliary field after computing them.
+     *
+     * @param[inout] auxiliaryField Auxiliary field containing state variables.
+     */
+    void restore(pylith::topology::Field* auxiliaryField);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    PetscIS* superIS; ///< Petsc IS for ??
-    PetscDM superDM; ///< Petsc DM for ??
-    PetscIS stateVarIS; ///< Petsc IS for state vars in auxiliary field.
-    PetscDM stateVarDM; ///< Petsc DM for state vars subfield.
-    PetscVec stateVarsSolnVecLocal; ///< Petsc Vec with local vector for state vars and solution field.
-    PetscVec stateVarsSolnVecGlobal; ///< Petsc Vec with global vector for state vars and solution field.
-    PetscVec stateVarsVecGlobal; ///< Petsc Vec with global vector for state vars.
-    PetscVec auxiliaryFieldVecGlobal; ///< Petsc Vec with global vector for auxiliary field.
-    PetscVec solutionVecGlobal; ///< Petsc Vec with global vector for solution field.
+    PetscIS _stateVarsIS; ///< Petsc IS for state vars in auxiliary field.
+    PetscDM _stateVarsDM; ///< Petsc DM for state vars subfield.
+    PetscVec _stateVarsVecLocal; ///< Petsc Vec with global vector for state vars.
+    PetscVec _stateVarsVecGlobal; ///< Petsc Vec with global vector for state vars.
+    PetscVec _auxiliaryFieldVecGlobal; ///< Petsc Vec with global vector for auxiliary field.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

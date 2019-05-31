@@ -201,7 +201,7 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
         delete _updateState;_updateState = new pylith::feassemble::UpdateStateVars;assert(_updateState);
 
         assert(_auxiliaryField);
-        _updateState->initialize(*_auxiliaryField, solution);
+        _updateState->initialize(*_auxiliaryField);
     } // if
 
     PYLITH_METHOD_END;
@@ -372,12 +372,9 @@ pylith::feassemble::IntegratorDomain::_updateStateVars(const PylithReal t,
     } // if
 
     assert(_updateState);
-    _updateState->prepareValues(_auxiliaryField, solution);
-
     assert(_auxiliaryField);
-    PetscDM auxiliaryDM = _auxiliaryField->dmMesh();
+    _updateState->prepare(_auxiliaryField);
     _setKernelConstants(*_auxiliaryField, dt);
-    // _auxiliaryField->view("AUXILIARY FIELD"); //:DEBUG:
 
     // Set update kernel for each auxiliary subfield.
     const pylith::string_vector& subfieldNames = _auxiliaryField->subfieldNames();
@@ -394,22 +391,13 @@ pylith::feassemble::IntegratorDomain::_updateStateVars(const PylithReal t,
     } // for
 
     PetscErrorCode err = 0;
-    err = DMProjectFieldLocal(auxiliaryDM, t, _auxiliaryField->localVector(), kernelsStateVars, INSERT_VALUES, _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    PetscDM stateVarsDM = _updateState->stateVarsDM();
+    err = PetscObjectCompose((PetscObject) stateVarsDM, "dmAux", (PetscObject) _auxiliaryField->dmMesh());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) stateVarsDM, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMProjectFieldLocal(stateVarsDM, t, solution.localVector(), kernelsStateVars, INSERT_VALUES,
+                              _updateState->stateVarsLocalVector());PYLITH_CHECK_ERROR(err);
+    _updateState->restore(_auxiliaryField);
 
-#if 0
-    std::cout << std::endl << "_updateState->stateVarsVecGlobal" << std::endl; // :DEBUG:
-    err = VecView(_updateState->stateVarsVecGlobal, PETSC_VIEWER_STDOUT_WORLD); // :DEBUG:
-    std::cout << std::endl << "solution.localVector" << std::endl; // :DEBUG:
-    err = VecView(solution.localVector(), PETSC_VIEWER_STDOUT_WORLD); // :DEBUG:
-    std::cout << std::endl << "_updateState->solutionVecGlobal" << std::endl; // :DEBUG:
-    err = VecView(_updateState->solutionVecGlobal, PETSC_VIEWER_STDOUT_WORLD); // :DEBUG:
-    PetscSection section = NULL;
-    std::cout << std::endl << "_updateState->stateVarsSolnVecGlobal" << std::endl; // :DEBUG:
-    err = VecView(_updateState->stateVarsSolnVecGlobal, PETSC_VIEWER_STDOUT_WORLD); // :DEBUG:
-    std::cout << std::endl << "superDMSection" << std::endl; // :DEBUG:
-    err = DMGetDefaultSection(_updateState->superDM, &section);PYLITH_CHECK_ERROR(err); // :DEBUG:
-    err = PetscSectionView(section, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err); // :DEBUG:
-#endif
     delete[] kernelsStateVars;kernelsStateVars = NULL;
 
     PYLITH_METHOD_END;
