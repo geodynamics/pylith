@@ -1,13 +1,27 @@
 # Examples: 2-D box
 
-This suite of examples demonstrates some basic concepts of using PyLith to solve the static or quasistatic elasticity equation in 2-D. Faults are discussed in the 2d/strike-slip and 2d/reverse example suites.
+This suite of examples demonstrates some basic concepts of using
+PyLith to solve the static or quasistatic elasticity equation in
+2-D, including:
 
+* Dirichlet boundary conditions
+* Neumann boundary conditions
+* Initial conditions
+* Isotropic, linear elasticity with a single material
+* UniformDB and SimpleDB spatial databases for specifying properties
+and boundary condition values
+* Output of the solution over the domain, boundaries, and materials
+* Output of auxiliary information for boundary conditions and
+materials
 
+Faults are discussed in the 2d/strike-slip and 2d/reverse example
+suites.
 
 ## Step01: Axial extension with Dirichlet boundary conditions
 
-Axial extension with Dirichlet boundary conditions on the +x, -x, and -y boundaries.
-The simulation parameters are in the `pylithapp.cfg` and `step01_axialdisp.cfg` files.
+Axial extension with Dirichlet boundary conditions on the +x, -x, and
+-y boundaries.  The simulation parameters are in the `pylithapp.cfg`
+and `step01_axialdisp.cfg` files.
 
 To run the example:
 ```

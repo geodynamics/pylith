@@ -1,0 +1,15 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values =      2
+  value-names =  initial_amplitude_x  initial_amplitude_y
+  value-units =  m  m
+  num-locs =     2
+  data-dim =    1
+  space-dim =    2
+  cs-data = cartesian {
+    to-meters = 1
+    space-dim = 2
+  }
+}
+ -6.000000e+03 -1.600000e+04 -1.600000e+00 -6.000000e-01
+ -6.000000e+03  0.000000e+00  0.000000e+00 -6.000000e-01
