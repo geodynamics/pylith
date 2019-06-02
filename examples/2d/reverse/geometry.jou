@@ -1,0 +1,155 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2017 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file with geometry for strike-slip Green's functions
+# example.
+#
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+${Units('si')}
+#
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+
+# Make sure undo is off to prevent errors in stitching volumes.
+undo off
+
+# Turn on IDless journal files for maximum compatibility.
+# The commands echoed to the log will replace the object ID with a
+# geometric specification of the object. Note that this means changing
+# the geometry will require changes to subsequent journal commands.
+journal idless on
+
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+# Block is 200.0 km x 100.0 km
+# -100.0 km <= x <= 100.0 km
+# -100.0 km <= y <= 0.0 km
+#
+${blockWidth=200*km}
+${blockHeight=100*km}
+${blockLength=10*km}
+
+${fault1Width=60.0*km}
+${fault1DipAngle=30.0}
+
+${fault2Width=15.0*km}
+${fault2DipAngle=45.0}
+${fault2Offset=20.0*km}
+
+${xoffset=0.5*fault1Width*cosd(fault1DipAngle)}
+
+brick x {blockWidth} y {blockHeight} z {blockLength}
+${idV=Id("volume")}
+volume {idV} move x {-xoffset} y {-blockHeight/2.0} z 0.0
+
+#create midsurface volume {idV} surface 1 2
+#surface ( at -10606.6 -40000 5000 ordinal 1 ) name "surf_front"
+#surface ( at -10606.6 -40000 -5000 ordinal 1 ) name "surf_back"
+surface 1 name "surf_front"
+surface 2 name "surf_back"
+
+create midsurface volume {idV} surface surf_front surf_back
+
+${idS=Id("surface")}
+delete volume {idV}
+
+# ----------------------------------------------------------------------
+# Create fault surfaces
+# ----------------------------------------------------------------------
+
+# Create fault (yz plane) at x = 0.0
+split surface {idS} across location position 0 0 0 location position {-blockHeight/tand(fault1DipAngle)} {-blockHeight} 0
+
+#curve 17 name "fault_tmp"
+# curve ( at -40000 -40000 0 ordinal 1 ordered ) name "fault_tmp"
+split curve 17 at position {-fault1Width*cosd(fault1DipAngle)} {-fault1Width*sind(fault1DipAngle)} 0
+
+split surface 8 across location position -{fault2Offset} 0 0 location position {-blockHeight/tand(fault2DipAngle)} {-blockHeight} 0
+
+# ----------------------------------------------------------------------
+# Name curves
+# ----------------------------------------------------------------------
+curve 26 name "fault1_surface_bottom"
+#curve ( at -10606.6 -10606.6 0 ordinal 1 ordered ) name "fault_surface"
+
+curve 27 name "fault1_surface_top"
+#curve ( at -10606.6 -10606.6 0 ordinal 1 ordered ) name "fault_surface"
+
+curve 24 name "splay_surface"
+#curve ( at -10606.6 -10606.6 0 ordinal 1 ordered ) name "fault_surface"
+
+curve 21 name "ground_fw"
+#curve ( at 32196.7 0 0 ordinal 1 ordered )  name "ground_fw"
+
+curve 28 name "ground_wedge"
+#curve ( at -42803.3 0 0 ordinal 1 ordered ) name "ground_wedge"
+
+curve 25 name "ground_hw"
+#curve ( at 32196.7 0 0 ordinal 1 ordered )  name "ground_hw"
+
+curve 14 name "edge_xpos"
+c#urve ( at 64393.4 -40000 0 ordinal 1 ordered ) name "edge_xpos"
+
+curve 20 name "edge_xneg"
+#curve ( at -85606.6 -40000 0 ordinal 1 ordered ) name "edge_xneg"
+
+curve 19 name "edge_yneg_hw"
+#curve ( at -82803.3 -80000 0 ordinal 1 ordered ) name "edge_yneg_hw"
+
+curve 13 name "edge_yneg_fw"
+#curve ( at -7803.3 -80000 0 ordinal 1 ordered ) name "edge_yneg_fw"
+
+curve 23 name "fault1_extended"
+#curve ( at -50606.6 -50606.6 0 ordinal 1 ordered ) name "fault_extended"
+
+# ----------------------------------------------------------------------
+# Name vertices
+# ----------------------------------------------------------------------
+
+vertex 15 name "vertex_fault_bot"
+#vertex ( at -21213.2 -21213.2 0 ordinal 1 ordered ) name "vertex_fault_bot"
+
+vertex 13 name "vertex_fault_top"
+#vertex ( at 0 0 0 ordinal 1 ordered ) name "vertex_fault_top"
+
+vertex 17 name "vertex_splay_bot"
+#vertex ( at 0 0 0 ordinal 1 ordered ) name "vertex_splay_bot"
+
+vertex 14 name "vertex_fault_xneg"
+#vertex ( at -80000 -80000 0 ordinal 1 ordered ) name "vertex_fault_xneg"
+
+vertex 11 name "vertex_top_xpos"
+#vertex ( at 64393.4 0 0 ordinal 1 ordered ) name "vertex_top_xpos"
+
+vertex 12 name "vertex_top_xneg"
+#vertex ( at -85606.6 0 0 ordinal 1 ordered ) name "vertex_top_xneg"
+
+vertex 9 name "vertex_bot_xpos"
+#vertex ( at 64393.4 -80000 0 ordinal 1 ordered ) name "vertex_bot_xpos"
+
+vertex 10 name "vertex_bot_xneg"
+#vertex ( at -85606.6 -80000 0 ordinal 1 ordered ) name "vertex_bot_xneg"
+
+
+# End of file
+
+
+
