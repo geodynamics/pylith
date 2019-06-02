@@ -31,7 +31,7 @@ pylith step01_axialdisp.cfg
 ## Step02:  Simple shear with Dirichlet boundary conditions
 
 Simple shear with Dirichlet boundary conditions on all four boundaries.
-The simulation parameters are in the `pylithapp.cfg` and `step01_sheardisp.cfg` files.
+The simulation parameters are in the `pylithapp.cfg` and `step02_sheardisp.cfg` files.
 
 To run the example:
 ```
@@ -40,25 +40,25 @@ pylith step02_sheardisp.cfg
 
 ## Step03: Simple shear with Dirichlet and Neumann boundary conditions
 
-The same problem as Step02 but with Neumann (traction) boundary conditions replacing the Dirichlet boundary conditions on the +x and +y boundaries.  The simulation parameters are in the `pylithapp.cfg` and `step01_sheardisptract.cfg` files.
+The same problem as Step02 but with Neumann (traction) boundary conditions replacing the Dirichlet boundary conditions on the +x and +y boundaries.  The simulation parameters are in the `pylithapp.cfg` and `step03_sheardisptract.cfg` files.
 
 To run the example:
 ```
 pylith step03_sheardisptract.cfg
 ```
 
-## Step04: Simple shear with Dirichlet and Neumann boundary conditions and initial conditions
+## Step04: Simple shear with Dirichlet boundary conditions and initial conditions
 
-The same problem as Step03 but with the initial conditions set to the solution. The simulation parameters are in the `pylithapp.cfg` and `step01_sheardisptractic.cfg` files.
+The same problem as Step02 but with the initial conditions set to the solution. The simulation parameters are in the `pylithapp.cfg` and `step04_sheardispic.cfg` files.
 
 To run the example:
 ```
-pylith step04_sheardisptractic.cfg
+pylith step04_sheardispic.cfg
 ```
 
 ## Step05: Time-dependent shear with Dirichlet and Neumann boundary conditions
 
-Similar to Step03 but with time-dependent boundary conditions consisting of an initial value and a rate of change that is added starting at 1.0 year.  The simulation parameters are in the `pylithapp.cfg` and `step01_sheardisptractrate.cfg` files.
+Similar to Step03 but with time-dependent boundary conditions consisting of an initial value and a rate of change that is added starting at 1.0 year.  The simulation parameters are in the `pylithapp.cfg` and `step05_sheardisptractrate.cfg` files.
 
 To run the example:
 ```

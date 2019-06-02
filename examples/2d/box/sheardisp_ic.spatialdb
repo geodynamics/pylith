@@ -1,0 +1,51 @@
+// -*- C++ -*-
+//
+// This spatial database specifies the initial displacement over the domain.
+//
+// We use a SimpleGridDB because for efficient queries from a grid of points.
+#SPATIAL_GRID.ascii 1
+SimpleGridDB {
+  num-x = 4
+  num-y = 5
+  num-values =      2
+  value-names =  displacement_x  displacement_y
+  value-units =  m  m
+  space-dim = 2
+  cs-data = cartesian {
+    to-meters = 1.0e+3
+    space-dim = 2
+  }
+}
+// x coordinates (km)
+-6.0  -2.0  +2.0  +6.0
+
+// y coordinates (km)
+-16.0  -12.0  -8.0  -4.0  0.0
+
+// Columns are
+// (1) x coordinate (km)
+// (2) y coordinate (km)
+// (3) x displacement (m)
+// (4) y displacement (m)
+//
+// Order of points does not matter
+ -6.0  -16.0    -1.6  -0.6
+ -2.0  -16.0    -1.6  -0.2
+  2.0  -16.0    -1.6   0.2
+  6.0  -16.0    -1.6   0.6
+ -6.0  -12.0    -1.2  -0.6
+ -2.0  -12.0    -1.2  -0.2
+  2.0  -12.0    -1.2   0.2
+  6.0  -12.0    -1.2   0.6
+ -6.0   -8.0    -0.8  -0.6
+ -2.0   -8.0    -0.8  -0.2
+  2.0   -8.0    -0.8   0.2
+  6.0   -8.0    -0.8   0.6
+ -6.0   -4.0    -0.4  -0.6
+ -2.0   -4.0    -0.4  -0.2
+  2.0   -4.0    -0.4   0.2
+  6.0   -4.0    -0.4   0.6
+ -6.0    0.0     0.0  -0.6
+ -2.0    0.0     0.0  -0.2
+  2.0    0.0     0.0   0.2
+  6.0    0.0     0.0   0.6
