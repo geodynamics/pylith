@@ -2,17 +2,13 @@
 
 This suite of examples demonstrates some basic concepts of using
 PyLith to solve the static or quasistatic elasticity equation in
-2-D, including:
+2-D. Concepts common to all of the steps include:
 
 * Dirichlet boundary conditions
-* Neumann boundary conditions
-* Initial conditions
 * Isotropic, linear elasticity with a single material
-* UniformDB and SimpleDB spatial databases for specifying properties
-and boundary condition values
 * Output of the solution over the domain, boundaries, and materials
 * Output of auxiliary information for boundary conditions and
-materials
+  materials
 
 Faults are discussed in the 2d/strike-slip and 2d/reverse example
 suites.
@@ -20,8 +16,14 @@ suites.
 ## Step01: Axial extension with Dirichlet boundary conditions
 
 Axial extension with Dirichlet boundary conditions on the +x, -x, and
--y boundaries.  The simulation parameters are in the `pylithapp.cfg`
-and `step01_axialdisp.cfg` files.
+-y boundaries. Features used in this simulation include:
+
+* Static simulation
+* UniformDB spatial database for specifying values for properties and
+  boundary conditions
+
+The simulation parameters are in the `pylithapp.cfg` and
+`step01_axialdisp.cfg` files.
 
 To run the example:
 ```
@@ -30,8 +32,15 @@ pylith step01_axialdisp.cfg
 
 ## Step02:  Simple shear with Dirichlet boundary conditions
 
-Simple shear with Dirichlet boundary conditions on all four boundaries.
-The simulation parameters are in the `pylithapp.cfg` and `step02_sheardisp.cfg` files.
+Simple shear with Dirichlet boundary conditions on all four
+boundaries. Features used in this simulation include:
+
+* Static simulation
+* UniformDB and SimpleGridDB spatial database for specifying values
+  for properties and boundary conditions
+
+The simulation parameters are in the `pylithapp.cfg` and
+`step02_sheardisp.cfg` files.
 
 To run the example:
 ```
@@ -40,7 +49,17 @@ pylith step02_sheardisp.cfg
 
 ## Step03: Simple shear with Dirichlet and Neumann boundary conditions
 
-The same problem as Step02 but with Neumann (traction) boundary conditions replacing the Dirichlet boundary conditions on the +x and +y boundaries.  The simulation parameters are in the `pylithapp.cfg` and `step03_sheardisptract.cfg` files.
+The same problem as Step02 but with Neumann (traction) boundary
+conditions replacing the Dirichlet boundary conditions on the +x and
++y boundaries.  Features used in this simulation include:
+
+* Static simulation
+* Neumann boundary conditions
+* UniformDB and SimpleDB spatial database for specifying values
+  for properties and boundary conditions
+
+The simulation parameters are in the `pylithapp.cfg` and
+`step03_sheardisptract.cfg` files.
 
 To run the example:
 ```
@@ -49,7 +68,18 @@ pylith step03_sheardisptract.cfg
 
 ## Step04: Simple shear with Dirichlet boundary conditions and initial conditions
 
-The same problem as Step02 but with the initial conditions set to the solution. The simulation parameters are in the `pylithapp.cfg` and `step04_sheardispic.cfg` files.
+The same problem as Step02 but with the initial conditions set to the
+solution. Features used in this simulation include:
+
+* Static simulation
+* Neumann boundary conditions
+* Initial conditions over the domain
+* UniformDB, SimpleGridDB, and SimpleDB spatial database for
+  specifying values for properties, boundary conditions, and initial
+  conditions.
+
+The simulation parameters are in the `pylithapp.cfg` and
+`step04_sheardispic.cfg` files.
 
 To run the example:
 ```
@@ -58,11 +88,22 @@ pylith step04_sheardispic.cfg
 
 ## Step05: Time-dependent shear with Dirichlet and Neumann boundary conditions
 
-Similar to Step03 but with time-dependent boundary conditions consisting of an initial value and a rate of change that is added starting at 1.0 year.  The simulation parameters are in the `pylithapp.cfg` and `step05_sheardisptractrate.cfg` files.
+Similar to Step03 but with time-dependent boundary conditions
+consisting of an initial value and a rate of change that is added
+starting at 1.0 year.  Features used in this simulation include:
+
+* Quasistatic simulation
+* Time-dependent Dirichlet boundary conditions
+* Time-dependent Neumann boundary conditions
+* UniformDB and SimpleDB spatial database for specifying values for
+  properties and boundary conditions.
+
+The simulation parameters are in the `pylithapp.cfg` and
+`step05_sheardisptractrate.cfg` files.
 
 To run the example:
 ```
-pylith step05_sheardisptract.cfg
+pylith step05_sheardisptractrate.cfg
 ```
 
 ## Suggested exercises
