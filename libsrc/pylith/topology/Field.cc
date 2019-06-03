@@ -905,6 +905,33 @@ pylith::topology::Field::subfieldAdd(const Description& description,
 
 
 // ----------------------------------------------------------------------
+// Update subfield description and discretization.
+void
+pylith::topology::Field::subfieldUpdate(const char* subfieldName,
+                                        const char* subfieldNameNew,
+                                        const Description& description,
+                                        const Discretization& discretization) {
+    PYLITH_METHOD_BEGIN;
+
+    subfields_type::iterator iter = _subfields.find(subfieldName);
+    assert(iter != _subfields.end());
+    assert(discretization.basisOrder == iter->second.fe.basisOrder);
+    assert(discretization.quadOrder == iter->second.fe.quadOrder);
+    assert(discretization.dimension == iter->second.fe.dimension);
+
+    SubfieldInfo newInfo;
+    newInfo.description = description;
+    newInfo.fe = discretization;
+    newInfo.index = iter->second.index;
+    newInfo.dm = iter->second.dm;
+    _subfields.erase(iter->first);
+    _subfields[subfieldNameNew] = newInfo;
+
+    PYLITH_METHOD_END;
+} // subfieldUpdate
+
+
+// ----------------------------------------------------------------------
 void
 pylith::topology::Field::subfieldsSetup(void) {
     PYLITH_METHOD_BEGIN;

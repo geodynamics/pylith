@@ -235,6 +235,18 @@ public:
     void subfieldAdd(const Description& description,
                      const Discretization& discretization);
 
+    /** Update subfield description and discretization.
+     *
+     * @param[in] subfieldName Name of subfield to update.
+     * @param[in] subfieldNameNew New name for subfield.
+     * @param[in] description Description for new subfield.
+     * @param[in] discretization Deiscretization information for new subfield.
+     */
+    void subfieldUpdate(const char* subfieldName,
+                        const char* subfieldNameNew,
+                        const Description& description,
+                        const Discretization& discretization);
+
     /** Setup sections for subfields.
      *
      * Should be preceded by calls to subfieldAdd() and followed by calls to allocate().

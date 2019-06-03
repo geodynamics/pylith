@@ -108,13 +108,13 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
         delete _fieldProj;_fieldProj = NULL;
         delete _passThruFns;_passThruFns = NULL;
     } // if
+
+    pylith::topology::Field::Discretization feP1;
+    feP1.basisOrder = _basisOrder;
     if (!_fieldProj) {
         _fieldProj = new pylith::topology::Field(fieldIn->mesh());assert(_fieldProj);
 
-        // Set discretization of all subfields to basis order.
-        pylith::topology::Field::Discretization feP1;
-        feP1.basisOrder = _basisOrder;
-
+        // Set subfield information in projected field, except basis order.
         const pylith::string_vector& subfieldNames = fieldIn->subfieldNames();
         const size_t numSubfields = subfieldNames.size();
         for (size_t i = 0; i < numSubfields; ++i) {
@@ -138,7 +138,35 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
         } // for
         _fieldProj->subfieldsSetup();
         _fieldProj->allocate();
-    } // if
+    } else {
+        // Update subfield information in projected field to match input field, except basis order.
+        pylith::topology::Field::Discretization feP1;
+        feP1.basisOrder = _basisOrder;
+
+        const pylith::string_vector& subfieldInNames = fieldIn->subfieldNames();
+        const pylith::string_vector& subfieldProjNames = _fieldProj->subfieldNames();
+        assert(subfieldInNames.size() == subfieldProjNames.size());
+        const size_t numSubfields = subfieldInNames.size();
+        for (size_t i = 0; i < numSubfields; ++i) {
+            const pylith::topology::Field::SubfieldInfo& infoIn = fieldIn->subfieldInfo(subfieldInNames[i].c_str());
+            const pylith::topology::Field::SubfieldInfo& infoProj = _fieldProj->subfieldInfo(subfieldProjNames[i].c_str());
+            feP1.isBasisContinuous = infoIn.fe.isBasisContinuous;
+            feP1.feSpace = infoIn.fe.feSpace;
+            feP1.quadOrder = infoIn.fe.quadOrder;
+            feP1.dimension = infoIn.fe.dimension;
+
+            if (infoIn.fe.quadOrder < _basisOrder) {
+                PYLITH_COMPONENT_WARNING(
+                    "Projecting subfield '"
+                        << infoIn.description.label << "' in field ''" << fieldIn->label() << "'' from basis order "
+                        << infoIn.fe.basisOrder << " to basis order " << _basisOrder
+                        << " with quadrature order " << infoIn.fe.quadOrder << " will result in under integration of the "
+                        << "subfield. Accurate projection requires a quadrature order of at least " << _basisOrder << "."
+                    );
+            } // if
+            _fieldProj->subfieldUpdate(subfieldProjNames[i].c_str(), subfieldInNames[i].c_str(), infoIn.description, feP1);
+        } // for
+    } // if/else
     _fieldProj->label(fieldIn->label());
     _fieldProj->dimensionalizeOkay(true);
 
