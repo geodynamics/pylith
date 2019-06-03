@@ -63,13 +63,25 @@ pylith::fekernels::FaultCohesiveKin::g0u(const PylithInt dim,
 
     assert(numS >= 2);
 
+    const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
+
+    const PylithInt i_disp = 0;
     const PylithInt i_lagrange = numS-1;
-    const PylithScalar* lagrange = &s[sOff[i_lagrange]];
+    const PylithInt o_dispN = sOff[i_disp];
+    const PylithInt o_dispP = sOff[i_disp]+spaceDim;
+
+    // :KLUDGE: sOff doesn't account for DOF on two sides of the fault.
+    //
+    // Offset in s is off by number of subfields on two sides of the fault (numS-1)*dim.
+    const PylithInt o_lagrange = sOff[i_lagrange]+(numS-1)*spaceDim;
+
+    const PylithScalar* lagrange = &s[o_lagrange];
 
     for (PylithInt i = 0; i < dim; ++i) {
-        g0[i] += -lagrange[i];
+        g0[o_dispN+i] += +lagrange[i];
+        g0[o_dispP+i] += -lagrange[i];
     } // for
-} // g0u_pos
+} // g0u
 
 
 // ----------------------------------------------------------------------
@@ -106,13 +118,25 @@ pylith::fekernels::FaultCohesiveKin::g0l(const PylithInt dim,
     const PylithInt i_slip = numA-1;
     const PylithScalar* slip = &a[aOff[i_slip]];
 
+    const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
+
     const PylithInt i_disp = 0;
-    const PylithScalar* disp = &s[sOff[i_disp]];
+    const PylithInt i_lagrange = numS-1;
+    const PylithInt o_dispN = sOff[i_disp];
+    const PylithInt o_dispP = sOff[i_disp]+spaceDim;
+
+    // :KLUDGE: sOff doesn't account for DOF on two sides of the fault.
+    //
+    // Offset in s is off by number of subfields on two sides of the fault (numS-1)*dim.
+    const PylithInt o_lagrange = sOff[i_lagrange]+(numS-1)*spaceDim;
+
+    const PylithScalar* dispN = &s[o_dispN];
+    const PylithScalar* dispP = &s[o_dispP];
 
     for (PylithInt i = 0; i < dim; ++i) {
-        g0[i] += 0.5*slip[i] - disp[i];
+        g0[o_lagrange+i] += slip[i] - dispP[i] + dispN[i];
     } // for
-} // g0v_pos
+} // g0l
 
 
 // ----------------------------------------------------------------------
@@ -144,8 +168,21 @@ pylith::fekernels::FaultCohesiveKin::Jg0ul(const PylithInt dim,
                                            PylithScalar Jg0[]) {
     assert(numS >= 2);
 
+    const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
+
+    const PylithInt i_disp = 0;
+    const PylithInt i_lagrange = numS-1;
+    const PylithInt o_dispN = sOff[i_disp];
+    const PylithInt o_dispP = sOff[i_disp]+spaceDim;
+
+    // :KLUDGE: sOff doesn't account for DOF on two sides of the fault.
+    //
+    // Offset in s is off by number of subfields on two sides of the fault (numS-1)*dim.
+    const PylithInt o_lagrange = sOff[i_lagrange]+(numS-1)*spaceDim;
+
     for (PylithInt i = 0; i < dim; ++i) {
-        Jg0[i*dim+i] += -1.0;
+        Jg0[(o_dispN+i)*dim+o_lagrange+i] += +1.0;
+        Jg0[(o_dispP+i)*dim+o_lagrange+i] += -1.0;
     } // for
 } // Jg0ul
 
@@ -179,8 +216,21 @@ pylith::fekernels::FaultCohesiveKin::Jg0lu(const PylithInt dim,
                                            PylithScalar Jg0[]) {
     assert(numS >= 2);
 
+    const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
+
+    const PylithInt i_disp = 0;
+    const PylithInt i_lagrange = numS-1;
+    const PylithInt o_dispN = sOff[i_disp];
+    const PylithInt o_dispP = sOff[i_disp]+spaceDim;
+
+    // :KLUDGE: sOff doesn't account for DOF on two sides of the fault.
+    //
+    // Offset in s is off by number of subfields on two sides of the fault (numS-1)*dim.
+    const PylithInt o_lagrange = sOff[i_lagrange]+(numS-1)*spaceDim;
+
     for (PylithInt i = 0; i < dim; ++i) {
-        Jg0[i*dim+i] += -1.0;
+        Jg0[(o_lagrange+i)*dim+o_dispN+i] += +1.0;
+        Jg0[(o_lagrange+i)*dim+o_dispP+i] += -1.0;
     } // for
 } // Jg0lu
 
