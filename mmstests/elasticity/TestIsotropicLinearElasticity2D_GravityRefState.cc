@@ -89,7 +89,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState :
 
     static double referenceMeanStress(const double x,
                                       const double y) {
-        return -density(x,y) * GACC * (YMAX-y);
+        return density(x,y) * GACC * (y-YMAX);
     } // referenceMeanStress
 
     static double referenceShearStress(const double x,
