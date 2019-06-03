@@ -401,7 +401,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::cauchyStress_refstate(c
     const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
     const PylithScalar shearModulus = a[aOff[i_shearModulus]];
     const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
-    const PylithScalar* rstress = &a[sOff[i_rstress]];
+    const PylithScalar* rstress = &a[aOff[i_rstress]];
     const PylithScalar stress_zz = rstress[2] +
                                    0.5*lambda/(lambda+shearModulus) *
                                    (stressTensor[0*_dim+0]-rstress[0] + stressTensor[1*_dim+1]-rstress[1]);
