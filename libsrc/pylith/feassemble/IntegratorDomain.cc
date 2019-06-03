@@ -204,6 +204,13 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
         _updateState->initialize(*_auxiliaryField);
     } // if
 
+    journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        PYLITH_JOURNAL_DEBUG("Viewing auxiliary field.");
+        assert(_auxiliaryField);
+        _auxiliaryField->view("Auxiliary field");
+    } // if
+
     PYLITH_METHOD_END;
 } // initialize
 
