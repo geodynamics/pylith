@@ -66,10 +66,11 @@ class TestCase(unittest.TestCase):
         return
 
     def test_material_solution(self):
-        vertexFields = ["displacement", "cauchy_strain", "cauchy_stress"]
+        vertexFields = ["displacement"]
+        cellFields = ["cauchy_strain", "cauchy_stress"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields)
+            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields, cellFields=cellFields)
         return
 
     def test_bcdirichlet_info(self):
