@@ -264,6 +264,30 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Update at beginning of time step.
+void
+pylith::feassemble::IntegratorInterface::prestep(const double t,
+                                                 const double dt) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<")");
+
+    assert(_physics);
+    _physics->updateAuxiliaryField(_auxiliaryField, t+dt);
+
+    journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        assert(_auxiliaryField);
+        PYLITH_JOURNAL_DEBUG("IntegratorInterface component '" << GenericComponent::getName() << "' for '"
+                                                               <<_physics->getIdentifier()
+                                                               << "': viewing auxiliary field.");
+        _auxiliaryField->view("IntegratorInterface auxiliary field", pylith::topology::Field::VIEW_ALL);
+    } // if
+
+    PYLITH_METHOD_END;
+} // prestep
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Compute RHS residual for G(t,s).
 void
 pylith::feassemble::IntegratorInterface::computeRHSResidual(pylith::topology::Field* residual,

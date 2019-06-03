@@ -99,8 +99,8 @@ public:
              * @param[out] auxiliaryField Auxiliary field.
              * @param[in] t Current time.
              */
-            void prestep(pylith::topology::Field* auxiliaryField,
-                         const double t);
+            void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                                      const double t);
 
             // PROTECTED METHODS
             // ///////////////////////////////////////////////////////////////////////////////////////////////

@@ -32,6 +32,7 @@
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::SpaceDim
 #include "pylith/feassemble/feassemblefwd.hh" // USES AuxiliaryFactory
+#include "pylith/utils/petscfwd.h" // HASA PetscVec
 
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
@@ -137,6 +138,7 @@ protected:
     pylith::faults::KinSrcAuxiliaryFactory* _auxFactory; ///< Factory for auxiliary subfields.
     PetscPointFunc _slipFnKernel; ///< Kernel for slip time function.
     pylith::topology::Field* _auxField; ///< Auxiliary field for this integrator.
+    PetscVec _slipLocalVec; ///< PETSc local Vec to hold slip for this rupture.
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
@@ -152,6 +154,5 @@ private:
 }; // class KinSrc
 
 #endif // pylith_faults_kinsrc_hh
-
 
 // End of file
