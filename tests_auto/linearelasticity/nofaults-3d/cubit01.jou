@@ -1,0 +1,364 @@
+## /private/var/folders/9w/cksf4hz9059gxsbk3nj0fq5h001c01/T/AppTranslocation/4465C777-8B8C-486A-8B85-28192A829795/d/Cubit.app/Contents/MacOS/Cubitx
+## Cubit Version 15.4
+## Cubit Build 415446
+## Revised 2019-05-02 10:02:47 -0600 (Thu, 02 May 2019)
+## Running 06/03/2019 10:09:38 PM
+## Command Options:
+undo on
+cd "/Volumes/Users/baagaard/src/cig/pylith/tests_auto/linearelasticity/nofaults-3d"
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+# Block is 12km x 12km x 9km
+# -6 km <= x <= 6 km
+# -6 km <= y <= 6 km
+# -9 km <= z <= 0 km
+brick x {12.0*km} y {12.0*km} z {9.0*km}
+volume 1 move x 0 y 0 z {-4.5*km}
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+create planar surface with plane zplane offset {-4.5*km}
+surface 7 name "material_interface"
+# ----------------------------------------------------------------------
+# Divide volumes using interface surfaces
+# ----------------------------------------------------------------------
+webcut volume 1 with plane material_interface
+volume 1 name "elastic"
+volume 3 name "viscoelastic"
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+imprint all with volume all
+merge all
+delete body 2
+# ----------------------------------------------------------------------
+# Set discretization size
+# ----------------------------------------------------------------------
+volume all size {3.0*km}
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+volume all scheme map
+mesh volume all
+# ----------------------------------------------------------------------
+# Mark entities for boundary conditions, etc.
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 volume 1
+block 1 name "elastic"
+block 2 volume 3
+block 2 name "viscoelastic"
+# ----------------------------------------------------------------------
+# Create nodeset for +x boundary
+# ----------------------------------------------------------------------
+group "boundary_xpos" add node in surface 12 14
+nodeset 20 boundary_xpos
+nodeset 20 name "boundary_xpos"
+# ----------------------------------------------------------------------
+# Create nodeset for -x boundary
+# ----------------------------------------------------------------------
+group "boundary_xneg" add node in surface 10 16
+nodeset 21 boundary_xneg
+nodeset 21 name "boundary_xneg"
+# ----------------------------------------------------------------------
+# Create nodeset for +y boundary
+# ----------------------------------------------------------------------
+group "boundary_ypos" add node in surface 9 17
+nodeset 22 boundary_ypos
+nodeset 22 name "boundary_ypos"
+# ----------------------------------------------------------------------
+# Create nodeset for -y boundary
+# ----------------------------------------------------------------------
+group "boundary_yneg" add node in surface 11 15
+nodeset 23 boundary_yneg
+nodeset 23 name "boundary_yneg"
+# ----------------------------------------------------------------------
+# Create nodeset for -z boundary
+# ----------------------------------------------------------------------
+group "boundary_zneg" add node in surface 2
+nodeset 24 boundary_zneg
+nodeset 24 name "boundary_zneg"
+# ----------------------------------------------------------------------
+# Create nodeset for +z boundary
+# ----------------------------------------------------------------------
+group "boundary_zpos" add node in surface 1
+nodeset 25 boundary_zpos
+nodeset 25 name "boundary_zpos"
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_hex.exo" dimension 3 overwrite
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+# Block is 12km x 12km x 9km
+# -6 km <= x <= 6 km
+# -6 km <= y <= 6 km
+# -9 km <= z <= 0 km
+brick x {12.0*km} y {12.0*km} z {9.0*km}
+volume 1 move x 0 y 0 z {-1.5*km}
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+create planar surface with plane zplane offset {-3.0*km}
+surface 7 name "material_interface"
+# ----------------------------------------------------------------------
+# Divide volumes using interface surfaces
+# ----------------------------------------------------------------------
+webcut volume 1 with plane material_interface
+volume 1 name "elastic"
+volume 3 name "viscoelastic"
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+imprint all with volume all
+merge all
+delete body 2
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+# Block is 12km x 12km x 9km
+# -6 km <= x <= 6 km
+# -6 km <= y <= 6 km
+# -9 km <= z <= 0 km
+brick x {12.0*km} y {12.0*km} z {9.0*km}
+volume 1 move x 0 y 0 z {-4.5*km}
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+create planar surface with plane zplane offset {-3.0*km}
+surface 7 name "material_interface"
+# ----------------------------------------------------------------------
+# Divide volumes using interface surfaces
+# ----------------------------------------------------------------------
+webcut volume 1 with plane material_interface
+volume 1 name "elastic"
+volume 3 name "viscoelastic"
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+imprint all with volume all
+merge all
+delete body 2
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+# Block is 12km x 12km x 9km
+# -6 km <= x <= 6 km
+# -6 km <= y <= 6 km
+# -9 km <= z <= 0 km
+brick x {12.0*km} y {12.0*km} z {9.0*km}
+volume 1 move x 0 y 0 z {-4.5*km}
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+create planar surface with plane zplane offset {-3.0*km}
+surface 7 name "material_interface"
+# ----------------------------------------------------------------------
+# Divide volumes using interface surfaces
+# ----------------------------------------------------------------------
+webcut volume 1 with plane material_interface
+volume 1 name "elastic"
+volume 3 name "viscoelastic"
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+imprint all with volume all
+merge all
+delete body 2
+# ----------------------------------------------------------------------
+# Set discretization size
+# ----------------------------------------------------------------------
+volume all size {3.0*km}
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+volume all scheme map
+mesh volume all
+# ----------------------------------------------------------------------
+# Mark entities for boundary conditions, etc.
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 volume 1
+block 1 name "elastic"
+block 2 volume 3
+block 2 name "viscoelastic"
+# ----------------------------------------------------------------------
+# Create nodeset for +x boundary
+# ----------------------------------------------------------------------
+group "boundary_xpos" add node in surface 12 14
+nodeset 20 boundary_xpos
+nodeset 20 name "boundary_xpos"
+# ----------------------------------------------------------------------
+# Create nodeset for -x boundary
+# ----------------------------------------------------------------------
+group "boundary_xneg" add node in surface 10 16
+nodeset 21 boundary_xneg
+nodeset 21 name "boundary_xneg"
+# ----------------------------------------------------------------------
+# Create nodeset for +y boundary
+# ----------------------------------------------------------------------
+group "boundary_ypos" add node in surface 9 17
+nodeset 22 boundary_ypos
+nodeset 22 name "boundary_ypos"
+# ----------------------------------------------------------------------
+# Create nodeset for -y boundary
+# ----------------------------------------------------------------------
+group "boundary_yneg" add node in surface 11 15
+nodeset 23 boundary_yneg
+nodeset 23 name "boundary_yneg"
+# ----------------------------------------------------------------------
+# Create nodeset for -z boundary
+# ----------------------------------------------------------------------
+group "boundary_zneg" add node in surface 2
+nodeset 24 boundary_zneg
+nodeset 24 name "boundary_zneg"
+# ----------------------------------------------------------------------
+# Create nodeset for +z boundary
+# ----------------------------------------------------------------------
+group "boundary_zpos" add node in surface 1
+nodeset 25 boundary_zpos
+nodeset 25 name "boundary_zpos"
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_hex.exo" dimension 3 overwrite
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+# Block is 12km x 12km x 9km
+# -6 km <= x <= 6 km
+# -6 km <= y <= 6 km
+# -9 km <= z <= 0 km
+brick x {12.0*km} y {12.0*km} z {9.0*km}
+volume 1 move x 0 y 0 z {-4.5*km}
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+create planar surface with plane zplane offset {-3.0*km}
+surface 7 name "material_interface"
+# ----------------------------------------------------------------------
+# Divide volumes using interface surfaces
+# ----------------------------------------------------------------------
+webcut volume 1 with plane material_interface
+volume 1 name "elastic"
+volume 3 name "viscoelastic"
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+imprint all with volume all
+merge all
+delete body 2
+# ----------------------------------------------------------------------
+# Set discretization size
+# ----------------------------------------------------------------------
+volume all size {3.0*km}
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+mesh volume all
+# ----------------------------------------------------------------------
+# Mark entities for boundary conditions, etc.
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 volume 1
+block 1 name "elastic"
+block 2 volume 3
+block 2 name "viscoelastic"
+# ----------------------------------------------------------------------
+# Create nodeset for +x boundary
+# ----------------------------------------------------------------------
+group "boundary_xpos" add node in surface 12 14
+nodeset 20 boundary_xpos
+nodeset 20 name "boundary_xpos"
+# ----------------------------------------------------------------------
+# Create nodeset for -x boundary
+# ----------------------------------------------------------------------
+group "boundary_xneg" add node in surface 10 16
+nodeset 21 boundary_xneg
+nodeset 21 name "boundary_xneg"
+# ----------------------------------------------------------------------
+# Create nodeset for +y boundary
+# ----------------------------------------------------------------------
+group "boundary_ypos" add node in surface 9 17
+nodeset 22 boundary_ypos
+nodeset 22 name "boundary_ypos"
+# ----------------------------------------------------------------------
+# Create nodeset for -y boundary
+# ----------------------------------------------------------------------
+group "boundary_yneg" add node in surface 11 15
+nodeset 23 boundary_yneg
+nodeset 23 name "boundary_yneg"
+# ----------------------------------------------------------------------
+# Create nodeset for -z boundary
+# ----------------------------------------------------------------------
+group "boundary_zneg" add node in surface 2
+nodeset 24 boundary_zneg
+nodeset 24 name "boundary_zneg"
+# ----------------------------------------------------------------------
+# Create nodeset for +z boundary
+# ----------------------------------------------------------------------
+group "boundary_zpos" add node in surface 1
+nodeset 25 boundary_zpos
+nodeset 25 name "boundary_zpos"
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_tet.exo" dimension 3 overwrite

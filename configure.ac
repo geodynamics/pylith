@@ -309,7 +309,8 @@ AC_CONFIG_FILES([Makefile
 		mmstests/faults/Makefile
 		tests_auto/Makefile
 		tests_auto/linearelasticity/Makefile
-		tests_auto/linearelasticity/nofaults-2d/Makefile
+    tests_auto/linearelasticity/nofaults-2d/Makefile
+		tests_auto/linearelasticity/nofaults-3d/Makefile
 		tests_auto/linearelasticity/faults-2d/Makefile
 		tests_auto/petsc/Makefile
 		tests_auto/eqinfo/Makefile
