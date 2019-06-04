@@ -46,7 +46,7 @@ class IsotropicPowerLaw(RheologyElasticity, ModuleLinearElasticity):
     useReferenceState.meta['tip'] = "Use reference stress/strain state."
 
     from .AuxSubfieldsIsotropicPowerLaw import AuxSubfieldsIsotropicPowerLaw
-    from pylith.topology.AuxSubfield import subfieldFactory
+    from pylith.topology.Subfield import subfieldFactory
     auxiliarySubfields = pyre.inventory.facilityArray(
         "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsIsotropicPowerLaw)
     auxiliarySubfields.meta['tip'] = "Discretization of physical properties and state variables."

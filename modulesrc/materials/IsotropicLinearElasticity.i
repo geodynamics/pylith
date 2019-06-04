@@ -27,6 +27,12 @@ namespace pylith {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
+            /// Default constructor.
+            IsotropicLinearElasticity(void);
+
+            /// Destructor.
+            ~IsotropicLinearElasticity(void);
+
             /// Deallocate PETSc and local data structures.
             void deallocate(void);
 
