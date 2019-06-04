@@ -65,6 +65,22 @@ public:
                                                     const bool isBasisContinuous,
                                                     const pylith::topology::FieldBase::SpaceEnum feSpace);
 
+            /** Set discretization information for derived subfield.
+             *
+             * @param[in] subfieldName Name of auxiliary subfield.
+             * @param[in] basisOrder Polynomial order for basis.
+             * @param[in] quadOrder Order of quadrature rule.
+             * @param[in] dimension Dimension of points for discretization.
+             * @param[in] isBasisContinuous True if basis is continuous.
+             * @param[in] feSpace Finite-element space.
+             */
+            void setDerivedSubfieldDiscretization(const char* subfieldName,
+                                                  const int basisOrder,
+                                                  const int quadOrder,
+                                                  const int dimension,
+                                                  const bool isBasisContinuous,
+                                                  const pylith::topology::FieldBase::SpaceEnum feSpace);
+
             /** Register observer to receive notifications.
              *
              * Observers are used for output.
@@ -157,6 +173,13 @@ protected:
              */
             virtual
             pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void) = 0;
+
+            /** Get derived factory associated with physics.
+             *
+             * @return Derived factory for physics object.
+             */
+            virtual
+            pylith::topology::FieldFactory* _getDerivedFactory(void);
 
             /** Update kernel constants.
              *

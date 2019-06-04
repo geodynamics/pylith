@@ -204,6 +204,13 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
         _updateState->initialize(*_auxiliaryField);
     } // if
 
+    journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        PYLITH_JOURNAL_DEBUG("Viewing auxiliary field.");
+        assert(_auxiliaryField);
+        _auxiliaryField->view("Auxiliary field");
+    } // if
+
     PYLITH_METHOD_END;
 } // initialize
 
@@ -405,6 +412,49 @@ pylith::feassemble::IntegratorDomain::_updateStateVars(const PylithReal t,
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Compute field derived from solution and auxiliary field.
+void
+pylith::feassemble::IntegratorDomain::_computeDerivedField(const PylithReal t,
+                                                           const PylithReal dt,
+                                                           const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_computeDerivedField(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
+
+    if (!_derivedField) {
+        PYLITH_METHOD_END;
+    } // if
+
+    assert(_derivedField);
+    _setKernelConstants(*_derivedField, dt);
+
+    const size_t numKernels = _kernelsDerivedField.size();
+    PetscPointFunc* kernelsArray = (numKernels > 0) ? new PetscPointFunc[numKernels] : NULL;
+    for (size_t iKernel = 0; iKernel < numKernels; ++iKernel) {
+        const pylith::topology::Field::SubfieldInfo& sinfo = _derivedField->subfieldInfo(_kernelsDerivedField[iKernel].subfield.c_str());
+        kernelsArray[sinfo.index] = _kernelsDerivedField[iKernel].f;
+    } // for
+
+    PetscErrorCode err = 0;
+
+    PetscDM derivedDM = _derivedField->dmMesh();
+    assert(_auxiliaryField);
+    err = PetscObjectCompose((PetscObject) derivedDM, "dmAux", (PetscObject) _auxiliaryField->dmMesh());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) derivedDM, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+
+    err = DMProjectFieldLocal(derivedDM, t, solution.localVector(), kernelsArray, INSERT_VALUES, _derivedField->localVector());PYLITH_CHECK_ERROR(err);
+    delete[] kernelsArray;kernelsArray = NULL;
+
+    journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        PYLITH_JOURNAL_DEBUG("Viewing derived field.");
+        _derivedField->view("Derived field");
+    } // if
+
+    PYLITH_METHOD_END;
+} // _computeDerivedField
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Compute residual using current kernels.
 void
 pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* residual,
@@ -449,7 +499,7 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     err = DMLabelGetStratumBounds(dmLabel, _materialId, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     assert(cEnd > cStart); // Double-check that this material has cells.
 
-    PYLITH_JOURNAL_DEBUG("DMPlexComputeResidual_Internal() with material-id '"<<_materialId<<"' and cells ["<<cStart<<","<<cEnd<<".");
+    PYLITH_JOURNAL_DEBUG("DMPlexComputeResidual_Internal() with material-id '"<<_materialId<<"' and cells ["<<cStart<<","<<cEnd<<").");
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cells);PYLITH_CHECK_ERROR(err);
     err = DMPlexComputeResidual_Internal(dmSoln, cells, PETSC_MIN_REAL, solution.localVector(), solutionDot.localVector(), residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&cells);PYLITH_CHECK_ERROR(err);

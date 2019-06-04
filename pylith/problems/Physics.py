@@ -47,8 +47,6 @@ class Physics(PetscComponent, ModulePhysics):
     Facilities
       - *db_auxiliary_field* Database for physical property parameters.
       - *observers* Observers of integrator (e.g., output).
-
-    FACTORY: material
     """
 
     import pyre.inventory
@@ -68,6 +66,10 @@ class Physics(PetscComponent, ModulePhysics):
         Constructor.
         """
         PetscComponent.__init__(self, name, facility)
+
+        from pylith.utils.EmptyBin import EmptyBin
+        self.auxiliarySubfields = EmptyBin()
+        self.derivedSubfields = EmptyBin()
         return
 
     def preinitialize(self, mesh):
@@ -76,16 +78,17 @@ class Physics(PetscComponent, ModulePhysics):
         """
         self._createModuleObj()
         ModulePhysics.setIdentifier(self, self.aliases[-1])
-
-        for observer in self.observers.components():
-            observer.preinitialize(self)
-
         ModulePhysics.setAuxiliaryFieldDB(self, self.auxiliaryFieldDB)
 
         for subfield in self.auxiliarySubfields.components():
             fieldName = subfield.aliases[-1]
             ModulePhysics.setAuxiliarySubfieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder,
                                                              subfield.dimension, subfield.isBasisContinuous, subfield.feSpace)
+
+        for subfield in self.derivedSubfields.components():
+            fieldName = subfield.aliases[-1]
+            ModulePhysics.setDerivedSubfieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder,
+                                                           subfield.dimension, subfield.isBasisContinuous, subfield.feSpace)
 
         for observer in self.observers.components():
             observer.preinitialize(self)

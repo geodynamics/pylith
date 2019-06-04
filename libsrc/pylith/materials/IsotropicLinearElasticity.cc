@@ -27,8 +27,7 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
-#include <typeinfo> \
-    // USES typeid()
+#include <typeinfo> // USES typeid()
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -144,20 +143,20 @@ pylith::materials::IsotropicLinearElasticity::getKernelRHSJacobianElasticConstan
 // ---------------------------------------------------------------------------------------------------------------------
 // Get stress kernel for derived field.
 PetscPointFunc
-pylith::materials::IsotropicLinearElasticity::getKernelDerivedStress(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearElasticity::getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelDerivedStress(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG("getKernelDerivedCauchyStress(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->spaceDim();
     PetscPointFunc kernel =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::stress :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::stress :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::stress_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::stress_refstate :
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::cauchyStress :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::cauchyStress :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::cauchyStress_refstate :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::cauchyStress_refstate :
         NULL;
 
     PYLITH_METHOD_RETURN(kernel);
-} // getKernelDerivedStress
+} // getKernelDerivedCauchyStress
 
 
 // End of file

@@ -113,7 +113,7 @@ class AnalyticalSoln(object):
         """
         Compute strain field at locations.
         """
-        eyy = p_density * gacc * (locs[:, 1] - ymax) / (3 * p_lambda + 2 * p_mu)
+        eyy = p_density * gacc * (locs[:, 1] - ymax) / (p_lambda + 2 * p_mu)
         exx = 0
         ezz = 0
         exy = 0

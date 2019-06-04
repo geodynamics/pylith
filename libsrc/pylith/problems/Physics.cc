@@ -117,6 +117,25 @@ pylith::problems::Physics::setAuxiliarySubfieldDiscretization(const char* subfie
 } // setAuxSubfieldDiscretization
 
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Set discretization information for derived subfield.
+void
+pylith::problems::Physics::setDerivedSubfieldDiscretization(const char* subfieldName,
+                                                            const int basisOrder,
+                                                            const int quadOrder,
+                                                            const int dimension,
+                                                            const bool isBasisContinuous,
+                                                            const pylith::topology::FieldBase::SpaceEnum feSpace) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("setDerivedSubfieldDiscretization(subfieldName="<<subfieldName<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", dimension="<<dimension<<", isBasisContinuous="<<isBasisContinuous<<")");
+
+    pylith::topology::FieldFactory* factory = _getDerivedFactory();assert(factory);
+    factory->setSubfieldDiscretization(subfieldName, basisOrder, quadOrder, dimension, isBasisContinuous, feSpace);
+
+    PYLITH_METHOD_END;
+} // setDerivedSubfieldDiscretization
+
+
 // ----------------------------------------------------------------------
 // Register observer to receive notifications.
 void
@@ -173,6 +192,14 @@ pylith::problems::Physics::updateAuxiliaryField(pylith::topology::Field* auxilia
 
     PYLITH_METHOD_END;
 } // updateAuxiliaryField
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get derived factory associated with physics.
+pylith::topology::FieldFactory*
+pylith::problems::Physics::_getDerivedFactory(void) {
+    return NULL;
+} // _getDerivedFactory
 
 
 // ---------------------------------------------------------------------------------------------------------------------

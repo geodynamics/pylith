@@ -59,7 +59,7 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
     eqRuptures.meta['tip'] = "Kinematic earthquake sources information."
 
     from pylith.utils.EmptyBin import EmptyBin
-    from pylith.topology.AuxSubfield import subfieldFactory
+    from pylith.topology.Subfield import subfieldFactory
     auxiliarySubfields = pyre.inventory.facilityArray(
         "auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin)
     auxiliarySubfields.meta['tip'] = "Discretization of fault parameters."

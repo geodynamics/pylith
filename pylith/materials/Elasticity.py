@@ -43,11 +43,18 @@ class Elasticity(Material, ModuleElasticity):
 
     import pyre.inventory
 
-    from pylith.topology.AuxSubfield import subfieldFactory
+    from pylith.topology.Subfield import subfieldFactory
+    from pylith.utils.EmptyBin import EmptyBin
+
     from .AuxSubfieldsElasticity import AuxSubfieldsElasticity
     auxiliarySubfields = pyre.inventory.facilityArray(
         "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsElasticity)
     auxiliarySubfields.meta['tip'] = "Discretization of elasticity properties."
+
+    from .DerivedSubfieldsElasticity import DerivedSubfieldsElasticity
+    derivedSubfields = pyre.inventory.facilityArray(
+        "derived_subfields", itemFactory=subfieldFactory, factory=DerivedSubfieldsElasticity)
+    derivedSubfields.meta['tip'] = "Discretization of derived subfields (e.g., stress and strain)."
 
     useInertia = pyre.inventory.bool("use_inertia", default=False)
     useInertia.meta['tip'] = "Include inertial term in elasticity equation."

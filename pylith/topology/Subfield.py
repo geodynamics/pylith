@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/topology/AuxSubfield.py
+# @file pylith/topology/Subfield.py
 #
 # @brief Python object for defining attributes of a subfield within a
 # field.
@@ -23,9 +23,9 @@
 from pyre.components.Component import Component
 
 
-class AuxSubfield(Component):
+class Subfield(Component):
     """
-    Python object for defining discretization of an auxiliary subfield.
+    Python object for defining discretization of a subfield.
 
     INVENTORY
 
@@ -39,7 +39,7 @@ class AuxSubfield(Component):
     Facilities
       - None
 
-    FACTORY: auxiliary_subfield
+    FACTORY: subfield
     """
 
     import pyre.inventory
@@ -62,11 +62,11 @@ class AuxSubfield(Component):
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="auxsubfield"):
+    def __init__(self, name="subfield"):
         """
         Constructor.
         """
-        Component.__init__(self, name, facility="auxsubfield")
+        Component.__init__(self, name, facility="subfield")
 
         return
 
@@ -94,17 +94,16 @@ def subfieldFactory(name):
     Factory for subfield items.
     """
     from pyre.inventory import facility
-    from pylith.topology.AuxSubfield import AuxSubfield
-    return facility(name, family="auxiliary_subfield", factory=AuxSubfield)
+    return facility(name, family="subfield", factory=Subfield)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def auxiliary_subfield():
+def subfield():
     """
-    Factory associated with AuxSubfield.
+    Factory associated with Subfield.
     """
-    return AuxSubfield()
+    return Subfield()
 
 
 # End of file

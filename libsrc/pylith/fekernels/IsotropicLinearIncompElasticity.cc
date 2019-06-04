@@ -411,48 +411,51 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::Jg3uu(const Pylit
 // ---------------------------------------------------------------------------------------------------------------------
 // Calculate stress for 2-D plane strain isotropic linear incompressible elasticity WITHOUT a reference stress and
 void
-pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::stress(const PylithInt dim,
-                                                                      const PylithInt numS,
-                                                                      const PylithInt numA,
-                                                                      const PylithInt sOff[],
-                                                                      const PylithInt sOff_x[],
-                                                                      const PylithScalar s[],
-                                                                      const PylithScalar s_t[],
-                                                                      const PylithScalar s_x[],
-                                                                      const PylithInt aOff[],
-                                                                      const PylithInt aOff_x[],
-                                                                      const PylithScalar a[],
-                                                                      const PylithScalar a_t[],
-                                                                      const PylithScalar a_x[],
-                                                                      const PylithReal t,
-                                                                      const PylithScalar x[],
-                                                                      const PylithInt numConstants,
-                                                                      const PylithScalar constants[],
-                                                                      PylithScalar stressVector[]) {
+pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::cauchyStress(const PylithInt dim,
+                                                                            const PylithInt numS,
+                                                                            const PylithInt numA,
+                                                                            const PylithInt sOff[],
+                                                                            const PylithInt sOff_x[],
+                                                                            const PylithScalar s[],
+                                                                            const PylithScalar s_t[],
+                                                                            const PylithScalar s_x[],
+                                                                            const PylithInt aOff[],
+                                                                            const PylithInt aOff_x[],
+                                                                            const PylithScalar a[],
+                                                                            const PylithScalar a_t[],
+                                                                            const PylithScalar a_x[],
+                                                                            const PylithReal t,
+                                                                            const PylithScalar x[],
+                                                                            const PylithInt numConstants,
+                                                                            const PylithScalar constants[],
+                                                                            PylithScalar stressVector[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
+    const PylithInt i_pres = 1;
 
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = numA-2;
     const PylithInt i_bulkModulus = numA-1;
 
     assert(_dim == dim);
-    assert(numS >= 1);
+    assert(numS >= 2);
     assert(numA >= 3);
     assert(sOff);
     assert(sOff[i_disp] >= 0);
+    assert(sOff[i_pres] >= 0);
     assert(sOff_x);
     assert(sOff_x[i_disp] >= 0);
+    assert(sOff_x[i_pres] >= 0);
     assert(aOff);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
     assert(stressVector);
 
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+    const PylithInt numSDev = 1; // Number passed on to deviatoric stress kernel.
+    const PylithInt sOffDev[1] = { sOff[i_disp] };
+    const PylithInt sOffDev_x[1] = { sOff_x[i_disp] };
 
     const PylithInt numAMean = 1; // Number passed to mean stress kernel.
     const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
@@ -461,13 +464,13 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::stress(const Pyli
     const PylithInt aOffDev[1] = { aOff[i_shearModulus] };
 
     PylithScalar stressTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
-    meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
+    meanStress(_dim, numS, numAMean, sOff, sOff_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
                t, x, numConstants, constants, stressTensor);
-    IsotropicLinearElasticityPlaneStrain::deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+    IsotropicLinearElasticityPlaneStrain::deviatoricStress(_dim, numSDev, numADev, sOffDev, sOffDev_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                                                            t, x, numConstants, constants, stressTensor);
 
-    const PylithScalar bulkModulus = aOff[i_bulkModulus];
-    const PylithScalar shearModulus = aOff[i_shearModulus];
+    const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
+    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
     const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
     const PylithScalar stress_zz = 0.5*lambda/(lambda+shearModulus) * (stressTensor[0*_dim+0] + stressTensor[1*_dim+1]);
 
@@ -475,30 +478,30 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::stress(const Pyli
     stressVector[1] = stressTensor[1*_dim+1]; // stress_yy
     stressVector[2] = stress_zz;
     stressVector[3] = stressTensor[0*_dim+1]; // stress_xy
-} // stress
+} // cauchyStress
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Calculate stress for 2-D plane strain isotropic linear incompressible elasticity WITH a reference stress/strain.
 void
-pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::stress_refstate(const PylithInt dim,
-                                                                               const PylithInt numS,
-                                                                               const PylithInt numA,
-                                                                               const PylithInt sOff[],
-                                                                               const PylithInt sOff_x[],
-                                                                               const PylithScalar s[],
-                                                                               const PylithScalar s_t[],
-                                                                               const PylithScalar s_x[],
-                                                                               const PylithInt aOff[],
-                                                                               const PylithInt aOff_x[],
-                                                                               const PylithScalar a[],
-                                                                               const PylithScalar a_t[],
-                                                                               const PylithScalar a_x[],
-                                                                               const PylithReal t,
-                                                                               const PylithScalar x[],
-                                                                               const PylithInt numConstants,
-                                                                               const PylithScalar constants[],
-                                                                               PylithScalar stressVector[]) {
+pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::cauchyStress_refstate(const PylithInt dim,
+                                                                                     const PylithInt numS,
+                                                                                     const PylithInt numA,
+                                                                                     const PylithInt sOff[],
+                                                                                     const PylithInt sOff_x[],
+                                                                                     const PylithScalar s[],
+                                                                                     const PylithScalar s_t[],
+                                                                                     const PylithScalar s_x[],
+                                                                                     const PylithInt aOff[],
+                                                                                     const PylithInt aOff_x[],
+                                                                                     const PylithScalar a[],
+                                                                                     const PylithScalar a_t[],
+                                                                                     const PylithScalar a_x[],
+                                                                                     const PylithReal t,
+                                                                                     const PylithScalar x[],
+                                                                                     const PylithInt numConstants,
+                                                                                     const PylithScalar constants[],
+                                                                                     PylithScalar stressVector[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -511,7 +514,7 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::stress_refstate(c
     const PylithInt i_bulkModulus = numA-1;
 
     assert(_dim == dim);
-    assert(numS >= 1);
+    assert(numS >= 2);
     assert(numA >= 4);
     assert(sOff);
     assert(sOff[i_disp] >= 0);
@@ -524,9 +527,9 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::stress_refstate(c
     assert(aOff[i_rstrain] >= 0);
     assert(stressVector);
 
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+    const PylithInt numSDev = 1; // Number passed on to deviatoric stress kernels.
+    const PylithInt sOffDev[1] = { sOff[i_disp] };
+    const PylithInt sOffDev_x[1] = { sOff_x[i_disp] };
 
     const PylithInt numAMean = 3; // Number passed to mean stress kernel.
     const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
@@ -535,13 +538,13 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::stress_refstate(c
     const PylithInt aOffDev[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus] };
 
     PylithScalar stressTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
-    meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
+    meanStress_refstate(_dim, numS, numAMean, sOff, sOff_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
                         t, x, numConstants, constants, stressTensor);
-    IsotropicLinearElasticityPlaneStrain::deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+    IsotropicLinearElasticityPlaneStrain::deviatoricStress_refstate(_dim, numSDev, numADev, sOffDev, sOffDev_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                                                                     t, x, numConstants, constants, stressTensor);
 
-    const PylithScalar bulkModulus = aOff[i_bulkModulus];
-    const PylithScalar shearModulus = aOff[i_shearModulus];
+    const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
+    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
     const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
     const PylithScalar* rstress = &a[aOff[i_rstress]];
     const PylithScalar stress_zz = rstress[2] +
@@ -551,7 +554,7 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::stress_refstate(c
     stressVector[1] = stressTensor[1*_dim+1]; // stress_yy
     stressVector[2] = stress_zz;
     stressVector[3] = stressTensor[0*_dim+1]; // stress_xy
-} // stress_refstate
+} // cauchyStress_refstate
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -970,48 +973,51 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::Jg3uu(const PylithInt dim,
 // ---------------------------------------------------------------------------------------------------------------------
 // Calculate stress for 3-D  isotropic linear incompressible elasticity WITHOUT a reference stress and strain.
 void
-pylith::fekernels::IsotropicLinearIncompElasticity3D::stress(const PylithInt dim,
-                                                             const PylithInt numS,
-                                                             const PylithInt numA,
-                                                             const PylithInt sOff[],
-                                                             const PylithInt sOff_x[],
-                                                             const PylithScalar s[],
-                                                             const PylithScalar s_t[],
-                                                             const PylithScalar s_x[],
-                                                             const PylithInt aOff[],
-                                                             const PylithInt aOff_x[],
-                                                             const PylithScalar a[],
-                                                             const PylithScalar a_t[],
-                                                             const PylithScalar a_x[],
-                                                             const PylithReal t,
-                                                             const PylithScalar x[],
-                                                             const PylithInt numConstants,
-                                                             const PylithScalar constants[],
-                                                             PylithScalar stressVector[]) {
+pylith::fekernels::IsotropicLinearIncompElasticity3D::cauchyStress(const PylithInt dim,
+                                                                   const PylithInt numS,
+                                                                   const PylithInt numA,
+                                                                   const PylithInt sOff[],
+                                                                   const PylithInt sOff_x[],
+                                                                   const PylithScalar s[],
+                                                                   const PylithScalar s_t[],
+                                                                   const PylithScalar s_x[],
+                                                                   const PylithInt aOff[],
+                                                                   const PylithInt aOff_x[],
+                                                                   const PylithScalar a[],
+                                                                   const PylithScalar a_t[],
+                                                                   const PylithScalar a_x[],
+                                                                   const PylithReal t,
+                                                                   const PylithScalar x[],
+                                                                   const PylithInt numConstants,
+                                                                   const PylithScalar constants[],
+                                                                   PylithScalar stressVector[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
+    const PylithInt i_pres = 1;
 
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = 1;
     const PylithInt i_bulkModulus = 2;
 
     assert(_dim == dim);
-    assert(numS >= 1);
+    assert(numS >= 2);
     assert(numA >= 3);
     assert(sOff);
     assert(sOff[i_disp] >= 0);
+    assert(sOff[i_pres] >= 0);
     assert(sOff_x);
     assert(sOff_x[i_disp] >= 0);
+    assert(sOff_x[i_pres] >= 0);
     assert(aOff);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
     assert(stressVector);
 
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+    const PylithInt numSDev = 1; // Number passed on to deviatoric stress kernel.
+    const PylithInt sOffDev[1] = { sOff[i_disp] };
+    const PylithInt sOffDev_x[1] = { sOff_x[i_disp] };
 
     const PylithInt numAMean = 1; // Number passed to mean stress kernel.
     const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
@@ -1020,9 +1026,9 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::stress(const PylithInt dim
     const PylithInt aOffDev[1] = { aOff[i_shearModulus] };
 
     PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-    meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
+    meanStress(_dim, numS, numAMean, sOff, sOff_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
                t, x, numConstants, constants, stressTensor);
-    IsotropicLinearElasticity3D::deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+    IsotropicLinearElasticity3D::deviatoricStress(_dim, numSDev, numADev, sOffDev, sOffDev_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                                                   t, x, numConstants, constants, stressTensor);
 
     stressVector[0] = stressTensor[0*_dim+0]; // stress_xx
@@ -1037,28 +1043,29 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::stress(const PylithInt dim
 // ---------------------------------------------------------------------------------------------------------------------
 // Calculate stress for 3-D isotropic linear incompressible elasticity WITH a reference stress/strain.
 void
-pylith::fekernels::IsotropicLinearIncompElasticity3D::stress_refstate(const PylithInt dim,
-                                                                      const PylithInt numS,
-                                                                      const PylithInt numA,
-                                                                      const PylithInt sOff[],
-                                                                      const PylithInt sOff_x[],
-                                                                      const PylithScalar s[],
-                                                                      const PylithScalar s_t[],
-                                                                      const PylithScalar s_x[],
-                                                                      const PylithInt aOff[],
-                                                                      const PylithInt aOff_x[],
-                                                                      const PylithScalar a[],
-                                                                      const PylithScalar a_t[],
-                                                                      const PylithScalar a_x[],
-                                                                      const PylithReal t,
-                                                                      const PylithScalar x[],
-                                                                      const PylithInt numConstants,
-                                                                      const PylithScalar constants[],
-                                                                      PylithScalar stressVector[]) {
+pylith::fekernels::IsotropicLinearIncompElasticity3D::cauchyStress_refstate(const PylithInt dim,
+                                                                            const PylithInt numS,
+                                                                            const PylithInt numA,
+                                                                            const PylithInt sOff[],
+                                                                            const PylithInt sOff_x[],
+                                                                            const PylithScalar s[],
+                                                                            const PylithScalar s_t[],
+                                                                            const PylithScalar s_x[],
+                                                                            const PylithInt aOff[],
+                                                                            const PylithInt aOff_x[],
+                                                                            const PylithScalar a[],
+                                                                            const PylithScalar a_t[],
+                                                                            const PylithScalar a_x[],
+                                                                            const PylithReal t,
+                                                                            const PylithScalar x[],
+                                                                            const PylithInt numConstants,
+                                                                            const PylithScalar constants[],
+                                                                            PylithScalar stressVector[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
+    const PylithInt i_pres = 1;
 
     // Incoming auxiliary fields.
     const PylithInt i_rstress = numA-4;
@@ -1067,12 +1074,14 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::stress_refstate(const Pyli
     const PylithInt i_bulkModulus = numA-1;
 
     assert(_dim == dim);
-    assert(numS >= 1);
+    assert(numS >= 2);
     assert(numA >= 4);
     assert(sOff);
     assert(sOff[i_disp] >= 0);
+    assert(sOff[i_pres] >= 0);
     assert(sOff_x);
     assert(sOff_x[i_disp] >= 0);
+    assert(sOff_x[i_pres] >= 0);
     assert(aOff);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
@@ -1080,9 +1089,9 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::stress_refstate(const Pyli
     assert(aOff[i_rstrain] >= 0);
     assert(stressVector);
 
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+    const PylithInt numSDev = 1; // Number passed on to deviratoric stress kernels.
+    const PylithInt sOffDev[1] = { sOff[i_disp] };
+    const PylithInt sOffDev_x[1] = { sOff_x[i_disp] };
 
     const PylithInt numAMean = 3; // Number passed to mean stress kernel.
     const PylithInt aOffMean[3] = { aOff[i_bulkModulus], aOff[i_rstress], aOff[i_rstrain] };
@@ -1091,9 +1100,9 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::stress_refstate(const Pyli
     const PylithInt aOffDev[3] = { aOff[i_shearModulus], aOff[i_rstress], aOff[i_rstrain] };
 
     PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-    meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
+    meanStress_refstate(_dim, numS, numAMean, sOff, sOff_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
                         t, x, numConstants, constants, stressTensor);
-    IsotropicLinearElasticity3D::deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+    IsotropicLinearElasticity3D::deviatoricStress_refstate(_dim, numSDev, numADev, sOffDev, sOffDev_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                                                            t, x, numConstants, constants, stressTensor);
     stressVector[0] = stressTensor[0*_dim+0]; // stress_xx
     stressVector[1] = stressTensor[1*_dim+1]; // stress_yy

@@ -149,7 +149,6 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
         const size_t numSubfields = subfieldInNames.size();
         for (size_t i = 0; i < numSubfields; ++i) {
             const pylith::topology::Field::SubfieldInfo& infoIn = fieldIn->subfieldInfo(subfieldInNames[i].c_str());
-            const pylith::topology::Field::SubfieldInfo& infoProj = _fieldProj->subfieldInfo(subfieldProjNames[i].c_str());
             feP1.isBasisContinuous = infoIn.fe.isBasisContinuous;
             feP1.feSpace = infoIn.fe.feSpace;
             feP1.quadOrder = infoIn.fe.quadOrder;

@@ -414,9 +414,10 @@ pylith::meshio::OutputPhysics::_expandDataFieldNames(const pylith::topology::Fie
 
         if (derivedField) {
             const pylith::string_vector& derivedSubfields = derivedField->subfieldNames();
+            const size_t origSize = dataNames.size();
             const size_t numAdd = derivedSubfields.size();
-            dataNames.resize(dataNames.size() + numAdd);
-            for (size_t iAdd = 0, iName = dataNames.size(); iAdd < numAdd; ++iAdd) {
+            dataNames.resize(origSize + numAdd);
+            for (size_t iAdd = 0, iName = origSize; iAdd < numAdd; ++iAdd, ++iName) {
                 dataNames[iName] = derivedSubfields[iAdd];
             } // for
         } // if

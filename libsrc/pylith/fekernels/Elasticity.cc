@@ -336,43 +336,42 @@ pylith::fekernels::Elasticity::Jf0vv_inertiaexplicit(const PylithInt dim,
 // =====================================================================================================================
 
 // ---------------------------------------------------------------------------------------------------------------------
-/* Calculate strain for 2-D plane strain isotropic linear
- * elasticity.
+/* Calculate Cauchy strain for 2-D plane strain elasticity.
  *
- * Used in outputing the strain field.
+ * Order of output components is xx, yy, zz, xy.
  *
  * Solution fields: [disp(dim)]
  */
 void
-pylith::fekernels::ElasticityPlaneStrain::strain(const PylithInt dim,
-                                                 const PylithInt numS,
-                                                 const PylithInt numA,
-                                                 const PylithInt sOff[],
-                                                 const PylithInt sOff_x[],
-                                                 const PylithScalar s[],
-                                                 const PylithScalar s_t[],
-                                                 const PylithScalar s_x[],
-                                                 const PylithInt aOff[],
-                                                 const PylithInt aOff_x[],
-                                                 const PylithScalar a[],
-                                                 const PylithScalar a_t[],
-                                                 const PylithScalar a_x[],
-                                                 const PylithReal t,
-                                                 const PylithScalar x[],
-                                                 const PylithInt numConstants,
-                                                 const PylithScalar constants[],
-                                                 PylithScalar strain[]) {
+pylith::fekernels::ElasticityPlaneStrain::cauchyStrain(const PylithInt dim,
+                                                       const PylithInt numS,
+                                                       const PylithInt numA,
+                                                       const PylithInt sOff[],
+                                                       const PylithInt sOff_x[],
+                                                       const PylithScalar s[],
+                                                       const PylithScalar s_t[],
+                                                       const PylithScalar s_x[],
+                                                       const PylithInt aOff[],
+                                                       const PylithInt aOff_x[],
+                                                       const PylithScalar a[],
+                                                       const PylithScalar a_t[],
+                                                       const PylithScalar a_x[],
+                                                       const PylithReal t,
+                                                       const PylithScalar x[],
+                                                       const PylithInt numConstants,
+                                                       const PylithScalar constants[],
+                                                       PylithScalar strain[]) {
     const PylithInt _dim = 2;
-
-    // Incoming solution field.
-    const PylithInt i_disp = 0;
-    const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
 
     assert(_dim == dim);
     assert(numS >= 1);
     assert(sOff_x);
     assert(s_x);
     assert(strain);
+
+    // Incoming solution field.
+    const PylithInt i_disp = 0;
+    const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
 
     const PylithScalar strain_xx = disp_x[0*_dim+0];
     const PylithScalar strain_yy = disp_x[1*_dim+1];
@@ -383,7 +382,7 @@ pylith::fekernels::ElasticityPlaneStrain::strain(const PylithInt dim,
     strain[1] = strain_yy;
     strain[2] = strain_zz;
     strain[3] = strain_xy;
-} // strain
+} // cauchyStrain
 
 
 // =====================================================================================================================
@@ -391,42 +390,42 @@ pylith::fekernels::ElasticityPlaneStrain::strain(const PylithInt dim,
 // =====================================================================================================================
 
 // ---------------------------------------------------------------------------------------------------------------------
-/* Calculate strain for 3-D elasticity.
+/** Calculate Cauchy strain for 3-D elasticity.
  *
- * Used in outputing the strain field.
+ * Order of output components is xx, yy, zz, xy, yz, xz.
  *
  * Solution fields: [disp(dim)]
  */
 void
-pylith::fekernels::Elasticity3D::strain(const PylithInt dim,
-                                        const PylithInt numS,
-                                        const PylithInt numA,
-                                        const PylithInt sOff[],
-                                        const PylithInt sOff_x[],
-                                        const PylithScalar s[],
-                                        const PylithScalar s_t[],
-                                        const PylithScalar s_x[],
-                                        const PylithInt aOff[],
-                                        const PylithInt aOff_x[],
-                                        const PylithScalar a[],
-                                        const PylithScalar a_t[],
-                                        const PylithScalar a_x[],
-                                        const PylithReal t,
-                                        const PylithScalar x[],
-                                        const PylithInt numConstants,
-                                        const PylithScalar constants[],
-                                        PylithScalar strain[]) {
+pylith::fekernels::Elasticity3D::cauchyStrain(const PylithInt dim,
+                                              const PylithInt numS,
+                                              const PylithInt numA,
+                                              const PylithInt sOff[],
+                                              const PylithInt sOff_x[],
+                                              const PylithScalar s[],
+                                              const PylithScalar s_t[],
+                                              const PylithScalar s_x[],
+                                              const PylithInt aOff[],
+                                              const PylithInt aOff_x[],
+                                              const PylithScalar a[],
+                                              const PylithScalar a_t[],
+                                              const PylithScalar a_x[],
+                                              const PylithReal t,
+                                              const PylithScalar x[],
+                                              const PylithInt numConstants,
+                                              const PylithScalar constants[],
+                                              PylithScalar strain[]) {
     const PylithInt _dim = 3;
-
-    // Incoming solution field.
-    const PylithInt i_disp = 0;
-    const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
 
     assert(_dim == dim);
     assert(numS >= 1);
     assert(sOff_x);
     assert(s_x);
     assert(strain);
+
+    // Incoming solution field.
+    const PylithInt i_disp = 0;
+    const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
 
     const PylithScalar strain_xx = disp_x[0*_dim+0];
     const PylithScalar strain_yy = disp_x[1*_dim+1];
@@ -441,7 +440,7 @@ pylith::fekernels::Elasticity3D::strain(const PylithInt dim,
     strain[3] = strain_xy;
     strain[4] = strain_yz;
     strain[5] = strain_xz;
-} // strain
+} // cauchyStrain
 
 
 // End of file

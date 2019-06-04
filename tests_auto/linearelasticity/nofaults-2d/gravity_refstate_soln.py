@@ -34,19 +34,13 @@ import numpy
 # Physical properties
 p_density = 2500.0  # kg/m**3
 p_vs = 3000.0  # m/s
-p_vp = 5291.502622129181  # m/s
+p_vp = 5291.5026  # m/s
 
 p_mu = p_density * p_vs**2
 p_lambda = p_density * p_vp**2 - 2 * p_mu
 
 gacc = 9.80665  # m/s
 ymax = +4000.0  # m
-
-# Uniform strain field
-exx = 0
-eyy = 0
-ezz = 0
-exy = 0
 
 
 # ----------------------------------------------------------------------
@@ -109,17 +103,13 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         strain = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        strain[0, :, 0] = exx
-        strain[0, :, 1] = eyy
-        strain[0, :, 2] = ezz
-        strain[0, :, 3] = exy
         return strain
 
     def stress(self, locs):
         """
         Compute stress field at locations.
         """
-        syy = -p_density * gacc * (ymax - locs[:, 1])
+        syy = p_density * gacc * (locs[:, 1] - ymax)
         sxx = syy
         szz = syy
         sxy = 0

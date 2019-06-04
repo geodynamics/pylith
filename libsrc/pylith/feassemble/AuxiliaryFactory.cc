@@ -32,25 +32,17 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::feassemble::AuxiliaryFactory::AuxiliaryFactory(void) :
-    _field(NULL),
-    _defaultDescription(NULL),
-    _normalizer(new spatialdata::units::Nondimensional),
-    _spaceDim(0),
     _queryDB(NULL),
     _fieldQuery(NULL) {
     GenericComponent::setName("auxiliaryfactory");
-    _subfieldDiscretizations["default"] = pylith::topology::FieldBase::Discretization();
 } // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::feassemble::AuxiliaryFactory::~AuxiliaryFactory(void) {
-    _field = NULL; // :TODO: use shared pointer
     _queryDB = NULL; // :TODO: use shared pointer
 
-    delete _defaultDescription;_defaultDescription = NULL;
-    delete _normalizer;_normalizer = NULL;
     delete _fieldQuery;_fieldQuery = NULL;
 } // destructor
 
@@ -72,51 +64,6 @@ pylith::feassemble::AuxiliaryFactory::getQueryDB(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set discretization information for auxiliary subfield.
-void
-pylith::feassemble::AuxiliaryFactory::setSubfieldDiscretization(const char* subfieldName,
-                                                                const int basisOrder,
-                                                                const int quadOrder,
-                                                                const int dimension,
-                                                                const bool isBasisContinuous,
-                                                                const pylith::topology::FieldBase::SpaceEnum feSpace) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setSubfieldDiscretization(subfieldName="<<subfieldName<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
-
-    pylith::topology::FieldBase::Discretization feInfo;
-    feInfo.basisOrder = basisOrder;
-    feInfo.quadOrder = quadOrder;
-    feInfo.isBasisContinuous = isBasisContinuous;
-    feInfo.dimension = dimension;
-    feInfo.feSpace = feSpace;
-    _subfieldDiscretizations[subfieldName] = feInfo;
-
-    PYLITH_METHOD_END;
-} // setSubfieldDiscretization
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get discretization information for subfield.
-const pylith::topology::FieldBase::Discretization&
-pylith::feassemble::AuxiliaryFactory::getSubfieldDiscretization(const char* subfieldName) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("getSubfieldDiscretization(subfieldName="<<subfieldName<<")");
-
-    pylith::topology::FieldBase::discretizations_map::const_iterator iter = _subfieldDiscretizations.find(subfieldName);
-    if (iter != _subfieldDiscretizations.end()) {
-        PYLITH_METHOD_RETURN(iter->second);
-    } else { // not found so try default
-        iter = _subfieldDiscretizations.find("default");
-        if (iter == _subfieldDiscretizations.end()) {
-            throw std::logic_error("Default discretization not set for auxiliary fields.");
-        } // if
-    } // if/else
-
-    PYLITH_METHOD_RETURN(iter->second); // default
-} // getSubfieldDiscretization
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Initialie factory for setting up auxiliary subfields.
 void
 pylith::feassemble::AuxiliaryFactory::initialize(pylith::topology::Field* field,
@@ -126,23 +73,7 @@ pylith::feassemble::AuxiliaryFactory::initialize(pylith::topology::Field* field,
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("initialize(field="<<field<<", normalizer="<<&normalizer<<", spaceDim="<<spaceDim<<", defaultDescription="<<defaultDescription<<")");
 
-    assert(field);
-
-    _field = field;
-    if (defaultDescription) {
-        if (!_defaultDescription) {
-            _defaultDescription = new pylith::topology::FieldBase::Description;assert(_defaultDescription);
-        } // if
-        *_defaultDescription = *defaultDescription;
-    } else {
-        delete _defaultDescription;_defaultDescription = NULL;
-    } // if/else
-    assert(_normalizer);
-    *_normalizer = normalizer;
-    _spaceDim = spaceDim;
-
-    assert(1 <= _spaceDim && _spaceDim <= 3);
-
+    FieldFactory::initialize(field, normalizer, spaceDim, defaultDescription);
     delete _fieldQuery;_fieldQuery = new pylith::topology::FieldQuery(*field);
 
     PYLITH_METHOD_END;

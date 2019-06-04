@@ -856,24 +856,24 @@ pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain(con
  * total_strain(4), viscous_strain(4)]
  */
 void
-pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::stress(const PylithInt dim,
-                                                                const PylithInt numS,
-                                                                const PylithInt numA,
-                                                                const PylithInt sOff[],
-                                                                const PylithInt sOff_x[],
-                                                                const PylithScalar s[],
-                                                                const PylithScalar s_t[],
-                                                                const PylithScalar s_x[],
-                                                                const PylithInt aOff[],
-                                                                const PylithInt aOff_x[],
-                                                                const PylithScalar a[],
-                                                                const PylithScalar a_t[],
-                                                                const PylithScalar a_x[],
-                                                                const PylithReal t,
-                                                                const PylithScalar x[],
-                                                                const PylithInt numConstants,
-                                                                const PylithScalar constants[],
-                                                                PylithScalar stressVector[]) {
+pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::cauchyStress(const PylithInt dim,
+                                                                      const PylithInt numS,
+                                                                      const PylithInt numA,
+                                                                      const PylithInt sOff[],
+                                                                      const PylithInt sOff_x[],
+                                                                      const PylithScalar s[],
+                                                                      const PylithScalar s_t[],
+                                                                      const PylithScalar s_x[],
+                                                                      const PylithInt aOff[],
+                                                                      const PylithInt aOff_x[],
+                                                                      const PylithScalar a[],
+                                                                      const PylithScalar a_t[],
+                                                                      const PylithScalar a_x[],
+                                                                      const PylithReal t,
+                                                                      const PylithScalar x[],
+                                                                      const PylithInt numConstants,
+                                                                      const PylithScalar constants[],
+                                                                      PylithScalar stressVector[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -920,8 +920,8 @@ pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::stress(const PylithInt 
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, stressTensor);
 
-    const PylithScalar bulkModulus = aOff[i_bulkModulus];
-    const PylithScalar shearModulus = aOff[i_shearModulus];
+    const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
+    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
     const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
     const PylithScalar stress_zz = 0.5*lambda/(lambda+shearModulus) * (stressTensor[0*_dim+0] + stressTensor[1*_dim+1]);
 
@@ -943,24 +943,24 @@ pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::stress(const PylithInt 
  *                   maxwell_time(3), shear_modulus_ratio(3), total_strain(4), viscous_strain(4)]
  */
 void
-pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::stress_refstate(const PylithInt dim,
-                                                                         const PylithInt numS,
-                                                                         const PylithInt numA,
-                                                                         const PylithInt sOff[],
-                                                                         const PylithInt sOff_x[],
-                                                                         const PylithScalar s[],
-                                                                         const PylithScalar s_t[],
-                                                                         const PylithScalar s_x[],
-                                                                         const PylithInt aOff[],
-                                                                         const PylithInt aOff_x[],
-                                                                         const PylithScalar a[],
-                                                                         const PylithScalar a_t[],
-                                                                         const PylithScalar a_x[],
-                                                                         const PylithReal t,
-                                                                         const PylithScalar x[],
-                                                                         const PylithInt numConstants,
-                                                                         const PylithScalar constants[],
-                                                                         PylithScalar stressVector[]) {
+pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::cauchyStress_refstate(const PylithInt dim,
+                                                                               const PylithInt numS,
+                                                                               const PylithInt numA,
+                                                                               const PylithInt sOff[],
+                                                                               const PylithInt sOff_x[],
+                                                                               const PylithScalar s[],
+                                                                               const PylithScalar s_t[],
+                                                                               const PylithScalar s_x[],
+                                                                               const PylithInt aOff[],
+                                                                               const PylithInt aOff_x[],
+                                                                               const PylithScalar a[],
+                                                                               const PylithScalar a_t[],
+                                                                               const PylithScalar a_x[],
+                                                                               const PylithReal t,
+                                                                               const PylithScalar x[],
+                                                                               const PylithInt numConstants,
+                                                                               const PylithScalar constants[],
+                                                                               PylithScalar stressVector[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -1012,8 +1012,8 @@ pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::stress_refstate(const P
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, stressTensor);
 
-    const PylithScalar bulkModulus = aOff[i_bulkModulus];
-    const PylithScalar shearModulus = aOff[i_shearModulus];
+    const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
+    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
     const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
     const PylithScalar* rstress = &a[aOff[i_rstress]];
     const PylithScalar stress_zz = 0.5*lambda/(lambda+shearModulus) * (stressTensor[0*_dim+0]-rstress[0] + stressTensor[1*_dim+1]-rstress[1]);
@@ -2007,24 +2007,24 @@ pylith::fekernels::IsotropicLinearGenMaxwell3D::updateViscousStrain(const Pylith
  * total_strain(4), viscous_strain(4)]
  */
 void
-pylith::fekernels::IsotropicLinearGenMaxwell3D::stress(const PylithInt dim,
-                                                       const PylithInt numS,
-                                                       const PylithInt numA,
-                                                       const PylithInt sOff[],
-                                                       const PylithInt sOff_x[],
-                                                       const PylithScalar s[],
-                                                       const PylithScalar s_t[],
-                                                       const PylithScalar s_x[],
-                                                       const PylithInt aOff[],
-                                                       const PylithInt aOff_x[],
-                                                       const PylithScalar a[],
-                                                       const PylithScalar a_t[],
-                                                       const PylithScalar a_x[],
-                                                       const PylithReal t,
-                                                       const PylithScalar x[],
-                                                       const PylithInt numConstants,
-                                                       const PylithScalar constants[],
-                                                       PylithScalar stressVector[]) {
+pylith::fekernels::IsotropicLinearGenMaxwell3D::cauchyStress(const PylithInt dim,
+                                                             const PylithInt numS,
+                                                             const PylithInt numA,
+                                                             const PylithInt sOff[],
+                                                             const PylithInt sOff_x[],
+                                                             const PylithScalar s[],
+                                                             const PylithScalar s_t[],
+                                                             const PylithScalar s_x[],
+                                                             const PylithInt aOff[],
+                                                             const PylithInt aOff_x[],
+                                                             const PylithScalar a[],
+                                                             const PylithScalar a_t[],
+                                                             const PylithScalar a_x[],
+                                                             const PylithReal t,
+                                                             const PylithScalar x[],
+                                                             const PylithInt numConstants,
+                                                             const PylithScalar constants[],
+                                                             PylithScalar stressVector[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
@@ -2076,7 +2076,7 @@ pylith::fekernels::IsotropicLinearGenMaxwell3D::stress(const PylithInt dim,
     stressVector[3] = stressTensor[0*_dim+1]; // stress_xy
     stressVector[4] = stressTensor[1*_dim+2]; // stress_yz
     stressVector[5] = stressTensor[0*_dim+2]; // stress_xz
-} // stress
+} // cauchyStress
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -2090,24 +2090,24 @@ pylith::fekernels::IsotropicLinearGenMaxwell3D::stress(const PylithInt dim,
  *                   maxwell_time(3), shear_modulus_ratio(3), total_strain(4), viscous_strain(4)]
  */
 void
-pylith::fekernels::IsotropicLinearGenMaxwell3D::stress_refstate(const PylithInt dim,
-                                                                const PylithInt numS,
-                                                                const PylithInt numA,
-                                                                const PylithInt sOff[],
-                                                                const PylithInt sOff_x[],
-                                                                const PylithScalar s[],
-                                                                const PylithScalar s_t[],
-                                                                const PylithScalar s_x[],
-                                                                const PylithInt aOff[],
-                                                                const PylithInt aOff_x[],
-                                                                const PylithScalar a[],
-                                                                const PylithScalar a_t[],
-                                                                const PylithScalar a_x[],
-                                                                const PylithReal t,
-                                                                const PylithScalar x[],
-                                                                const PylithInt numConstants,
-                                                                const PylithScalar constants[],
-                                                                PylithScalar stressVector[]) {
+pylith::fekernels::IsotropicLinearGenMaxwell3D::cauchyStress_refstate(const PylithInt dim,
+                                                                      const PylithInt numS,
+                                                                      const PylithInt numA,
+                                                                      const PylithInt sOff[],
+                                                                      const PylithInt sOff_x[],
+                                                                      const PylithScalar s[],
+                                                                      const PylithScalar s_t[],
+                                                                      const PylithScalar s_x[],
+                                                                      const PylithInt aOff[],
+                                                                      const PylithInt aOff_x[],
+                                                                      const PylithScalar a[],
+                                                                      const PylithScalar a_t[],
+                                                                      const PylithScalar a_x[],
+                                                                      const PylithReal t,
+                                                                      const PylithScalar x[],
+                                                                      const PylithInt numConstants,
+                                                                      const PylithScalar constants[],
+                                                                      PylithScalar stressVector[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
@@ -2175,7 +2175,7 @@ pylith::fekernels::IsotropicLinearGenMaxwell3D::stress_refstate(const PylithInt 
     stressVector[4] = stressTensor[1*_dim+2]; // stress_yz
     stressVector[5] = stressTensor[0*_dim+2]; // stress_xz
 
-} // stress_refstate
+} // cauchyStress_refstate
 
 
 // End of file

@@ -170,7 +170,7 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     PYLITH_METHOD_BEGIN;
 
     if (_disableFiniteDifferenceCheck) {
-        CPPUNIT_ASSERT_MESSAGE("Skipping Jacobian finite-difference check.", false);
+        PYLITH_JOURNAL_ERROR("Skipping Jacobian finite-difference check. Test disabled.");
         PYLITH_METHOD_END;
     } // if
 

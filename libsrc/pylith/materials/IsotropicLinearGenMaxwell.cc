@@ -149,20 +149,20 @@ pylith::materials::IsotropicLinearGenMaxwell::getKernelRHSJacobianElasticConstan
 // ---------------------------------------------------------------------------------------------------------------------
 // Get stress kernel for derived field.
 PetscPointFunc
-pylith::materials::IsotropicLinearGenMaxwell::getKernelDerivedStress(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearGenMaxwell::getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelDerivedStress(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG("getKernelDerivedCauchyStress(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->spaceDim();
     PetscPointFunc kernel =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwell3D::stress :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::stress :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwell3D::stress_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::stress_refstate :
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwell3D::cauchyStress :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::cauchyStress :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwell3D::cauchyStress_refstate :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::cauchyStress_refstate :
         NULL;
 
     PYLITH_METHOD_RETURN(kernel);
-} // getKernelDerivedStress
+} // getKernelDerivedCauchyStress
 
 
 // ---------------------------------------------------------------------------------------------------------------------

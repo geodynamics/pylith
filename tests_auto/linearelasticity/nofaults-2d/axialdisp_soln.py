@@ -123,7 +123,7 @@ class AnalyticalSoln(object):
         Compute strain field at locations.
         """
         (npts, dim) = locs.shape
-        strain = numpy.zeros((1, npts, self.TESNSOR_SIZE), dtype=numpy.float64)
+        strain = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
         strain[0, :, 0] = exx
         strain[0, :, 1] = eyy
         strain[0, :, 2] = ezz

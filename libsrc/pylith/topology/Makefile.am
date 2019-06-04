@@ -26,6 +26,7 @@ subpkginclude_HEADERS = \
 	FieldBase.hh \
 	Field.hh \
 	Field.icc \
+	FieldFactory.hh \
 	FieldOps.hh \
 	FieldQuery.hh \
 	Fields.hh \

@@ -39,7 +39,7 @@ public:
     AuxiliaryFactoryElasticity(void);
 
     /// Destructor.
-    ~AuxiliaryFactoryElasticity(void);
+    virtual ~AuxiliaryFactoryElasticity(void);
 
     /// Add density subfield to auxiliary subfields.
     void addDensity(void);

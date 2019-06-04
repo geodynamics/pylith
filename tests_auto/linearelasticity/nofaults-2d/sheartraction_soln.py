@@ -147,7 +147,7 @@ class AnalyticalSoln(object):
         Compute stress field at locations.
         """
         (npts, dim) = locs.shape
-        stress = numpy.zeros((1, npts, self.TESNSOR_SIZE), dtype=numpy.float64)
+        stress = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
         stress[0, :, 0] = sxx
         stress[0, :, 1] = syy
         stress[0, :, 2] = szz

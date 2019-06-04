@@ -24,6 +24,7 @@ subpkginclude_HEADERS = \
 	Elasticity.hh \
 	RheologyElasticity.hh \
 	AuxiliaryFactoryElasticity.hh \
+	DerivedFactoryElasticity.hh \
 	IsotropicLinearElasticity.hh \
 	IsotropicLinearMaxwell.hh \
 	IsotropicLinearGenMaxwell.hh \

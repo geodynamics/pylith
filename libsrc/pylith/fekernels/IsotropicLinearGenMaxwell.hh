@@ -311,24 +311,24 @@ public:
      * total_strain(4), viscous_strain(4)]
      */
     static
-    void stress(const PylithInt dim,
-                const PylithInt numS,
-                const PylithInt numA,
-                const PylithInt sOff[],
-                const PylithInt sOff_x[],
-                const PylithScalar s[],
-                const PylithScalar s_t[],
-                const PylithScalar s_x[],
-                const PylithInt aOff[],
-                const PylithInt aOff_x[],
-                const PylithScalar a[],
-                const PylithScalar a_t[],
-                const PylithScalar a_x[],
-                const PylithReal t,
-                const PylithScalar x[],
-                const PylithInt numConstants,
-                const PylithScalar constants[],
-                PylithScalar stressVector[]);
+    void cauchyStress(const PylithInt dim,
+                      const PylithInt numS,
+                      const PylithInt numA,
+                      const PylithInt sOff[],
+                      const PylithInt sOff_x[],
+                      const PylithScalar s[],
+                      const PylithScalar s_t[],
+                      const PylithScalar s_x[],
+                      const PylithInt aOff[],
+                      const PylithInt aOff_x[],
+                      const PylithScalar a[],
+                      const PylithScalar a_t[],
+                      const PylithScalar a_x[],
+                      const PylithReal t,
+                      const PylithScalar x[],
+                      const PylithInt numConstants,
+                      const PylithScalar constants[],
+                      PylithScalar stressVector[]);
 
     /** Calculate stress for 2-D plane strain isotropic linear generalized
      * Maxwell WITH a reference stress/strain.
@@ -340,24 +340,24 @@ public:
      *                   maxwell_time(3), shear_modulus_ratio(3), total_strain(4), viscous_strain(4)]
      */
     static
-    void stress_refstate(const PylithInt dim,
-                         const PylithInt numS,
-                         const PylithInt numA,
-                         const PylithInt sOff[],
-                         const PylithInt sOff_x[],
-                         const PylithScalar s[],
-                         const PylithScalar s_t[],
-                         const PylithScalar s_x[],
-                         const PylithInt aOff[],
-                         const PylithInt aOff_x[],
-                         const PylithScalar a[],
-                         const PylithScalar a_t[],
-                         const PylithScalar a_x[],
-                         const PylithReal t,
-                         const PylithScalar x[],
-                         const PylithInt numConstants,
-                         const PylithScalar constants[],
-                         PylithScalar stressVector[]);
+    void cauchyStress_refstate(const PylithInt dim,
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               PylithScalar stressVector[]);
 
 }; // IsotropicLinearGenMaxwellPlaneStrain
 
@@ -588,24 +588,24 @@ public:
      * total_strain(4), viscous_strain(4)]
      */
     static
-    void stress(const PylithInt dim,
-                const PylithInt numS,
-                const PylithInt numA,
-                const PylithInt sOff[],
-                const PylithInt sOff_x[],
-                const PylithScalar s[],
-                const PylithScalar s_t[],
-                const PylithScalar s_x[],
-                const PylithInt aOff[],
-                const PylithInt aOff_x[],
-                const PylithScalar a[],
-                const PylithScalar a_t[],
-                const PylithScalar a_x[],
-                const PylithReal t,
-                const PylithScalar x[],
-                const PylithInt numConstants,
-                const PylithScalar constants[],
-                PylithScalar stressVector[]);
+    void cauchyStress(const PylithInt dim,
+                      const PylithInt numS,
+                      const PylithInt numA,
+                      const PylithInt sOff[],
+                      const PylithInt sOff_x[],
+                      const PylithScalar s[],
+                      const PylithScalar s_t[],
+                      const PylithScalar s_x[],
+                      const PylithInt aOff[],
+                      const PylithInt aOff_x[],
+                      const PylithScalar a[],
+                      const PylithScalar a_t[],
+                      const PylithScalar a_x[],
+                      const PylithReal t,
+                      const PylithScalar x[],
+                      const PylithInt numConstants,
+                      const PylithScalar constants[],
+                      PylithScalar stressVector[]);
 
     /** Calculate stress for 3-D isotropic linear generalized
      * Maxwell WITH a reference stress/strain.
@@ -617,24 +617,24 @@ public:
      *                   maxwell_time(3), shear_modulus_ratio(3), total_strain(4), viscous_strain(4)]
      */
     static
-    void stress_refstate(const PylithInt dim,
-                         const PylithInt numS,
-                         const PylithInt numA,
-                         const PylithInt sOff[],
-                         const PylithInt sOff_x[],
-                         const PylithScalar s[],
-                         const PylithScalar s_t[],
-                         const PylithScalar s_x[],
-                         const PylithInt aOff[],
-                         const PylithInt aOff_x[],
-                         const PylithScalar a[],
-                         const PylithScalar a_t[],
-                         const PylithScalar a_x[],
-                         const PylithReal t,
-                         const PylithScalar x[],
-                         const PylithInt numConstants,
-                         const PylithScalar constants[],
-                         PylithScalar stressVector[]);
+    void cauchyStress_refstate(const PylithInt dim,
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               PylithScalar stressVector[]);
 
 }; // IsotropicLinearGenMaxwell3D
 
