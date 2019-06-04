@@ -40,34 +40,32 @@ nodeset 13 group splay_edge
 nodeset 13 name "splay_edge"
 
 # ----------------------------------------------------------------------
-# Create nodeset for +x face
+# Create nodeset for +x edge
 # ----------------------------------------------------------------------
-group "face_xpos" add node in curve edge_xpos
-nodeset 20 group face_xpos
-nodeset 20 name "face_xpos"
+group "edge_xpos" add node in curve curve_xpos
+nodeset 20 group edge_xpos
+nodeset 20 name "edge_xpos"
 
 # ----------------------------------------------------------------------
-# Create nodeset for -x face
+# Create nodeset for -x edge
 # ----------------------------------------------------------------------
-group "face_xneg" add node in curve edge_xneg_hw
-group "face_xneg" add node in curve edge_xneg_fw
-nodeset 21 group face_xneg
-nodeset 21 name "face_xneg"
+group "edge_xneg" add node in curve curve_xneg_hw
+group "edge_xneg" add node in curve curve_xneg_fw
+nodeset 21 group edge_xneg
+nodeset 21 name "edge_xneg"
 
 # ----------------------------------------------------------------------
-# Create nodeset for +y face
+# Create nodeset for +y edge
 # ----------------------------------------------------------------------
-group "face_ypos" add node in curve ground_fw ground_hw ground_wedge
-nodeset 22 group face_ypos
-nodeset 22 name "face_ypos"
+group "edge_ypos" add node in curve ground_fw ground_hw ground_wedge
+nodeset 22 group edge_ypos
+nodeset 22 name "edge_ypos"
 
 # ----------------------------------------------------------------------
-# Create nodeset for -y face
+# Create nodeset for -y edge
 # ----------------------------------------------------------------------
-group "face_yneg" add node in curve edge_yneg
-nodeset 23 group face_yneg
-nodeset 23 name "face_yneg"
-
-
+group "edge_yneg" add node in curve curve_yneg
+nodeset 23 group edge_yneg
+nodeset 23 name "edge_yneg"
 
 

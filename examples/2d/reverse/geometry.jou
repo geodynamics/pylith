@@ -127,17 +127,17 @@ curve  ( at -10000 0 0 ordinal 1 ordered )  name "ground_wedge"
 # curve 25 name "ground_hw"
 curve  ( at -72990.4 0 0 ordinal 1 ordered )  name "ground_hw"
 
-# curve 14 name "edge_xpos"
-curve  ( at 74019.2 -50000 0 ordinal 1 ordered )  name "edge_xpos"
+# curve 14 name "curve_xpos"
+curve  ( at 74019.2 -50000 0 ordinal 1 ordered )  name "curve_xpos"
 
-# curve 20 name "edge_xneg_fw"
-curve  ( at -125981 -86367.5 0 ordinal 1 ordered )  name "edge_xneg_fw"
+# curve 20 name "curve_xneg_fw"
+curve  ( at -125981 -86367.5 0 ordinal 1 ordered )  name "curve_xneg_fw"
 
-# curve 19 name "edge_xneg_hw"
-curve  ( at -125981 -36367.5 0 ordinal 1 ordered )  name "edge_xneg_hw"
+# curve 19 name "curve_xneg_hw"
+curve  ( at -125981 -36367.5 0 ordinal 1 ordered )  name "curve_xneg_hw"
 
-# curve 13 name "edge_yneg"
-curve  ( at -25980.8 -100000 0 ordinal 1 ordered )  name "edge_yneg"
+# curve 13 name "curve_yneg"
+curve  ( at -25980.8 -100000 0 ordinal 1 ordered )  name "curve_yneg"
 
 # curve 23 name "fault_extended"
 curve  ( at -88971.1 -51367.5 0 ordinal 1 ordered )  name "fault_extended"

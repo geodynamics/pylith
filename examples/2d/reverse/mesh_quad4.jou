@@ -17,7 +17,7 @@ playback 'gradient.jou'
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
-preview mesh surface all
+# preview mesh surface all
 mesh surface all
 
 # ----------------------------------------------------------------------
@@ -38,6 +38,7 @@ export mesh "mesh_quad4.exo" dimension 2 overwrite
 
 
 # End of file
+
 
 
 

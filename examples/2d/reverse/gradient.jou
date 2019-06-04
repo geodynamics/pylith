@@ -20,7 +20,7 @@ ${dxStart=dx}{curveL=Length(Id("ground_hw"))}{execute("dxB="//fun_dx)}
 ${dxStart=dx}{curveL=Length(Id("fault_extended"))}{execute("dxC="//fun_dx)}
 
 # dxD - size at vertex_bot_xpos
-${dxStart=dxA}{curveL=Length(Id("edge_xpos"))}{execute("dxD="//fun_dx)}
+${dxStart=dxA}{curveL=Length(Id("curve_xpos"))}{execute("dxD="//fun_dx)}
 
 # ----------------------------------------------------------------------
 # Reset sizes
@@ -39,16 +39,16 @@ curve ground_fw scheme bias fine size {dx} factor {bias_factor} start vertex ver
 curve ground_hw scheme bias fine size {dx} factor {bias_factor} start vertex vertex_splay_top
 curve fault_extended scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_bot
 
-curve edge_yneg size {dxD}
+curve curve_yneg size {dxD}
 
 # A to D
-curve edge_xpos scheme bias fine size {dxA} coarse size {dxD} start vertex vertex_top_xpos
+curve curve_xpos scheme bias fine size {dxA} coarse size {dxD} start vertex vertex_top_xpos
 
 # C to B
-curve edge_xneg_hw scheme bias fine size {dxC} coarse size {dxB} start vertex vertex_fault_xneg
+curve curve_xneg_hw scheme bias fine size {dxC} coarse size {dxB} start vertex vertex_fault_xneg
 
 # B to D
-curve edge_xneg_fw scheme bias fine size {dxB} coarse size {dxD} start vertex vertex_fault_xneg
+curve curve_xneg_fw scheme bias fine size {dxB} coarse size {dxD} start vertex vertex_fault_xneg
 
 surface all sizing function type bias start curve fault_surface_top fault_surface_bot splay_surface ground_wedge factor {bias_factor}
 
