@@ -109,6 +109,12 @@ protected:
              */
             void _updateKernelConstants(const PylithReal dt);
 
+            /** Get derived factory associated with physics.
+             *
+             * @return Derived factory for physics object.
+             */
+            pylith::topology::FieldFactory* _getDerivedFactory(void);
+
         }; // class Elasticity
 
     } // materials

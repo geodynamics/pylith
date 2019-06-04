@@ -183,7 +183,7 @@ private:
     bool _useInertia; ///< Flag to include inertial term.
     bool _useBodyForce; ///< Flag to include body force term.
     pylith::materials::RheologyElasticity* _rheology; ///< Bulk rheology for elasticity.
-    pylith::materials::DerivedFactoryElasticity* _derivedFactory;
+    pylith::materials::DerivedFactoryElasticity* _derivedFactory; ///< Factory for creating derived fields.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

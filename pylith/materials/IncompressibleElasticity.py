@@ -48,6 +48,11 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
         "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsElasticity)
     auxiliarySubfields.meta['tip'] = "Discretization of incompressible elasticity properties."
 
+    from .DerivedSubfieldsElasticity import DerivedSubfieldsElasticity
+    derivedSubfields = pyre.inventory.facilityArray(
+        "derived_subfields", itemFactory=subfieldFactory, factory=DerivedSubfieldsElasticity)
+    derivedSubfields.meta['tip'] = "Discretization of derived subfields (e.g., stress and strain)."
+
     useBodyForce = pyre.inventory.bool("use_body_force", default=False)
     useBodyForce.meta['tip'] = "Include body force term in elasticity equation."
 

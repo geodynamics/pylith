@@ -22,6 +22,7 @@
 
 #include "pylith/materials/RheologyIncompressibleElasticity.hh" // HASA RheologyIncompressibleElasticity
 #include "pylith/materials/AuxiliaryFactoryElasticity.hh" // USES AuxiliaryFactoryElasticity
+#include "pylith/materials/DerivedFactoryElasticity.hh" // USES DerivedFactoryElasticity
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
@@ -34,6 +35,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <typeinfo> // USES typeid()
@@ -41,12 +43,14 @@
 // ---------------------------------------------------------------------------------------------------------------------
 typedef pylith::feassemble::IntegratorDomain::ResidualKernels ResidualKernels;
 typedef pylith::feassemble::IntegratorDomain::JacobianKernels JacobianKernels;
+typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::IncompressibleElasticity::IncompressibleElasticity(void) :
     _useBodyForce(false),
-    _rheology(NULL) {
+    _rheology(NULL),
+    _derivedFactory(new pylith::materials::DerivedFactoryElasticity) {
     pylith::utils::PyreComponent::setName("incompressibleelasticity");
 } // constructor
 
@@ -64,6 +68,7 @@ void
 pylith::materials::IncompressibleElasticity::deallocate(void) {
     Material::deallocate();
 
+    delete _derivedFactory;_derivedFactory = NULL;
     _rheology = NULL; // :TODO: Use shared pointer.
 } // deallocate
 
@@ -137,7 +142,7 @@ pylith::materials::IncompressibleElasticity::createIntegrator(const pylith::topo
     _setKernelsRHSJacobian(integrator, solution);
     _setKernelsLHSJacobian(integrator, solution);
     // No state variables.
-    // _setKernelsDerivedFields(integrator, solution);
+    _setKernelsDerivedField(integrator, solution);
 
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
@@ -195,9 +200,26 @@ pylith::topology::Field*
 pylith::materials::IncompressibleElasticity::createDerivedField(const pylith::topology::Field& solution,
                                                                 const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
-    PYLITH_METHOD_RETURN(NULL);
+    assert(_derivedFactory);
+    if (_derivedFactory->getNumSubfields() == 1) {
+        PYLITH_METHOD_RETURN(NULL);
+    } // if
+
+    pylith::topology::Field* derivedField = new pylith::topology::Field(domainMesh);assert(derivedField);
+    derivedField->label("Elasticity derived field");
+
+    assert(_normalizer);
+    _derivedFactory->initialize(derivedField, *_normalizer, domainMesh.dimension());
+    _derivedFactory->addSubfields();
+
+    derivedField->subfieldsSetup();
+    pylith::topology::FieldOps::checkDiscretization(solution, *derivedField);
+    derivedField->allocate();
+    derivedField->zeroLocal();
+
+    PYLITH_METHOD_RETURN(derivedField);
 } // createDerivedField
 
 
@@ -217,6 +239,14 @@ pylith::materials::IncompressibleElasticity::_updateKernelConstants(const Pylith
     assert(_rheology);
     _rheology->updateKernelConstants(&_kernelConstants, dt);
 } // _updateKernelConstants
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get derived factory associated with physics.
+pylith::topology::FieldFactory*
+pylith::materials::IncompressibleElasticity::_getDerivedFactory(void) {
+    return _derivedFactory;
+} // _getDerivedFactory
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -323,6 +353,34 @@ pylith::materials::IncompressibleElasticity::_setKernelsLHSJacobian(pylith::feas
 
     PYLITH_METHOD_END;
 } // setKernelsLHSJacobian
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set kernels for computing derived field.
+void
+pylith::materials::IncompressibleElasticity::_setKernelsDerivedField(pylith::feassemble::IntegratorDomain* integrator,
+                                                                     const topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.label()<<")");
+
+    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().coordsys();
+    assert(coordsys);
+
+    std::vector<ProjectKernels> kernels(2);
+    kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelDerivedCauchyStress(coordsys));
+
+    const int spaceDim = coordsys->spaceDim();
+    const PetscPointFunc strainKernel =
+        (3 == spaceDim) ? pylith::fekernels::Elasticity3D::cauchyStrain :
+        (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::cauchyStrain :
+        NULL;
+    kernels[1] = ProjectKernels("cauchy_strain", strainKernel);
+
+    assert(integrator);
+    integrator->setKernelsDerivedField(kernels);
+
+    PYLITH_METHOD_END;
+} // _setKernelsDerivedField
 
 
 // End of file

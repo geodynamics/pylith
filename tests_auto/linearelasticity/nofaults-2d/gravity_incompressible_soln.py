@@ -146,7 +146,7 @@ class AnalyticalSoln(object):
         """
         Compute stress field at locations.
         """
-        syy = -p_density * gacc * (ymax - locs[:, 1])
+        syy = p_density * gacc * (locs[:, 1] - ymax)
         sxx = syy
         szz = syy
         sxy = 0.0

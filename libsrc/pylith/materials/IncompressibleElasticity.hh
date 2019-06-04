@@ -116,6 +116,12 @@ protected:
      */
     void _updateKernelConstants(const PylithReal dt);
 
+    /** Get derived factory associated with physics.
+     *
+     * @return Derived factory for physics object.
+     */
+    pylith::topology::FieldFactory* _getDerivedFactory(void);
+
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
@@ -143,11 +149,20 @@ private:
     void _setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
                                 const pylith::topology::Field& solution) const;
 
+    /** Set kernels for computing derived field.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    void _setKernelsDerivedField(pylith::feassemble::IntegratorDomain* integrator,
+                                 const pylith::topology::Field& solution) const;
+
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     bool _useBodyForce; ///< Flag to include body force term.
     pylith::materials::RheologyIncompressibleElasticity* _rheology; ///< Bulk rheology for incompressible elasticity.
+    pylith::materials::DerivedFactoryElasticity* _derivedFactory; ///< Factory for creating derived fields.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
