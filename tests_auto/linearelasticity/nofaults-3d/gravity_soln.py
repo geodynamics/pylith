@@ -13,62 +13,35 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults-3d/sheartraction_soln.py
+# @file tests_auto/linearelasticity/nofaults-3d/gravity_soln.py
 #
-# @brief Analytical solution to shear displacement/traction problem.
+# @brief Analytical solution to gravitational body foces (no initial stress).
 #
-# 3-D uniform shear test.
-#
-#             --->
-#          ----------
-#          |        |
-#        | |        | ^
-#        v |        | |
-#          |        |
-#          ----------
-#             <--
-#
-# Dirichlet boundary conditions
-# boundary_xneg: Ux(-6000,y,z) = a*y, Uy(-6000,y,z) = a*x, Uz=0
-# boundary_yneg: Ux(x,-6000,z) = a*y, Uy(x,-6000,z) = a*y, Uz=0
-# boundary_zneg: Uz=0
-# Neumann boundary conditions
-#   \tau_shear_horiz(x,0,z) = -2*mu*a
-#   \tau_shear_horiz(+6000,y,z) = +2*mu*a
+# Dirichlet boundary conditions on lateral sides and bottom
+# boundary +-x: Ux(+-4000,0,z) = 0
+# boundary +-y: Uy(x,-4000,z) = 0
+# boundary -z: Uz(x,y,-9000) = 0
 
 import numpy
 
 
 # Physical properties
-p_density = 2500.0
-p_vs = 3000.0
-p_vp = 5291.502622129181
+p_density = 2500.0  # kg/m**3
+p_vs = 3000.0  # m/s
+p_vp = 5291.5026  # m/s
 
 p_mu = p_density * p_vs**2
 p_lambda = p_density * p_vp**2 - 2 * p_mu
 
-# Uniform stress field (plane strain)
-sxx = 0.0
-syy = 0.0
-szz = 0.0
-sxy = 5.0e+6
-syz = 0.0
-sxz = 0.0
-
-# Uniform strain field
-exx = 1.0 / (2 * p_mu) * (sxx - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
-eyy = 1.0 / (2 * p_mu) * (syy - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
-ezz = 1.0 / (2 * p_mu) * (szz - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
-
-exy = 1.0 / (2 * p_mu) * (sxy)
-eyz = 1.0 / (2 * p_mu) * (syz)
-exz = 1.0 / (2 * p_mu) * (sxz)
+gacc = 9.80665  # m/s
+zmax = 0.0
+zmin = -9000.0  # m
 
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
     """
-    Analytical solution to shear problem.
+    Analytical solution to gravitational body forces (no initial stress).
     """
     SPACE_DIM = 3
     TENSOR_SIZE = 6
@@ -81,34 +54,29 @@ class AnalyticalSoln(object):
             "bulk_modulus": self.bulk_modulus,
             "cauchy_strain": self.strain,
             "cauchy_stress": self.stress,
-            "initial_amplitude": {
-                "bc_yneg": self.displacement,
-                "bc_xneg": self.displacement,
-                "bc_xpos": self.bc_xpos_traction,
-                "bc_ypos": self.bc_ypos_traction,
-                "bc_zneg": self.displacement,
-            }
+            "gravitational_acceleration": self.gacc,
+            "initial_amplitude": self.zero_vector,
         }
-        self.key = None
         return
 
     def getField(self, name, pts):
-        if self.key is None:
-            field = self.fields[name](pts)
-        else:
-            field = self.fields[name][self.key](pts)
-        return field
+        return self.fields[name](pts)
 
     def displacement(self, locs):
         """
         Compute displacement field at locations.
         """
+        strain = self.strain(locs)
+
         (npts, dim) = locs.shape
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[0, :, 0] = exx * locs[:, 0] + exy * locs[:, 1] + exz * locs[:, 2]
-        disp[0, :, 1] = exy * locs[:, 0] + eyy * locs[:, 1] + eyz * locs[:, 2]
-        disp[0, :, 2] = exz * locs[:, 0] + eyz * locs[:, 1] + ezz * locs[:, 2]
+        disp[:, :, 2] = p_density * gacc / (p_lambda + 2 * p_mu) * \
+            (0.5 * (locs[:, 2]**2 - zmin**2) - zmax * (locs[:, 2] - zmin))
         return disp
+
+    def zero_vector(self, locs):
+        (npts, dim) = locs.shape
+        return numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
 
     def density(self, locs):
         """
@@ -138,20 +106,34 @@ class AnalyticalSoln(object):
         """
         Compute strain field at locations.
         """
+        exx = 0.0
+        eyy = 0.0
+        ezz = p_density * gacc * (locs[:, 2] - zmax) / (p_lambda + 2 * p_mu)
+        exy = 0.0
+        eyz = 0.0
+        exz = 0.0
+
         (npts, dim) = locs.shape
         strain = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        strain[0, :, 0] = exx
-        strain[0, :, 1] = eyy
-        strain[0, :, 2] = ezz
-        strain[0, :, 3] = exy
-        strain[0, :, 4] = eyz
-        strain[0, :, 5] = exz
+        strain[:, :, 0] = exx
+        strain[:, :, 1] = eyy
+        strain[:, :, 2] = ezz
+        strain[:, :, 3] = exy
+        strain[:, :, 4] = eyz
+        strain[:, :, 5] = exz
         return strain
 
     def stress(self, locs):
         """
         Compute stress field at locations.
         """
+        szz = p_density * gacc * (locs[:, 2] - zmax)
+        sxx = p_lambda / (p_lambda + 2 * p_mu) * szz
+        syy = p_lambda / (p_lambda + 2 * p_mu) * szz
+        sxy = 0.0
+        syz = 0.0
+        sxz = 0.0
+
         (npts, dim) = locs.shape
         stress = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
         stress[0, :, 0] = sxx
@@ -162,25 +144,13 @@ class AnalyticalSoln(object):
         stress[0, :, 5] = sxz
         return stress
 
-    def bc_xpos_traction(self, locs):
-        """Compute initial traction at locations.
+    def gacc(self, locs):
+        """Compute gravitational acceleration at locations.
         """
         (npts, dim) = locs.shape
-        traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[0, :, 0] = sxy
-        traction[0, :, 1] = 0.0
-        traction[0, :, 2] = 0.0
-        return traction
-
-    def bc_ypos_traction(self, locs):
-        """Compute initial traction at locations.
-        """
-        (npts, dim) = locs.shape
-        traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[0, :, 0] = -sxy
-        traction[0, :, 1] = 0.0
-        traction[0, :, 2] = 0.0
-        return traction
+        gravacc = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
+        gravacc[0, :, 2] = -gacc
+        return gravacc
 
 
 # End of file

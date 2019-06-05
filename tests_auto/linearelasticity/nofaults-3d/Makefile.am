@@ -29,13 +29,13 @@ dist_noinst_PYTHON = \
 	sheartraction_gendb.py \
 	TestShearTractionRate.py \
 	sheartraction_rate_soln.py \
-	sheartraction_rate_gendb.py
-
-#	TestGravity.py \
-#	gravity_soln.py \
-#	TestGravityRefState.py \
-#	gravity_refstate_soln.py \
-#	gravity_refstate_gendb.py \
+	sheartraction_rate_gendb.py \
+	TestGravity.py \
+	gravity_soln.py \
+	TestGravityRefState.py \
+	gravity_refstate_soln.py \
+	gravity_refstate_gendb.py
+	
 #	TestGravityIncompressible.py \
 #	gravity_incompressible_soln.py
 
@@ -55,14 +55,14 @@ dist_noinst_DATA = \
 	sheartraction_hex.cfg \
  	sheartraction_rate.cfg \
 	sheartraction_rate_tet.cfg \
-	sheartraction_rate_hex.cfg
+	sheartraction_rate_hex.cfg \
+	gravity.cfg \
+	gravity_tet.cfg \
+	gravity_hex.cfg \
+	gravity_refstate.cfg \
+	gravity_refstate_tet.cfg \
+	gravity_refstate_hex.cfg
 
-#	gravity.cfg \
-#	gravity_tet.cfg \
-#	gravity_hex.cfg \
-#	gravity_refstate.cfg \
-#	gravity_refstate_tet.cfg \
-#	gravity_refstate_hex.cfg \
 #	gravity_incompressible.cfg \
 #	gravity_incompressible_hex.cfg \
 #	gravity_incompressible_tet.cfg
@@ -71,9 +71,8 @@ noinst_TMP = \
 	axialdisp_bc.spatialdb \
 	axialdisp_ic.spatialdb
 	sheartraction_disp.spatialdb \
-	sheartraction_rate_disp.spatialdb
-
-#	gravity_refstate_matfields.spatialdb
+	sheartraction_rate_disp.spatialdb \
+	gravity_refstate_matfields.spatialdb
 
 
 

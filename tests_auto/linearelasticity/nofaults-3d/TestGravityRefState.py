@@ -15,27 +15,27 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults-3d/TestShearTraction.py
+# @file tests_auto/linearelasticity/nofaults-3d/TestGravityRefState.py
 #
-# @brief Test suite for testing pylith with 3-D simple shear.
+# @brief Test suite for testing pylith with 3-D gravitational body forces with initial stress and no displacement.
 
 import unittest
 
 from pylith.tests.FullTestApp import run_pylith, check_data
 
 import meshes
-from sheartraction_soln import AnalyticalSoln
-from sheartraction_gendb import GenerateDB
-
+from gravity_refstate_soln import AnalyticalSoln
+from gravity_refstate_gendb import GenerateDB
 
 # ----------------------------------------------------------------------------------------------------------------------
+
+
 class TestCase(unittest.TestCase):
     """
-    Test suite for testing PyLith with 2-D simple shear.
+    Test suite for testing PyLith with gravitational body forces with initial stress and no displacement.
     """
     NAME = None  # Set in child class.
-    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_yneg", "bc_zneg"]
-    NEUMANN_BOUNDARIES = ["bc_xpos", "bc_ypos"]
+    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos", "bc_zneg"]
 
     def setUp(self):
         """
@@ -58,25 +58,26 @@ class TestCase(unittest.TestCase):
         return
 
     def test_material_info(self):
-        cellFields = ["density", "bulk_modulus", "shear_modulus"]
+        cellFields = ["density", "bulk_modulus", "shear_modulus", "gravitational_acceleration", "reference_strain"]
+        vertexFields = ["reference_stress"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
             check_data(filename, self, self.MATERIALS[material], cellFields=cellFields)
         return
 
     def test_material_solution(self):
-        vertexFields = ["displacement", "cauchy_strain", "cauchy_stress"]
+        vertexFields = ["displacement"]
+        cellFields = ["cauchy_strain", "cauchy_stress"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields)
+            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields, cellFields=cellFields)
         return
 
     def test_bcdirichlet_info(self):
-        vertexFields = ["initial_amplitude"]
+        cellFields = ["initial_amplitude"]
         for bc in self.DIRICHLET_BOUNDARIES:
-            self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
+            check_data(filename, self, self.BOUNDARIES[bc], cellFields=cellFields)
         return
 
     def test_bcdirichlet_solution(self):
@@ -86,39 +87,24 @@ class TestCase(unittest.TestCase):
             check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
         return
 
-    def test_bcneumann_info(self):
-        vertexFields = ["initial_amplitude"]
-        for bc in self.NEUMANN_BOUNDARIES:
-            self.exactsoln.key = bc
-            filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
-        return
-
-    def test_bcneumann_solution(self):
-        vertexFields = ["displacement"]
-        for bc in self.NEUMANN_BOUNDARIES:
-            filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
-        return
-
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestHex(TestCase, meshes.Hex):
-    NAME = "sheartraction_hex"
+    NAME = "gravity_refstate_hex"
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["sheartraction.cfg", "sheartraction_hex.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["gravity_refstate.cfg", "gravity_refstate_hex.cfg"])
         return
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestTet(TestCase, meshes.Tet):
-    NAME = "sheartraction_tet"
+    NAME = "gravity_refstate_tet"
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["sheartraction.cfg", "sheartraction_tet.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["gravity_refstate.cfg", "gravity_refstate_tet.cfg"])
         return
 
 

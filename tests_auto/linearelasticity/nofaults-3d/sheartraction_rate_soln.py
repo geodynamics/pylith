@@ -31,10 +31,10 @@
 # Dirichlet boundary conditions
 #
 # boundary_xneg:
-#   Ux(-4000,y) = (a+v*H(t-t0))*y, Uy(-4000,y) = (a+v*H(t-t0))*x
+#   Ux(-6000,y) = (a+v*H(t-t0))*y, Uy(-6000,y) = (a+v*H(t-t0))*x
 #
 # boundary_yneg:
-#   Ux(x,-4000) = (a+v*H(t-t0))*y, Uy(x,-4000) = (a+v*H(t-t0))*y
+#   Ux(x,-6000) = (a+v*H(t-t0))*y, Uy(x,-6000) = (a+v*H(t-t0))*y
 #
 # boundary_zneg:
 #   Uz=0
