@@ -15,9 +15,8 @@
 #
 # ----------------------------------------------------------------------
 #
-
-# @file tests/2d/quad4/axialdisp_gendb.py
-##
+# @file tests_auto/linearelasticity/nofaults-2d/axialdisp_gendb.py
+#
 # @brief Python script to generate spatial database with displacement
 # boundary conditions for the axial displacement test.
 

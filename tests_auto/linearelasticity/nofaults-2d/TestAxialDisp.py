@@ -15,7 +15,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults/TestAxialDisp.py
+# @file tests_auto/linearelasticity/nofaults-2d/TestAxialDisp.py
 #
 # @brief Test suite for testing pylith with 2-D axial extension.
 

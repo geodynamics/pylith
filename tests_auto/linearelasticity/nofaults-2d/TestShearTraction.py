@@ -15,7 +15,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults/TestShearTraction.py
+# @file tests_auto/linearelasticity/nofaults-2d/TestShearTraction.py
 #
 # @brief Test suite for testing pylith with 2-D simple shear.
 

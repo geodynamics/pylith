@@ -15,7 +15,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults/TestShearTractionRate.py
+# @file tests_auto/linearelasticity/nofaults-2d/TestShearTractionRate.py
 #
 # @brief Test suite for testing pylith with 2-D time-dependent simple shear.
 
