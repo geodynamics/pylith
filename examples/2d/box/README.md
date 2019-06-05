@@ -10,8 +10,8 @@ PyLith to solve the static or quasistatic elasticity equation in
 * Output of auxiliary information for boundary conditions and
   materials
 
-Faults are discussed in the 2d/strike-slip and 2d/reverse example
-suites.
+Faults are discussed in the 2d/strike-slip, 2d/reverse, and
+2d/subduction example sets.
 
 ## Step01: Axial extension with Dirichlet boundary conditions
 

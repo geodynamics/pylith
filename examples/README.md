@@ -1,37 +1,53 @@
-All:
-  HDF5 output
+# Examples
 
-2d/box
-  tri mesh
-  quad mesh (default)
-  Material: single, isotropic linear elasticity; uniform properties
-  Output: domain, material, bc
-  basis order (default: 1); quad order (default: 1)
+This directory contains a large suite of examples demonstrating most
+of the features available in PyLith. The examples progress from vary
+simple problems to more complex ones similar to those encountered in
+research. The examples are broken up into the small sets listed below,
+in which all of the simulations within a set use the same geometry.
 
-  Step01: axial extension w/Dirichlet BC
-    Dirichlet BC (UniformDB)
-    IsotropicLinearElasticity (UniformDB)
-  Step02: simple shear w/Dirichlet BC
-    Dirichlet BC (SimpleDB)
-    IsotropicLinearElasticity (UniformDB)
-  Step03: simple shear w/Dirichlet + Neumann BC
-    Dirichlet BC (SimpleDB)
-    Neumann BC (UniformDB)
-    IsotropicLinearElasticity (SimpleDB)
-  Step04: simple shear w/Dirichlet + Neumann BC + initial conditions
-    Dirichlet BC (SimpleDB)
-    Neumann BC (UniformDB)
-    IsotropicLinearElasticity (SimpleDB)
-    IC: SimpleDB
-  Step03: time-dependent shear w/Dirichlet and Neumann BC
-    Dirichlet BC (UniformDB)
-    Neumann BC (UniformDB)
-    IsotropicLinearElasticity (SimpleDB)
-  Exercises
-    Change to tri mesh
-    Change material properties
-1    Change BC to give axial compression in the +y direction
-    Change basis and quadrature order
+All of the examples use HDF5 output. PyLith supports writing output as
+VTK files, but this does not scale to large research level problems.
+Additionally, PyLith supports HDF5 output with external data sets, and
+this is the output recommended for large parallel runs.
+
+## 2d/box
+
+Simple axial and shear loading in a 2-D box with Dirichlet and Neumann
+boundary conditions and isotropic, linear elasticty.
+
+## 3d/box
+
+Same simulations as those in 2d/box, but in 3-D.
+
+## 2d/strike-slip
+
+## 2d/reverse
+
+## 2d/subduction
+
+## 2d/magma-chamber
+
+Considering for future release.
+
+## 3d/magma-chamber
+
+Considering for future release.
+
+## 3d/strike-slip
+
+Planned for future release.
+
+## 3d/subduction
+
+## bar_shearwave
+
+Not yet updated for v3.0.
+
+
+Add example of using the initial conditions.
+
+
 
 3d/box
   tet mesh (default)
@@ -80,8 +96,6 @@ All:
   Step02: gravitational body forces (reference state)
     Reference state (SimpleDB)
   Step03: gravitational body forces + incompressible elasticity
-  Step04: gravitational body forces + incompressible elasticity
-    Add initial condition to Step03 (SimpleDB)
   Step05: distributed surface load
     Neumann BC (SimpleGridDB)
   Step06: coseismic slip (main fault)
@@ -110,6 +124,8 @@ debugging :UPDATE:
   typos in component names
 
 meshing [no changes]
+
+
 
 Concepts:
   * Output
