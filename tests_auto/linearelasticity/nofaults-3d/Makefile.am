@@ -23,11 +23,11 @@ dist_noinst_PYTHON = \
 	meshes.py \
 	TestAxialDisp.py \
 	axialdisp_soln.py \
-	axialdisp_gendb.py
+	axialdisp_gendb.py \
+	TestShearTraction.py \
+	sheartraction_soln.py \
+	sheartraction_gendb.py
 
-#	TestShearTraction.py \
-#	sheartraction_soln.py \
-#	sheartraction_gendb.py \
 #	TestShearTractionRate.py \
 #	sheartraction_rate_soln.py \
 #	sheartraction_rate_gendb.py \
@@ -49,11 +49,11 @@ dist_noinst_DATA = \
 	pylithapp.cfg \
 	axialdisp.cfg \
 	axialdisp_tet.cfg \
-	axialdisp_hex.cfg
+	axialdisp_hex.cfg \
+	sheartraction.cfg \
+	sheartraction_tet.cfg \
+	sheartraction_hex.cfg
 
-#	sheartraction.cfg \
-#	sheartraction_tet.cfg \
-#	sheartraction_hex.cfg \
 #	sheartraction_rate.cfg \
 #	sheartraction_rate_tet.cfg \
 #	sheartraction_rate_hex.cfg \

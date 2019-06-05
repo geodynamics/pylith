@@ -13,18 +13,28 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults-3d/axialdisp_soln.py
+# @file tests_auto/linearelasticity/nofaults-3d/sheartraction_soln.py
 #
-# @brief Analytical solution to axial displacement problem.
+# @brief Analytical solution to shear displacement/traction problem.
 #
-# 3-D axial extension/compression test with linear cells.
+# 3-D uniform shear test.
+#
+#             --->
+#          ----------
+#          |        |
+#        | |        | ^
+#        v |        | |
+#          |        |
+#          ----------
+#             <--
 #
 # Dirichlet boundary conditions
-# boundary_xneg: Ux(-4000,0,z) = -b
-# boundary_yneg: Uy(x,-4000,z) = -a
-# boundary_xpos: Ux(-4000,0,z) = +b
-# boundary_ypos: Uy(x,-4000,z) = +a
-# boundary_zneg: Uz(x,y,-4000) = 0
+# boundary_xneg: Ux(-4000,y,z) = a*y, Uy(-4000,y,z) = a*x, Uz=0
+# boundary_yneg: Ux(x,-4000,z) = a*y, Uy(x,-4000,z) = a*y, Uz=0
+# boundary_zneg: Uz=0
+# Neumann boundary conditions
+#   \tau_shear_horiz(x,0,z) = -2*mu*a
+#   \tau_shear_horiz(+4000,y,z) = +2*mu*a
 
 import numpy
 
@@ -38,10 +48,10 @@ p_mu = p_density * p_vs**2
 p_lambda = p_density * p_vp**2 - 2 * p_mu
 
 # Uniform stress field (plane strain)
-sxx = +1.0e+7
-syy = -0.8e+7
+sxx = 0.0
+syy = 0.0
 szz = 0.0
-sxy = 0.0
+sxy = 5.0e+6
 syz = 0.0
 sxz = 0.0
 
@@ -58,7 +68,7 @@ exz = 1.0 / (2 * p_mu) * (sxz)
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
     """
-    Analytical solution to axial extension problem.
+    Analytical solution to shear problem.
     """
     SPACE_DIM = 3
     TENSOR_SIZE = 6
@@ -71,12 +81,23 @@ class AnalyticalSoln(object):
             "bulk_modulus": self.bulk_modulus,
             "cauchy_strain": self.strain,
             "cauchy_stress": self.stress,
-            "initial_amplitude": self.displacement,
+            "initial_amplitude": {
+                "bc_yneg": self.displacement,
+                "bc_xneg": self.displacement,
+                "bc_xpos": self.bc_xpos_traction,
+                "bc_ypos": self.bc_ypos_traction,
+                "bc_zneg": self.displacement,
+            }
         }
+        self.key = None
         return
 
     def getField(self, name, pts):
-        return self.fields[name](pts)
+        if self.key is None:
+            field = self.fields[name](pts)
+        else:
+            field = self.fields[name][self.key](pts)
+        return field
 
     def displacement(self, locs):
         """
@@ -140,6 +161,26 @@ class AnalyticalSoln(object):
         stress[0, :, 4] = syz
         stress[0, :, 5] = sxz
         return stress
+
+    def bc_xpos_traction(self, locs):
+        """Compute initial traction at locations.
+        """
+        (npts, dim) = locs.shape
+        traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
+        traction[0, :, 0] = sxy
+        traction[0, :, 1] = 0.0
+        traction[0, :, 2] = 0.0
+        return traction
+
+    def bc_ypos_traction(self, locs):
+        """Compute initial traction at locations.
+        """
+        (npts, dim) = locs.shape
+        traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
+        traction[0, :, 0] = -sxy
+        traction[0, :, 1] = 0.0
+        traction[0, :, 2] = 0.0
+        return traction
 
 
 # End of file

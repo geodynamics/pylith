@@ -15,10 +15,11 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults-3d/axialdisp_gendb.py
+# @file tests_auto/linearelasticity/nofaults-3d/sheartraction_gendb.py
 #
 # @brief Python script to generate spatial database with displacement
-# boundary conditions for the axial displacement test.
+# boundary conditions for the shear test. The traction boundary
+# conditions use UniformDB in the .cfg file.
 
 import numpy
 
@@ -26,8 +27,14 @@ import numpy
 class GenerateDB(object):
     """
     Python object to generate spatial database with displacement
-    boundary conditions for the axial displacement test.
+    boundary conditions for the shear test.
     """
+
+    def __init__(self):
+        """
+        Constructor.
+        """
+        return
 
     def run(self):
         """
@@ -47,7 +54,7 @@ class GenerateDB(object):
         xyz[:, 1] = y3.ravel()
         xyz[:, 2] = z3.ravel()
 
-        from axialdisp_soln import AnalyticalSoln
+        from sheartraction_soln import AnalyticalSoln
         soln = AnalyticalSoln()
         disp = soln.displacement(xyz)
 
@@ -76,14 +83,7 @@ class GenerateDB(object):
 
         from spatialdata.spatialdb.SimpleGridAscii import SimpleGridAscii
         io = SimpleGridAscii()
-        io.inventory.filename = "axialdisp_bc.spatialdb"
-        io._configure()
-        io.write(data)
-
-        data["values"][0]["name"] = "displacement_x"
-        data["values"][1]["name"] = "displacement_y"
-        data["values"][2]["name"] = "displacement_z"
-        io.inventory.filename = "axialdisp_ic.spatialdb"
+        io.inventory.filename = "sheartraction_disp.spatialdb"
         io._configure()
         io.write(data)
         return
