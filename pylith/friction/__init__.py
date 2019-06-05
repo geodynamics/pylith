@@ -16,18 +16,12 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/friction/__init__.py
+# @file pylith/friction/__init__.py
 
-## @brief Python PyLith Friction module initialization
+# @brief Python PyLith Friction module initialization
 
-__all__ = ['FrictionModel',
-           'StaticFriction',
-           'SlipWeakening',
-           'SlipWeakeningTime',
-           'SlipWeakeningTimeStable',
-           'RateStateAgeing',
-           'TimeWeakening',
-           ]
+__all__ = [
+]
 
 
 # End of file

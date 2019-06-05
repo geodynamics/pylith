@@ -16,26 +16,34 @@
 # ----------------------------------------------------------------------
 #
 
-# @file pylith/meshio___init__.py
+# @file pylith/meshio___init__",
 #
 # @brief Python PyLith meshio module initialization
 
-__all__ = ['DataWriter',
-           'DataWriterVTK',
-           'MeshIOObj',
-           'MeshIOAscii',
-           'MeshIOCubit',
-           'MeshIOLagrit',
-           'OutputFaultKin',
-           'OutputManager',
-           'OutputSoln',
-           'OutputSolnSubset',
-           'OutputSolnPoints',
-           'PointsList',
-           'SingleOutput',
-           'FieldFilter',
-           'FieldFilterProject',
-           ]
+__all__ = [
+    "MeshIOObj",
+    "MeshIOAscii",
+    "MeshIOCubit",
+    "MeshIOLagrit",
+    "DataWriter",
+    "DataWriterVTK",
+    "DataWriterHDF5Ext",
+    "DataWriterHDF5",
+    "FieldFilter",
+    "FieldFilterNone",
+    "FieldFilterProject",
+    "OutputObserver",
+    "OutputPhysics",
+    "OutputSoln",
+    "OutputSolnBoundary",
+    "OutputSolnDomain",
+    "OutputSolnPoints",
+    "OutputTrigger",
+    "OutputTriggerStep",
+    "OutputTriggerTime",
+    "PointsList",
+    "Xdmf",
+]
 
 
 # End of file

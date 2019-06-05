@@ -15,27 +15,32 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/problems/__init__.py
+# @file pylith/__init__",
 #
 # @brief Python PyLith crustal dynamics problems module initialization
 
-__all__ = ['Problem',
-           'TimeDependent',
-           'Solution',
-           'SolutionSubfield',
-           'SubfieldDisplacement',
-           'SubfieldLagrangeFault',
-           'SubfieldPressure',
-           'SubfieldTemperature',
-           'SubfieldVelocity',
-           'SolnDisp',
-           'SolnDispLagrange',
-           'SolnDispPres',
-           'SolnDispPresLagrange',
-           'SolnDispVel',
-           'SolnDispVelLagrange',
-           'Physics',
-           ]
+__all__ = [
+    "Problem",
+    "TimeDependent",
+    "InitialCondition",
+    "InitialConditionDomain",
+    "InitialConditionPatch",
+    "Physics",
+    "Solution",
+    "SolnDispLagrange",
+    "SolnDispPresLagrange",
+    "SolnDispPres",
+    "SolnDisp",
+    "SolnDispVelLagrange",
+    "SolnDispVel",
+    "SolutionSubfield",
+    "SubfieldDisplacement",
+    "SubfieldLagrangeFault",
+    "SubfieldPressure",
+    "SubfieldTemperature",
+    "SubfieldVelocity",
+    "SingleObserver",
+]
 
 
 # End of file

@@ -16,19 +16,22 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/topology/__init__.py
+# @file pylith/topology/__init__.py
 
-## @brief Python PyLith finite-element topology module initialization
+# @brief Python PyLith finite-element topology module initialization
 
-__all__ = ['Distributor',
-           'Mesh',
-           'Field',
-           'MeshGenSimple',
-           'MeshGenerator',
-           'MeshImporter',
-           'MeshRefiner',
-           'RefineUniform',
-           ]
+__all__ = [
+    "Distributor",
+    "Mesh",
+    "Field",
+    "Fields",
+    "MeshGenerator",
+    "MeshImporter",
+    "MeshRefiner",
+    "RefineUniform",
+    "ReverseCuthillMcKee",
+    "Subfield",
+]
 
 
 # End of file

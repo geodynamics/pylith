@@ -16,25 +16,29 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/materials/__init__.py
+# @file pylith/materials/__init__"
 
-## @brief Python PyLith materials module initialization
+# @brief Python PyLith materials module initialization
 
-__all__ = ['ElasticMaterial',
-           'ElasticIsotropic3D',
-           'ElasticPlaneStrain',
-           'ElasticPlaneStress',
-           'ElasticStrain1D',
-           'ElasticStress1D',
-           'GenMaxwellIsotropic3D',
-           'GenMaxwellQpQsIsotropic3D',
-           'Homogeneous',
-           'Material',
-           'MaxwellIsotropic3D',
-           'PowerLaw3D',
-           'PowerLawPlaneStrain',
-           'DruckerPrager3D',
-           ]
+__all__ = [
+    "AuxSubfieldsElasticity",
+    "AuxSubfieldsIsotropicLinearElasticity",
+    "AuxSubfieldsIsotropicLinearGenMaxwell",
+    "AuxSubfieldsIsotropicLinearMaxwell",
+    "AuxSubfieldsIsotropicPowerLaw",
+    "DerivedSubfieldsElasticity",
+    "Elasticity",
+    "Homogeneous",
+    "IncompressibleElasticity",
+    "IsotropicLinearElasticity",
+    "IsotropicLinearGenMaxwell",
+    "IsotropicLinearIncompElasticity",
+    "IsotropicLinearMaxwell",
+    "IsotropicPowerLaw",
+    "Material",
+    "RheologyElasticity",
+    "RheologyIncompressibleElasticity",
+]
 
 
 # End of file
