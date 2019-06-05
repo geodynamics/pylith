@@ -36,7 +36,7 @@ class GenerateDB(object):
         # Domain
         x = numpy.arange(-1.0e+4, 1.01e+4, 5.0e+3)
         y = numpy.arange(-1.0e+4, 1.01e+4, 5.0e+3)
-        z = numpy.array([0])
+        z = numpy.arange(-1.0e+4, 0.01e+4, 5.0e+3)
         x3, y3, z3 = numpy.meshgrid(x, y, z)
         nptsX = x.shape[0]
         nptsY = y.shape[0]
@@ -61,7 +61,7 @@ class GenerateDB(object):
             "z": z,
             "points": xyz,
             "coordsys": cs,
-            "data_dim": 2,
+            "data_dim": 3,
             "values": [
                 {"name": "initial_amplitude_x",
                  "units": "m",

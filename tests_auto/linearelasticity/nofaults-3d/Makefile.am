@@ -36,7 +36,8 @@ dist_noinst_PYTHON = \
 	gravity_refstate_soln.py \
 	gravity_refstate_gendb.py \
 	TestGravityIncompressible.py \
-	gravity_incompressible_soln.py
+	gravity_incompressible_soln.py \
+	test_pylith.py
 
 dist_noinst_DATA = \
 	geometry.jou \

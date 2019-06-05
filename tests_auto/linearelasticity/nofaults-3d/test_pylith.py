@@ -15,7 +15,7 @@
 #
 # ======================================================================
 
-from pylith.tests.FullTestApp import TestDriver
+from pylith.tests.FullTestApp import TestDriver, TestCase
 
 import unittest
 
@@ -67,6 +67,7 @@ class TestApp(TestDriver):
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
+    TestCase.parse_args()
     TestApp().main()
 
 

@@ -21,7 +21,8 @@
 
 import unittest
 
-from pylith.tests.FullTestApp import run_pylith, check_data
+from pylith.tests.FullTestApp import check_data
+from pylith.tests.FullTestApp import TestCase as FullTestCase
 
 import meshes
 from axialdisp_soln import AnalyticalSoln
@@ -29,25 +30,22 @@ from axialdisp_gendb import GenerateDB
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-class TestCase(unittest.TestCase):
+class TestCase(FullTestCase):
     """
     Test suite for testing PyLith with 3-D axial compression/extension.
     """
-    NAME = None  # Set in child class.
     DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos", "bc_zneg"]
 
     def setUp(self):
         """
         Setup for test.
         """
+        FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()
-        self.verbosity = 0
         return
 
     def run_pylith(self, testName, args):
-        if self.verbosity > 0:
-            print("Running Pylith with args '{}' ...".format(" ".join(args)))
-        run_pylith(testName, args, GenerateDB)
+        FullTestCase.run_pylith(self, testName, args, GenerateDB)
         return
 
     def test_domain_solution(self):
@@ -115,6 +113,7 @@ def test_cases():
 
 # ----------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
+    FullTestCase.parse_args()
 
     suite = unittest.TestSuite()
     for test in test_cases():
