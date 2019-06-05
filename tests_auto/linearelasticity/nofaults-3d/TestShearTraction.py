@@ -42,7 +42,7 @@ class TestCase(unittest.TestCase):
         Setup for test.
         """
         self.exactsoln = AnalyticalSoln()
-        self.verbosity = 1
+        self.verbosity = 0
         return
 
     def run_pylith(self, testName, args):
@@ -125,7 +125,7 @@ class TestTet(TestCase, meshes.Tet):
 # ----------------------------------------------------------------------------------------------------------------------
 def test_cases():
     return [
-        # TestHex,
+        TestHex,
         TestTet,
     ]
 
