@@ -34,10 +34,9 @@ dist_noinst_PYTHON = \
 	gravity_soln.py \
 	TestGravityRefState.py \
 	gravity_refstate_soln.py \
-	gravity_refstate_gendb.py
-	
-#	TestGravityIncompressible.py \
-#	gravity_incompressible_soln.py
+	gravity_refstate_gendb.py \
+	TestGravityIncompressible.py \
+	gravity_incompressible_soln.py
 
 dist_noinst_DATA = \
 	geometry.jou \
@@ -61,11 +60,10 @@ dist_noinst_DATA = \
 	gravity_hex.cfg \
 	gravity_refstate.cfg \
 	gravity_refstate_tet.cfg \
-	gravity_refstate_hex.cfg
-
-#	gravity_incompressible.cfg \
-#	gravity_incompressible_hex.cfg \
-#	gravity_incompressible_tet.cfg
+	gravity_refstate_hex.cfg \
+	gravity_incompressible.cfg \
+	gravity_incompressible_hex.cfg \
+	gravity_incompressible_tet.cfg
 
 noinst_TMP = \
 	axialdisp_bc.spatialdb \
