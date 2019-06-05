@@ -729,9 +729,9 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::g1u(const PylithInt dim,
     PylithScalar stressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     meanStress(_dim, numSMean, numAMean, sOffMean, sOffMean_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
                t, x, numConstants, constants, stressTensor);
-    IsotropicLinearElasticityPlaneStrain::deviatoricStress(_dim, numSDev, numADev, sOffDev, sOffDev_x, s, s_t, s_x,
-                                                           aOffDev, NULL, a, a_t, NULL,
-                                                           t, x, numConstants, constants, stressTensor);
+    IsotropicLinearElasticity3D::deviatoricStress(_dim, numSDev, numADev, sOffDev, sOffDev_x, s, s_t, s_x,
+                                                  aOffDev, NULL, a, a_t, NULL,
+                                                  t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
         g1[i] -= stressTensor[i];
     } // for
@@ -804,9 +804,9 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::g1u_refstate(const PylithI
     PylithScalar stressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     meanStress(_dim, numSMean, numAMean, sOffMean, sOffMean_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
                t, x, numConstants, constants, stressTensor);
-    IsotropicLinearElasticityPlaneStrain::deviatoricStress(_dim, numSDev, numADev, sOffDev, sOffDev_x, s, s_t, s_x,
-                                                           aOffDev, NULL, a, a_t, NULL,
-                                                           t, x, numConstants, constants, stressTensor);
+    IsotropicLinearElasticity3D::deviatoricStress(_dim, numSDev, numADev, sOffDev, sOffDev_x, s, s_t, s_x,
+                                                  aOffDev, NULL, a, a_t, NULL,
+                                                  t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
         g1[i] -= stressTensor[i];
     } // for
