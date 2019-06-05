@@ -1,0 +1,18 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values =      1
+  value-names =  initial_amplitude
+  value-units =  m
+  num-locs =     1
+  data-dim =    0
+  space-dim =    2
+  cs-data = cartesian {
+  to-meters = 1
+  space-dim = 2
+}
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) initial_amplitude (m)
+0.0  0.0    0.0
