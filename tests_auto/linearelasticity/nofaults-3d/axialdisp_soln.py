@@ -13,25 +13,18 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults-2d/axialdisp_soln.py
+# @file tests_auto/linearelasticity/nofaults-3d/axialdisp_soln.py
 #
 # @brief Analytical solution to axial displacement problem.
 #
-# 2-D axial compression test with linear quadrilateral cells.
-#
-#             Uy=-a
-#          ----------
-#          |        |
-# Ux=-b    |        |
-#          |        |
-#          |        |
-#          ----------
-#            Uy=+a
+# 3-D axial extension/compression test with linear cells.
 #
 # Dirichlet boundary conditions
-# Ux(x,0) = b
-# Uy(-4000,y) = -a
-# Uy(+4000,y) = +a
+# boundary_xneg: Ux(-6000,0,z) = -b
+# boundary_yneg: Uy(x,-6000,z) = -a
+# boundary_xpos: Ux(-6000,0,z) = +b
+# boundary_ypos: Uy(x,-6000,z) = +a
+# boundary_zneg: Uz(x,y,-9000) = 0
 
 import numpy
 
@@ -45,10 +38,12 @@ p_mu = p_density * p_vs**2
 p_lambda = p_density * p_vp**2 - 2 * p_mu
 
 # Uniform stress field (plane strain)
-sxx = 1.0e+7
+sxx = +1.0e+7
+syy = -0.8e+7
+szz = 0.0
 sxy = 0.0
-syy = 0.0
-szz = p_lambda / (2 * p_lambda + 2 * p_mu) * (sxx + syy)
+syz = 0.0
+sxz = 0.0
 
 # Uniform strain field
 exx = 1.0 / (2 * p_mu) * (sxx - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
@@ -56,6 +51,8 @@ eyy = 1.0 / (2 * p_mu) * (syy - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + sy
 ezz = 1.0 / (2 * p_mu) * (szz - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
 
 exy = 1.0 / (2 * p_mu) * (sxy)
+eyz = 1.0 / (2 * p_mu) * (syz)
+exz = 1.0 / (2 * p_mu) * (sxz)
 
 
 # ----------------------------------------------------------------------
@@ -63,8 +60,8 @@ class AnalyticalSoln(object):
     """
     Analytical solution to axial extension problem.
     """
-    SPACE_DIM = 2
-    TENSOR_SIZE = 4
+    SPACE_DIM = 3
+    TENSOR_SIZE = 6
 
     def __init__(self):
         self.fields = {
@@ -87,8 +84,9 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[0, :, 0] = exx * locs[:, 0] + exy * locs[:, 1]
-        disp[0, :, 1] = eyy * locs[:, 1] + exy * locs[:, 0]
+        disp[0, :, 0] = exx * locs[:, 0] + exy * locs[:, 1] + exz * locs[:, 2]
+        disp[0, :, 1] = exy * locs[:, 0] + eyy * locs[:, 1] + eyz * locs[:, 2]
+        disp[0, :, 2] = exz * locs[:, 0] + eyz * locs[:, 1] + ezz * locs[:, 2]
         return disp
 
     def density(self, locs):
@@ -125,6 +123,8 @@ class AnalyticalSoln(object):
         strain[0, :, 1] = eyy
         strain[0, :, 2] = ezz
         strain[0, :, 3] = exy
+        strain[0, :, 4] = eyz
+        strain[0, :, 5] = exz
         return strain
 
     def stress(self, locs):
@@ -137,6 +137,8 @@ class AnalyticalSoln(object):
         stress[0, :, 1] = syy
         stress[0, :, 2] = szz
         stress[0, :, 3] = sxy
+        stress[0, :, 4] = syz
+        stress[0, :, 5] = sxz
         return stress
 
 

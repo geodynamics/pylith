@@ -15,7 +15,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults-2d/axialdisp_gendb.py
+# @file tests_auto/linearelasticity/nofaults-3d/axialdisp_gendb.py
 #
 # @brief Python script to generate spatial database with displacement
 # boundary conditions for the axial displacement test.
@@ -34,42 +34,55 @@ class GenerateDB(object):
         Generate the database.
         """
         # Domain
-        x = numpy.arange(-4000.0, 4000.1, 1000.0)
-        y = numpy.arange(-4000.0, 4000.1, 1000.0)
-        npts = x.shape[0]
+        x = numpy.arange(-1.0e+4, 1.01e+4, 5.0e+3)
+        y = numpy.arange(-1.0e+4, 1.01e+4, 5.0e+3)
+        z = numpy.arange(-1.0e+4, 0.01e+4, 5.0e+3)
+        x3, y3, z3 = numpy.meshgrid(x, y, z)
+        nptsX = x.shape[0]
+        nptsY = y.shape[0]
+        nptsZ = z.shape[0]
 
-        xx = x * numpy.ones((npts, 1), dtype=numpy.float64)
-        yy = y * numpy.ones((npts, 1), dtype=numpy.float64)
-        xy = numpy.zeros((npts**2, 2), dtype=numpy.float64)
-        xy[:, 0] = numpy.ravel(xx)
-        xy[:, 1] = numpy.ravel(numpy.transpose(yy))
+        xyz = numpy.zeros((nptsX * nptsY * nptsZ, 3), dtype=numpy.float64)
+        xyz[:, 0] = x3.ravel()
+        xyz[:, 1] = y3.ravel()
+        xyz[:, 2] = z3.ravel()
 
         from axialdisp_soln import AnalyticalSoln
         soln = AnalyticalSoln()
-        disp = soln.displacement(xy)
+        disp = soln.displacement(xyz)
 
         from spatialdata.geocoords.CSCart import CSCart
         cs = CSCart()
-        cs.inventory.spaceDim = 2
+        cs.inventory.spaceDim = 3
         cs._configure()
-        data = {'points': xy,
-                'coordsys': cs,
-                'data_dim': 2,
-                'values': [{'name': "initial_amplitude_x",
-                            'units': "m",
-                            'data': numpy.ravel(disp[0, :, 0])},
-                           {'name': "initial_amplitude_y",
-                            'units': "m",
-                            'data': numpy.ravel(disp[0, :, 1])}]}
+        data = {
+            "x": x,
+            "y": y,
+            "z": z,
+            "points": xyz,
+            "coordsys": cs,
+            "data_dim": 3,
+            "values": [
+                {"name": "initial_amplitude_x",
+                 "units": "m",
+                 "data": numpy.ravel(disp[0, :, 0])},
+                {"name": "initial_amplitude_y",
+                 "units": "m",
+                 "data": numpy.ravel(disp[0, :, 1])},
+                {"name": "initial_amplitude_z",
+                 "units": "m",
+                 "data": numpy.ravel(disp[0, :, 2])},
+            ]}
 
-        from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
-        io = SimpleIOAscii()
+        from spatialdata.spatialdb.SimpleGridAscii import SimpleGridAscii
+        io = SimpleGridAscii()
         io.inventory.filename = "axialdisp_bc.spatialdb"
         io._configure()
         io.write(data)
 
         data["values"][0]["name"] = "displacement_x"
         data["values"][1]["name"] = "displacement_y"
+        data["values"][2]["name"] = "displacement_z"
         io.inventory.filename = "axialdisp_ic.spatialdb"
         io._configure()
         io.write(data)

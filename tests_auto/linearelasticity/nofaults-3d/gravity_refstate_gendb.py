@@ -14,7 +14,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults-2d/gravity_refstate_gendb.py
+# @file tests_auto/linearelasticity/nofaults-3d/gravity_refstate_gendb.py
 #
 # @brief Python script to generate spatial database with auxiliary
 # fields for test with gravitational body forces and initial
@@ -40,24 +40,25 @@ class GenerateDB(object):
         Generate the database.
         """
         # Domain
-        y = numpy.arange(-4000.0, 4000.1, 8000.0)
-        x = numpy.zeros(y.shape)
-        npts = y.shape[0]
+        z = numpy.arange(-9000.0, 0.1, 9000.0)
+        x = numpy.zeros(z.shape)
+        y = numpy.zeros(z.shape)
+        npts = z.shape[0]
 
-        xy = numpy.vstack((x, y)).transpose()
+        xyz = numpy.vstack((x, y, z)).transpose()
 
         from gravity_refstate_soln import AnalyticalSoln
         from gravity_refstate_soln import p_density, p_vs, p_vp
         soln = AnalyticalSoln()
-        stress = soln.stress(xy)
-        strain = soln.strain(xy)
+        stress = soln.stress(xyz)
+        strain = soln.strain(xyz)
 
         from spatialdata.geocoords.CSCart import CSCart
         cs = CSCart()
-        cs.inventory.spaceDim = 2
+        cs.inventory.spaceDim = 3
         cs._configure()
         data = {
-            'points': xy,
+            'points': xyz,
             'coordsys': cs,
             'data_dim': 1,
             'values': [
@@ -86,6 +87,14 @@ class GenerateDB(object):
                     'units': "Pa",
                     'data': numpy.ravel(stress[0, :, 2]),
                 }, {
+                    'name': "reference_stress_yz",
+                    'units': "Pa",
+                    'data': numpy.ravel(stress[0, :, 4]),
+                }, {
+                    'name': "reference_stress_xz",
+                    'units': "Pa",
+                    'data': numpy.ravel(stress[0, :, 5]),
+                }, {
                     'name': "reference_stress_xy",
                     'units': "Pa",
                     'data': numpy.ravel(stress[0, :, 3]),
@@ -105,6 +114,14 @@ class GenerateDB(object):
                     'name': "reference_strain_xy",
                     'units': "none",
                     'data': numpy.ravel(strain[0, :, 3]),
+                }, {
+                    'name': "reference_strain_yz",
+                    'units': "none",
+                    'data': numpy.ravel(strain[0, :, 4]),
+                }, {
+                    'name': "reference_strain_xz",
+                    'units': "none",
+                    'data': numpy.ravel(strain[0, :, 5]),
                 }
             ]
         }

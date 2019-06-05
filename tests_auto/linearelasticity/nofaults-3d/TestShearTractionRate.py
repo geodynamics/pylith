@@ -15,9 +15,9 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults-2d/TestShearTraction.py
+# @file tests_auto/linearelasticity/nofaults-3d/TestShearTractionRate.py
 #
-# @brief Test suite for testing pylith with 2-D simple shear.
+# @brief Test suite for testing pylith with 3-D time-dependent simple shear.
 
 import unittest
 
@@ -25,16 +25,16 @@ from pylith.tests.FullTestApp import check_data
 from pylith.tests.FullTestApp import TestCase as FullTestCase
 
 import meshes
-from sheartraction_soln import AnalyticalSoln
-from sheartraction_gendb import GenerateDB
+from sheartraction_rate_soln import AnalyticalSoln
+from sheartraction_rate_gendb import GenerateDB
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
     """
-    Test suite for testing PyLith with 2-D simple shear.
+    Test suite for testing PyLith with 2-D time-dependent simple shear.
     """
-    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_yneg"]
+    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_yneg", "bc_zneg"]
     NEUMANN_BOUNDARIES = ["bc_xpos", "bc_ypos"]
 
     def setUp(self):
@@ -70,7 +70,7 @@ class TestCase(FullTestCase):
         return
 
     def test_bcdirichlet_info(self):
-        vertexFields = ["initial_amplitude"]
+        vertexFields = ["initial_amplitude", "rate_start_time", "rate_amplitude"]
         for bc in self.DIRICHLET_BOUNDARIES:
             self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
@@ -85,7 +85,7 @@ class TestCase(FullTestCase):
         return
 
     def test_bcneumann_info(self):
-        vertexFields = ["initial_amplitude"]
+        vertexFields = ["initial_amplitude", "rate_start_time", "rate_amplitude"]
         for bc in self.NEUMANN_BOUNDARIES:
             self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
@@ -101,30 +101,30 @@ class TestCase(FullTestCase):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-class TestQuad(TestCase, meshes.Quad):
-    NAME = "sheartraction_quad"
+class TestHex(TestCase, meshes.Hex):
+    NAME = "sheartraction_rate_hex"
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["sheartraction.cfg", "sheartraction_quad.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["sheartraction_rate.cfg", "sheartraction_rate_hex.cfg"])
         return
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-class TestTri(TestCase, meshes.Tri):
-    NAME = "sheartraction_tri"
+class TestTet(TestCase, meshes.Tet):
+    NAME = "sheartraction_rate_tet"
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["sheartraction.cfg", "sheartraction_tri.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["sheartraction_rate.cfg", "sheartraction_rate_tet.cfg"])
         return
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 def test_cases():
     return [
-        TestQuad,
-        TestTri,
+        TestHex,
+        TestTet,
     ]
 
 

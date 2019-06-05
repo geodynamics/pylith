@@ -42,33 +42,33 @@ dist_noinst_PYTHON = \
 dist_noinst_DATA = \
 	geometry.jou \
 	bc.jou \
-	mesh_tri.jou \
-	mesh_tri.exo \
-	mesh_quad.jou \
-	mesh_quad.exo \
+	mesh_tet.jou \
+	mesh_tet.exo \
+	mesh_hex.jou \
+	mesh_hex.exo \
 	pylithapp.cfg \
 	axialdisp.cfg \
-	axialdisp_tri.cfg \
-	axialdisp_quad.cfg \
+	axialdisp_tet.cfg \
+	axialdisp_hex.cfg \
 	sheartraction.cfg \
-	sheartraction_tri.cfg \
-	sheartraction_quad.cfg \
-	sheartraction_rate.cfg \
-	sheartraction_rate_tri.cfg \
-	sheartraction_rate_quad.cfg \
+	sheartraction_tet.cfg \
+	sheartraction_hex.cfg \
+ 	sheartraction_rate.cfg \
+	sheartraction_rate_tet.cfg \
+	sheartraction_rate_hex.cfg \
 	gravity.cfg \
-	gravity_tri.cfg \
-	gravity_quad.cfg \
+	gravity_tet.cfg \
+	gravity_hex.cfg \
 	gravity_refstate.cfg \
-	gravity_refstate_tri.cfg \
-	gravity_refstate_quad.cfg \
+	gravity_refstate_tet.cfg \
+	gravity_refstate_hex.cfg \
 	gravity_incompressible.cfg \
-	gravity_incompressible_quad.cfg \
-	gravity_incompressible_tri.cfg
+	gravity_incompressible_hex.cfg \
+	gravity_incompressible_tet.cfg
 
 noinst_TMP = \
 	axialdisp_bc.spatialdb \
-	axialdisp_ic.spatialdb \
+	axialdisp_ic.spatialdb
 	sheartraction_disp.spatialdb \
 	sheartraction_rate_disp.spatialdb \
 	gravity_refstate_matfields.spatialdb
@@ -76,7 +76,7 @@ noinst_TMP = \
 
 
 # 'export' the input files by performing a mock install
-export_datadir = $(top_builddir)/tests_auto/linearelasticity/nofaults-2d
+export_datadir = $(top_builddir)/tests_auto/linearelasticity/nofaults-3d
 export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 

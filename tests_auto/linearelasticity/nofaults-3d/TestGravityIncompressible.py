@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ----------------------------------------------------------------------
 #
@@ -15,9 +15,9 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults-2d/TestShearTraction.py
+# @file tests_auto/linearelasticity/nofaults-2d/TestGravityIncompressible.py
 #
-# @brief Test suite for testing pylith with 2-D simple shear.
+# @brief Test suite for testing pylith with 2-D gravitational body forces for incompssible elasticity.
 
 import unittest
 
@@ -25,17 +25,15 @@ from pylith.tests.FullTestApp import check_data
 from pylith.tests.FullTestApp import TestCase as FullTestCase
 
 import meshes
-from sheartraction_soln import AnalyticalSoln
-from sheartraction_gendb import GenerateDB
+from gravity_incompressible_soln import AnalyticalSoln
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
     """
-    Test suite for testing PyLith with 2-D simple shear.
+    Test suite for testing PyLith with gravitational body forces (no initial stress).
     """
-    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_yneg"]
-    NEUMANN_BOUNDARIES = ["bc_xpos", "bc_ypos"]
+    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos", "bc_zneg", "bc_zpos"]
 
     def setUp(self):
         """
@@ -46,85 +44,70 @@ class TestCase(FullTestCase):
         return
 
     def run_pylith(self, testName, args):
-        FullTestCase.run_pylith(self, testName, args, GenerateDB)
+        FullTestCase.run_pylith(self, testName, args)
         return
 
     def test_domain_solution(self):
         filename = "output/{}-domain.h5".format(self.NAME)
-        vertexFields = ["displacement"]
+        vertexFields = ["displacement", "pressure"]
         check_data(filename, self, self.DOMAIN, vertexFields=vertexFields)
         return
 
     def test_material_info(self):
-        cellFields = ["density", "bulk_modulus", "shear_modulus"]
+        cellFields = ["density", "bulk_modulus", "shear_modulus", "gravitational_acceleration"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
             check_data(filename, self, self.MATERIALS[material], cellFields=cellFields)
         return
 
     def test_material_solution(self):
-        vertexFields = ["displacement", "cauchy_strain", "cauchy_stress"]
+        vertexFields = ["displacement", "pressure", "cauchy_strain", "cauchy_stress"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}.h5".format(self.NAME, material)
             check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields)
         return
 
     def test_bcdirichlet_info(self):
-        vertexFields = ["initial_amplitude"]
+        cellFields = ["initial_amplitude"]
         for bc in self.DIRICHLET_BOUNDARIES:
             self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
+            check_data(filename, self, self.BOUNDARIES[bc], cellFields=cellFields)
         return
 
     def test_bcdirichlet_solution(self):
-        vertexFields = ["displacement"]
+        vertexFields = ["displacement", "pressure"]
         for bc in self.DIRICHLET_BOUNDARIES:
             filename = "output/{}-{}.h5".format(self.NAME, bc)
             check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
         return
 
-    def test_bcneumann_info(self):
-        vertexFields = ["initial_amplitude"]
-        for bc in self.NEUMANN_BOUNDARIES:
-            self.exactsoln.key = bc
-            filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
-        return
 
-    def test_bcneumann_solution(self):
-        vertexFields = ["displacement"]
-        for bc in self.NEUMANN_BOUNDARIES:
-            filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
+# ----------------------------------------------------------------------------------------------------------------------
+class TestHex(TestCase, meshes.Hex):
+    NAME = "gravity_incompressible_hex"
+
+    def setUp(self):
+        TestCase.setUp(self)
+        TestCase.run_pylith(self, self.NAME, ["gravity_incompressible.cfg", "gravity_incompressible_hex.cfg"])
         return
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-class TestQuad(TestCase, meshes.Quad):
-    NAME = "sheartraction_quad"
+class TestTet(TestCase, meshes.Tet):
+    NAME = "gravity_incompressible_tet"
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["sheartraction.cfg", "sheartraction_quad.cfg"])
-        return
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-class TestTri(TestCase, meshes.Tri):
-    NAME = "sheartraction_tri"
-
-    def setUp(self):
-        TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["sheartraction.cfg", "sheartraction_tri.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["gravity_incompressible.cfg", "gravity_incompressible_tet.cfg"])
         return
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 def test_cases():
     return [
-        TestQuad,
-        TestTri,
+        TestHex,
+        TestTet,
     ]
 
 

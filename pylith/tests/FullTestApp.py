@@ -28,6 +28,41 @@ from pylith.apps.PyLithApp import PyLithApp
 
 
 # ----------------------------------------------------------------------------------------------------------------------
+class TestCase(unittest.TestCase):
+    """
+    Generic test case for full-scale test.
+    """
+    NAME = None  # Set in child class.
+    VERBOSITY = 0
+    RUN_PYLITH = True
+
+    def setUp(self):
+        """
+        Setup for test.
+        """
+        return
+
+    def run_pylith(self, testName, args, generatedb=None):
+        if self.VERBOSITY > 0:
+            print("Running Pylith with args '{}' ...".format(" ".join(args)))
+        if self.RUN_PYLITH:
+            run_pylith(testName, args, generatedb)
+        return
+
+    @staticmethod
+    def parse_args():
+        import argparse
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--verbose", action="store_true", dest="verbosity", default=0)
+        parser.add_argument("--skip-pylith-run", action="store_false", dest="run_pylith", default=True)
+        args = parser.parse_args()
+        TestCase.VERBOSITY = args.verbosity
+        TestCase.RUN_PYLITH = args.run_pylith
+        print TestCase.RUN_PYLITH
+        return
+
+
+# ----------------------------------------------------------------------------------------------------------------------
 class TestDriver(object):
     """
     Driver application for running full-scale tests.
@@ -172,11 +207,11 @@ def check_data(filename, testcase, mesh, vertexFields=[], cellFields=[]):
 
     checker = HDF5Checker(filename, testcase, mesh)
     for field in vertexFields:
-        if testcase.verbosity > 0:
+        if testcase.VERBOSITY > 0:
             print("Checking vertex field '{}' in file {}.".format(field, filename))
         checker.checkVertexField(field)
     for field in cellFields:
-        if testcase.verbosity > 0:
+        if testcase.VERBOSITY > 0:
             print("Checking cell field '{}' in file {}.".format(field, filename))
         checker.checkCellField(field)
     return
