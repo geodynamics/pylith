@@ -761,13 +761,13 @@ pylith::fekernels::NeumannTimeDependent::_tangential_directions(const PylithInt 
 
     // refDir x normDir
     tanDir1[0] = +refDir[1]*normDir[2] - refDir[2]*normDir[1];
-    tanDir1[0] = -refDir[2]*normDir[0] + refDir[0]*normDir[2];
-    tanDir1[0] = +refDir[0]*normDir[1] - refDir[1]*normDir[0];
+    tanDir1[1] = +refDir[2]*normDir[0] - refDir[0]*normDir[2];
+    tanDir1[2] = +refDir[0]*normDir[1] - refDir[1]*normDir[0];
 
     // normDir x tanDir1
     tanDir2[0] = +normDir[1]*tanDir1[2] - normDir[2]*tanDir1[1];
-    tanDir2[0] = -normDir[2]*tanDir1[0] + normDir[0]*tanDir1[2];
-    tanDir2[0] = +normDir[0]*tanDir1[1] - normDir[1]*tanDir1[0];
+    tanDir2[1] = +normDir[2]*tanDir1[0] - normDir[0]*tanDir1[2];
+    tanDir2[2] = +normDir[0]*tanDir1[1] - normDir[1]*tanDir1[0];
 } // _tangential_directions
 
 
