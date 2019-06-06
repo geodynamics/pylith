@@ -1,0 +1,161 @@
+\chapter{PyLith Design}
+
+PyLith is separated into modules to encapsulate behavior and facilitate
+use across multiple applications. This allows expert users to replace
+functionality of a wide variety of components without recompiling
+or polluting the main code. PyLith employs external packages (see
+Figure \vref{fig:pylith-dependencies}) to reduce development time
+and enhance computational efficiency; for example, PyLith 0.8 ran
+two times faster when the PETSc linear solver was used.
+
+\begin{figure}[htbp]
+  \includegraphics[width=4in]{intro/figs/packages}
+  \caption{PyLith dependencies. PyLith makes direct use of several
+    other packages, some of which have their own dependencies.}
+  \label{fig:pylith-dependencies}
+\end{figure}
+
+PyLith is written in two programming languages. High-level code is
+written in Python; this rich, expressive interpreted language with
+dynamic typing reduces development time and permits flexible addition
+of user-contributed modules. This high-level code makes use of Pyre, a
+science-neutral simulation framework developed at Caltech, to link the
+modules together at runtime and gather user-input. Low-level code is
+written in C++, providing fast execution while still allowing an
+object-oriented implementation. This low-level code relies on PETSc to
+perform operations on matrices and vectors in parallel. We also make
+extensive use of two Python packages. SWIG is a package that
+simplifies the task of adding C++ extensions to Python code, and FIAT
+provides tabulated basis functions and numerical quadrature points.
+
+In writing PyLith 1.0, the code was designed to be object-oriented and
+modular. Each type of module is accessed through a specified interface
+(set of functions). This permits adding, replacing, and rewriting
+modules without affecting other parts of the code. This code structure
+simplifies code maintenance and development. Extending the set of code
+features is also easier, since developers can create new modules
+derived from the existing ones.
+
+The current code design leverages Pyre and PETSc extensively. Pyre
+glues together the various modules used to construct a simulation and
+specify the parameters. PETSc provides the finite-element data
+structures and handles the creation and manipulation of matrices and
+vectors. As a result, most of the PyLith source code pertains to
+implementing the geodynamics, such as bulk rheology, boundary
+conditions, and slip on faults.
+
+PyLith also uses FIAT to tabulate the finite-element basis functions
+at the numerical integration (quadrature) points. Nemesis allows
+PyLith to run Python using the Message Passing Interface (MPI) for
+parallel processing. Additional, indirect dependencies (see Figure
+\vref{fig:pylith-dependencies}) include numpy (efficient operations on
+numerical arrays in Python), Proj.4 (geographic projections), and SWIG
+(calling C++ functions from Python).
+
+During development, tests were constructed for nearly every module
+function. These unit tests are distributed with the source code. These
+tests are run throughout the development cycle to expose bugs and
+isolate their origin. As additional changes are made to the code, the
+tests are rerun to help prevent introduction of new bugs. A number of
+simple, full-scale tests, such as axial compression and extension,
+simple shear, and slip on through-going faults, have been used to test
+the code. Additionally, we have run the Southern California Earthquake
+Center crustal deformation and several of the spontaneous rupture
+benchmarks for strike-slip and reverse-slip to determine the relative
+local and global error (see Chapter \vref{sec:benchmarks}).
+
+\subsection{Pyre}
+
+Pyre is an object-oriented environment capable of specifying and launching
+numerical simulations on multiple platforms, including Beowulf-class
+parallel computers and grid computing systems. Pyre allows the binding
+of multiple components such as solid and fluid models used in Earth
+science simulations, and different meshers. The Pyre framework enables
+the elegant setup, modification and launching of massively parallel
+solver applications.
+
+\begin{figure}[htbp]
+  \includegraphics[width=4in]{intro/figs/pyre_overview}
+  \caption{Pyre Architecture. The integration framework is a set of
+    cooperating abstract services.}
+  \label{fig:Pyre:Architecture}
+\end{figure}
+
+Pyre is a framework, a combination of software and design philosophy
+that promotes the reuse of code. In their canonical software design
+book, \emph{Design Patterns}, Erich Gamma \textit{et al}. condense
+the concept of a framework concept down to, ``When you use a framework,
+you reuse the main body and write the code it calls.'' In the context
+of frameworks and object-oriented programming, Pyre can be thought
+of as a collection of classes and the way their instances interact.
+Programming applications based on Pyre will look similar to those
+written in any other object-oriented language. The Pyre framework
+contains a subset of parts that make up the overall framework. Each
+of those parts is designed to solve a specific problem.
+
+The framework approach to computation offers many advantages. It permits
+the exchange of codes and promotes the reuse of standardized software
+while preserving efficiency. Frameworks are also an efficient way
+to handle changes in computer architecture. They present programmers
+and scientists with a unified and well-defined task and allow for
+shared costs of the housekeeping aspects of software development.
+They provide greater institutional continuity to model development
+than piecemeal approaches.
+
+The Pyre framework incorporates features aimed at enabling the
+scientific non-expert to perform tasks easily without hindering the
+expert. Target features for end users allow complete and intuitive
+simulation specification, reasonable defaults, consistency checks of
+input, good diagnostics, easy access to remote facilities, and status
+monitoring. Target features for developers include easy access to user
+input, a shorter development cycle, and good debugging support.
+
+
+\subsection{PETSc}
+
+PyLith 2.x makes use of a set of data structures and routines in PETSc
+called \object{DMPlex}, which is still under active
+development. \object{DMPlex} provides data structures and routines for
+for representing and manipulating computational meshes, and it greatly
+simplifies finite-element computations.\object{DMPlex} represents the
+topology of the domain. Zero volume elements are inserted along all
+fault surfaces to implement kinematic (prescribed) or dynamic
+(constitutive model) implementations of fault slip. Material
+properties and other parameters are represented as scalar and vector
+fields over the mesh using vectors to store the values and sections to
+map vertices, edges, faces, and cells to indices in the vector. For
+each problem, functions are provided to calculate the residual and its
+Jacobian.  All numerical integration is done in these functions, and
+parallel assembly is accomplished using the get/set closure paradigm
+of the \object{DMPlex} framework. We assemble into PETSc linear
+algebra objects and then call PETSc solvers.
+
+PETSc \url{www-unix.mcs.anl.gov/petsc/petsc-as}, the Portable,
+Extensible Toolkit for Scientific computation, provides a suite of
+routines for parallel, numerical solution of partial differential
+equations for linear and nonlinear systems with large, sparse systems
+of equations.  PETSc includes solvers that implement a variety of
+Newton and Krylov subspace methods. It can also interface with many
+external packages, including ESSL, MUMPS, Matlab, ParMETIS, PVODE, and
+Hypre, thereby providing additional solvers and interaction with other
+software packages.
+
+PETSc includes interfaces for FORTRAN 77/90, C, C++, and Python for
+nearly all of the routines, and PETSc can be installed on most Unix
+systems. PETSc can be built with user-supplied, highly optimized
+linear algebra routines (e.g., ATLAS and commercial versions of
+BLAS/LAPACK), thereby improving application performance. Users can use
+PETSc parallel matrices, vectors, and other data structures for most
+parallel operations, eliminating the need for explicit calls to
+Message Passing Interface (MPI) routines. Many settings and options
+can be controlled with PETSc-specific command-line arguments,
+including selection of preconditions, solvers, and generation of
+performance logs.
+
+
+\todo{brad}{Fields with subfields}
+\todo{brad}{Solution field}
+\todo{brad}{Auxiliary field (properties and state variables)}
+\todo{brad}{Basis order and quadrature order}
+
+\todo{brad}{Organization of components; Physics vs Physics implementation; Obsevers}
