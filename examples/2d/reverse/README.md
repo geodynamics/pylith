@@ -6,7 +6,7 @@ meshing and using faults with specified slip in 2-D.
 Concepts common to all of the steps include:
 
 * Dirichlet boundary conditions
-* Isotropic, linear elasticity with a single material
+* Isotropic, linear elasticity with multiple materials but identical properties
 * Output of the solution over the domain, boundaries, and materials
 * Output of auxiliary information for boundary conditions and
   materials
@@ -26,7 +26,7 @@ simulation include:
 * Static simulation
 * SimpleDB spatial database for specifying values for properties and
   boundary conditions
-* Use of gravity_field to simulate gravitational body forces.
+* Use of gravity_field to simulate gravitational body forces
 
 The simulation parameters are in the `pylithapp.cfg`,
 `step01_gravity.cfg`, `step01_gravity_quad.cfg`  and 'step01_gravity_tri.cfg`
@@ -122,24 +122,29 @@ To run the example (tri cells):
 pylith step04_neumann.cfg step04_neumann_tri.cfg
 ```
 
-## Step05: Time-dependent shear with Dirichlet and Neumann boundary conditions
+## Step05: Fault slip on a single fault
 
-Similar to Step03 but with time-dependent boundary conditions
-consisting of an initial value and a rate of change that is added
-starting at 1.0 year.  Features used in this simulation include:
+This problem has the same zero-displacement BC used in Step 01-03,
+but includes slip on the main thrust fault. Features used in this simulation
+include:
 
-* Quasistatic simulation
-* Time-dependent Dirichlet boundary conditions
-* Time-dependent Neumann boundary conditions
+* Static simulation
 * UniformDB and SimpleDB spatial database for specifying values for
-  properties and boundary conditions.
+  properties, faults, and boundary conditions
+* Use of pylith.problems.SolnDispLagrange for problems involving faults
 
-The simulation parameters are in the `pylithapp.cfg` and
-`step05_sheardisptractrate.cfg` files.
+The simulation parameters are in the `pylithapp.cfg`, `step05_onefault.cfg`,
+`step05_onefault_quad.cfg` and 'step05_onefault_tri.cfg` files. Note that we
+provide options for both triangular and quadrilateral cells.
 
-To run the example:
+To run the example (quad cells):
 ```
-pylith step05_sheardisptractrate.cfg
+pylith step05_onefault.cfg step05_onefault_quad.cfg
+```
+
+To run the example (tri cells):
+```
+pylith step05_onefault.cfg step05_onefault_tri.cfg
 ```
 
 ## Suggested exercises
