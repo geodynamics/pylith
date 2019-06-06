@@ -309,7 +309,7 @@ AC_CONFIG_FILES([Makefile
 		mmstests/faults/Makefile
 		tests_auto/Makefile
 		tests_auto/linearelasticity/Makefile
-  		tests_auto/linearelasticity/nofaults-2d/Makefile
+		tests_auto/linearelasticity/nofaults-2d/Makefile
 		tests_auto/linearelasticity/nofaults-3d/Makefile
 		tests_auto/linearelasticity/faults-2d/Makefile
 		tests_auto/petsc/Makefile
@@ -336,26 +336,14 @@ AC_CONFIG_FILES([Makefile
 		doc/userguide/Makefile
 		examples/Makefile
 		examples/3d/Makefile
-		examples/3d/tet4/Makefile
-		examples/3d/hex8/Makefile
 		examples/3d/subduction/Makefile
 		examples/2d/Makefile
 		examples/2d/subduction/Makefile
-		examples/2d/gravity/Makefile
-		examples/2d/greensfns/Makefile
-		examples/2d/greensfns/strikeslip/Makefile
-		examples/2d/greensfns/reverse/Makefile
 		examples/bar_shearwave/Makefile
 		examples/bar_shearwave/hex8/Makefile
 		examples/bar_shearwave/quad4/Makefile
 		examples/bar_shearwave/tet4/Makefile
 		examples/bar_shearwave/tri3/Makefile
-		examples/twocells/Makefile
-		examples/twocells/twohex8/Makefile
-		examples/twocells/twoquad4/Makefile
-		examples/twocells/twotet4/Makefile
-		examples/twocells/twotet4-geoproj/Makefile
-		examples/twocells/twotri3/Makefile
 		examples/meshing/Makefile
 		examples/meshing/surface_nurbs/Makefile
 		examples/meshing/surface_nurbs/dem/Makefile
@@ -365,7 +353,7 @@ AC_CONFIG_FILES([Makefile
 		examples/meshing/surface_nurbs/merge_surfs/Makefile
 		examples/meshing/surface_nurbs/subduction/Makefile
 		examples/meshing/cubit_cellsize/Makefile
-		examples/debugging/Makefile
+		examples/troubleshooting/Makefile
 		templates/Makefile
 		share/Makefile
 		])

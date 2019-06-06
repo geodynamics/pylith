@@ -1,23 +1,23 @@
-# Examples: 2-D box
+# Examples: 3-D box
 
-This suite of examples demonstrates some basic concepts of using
+This set of examples demonstrates some basic concepts of using
 PyLith to solve the static or quasistatic elasticity equation in
-2-D. Concepts common to all of the steps include:
+3-D. Concepts common to all of the steps include:
 
-* Mesh from ASCII file
+* Mesh from CUBIT/Trelis
 * Dirichlet boundary conditions
 * Isotropic, linear elasticity with a single material
 * Output of the solution over the domain, boundaries, and materials
 * Output of auxiliary information for boundary conditions and
   materials
 
-Faults are discussed in the 2d/strike-slip, 2d/reverse, and
-2d/subduction example sets.
+Faults are discussed in the 3d/strike-slip (planned) and 3d/subduction
+example sets.
 
 ## Step01: Axial extension with Dirichlet boundary conditions
 
-Axial extension with Dirichlet boundary conditions on the +x, -x, and
--y boundaries. Features used in this simulation include:
+Axial extension with Dirichlet boundary conditions on the +x, -x, +y,
+-y, and -z boundaries. Features used in this simulation include:
 
 * Static simulation
 * UniformDB spatial database for specifying values for properties and
@@ -33,8 +33,9 @@ pylith step01_axialdisp.cfg
 
 ## Step02:  Simple shear with Dirichlet boundary conditions
 
-Simple shear with Dirichlet boundary conditions on all four
-boundaries. Features used in this simulation include:
+Simple shear with Dirichlet boundary conditions on the four lateral
+boundaries and the bottom boundary. Features used in this simulation
+include:
 
 * Static simulation
 * UniformDB and SimpleGridDB spatial database for specifying values
@@ -109,7 +110,7 @@ pylith step05_sheardisptractrate.cfg
 
 ## Suggested exercises
 
-1. Change the mesh to the tri mesh.
+1. Change the mesh to the hex mesh.
 
   * Change the setting in the pylithapp.cfg file.
   * Override the current setting using the command line.
@@ -118,7 +119,7 @@ pylith step05_sheardisptractrate.cfg
 
 3. Change the basis order and quadrature order for the solution field.
 
-4. Change Step01 to axial compression in the +y direction.
+4. Change Step01 to axial compression in the x and y directions.
 
 5. Change Step03 to be a combination of shear and axial compression/extension.
 

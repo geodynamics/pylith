@@ -2,7 +2,7 @@
 //
 // This spatial database specifies the initial displacement over the domain.
 //
-// We use a SimpleGridDB because for efficient queries from a grid of points.
+// We use a SimpleGridDB for efficient queries from a grid of points.
 #SPATIAL_GRID.ascii 1
 SimpleGridDB {
   num-x = 4

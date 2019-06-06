@@ -16,13 +16,15 @@
 # ----------------------------------------------------------------------
 #
 
+dist_noinst_DATA = \
+	README.md
+
 SUBDIRS = \
 	2d \
 	3d \
 	bar_shearwave \
 	meshing \
-	debugging \
-	twocells
+	troubleshooting
 
 
 # End of file 
