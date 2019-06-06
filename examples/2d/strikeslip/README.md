@@ -15,8 +15,11 @@ Concepts common to all of the steps include:
 
 ## Meshing: Meshing a 2-D geometry including a throughgoing fault
 
-To do the meshing, Cubit/Trelis is required, and the journal files required are
-`geometry.jou`, `createbc.jou`, `gradient.jou`, and `mesh_tri3.jou`.
+We create the mesh using CUBIT/Trelis; however the resulting mesh is
+provided, so you can skip creating the mesh if you do not have
+CUBIT/Trelis. The associated journal files are: `geometry.jou`,
+`createbc.jou`, `gradient.jou`, `mesh_tri.jou` (triangule cells) and
+`mesh_quad.jou` (quadrilateral mesh).
 
 ## Step01: Prescribed slip with fixed Dirichlet boundary conditions
 
@@ -29,22 +32,21 @@ simulation include:
   boundary conditions
 * UniformDB spatial database for specifying values for fault slip and
   slip initiation time
-* Use of static fault slip
+* Use of precsribed static fault slip
 
-The simulation parameters are in the `pylithapp.cfg` and `step01_slip.cfg`
-files.
+The simulation parameters are in the `pylithapp.cfg`,
+`step01_slip.cfg`, and `solver_fault.cfg` files.
 
 To run the example:
 ```
-pylith step01_slip.cfg
+pylith step01_slip.cfg solver_fault.cfg
 ```
 
 ## Step02: Prescribed slip with time-dependent Dirichlet boundary conditions
 
-Velocity boundary conditions applied in the y-direction, and a single slip
-event with slip matching the accumulated slip deficit.
--y boundaries, gravitational body forces applied, and reference normal stresses
-applied to balance the body forces. Features used in this simulation include:
+Velocity boundary conditions applied in the y-direction, and a single
+earthquake rupture with slip matching the accumulated slip
+deficit. Features used in this simulation include:
 
 * Quasi-static, time-dependent simulation
 * SimpleDB spatial database for specifying values for properties and
@@ -53,12 +55,12 @@ applied to balance the body forces. Features used in this simulation include:
   slip initiation time
 * Rate conditions used to provide velocities on left and right sides
 
-The simulation parameters are in the `pylithapp.cfg` and `step02_slip_velbc.cfg`
-files.
+The simulation parameters are in the `pylithapp.cfg`,
+`step02_slip_velbc.cfg`, and `solver_faults.cfg` files.
 
 To run the example:
 ```
-pylith step02_slip_velbc.cfg
+pylith step02_slip_velbc.cfg solver_fault.cfg
 ```
 
 ## Step03: Multiple ruptures with time-dependent Dirichlet boundary conditions
@@ -76,12 +78,12 @@ include:
 * Rate conditions used to provide velocities on left and right sides
 * Use of multiple rupture sources
 
-The simulation parameters are in the `pylithapp.cfg` and
-`step03_multislip_velbc.cfg` files.
+The simulation parameters are in the `pylithapp.cfg`,
+`step03_multislip_velbc.cfg`, and `solver_fault.cfg` files.
 
 To run the example:
 ```
-pylith step03_multislip_velbc.cfg
+pylith step03_multislip_velbc.cfg solver_fault.cfg
 ```
 
 ## Suggested exercises
@@ -90,9 +92,10 @@ pylith step03_multislip_velbc.cfg
 
   * Create a journal file based on mesh_tri3.jou and use quads instead of tris.
   * Create new .cfg files (stepxx_yy.cfg) to use the quad mesh.
-  
+
 2. Change the material contrast across the fault.
 
 3. Change the basis order and quadrature order for the solution field.
 
-4. Change Step03 to include multiple ruptures at different time intervals, while still accounting for the accumulated slip deficit.
+4. Change Step03 to include multiple ruptures at different time
+   intervals, while still accounting for the accumulated slip deficit.

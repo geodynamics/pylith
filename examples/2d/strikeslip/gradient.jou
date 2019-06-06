@@ -46,9 +46,14 @@ curve edge_yneg_xpos scheme bias fine size {dx} factor {bias_factor} start verte
 curve edge_xneg size {dxA}
 curve edge_xpos size {dxA}
 
+# For CUBIT 15.4
+set trimesher surface gradation {bias_factor}
+
+# For earlier versions of CUBIT
 surface all sizing function type bias start curve fault_surface factor {bias_factor}
 
 # End of file
+
 
 
 
