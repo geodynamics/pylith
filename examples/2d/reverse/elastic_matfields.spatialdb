@@ -1,3 +1,4 @@
+// -*- C++ -*- (syntax highlighting)
 #SPATIAL.ascii 1
 SimpleDB {
   num-values =     3
@@ -7,9 +8,9 @@ SimpleDB {
   data-dim =    0
   space-dim =    2
   cs-data = cartesian {
-  to-meters = 1
-  space-dim = 2
-}
+    to-meters = 1.0
+    space-dim = 2
+  }
 }
 // Columns are
 // (1) x coordinate (m)

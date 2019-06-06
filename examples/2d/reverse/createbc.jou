@@ -1,3 +1,4 @@
+# -*- Python -*- (syntax highlighting)
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
@@ -69,3 +70,4 @@ nodeset 23 group edge_yneg
 nodeset 23 name "edge_yneg"
 
 
+# End of file

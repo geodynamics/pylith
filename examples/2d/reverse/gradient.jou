@@ -1,3 +1,5 @@
+# -*- Python -*- (syntax highlighting)
+
 # ----------------------------------------------------------------------
 # Set vertex spacing with increasing spacing away from fault
 # ----------------------------------------------------------------------
@@ -50,7 +52,12 @@ curve curve_xneg_hw scheme bias fine size {dxC} coarse size {dxB} start vertex v
 # B to D
 curve curve_xneg_fw scheme bias fine size {dxB} coarse size {dxD} start vertex vertex_fault_xneg
 
+# For CUBIT 15.4
+set trimesher surface gradation {bias_factor}
+
+# For earlier versions of CUBIT
 surface all sizing function type bias start curve fault_surface_top fault_surface_bot splay_surface ground_wedge factor {bias_factor}
+
 
 # End of file
 

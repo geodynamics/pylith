@@ -1,6 +1,7 @@
+# -*- Python -*-
 # ----------------------------------------------------------------------
-# Create quad4 mesh at 2 km resolution.
-# ----------------------------------------------------------------------
+# Create tri mesh at 2 km resolution along the fault and coarsening
+# with distance from the fault.
 
 # ----------------------------------------------------------------------
 # Generate geometry
@@ -11,7 +12,7 @@ playback 'geometry.jou'
 # Set discretization size and scheme
 # ----------------------------------------------------------------------
 ${dx=2.0*km}
-surface all scheme pave
+surface all scheme trimesh
 playback 'gradient.jou'
 
 # ----------------------------------------------------------------------
@@ -34,12 +35,10 @@ playback 'createbc.jou'
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-export mesh "mesh_quad4.exo" dimension 2 overwrite
+export mesh "mesh_tri.exo" dimension 2 overwrite
 
 
 # End of file
-
-
 
 
 
