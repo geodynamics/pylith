@@ -1,0 +1,63 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2017 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 surface surface_xneg
+block 1 name "elastic_xneg"
+
+block 2 surface surface_xpos
+block 2 name "elastic_xpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for fault
+# ----------------------------------------------------------------------
+group "fault" add node in fault_surface
+nodeset 10 group fault
+nodeset 10 name "fault"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +x face
+# ----------------------------------------------------------------------
+group "face_xpos" add node in curve edge_xpos
+nodeset 21 group face_xpos
+nodeset 21 name "face_xpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x face
+# ----------------------------------------------------------------------
+group "face_xneg" add node in curve edge_xneg
+nodeset 22 group face_xneg
+nodeset 22 name "face_xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +y face
+# ----------------------------------------------------------------------
+group "face_ypos" add node in curve edge_ypos_xneg
+group "face_ypos" add node in curve edge_ypos_xpos
+nodeset 23 group face_ypos
+nodeset 23 name "face_ypos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y face
+# ----------------------------------------------------------------------
+group "face_yneg" add node in curve edge_yneg_xneg
+group "face_yneg" add node in curve edge_yneg_xpos
+nodeset 24 group face_yneg
+nodeset 24 name "face_yneg"
+
+
+# End of file
+
