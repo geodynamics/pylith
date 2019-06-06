@@ -1,4 +1,4 @@
-# Examples: 2-D reverse faults/gravity
+# Examples: 2-D Reverse Fault and Gravitational Body Forces
 
 This suite of examples demonstrates some basic concepts of using
 PyLith with body forces as well as providing simple examples of

@@ -1,4 +1,4 @@
-# Examples: 2-D subduction
+# Examples: 2-D Subduction
 
 **IMPORTANT**: THIS EXAMPLE HAS NOT BEEN UPDATED FOR V3.0.
 

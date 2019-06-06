@@ -1,4 +1,4 @@
-# Examples: 2-D strike-slip fault
+# Examples: 2-D Strike-Slip Fault
 
 This suite of examples demonstrates some basic concepts of using
 PyLith with a single throughgoing strike-slip fault and a very simple
