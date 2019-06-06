@@ -51,10 +51,10 @@ writer._configure()
 writer.write({'points': vertices,
               'coordsys': cs,
               'data_dim': 1,
-              'values': [{'name': "traction-shear",
+              'values': [{'name': "initial_amplitude_tangential",
                           'units': "Pa",
                           'data': tractions_shear},
-                         {'name': "traction-normal",
+                         {'name': "initial_amplitude_normal",
                           'units': "Pa",
                           'data': tractions_normal}]})
 

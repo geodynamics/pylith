@@ -70,7 +70,7 @@ playback 'createbc.jou'
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-export mesh "mesh_tri3.exo" dimension 2 overwrite
+export mesh "mesh_tri.exo" dimension 2 overwrite
 
 # End of file
 
