@@ -1,0 +1,22 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values =      5
+  value-names =  initial_amplitude_x  initial_amplitude_y rate_amplitude_x rate_amplitude_y rate_start_time
+  value-units =  m  m  cm/year  cm/year  year
+  num-locs =     1
+  data-dim =    0
+  space-dim =    2
+  cs-data = cartesian {
+  to-meters = 1
+  space-dim = 2
+}
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) initial_amplitude_x (m)
+// (4) initial_amplitude_y (m)
+// (5) rate_amplitude_x (cm/year)
+// (6) rate_amplitude_y (cm/year)
+// (6) rate_start_time (year)
+0.0  0.0    0.0  0.0  0.0  1.0  0.0
