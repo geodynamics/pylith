@@ -21,9 +21,7 @@ SUBDIRS = \
 	libsrc \
 	modulesrc \
 	pylith \
-	applications \
-	templates \
-	share
+	applications
 
 if ENABLE_TESTING
   SUBDIRS += \
@@ -37,15 +35,12 @@ endif
 
 DIST_SUBDIRS = $(SUBDIRS) \
 	examples \
-	tests \
-	doc
-
-if ENABLE_DOCUMENTATION
-  SUBDIRS += doc
-endif
+	doc \
+	templates \
+	share
 
 EXTRA_DIST = \
 	CHANGES \
 	DEPENDENCIES
 
-# End of file 
+# End of file

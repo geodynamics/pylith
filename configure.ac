@@ -240,26 +240,26 @@ AC_CONFIG_FILES([Makefile
 		libsrc/Makefile
 		libsrc/pylith/Makefile
 		libsrc/pylith/bc/Makefile
-    libsrc/pylith/feassemble/Makefile
-    libsrc/pylith/fekernels/Makefile
+        libsrc/pylith/feassemble/Makefile
+        libsrc/pylith/fekernels/Makefile
 		libsrc/pylith/faults/Makefile
 		libsrc/pylith/friction/Makefile
-    libsrc/pylith/materials/Makefile
-    libsrc/pylith/meshio/Makefile
-    libsrc/pylith/problems/Makefile
+        libsrc/pylith/materials/Makefile
+        libsrc/pylith/meshio/Makefile
+        libsrc/pylith/problems/Makefile
 		libsrc/pylith/testing/Makefile
 		libsrc/pylith/topology/Makefile
 		libsrc/pylith/utils/Makefile
-    modulesrc/Makefile
-    modulesrc/include/Makefile
-    modulesrc/bc/Makefile
-    modulesrc/faults/Makefile
-    modulesrc/feassemble/Makefile
+        modulesrc/Makefile
+        modulesrc/include/Makefile
+        modulesrc/bc/Makefile
+        modulesrc/faults/Makefile
+        modulesrc/feassemble/Makefile
 		modulesrc/friction/Makefile
-    modulesrc/materials/Makefile
-    modulesrc/meshio/Makefile
-    modulesrc/mpi/Makefile
-    modulesrc/problems/Makefile
+        modulesrc/materials/Makefile
+        modulesrc/meshio/Makefile
+        modulesrc/mpi/Makefile
+        modulesrc/problems/Makefile
 		modulesrc/topology/Makefile
 		modulesrc/utils/Makefile
 		applications/Makefile
@@ -314,36 +314,21 @@ AC_CONFIG_FILES([Makefile
 		tests_auto/linearelasticity/faults-2d/Makefile
 		tests_auto/petsc/Makefile
 		tests_auto/eqinfo/Makefile
-		tests/Makefile
-		tests/2d/Makefile
-		tests/2d/maxwell/Makefile
-		tests/2d/powerlaw/Makefile
-		tests/2d/frictionslide/Makefile
-		tests/2d/plasticity/Makefile
-		tests/2d/plasticity/initialstress/Makefile
-		tests/3d/Makefile
-		tests/3d/matprops/Makefile
-		tests/3d/slipdir/Makefile
-		tests/3d/cyclicfriction/Makefile
-		tests/3d/plasticity/Makefile
-		tests/3d/plasticity/dynamic/Makefile
-		tests/3d/plasticity/initialstress/Makefile
 		doc/Makefile
 		doc/developer/Makefile
 		doc/install/Makefile
-		doc/refguide/Makefile
 		doc/releasenotes/Makefile
 		doc/userguide/Makefile
 		examples/Makefile
+        examples/2d/Makefile
+        examples/2d/box/Makefile
+        examples/2d/strikeslip/Makefile
+        examples/2d/reverse/Makefile
+        examples/2d/subduction/Makefile
 		examples/3d/Makefile
+        examples/3d/box/Makefile
 		examples/3d/subduction/Makefile
-		examples/2d/Makefile
-		examples/2d/subduction/Makefile
 		examples/bar_shearwave/Makefile
-		examples/bar_shearwave/hex8/Makefile
-		examples/bar_shearwave/quad4/Makefile
-		examples/bar_shearwave/tet4/Makefile
-		examples/bar_shearwave/tri3/Makefile
 		examples/meshing/Makefile
 		examples/meshing/surface_nurbs/Makefile
 		examples/meshing/surface_nurbs/dem/Makefile

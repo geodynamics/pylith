@@ -20,7 +20,7 @@ SUBDIRS = \
 	developer \
 	install \
 	releasenotes \
-	userguide \
-	refguide
+	userguide
 
-# End of file 
+
+# End of file

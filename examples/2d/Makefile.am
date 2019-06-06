@@ -18,9 +18,9 @@
 
 SUBDIRS = \
 	box \
-	strike-slip \
+	strikeslip \
 	reverse \
 	subduction
 
 
-# End of file 
+# End of file
