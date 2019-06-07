@@ -4,15 +4,15 @@ PyLith is separated into modules to encapsulate behavior and facilitate
 use across multiple applications. This allows expert users to replace
 functionality of a wide variety of components without recompiling
 or polluting the main code. PyLith employs external packages (see
-Figure \vref{fig:pylith-dependencies}) to reduce development time
+Figure \vref{fig:pylith:dependencies}) to reduce development time
 and enhance computational efficiency; for example, PyLith 0.8 ran
 two times faster when the PETSc linear solver was used.
 
 \begin{figure}[htbp]
-  \includegraphics[width=4in]{intro/figs/packages}
+  \includegraphics[width=4in]{implementation/figs/packages}
   \caption{PyLith dependencies. PyLith makes direct use of several
     other packages, some of which have their own dependencies.}
-  \label{fig:pylith-dependencies}
+  \label{fig:pylith:dependencies}
 \end{figure}
 
 PyLith is written in two programming languages. High-level code is

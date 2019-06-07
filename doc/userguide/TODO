@@ -1,5 +1,4 @@
 PyLith design
-  Update diagram (no FIAT)
   Fields with subfields
   Solution field (displacement/velocity, displacement/pressure, etc)
     Predefined containers

@@ -1,10 +1,9 @@
 \documentclass[crop,tikz]{standalone}
 \usepackage{tikz}
 \usetikzlibrary{external}
-\tikzexternalize % activate
 
 \begin{document}
-\usetikzlibrary{arrows,shapes}
+\usetikzlibrary{arrows,shapes,positioning}
 \input{../../palettes/figcolors}
 \tikzstyle{level0} = [rectangle, 
                       minimum width=5em, 
@@ -52,31 +51,28 @@
 \tikzstyle{arrow13} = [arrowto, color=red]
 \tikzstyle{arrow23} = [arrowto, color=red]
 
-\begin{tikzpicture}[node distance=7.0em]
+\begin{tikzpicture}[node distance=4.0em]
   % Level 0
   \node (pylith) [level0] {PyLith};
 
   % Level 1
-  \node (spatialdata) [level1, below of=pylith, yshift=+3em] {spatialdata};
-  \node (petsc) [level1, left of=spatialdata, xshift=0em] {PETSc};
-  \node (fiat) [level1, right of=spatialdata] {FIAT};
+  \node (spatialdata) [level1, below right=of pylith, yshift=+0em] {spatialdata};
+  \node (petsc) [level1, below left=of pylith, yshift=+0em] {PETSc};
 
   \path (pylith) edge[arrow01] (petsc);
   \path (pylith) edge[arrow01] (spatialdata);
-  \path (pylith) edge[arrow01] (fiat);
 
   % Level 2
-  \node (proj4) [level2, below of=spatialdata, xshift=0em, yshift=+3em] {Proj.4};
-  \node (hdf5) [level2, left of=proj4, xshift=0em] {HDF5};
-  \node (netcdf) [level2, left of=hdf5, xshift=0em] {NetCDF};
-  \node (pyre) [level2, right of=proj4, xshift=0em] {Pyre};
-  \node (numpy) [level2, right of=pyre, xshift=0em] {numpy};
+  \node (proj4) [level2, below left=of spatialdata, yshift=+0em] {Proj.4};
+  \node (hdf5) [level2, left=of proj4, xshift=0em] {HDF5};
+  \node (netcdf) [level2, left=of hdf5, xshift=0em] {NetCDF};
+  \node (pyre) [level2, right=of proj4, xshift=0em] {Pyre};
+  \node (numpy) [level2, right=of pyre, xshift=0em] {numpy};
 
   \path (petsc) edge[arrow12] (hdf5);
   \path (spatialdata) edge[arrow12] (pyre);
   \path (spatialdata) edge[arrow12] (proj4);
   \path (spatialdata) edge[arrow12] (numpy);
-  \path (fiat) edge[arrow12] (numpy);
   \path (netcdf) edge[arrow12] (hdf5);
 
   \path (pylith) edge[arrow02] (hdf5);
@@ -84,8 +80,8 @@
   \path (pylith) edge[arrow02] (pyre);
 
   % Level 3
-  \node (mpi) [level3, below of=proj4, yshift=+3em] {MPI};
-  \node (blas) [level3, left of=mpi, xshift=-4em] {BLAS/LAPACK};
+  \node (mpi) [level3, below=of proj4, yshift=+1em] {MPI};
+  \node (blas) [level3, left=of mpi, xshift=-4em] {BLAS/LAPACK};
 
   \path (pyre) edge[arrow23] (mpi);
   \path (hdf5) edge[arrow23] (mpi);
