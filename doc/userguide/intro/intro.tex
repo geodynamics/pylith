@@ -17,15 +17,20 @@ modeling of earthquake faulting.
   \begin{itemize}
   \item Use of point-wise functions to implement governing equations;
   \item Higher order discretizations;
-  \item Problem specification independent of cell shape (quad vs tri,
-    hex vs tet);
+  \item Problem specification independent of cell shape (quadrilateral
+    vs triangle, hexahedron vs tetrahedron);
   \item Incompressible elasticity;
   \end{itemize}
 \item Use of PETSc time-stepping algorithms;
 \item New examples
   \begin{itemize}
-  \item Simple 2-D and 3-D examples without faults;
-  \item Prescribed slip on a 2-D through-going strike-slip fault; and
+  \item Simple 2-D and 3-D examples of Dirichlet and Neumann boundary
+    conditions without faults;
+  \item Prescribed slip on a 2-D through-going strike-slip fault;
+  \item Gravitational body forces with elasticity and incompressible
+    elasticity;
+  \item Distributed surface loads using Neumann boundary conditions;
+    and
   \item Prescribed slip on a reverse fault with a splay fault;
   \end{itemize}
 \end{itemize}
@@ -42,7 +47,7 @@ combines the functionality of EqSim
 \cite{Aagaard:etal:2001a,Aagaard:etal:2001b} and PyLith 0.8. PyLith
 0.8 was a direct descendant of LithoMop and was the first version that
 ran in parallel, as well as providing several other improvements over
-LithoMop. LithoMop was the product of major reengineering of Tecton, a
+LithoMop. LithoMop was the product of major re-engineering of Tecton, a
 finite-element code for simulating static and quasi-static crustal
 deformation. The major new features present in LithoMop included
 dynamic memory allocation and the use of the Pyre simulation framework
@@ -76,7 +81,7 @@ fault slip and slip governed by fault constitutive models. PyLith also
 includes an interface for computing static Green's functions for fault
 slip.
 
-PyLith 2.0 replaces the finite-element data structures provided by the
+PyLith 2.0 replaced the finite-element data structures provided by the
 C++ Sieve implementation with those provided by the C DMPlex
 implementation.  The newly developed DMPlex implementation by the
 PETSc developers conforms to the PETSc data manager (DM) interface,
@@ -84,7 +89,12 @@ thereby providing tighter integration with other PETSc data
 structures, such as vectors and matrices. Other improvements include
 significantly reduced memory use and memory balancing.
 
-PyLith 3.0 \todo{brad/charles}{Describe changes in v3.0.}
+PyLith 3.0 involves restructuring the code to permit more flexible
+specifications of governing equations and discretization and use of
+PETSc time-stepping algorithms. The finite-element integrations,
+constraints, and transformations are done through a suite of
+point-wise functions. The PETSc DMPlex interface calls these functions
+to perform the finite-element integrations. 
 
 PyLith is under active development and we expect a number of additions
 and improvements in the near future. Likely enhancements will include

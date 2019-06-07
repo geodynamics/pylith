@@ -1,0 +1,93 @@
+Intro
+  description of v3
+
+Installation
+  update version number
+
+Governing equations
+  quick check
+  add note on poroelasticity implementation
+
+PyLith design
+  Update diagram (no FIAT)
+  Fields with subfields
+  Solution field (displacement/velocity, displacement/pressure, etc)
+  Auxiliary field with subfields (properties and state variables)
+  Basis order and quadrature
+    Basis order can differ among subfields, but quadrature order
+      cannot (for now)
+  Organization of components
+    physics (materials, boundary conditions, interface conditions) and
+   physics implementations (integrators and constraints)
+
+    physics provide kernels, auxiliary field, derived field
+    integrators perform integrations or apply constraints
+
+Running PyLith
+
+  Defining the Simulation
+
+    Mesh
+
+    Problem specification
+      solution field
+      normalizer
+      materials
+      bc
+      interfaces
+      solution observers
+      gravity field
+
+    PETSc settings
+      monitors
+      log    
+
+    Solvers
+      Elasticity, no fault
+      Elasticity w/fault
+      Incompressible elasicity, no fault
+
+    Pylith parameter viewer
+
+  Troubleshooting
+
+  Spatial databases
+
+    changes to naming scheme
+
+  Observers
+
+  Problems
+
+    Time-dependent problem (only one currently available)
+
+      PETSc TS
+
+      Initial conditions
+
+      notify_observers_ic
+
+Physics
+
+  Materials
+
+  Boundary Conditions
+
+  Interface Conditions
+
+Examples
+  Overview
+
+  Paraview Python scripts
+
+  2d/box
+  3d/box
+  2d/strikeslip
+  2d/reverse
+  2d/subduction (not updated)
+  3d/strikeslip (later)
+  3d/subduction (not updated)
+
+Developer Guide
+
+  
