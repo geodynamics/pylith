@@ -17,7 +17,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [2.2.1], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [3.0.0b1], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -309,7 +309,7 @@ AC_CONFIG_FILES([Makefile
 		mmstests/faults/Makefile
 		tests_auto/Makefile
 		tests_auto/linearelasticity/Makefile
-    tests_auto/linearelasticity/nofaults-2d/Makefile
+  		tests_auto/linearelasticity/nofaults-2d/Makefile
 		tests_auto/linearelasticity/nofaults-3d/Makefile
 		tests_auto/linearelasticity/faults-2d/Makefile
 		tests_auto/petsc/Makefile

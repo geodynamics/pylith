@@ -23,9 +23,7 @@ dist_check_SCRIPTS = test_pylith.py
 
 dist_noinst_PYTHON = \
 	meshes.py \
-	TestTwoBlocks.py \
-	twoblocks_soln.py \
-	twoblocks_gendb.py
+	twoblocks_soln.py
 
 dist_noinst_DATA = \
 	geometry.jou \

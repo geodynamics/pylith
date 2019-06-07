@@ -1,14 +1,7 @@
 ********* WARNING *********
-This file is obsolete. The preferred TODO list is GitHub and the
-PyLith development Trello page.
+This file is obsolete. The preferred TODO list is the GitHub Issues and Projects pages.
 ********* WARNING *********
 
-
-======================================================================
-CURRENT BUGS
-======================================================================
-
-* None
 
 ======================================================================
 CURRENT ISSUES/PRIORITIES
@@ -57,15 +50,6 @@ KNOWN DEFICIENCIES
   possible solution is for ZeroDispDB to use a C++ UniformDB but not
   inherit from the Python UniformDB.
 
-* Fault orientatin in 1-D mesh
-
-  How do we determine the orientation for a fault in a 1-D mesh? We
-  assume normaldir is +1.0, but cohesive cells could be created so
-  that the fault has a normaldir of -1.0. If the normaldir is -1.0,
-  then we need to flip the orientation field to get the correct
-  sense of slip.
-
-
 ----------------------------------------------------------------------
 LONG TERM WISH LIST
 ----------------------------------------------------------------------
@@ -92,29 +76,3 @@ CLEANUP
 ----------------------------------------------------------------------
 
   * write cells as ints in HDF5
-
-
-4. Tidy up
-
-  Eliminate use of Inventory class.
-
-  Create createModuleObj() methods to Python objects as standard way
-  of creating handle to C++ object (not necessary in abstract base
-  classes).
-
-  Add check before calling newSection() when want to enforce at
-  least 1 value.
-
-======================================================================
-MISC PRIORITIES
-======================================================================
-
-1. OutputManager
-   a. VertexFilterChangeCS
-      OutputFilter for writing vertex coordinates in another 
-      coordinate system. Need test for whether two coordinate systems 
-      are the same.
-
-2. Coarsening for PyLith meshes
-
-3. For Schur complement directly for mass matrix and Lagrange multiplier problem
