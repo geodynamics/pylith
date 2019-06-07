@@ -90,43 +90,6 @@ parameters, the \object{OutputSolnSubset} includes:
 is [displacement]).}
 \end{inventory}
 
-\subsection{Output at Arbitrary Points}
-\label{sec:output:points}
-
-In many situations with recorded observations, one would like to
-extract the solution at the same locations as the recorded
-observation. Rather than forcing the finite-element discretization to
-be consistent with the observation points, PyLith includes a
-specialized output manager, \object{OutputSolnPoints}, to interpolate
-the solution to arbitrary points. By default, the output manager will
-include the displaceent time histories in the output. The locations
-are specified in a text file. In addition to the
-\object{OutputManager} parameters, the \object{OutputSolnSubset}
-includes:
-\begin{inventory}
-\propertyitem{vertex\_data\_fields}{Names of vertex data fields to output (default
-is [displacement]).}
-\facilityitem{reader}{Reader for points list (default is \object{PointsList}).}
-\facilityitem{writer}{Writer for output (default is \object{DataWriterVTKPoints}). In most cases users will want to use the \object{DataWriterHDF5}.}
-\end{inventory}
-
-\subsubsection{\object{PointsList} Reader}
-
-This object corresponds to a simple text file containing a list of
-points (one per line) where output is desired. See \vref{sec:format:PointsList}
-for file format specifications. The points are specified in the coordinate
-system specified by \object{OutputSolnPoints}. The coordinates will be transformed
-into the coordinate system of the mesh prior to interpolation. The
-properties available to customize the behavior of \object{PointsList}
-are:
-\begin{inventory}
-\propertyitem{filename}{Names of file containing list of points.}
-\propertyitem{comment\_delimiter}{Delimiter at beginning of line to identify
-comments (default is \#).}
-\propertyitem{value\_delimiter}{Delimiter used to separate values (default is
-whitespace).}
-\end{inventory}
-
 \subsection{Output Field Filters}
 
 Output fields may not directly correspond to the information a user

@@ -1,32 +1,5 @@
 Running PyLith
 
-  Defining the Simulation
-
-    Mesh
-
-    Problem specification
-      solution field
-      normalizer
-      materials
-      bc
-      interfaces
-      solution observers
-      gravity field
-
-    PETSc settings
-      monitors
-      log    
-
-    Solvers
-      Elasticity, no fault
-      Elasticity w/fault
-      Incompressible elasicity, no fault
-
-    Solution field (displacement/velocity, displacement/pressure, etc)
-      Predefined containers
-
-    Pylith parameter viewer
-
   Troubleshooting
 
   Spatial databases
@@ -34,6 +7,8 @@ Running PyLith
     changes to naming scheme
 
   Observers
+    OutputTriggerStep
+    OutputTriggerTime
 
   Problems
 
