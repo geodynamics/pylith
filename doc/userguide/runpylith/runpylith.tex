@@ -1,9 +1,30 @@
-
 \chapter{Running PyLith}
+\label{cha:running}
+
+\section{Organization of Simulation Components}
+
+The components in a PyLith simulation generally fall into four main
+categories:
+\begin{description}
+\item[Topology] Components associated with the spatial discretization
+  of the domain, such as the finite-element mesh;
+\item[Physics] Components specifying the physics to be solved, such as
+  materials associated with a governing equation, bulk rheologies,
+  boundary conditions, and fault interface conditions;
+\item[Physics Implementation] Components that perform the
+  finite-element operations, such as integration of the residual and
+  system Jacobian; and
+\item[Observers] Components that get notified of updates to the
+  solution and state variables, such as writers for saving the
+  solution to a file.
+\end{description}
+The physics components provide the point-wise functions (kernels) used
+by the physics implementation components, the auxiliary field, and the
+layout of the derived field (subfields computed from the auxiliary
+field and solution, such as stress and strain).
 
 Figure \vref{fig:pylith:workflow} shows the workflow for running PyLith.
-There are essentially three main inputs needed to run a problem with
-PyLith:
+The user supplies:
 \begin{enumerate}
 \item Mesh information. This includes the topology of the
   finite-element mesh (coordinates of vertices and how the vertices
@@ -28,10 +49,11 @@ PyLith:
   \vref{sec:format:SimpleIOAscii} for the format specification).
 \end{enumerate}
 PyLith writes solution information, such as solution fields and state
-variables, to either VTK files or HDF5/Xdmf files. ParaView and Visit
-can read both types of files. Post-processing of output is generally
-performed using HDF5 files accessed via a Python script and the h5py
-package or a Matlab script.
+variables, to either VTK files or HDF5/Xdmf files using the observer
+components. ParaView and Visit can read both types of
+files. Post-processing of output is generally performed using HDF5
+files accessed via a Python script and the h5py package or a Matlab
+script.
 
 \begin{figure}[htbp]
   \includegraphics[width=5in]{runpylith/figs/runpylith} 
