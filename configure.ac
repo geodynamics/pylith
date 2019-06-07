@@ -240,26 +240,26 @@ AC_CONFIG_FILES([Makefile
 		libsrc/Makefile
 		libsrc/pylith/Makefile
 		libsrc/pylith/bc/Makefile
-        libsrc/pylith/feassemble/Makefile
-        libsrc/pylith/fekernels/Makefile
+		libsrc/pylith/feassemble/Makefile
+		libsrc/pylith/fekernels/Makefile
 		libsrc/pylith/faults/Makefile
 		libsrc/pylith/friction/Makefile
-        libsrc/pylith/materials/Makefile
-        libsrc/pylith/meshio/Makefile
-        libsrc/pylith/problems/Makefile
+		libsrc/pylith/materials/Makefile
+		libsrc/pylith/meshio/Makefile
+		libsrc/pylith/problems/Makefile
 		libsrc/pylith/testing/Makefile
 		libsrc/pylith/topology/Makefile
 		libsrc/pylith/utils/Makefile
-        modulesrc/Makefile
-        modulesrc/include/Makefile
-        modulesrc/bc/Makefile
-        modulesrc/faults/Makefile
-        modulesrc/feassemble/Makefile
+		modulesrc/Makefile
+		modulesrc/include/Makefile
+		modulesrc/bc/Makefile
+		modulesrc/faults/Makefile
+		modulesrc/feassemble/Makefile
 		modulesrc/friction/Makefile
-        modulesrc/materials/Makefile
-        modulesrc/meshio/Makefile
-        modulesrc/mpi/Makefile
-        modulesrc/problems/Makefile
+		modulesrc/materials/Makefile
+		modulesrc/meshio/Makefile
+		modulesrc/mpi/Makefile
+		modulesrc/problems/Makefile
 		modulesrc/topology/Makefile
 		modulesrc/utils/Makefile
 		applications/Makefile
@@ -320,13 +320,13 @@ AC_CONFIG_FILES([Makefile
 		doc/releasenotes/Makefile
 		doc/userguide/Makefile
 		examples/Makefile
-        examples/2d/Makefile
-        examples/2d/box/Makefile
-        examples/2d/strikeslip/Makefile
-        examples/2d/reverse/Makefile
-        examples/2d/subduction/Makefile
+		examples/2d/Makefile
+		examples/2d/box/Makefile
+		examples/2d/strikeslip/Makefile
+		examples/2d/reverse/Makefile
+		examples/2d/subduction/Makefile
 		examples/3d/Makefile
-        examples/3d/box/Makefile
+		examples/3d/box/Makefile
 		examples/3d/subduction/Makefile
 		examples/bar_shearwave/Makefile
 		examples/meshing/Makefile

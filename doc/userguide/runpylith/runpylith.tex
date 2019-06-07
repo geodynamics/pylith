@@ -20,12 +20,12 @@ PyLith:
   time-stepping information, boundary conditions, materials, etc. This
   information can be provided from the command-line or by using a
   \filename{cfg} file.
-\item Databases specifying the material property values and boundary
-  condition values to be used. Arbitrarily complex spatial variations
-  in boundary and fault conditions and material properties may be
-  given in the spatial database (see Chapter \vref{cha:examples} for
-  examples and Appendix \vref{sec:format:SimpleIOAscii} for the
-  format specification).
+\item Spatial databases specifying the values for the material
+  properties and boundary conditions. Arbitrarily complex spatial
+  variations in boundary and fault conditions and material properties
+  may be given in the spatial database (see Chapter
+  \vref{cha:examples} for examples and Appendix
+  \vref{sec:format:SimpleIOAscii} for the format specification).
 \end{enumerate}
 PyLith writes solution information, such as solution fields and state
 variables, to either VTK files or HDF5/Xdmf files. ParaView and Visit
