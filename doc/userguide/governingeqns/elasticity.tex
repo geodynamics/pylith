@@ -6,43 +6,43 @@ Consider volume $V$ bounded by surface $S$. Applying a Lagrangian
 description of the conservation of momentum gives
 \begin{equation}
 \label{eqn:momentum:vec}
-\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\vec{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{S}\overrightarrow{T}\, dS.
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\vec{u}}{\partial t}\, dV=\int_{V}\vec{f}\, dV+\int_{S}\vec{\tau}\, dS.
 \end{equation}
 The traction vector field is related to the stress tensor through
 \begin{equation}
-\overrightarrow{T}=\underline{\sigma}\cdot\overrightarrow{n},
+\vec{\tau}=\underline{\sigma}\cdot\vec{n},
 \end{equation}
-where $\overrightarrow{n}$ is the vector normal to $S$. Substituting
+where $\vec{n}$ is the vector normal to $S$. Substituting
 into equation \vref{eqn:momentum:vec} yields
 \begin{equation}
-\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\overrightarrow{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\, dS.
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\vec{u}}{\partial t}\, dV=\int_{V}\vec{f}\, dV+\int_{S}\underline{\sigma}\cdot\vec{n}\, dS.
 \end{equation}
 Applying the divergence theorem,
 \begin{equation}
-\int_{V}\nabla\cdot\overrightarrow{a}\: dV=\int_{S}\overrightarrow{a}\cdot\overrightarrow{n}\: dS,
+\int_{V}\nabla\cdot\vec{a}\: dV=\int_{S}\vec{a}\cdot\vec{n}\: dS,
 \end{equation}
 to the surface integral results in
 \begin{equation}
-\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\overrightarrow{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{V}\nabla\cdot\underline{\sigma}\, dV,
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\vec{u}}{\partial t}\, dV=\int_{V}\vec{f}\, dV+\int_{V}\nabla\cdot\underline{\sigma}\, dV,
 \end{equation}
 which we can rewrite as
 \begin{equation}
-\int_{V}\left(\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}\right)\, dV=\vec{0}.
+\int_{V}\left(\rho\frac{\partial^{2}\vec{u}}{\partial t^{2}}-\vec{f}-\nabla\cdot\vec{\sigma}\right)\, dV=\vec{0}.
 \end{equation}
 Because the volume $V$ is arbitrary, the integrand must be the zero
 vector at every location in the volume, so that we end up with
 \begin{gather}
-\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}=\vec{0}\text{ in }V,\\
-\underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T}\text{,}\\
-\overrightarrow{u}=\overrightarrow{u^{o}}\text{ on }S_{u},\text{ and}\\
+\rho\frac{\partial^{2}\vec{u}}{\partial t^{2}}-\vec{f}-\nabla\cdot\vec{\sigma}=\vec{0}\text{ in }V,\\
+\underline{\sigma}\cdot\vec{n}=\vec{\tau}\text{ on }S_{\tau}\text{,}\\
+\vec{u}=\vec{u^{o}}\text{ on }S_{u},\text{ and}\\
 \underbar{R}\cdot(\vec{u^{+}}-\vec{u^{-}})=\vec{d}\text{ on }S_{f}.
 \end{gather}
-We specify tractions, $\vec{T}$, on surface $S_{f}$, displacements,
-$\overrightarrow{u^{o}}$, on surface $S_{u}$, and slip, $\vec{d}$,
+We specify tractions, $\vec{\tau}$, on surface $S_{f}$, displacements,
+$\vec{u^{o}}$, on surface $S_{u}$, and slip, $\vec{d}$,
 on fault surface $S_{f}$ (we will consider the case of fault constitutive
 models in Section \vref{sec:fault}). The rotation matrix $\underline{R}$
 transforms vectors from the global coordinate system to the fault
-coordinate system. Note that since both $\overrightarrow{T}$ and
-$\overrightarrow{u}$ are vector quantities, there can be some spatial
-overlap of the surfaces $S_{T}$ and $S_{u}$; however, the same degree
+coordinate system. Note that since both $\vec{\tau}$ and
+$\vec{u}$ are vector quantities, there can be some spatial
+overlap of the surfaces $S_{\tau}$ and $S_{u}$; however, the same degree
 of freedom cannot simultaneously have both types of boundary conditions.

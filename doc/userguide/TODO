@@ -1,11 +1,9 @@
-Governing equations
-  quick check
-  add note on poroelasticity implementation
-
 PyLith design
   Update diagram (no FIAT)
   Fields with subfields
   Solution field (displacement/velocity, displacement/pressure, etc)
+    Predefined containers
+    
   Auxiliary field with subfields (properties and state variables)
   Basis order and quadrature
     Basis order can differ among subfields, but quadrature order
@@ -64,6 +62,11 @@ Running PyLith
 Physics
 
   Materials
+
+    Elasticity
+      Bulk rheologies
+
+    Incompressible Elasticity
 
   Boundary Conditions
 
