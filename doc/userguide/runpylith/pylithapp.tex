@@ -178,7 +178,7 @@ into eight cells.
 
 Refinement occurs after distribution of the mesh among processors.
 This allows one to run much larger simulations by (1) permitting the
-mesh generator to construct a mesh with a node spacing largeer than
+mesh generator to construct a mesh with a node spacing larger than
 that needed in the simulation and (2) operations performed in serial
 during the simulation setup phase, such as, adjusting the topology
 to insert cohesive cells and distribution of the mesh among processors
@@ -337,7 +337,7 @@ properties:
   problems; however, it may be necessary to change the default values
   in some cases. When doing this, keep in mind that the
   nondimensionalization generally applies to the minimum values
-  encountered for a problem.  For example, in a quasistatic problem,
+  encountered for a problem.  For example, in a quasi-static problem,
   the \property{length\_scale} should be on the order of the minimum
   cell size. Similarly, the \property{relaxation\_time} should be on
   the order of the minimum relaxation time or time scale associated
@@ -368,7 +368,7 @@ All of the solution observers have the following properties:
 \begin{inventory}
   \propertyitem{data\_fields}{List of solution subfields to observer/output (default=all which will output all of the subfields);}
   \facilityitem{writer}{Writer for data (default=\object{DataWriterHDF5});}
-  \facilityitem{trigger}{Trigger defining how often output is writtern (default=\object{OutputTriggerStep}); and}
+  \facilityitem{trigger}{Trigger defining how often output is written (default=\object{OutputTriggerStep}); and}
   \facilityitem{field\_filter}{Filter for output fields (default=\object{FieldFilterNone}).}
 \end{inventory}
 \object{OutputSolnBoundary} adds a property:

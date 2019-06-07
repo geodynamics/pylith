@@ -1,7 +1,5 @@
 Running PyLith
 
-  Troubleshooting
-
   Spatial databases
 
     changes to naming scheme
@@ -10,15 +8,7 @@ Running PyLith
     OutputTriggerStep
     OutputTriggerTime
 
-  Problems
-
-    Time-dependent problem (only one currently available)
-
-      PETSc TS
-
-      Initial conditions
-
-      notify_observers_ic
+  Troubleshooting
 
 Physics
 
