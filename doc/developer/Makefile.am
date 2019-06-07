@@ -14,14 +14,11 @@
 # See COPYING for license information.
 #
 # ----------------------------------------------------------------------
-#
 
 EXTRA_DIST = \
-	general \
-	Sieve.tex \
-	toplevel_flow.txt \
-	update_1.9to2.0.sh \
-	SWIG
-
+	downloads.py \
+	autopep8.cfg \
+	uncrustify.cfg \
+	format_source.py
 
 # End of file 
