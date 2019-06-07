@@ -115,24 +115,90 @@ To run the example:
 pylith step05_onefault.cfg
 ```
 
+## Step06: Fault slip on main fault and splay fault
+
+This problem is similar to Step05, but includes earthquake rupture on both
+the main thrust fault and a splay fault. Features used in this simulation
+include:
+
+* Static simulation
+* UniformDB, ZeroDB, and SimpleDB spatial database for specifying
+  values for properties, faults, and boundary conditions
+* Use of pylith.problems.SolnDispLagrange for problems involving
+  faults
+* Slip on multiple faults, with the main thrust considered the throughgoing
+  fault
+
+The simulation parameters are in the `pylithapp.cfg` and `step06_twofault.cfg` files.
+
+To run the example:
+```
+pylith step06_twofault.cfg
+```
+
+## Step07: Fault slip on main fault and splay fault with Maxwell viscoelasticity
+
+This problem is similar to Step06, but the slab material is considered to be
+viscoelastic, and the simulation runs for 100 years. Features used in this
+simulation include:
+
+* Quasi-static simulation
+* UniformDB, ZeroDB, and SimpleDB spatial database for specifying
+  values for properties, faults, and boundary conditions
+* Use of pylith.problems.SolnDispLagrange for problems involving
+  faults
+* Slip on multiple faults, with the main thrust considered the throughgoing
+  fault
+* Use of a Maxwell viscoelastic material
+* Time-dependent problem running for 100 years
+
+The simulation parameters are in the `pylithapp.cfg` and
+`step07_twofault_maxwell.cfg` files.
+
+To run the example:
+```
+pylith step07_twofault_maxwell.cfg
+```
+
+## Step08: Fault slip on main fault and splay fault with power-law viscoelasticity
+
+This problem is similar to Step07, but the slab material is considered to be
+power-law viscoelastic, and the simulation runs for 100 years. Features used
+in this simulation include:
+
+* Quasi-static simulation
+* UniformDB, ZeroDB, and SimpleDB spatial database for specifying
+  values for properties, faults, and boundary conditions
+* Use of pylith.problems.SolnDispLagrange for problems involving
+  faults
+* Slip on multiple faults, with the main thrust considered the throughgoing
+  fault
+* Use of a power-law (nonlinear) viscoelastic material
+* Time-dependent problem running for 100 years
+* Required use of the nonlinear solution type
+
+The simulation parameters are in the `pylithapp.cfg` and
+`step08_twofault_powerlaw.cfg` files.
+
+To run the example:
+```
+pylith step08_twofault_powerlaw.cfg
+```
+
 ## Suggested exercises
 
-1. Change the mesh to the tri mesh.
+1. Change the mesh to the quad mesh.
 
   * Change the setting in the pylithapp.cfg file.
   * Override the current setting using the command line.
   
-2. Reduce the shear modulus while keeping the bulk modulus the same.
+2. Use different elastic properties/density for the elastic problems (Step01-06).
 
 3. Change the basis order and quadrature order for the solution field.
 
-4. Change Step01 to axial compression in the +y direction.
+4. Change the shape of the applied surface load in Step04.
 
-5. Change Step03 to be a combination of shear and axial
-   compression/extension.
+5. Try using variable fault slip for the faulting problems (Step05-08).
 
-6. In Step04 change the initial conditions so that only one of the
-   components is equal to the solution.
-
-7. In Step05 adjust the rate and/or time when the rate dependence
-   starts.
+6. Introduce multiple ruptures on one of the faults for the faulting problems
+   (Step05-08).
