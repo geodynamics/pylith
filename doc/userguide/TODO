@@ -1,9 +1,5 @@
 Running PyLith
 
-  Spatial databases
-
-    changes to naming scheme
-
   Observers
     OutputTriggerStep
     OutputTriggerTime
