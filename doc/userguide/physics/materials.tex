@@ -1,78 +1,76 @@
-\chapter{Material Models}
-\label{cha:material:models}
+\section{Materials (\facility{materials})}
+\label{sec:materials}
 
+The materials objects encapsulate the bulk behavior of the domain. This
+includes both the governing equations and the associated bulk rheology.
 
-\section{Specifying Material Properties}
+\subsection{Specifying Material Properties}
 
 Associating material properties with a given cell involves several
 steps. 
 \begin{enumerate}
-\item In the mesh generation process, assign a material identifier to each
+\item In the mesh generation process assign a material identifier to each
 cell.
-\item Define material property groups corresponding to each material identifier.
-\item Set the parameters for each material group using \filename{cfg} and/or command-line arguments.
-\item Specify the spatial variation in material property parameters using
-a spatial database file.
+\item Define material property groups corresponding to each material
+  identifier. In CUBIT/Trelis this is done by creating the blocks as
+  part of the boundary conditions.
+\item Provide the settings for each material group in the parameters,
+  i.e., \filename{cfg} file.
+\item Specify the parameters for the material properties, e.g., linear
+  variation in density with depth, using a spatial database file. This
+  allows variation of the material properties across cells with the
+  same material identifier.
 \end{enumerate}
 
-\subsection{Setting the Material Identifier}
-
-Each cell in the finite-element mesh must have a material identifier.
-This integer value is associated with a bulk material model. The parameters
-of the material model need not be uniform for cells with the same
-material identifier. The bulk constitutive model and numerical integration
-(quadrature) scheme will, however, be the same for all cells with
-the same material identifier value. The material identifier is set
-during the mesh generation process. The procedure for assigning this
-integer value to a cell depends on the mesh generator. For example,
-in the PyLith mesh ASCII format, the identifiers are listed in the
-cells group using the material-id data; in CUBIT materials are defined
-using blocks; in LaGriT materials are defined by the attribute \texttt{imt1}
-and the mregion command.
-
-
-\subsection{Material Property Groups}
-
-The material property group associates a material model (label for the
-material, a bulk constitutive model, and parameters for the
-constitutive model) with a material identifier. In previous versions
-of PyLith it was necessary to specify containers that defined the
-number of groups and associated information for each group. This was
-necessary because previous versions of Pyre did not support dynamic
-arrays of components, and it was necessary to predefine these
-arrays. More recent versions of Pythia do support this, however, and
-it is now possible to define material property groups using a
-\filename{cfg} file or on the command-line. User-defined containers
-are no longer necessary, and the predefined containers are no longer
-available (or necessary). If a set of material groups is not
-specified, a single material model is used for the entire problem. See
-Sections \vref{sec:example:3dhex8} and \vref{sec:example:3dtet4}
-for examples that demonstrate how to specify more than one material
-model.
-
-
-\subsection{Material Parameters}
-\label{sec:material:parameters}
-
-For each material group, there is a single component defining the
-material model to be used. The default material model is \object{ElasticIsotropic3D}.
-For each material model, the available properties and facilities are:
+Facilities and properties common to all materials:
 \begin{inventory}
 \propertyitem{id}{This is the material identifier that matches the integer value
-assigned to each cell in the mesh generation process.}
-\propertyitem{label}{Name or label for the material. This is used in error and
-diagnostic reports.}
-\facilityitem{db\_properties}{Spatial database specifying the spatial variation
-in the parameters of the bulk constitutive model (default is a SimpleDB).}
-\facilityitem{db\_initial\_stress}{Spatial database specifying the spatial variation
-in the initial stress (default is none).}
-\facilityitem{db\_initial\_strain}{Spatial database specifying the spatial variation
-in the initial strain (default is none).}
-\facilityitem{db\_initial\_state}{Spatial database specifying the spatial variation
-in the other initial state variables (default is none).}
-\facilityitem{output}{The output manager used for outputting material information.}
-\facilityitem{quadrature}{Numerical integration scheme used in integrating fields
-over each cell.}
+assigned to each cell in the mesh generation process (default=0);}
+\propertyitem{label}{Name or label for the material (default=""), this is used in error and
+diagnostic reports);}
+\facilityitem{db\_auxiliary\_field}{}
+\facilityitem{observers}{}
+\facilityitem{auxiliary\_subfields}{}
+\end{inventory}
+
+
+\subsection{Elasticity (\object{Elasticity})}
+
+\begin{table}[htbp]
+  \caption{Elasticity bulk rheologies.}
+  \label{tab:elasticity:rheologies}
+  \begin{tabular}{ll}
+    \toprule
+    \thead{Bulk Rheology} & \thead{Description} \\
+    \midrule
+      \object{IsotropicLinearElasticity} & Isotropic, linear elasticity \\
+      \object{IsotropicLinearMaxwell} & Isotropic, linear Maxwell viscoelasticity \\
+      \object{IsotropicLinearGenMaxwell} & Isotropic, generalized Maxwell viscoelasticity \\
+      \object{IsotropicPowerLaw} & Isotropic, power-law viscoelasticity \\
+      \object{IsotropicDruckerPrager} & Isotropic, Drucker-Prager elastoplasticity \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \caption{Auxiliary subfields for elasticity bulk rheologies.}
+  \label{tab:elasticity:auxiliary:subfields}
+  \begin{tabular}{lcccccl}
+    \toprule
+    \multirow{2}{*}{Subfield} & \multicolumn{5}{c}{\thead{Bulk Rheologies}} & \multirow{2}{*}{\thead{Components}} \\
+                              & \thead{L} & \thead{LM} & \thead{GM} & \thead{PL} & \thead{DP} & \\
+    \midrule
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+
+Property common to all bulk rheologies for elasticity:
+\begin{inventory}
+  \propertyitem{use\_reference\_state}{Flag indicating to compute
+    deformation relative to the supplied reference state
+    (default=False).}
 \end{inventory}
 
 \begin{cfg}[Parameters for two materials in a \filename{cfg} file]
@@ -93,6 +91,28 @@ over each cell.}
 <f>quadrature.cell</f> = pylith.feassemble.FIATLagrange
 <p>quadrature.cell.dimension</p> = 3
 \end{cfg}
+
+
+\subsection{Incompressible Elasticity (\object{IncompressibleElasticity})}
+
+use\_reference\_state
+
+
+\begin{table}[htbp]
+  \caption{Incompressible elasticity bulk rheologies.}
+  \label{tab:incompressible:elasticity:rheologies}
+  \begin{tabular}{ll}
+    \toprule
+    \thead{Bulk Rheology} & \thead{Description} \\
+    \midrule
+    \object{IsotropicLinearIncompElasticity & Isotropic, linear incompressible elasticity \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{}
+
+
 
 These settings correspond to the the problem in Section
 \vref{sec:example:3dhex8}.  The parameters for the bulk constitutive
@@ -117,45 +137,6 @@ group:
 <f>cell_filter</f> = pylith.meshio.CellFilterAvg
 <p>writer.filename</p> = dislocation-viscoelastic.vtk
 \end{cfg}
-
-These settings again correspond to the problem in Section \vref{sec:example:3dhex8}.
-The specification of a state variable base filename (\filename{writer.filename}
-settings) will cause two files to be created for each material group:
-an info file, which describes the material property parameters used
-in the model, and a state variables file, which contains the state
-variable information. Note that the material property parameters described
-by the info file are the parameters used internally by PyLith. In
-some cases they are parameters convenient for use in the constitutive
-models and are derived from the parameters specified by the user via
-the spatial database. If the problem has more than one time step,
-a state variable output file will be created for each requested time
-step. We have requested that the values be averaged over each cell.
-Otherwise, output would be produced for each quadrature point, which
-can cause problems with some visualization packages. For this example
-problem, the material is three-dimensional isotropic elastic, and
-is thus described by three parameters ($\lambda$, $\mu$, $\rho$),
-as described below. These properties are output by default. Other
-material models require additional parameters, and if users want these
-to be output, they must be specified. Similarly, other material models
-require state variables in addition to the default stress and strain
-variables that are used by all material models. Additional output
-may be requested for a material model, as in this example (see Section
-\vref{sec:example:twohex8}):
-\begin{cfg}
-<h>[pylithapp.timedependent.materials.material.output]</h>
-<p>cell_data_fields</p> = [total_strain, viscous_strain, stress]
-<p>cell_info_fields</p> = [mu, lambda, density, maxwell_time]
-\end{cfg}
-
-The properties and state variables available for output in each
-material model are listed in Table
-\vref{tab:materials:output}. The order of the state variables in
-the output arrays is given in Table \vref{tab:materials:statevars}.
-For the generalized Maxwell model, values of \texttt{shear\_ratio} and
-\texttt{maxwell\_time} are given for each Maxwell element in the model
-(there are presently three, as described below). Similarly, there are
-three sets of \texttt{viscous\_strain} values for the generalized
-Maxwell model.
 
 \begin{table}[htbp]
 \caption{Properties and state variables available for output for
