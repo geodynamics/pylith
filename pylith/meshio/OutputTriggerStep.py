@@ -40,7 +40,7 @@ class OutputTriggerStep(OutputTrigger, ModuleOutputTriggerStep):
 
     import pyre.inventory
 
-    numSkip = pyre.inventory.int("num_slip", default=0, validator=pyre.inventory.greaterEqual(0))
+    numSkip = pyre.inventory.int("num_skip", default=0, validator=pyre.inventory.greaterEqual(0))
     numSkip.meta['tip'] = "Number of solution steps to skip between writes."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
