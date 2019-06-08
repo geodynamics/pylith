@@ -1,132 +1,81 @@
-\section{PyLith Output}
+\section{Output}
 
-PyLith currently supports output to VTK and HDF5/Xdmf files, which
-can be imported directly into a number of visualization tools, such
-as ParaView, Visit, and MayaVi. The HDF5 files can also be directly
-accessed via Matlab and PyTables. PyLith v1.1 significantly expanded
-the information available for output, including fault information
-and state variables. Output of solution information for the domain,
-faults, materials, and boundary conditions is controlled by an output
-manager for each module. This allows the user to tailor the output
-to the problem. By default PyLith will write a number of files. Diagnostic
-information for each fault and material is written into a separate
-file as are the solution and state variables for the domain, each
-fault, and each material. For a fault the diagnostic fields include
-the final slip, the slip initiation time, and the fault normal vector.
-For a material the diagnostic fields include the density and the elastic
-constants. Additional diagnostic information can be included by setting
-the appropriate output parameters. See Chapters \vref{cha:material:models}
-and \vref{cha:boundary:interface:conditions} for more information
-on the available fields and the next section for output parameters.
-The other files for each fault and material include solution information
-at each time step where output was requested (also customizable by
-the user). For a fault the solution information includes the slip
-and the change in tractions on the fault surface. For a material the
-solution information includes the total strain and stress. For some
-materials fields for additional state variables may be available.
-For output via VTK files, each time step is written to a separate
-file, whereas for HDF5 files all of the time steps for a given domain,
-fault, or material are written into the same file. A single Xdmf metadata
-file is created for each HDF5 file.
+PyLith currently supports output to HDF5/Xdmf and VTK files, which can
+be imported directly into a number of visualization tools, such as
+ParaView, Visit, and MayaVi. The HDF5 files can also be directly
+accessed via Matlab and Python modules, such as h5py and
+PyTables. PyLith v3.x supports output of the solution subfields (see
+Section \vref{sec:solution:observers}) all auxiliary fields
+(material properties, boundary condition parameters, and fault interface
+parameters, etc.) and fields derived from the auxiliary field and/or
+solution, such as stress and stress.
+
+HDF5 writer provides parallel binary output, whereas the VTK writer
+provides serial ASCII output. Additionally, with the VTK writer each
+time step is written to a separate file; the HDF5 writer puts all
+information for a given domain, boundary condition, or fault interface
+into a single file.
 
 
-\subsection{Output Manager}
+\subsection{Physics Observer (\object{OutputPhysics})}
 
-The \object{OutputManager} object controls the type of files written, the fields
-included in the output, and how often output is written. PyLith includes
-some specialized OutputManagers that prescribe what fields are output
-by default. In some cases, additional fields are available but not
-included by default. For example, in 3D problems, the along-strike
-and up-dip directions over the fault surface can be included in the
-diagnostic information. These are not included by default, because
-1D problems have neither an along-strike nor up-dip direction and
-2D problems do not have an up-dip direction.
+Analogous to the \object{OutputSoln} objects discussed in Section
+\vref{sec:solution:observers} for output of the solution, the physics
+objects (material, boundary conditions, and fault interfaces) have
+\object{OutputPhysics} objects to provide output of the solution,
+properties, state variables, etc. 
 
-
-The parameters for the \object{OutputManager} are:
+The parameters for the \object{OutputPhysics} are:
 \begin{inventory}
-\propertyitem{output\_freq}{Flag indicating whether to write output based on
-the time or number of time steps since the last output. Permissible
-values are ``time\_step'' and ``skip'' (default).}
-\propertyitem{time\_step}{Minimum time between output if \property{output\_freq}
-is set to ``time\_step''.}
-\propertyitem{skip}{Number of time steps between output if \property{output\_freq}
-is set to ``skip''. A value of 0 means every time step is written.}
-\facilityitem{writer}{Writer for data (VTK writer or HDF5 writer).}
-\facilityitem{coordsys}{Coordinate system for vertex coordinates (currently
-ignored).}
-\facilityitem{vertex\_filter}{Filter to apply to all vertex fields (see Section
-\vref{sub:vertex:field:filters}).}
-\facilityitem{cell\_filter}{Filter to apply to all cell fields (see Section
-\vref{sub:cell:field:filters}).}
-\end{inventory}
+  \propertyitem{info\_fields}{List of auxiliary subfields to observer/output (default=all which will output all of the subfields);}
+  \propertyitem{data\_fields}{List of solution subfields to observer/output (default=all which will output all of the subfields);}
+  \facilityitem{writer}{Writer for data (default=\object{DataWriterHDF5});}
+  \facilityitem{trigger}{Trigger defining how often output is written (default=\object{OutputTriggerStep}); and}
+  \facilityitem{field\_filter}{Filter for output fields (default=\object{FieldFilterNone}).}
 
-\begin{cfg}[\object{OutputManager} parameters in a \filename{cfg} file]
-<h>[pylithapp.timedependent.materials.elastic.output]</h>
-<p>output_freq</p> = time_step
-<p>time_step</p> = 1.0*yr
-<f>cell_filter</f> = pylith.meshio.CellFilterAvg
-<p>cell_info_fields</p> = [density] ; limit diagnostic data to density
-<p>cell_data_fields</p> = [total-strain, stress] ; default
-<p>writer.filename</p> = dislocation-elastic.vtk
+\begin{cfg}[\object{PhysicsOutput} parameters in a \filename{cfg} file]
+<h>[pylithapp.problem.materials.elastic.observers.observer]</h>
+<p>writer.filename</p> = output/step01-elastic.h5
+<f>field_filter</f> = pylith.meshio.FieldFilterNone
 \end{cfg}
 
-\subsubsection{Output Over Subdomain}
-\label{sec:output:subdomain}
+\subsection{Output Field Filter (\facility{field\_filter})}
 
-Output of the solution over the entire domain for large problems generates
-very large data files. In some cases one is primarily interested in
-the solution over the ground surface. PyLith supports output of the
-solution on any boundary of the domain by associating an output manager
-with a group of vertices corresponding to the surface of the boundary.
-As with several of the boundary conditions, the boundary must be a
-simply-connected surface. The \object{OutputSolnSubset} is the specialized
-\object{OutputManager} that implements this feature and, by default, includes
-the displacement field in the output. In addition to the \object{OutputManager}
-parameters, the \object{OutputSolnSubset} includes:
+Sometimes fields may not be in the form a user wants. For example, the
+displacement solution subfield may have a basis order of 2 with
+degrees of freedom associated with edges, which is incompatible with
+most visualization packages that require information be provided with
+a basis order of 1 (vertex data) or 0 (cell data). The
+\facility{field\_filter} facility of the \object{OutputPhysics} object
+allows passing a field through a ``filter'' to yield the desired form
+of the output. The default filter is \object{FieldFilterNone}, which
+simply passes the input field on to the \facility{writer} for
+output. The \object{FieldFilterProject} object provides the ability to
+project the input field to a lower basis order.
+
+\subsubsection{Projecting to lower basis order (\object{FieldFilterProject})}
+
+This filter projects a field to a lower basis order. It is most often
+used to reduce the basis order of solution subfields, e.g,,
+displacement, to a basis order of 1 from a basis order of 2, so that
+the solutino field can be visualized in common ParaView, etc.
+The \object{fieldFilterProject} property is:
 \begin{inventory}
-\propertyitem{label}{Label of group of vertices defining boundary surface.}
-\propertyitem{vertex\_data\_fields}{Names of vertex data fields to output (default
-is [displacement]).}
+  \propertyitem{basis\_order}{Basis order of the projected field (default=1).}
 \end{inventory}
 
-\subsection{Output Field Filters}
+\begin{cfg}[Using \object{FieldFilterProject} with solution output in
+  a \filename{cfg} file]
+<h>[pylithapp.problem.solution_observers.domain]</h>
+<p>writer.filename</p> = output/step01-domain.h5
+<f>field_filter</f> = pylith.meshio.FieldFilterProject
+<p>field_filter.basis_oder</p> = 0
+\end{cfg}
 
-Output fields may not directly correspond to the information a user
-desires. For example, the default output for the state variables
-includes the values at each quadrature point. Most visualization
-packages cannot handle cell fields with multiple points in a cell (the
-locations of the points within the cell are not included in the data
-file). In order to reduce the field to a single point within the cell,
-we would like to average the values. This is best done within PyLith
-before output, because it reduces the file size and the quadrature
-information provides the information necessary (the weights of the
-quadrature points) to compute the appropriate average over the cell.
 
-\subsubsection{Vertex Field Filters}
-\label{sub:vertex:field:filters}
+\subsection{Data Writers (\facility{writer})}
 
-Currently the only filter available for vertex fields computes the
-magnitude of a vector at each location. Most visualization packages
-support this operation, so this filter is not used very often.
-\begin{description}
-\item [\object{VertexFilterVecNorm}] Computes the magnitude of a vector field
-at each location.
-\end{description}
-
-\subsubsection{Cell Field Filters}
-\label{sub:cell:field:filters}
-
-Most users will want to apply a filter to cell fields to average the
-fields over the cell, producing values at one location per cell for
-visualization.
-\begin{description}
-\item [\object{CellFilterAvg}] Compute the weighted average of the values within
-a cell. The weights are determined from the quadrature associated
-with the cells.
-\end{description}
-
-\subsection{VTK Output (\object{DataWriterVTK})}
+\subsubsection{VTK Output (\object{DataWriterVTK})}
 
 PyLith writes legacy (non-XML) VTK files. These are simple files with
 vertex coordinates, the mesh topology, and fields over vertices and/or
@@ -149,7 +98,12 @@ data from multiple VTK files.}
 (default is 1.0 s).}
 \end{inventory}
 
-\subsection{HDF5/Xdmf Output (\object{DataWriterHDF5}, \object{DataWriterHDF5Ext})}
+\warning{We strongly discourage use of using VTK output. It is slow,
+  inefficient, and not easily read from post-processing scripts. We
+  strongly recommwnd using HDF5 output instead, which is the default
+  starting in PyLith v3.0.0.}
+
+\subsubsection{HDF5/Xdmf Output (\object{DataWriterHDF5}, \object{DataWriterHDF5Ext})}
 \label{sub:HDF5/Xdmf-Output}
 
 HDF5 files provide a flexible framework for storing simulation data
@@ -197,6 +151,24 @@ tensor output in HDF5 files. To avoid confusion about the ordering of
 components for tensor data, we separate the components in the Xdmf
 file.
 
+The \object{DataWriterHDF5} and \object{DataWriterHDF5Ext} property is:
+\begin{inventory}
+  \propertyitem{filename}{Name of HDF5 file (default=output.h5; the
+    Xdmf filename is generated from the same prefix).}
+\end{inventory}
+
+\begin{cfg}[\object{DataWriterHDF5Ext} parameters in a \filename{cfg} file]
+<h>[pylithapp.timedependent.domain.output]</h>
+<p>output_freq</p> = time_step
+<p>time_step</p> = 1.0*yr
+<p>cell_data_fields</p> = [displacement, velocity]
+<f>writer</f> = pylith.meshio.DataWriterHDF5Ext
+<p>writer.filename</p> = dislocation.h5
+\end{cfg}
+In this example, we change the writer from the default VTK writer to
+the HDF5 writer with external datasets (\object{DataWriterHDF5Ext})
+for output over the domain.
+
 HDF5 files do not contain self-correcting features that allow a file
 to be read if part of a dataset is corrupted. This type of error can
 occur if a job terminates abnormally in the middle or at the end of a
@@ -238,27 +210,15 @@ the ``work'' directory. See Table \vref{tab:materials:statevars}
 in Section \vref{sec:material:parameters} for a table of component
 values for tensor output.
 
-\subsubsection{Parameters}
+\begin{cfg}[Selecting \object{DataWriterHDF5Ext} in a \filename{cfg}
+  file]
+<h>[pylithapp.problem]</h>
+<f>solution_observers</f> = [domain]
+<f>solution_observers.domain>/f> = pylith.mehsio.DataWriterHDF5Ext
 
-The parametesr for the \object{DataWriterHDF5} and
-\object{DataWriterHDF5Ext} objects is identical:
-\begin{inventory}
-\propertyitem{filename}{Name of HDF5 file (the Xdmf filename is generated from
-the same prefix).}
-\end{inventory}
-
-\begin{cfg}[\object{DataWriterHDF5Ext} parameters in a \filename{cfg} file]
-<h>[pylithapp.timedependent.domain.output]</h>
-<p>output_freq</p> = time_step
-<p>time_step</p> = 1.0*yr
-<p>cell_data_fields</p> = [displacement, velocity]
-<f>writer</f> = pylith.meshio.DataWriterHDF5Ext
-<p>writer.filename</p> = dislocation.h5
+<h>[pylithapp.problem.solution_observers.domain]</h>
+<p>writer.filename</p> = output/step01-domain.h5
 \end{cfg}
-In this example, we change the writer from the default VTK writer to
-the HDF5 writer with external datasets (\object{DataWriterHDF5Ext})
-for output over the domain.
-
 
 \subsubsection{HDF5 Utilities}
 
@@ -286,4 +246,39 @@ HDF5 files in post-processing and wish to view the results in ParaView
 or Visit.
 
 
+\subsection{Output Triggers (\facility{trigger})}
+\newfeatures{3.0}
+
+By default PyLith will write the requested output after every time
+step. In many cases we prefer to save the solution, state variables,
+etc at a coarser temporal resolution. The \object{OutputTriggerStep}
+controls the decimation of the output by time step, and the
+\object{OutputTriggerTime} controls the decimation of the output via
+time. For uniform time stepping these are equivalent.
+
+\subsubsection{Decimate by time step (\object{OutputTriggerStep})
+
+\object{OutputTriggerStep} decimates the output by skipping a
+user-specified number of time steps. The property is
+\begin{inventory}
+  \propertyitem{num\_skip}{Number of solution steps to skip between
+    writes (default=0).}
+\end{inventory}
+
+  
+\subsubsection{Decimate by time (\object{OutputTriggerTime})
+
+\object{OutputTriggerTime} decimates the output by skipping a
+user-specified elasped time. The property is
+\begin{inventory}
+  \propertyitem{elapsed\_time}{Elasped time between writes (default=0.0*s).}
+\end{inventory}
+ 
+\tip{Due to roundoff error in determining the simulation time over
+  many time steps, a simulation may occasionally skip writing output
+  unexpectedly when using \object{OutputTriggerTime}. The best
+  workaround is to use an \property{elapsed\_time} that is a fraction
+  of the time step size smaller than the desired elapsed time, such as
+  0.9999*year instead of 1.0*year.}
+  
 % End of file
