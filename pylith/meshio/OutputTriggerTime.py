@@ -39,7 +39,7 @@ class OutputTriggerTime(OutputTrigger, ModuleOutputTriggerTime):
     import pyre.inventory
 
     from pyre.units.time import s
-    timeSkip = pyre.inventory.dimensional("elapsed_time", default=1.0 * s)
+    timeSkip = pyre.inventory.dimensional("elapsed_time", default=0.0*s)
     timeSkip.meta['tip'] = "Elapsed time between writes."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
