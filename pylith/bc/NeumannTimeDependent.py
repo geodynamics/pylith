@@ -24,6 +24,22 @@ from .bc import NeumannTimeDependent as ModuleNeumannTimeDependent
 from pylith.utils.NullComponent import NullComponent
 
 
+def validateDir(value):
+    """
+    Validate direction.
+    """
+    msg = "Direction must be a 3 component vector (list)."
+    if not isinstance(value, list):
+        raise ValueError(msg)
+    if 3 != len(value):
+        raise ValueError(msg)
+    try:
+        nums = map(float, value)
+    except:
+        raise ValueError(msg)
+    return nums
+
+
 class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
     """
     Python object for managing a time-dependent Neumann (natural) boundary condition.
@@ -35,6 +51,8 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
       - *use_initial* Use initial term in time-dependent expression.
       - *use_rate* Use rate term in time-dependent expression.
       - *use_time_history* Use time history term in time-dependent expression.
+      - *ref_dir_1* First choice for reference direction to discriminate among tangential directions in 3-D.
+      - *ref_dir_2* Second choice for reference direction to discriminate among tangential directions in 3-D.
 
     Facilities
       - *auxiliary_subfields* Discretization of time-dependent Neumann parameters.
@@ -60,6 +78,12 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
     dbTimeHistory = pyre.inventory.facility("time_history", factory=NullComponent, family="temporal_database")
     dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
 
+    refDir1 = pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
+    refDir1.meta['tip'] = "First choice for reference direction to discriminate among tangential directions in 3-D."
+
+    refDir2 = pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
+    refDir2.meta['tip'] = "Second choice for reference direction to discriminate among tangential directions in 3-D."
+    
     from .AuxSubfieldsTimeDependent import AuxSubfieldsTimeDependent
     from pylith.topology.Subfield import subfieldFactory
     auxiliarySubfields = pyre.inventory.facilityArray(
@@ -86,6 +110,8 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
         BoundaryCondition.preinitialize(self, mesh)
 
         ModuleNeumannTimeDependent.setScaleName(self, self.scaleName)
+        ModuelNeumannTimeDependent.setRefDir1(self, self.refDir1)
+        ModuleNeumannTimeDependent.setRefDir2(self, self.refDir2)
         ModuleNeumannTimeDependent.useInitial(self, self.useInitial)
         ModuleNeumannTimeDependent.useRate(self, self.useRate)
         ModuleNeumannTimeDependent.useTimeHistory(self, self.useTimeHistory)

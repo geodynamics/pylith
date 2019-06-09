@@ -32,6 +32,7 @@ The parameters for the \object{OutputPhysics} are:
   \facilityitem{writer}{Writer for data (default=\object{DataWriterHDF5});}
   \facilityitem{trigger}{Trigger defining how often output is written (default=\object{OutputTriggerStep}); and}
   \facilityitem{field\_filter}{Filter for output fields (default=\object{FieldFilterNone}).}
+\end{inventory}
 
 \begin{cfg}[\object{PhysicsOutput} parameters in a \filename{cfg} file]
 <h>[pylithapp.problem.materials.elastic.observers.observer]</h>
@@ -247,7 +248,7 @@ or Visit.
 
 
 \subsection{Output Triggers (\facility{trigger})}
-\newfeatures{3.0}
+\newfeature{3.0}
 
 By default PyLith will write the requested output after every time
 step. In many cases we prefer to save the solution, state variables,
@@ -256,7 +257,7 @@ controls the decimation of the output by time step, and the
 \object{OutputTriggerTime} controls the decimation of the output via
 time. For uniform time stepping these are equivalent.
 
-\subsubsection{Decimate by time step (\object{OutputTriggerStep})
+\subsubsection{Decimate by time step (\object{OutputTriggerStep})}
 
 \object{OutputTriggerStep} decimates the output by skipping a
 user-specified number of time steps. The property is
@@ -266,7 +267,7 @@ user-specified number of time steps. The property is
 \end{inventory}
 
   
-\subsubsection{Decimate by time (\object{OutputTriggerTime})
+\subsubsection{Decimate by time (\object{OutputTriggerTime})}
 
 \object{OutputTriggerTime} decimates the output by skipping a
 user-specified elasped time. The property is

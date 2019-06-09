@@ -47,7 +47,7 @@ class BoundaryCondition(Physics,
 
     Properties
       - *label* Label identifying boundary.
-      - *field* Field associated with boundary condition.
+      - *field* Solution subfield associated with boundary condition.
 
     Facilities
       - None
@@ -58,7 +58,7 @@ class BoundaryCondition(Physics,
     import pyre.inventory
 
     field = pyre.inventory.str("field", default="displacement")
-    field.meta['tip'] = "Solution field associated with boundary condition."
+    field.meta['tip'] = "Solution subfield associated with boundary condition."
 
     label = pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Label identifier for boundary."

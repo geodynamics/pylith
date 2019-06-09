@@ -1,12 +1,5 @@
 Physics
 
-  Materials
-
-    Elasticity
-      Bulk rheologies
-
-    Incompressible Elasticity
-
   Boundary Conditions
 
   Interface Conditions
@@ -24,8 +17,3 @@ Examples
   3d/strikeslip (later)
   3d/subduction (not updated)
 
-Developer Guide
-
-Coding style
-
-Glossary
