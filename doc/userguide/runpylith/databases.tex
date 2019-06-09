@@ -1,4 +1,4 @@
-\section{Databases for Boundaries, Interfaces, and Material Properties}
+\section{Databases for Boundary, Interface, and Material Property Values}
 \label{sec:spatial:databases}
 
 Once the problem has been defined with PyLith parameters and the
@@ -38,6 +38,7 @@ the specification and use of the spatial database files.
 
 
 \subsection{\object{SimpleDB} Spatial Database}
+\label{sec:SimpleDB}
 
 In most cases we set the default type of spatial database to
 \object{SimpleDB}. It is very flexible and can represent spatial
@@ -102,6 +103,7 @@ so you do not need to change this setting.}
 \end{cfg}
 
 \subsection{\object{UniformDB} Spatial Database}
+\label{sec:UniformDB}
 
 The \object{SimpleDB} spatial database is quite general, but when the
 values are uniform, it is often easier to use the \object{UniformDB}
@@ -131,6 +133,7 @@ dimensioned with the appropriate units using Python syntax.
 
 
 \subsubsection{\object{ZeroDB}}
+\label{sec:ZeroDB}
 
 The \object{ZeroDB} is a special case of the \object{UniformDB} for
 Dirichlet boundary conditions. The values in the database are the ones
@@ -141,6 +144,7 @@ vector) to zero on a boundary. Several examples discussed in Chapter
 
 
 \subsection{\object{SimpleGridDB} Spatial Database}
+\label{sec:SimpleGridDB}
 
 The \object{SimpleGridDB} object provides a much more efficient query
 algorithm than \object{SimpleDB} by requiring the points to lie in a
@@ -217,6 +221,7 @@ below this elevation remains undistorted).}
 \end{cfg}
 
 \subsection{\object{CompositeDB} Spatial Database}
+\label{sec:composite:database}
 
 For some problems, a boundary condition or material property may have
 subsets with different spatial variations. One example would be when
@@ -259,7 +264,36 @@ mechanism for specifying material properties or boundary conditions
 where the variations come from two different sources.
 
 
-\subsection{\object{TimeHistory} Database}
+\subsection{\protect\object{GravityField}}
+\label{sec:gravity:field}
+
+Many problems in geophysics require the consideration of gravitational
+body forces. For example, it is often important to include the effects
+of the lithostatic (overburden) pressure. The \object{GravityField}
+object specifies the gravity field, both direction and gravitational
+acceleration. The properties are:
+
+\begin{inventory}
+  \propertyitem{gravity\_dir}{Direction of gravitational body force
+    (default=[0,0,-1], only used with a Cartesian coordinate system);}
+  \propertyitem{acceleration}{Gravitational acceleration
+    (default=9.80665*m/s**2); and}
+  \propertyitem{label}{Descriptive label for gravity field
+    (default=Gravity field).}
+\end{inventory}
+
+\begin{cfg}[Specifying the gravity field for PyLith in a \filename{cfg} file]
+<h>[pylithapp.problem]</h>
+<f>gravity_field</f> = spatialdata.spatialdb.GravityField
+
+<h>[pylithapp.problem.gravity_field]</h>
+<p>acceleration</p> = 100.0*m/s**2
+<p>gravity_dir</p> = [0, -1, 0]
+\end{cfg}
+
+
+\subsection{\protect\object{TimeHistory} Database}
+\label{sec:time:history:database}
 
 The \object{TimeHistory} database specifies the temporal variation in the
 amplitude of a field associated with a boundary condition. It is used
