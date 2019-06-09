@@ -110,7 +110,7 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
         BoundaryCondition.preinitialize(self, mesh)
 
         ModuleNeumannTimeDependent.setScaleName(self, self.scaleName)
-        ModuelNeumannTimeDependent.setRefDir1(self, self.refDir1)
+        ModuleNeumannTimeDependent.setRefDir1(self, self.refDir1)
         ModuleNeumannTimeDependent.setRefDir2(self, self.refDir2)
         ModuleNeumannTimeDependent.useInitial(self, self.useInitial)
         ModuleNeumannTimeDependent.useRate(self, self.useRate)
