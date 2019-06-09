@@ -36,7 +36,10 @@ dist_noinst_DATA = \
 	pylithapp.cfg \
 	twoblocks.cfg \
 	twoblocks_quad.cfg \
-	twoblocks_tri.cfg
+	twoblocks_tri.cfg \
+	twoblocks_ic.cfg \
+	twoblocks_ic_quad.cfg \
+	twoblocks_ic_tri.cfg
 
 
 noinst_TMP =
