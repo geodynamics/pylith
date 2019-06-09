@@ -113,8 +113,8 @@ pylith::feassemble::ConstraintUserFn::setSolution(pylith::topology::Field* solut
 
     journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        debug << journal::at(__HERE__);
-        solution->view("SOLUTION at end of ConstraintUserFn::setSolution()");
+        PYLITH_JOURNAL_DEBUG("Displaying solution field");
+        solution->view("solution field");
     } // if
 
     PYLITH_METHOD_END;

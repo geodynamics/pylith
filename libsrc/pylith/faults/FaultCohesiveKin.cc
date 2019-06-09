@@ -214,7 +214,7 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
 
     assert(_auxiliaryFactory);
     assert(_normalizer);
-    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.dimension());
+    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, solution.spaceDim());
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
@@ -225,8 +225,8 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
     auxiliaryField->allocate();
     auxiliaryField->zeroLocal();
 
-    assert(_auxiliaryFactory);
-    _auxiliaryFactory->setValuesFromDB();
+    // We don't populate the auxiliary field via a spatial database, because they will be set from the earthquake
+    // rupture.
 
     // Initialize auxiliary fields for kinematic ruptures.
     assert(auxiliaryField);
@@ -253,12 +253,10 @@ pylith::faults::FaultCohesiveKin::createDerivedField(const pylith::topology::Fie
 // ---------------------------------------------------------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
-pylith::faults::FaultCohesiveKin::prestep(pylith::topology::Field* auxiliaryField,
-                                          const double t) {
+pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                                                       const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("prestep(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
-
-    // Update slip subfield.
+    PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
     // Compute slip field at current time step
     const srcs_type::const_iterator rupturesEnd = _ruptures.end();
@@ -268,7 +266,7 @@ pylith::faults::FaultCohesiveKin::prestep(pylith::topology::Field* auxiliaryFiel
     } // for
 
     PYLITH_METHOD_END;
-} // prestep
+} // updateAuxiliaryField
 
 
 // ---------------------------------------------------------------------------------------------------------------------

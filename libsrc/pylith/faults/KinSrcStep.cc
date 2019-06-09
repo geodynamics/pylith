@@ -80,7 +80,7 @@ pylith::faults::KinSrcStep::slipFn(const PylithInt dim,
 
     if (t >= t0) {
         for (PylithInt i = 0; i < dim; ++i) {
-            slip[i] += finalSlip[i];
+            slip[i] = finalSlip[i];
         } // for
     } // if
 

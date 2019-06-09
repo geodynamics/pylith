@@ -103,7 +103,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addFinalSlip(void) {
     PYLITH_JOURNAL_DEBUG("addFinalSlip(void)");
 
     const char* fieldName = "final_slip";
-    const char* componentNames[3] = { "final_slip_opening", "final_slip_left_lateral", "final_slip_opening" };
+    const char* componentNames[3] = { "final_slip_opening", "final_slip_left_lateral", "final_slip_reverse" };
 
     const PylithReal lengthScale = _normalizer->lengthScale();
 

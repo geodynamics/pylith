@@ -117,7 +117,7 @@ pylith::testing::MMSTest::testResidual(void) {
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
     if (debug.state()) {
-        _solution->view("SOLUTION FOR RESIDUAL CHECK", pylith::topology::Field::VIEW_LAYOUT);
+        _solution->view("Solution field", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
     const PylithReal tolerance = -1.0;

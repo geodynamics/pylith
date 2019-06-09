@@ -159,9 +159,8 @@ pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solu
 
     journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
-        debug << journal::at(__HERE__)
-              << "Component '"<<PyreComponent::getIdentifier()<<"': viewing solution field." << journal::endl;
-        solution->view("Solution field with initial values", pylith::topology::Field::VIEW_ALL);
+        PYLITH_COMPONENT_DEBUG("Displaying solution field");
+        solution->view("Solution field with initial values");
     } // if
 
     PYLITH_METHOD_END;

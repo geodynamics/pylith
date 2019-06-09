@@ -38,9 +38,9 @@ class TestApp(TestDriver):
         """
         suite = unittest.TestSuite()
 
-        #import TestTwoBlocks
-        #for test in TestTwoBlocks.test_cases():
-        #    suite.addTest(unittest.makeSuite(test))
+        import TestTwoBlocks
+        for test in TestTwoBlocks.test_cases():
+            suite.addTest(unittest.makeSuite(test))
 
         return suite
 

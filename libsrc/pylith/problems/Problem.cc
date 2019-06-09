@@ -340,9 +340,8 @@ pylith::problems::Problem::initialize(void) {
 
     journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
-        debug << journal::at(__HERE__)
-              << "Component '"<<PyreComponent::getIdentifier()<<"': viewing solution field layout." << journal::endl;
-        _solution->view("Problem solution field", pylith::topology::Field::VIEW_LAYOUT);
+        PYLITH_COMPONENT_DEBUG("Displaying solution field layout");
+        _solution->view("Solution field", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
     // Initialize residual.
