@@ -339,6 +339,7 @@ AC_CONFIG_FILES([Makefile
 		examples/meshing/surface_nurbs/subduction/Makefile
 		examples/meshing/cubit_cellsize/Makefile
 		examples/troubleshooting/Makefile
+		examples/troubleshooting/nofaults-2d/Makefile
 		templates/Makefile
 		share/Makefile
 		])
