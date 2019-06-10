@@ -22,7 +22,6 @@ dist_noinst_DATA = \
 SUBDIRS = \
 	2d \
 	3d \
-	bar_shearwave \
 	meshing \
 	troubleshooting
 
