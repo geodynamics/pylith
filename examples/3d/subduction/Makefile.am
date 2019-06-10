@@ -17,7 +17,7 @@
 #
 
 dist_noinst_DATA = \
-	README \
+	README.md \
 	pylithapp.cfg \
 	greensfns.cfg \
 	mat_elastic.cfg \

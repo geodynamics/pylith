@@ -27,8 +27,7 @@ dist_noinst_DATA = \
 	sheardisp_bc_xneg.spatialdb \
 	sheardisp_bc_xpos.spatialdb \
 	sheardisp_bc_yneg.spatialdb \
-	sheardisp_bc_ypos.spatialdb \
-	viz/plot_dispwarp.py
+	sheardisp_bc_ypos.spatialdb
 
 
 # 'export' the input files by performing a mock install

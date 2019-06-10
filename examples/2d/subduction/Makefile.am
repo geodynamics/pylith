@@ -17,7 +17,7 @@
 #
 
 dist_noinst_DATA = \
-	README \
+	README.md \
 	pylithapp.cfg \
 	step01.cfg \
 	step02.cfg \

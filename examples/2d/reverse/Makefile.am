@@ -17,9 +17,9 @@
 
 include $(top_srcdir)/check.am
 
-TESTS = run_examples.py
+#TESTS = run_examples.py
 
-dist_check_SCRIPTS = test_pylith.py
+#dist_check_SCRIPTS = run_examples.py
 
 dist_noinst_DATA = \
 	README.md \
@@ -34,7 +34,7 @@ dist_noinst_DATA = \
 	step01_gravity.cfg \
 	step02_gravity_refstate.cfg \
 	step03_gravity_incompressible.cfg \
-	step04_neumann.cfg \
+	step04_surfload.cfg \
 	step05_onefault.cfg \
 	step06_twofault.cfg \
 	step07_twofault_maxwell.cfg \
