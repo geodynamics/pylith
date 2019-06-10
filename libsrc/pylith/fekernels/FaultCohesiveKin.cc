@@ -54,18 +54,6 @@ public:
             static PylithInt lagrange_sOff(const PylithInt sOff[],
                                            const PylithInt numS);
 
-            /** Get offset in residual where Lagrange multiplier field starts.
-             *
-             * Normally it would be zero, but the Lagrange multiplier field is offset.
-             *
-             * @param[in] sOff Offset of registered subfields in solution field [numS].
-             * @param[in] numS Number of registered subfields in solution field.
-             *
-             * @returns Offset of Lagrange multiplier field in residual.
-             */
-            static PylithInt lagrange_rOff(const PylithInt sOff[],
-                                           const PylithInt numS);
-
             /* Compute tangential directions for 3-D fault.
              *
              * @param[in] dim Spatial dimension.
@@ -98,20 +86,6 @@ pylith::fekernels::_FaultCohesiveKin::lagrange_sOff(const PylithInt sOff[],
     } // for
     return off;
 } // lagrange_sOff
-
-
-// ----------------------------------------------------------------------
-// Get offset in residual where Lagrange multiplier field starts.
-PylithInt
-pylith::fekernels::_FaultCohesiveKin::lagrange_rOff(const PylithInt sOff[],
-                                                    const PylithInt numS) {
-    PylithInt off = 0;
-    const PylithInt numCount = numS - 1; // Don't include last field (Lagrange multiplier)
-    for (PylithInt i = 0; i < numCount; ++i) {
-        off += (sOff[i+1] - sOff[i]);
-    } // for
-    return off;
-} // lagrange_rOff
 
 
 // ----------------------------------------------------------------------
@@ -231,7 +205,7 @@ pylith::fekernels::FaultCohesiveKin::g0l(const PylithInt dim,
 
     const PylithInt sOffDispN = sOff[i_disp];
     const PylithInt sOffDispP = sOff[i_disp]+spaceDim;
-    const PylithInt gOffLagrange = 0;//pylith::fekernels::_FaultCohesiveKin::lagrange_rOff(sOff, numS);
+    const PylithInt gOffLagrange = 0;
 
     const PylithScalar* dispN = &s[sOffDispN];
     const PylithScalar* dispP = &s[sOffDispP];
