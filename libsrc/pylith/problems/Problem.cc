@@ -746,7 +746,6 @@ pylith::problems::Problem::_setupLagrangeMultiplier(pylith::topology::Field* sol
     err = DMSetField(dmSoln, lagrangeMultiplierInfo.index, cohesiveLabel, (PetscObject)fe);PYLITH_CHECK_ERROR(err);
 
     err = PetscFEDestroy(&fe);PYLITH_CHECK_ERROR(err);
-    err = DMLabelDestroy(&cohesiveLabel);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setupLagrangeMultiplier
