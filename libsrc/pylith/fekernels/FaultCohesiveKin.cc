@@ -231,7 +231,7 @@ pylith::fekernels::FaultCohesiveKin::g0l(const PylithInt dim,
 
     const PylithInt sOffDispN = sOff[i_disp];
     const PylithInt sOffDispP = sOff[i_disp]+spaceDim;
-    const PylithInt gOffLagrange = pylith::fekernels::_FaultCohesiveKin::lagrange_rOff(sOff, numS);
+    const PylithInt gOffLagrange = 0;//pylith::fekernels::_FaultCohesiveKin::lagrange_rOff(sOff, numS);
 
     const PylithScalar* dispN = &s[sOffDispN];
     const PylithScalar* dispP = &s[sOffDispP];
@@ -299,15 +299,13 @@ pylith::fekernels::FaultCohesiveKin::Jg0ul(const PylithInt dim,
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt i_disp = 0;
-    const PylithInt sOffDispN = sOff[i_disp];
-    const PylithInt sOffDispP = sOff[i_disp]+spaceDim;
-    const PylithInt sOffLagrange = 0;
-    const PylithInt ncols = sOffLagrange + spaceDim;
+    const PylithInt gOffDispN = 0;
+    const PylithInt gOffDispP = 0+spaceDim;
+    const PylithInt ncols = spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jg0[(sOffDispN+i)*ncols+sOffLagrange+i] += +1.0;
-        Jg0[(sOffDispP+i)*ncols+sOffLagrange+i] += -1.0;
+        Jg0[(gOffDispN+i)*ncols+i] += +1.0;
+        Jg0[(gOffDispP+i)*ncols+i] += -1.0;
     } // for
 } // Jg0ul
 
@@ -346,15 +344,13 @@ pylith::fekernels::FaultCohesiveKin::Jg0lu(const PylithInt dim,
 
     const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt i_disp = 0;
-    const PylithInt sOffDispN = sOff[i_disp];
-    const PylithInt sOffDispP = sOff[i_disp]+spaceDim;
-    const PylithInt sOffLagrange = 0;
+    const PylithInt gOffDispN = 0;
+    const PylithInt gOffDispP = 0+spaceDim;
     const PylithInt ncols = 2*spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jg0[(0*sOffLagrange+i)*ncols+sOffDispN+i] += +1.0;
-        Jg0[(0*sOffLagrange+i)*ncols+sOffDispP+i] += -1.0;
+        Jg0[i*ncols+gOffDispN+i] += +1.0;
+        Jg0[i*ncols+gOffDispP+i] += -1.0;
     } // for
 } // Jg0lu
 
