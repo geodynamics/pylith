@@ -28,6 +28,8 @@ dist_noinst_DATA = \
 	mesh_quad.jou \
 	gradient.jou \
 	createbc.jou \
+	mesh_tri.exo \
+	mesh_quad.exo \
 	pylithapp.cfg \
 	step01_slip.cfg \
 	step02_slip_velbc.cfg \
@@ -40,7 +42,7 @@ dist_noinst_DATA = \
 
 
 # 'export' the input files by performing a mock install
-export_datadir = $(top_builddir)/examples/2d/box
+export_datadir = $(top_builddir)/examples/2d/strikeslip
 export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 

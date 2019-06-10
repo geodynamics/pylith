@@ -37,15 +37,20 @@ dist_noinst_DATA = \
 	step04_neumann.cfg \
 	step05_onefault.cfg \
 	step06_twofault.cfg \
+	step07_twofault_maxwell.cfg \
+	step08_twofault_powerlaw.cfg \
 	elastic_incompressible_matfields.spatialdb \
 	elastic_matfields.spatialdb \
 	gravity_refstate_matfields.spatialdb \
+	maxwell_matfields.spatialdb \
+	powerlaw_matfields.spatialdb \
 	traction_trapezoid.spatialdb \
-	viz/plot_dispwarp.py
+	viz/plot_dispwarp.py \
+	viz/plot_mesh.py
 
 
 # 'export' the input files by performing a mock install
-export_datadir = $(top_builddir)/examples/2d/box
+export_datadir = $(top_builddir)/examples/2d/reverse
 export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 
