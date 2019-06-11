@@ -18,7 +18,7 @@ from paraview.simple import *
 
 """
 Plot the undeformed domain as a gray wireframe and then the deformed
-domain, colored by the value of the x-displacemenet.
+domain, colored by the value of the y-displacemenet.
 
 
 User-specified parameters.
@@ -34,10 +34,10 @@ OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "2d",
 
 DEFAULTS = {
     "OUTPUT_DIR": "output",
-    "SIM": "step01_axialdisp",
-    "WARP_SCALE": 1.0e+3,
+    "SIM": "step01_slip",
+    "WARP_SCALE": 2.0e+3,
     "FIELD": "displacement",
-    "FIELD_COMPONENT": "X",
+    "FIELD_COMPONENT": "Y",
     "TIMESTEP": 0,  # Use 0 for first, -1 for last.
 }
 
