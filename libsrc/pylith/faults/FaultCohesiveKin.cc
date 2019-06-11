@@ -258,6 +258,9 @@ pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* 
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
+    
+    auxiliaryField->zeroLocal(); // :KLUDGE: :TEMPORARY: Slip field is only auxiliary field, so we can zero entire field.
+    
     // Compute slip field at current time step
     const srcs_type::const_iterator rupturesEnd = _ruptures.end();
     for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
