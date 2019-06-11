@@ -36,8 +36,6 @@ dist_noinst_DATA = \
 	step03_multislip_velbc.cfg \
 	disprate_bc_xneg.spatialdb \
 	disprate_bc_xpos.spatialdb \
-	elastic_xneg_matfields.spatialdb \
-	elastic_xpos_matfields.spatialdb \
 	viz/plot_dispwarp.py
 
 

@@ -8,6 +8,7 @@ Concepts common to all of the steps include:
 * Dirichlet boundary conditions
 * Isotropic, linear elasticity with two materials and a contrast in shear
   modulus across the fault
+* UniformDB spatial database for specifying values for material properties
 * Kinematic fault slip
 * Output of the solution over the domain, boundaries, fault, and materials
 * Output of auxiliary information for boundary conditions and
@@ -28,18 +29,17 @@ boundaries, and a single coseismic slip event. Features used in this
 simulation include:
 
 * Static simulation
-* SimpleDB spatial database for specifying values for properties and
-  boundary conditions
+* ZeroDB spatial database for specifying values for boundary conditions
 * UniformDB spatial database for specifying values for fault slip and
   slip initiation time
 * Use of precsribed static fault slip
 
-The simulation parameters are in the `pylithapp.cfg`,
-`step01_slip.cfg`, and `solver_fault.cfg` files.
+The simulation parameters are in the `pylithapp.cfg` and
+`step01_slip.cfg` files.
 
 To run the example:
 ```
-pylith step01_slip.cfg solver_fault.cfg
+pylith step01_slip.cfg
 ```
 
 ## Step02: Prescribed slip with time-dependent Dirichlet boundary conditions
@@ -49,18 +49,17 @@ earthquake rupture with slip matching the accumulated slip
 deficit. Features used in this simulation include:
 
 * Quasi-static, time-dependent simulation
-* SimpleDB spatial database for specifying values for properties and
-  boundary conditions
+* SimpleDB spatial database for specifying values for boundary conditions
 * UniformDB spatial database for specifying values for fault slip and
   slip initiation time
 * Rate conditions used to provide velocities on left and right sides
 
-The simulation parameters are in the `pylithapp.cfg`,
-`step02_slip_velbc.cfg`, and `solver_faults.cfg` files.
+The simulation parameters are in the `pylithapp.cfg` and
+`step02_slip_velbc.cfg` files.
 
 To run the example:
 ```
-pylith step02_slip_velbc.cfg solver_fault.cfg
+pylith step02_slip_velbc.cfg
 ```
 
 ## Step03: Multiple ruptures with time-dependent Dirichlet boundary conditions
@@ -71,19 +70,18 @@ accumulated slip deficit at both times. Features used in this simulation
 include:
 
 * Quasi-static, time-dependent simulation
-* SimpleDB spatial database for specifying values for properties and
-  boundary conditions
+* SimpleDB spatial database for specifying values for boundary conditions
 * UniformDB spatial database for specifying values for fault slip and
   slip initiation time
 * Rate conditions used to provide velocities on left and right sides
 * Use of multiple rupture sources
 
-The simulation parameters are in the `pylithapp.cfg`,
-`step03_multislip_velbc.cfg`, and `solver_fault.cfg` files.
+The simulation parameters are in the `pylithapp.cfg` and
+`step03_multislip_velbc.cfg` files.
 
 To run the example:
 ```
-pylith step03_multislip_velbc.cfg solver_fault.cfg
+pylith step03_multislip_velbc.cfg
 ```
 
 ## Suggested exercises
