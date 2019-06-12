@@ -104,6 +104,7 @@ pylith::topology::Field::Field(const Mesh& mesh,
 
     err = DMCreateLocalVector(_dm, &_localVec);PYLITH_CHECK_ERROR(err);
     err = PetscObjectSetName((PetscObject) _localVec,  _label.c_str());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject) _dm, _label.c_str());PYLITH_CHECK_ERROR(err);
     err = VecCopy(localVec, _localVec);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
@@ -139,6 +140,9 @@ pylith::topology::Field::label(const char* value) {
     PetscErrorCode err;
 
     _label = value;
+    if (_dm) {
+        err = PetscObjectSetName((PetscObject) _dm, value);PYLITH_CHECK_ERROR(err);
+    } // of
     if (_localVec) {
         err = PetscObjectSetName((PetscObject) _localVec, value);PYLITH_CHECK_ERROR(err);
     } // if
@@ -147,6 +151,10 @@ pylith::topology::Field::label(const char* value) {
     for (scatter_map_type::const_iterator s_iter = _scatters.begin();
          s_iter != scattersEnd;
          ++s_iter) {
+      const std::string& scatterName = value + std::string("_") + s_iter->first;
+        if (s_iter->second.dm) {
+	  err = PetscObjectSetName((PetscObject)s_iter->second.dm, scatterName.c_str());PYLITH_CHECK_ERROR(err);
+        } // if
         if (s_iter->second.vector) {
             err = PetscObjectSetName((PetscObject)s_iter->second.vector, value);PYLITH_CHECK_ERROR(err);
         } // if
@@ -230,6 +238,7 @@ pylith::topology::Field::cloneSection(const Field& src) {
     label(origLabel.c_str());
 
     PetscErrorCode err;
+    const char* name = NULL;
 
     assert(_dm);
     PetscSection srcSection = src.localSection();
@@ -240,7 +249,10 @@ pylith::topology::Field::cloneSection(const Field& src) {
 
     assert(!_localVec);
     err = DMCreateLocalVector(_dm, &_localVec);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) _localVec,  _label.c_str());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectGetName((PetscObject)src._dm, &name);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject)_dm,  name);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectGetName((PetscObject)src._localVec, &name);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject)_localVec, name);PYLITH_CHECK_ERROR(err);
 
     // Reuse scatters in clone
     _scatters.clear();
@@ -256,7 +268,8 @@ pylith::topology::Field::cloneSection(const Field& src) {
 
         // Create global vector.
         err = DMCreateGlobalVector(sinfo.dm, &sinfo.vector);PYLITH_CHECK_ERROR(err);
-        err = PetscObjectSetName((PetscObject)sinfo.vector, _label.c_str());PYLITH_CHECK_ERROR(err);
+	err = PetscObjectGetName((PetscObject)s_iter->second.vector, &name); PYLITH_CHECK_ERROR(err);
+        err = PetscObjectSetName((PetscObject)sinfo.vector, name);PYLITH_CHECK_ERROR(err);
     } // for
 
     // Reuse subfields in clone
@@ -336,11 +349,15 @@ pylith::topology::Field::allocate(void) {
 
     // Create DM for subfields.
     int fields[1];
+    const char* name = NULL;
     for (subfields_type::iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
         SubfieldInfo& info = s_iter->second;
         fields[0] = info.index;
         err = DMDestroy(&info.dm);PYLITH_CHECK_ERROR(err);
         err = DMCreateSubDM(_dm, 1, fields, NULL, &info.dm);PYLITH_CHECK_ERROR(err);
+	err = PetscObjectGetName((PetscObject)_dm, &name); PYLITH_CHECK_ERROR(err);
+	const std::string& subDMName = std::string(name) + std::string("_") + s_iter->first;
+	err = PetscObjectSetName((PetscObject)info.dm, subDMName.c_str());PYLITH_CHECK_ERROR(err);
     } // for
 
     PYLITH_METHOD_END;
@@ -514,6 +531,7 @@ pylith::topology::Field::createScatter(const Mesh& mesh,
 
     assert(context);
     PetscErrorCode err;
+    const char* name = NULL;
 
     const bool createScatterOk = true;
     ScatterInfo& sinfo = _getScatter(context, createScatterOk);
@@ -525,10 +543,13 @@ pylith::topology::Field::createScatter(const Mesh& mesh,
     err = DMDestroy(&sinfo.dm);PYLITH_CHECK_ERROR(err);
     sinfo.dm = _dm;
     err = PetscObjectReference((PetscObject) sinfo.dm);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectGetName((PetscObject)_dm, &name);PYLITH_CHECK_ERROR(err);
+    const std::string dmName = std::string(name) + std::string("_") + std::string(context);
+    err = PetscObjectSetName((PetscObject)sinfo.dm, dmName.c_str());PYLITH_CHECK_ERROR(err);
 
     err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);
     err = DMCreateGlobalVector(_dm, &sinfo.vector);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) sinfo.vector, _label.c_str());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject)sinfo.vector, _label.c_str());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // createScatter
@@ -556,21 +577,28 @@ pylith::topology::Field::createScatterWithBC(const char* context) {
 
     PetscSection section = NULL, newSection = NULL, gsection = NULL;
     PetscSF sf = NULL;
-
+    const char* name = NULL;
+    
     err = DMDestroy(&sinfo.dm);PYLITH_CHECK_ERROR(err);
     err = DMClone(_dm, &sinfo.dm);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectGetName((PetscObject)_dm, &name);PYLITH_CHECK_ERROR(err);
+    const std::string dmName = std::string(name) + std::string("_") + std::string(context);
+    err = PetscObjectSetName((PetscObject)sinfo.dm, dmName.c_str());PYLITH_CHECK_ERROR(err);
     err = DMCopyDisc(_dm, sinfo.dm);PYLITH_CHECK_ERROR(err);
+
     err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);
     err = PetscSectionClone(section, &newSection);PYLITH_CHECK_ERROR(err);
     err = DMSetDefaultSection(sinfo.dm, newSection);PYLITH_CHECK_ERROR(err);
     err = PetscSectionDestroy(&newSection);PYLITH_CHECK_ERROR(err);
     err = DMGetPointSF(sinfo.dm, &sf);PYLITH_CHECK_ERROR(err);
+
     err = PetscSectionCreateGlobalSection(section, sf, PETSC_TRUE, PETSC_FALSE, &gsection);PYLITH_CHECK_ERROR(err);
     err = DMSetDefaultGlobalSection(sinfo.dm, gsection);PYLITH_CHECK_ERROR(err);
     err = PetscSectionDestroy(&gsection);PYLITH_CHECK_ERROR(err);
+
     err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);
     err = DMCreateGlobalVector(sinfo.dm, &sinfo.vector);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) sinfo.vector, _label.c_str());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject)sinfo.vector, _label.c_str());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // createScatterWithBC
@@ -653,8 +681,13 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
         numExcludes = 0;
     } // if
 
+    const char* name = NULL;
     err = DMDestroy(&sinfo.dm);PYLITH_CHECK_ERROR(err);
     err = DMClone(_dm, &sinfo.dm);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectGetName((PetscObject)_dm, &name);PYLITH_CHECK_ERROR(err);
+    const std::string dmName = std::string(name) + std::string("_") + std::string(context);
+    err = PetscObjectSetName((PetscObject)sinfo.dm, dmName.c_str());PYLITH_CHECK_ERROR(err);
+
     err = DMCopyDisc(_dm, sinfo.dm);PYLITH_CHECK_ERROR(err);
     err = PetscSectionClone(section, &newSection);PYLITH_CHECK_ERROR(err);
     err = DMSetDefaultSection(sinfo.dm, newSection);PYLITH_CHECK_ERROR(err);

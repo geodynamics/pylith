@@ -102,6 +102,10 @@ pylith::topology::TestFieldMesh::testGeneralAccessors(void) {
     const std::string label = "velocity";
     _field->label(label.c_str());
     CPPUNIT_ASSERT_EQUAL(label, std::string(_field->label()));
+    const char* name = NULL;
+    PetscErrorCode err = 0;
+    err = PetscObjectGetName((PetscObject)_field->_dm, &name);CPPUNIT_ASSERT(!err);
+    CPPUNIT_ASSERT_EQUAL(label, std::string(name));    
 
     // Test addDimensionOkay()
     CPPUNIT_ASSERT_EQUAL(false, _field->_dimsOkay);
@@ -143,13 +147,20 @@ pylith::topology::TestFieldMesh::testVectorAccessors(void) {
     CPPUNIT_ASSERT(_field);
 
     PetscErrorCode err;
+    const char* name = NULL;
     PylithInt size = 0;
 
     const PetscVec& localVec = _field->localVector();
+
+    err = PetscObjectGetName((PetscObject)localVec, &name);CPPUNIT_ASSERT(!err);
+    CPPUNIT_ASSERT_EQUAL(std::string(_field->label()), std::string(name));    
+
     err = VecGetSize(localVec, &size);CPPUNIT_ASSERT(!err);
     const PylithInt fiberDim = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
     CPPUNIT_ASSERT_EQUAL(_data->numVertices * fiberDim, size);
 
+
+    
     PYLITH_METHOD_END;
 } // testVectorAccessors
 
@@ -178,11 +189,19 @@ pylith::topology::TestFieldMesh::testCloneSection(void) {
 
     Field field(*_mesh);
     const std::string& label = "field A";
-    field.label(label.c_str());
     field.cloneSection(*_field);
-    PetscSection section = field.localSection();
-    PetscVec vec = field.localVector();
-    CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
+    field.label(label.c_str());
+
+    const char *name = NULL;
+    err = PetscObjectGetName((PetscObject)field.dmMesh(), &name);CPPUNIT_ASSERT(!err);
+    CPPUNIT_ASSERT_EQUAL(label, std::string(name));
+
+    PetscSection section = field.localSection();CPPUNIT_ASSERT(section);
+    PetscVec vec = field.localVector();CPPUNIT_ASSERT(vec);
+
+    err = PetscObjectGetName((PetscObject) vec, &name);CPPUNIT_ASSERT(!err);
+    CPPUNIT_ASSERT_EQUAL(label, std::string(name));
+    
     const PylithInt fiberDim = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
     for (PylithInt v = vStart, iV = 0; v < vEnd; ++v, ++iV) {
         PylithInt dof, cdof;
@@ -212,9 +231,6 @@ pylith::topology::TestFieldMesh::testCloneSection(void) {
     // Verify vector scatters were also copied.
     CPPUNIT_ASSERT_EQUAL(_field->_scatters[""].dm,  field._scatters[""].dm);
     CPPUNIT_ASSERT_EQUAL(_field->_scatters[context].dm, field._scatters[context].dm);
-    const char *name = NULL;
-    err = PetscObjectGetName((PetscObject) vec, &name);CPPUNIT_ASSERT(!err);
-    CPPUNIT_ASSERT_EQUAL(label, std::string(name));
 
     field.deallocate();
 
@@ -505,9 +521,11 @@ pylith::topology::TestFieldMesh::testScatter(void) {
         const PetscVec scatterVector = _field->scatterVector(contextA);
         CPPUNIT_ASSERT_EQUAL(sinfo.vector, scatterVector);
         // Check vector name
-        const char* vecname = 0;
-        PetscErrorCode err = PetscObjectGetName((PetscObject)scatterVector, &vecname);CPPUNIT_ASSERT(!err);
-        CPPUNIT_ASSERT_EQUAL(std::string("solution"), std::string(vecname));
+        const char* name = NULL;
+        PetscErrorCode err = PetscObjectGetName((PetscObject)scatterVector, &name);CPPUNIT_ASSERT(!err);
+        CPPUNIT_ASSERT_EQUAL(std::string("solution"), std::string(name));
+        err = PetscObjectGetName((PetscObject)sinfo.dm, &name);CPPUNIT_ASSERT(!err);
+        CPPUNIT_ASSERT_EQUAL(std::string("solution_abc"), std::string(name));
 
         // Make sure we can do multiple calls to createScatter().
         _field->createScatter(*_mesh, contextA);
