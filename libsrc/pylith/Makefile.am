@@ -57,6 +57,7 @@ libpylith_la_SOURCES = \
 	feassemble/Constraint.cc \
 	feassemble/ConstraintSpatialDB.cc \
 	feassemble/ConstraintUserFn.cc \
+	feassemble/ConstraintSimple.cc \
 	feassemble/AuxiliaryFactory.cc \
 	fekernels/Elasticity.cc \
 	fekernels/IsotropicLinearElasticity.cc \
