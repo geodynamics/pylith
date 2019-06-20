@@ -147,6 +147,9 @@ pylith step06_twofault.cfg solver_faults.cfg
 
 ## Step07: Fault slip on main fault and splay fault with Maxwell viscoelasticity
 
+**Note**: This example does not work in v3.0.0beta3. It will be
+working in the v3.0.0 release.
+
 This problem is similar to Step06, but the slab material is considered to be
 viscoelastic, and the simulation runs for 100 years. Features used in this
 simulation include:
@@ -173,6 +176,9 @@ pylith step07_twofault_maxwell.cfg solver_faults.cfg
 ```
 
 ## Step08: Fault slip on main fault and splay fault with power-law viscoelasticity
+
+**Note**: This example does not work in v3.0.0beta3. It will be
+working in the v3.0.0 release.
 
 This problem is similar to Step07, but the slab material is considered to be
 power-law viscoelastic, and the simulation runs for 100 years. Features used
