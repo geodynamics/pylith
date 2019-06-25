@@ -42,35 +42,35 @@ namespace pylith {
        * @returns True if source code comes from a release?
        */
       static
-      bool isRelease(void) const;
+      bool isRelease(void);
       
       /** Get version number.
        *
        * @returns Version number.
        */
       static
-      const char* version(void) const;
+      const char* version(void);
       
       /** Get GIT revision.
        *
        * @returns GIT revision.
        */
       static
-      const char* gitRevision(void) const;
+      const char* gitRevision(void);
       
       /** Get date of GIT revision.
        *
        * @returns Date of GIT revision.
        */
       static
-      const char* gitDate(void) const;
+      const char* gitDate(void);
       
       /** Get GIT branch.
        *
        * @returns GIT branch.
        */
       static
-      const char* gitBranch(void) const;
+      const char* gitBranch(void);
       
       /** Get PETSC_DIR.
        *
