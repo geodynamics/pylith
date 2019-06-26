@@ -225,6 +225,12 @@ class TimeDependent(Problem):
     return
 
 
+  def cleanup(self):
+    self.formulation.deallocate()
+    Problem.cleanup(self)
+    return
+    
+  
   def checkpoint(self):
     """
     Save problem state for restart.

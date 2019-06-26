@@ -26,8 +26,11 @@
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/meshio/DataWriterHDF5.hh" // USES DataWriterHDF5
 
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
+#include "journal/debug.h" // USES journal::debug_t
+
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -40,7 +43,8 @@ pylith::problems::Formulation::Formulation(void) :
   _jacobianLumped(0),
   _fields(0),
   _isJacobianSymmetric(false),
-  _splitFields(false)
+  _splitFields(false),
+  _residualWriter(NULL)
 { // constructor
 } // constructor
 
@@ -58,6 +62,7 @@ pylith::problems::Formulation::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
+  delete _residualWriter; _residualWriter = NULL;
   _jacobian = 0; // :TODO: Use shared pointer.
   _jacobianLumped = 0; // :TODO: Use shared pointer.
   _fields = 0; // :TODO: Use shared pointer.
@@ -231,6 +236,20 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
   if (tmpResidualVec)
     VecScale(*tmpResidualVec, -1.0);
 
+  journal::debug_t debug("formulation");
+  if (debug.state()) {
+      if (!_residualWriter) {
+	  _residualWriter = new pylith::meshio::DataWriterHDF5();assert(_residualWriter);
+	  _residualWriter->filename("residual.h5");
+	  _residualWriter->open(residual.mesh(), 10);
+	  _residualCounter = 0;
+      } // if
+      assert(_residualWriter);
+      const double tresidual = double(_residualCounter++);
+      _residualWriter->writeVertexField(tresidual, residual, residual.mesh());
+  } // if
+
+  
   PYLITH_METHOD_END;
 } // reformResidual
 
@@ -377,7 +396,6 @@ pylith::problems::Formulation::adjustSolnLumped(void)
   PYLITH_METHOD_END;
 } // adjustSolnLumped
 
-#include "pylith/meshio/DataWriterHDF5.hh"
 // ----------------------------------------------------------------------
 void
 pylith::problems::Formulation::printState(PetscVec* solutionVec,
