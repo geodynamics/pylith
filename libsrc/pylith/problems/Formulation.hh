@@ -31,6 +31,7 @@
 
 #include "pylith/feassemble/feassemblefwd.hh" // USES Integrator
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field, SolutionFields
+#include "pylith/meshio/meshiofwd.hh" // USES DataWriterHDF5
 
 #include "pylith/utils/petscfwd.h" // USES PetscVec, PetscMat
 
@@ -187,6 +188,12 @@ protected :
 
   bool _useCustomConstraintPC; ///< True if using custom preconditioner for Lagrange constraints.
 
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
+private :
+
+    pylith::meshio::DataWriterHDF5* _residualWriter; ///< Handle to writer for residual field (debugging).
+    PylithInt _residualCounter; ///< Fake time for residual writer.
+    
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
