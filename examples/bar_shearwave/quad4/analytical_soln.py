@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 
 # Compute the analytical steady-state solution.
 #
