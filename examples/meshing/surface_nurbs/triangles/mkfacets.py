@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 # Python script to create a triangulated surface in Facets format from a
 # set of points. The Facets file can be read by Cubit.
 # This script uses the GMT triangulate command, which invokes the triangle
