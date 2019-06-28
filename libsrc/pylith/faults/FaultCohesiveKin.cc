@@ -187,72 +187,79 @@ pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Create constraint and set kernels.
+// Create constraint for buried fault edges and faces.
 pylith::feassemble::Constraint*
 pylith::faults::FaultCohesiveKin::createConstraint(const pylith::topology::Field& solution) {
-  PYLITH_METHOD_BEGIN;
-  PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.label()<<")");
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.label()<<")");
 
-  const char* lagrangeName = "lagrange_multiplier_fault";
-  //const PylithInt numComponents = solution.subfieldInfo(lagrangeName).fe.numComponents;
-  const PylithInt numComponents = solution.spaceDim();
+    if (0 == strlen(getBuriedEdgesMarkerLabel())) {
+        PYLITH_METHOD_RETURN(NULL);
+    } // if
 
-  pylith::int_array constrainedDOF;
-  constrainedDOF.resize(numComponents);
-  for (int c = 0; c < numComponents; ++c) { constrainedDOF[c] = c; }
-  // Make new label for cohesive edges and faces
-  DM dm = solution.dmMesh();
-  DMLabel buriedLabel, buriedCohesiveLabel;
-  IS pointIS;
-  const PetscInt *points;
-  PetscInt fMax, fEnd, eMax, eEnd, n;
-  std::ostringstream labelstream;
-  labelstream << getBuriedEdgesMarkerLabel() << "_cohesive";
-  std::string labelname = labelstream.str();
-  PetscErrorCode err;
+    const char* lagrangeName = "lagrange_multiplier_fault";
+    // const PylithInt numComponents = solution.subfieldInfo(lagrangeName).fe.numComponents;
+    const PylithInt numComponents = solution.spaceDim();
 
-  err = DMPlexGetHybridBounds(dm, NULL, &fMax, &eMax, NULL);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetHeightStratum(dm, 1, NULL, &fEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetDepthStratum(dm, 1, NULL, &eEnd);PYLITH_CHECK_ERROR(err);
-  err = DMCreateLabel(dm, labelname.c_str());PYLITH_CHECK_ERROR(err);
-  err = DMGetLabel(dm, getBuriedEdgesMarkerLabel(), &buriedLabel);PYLITH_CHECK_ERROR(err);
-  err = DMGetLabel(dm, labelname.c_str(), &buriedCohesiveLabel);PYLITH_CHECK_ERROR(err);
-  err = DMLabelGetStratumIS(buriedLabel, 1, &pointIS);PYLITH_CHECK_ERROR(err);
-  err = ISGetLocalSize(pointIS, &n);PYLITH_CHECK_ERROR(err);
-  err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
-  for (int p = 0; p < n; ++p) {
-    const PetscInt *support;
-    PetscInt        supportSize;
-
-    err = DMPlexGetSupportSize(dm, points[p], &supportSize);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetSupport(dm, points[p], &support);PYLITH_CHECK_ERROR(err);
-    for (int s = 0; s < supportSize; ++s) {
-      const PetscInt spoint = support[s];
-
-      if (((spoint >= fMax) && (spoint < fEnd)) || ((spoint >= eMax) && (spoint < eEnd))) {
-        const PetscInt *cone;
-        PetscInt        coneSize;
-
-        err = DMPlexGetConeSize(dm, spoint, &coneSize);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetCone(dm, spoint, &cone);PYLITH_CHECK_ERROR(err);
-        for (int c = 0; c < coneSize; ++c) {
-          PetscInt val;
-          err = DMLabelGetValue(buriedLabel, cone[c], &val);PYLITH_CHECK_ERROR(err);
-          if (val >= 0) {err = DMLabelSetValue(buriedCohesiveLabel, spoint, 1);PYLITH_CHECK_ERROR(err);break;}
-        }
-      }
+    pylith::int_array constrainedDOF;
+    constrainedDOF.resize(numComponents);
+    for (int c = 0; c < numComponents; ++c) {
+        constrainedDOF[c] = c;
     }
-  }
+    // Make new label for cohesive edges and faces
+    PetscDM dm = solution.dmMesh();
+    PetscDMLabel buriedLabel = NULL;
+    PetscDMLabel buriedCohesiveLabel = NULL;
+    PetscIS pointIS = NULL;
+    const PetscInt *points = NULL;
+    PetscInt fMax, fEnd, eMax, eEnd, n;
+    std::ostringstream labelstream;
+    labelstream << getBuriedEdgesMarkerLabel() << "_cohesive";
+    std::string labelname = labelstream.str();
+    PetscErrorCode err;
 
-  pylith::feassemble::ConstraintSimple *constraint = new pylith::feassemble::ConstraintSimple(this);assert(constraint);
-  constraint->setMarkerLabel(labelname.c_str());
-  err = PetscObjectViewFromOptions((PetscObject) buriedLabel, NULL, "-buried_edge_label_view");
-  err = PetscObjectViewFromOptions((PetscObject) buriedCohesiveLabel, NULL, "-buried_cohesive_edge_label_view");
-  constraint->setConstrainedDOF(&constrainedDOF[0], constrainedDOF.size());
-  constraint->setSubfieldName(lagrangeName);
-  constraint->setUserFn(_zero);
+    err = DMPlexGetHybridBounds(dm, NULL, &fMax, &eMax, NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHeightStratum(dm, 1, NULL, &fEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetDepthStratum(dm, 1, NULL, &eEnd);PYLITH_CHECK_ERROR(err);
+    err = DMCreateLabel(dm, labelname.c_str());PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dm, getBuriedEdgesMarkerLabel(), &buriedLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dm, labelname.c_str(), &buriedCohesiveLabel);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumIS(buriedLabel, 1, &pointIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(pointIS, &n);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    for (int p = 0; p < n; ++p) {
+        const PetscInt *support = NULL;
+        PetscInt supportSize;
 
-  PYLITH_METHOD_RETURN(constraint);
+        err = DMPlexGetSupportSize(dm, points[p], &supportSize);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetSupport(dm, points[p], &support);PYLITH_CHECK_ERROR(err);
+        for (int s = 0; s < supportSize; ++s) {
+            const PetscInt spoint = support[s];
+
+            if (((spoint >= fMax) && (spoint < fEnd)) || ((spoint >= eMax) && (spoint < eEnd))) {
+                const PetscInt *cone = NULL;
+                PetscInt coneSize;
+
+                err = DMPlexGetConeSize(dm, spoint, &coneSize);PYLITH_CHECK_ERROR(err);
+                err = DMPlexGetCone(dm, spoint, &cone);PYLITH_CHECK_ERROR(err);
+                for (int c = 0; c < coneSize; ++c) {
+                    PetscInt val;
+                    err = DMLabelGetValue(buriedLabel, cone[c], &val);PYLITH_CHECK_ERROR(err);
+                    if (val >= 0) {err = DMLabelSetValue(buriedCohesiveLabel, spoint, 1);PYLITH_CHECK_ERROR(err);break;}
+                }
+            }
+        }
+    }
+
+    pylith::feassemble::ConstraintSimple *constraint = new pylith::feassemble::ConstraintSimple(this);assert(constraint);
+    constraint->setMarkerLabel(labelname.c_str());
+    err = PetscObjectViewFromOptions((PetscObject) buriedLabel, NULL, "-buried_edge_label_view");
+    err = PetscObjectViewFromOptions((PetscObject) buriedCohesiveLabel, NULL, "-buried_cohesive_edge_label_view");
+    constraint->setConstrainedDOF(&constrainedDOF[0], constrainedDOF.size());
+    constraint->setSubfieldName(lagrangeName);
+    constraint->setUserFn(_zero);
+
+    PYLITH_METHOD_RETURN(constraint);
 } // createConstraint
 
 
@@ -321,9 +328,9 @@ pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* 
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
-    
-    auxiliaryField->zeroLocal(); // :KLUDGE: :TEMPORARY: Slip field is only auxiliary field, so we can zero entire field.
-    
+    auxiliaryField->zeroLocal(); // :KLUDGE: :TEMPORARY: Slip field is only auxiliary field, so we can zero entire
+                                 // field.
+
     // Compute slip field at current time step
     const srcs_type::const_iterator rupturesEnd = _ruptures.end();
     for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
