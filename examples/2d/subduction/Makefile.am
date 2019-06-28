@@ -19,17 +19,17 @@
 dist_noinst_DATA = \
 	README.md \
 	pylithapp.cfg \
-	step01.cfg \
-	step02.cfg \
-	step03.cfg \
-	step04.cfg \
-	step05.cfg \
-	step06.cfg \
+	step01_coeseismic.cfg \
+	step02_interseismic.cfg \
+	step03_eqcycle.cfg \
+	step04_afterslip.cfg \
+	step05_eqcycleslipweakening.cfg \
+	step06_eqcycleratestate.cfg \
 	geometry.jou \
 	createbc.jou \
 	mesh_tri.jou \
 	mesh_tri.exo \
-	fault_slip_coseismic.spatialdb \
+	fault_coseismic.spatialdb \
 	fault_slabtop_creep.spatialdb \
 	fault_slabtop_ratestate.spatialdb \
 	fault_slabtop_slipweakening.spatialdb \
