@@ -1,7 +1,5 @@
 # Examples: 2-D Subduction
 
-**IMPORTANT**: THIS EXAMPLE HAS NOT BEEN UPDATED FOR V3.0.
-
 This suite of examples simulates quasi-static interseismic and
 coseismic deformation for a subduction zone. It is based on the 2011
 M9.0 Tohoku earthquake off the east coast of Japan.
@@ -19,7 +17,7 @@ complexity. Step 1 focuses on the coseismic slip, Step 2 focuses on
 interseismic deformation, and Step 3 combines the two into a pseudo
 earthquake cycle deformation simulation. In a similar fashion as other
 examples, we place all of the general parameters in `pylithapp.cfg` and
-the parameters specific to each simulation in `stepXX.cfg`.
+the parameters specific to each simulation in `stepXX_XXXX.cfg`.
 
 We model the crust with a linear elastic bulk constitutive model and
 the mantle with a linear Maxwell viscoelastic model. Both constitutive
@@ -41,7 +39,7 @@ stress field, and fault slip.
 
 ## Mesh generation using CUBIT/Trelis (optional)
 
-**NOTE**: The result of this step will overwrite the included file
+**WARNING**: The result of this step will overwrite the included file
 tri_mesh.exo. You may want to copy/rename this file so that you have a
 backup copy in case you have difficulty running CUBIT/Trelis.
 
@@ -61,7 +59,7 @@ The parameters for the earthquake slip are defined in
 
 To run the example:
 ```
-pylith step01.cfg
+pylith step01_coesismic.cfg
 ```
 
 
@@ -76,7 +74,7 @@ The parameters for the creep along the top of the slab are defined in
 
 To run the example:
 ```
-pylith step02.cfg
+pylith step02_interseismic.cfg
 ```
 
 
@@ -88,7 +86,7 @@ midway (150 years) through the 300 year simulation.
 
 To run the example:
 ```
-pylith step03.cfg
+pylith step03_eqcycle.cfg
 ```
 
 ## Step04: Friction controlled afterslip
@@ -105,7 +103,7 @@ tractions.
 
 Run the simulation via the following command:
 ```
-pylith step04.cfg
+pylith step04_afterslip.cfg
 ```
 
 
@@ -122,7 +120,7 @@ interface.
 
 Run the simulation and capture the output via the following commands:
 ```
-pylith step05.cfg >& step05.log &
+pylith step05_eqcycleslipweakening.cfg >& step05.log &
 tail -f step05.log
 ```
 
@@ -140,7 +138,7 @@ interface.
 
 Run the simulation and capture the output via the following commands:
 ```
-pylith step06.cfg >& step06.log &
+pylith step06_eqcycleratestate.cfg >& step06.log &
 tail -f step06.log
 ```
 
