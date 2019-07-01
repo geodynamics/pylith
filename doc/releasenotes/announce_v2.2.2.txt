@@ -1,0 +1,51 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 2.2.2, a finite-element
+code designed to solve dynamic elastic problems and quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release provides a small number of bugfixes.
+
+You can download the source code and binaries from
+
+    https://geodynamics.org/cig/software/pylith
+
+Detailed installation instructions for the binary packages are in the
+User Manual with detailed building instructions for a few platforms in
+the INSTALL file bundled with the PyLith Installer utility. 
+
+======================================================================
+MIGRATING FROM VERSION 2.1 TO 2.2
+======================================================================
+
+No changes are needed to parameter or other input files. The default
+format for pylithinfo output is now JSON.
+
+======================================================================
+RELEASE NOTES
+======================================================================
+
+* Bug fixes
+
+    - Fix several typos in the manual.
+
+    - Fix order of deallocation of data members in ElasticMaterial to
+      prevent a segmentation fault, thereby allowing error messages to
+      be shown when throwing an exception.
+
+    - Fix tests for MPI and PETSc version info for more use cases.
+
+    - Ensure all Python scripts are executable and use nemesis is used
+      instead of python for correct paths to modules on Darwin.
+
+* Added ability to write residual to an HDF5 file during solves. This
+  is intended for debugging and is enabled at runtime using
+  --journal.debug.formulation=1. The residual will be written to
+  residual.h5. To generate the associated .xdmf file run
+  "pylith_genxdmd -f residual.h5".
+
+* Updated to PETSc 3.10.2
+
+
+See CHANGES in the top-level source directory for a list of changes
+for each prior release.
