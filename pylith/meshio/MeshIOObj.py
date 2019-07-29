@@ -41,6 +41,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
     def preinitialize(self):
         """Do minimal initialization."""
         self._createModuleObj()
+        ModuleMeshIO.setIdentifier(self, self.aliases[-1])
         return
 
     def read(self, debug):

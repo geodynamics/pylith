@@ -29,8 +29,7 @@ namespace pylith {
 
   namespace meshio {
 
-    class MeshIO
-    { // MeshIO
+      class MeshIO  : public pylith::utils::PyreComponent {
 
       // PUBLIC TYPEDEFS ////////////////////////////////////////////////
     public :
