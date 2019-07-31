@@ -47,16 +47,31 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
 
   if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
   err = DMPlexCreateSubmesh(dmMesh, groupField, 1, PETSC_FALSE, &subdm);PYLITH_CHECK_ERROR(err);
-  // Check that no cell have all vertices on the fault
+  // Check that no cells have all vertices on the fault
   if (groupField) {
-    IS              subpointIS;
-    const PetscInt *dmpoints;
-    PetscInt        defaultValue, cStart, cEnd, vStart, vEnd;
+    PetscIS subpointIS = NULL;
+    const PetscInt *dmpoints = NULL;
+    PetscInt defaultValue, cStart, cEnd, vStart, vEnd;
 
     err = DMLabelGetDefaultValue(groupField, &defaultValue);PYLITH_CHECK_ERROR(err);
     err = DMPlexCreateSubpointIS(subdm, &subpointIS);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetHeightStratum(subdm, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    if (cStart == cEnd) {
+	std::ostringstream msg;
+	msg << "Degenerative topology for fault '" << groupName << "'. No cells found adjacent to fault.";
+	throw std::runtime_error(msg.str());
+    } // if
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+    if (vStart == vEnd) {
+	std::ostringstream msg;
+	msg << "Degenerative topology for fault '" << groupName << "'. No vertices found adjacent to fault.";
+	throw std::runtime_error(msg.str());
+    } // if
+    if (!subpointIS) {
+	std::ostringstream msg;
+	msg << "Degenerative topology for fault '" << groupName << "'. Subpoint index set is NULL.";
+	throw std::logic_error(msg.str());
+    } // if
     err = ISGetIndices(subpointIS, &dmpoints);PYLITH_CHECK_ERROR(err);
     for (PetscInt c = cStart; c < cEnd; ++c) {
       PetscBool invalidCell = PETSC_TRUE;
