@@ -21,7 +21,7 @@ List of examples
 * step02: Prescribed coseismic slip and postseismic relaxation
 * step03: Prescribed aseismic creep and interseismic deformation
 * step04: Prescribed earthquake cycle
-* step05: Spontaneous rupture driven by subducting slab
+* step05: Spontaneous rupture driven by subducting slab (not yet working for v3.0)
 * step06: Prescribed slow-slip event
-* step07a,b: Inversion of slow-slip event using 3-D Green's functions
+* step07a,b: Inversion of slow-slip event using 3-D Green's functions (not yet working for v3.0)
 * step08a,b,c: Stress field due to gravitational body forces
