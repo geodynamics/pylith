@@ -150,9 +150,9 @@ pylith::faults::FaultCohesive::setRefDir2(const double vec[3]) {
         throw std::runtime_error(msg.str());
     } // if
     for (int i = 0; i < 3; ++i) {
-        _refDir1[i] = vec[i] / mag;
+        _refDir2[i] = vec[i] / mag;
     } // for
-} // serRefDir2
+} // setRefDir2
 
 
 // ---------------------------------------------------------------------------------------------------------------------
