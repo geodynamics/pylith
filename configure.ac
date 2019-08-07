@@ -57,29 +57,27 @@ AM_CONDITIONAL([ENABLE_FULL_TESTING], [test "$enable_full_testing" = yes])
 # CUBIT I/O w/netcdf
 AC_ARG_ENABLE([cubit],
     [AC_HELP_STRING([--enable-cubit],
-        [enable reading/writing Cubit EXODUS files (requires netcdf) @<:@default=no@:>@])],
-	[if test "$enableval" = yes ; then
+        [enable reading/writing Cubit EXODUS files (requires netcdf) @<:@default=yes@:>@])],
+	[if test "$enableval" = yes ; then 
 	  enable_cubit=yes
 	  CPPFLAGS="-DENABLE_CUBIT $CPPFLAGS"; export CPPFLAGS;
-	  PYLITH_SWIG_CPPFLAGS="-DENABLE_CUBIT $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
+	  PYLITH_SWIG_CPPFLAGS="-DENABLE_CUBIT $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS ;
 	else enable_cubit=no; fi],
-	[enable_cubit=no])
+	[enable_cubit=yes])
 AM_CONDITIONAL([ENABLE_CUBIT], [test "$enable_cubit" = yes])
-AC_SUBST(PYLITH_SWIG_CPPFLAGS)
 
 # PETSc w/HDF5
 AC_ARG_ENABLE([hdf5],
     [AC_HELP_STRING([--enable-hdf5],
-        [enable output to HDF5 files via PETSc @<:@default=no@:>@])],
-	[if test "$enableval" = yes;
-	  then enable_hdf5=yes
-          else enable_hdf5=no; fi],
+        [enable output to HDF5 files via PETSc @<:@default=yes@:>@])],
+	[if test "$enableval" = yes; then enable_hdf5=yes; else enable_hdf5=no; fi],
 	[enable_hdf5=yes])
 if test "$enable_hdf5" = "yes"; then
   CPPFLAGS="-DENABLE_HDF5 $CPPFLAGS"; export CPPFLAGS
   PYLITH_SWIG_CPPFLAGS="-DENABLE_HDF5 $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
 fi
 AM_CONDITIONAL([ENABLE_HDF5], [test "$enable_hdf5" = yes])
+AC_SUBST(PYLITH_SWIG_CPPFLAGS)
 
 # DOCUMENTATION w/doxygen
 AC_ARG_ENABLE([documentation],
