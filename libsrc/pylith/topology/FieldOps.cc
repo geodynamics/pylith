@@ -9,8 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
-//
+// Copyright (c) 2010-2015 University of California, Davis//
 // See COPYING for license information.
 //
 // ======================================================================
@@ -29,8 +28,6 @@
 
 #include "petscdm.h" // USES PetscDM
 #include "petscds.h" // USES PetscDS
-
-#include <cppunit/extensions/HelperMacros.h>
 
 // ----------------------------------------------------------------------
 // Create PetscFE object for discretization.
