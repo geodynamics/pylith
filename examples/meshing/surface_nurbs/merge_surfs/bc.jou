@@ -13,40 +13,27 @@
 # See COPYING for license information.
 #
 # ----------------------------------------------------------------------
-#
-# CUBIT journal file to create a mesh for example with merged sheet
-# surfaces.
-#
+# Create block for materials
 # ----------------------------------------------------------------------
-# Generate geometry
-# ----------------------------------------------------------------------
-playback 'geometry.jou'
+block 1 volume 1
+block 1 name "domain"
 
 # ----------------------------------------------------------------------
-# Create tet4 mesh at 5.0 km resolution.
+# Create nodeset for fault and buried edges
 # ----------------------------------------------------------------------
+group "fault" add node in surface 10 11 12
+nodeset 10 group fault
+nodeset 10 name "fault"
 
-#{dx=5.0*km}
-volume all size {dx}
-volume all scheme tetmesh
-
-# ----------------------------------------------------------------------
-# Generate the mesh
-# ----------------------------------------------------------------------
-mesh surface all
-mesh volume all
+group "fault_edge" add node in curve 27 26 30 33 32
+nodeset 11 group fault_edge
+nodeset 11 name "fault_edge"
 
 # ----------------------------------------------------------------------
-# Create boundary conditions
+# Create nodeset for lateral boundaries and bottom
 # ----------------------------------------------------------------------
-playback 'bc.jou'
+group "domain_boundary" add node in surface 2 3 4 5 6
+nodeset 20 group domain_boundary
+nodeset 20 name "domain_boundary"
 
-# ----------------------------------------------------------------------
-# Export exodus file
-# ----------------------------------------------------------------------
-set large exodus off
-export mesh "mesh.exo" dimension 3 overwrite
-
-
-# End of file
 
