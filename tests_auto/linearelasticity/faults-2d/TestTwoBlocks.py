@@ -15,9 +15,9 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests_auto/linearelasticity/nofaults/TestAxialDisp.py
+# @file tests_auto/linearelasticity/faults-2d/TestTwoBlocks.py
 #
-# @brief Test suite for testing pylith with 2-D axial extension.
+# @brief Test suite for testing pylith with 2-D fault shear displacement.
 
 import unittest
 
@@ -31,10 +31,10 @@ from twoblocks_soln import AnalyticalSoln
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
     """
-    Test suite for testing PyLith with 2-D axial extension.
+    Test suite for testing PyLith with fault shear displacement.
     """
     FAULTS = ["fault"]
-    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg"]
+    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos"]
 
     def setUp(self):
         """
@@ -107,7 +107,7 @@ class TestTri(TestCase, meshes.Tri):
 def test_cases():
     return [
         TestQuad,
-        # TestTri,
+        TestTri,
     ]
 
 
