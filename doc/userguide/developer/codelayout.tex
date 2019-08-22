@@ -23,6 +23,8 @@ examples and documentation are also in their own directories.
 \item[\filename{share}] Useful settings and configuration files.
 \item[\filename{unittests}] Python and C++ unit tests source
   files. Run using \filename{make check}.
+\item[\filename{mmstests}] Method of Manufactured solution tests. Run using
+  \filename{make check}.
 \item[\filename{tests\_auto}] Full-scale tests. Run using
   \filename{make check}.
 \item[\filename{tests}] Full-scale tests that require manual checking
@@ -58,6 +60,42 @@ subpackages.
 \item[\filename{topology}] Finite-element mesh topology.
 \item[\filename{utils}] General utilities.
 \end{description}
+
+\subsection{Code Structure}
+\label{sec:code:structure}
+
+We separate the specification of the physics from the finite-element
+operations. That is, we have one set of objects that specify the
+physics through materials, boundary conditions, and faults; another
+set of objects perform the finite-element operations required to solve
+the equations. Figure~\vref{fig:developer:physics:class} illustrates
+this separation. The user specifies the parameters for the
+\object{Physics} objects, which each create the appropriate integrator
+and/or constraint via factory methods.
+
+We generalize the finite-element operations into to main classes:
+\object{Integrator} and \object{Constraint}. The \object{Integrator}
+is further separated into concrete classes for performing the
+finite-element integrations over pieces of the domain
+(\object{IntegratorDomain}), pieces of the domain boundary
+(\object{IntegratorBoundary}, and interior interfaces
+(\object{IntegratorInterface}). We implement several kinds of
+constraints, corresponding to how the values of the constrained
+degrees of freedom and their values are
+specified. \object{ConstraintSpatialDB} gets values for the
+constrained degrees of freedom from a spatial database;
+\object{ConstraintUserFn} gets the values for the constrained degrees
+of freedom from a function (this object is widely used in tests);
+\object{ConstraintSimple} is a special case of
+\object{ConstraintUserFn} with the constrained degrees of freedom set
+programmatically using a label (this object is used for contraining
+the edges of the fault).
+
+\begin{figure}[htbp]
+  \includegraphics[scale=0.8]{developer/figs/physics_classdiagram}
+  \caption{Class diagram for the \object{Physics}.}
+  \label{fig:developer:physics:class}
+\end{figure}
 
 \subsection{PyLith Application Flow}
 
