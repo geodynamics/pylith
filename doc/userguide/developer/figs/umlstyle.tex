@@ -1,4 +1,5 @@
-\newcommand{\umlclass}[2]{#1\\[2pt] \hrule \vspace*{4pt} \parbox{\textwidth}{#2}}
+\newcommand{\umlclass}[2]{\begin{minipage}{\maxof{\widthof{#1}+1em}{10em}}\parbox{\textwidth}{\centering #1}
+\vspace*{-8pt} \hrule \vspace*{4pt} \parbox{\textwidth}{#2} \end{minipage}}
 \newcommand{\umltype}[1]{$\ll$type$\gg$\\ #1}
 \newcommand{\umlemptyclass}[1]{#1}
 
@@ -6,7 +7,7 @@
   rectangle,
   thick,
   minimum width=10em,
-  text centered,
+  align=center,
   anchor=north,
 ]
 \tikzstyle{concrete-class} = [
