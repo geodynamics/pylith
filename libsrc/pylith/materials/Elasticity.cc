@@ -468,7 +468,7 @@ pylith::materials::Elasticity::_setKernelsUpdateStateVars(pylith::feassemble::In
     std::vector<ProjectKernels> kernels;
     _rheology->addKernelsUpdateStateVars(&kernels, coordsys);
 
-    integrator->setKernelsDerivedField(kernels);
+    integrator->setKernelsUpdateStateVars(kernels);
 
     PYLITH_METHOD_END;
 } // _setKernelsUpdateStateVars
