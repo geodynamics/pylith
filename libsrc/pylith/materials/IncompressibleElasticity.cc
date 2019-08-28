@@ -356,6 +356,26 @@ pylith::materials::IncompressibleElasticity::_setKernelsLHSJacobian(pylith::feas
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Set kernels for computing updated state variables in auxiliary field.
+void
+pylith::materials::IncompressibleElasticity::_setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
+									const topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setKernelsUpdateStateVars(integrator="<<integrator<<", solution="<<solution.label()<<")");
+
+    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().coordsys();
+    assert(coordsys);
+
+    std::vector<ProjectKernels> kernels;
+    _rheology->addKernelsUpdateStateVars(&kernels, coordsys);
+
+    integrator->setKernelsUpdateStateVars(kernels);
+
+    PYLITH_METHOD_END;
+} // _setKernelsUpdateStateVars
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for computing derived field.
 void
 pylith::materials::IncompressibleElasticity::_setKernelsDerivedField(pylith::feassemble::IntegratorDomain* integrator,
