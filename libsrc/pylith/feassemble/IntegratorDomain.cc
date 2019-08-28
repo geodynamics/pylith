@@ -381,7 +381,7 @@ pylith::feassemble::IntegratorDomain::_updateStateVars(const PylithReal t,
     assert(_updateState);
     assert(_auxiliaryField);
     _updateState->prepare(_auxiliaryField);
-    _setKernelConstants(*_auxiliaryField, dt);
+    _setKernelConstants(solution, dt);
 
     // Set update kernel for each auxiliary subfield.
     const pylith::string_vector& subfieldNames = _auxiliaryField->subfieldNames();
@@ -425,7 +425,7 @@ pylith::feassemble::IntegratorDomain::_computeDerivedField(const PylithReal t,
     } // if
 
     assert(_derivedField);
-    _setKernelConstants(*_derivedField, dt);
+    _setKernelConstants(solution, dt);
 
     const size_t numKernels = _kernelsDerivedField.size();
     PetscPointFunc* kernelsArray = (numKernels > 0) ? new PetscPointFunc[numKernels] : NULL;
