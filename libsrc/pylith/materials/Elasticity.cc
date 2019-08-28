@@ -158,7 +158,7 @@ pylith::materials::Elasticity::createIntegrator(const pylith::topology::Field& s
     _setKernelsRHSJacobian(integrator, solution);
     _setKernelsLHSResidual(integrator, solution);
     _setKernelsLHSJacobian(integrator, solution);
-    // No state variables.
+    _setKernelsUpdateStateVars(integrator, solution);
     _setKernelsDerivedField(integrator, solution);
 
     PYLITH_METHOD_RETURN(integrator);
@@ -452,6 +452,26 @@ pylith::materials::Elasticity::_setKernelsLHSJacobian(pylith::feassemble::Integr
 
     PYLITH_METHOD_END;
 } // _setKernelsLHSJacobian
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set kernels for computing updated state variables in auxiliary field.
+void
+pylith::materials::Elasticity::_setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
+                                                       const topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setKernelsUpdateStateVars(integrator="<<integrator<<", solution="<<solution.label()<<")");
+
+    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().coordsys();
+    assert(coordsys);
+
+    std::vector<ProjectKernels> kernels;
+    _rheology->addKernelsUpdateStateVars(&kernels, coordsys);
+
+    integrator->setKernelsDerivedField(kernels);
+
+    PYLITH_METHOD_END;
+} // _setKernelsUpdateStateVars
 
 
 // ---------------------------------------------------------------------------------------------------------------------

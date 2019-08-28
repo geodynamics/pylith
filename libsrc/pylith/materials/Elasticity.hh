@@ -169,6 +169,14 @@ private:
     void _setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
                                 const pylith::topology::Field& solution) const;
 
+    /** Set kernels for computing updated state variables in auxiliary field.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    void _setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
+                                 const pylith::topology::Field& solution) const;
+
     /** Set kernels for computing derived field.
      *
      * @param[out] integrator Integrator for material.
