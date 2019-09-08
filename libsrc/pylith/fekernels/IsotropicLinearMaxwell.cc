@@ -634,38 +634,36 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain(const 
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
-    const PylithInt i_viscousStrainPrev = 0;
-    const PylithInt i_totalStrainPrev = 1;
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
     const PylithInt i_maxwellTime = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_totalStrain = numA-1;
+    const PylithInt i_viscousStrainPrev = numA-2;
+    const PylithInt i_totalStrainPrev = numA-1;
 
     assert(_dim == dim);
-    assert(numS >= 3);
+    assert(numS >= 1);
     assert(numA >= 3);
     assert(sOff);
-    assert(sOff[i_viscousStrainPrev] >= 0);
-    assert(sOff[i_totalStrainPrev] >= 0);
     assert(sOff[i_disp] >= 0);
     assert(sOff_x);
     assert(sOff_x[i_disp] >= 0);
     assert(aOff);
     assert(aOff[i_maxwellTime] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_totalStrain] >= 0);
+    assert(aOff[i_viscousStrainPrev] >= 0);
+    assert(aOff[i_totalStrainPrev] >= 0);
     assert(s_x);
     assert(a);
     assert(visStrain);
-
+    assert(constants);
+    assert(1 == numConstants);
+    
     // Compute strain, deviatoric strain, etc.
-    const PylithScalar* viscousStrainPrev = &s[sOff[i_viscousStrainPrev]];
-    const PylithScalar* totalStrainPrev = &s[sOff[i_totalStrainPrev]];
     const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
 
     const PylithScalar maxwellTime = a[aOff[i_maxwellTime]];
+    const PylithScalar* viscousStrainPrev = &a[aOff[i_viscousStrainPrev]];
+    const PylithScalar* totalStrainPrev = &a[aOff[i_totalStrainPrev]];
 
     const PylithScalar dt = constants[0];
 
