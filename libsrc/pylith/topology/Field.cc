@@ -321,6 +321,15 @@ pylith::topology::Field::clear(void) {
     PYLITH_METHOD_END;
 } // clear
 
+// ----------------------------------------------------------------------
+void
+pylith::topology::Field::createDiscretizatin(void) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscErrorCode err = DMCreateDS(_dm);PYLITH_CHECK_ERROR(err);
+ 
+   PYLITH_METHOD_END;
+} // createDiscretization
 
 // ----------------------------------------------------------------------
 // Allocate PETSc section.

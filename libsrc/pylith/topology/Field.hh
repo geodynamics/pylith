@@ -279,7 +279,15 @@ public:
     /// Clear variables associated with section.
     void clear(void);
 
-    /// Allocate field and zero local vector..
+  /** Create discretization for field.
+   *
+   * @important Should be called for all fields after
+   * Field::subfieldsSetup() and before PetscDSAddBoundary() and
+   * Field::allocate().
+   */
+  void createDiscretizatin(void);
+
+  /// Allocate field and zero local vector..
     void allocate(void);
 
     /// Zero local values (including constrained values).
