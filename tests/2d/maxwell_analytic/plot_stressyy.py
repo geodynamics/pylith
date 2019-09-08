@@ -6,26 +6,23 @@ def plot(sim):
     import pylab
     import numpy
 
-    filename = "output/%s-statevars.h5" % sim
+    filename = "output/%s-maxwell.h5" % sim
     h5 = h5py.File(filename, "r")
-    stress = h5['cell_fields/stress'][:,:,1]
+    stress = h5['vertex_fields/cauchy_stress'][:,:,1]
     t = h5['time'][:].ravel()
     h5.close()
 
-    filename = "output/%s-statevars_info.h5" % sim
+    filename = "output/%s-maxwell_info.h5" % sim
     h5 = h5py.File(filename, "r")
-    mat_mu = h5['cell_fields/mu'][0,0,0]
-    mat_lambda = h5['cell_fields/lambda'][0,0,0]
-    mat_density = h5['cell_fields/density'][0,0,0]
-    mat_tm = h5['cell_fields/maxwell_time'][0,0,0]
+    shear_modulus = h5['vertex_fields/shear_modulus'][0,0,0]
+    bulk_modulus = h5['vertex_fields/bulk_modulus'][0,0,0]
+    maxwell_time = h5['vertex_fields/maxwell_time'][0,0,0]
     h5.close()
 
 
-    K = mat_lambda + 2.0/3.0*mat_mu
-    G = mat_mu
-    viscosity = mat_tm * mat_mu
-    theta = viscosity / G
-    analytic = -10e+6*(1.0-6*G/(3*K+4*G)*numpy.exp(-3*K*t/((3*K+4*G)*theta)))
+    viscosity = maxwell_time * shear_modulus
+    theta = viscosity / shear_modulus
+    analytic = -10e+6*(1.0-6*shear_modulus/(3*bulk_modulus+4*shear_modulus)*numpy.exp(-3*bulk_modulus*t/((3*bulk_modulus+4*shear_modulus)*theta)))
     
     pylab.plot(t, analytic[:], 'k-', t, stress[:,0], 'r--')
     pylab.show()
