@@ -26,7 +26,7 @@
 
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
-
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_INFO
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include <cassert> // USES assert()
@@ -77,10 +77,36 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh)
     _mesh->debug(_debug);
     _read();
 
+    PetscErrorCode err = 0;
+    
+#if 0
+    // Check for bounding box with positive volume.
+    PetscReal cmin[3];
+    PetscReal cmax[3];
+    err = DMPlexGetBoundingBox(_mesh->dmMesh(), cmin, cmax);
+    const PetscInt dim = _mesh->dimension();
+    PetscReal volume = 1.0;
+    for (int i=0; i < dim; ++i) {
+        volume *= cmax[i] - cmin[i];
+    } // for
+    std::ostringstream msg;
+    msg << "Domain bounding box:\n";
+    for (int i=0; i < dim; ++i) {
+        msg << "    (" << cmin[i] << ", " << cmax[i] << ")";
+    } // for
+    PYLITH_COMPONENT_INFO(msg.str());
+    const PetscReal tolerance = 1.0e-8;
+    if (volume < tolerance) {
+        msg.clear();
+        msg << "Domain bounding box volume (" << volume << ") less than minimum tolerance (" << tolerance << ").";
+        throw std::runtime_error(msg.str());
+    } // if
+#endif
+    
     // Check mesh consistency
     topology::MeshOps::checkTopology(*_mesh);
     // Respond to PETSc diagnostic output
-    PetscErrorCode err = DMViewFromOptions(_mesh->dmMesh(), NULL, "-pylith_dm_view");PYLITH_CHECK_ERROR(err);
+    err = DMViewFromOptions(_mesh->dmMesh(), NULL, "-pylith_dm_view");PYLITH_CHECK_ERROR(err);
 
     _mesh = 0;
 
