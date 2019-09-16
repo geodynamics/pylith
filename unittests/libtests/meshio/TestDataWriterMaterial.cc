@@ -209,7 +209,7 @@ pylith::meshio::TestDataWriterMaterial::_setDataTri(void) {
     data->cellDiscretization.basisOrder = 0;
     data->cellDiscretization.quadOrder = 0;
     data->cellDiscretization.isBasisContinuous = true;
-    data->cellDiscretization.feSpace = pylith::topology::FieldBase::POINT_SPACE;
+    data->cellDiscretization.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
 
     // Scalar
     data->cellScalarNumComponents = 1;
@@ -311,7 +311,7 @@ pylith::meshio::TestDataWriterMaterial::_setDataQuad(void) {
     data->cellDiscretization.basisOrder = 0;
     data->cellDiscretization.quadOrder = 0;
     data->cellDiscretization.isBasisContinuous = true;
-    data->cellDiscretization.feSpace = pylith::topology::FieldBase::POINT_SPACE;
+    data->cellDiscretization.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
 
     // Scalar
     data->cellScalarNumComponents = 1;
@@ -420,7 +420,7 @@ pylith::meshio::TestDataWriterMaterial::_setDataTet(void) {
     data->cellDiscretization.basisOrder = 0;
     data->cellDiscretization.quadOrder = 0;
     data->cellDiscretization.isBasisContinuous = true;
-    data->cellDiscretization.feSpace = pylith::topology::FieldBase::POINT_SPACE;
+    data->cellDiscretization.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
 
     // Scalar
     data->cellScalarNumComponents = 1;
@@ -557,7 +557,7 @@ pylith::meshio::TestDataWriterMaterial::_setDataHex(void) {
     data->cellDiscretization.basisOrder = 0;
     data->cellDiscretization.quadOrder = 0;
     data->cellDiscretization.isBasisContinuous = true;
-    data->cellDiscretization.feSpace = pylith::topology::FieldBase::POINT_SPACE;
+    data->cellDiscretization.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
 
     // Scalar
     data->cellScalarNumComponents = 1;
