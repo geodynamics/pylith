@@ -104,16 +104,20 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
 
     // Check element centroids
     PylithScalar coordsCheckOrig = 0.0;
+    PylithInt numCellsOrig = 0;
+    PylithInt totalClosureSizeOrig = 0;
     { // original
         Stratum cellsStratum(dmOrig, Stratum::HEIGHT, 0);
         const PetscInt cStart = cellsStratum.begin();
         const PetscInt cEnd = cellsStratum.end();
-        topology::CoordsVisitor coordsVisitor(dmOrig);
+        numCellsOrig = cEnd - cStart;
+        pylith::topology::CoordsVisitor coordsVisitor(dmOrig);
         for (PetscInt cell = cStart; cell < cEnd; ++cell) {
             PetscScalar* coordsCell = NULL;
             PetscInt coordsSize = 0;
             PylithScalar value = 0.0;
             coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+            totalClosureSizeOrig += coordsSize;
             for (int i = 0; i < coordsSize; ++i) {
                 value += coordsCell[i];
             } // for
@@ -121,26 +125,32 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
             coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
         } // for
     } // original
-    PylithScalar coordsCheck = 0.0;
+    PylithScalar coordsCheckReorder = 0.0;
+    PylithInt numCellsReorder = 0;
+    PylithInt totalClosureSizeReorder = 0;
     { // reordered
         Stratum cellsStratum(dmMesh, Stratum::HEIGHT, 0);
         const PetscInt cStart = cellsStratum.begin();
         const PetscInt cEnd = cellsStratum.end();
-        topology::CoordsVisitor coordsVisitor(dmMesh);
+        numCellsReorder = cEnd - cStart;
+        pylith::topology::CoordsVisitor coordsVisitor(dmMesh);
         for (PetscInt cell = cStart; cell < cEnd; ++cell) {
             PetscScalar* coordsCell = NULL;
             PetscInt coordsSize = 0;
             PylithScalar value = 0.0;
             coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+            totalClosureSizeReorder += coordsSize;
             for (int i = 0; i < coordsSize; ++i) {
                 value += coordsCell[i];
             } // for
-            coordsCheck += value*value;
+            coordsCheckReorder += value*value;
             coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
         } // for
     } // reordered
+    CPPUNIT_ASSERT_EQUAL(numCellsOrig, numCellsReorder);
+    CPPUNIT_ASSERT_EQUAL(totalClosureSizeOrig, totalClosureSizeReorder);
     const PylithScalar tolerance = 1.0e-6;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(coordsCheckOrig, coordsCheck, tolerance*coordsCheckOrig);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(coordsCheckOrig, coordsCheckReorder, tolerance*coordsCheckOrig);
 
     // Verify reduction in Jacobian bandwidth
     Field fieldOrig(meshOrig);
