@@ -51,7 +51,7 @@ pylith::meshio::FieldFilterProject::deallocate(void) {
     FieldFilter::deallocate();
 
     delete _fieldProj;_fieldProj = NULL;
-    delete _passThruFns;_passThruFns = NULL;
+    delete[] _passThruFns;_passThruFns = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -106,7 +106,7 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
     assert(fieldIn);
     if (_fieldProj && !pylith::topology::FieldOps::layoutsMatch(*fieldIn, *_fieldProj)) {
         delete _fieldProj;_fieldProj = NULL;
-        delete _passThruFns;_passThruFns = NULL;
+        delete[] _passThruFns;_passThruFns = NULL;
     } // if
 
     pylith::topology::Field::Discretization feP1;
