@@ -85,7 +85,7 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
     const int labelId = 1;
     const PylithInt numConstrained = _constrainedDOF.size();
     const PetscInt i_field = solution.subfieldInfo(_subfieldName.c_str()).index;
-    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_FIELD, _constraintLabel.c_str(), _constraintLabel.c_str(), i_field,
+    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_BD_FIELD, _constraintLabel.c_str(), _constraintLabel.c_str(), i_field,
                              numConstrained, &_constrainedDOF[0], (void (*)())_kernelConstraint, 1, &labelId, context);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
