@@ -28,7 +28,6 @@ check_PROGRAMS = test_problems
 
 # Primary source files
 test_problems_SOURCES = \
-	TestPhysics.cc \
 	TestObserversSoln.cc \
 	TestObserversPhysics.cc \
 	TestSolutionFactory.cc \

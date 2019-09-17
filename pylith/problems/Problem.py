@@ -137,6 +137,7 @@ class Problem(PetscComponent, ModuleProblem):
 
         self._createModuleObj()
         ModuleProblem.setIdentifier(self, self.aliases[-1])
+        self.defaults.preinitialize()
 
         if self.solverChoice == "linear":
             ModuleProblem.setSolverType(self, ModuleProblem.LINEAR)
@@ -149,7 +150,7 @@ class Problem(PetscComponent, ModuleProblem):
             ModuleProblem.setGravityField(self, self.gravityField)
 
         # Do minimal setup of solution.
-        self.solution.preinitialize(mesh, self.normalizer)
+        self.solution.preinitialize(self, mesh)
         ModuleProblem.setSolution(self, self.solution.field)
 
         # Preinitialize materials
