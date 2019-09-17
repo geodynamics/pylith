@@ -170,6 +170,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     discretization.feSpace = FieldBase::POLYNOMIAL_SPACE;
     fieldOrig.subfieldAdd(description, discretization);
     fieldOrig.subfieldsSetup();
+    fieldOrig.createDiscretization();
     fieldOrig.allocate();
     PetscMat matrix = NULL;
     PetscInt bandwidthOrig = 0;
@@ -180,6 +181,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     Field field(*_mesh);
     field.subfieldAdd(description, discretization);
     field.subfieldsSetup();
+    field.createDiscretization();
     field.allocate();
     PetscInt bandwidth = 0;
     err = DMCreateMatrix(field.dmMesh(), &matrix);CPPUNIT_ASSERT(!err);

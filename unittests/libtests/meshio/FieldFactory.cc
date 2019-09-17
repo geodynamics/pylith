@@ -63,6 +63,7 @@ pylith::meshio::FieldFactory::scalar(const pylith::topology::FieldBase::Discreti
 
     field.subfieldAdd(description, discretization);
     field.subfieldsSetup();
+    field.createDiscretization();
     field.allocate();
 
     this->setField(&field, values, numPoints, numComponents);
@@ -100,6 +101,7 @@ pylith::meshio::FieldFactory::vector(const pylith::topology::FieldBase::Discreti
 
     field.subfieldAdd(description, discretization);
     field.subfieldsSetup();
+    field.createDiscretization();
     field.allocate();
 
     this->setField(&field, values, numPoints, numComponents);
@@ -149,6 +151,7 @@ pylith::meshio::FieldFactory::tensor(const pylith::topology::FieldBase::Discreti
 
     field.subfieldAdd(description, discretization);
     field.subfieldsSetup();
+    field.createDiscretization();
     field.allocate();
 
     this->setField(&field, values, numPoints, numComponents);
@@ -184,6 +187,7 @@ pylith::meshio::FieldFactory::other(const pylith::topology::FieldBase::Discretiz
 
     field.subfieldAdd(description, discretization);
     field.subfieldsSetup();
+    field.createDiscretization();
     field.allocate();
 
     this->setField(&field, values, numPoints, numComponents);

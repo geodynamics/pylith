@@ -137,6 +137,7 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
             _fieldProj->subfieldAdd(info.description, feP1);
         } // for
         _fieldProj->subfieldsSetup();
+        _fieldProj->createDiscretization();
         _fieldProj->allocate();
     } else {
         // Update subfield information in projected field to match input field, except basis order.

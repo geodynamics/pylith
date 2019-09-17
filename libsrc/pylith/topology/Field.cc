@@ -151,9 +151,9 @@ pylith::topology::Field::label(const char* value) {
     for (scatter_map_type::const_iterator s_iter = _scatters.begin();
          s_iter != scattersEnd;
          ++s_iter) {
-      const std::string& scatterName = value + std::string("_") + s_iter->first;
+        const std::string& scatterName = value + std::string("_") + s_iter->first;
         if (s_iter->second.dm) {
-	  err = PetscObjectSetName((PetscObject)s_iter->second.dm, scatterName.c_str());PYLITH_CHECK_ERROR(err);
+            err = PetscObjectSetName((PetscObject)s_iter->second.dm, scatterName.c_str());PYLITH_CHECK_ERROR(err);
         } // if
         if (s_iter->second.vector) {
             err = PetscObjectSetName((PetscObject)s_iter->second.vector, value);PYLITH_CHECK_ERROR(err);
@@ -268,7 +268,7 @@ pylith::topology::Field::cloneSection(const Field& src) {
 
         // Create global vector.
         err = DMCreateGlobalVector(sinfo.dm, &sinfo.vector);PYLITH_CHECK_ERROR(err);
-	err = PetscObjectGetName((PetscObject)s_iter->second.vector, &name); PYLITH_CHECK_ERROR(err);
+        err = PetscObjectGetName((PetscObject)s_iter->second.vector, &name);PYLITH_CHECK_ERROR(err);
         err = PetscObjectSetName((PetscObject)sinfo.vector, name);PYLITH_CHECK_ERROR(err);
     } // for
 
@@ -321,15 +321,17 @@ pylith::topology::Field::clear(void) {
     PYLITH_METHOD_END;
 } // clear
 
+
 // ----------------------------------------------------------------------
 void
-pylith::topology::Field::createDiscretizatin(void) {
+pylith::topology::Field::createDiscretization(void) {
     PYLITH_METHOD_BEGIN;
 
     PetscErrorCode err = DMCreateDS(_dm);PYLITH_CHECK_ERROR(err);
- 
-   PYLITH_METHOD_END;
+
+    PYLITH_METHOD_END;
 } // createDiscretization
+
 
 // ----------------------------------------------------------------------
 // Allocate PETSc section.
@@ -345,7 +347,6 @@ pylith::topology::Field::allocate(void) {
      * We cannot create the DS until after setting the discretizations for each field in subfieldsSetup() and
      * _setupLagrangeMultiplier().
      */
-    err = DMCreateDS(_dm);PYLITH_CHECK_ERROR(err);
 
     err = DMGetSection(_dm, &s);PYLITH_CHECK_ERROR(err);assert(s); // Creates local section
     err = DMSetGlobalSection(_dm, NULL);PYLITH_CHECK_ERROR(err); // Creates global section
@@ -364,9 +365,9 @@ pylith::topology::Field::allocate(void) {
         fields[0] = info.index;
         err = DMDestroy(&info.dm);PYLITH_CHECK_ERROR(err);
         err = DMCreateSubDM(_dm, 1, fields, NULL, &info.dm);PYLITH_CHECK_ERROR(err);
-	err = PetscObjectGetName((PetscObject)_dm, &name); PYLITH_CHECK_ERROR(err);
-	const std::string& subDMName = std::string(name) + std::string("_") + s_iter->first;
-	err = PetscObjectSetName((PetscObject)info.dm, subDMName.c_str());PYLITH_CHECK_ERROR(err);
+        err = PetscObjectGetName((PetscObject)_dm, &name);PYLITH_CHECK_ERROR(err);
+        const std::string& subDMName = std::string(name) + std::string("_") + s_iter->first;
+        err = PetscObjectSetName((PetscObject)info.dm, subDMName.c_str());PYLITH_CHECK_ERROR(err);
     } // for
 
     PYLITH_METHOD_END;
@@ -587,7 +588,7 @@ pylith::topology::Field::createScatterWithBC(const char* context) {
     PetscSection section = NULL, newSection = NULL, gsection = NULL;
     PetscSF sf = NULL;
     const char* name = NULL;
-    
+
     err = DMDestroy(&sinfo.dm);PYLITH_CHECK_ERROR(err);
     err = DMClone(_dm, &sinfo.dm);PYLITH_CHECK_ERROR(err);
     err = PetscObjectGetName((PetscObject)_dm, &name);PYLITH_CHECK_ERROR(err);
@@ -1147,6 +1148,7 @@ pylith::topology::Field::_extractSubfield(const Field& field,
 
     this->subfieldAdd(subfieldInfo.description, subfieldInfo.fe);
     this->subfieldsSetup();
+    this->createDiscretization();
 
     err = DMCreateLocalVector(_dm, &_localVec);PYLITH_CHECK_ERROR(err);
     err = PetscObjectSetName((PetscObject) _localVec,  _label.c_str());PYLITH_CHECK_ERROR(err);

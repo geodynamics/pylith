@@ -290,11 +290,13 @@ pylith::materials::TestMaterial::testComputeResidual(void) {
     pylith::topology::Field residualRHS(*_mesh);
     residualRHS.cloneSection(solution);
     residualRHS.label("residual RHS");
+    residualRHS.createDiscretization();
     residualRHS.allocate();
 
     pylith::topology::Field residualLHS(*_mesh);
     residualLHS.cloneSection(solution);
     residualLHS.label("residual LHS");
+    residualLHS.createDiscretization();
     residualLHS.allocate();
 
     Material* material = _material();CPPUNIT_ASSERT(material);
@@ -366,11 +368,13 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void) {
     pylith::topology::Field residual1(*_mesh);
     residual1.cloneSection(solution);
     residual1.label("residual1");
+    residual1.createDiscretization();
     residual1.allocate();
 
     pylith::topology::Field residual2(*_mesh);
     residual2.cloneSection(perturbation);
     residual2.label("residual2");
+    residual2.createDiscretization();
     residual2.allocate();
 
 #if 0 // :DEBUG:
@@ -470,11 +474,13 @@ pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void) {
     pylith::topology::Field residual1(*_mesh);
     residual1.cloneSection(solution);
     residual1.label("residual1");
+    residual1.createDiscretization();
     residual1.allocate();
 
     pylith::topology::Field residual2(*_mesh);
     residual2.cloneSection(perturbation);
     residual2.label("residual2");
+    residual2.createDiscretization();
     residual2.allocate();
 
 #if 0 // :DEBUG:

@@ -48,7 +48,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::setUp(void) {
     _mymaterial->PyreComponent::identifier("TestIsotropicLinearGenMaxwell3D");
     const char* journal = _mymaterial->PyreComponent::getName();
     journal::debug_t debug(journal);
-    //debug.activate(); // DEBUGGING
+    // debug.activate(); // DEBUGGING
 } // setUp
 
 
@@ -285,7 +285,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         pylith::topology::Field density(*_mesh);
         density.copySubfield(*auxField, "density");
 
-        //density.view("DENSITY"); // DEBUGGING
+        // density.view("DENSITY"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("density"), std::string(density.label()));
@@ -309,7 +309,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         pylith::topology::Field bulkModulus(*_mesh);
         bulkModulus.copySubfield(*auxField, "bulk_modulus");
 
-        //bulkModulus.view("BULK MODULUS"); // DEBUGGING
+        // bulkModulus.view("BULK MODULUS"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("bulk_modulus"), std::string(bulkModulus.label()));
@@ -333,7 +333,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         pylith::topology::Field maxwellTime(*_mesh);
         maxwellTime.copySubfield(*auxField, "maxwell_time");
 
-        //maxwellTime.view("MAXWELL TIME"); // DEBUGGING
+        // maxwellTime.view("MAXWELL TIME"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("maxwell_time"), std::string(maxwellTime.label()));
@@ -357,7 +357,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         pylith::topology::Field shearModulusRatio(*_mesh);
         shearModulusRatio.copySubfield(*auxField, "shear_modulus_ratio");
 
-        //shearModulusRatio.view("SHEAR MODULUS RATIO"); // DEBUGGING
+        // shearModulusRatio.view("SHEAR MODULUS RATIO"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("shear_modulus_ratio"), std::string(shearModulusRatio.label()));
@@ -381,7 +381,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         pylith::topology::Field viscousStrain(*_mesh);
         viscousStrain.copySubfield(*auxField, "viscous_strain");
 
-        //viscousStrain.view("VISCOUS STRAIN"); // DEBUGGING
+        // viscousStrain.view("VISCOUS STRAIN"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("viscous_strain"), std::string(viscousStrain.label()));
@@ -405,7 +405,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         pylith::topology::Field totalStrain(*_mesh);
         totalStrain.copySubfield(*auxField, "total_strain");
 
-        //totalStrain.view("TOTAL STRAIN"); // DEBUGGING
+        // totalStrain.view("TOTAL STRAIN"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("total_strain"), std::string(totalStrain.label()));
@@ -429,7 +429,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         pylith::topology::Field referenceStress(*_mesh);
         referenceStress.copySubfield(*auxField, "reference_stress");
 
-        //referenceStress.view("REFERENCE STRESS"); // DEBUGGING
+        // referenceStress.view("REFERENCE STRESS"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("reference_stress"), std::string(referenceStress.label()));
@@ -453,7 +453,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         pylith::topology::Field referenceStrain(*_mesh);
         referenceStrain.copySubfield(*auxField, "reference_strain");
 
-        //referenceStrain.view("REFERENCE STRAIN"); // DEBUGGING
+        // referenceStrain.view("REFERENCE STRAIN"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("reference_strain"), std::string(referenceStrain.label()));
@@ -480,7 +480,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
 // ----------------------------------------------------------------------
 // Get material.
 pylith::materials::Material*
-pylith::materials::TestIsotropicLinearGenMaxwell3D::_material(void){ // _material
+pylith::materials::TestIsotropicLinearGenMaxwell3D::_material(void) { // _material
     return _mymaterial;
 } // _material
 
@@ -488,7 +488,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::_material(void){ // _materia
 // ----------------------------------------------------------------------
 // Get test data.
 pylith::materials::TestMaterial_Data*
-pylith::materials::TestIsotropicLinearGenMaxwell3D::_data(void){ // _data
+pylith::materials::TestIsotropicLinearGenMaxwell3D::_data(void) { // _data
     return _mydata;
 } // _data
 
@@ -496,7 +496,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::_data(void){ // _data
 // ----------------------------------------------------------------------
 // Setup and populate solution fields.
 void
-pylith::materials::TestIsotropicLinearGenMaxwell3D::_setupSolutionFields(void){ // _setupSolutionFields
+pylith::materials::TestIsotropicLinearGenMaxwell3D::_setupSolutionFields(void) { // _setupSolutionFields
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_solutionFields);
@@ -514,6 +514,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::_setupSolutionFields(void){ 
             factory.velocity(_mydata->solnDiscretizations[1]);
         } // if
         solution.subfieldsSetup();
+        solution.createDiscretization();
         solution.allocate();
         factory.setValues(_mydata->solnDB);
     } // Solution
@@ -526,6 +527,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::_setupSolutionFields(void){ 
             factory.velocityDot(_mydata->solnDiscretizations[1]);
         } // if
         solutionDot.subfieldsSetup();
+        solutionDot.createDiscretization();
         solutionDot.allocate();
         factory.setValues(_mydata->solnDB);
     } // Time derivative of solution
@@ -534,6 +536,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::_setupSolutionFields(void){ 
         pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
         const pylith::topology::Field& solution = _solutionFields->get("solution");
         perturbation.cloneSection(solution);
+        perturbation.createDiscretization();
         perturbation.allocate();
         perturbation.zeroLocal();
         pylith::problems::SolutionFactory factory(perturbation, *_mydata->normalizer);
@@ -544,6 +547,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::_setupSolutionFields(void){ 
         pylith::topology::Field& perturbationDot = _solutionFields->get("perturbation_dot");
         const pylith::topology::Field& solutionDot = _solutionFields->get("solution_dot");
         perturbationDot.cloneSection(solutionDot);
+        perturbationDot.createDiscretization();
         perturbationDot.allocate();
         perturbationDot.zeroLocal();
         pylith::problems::SolutionFactory factory(perturbationDot, *_mydata->normalizer);
@@ -556,7 +560,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::_setupSolutionFields(void){ 
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::materials::TestIsotropicLinearGenMaxwell3D_Data::TestIsotropicLinearGenMaxwell3D_Data(void){ // constructor
+pylith::materials::TestIsotropicLinearGenMaxwell3D_Data::TestIsotropicLinearGenMaxwell3D_Data(void) { // constructor
     dimension = 3;
     gravityVector[0] = 0.0; // Use scales in test to provide correct nondimensional value.
     gravityVector[1] = 0.0;

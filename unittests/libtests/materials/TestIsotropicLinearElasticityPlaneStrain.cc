@@ -40,7 +40,7 @@
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void) {
     TestMaterial::setUp();
-    _mymaterial = new IsotropicLinearElasticityPlaneStrain(); CPPUNIT_ASSERT(_mymaterial);
+    _mymaterial = new IsotropicLinearElasticityPlaneStrain();CPPUNIT_ASSERT(_mymaterial);
     _mydata = NULL;
 
     GenericComponent::setName("TestIsotropicLinearElasticityPlaneStrain");
@@ -48,7 +48,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void) {
     _mymaterial->PyreComponent::identifier("TestIsotropicLinearElasticityPlaneStrain");
     const char* journal = _mymaterial->PyreComponent::getName();
     journal::debug_t debug(journal);
-    //debug.activate(); // DEBUGGING
+    // debug.activate(); // DEBUGGING
 } // setUp
 
 
@@ -62,8 +62,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::tearDown(void) {
 
     TestMaterial::tearDown();
 
-    delete _mymaterial; _mymaterial = NULL;
-    delete _mydata; _mydata = NULL;
+    delete _mymaterial;_mymaterial = NULL;
+    delete _mydata;_mydata = NULL;
 } // tearDown
 
 
@@ -116,7 +116,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldSetup(
     const PylithReal forceScale = pressureScale / lengthScale;
     const PylithReal accelerationScale = lengthScale / (timeScale * timeScale);
 
-    delete _mymaterial->_auxField; _mymaterial->_auxField = new topology::Field(*_mesh); CPPUNIT_ASSERT(_mymaterial->_auxField);
+    delete _mymaterial->_auxField;_mymaterial->_auxField = new topology::Field(*_mesh);CPPUNIT_ASSERT(_mymaterial->_auxField);
     _mymaterial->_auxFieldSetup();
 
     // Check discretizations
@@ -233,7 +233,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
         pylith::topology::Field density(*_mesh);
         density.copySubfield(*auxField, "density");
 
-        //density.view("DENSITY"); // DEBUGGING
+        // density.view("DENSITY"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("density"), std::string(density.label()));
@@ -245,8 +245,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = density.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        const PetscDM dm = density.dmMesh();CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryDensity.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -257,7 +257,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
         pylith::topology::Field bulkModulus(*_mesh);
         bulkModulus.copySubfield(*auxField, "bulk_modulus");
 
-        //bulkModulus.view("BULK MODULUS"); // DEBUGGING
+        // bulkModulus.view("BULK MODULUS"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("bulk_modulus"), std::string(bulkModulus.label()));
@@ -269,8 +269,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = bulkModulus.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        const PetscDM dm = bulkModulus.dmMesh();CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryBulkModulus.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -281,7 +281,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
         pylith::topology::Field referenceStress(*_mesh);
         referenceStress.copySubfield(*auxField, "reference_stress");
 
-        //referenceStress.view("REFERENCE STRESS"); // DEBUGGING
+        // referenceStress.view("REFERENCE STRESS"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("reference_stress"), std::string(referenceStress.label()));
@@ -293,14 +293,13 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
-        const PetscDM dm = referenceStress.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStress.functions(), (void**)queryRefStress.contextPtrs(), referenceStress.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        const PetscDM dm = referenceStress.dmMesh();CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStress.functions(), (void**)queryRefStress.contextPtrs(), referenceStress.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryRefStress.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting reference stress subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting reference_stress field
-
 
     PYLITH_METHOD_END;
 } // testGetAuxField
@@ -343,6 +342,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
             factory.velocity(_mydata->solnDiscretizations[1]);
         } // if
         solution.subfieldsSetup();
+        solution.createDiscretization();
         solution.allocate();
         factory.setValues(_mydata->solnDB);
     } // Solution
@@ -355,6 +355,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
             factory.velocityDot(_mydata->solnDiscretizations[1]);
         } // if
         solutionDot.subfieldsSetup();
+        solutionDot.createDiscretization();
         solutionDot.allocate();
         factory.setValues(_mydata->solnDB);
     } // Time derivative of solution
@@ -363,6 +364,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
         pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
         const pylith::topology::Field& solution = _solutionFields->get("solution");
         perturbation.cloneSection(solution);
+        perturbation.createDiscretization();
         perturbation.allocate();
         perturbation.zeroLocal();
         pylith::problems::SolutionFactory factory(perturbation, *_mydata->normalizer);
@@ -373,6 +375,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
         pylith::topology::Field& perturbationDot = _solutionFields->get("perturbation_dot");
         const pylith::topology::Field& solutionDot = _solutionFields->get("solution_dot");
         perturbationDot.cloneSection(solutionDot);
+        perturbationDot.createDiscretization();
         perturbationDot.allocate();
         perturbationDot.zeroLocal();
         pylith::problems::SolutionFactory factory(perturbationDot, *_mydata->normalizer);
@@ -382,6 +385,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
     PYLITH_METHOD_END;
 } // _setupSolutionFields
 
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::TestIsotropicLinearElasticityPlaneStrain_Data(void) {
@@ -390,7 +394,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::TestIsotropicL
     gravityVector[1] = 0.0;
     gravityVector[2] = 0;
 
-    cs = new spatialdata::geocoords::CSCart; CPPUNIT_ASSERT(cs);
+    cs = new spatialdata::geocoords::CSCart;CPPUNIT_ASSERT(cs);
     cs->setSpaceDim(dimension);
     cs->initialize();
 

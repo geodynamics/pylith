@@ -45,7 +45,7 @@ const double pylith::bc::TestDirichletTimeDependent::FILL_VALUE = -999.0;
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::bc::TestDirichletTimeDependent::setUp(void){ // setUp
+pylith::bc::TestDirichletTimeDependent::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
     _bc = new pylith::bc::DirichletTimeDependent();CPPUNIT_ASSERT(_bc);
@@ -61,7 +61,7 @@ pylith::bc::TestDirichletTimeDependent::setUp(void){ // setUp
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::bc::TestDirichletTimeDependent::tearDown(void){ // tearDown
+pylith::bc::TestDirichletTimeDependent::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
     delete _bc;_bc = NULL;
@@ -77,7 +77,7 @@ pylith::bc::TestDirichletTimeDependent::tearDown(void){ // tearDown
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::bc::TestDirichletTimeDependent::testConstructor(void){ // testConstructor
+pylith::bc::TestDirichletTimeDependent::testConstructor(void) {
     PYLITH_METHOD_BEGIN;
 
     DirichletTimeDependent* bc = new DirichletTimeDependent();CPPUNIT_ASSERT(bc);
@@ -90,7 +90,7 @@ pylith::bc::TestDirichletTimeDependent::testConstructor(void){ // testConstructo
 // ----------------------------------------------------------------------
 /// Test accessors (dbTimeHistory, useInitial, useRate, useTimeHistory).
 void
-pylith::bc::TestDirichletTimeDependent::testAccessors(void){ // testAccessors
+pylith::bc::TestDirichletTimeDependent::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_bc);
@@ -151,7 +151,7 @@ pylith::bc::TestDirichletTimeDependent::testAccessors(void){ // testAccessors
 
 // ----------------------------------------------------------------------
 void
-pylith::bc::TestDirichletTimeDependent::testAuxFieldDiscretization(void){ // testAuxFieldDiscretization
+pylith::bc::TestDirichletTimeDependent::testAuxFieldDiscretization(void) {
     PYLITH_METHOD_BEGIN;
 
     const topology::FieldBase::Discretization infoDefault = pylith::topology::Field::Discretization(1, 1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
@@ -202,7 +202,7 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDiscretization(void){ // tes
 // ----------------------------------------------------------------------
 // Test auxFieldDB().
 void
-pylith::bc::TestDirichletTimeDependent::testAuxFieldDB(void){ // testAuxFieldDB
+pylith::bc::TestDirichletTimeDependent::testAuxFieldDB(void) {
     PYLITH_METHOD_BEGIN;
 
     const std::string label = "test db";
@@ -224,7 +224,7 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDB(void){ // testAuxFieldDB
 // ----------------------------------------------------------------------
 // Test normalizer().
 void
-pylith::bc::TestDirichletTimeDependent::testNormalizer(void){ // testNormalizer
+pylith::bc::TestDirichletTimeDependent::testNormalizer(void) {
     PYLITH_METHOD_BEGIN;
 
     spatialdata::units::Nondimensional normalizer;
@@ -242,7 +242,7 @@ pylith::bc::TestDirichletTimeDependent::testNormalizer(void){ // testNormalizer
 // ----------------------------------------------------------------------
 // Test verifyConfiguration().
 void
-pylith::bc::TestDirichletTimeDependent::testVerifyConfiguration(void){ // testVerifyConfiguration
+pylith::bc::TestDirichletTimeDependent::testVerifyConfiguration(void) {
     PYLITH_METHOD_BEGIN;
 
     _initialize();
@@ -271,7 +271,7 @@ pylith::bc::TestDirichletTimeDependent::testVerifyConfiguration(void){ // testVe
 // ----------------------------------------------------------------------
 // Test initialize().
 void
-pylith::bc::TestDirichletTimeDependent::testInitialize(void){ // testInitialize
+pylith::bc::TestDirichletTimeDependent::testInitialize(void) {
     PYLITH_METHOD_BEGIN;
 
     // Call initialize()
@@ -327,7 +327,7 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void){ // testInitialize
 // ----------------------------------------------------------------------
 // Test preStep().
 void
-pylith::bc::TestDirichletTimeDependent::testPrestep(void){ // testPrestep
+pylith::bc::TestDirichletTimeDependent::testPrestep(void) {
     PYLITH_METHOD_BEGIN;
 
     if (!_data->useTimeHistory) {PYLITH_METHOD_END;}
@@ -366,7 +366,7 @@ pylith::bc::TestDirichletTimeDependent::testPrestep(void){ // testPrestep
 // ----------------------------------------------------------------------
 // Test setSolution().
 void
-pylith::bc::TestDirichletTimeDependent::testSetSolution(void){ // testSetSolution
+pylith::bc::TestDirichletTimeDependent::testSetSolution(void) {
     PYLITH_METHOD_BEGIN;
 
     _initialize();
@@ -374,6 +374,7 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void){ // testSetSolutio
 
     CPPUNIT_ASSERT(_bc);
     CPPUNIT_ASSERT(_solution);
+    _solution->createDiscretization();
     _bc->initialize(*_solution);
 
     // Initialize solution field.
@@ -383,11 +384,11 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void){ // testSetSolutio
 
     // Set solution field.
     CPPUNIT_ASSERT(_data);
-    //_solution->mesh().view(":detail.txt:ascii_info_detail"); // :DEBUG: TEMPORARY
+    // _solution->mesh().view(":detail.txt:ascii_info_detail"); // :DEBUG: TEMPORARY
     _bc->prestep(_data->t, _data->dt);
     _bc->setSolution(_solution, _data->t);
 
-    //_solution->view("SOLUTION BC ONLY"); // :DEBUG:
+    // _solution->view("SOLUTION BC ONLY"); // :DEBUG:
 
     // Verify setting solution did not change unconstrained values.
     const PylithReal tolerance = 1.0e-6;
@@ -432,7 +433,7 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void){ // testSetSolutio
 // ----------------------------------------------------------------------
 // Test _auxFieldSetup().
 void
-pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void){ // testAuxFieldSetup
+pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void) {
     PYLITH_METHOD_BEGIN;
 
     _initialize();
@@ -571,7 +572,7 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void){ // testAuxField
 
 // ----------------------------------------------------------------------
 void
-pylith::bc::TestDirichletTimeDependent::_initialize(void){ // _initialize
+pylith::bc::TestDirichletTimeDependent::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_data);
@@ -612,7 +613,7 @@ pylith::bc::TestDirichletTimeDependent::_initialize(void){ // _initialize
 
 // ----------------------------------------------------------------------
 void
-pylith::bc::TestDirichletTimeDependent::_setupSolutionField(void){ // setupSolutionField
+pylith::bc::TestDirichletTimeDependent::_setupSolutionField(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mesh);
@@ -653,13 +654,12 @@ pylith::bc::TestDirichletTimeDependent_Data::TestDirichletTimeDependent_Data(voi
     dt(0.0),
     solnNumSubfields(0),
     solnDiscretizations(NULL),
-    solnDB(new spatialdata::spatialdb::UserFunctionDB){ // constructor
-} // constructor
+    solnDB(new spatialdata::spatialdb::UserFunctionDB) {}
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::bc::TestDirichletTimeDependent_Data::~TestDirichletTimeDependent_Data(void){ // destructor
+pylith::bc::TestDirichletTimeDependent_Data::~TestDirichletTimeDependent_Data(void) {
     delete cs;cs = NULL;
     delete normalizer;normalizer = NULL;
     delete auxDB;auxDB = NULL;

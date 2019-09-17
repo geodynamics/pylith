@@ -48,7 +48,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::setUp(void) {
     _mymaterial->PyreComponent::identifier("TestIsotropicLinearMaxwellPlaneStrain");
     const char* journal = _mymaterial->PyreComponent::getName();
     journal::debug_t debug(journal);
-    //debug.activate(); // DEBUGGING
+    // debug.activate(); // DEBUGGING
 } // setUp
 
 
@@ -272,7 +272,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
         pylith::topology::Field density(*_mesh);
         density.copySubfield(*auxField, "density");
 
-        //density.view("DENSITY"); // DEBUGGING
+        // density.view("DENSITY"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("density"), std::string(density.label()));
@@ -296,7 +296,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
         pylith::topology::Field bulkModulus(*_mesh);
         bulkModulus.copySubfield(*auxField, "bulk_modulus");
 
-        //bulkModulus.view("BULK MODULUS"); // DEBUGGING
+        // bulkModulus.view("BULK MODULUS"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("bulk_modulus"), std::string(bulkModulus.label()));
@@ -320,7 +320,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
         pylith::topology::Field maxwellTime(*_mesh);
         maxwellTime.copySubfield(*auxField, "maxwell_time");
 
-        //maxwellTime.view("MAXWELL TIME"); // DEBUGGING
+        // maxwellTime.view("MAXWELL TIME"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("maxwell_time"), std::string(maxwellTime.label()));
@@ -344,7 +344,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
         pylith::topology::Field viscousStrain(*_mesh);
         viscousStrain.copySubfield(*auxField, "viscous_strain");
 
-        //viscousStrain.view("VISCOUS STRAIN"); // DEBUGGING
+        // viscousStrain.view("VISCOUS STRAIN"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("viscous_strain"), std::string(viscousStrain.label()));
@@ -368,7 +368,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
         pylith::topology::Field totalStrain(*_mesh);
         totalStrain.copySubfield(*auxField, "total_strain");
 
-        //totalStrain.view("TOTAL STRAIN"); // DEBUGGING
+        // totalStrain.view("TOTAL STRAIN"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("total_strain"), std::string(totalStrain.label()));
@@ -392,7 +392,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
         pylith::topology::Field referenceStress(*_mesh);
         referenceStress.copySubfield(*auxField, "reference_stress");
 
-        //referenceStress.view("REFERENCE STRESS"); // DEBUGGING
+        // referenceStress.view("REFERENCE STRESS"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("reference_stress"), std::string(referenceStress.label()));
@@ -416,7 +416,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
         pylith::topology::Field referenceStrain(*_mesh);
         referenceStrain.copySubfield(*auxField, "reference_strain");
 
-        //referenceStrain.view("REFERENCE STRAIN"); // DEBUGGING
+        // referenceStrain.view("REFERENCE STRAIN"); // DEBUGGING
 
         // Check result
         CPPUNIT_ASSERT_EQUAL(std::string("reference_strain"), std::string(referenceStrain.label()));
@@ -477,6 +477,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
             factory.velocity(_mydata->solnDiscretizations[1]);
         } // if
         solution.subfieldsSetup();
+        solution.createDiscretization();
         solution.allocate();
         factory.setValues(_mydata->solnDB);
     } // Solution
@@ -489,6 +490,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
             factory.velocityDot(_mydata->solnDiscretizations[1]);
         } // if
         solutionDot.subfieldsSetup();
+        solutionDot.createDiscretization();
         solutionDot.allocate();
         factory.setValues(_mydata->solnDB);
     } // Time derivative of solution
@@ -497,6 +499,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
         pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
         const pylith::topology::Field& solution = _solutionFields->get("solution");
         perturbation.cloneSection(solution);
+        perturbation.createDiscretization();
         perturbation.allocate();
         perturbation.zeroLocal();
         pylith::problems::SolutionFactory factory(perturbation, *_mydata->normalizer);
@@ -507,6 +510,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
         pylith::topology::Field& perturbationDot = _solutionFields->get("perturbation_dot");
         const pylith::topology::Field& solutionDot = _solutionFields->get("solution_dot");
         perturbationDot.cloneSection(solutionDot);
+        perturbationDot.createDiscretization();
         perturbationDot.allocate();
         perturbationDot.zeroLocal();
         pylith::problems::SolutionFactory factory(perturbationDot, *_mydata->normalizer);

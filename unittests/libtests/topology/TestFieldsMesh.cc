@@ -213,6 +213,7 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void) {
     const double scale = 1.2;
     fieldA.subfieldAdd("displacement", "displacement", Field::SCALAR, components, numComponents, scale, basisOrder, dim, quadOrder, true, Field::POLYNOMIAL_SPACE);
     fieldA.subfieldsSetup();
+    fieldA.createDiscretization();
     fieldA.allocate();
 
     const char* labelB = "field B";

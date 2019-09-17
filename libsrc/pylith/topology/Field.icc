@@ -28,10 +28,11 @@ PetscSection
 pylith::topology::Field::localSection(void) const {
     PetscSection s = NULL;
     if (_dm) {
-        PetscErrorCode err = DMGetSection(_dm, &s); PYLITH_CHECK_ERROR(err);
+        PetscErrorCode err = DMGetSection(_dm, &s);PYLITH_CHECK_ERROR(err);
     } // if
     return s;
 }
+
 
 // Get global PetscSection.
 inline
@@ -39,10 +40,11 @@ PetscSection
 pylith::topology::Field::globalSection(void) const {
     PetscSection s = NULL;
     if (_dm) {
-        PetscErrorCode err = DMGetGlobalSection(_dm, &s); PYLITH_CHECK_ERROR(err);
+        PetscErrorCode err = DMGetGlobalSection(_dm, &s);PYLITH_CHECK_ERROR(err);
     } // if
     return s;
 }
+
 
 // Get local vector.
 inline
@@ -50,6 +52,7 @@ PetscVec
 pylith::topology::Field::localVector(void) const {
     return _localVec;
 }
+
 
 // Get mesh associated with field.
 inline
@@ -59,11 +62,13 @@ pylith::topology::Field::mesh(void) const {
     return _mesh;
 }
 
+
 inline
 PetscDM
 pylith::topology::Field::dmMesh(void) const {
     return _dm;
 }
+
 
 // Get label for field.
 inline
@@ -72,12 +77,14 @@ pylith::topology::Field::label(void) const {
     return _label.c_str();
 }
 
+
 // Set flag indicating whether it is okay to dimensionalize field.
 inline
 void
 pylith::topology::Field::dimensionalizeOkay(const bool value) {
     _dimsOkay = value;
 }
+
 
 // Set flag indicating whether it is okay to dimensionalize field.
 inline
@@ -88,6 +95,5 @@ pylith::topology::Field::dimensionalizeOkay(void) const {
 
 
 #endif
-
 
 // End of file

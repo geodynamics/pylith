@@ -283,6 +283,7 @@ pylith::problems::TestSolutionFactory::testSetValues(void) {
     _factory->addDisplacement(_data->subfields["displacement"].fe);
     _factory->addPressure(_data->subfields["pressure"].fe);
     _solution->subfieldsSetup();
+    _solution->createDiscretization();
     _solution->allocate();
 
     CPPUNIT_ASSERT(_data);

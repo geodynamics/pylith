@@ -43,7 +43,7 @@ const double pylith::bc::TestAbsorbingDampers::FILL_VALUE = -999.0;
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::bc::TestAbsorbingDampers::setUp(void){ // setUp
+pylith::bc::TestAbsorbingDampers::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
     _bc = new pylith::bc::AbsorbingDampers();CPPUNIT_ASSERT(_bc);
@@ -59,7 +59,7 @@ pylith::bc::TestAbsorbingDampers::setUp(void){ // setUp
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::bc::TestAbsorbingDampers::tearDown(void){ // tearDown
+pylith::bc::TestAbsorbingDampers::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
     delete _bc;_bc = NULL;
@@ -75,7 +75,7 @@ pylith::bc::TestAbsorbingDampers::tearDown(void){ // tearDown
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::bc::TestAbsorbingDampers::testConstructor(void){ // testConstructor
+pylith::bc::TestAbsorbingDampers::testConstructor(void) {
     PYLITH_METHOD_BEGIN;
 
     AbsorbingDampers* bc = new AbsorbingDampers();CPPUNIT_ASSERT(bc);
@@ -88,7 +88,7 @@ pylith::bc::TestAbsorbingDampers::testConstructor(void){ // testConstructor
 // ----------------------------------------------------------------------
 /// Test accessors (dbTimeHistory, useInitial, useRate, useTimeHistory).
 void
-pylith::bc::TestAbsorbingDampers::testAccessors(void){ // testAccessors
+pylith::bc::TestAbsorbingDampers::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_bc);
@@ -104,7 +104,7 @@ pylith::bc::TestAbsorbingDampers::testAccessors(void){ // testAccessors
 
 // ----------------------------------------------------------------------
 void
-pylith::bc::TestAbsorbingDampers::testAuxFieldDiscretization(void){ // testAuxFieldDiscretization
+pylith::bc::TestAbsorbingDampers::testAuxFieldDiscretization(void) {
     PYLITH_METHOD_BEGIN;
 
     const topology::FieldBase::Discretization infoDefault = pylith::topology::Field::Discretization(1, 1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
@@ -155,7 +155,7 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldDiscretization(void){ // testAuxFi
 // ----------------------------------------------------------------------
 // Test auxFieldDB().
 void
-pylith::bc::TestAbsorbingDampers::testAuxFieldDB(void){ // testAuxFieldDB
+pylith::bc::TestAbsorbingDampers::testAuxFieldDB(void) {
     PYLITH_METHOD_BEGIN;
 
     const std::string label = "test db";
@@ -177,7 +177,7 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldDB(void){ // testAuxFieldDB
 // ----------------------------------------------------------------------
 // Test normalizer().
 void
-pylith::bc::TestAbsorbingDampers::testNormalizer(void){ // testNormalizer
+pylith::bc::TestAbsorbingDampers::testNormalizer(void) {
     PYLITH_METHOD_BEGIN;
 
     spatialdata::units::Nondimensional normalizer;
@@ -195,7 +195,7 @@ pylith::bc::TestAbsorbingDampers::testNormalizer(void){ // testNormalizer
 // ----------------------------------------------------------------------
 // Test verifyConfiguration().
 void
-pylith::bc::TestAbsorbingDampers::testVerifyConfiguration(void){ // testVerifyConfiguration
+pylith::bc::TestAbsorbingDampers::testVerifyConfiguration(void) {
     PYLITH_METHOD_BEGIN;
 
     _initialize();
@@ -222,7 +222,7 @@ pylith::bc::TestAbsorbingDampers::testVerifyConfiguration(void){ // testVerifyCo
 // ----------------------------------------------------------------------
 // Test initialize().
 void
-pylith::bc::TestAbsorbingDampers::testInitialize(void){ // testInitialize
+pylith::bc::TestAbsorbingDampers::testInitialize(void) {
     PYLITH_METHOD_BEGIN;
 
     // Call initialize()
@@ -234,7 +234,7 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void){ // testInitialize
 
     _bc->initialize(*_solution);
 
-    //_bc->auxField().view("AUXILIARY FIELD"); // DEBUGGING
+    // _bc->auxField().view("AUXILIARY FIELD"); // DEBUGGING
 
     // Verify auxiliary field.
     CPPUNIT_ASSERT(_data);
@@ -262,7 +262,7 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void){ // testInitialize
 // ----------------------------------------------------------------------
 // Test computeRHSResidual().
 void
-pylith::bc::TestAbsorbingDampers::testComputeRHSResidual(void){ // testComputeRHSResidual
+pylith::bc::TestAbsorbingDampers::testComputeRHSResidual(void) {
     PYLITH_METHOD_BEGIN;
 
 #if 1
@@ -270,6 +270,7 @@ pylith::bc::TestAbsorbingDampers::testComputeRHSResidual(void){ // testComputeRH
 #else
     CPPUNIT_ASSERT(_bc);
     CPPUNIT_ASSERT(_solution);
+    _solution->createDiscretization();
     _bc->initialize(*_solution);
 
     // Initialize solution field.
@@ -325,7 +326,7 @@ pylith::bc::TestAbsorbingDampers::testComputeRHSResidual(void){ // testComputeRH
 // ----------------------------------------------------------------------
 // Test _auxFieldSetup().
 void
-pylith::bc::TestAbsorbingDampers::testAuxFieldSetup(void){ // testAuxFieldSetup
+pylith::bc::TestAbsorbingDampers::testAuxFieldSetup(void) {
     PYLITH_METHOD_BEGIN;
 
     _initialize();
@@ -404,7 +405,7 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldSetup(void){ // testAuxFieldSetup
 
 // ----------------------------------------------------------------------
 void
-pylith::bc::TestAbsorbingDampers::_initialize(void){ // _initialize
+pylith::bc::TestAbsorbingDampers::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_data);
@@ -434,7 +435,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(void){ // _initialize
 
 // ----------------------------------------------------------------------
 void
-pylith::bc::TestAbsorbingDampers::_setupSolutionField(void){ // setupSolutionField
+pylith::bc::TestAbsorbingDampers::_setupSolutionField(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mesh);
@@ -467,13 +468,12 @@ pylith::bc::TestAbsorbingDampers_Data::TestAbsorbingDampers_Data(void) :
     t(0.0),
     solnNumSubfields(0),
     solnDiscretizations(NULL),
-    solnDB(new spatialdata::spatialdb::UserFunctionDB){ // constructor
-} // constructor
+    solnDB(new spatialdata::spatialdb::UserFunctionDB) {} // constructor
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::bc::TestAbsorbingDampers_Data::~TestAbsorbingDampers_Data(void){ // destructor
+pylith::bc::TestAbsorbingDampers_Data::~TestAbsorbingDampers_Data(void) {
     delete cs;cs = NULL;
     delete normalizer;normalizer = NULL;
     delete auxDB;auxDB = NULL;
