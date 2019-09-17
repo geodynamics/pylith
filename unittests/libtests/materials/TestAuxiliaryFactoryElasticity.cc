@@ -166,6 +166,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::testSetValuesFromDB(void) {
     CPPUNIT_ASSERT(_data->gravityField);
     _factory->addGravityField(_data->gravityField);
     _auxiliaryField->subfieldsSetup();
+    _auxiliaryField->createDiscretization();
     _auxiliaryField->allocate();
 
     CPPUNIT_ASSERT(_data);

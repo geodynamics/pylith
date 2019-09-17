@@ -121,6 +121,7 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
     _auxField->label("kinsrc auxiliary");
     _auxFieldSetup(normalizer, cs);
     _auxField->subfieldsSetup();
+    _auxField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(faultAuxField, *_auxField);
     _auxField->allocate();
     _auxField->zeroLocal();

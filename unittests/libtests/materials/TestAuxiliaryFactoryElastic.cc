@@ -214,6 +214,7 @@ pylith::materials::TestAuxiliaryFactoryElastic::testSetValuesFromDB(void) {
     _factory->addReferenceStress();
     _factory->addReferenceStrain();
     _auxiliaryField->subfieldsSetup();
+    _auxiliaryField->createDiscretization();
     _auxiliaryField->allocate();
 
     CPPUNIT_ASSERT(_data);

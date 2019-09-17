@@ -206,11 +206,13 @@ pylith::feassemble::TestIntegratorDomain::testComputeResidual(void) {
     pylith::topology::Field residualRHS(*_mesh);
     residualRHS.cloneSection(solution);
     residualRHS.label("residual RHS");
+    residualRHS.createDiscretization();
     residualRHS.allocate();
 
     pylith::topology::Field residualLHS(*_mesh);
     residualLHS.cloneSection(solution);
     residualLHS.label("residual LHS");
+    residualLHS.createDiscretization();
     residualLHS.allocate();
 
 #if 0 // :DEBUG:
@@ -279,11 +281,13 @@ pylith::feassemble::TestIntegratorDomain::testComputeLHSJacobian(void) {
     pylith::topology::Field residual1(*_mesh);
     residual1.cloneSection(solution);
     residual1.label("residual1");
+    residual1.createDiscretization();
     residual1.allocate();
 
     pylith::topology::Field residual2(*_mesh);
     residual2.cloneSection(perturbation);
     residual2.label("residual2");
+    residual2.createDiscretization();
     residual2.allocate();
 
 #if 0 // :DEBUG:
@@ -377,11 +381,13 @@ pylith::feassemble::TestIntegratorDomain::testComputeRHSJacobian(void) {
     pylith::topology::Field residual1(*_mesh);
     residual1.cloneSection(solution);
     residual1.label("residual1");
+    residual1.createDiscretization();
     residual1.allocate();
 
     pylith::topology::Field residual2(*_mesh);
     residual2.cloneSection(perturbation);
     residual2.label("residual2");
+    residual2.createDiscretization();
     residual2.allocate();
 
 #if 0 // :DEBUG:
@@ -522,6 +528,7 @@ pylith::feassemble::TestIntegratorDomain::_setupSolutionFields(void) {
             factory.velocity(_data->solutionDiscretizations[1]);
         } // if
         solution.subfieldsSetup();
+        solution.createDiscretization();
         solution.allocate();
         factory.setValues(_data->solutionDB);
     } // Solution
@@ -534,6 +541,7 @@ pylith::feassemble::TestIntegratorDomain::_setupSolutionFields(void) {
             factory.velocityDot(_data->solutionDiscretizations[1]);
         } // if
         solutionDot.subfieldsSetup();
+        solutionDot.createDiscretization();
         solutionDot.allocate();
         factory.setValues(_data->solutionDB);
     } // Time derivative of solution
@@ -542,6 +550,7 @@ pylith::feassemble::TestIntegratorDomain::_setupSolutionFields(void) {
         pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
         const pylith::topology::Field& solution = _solutionFields->get("solution");
         perturbation.cloneSection(solution);
+        perturbation.createDiscretization();
         perturbation.allocate();
         perturbation.zeroLocal();
         pylith::problems::SolutionFactory factory(perturbation, *_data->normalizer);
@@ -552,6 +561,7 @@ pylith::feassemble::TestIntegratorDomain::_setupSolutionFields(void) {
         pylith::topology::Field& perturbationDot = _solutionFields->get("perturbation_dot");
         const pylith::topology::Field& solutionDot = _solutionFields->get("solution_dot");
         perturbationDot.cloneSection(solutionDot);
+        perturbationDot.createDiscretization();
         perturbationDot.allocate();
         perturbationDot.zeroLocal();
         pylith::problems::SolutionFactory factory(perturbationDot, *_data->normalizer);

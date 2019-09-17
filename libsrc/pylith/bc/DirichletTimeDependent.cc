@@ -285,6 +285,7 @@ pylith::bc::DirichletTimeDependent::createAuxiliaryField(const pylith::topology:
     } // _useTimeHistory
 
     auxiliaryField->subfieldsSetup();
+    auxiliaryField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
     auxiliaryField->allocate();
     auxiliaryField->zeroLocal();

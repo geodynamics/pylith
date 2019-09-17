@@ -254,6 +254,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
         _factory->_setSubfieldQueryFn(subfields[i], pylith::topology::FieldQuery::dbQueryGeneric);
     } // for
     auxiliaryField.subfieldsSetup();
+    auxiliaryField.createDiscretization();
     auxiliaryField.allocate();
     auxiliaryField.zeroLocal();
 

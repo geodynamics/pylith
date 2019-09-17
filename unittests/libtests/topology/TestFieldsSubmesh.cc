@@ -209,6 +209,7 @@ pylith::topology::TestFieldsSubmesh::testCopyLayout(void) {
     const double scale = 1.2;
     fieldA.subfieldAdd("velocity", "velocity", Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder, dim, true, Field::POLYNOMIAL_SPACE);
     fieldA.subfieldsSetup();
+    fieldA.createDiscretization();
     fieldA.allocate();
 
     const char* labelB = "field B";

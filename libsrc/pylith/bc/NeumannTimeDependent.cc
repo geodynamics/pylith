@@ -269,6 +269,7 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
     } // _useTimeHistory
 
     auxiliaryField->subfieldsSetup();
+    auxiliaryField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
     auxiliaryField->allocate();
     auxiliaryField->zeroLocal();

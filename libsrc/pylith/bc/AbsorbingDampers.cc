@@ -170,6 +170,7 @@ pylith::bc::AbsorbingDampers::createAuxiliaryField(const pylith::topology::Field
     _auxiliaryFactory->addVs(); // 2
 
     auxiliaryField->subfieldsSetup();
+    auxiliaryField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
     auxiliaryField->allocate();
     auxiliaryField->zeroLocal();

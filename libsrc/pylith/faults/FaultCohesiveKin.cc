@@ -291,6 +291,7 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
     _auxiliaryFactory->addSlip(); // 0
 
     auxiliaryField->subfieldsSetup();
+    auxiliaryField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
     auxiliaryField->allocate();
     auxiliaryField->zeroLocal();

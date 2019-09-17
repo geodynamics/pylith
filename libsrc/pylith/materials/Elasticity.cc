@@ -200,6 +200,7 @@ pylith::materials::Elasticity::createAuxiliaryField(const pylith::topology::Fiel
     _rheology->addAuxiliarySubfields();
 
     auxiliaryField->subfieldsSetup();
+    auxiliaryField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
     auxiliaryField->allocate();
     auxiliaryField->zeroLocal();
@@ -232,6 +233,7 @@ pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field&
     _derivedFactory->addSubfields();
 
     derivedField->subfieldsSetup();
+    derivedField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(solution, *derivedField);
     derivedField->allocate();
     derivedField->zeroLocal();
@@ -458,7 +460,7 @@ pylith::materials::Elasticity::_setKernelsLHSJacobian(pylith::feassemble::Integr
 // Set kernels for computing updated state variables in auxiliary field.
 void
 pylith::materials::Elasticity::_setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
-                                                       const topology::Field& solution) const {
+                                                          const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsUpdateStateVars(integrator="<<integrator<<", solution="<<solution.label()<<")");
 
