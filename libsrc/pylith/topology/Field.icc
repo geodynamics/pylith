@@ -28,7 +28,7 @@ PetscSection
 pylith::topology::Field::localSection(void) const {
     PetscSection s = NULL;
     if (_dm) {
-        PetscErrorCode err = DMGetDefaultSection(_dm, &s); PYLITH_CHECK_ERROR(err);
+        PetscErrorCode err = DMGetSection(_dm, &s); PYLITH_CHECK_ERROR(err);
     } // if
     return s;
 }
@@ -39,7 +39,7 @@ PetscSection
 pylith::topology::Field::globalSection(void) const {
     PetscSection s = NULL;
     if (_dm) {
-        PetscErrorCode err = DMGetDefaultGlobalSection(_dm, &s); PYLITH_CHECK_ERROR(err);
+        PetscErrorCode err = DMGetGlobalSection(_dm, &s); PYLITH_CHECK_ERROR(err);
     } // if
     return s;
 }

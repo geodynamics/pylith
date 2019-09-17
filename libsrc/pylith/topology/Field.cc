@@ -63,9 +63,9 @@ pylith::topology::Field::Field(const Mesh& mesh) :
 
             err = DMGetCoordinateDM(dm, &coordDM);PYLITH_CHECK_ERROR(err);
             err = DMGetCoordinateDM(_dm, &newCoordDM);PYLITH_CHECK_ERROR(err);
-            err = DMGetDefaultSection(coordDM, &coordSection);PYLITH_CHECK_ERROR(err);
+            err = DMGetSection(coordDM, &coordSection);PYLITH_CHECK_ERROR(err);
             err = PetscSectionClone(coordSection, &newCoordSection);PYLITH_CHECK_ERROR(err);
-            err = DMSetDefaultSection(newCoordDM, newCoordSection);PYLITH_CHECK_ERROR(err);
+            err = DMSetSection(newCoordDM, newCoordSection);PYLITH_CHECK_ERROR(err);
             err = PetscSectionDestroy(&newCoordSection);PYLITH_CHECK_ERROR(err);
             err = DMSetCoordinatesLocal(_dm, coordVec);PYLITH_CHECK_ERROR(err);
         } // if
@@ -197,7 +197,7 @@ pylith::topology::Field::chartSize(void) const {
     PylithInt pStart, pEnd;
     PetscErrorCode err;
 
-    err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);
+    err = DMGetSection(_dm, &s);PYLITH_CHECK_ERROR(err);
     err = PetscSectionGetChart(s, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_RETURN(pEnd-pStart);
@@ -216,7 +216,7 @@ pylith::topology::Field::sectionSize(void) const {
         PetscSection s = NULL;
         PetscErrorCode err;
 
-        err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);
+        err = DMGetSection(_dm, &s);PYLITH_CHECK_ERROR(err);
         err = PetscSectionGetStorageSize(s, &size);PYLITH_CHECK_ERROR(err);
     } // if
 
@@ -244,7 +244,7 @@ pylith::topology::Field::cloneSection(const Field& src) {
     PetscSection srcSection = src.localSection();
     PetscSection newSection = NULL;
     err = PetscSectionClone(srcSection, &newSection);PYLITH_CHECK_ERROR(err);
-    err = DMSetDefaultSection(_dm, newSection);PYLITH_CHECK_ERROR(err);
+    err = DMSetSection(_dm, newSection);PYLITH_CHECK_ERROR(err);
     err = PetscSectionDestroy(&newSection);PYLITH_CHECK_ERROR(err);
 
     assert(!_localVec);
@@ -338,8 +338,8 @@ pylith::topology::Field::allocate(void) {
      */
     err = DMCreateDS(_dm);PYLITH_CHECK_ERROR(err);
 
-    err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);assert(s); // Creates local section
-    err = DMSetDefaultGlobalSection(_dm, NULL);PYLITH_CHECK_ERROR(err); // Creates global section
+    err = DMGetSection(_dm, &s);PYLITH_CHECK_ERROR(err);assert(s); // Creates local section
+    err = DMSetGlobalSection(_dm, NULL);PYLITH_CHECK_ERROR(err); // Creates global section
     err = PetscSectionSetUp(s);PYLITH_CHECK_ERROR(err);
 
     err = VecDestroy(&_localVec);PYLITH_CHECK_ERROR(err);
@@ -500,7 +500,7 @@ pylith::topology::Field::view(const char* label,
         PetscMPIInt numProcs, rank;
         PetscErrorCode err;
 
-        err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);
+        err = DMGetSection(_dm, &section);PYLITH_CHECK_ERROR(err);
         if ((VIEW_LAYOUT == options) || (VIEW_ALL == options)) {
             err = DMView(_dm, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
             err = PetscSectionView(section, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
@@ -586,14 +586,14 @@ pylith::topology::Field::createScatterWithBC(const char* context) {
     err = PetscObjectSetName((PetscObject)sinfo.dm, dmName.c_str());PYLITH_CHECK_ERROR(err);
     err = DMCopyDisc(_dm, sinfo.dm);PYLITH_CHECK_ERROR(err);
 
-    err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);
+    err = DMGetSection(_dm, &section);PYLITH_CHECK_ERROR(err);
     err = PetscSectionClone(section, &newSection);PYLITH_CHECK_ERROR(err);
-    err = DMSetDefaultSection(sinfo.dm, newSection);PYLITH_CHECK_ERROR(err);
+    err = DMSetSection(sinfo.dm, newSection);PYLITH_CHECK_ERROR(err);
     err = PetscSectionDestroy(&newSection);PYLITH_CHECK_ERROR(err);
     err = DMGetPointSF(sinfo.dm, &sf);PYLITH_CHECK_ERROR(err);
 
     err = PetscSectionCreateGlobalSection(section, sf, PETSC_TRUE, PETSC_FALSE, &gsection);PYLITH_CHECK_ERROR(err);
-    err = DMSetDefaultGlobalSection(sinfo.dm, gsection);PYLITH_CHECK_ERROR(err);
+    err = DMSetGlobalSection(sinfo.dm, gsection);PYLITH_CHECK_ERROR(err);
     err = PetscSectionDestroy(&gsection);PYLITH_CHECK_ERROR(err);
 
     err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);
@@ -638,7 +638,7 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
     PetscInt excludeRanges[4] = {cMax, cEnd, vMax, vEnd};
     PetscInt numExcludes = (cMax >= 0 ? 1 : 0) + (vMax >= 0 ? 1 : 0);
 
-    err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);
+    err = DMGetSection(_dm, &section);PYLITH_CHECK_ERROR(err);
     err = DMGetDimension(dm,  &dim);PYLITH_CHECK_ERROR(err);
     err = DMGetDimension(_dm, &dimF);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetChart(dm,  &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
@@ -690,12 +690,12 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
 
     err = DMCopyDisc(_dm, sinfo.dm);PYLITH_CHECK_ERROR(err);
     err = PetscSectionClone(section, &newSection);PYLITH_CHECK_ERROR(err);
-    err = DMSetDefaultSection(sinfo.dm, newSection);PYLITH_CHECK_ERROR(err);
+    err = DMSetSection(sinfo.dm, newSection);PYLITH_CHECK_ERROR(err);
     err = PetscSectionDestroy(&newSection);PYLITH_CHECK_ERROR(err);
     err = DMGetPointSF(sinfo.dm, &sf);PYLITH_CHECK_ERROR(err);
     err = PetscSectionCreateGlobalSectionCensored(section, sf, PETSC_TRUE, numExcludes, excludeRanges,
                                                   &gsection);PYLITH_CHECK_ERROR(err);
-    err = DMSetDefaultGlobalSection(sinfo.dm, gsection);PYLITH_CHECK_ERROR(err);
+    err = DMSetGlobalSection(sinfo.dm, gsection);PYLITH_CHECK_ERROR(err);
     err = PetscSectionDestroy(&gsection);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);
     err = DMCreateGlobalVector(sinfo.dm, &sinfo.vector);PYLITH_CHECK_ERROR(err);
@@ -1128,8 +1128,8 @@ pylith::topology::Field::_extractSubfield(const Field& field,
         err = DMClone(subfieldInfo.dm, &_dm);PYLITH_CHECK_ERROR(err);assert(_dm);
         // :TODO: @brad These next 3 lines should disappear now that we use the PETSc DS.
         PetscSection s = NULL;
-        err = DMGetDefaultSection(subfieldInfo.dm, &s);PYLITH_CHECK_ERROR(err);
-        err = DMSetDefaultSection(_dm, s);PYLITH_CHECK_ERROR(err);
+        err = DMGetSection(subfieldInfo.dm, &s);PYLITH_CHECK_ERROR(err);
+        err = DMSetSection(_dm, s);PYLITH_CHECK_ERROR(err);
     } else {
         err = DMCreateSubDM(field.dmMesh(), numSubfields, indicesSubfield, &subfieldIS, &_dm);PYLITH_CHECK_ERROR(err);
         assert(_dm);
@@ -1145,8 +1145,8 @@ pylith::topology::Field::_extractSubfield(const Field& field,
     // Setup section
     const PetscSection& fieldSection = field.localSection();
     PetscSection subfieldSection = NULL;
-    err = DMGetDefaultSection(_dm, &subfieldSection);PYLITH_CHECK_ERROR(err);
-    err = DMSetDefaultGlobalSection(_dm, NULL);PYLITH_CHECK_ERROR(err);
+    err = DMGetSection(_dm, &subfieldSection);PYLITH_CHECK_ERROR(err);
+    err = DMSetGlobalSection(_dm, NULL);PYLITH_CHECK_ERROR(err);
 
     PetscInt pStart = -1, pEnd = -1;
     err = PetscSectionGetChart(fieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
