@@ -70,11 +70,11 @@ class BoundaryCondition(Physics,
         Physics.__init__(self, name, facility="boundary_condition")
         return
 
-    def preinitialize(self, mesh):
+    def preinitialize(self, problem):
         """
         Setup boundary condition.
         """
-        Physics.preinitialize(self, mesh)
+        Physics.preinitialize(self, problem, self.label)
 
         ModuleBoundaryCondition.setMarkerLabel(self, self.label)
         ModuleBoundaryCondition.setSubfieldName(self, self.field)

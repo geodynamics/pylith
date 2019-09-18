@@ -24,7 +24,7 @@ from pyre.components.Component import Component
 
 def validateName(value):
     if not value.strip():
-        raise ValueError("Missing problem name.")
+        raise ValueError("Missing required property 'name' in default options for problem.")
     return value.strip()
 
 
@@ -48,8 +48,8 @@ class ProblemDefaults(Component):
     outputDir = pyre.inventory.str("output_directory", default="output")
     outputDir.meta['tip'] = "Directory for output."
 
-    name = pyre.inventory.str("name", default="", validator=validateName)
-    name.meta['tip'] = "Name for the problem (used with output_directory for default output filenames)."
+    simName = pyre.inventory.str("name", default="", validator=validateName)
+    simName.meta['tip'] = "Name for the problem (used with output_directory for default output filenames)."
 
     quadOrder = pyre.inventory.int("quadrature_order", default=1, validator=pyre.inventory.greater(0))
     quadOrder.meta['tip'] = "Finite-element quadrature order."
@@ -63,7 +63,7 @@ class ProblemDefaults(Component):
         Component.__init__(self, name, facility="problem_defaults")
         return
 
-    def preinitialize(self, mesh):
+    def preinitialize(self):
         """
         Do minimal initialization.
         """

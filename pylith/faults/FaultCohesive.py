@@ -95,11 +95,11 @@ class FaultCohesive(Physics, ModuleFaultCohesive):
         Physics.__init__(self, name)
         return
 
-    def preinitialize(self, mesh):
+    def preinitialize(self, problem):
         """
         Setup fault.
         """
-        Physics.preinitialize(self, mesh)
+        Physics.preinitialize(self, problem, self.label)
 
         ModuleFaultCohesive.setInterfaceId(self, self.matId)
         ModuleFaultCohesive.setSurfaceMarkerLabel(self, self.label)

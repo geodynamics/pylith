@@ -23,6 +23,7 @@ from pylith.utils.PetscComponent import PetscComponent
 from .problems import Problem as ModuleProblem
 
 from pylith.utils.NullComponent import NullComponent
+from .ProblemDefaults import ProblemDefaults
 
 
 # Factories for items in facility arrays
@@ -81,10 +82,14 @@ class Problem(PetscComponent, ModuleProblem):
       - *interfaces* Array of interior surfaces with relative displacement constraints or constitutive models.
       - *solution_observers* Array of observers for solution.
       - *gravity_field* Gravity field for problem (SpatialDB).
+      - *defaults* Default options for problem.
     """
 
     import pyre.inventory
     from pylith.utils.EmptyBin import EmptyBin
+
+    defaults = pyre.inventory.facility("defaults", family="problem_defaults", factory=ProblemDefaults)
+    defaults.meta['tip'] = "Default options for problem."
 
     solverChoice = pyre.inventory.str("solver", default="linear",
                                       validator=pyre.inventory.choice(["linear", "nonlinear"]))
@@ -155,17 +160,17 @@ class Problem(PetscComponent, ModuleProblem):
 
         # Preinitialize materials
         for material in self.materials.components():
-            material.preinitialize(mesh)
+            material.preinitialize(self)
         ModuleProblem.setMaterials(self, self.materials.components())
 
         # Preinitialize boundary conditions.
         for bc in self.bc.components():
-            bc.preinitialize(mesh)
+            bc.preinitialize(self)
         ModuleProblem.setBoundaryConditions(self, self.bc.components())
 
         # Preinitialize interfaces
         for interface in self.interfaces.components():
-            interface.preinitialize(mesh)
+            interface.preinitialize(self)
         ModuleProblem.setInterfaces(self, self.interfaces.components())
 
         # Preinitialize observers.

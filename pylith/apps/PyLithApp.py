@@ -47,7 +47,8 @@ class PyLithApp(PetscApplication):
     pdbOn = pyre.inventory.bool("start_python_debugger", default=False)
     pdbOn.meta['tip'] = "Start python debugger at beginning of main()."
 
-    typos = pyre.inventory.str("typos", default="pedantic", validator=pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
+    typos = pyre.inventory.str("typos", default="pedantic",
+                               validator=pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
     typos.meta['tip'] = "Specifies the handling of unknown properties and facilities"
 
     initializeOnly = pyre.inventory.bool("initialize_only", default=False)
@@ -102,8 +103,8 @@ class PyLithApp(PetscApplication):
         interfaces = None
         if "interfaces" in dir(self.problem):
             interfaces = self.problem.interfaces.components()
-        self.mesher.preinitialize()
-        mesh = self.mesher.create(self.problem.normalizer, interfaces)
+        self.mesher.preinitialize(self.problem)
+        mesh = self.mesher.create(self.problem, interfaces)
         del interfaces
         self.mesher = None
         self._debug.log(resourceUsageString())

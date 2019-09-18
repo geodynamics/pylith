@@ -73,7 +73,7 @@ class Physics(PetscComponent, ModulePhysics):
         self.derivedSubfields = EmptyBin()
         return
 
-    def preinitialize(self, mesh):
+    def preinitialize(self, problem, label):
         """
         Do pre-initialization setup.
         """
@@ -94,7 +94,7 @@ class Physics(PetscComponent, ModulePhysics):
                                                            subfield.dimension, subfield.isBasisContinuous, subfield.feSpace)
 
         for observer in self.observers.components():
-            observer.preinitialize(self)
+            observer.preinitialize(problem, label)
             ModulePhysics.registerObserver(self, observer)
         return
 

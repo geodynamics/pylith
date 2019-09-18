@@ -48,7 +48,7 @@ class RheologyElasticity(PetscComponent, ModuleRheology):
         PetscComponent.__init__(self, name, facility="rheologyelasticity")
         return
 
-    def preinitialize(self, mesh):
+    def preinitialize(self, problem):
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
         if 0 == comm.rank:

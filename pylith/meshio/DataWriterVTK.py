@@ -40,7 +40,7 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
 
     import pyre.inventory
 
-    filename = pyre.inventory.str("filename", default="output.vtk")
+    filename = pyre.inventory.str("filename", default="")
     filename.meta['tip'] = "Name of VTK file."
 
     timeFormat = pyre.inventory.str("time_format", default="%f")
@@ -69,12 +69,21 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
         """
         Initialize writer.
         """
-        DataWriter.preinitialize(self, self.filename)
+        DataWriter.preinitialize(self)
 
-        ModuleDataWriterVTK.filename(self, self.filename)
         ModuleDataWriterVTK.timeFormat(self, self.timeFormat)
         ModuleDataWriterVTK.timeConstant(self, self.timeConstant.value)
         ModuleDataWriterVTK.precision(self, self.precision)
+        return
+
+    def setFilename(self, outputDir, simName, label):
+        """
+        Set filename from default options and inventory. If filename is given in inventory, use it,
+        otherwise create filename from default options.
+        """
+        filename = self.filename or DataWriter.mkfilename(outputDir, simName, label, "vtk")
+        self.mkpath(filename)
+        ModuleDataWriterVTK.filename(self, filename)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

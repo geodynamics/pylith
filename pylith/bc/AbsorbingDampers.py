@@ -39,11 +39,11 @@ class AbsorbingDampers(BoundaryCondition, ModuleAbsorbingDampers):
         BoundaryCondition.__init__(self, name)
         return
 
-    def preinitialize(self, mesh):
+    def preinitialize(self, problem):
         """
         Do pre-initialization setup.
         """
-        BoundaryCondition.preinitialize(self, mesh)
+        BoundaryCondition.preinitialize(self, problem)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

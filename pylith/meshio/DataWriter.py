@@ -21,6 +21,8 @@
 
 from pylith.utils.PetscComponent import PetscComponent
 
+import os
+
 
 class DataWriter(PetscComponent):
     """
@@ -36,16 +38,27 @@ class DataWriter(PetscComponent):
         PetscComponent.__init__(self, name, facility="datawriter")
         return
 
-    def preinitialize(self, filename):
+    def preinitialize(self):
         """
         Setup data writer.
         """
         self._createModuleObj()
+        return
 
-        import os
+    @staticmethod
+    def mkfilename(outputDir, simName, label, suffix):
+        """Create filename from output directory, simulation name, label, and filename suffix.
+        """
+        filename = os.path.join(outputDir, "{}-{}.{}".format(simName, label, suffix))
+        return filename
+
+    def mkpath(self, filename):
+        """Create path for output file.
+        """
+        self._info.log("Creating path for output file '{}'".format(filename))
         relpath = os.path.dirname(filename)
 
-        if len(relpath) > 0 and not os.path.exists(relpath):
+        if relpath and not os.path.exists(relpath):
             # Only create directory on proc 0
             from pylith.mpi.Communicator import mpi_comm_world
             comm = mpi_comm_world()
