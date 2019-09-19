@@ -47,7 +47,7 @@ class Subfield(Component):
     basisOrder = pyre.inventory.int("basis_order", default=1)
     basisOrder.meta['tip'] = "Order of basis functions."
 
-    quadOrder = pyre.inventory.int("quadrature_order", default=1)
+    quadOrder = pyre.inventory.int("quadrature_order", default=-1)
     quadOrder.meta['tip'] = "Order of numerical quadrature."
 
     isBasisContinuous = pyre.inventory.bool("is_basis_continous", default=True)

@@ -127,7 +127,7 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
             if (info.fe.quadOrder < _basisOrder) {
                 PYLITH_COMPONENT_WARNING(
                     "Projecting subfield '"
-                        << info.description.label << "' in field ''" << fieldIn->label() << "'' from basis order "
+                        << info.description.label << "' in field '" << fieldIn->label() << " from basis order "
                         << info.fe.basisOrder << " to basis order " << _basisOrder
                         << " with quadrature order " << info.fe.quadOrder << " will result in under integration of the "
                         << "subfield. Accurate projection requires a quadrature order of at least " << _basisOrder << "."

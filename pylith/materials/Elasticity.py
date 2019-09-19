@@ -81,7 +81,7 @@ class Elasticity(Material, ModuleElasticity):
         self.rheology.preinitialize(problem)
         Material.preinitialize(self, problem)
 
-        self.rheology.addAuxiliarySubfields(self)
+        self.rheology.addAuxiliarySubfields(self, problem)
 
         ModuleElasticity.useInertia(self, self.useInertia)
         ModuleElasticity.useBodyForce(self, self.useBodyForce)

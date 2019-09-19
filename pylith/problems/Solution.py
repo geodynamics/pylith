@@ -56,7 +56,7 @@ class Solution(PetscComponent):
         self.field = None
         return
 
-    def preinitialize(self, mesh, normalizer):
+    def preinitialize(self, problem, mesh):
         """
         Do minimal initialization of solution.
         """
@@ -70,13 +70,14 @@ class Solution(PetscComponent):
         self.field.label("solution")
         spaceDim = mesh.coordsys().spaceDim()
         for subfield in self.subfields.components():
-            subfield.initialize(normalizer, spaceDim)
+            subfield.initialize(problem.normalizer, spaceDim)
             ncomponents = len(subfield.componentNames)
             if 0 == comm.rank:
                 self._debug.log("Adding subfield '%s' as '%s' with components %s to solution." %
                                 (subfield.fieldName, subfield.userAlias, subfield.componentNames))
+            quadOrder = problem.defaults.quadOrder if subfield.quadOrder < 0 else subfield.quadOrder
             self.field.subfieldAdd(subfield.fieldName, subfield.userAlias, subfield.vectorFieldType, subfield.componentNames,
-                                   subfield.scale.value, subfield.basisOrder, subfield.quadOrder, subfield.dimension,
+                                   subfield.scale.value, subfield.basisOrder, quadOrder, subfield.dimension,
                                    subfield.isBasisContinuous, subfield.feSpace)
         return
 

@@ -76,7 +76,7 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
         self.rheology.preinitialize(problem)
         Material.preinitialize(self, problem)
 
-        self.rheology.addAuxiliarySubfields(self)
+        self.rheology.addAuxiliarySubfields(self, problem)
 
         ModuleIncompressibleElasticity.useBodyForce(self, self.useBodyForce)
         return
