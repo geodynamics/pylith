@@ -56,7 +56,7 @@ class OutputPhysics(OutputObserver, ModuleOutputPhysics):
         OutputObserver.__init__(self, name)
         return
 
-    def preinitialize(self, problem, label):
+    def preinitialize(self, problem, identifier):
         """
         Do mimimal initialization.
         """
@@ -64,7 +64,7 @@ class OutputPhysics(OutputObserver, ModuleOutputPhysics):
         ModuleOutputPhysics.setInfoFields(self, self.infoFields)
         ModuleOutputPhysics.setDataFields(self, self.dataFields)
 
-        self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, label)
+        self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

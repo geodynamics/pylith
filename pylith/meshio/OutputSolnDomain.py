@@ -54,7 +54,8 @@ class OutputSolnDomain(OutputSoln, ModuleOutputSolnDomain):
         """
         OutputSoln.preinitialize(self, problem)
 
-        self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, "domain")
+        identifier = self.aliases[-1]
+        self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

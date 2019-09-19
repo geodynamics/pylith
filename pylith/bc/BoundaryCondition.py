@@ -74,7 +74,7 @@ class BoundaryCondition(Physics,
         """
         Setup boundary condition.
         """
-        Physics.preinitialize(self, problem, self.label)
+        Physics.preinitialize(self, problem)
 
         ModuleBoundaryCondition.setMarkerLabel(self, self.label)
         ModuleBoundaryCondition.setSubfieldName(self, self.field)

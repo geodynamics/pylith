@@ -70,7 +70,8 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
         OutputSoln.preinitialize(self, problem)
         ModuleOutputSolnBoundary.setLabel(self, self.label)
 
-        self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, self.label)
+        identifier = self.aliases[-1]
+        self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

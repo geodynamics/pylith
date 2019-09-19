@@ -77,7 +77,8 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
 
         ModuleOutputSolnPoints.stations(stationCoords, stationNames)
 
-        self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, self.label)
+        identifier = self.aliases[-1]
+        self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

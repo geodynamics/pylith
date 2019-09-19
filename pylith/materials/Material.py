@@ -68,7 +68,7 @@ class Material(Physics, ModuleMaterial):
         """
         Setup material.
         """
-        Physics.preinitialize(self, problem, self.label)
+        Physics.preinitialize(self, problem)
 
         ModuleMaterial.setMaterialId(self, self.materialId)
         ModuleMaterial.setDescriptiveLabel(self, self.label)

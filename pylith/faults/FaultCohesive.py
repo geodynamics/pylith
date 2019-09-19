@@ -99,7 +99,7 @@ class FaultCohesive(Physics, ModuleFaultCohesive):
         """
         Setup fault.
         """
-        Physics.preinitialize(self, problem, self.label)
+        Physics.preinitialize(self, problem)
 
         ModuleFaultCohesive.setInterfaceId(self, self.matId)
         ModuleFaultCohesive.setSurfaceMarkerLabel(self, self.label)
