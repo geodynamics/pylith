@@ -18,6 +18,7 @@
 from pylith.tests.FullTestApp import TestDriver, TestCase
 
 import unittest
+import pdb
 
 
 class TestApp(TestDriver):
@@ -29,6 +30,7 @@ class TestApp(TestDriver):
         """
         Constructor.
         """
+        pdb.set_trace()
         TestDriver.__init__(self)
         return
 
@@ -36,6 +38,7 @@ class TestApp(TestDriver):
         """
         Create test suite.
         """
+        pdb.set_trace()
         suite = unittest.TestSuite()
 
         import TestAxialTractionMaxwell
