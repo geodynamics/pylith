@@ -71,9 +71,4 @@ BUILT_SOURCES = export-data
 clean-local: clean-data
 
 
-leakcheck-faultkin: test_faultkin
-	valgrind --log-file=valgrind_faultkin.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/test_faultkin
-
-
-
 # End of file

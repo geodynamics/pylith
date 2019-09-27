@@ -76,9 +76,4 @@ BUILT_SOURCES = export-data
 clean-local: clean-data
 
 
-leakcheck-isotropiclinearelasticity:
-	valgrind --log-file=valgrind_isotropiclinearelasticity.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/test_isotropiclinearelasticity
-
-
-
 # End of file
