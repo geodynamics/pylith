@@ -211,11 +211,8 @@ noinst_tmp = \
 	mesh3D.txt
 
 
-leakcheck-all: check_PROGRAMS
-	for p in $(check_PROGRAMS); do
-		pname=`echo $$p | sed -e s/test_//g`
-		valgrind --log-file=valgrind_$$pname.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/$$p
-	done
+leakcheck-all: $(check_PROGRAMS)
+	for p in $(check_PROGRAMS); do pname=`echo $$p | sed -e s/test_//g`; valgrind --log-file=valgrind_$$pname.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/$$p; done
 
 CLEANFILES = $(noinst_tmp)
 

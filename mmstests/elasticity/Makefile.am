@@ -78,8 +78,8 @@ BUILT_SOURCES = export-data
 clean-local: clean-data
 
 
-leakcheck-isotropiclinearelasticity:
-	valgrind --log-file=valgrind_isotropiclinearelasticity.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/test_isotropiclinearelasticity
+leakcheck-all: $(check_PROGRAMS)
+	for p in $(check_PROGRAMS); do pname=`echo $$p | sed -e s/test_//g`; valgrind --log-file=valgrind_$$pname.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/$$p; done
 
 
 
