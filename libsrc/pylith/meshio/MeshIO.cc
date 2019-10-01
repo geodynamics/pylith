@@ -79,20 +79,19 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh)
 
     PetscErrorCode err = 0;
     
-#if 0
     // Check for bounding box with positive volume.
     PetscReal cmin[3];
     PetscReal cmax[3];
-    err = DMPlexGetBoundingBox(_mesh->dmMesh(), cmin, cmax);
+    err = DMGetBoundingBox(_mesh->dmMesh(), cmin, cmax);
     const PetscInt dim = _mesh->dimension();
     PetscReal volume = 1.0;
     for (int i=0; i < dim; ++i) {
         volume *= cmax[i] - cmin[i];
     } // for
     std::ostringstream msg;
-    msg << "Domain bounding box:\n";
+    msg << "Domain bounding box:";
     for (int i=0; i < dim; ++i) {
-        msg << "    (" << cmin[i] << ", " << cmax[i] << ")";
+        msg << "\n    (" << cmin[i] << ", " << cmax[i] << ")";
     } // for
     PYLITH_COMPONENT_INFO(msg.str());
     const PetscReal tolerance = 1.0e-8;
@@ -101,7 +100,6 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh)
         msg << "Domain bounding box volume (" << volume << ") less than minimum tolerance (" << tolerance << ").";
         throw std::runtime_error(msg.str());
     } // if
-#endif
     
     // Check mesh consistency
     topology::MeshOps::checkTopology(*_mesh);
