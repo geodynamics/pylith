@@ -45,6 +45,7 @@ namespace pylith {
         class PhysicsStub;
         class ObserverSolnStub;
         class ObserverPhysicsStub;
+        class ProgressMonitorStub;
     } // problems
 
 } // pylith

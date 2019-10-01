@@ -33,6 +33,7 @@ test_problems_SOURCES = \
 	TestObserversPhysics.cc \
 	TestSolutionFactory.cc \
 	TestSolutionFactory_Cases.cc \
+	TestProgressMonitor.cc \
 	test_problems.cc
 
 
@@ -41,7 +42,8 @@ noinst_HEADERS = \
 	TestPhysics.hh \
 	TestObserversSoln.hh \
 	TestObserversPhysics.hh \
-	TestSolutionFactory.hh
+	TestSolutionFactory.hh \
+	TestProgressMonitor.hh
 
 AM_CPPFLAGS += \
 	$(PETSC_CC_INCLUDES) \
