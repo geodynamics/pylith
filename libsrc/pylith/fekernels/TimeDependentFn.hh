@@ -55,6 +55,7 @@ public:
      * @param[in] a_x Gradient of auxiliary field.
      * @param[in] t Time for residual evaluation.
      * @param[in] x Coordinates of point evaluation.
+     * @param[in] n Face normal at point evaluation.
      * @param[in] numConstants Number of registered constants.
      * @param[in] constants Array of registered constants.
      * @param[out] f0 [dim].
@@ -80,6 +81,7 @@ public:
                         const PylithScalar a_x[],
                         const PylithReal t,
                         const PylithScalar x[],
+                        const PylithScalar n[],
                         const PylithInt numConstants,
                         const PylithScalar constants[],
                         PylithScalar value[]);
@@ -104,6 +106,7 @@ public:
                         const PylithScalar a_x[],
                         const PylithReal t,
                         const PylithScalar x[],
+                        const PylithScalar n[],
                         const PylithInt numConstants,
                         const PylithScalar constants[],
                         PylithScalar value[]);
@@ -128,6 +131,7 @@ public:
                      const PylithScalar a_x[],
                      const PylithReal t,
                      const PylithScalar x[],
+                     const PylithScalar n[],
                      const PylithInt numConstants,
                      const PylithScalar constants[],
                      PylithScalar value[]);
@@ -152,6 +156,7 @@ public:
                      const PylithScalar a_x[],
                      const PylithReal t,
                      const PylithScalar x[],
+                     const PylithScalar n[],
                      const PylithInt numConstants,
                      const PylithScalar constants[],
                      PylithScalar value[]);
@@ -176,6 +181,7 @@ public:
                             const PylithScalar a_x[],
                             const PylithReal t,
                             const PylithScalar x[],
+                            const PylithScalar n[],
                             const PylithInt numConstants,
                             const PylithScalar constants[],
                             PylithScalar value[]);
@@ -200,6 +206,7 @@ public:
                             const PylithScalar a_x[],
                             const PylithReal t,
                             const PylithScalar x[],
+                            const PylithScalar n[],
                             const PylithInt numConstants,
                             const PylithScalar constants[],
                             PylithScalar value[]);
@@ -225,6 +232,7 @@ public:
                             const PylithScalar a_x[],
                             const PylithReal t,
                             const PylithScalar x[],
+                            const PylithScalar n[],
                             const PylithInt numConstants,
                             const PylithScalar constants[],
                             PylithScalar value[]);
@@ -250,6 +258,7 @@ public:
                             const PylithScalar a_x[],
                             const PylithReal t,
                             const PylithScalar x[],
+                            const PylithScalar n[],
                             const PylithInt numConstants,
                             const PylithScalar constants[],
                             PylithScalar value[]);
@@ -276,6 +285,7 @@ public:
                                    const PylithScalar a_x[],
                                    const PylithReal t,
                                    const PylithScalar x[],
+                                   const PylithScalar n[],
                                    const PylithInt numConstants,
                                    const PylithScalar constants[],
                                    PylithScalar value[]);
@@ -302,6 +312,7 @@ public:
                                    const PylithScalar a_x[],
                                    const PylithReal t,
                                    const PylithScalar x[],
+                                   const PylithScalar n[],
                                    const PylithInt numConstants,
                                    const PylithScalar constants[],
                                    PylithScalar value[]);
@@ -327,6 +338,7 @@ public:
                                 const PylithScalar a_x[],
                                 const PylithReal t,
                                 const PylithScalar x[],
+                                const PylithScalar n[],
                                 const PylithInt numConstants,
                                 const PylithScalar constants[],
                                 PylithScalar value[]);
@@ -352,6 +364,7 @@ public:
                                 const PylithScalar a_x[],
                                 const PylithReal t,
                                 const PylithScalar x[],
+                                const PylithScalar n[],
                                 const PylithInt numConstants,
                                 const PylithScalar constants[],
                                 PylithScalar value[]);
@@ -378,6 +391,7 @@ public:
                                        const PylithScalar a_x[],
                                        const PylithReal t,
                                        const PylithScalar x[],
+                                       const PylithScalar n[],
                                        const PylithInt numConstants,
                                        const PylithScalar constants[],
                                        PylithScalar value[]);
@@ -404,6 +418,7 @@ public:
                                        const PylithScalar a_x[],
                                        const PylithReal t,
                                        const PylithScalar x[],
+                                       const PylithScalar n[],
                                        const PylithInt numConstants,
                                        const PylithScalar constants[],
                                        PylithScalar value[]);
