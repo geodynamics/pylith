@@ -144,7 +144,7 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::topology::Field* so
     const int fieldIndex = solution->subfieldInfo(_subfieldName.c_str()).index;
     const PylithInt numConstrained = _constrainedDOF.size();
     assert(solution->localVector());
-    err = DMPlexLabelAddCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMPlexLabelAddFaceCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
     err = DMPlexInsertBoundaryValuesEssentialBdField(dmSoln, t, solution->localVector(), fieldIndex,
                                                      numConstrained, &_constrainedDOF[0], dmLabel, 1, &labelId,
                                                      _kernelConstraint, context, solution->localVector());PYLITH_CHECK_ERROR(err);
