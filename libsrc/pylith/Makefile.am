@@ -123,6 +123,8 @@ libpylith_la_SOURCES = \
 	problems/InitialCondition.cc \
 	problems/InitialConditionDomain.cc \
 	problems/InitialConditionPatch.cc \
+	problems/ProgressMonitor.cc \
+	problems/ProgressMonitorTime.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
 	topology/FieldBase.cc \
@@ -176,6 +178,7 @@ libpylith_la_SOURCES += \
 	testing/FieldTester.cc \
 	testing/PhysicsStub.cc \
 	testing/PhysicsImplementationStub.cc \
+	testing/ProgressMonitorStub.cc \
 	testing/ObserverPhysicsStub.cc \
 	testing/ObserverSolnStub.cc \
 	testing/FaultCohesiveStub.cc \

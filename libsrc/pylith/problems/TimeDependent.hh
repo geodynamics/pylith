@@ -116,6 +116,12 @@ public:
      */
     void setShouldNotifyIC(const bool value);
 
+    /** Set progress monitor.
+     *
+     * @param[in] monitor Progress monitor for time-dependent simulation.
+     */
+    void setProgressMonitor(pylith::problems::ProgressMonitorTime* monitor);
+
     /** Get Petsc DM for problem.
      *
      * @returns PETSc DM for problem.
@@ -237,12 +243,13 @@ private:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    double _startTime; ///< Starting time.
-    double _dtInitial; ///< Initial time step.
-    double _totalTime; ///< Total time (duration) of problem.
+    double _startTime; ///< Starting time (seconds).
+    double _dtInitial; ///< Initial time step (seconds).
+    double _totalTime; ///< Ending time of problem (seconds).
     size_t _maxTimeSteps; ///< Maximum number of time steps for problem.
     PetscTS _ts; ///< PETSc time stepper.
     std::vector<pylith::problems::InitialCondition*> _ic; ///< Array of initial conditions.
+    pylith::problems::ProgressMonitorTime* _monitor; ///< Monitor for simulation progress.
     FormulationTypeEnum _formulationType; ///< Type of time stepping.
     bool _shouldNotifyIC;
 
