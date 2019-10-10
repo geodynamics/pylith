@@ -70,6 +70,7 @@ void
 pylith::problems::ProgressMonitorTime::_open(void) {
     _sout.open(getFilename());
     _sout << "Timestamp                     Simulation t   % complete   Est. completion" << std::endl;
+    _sout.setf(std::ios::fixed);
 } // _open
 
 
@@ -93,9 +94,12 @@ pylith::problems::ProgressMonitorTime::_update(const double current,
     assert(_sout.is_open());
     const double tSimNorm = current / _baseTime;
     std::tm* now_tm = localtime(&now);
-    _sout << asctime(now_tm) << "   "
-          << std::setiosflags(std::ios::fixed) << std::setprecision(2) << std::setw(8) << tSimNorm << "*" << _baseUnit
-          << std::setprecision(0) << std::setw(10) << percentComplete
+    std::string now_str = asctime(now_tm);
+    now_str = now_str.erase(now_str.find_last_not_of('\n')+1);
+    _sout << now_str << "   "
+          << std::setprecision(2) << std::setw(8) << tSimNorm
+          << "*" << std::left << std::setw(6) << _baseUnit << std::right
+          << std::setprecision(0) << std::setw(13) << percentComplete
           << "   " << finished
           << std::endl;
 } // _update

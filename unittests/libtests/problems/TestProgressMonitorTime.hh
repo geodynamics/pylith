@@ -17,30 +17,30 @@
 //
 
 /**
- * @file unittests/libtests/problems/TestProgressMonitor.hh
+ * @file unittests/libtests/problems/TestProgressMonitorTime.hh
  *
- * @brief C++ TestProgressMonitor object.
+ * @brief C++ TestProgressMonitorTime object.
  *
  * C++ unit testing for ProgressMonitor.
  */
 
-#if !defined(pylith_problems_testprogressmonitor_hh)
-#define pylith_problems_testprogressmonitor_hh
+#if !defined(pylith_problems_testprogressmonitortime_hh)
+#define pylith_problems_testprogressmonitortime_hh
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "pylith/testing/testingfwd.hh" // HOLDSA ProgressMonitorStub
+#include "pylith/problems/problemsfwd.hh" // HOLDSA ProgressMonitorTime
 
 /// Namespace for pylith package
 namespace pylith {
     namespace problems {
-        class TestProgressMonitor;
+        class TestProgressMonitorTime;
     } // problems
 } // pylith
 
-class pylith::problems::TestProgressMonitor : public CppUnit::TestFixture {
+class pylith::problems::TestProgressMonitorTime : public CppUnit::TestFixture {
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestProgressMonitor);
+    CPPUNIT_TEST_SUITE(TestProgressMonitorTime);
 
     CPPUNIT_TEST(testAccessors);
     CPPUNIT_TEST(testOpenClose);
@@ -57,7 +57,7 @@ public:
     /// Tear down testing data.
     void tearDown(void);
 
-    /// Test get/setUpdatePercent() and get/setFilename().
+    /// Test get/setTimeUnit().
     void testAccessors(void);
 
     /// Test open() and close().
@@ -69,10 +69,10 @@ public:
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    pylith::problems::ProgressMonitorStub* _monitor; ///< Test subject.
+    pylith::problems::ProgressMonitorTime* _monitor; ///< Test subject.
 
-}; // class TestProgressMonitor
+}; // class TestProgressMonitorTime
 
-#endif // pylith_problems_testprogressmonitor_hh
+#endif // pylith_problems_testprogressmonitortime_hh
 
 // End of file

@@ -146,13 +146,14 @@ pylith::problems::ProgressMonitor::update(const double current,
             finished_tm.tm_sec += durationSec;
             mktime(&finished_tm);
             finished = asctime(&finished_tm);
+            finished = finished.erase(finished.find_last_not_of('\n')+1);
         } else {
             finished = "TBD";
         } // if/else
         if (_isMaster) {
             _update(current, now, percentComplete, finished.c_str());
         } // if
-        _iUpdate += 1;
+        _iUpdate = int(percentComplete / _updatePercent) + 1;
     } // if
 
 } // update

@@ -111,20 +111,27 @@ pylith::problems::TestProgressMonitor::testUpdate(void) {
     _monitor->open();
 
     size_t count = 0;
-    double current = 0.0;
-    double start = 0.0;
-    double stop = 10.0;
+    double current = 2.0;
+    double start = 2.0;
+    double stop = 12.0;
+    const double tolerance = 1.0e-6;
 
     _monitor->update(current, start, stop);
     CPPUNIT_ASSERT_EQUAL(++count, tracker.getMethodCount("pylith::problems::ProgressMonitorStub::_update"));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(current, _monitor->_state.current, tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, _monitor->_state.percentComplete, tolerance);
 
-    current = 1.0;
+    current = 4.0;
     _monitor->update(current, start, stop);
     CPPUNIT_ASSERT_EQUAL(++count, tracker.getMethodCount("pylith::problems::ProgressMonitorStub::_update"));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(current, _monitor->_state.current, tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(20.0, _monitor->_state.percentComplete, tolerance);
 
-    current = 1.1;
+    current = 4.1;
     _monitor->update(current, start, stop);
-    CPPUNIT_ASSERT_EQUAL(++count, tracker.getMethodCount("pylith::problems::ProgressMonitorStub::_update"));
+    CPPUNIT_ASSERT_EQUAL(count, tracker.getMethodCount("pylith::problems::ProgressMonitorStub::_update"));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0, _monitor->_state.current, tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(20.0, _monitor->_state.percentComplete, tolerance);
 
     _monitor->close();
 

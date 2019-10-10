@@ -34,6 +34,7 @@ test_problems_SOURCES = \
 	TestSolutionFactory.cc \
 	TestSolutionFactory_Cases.cc \
 	TestProgressMonitor.cc \
+	TestProgressMonitorTime.cc \
 	test_problems.cc
 
 
@@ -43,6 +44,7 @@ noinst_HEADERS = \
 	TestObserversSoln.hh \
 	TestObserversPhysics.hh \
 	TestSolutionFactory.hh \
+	TestProgressMonitor.hh \
 	TestProgressMonitor.hh
 
 AM_CPPFLAGS += \
