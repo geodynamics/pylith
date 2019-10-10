@@ -33,7 +33,7 @@ addons:
       - libproj-dev
       - zlib1g
       - zlib1g-dev
-      - swig
+#      - swig=3.0.2
 
 # Install dependencies cached on CIG server
 install:
