@@ -98,6 +98,8 @@ nobase_pkgpyexec_PYTHON = \
 	problems/InitialCondition.py \
 	problems/InitialConditionDomain.py \
 	problems/InitialConditionPatch.py \
+	problems/ProgressMonitor.py \
+	problems/ProgressMonitorTime.py \
 	topology/__init__.py \
 	topology/Distributor.py \
 	topology/Mesh.py \

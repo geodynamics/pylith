@@ -27,6 +27,7 @@
 #include "pylith/feassemble/Constraint.hh" // USES Constraint
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 #include "pylith/problems/InitialCondition.hh" // USES InitialCondition
+#include "pylith/problems/ProgressMonitorTime.hh" // USES ProgressMonitorTime
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -57,6 +58,7 @@ pylith::problems::TimeDependent::TimeDependent(void) :
     _totalTime(0.0),
     _maxTimeSteps(0),
     _ts(NULL),
+    _monitor(NULL),
     _formulationType(IMPLICIT),
     _shouldNotifyIC(false) {
     PyreComponent::setName(_TimeDependent::pyreComponent);
@@ -79,6 +81,8 @@ pylith::problems::TimeDependent::deallocate(void) {
     Problem::deallocate();
 
     PetscErrorCode err = TSDestroy(&_ts);PYLITH_CHECK_ERROR(err);
+
+    _monitor = NULL; // Memory handle in Python. :TODO: Use shared pointer.
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -205,6 +209,14 @@ void
 pylith::problems::TimeDependent::setShouldNotifyIC(const bool value) {
     _shouldNotifyIC = value;
 } // setShouldNotifyIC
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set progress monitor.
+void
+pylith::problems::TimeDependent::setProgressMonitor(pylith::problems::ProgressMonitorTime* monitor) {
+    _monitor = monitor; // :KLUDGE: :TODO: Use shared pointer.
+} // setProgressMonitor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -377,6 +389,10 @@ pylith::problems::TimeDependent::initialize(void) {
         _notifyObserversInitialSoln();
     } // if
 
+    if (_monitor) {
+        _monitor->open();
+    } // if
+
     PYLITH_METHOD_END;
 } // initialize
 
@@ -460,6 +476,12 @@ pylith::problems::TimeDependent::poststep(void) {
     // Notify problem observers of updated solution.
     assert(_observers);
     _observers->notifyObservers(t, tindex, *_solution);
+
+    if (_monitor) {
+        assert(_normalizer);
+        const PylithReal timeScale = _normalizer->timeScale();
+        _monitor->update(t*timeScale, _startTime, _totalTime);
+    } // if
 
     PYLITH_METHOD_END;
 } // poststep

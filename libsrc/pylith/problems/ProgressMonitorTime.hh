@@ -41,6 +41,9 @@ public:
     /// Destructor
     virtual ~ProgressMonitorTime(void);
 
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
+
     /** Set unit for simulation time in output.
      *
      * @param[in] Unit of time.

@@ -109,6 +109,12 @@ public:
              */
             void setShouldNotifyIC(const bool value);
 
+            /** Set progress monitor.
+             *
+             * @param[in] monitor Progress monitor for time-dependent simulation.
+             */
+            void setProgressMonitor(pylith::problems::ProgressMonitorTime* monitor);
+
             /// Initialize.
             void initialize(void);
 

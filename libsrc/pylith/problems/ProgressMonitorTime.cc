@@ -46,6 +46,18 @@ pylith::problems::ProgressMonitorTime::~ProgressMonitorTime(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::problems::ProgressMonitorTime::deallocate(void) {
+    ProgressMonitor::deallocate();
+
+    if (_sout.is_open()) {
+        _sout.close();
+    } // if
+} // deallocate
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set units for simulation time in output.
 void
 pylith::problems::ProgressMonitorTime::setTimeUnit(const char* value) {

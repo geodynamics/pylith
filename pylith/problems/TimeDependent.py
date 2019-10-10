@@ -77,9 +77,10 @@ class TimeDependent(Problem, ModuleTimeDependent):
     shouldNotifyIC = pyre.inventory.bool("notify_observers_ic", default=False)
     shouldNotifyIC.meta["tip"] = "Notify observers of solution with initial conditions."
 
-    #from ProgressMonitorTime import ProgressMonitorTime
-    #progressMonitor = pyre.inventory.facility("progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
-    #progressMonitor.meta['tip'] = "Simple progress monitor via text file."
+    from .ProgressMonitorTime import ProgressMonitorTime
+    progressMonitor = pyre.inventory.facility(
+        "progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
+    progressMonitor.meta['tip'] = "Simple progress monitor via text file."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -112,6 +113,9 @@ class TimeDependent(Problem, ModuleTimeDependent):
         for ic in self.ic.components():
             ic.preinitialize(mesh)
         ModuleTimeDependent.setInitialCondition(self, self.ic.components())
+
+        self.progressMonitor.preinitialize()
+        ModuleTimeDependent.setProgressMonitor(self, self.progressMonitor)
         return
 
     def run(self, app):

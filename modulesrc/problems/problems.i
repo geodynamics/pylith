@@ -29,6 +29,8 @@
 #include "pylith/problems/InitialCondition.hh"
 #include "pylith/problems/InitialConditionDomain.hh"
 #include "pylith/problems/InitialConditionPatch.hh"
+#include "pylith/problems/ProgressMonitor.hh"
+#include "pylith/problems/ProgressMonitorTime.hh"
 %}
 
 %include "exception.i"
@@ -66,5 +68,7 @@
 %include "InitialCondition.i"
 %include "InitialConditionDomain.i"
 %include "InitialConditionPatch.i"
+%include "ProgressMonitor.i"
+%include "ProgressMonitorTime.i"
 
 // End of file
