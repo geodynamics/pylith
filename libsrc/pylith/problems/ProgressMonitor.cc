@@ -26,7 +26,6 @@
 
 #include <fstream> // HASA std::ofstream
 #include <cassert> // USES assert()
-#include <typeinfo> // USES typeid()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 

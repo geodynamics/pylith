@@ -32,7 +32,7 @@
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 #include <cassert> // USES assert()
-
+#include <typeinfo> // USES typeid()
 #include <stdexcept> // USES std::runtime_error
 
 extern "C" PetscErrorCode DMPlexComputeResidual_Hybrid_Internal(DM dm,

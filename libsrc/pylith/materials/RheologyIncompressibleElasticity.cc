@@ -25,8 +25,7 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
-#include <typeinfo> \
-    // USES typeid()
+#include <typeinfo> // USES typeid()
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -66,7 +65,7 @@ void
 pylith::materials::RheologyIncompressibleElasticity::addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
                                                                                const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<") empty method");
+    PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<typeid(coordsys).name()<<") empty method");
 
     // Default is to do nothing.
 
