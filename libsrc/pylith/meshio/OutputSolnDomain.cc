@@ -25,8 +25,6 @@
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
-#include <typeinfo> // USES typeid()
-
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputSolnDomain::OutputSolnDomain(void) {
