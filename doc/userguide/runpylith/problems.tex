@@ -29,7 +29,7 @@ The \object{TimeDependent} properties and facilities include
 <h>[pylithapp.timedependent]</h>
 <p>initial_dt</p> = 10.0*year
 <p>start_time</p> = 0.0*year
-<p>total_time</p> = 100.0*year
+<p>end_time</p> = 100.0*year
 <f>ic</f> = [pylith.problems.InitialConditionDomain]
 \end{cfg}
 
@@ -82,7 +82,7 @@ Not yet reimplemented in v3.x.
 %% reduce these high frequency oscillations. In computing the strains
 %% for the elasticity term in equation \vref{eq:elasticity:integral:dynamic:t},
 %% we use an adjusted displacement rather than the actual displacement,
-%% where 
+%% where
 %% \begin{equation}
 %% \vec{u}^{adj}(t)=\vec{u}(t)+\eta^{*}\Delta t\vec{\dot{u}}(t),
 %% \end{equation}

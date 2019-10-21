@@ -54,27 +54,27 @@ public:
 
     /** Set start time for problem.
      *
-     * @param[in] value Start time (nondimensional).
+     * @param[in] value Start time (seconds).
      */
     void setStartTime(const double value);
 
     /** Get start time for problem.
      *
-     * @returns Start time (nondimensional).
+     * @returns Start time (seconds).
      */
     double getStartTime(void) const;
 
-    /** Set total time for problem.
+    /** Set end time for problem.
      *
-     * @param[in] value Total time (nondimensional).
+     * @param[in] value End time (seconds).
      */
-    void setTotalTime(const double value);
+    void setEndTime(const double value);
 
-    /** Get total time for problem.
+    /** Get end time for problem.
      *
-     * @returns Total time (nondimensional).
+     * @returns End time (seconds).
      */
-    double getTotalTime(void) const;
+    double getEndTime(void) const;
 
     /** Set maximum number of time steps.
      *
@@ -90,13 +90,13 @@ public:
 
     /** Set initial time step for problem.
      *
-     * @param[in] value Initial time step (nondimensional).
+     * @param[in] value Initial time step (seconds).
      */
     void setInitialTimeStep(const double value);
 
     /** Get initial time step for problem.
      *
-     * @returns Initial time step (nondimensional).
+     * @returns Initial time step (seconds).
      */
     double getInitialTimeStep(void) const;
 
@@ -243,9 +243,9 @@ private:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    double _startTime; ///< Starting time (seconds).
+    double _startTime; ///< Starting time of problem (seconds).
+    double _endTime; ///< Ending time of problem (seconds).
     double _dtInitial; ///< Initial time step (seconds).
-    double _totalTime; ///< Ending time of problem (seconds).
     size_t _maxTimeSteps; ///< Maximum number of time steps for problem.
     PetscTS _ts; ///< PETSc time stepper.
     std::vector<pylith::problems::InitialCondition*> _ic; ///< Array of initial conditions.
