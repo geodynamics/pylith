@@ -54,8 +54,8 @@ public:
 // Constructor
 pylith::problems::TimeDependent::TimeDependent(void) :
     _startTime(0.0),
-    _dtInitial(1.0),
     _endTime(0.0),
+    _dtInitial(1.0),
     _maxTimeSteps(0),
     _ts(NULL),
     _monitor(NULL),
@@ -107,29 +107,29 @@ pylith::problems::TimeDependent::getStartTime(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set total time for problem.
+// Set end time for problem.
 void
-pylith::problems::TimeDependent::setTotalTime(const double value) {
+pylith::problems::TimeDependent::setEndTime(const double value) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("endTime(value="<<value<<")");
 
     if (value < 0.0) {
         std::ostringstream msg;
-        msg << "Total time (nondimensional) for problem (" << value << ") must be positive.";
+        msg << "End time (seconds) for problem (" << value << ") must be positive.";
         throw std::runtime_error(msg.str());
     } // if
     _endTime = value;
 
     PYLITH_METHOD_END;
-} // setTotalTime
+} // setEndTime
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get total time for problem.
+// Get end time for problem.
 double
-pylith::problems::TimeDependent::getTotalTime(void) const {
+pylith::problems::TimeDependent::getEndTime(void) const {
     return _endTime;
-} // getTotalTime
+} // getEndTime
 
 
 // ---------------------------------------------------------------------------------------------------------------------
