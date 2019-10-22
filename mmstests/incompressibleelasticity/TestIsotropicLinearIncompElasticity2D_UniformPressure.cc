@@ -143,7 +143,7 @@ protected:
         // Overwrite component names for control of debugging info at test level.
         GenericComponent::setName("TestIsotropicLinearIncompElasticity2D_UniformPressure");
         journal::debug_t debug(GenericComponent::getName());
-        // debug.activate(); // DEBUGGING
+        //debug.activate(); // DEBUGGING
 
         CPPUNIT_ASSERT(!_data);
         _data = new TestIncompressibleElasticity_Data();CPPUNIT_ASSERT(_data);
@@ -239,7 +239,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Tr
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(1, 1), // disp
-            pylith::topology::Field::Discretization(1, 1), // pressure
+            pylith::topology::Field::Discretization(0, 1), // pressure
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -271,7 +271,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Tr
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(2, 2), // disp
-            pylith::topology::Field::Discretization(2, 2), // pressure
+            pylith::topology::Field::Discretization(1, 2), // pressure
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -303,14 +303,14 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Tr
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(3, 3), // disp
-            pylith::topology::Field::Discretization(3, 3), // pressure
+            pylith::topology::Field::Discretization(2, 3), // pressure
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
     } // setUp
 
 }; // TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP3);
+//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP3);
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP4 :
@@ -335,7 +335,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Tr
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(4, 4), // disp
-            pylith::topology::Field::Discretization(4, 4), // pressure
+            pylith::topology::Field::Discretization(3, 4), // pressure
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -360,7 +360,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Qu
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(1, 1), // disp
-            pylith::topology::Field::Discretization(1, 1), // pressure
+            pylith::topology::Field::Discretization(0, 1), // pressure
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -392,7 +392,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Qu
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(2, 2), // disp
-            pylith::topology::Field::Discretization(2, 2), // pressure
+            pylith::topology::Field::Discretization(1, 2), // pressure
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -424,14 +424,14 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Qu
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(3, 3), // disp
-            pylith::topology::Field::Discretization(3, 3), // pressure
+            pylith::topology::Field::Discretization(2, 3), // pressure
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
     } // setUp
 
 }; // TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ3);
+//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ3);
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ4 :
@@ -456,7 +456,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Qu
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(4, 4), // disp
-            pylith::topology::Field::Discretization(4, 4), // pressure
+            pylith::topology::Field::Discretization(3, 4), // pressure
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
