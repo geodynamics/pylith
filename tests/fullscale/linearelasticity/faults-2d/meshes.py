@@ -27,7 +27,7 @@ class Tri(object):
     DOMAIN = {
         "ncells": 124,
         "ncorners": 3,
-        "nvertices": 79,
+        "nvertices": 88,
     }
     MATERIALS = {
         "elastic_xpos": {
@@ -79,7 +79,7 @@ class Quad(object):
     DOMAIN = {
         "ncells": 64,
         "ncorners": 4,
-        "nvertices": 81,
+        "nvertices": 90,
     }
     MATERIALS = {
         "elastic_xpos": {

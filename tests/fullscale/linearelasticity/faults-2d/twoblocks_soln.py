@@ -81,6 +81,12 @@ class AnalyticalSoln(object):
     def getField(self, name, pts):
         return self.fields[name](pts)
 
+    def getMask(self, name, pts):
+        mask = None
+        if name == "displacement":
+            mask = pts[:,0] == 0.0
+        return mask
+    
     def displacement(self, locs):
         """
         Compute displacement field at locations.
