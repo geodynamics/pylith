@@ -58,10 +58,27 @@ class TestCase(unittest.TestCase):
         args = parser.parse_args()
         TestCase.VERBOSITY = args.verbosity
         TestCase.RUN_PYLITH = args.run_pylith
-        print TestCase.RUN_PYLITH
         return
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+class Example(TestCase):
+    """
+    Base class for running an example.
+
+    Need one test_* method to instantiate object and run PyLith via setUp().
+    """
+    NAME = None
+    PYLITH_ARGS = None
+    
+    def setUp(self):
+        TestCase.setUp(self)
+        TestCase.run_pylith(self, self.NAME, self.PYLITH_ARGS)
+
+    def test_example(self):
+        return
+
+    
 # ----------------------------------------------------------------------------------------------------------------------
 class TestDriver(object):
     """

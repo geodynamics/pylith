@@ -17,9 +17,9 @@
 
 include $(top_srcdir)/check.am
 
-#TESTS = run_examples.py
+TESTS = run_examples.py
 
-#dist_check_SCRIPTS = run_examples.py
+dist_check_SCRIPTS = run_examples.py
 
 dist_noinst_DATA = \
 	README.md \
@@ -46,7 +46,7 @@ dist_noinst_DATA = \
 
 
 # 'export' the input files by performing a mock install
-export_datadir = $(top_builddir)/examples/2d/box
+export_datadir = $(top_builddir)/examples/3d/box
 export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 

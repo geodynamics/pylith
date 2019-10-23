@@ -17,9 +17,9 @@
 
 include $(top_srcdir)/check.am
 
-#TESTS = run_examples.py
+TESTS = run_examples.py
 
-#dist_check_SCRIPTS = run_examples.py
+dist_check_SCRIPTS = run_examples.py
 
 dist_noinst_DATA = \
 	README.md \
@@ -47,7 +47,7 @@ export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 
 clean-data:
-	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
+	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA)  $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
 
 
 BUILT_SOURCES = export-data

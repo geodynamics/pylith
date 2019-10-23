@@ -17,9 +17,9 @@
 
 include $(top_srcdir)/check.am
 
-#TESTS = run_examples.py
+TESTS = run_examples.py
 
-#dist_check_SCRIPTS = run_examples.py
+dist_check_SCRIPTS = run_examples.py
 
 dist_noinst_DATA = \
 	README.md \
@@ -31,15 +31,16 @@ dist_noinst_DATA = \
 	mesh_tri.exo \
 	mesh_tri.jou \
 	pylithapp.cfg \
-	solver_faults.cfg \
+	solver_onefault.cfg \
+	solver_twofaults.cfg \
 	step01_gravity.cfg \
 	step02_gravity_refstate.cfg \
 	step03_gravity_incompressible.cfg \
 	step04_surfload.cfg \
 	step05_onefault.cfg \
-	step06_twofault.cfg \
-	step07_twofault_maxwell.cfg \
-	step08_twofault_powerlaw.cfg \
+	step06_twofaults_elastic.cfg \
+	step07_twofaults_maxwell.cfg \
+	step08_twofaults_powerlaw.cfg \
 	elastic_incompressible_matfields.spatialdb \
 	elastic_matfields.spatialdb \
 	gravity_refstate_matfields.spatialdb \
