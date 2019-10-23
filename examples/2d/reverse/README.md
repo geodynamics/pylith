@@ -111,13 +111,13 @@ this simulation include:
 * Additional solver parameters to solve a problem involving faults.
 
 The simulation parameters are in the `pylithapp.cfg`, `step05_onefault.cfg`
-and `solver_1fault.cfg` files. Note that the additional solver settings in
-'solver_1fault.cfg' are required for faulting examples involving a single
+and `solver_onefault.cfg` files. Note that the additional solver settings in
+'solver_onefault.cfg' are required for faulting examples involving a single
 fault (step05).
 
 To run the example:
 ```
-pylith step05_onefault.cfg solver_1fault.cfg
+pylith step05_onefault.cfg solver_onefault.cfg
 ```
 
 ## Step06: Fault slip on main fault and splay fault
@@ -135,20 +135,18 @@ include:
   fault
 * Additional solver parameters to solve a problem involving faults.
 
-The simulation parameters are in the `pylithapp.cfg`, `step06_twofault.cfg`
-and `solver_2faults.cfg` files. Note that the additional solver settings in
-'solver_2faults.cfg' are required for all of the faulting examples
-involving 2 faults (step06-step08).
+The simulation parameters are in the `pylithapp.cfg`,
+`step06_twofaults_elastic.cfg` and `solver_twofaults.cfg` files. Note
+that the additional solver settings in 'solver_twofaults.cfg' are
+required for all of the faulting examples involving two faults
+(step06-step08).
 
 To run the example:
 ```
-pylith step06_twofault.cfg solver_2faults.cfg
+pylith step06_twofaults_elastic.cfg solver_twofaults.cfg
 ```
 
 ## Step07: Fault slip on main fault and splay fault with Maxwell viscoelasticity
-
-**Note**: This example does not work in v3.0.0beta3. It will be
-working in the v3.0.0 release.
 
 This problem is similar to Step06, but the slab material is considered to be
 viscoelastic, and the simulation runs for 100 years. Features used in this
@@ -166,13 +164,13 @@ simulation include:
 * Time-dependent problem running for 100 years
 
 The simulation parameters are in the `pylithapp.cfg`,
-`step07_twofault_maxwell.cfg` and `solver_2faults.cfg` files. Note that the
-additional solver settings in 'solver_2faults.cfg' are required for all of
+`step07_twofaults_maxwell.cfg` and `solver_twofaults.cfg` files. Note that the
+additional solver settings in 'solver_twofaults.cfg' are required for all of
 the faulting examples involving 2 faults (step06-step08).
 
 To run the example:
 ```
-pylith step07_twofault_maxwell.cfg solver_2faults.cfg
+pylith step07_twofaults_maxwell.cfg solver_twofaults.cfg
 ```
 
 ## Step08: Fault slip on main fault and splay fault with power-law viscoelasticity
@@ -197,13 +195,13 @@ in this simulation include:
 * Required use of the nonlinear solution type
 
 The simulation parameters are in the `pylithapp.cfg`,
-`step08_twofault_powerlaw.cfg` and `solver_2faults.cfg` files. Note that the
-additional solver settings in 'solver_2faults.cfg' are required for all of
+`step08_twofaults_powerlaw.cfg` and `solver_twofaults.cfg` files. Note that the
+additional solver settings in 'solver_twofaults.cfg' are required for all of
 the faulting examples involving 2 faults (step06-step08).
 
 To run the example:
 ```
-pylith step08_twofault_powerlaw.cfg solver_2faults.cfg
+pylith step08_twofaults_powerlaw.cfg solver_twofaults.cfg
 ```
 
 ## Suggested exercises
