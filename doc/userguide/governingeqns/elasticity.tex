@@ -2,47 +2,47 @@
 
 \subsection{Vector Notation}
 
-Consider volume $V$ bounded by surface $S$. Applying a Lagrangian
+Consider volume $\Omega$ bounded by surface $\Gamma$. Applying a Lagrangian
 description of the conservation of momentum gives
 \begin{equation}
 \label{eqn:momentum:vec}
-\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\vec{u}}{\partial t}\, dV=\int_{V}\vec{f}\, dV+\int_{S}\vec{\tau}\, dS.
+\frac{\partial}{\partial t}\int_{\Omega}\rho(\vec{x})\frac{\partial\vec{u}}{\partial t}\, d\Omega=\int_{\Omega}\vec{f}(\vec{x},t)\, d\ + \int_{\Gamma}\vec{\tau}(\vec{x},t)\, d\Gamma.
 \end{equation}
 The traction vector field is related to the stress tensor through
 \begin{equation}
-\vec{\tau}=\underline{\sigma}\cdot\vec{n},
+\vec{\tau}(\vec{x},t) = \tensor{\sigma}(\vec{u}) \cdot \vec{n},
 \end{equation}
-where $\vec{n}$ is the vector normal to $S$. Substituting
+where $\vec{n}$ is the outward normal vector to $\Gamma$. Substituting
 into equation \vref{eqn:momentum:vec} yields
 \begin{equation}
-\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\vec{u}}{\partial t}\, dV=\int_{V}\vec{f}\, dV+\int_{S}\underline{\sigma}\cdot\vec{n}\, dS.
+\frac{\partial}{\partial t}\int_{\Omega}\rho(\vec{x})\frac{\partial\vec{u}}{\partial t}\, d\Omega=\int_{\Omega}\vec{f}(\vec{x},t)\, d\Omega+\int_{\Gamma}\tensor{\sigma}(\vec{u})\cdot\vec{n}\, d\Gamma.
 \end{equation}
 Applying the divergence theorem,
 \begin{equation}
-\int_{V}\nabla\cdot\vec{a}\: dV=\int_{S}\vec{a}\cdot\vec{n}\: dS,
+\int_{\Omega}\tensor{\nabla}\cdot\vec{a}\: d\Omega=\int_{\Gamma}\vec{a}\cdot\vec{n}\: d\Gamma,
 \end{equation}
 to the surface integral results in
 \begin{equation}
-\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\vec{u}}{\partial t}\, dV=\int_{V}\vec{f}\, dV+\int_{V}\nabla\cdot\underline{\sigma}\, dV,
+\frac{\partial}{\partial t}\int_{\Omega}\rho(\vec{x})\frac{\partial\vec{u}}{\partial t}\, d\Omega=\int_{\Omega}\vec{f}(\vec{x},t)\, d\Omega+\int_{\Omega}\tensor{\nabla}\cdot\tensor{\sigma}(\vec{u})\, d\Omega,
 \end{equation}
 which we can rewrite as
 \begin{equation}
-\int_{V}\left(\rho\frac{\partial^{2}\vec{u}}{\partial t^{2}}-\vec{f}-\nabla\cdot\vec{\sigma}\right)\, dV=\vec{0}.
+\int_{\Omega}\left(\rho(\vec{x})\frac{\partial^{2}\vec{u}}{\partial t^{2}}-\vec{f}(\vec{x},t)-\tensor{\nabla}\cdot\tensor{\sigma}(\vec{u})\right)\, d\Omega=\vec{0}.
 \end{equation}
-Because the volume $V$ is arbitrary, the integrand must be the zero
+Because the volume $\Omega$ is arbitrary, the integrand must be the zero
 vector at every location in the volume, so that we end up with
 \begin{gather}
-\rho\frac{\partial^{2}\vec{u}}{\partial t^{2}}-\vec{f}-\nabla\cdot\vec{\sigma}=\vec{0}\text{ in }V,\\
-\underline{\sigma}\cdot\vec{n}=\vec{\tau}\text{ on }S_{\tau}\text{,}\\
-\vec{u}=\vec{u^{o}}\text{ on }S_{u},\text{ and}\\
-\underbar{R}\cdot(\vec{u^{+}}-\vec{u^{-}})=\vec{d}\text{ on }S_{f}.
+\rho(\vec{x})\frac{\partial^{2}\vec{u}}{\partial t^{2}}-\vec{f}(\vec{x},t)-\tensor{\nabla}\cdot\tensor{\sigma}=\vec{0}\text{ in }\Omega,\\
+\tensor{\sigma}(\vec{u})\cdot\vec{n}=\vec{\tau}(\vec{x},t)\text{ on }\Gamma_{\tau}\text{,}\\
+\vec{u}=\vec{u}_0(\vec{x},t)\text{ on }\Gamma_{u},\text{ and}\\
+\vec{u}^{+}-\vec{u}^{-}=\vec{d}\text{ on }\Gamma_{f}.
 \end{gather}
-We specify tractions, $\vec{\tau}$, on surface $S_{f}$, displacements,
-$\vec{u^{o}}$, on surface $S_{u}$, and slip, $\vec{d}$,
-on fault surface $S_{f}$ (we will consider the case of fault constitutive
-models in Section \vref{sec:fault}). The rotation matrix $\underline{R}$
+We specify tractions, $\vec{\tau}$, on surface $\Gamma_{f}$, displacements,
+$\vec{u^{o}}$, on surface $\Gamma_{u}$, and slip, $\vec{d}$,
+on fault surface $\Gamma_{f}$ (we will consider the case of fault constitutive
+models in Section \vref{sec:fault}). The rotation matrix $\tensor{R}$
 transforms vectors from the global coordinate system to the fault
 coordinate system. Note that since both $\vec{\tau}$ and
 $\vec{u}$ are vector quantities, there can be some spatial
-overlap of the surfaces $S_{\tau}$ and $S_{u}$; however, the same degree
+overlap of the surfaces $\Gamma_{\tau}$ and $\Gamma_{u}$; however, the same degree
 of freedom cannot simultaneously have both types of boundary conditions.
