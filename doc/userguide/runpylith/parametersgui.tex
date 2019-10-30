@@ -6,7 +6,7 @@ The PyLith Parameter Viewer provides a graphical user interface for
 viewing the parameters associated with a PyLith simulation and the
 version information for PyLith and its dependencies. This viewer is
 an updated and interactive interface to the information generated
-by the \filename{pylithinfo} script. It displays the hiearchy of components
+by the \filename{pylith\_info} script. It displays the hiearchy of components
 and the parameters for each one, including default values.
 
 
@@ -37,10 +37,10 @@ The steps to run the parameter viewer are:
 
 The parameter viewer uses a JSON file with all of the parameters
 collected from \filename{cfg} files, command line arguments, etc as
-input. This file can be generated using \filename{pylithinfo} (see
-Section \ref{sec:pylithinfo}) and, by default, it will be generated
+input. This file can be generated using \filename{pylith\_info} (see
+Section \ref{sec:pylith\_info}) and, by default, it will be generated
 whenever a \filename{pylith} simulation is run. When using
-\filename{pylithinfo}, the name of the parameter file can be set via a
+\filename{pylith\_info}, the name of the parameter file can be set via a
 command line argument. When using \filename{pylith}, the
 DumpParametersJSON component contains a property for the name of the
 file. You can set the filename on the command line
@@ -98,7 +98,7 @@ Click on the \textsf{Version} tab to examine the version information.
 This tab displays the same version information shown with the
 \filename{-{}-version} command line argument to \filename{pylith} in
 an easy to read layout.  This includes information about the platform
-on which \filename{pylith} or \filename{pylithinfo} was run, the
+on which \filename{pylith} or \filename{pylith\_info} was run, the
 PyLith version, and versions of the dependencies, as shown in Figure
 \ref{fig:parameters:gui:version}.
 

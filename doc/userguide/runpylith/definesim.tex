@@ -204,14 +204,14 @@ since it includes default values as well as those that have been specified
 in the \filename{cfg} file.
 
 
-\subsubsection{List of PyLith Parameters (\filename{pylithinfo})}
+\subsubsection{List of PyLith Parameters (\filename{pylith\_info})}
 \label{sec:pylithinfo}
 
-The Python application \filename{pylithinfo} writes all of the current
+The Python application \filename{pylith\_info} writes all of the current
 parameters to a text file or JSON file (default). The default name of the JSON is \filename{pylith\_parameters.json}.
 The usage synopsis is
 \begin{shell}
-$ pylithinfo [--verbose-false] [--format={ascii,json} [--filename=pylith_parameters.json] PYLITH_ARGS
+$ pylith_info [--verbose-false] [--format={ascii,json} [--filename=pylith_parameters.json] PYLITH_ARGS
 \end{shell}
 where \commandline{-{}-verbose-false} turns off printing the descriptions of
 the properties and components as well as the location where the
