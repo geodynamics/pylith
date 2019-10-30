@@ -143,11 +143,11 @@ protected:
         // Overwrite component names for control of debugging info at test level.
         GenericComponent::setName("TestIsotropicLinearIncompElasticity2D_UniformPressure");
         journal::debug_t debug(GenericComponent::getName());
-        //debug.activate(); // DEBUGGING
+        // debug.activate(); // DEBUGGING
 
         CPPUNIT_ASSERT(!_data);
         _data = new TestIncompressibleElasticity_Data();CPPUNIT_ASSERT(_data);
-        _isJacobianLinear = false;
+        _isJacobianLinear = true;
         _jacobianConvergenceRate = 1.0;
 
         _data->spaceDim = 2;
@@ -310,7 +310,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Tr
     } // setUp
 
 }; // TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP3
-//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP3);
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP3);
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP4 :
@@ -431,7 +431,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Qu
     } // setUp
 
 }; // TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ3
-//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ3);
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ3);
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ4 :

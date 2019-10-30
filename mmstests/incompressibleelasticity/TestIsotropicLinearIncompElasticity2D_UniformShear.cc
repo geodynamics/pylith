@@ -158,7 +158,7 @@ protected:
 
         CPPUNIT_ASSERT(!_data);
         _data = new TestIncompressibleElasticity_Data();CPPUNIT_ASSERT(_data);
-        _isJacobianLinear = false;
+        _isJacobianLinear = true;
         _jacobianConvergenceRate = 1.0;
 
         _data->spaceDim = 2;
@@ -321,7 +321,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_TriP3
     } // setUp
 
 }; // TestIsotropicLinearIncompElasticity2D_UniformShear_TriP3
-//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_TriP3);
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_TriP3);
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_TriP4 :
@@ -442,7 +442,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ
     } // setUp
 
 }; // TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ3
-//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ3);
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ3);
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ4 :
