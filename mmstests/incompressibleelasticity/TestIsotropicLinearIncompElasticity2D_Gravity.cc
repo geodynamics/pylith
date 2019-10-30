@@ -259,7 +259,7 @@ const double pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity::LE
 const double pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity::TIMESCALE = 2.0;
 const double pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity::PRESSURESCALE = 2.25e+10;
 const double pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity::GACC = 9.80665;
-const double pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity::YMAX = +4.0e+3; // nondimensional
+const double pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity::YMAX = +4.0e+3;
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_Gravity_TriP1 :
