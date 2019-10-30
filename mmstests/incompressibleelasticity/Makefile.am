@@ -31,6 +31,7 @@ test_isotropiclinearelasticity_SOURCES = \
 	TestIsotropicLinearIncompElasticity2D_UniformPressure.cc \
 	TestIsotropicLinearIncompElasticity2D_UniformShear.cc \
 	TestIsotropicLinearIncompElasticity2D_Gravity.cc \
+	TestIsotropicLinearIncompElasticity2D_BodyForce.cc \
 	test_driver.cc
 
 
