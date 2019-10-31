@@ -33,7 +33,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Check to make sure field matches spatial database.
 PylithReal
-pylith::topology::FieldTester::checkFieldWithDB(const pylith::topology::Field& field,
+pylith::testing::FieldTester::checkFieldWithDB(const pylith::topology::Field& field,
                                                 spatialdata::spatialdb::SpatialDB* fieldDB,
                                                 const PylithReal lengthScale) {
     PYLITH_METHOD_BEGIN;
@@ -55,7 +55,7 @@ pylith::topology::FieldTester::checkFieldWithDB(const pylith::topology::Field& f
 // ---------------------------------------------------------------------------------------------------------------------
 // Test subfield info created by factory.
 void
-pylith::topology::FieldTester::checkSubfieldInfo(const pylith::topology::Field& field,
+pylith::testing::FieldTester::checkSubfieldInfo(const pylith::topology::Field& field,
                                                  const pylith::topology::Field::SubfieldInfo& infoE) {
     PYLITH_METHOD_BEGIN;
 

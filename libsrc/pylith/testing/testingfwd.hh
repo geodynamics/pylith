@@ -31,6 +31,7 @@ namespace pylith {
     namespace testing {
         class StubMethodTracker;
         class MMSTest;
+        class FieldTester;
     } // testing
 
     namespace faults {
