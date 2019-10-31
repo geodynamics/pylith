@@ -154,6 +154,7 @@ class pylith::materials::TestAuxiliaryFactoryElastic_Tri : public pylith::materi
 protected:
 
     void setUp(void) {
+        _auxDim = 2;
         TestAuxiliaryFactoryElastic::setUp();
 
         CPPUNIT_ASSERT(_data);
@@ -351,6 +352,7 @@ class pylith::materials::TestAuxiliaryFactoryElastic_Hex : public pylith::materi
 protected:
 
     void setUp(void) {
+        _auxDim = 3;
         TestAuxiliaryFactoryElastic::setUp();
 
         CPPUNIT_ASSERT(_data);

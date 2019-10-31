@@ -25,7 +25,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldTester.hh" // USES FieldTester
+#include "pylith/testing/FieldTester.hh" // USES FieldTester
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
@@ -63,7 +63,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::setUp(void) {
         pylith::topology::FieldQuery::validatorPositive
         );
     info.fe = pylith::topology::Field::Discretization(
-        1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE
+						      1, 2, _auxDim, true, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 0;
     _data->subfields["density"] = info;
@@ -82,7 +82,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::setUp(void) {
         _data->normalizer->pressureScale() / _data->normalizer->lengthScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 2, false, pylith::topology::Field::POLYNOMIAL_SPACE
+						      2, 2, _auxDim, false, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 1;
     _data->subfields["body_force"] = info;
@@ -101,7 +101,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::setUp(void) {
         _data->normalizer->lengthScale() / pow(_data->normalizer->timeScale(), 2)
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE
+						      2, 2, _auxDim, true, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 2;
     _data->subfields["gravitational_acceleration"] = info;
@@ -145,9 +145,9 @@ pylith::materials::TestAuxiliaryFactoryElasticity::testAdd(void) {
 
     CPPUNIT_ASSERT(_data->normalizer);
 
-    pylith::topology::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["density"]);
-    pylith::topology::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["body_force"]);
-    pylith::topology::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["gravitational_acceleration"]);
+    pylith::testing::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["density"]);
+    pylith::testing::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["body_force"]);
+    pylith::testing::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["gravitational_acceleration"]);
 
     PYLITH_METHOD_END;
 } // testAdd
@@ -172,7 +172,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::testSetValuesFromDB(void) {
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->normalizer);
     _factory->setValuesFromDB();
-    pylith::topology::FieldTester::checkFieldWithDB(*_auxiliaryField, _data->auxiliaryDB, _data->normalizer->lengthScale());
+    pylith::testing::FieldTester::checkFieldWithDB(*_auxiliaryField, _data->auxiliaryDB, _data->normalizer->lengthScale());
 
     PYLITH_METHOD_END;
 } // testSetValues
@@ -210,7 +210,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::_initialize(void) {
     for (subfield_iter iter = _data->subfields.begin(); iter != _data->subfields.end(); ++iter) {
         const char* subfieldName = iter->first.c_str();
         const pylith::topology::Field::Discretization& fe = iter->second.fe;
-        _factory->setSubfieldDiscretization(subfieldName, fe.basisOrder, fe.quadOrder, fe.isBasisContinuous, fe.feSpace);
+        _factory->setSubfieldDiscretization(subfieldName, fe.basisOrder, fe.quadOrder, fe.dimension, fe.isBasisContinuous, fe.feSpace);
     } // for
     CPPUNIT_ASSERT(_data->normalizer);
     _factory->initialize(_auxiliaryField, *_data->normalizer, _data->dimension);

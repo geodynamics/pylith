@@ -84,6 +84,8 @@ protected:
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
     pylith::topology::Field* _auxiliaryField; ///< Auxiliary field for test subject.
 
+    size_t _auxDim; ///< Topological dimension of auxiliary field.
+  
 }; // class TestAuxiliaryFactoryElasticity
 
 // =====================================================================================================================
