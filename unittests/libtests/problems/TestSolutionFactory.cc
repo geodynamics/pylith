@@ -193,8 +193,8 @@ pylith::problems::TestSolutionFactory::testDispVel(void) {
 
     CPPUNIT_ASSERT(_data->normalizer);
 
-    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
-    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["velocity"]);
+    pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
+    pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["velocity"]);
 
     PYLITH_METHOD_END;
 } // testDispVel
@@ -217,8 +217,8 @@ pylith::problems::TestSolutionFactory::testDispLagrangeFault(void) {
 
     CPPUNIT_ASSERT(_data->normalizer);
 
-    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
-    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["lagrange_multiplier_fault"]);
+    pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
+    pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["lagrange_multiplier_fault"]);
 
     PYLITH_METHOD_END;
 } // testDispVel
@@ -241,8 +241,8 @@ pylith::problems::TestSolutionFactory::testPressure(void) {
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->normalizer);
 
-    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["pressure"]);
-    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["fluid_pressure"]);
+    pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["pressure"]);
+    pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["fluid_pressure"]);
 
     PYLITH_METHOD_END;
 } // testPressure
@@ -265,8 +265,8 @@ pylith::problems::TestSolutionFactory::testDispTemp(void) {
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->normalizer);
 
-    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
-    pylith::topology::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["temperature"]);
+    pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
+    pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["temperature"]);
 
     PYLITH_METHOD_END;
 } // testTemperature
@@ -291,7 +291,7 @@ pylith::problems::TestSolutionFactory::testSetValues(void) {
 
     CPPUNIT_ASSERT(_data->solutionDB);
     _factory->setValues(_data->solutionDB);
-    pylith::topology::FieldTester::checkFieldWithDB(*_solution, _data->solutionDB, _data->normalizer->lengthScale());
+    pylith::testing::FieldTester::checkFieldWithDB(*_solution, _data->solutionDB, _data->normalizer->lengthScale());
 
     PYLITH_METHOD_END;
 } // testSetValues

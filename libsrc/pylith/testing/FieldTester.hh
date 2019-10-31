@@ -17,7 +17,7 @@
 //
 
 /**
- * @file libsrc/topology/FieldTester.hh
+ * @file libsrc/testing/FieldTester.hh
  *
  * @brief General routines for C++ unit tests related to Fields.
  */
