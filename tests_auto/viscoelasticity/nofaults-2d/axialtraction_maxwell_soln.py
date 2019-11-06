@@ -55,7 +55,7 @@ p_poissons = 0.5*p_lambda/(p_lambda + p_mu)
 # Time information.
 year = 60.0*60.0*24.0*365.25
 dt = 0.05*year
-startTime = 0.0
+startTime = dt
 endTime = 1.0*year
 numSteps = 20
 timeArray = numpy.linspace(startTime, endTime, num=numSteps, dtype=numpy.float64)
@@ -198,10 +198,10 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         strain = numpy.zeros((numSteps, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        strain[:, :, 0] = exx
-        strain[:, :, 1] = eyy
-        strain[:, :, 2] = ezz
-        strain[:, :, 3] = exy
+        strain[:, :, 0] = exx.reshape(numSteps, 1)
+        strain[:, :, 1] = eyy.reshape(numSteps, 1)
+        strain[:, :, 2] = ezz.reshape(numSteps, 1)
+        strain[:, :, 3] = exy.reshape(numSteps, 1)
         return strain
 
     def stress(self, locs):
@@ -210,10 +210,10 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         stress = numpy.zeros((numSteps, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        stress[:, :, 0] = sxx
-        stress[:, :, 1] = syy
-        stress[:, :, 2] = szz
-        stress[:, :, 3] = sxy
+        stress[:, :, 0] = sxx.reshape(numSteps, 1)
+        stress[:, :, 1] = syy.reshape(numSteps, 1)
+        stress[:, :, 2] = szz.reshape(numSteps, 1)
+        stress[:, :, 3] = sxy.reshape(numSteps, 1)
         return stress
 
     def viscous_strain(self, locs):
@@ -222,10 +222,10 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         viscous_strain = numpy.zeros((numSteps, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        viscous_strain[:, :, 0] = eVisxx
-        viscous_strain[:, :, 1] = eVisyy
-        viscous_strain[:, :, 2] = eViszz
-        viscous_strain[:, :, 3] = eVisxy
+        viscous_strain[:, :, 0] = eVisxx.reshape(numSteps, 1)
+        viscous_strain[:, :, 1] = eVisyy.reshape(numSteps, 1)
+        viscous_strain[:, :, 2] = eViszz.reshape(numSteps, 1)
+        viscous_strain[:, :, 3] = eVisxy.reshape(numSteps, 1)
         return viscous_strain
 
 
