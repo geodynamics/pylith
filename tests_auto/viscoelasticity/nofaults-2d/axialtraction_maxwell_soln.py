@@ -37,9 +37,9 @@
 # Tx(+4000,y) = T0
 
 import numpy
-import pdb
+# import pdb
 
-pdb.set_trace()
+# pdb.set_trace()
 
 # Physical properties.
 p_density = 2500.0
@@ -47,17 +47,17 @@ p_vs = 3464.1016
 p_vp = 6000.0
 p_viscosity = 9.46728e17
 
-p_mu = p_density * p_vs**2
-p_lambda = p_density * p_vp**2 - 2 * p_mu
+p_mu = p_density*p_vs*p_vs
+p_lambda = p_density*p_vp*p_vp - 2.0*p_mu
 p_youngs = p_mu*(3.0*p_lambda + 2.0*p_mu)/(p_lambda + p_mu)
 p_poissons = 0.5*p_lambda/(p_lambda + p_mu)
 
 # Time information.
 year = 60.0*60.0*24.0*365.25
-dt = 0.1*year
-startTime = dt
-endTime = 10.1*year
-numSteps = 101
+dt = 0.05*year
+startTime = 0.0
+endTime = 1.0*year
+numSteps = 20
 timeArray = numpy.linspace(startTime, endTime, num=numSteps, dtype=numpy.float64)
 
 # Uniform stress field (plane strain).
@@ -74,6 +74,9 @@ exx = T0*(1.0 - 2.0*p_poissons)*(3.0 + 2.0*poisFac*timeFac)/p_youngs
 eyy = numpy.zeros(numSteps, dtype=numpy.float64)
 ezz = numpy.zeros(numSteps, dtype=numpy.float64)
 exy = numpy.zeros(numSteps, dtype=numpy.float64)
+
+outArray = numpy.column_stack((timeArray, syy, exx))
+numpy.savetxt('axialtraction_maxwell_analytical.txt', outArray)
 
 # Total deviatoric strain.
 meanStrain = exx/3.0

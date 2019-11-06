@@ -1,9 +1,9 @@
 // -*- C++ -*- (syntax highlighting)
 #SPATIAL.ascii 1
 SimpleDB {
-  num-values =     12
-  value-names =  density  vs  vp viscosity viscous_strain_xx viscous_strain_yy viscous_strain_zz viscous_strain_xy total_strain_xx total_strain_yy total_strain_zz total_strain_xy
-  value-units =  kg/m**3  m/s  m/s Pa*s None None None None None None None None
+  num-values =     20
+  value-names =  density  vs  vp viscosity viscous_strain_xx viscous_strain_yy viscous_strain_zz viscous_strain_xy total_strain_xx total_strain_yy total_strain_zz total_strain_xy  reference_stress_xx  reference_stress_yy  reference_stress_zz  reference_stress_xy  reference_strain_xx  reference_strain_yy  reference_strain_zz  reference_strain_xy
+  value-units =  kg/m**3  m/s  m/s Pa*s None None None None None None None None Pa Pa Pa Pa none none none none
   num-locs =      1
   data-dim =    0
   space-dim =    2
@@ -27,4 +27,12 @@ SimpleDB {
 // (12) total_strain_yy (None)
 // (13) total_strain_zz (None)
 // (14) total_strain_xy (None)
-  0.000000e+00  0.000000e+00  2500.0  3464.1016  6000.0  9.46728e17  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+// (15) reference_stress_xx (Pa)
+// (16) reference_stress_yy (Pa)
+// (17) reference_stress_zz (Pa)
+// (18) reference_stress_xy (Pa)
+// (19) reference_strain_xx (None)
+// (20) reference_strain_yy (None)
+// (21) reference_strain_zz (None)
+// (22) reference_strain_xy (None)
+  0.000000e+00  0.000000e+00  2500.0  3464.1016151377544  6000.0  9.46728e17  -7.407407407407406e-05  3.703703703703703e-05  3.703703703703703e-05  0.0  -0.00011111111111  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
