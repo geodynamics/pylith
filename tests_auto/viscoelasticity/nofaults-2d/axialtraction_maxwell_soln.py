@@ -54,10 +54,10 @@ p_poissons = 0.5*p_lambda/(p_lambda + p_mu)
 
 # Time information.
 year = 60.0*60.0*24.0*365.25
-dt = 0.05*year
+dt = 0.025*year
 startTime = dt
 endTime = 1.0*year
-numSteps = 20
+numSteps = 40
 timeArray = numpy.linspace(startTime, endTime, num=numSteps, dtype=numpy.float64)
 
 # Uniform stress field (plane strain).
@@ -69,6 +69,12 @@ syy = T0*(1.0 + poisFac*timeFac)
 szz = syy
 sxy = numpy.zeros(numSteps, dtype=numpy.float64)
 
+# Deviatoric stress.
+meanStress = (sxx + syy + szz)/3.0
+sDevxx = sxx - meanStress
+sDevyy = syy - meanStress
+sDevzz = szz - meanStress
+
 # Uniform strain field.
 exx = T0*(1.0 - 2.0*p_poissons)*(3.0 + 2.0*poisFac*timeFac)/p_youngs
 eyy = numpy.zeros(numSteps, dtype=numpy.float64)
@@ -78,26 +84,11 @@ exy = numpy.zeros(numSteps, dtype=numpy.float64)
 outArray = numpy.column_stack((timeArray, syy, exx))
 numpy.savetxt('axialtraction_maxwell_analytical.txt', outArray)
 
-# Total deviatoric strain.
-meanStrain = exx/3.0
-eDevxx = exx - meanStrain
-eDevyy = eyy - meanStrain
-eDevzz = ezz - meanStrain
-eDevxy = exy
-
-# Elastic deviatoric strain.
-eElasxx = T0*(1.0 - 2.0*p_poissons)*(3.0 + 2.0*poisFac)/p_youngs
-meanElasStrain = eElasxx/3.0
-eElasDevxx = eElasxx - meanElasStrain
-eElasDevyy = -meanElasStrain
-eElasDevzz = -meanElasStrain
-eElasDevxy = 0.0
-
-# Viscous strains.
-eVisxx = eDevxx - eElasDevxx
-eVisyy = eDevyy - eElasDevyy
-eViszz = eDevzz - eElasDevzz
-eVisxy = eDevxy - eElasDevxy
+# Get viscous strains from deviatoric stress.
+eVisxx = 0.5*sDevxx/p_mu
+eVisyy = 0.5*sDevyy/p_mu
+eViszz = 0.5*sDevzz/p_mu
+eVisxy = 0.5*sxy/p_mu
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
