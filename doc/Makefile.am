@@ -17,7 +17,6 @@
 #
 
 SUBDIRS = \
-	developer \
 	install \
 	releasenotes \
 	userguide

@@ -58,7 +58,7 @@ AM_CONDITIONAL([ENABLE_FULL_TESTING], [test "$enable_full_testing" = yes])
 AC_ARG_ENABLE([cubit],
     [AC_HELP_STRING([--enable-cubit],
         [enable reading/writing Cubit EXODUS files (requires netcdf) @<:@default=yes@:>@])],
-	[if test "$enableval" = yes ; then 
+	[if test "$enableval" = yes ; then
 	  enable_cubit=yes
 	  CPPFLAGS="-DENABLE_CUBIT $CPPFLAGS"; export CPPFLAGS;
 	  PYLITH_SWIG_CPPFLAGS="-DENABLE_CUBIT $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS ;
@@ -112,7 +112,7 @@ CIT_HEADER_MPI
 
 # PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.12.0])
+CIT_PATH_PETSC([3.12.2])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -312,8 +312,8 @@ AC_CONFIG_FILES([Makefile
 		tests_auto/linearelasticity/faults-2d/Makefile
 		tests_auto/petsc/Makefile
 		tests_auto/eqinfo/Makefile
+        developer/Makefile
 		doc/Makefile
-		doc/developer/Makefile
 		doc/install/Makefile
 		doc/releasenotes/Makefile
 		doc/userguide/Makefile
