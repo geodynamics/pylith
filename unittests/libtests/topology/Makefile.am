@@ -43,7 +43,7 @@ test_topology_SOURCES = \
 	TestRefineUniform_Cases.cc \
 	TestReverseCuthillMcKee.cc \
 	TestReverseCuthillMcKee_Cases.cc \
-	test_topology.cc
+	test_driver.cc
 
 #	TestFieldSubmesh.cc
 

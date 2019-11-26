@@ -36,7 +36,7 @@ test_bc_SOURCES = \
 	TestNeumannTimeDependent_Cases.cc \
 	TestAbsorbingDampers.cc \
 	TestAbsorbingDampers_Cases.cc \
-	test_bc.cc
+	test_driver.cc
 
 noinst_HEADERS = \
 	TestBoundaryMesh.hh \

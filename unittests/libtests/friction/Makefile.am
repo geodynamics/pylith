@@ -28,7 +28,7 @@ check_PROGRAMS = test_friction
 
 # Primary source files
 test_friction_SOURCES = \
-	test_friction.cc
+	test_driver.cc
 
 
 noinst_HEADERS =
