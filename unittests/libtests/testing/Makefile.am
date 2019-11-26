@@ -27,7 +27,7 @@ check_PROGRAMS = test_utils
 # Primary source files
 test_utils_SOURCES = \
 	TestStubMethodTracker.cc \
-	test_testing.cc
+	test_driver.cc
 
 noinst_HEADERS = \
 	TestStubMethodTracker.hh

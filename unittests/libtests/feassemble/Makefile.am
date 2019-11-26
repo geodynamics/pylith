@@ -30,7 +30,7 @@ check_PROGRAMS = test_feassemble
 test_feassemble_SOURCES = \
 	TestAuxiliaryFactory.cc \
 	TestIntegratorDomain.cc \
-	test_feassemble.cc
+	test_driver.cc
 
 
 noinst_HEADERS =

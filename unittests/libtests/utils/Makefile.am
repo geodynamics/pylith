@@ -32,7 +32,7 @@ test_utils_SOURCES = \
 	TestPylithVersion.cc \
 	TestPetscVersion.cc \
 	TestDependenciesVersion.cc \
-	test_utils.cc
+	test_driver.cc
 
 noinst_HEADERS = \
 	TestEventLogger.hh \

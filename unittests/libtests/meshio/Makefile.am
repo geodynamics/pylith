@@ -27,7 +27,7 @@ check_PROGRAMS = test_meshio test_vtk
 
 # general meshio
 test_meshio_SOURCES = \
-	test_meshio.cc \
+	test_driver.cc \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
 	TestMeshIOAscii_Cases.cc \
@@ -42,7 +42,7 @@ test_meshio_SOURCES = \
 
 # VTK data writer
 test_vtk_SOURCES = \
-	test_meshio.cc \
+	test_driver.cc \
 	FieldFactory.cc \
 	TestDataWriter.cc \
 	TestDataWriterMesh.cc \
@@ -137,7 +137,7 @@ if ENABLE_HDF5
 
   # HDF5 data writer
   test_hdf5_SOURCES = \
-	test_meshio.cc \
+	test_driver.cc \
 	FieldFactory.cc \
 	TestDataWriter.cc \
 	TestDataWriterMesh.cc \

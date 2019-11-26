@@ -35,7 +35,7 @@ test_problems_SOURCES = \
 	TestSolutionFactory_Cases.cc \
 	TestProgressMonitor.cc \
 	TestProgressMonitorTime.cc \
-	test_problems.cc
+	test_driver.cc
 
 
 

@@ -28,7 +28,7 @@ check_PROGRAMS = test_faults
 
 # Primary source files
 test_faults_SOURCES = \
-	test_faults.cc
+	test_driver.cc
 
 
 noinst_HEADERS =
