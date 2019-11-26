@@ -25,10 +25,12 @@
 #if !defined(pylith_testing_testdriver_hh)
 #define pylith_testing_testdriver_hh
 
-#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
-#include <cppunit/extensions/HelperMacros.h> /// ISA Cppunit::TestFixture
-
 #include "pylith/testing/testingfwd.hh" // forward declaration
+
+#include <cppunit/Test.h> /// USES CppUnit::Test
+
+#include <vector> // USES std::vector
+#include <string> // USES std::string
 
 class pylith::testing::TestDriver {
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
