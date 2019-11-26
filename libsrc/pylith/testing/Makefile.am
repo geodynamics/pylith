@@ -30,9 +30,8 @@ subpkginclude_HEADERS = \
 	ObserverPhysicsStub.hh \
 	ObserverSolnStub.hh \
 	MMSTest.hh \
+	TestDriver.hh \
 	testingfwd.hh
-
-noinst_HEADERS =
 
 endif
 
