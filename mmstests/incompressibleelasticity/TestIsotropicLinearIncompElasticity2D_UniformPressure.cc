@@ -310,7 +310,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Tr
     } // setUp
 
 }; // TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP3
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP3);
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP3);
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_TriP4 :
@@ -355,7 +355,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Qu
         TestIsotropicLinearIncompElasticity2D_UniformPressure::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/quad_aligned.mesh";
+        _data->meshFilename = "data/quad.mesh";
 
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
@@ -380,7 +380,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Qu
         TestIsotropicLinearIncompElasticity2D_UniformPressure::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/quad_aligned.mesh";
+        _data->meshFilename = "data/quad.mesh";
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 2), // density
@@ -412,7 +412,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Qu
         TestIsotropicLinearIncompElasticity2D_UniformPressure::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/quad_aligned.mesh";
+        _data->meshFilename = "data/quad.mesh";
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 3), // density
@@ -431,7 +431,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Qu
     } // setUp
 
 }; // TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ3
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ3);
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ3);
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_QuadQ4 :
@@ -444,7 +444,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformPressure_Qu
         TestIsotropicLinearIncompElasticity2D_UniformPressure::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/quad_aligned.mesh";
+        _data->meshFilename = "data/quad.mesh";
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 4), // density

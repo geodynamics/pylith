@@ -59,7 +59,7 @@ endif
 
 dist_noinst_DATA = \
 	data/tri.mesh \
-	data/quad_aligned.mesh \
+	data/quad.mesh \
 	data/tet.mesh \
 	data/hex.mesh
 

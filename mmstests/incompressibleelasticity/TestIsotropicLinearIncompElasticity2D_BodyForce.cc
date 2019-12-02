@@ -358,7 +358,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_BodyForce_TriP3 :
     } // setUp
 
 }; // TestIsotropicLinearIncompElasticity2D_BodyForce_TriP3
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_BodyForce_TriP3);
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_BodyForce_TriP3);
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_BodyForce_QuadQ2 :
@@ -370,7 +370,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_BodyForce_QuadQ2 :
         TestIsotropicLinearIncompElasticity2D_BodyForce::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/quad_aligned.mesh";
+        _data->meshFilename = "data/quad.mesh";
 
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
@@ -402,7 +402,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_BodyForce_QuadQ3 :
         TestIsotropicLinearIncompElasticity2D_BodyForce::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/quad_aligned.mesh";
+        _data->meshFilename = "data/quad.mesh";
 
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
@@ -422,6 +422,6 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_BodyForce_QuadQ3 :
     } // setUp
 
 }; // TestIsotropicLinearIncompElasticity2D_BodyForce_QuadQ3
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_BodyForce_QuadQ3);
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearIncompElasticity2D_BodyForce_QuadQ3);
 
 // End of file
