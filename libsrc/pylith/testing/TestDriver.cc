@@ -36,8 +36,6 @@
 #include <getopt.h> // USES getopt_long()
 #include <sstream> // USES std::ostringstream, std::istringstream
 
-#define MALLOC_DUMP
-
 // ----------------------------------------------------------------------
 // Constructor
 pylith::testing::TestDriver::TestDriver() :
@@ -123,7 +121,7 @@ pylith::testing::TestDriver::run(int argc,
 void
 pylith::testing::TestDriver::_parseArgs(int argc,
                                         char* argv[]) {
-    static struct option options[8] = {
+    static struct option options[5] = {
         {"help", no_argument, NULL, 'h'},
         {"list", no_argument, NULL, 'l'},
         {"quiet", no_argument, NULL, 'q'},
