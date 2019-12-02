@@ -371,7 +371,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ1 :
         TestIsotropicLinearElasticity2D_GravityRefState::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/quad_aligned.mesh";
+        _data->meshFilename = "data/quad.mesh";
 
         _data->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -404,7 +404,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2 :
         TestIsotropicLinearElasticity2D_GravityRefState::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/quad_aligned.mesh";
+        _data->meshFilename = "data/quad.mesh";
 
         _data->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -437,7 +437,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3 :
         TestIsotropicLinearElasticity2D_GravityRefState::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/quad_aligned.mesh";
+        _data->meshFilename = "data/quad.mesh";
 
         _data->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
