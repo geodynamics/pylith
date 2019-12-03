@@ -25,12 +25,7 @@ SUBDIRS = \
 
 if ENABLE_TESTING
   SUBDIRS += \
-	unittests \
-	mmstests
-endif
-if ENABLE_FULL_TESTING
-  SUBDIRS += \
-	tests_auto
+	tests
 endif
 
 DIST_SUBDIRS = $(SUBDIRS) \

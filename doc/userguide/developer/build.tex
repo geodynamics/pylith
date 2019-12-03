@@ -450,7 +450,7 @@ $ cd PATH_TO_PYLITH_BUILD_DIRECTORY
 $ make -j8 -C libsrc
 
 # Rerun boundary condition C++ unit tests.
-$ make check -C unittests/libtests/bc
+$ make check -C tests/libtests/bc
 \end{shell}
 
 Similarly, when fixing a bug exposed by a Python unit test, after changing Python code, only the Python modules need to
@@ -465,7 +465,7 @@ $ cd PATH_TO_PYLITH_BUILD_DIRECTORY
 $ make install -C pylith
 
 # Rerun boundary condition Python unit tests.
-$ make check -C unittests/pytests/bc
+$ make check -C tests/pytests/bc
 \end{shell}
 
 

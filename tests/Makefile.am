@@ -17,7 +17,13 @@
 #
 
 SUBDIRS = \
-	2d \
-	3d
+	libtests \
+	pytests \
+	mmstests
+
+if ENABLE_FULL_TESTING
+  SUBDIRS += \
+	fullscale
+endif
 
 # End of file 
