@@ -1,0 +1,60 @@
+# -*- Makefile -*-
+#
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2017 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+
+subpackage = utils
+include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/check.am
+
+TESTS = test_utils
+
+check_PROGRAMS = test_utils
+
+# Primary source files
+test_utils_SOURCES = \
+	TestEventLogger.cc \
+	TestPyreComponent.cc \
+	TestGenericComponent.cc \
+	TestPylithVersion.cc \
+	TestPetscVersion.cc \
+	TestDependenciesVersion.cc \
+	test_driver.cc
+
+noinst_HEADERS = \
+	TestEventLogger.hh \
+	TestPyreComponent.hh \
+	TestGenericComponent.hh \
+	TestPylithVersion.hh \
+	TestPetscVersion.hh \
+	TestDependenciesVersion.hh
+
+AM_CPPFLAGS += $(PETSC_CC_INCLUDES)
+AM_CPPFLAGS += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR)
+
+test_utils_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+test_utils_LDADD = \
+	-lcppunit -ldl \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
+	-lspatialdata \
+	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+
+if ENABLE_CUBIT
+  test_utils_LDADD += -lnetcdf
+endif
+
+
+# End of file

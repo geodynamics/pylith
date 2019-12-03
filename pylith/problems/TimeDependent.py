@@ -42,7 +42,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
     Properties
       - *initial_dt* Initial time step.
       - *start_time* Start time for problem.
-      - *total_time* Time duration of problem.
+      - *end_time* End time for problem.
       - *max_timesteps* Maximum number of time steps.
 
     Facilities
@@ -64,9 +64,9 @@ class TimeDependent(Problem, ModuleTimeDependent):
     startTime = pyre.inventory.dimensional("start_time", default=0.0 * year)
     startTime.meta['tip'] = "Start time for problem."
 
-    totalTime = pyre.inventory.dimensional("total_time", default=0.1 * year,
+    endTime = pyre.inventory.dimensional("end_time", default=0.1 * year,
                                            validator=pyre.inventory.greaterEqual(0.0 * year))
-    totalTime.meta['tip'] = "Time duration of problem."
+    endTime.meta['tip'] = "End time for problem."
 
     maxTimeSteps = pyre.inventory.int("max_timesteps", default=20000, validator=pyre.inventory.greater(0))
     maxTimeSteps.meta['tip'] = "Maximum number of time steps."
@@ -77,9 +77,10 @@ class TimeDependent(Problem, ModuleTimeDependent):
     shouldNotifyIC = pyre.inventory.bool("notify_observers_ic", default=False)
     shouldNotifyIC.meta["tip"] = "Notify observers of solution with initial conditions."
 
-    #from ProgressMonitorTime import ProgressMonitorTime
-    #progressMonitor = pyre.inventory.facility("progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
-    #progressMonitor.meta['tip'] = "Simple progress monitor via text file."
+    from .ProgressMonitorTime import ProgressMonitorTime
+    progressMonitor = pyre.inventory.facility(
+        "progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
+    progressMonitor.meta['tip'] = "Simple progress monitor via text file."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -103,8 +104,8 @@ class TimeDependent(Problem, ModuleTimeDependent):
         Problem.preinitialize(self, mesh)
 
         ModuleTimeDependent.setStartTime(self, self.startTime.value)
+        ModuleTimeDependent.setEndTime(self, self.endTime.value)
         ModuleTimeDependent.setInitialTimeStep(self, self.dtInitial.value)
-        ModuleTimeDependent.setTotalTime(self, self.totalTime.value)
         ModuleTimeDependent.setMaxTimeSteps(self, self.maxTimeSteps)
         ModuleTimeDependent.setShouldNotifyIC(self, self.shouldNotifyIC)
 
@@ -112,6 +113,9 @@ class TimeDependent(Problem, ModuleTimeDependent):
         for ic in self.ic.components():
             ic.preinitialize(mesh)
         ModuleTimeDependent.setInitialCondition(self, self.ic.components())
+
+        self.progressMonitor.preinitialize()
+        ModuleTimeDependent.setProgressMonitor(self, self.progressMonitor)
         return
 
     def run(self, app):
@@ -134,6 +138,8 @@ class TimeDependent(Problem, ModuleTimeDependent):
         Set members based using inventory.
         """
         Problem._configure(self)
+        if self.startTime > self.endTime:
+            raise ValueError("End time {} must be later than start time {}.".format(self.startTime, self.endTime))
         return
 
     def _createModuleObj(self):

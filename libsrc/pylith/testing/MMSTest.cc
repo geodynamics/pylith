@@ -33,7 +33,7 @@
 #include <cassert> // USES assert()
 
 // ---------------------------------------------------------------------------------------------------------------------
-/// Setup testing data.
+// Setup testing data.
 void
 pylith::testing::MMSTest::setUp(void) {
     GenericComponent::setName("mmstest"); // Override in child class for finer control of journal output.
@@ -47,7 +47,7 @@ pylith::testing::MMSTest::setUp(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-/// Tear down testing data.
+// Tear down testing data.
 void
 pylith::testing::MMSTest::tearDown(void) {
     PYLITH_METHOD_BEGIN;
@@ -64,7 +64,7 @@ pylith::testing::MMSTest::tearDown(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-/// Verify discretization can represent solution field.
+// Verify discretization can represent solution field.
 void
 pylith::testing::MMSTest::testDiscretization(void) {
     PYLITH_METHOD_BEGIN;
@@ -99,7 +99,7 @@ pylith::testing::MMSTest::testDiscretization(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-/// Verify residual evaluated for solution is below specified tolerance.
+// Verify residual evaluated for solution is below specified tolerance.
 void
 pylith::testing::MMSTest::testResidual(void) {
     PYLITH_METHOD_BEGIN;

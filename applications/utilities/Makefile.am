@@ -17,7 +17,7 @@
 #
 
 bin_SCRIPTS = \
-	pylithinfo \
+	pylith_info \
 	pylith_genxdmf \
 	pylith_eqinfo \
 	powerlaw_gendb.py
@@ -29,8 +29,8 @@ noinstINTERPRETER = $(PYTHON)
 do_build = sed -e s%[@]INTERPRETER[@]%$(noinstINTERPRETER)%g -e s%[@]PYTHONPATH[@]%$(noinstPYTHONPATH)%g
 do_install = sed -e s%[@]INTERPRETER[@]%$(INTERPRETER)%g -e s%[@]PYTHONPATH[@]%$(PYTHONPATH)%g
 
-pylithinfo:  $(srcdir)/pylithinfo.in Makefile
-	$(do_build) <  $(srcdir)/pylithinfo.in > $@ || (rm -f $@ && exit 1)
+pylith_info:  $(srcdir)/pylith_info.in Makefile
+	$(do_build) <  $(srcdir)/pylith_info.in > $@ || (rm -f $@ && exit 1)
 	chmod +x $@
 
 pylith_genxdmf:  $(srcdir)/pylith_genxdmf.in Makefile
@@ -61,20 +61,15 @@ install-binSCRIPTS: $(bin_SCRIPTS)
 	done
 
 EXTRA_DIST = \
-	pylithinfo.in \
+	pylith_info.in \
 	pylith_genxdmf.in \
 	pylith_eqinfo.in \
 	powerlaw_gendb.py
 
 CLEANFILES = \
-	pylithinfo \
+	pylith_info \
 	pylith_genxdmf \
 	pylith_eqinfo
-
-
-# End of file 
-
-
 
 
 # End of file 

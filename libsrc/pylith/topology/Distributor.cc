@@ -105,6 +105,7 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
     const double scale = 1.0;
     partition.subfieldAdd("partition", "partition", pylith::topology::Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder, dim, true, pylith::topology::Field::POLYNOMIAL_SPACE);
     partition.subfieldsSetup();
+    partition.createDiscretization();
     partition.allocate();
     partition.label("partition");
 

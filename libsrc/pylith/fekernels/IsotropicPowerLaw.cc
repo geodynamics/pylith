@@ -25,6 +25,7 @@
 
 #include <cassert> // USES assert()
 #include <cmath> // USES exp()
+#include <stdexcept> // USES runtime_error
 
 // =====================================================================================================================
 // Kernels for isotropic power-law viscoelastic material.

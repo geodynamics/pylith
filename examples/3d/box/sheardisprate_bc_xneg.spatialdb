@@ -1,0 +1,28 @@
+// -*- C++ -*-
+//
+// This spatial database specifies the initial displacement and
+// velocity on the -x boundary. For the linear variation (data-dim ==
+// 1) in displacement, we only need to specify the two end points with
+// a SimpleDB.
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values =  7
+  value-names =  initial_amplitude_x  initial_amplitude_y  initial_amplitude_z  rate_amplitude_x  rate_amplitude_y  rate_amplitude_z  rate_start_time
+  value-units =  m  m  m    m/year  m/year  m/year    year
+  num-locs =     2
+  data-dim =    1
+  space-dim =    3
+  cs-data = cartesian {
+    to-meters = 1.0e+3 // specify coordinates in km
+    space-dim = 3
+  }
+}
+// Columns are
+// (1) x coordinate (km)
+// (2) y coordinate (km)
+// (3) z coordinate (km)
+// (4) initial x displacement (m)
+// (5) initial y displacement (m)
+// (6) initial z displacement (m)
+-6.0  -6.0  0.0   -1.2 -1.2  0.0    -0.3  -0.3  0.0   1.0
+-6.0  +6.0  0.0   +1.2 -1.2  0.0    +0.3  -0.3  0.0   1.0

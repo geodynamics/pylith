@@ -81,6 +81,7 @@ nobase_pkgpyexec_PYTHON = \
 	problems/Physics.py \
 	problems/Problem.py \
 	problems/TimeDependent.py \
+	problems/ProblemDefaults.py \
 	problems/Solution.py \
 	problems/SolutionSubfield.py \
 	problems/SolnDisp.py \
@@ -98,6 +99,8 @@ nobase_pkgpyexec_PYTHON = \
 	problems/InitialCondition.py \
 	problems/InitialConditionDomain.py \
 	problems/InitialConditionPatch.py \
+	problems/ProgressMonitor.py \
+	problems/ProgressMonitorTime.py \
 	topology/__init__.py \
 	topology/Distributor.py \
 	topology/Mesh.py \

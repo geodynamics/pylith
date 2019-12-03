@@ -91,7 +91,7 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
         BoundaryCondition.__init__(self, name)
         return
 
-    def preinitialize(self, mesh):
+    def preinitialize(self, problem):
         """
         Do pre-initialization setup.
         """
@@ -103,7 +103,7 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
             self._info.log(
                 "Performing minimal initialization of time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
 
-        BoundaryCondition.preinitialize(self, mesh)
+        BoundaryCondition.preinitialize(self, problem)
 
         ModuleDirichletTimeDependent.setConstrainedDOF(self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
         ModuleDirichletTimeDependent.useInitial(self, self.useInitial)

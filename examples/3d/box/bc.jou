@@ -1,0 +1,66 @@
+# -*- Python -*-
+# ----------------------------------------------------------------------
+# Create blocks for materials
+#
+# We only use one material in the simulations, so we lump the two
+# meshed volumes into a single block.
+# ----------------------------------------------------------------------
+#block 1 volume 1 3
+block 1 volume  ( at 0 0 -1500 ordinal 1 at 0 0 -6000 ordinal 1 ordered )
+block 1 name "elastic"
+
+# In order to create nodesets (marking boundaries, faults, etc), we
+# first create a group and then form a nodeset from the group, because
+# we often need to perform boolean operations to get the nodesets we
+# want, and groups suppoert boolean operations (union, intersect, etc)
+# but nodesets do not.
+
+# ----------------------------------------------------------------------
+# Create nodeset for +x boundary
+# ----------------------------------------------------------------------
+#group "boundary_xpos" add node in surface 12 14
+group "boundary_xpos" add node in surface  ( at 6000 0 -1500 ordinal 1 at 6000 0 -6000 ordinal 1 ordered )
+nodeset 20 group boundary_xpos
+nodeset 20 name "boundary_xpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x boundary
+# ----------------------------------------------------------------------
+#group "boundary_xneg" add node in surface 10 16
+group "boundary_xneg" add node in surface  ( at -6000 0 -1500 ordinal 1 at -6000 0 -6000 ordinal 1 ordered )
+nodeset 21 group boundary_xneg
+nodeset 21 name "boundary_xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +y boundary
+# ----------------------------------------------------------------------
+#group "boundary_ypos" add node in surface  9 17
+group "boundary_ypos" add node in surface  ( at 0 6000 -1500 ordinal 1 at 0 6000 -6000 ordinal 1 ordered )
+nodeset 22 group boundary_ypos
+nodeset 22 name "boundary_ypos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y boundary
+# ----------------------------------------------------------------------
+group "boundary_yneg" add node in surface  11 15
+#group "boundary_yneg" add node in surface  ( at 0 -6000 -1500 ordinal 1 at 0 -6000 -6000 ordinal 1 ordered )
+nodeset 23 group boundary_yneg
+nodeset 23 name "boundary_yneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -z boundary
+# ----------------------------------------------------------------------
+#group "boundary_zneg" add node in surface 2
+group "boundary_zneg" add node in surface  ( at 0 0 -9000 ordinal 1 ordered )
+nodeset 24 group boundary_zneg
+nodeset 24 name "boundary_zneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +z boundary
+# ----------------------------------------------------------------------
+#group "boundary_zpos" add node in surface 1
+group "boundary_zpos" add node in surface  ( at 0 0 0 ordinal 1 ordered )
+nodeset 25 group boundary_zpos
+nodeset 25 name "boundary_zpos"
+
+

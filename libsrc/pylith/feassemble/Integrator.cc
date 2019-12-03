@@ -132,16 +132,20 @@ pylith::feassemble::Integrator::_setKernelConstants(const pylith::topology::Fiel
     assert(_physics);
     const pylith::real_array& constants = _physics->getKernelConstants(dt);
 
-    // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
-    // the correct one.
-    PetscDS prob = NULL;
     PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
-    PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
-    if (constants.size() > 0) {
-        err = PetscDSSetConstants(prob, constants.size(), const_cast<double*>(&constants[0]));PYLITH_CHECK_ERROR(err);
-    } else {
-        err = PetscDSSetConstants(prob, 0, NULL);PYLITH_CHECK_ERROR(err);
-    } // if/else
+    PetscInt numDS = 0;
+    PetscErrorCode err = DMGetNumDS(dmSoln, &numDS);PYLITH_CHECK_ERROR(err);
+    for (PetscInt i = 0; i < numDS; ++i) {
+        PetscDMLabel* label = NULL;
+        PetscIS* fields = NULL;
+        PetscDS prob = NULL;
+        err = DMGetRegionNumDS(dmSoln, i, label, fields, &prob);PYLITH_CHECK_ERROR(err);
+        if (constants.size() > 0) {
+            err = PetscDSSetConstants(prob, constants.size(), const_cast<double*>(&constants[0]));PYLITH_CHECK_ERROR(err);
+        } else {
+            err = PetscDSSetConstants(prob, 0, NULL);PYLITH_CHECK_ERROR(err);
+        } // if/else
+    } // for
 
     PYLITH_METHOD_END;
 } // _setKernelConstants

@@ -28,7 +28,7 @@ def validateLabel(value):
     """
     Validate label for group/nodeset/pset.
     """
-    if 0 == len(value):
+    if not value.strip():
         raise ValueError("Label for group/nodeset/pset in mesh not specified.")
     return value
 
@@ -69,6 +69,9 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
         """
         OutputSoln.preinitialize(self, problem)
         ModuleOutputSolnBoundary.setLabel(self, self.label)
+
+        identifier = self.aliases[-1]
+        self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

@@ -46,11 +46,6 @@ class MeshRefiner(PetscComponent):
         """
         Refine mesh.
         """
-        self._setupLogging()
-        logEvent = "%srefine" % self._loggingPrefix
-        self._eventLogger.eventBegin(logEvent)
-
-        self._eventLogger.eventEnd(logEvent)
         return mesh
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

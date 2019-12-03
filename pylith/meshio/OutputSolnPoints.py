@@ -44,6 +44,9 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
 
     import pyre.inventory
 
+    label = pyre.inventory.str("label", default="points")
+    label.meta['tip'] = "Label identifier for points (used in constructing default filenames)."
+
     from PointsList import PointsList
     reader = pyre.inventory.facility("reader", factory=PointsList, family="points_list")
     reader.meta['tip'] = "Reader for points list."
@@ -73,6 +76,9 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
         stationsCoords /= problem.normalizer.lengthScale.value
 
         ModuleOutputSolnPoints.stations(stationCoords, stationNames)
+
+        identifier = self.aliases[-1]
+        self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

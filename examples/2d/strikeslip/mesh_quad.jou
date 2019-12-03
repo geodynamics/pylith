@@ -1,0 +1,55 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2017 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+# Create quad mesh at 4 km resolution.
+
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+# ----------------------------------------------------------------------
+# Set discretization size and scheme
+#
+# The "pave" scheme is an unstructured 2-D quad meshing scheme.
+# ----------------------------------------------------------------------
+${dx=4.0*km}
+surface all scheme pave
+playback 'gradient.jou'
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+# preview mesh surface all
+mesh surface all
+
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+surface all smooth scheme condition number beta 1.1 cpu 10
+smooth surface all
+
+# ----------------------------------------------------------------------
+# Setup boundary conditions.
+# ----------------------------------------------------------------------
+playback 'createbc.jou'
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_quad.exo" dimension 2 overwrite
+
+
+# End of file

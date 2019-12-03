@@ -88,6 +88,36 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
 
     newMesh->dmMesh(dmNew);
 
+    // Remove all non-cells from material-id label
+    PetscDMLabel matidLabel = NULL;
+    PetscIS valuesIS = NULL;
+    const PetscInt *values = NULL;
+    PetscInt cStart, cEnd, labelNumValues;
+    err = DMPlexGetHeightStratum(dmNew, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmNew, "material-id", &matidLabel);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetNumValues(matidLabel, &labelNumValues);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetValueIS(matidLabel, &valuesIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(valuesIS, &values);PYLITH_CHECK_ERROR(err);
+    for (PetscInt iValue = 0; iValue < labelNumValues; ++iValue) {
+        PetscIS stratumIS = NULL;
+        const PetscInt *points = NULL;
+        const PetscInt value = values[iValue];
+        PetscInt numPoints;
+        err = DMLabelGetStratumSize(matidLabel, value, &numPoints);PYLITH_CHECK_ERROR(err);
+        err = DMLabelGetStratumIS(matidLabel, value, &stratumIS);PYLITH_CHECK_ERROR(err);
+        err = ISGetIndices(stratumIS, &points);PYLITH_CHECK_ERROR(err);
+        for (PetscInt p = 0; p < numPoints; ++p) {
+            const PetscInt point = points[p];
+            if (( point < cStart) || ( point >= cEnd) ) {
+                err = DMLabelClearValue(matidLabel, point, value);PYLITH_CHECK_ERROR(err);
+            } // if
+        } // for
+        err = ISRestoreIndices(stratumIS, &points);PYLITH_CHECK_ERROR(err);
+        err = ISDestroy(&stratumIS);PYLITH_CHECK_ERROR(err);
+    } // for
+    err = ISRestoreIndices(valuesIS, &values);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&valuesIS);PYLITH_CHECK_ERROR(err);
+
     // Check consistency
     topology::MeshOps::checkTopology(*newMesh);
 

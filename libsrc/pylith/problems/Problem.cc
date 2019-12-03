@@ -21,7 +21,7 @@
 #include "Problem.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Field.hh" // HASA Field
 
 #include "pylith/materials/Material.hh" // USES Material
 #include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
@@ -315,6 +315,7 @@ pylith::problems::Problem::initialize(void) {
     if (_solution->hasSubfield("lagrange_multiplier_fault")) {
         _setupLagrangeMultiplier(_solution);
     } // if
+    _solution->createDiscretization();
 
     const pylith::topology::Mesh& mesh = _solution->mesh();
     pylith::topology::CoordsVisitor::optimizeClosure(mesh.dmMesh());
@@ -746,7 +747,6 @@ pylith::problems::Problem::_setupLagrangeMultiplier(pylith::topology::Field* sol
     err = DMSetField(dmSoln, lagrangeMultiplierInfo.index, cohesiveLabel, (PetscObject)fe);PYLITH_CHECK_ERROR(err);
 
     err = PetscFEDestroy(&fe);PYLITH_CHECK_ERROR(err);
-    err = DMLabelDestroy(&cohesiveLabel);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setupLagrangeMultiplier

@@ -31,6 +31,8 @@ subpkginclude_HEADERS = \
 	InitialCondition.hh \
 	InitialConditionDomain.hh \
 	InitialConditionPatch.hh \
+	ProgressMonitor.hh \
+	ProgressMonitorTime.hh \
 	problemsfwd.hh
 
 noinst_HEADERS =

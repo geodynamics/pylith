@@ -31,6 +31,8 @@ namespace pylith {
     namespace testing {
         class StubMethodTracker;
         class MMSTest;
+        class FieldTester;
+        class TestDriver;
     } // testing
 
     namespace faults {
@@ -45,6 +47,7 @@ namespace pylith {
         class PhysicsStub;
         class ObserverSolnStub;
         class ObserverPhysicsStub;
+        class ProgressMonitorStub;
     } // problems
 
 } // pylith

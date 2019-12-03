@@ -1,0 +1,165 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+
+# Set units to SI.
+# ----------------------------------------------------------------------
+${Units('si')}
+#
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+
+# Make sure undo is off to prevent errors in stitching volumes.
+undo off
+
+# Turn on IDless journal files for maximum compatibility.
+# The commands echoed to the log will replace the object ID with a
+# geometric specification of the object. Note that this means changing
+# the geometry will require changes to subsequent journal commands.
+# The commented-out commands below are the commands that were originally
+# used, and the uncommented commands are those that were produced by
+# turning on idless journaling.
+journal idless on
+
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+# Block is 200.0 km x 100.0 km
+# -100.0 km <= x <= 100.0 km
+# -100.0 km <= y <= 0.0 km
+#
+# Define Aprepro parameters for block and faults.
+${blockWidth=200*km}
+${blockHeight=100*km}
+${blockLength=10*km}
+
+${faultWidth=60.0*km}
+${faultDipAngle=30.0}
+
+${splayWidth=15.0*km}
+${splayDipAngle=45.0}
+${splayOffset=20.0*km}
+
+${xoffset=0.5*faultWidth*cosd(faultDipAngle)}
+
+# Create a brick and move it so fault is centered and upper surface
+# is at y=0.
+brick x {blockWidth} y {blockHeight} z {blockLength}
+${idV=Id("volume")}
+volume {idV} move x {-xoffset} y {-blockHeight/2.0} z 0.0
+
+# Create a midsurface from front and back surfaces.
+# surface 1 name "surf_front"
+# surface 2 name "surf_back"
+surface  ( at -25980.8 -50000 5000 ordinal 1 ordered )  name "surf_front"
+surface  ( at -25980.8 -50000 -5000 ordinal 1 ordered )  name "surf_back"
+
+create midsurface volume {idV} surface surf_front surf_back
+
+# Delete the initial volume now we have the midsurface.
+${idS=Id("surface")}
+delete volume {idV}
+
+# ----------------------------------------------------------------------
+# Create fault and splay surfaces
+# ----------------------------------------------------------------------
+
+# Create fault (yz plane) at x = 0.0
+split surface {idS} across location position 0 0 0 location position {-blockHeight/tand(faultDipAngle)} {-blockHeight} 0
+
+# split curve 17 at position {-faultWidth*cosd(fault1DipAngle)} {-faultWidth*sind(faultDipAngle)} 0
+split curve  ( at -62990.4 -36367.5 0 ordinal 1 ordered )  at position {-faultWidth*cosd(faultDipAngle)} {-faultWidth*sind(faultDipAngle)} 0
+
+# split surface 8 across location position -{splayOffset} 0 0 location position {-blockHeight/tand(splayDipAngle)} {-blockHeight} 0
+split surface  ( at -62990.4 -36367.5 0 ordinal 1 ordered )  across location position -{splayOffset} 0 0 location position {-blockHeight/tand(splayDipAngle)} {-blockHeight} 0
+
+# ----------------------------------------------------------------------
+# Name surfaces
+# ----------------------------------------------------------------------
+# Material on the footwall.
+# surface 9 name "slab_material"
+surface  ( at -25980.8 -50000 0 ordinal 1 ordered )  name "slab_material"
+
+# Material on the hanging wall.
+# surface 10 name "plate_material"
+surface  ( at -72990.4 -36367.5 0 ordinal 1 ordered )  name "plate_material"
+
+# Material between faul and splay.
+# surface 11 name "wedge_material"
+surface  ( at -18583.2 -10729 0 ordinal 1 ordered )  name "wedge_material"
+
+# ----------------------------------------------------------------------
+# Name curves
+# ----------------------------------------------------------------------
+# curve 26 name "fault_surface_bottom"
+curve  ( at -44564 -25729 0 ordinal 1 ordered )  name "fault_surface_bot"
+
+# curve 27 name "fault_surface_top"
+curve  ( at -18583.2 -10729 0 ordinal 1 ordered )  name "fault_surface_top"
+
+# curve 24 name "splay_surface"
+curve  ( at -28583.2 -10729 0 ordinal 1 ordered )  name "splay_surface"
+
+# curve 21 name "ground_fw"
+curve  ( at 37009.6 0 0 ordinal 1 ordered )  name "ground_fw"
+
+# curve 28 name "ground_wedge"
+curve  ( at -10000 0 0 ordinal 1 ordered )  name "ground_wedge"
+
+# curve 25 name "ground_hw"
+curve  ( at -72990.4 0 0 ordinal 1 ordered )  name "ground_hw"
+
+# curve 14 name "curve_xpos"
+curve  ( at 74019.2 -50000 0 ordinal 1 ordered )  name "curve_xpos"
+
+# curve 20 name "curve_xneg_fw"
+curve  ( at -125981 -86367.5 0 ordinal 1 ordered )  name "curve_xneg_fw"
+
+# curve 19 name "curve_xneg_hw"
+curve  ( at -125981 -36367.5 0 ordinal 1 ordered )  name "curve_xneg_hw"
+
+# curve 13 name "curve_yneg"
+curve  ( at -25980.8 -100000 0 ordinal 1 ordered )  name "curve_yneg"
+
+# curve 23 name "fault_extended"
+curve  ( at -88971.1 -51367.5 0 ordinal 1 ordered )  name "fault_extended"
+
+# ----------------------------------------------------------------------
+# Name vertices
+# ----------------------------------------------------------------------
+
+# vertex 15 name "vertex_fault_bot"
+vertex  ( at -51961.5 -30000 0 ordinal 1 ordered )  name "vertex_fault_bot"
+
+# vertex 13 name "vertex_fault_top"
+vertex  ( at 0 0 0 ordinal 1 ordered )  name "vertex_fault_top"
+
+# vertex 17 name "vertex_splay_bot"
+vertex  ( at -37166.4 -21458.1 0 ordinal 1 ordered )  name "vertex_splay_bot"
+
+# vertex 16 name "vertex_splay_top"
+vertex  ( at -20000 -3.63798e-12 0 ordinal 1 ordered )  name "vertex_splay_top"
+
+# vertex 14 name "vertex_fault_xneg"
+vertex  ( at -125981 -72735 0 ordinal 1 ordered )  name "vertex_fault_xneg"
+
+# vertex 11 name "vertex_top_xpos"
+vertex  ( at 74019.2 0 0 ordinal 1 ordered )  name "vertex_top_xpos"
+
+# vertex 12 name "vertex_top_xneg"
+vertex  ( at -125981 0 0 ordinal 1 ordered )  name "vertex_top_xneg"
+
+# vertex 9 name "vertex_bot_xpos"
+vertex  ( at 74019.2 -100000 0 ordinal 1 ordered )  name "vertex_bot_xpos"
+
+# vertex 10 name "vertex_bot_xneg"
+vertex  ( at -125981 -100000 0 ordinal 1 ordered )  name "vertex_bot_xneg"
+
+
+# End of file
+
+
+
+
+

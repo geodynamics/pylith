@@ -29,7 +29,6 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <cassert> // USES assert()
-#include <typeinfo> // USES typeid()
 #include <stdexcept> // USES std::runtime_error
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -51,7 +50,7 @@ pylith::feassemble::ConstraintSpatialDB::~ConstraintSpatialDB(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set constraint kernel.
 void
-pylith::feassemble::ConstraintSpatialDB::setKernelConstraint(const PetscPointFunc kernel) {
+pylith::feassemble::ConstraintSpatialDB::setKernelConstraint(const PetscBdPointFunc kernel) {
     _kernelConstraint = kernel;
 } // setkernelConstraint
 
@@ -85,7 +84,7 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
     const int labelId = 1;
     const PylithInt numConstrained = _constrainedDOF.size();
     const PetscInt i_field = solution.subfieldInfo(_subfieldName.c_str()).index;
-    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_FIELD, _constraintLabel.c_str(), _constraintLabel.c_str(), i_field,
+    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_BD_FIELD, _constraintLabel.c_str(), _constraintLabel.c_str(), i_field,
                              numConstrained, &_constrainedDOF[0], (void (*)())_kernelConstraint, 1, &labelId, context);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
@@ -145,10 +144,10 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::topology::Field* so
     const int fieldIndex = solution->subfieldInfo(_subfieldName.c_str()).index;
     const PylithInt numConstrained = _constrainedDOF.size();
     assert(solution->localVector());
-    err = DMPlexLabelAddCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMPlexInsertBoundaryValuesEssentialField(dmSoln, t, solution->localVector(), fieldIndex,
-                                                   numConstrained, &_constrainedDOF[0], dmLabel, 1, &labelId,
-                                                   _kernelConstraint, context, solution->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMPlexLabelAddFaceCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMPlexInsertBoundaryValuesEssentialBdField(dmSoln, t, solution->localVector(), fieldIndex,
+                                                     numConstrained, &_constrainedDOF[0], dmLabel, 1, &labelId,
+                                                     _kernelConstraint, context, solution->localVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
 
     journal::debug_t debug(GenericComponent::getName());

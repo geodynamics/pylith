@@ -12,9 +12,9 @@ SimpleGridDB {
   num-x = 1
   num-y = 1
   num-z = 4
-  num-values = 3
-  value-names =  left-lateral-slip  reverse-slip  fault-opening
-  value-units =  m  m  m
+  num-values = 4
+  value-names =  final_slip_left_lateral  final_slip_reverse  final_slip_opening  initiation_time
+  value-units =  m  m  m  year
   space-dim = 3
   cs-data = geo-projected {
     to-meters = 1.0e+3 // Specify coordinates in km for convenience.
@@ -45,10 +45,11 @@ SimpleGridDB {
 // (1) x coordinate (km)
 // (2) y coordinate (km)
 // (3) z coordinate (km)
-// (4) left-laterial-slip (m)
-// (5) reverse-slip (m)
-// (6) fault-opening (m)
-0.0  0.0    99.0   -2.0 +4.0  0.0
-0.0  0.0   -45.0   -2.0 +4.0  0.0
-0.0  0.0   -60.0    0.0  0.0  0.0
-0.0  0.0  -999.0    0.0  0.0  0.0
+// (4) final_slip_left_lateral (m)
+// (5) final_slip_reverse (m)
+// (6) final_slip_opening (m)
+// (7) initiation_time (year)
+0.0  0.0    99.0   -2.0 +4.0  0.0  0.0
+0.0  0.0   -45.0   -2.0 +4.0  0.0  0.0
+0.0  0.0   -60.0    0.0  0.0  0.0  0.0
+0.0  0.0  -999.0    0.0  0.0  0.0  0.0

@@ -1,0 +1,24 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values =      2
+  value-names =  initial_amplitude_tangential  initial_amplitude_normal
+  value-units =  MPa MPa
+  num-locs =     6
+  data-dim =    1
+  space-dim =    2
+  cs-data = cartesian {
+  to-meters = 1.0e3 // Use km
+  space-dim = 2
+}
+}
+// Columns are
+// (1) x coordinate (km)
+// (2) y coordinate (km)
+// (3) initial_amplitude_tangential (MPa)
+// (4) initial_amplitude_normal (MPa)
+-126.0  0.0    0.0    0.0
+-75.98  0.0    0.0    0.0
+-50.98  0.0    0.0  -25.0
+-0.98   0.0    0.0  -25.0
+24.02   0.0    0.0    0.0
+75.00   0.0    0.0    0.0

@@ -16,20 +16,26 @@
 # ----------------------------------------------------------------------
 #
 
+include $(top_srcdir)/check.am
+
+TESTS = run_examples.py
+
+dist_check_SCRIPTS = run_examples.py
+
 dist_noinst_DATA = \
-	README \
+	README.md \
 	pylithapp.cfg \
-	step01.cfg \
-	step02.cfg \
-	step03.cfg \
-	step04.cfg \
-	step05.cfg \
-	step06.cfg \
+	step01_coseismic.cfg \
+	step02_interseismic.cfg \
+	step03_eqcycle.cfg \
+	step04_afterslip.cfg \
+	step05_eqcycleslipweakening.cfg \
+	step06_eqcycleratestate.cfg \
 	geometry.jou \
-	mesh_tri3.jou \
 	createbc.jou \
-	mesh_tri3.exo \
-	fault_slip_coseismic.spatialdb \
+	mesh_tri.jou \
+	mesh_tri.exo \
+	fault_coseismic.spatialdb \
 	fault_slabtop_creep.spatialdb \
 	fault_slabtop_ratestate.spatialdb \
 	fault_slabtop_slipweakening.spatialdb \
@@ -40,6 +46,23 @@ dist_noinst_DATA = \
 	mat_oceanmantle.spatialdb \
 	afterslip_tractions.spatialdb \
 	afterslip_tractions.py
+
+
+# 'export' the input files by performing a mock install
+export_datadir = $(top_builddir)/examples/2d/subduction
+export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
+	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
+
+clean-data:
+	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
+
+
+BUILT_SOURCES = export-data
+
+clean-local: clean-local-tmp clean-data
+.PHONY: clean-local-tmp
+clean-local-tmp:
+	-rm *.pyc output/*
 
 
 # End of file 

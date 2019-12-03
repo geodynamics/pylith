@@ -1,0 +1,71 @@
+# -*- Python -*-
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+${Units('si')}
+
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+
+# Turn on IDless journal files for maximum compatibility.
+# The commands echoed to the log will replace the object ID with a
+# geometric specification of the object. Note that this means changing
+# the geometry will require changes to subsequent journal commands.
+# The commented-out commands below are the commands that were originally
+# used, and the uncommented commands are those that were produced by
+# turning on idless journaling.
+journal idless on
+
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+# Block is 12km x 12km x 9km
+# -6 km <= x <= 6 km
+# -6 km <= y <= 6 km
+# -9 km <= z <= 0 km
+brick x {12.0*km} y {12.0*km} z {9.0*km}
+
+# Center of block will be at (0,0,0), so move it down half the height
+# to align the top at z=0.
+#volume 1 move x 0 y 0 z {-4.5*km}
+volume  ( at 0 0 0 ordinal 1 ordered )  move x 0 y 0 z {-4.5*km}
+
+# ----------------------------------------------------------------------
+# Create interface surface between (potential) materials
+#
+# Note: We include this step to demonstrate how to divide volumes into
+# chunks of different materials. We will lump these two volumes
+# together into a single material when we setup the material blocks
+# (see bc.jou).
+# ----------------------------------------------------------------------
+create planar surface with plane zplane offset {-3.0*km}
+# Name the surface to make it easy to reference later.
+#surface 7 name "material_interface"
+surface  ( at 0 0 -3000 ordinal 1 ordered )  name "material_interface"
+
+# ----------------------------------------------------------------------
+# Divide volumes using interface surfaces
+# ----------------------------------------------------------------------
+#webcut volume 1 with plane surface material_interface
+webcut volume  ( at 0 0 -4500 ordinal 1 ordered )  with plane material_interface
+
+#volume 1 name "elastic"
+volume  ( at 0 0 -1500 ordinal 1 ordered )  name "elastic"
+
+#volume 3 name "viscoelastic"
+volume  ( at 0 0 -6000 ordinal 1 ordered )  name "viscoelastic"
+
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+imprint all with volume all
+merge all
+
+#delete body 2
+delete body  ( at 0 0 -3000 ordinal 1 ordered )
+
+
+# End of file
+

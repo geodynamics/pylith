@@ -26,7 +26,7 @@
 
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
-
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_INFO
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include <cassert> // USES assert()
@@ -37,37 +37,36 @@
 // Constructor
 pylith::meshio::MeshIO::MeshIO(void) :
     _mesh(0),
-    _debug(false)
-{ // constructor
+    _debug(false) { // constructor
 } // constructor
+
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::MeshIO::~MeshIO(void)
-{ // destructor
+pylith::meshio::MeshIO::~MeshIO(void) { // destructor
     deallocate();
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::MeshIO::deallocate(void)
-{ // deallocate
+pylith::meshio::MeshIO::deallocate(void) { // deallocate
 } // deallocate
+
 
 // ----------------------------------------------------------------------
 // Get spatial dimension of mesh.
 int
-pylith::meshio::MeshIO::getMeshDim(void) const
-{ // getMeshDim
+pylith::meshio::MeshIO::getMeshDim(void) const { // getMeshDim
     return (_mesh) ? _mesh->dimension() : 0;
 } // getMeshDim
+
 
 // ----------------------------------------------------------------------
 // Read mesh from file.
 void
-pylith::meshio::MeshIO::read(topology::Mesh* mesh)
-{ // read
+pylith::meshio::MeshIO::read(topology::Mesh* mesh) { // read
     PYLITH_METHOD_BEGIN;
 
     assert(mesh);
@@ -77,21 +76,45 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh)
     _mesh->debug(_debug);
     _read();
 
+    PetscErrorCode err = 0;
+
+    // Check for bounding box with positive volume.
+    PetscReal cmin[3];
+    PetscReal cmax[3];
+    err = DMGetBoundingBox(_mesh->dmMesh(), cmin, cmax);
+    const PetscInt dim = _mesh->dimension();
+    PetscReal volume = 1.0;
+    for (int i = 0; i < dim; ++i) {
+        volume *= cmax[i] - cmin[i];
+    } // for
+    std::ostringstream msg;
+    msg << "Domain bounding box:";
+    for (int i = 0; i < dim; ++i) {
+        msg << "\n    (" << cmin[i] << ", " << cmax[i] << ")";
+    } // for
+    PYLITH_COMPONENT_INFO(msg.str());
+    const PetscReal tolerance = 1.0e-8;
+    if (volume < tolerance) {
+        msg.clear();
+        msg << "Domain bounding box volume (" << volume << ") less than minimum tolerance (" << tolerance << ").";
+        throw std::runtime_error(msg.str());
+    } // if
+
     // Check mesh consistency
     topology::MeshOps::checkTopology(*_mesh);
     // Respond to PETSc diagnostic output
-    PetscErrorCode err = DMViewFromOptions(_mesh->dmMesh(), NULL, "-pylith_dm_view");PYLITH_CHECK_ERROR(err);
+    err = DMViewFromOptions(_mesh->dmMesh(), NULL, "-pylith_dm_view");PYLITH_CHECK_ERROR(err);
 
     _mesh = 0;
 
     PYLITH_METHOD_END;
 } // read
 
+
 // ----------------------------------------------------------------------
 // Write mesh to file.
 void
-pylith::meshio::MeshIO::write(topology::Mesh* const mesh)
-{ // write
+pylith::meshio::MeshIO::write(topology::Mesh* const mesh) { // write
     PYLITH_METHOD_BEGIN;
 
     assert(mesh);
@@ -104,13 +127,13 @@ pylith::meshio::MeshIO::write(topology::Mesh* const mesh)
     PYLITH_METHOD_END;
 } // write
 
+
 // ----------------------------------------------------------------------
 // Get coordinates of vertices in mesh.
 void
 pylith::meshio::MeshIO::_getVertices(scalar_array* coordinates,
                                      int* numVertices,
-                                     int* spaceDim) const
-{ // _getVertices
+                                     int* spaceDim) const { // _getVertices
     PYLITH_METHOD_BEGIN;
 
     assert(coordinates);
@@ -147,14 +170,14 @@ pylith::meshio::MeshIO::_getVertices(scalar_array* coordinates,
     PYLITH_METHOD_END;
 } // _getVertices
 
+
 // ----------------------------------------------------------------------
 // Get cells in mesh.
 void
 pylith::meshio::MeshIO::_getCells(int_array* cells,
                                   int* numCells,
                                   int* numCorners,
-                                  int* meshDim) const
-{ // _getCells
+                                  int* meshDim) const { // _getCells
     PYLITH_METHOD_BEGIN;
 
     assert(cells);
@@ -203,11 +226,11 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
     PYLITH_METHOD_END;
 } // _getCells
 
+
 // ----------------------------------------------------------------------
 // Tag cells in mesh with material identifiers.
 void
-pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
-{ // _setMaterials
+pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds) { // _setMaterials
     PYLITH_METHOD_BEGIN;
 
     assert(_mesh);
@@ -233,11 +256,11 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
     PYLITH_METHOD_END;
 } // _setMaterials
 
+
 // ----------------------------------------------------------------------
 // Get material identifiers for cells.
 void
-pylith::meshio::MeshIO::_getMaterials(int_array* materialIds) const
-{ // _getMaterials
+pylith::meshio::MeshIO::_getMaterials(int_array* materialIds) const { // _getMaterials
     PYLITH_METHOD_BEGIN;
 
     assert(materialIds);
@@ -259,13 +282,13 @@ pylith::meshio::MeshIO::_getMaterials(int_array* materialIds) const
     PYLITH_METHOD_END;
 } // _getMaterials
 
+
 // ----------------------------------------------------------------------
 // Build a point group as an int section.
 void
 pylith::meshio::MeshIO::_setGroup(const std::string& name,
                                   const GroupPtType type,
-                                  const int_array& points)
-{ // _setGroup
+                                  const int_array& points) { // _setGroup
     PYLITH_METHOD_BEGIN;
 
     assert(_mesh);
@@ -306,7 +329,7 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
                 for (c = 0; c < closureSize*2; c += 2) {
                     if ((closure[c] >= vStart) && (closure[c] < vEnd)) {
                         err = DMLabelGetValue(label, closure[c], &value);PYLITH_CHECK_ERROR(err);
-                        if (value != 1) {marked = PETSC_FALSE; break;}
+                        if (value != 1) {marked = PETSC_FALSE;break;}
                     }
                 }
                 err = DMPlexRestoreTransitiveClosure(dmMesh, point, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
@@ -319,11 +342,11 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
     PYLITH_METHOD_END;
 } // _setGroup
 
+
 // ----------------------------------------------------------------------
 // Create empty groups on other processes
 void
-pylith::meshio::MeshIO::_distributeGroups()
-{ // _distributeGroups
+pylith::meshio::MeshIO::_distributeGroups() { // _distributeGroups
     PYLITH_METHOD_BEGIN;
 
     assert(_mesh);
@@ -332,39 +355,41 @@ pylith::meshio::MeshIO::_distributeGroups()
     PYLITH_METHOD_END;
 } // _distributeGroups
 
+
 // ----------------------------------------------------------------------
 // Get names of all groups in mesh.
 void
-pylith::meshio::MeshIO::_getGroupNames(string_vector* names) const
-{ // _getGroups
+pylith::meshio::MeshIO::_getGroupNames(string_vector* names) const { // _getGroups
     PYLITH_METHOD_BEGIN;
 
     assert(names);
     assert(_mesh);
 
     PetscDM dmMesh = _mesh->dmMesh();assert(dmMesh);
-    PetscInt numGroups = 0;
+    PetscInt numLabels = 0;
     PetscErrorCode err = 0;
-    err = DMGetNumLabels(dmMesh, &numGroups);PYLITH_CHECK_ERROR(err);
-    numGroups -= 2; // Remove depth and material labels.
+    err = DMGetNumLabels(dmMesh, &numLabels);PYLITH_CHECK_ERROR(err);
+    const PetscInt numGroups = numLabels - 2; // Remove depth and material labels.
     names->resize(numGroups);
 
-    for (int iGroup = 0, iLabel = numGroups-1; iGroup < numGroups; ++iGroup, --iLabel) {
-        const char* namestr = NULL;
-        err = DMGetLabelName(dmMesh, iLabel, &namestr);PYLITH_CHECK_ERROR(err);
-        (*names)[iGroup] = namestr;
+    for (int iGroup = 0, iLabel = 0; iLabel < numLabels; ++iLabel) {
+        const char* labelName = NULL;
+        err = DMGetLabelName(dmMesh, iLabel, &labelName);PYLITH_CHECK_ERROR(err);
+        if ((std::string(labelName) != std::string("depth")) && (std::string(labelName) != std::string("material-id"))) {
+            (*names)[iGroup++] = labelName;
+        } // if
     } // for
 
     PYLITH_METHOD_END;
 } // _getGroups
+
 
 // ----------------------------------------------------------------------
 // Get group entities
 void
 pylith::meshio::MeshIO::_getGroup(int_array* points,
                                   GroupPtType* groupType,
-                                  const char *name) const
-{ // _getGroup
+                                  const char *name) const { // _getGroup
     PYLITH_METHOD_BEGIN;
 
     assert(points);

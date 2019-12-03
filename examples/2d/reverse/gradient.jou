@@ -1,0 +1,63 @@
+# -*- Python -*- (syntax highlighting)
+
+# ----------------------------------------------------------------------
+# Set vertex spacing with increasing spacing away from fault
+# ----------------------------------------------------------------------
+${bias_factor=1.05}
+
+# Function for computing discretization size at end of curve with bias
+${fun_dx='dxStart*bias_factor**ceil( ln(1-curveL/dxStart*(1-bias_factor))/ln(bias_factor))'}
+
+# ----------------------------------------------------------------------
+# Compute sizes at curve endpoints
+# ----------------------------------------------------------------------
+
+# dxA - size at vertex_top_xpos
+${dxStart=dx}{curveL=Length(Id("ground_fw"))}{execute("dxA="//fun_dx)}
+
+# dxB - size at vertex_top_xneg
+${dxStart=dx}{curveL=Length(Id("ground_hw"))}{execute("dxB="//fun_dx)}
+
+# dxC - size at vertex_fault_xneg
+${dxStart=dx}{curveL=Length(Id("fault_extended"))}{execute("dxC="//fun_dx)}
+
+# dxD - size at vertex_bot_xpos
+${dxStart=dxA}{curveL=Length(Id("curve_xpos"))}{execute("dxD="//fun_dx)}
+
+# ----------------------------------------------------------------------
+# Reset sizes
+# ----------------------------------------------------------------------
+curve all scheme default
+surface all sizing function none
+
+# Set size on faults
+curve fault_surface_top size {dx}
+curve fault_surface_bot size {dx}
+curve splay_surface size {dx}
+curve ground_wedge size {dx}
+
+# Set bias on curves extending from faults
+curve ground_fw scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_top
+curve ground_hw scheme bias fine size {dx} factor {bias_factor} start vertex vertex_splay_top
+curve fault_extended scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_bot
+
+curve curve_yneg size {dxD}
+
+# A to D
+curve curve_xpos scheme bias fine size {dxA} coarse size {dxD} start vertex vertex_top_xpos
+
+# C to B
+curve curve_xneg_hw scheme bias fine size {dxC} coarse size {dxB} start vertex vertex_fault_xneg
+
+# B to D
+curve curve_xneg_fw scheme bias fine size {dxB} coarse size {dxD} start vertex vertex_fault_xneg
+
+# For CUBIT 15.4
+set trimesher surface gradation {bias_factor}
+
+# For earlier versions of CUBIT
+surface all sizing function type bias start curve fault_surface_top fault_surface_bot splay_surface ground_wedge factor {bias_factor}
+
+
+# End of file
+

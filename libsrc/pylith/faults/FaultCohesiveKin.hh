@@ -137,6 +137,8 @@ private:
     FaultCohesiveKin(const FaultCohesiveKin&); ///< Not implemented
     const FaultCohesiveKin& operator=(const FaultCohesiveKin&); ///< Not implemented.
 
+    static PetscErrorCode _zero(PetscInt dim, PetscReal t, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx) {for(int c = 0; c < Nc; ++c) u[c] = 0.0;return 0;}
+
 }; // class FaultCohesiveKin
 
 #endif // pylith_faults_faultcohesivekin_hh

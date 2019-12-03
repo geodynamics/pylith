@@ -17,9 +17,10 @@
 #
 
 SUBDIRS = \
-	subduction \
-	greensfns \
-	gravity
+	box \
+	strikeslip \
+	reverse \
+	subduction
 
 
-# End of file 
+# End of file

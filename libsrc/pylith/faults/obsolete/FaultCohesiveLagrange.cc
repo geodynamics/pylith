@@ -661,7 +661,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
 
     PetscDM lagrangeDM = fields->solution().subfieldInfo("lagrange_multiplier").dm; assert(lagrangeDM);
     PetscSection lagrangeGlobalSection = NULL;
-    PetscErrorCode err = DMGetDefaultGlobalSection(lagrangeDM, &lagrangeGlobalSection); PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMGetGlobalSection(lagrangeDM, &lagrangeGlobalSection); PYLITH_CHECK_ERROR(err);
 
     _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)

@@ -31,8 +31,12 @@
 \RequirePackage{listings}
 \RequirePackage{pifont}
 \RequirePackage{calc}
-\RequirePackage[table]{xcolor}
+%\RequirePackage[table]{xcolor}
 \RequirePackage{tikz}
+\RequirePackage{makecell} % tables
+\RequirePackage{booktabs} % tables
+\RequirePackage{colortbl} % tables
+
 
 %\RequirePackage{url}
 \RequirePackage[%
@@ -273,7 +277,7 @@
     rulecolor=\color{\captioncolor},
 }}{}
 %
-% python
+% C++
 %
 \lstnewenvironment{cplusplus}[1][\@empty]{%
   \def\captioncolor{ltgreen}
@@ -374,6 +378,8 @@
 % % Features table
 \newcommand{\rlabel}[1]{\rotatebox[origin=l]{90}{#1}}
 \newcommand{\yes}{\ding{52}}
-
+%
+% Tables
+\renewcommand{\thead}[1]{{\bfseries #1}}
 
 % End of file

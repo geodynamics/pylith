@@ -12,7 +12,7 @@ SimpleGridDB {
   num-x = 1
   num-y = 6
   num-values = 2
-  value-names =  traction-shear traction-normal
+  value-names =  initial_amplitude_tangential initial_amplitude_normal
   value-units =  MPa  MPa
   space-dim = 2
   cs-data = cartesian {

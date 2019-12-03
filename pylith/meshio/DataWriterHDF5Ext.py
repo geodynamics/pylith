@@ -38,7 +38,7 @@ class DataWriterHDF5Ext(DataWriter, ModuleDataWriterHDF5Ext):
 
     import pyre.inventory
 
-    filename = pyre.inventory.str("filename", default="output.h5")
+    filename = pyre.inventory.str("filename", default="")
     filename.meta['tip'] = "Name of HDF5 file."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -54,9 +54,17 @@ class DataWriterHDF5Ext(DataWriter, ModuleDataWriterHDF5Ext):
         """
         Initialize writer.
         """
-        DataWriter.preinitialize(self, self.filename)
+        DataWriter.preinitialize(self)
+        return
 
-        ModuleDataWriterHDF5Ext.filename(self, self.filename)
+    def setFilename(self, outputDir, simName, label):
+        """
+        Set filename from default options and inventory. If filename is given in inventory, use it,
+        otherwise create filename from default options.
+        """
+        filename = self.filename or DataWriter.mkfilename(outputDir, simName, label, "h5")
+        self.mkpath(filename)
+        ModuleDataWriterHDF5Ext.filename(self, filename)
         return
 
     def close(self):

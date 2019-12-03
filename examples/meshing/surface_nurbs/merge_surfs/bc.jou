@@ -1,0 +1,39 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Buffalo
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2019 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+# Create block for materials
+# ----------------------------------------------------------------------
+block 1 volume 1
+block 1 name "domain"
+
+# ----------------------------------------------------------------------
+# Create nodeset for fault and buried edges
+# ----------------------------------------------------------------------
+group "fault" add node in surface 10 11 12
+nodeset 10 group fault
+nodeset 10 name "fault"
+
+group "fault_edge" add node in curve 27 26 30 33 32
+nodeset 11 group fault_edge
+nodeset 11 name "fault_edge"
+
+# ----------------------------------------------------------------------
+# Create nodeset for lateral boundaries and bottom
+# ----------------------------------------------------------------------
+group "domain_boundary" add node in surface 2 3 4 5 6
+nodeset 20 group domain_boundary
+nodeset 20 name "domain_boundary"
+
+

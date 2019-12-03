@@ -1,0 +1,114 @@
+% ----------------------------------------------------------------------
+\section{Incompressible Isotropic Elasticity with Infinitesimal Strain (Bathe) and No Faults or Inertia}
+
+Building from the elasticity equation
+(equations~\ref{eqn:velocity:strong:form}
+and~\ref{eqn:elasticity:order1:strong:form}), we consider an
+incompressible material. As the bulk modulus ($K$) approaches
+infinity, the volumetric strain ($\Tr(\epsilon)$) approaches zero and
+the pressure remains finite, $p = -K \Tr(\epsilon)$. We consider
+pressure $p$ as an independent variable and decompose the stress into the
+pressure and deviatoric components. As a result, we write the stress tensor in terms of both the displacement and pressure fields,
+\begin{equation}
+  \tensor{\sigma}(\vec{u},p) = \tensor{\sigma}^\mathit{dev}(\vec{u}) - p\tensor{I}.
+\end{equation}
+
+\subsection{Notation}
+\begin{itemize}
+\item Unknowns
+  \begin{description}
+  \item[$\vec{u}$] Displacement field
+  \item[$p$] Pressure field (positive pressure corresponds to negative stress)
+  \end{description}
+\item Derived quantities
+  \begin{description}
+    \item[$\tensor{\sigma}$] Stress tensor
+    \item[$\tensor{\epsilon}$] Strain tensor
+  \end{description}
+\item Constitutive parameters
+  \begin{description}
+  \item[$\mu$] Shear modulus
+  \item[$K$] Bulk modulus
+  \item[$\rho$] Density
+  \end{description}
+\item Source terms
+  \begin{description}
+    \item[$\vec{f}$] Body force per unit volume, for example $\rho \vec{g}$
+  \end{description}
+\end{itemize}
+
+
+\subsection{Implicit Time Stepping}
+
+We only consider the case of an incompressible material while
+neglecting inertia. The time dependence only arises from
+history-dependent constitutive equations and boundary conditions. We
+have
+\begin{gather}
+  % Solution
+  \vec{s}^T = \left( \vec{u} \quad \ p \right)^T, \\
+  % Elasticity
+  \vec{0} = \vec{f}(t) + \tensor{\nabla} \cdot \left(\tensor{\sigma}^\mathit{dev}(\vec{u}) - p\tensor{I}\right) \text{ in }\Omega, \\
+  % Pressure
+  0 = \vec{\nabla} \cdot \vec{u} + \frac{p}{K}, \\
+  % Neumann
+  \tensor{\sigma} \cdot \vec{n} = \vec{\tau} \text{ on }\Gamma_\tau, \\
+  % Dirichlet
+  \vec{u} = \vec{u}_0 \text{ on }\Gamma_u, \\
+  p = p_0 \text{ on }\Gamma_p.
+\end{gather}
+
+Using trial functions $\trialvec[u]$ and $\trialscalar[p]$ and
+incorporating the Neumann boundary conditions, we write the weak form
+as
+\begin{gather}
+  % Displacement
+  0 = 
+  \int_\Omega \trialvec[u] \cdot \vec{f}(t) + \nabla \trialvec[u] : \left(-\tensor{\sigma}^\mathit{dev}(\vec{u}) + p\tensor{I}
+  \right)\, d\Omega + \int_{\Gamma_\tau} \trialvec[u] \cdot \vec{\tau}(t) \, d\Gamma, \\
+  % Pressure
+  0 = \int_\Omega \trialscalar[p] \cdot \left(\vec{\nabla} \cdot \vec{u} + \frac{p}{K} \right) 
+\, d\Omega.
+\end{gather}
+
+Identifying $G(t,s)$, we have
+\begin{gather}
+  \label{eqn:incompressible:elasticity:displacement}
+  0 = \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{f}(t)}{g_0^u} + \nabla \trialvec[u] :
+  \eqnannotate{\left(-\tensor{\sigma}^\mathit{dev}(\vec{u}) + p\tensor{I}\right)}{g_1^u}  \, d\Omega
+  + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(t)}{g_0^u} \, d\Gamma, \\
+%
+  \label{eqn:incompressible:elasticity:pressure}
+  0 = \int_\Omega \trialscalar[p] \cdot \eqnannotate{\left(\vec{\nabla} \cdot \vec{u} + 
+\frac{p}{K} \right)}{g_0^p} \, d\Omega.
+\end{gather}
+
+
+\subsubsection{Jacobians}
+
+With two fields we have four Jacobians for the RHS associated with the coupling of 
+the two fields.
+\begin{align}
+  J_G^{uu} &= \frac{\partial G^u}{\partial u} = \int_\Omega \nabla \trialvec[u] : 
+\frac{\partial}{\partial u}(-
+\tensor{\sigma}^\mathit{dev}) \, d\Omega 
+  = \int_\Omega \trialscalar[u]_{i,k} \, \eqnannotate{\left(-C^\mathit{dev}_{ikjl}\right)}
+{J_{g3}^{uu}}  \, 
+\basisscalar[u]_{j,l}\, d\Omega \\
+  J_G^{up} &= \frac{\partial G^u}{\partial p} = \int_\Omega \nabla\trialvec[u] : \tensor{I} 
+\basisscalar[p] \,  d\Omega = \int_\Omega \trialscalar[u]_{i,k} \eqnannotate{\delta_{ik}}{J_{g2}^{up}} \, 
+\basisscalar[p] \, d\Omega \\
+%
+  J_G^{pu} &= \frac{\partial G^p}{\partial u} = \int_\Omega \trialscalar[p] \left(\vec{\nabla} 
+\cdot \basisvec[u]\right) \, d\Omega = \int_\Omega \trialscalar[p] \eqnannotate{\delta_{jl}}{J_{g1}^{pu}} 
+\basisscalar[u]_{j,l} \, d\Omega\\
+  J_G^{pp} &= \frac{\partial G^p}{\partial p} = \int_\Omega \trialscalar[p] \eqnannotate{\frac{1}
+{K}}{J_{g0}^{pp}} \basisscalar[p] \, d\Omega
+\end{align}
+
+For isotropic, linear incompressible elasticity, the deviatoric elastic constants are:
+\begin{align}
+    C_{1111} &= C_{2222} = C_{3333} = +\frac{4}{3} \mu \\
+    C_{1122} &= C_{1133} = C_{2233} = -\frac{2}{3} \mu \\
+    C_{1212} &= C_{1313} = C_{2323} = \mu
+\end{align}

@@ -27,6 +27,7 @@
 #include "pylith/feassemble/Constraint.hh" // USES Constraint
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 #include "pylith/problems/InitialCondition.hh" // USES InitialCondition
+#include "pylith/problems/ProgressMonitorTime.hh" // USES ProgressMonitorTime
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -53,10 +54,11 @@ public:
 // Constructor
 pylith::problems::TimeDependent::TimeDependent(void) :
     _startTime(0.0),
+    _endTime(0.0),
     _dtInitial(1.0),
-    _totalTime(0.0),
     _maxTimeSteps(0),
     _ts(NULL),
+    _monitor(NULL),
     _formulationType(IMPLICIT),
     _shouldNotifyIC(false) {
     PyreComponent::setName(_TimeDependent::pyreComponent);
@@ -79,6 +81,8 @@ pylith::problems::TimeDependent::deallocate(void) {
     Problem::deallocate();
 
     PetscErrorCode err = TSDestroy(&_ts);PYLITH_CHECK_ERROR(err);
+
+    _monitor = NULL; // Memory handle in Python. :TODO: Use shared pointer.
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -103,29 +107,29 @@ pylith::problems::TimeDependent::getStartTime(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set total time for problem.
+// Set end time for problem.
 void
-pylith::problems::TimeDependent::setTotalTime(const double value) {
+pylith::problems::TimeDependent::setEndTime(const double value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("totalTime(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("endTime(value="<<value<<")");
 
     if (value < 0.0) {
         std::ostringstream msg;
-        msg << "Total time (nondimensional) for problem (" << value << ") must be positive.";
+        msg << "End time (seconds) for problem (" << value << ") must be positive.";
         throw std::runtime_error(msg.str());
     } // if
-    _totalTime = value;
+    _endTime = value;
 
     PYLITH_METHOD_END;
-} // setTotalTime
+} // setEndTime
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get total time for problem.
+// Get end time for problem.
 double
-pylith::problems::TimeDependent::getTotalTime(void) const {
-    return _totalTime;
-} // getTotalTime
+pylith::problems::TimeDependent::getEndTime(void) const {
+    return _endTime;
+} // getEndTime
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -205,6 +209,14 @@ void
 pylith::problems::TimeDependent::setShouldNotifyIC(const bool value) {
     _shouldNotifyIC = value;
 } // setShouldNotifyIC
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set progress monitor.
+void
+pylith::problems::TimeDependent::setProgressMonitor(pylith::problems::ProgressMonitorTime* monitor) {
+    _monitor = monitor; // :KLUDGE: :TODO: Use shared pointer.
+} // setProgressMonitor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -326,14 +338,14 @@ pylith::problems::TimeDependent::initialize(void) {
     PYLITH_COMPONENT_DEBUG("Setting PetscTS parameters: dtInitial="<<_dtInitial
                                                                    <<", startTime="<<_startTime
                                                                    <<", maxTimeSteps="<<_maxTimeSteps
-                                                                   <<", totalTime="<<_totalTime);
+                                                                   <<", endTime="<<_endTime);
 
     assert(_normalizer);
     const PylithReal timeScale = _normalizer->timeScale();
     err = TSSetTime(_ts, _startTime / timeScale);PYLITH_CHECK_ERROR(err);
     err = TSSetTimeStep(_ts, _dtInitial / timeScale);PYLITH_CHECK_ERROR(err);
     err = TSSetMaxSteps(_ts, _maxTimeSteps);PYLITH_CHECK_ERROR(err);
-    err = TSSetMaxTime(_ts, _totalTime / timeScale);PYLITH_CHECK_ERROR(err);
+    err = TSSetMaxTime(_ts, _endTime / timeScale);PYLITH_CHECK_ERROR(err);
     err = TSSetDM(_ts, _solution->dmMesh());PYLITH_CHECK_ERROR(err);
 
     // Set initial solution.
@@ -375,6 +387,10 @@ pylith::problems::TimeDependent::initialize(void) {
 
     if (_shouldNotifyIC) {
         _notifyObserversInitialSoln();
+    } // if
+
+    if (_monitor) {
+        _monitor->open();
     } // if
 
     PYLITH_METHOD_END;
@@ -460,6 +476,12 @@ pylith::problems::TimeDependent::poststep(void) {
     // Notify problem observers of updated solution.
     assert(_observers);
     _observers->notifyObservers(t, tindex, *_solution);
+
+    if (_monitor) {
+        assert(_normalizer);
+        const PylithReal timeScale = _normalizer->timeScale();
+        _monitor->update(t*timeScale, _startTime, _endTime);
+    } // if
 
     PYLITH_METHOD_END;
 } // poststep

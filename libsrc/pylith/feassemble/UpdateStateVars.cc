@@ -75,7 +75,6 @@ pylith::feassemble::UpdateStateVars::stateVarsLocalVector(void) {
     return _stateVarsVecLocal;
 } // stateVarsLocalVector
 
-
 // ---------------------------------------------------------------------------------------------------------------------
 // Initialize layout for updating state variables.
 void
@@ -96,6 +95,7 @@ pylith::feassemble::UpdateStateVars::initialize(const pylith::topology::Field& a
             stateSubfieldIndices[numStateSubfields++] = info.index;
         } // if
     } // for
+    std::sort(&stateSubfieldIndices[0], &stateSubfieldIndices[numStateSubfields]);
 
     // Create subDM holding only the state vars, which we want to update.
     err = DMCreateSubDM(auxiliaryDM, numStateSubfields, &stateSubfieldIndices[0], &_stateVarsIS,

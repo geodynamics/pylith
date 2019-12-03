@@ -48,7 +48,7 @@ class RheologyElasticity(PetscComponent, ModuleRheology):
         PetscComponent.__init__(self, name, facility="rheologyelasticity")
         return
 
-    def preinitialize(self, mesh):
+    def preinitialize(self, problem):
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
         if 0 == comm.rank:
@@ -57,10 +57,11 @@ class RheologyElasticity(PetscComponent, ModuleRheology):
         self._createModuleObj()
         return
 
-    def addAuxiliarySubfields(self, material):
+    def addAuxiliarySubfields(self, material, problem):
         for subfield in self.auxiliarySubfields.components():
             fieldName = subfield.aliases[-1]
-            material.setAuxiliarySubfieldDiscretization(fieldName, subfield.basisOrder, subfield.quadOrder,
+            quadOrder = problem.defaults.quadOrder if subfield.quadOrder < 0 else subfield.quadOrder
+            material.setAuxiliarySubfieldDiscretization(fieldName, subfield.basisOrder, quadOrder,
                                                         subfield.dimension, subfield.isBasisContinuous, subfield.feSpace)
         return
 

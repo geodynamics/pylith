@@ -38,7 +38,9 @@ swig_sources = \
 	ObserverPhysics.i \
 	InitialCondition.i \
 	InitialConditionDomain.i \
-	InitialConditionPatch.i
+	InitialConditionPatch.i \
+	ProgressMonitor.i \
+	ProgressMonitorTime.i
 
 
 swig_generated = \

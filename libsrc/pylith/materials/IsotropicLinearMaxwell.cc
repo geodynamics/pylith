@@ -96,15 +96,15 @@ pylith::materials::IsotropicLinearMaxwell::addAuxiliarySubfields(void) {
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the point-wise
     // functions (kernels).
 
+    if (_useReferenceState) {
+        _auxiliaryFactory->addReferenceStress();
+        _auxiliaryFactory->addReferenceStrain();
+    } // if
     _auxiliaryFactory->addShearModulus();
     _auxiliaryFactory->addBulkModulus();
     _auxiliaryFactory->addMaxwellTime();
     _auxiliaryFactory->addViscousStrain();
     _auxiliaryFactory->addTotalStrain();
-    if (_useReferenceState) {
-        _auxiliaryFactory->addReferenceStress();
-        _auxiliaryFactory->addReferenceStrain();
-    } // if
 
     PYLITH_METHOD_END;
 } // addAuxiliarySubfields

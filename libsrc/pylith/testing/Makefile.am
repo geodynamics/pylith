@@ -26,12 +26,12 @@ subpkginclude_HEADERS = \
 	FieldTester.hh \
 	PhysicsStub.hh \
 	PhysicsImplementationStub.hh \
+	ProgressMonitorStub.hh \
 	ObserverPhysicsStub.hh \
 	ObserverSolnStub.hh \
 	MMSTest.hh \
+	TestDriver.hh \
 	testingfwd.hh
-
-noinst_HEADERS =
 
 endif
 

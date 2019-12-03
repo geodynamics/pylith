@@ -381,20 +381,15 @@ pylith::feassemble::IntegratorDomain::_updateStateVars(const PylithReal t,
     assert(_updateState);
     assert(_auxiliaryField);
     _updateState->prepare(_auxiliaryField);
-    _setKernelConstants(*_auxiliaryField, dt);
+    _setKernelConstants(solution, dt);
 
-    // Set update kernel for each auxiliary subfield.
-    const pylith::string_vector& subfieldNames = _auxiliaryField->subfieldNames();
-    const size_t numAuxiliarySubfields = subfieldNames.size();
-    PetscPointFunc* kernelsStateVars = (numAuxiliarySubfields > 0) ? new PetscPointFunc[numAuxiliarySubfields] : NULL;
-    // By default, set all auxiliary subfield update kernels to NULL.
-    for (size_t i = 0; i < numAuxiliarySubfields; ++i) {
-        kernelsStateVars[i] = NULL;
-    } // for
+    // We assume order of the update state variable kernels matches
+    // the order of the correspoinding subfields in the auxiliary
+    // field.
     const size_t numKernels = _kernelsUpdateStateVars.size();
+    PetscPointFunc* kernelsStateVars = (numKernels > 0) ? new PetscPointFunc[numKernels] : NULL;
     for (size_t iKernel = 0; iKernel < numKernels; ++iKernel) {
-        const pylith::topology::Field::SubfieldInfo& sinfo = _auxiliaryField->subfieldInfo(_kernelsUpdateStateVars[iKernel].subfield.c_str());
-        kernelsStateVars[sinfo.index] = _kernelsUpdateStateVars[iKernel].f;
+        kernelsStateVars[iKernel] = _kernelsUpdateStateVars[iKernel].f;
     } // for
 
     PetscErrorCode err = 0;
@@ -425,7 +420,7 @@ pylith::feassemble::IntegratorDomain::_computeDerivedField(const PylithReal t,
     } // if
 
     assert(_derivedField);
-    _setKernelConstants(*_derivedField, dt);
+    _setKernelConstants(solution, dt);
 
     const size_t numKernels = _kernelsDerivedField.size();
     PetscPointFunc* kernelsArray = (numKernels > 0) ? new PetscPointFunc[numKernels] : NULL;

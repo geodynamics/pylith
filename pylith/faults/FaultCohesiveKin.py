@@ -78,7 +78,7 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
         FaultCohesive.__init__(self, name)
         return
 
-    def preinitialize(self, mesh):
+    def preinitialize(self, problem):
         """
         Do pre-initialization setup.
         """
@@ -87,7 +87,7 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
         if 0 == comm.rank:
             self._info.log("Pre-initializing fault '%s'." % self.label)
 
-        FaultCohesive.preinitialize(self, mesh)
+        FaultCohesive.preinitialize(self, problem)
 
         for eqsrc in self.eqRuptures.components():
             eqsrc.preinitialize()

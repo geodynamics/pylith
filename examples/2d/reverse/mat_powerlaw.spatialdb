@@ -1,0 +1,31 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values =      14
+  value-names = density vs vp power_law_reference_stress power_law_reference_strain_rate power_law_exponent viscous_strain_xx viscous_strain_yy viscous_strain_zz viscous_strain_xy stress_xx stress_yy stress_zz stress_xy
+  value-units = kg/m**3 m/s m/s Pa 1/s none none none none none Pa Pa Pa Pa
+  num-locs =     1
+  data-dim =    0
+  space-dim =    2
+  cs-data = cartesian {
+    to-meters = 1
+    space-dim = 2
+  }
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) density (kg/m**3)
+// (4) vs (m/s)
+// (5) vp (m/s)
+// (6) Power-law reference stress (Pa)
+// (7) Power-law reference strain rate (1/s)
+// (8) Power-law exponent (none)
+// (9) viscous_strain_xx (none)
+// (10) viscous_strain_yy (none)
+// (11) viscous_strain_zz (none)
+// (12) viscous_strain_xy (none)
+// (13) stress_xx (none)
+// (14) stress_yy (none)
+// (15) stress_zz (none)
+// (16) stress_xy (none)
+  0.0 0.0  2000.0 1200.0 2078.460969082653 1.0e+07 1.000000e-06 3.500 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0

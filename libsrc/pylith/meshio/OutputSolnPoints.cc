@@ -252,6 +252,7 @@ pylith::meshio::OutputSolnPoints::_interpolateField(const pylith::topology::Fiel
             fieldInterp->subfieldAdd(sinfo.description, sinfo.fe);
         } // for
         fieldInterp->subfieldsSetup();
+        fieldInterp->createDiscretization();
         fieldInterp->allocate();
     } // if
     fieldInterp->label(field.label());

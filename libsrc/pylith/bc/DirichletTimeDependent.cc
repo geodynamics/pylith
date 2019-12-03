@@ -285,6 +285,7 @@ pylith::bc::DirichletTimeDependent::createAuxiliaryField(const pylith::topology:
     } // _useTimeHistory
 
     auxiliaryField->subfieldsSetup();
+    auxiliaryField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
     auxiliaryField->allocate();
     auxiliaryField->zeroLocal();
@@ -352,7 +353,7 @@ pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::Con
           << "setKernelConstraint(constraint="<<constraint<<", bc="<<typeid(bc).name()<<", solution="<<solution.label()
           <<")" << journal::endl;
 
-    PetscPointFunc bcKernel = NULL;
+    PetscBdPointFunc bcKernel = NULL;
 
     const pylith::topology::Field::VectorFieldEnum fieldType = solution.subfieldInfo(bc.getSubfieldName()).description.vectorFieldType;
     const bool isScalarField = fieldType == pylith::topology::Field::SCALAR;

@@ -1,0 +1,134 @@
+\section{Multiphysics Finite-Element Formulation}
+\label{sec:multiphysics:formulation}
+
+Within the PETSc solver framework, we want to solve a system of
+partial differential equations in which the strong form can be
+expressed as $F(t,s,\dot{s}) = G(t,s)$, $s(t_0) = s_0$, where $F$ and
+$G$ are vector functions, $t$ is time, and $s$ is the solution vector.
+
+Using the finite-element method we manipulate the weak form of the
+system of equations involving a vector field $\vec{u}$ into integrals
+over the domain $\Omega$ with the form,
+\begin{equation}
+  \label{eqn:problem:form}
+  \int_\Omega \trialvec[u] \cdot \vec{f}_0(t,s,\dot{s}) + \nabla \trialvec[u] : \tensor{f}
+_1(t,s,\dot{s}) \, 
+d\Omega =
+  \int_\Omega \trialvec[u] \cdot \vec{g}_0(t,s) + \nabla \trialvec[u] : \tensor{g}_1(t,s) \, 
+d\Omega,
+\end{equation}
+where $\trialvec[u]$ is the trial function for field $\vec{u}$,
+$\vec{f}_0$ and $\vec{g}_0$ are vectors, and $\tensor{f}_1$ and
+$\tensor{g}_1$ are tensors. With multiple partial differential
+equations we will have multiple equations of this form, and the
+solution vector $s$, which we usually write as $\vec{s}$, will be
+composed of several different fields, such as displacement $\vec{u}$,
+velocity $\vec{v}$, pressure $p$, and temperature $T$.
+
+For consistency with the PETSc time stepping formulation, we call
+$G(t,s)$ the RHS function and call $F(t,s,\dot{s})$ the LHS (or I)
+function. Likewise, the Jacobian of $G(t,s)$ is the RHS Jacobian and
+the Jacobian of $F(t,s,\dot{s})$ is the LHS Jacobian. In most cases,
+we can take $F(t,s,\dot{s}) = \dot{s}$, or as close to this as
+possible. This results in miminal changes to the formulation in order
+to accommodate both implicit and explicit time stepping algorithms.
+
+Using a finite-element discretization we break up the domain and
+boundary integrals into sums over the cells and boundary faces/edges,
+respectively. Using numerical quadrature those sums in turn involve
+sums over the values at the quadrature points with appropriate
+weights. Thus, computation of the RHS function boils down to
+point-wise evaluation of $\vec{g}_0(t,s)$ and $\tensor{g}_1(t,s)$, and
+computation of the LHS function boils down to point-wise evaluation of
+$\vec{f}_0(t,s,\dot{s})$ and $\tensor{f}_1(t,s,\dot{s})$.
+
+\subsection{Jacobian}
+
+The LHS Jacobian $J_F$ is $\frac{\partial F}{\partial s} +
+s_\mathit{tshift} \frac{\partial F}{\partial \dot{s}}$ and the RHS
+Jacobian $J_G$ is $\frac{\partial G}{\partial s}$, where
+$s_\mathit{tshift}$ arises from the temporal discretization . We put
+the Jacobians for each equation in the form:
+\begin{align}
+  \label{eqn:jacobian:form}
+  J_F &= \int_\Omega \trialvec \cdot \tensor{J}_{f0}(t,s,\dot{s}) \cdot \basisvec
+  + \trialvec \cdot \tensor{J}_{f1}(t,s,\dot{s}) : \nabla \basisvec
+  + \nabla \trialvec : \tensor{J}_{f2}(t,s,\dot{s}) \cdot \basisvec
+  + \nabla \trialvec : \tensor{J}_{f3}(t,s,\dot{s}) : \nabla \basisvec \, d\Omega \\
+%
+  J_G &= \quad \int_\Omega \trialvec \cdot \tensor{J}_{g0}(t,s) \cdot \basisvec
+  + \trialvec \cdot \tensor{J}_{g1}(t,s) : \nabla \basisvec
+  + \nabla \trialvec : \tensor{J}_{g2}(t,s) \cdot \basisvec
+  + \nabla \trialvec : \tensor{J}_{g3}(t,s) : \nabla \basisvec \, d\Omega,
+\end{align}
+where $\basisvec$ is a basis function.  Expressed in index notation
+the Jacobian coupling solution field components $s_i$ and $s_j$ is
+\begin{equation}
+\label{eqn:jacobian:index:form}
+J^{s_is_j} = \int_\Omega \trialscalar_i J_0^{s_is_j} \basisscalar_j + \trialscalar_i 
+J_1^{s_js_jl} 
+\basisscalar_{j,l} + \trialscalar_{i,k} J_2^{s_is_jk} \basisscalar_j + \trialscalar_{i,k} 
+J_3^{s_is_jkl} 
+\basisscalar_{j,l} \, d\Omega, 
+\end{equation}
+It is clear that the tensors $J_0$, $J_1$, $J_2$, and $J_3$ have
+various sizes: $J_0(n_i,n_j)$, $J_1(n_i,n_j,d)$, $J_2(n_i,n_j,d)$,
+$J_3(n_i,n_j,d,d)$, where $n_i$ is the number of components in
+solution field $s_i$, $n_j$ is the number of components in solution
+field $s_j$, and $d$ is the spatial dimension.  Alternatively,
+expressed in discrete form, the Jacobian for the coupling between
+solution fields $s_i$ and $s_j$ is
+\begin{equation}
+  \label{eqn:jacobian:discrete:form}
+  J^{s_is_j} = J_{0}^{s_is_j} + J_{1}^{s_is_j} B + B^T J_{2}^{s_is_j} + B^T J_{3}^{s_is_j} B,
+\end{equation}
+where $B$ is a matrix of the derivatives of the basis functions and $B^T$
+is a matrix of the derivatives of the trial functions. 
+
+\important{See
+  \url{http://www.mcs.anl.gov/petsc/petsc-master/docs/manualpages/DT/PetscFEIntegrateJacobian.html}
+  for the ordering of indicies in the Jacobian pointwise functions.}
+
+%\brad{I think it is very important that we have a way to control
+%  allocation of the sparse matrix. We do not want to allocate portions
+%  that are not coupled, because it is way too much memory. A simple
+%  way to do this would be to create an array that is \#fields x
+%  \#fields and have the materials populate it with values to indicate
+%  whether they couple those fields or not. We could use a value to
+%  indicate if the Jacobian was diagonal or not as well.}
+
+\subsection{PETSc TS Notes}
+
+\begin{itemize}
+\item If no LHS (or I) function is given, then the PETSc TS assumes $F(t,s,\dot{s}) = \dot{s}
+$.
+\item If no RHS function is given, then the PETSc TS assumes $G(t,s) = 0$.
+\item Explicit time stepping with the PETSc TS requires
+  $F(t,s,\dot{s}) = \dot{s}$.
+  \begin{itemize}
+  \item Because $F(t,s,\dot{s}) = \dot{s}$, we do not specify the
+    functions $\vec{f}_0(t,s,\dot{s})$ and $\tensor{f}_1(t,s,\dot{s})$
+    because the PETSc TS will assume this is the case if no LHS (or I)
+    function is given.
+  \item We also do not specify $J_F$ or $J_G$.
+  \item This leaves us with only needing to specify $\vec{g}_0(t,s)$
+    and $\tensor{g}_1(t,s)$. 
+  \item The PETSc TS will verify that the LHS (or I) function is null.
+  \end{itemize}
+\end{itemize}
+
+\subsection{Explicit Time Stepping}
+
+For explicit time stepping with the PETSc TS, we need $F(t,s,\dot{s})
+= \dot{s}$. Using a finite-element formulation, $F(t,s,\dot{s})$
+generally involves integrals of the inertia over the domain. It is
+tempting to simply move these terms to the RHS, but that introduces
+inertial terms into the boundary conditions, which makes them less
+intuitive. Instead, we transform our equation into the form
+$F^*(t,s,\dot{s}) = \dot{s} = G^*(t,s)$ by writing $F(t,s,\dot{s}) = M
+\dot{s}$, so that $\dot{s} = M^{-1} G(t,s) = G^*(t,s)$. We take $M$ to
+be a lumped (diagonal) matrix, so that $M^{-1}$ is trivial to
+compute. In computing the RHS function, $G^*(t,s)$, we compute
+$G(t,s)$, then compute $M$ and $M^{-1}$, and then $M^{-1}G(t,s)$. For
+the elasticity equation with inertial terms, $M$ contains the mass
+matrix.

@@ -33,7 +33,6 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <cassert> // USES assert()
-#include <typeinfo> // USES typeid()
 #include <stdexcept> // USES std::runtime_error
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -166,9 +165,11 @@ pylith::feassemble::Constraint::initialize(const pylith::topology::Field& soluti
     pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 
     assert(_physics);
-    _observers = _physics->getObservers();assert(_observers); // Memory managed by Physics
-    _observers->setPhysicsImplementation(this);
-    _observers->setTimeScale(_physics->getNormalizer().timeScale());
+    _observers = _physics->getObservers(); // Memory managed by Physics
+    if (_observers) {
+        _observers->setPhysicsImplementation(this);
+        _observers->setTimeScale(_physics->getNormalizer().timeScale());
+    } // if
 
     PYLITH_METHOD_END;
 } // initialize

@@ -1,14 +1,13 @@
 \documentclass[crop,tikz]{standalone}
 \usepackage{tikz}
-\usetikzlibrary{external}
-\tikzexternalize % activate
+\usepackage{times}
 
 \begin{document}
 
 \pgfdeclarelayer{background}
 \pgfsetlayers{background,main}
 
-\usetikzlibrary{arrows,shapes}
+\usetikzlibrary{arrows,shapes,positioning}
 \input{../../palettes/figcolors}
 \tikzstyle{maincomps} = [rectangle, text centered, very thick, font=\bf\large]
 \tikzstyle{mesh} = [maincomps, draw=green!0!white, fill=ltgreen!50!white]
@@ -27,7 +26,7 @@
                       top color=ltred!50!white,
                       bottom color=red]
 
-\tikzstyle{subcomps} = [rectangle, text width=6em, text centered, very thick, minimum height=1.5em, font=\small, node distance=9.0em]
+\tikzstyle{subcomps} = [rectangle, text width=6em, text centered, very thick, minimum height=1.5em, font=\small, node distance=2.0em]
 \tikzstyle{app} = [subcomps,
                       rounded corners=0.75em,
                       draw=orange!80!black,
@@ -49,45 +48,45 @@
 \tikzstyle{connect} = [very thick]
 \tikzstyle{connect_opt} = [connect, dashed]
 
-\begin{tikzpicture}[node distance=15.0em]
+\begin{tikzpicture}[node distance=3.0em]
 
   \begin{pgfonlayer}{background}
     
     \node (pylith) [pylith] {PyLith};
 
-    \node (mesh) [mesh, above left of=pylith, text depth=11em, minimum width=26em, xshift=-5em] {Mesh Generator};
-    \node (params) [params, above right of=pylith, text depth=11em, minimum width=18em, xshift=+5em] {Simulation Parameters};
-    \node (viz) [visualize, below left of=pylith, text height=12em, minimum width=18em] {Visualization};
-    \node (postprocess) [postprocess, right of=viz, text height=8em, xshift=5em] {Post-processing};
+    \node (mesh) [mesh, above left=of pylith, text depth=11em, minimum width=26em, xshift=0em] {Mesh Generator};
+    \node (params) [params, above right=of pylith, text depth=11em, minimum width=18em, xshift=0em] {Simulation Parameters};
+    \node (viz) [visualize, below= of pylith, text height=15em, minimum width=18em] {Visualization};
+    \node (postprocess) [postprocess, right=of viz, text height=8em, xshift=5em] {Post-processing};
     
   \end{pgfonlayer}
   
   % Mesh
   \node (cubit) [app, xshift=-9em, yshift=+3em] at (mesh) {CUBIT / Trelis};
-  \node (exodus) [input, below of=cubit, yshift=+4em] {Exodus file [.exo]};
+  \node (exodus) [input, below=of cubit, yshift=1em] {Exodus file [.exo]};
 
-  \node (lagrit) [app, right of=cubit] {LaGriT};
-  \node (gmvpset) [input, below of=lagrit, yshift=+4em] {GMV File [.gmv] \par Pset File [.pset]};
+  \node (lagrit) [app, right=of cubit] {LaGriT};
+  \node (gmvpset) [input, below=of lagrit, yshift=+1em] {GMV File [.gmv] \par Pset File [.pset]};
 
-  \node (textedit) [app, right of=lagrit] {Text Editor};
-  \node (asciimesh) [input, below of=textedit, yshift=+4em] {ASCII File [.mesh]};
+  \node (textedit) [app, right=of lagrit] {Text Editor};
+  \node (asciimesh) [input, below=of textedit, yshift=+1em] {ASCII File [.mesh]};
 
   % Simulation parameters
   \node (textedit2) [app, yshift=+3em] at (params) {Text Editor};
-  \node (cfg) [input, below of=textedit2, xshift=-4.5em, yshift=+4em] {Parameter File(s) [.cfg]};
-  \node (spatialdb) [input, right of=cfg] {Spatial Database(s) [.spatialdb]};
+  \node (cfg) [input, below=of textedit2, xshift=-4.5em, yshift=+1em] {Parameter File(s) [.cfg]};
+  \node (spatialdb) [input, right=of cfg] {Spatial Database(s) [.spatialdb]};
 
   % Visualization
   \node (vtk) [output, xshift=-4.5em, yshift=+2em] at (viz) {VTK File(s) [.vtk]};
-  \node (hdf5) [output, right of=vtk] {HDF5 File(s) [.h5] \par Xdmf File(s) [.xmf]};
+  \node (hdf5) [output, right=of vtk] {HDF5 File(s) [.h5] \par Xdmf File(s) [.xmf]};
 
-  \node (paraview) [app, below of=vtk, yshift=+4em] {ParaView};
-  \node (visit) [app, right of=paraview] {Visit};
+  \node (paraview) [app, below=of vtk, yshift=-2em] {ParaView};
+  \node (visit) [app, right=of paraview] {Visit};
 
 
   % Post-processing
   \node (h5py) [app, yshift=+2em] at (postprocess) {Python w/h5py};
-  \node (matlab) [app, below of=h5py, yshift=+6em] {Matlab};
+  \node (matlab) [app, below=of h5py, yshift=1em] {Matlab};
 
   % Main workflow
   \draw[connect_opt] (exodus.south) |- (mesh.south);

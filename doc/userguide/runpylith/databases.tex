@@ -1,57 +1,63 @@
-\section{Databases for Boundaries, Interfaces, and Material Properties}
+\section{Databases for Boundary, Interface, and Material Property Values}
 \label{sec:spatial:databases}
 
-Once the problem has been defined with PyLith parameters, and the
-mesh information has been provided, the final step is to specify the
-boundary conditions and material properties to be used. The mesh information
-provides labels defining sets of vertices to which boundary conditions
-or fault conditions will be applied, as well as cell labels that will
-be used to define the material type of each cell. For boundary conditions,
-the \filename{cfg} file is used to associate boundary condition types
-and spatial databases with each vertex group (see Chapter \vref{cha:boundary:interface:conditions}).
-For materials, the \filename{cfg} file is used to associate material
-types and spatial databases with cells identified by the material
-identifier (see Figure \vref{fig:material:models}).
+Once the problem has been defined with PyLith parameters and the
+discretization of the domain with the finite-element mesh, the final
+step is to specify the boundary conditions and material
+properties. The mesh information provides labels defining sets of
+vertices to which boundary conditions or fault conditions will be
+applied, as well as cell labels that will be used to define the
+material type of each cell. For boundary conditions, the
+\filename{cfg} file is used to associate boundary condition types and
+spatial databases with each vertex group (see Chapter
+\vref{cha:boundary:interface:conditions}).  For materials, the
+\filename{cfg} file is used to associate material types and spatial
+databases with cells identified by the material identifier (see Figure
+\vref{fig:material:models}).
 
 The spatial databases define how the boundary conditions or material
 property values vary spatially, and they can be arbitrarily complex.
-The simplest example for a material database would be a mesh where
-all the cells of a given type have uniform properties (``point''
-or 0D variation). A slightly more complex case would be a mesh where
-the cells of a given type have properties that vary linearly along
-a given direction (``line'' or 1D variation). In more complex models,
-the material properties might have different values at each point
-in the mesh (``volume'' or 3D variation). This might be the case,
-for example, if the material properties are provided by a database
-of seismic velocities and densities. For boundary conditions the simplest
-case would be where all vertices in a given group have the same boundary
-condition parameters (``point'' or 0D variation). A more complex
-case might specify a variation in the conditions on a given surface
-(``area'' or 2D variation). This sort of condition might be used,
-for example, to specify the variation of slip on a fault plane. The
-examples discussed in Chapter \vref{cha:examples} also contain more
-information regarding the specification and use of the spatial database
-files.
+The simplest example for a material database would be a mesh where all
+the cells of a given type have uniform properties (``point'' or 0D
+variation). A slightly more complex case would be a mesh where the
+cells of a given type have properties that vary linearly along a given
+direction (``line'' or 1D variation). In more sophisticated models,
+the material properties might have different values at each point in
+the mesh (``volume'' or 3D variation). This might be the case, for
+example, if the material properties are provided by a database of
+seismic velocities and densities.
+
+For boundary conditions the simplest case would be where all vertices
+in a given group have the same boundary condition parameters
+(``point'' or 0D variation). A more complex case might specify a
+variation in the conditions on a given surface (``area'' or 2D
+variation). This sort of condition might be used, for example, to
+specify the variation of slip on a fault plane. The examples discussed
+in Chapter \vref{cha:examples} also contain more information regarding
+the specification and use of the spatial database files.
 
 
 \subsection{\object{SimpleDB} Spatial Database}
+\label{sec:SimpleDB}
 
-In most cases the default type of spatial database for faults, boundary
-conditions, and materials is \object{SimpleDB}. Spatial database files
-provide specification of a field over some set of points. There is
-no topology associated with the points. Although multiple values can
+In most cases we set the default type of spatial database to
+\object{SimpleDB}. It is very flexible and can represent spatial
+variations from uniform properties with a single point to arbitrarily
+complex with irregularly spaced points. This spatial database does not
+associated any topology with the points. Although multiple values can
 be specified at each point with more than one value included in a
-search query, the interpolation of each value will be done independently.
-Time dependent variations of a field are not supported in these files.
+search query, the interpolation of each value will be done
+independently.  Temporal variations of a field are not supported.
+
 Spatial database files can specify spatial variations over zero, one,
-two, and three dimensions. Zero dimensional variations correspond
-to uniform values. One-dimensional spatial variations correspond to
-piecewise linear variations, which need not coincide with coordinate
-axes. Likewise, two-dimensional spatial variations correspond to variations
-on a planar surface (which need not coincide with the coordinate axes)
-and three-dimensional spatial variations correspond to variations
-over a volume. In one, two, or three dimensions, queries can use a
-``nearest value'' search or linear interpolation.
+two, and three dimensions. Zero dimensional variations correspond to
+uniform values. One-dimensional spatial variations correspond to
+piece-wise linear variations, which need not coincide with coordinate
+axes. Likewise, two-dimensional spatial variations correspond to
+variations on a planar surface (which need not coincide with the
+coordinate axes) and three-dimensional spatial variations correspond
+to variations over a volume. In one, two, or three dimensions, queries
+can use a ``nearest value'' search or linear interpolation.
 
 The spatial database files need not provide the data using the same
 coordinate system as the mesh coordinate system, provided the two
@@ -71,7 +77,12 @@ coordinate system combines latitude, longitude, and elevation in meters
 in meters leading to distorted ``distance'' between locations and
 interpolation).
 
-\object{SimpleDB} uses a simple ASCII file to specify the variation of values (e.g., displacement field, slip field, physical properties) in space.  The file format is described in Section \vref{sec:format:SimpleIOAscii}.  The examples in Chapter \vref{cha:examples} use \object{SimpleDB} files to specify the values for the boundary conditions, physical properties, and fault slip.
+\object{SimpleDB} uses a simple ASCII file to specify the variation of
+values (e.g., displacement field, slip field, physical properties) in
+space.  The file format is described in Section
+\vref{sec:format:SimpleIOAscii}.  The examples in Chapter
+\vref{cha:examples} use \object{SimpleDB} files to specify the values
+for the boundary conditions, physical properties, and fault slip.
 
 As in the other Pyre objects, spatial database objects contain parameters
 that can be set from the command line or using \filename{cfg}
@@ -92,17 +103,19 @@ so you do not need to change this setting.}
 \end{cfg}
 
 \subsection{\object{UniformDB} Spatial Database}
+\label{sec:UniformDB}
 
-The \object{SimpleDB} spatial database is quite general, but when the values
-are uniform, it is often easier to use the \object{UniformDB} spatial database
-instead. With the \object{UniformDB}, you specify the values directly either
-on the command line or in a parameter-setting (\filename{cfg}) file.
-On the other hand, if the values are used in more than one place,
-it is easier to place the values in a \object{SimpleDB} file, because they
-can then be referred to using the filename of the spatial database
-rather than having to repeatedly list all of the values on the command
-line or in a parameter-setting (\filename{cfg}) file. The properties
-for a \object{UniformDB} are:
+The \object{SimpleDB} spatial database is quite general, but when the
+values are uniform, it is often easier to use the \object{UniformDB}
+spatial database instead. With the \object{UniformDB}, you specify the
+values directly either on the command line or in a parameter-setting
+(\filename{cfg}) file.  On the other hand, if the values are used in
+more than one place, it is easier to place the values in a
+\object{SimpleDB} file, because they can then be repeatedly referred
+to using the filename of the spatial database rather than having to
+repeatedly list all of the values on the command line or in a
+parameter-setting (\filename{cfg}) file. The properties for a
+\object{UniformDB} are:
 \begin{inventory}
 \propertyitem{values}{Array of names of values in spatial database.}
 \propertyitem{data}{Array of values in spatial database.}
@@ -119,23 +132,26 @@ isotropic material in a \filename{cfg} file. The data values are
 dimensioned with the appropriate units using Python syntax.
 
 
-\subsubsection{\object{ZeroDispDB}}
+\subsubsection{\object{ZeroDB}}
+\label{sec:ZeroDB}
 
-The \object{ZeroDispDB} is a special case of the \object{UniformDB} for the Dirichlet
-boundary conditions. The values in the database are the ones requested
-by the Dirichlet boundary conditions, \filename{displacement-x}, \filename{displacement-y},
-and \filename{displacement-z}, and are all set to zero. This makes it
-trivial to set displacements to zero on a boundary. The examples discussed
-in Chapter \vref{cha:examples} use this database.
+The \object{ZeroDB} is a special case of the \object{UniformDB} for
+Dirichlet boundary conditions. The values in the database are the ones
+requested by the Dirichlet boundary conditions and are all set to
+zero. This makes it trivial to set a solution subfield (scalar or
+vector) to zero on a boundary. Several examples discussed in Chapter
+\vref{cha:examples} use this database.
 
 
 \subsection{\object{SimpleGridDB} Spatial Database}
+\label{sec:SimpleGridDB}
 
 The \object{SimpleGridDB} object provides a much more efficient query
-algorithm than \object{SimpleDB} in cases with a orthogonal grid. The
-points do not need to be uniformly spaced along each coordinate
-direction. Thus, in contrast to the \object{SimpleDB} there is an
-implicit topology. Nevertheless, the points can be specified in any
+algorithm than \object{SimpleDB} by requiring the points to lie in a
+orthogonal grid. The points do not need to be uniformly spaced along
+each coordinate direction. Thus, in contrast to the \object{SimpleDB}
+there is an implicit topology with the \object{SimpleGridDB} as the
+name suggests. Nevertheless, the point values can be specified in any
 order, as well as over a lower-dimension than the spatial dimension.
 For example, one can specify a 2-D grid in 3-D space provided that the
 2-D grid is aligned with one of the coordinate axes.
@@ -205,6 +221,7 @@ below this elevation remains undistorted).}
 \end{cfg}
 
 \subsection{\object{CompositeDB} Spatial Database}
+\label{sec:composite:database}
 
 For some problems, a boundary condition or material property may have
 subsets with different spatial variations. One example would be when
@@ -247,7 +264,36 @@ mechanism for specifying material properties or boundary conditions
 where the variations come from two different sources.
 
 
-\subsection{\object{TimeHistory} Database}
+\subsection{\protect\object{GravityField}}
+\label{sec:gravity:field}
+
+Many problems in geophysics require the consideration of gravitational
+body forces. For example, it is often important to include the effects
+of the lithostatic (overburden) pressure. The \object{GravityField}
+object specifies the gravity field, both direction and gravitational
+acceleration. The properties are:
+
+\begin{inventory}
+  \propertyitem{gravity\_dir}{Direction of gravitational body force
+    (default=[0,0,-1], only used with a Cartesian coordinate system);}
+  \propertyitem{acceleration}{Gravitational acceleration
+    (default=9.80665*m/s**2); and}
+  \propertyitem{label}{Descriptive label for gravity field
+    (default=Gravity field).}
+\end{inventory}
+
+\begin{cfg}[Specifying the gravity field for PyLith in a \filename{cfg} file]
+<h>[pylithapp.problem]</h>
+<f>gravity_field</f> = spatialdata.spatialdb.GravityField
+
+<h>[pylithapp.problem.gravity_field]</h>
+<p>acceleration</p> = 100.0*m/s**2
+<p>gravity_dir</p> = [0, -1, 0]
+\end{cfg}
+
+
+\subsection{\protect\object{TimeHistory} Database}
+\label{sec:time:history:database}
 
 The \object{TimeHistory} database specifies the temporal variation in the
 amplitude of a field associated with a boundary condition. It is used

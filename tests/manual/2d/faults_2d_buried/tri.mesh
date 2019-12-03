@@ -1,0 +1,107 @@
+// Domain
+// -6 km <= x <= +6 km
+// -16 km <= y <= 0 km
+//
+// Nominal vertex spacing is 4 km.
+//
+//  4 ----- 9 ---- 14 ---- 19
+//  |       |       |       |
+//  |   9   |  10   |  11   |
+//  |       |       |       |
+//  3 ----- 8 ---- 13 ---- 18
+//  |       |       |       |
+//  |   6   |   7   |   8   |
+//  |       |       |       |
+//  2 ----- 7 ---- 12 ---- 17
+//  |       |       |       |
+//  |   3   |   4   |   5   |
+//  |       |       |       |
+//  1 ----- 6 ---- 11 ---- 16
+//  |       |       |       |
+//  |   0   |   1   |   2   |
+//  |       |       |       |
+//  0 ----- 5 ---- 10 ---- 15
+//
+mesh = {
+  dimension = 2
+  use-index-zero = true
+  vertices = {
+    dimension = 2
+    count = 9
+    coordinates = {
+             0      0.0      0.0
+             1      0.0      5.0e+3
+             2      0.0      1.0e+4
+             3      5.0e+3   0.0
+             4      5.0e+3   5.0e+3
+             5      5.0e+3   1.0e+4
+             6      1.0e+4   0.0
+             7      1.0e+4   5.0e+3
+             8      1.0e+4   1.0e+4
+    }
+  }
+  cells = {
+    count = 8
+    num-corners = 3
+    simplices = {
+             0       0  4  1
+             1       0  3  4
+             2       3  6  4
+             3       6  7  4
+             4       1  4  2
+             5       4  5  2
+             6       4  8  5
+             7       4  7  8
+    }
+    material-ids = {
+             0   0
+             1   0
+             2   0
+             3   0
+             4   0
+             5   0
+             6   0
+             7   0
+    }
+  }
+  group = {
+    name = boundary_xneg
+    type = vertices
+    count = 3
+    indices = {
+      0  1  2
+    }
+  }
+  group = {
+    name = boundary_yneg
+    type = vertices
+    count = 3
+    indices = {
+      0  3  6
+    }
+  }
+  group = {
+    name = fault
+    type = vertices
+    count = 2
+    indices = {
+      4  8
+    }
+  }
+  group = {
+    name = fault_edge
+    type = vertices
+    count = 1
+    indices = {
+      4
+    }
+  }
+  group = {
+    name = boundary_ypos
+    type = vertices
+    count = 3
+    indices = {
+      2  5  8
+    }
+  }
+}

@@ -39,7 +39,7 @@ source. See Chapter~\vref{cha:extending} for more information on
 extending PyLith.
 
 Binary executables are available for Linux (glibc 2.12 and later) and
-Mac OS X (Intel 10.10 and later) from the PyLith web page
+Mac OS X (Intel 10.13 and later) from the PyLith web page
 \url{geodynamics.org/cig/software/packages/short/pylith/}. Users
 running Windows 10 build 14316 and later can install a Linux bash
 environment and use the PyLith binary for Linux (see
@@ -66,11 +66,11 @@ $ cd pylith
 \item Unpack the tarball.
   \begin{shell}
 # Linux 32-bit
-$ tar -xzf pylith-2.2.1-linux-i686.tgz
+$ tar -xzf pylith-3.0.0beta-linux-i686.tgz
 # Linux 64-bit
-$ tar -xzf pylith-2.2.1-linux-x86_64.tgz
+$ tar -xzf pylith-3.0.0beta-linux-x86_64.tgz
 # Mac OS X
-$ tar -xzf pylith-2.2.1-darwin-10.11.6.tgz
+$ tar -xzf pylith-3.0.0beta-darwin-10.11.6.tgz
   \end{shell}
 \item Set environment variables. The provided \filename{setup.sh}
   script only works if you are using bash shell. If you are using a
@@ -139,7 +139,8 @@ binary distribution.
 \begin{description}
 \item[Darwin] The binary package includes the header files for PyLith
   and all of its dependencies. Use the clang compiler and Python
-  provided with the operating system. You will need to install XTools.
+  provided with the operating system. You will need to install XCode
+  command line tools or XCode.
 \item[Linux] The binary package includes the GNU compilers, Python, as
   well as header files for PyLith and all of its dependencies.
 \end{description}
@@ -148,130 +149,6 @@ binary distribution.
   repository and build from source using the PyLith Installer Utility
   to facilitate contributing these features back into the CIG
   repository via pull requests.}
-
-\section{Installation of PyLith Docker Container}
-
-As an alternative to installing a binary package, we provide a Docker
-container for running PyLith in a self-contained virtual
-environment. Docker containers provide a self-contained virtual
-environment that are a smaller, simpler alternative to a virtual
-machine. The PyLith Docker container provides a Debian Linux
-environment with a pre-built PyLith executable, vim text editor,
-iceweasel (GNU version of Firefox) web-browser, and the matplotlib
-Python module.
-
-\tip{In nearly all cases, installing a PyLith binary provides easier
-  integration with mesh generation and post-processing tools, so
-  binaries are the preferred approach to using the PyLith Docker
-  container. This installation method targets users running Windows
-  versions earlier than Windows 10 build 14316.}
-
-\subsection{Setup (first time only)}
-
-\begin{enumerate}
-\item Install Docker (See \url{https://www.docker.com/products/docker})
-\item Create a container to store persistent user data\\
-  This container, called pylith-data, will hold a directory where all
-  your user data can be stored for use with PyLith within Docker. The
-  data can persist for different versions of PyLith; that is, you can
-  update to a newer version of PyLith and your user data will still
-  be available. This directory is not directly accessible from your
-  host computer. However, you can copy files to/from your host filesystem
-  using ``docker cp'' (see below).
-\end{enumerate}
-\begin{shell}[]
-# Create the container
-$ docker create --name pylith-data geodynamics/pylith-data
-# Run the docker container and copy examples to the persistent storage.
-$ docker run -ti --volumes-from pylith-data geodynamics/pylith
-# This next command is run WITHIN the docker container.  
-$ cp -R $HOME/pylith-VERSION/examples $HOME/data
-\end{shell}
-
-\subsection{Run Unix shell within Docker to use PyLith.}
-
-To run the container with a text only interface:
-\begin{shell}
-$ docker run -ti --volumes-from pylith-data geodynamics/pylith
-\end{shell}
-
-To run the container and allow display of windows on the host computer
-(requires that X-Windows be installed):
-\begin{shell}
-# Darwin: Allow X connections
-$ xhost +YOUR_IP_ADDRESS; DISPLAY=YOUR_IP_ADDRESS:0
-# Linux: Allow X connections
-$ xhost +local:root
-# For Linux and Darwin, continue with the follow lines.
-$ XSOCK=/tmp/.X11-unix
-$ docker run -ti --volumes-from pylith-data \
-    -e DISPLAY=$DISPLAY -v $XSOCK:$XSOCK geodynamics/pylith
-\end{shell}
-
-In addition to a minimalist Debian Linux distribution and PyLith and
-all of its dependencies, the container includes the following useful
-utilities:
-\begin{description}
-\item[vim] Lightweight text editor
-\item[matplotlib] Python plotting module
-\item[iceweasel] GNU version of Firefox
-\end{description}
-
-\important{We do not yet include ParaView due to difficulties
-  associated with setting up rendering on the host display outside the
-  container. You will need to copy the output files to your host
-  machine to view them in ParaView as described later.}
-
-\subsubsection{Using Docker containers}
-\begin{itemize}
-\item To ``pause'' a container: \texttt{Control-p Control-q}
-\item To attach to a ``paused'' or ``running'' container.
-  \begin{shell}
-# Get the container id.
-$ docker ps
-# Attach to the container
-$ docker attach CONTAINER_ID
-  \end{shell}
-\item To restart an existing container after it exited.
-  \begin{shell}
-# Get the container id.
-$ docker ps -a
-# Start and then attach to the container
-$ docker run CONTAINER_ID
-$ docker attach CONTAINER_ID
-  \end{shell}
-\end{itemize}
-
-\subsection{Copy data to/from persistent storage volume.}
-
-These commands are run on the local host outside the container, not
-inside the Docker container. These commands are used to move files
-from your host machine into the PyLith Docker container and vice
-versa. For example, you will generate your mesh on the host, copy the
-mesh file into the Docker container, run PyLith within the container,
-and then copy the output files to the host to display in ParaView.
-
-\begin{shell}
-# Copy data FROM persistent storage volume TO local host
-$ docker cp pylith-data:/data/pylith-user/PATH/FILENAME LOCAL_PATH
-# Copy data FROM local host TO persistent storage volume
-$ docker cp LOCAL_PATH pylith-data:/data/pylith-user/PATH/
-\end{shell}
-
-
-\subsection{Docker Quick Reference}
-\begin{shell}
-# List local docker images.
-$ docker images
-# List all docker containers.
-$ docker ps -a
-# List running docker containers.
-$ docker ps
-# Remove docker container
-$ docker rm CONTAINER_ID
-# Remove docker image
-$ docker rmi IMAGE_ID
-\end{shell}
 
 \section{Installation from Source}
 
@@ -315,18 +192,12 @@ they are located in \texttt{pylith-\pylithVersionNumber/examples}. Chapter
 for the examples. To run the example discussed in Section
 \vref{sec:example:3dhex8-static}:
 \begin{shell}
-$ cd examples/3d/hex8
-$ pylith step01.cfg
-# A bunch of stuff will be written to stdout. The last few lines should be:  
-WARNING! There are options you set that were not used!
-WARNING! could be spelling mistake, etc!
-Option left: name:-snes_atol value: 1.0e-9
-Option left: name:-snes_converged_reason (no value)
-Option left: name:-snes_error_if_not_converged (no value)
-Option left: name:-snes_linesearch_monitor (no value)
-Option left: name:-snes_max_it value: 100
-Option left: name:-snes_monitor (no value)
-Option left: name:-snes_rtol value: 1.0e-10
+$ cd examples/2d/box
+$ pylith step01_axialdisp.cfg
+# A bunch of stuff will be written to stdout. The last few lines should be:
+ >> ... lib/python2.7/site-packages/pylith/problems/Problem.py:218:finalize
+ -- timedependent(info)
+ -- Finalizing problem.
 \end{shell}
 If you run PyLith in a directory without any input, you will get the
 error message:
@@ -335,25 +206,11 @@ $ pylith
  >> {default}::
  -- pyre.inventory(error)
  -- meshimporter.meshioascii.filename <- ''
- -- Filename for ASCII input mesh not specified.
-    To test PyLith, run an example as discussed in the manual.
- >> {default}::
- -- pyre.inventory(error)
- -- timedependent.homogeneous.elasticisotropic3d.label <- ''
- -- Descriptive label for material not specified.
- >> {default}::
- -- pyre.inventory(error)
- -- timedependent.homogeneous.elasticisotropic3d.simpledb.label <- ''
- -- Descriptive label for spatial database not specified.
- >> {default}::
- -- pyre.inventory(error)
- -- timedependent.homogeneous.elasticisotropic3d.simpledb.simpleioascii.filename <- ''
- -- Filename for spatial database not specified.
+ -- Filename for ASCII input mesh not specified.  To test PyLith, run an example as discussed in the manual.
 pylithapp: configuration error(s)
 \end{shell}
-This indicates that a number of default settings must be set in order
-to run PyLith, including setting the filename for the finite-element
-mesh.
+This indicates that at a very minimum the finite-element mesh file
+must be specified in order to run PyLith.
 
 
 \section{Configuration on a Cluster}

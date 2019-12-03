@@ -46,7 +46,6 @@ namespace pylith {
 
         class FieldFactory;
         class FieldOps;
-        class FieldTester;
         class FieldQuery;
 
         class SolutionFields;

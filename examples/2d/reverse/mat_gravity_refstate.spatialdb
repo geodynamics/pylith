@@ -1,0 +1,15 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values =     11
+  value-names =  density  vs  vp  reference_stress_xx  reference_stress_yy  reference_stress_zz  reference_stress_xy  reference_strain_xx  reference_strain_yy  reference_strain_zz  reference_strain_xy
+  value-units =  kg/m**3  m/s  m/s  Pa  Pa  Pa  Pa  none  none  none  none
+  num-locs =      2
+  data-dim =    1
+  space-dim =    2
+  cs-data = cartesian {
+  to-meters = 1000.0 // Use km
+  space-dim = 2
+}
+}
+  0.000000e+00 -1.000000e+02  2.500000e+03  3.000000e+03  5.291503e+03 -2.45166250e+09 -2.45166250e+09 -2.45166250e+09 0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00
+  0.000000e+00  0.000000e+00  2.500000e+03  3.000000e+03  5.291503e+03    0.000000e+00    0.000000e+00    0.000000e+00 0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00

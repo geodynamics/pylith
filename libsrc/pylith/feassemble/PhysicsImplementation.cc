@@ -29,7 +29,6 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <cassert> // USES assert()
-#include <typeinfo> // USES typeid()
 #include <stdexcept> // USES std::runtime_error
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -87,6 +86,10 @@ void
 pylith::feassemble::PhysicsImplementation::notifyObservers(const PylithReal t,
                                                            const PylithInt tindex,
                                                            const pylith::topology::Field& solution) {
+    if (!_observers) {
+        return;
+    } // if
+
     assert(_observers);
     const bool infoOnly = false;
     _observers->notifyObservers(t, tindex, solution, infoOnly);

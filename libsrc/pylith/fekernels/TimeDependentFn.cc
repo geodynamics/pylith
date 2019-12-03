@@ -51,6 +51,7 @@ pylith::fekernels::TimeDependentFn::initial_scalar(const PylithInt dim,
                                                    const PylithScalar a_x[],
                                                    const PylithReal t,
                                                    const PylithScalar x[],
+                                                   const PylithScalar n[],
                                                    const PylithInt numConstants,
                                                    const PylithScalar constants[],
                                                    PylithScalar value[]) {
@@ -87,6 +88,7 @@ pylith::fekernels::TimeDependentFn::initial_vector(const PylithInt dim,
                                                    const PylithScalar a_x[],
                                                    const PylithReal t,
                                                    const PylithScalar x[],
+                                                   const PylithScalar n[],
                                                    const PylithInt numConstants,
                                                    const PylithScalar constants[],
                                                    PylithScalar value[]) {
@@ -125,6 +127,7 @@ pylith::fekernels::TimeDependentFn::rate_scalar(const PylithInt dim,
                                                 const PylithScalar a_x[],
                                                 const PylithReal t,
                                                 const PylithScalar x[],
+                                                const PylithScalar n[],
                                                 const PylithInt numConstants,
                                                 const PylithScalar constants[],
                                                 PylithScalar value[]) {
@@ -168,6 +171,7 @@ pylith::fekernels::TimeDependentFn::rate_vector(const PylithInt dim,
                                                 const PylithScalar a_x[],
                                                 const PylithReal t,
                                                 const PylithScalar x[],
+                                                const PylithScalar n[],
                                                 const PylithInt numConstants,
                                                 const PylithScalar constants[],
                                                 PylithScalar value[]) {
@@ -214,6 +218,7 @@ pylith::fekernels::TimeDependentFn::timeHistory_scalar(const PylithInt dim,
                                                        const PylithScalar a_x[],
                                                        const PylithReal t,
                                                        const PylithScalar x[],
+                                                       const PylithScalar n[],
                                                        const PylithInt numConstants,
                                                        const PylithScalar constants[],
                                                        PylithScalar value[]) {
@@ -251,6 +256,7 @@ pylith::fekernels::TimeDependentFn::timeHistory_vector(const PylithInt dim,
                                                        const PylithScalar a_x[],
                                                        const PylithReal t,
                                                        const PylithScalar x[],
+                                                       const PylithScalar n[],
                                                        const PylithInt numConstants,
                                                        const PylithScalar constants[],
                                                        PylithScalar value[]) {
@@ -288,6 +294,7 @@ pylith::fekernels::TimeDependentFn::initialRate_scalar(const PylithInt dim,
                                                        const PylithScalar a_x[],
                                                        const PylithReal t,
                                                        const PylithScalar x[],
+                                                       const PylithScalar n[],
                                                        const PylithInt numConstants,
                                                        const PylithScalar constants[],
                                                        PylithScalar value[]) {
@@ -312,11 +319,11 @@ pylith::fekernels::TimeDependentFn::initialRate_scalar(const PylithInt dim,
     PylithScalar valueTmp = 0.0;
 
     initial_scalar(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, a, a_t, a_x,
-                   t, x, numConstants, constants, &valueTmp);
+                   t, x, n, numConstants, constants, &valueTmp);
     value[0] = valueTmp;
 
     rate_scalar(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, a, a_t, a_x,
-                t, x, numConstants, constants, &valueTmp);
+                t, x, n, numConstants, constants, &valueTmp);
     value[0] += valueTmp;
 
 } // initialRate_scalar
@@ -341,6 +348,7 @@ pylith::fekernels::TimeDependentFn::initialRate_vector(const PylithInt dim,
                                                        const PylithScalar a_x[],
                                                        const PylithReal t,
                                                        const PylithScalar x[],
+                                                       const PylithScalar n[],
                                                        const PylithInt numConstants,
                                                        const PylithScalar constants[],
                                                        PylithScalar value[]) {
@@ -365,13 +373,13 @@ pylith::fekernels::TimeDependentFn::initialRate_vector(const PylithInt dim,
     PylithScalar valueTmp[3] = { 0.0, 0.0, 0.0 };
 
     initial_vector(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, a, a_t, a_x,
-                   t, x, numConstants, constants, valueTmp);
+                   t, x, n, numConstants, constants, valueTmp);
     for (PylithInt i = 0; i < dim; ++i) {
         value[i] = valueTmp[i];
     } // for
 
     rate_vector(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, a, a_t, a_x,
-                t, x, numConstants, constants, valueTmp);
+                t, x, n, numConstants, constants, valueTmp);
     for (PylithInt i = 0; i < dim; ++i) {
         value[i] += valueTmp[i];
     } // for
@@ -397,6 +405,7 @@ pylith::fekernels::TimeDependentFn::initialTimeHistory_scalar(const PylithInt di
                                                               const PylithScalar a_x[],
                                                               const PylithReal t,
                                                               const PylithScalar x[],
+                                                              const PylithScalar n[],
                                                               const PylithInt numConstants,
                                                               const PylithScalar constants[],
                                                               PylithScalar value[]) {
@@ -422,11 +431,11 @@ pylith::fekernels::TimeDependentFn::initialTimeHistory_scalar(const PylithInt di
     PylithScalar valueTmp = 0.0;
 
     initial_scalar(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, a, a_t, a_x,
-                   t, x, numConstants, constants, &valueTmp);
+                   t, x, n, numConstants, constants, &valueTmp);
     value[0] = valueTmp;
 
     timeHistory_scalar(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, a, a_t, a_x,
-                       t, x, numConstants, constants, &valueTmp);
+                       t, x, n, numConstants, constants, &valueTmp);
     value[0] += valueTmp;
 
 } // initialTimeHistory_scalar
@@ -451,6 +460,7 @@ pylith::fekernels::TimeDependentFn::initialTimeHistory_vector(const PylithInt di
                                                               const PylithScalar a_x[],
                                                               const PylithReal t,
                                                               const PylithScalar x[],
+                                                              const PylithScalar n[],
                                                               const PylithInt numConstants,
                                                               const PylithScalar constants[],
                                                               PylithScalar value[]) {
@@ -476,13 +486,13 @@ pylith::fekernels::TimeDependentFn::initialTimeHistory_vector(const PylithInt di
     PylithScalar valueTmp[3] = { 0.0, 0.0, 0.0 };
 
     initial_vector(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, a, a_t, a_x,
-                   t, x, numConstants, constants, valueTmp);
+                   t, x, n, numConstants, constants, valueTmp);
     for (PylithInt i = 0; i < dim; ++i) {
         value[i] = valueTmp[i];
     } // for
 
     timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, a, a_t, a_x,
-                       t, x, numConstants, constants, valueTmp);
+                       t, x, n, numConstants, constants, valueTmp);
     for (PylithInt i = 0; i < dim; ++i) {
         value[i] += valueTmp[i];
     } // for
@@ -508,6 +518,7 @@ pylith::fekernels::TimeDependentFn::rateTimeHistory_scalar(const PylithInt dim,
                                                            const PylithScalar a_x[],
                                                            const PylithReal t,
                                                            const PylithScalar x[],
+                                                           const PylithScalar n[],
                                                            const PylithInt numConstants,
                                                            const PylithScalar constants[],
                                                            PylithScalar value[]) {
@@ -534,11 +545,11 @@ pylith::fekernels::TimeDependentFn::rateTimeHistory_scalar(const PylithInt dim,
     PylithScalar valueTmp = 0.0;
 
     rate_scalar(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, a, a_t, a_x,
-                t, x, numConstants, constants, &valueTmp);
+                t, x, n, numConstants, constants, &valueTmp);
     value[0] = valueTmp;
 
     timeHistory_scalar(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, a, a_t, a_x,
-                       t, x, numConstants, constants, &valueTmp);
+                       t, x, n, numConstants, constants, &valueTmp);
     value[0] += valueTmp;
 
 } // rateTimeHistory_scalar
@@ -563,6 +574,7 @@ pylith::fekernels::TimeDependentFn::rateTimeHistory_vector(const PylithInt dim,
                                                            const PylithScalar a_x[],
                                                            const PylithReal t,
                                                            const PylithScalar x[],
+                                                           const PylithScalar n[],
                                                            const PylithInt numConstants,
                                                            const PylithScalar constants[],
                                                            PylithScalar value[]) {
@@ -589,14 +601,14 @@ pylith::fekernels::TimeDependentFn::rateTimeHistory_vector(const PylithInt dim,
     PylithScalar valueTmp[3] = { 0.0, 0.0, 0.0 };
 
     rate_vector(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, a, a_t, a_x,
-                t, x, numConstants, constants, valueTmp);
+                t, x, n, numConstants, constants, valueTmp);
     for (PylithInt i = 0; i < dim; ++i) {
         value[i] = valueTmp[i];
     } // for
 
     timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x,
                        aOffTimeHistory, aOffTimeHistory_x, a, a_t, a_x,
-                       t, x, numConstants, constants, valueTmp);
+                       t, x, n, numConstants, constants, valueTmp);
     for (PylithInt i = 0; i < dim; ++i) {
         value[i] += valueTmp[i];
     } // for
@@ -623,6 +635,7 @@ pylith::fekernels::TimeDependentFn::initialRateTimeHistory_scalar(const PylithIn
                                                                   const PylithScalar a_x[],
                                                                   const PylithReal t,
                                                                   const PylithScalar x[],
+                                                                  const PylithScalar n[],
                                                                   const PylithInt numConstants,
                                                                   const PylithScalar constants[],
                                                                   PylithScalar value[]) {
@@ -654,15 +667,15 @@ pylith::fekernels::TimeDependentFn::initialRateTimeHistory_scalar(const PylithIn
     PylithScalar valueTmp = 0.0;
 
     initial_scalar(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, a, a_t, a_x,
-                   t, x, numConstants, constants, &valueTmp);
+                   t, x, n, numConstants, constants, &valueTmp);
     value[0] = valueTmp;
 
     rate_scalar(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, a, a_t, a_x,
-                t, x, numConstants, constants, &valueTmp);
+                t, x, n, numConstants, constants, &valueTmp);
     value[0] += valueTmp;
 
     timeHistory_scalar(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x,
-                       aOffTimeHistory, aOffTimeHistory_x, a, a_t, a_x, t, x, numConstants, constants, &valueTmp);
+                       aOffTimeHistory, aOffTimeHistory_x, a, a_t, a_x, t, x, n, numConstants, constants, &valueTmp);
     value[0] += valueTmp;
 
 } // initialRateTimeHistory_scalar
@@ -687,6 +700,7 @@ pylith::fekernels::TimeDependentFn::initialRateTimeHistory_vector(const PylithIn
                                                                   const PylithScalar a_x[],
                                                                   const PylithReal t,
                                                                   const PylithScalar x[],
+                                                                  const PylithScalar n[],
                                                                   const PylithInt numConstants,
                                                                   const PylithScalar constants[],
                                                                   PylithScalar value[]) {
@@ -718,19 +732,19 @@ pylith::fekernels::TimeDependentFn::initialRateTimeHistory_vector(const PylithIn
     PylithScalar valueTmp[3] = { 0.0, 0.0, 0.0 };
 
     initial_vector(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, a, a_t, a_x,
-                   t, x, numConstants, constants, valueTmp);
+                   t, x, n, numConstants, constants, valueTmp);
     for (PylithInt i = 0; i < dim; ++i) {
         value[i] = valueTmp[i];
     } // for
 
     rate_vector(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, a, a_t, a_x,
-                t, x, numConstants, constants, valueTmp);
+                t, x, n, numConstants, constants, valueTmp);
     for (PylithInt i = 0; i < dim; ++i) {
         value[i] += valueTmp[i];
     } // for
 
     timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x,
-                       aOffTimeHistory, aOffTimeHistory_x, a, a_t, a_x, t, x, numConstants, constants, valueTmp);
+                       aOffTimeHistory, aOffTimeHistory_x, a, a_t, a_x, t, x, n, numConstants, constants, valueTmp);
     for (PylithInt i = 0; i < dim; ++i) {
         value[i] += valueTmp[i];
     } // for

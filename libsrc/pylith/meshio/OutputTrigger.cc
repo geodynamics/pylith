@@ -17,6 +17,7 @@
 //
 
 #include <portinfo>
+#include <stdexcept>
 
 #include "OutputTrigger.hh" // Implementation of class methods
 

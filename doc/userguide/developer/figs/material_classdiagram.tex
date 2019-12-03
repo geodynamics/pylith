@@ -1,6 +1,7 @@
 \documentclass[crop,tikz]{standalone}
 \usepackage[none]{hyphenat}
 \usepackage{helvet}
+\usepackage{calc}
 \renewcommand{\familydefault}{phv}
 
 \usepackage{tikz}
@@ -12,21 +13,38 @@
 
 \begin{tikzpicture}[node distance=10em, line width=1.5pt]
 
-  \node (integrator) [abstract-class] {\umlemptyclass{IntegratorPointwise}};
+  \node (petsc-component) [abstract-class] {\umlemptyclass{PetscComponent}};
 
-  \node (material) [abstract-class] at ($(integrator.south)-(0,4em)$) {\umlemptyclass{Material}};
+  \node (physics) [abstract-class] at ($(petsc-component.south)-(0,4em)$) {\umlemptyclass{Physics}};
 
-  \node (elastic-2d) [concrete-class] at ($(material.south)-(0,4em)$) {\umlemptyclass{IsotropicLinearElasticityPlaneStrain}};
-  \node (elastic-3d) [concrete-class] at ($(elastic-2d.south)-(0,1ex)$) {\umlemptyclass{IsotropicLinearElasticity3D}};
-  \node (maxwell-2d) [concrete-class] at ($(elastic-3d.south)-(0,1ex)$) {\umlemptyclass{IsotropicLinearMaxwellPlaneStrain}};
-  \node (maxwell-3d) [concrete-class] at ($(maxwell-2d.south)-(0,1ex)$) {\umlemptyclass{IsotropicLinearMaxwell3D}};
-  \node (genmaxwell-2d) [concrete-class] at ($(maxwell-3d.south)-(0,1ex)$) {\umlemptyclass{IsotropicLinearGenMaxwellPlaneStrain}};
-  \node (genmaxwell-3d) [concrete-class] at ($(genmaxwell-2d.south)-(0,1ex)$) {\umlemptyclass{IsotropicLinearGenMaxwell3D}};
+  \node (material) [abstract-class] at ($(physics.south)-(0,4em)$) {\umlemptyclass{Material}};
 
-  % Relationships
-  \draw[inherit] (material) -- (integrator);
-  \draw[inherit] (elastic-2d) -- (material);
+  \node (elasticity) [concrete-class] at ($(material.south)-(0,4em)$) {\umlclass{Elasticity}{rheology}};
+  \node (incompressible-elasticity) [concrete-class] at ($(elasticity.south)-(0,1ex)$) {\umlclass{IncompressibleElasticity}{rheology}};
+
+  \node (rheology-elasticity) [abstract-class, anchor=west] at ($(elasticity.east)+(6em,16em)$) {\umlemptyclass{RheologyElasticity}};
+  \node (isotropic-linear-elasticity) [concrete-class] at ($(rheology-elasticity.south)-(0,4em)$) {\umlemptyclass{IsotropicLinearElasticity}};
+  \node (isotropic-linear-maxwell) [concrete-class] at ($(isotropic-linear-elasticity.south)-(0,1ex)$) {\umlemptyclass{IsotropicLinearMaxwell}};
+  \node (isotropic-generalized-maxwell) [concrete-class] at ($(isotropic-linear-maxwell.south)-(0,1ex)$) {\umlemptyclass{IsotropicGenMaxwell}};
+  \node (isotropic-powerlaw) [concrete-class] at ($(isotropic-generalized-maxwell.south)-(0,1ex)$) {\umlemptyclass{IsotropicPowerLaw}};
+  \node (isotropic-drucker-prager) [concrete-class] at ($(isotropic-powerlaw.south)-(0,1ex)$) {\umlemptyclass{IsotropicDruckerPrager}};
+
+  \node (rheology-incompressible-elasticity) [abstract-class,anchor=west] at ($(incompressible-elasticity.east)+(6em,0)$) {\umlemptyclass{RheologyIncompressibleElasticity}};
+  \node (isotropic-linear-incompressible-elasticity) [concrete-class] at ($(rheology-incompressible-elasticity.south)-(0,4em)$) {\umlemptyclass{IsotropicLinearIncompElasticity}};
   
+  
+  % Relationships
+  \draw[inherit] (physics) -- (petsc-component);
+  \draw[inherit] (material) -- (physics);
+  \draw[inherit] (elasticity) -- (material);
+  \draw[aggregate] (elasticity.east) -- (rheology-elasticity.west);
+  \draw[aggregate] (incompressible-elasticity.east) -- (rheology-incompressible-elasticity.west);
+
+  \draw[inherit] (isotropic-linear-elasticity) -- (rheology-elasticity);
+
+  \draw[inherit] (isotropic-linear-incompressible-elasticity) -- (rheology-incompressible-elasticity);
+
+
 \end{tikzpicture}
 
 \end{document}

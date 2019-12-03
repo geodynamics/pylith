@@ -109,15 +109,6 @@ public:
     void updateKernelConstants(pylith::real_array* kernelConstants,
                                const PylithReal dt) const;
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
-    /** Set finite-element constants.
-     *
-     * @param[in] dt Time step size for current time step.
-     */
-    void _updateKernelConstants(const PylithReal dt);
-
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 

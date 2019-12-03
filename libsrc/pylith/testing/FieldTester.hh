@@ -17,22 +17,22 @@
 //
 
 /**
- * @file libsrc/topology/FieldTester.hh
+ * @file libsrc/testing/FieldTester.hh
  *
  * @brief General routines for C++ unit tests related to Fields.
  */
 
-#if !defined(pylith_topology_fieldtester_hh)
-#define pylith_topology_fieldtester_hh
+#if !defined(pylith_testing_fieldtester_hh)
+#define pylith_testing_fieldtester_hh
 
-#include "pylith/topology/topologyfwd.hh" // forward declarations
+#include "pylith/testing/testingfwd.hh" // forward declarations
 
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/utils/petscfwd.h" // USES PetscFE
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 
-class pylith::topology::FieldTester {
+class pylith::testing::FieldTester {
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -66,6 +66,6 @@ private:
 
 }; // FieldTester
 
-#endif // pylith_topology_fieldtester_hh
+#endif // pylith_testing_fieldtester_hh
 
 // End of file

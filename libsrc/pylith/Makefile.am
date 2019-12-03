@@ -57,6 +57,7 @@ libpylith_la_SOURCES = \
 	feassemble/Constraint.cc \
 	feassemble/ConstraintSpatialDB.cc \
 	feassemble/ConstraintUserFn.cc \
+	feassemble/ConstraintSimple.cc \
 	feassemble/AuxiliaryFactory.cc \
 	fekernels/Elasticity.cc \
 	fekernels/IsotropicLinearElasticity.cc \
@@ -122,6 +123,8 @@ libpylith_la_SOURCES = \
 	problems/InitialCondition.cc \
 	problems/InitialConditionDomain.cc \
 	problems/InitialConditionPatch.cc \
+	problems/ProgressMonitor.cc \
+	problems/ProgressMonitorTime.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
 	topology/FieldBase.cc \
@@ -175,10 +178,12 @@ libpylith_la_SOURCES += \
 	testing/FieldTester.cc \
 	testing/PhysicsStub.cc \
 	testing/PhysicsImplementationStub.cc \
+	testing/ProgressMonitorStub.cc \
 	testing/ObserverPhysicsStub.cc \
 	testing/ObserverSolnStub.cc \
 	testing/FaultCohesiveStub.cc \
-	testing/MMSTest.cc
+	testing/MMSTest.cc \
+	testing/TestDriver.cc
 
 libpylith_la_LIBADD += -lcppunit
 endif

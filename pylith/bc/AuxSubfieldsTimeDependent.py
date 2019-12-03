@@ -58,14 +58,14 @@ class AuxSubfieldsTimeDependent(PetscComponent):
     rateAmplitude = pyre.inventory.facility("rate_amplitude", family="auxiliary_subfield", factory=Subfield)
     rateAmplitude.meta['tip'] = "Rate amplitude, \dot{f}_1(x), subfield."
 
-    rateStart = pyre.inventory.facility("rate_start", family="auxiliary_subfield", factory=Subfield)
+    rateStart = pyre.inventory.facility("rate_start_time", family="auxiliary_subfield", factory=Subfield)
     rateStart.meta['tip'] = "Rate starting time, t_1(x), subfield."
 
     timeHistoryAmplitude = pyre.inventory.facility(
         "time_history_amplitude", family="auxiliary_subfield", factory=Subfield)
     timeHistoryAmplitude.meta['tip'] = "Time history amplitude, f_2(x). subfield"
 
-    timeHistoryStart = pyre.inventory.facility("time_history_start", family="auxiliary_subfield", factory=Subfield)
+    timeHistoryStart = pyre.inventory.facility("time_history_start_time", family="auxiliary_subfield", factory=Subfield)
     timeHistoryStart.meta['tip'] = "Time history starting time, t_2(s), subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

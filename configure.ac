@@ -17,7 +17,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [3.0.0b1], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [3.0.0beta2], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -57,29 +57,27 @@ AM_CONDITIONAL([ENABLE_FULL_TESTING], [test "$enable_full_testing" = yes])
 # CUBIT I/O w/netcdf
 AC_ARG_ENABLE([cubit],
     [AC_HELP_STRING([--enable-cubit],
-        [enable reading/writing Cubit EXODUS files (requires netcdf) @<:@default=no@:>@])],
+        [enable reading/writing Cubit EXODUS files (requires netcdf) @<:@default=yes@:>@])],
 	[if test "$enableval" = yes ; then
 	  enable_cubit=yes
 	  CPPFLAGS="-DENABLE_CUBIT $CPPFLAGS"; export CPPFLAGS;
-	  PYLITH_SWIG_CPPFLAGS="-DENABLE_CUBIT $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
+	  PYLITH_SWIG_CPPFLAGS="-DENABLE_CUBIT $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS ;
 	else enable_cubit=no; fi],
-	[enable_cubit=no])
+	[enable_cubit=yes])
 AM_CONDITIONAL([ENABLE_CUBIT], [test "$enable_cubit" = yes])
-AC_SUBST(PYLITH_SWIG_CPPFLAGS)
 
 # PETSc w/HDF5
 AC_ARG_ENABLE([hdf5],
     [AC_HELP_STRING([--enable-hdf5],
-        [enable output to HDF5 files via PETSc @<:@default=no@:>@])],
-	[if test "$enableval" = yes;
-	  then enable_hdf5=yes
-          else enable_hdf5=no; fi],
+        [enable output to HDF5 files via PETSc @<:@default=yes@:>@])],
+	[if test "$enableval" = yes; then enable_hdf5=yes; else enable_hdf5=no; fi],
 	[enable_hdf5=yes])
 if test "$enable_hdf5" = "yes"; then
   CPPFLAGS="-DENABLE_HDF5 $CPPFLAGS"; export CPPFLAGS
   PYLITH_SWIG_CPPFLAGS="-DENABLE_HDF5 $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
 fi
 AM_CONDITIONAL([ENABLE_HDF5], [test "$enable_hdf5" = yes])
+AC_SUBST(PYLITH_SWIG_CPPFLAGS)
 
 # DOCUMENTATION w/doxygen
 AC_ARG_ENABLE([documentation],
@@ -114,7 +112,7 @@ CIT_HEADER_MPI
 
 # PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.11.2])
+CIT_PATH_PETSC([3.12.2])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -240,122 +238,95 @@ AC_CONFIG_FILES([Makefile
 		libsrc/Makefile
 		libsrc/pylith/Makefile
 		libsrc/pylith/bc/Makefile
-    libsrc/pylith/feassemble/Makefile
-    libsrc/pylith/fekernels/Makefile
+		libsrc/pylith/feassemble/Makefile
+		libsrc/pylith/fekernels/Makefile
 		libsrc/pylith/faults/Makefile
 		libsrc/pylith/friction/Makefile
-    libsrc/pylith/materials/Makefile
-    libsrc/pylith/meshio/Makefile
-    libsrc/pylith/problems/Makefile
+		libsrc/pylith/materials/Makefile
+		libsrc/pylith/meshio/Makefile
+		libsrc/pylith/problems/Makefile
 		libsrc/pylith/testing/Makefile
 		libsrc/pylith/topology/Makefile
 		libsrc/pylith/utils/Makefile
-    modulesrc/Makefile
-    modulesrc/include/Makefile
-    modulesrc/bc/Makefile
-    modulesrc/faults/Makefile
-    modulesrc/feassemble/Makefile
+		modulesrc/Makefile
+		modulesrc/include/Makefile
+		modulesrc/bc/Makefile
+		modulesrc/faults/Makefile
+		modulesrc/feassemble/Makefile
 		modulesrc/friction/Makefile
-    modulesrc/materials/Makefile
-    modulesrc/meshio/Makefile
-    modulesrc/mpi/Makefile
-    modulesrc/problems/Makefile
+		modulesrc/materials/Makefile
+		modulesrc/meshio/Makefile
+		modulesrc/mpi/Makefile
+		modulesrc/problems/Makefile
 		modulesrc/topology/Makefile
 		modulesrc/utils/Makefile
 		applications/Makefile
 		applications/utilities/Makefile
-		unittests/Makefile
-		unittests/libtests/Makefile
-		unittests/libtests/bc/Makefile
-		unittests/libtests/bc/data/Makefile
-		unittests/libtests/faults/Makefile
-		unittests/libtests/faults/data/Makefile
-		unittests/libtests/feassemble/Makefile
-		unittests/libtests/feassemble/data/Makefile
-		unittests/libtests/friction/Makefile
-		unittests/libtests/friction/data/Makefile
-		unittests/libtests/materials/Makefile
-		unittests/libtests/materials/data/Makefile
-		unittests/libtests/meshio/Makefile
-		unittests/libtests/problems/Makefile
-		unittests/libtests/problems/data/Makefile
-		unittests/libtests/meshio/data/Makefile
-		unittests/libtests/topology/Makefile
-		unittests/libtests/topology/data/Makefile
-		unittests/libtests/testing/Makefile
-		unittests/libtests/utils/Makefile
-		unittests/pytests/Makefile
-		unittests/pytests/bc/Makefile
-		unittests/pytests/bc/data/Makefile
-		unittests/pytests/faults/Makefile
-		unittests/pytests/faults/data/Makefile
-		unittests/pytests/feassemble/Makefile
-		unittests/pytests/feassemble/data/Makefile
-		unittests/pytests/friction/Makefile
-		unittests/pytests/friction/data/Makefile
-		unittests/pytests/materials/Makefile
-		unittests/pytests/materials/data/Makefile
-		unittests/pytests/meshio/Makefile
-		unittests/pytests/meshio/data/Makefile
-		unittests/pytests/mpi/Makefile
-		unittests/pytests/problems/Makefile
-		unittests/pytests/problems/data/Makefile
-		unittests/pytests/topology/Makefile
-		unittests/pytests/topology/data/Makefile
-		unittests/pytests/utils/Makefile
-		mmstests/Makefile
-		mmstests/elasticity/Makefile
-		mmstests/incompressibleelasticity/Makefile
-		mmstests/faults/Makefile
-		tests_auto/Makefile
-		tests_auto/linearelasticity/Makefile
-  		tests_auto/linearelasticity/nofaults-2d/Makefile
-		tests_auto/linearelasticity/nofaults-3d/Makefile
-		tests_auto/linearelasticity/faults-2d/Makefile
-		tests_auto/petsc/Makefile
-		tests_auto/eqinfo/Makefile
 		tests/Makefile
-		tests/2d/Makefile
-		tests/2d/maxwell/Makefile
-		tests/2d/powerlaw/Makefile
-		tests/2d/frictionslide/Makefile
-		tests/2d/plasticity/Makefile
-		tests/2d/plasticity/initialstress/Makefile
-		tests/3d/Makefile
-		tests/3d/matprops/Makefile
-		tests/3d/slipdir/Makefile
-		tests/3d/cyclicfriction/Makefile
-		tests/3d/plasticity/Makefile
-		tests/3d/plasticity/dynamic/Makefile
-		tests/3d/plasticity/initialstress/Makefile
+		tests/libtests/Makefile
+		tests/libtests/bc/Makefile
+		tests/libtests/bc/data/Makefile
+		tests/libtests/faults/Makefile
+		tests/libtests/faults/data/Makefile
+		tests/libtests/feassemble/Makefile
+		tests/libtests/feassemble/data/Makefile
+		tests/libtests/friction/Makefile
+		tests/libtests/friction/data/Makefile
+		tests/libtests/materials/Makefile
+		tests/libtests/materials/data/Makefile
+		tests/libtests/meshio/Makefile
+		tests/libtests/problems/Makefile
+		tests/libtests/problems/data/Makefile
+		tests/libtests/meshio/data/Makefile
+		tests/libtests/topology/Makefile
+		tests/libtests/topology/data/Makefile
+		tests/libtests/testing/Makefile
+		tests/libtests/utils/Makefile
+		tests/pytests/Makefile
+		tests/pytests/bc/Makefile
+		tests/pytests/bc/data/Makefile
+		tests/pytests/faults/Makefile
+		tests/pytests/faults/data/Makefile
+		tests/pytests/feassemble/Makefile
+		tests/pytests/feassemble/data/Makefile
+		tests/pytests/friction/Makefile
+		tests/pytests/friction/data/Makefile
+		tests/pytests/materials/Makefile
+		tests/pytests/materials/data/Makefile
+		tests/pytests/meshio/Makefile
+		tests/pytests/meshio/data/Makefile
+		tests/pytests/mpi/Makefile
+		tests/pytests/problems/Makefile
+		tests/pytests/problems/data/Makefile
+		tests/pytests/topology/Makefile
+		tests/pytests/topology/data/Makefile
+		tests/pytests/utils/Makefile
+		tests/mmstests/Makefile
+		tests/mmstests/elasticity/Makefile
+		tests/mmstests/incompressibleelasticity/Makefile
+		tests/mmstests/faults/Makefile
+		tests/fullscale/Makefile
+		tests/fullscale/linearelasticity/Makefile
+		tests/fullscale/linearelasticity/nofaults-2d/Makefile
+		tests/fullscale/linearelasticity/nofaults-3d/Makefile
+		tests/fullscale/linearelasticity/faults-2d/Makefile
+		tests/fullscale/petsc/Makefile
+		tests/fullscale/eqinfo/Makefile
+        	developer/Makefile
 		doc/Makefile
-		doc/developer/Makefile
 		doc/install/Makefile
-		doc/refguide/Makefile
 		doc/releasenotes/Makefile
 		doc/userguide/Makefile
 		examples/Makefile
-		examples/3d/Makefile
-		examples/3d/tet4/Makefile
-		examples/3d/hex8/Makefile
-		examples/3d/subduction/Makefile
 		examples/2d/Makefile
+		examples/2d/box/Makefile
+		examples/2d/strikeslip/Makefile
+		examples/2d/reverse/Makefile
 		examples/2d/subduction/Makefile
-		examples/2d/gravity/Makefile
-		examples/2d/greensfns/Makefile
-		examples/2d/greensfns/strikeslip/Makefile
-		examples/2d/greensfns/reverse/Makefile
+		examples/3d/Makefile
+		examples/3d/box/Makefile
+		examples/3d/subduction/Makefile
 		examples/bar_shearwave/Makefile
-		examples/bar_shearwave/hex8/Makefile
-		examples/bar_shearwave/quad4/Makefile
-		examples/bar_shearwave/tet4/Makefile
-		examples/bar_shearwave/tri3/Makefile
-		examples/twocells/Makefile
-		examples/twocells/twohex8/Makefile
-		examples/twocells/twoquad4/Makefile
-		examples/twocells/twotet4/Makefile
-		examples/twocells/twotet4-geoproj/Makefile
-		examples/twocells/twotri3/Makefile
 		examples/meshing/Makefile
 		examples/meshing/surface_nurbs/Makefile
 		examples/meshing/surface_nurbs/dem/Makefile
@@ -365,7 +336,8 @@ AC_CONFIG_FILES([Makefile
 		examples/meshing/surface_nurbs/merge_surfs/Makefile
 		examples/meshing/surface_nurbs/subduction/Makefile
 		examples/meshing/cubit_cellsize/Makefile
-		examples/debugging/Makefile
+		examples/troubleshooting/Makefile
+		examples/troubleshooting/nofaults-2d/Makefile
 		templates/Makefile
 		share/Makefile
 		])

@@ -1,0 +1,193 @@
+\section{Simulation Types (\protect\facility{problem})}
+
+\subsection{Time-Dependent Problem (\protect\object{TimeDependent})}
+
+This type of problem applies to transient static, quasi-static, and
+dynamic simulations. We use the PETSc \object{TS} object to manage the
+time-stepping. The selection of the time-stepping algorithm is done
+via the PETSc options. By default PyLith use the backward Euler time
+stepping algorithm.
+
+\begin{cfg}[Setting PETSc time-stepping options in a \filename{cfg} file]
+<h>[pylithapp.petsc]</h>
+<p>ts_type</p> = beuler
+<p>ts_monitor</p> = true
+<p>ts_error_if_step_fails</p> = true
+\end{cfg}
+
+The \object{TimeDependent} properties and facilities include
+\begin{inventory}
+  \propertyitem{initial\_dt}{Initial time step (default=1.0*year);}
+  \propertyitem{start\_time}{Starting time of the problem (default=0.0*year, the first time step will be from \property{start\_time} to \property{start\_time} + \property{initial\_step})}
+  \propertyitem{total\_time}{Time duration of the problem (default=0.0*year);}
+  \propertyitem{max\_timesteps}{Maximum number of time steps (default=20000);}
+  \facilityitem{ic}{Initial conditions for solution (default=\object{EmptyBin}); and}
+  \propertyitem{notify\_observers\_ic}{Send observers solution with initial conditions before time stepping (default=False);}
+\end{inventory}
+
+\begin{cfg}[\object{TimeDependent} parameters in a \filename{cfg} file]
+<h>[pylithapp.timedependent]</h>
+<p>initial_dt</p> = 10.0*year
+<p>start_time</p> = 0.0*year
+<p>end_time</p> = 100.0*year
+<f>ic</f> = [pylith.problems.InitialConditionDomain]
+\end{cfg}
+
+
+\subsubsection{Initial Conditions}
+\newfeature{v3.0.0}
+
+The initial conditions for a simulation are specified via a
+combination of the initial values for the solution and the initial
+values for the state variables. The initial values for state variables
+are specified via the spatial databases for the auxiliary field. In
+this section we discuss how to set the initial values of the solution
+field.
+
+\paragraph{\object{InitialConditionDomain}} We use this object when we
+want to specify the initial values of solution subfields across the
+entire domain using a single spatial database. The properties and facilities of the
+\object{InitialConditionDomain} are:
+\begin{inventory}
+  \propertyitem{subfields}{List of names of solution subfields for
+    which initial values are supplied (default=[displacement]); and}
+  \facilityitem{db}{Spatial database with initial values for solution
+    subfields (default=\object{spatialdata.spaitaldb.SimpleDB}).}
+\end{inventory}
+
+\paragraph{\object{InitialConditionPatch}} We use this object when we
+want to specify the initial values of solution subfields across
+patches of the domain defined by materials. Each patch specifies the
+initial values for a single material. Not all materials need to have
+initial values. The properties and facilities of the
+\object{InitialConditionPatch} are:
+\begin{inventory}
+  \propertyitem{subfields}{List of names os solution subfields for
+    which initial values are supplied (default=[displacement]); and}
+  \propertyitem{id}{Id of material associated with the patch (default=0); and}
+  \facilityitem{db}{Spatial database with initial values for solution
+    subfields (default=\object{spatialdata.spaitaldb.SimpleDB}).}
+\end{inventory}
+
+
+
+\subsection{Numerical Damping in Explicit Time Stepping}
+
+Not yet reimplemented in v3.x.
+
+%% In explicit time-stepping formulations for elasticity, boundary conditions
+%% and fault slip can excite short waveform elastic waves that are not
+%% accurately resolved by the discretization. We use numerical damping
+%% via an artificial viscosity\cite{Knopoff:Ni:2001,Day:Ely:2002} to
+%% reduce these high frequency oscillations. In computing the strains
+%% for the elasticity term in equation \vref{eq:elasticity:integral:dynamic:t},
+%% we use an adjusted displacement rather than the actual displacement,
+%% where
+%% \begin{equation}
+%% \vec{u}^{adj}(t)=\vec{u}(t)+\eta^{*}\Delta t\vec{\dot{u}}(t),
+%% \end{equation}
+%% $\vec{u}^{adj}(t)$ is the adjusted displacement at time t, $\vec{u}(t)$is
+%% the original displacement at time (t), $\eta^{*}$is the normalized
+%% artificial viscosity, $\Delta t$ is the time step, and $\vec{\dot{u}}(t)$
+%% is the velocity at time $t$. The default value for the normalized
+%% artificial viscosity is 0.1. We have found values in the range 0.1-0.4
+%% sufficiently suppress numerical noise while not excessively reducing
+%% the peak velocity. An example of setting the normalized artificial
+%% viscosity in a \filename{cfg} file is
+%% \begin{cfg}
+%% <h>[pylithapp.timedependent.formulation]</h>
+%% <p>norm_viscosity</p> = 0.2
+%% \end{cfg}
+
+\subsection{Green's Functions Problem (\object{GreensFns})}
+
+Not yet reimplemented in v3.x.
+
+
+%% This type of problem applies to computing static Green's functions
+%% for elastic deformation. The \object{GreensFns} problem specializes
+%% the time-dependent facility to the case of static simulations with
+%% slip impulses on a fault. The default formulation is the Implicit
+%% formulation and should not be changed as the other formulations are
+%% not applicable to static Green's functions. In the output files, the
+%% deformation at each ``time step'' is the deformation for a different
+%% slip impulse. The properties provide the ability to select which fault
+%% to use for slip impulses. The only fault component available for use
+%% with the \object{GreensFns} problem is the \object{FaultCohesiveImpulses}
+%% component discussed in Section \vref{sec:fault:cohesive:impulses}.
+%% The \object{GreensFns} properties amd facilities include:
+%% \begin{inventory}
+%% \propertyitem{fault\_id}{Id of fault on which to impose slip impulses.}
+%% \propertyitem{formulation}{Formulation for solving the partial differential
+%% equation.}
+%% \propertyitem{progress\_monitor}{Simple progress monitor via text file.}
+%% \end{inventory}
+
+%% \begin{cfg}[\object{GreensFns} parameters in a \filename{cfg} file]
+%% <h>[pylithapp]</h>
+%% <f>problem</f> = pylith.problems.GreensFns ; Change problem type from the default
+
+%% <h>[pylithapp.greensfns]</h>
+%% <p>fault_id</p> = 100 ; Default value
+%% <f>formulation</f> = pylith.problems.Implicit ; default
+%% <f>progres_monitor</f> = pylith.problems.ProgressMonitorTime ; default
+%% \end{cfg}
+
+%% \warning{The \object{GreensFns} problem generates slip impulses on a
+%%   fault. The current version of PyLith requires that impulses can only
+%%   be applied to a single fault and the fault facility must be set to
+%%   \object{FaultCohesiveImpulses}.}
+
+\subsubsection{Progress Monitors}
+%% \newfeature{v2.1.0}
+
+Not yet reimplemented in v3.x.
+
+
+%% The progress monitors make it easy to monitor the general progress of
+%% long simulations, especially on clusters where stdout is not always
+%% easily accessible. The progress monitors update a simulation's current
+%% progress by writing information to a text file. The information
+%% includes time stamps, percent completed, and an estimate of when the
+%% simulation will finish.
+
+%% \subsection{\object{ProgressMonitorTime}}
+
+%% This is the default progress monitor for time-stepping problems. The
+%% monitor calculates the percent completed based on the time at the
+%% current time step and the total simulated time of the simulation,
+%% not the total number of time steps (which may be unknown in simulations
+%% with adaptive time stepping). The \object{ProgressMonitorTime} properties
+%% include:
+%% \begin{inventory}
+%% \propertyitem{update\_percent}{Frequency (in percent) of progress updates.}
+%% \propertyitem{filename}{Name of output file.}
+%% \propertyitem{t\_units}{Units for simulation time in output.}
+%% \end{inventory}
+
+%% \begin{cfg}[\object{ProgressMonitorTime} parameters in a \filename{cfg} file]
+%% <h>[pylithapp.problem.progressmonitor]</h>
+%% <p>update_percent</p> = 5.0 ; default
+%% <p>filename</p> = progress.txt ; default
+%% <p>t_units</p> = year ; default
+%% \end{cfg}
+
+%% \subsection{\object{ProgressMonitorStep}}
+
+%% This is the default progress monitor for problems with a specified
+%% number of steps, such as Green's function problems. The monitor calculates
+%% the percent completed based on the number of steps (e.g., Green's
+%% function impulses completed). The ProgressMonitorStep propertiles
+%% include:
+%% \begin{inventory}
+%% \propertyitem{update\_percent}{Frequency (in percent) of progress updates.}
+%% \propertyitem{filename}{Name of output file.}
+%% \end{inventory}
+
+%% \begin{cfg}[\object{ProgressMonitorStep} parameters in a \filename{cfg} file]
+%% <h>[pylithapp.problem.progressmonitor]</h>
+%% <p>update_percent</p> = 5.0 ; default
+%% <p>filename</p> = progress.txt ; default
+%% \end{cfg}
+
+% End of file

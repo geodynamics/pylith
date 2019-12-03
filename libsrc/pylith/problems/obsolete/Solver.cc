@@ -325,7 +325,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
         err = MatDestroy(&_jacobianPCFault); PYLITH_CHECK_ERROR(err);
 
         PetscDM lagrangeDM = fields.solution().subfieldInfo("lagrange_multiplier").dm; assert(lagrangeDM);
-        err = DMGetDefaultGlobalSection(lagrangeDM, &lagrangeSection); PYLITH_CHECK_ERROR(err);
+        err = DMGetGlobalSection(lagrangeDM, &lagrangeSection); PYLITH_CHECK_ERROR(err);
         err = PetscSectionGetStorageSize(lagrangeSection, &nrows); PYLITH_CHECK_ERROR(err);
         PetscInt ncols = nrows;
 

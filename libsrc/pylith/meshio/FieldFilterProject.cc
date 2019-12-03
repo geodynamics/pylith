@@ -51,7 +51,7 @@ pylith::meshio::FieldFilterProject::deallocate(void) {
     FieldFilter::deallocate();
 
     delete _fieldProj;_fieldProj = NULL;
-    delete _passThruFns;_passThruFns = NULL;
+    delete[] _passThruFns;_passThruFns = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -106,7 +106,7 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
     assert(fieldIn);
     if (_fieldProj && !pylith::topology::FieldOps::layoutsMatch(*fieldIn, *_fieldProj)) {
         delete _fieldProj;_fieldProj = NULL;
-        delete _passThruFns;_passThruFns = NULL;
+        delete[] _passThruFns;_passThruFns = NULL;
     } // if
 
     pylith::topology::Field::Discretization feP1;
@@ -127,7 +127,7 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
             if (info.fe.quadOrder < _basisOrder) {
                 PYLITH_COMPONENT_WARNING(
                     "Projecting subfield '"
-                        << info.description.label << "' in field ''" << fieldIn->label() << "'' from basis order "
+                        << info.description.label << "' in field '" << fieldIn->label() << " from basis order "
                         << info.fe.basisOrder << " to basis order " << _basisOrder
                         << " with quadrature order " << info.fe.quadOrder << " will result in under integration of the "
                         << "subfield. Accurate projection requires a quadrature order of at least " << _basisOrder << "."
@@ -137,6 +137,7 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
             _fieldProj->subfieldAdd(info.description, feP1);
         } // for
         _fieldProj->subfieldsSetup();
+        _fieldProj->createDiscretization();
         _fieldProj->allocate();
     } else {
         // Update subfield information in projected field to match input field, except basis order.

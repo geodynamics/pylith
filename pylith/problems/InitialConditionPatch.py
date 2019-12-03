@@ -54,11 +54,11 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
         InitialCondition.__init__(self, name)
         return
 
-    def preinitialize(self, mesh):
+    def preinitialize(self, problem):
         """
         Setup initial conditions.
         """
-        InitialCondition.preinitialize(self, mesh)
+        InitialCondition.preinitialize(self, problem)
 
         ModuleInitialCondition.setMaterialId(self, self.matId)
         ModuleInitialCondition.setDB(self, self.db)

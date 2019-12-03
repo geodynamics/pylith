@@ -44,6 +44,10 @@ namespace pylith {
         class InitialConditionDomain;
         class InitialConditionPatch;
 
+        class ProgressMonitor;
+        class ProgressMonitorTime;
+        class PrograssMonitorStep;
+      
     } // problems
 } // pylith
 

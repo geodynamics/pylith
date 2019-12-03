@@ -54,18 +54,6 @@ public:
             static PylithInt lagrange_sOff(const PylithInt sOff[],
                                            const PylithInt numS);
 
-            /** Get offset in residual where Lagrange multiplier field starts.
-             *
-             * Normally it would be zero, but the Lagrange multiplier field is offset.
-             *
-             * @param[in] sOff Offset of registered subfields in solution field [numS].
-             * @param[in] numS Number of registered subfields in solution field.
-             *
-             * @returns Offset of Lagrange multiplier field in residual.
-             */
-            static PylithInt lagrange_rOff(const PylithInt sOff[],
-                                           const PylithInt numS);
-
             /* Compute tangential directions for 3-D fault.
              *
              * @param[in] dim Spatial dimension.
@@ -98,20 +86,6 @@ pylith::fekernels::_FaultCohesiveKin::lagrange_sOff(const PylithInt sOff[],
     } // for
     return off;
 } // lagrange_sOff
-
-
-// ----------------------------------------------------------------------
-// Get offset in residual where Lagrange multiplier field starts.
-PylithInt
-pylith::fekernels::_FaultCohesiveKin::lagrange_rOff(const PylithInt sOff[],
-                                                    const PylithInt numS) {
-    PylithInt off = 0;
-    const PylithInt numCount = numS - 1; // Don't include last field (Lagrange multiplier)
-    for (PylithInt i = 0; i < numCount; ++i) {
-        off += (sOff[i+1] - sOff[i]);
-    } // for
-    return off;
-} // lagrange_rOff
 
 
 // ----------------------------------------------------------------------
@@ -231,7 +205,7 @@ pylith::fekernels::FaultCohesiveKin::g0l(const PylithInt dim,
 
     const PylithInt sOffDispN = sOff[i_disp];
     const PylithInt sOffDispP = sOff[i_disp]+spaceDim;
-    const PylithInt gOffLagrange = pylith::fekernels::_FaultCohesiveKin::lagrange_rOff(sOff, numS);
+    const PylithInt gOffLagrange = 0;
 
     const PylithScalar* dispN = &s[sOffDispN];
     const PylithScalar* dispP = &s[sOffDispP];
@@ -299,15 +273,13 @@ pylith::fekernels::FaultCohesiveKin::Jg0ul(const PylithInt dim,
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt i_disp = 0;
-    const PylithInt sOffDispN = sOff[i_disp];
-    const PylithInt sOffDispP = sOff[i_disp]+spaceDim;
-    const PylithInt sOffLagrange = 0;
-    const PylithInt ncols = sOffLagrange + spaceDim;
+    const PylithInt gOffDispN = 0;
+    const PylithInt gOffDispP = 0+spaceDim;
+    const PylithInt ncols = spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jg0[(sOffDispN+i)*ncols+sOffLagrange+i] += +1.0;
-        Jg0[(sOffDispP+i)*ncols+sOffLagrange+i] += -1.0;
+        Jg0[(gOffDispN+i)*ncols+i] += +1.0;
+        Jg0[(gOffDispP+i)*ncols+i] += -1.0;
     } // for
 } // Jg0ul
 
@@ -346,15 +318,13 @@ pylith::fekernels::FaultCohesiveKin::Jg0lu(const PylithInt dim,
 
     const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt i_disp = 0;
-    const PylithInt sOffDispN = sOff[i_disp];
-    const PylithInt sOffDispP = sOff[i_disp]+spaceDim;
-    const PylithInt sOffLagrange = 0;
+    const PylithInt gOffDispN = 0;
+    const PylithInt gOffDispP = 0+spaceDim;
     const PylithInt ncols = 2*spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jg0[(0*sOffLagrange+i)*ncols+sOffDispN+i] += +1.0;
-        Jg0[(0*sOffLagrange+i)*ncols+sOffDispP+i] += -1.0;
+        Jg0[i*ncols+gOffDispN+i] += +1.0;
+        Jg0[i*ncols+gOffDispP+i] += -1.0;
     } // for
 } // Jg0lu
 

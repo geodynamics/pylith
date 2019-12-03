@@ -29,6 +29,7 @@ subpkginclude_HEADERS = \
 	Constraint.hh \
 	ConstraintSpatialDB.hh \
 	ConstraintUserFn.hh \
+	ConstraintSimple.hh \
 	AuxiliaryFactory.hh \
 	feassemblefwd.hh
 
