@@ -81,6 +81,7 @@ nobase_pkgpyexec_PYTHON = \
 	problems/Physics.py \
 	problems/Problem.py \
 	problems/TimeDependent.py \
+	problems/ProblemDefaults.py \
 	problems/Solution.py \
 	problems/SolutionSubfield.py \
 	problems/SolnDisp.py \

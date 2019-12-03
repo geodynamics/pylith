@@ -53,6 +53,9 @@ class OutputSolnDomain(OutputSoln, ModuleOutputSolnDomain):
         Do mimimal initialization.
         """
         OutputSoln.preinitialize(self, problem)
+
+        identifier = self.aliases[-1]
+        self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

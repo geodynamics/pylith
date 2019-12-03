@@ -54,8 +54,8 @@ public:
 // Constructor
 pylith::problems::TimeDependent::TimeDependent(void) :
     _startTime(0.0),
+    _endTime(0.0),
     _dtInitial(1.0),
-    _totalTime(0.0),
     _maxTimeSteps(0),
     _ts(NULL),
     _monitor(NULL),
@@ -107,29 +107,29 @@ pylith::problems::TimeDependent::getStartTime(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set total time for problem.
+// Set end time for problem.
 void
-pylith::problems::TimeDependent::setTotalTime(const double value) {
+pylith::problems::TimeDependent::setEndTime(const double value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("totalTime(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("endTime(value="<<value<<")");
 
     if (value < 0.0) {
         std::ostringstream msg;
-        msg << "Total time (nondimensional) for problem (" << value << ") must be positive.";
+        msg << "End time (seconds) for problem (" << value << ") must be positive.";
         throw std::runtime_error(msg.str());
     } // if
-    _totalTime = value;
+    _endTime = value;
 
     PYLITH_METHOD_END;
-} // setTotalTime
+} // setEndTime
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get total time for problem.
+// Get end time for problem.
 double
-pylith::problems::TimeDependent::getTotalTime(void) const {
-    return _totalTime;
-} // getTotalTime
+pylith::problems::TimeDependent::getEndTime(void) const {
+    return _endTime;
+} // getEndTime
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -338,14 +338,14 @@ pylith::problems::TimeDependent::initialize(void) {
     PYLITH_COMPONENT_DEBUG("Setting PetscTS parameters: dtInitial="<<_dtInitial
                                                                    <<", startTime="<<_startTime
                                                                    <<", maxTimeSteps="<<_maxTimeSteps
-                                                                   <<", totalTime="<<_totalTime);
+                                                                   <<", endTime="<<_endTime);
 
     assert(_normalizer);
     const PylithReal timeScale = _normalizer->timeScale();
     err = TSSetTime(_ts, _startTime / timeScale);PYLITH_CHECK_ERROR(err);
     err = TSSetTimeStep(_ts, _dtInitial / timeScale);PYLITH_CHECK_ERROR(err);
     err = TSSetMaxSteps(_ts, _maxTimeSteps);PYLITH_CHECK_ERROR(err);
-    err = TSSetMaxTime(_ts, _totalTime / timeScale);PYLITH_CHECK_ERROR(err);
+    err = TSSetMaxTime(_ts, _endTime / timeScale);PYLITH_CHECK_ERROR(err);
     err = TSSetDM(_ts, _solution->dmMesh());PYLITH_CHECK_ERROR(err);
 
     // Set initial solution.
@@ -480,7 +480,7 @@ pylith::problems::TimeDependent::poststep(void) {
     if (_monitor) {
         assert(_normalizer);
         const PylithReal timeScale = _normalizer->timeScale();
-        _monitor->update(t*timeScale, _startTime, _totalTime);
+        _monitor->update(t*timeScale, _startTime, _endTime);
     } // if
 
     PYLITH_METHOD_END;

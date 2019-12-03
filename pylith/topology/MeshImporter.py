@@ -66,18 +66,18 @@ class MeshImporter(MeshGenerator):
         self._loggingPrefix = "MeIm "
         return
 
-    def preinitialize(self):
+    def preinitialize(self, problem):
         """
         Do minimal initialization.
         """
-        MeshGenerator.preinitialize(self)
+        MeshGenerator.preinitialize(self, problem)
 
         self.reader.preinitialize()
         self.distributor.preinitialize()
         self.refiner.preinitialize()
         return
 
-    def create(self, normalizer, faults=None):
+    def create(self, problem, faults=None):
         """
         Hook for creating mesh.
         """
@@ -110,14 +110,14 @@ class MeshImporter(MeshGenerator):
         self._debug.log(resourceUsageString())
         if 0 == comm.rank:
             self._info.log("Adjusting topology.")
-        self._adjustTopology(mesh, faults)
+        self._adjustTopology(mesh, faults, problem)
 
         # Distribute mesh
         if comm.size > 1:
             if 0 == comm.rank:
                 self._info.log("Distributing mesh.")
             self.distributor.initialize()
-            mesh = self.distributor.distribute(mesh, normalizer)
+            mesh = self.distributor.distribute(mesh, problem.normalizer)
             if self.debug:
                 mesh.view()
             mesh.memLoggingStage = "DistributedMesh"
@@ -133,7 +133,7 @@ class MeshImporter(MeshGenerator):
 
         # Nondimensionalize mesh (coordinates of vertices).
         from pylith.topology.topology import MeshOps_nondimensionalize
-        MeshOps_nondimensionalize(newMesh, normalizer)
+        MeshOps_nondimensionalize(newMesh, problem.normalizer)
 
         self._eventLogger.eventEnd(logEvent)
         return newMesh

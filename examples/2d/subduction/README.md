@@ -91,7 +91,7 @@ pylith step03_eqcycle.cfg
 
 ## Step04: Friction controlled afterslip
 
-**IMPORTANT**: This example will not work with PyLith v3.0. It uses
+**WARNING**: This example will not work with PyLith v3.0. It uses
 spontaneous fault rupture, which has not been implemented in v3.0. Use
 the PyLith v2.2.1 release to simulate spontaneous fault rupture.
 
@@ -109,7 +109,7 @@ pylith step04_afterslip.cfg
 
 # Step05: Earthquake cycle with slip-weakening friction
 
-**IMPORTANT**: This example will not work with PyLith v3.0. It uses
+**WARNING**: This example will not work with PyLith v3.0. It uses
 spontaneous fault rupture, which has not been implemented in v3.0. Use
 the PyLith v2.2.1 release to simulate spontaneous fault rupture.
 
@@ -127,7 +127,7 @@ tail -f step05.log
 
 # Step06: Earthquake cycle with rate-state friction
 
-**IMPORTANT**: This example will not work with PyLith v3.0. It uses
+**WARNING**: This example will not work with PyLith v3.0. It uses
 spontaneous fault rupture, which has not been implemented in v3.0. Use
 the PyLith v2.2.1 release to simulate spontaneous fault rupture.
 

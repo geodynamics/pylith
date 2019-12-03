@@ -50,7 +50,7 @@ class InitialCondition(PetscComponent, ModuleInitialCondition):
         PetscComponent.__init__(self, name, facility="initial_conditions")
         return
 
-    def preinitialize(self, mesh):
+    def preinitialize(self, problem):
         """
         Setup initial conditions.
         """

@@ -57,7 +57,7 @@ class MeshGenerator(PetscComponent):
         self.interpolate = True
         return
 
-    def preinitialize(self):
+    def preinitialize(self, problem):
         """
         Do minimal initialization.
         """
@@ -82,7 +82,7 @@ class MeshGenerator(PetscComponent):
         PetscComponent._configure(self)
         return
 
-    def _adjustTopology(self, mesh, interfaces):
+    def _adjustTopology(self, mesh, interfaces, problem):
         """
         Adjust topology for interface implementation.
         """
@@ -96,7 +96,7 @@ class MeshGenerator(PetscComponent):
             for interface in interfaces:
                 if 0 == comm.rank:
                     self._info.log("Adjusting topology for fault '%s'." % interface.label)
-                interface.preinitialize(mesh)
+                interface.preinitialize(problem)
                 interface.adjustTopology(mesh)
 
         self._eventLogger.eventEnd(logEvent)

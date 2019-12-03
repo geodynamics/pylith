@@ -51,11 +51,11 @@ class InitialConditionDomain(InitialCondition, ModuleInitialCondition):
         InitialCondition.__init__(self, name)
         return
 
-    def preinitialize(self, mesh):
+    def preinitialize(self, problem):
         """
         Setup initial conditions.
         """
-        InitialCondition.preinitialize(self, mesh)
+        InitialCondition.preinitialize(self, problem)
 
         ModuleInitialCondition.setDB(self, self.db)
         return

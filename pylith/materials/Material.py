@@ -64,11 +64,11 @@ class Material(Physics, ModuleMaterial):
         Physics.__init__(self, name)
         return
 
-    def preinitialize(self, mesh):
+    def preinitialize(self, problem):
         """
         Setup material.
         """
-        Physics.preinitialize(self, mesh)
+        Physics.preinitialize(self, problem)
 
         ModuleMaterial.setMaterialId(self, self.materialId)
         ModuleMaterial.setDescriptiveLabel(self, self.label)

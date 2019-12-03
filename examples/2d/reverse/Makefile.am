@@ -41,12 +41,12 @@ dist_noinst_DATA = \
 	step06_twofaults_elastic.cfg \
 	step07_twofaults_maxwell.cfg \
 	step08_twofaults_powerlaw.cfg \
-	elastic_incompressible_matfields.spatialdb \
-	elastic_matfields.spatialdb \
-	gravity_refstate_matfields.spatialdb \
-	maxwell_matfields.spatialdb \
-	powerlaw_matfields.spatialdb \
-	traction_trapezoid.spatialdb \
+	mat_elastic_incompressible.spatialdb \
+	mat_elastic.spatialdb \
+	mat_gravity_refstate.spatialdb \
+	mat_maxwell.spatialdb \
+	mat_powerlaw.spatialdb \
+	traction_surfload.spatialdb \
 	viz/plot_dispwarp.py \
 	viz/plot_mesh.py
 

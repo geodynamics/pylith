@@ -160,7 +160,10 @@ class HDF5Checker(object):
         vertices = self._getVertices()
         (nvertices, spaceDim) = vertices.shape
         fieldE = self.exactsoln.getField(fieldName, vertices)
-        self._checkField(fieldName, fieldE, field, vertices)
+        mask = None
+        if "getMask" in dir(self.exactsoln):
+            mask = self.exactsoln.getMask(fieldName, vertices)
+        self._checkField(fieldName, fieldE, field, vertices, mask)
         return
 
     def checkCellField(self, fieldName):
@@ -174,10 +177,11 @@ class HDF5Checker(object):
         centroids = self._getCellCentroids()
         (ncells, spaceDim) = centroids.shape
         fieldE = self.exactsoln.getField(fieldName, centroids)
-        self._checkField(fieldName, fieldE, field, centroids)
+        mask = None
+        self._checkField(fieldName, fieldE, field, centroids, mask)
         return
 
-    def _checkField(self, fieldName, fieldE, field, pts):
+    def _checkField(self, fieldName, fieldE, field, pts, maskField):
         (nstepsE, nptsE, ncompsE) = fieldE.shape
         (nsteps, npts, ncomps) = field.shape
         self.testcase.assertEqual(nstepsE, nsteps)
@@ -186,8 +190,8 @@ class HDF5Checker(object):
 
         toleranceAbsMask = 0.1
         tolerance = 1.0e-5
-        mask = fieldE != 0.0
-        scale = scale = numpy.mean(numpy.abs(fieldE[mask].ravel())) if numpy.sum(mask) > 0 else 1.0
+        maskZero = fieldE != 0.0
+        scale = numpy.mean(numpy.abs(fieldE[maskZero].ravel())) if numpy.sum(maskZero) > 0 else 1.0
         for istep in xrange(nsteps):
             for icomp in xrange(ncomps):
                 okay = numpy.zeros((npts,), dtype=numpy.bool)
@@ -202,6 +206,9 @@ class HDF5Checker(object):
                 if len(diff) > 0:
                     okay[maskD] = diff < tolerance
 
+                if not maskField is None:
+                    okay[maskField] = True
+                    
                 if numpy.sum(okay) != npts:
                     print("Error in component {} of field '{}' at time step {}.".format(icomp, fieldName, istep))
                     print("Expected values: ", fieldE[istep, :, :])

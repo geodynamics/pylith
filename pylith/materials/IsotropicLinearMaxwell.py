@@ -58,8 +58,8 @@ class IsotropicLinearMaxwell(RheologyElasticity, ModuleLinearElasticity):
         RheologyElasticity.__init__(self, name)
         return
 
-    def preinitialize(self, mesh):
-        RheologyElasticity.preinitialize(self, mesh)
+    def preinitialize(self, problem):
+        RheologyElasticity.preinitialize(self, problem)
 
         ModuleLinearElasticity.useReferenceState(self, self.useReferenceState)
 
