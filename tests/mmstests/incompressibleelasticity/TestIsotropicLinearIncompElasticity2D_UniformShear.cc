@@ -177,7 +177,7 @@ protected:
         _data->normalizer->computeDensityScale();
 
         _data->startTime = 0.0;
-        _data->totalTime = 0.1;
+        _data->endTime = 0.1;
         _data->timeStep = 0.05;
 
         // solnDiscretizations set in derived class.

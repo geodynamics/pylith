@@ -110,7 +110,7 @@ pylith::mmstests::TestIncompressibleElasticity::_initialize(void) {
     pylith::bc::BoundaryCondition* bcs[2] = { _bcDisplacement, _bcPressure };
     _problem->setBoundaryConditions(bcs, 2);
     _problem->setStartTime(_data->startTime);
-    _problem->setTotalTime(_data->totalTime);
+    _problem->setEndTime(_data->endTime);
     _problem->setInitialTimeStep(_data->timeStep);
 
     // Set up solution field.
@@ -147,7 +147,7 @@ pylith::mmstests::TestIncompressibleElasticity_Data::TestIncompressibleElasticit
     normalizer(new spatialdata::units::Nondimensional),
 
     startTime(0.0),
-    totalTime(0.0),
+    endTime(0.0),
     timeStep(0.0),
 
     numSolnSubfields(0),

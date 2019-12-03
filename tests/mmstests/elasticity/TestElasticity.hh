@@ -95,7 +95,7 @@ public:
     spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
 
     PylithReal startTime; ///< Start time for simulation.
-    PylithReal totalTime; ///< Total time in simulation.
+    PylithReal endTime; ///< End time for simulation.
     PylithReal timeStep; ///< Time step in simulation.
 
     int numSolnSubfields; ///< Number of solution fields.

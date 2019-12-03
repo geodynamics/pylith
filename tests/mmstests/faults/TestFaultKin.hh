@@ -95,7 +95,7 @@ public:
     spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
 
     PylithReal startTime; ///< Start time for simulation.
-    PylithReal totalTime; ///< Total time in simulation.
+    PylithReal endTime; ///< Total time in simulation.
     PylithReal timeStep; ///< Time step in simulation.
     bool isExplicit; ///< True for explicit time stepping.
 
