@@ -105,7 +105,6 @@ class TestCase(FullTestCase):
 # ----------------------------------------------------------------------------------------------------------------------
 class TestQuad(TestCase, meshes.Quad):
     NAME = "axialtraction_maxwell_quad"
-    VERBOSITY = 2
 
     def setUp(self):
         TestCase.setUp(self)
@@ -116,7 +115,6 @@ class TestQuad(TestCase, meshes.Quad):
 # ----------------------------------------------------------------------------------------------------------------------
 class TestTri(TestCase, meshes.Tri):
     NAME = "axialtraction_maxwell_tri"
-    VERBOSITY = 2
 
     def setUp(self):
         TestCase.setUp(self)
