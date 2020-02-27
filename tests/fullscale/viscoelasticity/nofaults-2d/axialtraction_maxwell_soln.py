@@ -148,7 +148,7 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[:,:,0] = T0
+        traction[:,:,1] = T0
         return traction
 
     def density(self, locs):
