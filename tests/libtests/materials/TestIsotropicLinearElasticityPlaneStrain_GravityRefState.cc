@@ -119,14 +119,14 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
         return "none";
     } // strain_units
 
-    static double gravityAcc_x(const double x,
+    static double setGravityAcc_x(const double x,
                                const double y) {
         return 0.0;
-    } // gravityAcc_x
-    static double gravityAcc_y(const double x,
+    } // setGravityAcc_x
+    static double setGravityAcc_y(const double x,
                                const double y) {
         return -GACC;
-    } // gravityAcc_y
+    } // setGravityAcc_y
     static const char* acc_units(void) {
         return "m/s**2";
     } // acc_units
@@ -179,14 +179,14 @@ protected:
         _mydata->boundaryLabel = "boundary";
 
         CPPUNIT_ASSERT(_mydata->normalizer);
-        _mydata->normalizer->lengthScale(1.0e+03);
-        _mydata->normalizer->timeScale(2.0);
-        _mydata->normalizer->pressureScale(2.25e+10);
+        _mydata->normalizer->setLengthScale(1.0e+03);
+        _mydata->normalizer->setTimeScale(2.0);
+        _mydata->normalizer->setPressureScale(2.25e+10);
         _mydata->normalizer->computeDensityScale();
 
         delete _mydata->gravityField; _mydata->gravityField = new spatialdata::spatialdb::GravityField();
-        _mydata->gravityField->gravityDir(0.0, -1.0, 0.0);
-        _mydata->gravityField->gravityAcc(GACC);
+        _mydata->gravityField->setGravityDir(0.0, -1.0, 0.0);
+        _mydata->gravityField->setGravityAcc(GACC);
 
         _mydata->t = 1.0;
         _mydata->dt = 0.05;
@@ -221,8 +221,8 @@ protected:
         _mydata->auxDB->addValue("reference_strain_yy", referenceStrain, strain_units());
         _mydata->auxDB->addValue("reference_strain_zz", referenceStrain, strain_units());
         _mydata->auxDB->addValue("reference_strain_xy", referenceStrain, strain_units());
-        _mydata->auxDB->addValue("gravitational_acceleration_x", gravityAcc_x, acc_units()); // test of subfield.
-        _mydata->auxDB->addValue("gravitational_acceleration_y", gravityAcc_y, acc_units());
+        _mydata->auxDB->addValue("gravitational_acceleration_x", setGravityAcc_x, acc_units()); // test of subfield.
+        _mydata->auxDB->addValue("gravitational_acceleration_y", setGravityAcc_y, acc_units());
 
         CPPUNIT_ASSERT(_mydata->solnDB);
         _mydata->solnDB->addValue("displacement_x", disp_x, disp_units());
@@ -241,7 +241,7 @@ protected:
         _mymaterial->useBodyForce(false);
         _mymaterial->useReferenceState(true);
 
-        _mymaterial->label("Isotropic Linear Elascitity Plane Strain");
+        _mymaterial->setLabel("Isotropic Linear Elascitity Plane Strain");
         _mymaterial->id(24);
     } // setUp
 

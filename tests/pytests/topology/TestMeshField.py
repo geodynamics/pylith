@@ -74,12 +74,12 @@ class TestMeshField(unittest.TestCase):
 
   def test_label(self):
     """
-    Test label().
+    Test getLabel().
     """
     label = "field A"
 
     self.field.label(label)
-    self.assertEqual(label, self.field.label())
+    self.assertEqual(label, self.field.getLabel())
     return
 
 
@@ -118,9 +118,9 @@ class TestMeshField(unittest.TestCase):
 
   def test_spaceDim(self):
     """
-    Test spaceDim().
+    Test getSpaceDim().
     """
-    self.assertEqual(2, self.field.spaceDim())
+    self.assertEqual(2, self.field.getSpaceDim())
     return
 
 

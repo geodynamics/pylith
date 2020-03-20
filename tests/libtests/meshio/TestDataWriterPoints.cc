@@ -78,10 +78,10 @@ pylith::meshio::TestDataWriterPoints::_initialize(void) {
 
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim(_mesh->dimension());
-    _mesh->coordsys(&cs);
+    _mesh->setCoordSys(&cs);
 
     spatialdata::units::Nondimensional normalizer;
-    normalizer.lengthScale(data->lengthScale);
+    normalizer.setLengthScale(data->lengthScale);
     topology::MeshOps::nondimensionalize(_mesh, normalizer);
 
     if (_data->faultLabel) {

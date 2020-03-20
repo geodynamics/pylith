@@ -64,7 +64,7 @@ pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void) { // testTimeStep
     OutputSolnPoints output;
     DataWriterVTK writer;
     spatialdata::units::Nondimensional normalizer;
-    normalizer.lengthScale(10.0);
+    normalizer.setLengthScale(10.0);
 
     writer.filename(_data->timestepFilename);
     writer.timeFormat(_data->timeFormat);
@@ -105,7 +105,7 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void) { // testWri
     OutputSolnPoints output;
     DataWriterVTK writer;
     spatialdata::units::Nondimensional normalizer;
-    normalizer.lengthScale(10.0);
+    normalizer.setLengthScale(10.0);
 
     topology::Fields vertexFields(*_mesh);
     _createVertexFields(&vertexFields);

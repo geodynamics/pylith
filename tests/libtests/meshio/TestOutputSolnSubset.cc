@@ -45,7 +45,7 @@ pylith::meshio::TestOutputSolnSubset::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test label()
+// Test getLabel()
 void
 pylith::meshio::TestOutputSolnSubset::testLabel(void)
 { // testLabel
@@ -55,7 +55,7 @@ pylith::meshio::TestOutputSolnSubset::testLabel(void)
 
   const char* label = "boundary";
 
-  output.label(label);
+  output.setLabel(label);
   CPPUNIT_ASSERT(0 == strcmp(label, output._label.c_str()));
 
   PYLITH_METHOD_END;
@@ -84,7 +84,7 @@ pylith::meshio::TestOutputSolnSubset::testSubdomainMesh(void)
   iohandler.read(&mesh);
 
   OutputSolnSubset output;
-  output.label(label);
+  output.setLabel(label);
 
   PetscDM dmMesh = output.subdomainMesh(mesh).dmMesh();CPPUNIT_ASSERT(dmMesh);
 

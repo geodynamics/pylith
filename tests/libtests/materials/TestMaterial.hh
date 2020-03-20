@@ -97,7 +97,7 @@ public:
     /// Test checkConstraints().
     void testCheckConstraints(void);
 
-    /// Test dimension(), id(), and label().
+    /// Test dimension(), id(), and getLabel().
     void testAccessors(void);
 
     /// Test initialize().

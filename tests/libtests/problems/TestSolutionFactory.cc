@@ -40,10 +40,10 @@ pylith::problems::TestSolutionFactory::setUp(void) {
     _data = new TestSolutionFactory_Data();CPPUNIT_ASSERT(_data);
 
     CPPUNIT_ASSERT(_data->normalizer);
-    _data->normalizer->lengthScale(1.0e+03);
-    _data->normalizer->timeScale(2.0);
-    _data->normalizer->densityScale(3.0e+3);
-    _data->normalizer->pressureScale(2.25e+10);
+    _data->normalizer->setLengthScale(1.0e+03);
+    _data->normalizer->setTimeScale(2.0);
+    _data->normalizer->setDensityScale(3.0e+3);
+    _data->normalizer->setPressureScale(2.25e+10);
 
     pylith::topology::Field::SubfieldInfo info;
     info.dm = NULL;
@@ -60,7 +60,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         componentNames,
         componentNames.size(),
         pylith::topology::Field::VECTOR,
-        _data->normalizer->lengthScale()
+        _data->normalizer->getLengthScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         1, 2, -1, true, pylith::topology::Field::POLYNOMIAL_SPACE
@@ -79,7 +79,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         componentNames,
         componentNames.size(),
         pylith::topology::Field::VECTOR,
-        _data->normalizer->lengthScale() / _data->normalizer->timeScale()
+        _data->normalizer->getLengthScale() / _data->normalizer->getTimeScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 3, -1, false, pylith::topology::Field::POLYNOMIAL_SPACE
@@ -96,7 +96,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->normalizer->pressureScale()
+        _data->normalizer->getPressureScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 2, -1, true, pylith::topology::Field::POLYNOMIAL_SPACE
@@ -113,7 +113,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->normalizer->pressureScale()
+        _data->normalizer->getPressureScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 3, -1, true, pylith::topology::Field::POINT_SPACE
@@ -132,7 +132,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         componentNames,
         componentNames.size(),
         pylith::topology::Field::VECTOR,
-        _data->normalizer->pressureScale()
+        _data->normalizer->getPressureScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 2, -1, true, pylith::topology::Field::POLYNOMIAL_SPACE
@@ -149,7 +149,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->normalizer->temperatureScale()
+        _data->normalizer->getTemperatureScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 3, -1, true, pylith::topology::Field::POINT_SPACE
@@ -291,7 +291,7 @@ pylith::problems::TestSolutionFactory::testSetValues(void) {
 
     CPPUNIT_ASSERT(_data->solutionDB);
     _factory->setValues(_data->solutionDB);
-    pylith::testing::FieldTester::checkFieldWithDB(*_solution, _data->solutionDB, _data->normalizer->lengthScale());
+    pylith::testing::FieldTester::checkFieldWithDB(*_solution, _data->solutionDB, _data->normalizer->getLengthScale());
 
     PYLITH_METHOD_END;
 } // testSetValues
@@ -315,12 +315,12 @@ pylith::problems::TestSolutionFactory::_initialize(void) {
     CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.", _mesh->numVertices() > 0);
 
     // Setup coordinates.
-    _mesh->coordsys(_data->cs);
+    _mesh->setCoordSys(_data->cs);
     CPPUNIT_ASSERT(_data->normalizer);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
     _solution = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_solution);
-    _solution->label("solution");
+    _solution->setLabel("solution");
     _factory = new SolutionFactory(*_solution, *_data->normalizer);
 
     PYLITH_METHOD_END;

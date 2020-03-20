@@ -112,7 +112,7 @@ pylith::topology::TestFieldsMesh::testDelete(void) {
     size = 1;
     CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
     const Field& field = fields.get(keyB);
-    CPPUNIT_ASSERT_EQUAL(std::string(labelB), std::string(field.label()));
+    CPPUNIT_ASSERT_EQUAL(std::string(labelB), std::string(field.getLabel()));
 
     CPPUNIT_ASSERT_THROW(fields.del(keyA), std::runtime_error);
 
@@ -133,7 +133,7 @@ pylith::topology::TestFieldsMesh::testGet(void) {
     const char* label = "velocity";
     fields.add(key, label);
     const Field& field = fields.get(key);
-    CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(field.label()));
+    CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(field.getLabel()));
 
     CPPUNIT_ASSERT_THROW(fields.get("abc"), std::runtime_error);
 
@@ -160,7 +160,7 @@ pylith::topology::TestFieldsMesh::testGetConst(void) {
     const Fields* fieldsPtr = &fields;
     CPPUNIT_ASSERT(fieldsPtr);
     const Field& field = fieldsPtr->get(key);
-    CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(field.label()));
+    CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(field.getLabel()));
 
     PYLITH_METHOD_END;
 } // testGetConst

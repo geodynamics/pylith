@@ -109,10 +109,10 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::test_auxFieldSetup(
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_mydata);
     CPPUNIT_ASSERT(_mydata->normalizer);
-    const PylithReal densityScale = _mydata->normalizer->densityScale();
-    const PylithReal lengthScale = _mydata->normalizer->lengthScale();
-    const PylithReal timeScale = _mydata->normalizer->timeScale();
-    const PylithReal pressureScale = _mydata->normalizer->pressureScale();
+    const PylithReal densityScale = _mydata->normalizer->getDensityScale();
+    const PylithReal lengthScale = _mydata->normalizer->getLengthScale();
+    const PylithReal timeScale = _mydata->normalizer->getTimeScale();
+    const PylithReal pressureScale = _mydata->normalizer->getPressureScale();
     const PylithReal forceScale = pressureScale / lengthScale;
     const PylithReal accelerationScale = lengthScale/(timeScale * timeScale);
 
@@ -278,7 +278,7 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
     CPPUNIT_ASSERT(_mymaterial);
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_mydata->normalizer);
-    const PylithReal lengthScale = _mydata->normalizer->lengthScale();
+    const PylithReal lengthScale = _mydata->normalizer->getLengthScale();
 
     const pylith::topology::Field* auxField = _mymaterial->auxField();assert(auxField);
     { // Test getting density field.
@@ -288,8 +288,8 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         // density.view("DENSITY"); // DEBUGGING
 
         // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("density"), std::string(density.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, density.spaceDim());
+        CPPUNIT_ASSERT_EQUAL(std::string("density"), std::string(density.getLabel()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, density.getSpaceDim());
 
         pylith::topology::FieldQuery queryDensity(density);
         queryDensity.initializeWithDefaultQueryFns();
@@ -312,8 +312,8 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         // bulkModulus.view("BULK MODULUS"); // DEBUGGING
 
         // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("bulk_modulus"), std::string(bulkModulus.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, bulkModulus.spaceDim());
+        CPPUNIT_ASSERT_EQUAL(std::string("bulk_modulus"), std::string(bulkModulus.getLabel()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, bulkModulus.getSpaceDim());
 
         pylith::topology::FieldQuery queryBulkModulus(bulkModulus);
         queryBulkModulus.initializeWithDefaultQueryFns();
@@ -336,8 +336,8 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         // maxwellTime.view("MAXWELL TIME"); // DEBUGGING
 
         // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("maxwell_time"), std::string(maxwellTime.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, maxwellTime.spaceDim());
+        CPPUNIT_ASSERT_EQUAL(std::string("maxwell_time"), std::string(maxwellTime.getLabel()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, maxwellTime.getSpaceDim());
 
         pylith::topology::FieldQuery queryMaxwellTime(maxwellTime);
         queryMaxwellTime.initializeWithDefaultQueryFns();
@@ -360,8 +360,8 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         // shearModulusRatio.view("SHEAR MODULUS RATIO"); // DEBUGGING
 
         // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("shear_modulus_ratio"), std::string(shearModulusRatio.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, shearModulusRatio.spaceDim());
+        CPPUNIT_ASSERT_EQUAL(std::string("shear_modulus_ratio"), std::string(shearModulusRatio.getLabel()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, shearModulusRatio.getSpaceDim());
 
         pylith::topology::FieldQuery queryShearModulusRatio(shearModulusRatio);
         queryShearModulusRatio.initializeWithDefaultQueryFns();
@@ -384,8 +384,8 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         // viscousStrain.view("VISCOUS STRAIN"); // DEBUGGING
 
         // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("viscous_strain"), std::string(viscousStrain.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, viscousStrain.spaceDim());
+        CPPUNIT_ASSERT_EQUAL(std::string("viscous_strain"), std::string(viscousStrain.getLabel()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, viscousStrain.getSpaceDim());
 
         pylith::topology::FieldQuery queryViscousStrain(viscousStrain);
         queryViscousStrain.initializeWithDefaultQueryFns();
@@ -408,8 +408,8 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         // totalStrain.view("TOTAL STRAIN"); // DEBUGGING
 
         // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("total_strain"), std::string(totalStrain.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, totalStrain.spaceDim());
+        CPPUNIT_ASSERT_EQUAL(std::string("total_strain"), std::string(totalStrain.getLabel()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, totalStrain.getSpaceDim());
 
         pylith::topology::FieldQuery queryTotalStrain(totalStrain);
         queryTotalStrain.initializeWithDefaultQueryFns();
@@ -432,8 +432,8 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         // referenceStress.view("REFERENCE STRESS"); // DEBUGGING
 
         // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("reference_stress"), std::string(referenceStress.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, referenceStress.spaceDim());
+        CPPUNIT_ASSERT_EQUAL(std::string("reference_stress"), std::string(referenceStress.getLabel()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, referenceStress.getSpaceDim());
 
         pylith::topology::FieldQuery queryRefStress(referenceStress);
         queryRefStress.initializeWithDefaultQueryFns();
@@ -456,8 +456,8 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::testGetAuxField(voi
         // referenceStrain.view("REFERENCE STRAIN"); // DEBUGGING
 
         // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("reference_strain"), std::string(referenceStrain.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, referenceStrain.spaceDim());
+        CPPUNIT_ASSERT_EQUAL(std::string("reference_strain"), std::string(referenceStrain.getLabel()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, referenceStrain.getSpaceDim());
 
         pylith::topology::FieldQuery queryRefStrain(referenceStrain);
         queryRefStrain.initializeWithDefaultQueryFns();
@@ -568,15 +568,14 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain_Data::TestIsotropicL
 
     cs = new spatialdata::geocoords::CSCart;CPPUNIT_ASSERT(cs);
     cs->setSpaceDim(dimension);
-    cs->initialize();
 
     // Some auxiliary subfields get updated in updateStateVars().
     auxUpdateDB = new spatialdata::spatialdb::UserFunctionDB;CPPUNIT_ASSERT(auxUpdateDB);
 
-    solnDB->coordsys(*cs);
-    perturbDB->coordsys(*cs);
-    auxDB->coordsys(*cs);
-    auxUpdateDB->coordsys(*cs);
+    solnDB->setCoordSys(*cs);
+    perturbDB->setCoordSys(*cs);
+    auxDB->setCoordSys(*cs);
+    auxUpdateDB->setCoordSys(*cs);
 } // constructor
 
 

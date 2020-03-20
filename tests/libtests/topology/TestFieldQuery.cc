@@ -125,7 +125,7 @@ pylith::topology::TestFieldQuery::testOpenClose(void) {
     _query->initializeWithDefaultQueryFns();
 
     // Test with non-NULL database.
-    _query->openDB(_data->auxDB, _data->normalizer->lengthScale());
+    _query->openDB(_data->auxDB, _data->normalizer->getLengthScale());
     _query->closeDB(_data->auxDB);
     // Nothing to verify.
 
@@ -152,7 +152,7 @@ pylith::topology::TestFieldQuery::testQuery(void) {
 
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->normalizer);
-    _query->openDB(_data->auxDB, _data->normalizer->lengthScale());
+    _query->openDB(_data->auxDB, _data->normalizer->getLengthScale());
     _query->queryDB();
     _query->closeDB(_data->auxDB);
 
@@ -164,7 +164,7 @@ pylith::topology::TestFieldQuery::testQuery(void) {
     const PylithReal t = 0.0;
     pylith::topology::FieldQuery query(*_field);
     query.initializeWithDefaultQueryFns();
-    query.openDB(_data->auxDB, _data->normalizer->lengthScale());
+    query.openDB(_data->auxDB, _data->normalizer->getLengthScale());
     PetscErrorCode err = DMPlexComputeL2DiffLocal(_field->dmMesh(), t, query.functions(), (void**)query.contextPtrs(), _field->localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
@@ -249,13 +249,13 @@ pylith::topology::TestFieldQuery::_initialize(void) {
     pylith::meshio::MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, cellDim);
 
     CPPUNIT_ASSERT(_data->cs);
-    _mesh->coordsys(_data->cs);
+    _mesh->setCoordSys(_data->cs);
     CPPUNIT_ASSERT(_data->normalizer);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
     // Setup field
     delete _field;_field = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_field);
-    _field->label("auxiliary test field");
+    _field->setLabel("auxiliary test field");
     for (int i = 0; i < _data->numAuxSubfields; ++i) {
         CPPUNIT_ASSERT(_data->auxDescriptions);
         CPPUNIT_ASSERT(_data->auxDiscretizations);

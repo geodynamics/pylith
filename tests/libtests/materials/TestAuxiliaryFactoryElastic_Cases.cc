@@ -162,7 +162,6 @@ protected:
         _data->meshFilename = "data/tri.mesh";
         _data->cs = new spatialdata::geocoords::CSCart();CPPUNIT_ASSERT(_data->cs);
         _data->cs->setSpaceDim(_data->dimension);
-        _data->cs->initialize();
 
         CPPUNIT_ASSERT(_data->auxiliaryDB);
         _data->auxiliaryDB->addValue("density", density, density_units());
@@ -178,8 +177,8 @@ protected:
         _data->auxiliaryDB->addValue("reference_strain_yy", reference_strain_xx, strain_units());
         _data->auxiliaryDB->addValue("reference_strain_zz", reference_strain_xx, strain_units());
         _data->auxiliaryDB->addValue("reference_strain_xy", reference_strain_xx, strain_units());
-        _data->auxiliaryDB->label("auxiliary");
-        _data->auxiliaryDB->coordsys(*_data->cs);
+        _data->auxiliaryDB->setLabel("auxiliary");
+        _data->auxiliaryDB->setCoordSys(*_data->cs);
 
         _data->subfields["reference_stress"].description.numComponents = 4;
         _data->subfields["reference_stress"].description.vectorFieldType = pylith::topology::Field::OTHER;
@@ -360,7 +359,6 @@ protected:
         _data->meshFilename = "data/hex.mesh";
         _data->cs = new spatialdata::geocoords::CSCart();CPPUNIT_ASSERT(_data->cs);
         _data->cs->setSpaceDim(_data->dimension);
-        _data->cs->initialize();
 
         CPPUNIT_ASSERT(_data->auxiliaryDB);
         _data->auxiliaryDB->addValue("density", density, density_units());
@@ -380,8 +378,8 @@ protected:
         _data->auxiliaryDB->addValue("reference_strain_xy", reference_strain_xx, strain_units());
         _data->auxiliaryDB->addValue("reference_strain_yz", reference_strain_xx, strain_units());
         _data->auxiliaryDB->addValue("reference_strain_xz", reference_strain_xx, strain_units());
-        _data->auxiliaryDB->label("auxiliary");
-        _data->auxiliaryDB->coordsys(*_data->cs);
+        _data->auxiliaryDB->setLabel("auxiliary");
+        _data->auxiliaryDB->setCoordSys(*_data->cs);
 
         _initialize();
     } // setUp

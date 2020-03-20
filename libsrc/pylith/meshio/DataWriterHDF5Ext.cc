@@ -165,8 +165,8 @@ pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
             const hsize_t ndims = 2;
             hsize_t dims[ndims];
             dims[0] = numVertices;
-            const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
-            dims[1] = cs->spaceDim();
+            const spatialdata::geocoords::CoordSys* cs = mesh.getCoordSys();assert(cs);
+            dims[1] = cs->getSpaceDim();
             _h5->createDatasetRawExternal("/geometry", "vertices", filenameVertices.c_str(), dims, ndims, scalartype);
         } // if
 
@@ -320,15 +320,15 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
 
         // Create external dataset if necessary
         bool createdExternalDataset = false;
-        if (_datasets.find(field.label()) != _datasets.end()) {
-            binaryViewer = _datasets[field.label()].viewer;
+        if (_datasets.find(field.getLabel()) != _datasets.end()) {
+            binaryViewer = _datasets[field.getLabel()].viewer;
         } else {
-            err = PetscViewerBinaryOpen(comm, _datasetFilename(field.label()).c_str(), FILE_MODE_WRITE, &binaryViewer);PYLITH_CHECK_ERROR(err);
+            err = PetscViewerBinaryOpen(comm, _datasetFilename(field.getLabel()).c_str(), FILE_MODE_WRITE, &binaryViewer);PYLITH_CHECK_ERROR(err);
             err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
             ExternalDataset dataset;
             dataset.numTimeSteps = 0;
             dataset.viewer = binaryViewer;
-            _datasets[field.label()] = dataset;
+            _datasets[field.getLabel()] = dataset;
 
             createdExternalDataset = true;
         } // else
@@ -343,7 +343,7 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
         if (isseq) {err = VecView_Seq(vector, binaryViewer);PYLITH_CHECK_ERROR(err); } else       {err = VecView_MPI(vector, binaryViewer);PYLITH_CHECK_ERROR(err); }
 #endif
 
-        ExternalDataset& datasetInfo = _datasets[field.label()];
+        ExternalDataset& datasetInfo = _datasets[field.getLabel()];
         ++datasetInfo.numTimeSteps;
 
         // Update time stamp in "/time, if necessary.
@@ -402,8 +402,8 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
                     _h5->createGroup("/vertex_fields");
                 }
 
-                _h5->createDatasetRawExternal("/vertex_fields", field.label(), _datasetFilename(field.label()).c_str(), maxDims, ndims, scalartype);
-                std::string fullName = std::string("/vertex_fields/") + field.label();
+                _h5->createDatasetRawExternal("/vertex_fields", field.getLabel(), _datasetFilename(field.getLabel()).c_str(), maxDims, ndims, scalartype);
+                std::string fullName = std::string("/vertex_fields/") + field.getLabel();
                 const char* sattr = pylith::topology::FieldBase::vectorFieldString(field.vectorFieldType());
                 _h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
             } // if
@@ -414,16 +414,16 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
             dims[0] = datasetInfo.numTimeSteps; // update to current value
             dims[1] = datasetInfo.numPoints;
             dims[2] = datasetInfo.fiberDim;
-            _h5->extendDatasetRawExternal("/vertex_fields", field.label(), dims, ndims);
+            _h5->extendDatasetRawExternal("/vertex_fields", field.getLabel(), dims, ndims);
         } // if/else
     } catch (const std::exception& err) {
         std::ostringstream msg;
-        msg << "Error while writing field '" << field.label() << "' at time "
+        msg << "Error while writing field '" << field.getLabel() << "' at time "
             << t << " for HDF5 file '" << _filename << "'.\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
         std::ostringstream msg;
-        msg << "Error while writing field '" << field.label() << "' at time "
+        msg << "Error while writing field '" << field.getLabel() << "' at time "
             << t << " for HDF5 file '" << _filename << "'.";
         throw std::runtime_error(msg.str());
     } // try/catch
@@ -460,15 +460,15 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
 
         // Create external dataset if necessary
         bool createdExternalDataset = false;
-        if (_datasets.find(field.label()) != _datasets.end()) {
-            binaryViewer = _datasets[field.label()].viewer;
+        if (_datasets.find(field.getLabel()) != _datasets.end()) {
+            binaryViewer = _datasets[field.getLabel()].viewer;
         } else {
-            err = PetscViewerBinaryOpen(comm, _datasetFilename(field.label()).c_str(), FILE_MODE_WRITE, &binaryViewer);PYLITH_CHECK_ERROR(err);
+            err = PetscViewerBinaryOpen(comm, _datasetFilename(field.getLabel()).c_str(), FILE_MODE_WRITE, &binaryViewer);PYLITH_CHECK_ERROR(err);
             err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
             ExternalDataset dataset;
             dataset.numTimeSteps = 0;
             dataset.viewer = binaryViewer;
-            _datasets[field.label()] = dataset;
+            _datasets[field.getLabel()] = dataset;
 
             createdExternalDataset = true;
         } // else
@@ -483,7 +483,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         if (isseq) {err = VecView_Seq(vector, binaryViewer);PYLITH_CHECK_ERROR(err); } else       {err = VecView_MPI(vector, binaryViewer);PYLITH_CHECK_ERROR(err); }
 #endif
 
-        ExternalDataset& datasetInfo = _datasets[field.label()];
+        ExternalDataset& datasetInfo = _datasets[field.getLabel()];
         ++datasetInfo.numTimeSteps;
 
         // Update time stamp in "/time, if necessary.
@@ -540,8 +540,8 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
                     _h5->createGroup("/cell_fields");
                 }
 
-                _h5->createDatasetRawExternal("/cell_fields", field.label(), _datasetFilename(field.label()).c_str(), maxDims, ndims, scalartype);
-                std::string fullName = std::string("/cell_fields/") + field.label();
+                _h5->createDatasetRawExternal("/cell_fields", field.getLabel(), _datasetFilename(field.getLabel()).c_str(), maxDims, ndims, scalartype);
+                std::string fullName = std::string("/cell_fields/") + field.getLabel();
                 const char* sattr = pylith::topology::FieldBase::vectorFieldString(field.vectorFieldType());
                 _h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
             } // if
@@ -553,17 +553,17 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
             dims[0] = datasetInfo.numTimeSteps; // update to current value
             dims[1] = datasetInfo.numPoints;
             dims[2] = datasetInfo.fiberDim;
-            _h5->extendDatasetRawExternal("/cell_fields", field.label(), dims, ndims);
+            _h5->extendDatasetRawExternal("/cell_fields", field.getLabel(), dims, ndims);
         } // if/else
 
     } catch (const std::exception& err) {
         std::ostringstream msg;
-        msg << "Error while writing field '" << field.label() << "' at time "
+        msg << "Error while writing field '" << field.getLabel() << "' at time "
             << t << " for HDF5 file '" << _filename << "'.\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
         std::ostringstream msg;
-        msg << "Error while writing field '" << field.label() << "' at time "
+        msg << "Error while writing field '" << field.getLabel() << "' at time "
             << t << " for HDF5 file '" << _filename << "'.";
         throw std::runtime_error(msg.str());
     } // try/catch

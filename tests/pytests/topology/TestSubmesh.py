@@ -57,7 +57,7 @@ class TestSubmesh(unittest.TestCase):
     """
     mesh = self._getMesh()
     submesh = Mesh(mesh=mesh, label="bc")
-    self.assertEqual(2, submesh.coordsys().spaceDim())
+    self.assertEqual(2, submesh.coordsys().getSpaceDim())
     return
 
 

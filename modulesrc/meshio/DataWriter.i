@@ -49,7 +49,7 @@ public:
              *
              * @param value Time scale
              */
-            void timeScale(const PylithScalar value);
+            void setTimeScale(const PylithScalar value);
 
             /** Is data writer open, i.e., ready for openTimeStep()/closeTimeStep()?
              *

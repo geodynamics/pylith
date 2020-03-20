@@ -123,13 +123,13 @@ public:
      *
      * @param value Label for field.
      */
-    void label(const char* value);
+    void setLabel(const char* value);
 
     /** Get label for field.
      *
      * @returns Label for field.
      */
-    const char* label(void) const;
+    const char* getLabel(void) const;
 
     /** Set flag indicating whether it is okay to dimensionalize field.
      *
@@ -147,7 +147,7 @@ public:
      *
      * @returns Spatial dimension of domain.
      */
-    int spaceDim(void) const;
+    int getSpaceDim(void) const;
 
     /** Get vector field type.
      *
@@ -193,7 +193,7 @@ public:
      *
      * @param src Field defining layout.
      *
-     * @note Don't forget to call label(), especially if reusing a field.
+     * @note Don't forget to call getLabel(), especially if reusing a field.
      */
     void cloneSection(const Field& src);
 

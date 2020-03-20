@@ -178,7 +178,7 @@ class PowerLawApp(Application):
     err = numpy.zeros( (npoints,), dtype=numpy.int32)
 
     db.open()
-    db.queryVals([valueName])
+    db.setQueryValues([valueName])
     db.multiquery(data, err, points, cs)
     db.close()
     errSum = numpy.sum(err)

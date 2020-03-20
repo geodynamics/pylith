@@ -134,7 +134,7 @@ class TestMeshQuadrature(unittest.TestCase):
     quadrature.initialize()
 
     self.assertEqual(2, quadrature.cellDim())
-    self.assertEqual(2, quadrature.spaceDim())
+    self.assertEqual(2, quadrature.getSpaceDim())
     self.assertEqual(3, quadrature.numBasis())
     self.assertEqual(1, quadrature.numQuadPts())
 
@@ -165,7 +165,7 @@ class TestMeshQuadrature(unittest.TestCase):
 
     quadrature.preinitialize(spaceDim)
     self.assertEqual(2, quadrature.cellDim())
-    self.assertEqual(spaceDim, quadrature.spaceDim())
+    self.assertEqual(spaceDim, quadrature.getSpaceDim())
     self.assertEqual(3, quadrature.numBasis())
     return
 
@@ -186,7 +186,7 @@ class TestMeshQuadrature(unittest.TestCase):
 
     quadrature.preinitialize(spaceDim)
     self.assertEqual(3, quadrature.cellDim())
-    self.assertEqual(spaceDim, quadrature.spaceDim())
+    self.assertEqual(spaceDim, quadrature.getSpaceDim())
     self.assertEqual(4, quadrature.numBasis())
     return
 
@@ -207,7 +207,7 @@ class TestMeshQuadrature(unittest.TestCase):
 
     quadrature.preinitialize(spaceDim)
     self.assertEqual(2, quadrature.cellDim())
-    self.assertEqual(spaceDim, quadrature.spaceDim())
+    self.assertEqual(spaceDim, quadrature.getSpaceDim())
     self.assertEqual(4, quadrature.numBasis())
     return
 
@@ -228,7 +228,7 @@ class TestMeshQuadrature(unittest.TestCase):
 
     quadrature.preinitialize(spaceDim)
     self.assertEqual(3, quadrature.cellDim())
-    self.assertEqual(spaceDim, quadrature.spaceDim())
+    self.assertEqual(spaceDim, quadrature.getSpaceDim())
     self.assertEqual(8, quadrature.numBasis())
     return
 

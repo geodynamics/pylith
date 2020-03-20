@@ -69,7 +69,7 @@ public:
     /// Test setPhysicsImplemetation().
     void testSetPhysicsImplementation(void);
 
-    /// Test setTimeScale().
+    /// Test setgetTimeScale().
     void testTimeScale(void);
 
     /// Test verifyObservers().

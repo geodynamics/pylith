@@ -66,12 +66,12 @@ pylith::problems::TestPhysics::testSetNormalizer(void) {
 
     spatialdata::units::Nondimensional normalizer;
     const PylithReal lengthScale = 3.0;
-    normalizer.lengthScale(lengthScale);
+    normalizer.setLengthScale(lengthScale);
 
     CPPUNIT_ASSERT(_physics);
     _physics->setNormalizer(normalizer);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(lengthScale, _physics->_normalizer->lengthScale(), 1.0e-6);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(lengthScale, _physics->_normalizer->getLengthScale(), 1.0e-6);
 
     PYLITH_METHOD_END;
 } // testSetNormalizer
@@ -84,14 +84,14 @@ pylith::problems::TestPhysics::testSetAuxiliaryFieldDB(void) {
     PYLITH_METHOD_BEGIN;
 
     spatialdata::spatialdb::UniformDB db;
-    db.label("test db");
+    db.setLabel("test db");
 
     CPPUNIT_ASSERT(_physics);
     _physics->setAuxiliaryFieldDB(&db);
 
     const pylith::feassemble::AuxiliaryFactory* factory = _physics->_getAuxiliaryFactory();CPPUNIT_ASSERT(factory);
     const spatialdata::spatialdb::SpatialDB* queryDB = factory->getQueryDB();CPPUNIT_ASSERT(queryDB);
-    CPPUNIT_ASSERT_EQUAL(db.label(),queryDB->label());
+    CPPUNIT_ASSERT_EQUAL(db.getLabel(),queryDB->getLabel());
 
     PYLITH_METHOD_END;
 } // testSetAuxiliaryFieldDB

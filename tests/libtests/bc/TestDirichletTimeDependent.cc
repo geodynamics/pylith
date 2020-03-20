@@ -207,7 +207,7 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDB(void) {
 
     const std::string label = "test db";
     spatialdata::spatialdb::UserFunctionDB db;
-    db.label(label.c_str());
+    db.setLabel(label.c_str());
 
     CPPUNIT_ASSERT(_bc);
     _bc->auxFieldDB(&db);
@@ -215,7 +215,7 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDB(void) {
     CPPUNIT_ASSERT(_bc->_auxFactory());
     CPPUNIT_ASSERT(_bc->_auxFactory()->queryDB());
 
-    CPPUNIT_ASSERT_EQUAL(label, std::string(_bc->_auxFactory()->queryDB()->label()));
+    CPPUNIT_ASSERT_EQUAL(label, std::string(_bc->_auxFactory()->queryDB()->getLabel()));
 
     PYLITH_METHOD_END;
 } // testAuxFieldDB
@@ -229,11 +229,11 @@ pylith::bc::TestDirichletTimeDependent::testNormalizer(void) {
 
     spatialdata::units::Nondimensional normalizer;
     const double scale = 5.0;
-    normalizer.lengthScale(scale);
+    normalizer.setLengthScale(scale);
 
     CPPUNIT_ASSERT(_bc);
     _bc->normalizer(normalizer);
-    CPPUNIT_ASSERT_EQUAL(scale, _bc->_normalizer->lengthScale());
+    CPPUNIT_ASSERT_EQUAL(scale, _bc->_normalizer->getLengthScale());
 
     PYLITH_METHOD_END;
 } // testNormalizer
@@ -300,8 +300,8 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void) {
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_mesh);
     const pylith::topology::Field* auxField = _bc->auxField();CPPUNIT_ASSERT(auxField);
-    CPPUNIT_ASSERT_EQUAL(std::string("Dirichlet auxiliary"), std::string(auxField->label()));
-    CPPUNIT_ASSERT_EQUAL(_mesh->dimension(), auxField->spaceDim());
+    CPPUNIT_ASSERT_EQUAL(std::string("Dirichlet auxiliary"), std::string(auxField->getLabel()));
+    CPPUNIT_ASSERT_EQUAL(_mesh->dimension(), auxField->getSpaceDim());
 
     PylithReal norm = 0.0;
     PylithReal t = _data->t;
@@ -309,7 +309,7 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void) {
     pylith::topology::FieldQuery query(*auxField);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->normalizer);
-    query.openDB(_data->auxDB, _data->normalizer->lengthScale());
+    query.openDB(_data->auxDB, _data->normalizer->getLengthScale());
     err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
@@ -345,7 +345,7 @@ pylith::bc::TestDirichletTimeDependent::testPrestep(void) {
     pylith::topology::Field valueField(*_mesh);
     valueField.copySubfield(*auxField, "time_history_value");
     CPPUNIT_ASSERT(valueField.sectionSize() > 0);
-    CPPUNIT_ASSERT_EQUAL(std::string("time_history_value"), std::string(valueField.label()));
+    CPPUNIT_ASSERT_EQUAL(std::string("time_history_value"), std::string(valueField.getLabel()));
 
     PylithReal norm = 0.0;
     PylithReal t = _data->t;
@@ -353,7 +353,7 @@ pylith::bc::TestDirichletTimeDependent::testPrestep(void) {
     pylith::topology::FieldQuery query(valueField);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->normalizer);
-    query.openDB(_data->auxDB, _data->normalizer->lengthScale());
+    query.openDB(_data->auxDB, _data->normalizer->getLengthScale());
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), valueField.localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
@@ -407,7 +407,7 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void) {
     pylith::topology::FieldQuery query(*_solution);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->normalizer);
-    query.openDB(_data->solnDB, _data->normalizer->lengthScale());
+    query.openDB(_data->solnDB, _data->normalizer->getLengthScale());
     err = DMProjectFunction(dmSoln, t, query.functions(), (void**)query.contextPtrs(), INSERT_VALUES, _solution->scatterVector("global"));CPPUNIT_ASSERT(!err);
     query.closeDB(_data->solnDB);
     _solution->scatterContextToLocal("global", INSERT_VALUES);
@@ -421,7 +421,7 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void) {
 #endif // :DEBUG:
 
     PylithReal norm = 0.0;
-    query.openDB(_data->solnDB, _data->normalizer->lengthScale());
+    query.openDB(_data->solnDB, _data->normalizer->getLengthScale());
     err = DMPlexComputeL2DiffLocal(dmSoln, t, query.functions(), (void**)query.contextPtrs(), _solution->localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(_data->solnDB);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -444,7 +444,7 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void) {
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->normalizer);
-    const PylithReal timeScale = _data->normalizer->timeScale();
+    const PylithReal timeScale = _data->normalizer->getTimeScale();
 
     delete _bc->_boundaryMesh;_bc->_boundaryMesh = new pylith::topology::Mesh(_solution->mesh(), _data->bcLabel);
     CPPUNIT_ASSERT(_bc->_boundaryMesh);
@@ -452,8 +452,8 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void) {
     delete _bc->_auxField;_bc->_auxField = new pylith::topology::Field(*_bc->_boundaryMesh);CPPUNIT_ASSERT(_bc->_auxField);
     _bc->_auxFieldSetup(*_solution);
 
-    CPPUNIT_ASSERT(_mesh->coordsys());
-    const size_t spaceDim = _mesh->coordsys()->spaceDim();
+    CPPUNIT_ASSERT(_mesh->getCoordSys());
+    const size_t spaceDim = _mesh->getCoordSys()->getSpaceDim();
     const pylith::topology::Field::VectorFieldEnum vectorFieldType = _data->vectorFieldType;
     const size_t numComponents = (vectorFieldType == pylith::topology::Field::VECTOR) ? spaceDim : 1;
 
@@ -582,11 +582,11 @@ pylith::bc::TestDirichletTimeDependent::_initialize(void) {
     CPPUNIT_ASSERT(_data->meshFilename);
     iohandler.filename(_data->meshFilename);
     iohandler.read(_mesh);
-    _mesh->coordsys(_data->cs);
+    _mesh->setCoordSys(_data->cs);
     CPPUNIT_ASSERT(_data->normalizer);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
-    _bc->label(_data->bcLabel);
+    _bc->setLabel(_data->bcLabel);
     _bc->field(_data->field);
     _bc->auxFieldDB(_data->auxDB);
     _bc->constrainedDOF(_data->constrainedDOF, _data->numConstrainedDOF);

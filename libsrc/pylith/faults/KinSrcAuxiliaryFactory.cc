@@ -49,7 +49,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addInitiationTime(void) {
     PYLITH_JOURNAL_DEBUG("addInitiationTime(void)");
 
     const char* fieldName = "initiation_time";
-    const PylithReal timeScale = _normalizer->timeScale();
+    const PylithReal timeScale = _normalizer->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -76,7 +76,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addRiseTime(void) {
     PYLITH_JOURNAL_DEBUG("addRiseTime(void)");
 
     const char* fieldName = "rise_time";
-    const PylithReal timeScale = _normalizer->timeScale();
+    const PylithReal timeScale = _normalizer->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -105,7 +105,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addFinalSlip(void) {
     const char* fieldName = "final_slip";
     const char* componentNames[3] = { "final_slip_opening", "final_slip_left_lateral", "final_slip_reverse" };
 
-    const PylithReal lengthScale = _normalizer->lengthScale();
+    const PylithReal lengthScale = _normalizer->getLengthScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -136,8 +136,8 @@ pylith::faults::KinSrcAuxiliaryFactory::addSlipRate(void) {
     const char* fieldName = "slip_rate";
     const char* componentNames[3] = { "slip_rate_opening", "slip_rate_left_lateral", "slip_rate_reverse" };
 
-    const PylithReal lengthScale = _normalizer->lengthScale();
-    const PylithReal timeScale = _normalizer->timeScale();
+    const PylithReal lengthScale = _normalizer->getLengthScale();
+    const PylithReal timeScale = _normalizer->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;

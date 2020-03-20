@@ -52,7 +52,7 @@ pylith::materials::AuxiliaryFactoryElasticity::addDensity(void) {
     PYLITH_JOURNAL_DEBUG("addDensity(void)");
 
     const char* fieldName = "density";
-    const PylithReal densityScale = _normalizer->densityScale();
+    const PylithReal densityScale = _normalizer->getDensityScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -81,7 +81,7 @@ pylith::materials::AuxiliaryFactoryElasticity::addBodyForce(void) {
     const char* fieldName = "body_force";
     const char* componentNames[3] = { "body_force_x", "body_force_y", "body_force_z" };
 
-    const PylithReal forceScale = _normalizer->pressureScale() / _normalizer->lengthScale();
+    const PylithReal forceScale = _normalizer->getPressureScale() / _normalizer->getLengthScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -112,8 +112,8 @@ pylith::materials::AuxiliaryFactoryElasticity::addGravityField(spatialdata::spat
     const char* fieldName = "gravitational_acceleration";
     const char* componentNames[3] = { "gravitational_acceleration_x", "gravitational_acceleration_y", "gravitational_acceleration_z" };
 
-    const PylithReal lengthScale = _normalizer->lengthScale();
-    const PylithReal timeScale = _normalizer->timeScale();
+    const PylithReal lengthScale = _normalizer->getLengthScale();
+    const PylithReal timeScale = _normalizer->getTimeScale();
     const PylithReal accelerationScale = lengthScale / (timeScale * timeScale);
 
     pylith::topology::Field::Description description;

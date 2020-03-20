@@ -53,7 +53,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addMaxwellTime(void) {
     PYLITH_JOURNAL_DEBUG("addMaxwellTime(void)");
 
     const char* fieldName = "maxwell_time";
-    const PylithReal timeScale = _normalizer->timeScale();
+    const PylithReal timeScale = _normalizer->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -81,7 +81,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addMaxwellTimeGeneralizedMaxwel
 
     const char* fieldName = "maxwell_time";
     const char* componentNames[3] = { "maxwell_time_1", "maxwell_time_2", "maxwell_time_3" };
-    const PylithReal timeScale = _normalizer->timeScale();
+    const PylithReal timeScale = _normalizer->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -140,7 +140,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStrainRate(
     PYLITH_JOURNAL_DEBUG("addPowerLawReferenceStrainRate(void)");
 
     const char* fieldName = "power_law_reference_strain_rate";
-    const PylithReal strainRateScale = 1.0/_normalizer->timeScale();
+    const PylithReal strainRateScale = 1.0/_normalizer->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -167,7 +167,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStress(void
     PYLITH_JOURNAL_DEBUG("addPowerLawReferenceStress(void)");
 
     const char* fieldName = "power_law_reference_stress";
-    const PylithReal pressureScale = _normalizer->pressureScale();
+    const PylithReal pressureScale = _normalizer->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;

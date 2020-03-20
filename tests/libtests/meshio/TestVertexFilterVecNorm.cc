@@ -88,7 +88,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
   field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.allocate();
   field.vectorFieldType(fieldType);
-  field.label(label.c_str());
+  field.setLabel(label.c_str());
   field.scale(fieldScale);
 
   { // Setup vertex field
@@ -111,7 +111,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
   const topology::Field& fieldNorm = filter.filter(field);
 
   CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldNorm.vectorFieldType());
-  CPPUNIT_ASSERT_EQUAL(label, std::string(fieldNorm.label()));
+  CPPUNIT_ASSERT_EQUAL(label, std::string(fieldNorm.getLabel()));
   CPPUNIT_ASSERT_EQUAL(fieldScale, fieldNorm.scale());
 
   topology::VecVisitorMesh fieldNormVisitor(fieldNorm);

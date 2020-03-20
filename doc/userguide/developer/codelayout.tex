@@ -354,7 +354,7 @@ pylith::materials::Material::label(void) const {
 void
 pylith::materials::Material::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("intialize(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("intialize(solution="<<solution.getLabel()<<")");
 
     // Implementation not shown.
 

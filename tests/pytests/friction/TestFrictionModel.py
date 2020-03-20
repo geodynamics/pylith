@@ -39,11 +39,11 @@ class TestFrictionModel(unittest.TestCase):
 
   def testLabel(self):
     """
-    Test label().
+    Test getLabel().
     """
     label = "friction abc"
     self.friction.label(label)
-    self.assertEqual(label, self.friction.label())
+    self.assertEqual(label, self.friction.getLabel())
     return
 
 

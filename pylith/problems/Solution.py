@@ -67,8 +67,8 @@ class Solution(PetscComponent):
 
         from pylith.topology.Field import Field
         self.field = Field(mesh)
-        self.field.label("solution")
-        spaceDim = mesh.coordsys().spaceDim()
+        self.field.setLabel("solution")
+        spaceDim = mesh.getCoordSys().getSpaceDim()
         for subfield in self.subfields.components():
             subfield.initialize(problem.normalizer, spaceDim)
             ncomponents = len(subfield.componentNames)

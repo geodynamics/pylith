@@ -250,7 +250,7 @@ pylith::meshio::DataWriterVTK::writeVertexField(const PylithScalar t,
     if (!_vertexFieldCache) {
         _vertexFieldCache = new pylith::topology::Fields(field.mesh());assert(_vertexFieldCache);
     } // if/else
-    const char* fieldLabel = field.label();
+    const char* fieldLabel = field.getLabel();
     if (!_vertexFieldCache->hasField(fieldLabel)) {
         _vertexFieldCache->add(fieldLabel, fieldLabel);
         pylith::topology::Field& fieldCached = _vertexFieldCache->get(fieldLabel);
@@ -293,7 +293,7 @@ pylith::meshio::DataWriterVTK::writeCellField(const PylithScalar t,
     if (!_cellFieldCache) {
         _cellFieldCache = new pylith::topology::Fields(field.mesh());assert(_cellFieldCache);
     } // if/else
-    const char* fieldLabel = field.label();
+    const char* fieldLabel = field.getLabel();
     if (!_cellFieldCache->hasField(fieldLabel)) {
         _cellFieldCache->add(fieldLabel, fieldLabel);
         pylith::topology::Field& fieldCached = _cellFieldCache->get(fieldLabel);

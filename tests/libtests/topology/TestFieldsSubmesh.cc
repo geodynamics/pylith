@@ -115,7 +115,7 @@ pylith::topology::TestFieldsSubmesh::testDelete(void) {
     size = 1;
     CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
     const Field& field = fields.get(keyB);
-    CPPUNIT_ASSERT_EQUAL(std::string(labelB), std::string(field.label()));
+    CPPUNIT_ASSERT_EQUAL(std::string(labelB), std::string(field.getLabel()));
 
     PYLITH_METHOD_END;
 } // testDelete
@@ -134,7 +134,7 @@ pylith::topology::TestFieldsSubmesh::testGet(void) {
     const char* label = "displacement";
     fields.add(key, label);
     const Field& field = fields.get(key);
-    CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(field.label()));
+    CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(field.getLabel()));
 
     PYLITH_METHOD_END;
 } // testGet
@@ -156,7 +156,7 @@ pylith::topology::TestFieldsSubmesh::testGetConst(void) {
     const Fields* fieldsPtr = &fields;
     CPPUNIT_ASSERT(fieldsPtr);
     const Field& field = fieldsPtr->get(key);
-    CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(field.label()));
+    CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(field.getLabel()));
 
     PYLITH_METHOD_END;
 } // testGetConst

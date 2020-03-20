@@ -142,7 +142,7 @@ pylith::problems::Problem::registerObserver(pylith::problems::ObserverSoln* obse
     assert(_observers);
     assert(_normalizer);
     _observers->registerObserver(observer);
-    _observers->setTimeScale(_normalizer->timeScale());
+    _observers->setTimeScale(_normalizer->getTimeScale());
 
     PYLITH_METHOD_END;
 } // registerObserver
@@ -348,7 +348,7 @@ pylith::problems::Problem::initialize(void) {
     // Initialize residual.
     delete _residual;_residual = new pylith::topology::Field(_solution->mesh());assert(_residual);
     _residual->cloneSection(*_solution);
-    _residual->label("residual");
+    _residual->setLabel("residual");
 
     PYLITH_METHOD_END;
 } // initialize
@@ -371,7 +371,7 @@ pylith::problems::Problem::setSolutionLocal(const PylithReal t,
         if (!_solutionDot) {
             _solutionDot = new pylith::topology::Field(_solution->mesh());
             _solutionDot->cloneSection(*_solution);
-            _solutionDot->label("solutionDot");
+            _solutionDot->setLabel("solutionDot");
         } // if
         _solutionDot->scatterVectorToLocal(solutionDotVec);
     } // if

@@ -54,7 +54,7 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
     journal::info_t info("mesh_distributor");
 
     assert(newMesh);
-    newMesh->coordsys(origMesh.coordsys());
+    newMesh->setCoordSys(origMesh.getCoordSys());
 
     const int commRank = origMesh.commRank();
     if (0 == commRank) {
@@ -107,7 +107,7 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
     partition.subfieldsSetup();
     partition.createDiscretization();
     partition.allocate();
-    partition.label("partition");
+    partition.setLabel("partition");
 
     PylithScalar rankReal = PylithReal(commRank);
 

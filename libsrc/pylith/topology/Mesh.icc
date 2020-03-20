@@ -30,13 +30,15 @@ pylith::topology::Mesh::dmMesh(void) const {
     return _dmMesh;
 }
 
+
 // ----------------------------------------------------------------------
 // Get coordinate system.
 inline
 const spatialdata::geocoords::CoordSys*
-pylith::topology::Mesh::coordsys(void) const {
+pylith::topology::Mesh::getCoordSys(void) const {
     return _coordsys;
 }
+
 
 // ----------------------------------------------------------------------
 // Set debug flag.
@@ -46,6 +48,7 @@ pylith::topology::Mesh::debug(const bool value) {
     _debug = value;
 }
 
+
 // ----------------------------------------------------------------------
 // Get debug flag.
 inline
@@ -53,6 +56,7 @@ bool
 pylith::topology::Mesh::debug(void) const {
     return _debug;
 }
+
 
 // ----------------------------------------------------------------------
 // Get dimension of mesh.
@@ -63,11 +67,12 @@ pylith::topology::Mesh::dimension(void) const {
 
     PetscInt dim = 0;
     if (_dmMesh) {
-        PetscErrorCode err = DMGetDimension(_dmMesh, &dim); PYLITH_CHECK_ERROR(err);
+        PetscErrorCode err = DMGetDimension(_dmMesh, &dim);PYLITH_CHECK_ERROR(err);
     } // if
 
     PYLITH_METHOD_RETURN(dim);
 }
+
 
 // ----------------------------------------------------------------------
 // Get number of vertices per cell
@@ -81,19 +86,20 @@ pylith::topology::Mesh::numCorners(void) const {
         PetscInt cStart, cEnd, vStart, vEnd, closureSize, *closure = NULL;
         PetscErrorCode err;
         const int cellHeight = _isSubmesh ? 1 : 0;
-        err = DMPlexGetHeightStratum(_dmMesh, cellHeight, &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetDepthStratum(_dmMesh, 0, &vStart, &vEnd); PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetHeightStratum(_dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetDepthStratum(_dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
         if (cEnd > cStart) {
-            err = DMPlexGetTransitiveClosure(_dmMesh, cStart, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
+            err = DMPlexGetTransitiveClosure(_dmMesh, cStart, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
             for (PetscInt c = 0; c < closureSize*2; c += 2) {
-                if ((closure[c] >= vStart) && (closure[c] < vEnd)) ++numCorners;
+                if ((closure[c] >= vStart) && (closure[c] < vEnd)) {++numCorners;}
             }
-            err = DMPlexRestoreTransitiveClosure(_dmMesh, cStart, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
+            err = DMPlexRestoreTransitiveClosure(_dmMesh, cStart, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
         }
     } // if
 
     PYLITH_METHOD_RETURN(numCorners);
 }
+
 
 // ----------------------------------------------------------------------
 // Get number of vertices in mesh.
@@ -104,13 +110,14 @@ pylith::topology::Mesh::numVertices(void) const {
 
     PetscInt nvertices = 0;
     if (_dmMesh) {
-        PetscInt begin=0, end=0;
-        PetscErrorCode err = DMPlexGetDepthStratum(_dmMesh, 0, &begin, &end); PYLITH_CHECK_ERROR(err);
+        PetscInt begin = 0, end = 0;
+        PetscErrorCode err = DMPlexGetDepthStratum(_dmMesh, 0, &begin, &end);PYLITH_CHECK_ERROR(err);
         nvertices = end-begin;
     } // if
 
     PYLITH_METHOD_RETURN(nvertices);
 }
+
 
 // ----------------------------------------------------------------------
 // Get number of cells in mesh.
@@ -121,9 +128,9 @@ pylith::topology::Mesh::numCells(void) const {
 
     PetscInt ncells = 0;
     if (_dmMesh) {
-        PetscInt begin=0, end=0;
+        PetscInt begin = 0, end = 0;
         const int cellHeight = _isSubmesh ? 1 : 0;
-        PetscErrorCode err = DMPlexGetHeightStratum(_dmMesh, cellHeight, &begin, &end); PYLITH_CHECK_ERROR(err);
+        PetscErrorCode err = DMPlexGetHeightStratum(_dmMesh, cellHeight, &begin, &end);PYLITH_CHECK_ERROR(err);
         ncells = end-begin;
     } // if
 
@@ -139,7 +146,7 @@ pylith::topology::Mesh::isSimplex(void) const {
     return _isSimplex;
 }
 
-#endif
 
+#endif
 
 // End of file

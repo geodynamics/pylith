@@ -156,7 +156,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateAmplitude(void) {
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
     subfieldDescription.label = fieldName;
     subfieldDescription.alias = fieldName;
-    subfieldDescription.scale = _defaultDescription->scale / _normalizer->timeScale();
+    subfieldDescription.scale = _defaultDescription->scale / _normalizer->getTimeScale();
     subfieldDescription.validator = NULL;
     switch (subfieldDescription.vectorFieldType) {
     case pylith::topology::FieldBase::SCALAR: {
@@ -200,7 +200,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateStartTime(void) {
     subfieldDescription.numComponents = 1;
     subfieldDescription.componentNames.resize(1);
     subfieldDescription.componentNames[0] = fieldName;
-    subfieldDescription.scale = _normalizer->timeScale();
+    subfieldDescription.scale = _normalizer->getTimeScale();
     subfieldDescription.validator = NULL;
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
@@ -266,7 +266,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryStartTime(void) {
     subfieldDescription.numComponents = 1;
     subfieldDescription.componentNames.resize(1);
     subfieldDescription.componentNames[0] = fieldName;
-    subfieldDescription.scale = _normalizer->timeScale();
+    subfieldDescription.scale = _normalizer->getTimeScale();
     subfieldDescription.validator = NULL;
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
@@ -348,7 +348,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::updateAuxiliaryField(pylith::topology
             const int err = dbTimeHistory->query(&value, tDim);
             if (err) {
                 std::ostringstream msg;
-                msg << "Error querying for time '" << tDim << "' in time history database '" << dbTimeHistory->label() << "'.";
+                msg << "Error querying for time '" << tDim << "' in time history database '" << dbTimeHistory->getLabel() << "'.";
                 throw std::runtime_error(msg.str());
             } // if
         } // if

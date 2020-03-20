@@ -39,7 +39,7 @@ class TestCellGeometry(unittest.TestCase):
     
     geometry = GeometryLine2D()
     self.assertEqual(1, geometry.cellDim())
-    self.assertEqual(2, geometry.spaceDim())
+    self.assertEqual(2, geometry.getSpaceDim())
 
     return
     

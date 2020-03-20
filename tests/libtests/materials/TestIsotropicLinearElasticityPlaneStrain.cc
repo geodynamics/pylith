@@ -109,10 +109,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldSetup(
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_mydata);
     CPPUNIT_ASSERT(_mydata->normalizer);
-    const PylithReal densityScale = _mydata->normalizer->densityScale();
-    const PylithReal lengthScale = _mydata->normalizer->lengthScale();
-    const PylithReal pressureScale = _mydata->normalizer->pressureScale();
-    const PylithReal timeScale = _mydata->normalizer->timeScale();
+    const PylithReal densityScale = _mydata->normalizer->getDensityScale();
+    const PylithReal lengthScale = _mydata->normalizer->getLengthScale();
+    const PylithReal pressureScale = _mydata->normalizer->getPressureScale();
+    const PylithReal timeScale = _mydata->normalizer->getTimeScale();
     const PylithReal forceScale = pressureScale / lengthScale;
     const PylithReal accelerationScale = lengthScale / (timeScale * timeScale);
 
@@ -226,7 +226,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
     CPPUNIT_ASSERT(_mymaterial);
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_mydata->normalizer);
-    const PylithReal lengthScale = _mydata->normalizer->lengthScale();
+    const PylithReal lengthScale = _mydata->normalizer->getLengthScale();
 
     const pylith::topology::Field* auxField = _mymaterial->auxField();CPPUNIT_ASSERT(auxField);
     { // Test getting density field.
@@ -236,8 +236,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
         // density.view("DENSITY"); // DEBUGGING
 
         // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("density"), std::string(density.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, density.spaceDim());
+        CPPUNIT_ASSERT_EQUAL(std::string("density"), std::string(density.getLabel()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, density.getSpaceDim());
 
         pylith::topology::FieldQuery queryDensity(density);
         queryDensity.initializeWithDefaultQueryFns();
@@ -260,8 +260,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
         // bulkModulus.view("BULK MODULUS"); // DEBUGGING
 
         // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("bulk_modulus"), std::string(bulkModulus.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, bulkModulus.spaceDim());
+        CPPUNIT_ASSERT_EQUAL(std::string("bulk_modulus"), std::string(bulkModulus.getLabel()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, bulkModulus.getSpaceDim());
 
         pylith::topology::FieldQuery queryBulkModulus(bulkModulus);
         queryBulkModulus.initializeWithDefaultQueryFns();
@@ -284,8 +284,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
         // referenceStress.view("REFERENCE STRESS"); // DEBUGGING
 
         // Check result
-        CPPUNIT_ASSERT_EQUAL(std::string("reference_stress"), std::string(referenceStress.label()));
-        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, referenceStress.spaceDim());
+        CPPUNIT_ASSERT_EQUAL(std::string("reference_stress"), std::string(referenceStress.getLabel()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, referenceStress.getSpaceDim());
 
         pylith::topology::FieldQuery queryRefStress(referenceStress);
         queryRefStress.initializeWithDefaultQueryFns();
@@ -396,11 +396,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::TestIsotropicL
 
     cs = new spatialdata::geocoords::CSCart;CPPUNIT_ASSERT(cs);
     cs->setSpaceDim(dimension);
-    cs->initialize();
 
-    solnDB->coordsys(*cs);
-    perturbDB->coordsys(*cs);
-    auxDB->coordsys(*cs);
+    solnDB->setCoordSys(*cs);
+    perturbDB->setCoordSys(*cs);
+    auxDB->setCoordSys(*cs);
 } // constructor
 
 

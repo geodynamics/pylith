@@ -45,10 +45,10 @@ pylith::friction::FrictionModelData::FrictionModelData(void) :
   slipRate(0),
   normalTraction(0),
   stateVarsUpdated(0),
-  lengthScale(0),
-  timeScale(0),
-  pressureScale(0),
-  densityScale(0)
+  setLengthScale(0),
+  setTimeScale(0),
+  setPressureScale(0),
+  setDensityScale(0)
 { // constructor
 } // constructor
 

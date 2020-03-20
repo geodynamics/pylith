@@ -58,9 +58,9 @@ pylith::topology::TestMeshOps::testNondimensionalize(void) {
 
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim(2);
-    mesh.coordsys(&cs);
+    mesh.setCoordSys(&cs);
     spatialdata::units::Nondimensional normalizer;
-    normalizer.lengthScale(lengthScale);
+    normalizer.setLengthScale(lengthScale);
     MeshOps::nondimensionalize(&mesh, normalizer);
 
     // Get vertices

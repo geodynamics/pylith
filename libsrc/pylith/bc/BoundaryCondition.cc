@@ -148,7 +148,7 @@ pylith::bc::BoundaryCondition::setRefDir2(const PylithReal vec[3]) {
 void
 pylith::bc::BoundaryCondition::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     if (!solution.hasSubfield(_subfieldName.c_str())) {
         std::ostringstream msg;

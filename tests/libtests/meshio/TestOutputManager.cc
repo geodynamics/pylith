@@ -55,7 +55,7 @@ pylith::meshio::TestOutputManager::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test coordsys()
+// Test getCoordSys()
 void
 pylith::meshio::TestOutputManager::testCoordsys(void)
 { // testCoordsys
@@ -66,7 +66,7 @@ pylith::meshio::TestOutputManager::testCoordsys(void)
     CPPUNIT_ASSERT(!manager._coordsys);
 
     spatialdata::geocoords::CSCart cs;
-    manager.coordsys(&cs);
+    manager.setCoordSys(&cs);
     CPPUNIT_ASSERT(0 != manager._coordsys);
 
     PYLITH_METHOD_END;
@@ -228,7 +228,7 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
     topology::Field field(mesh);
     field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
     field.allocate();
-    field.label(label);
+    field.setLabel(label);
     field.vectorFieldType(fieldType);
     field.scale(scale);
 
@@ -315,7 +315,7 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
     topology::Field field(mesh);
     field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
     field.allocate();
-    field.label(label);
+    field.setLabel(label);
     field.vectorFieldType(fieldType);
     field.scale(scale);
 

@@ -82,11 +82,11 @@ pylith::feassemble::TestIntegratorDomain::testAccessors(void) {
 
     const pylith::topology::Field* auxiliaryField = _integrator->getAuxiliaryField();
     CPPUNIT_ASSERT(auxiliaryField);
-    CPPUNIT_ASSERT_EQUAL(std::string("auxiliary subfields"), std::string(auxiliaryField->label()));
+    CPPUNIT_ASSERT_EQUAL(std::string("auxiliary subfields"), std::string(auxiliaryField->getLabel()));
 
     const pylith::topology::Field* derivedField = _integrator->getDerivedField();
     CPPUNIT_ASSERT(derivedField);
-    CPPUNIT_ASSERT_EQUAL(std::string("derived subfields"), std::string(derivedField->label()));
+    CPPUNIT_ASSERT_EQUAL(std::string("derived subfields"), std::string(derivedField->getLabel()));
 
     CPPUNIT_ASSERT(_data);
     _integrator->setMaterialId(_data->materialId);
@@ -121,12 +121,12 @@ pylith::feassemble::TestIntegratorDomain::testInitialize(void) {
 
     CPPUNIT_ASSERT(_data);
 
-    CPPUNIT_ASSERT_EQUAL(std::string("auxiliary subfields"), std::string(auxiliaryField->label()));
-    CPPUNIT_ASSERT_EQUAL(_data->dimension, auxiliaryField->spaceDim());
+    CPPUNIT_ASSERT_EQUAL(std::string("auxiliary subfields"), std::string(auxiliaryField->getLabel()));
+    CPPUNIT_ASSERT_EQUAL(_data->dimension, auxiliaryField->getSpaceDim());
 
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT(_data->normalizer);
-    const PylithReal lengthScale = _data->normalizer->lengthScale();
+    const PylithReal lengthScale = _data->normalizer->getLengthScale();
     PylithReal norm = pylith::testing::FieldTester::checkFieldWithDB(*auxiliaryField, _data->auxiliaryDB, lengthScale);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Values in auxiliary field do not match spatial database.", 0.0, norm, tolerance);
 
@@ -181,7 +181,7 @@ pylith::feassemble::TestIntegratorDomain::testPoststep(void) {
 
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT(_data->normalizer);
-    const PylithReal lengthScale = _data->normalizer->lengthScale();
+    const PylithReal lengthScale = _data->normalizer->getLengthScale();
     PylithReal norm = pylith::testing::FieldTester::checkFieldWithDB(*_integrator->getAuxiliaryField(),
                                                                       _data->auxiliaryUpdateDB, lengthScale);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Updated auxiliary field values do not match spatial database.", 0.0, norm, tolerance);
@@ -205,13 +205,13 @@ pylith::feassemble::TestIntegratorDomain::testComputeResidual(void) {
 
     pylith::topology::Field residualRHS(*_mesh);
     residualRHS.cloneSection(solution);
-    residualRHS.label("residual RHS");
+    residualRHS.setLabel("residual RHS");
     residualRHS.createDiscretization();
     residualRHS.allocate();
 
     pylith::topology::Field residualLHS(*_mesh);
     residualLHS.cloneSection(solution);
-    residualLHS.label("residual LHS");
+    residualLHS.setLabel("residual LHS");
     residualLHS.createDiscretization();
     residualLHS.allocate();
 
@@ -280,13 +280,13 @@ pylith::feassemble::TestIntegratorDomain::testComputeLHSJacobian(void) {
 
     pylith::topology::Field residual1(*_mesh);
     residual1.cloneSection(solution);
-    residual1.label("residual1");
+    residual1.setLabel("residual1");
     residual1.createDiscretization();
     residual1.allocate();
 
     pylith::topology::Field residual2(*_mesh);
     residual2.cloneSection(perturbation);
-    residual2.label("residual2");
+    residual2.setLabel("residual2");
     residual2.createDiscretization();
     residual2.allocate();
 
@@ -380,13 +380,13 @@ pylith::feassemble::TestIntegratorDomain::testComputeRHSJacobian(void) {
 
     pylith::topology::Field residual1(*_mesh);
     residual1.cloneSection(solution);
-    residual1.label("residual1");
+    residual1.setLabel("residual1");
     residual1.createDiscretization();
     residual1.allocate();
 
     pylith::topology::Field residual2(*_mesh);
     residual2.cloneSection(perturbation);
-    residual2.label("residual2");
+    residual2.setLabel("residual2");
     residual2.createDiscretization();
     residual2.allocate();
 
@@ -477,7 +477,7 @@ pylith::feassemble::TestIntegratorDomain::_initializeMin(void) {
     CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.", _mesh->numVertices() > 0);
 
     // Setup coordinates.
-    _mesh->coordsys(_data->cs);
+    _mesh->setCoordSys(_data->cs);
     CPPUNIT_ASSERT(_data->normalizer);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
@@ -647,13 +647,13 @@ pylith::feassemble::TestIntegratorDomain_Data::TestIntegratorDomain_Data(void) :
     CPPUNIT_ASSERT(normalizer);
 
     CPPUNIT_ASSERT(solutionDB);
-    solutionDB->label("solution");
+    solutionDB->setLabel("solution");
 
     CPPUNIT_ASSERT(perturbationDB);
-    perturbationDB->label("solution+perturbation");
+    perturbationDB->setLabel("solution+perturbation");
 
     CPPUNIT_ASSERT(auxiliaryDB);
-    auxiliaryDB->label("auxiliary field");
+    auxiliaryDB->setLabel("auxiliary field");
 } // constructor
 
 

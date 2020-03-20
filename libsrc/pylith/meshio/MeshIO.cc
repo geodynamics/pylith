@@ -141,8 +141,8 @@ pylith::meshio::MeshIO::_getVertices(scalar_array* coordinates,
     assert(spaceDim);
     assert(_mesh);
 
-    const spatialdata::geocoords::CoordSys* cs = _mesh->coordsys();assert(cs);
-    *spaceDim = cs->spaceDim();
+    const spatialdata::geocoords::CoordSys* cs = _mesh->getCoordSys();assert(cs);
+    *spaceDim = cs->getSpaceDim();
 
     PetscDM dmMesh = _mesh->dmMesh();assert(dmMesh);
     PetscVec coordVec = NULL;

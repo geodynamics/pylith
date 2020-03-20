@@ -182,9 +182,9 @@ contrib::friction::ViscousFriction::_nondimProperties(PylithScalar* const values
 
   // Get scales needed to nondimensional parameters from the
   // Nondimensional object.
-  const PylithScalar lengthScale = _normalizer->lengthScale();
-  const PylithScalar timeScale = _normalizer->timeScale();
-  const PylithScalar pressureScale = _normalizer->pressureScale();
+  const PylithScalar lengthScale = _normalizer->getLengthScale();
+  const PylithScalar timeScale = _normalizer->getTimeScale();
+  const PylithScalar pressureScale = _normalizer->getPressureScale();
   const PylithScalar velocityScale = lengthScale / timeScale;
 
   // Use the Nondimensional::nondimensionalize() function to
@@ -207,9 +207,9 @@ contrib::friction::ViscousFriction::_dimProperties(PylithScalar* const values,
 
   // Get scales needed to dimensional parameters from the
   // Nondimensional object.
-  const PylithScalar lengthScale = _normalizer->lengthScale();
-  const PylithScalar timeScale = _normalizer->timeScale();
-  const PylithScalar pressureScale = _normalizer->pressureScale();
+  const PylithScalar lengthScale = _normalizer->getLengthScale();
+  const PylithScalar timeScale = _normalizer->getTimeScale();
+  const PylithScalar pressureScale = _normalizer->getPressureScale();
   const PylithScalar velocityScale = lengthScale / timeScale;
 
   // Use the Nondimensional::dimensionalize() function to
@@ -251,8 +251,8 @@ contrib::friction::ViscousFriction::_nondimStateVars(PylithScalar* const values,
 
   // Get scales needed to nondimensional parameters from the
   // Nondimensional object.
-  const PylithScalar lengthScale = _normalizer->lengthScale();
-  const PylithScalar timeScale = _normalizer->timeScale();
+  const PylithScalar lengthScale = _normalizer->getLengthScale();
+  const PylithScalar timeScale = _normalizer->getTimeScale();
   const PylithScalar velocityScale = lengthScale / timeScale;
 
   // Use the Nondimensional::dimensionalize() function to
@@ -274,8 +274,8 @@ contrib::friction::ViscousFriction::_dimStateVars(PylithScalar* const values,
 
   // Get scales needed to dimensional parameters from the
   // Nondimensional object.
-  const PylithScalar lengthScale = _normalizer->lengthScale();
-  const PylithScalar timeScale = _normalizer->timeScale();
+  const PylithScalar lengthScale = _normalizer->getLengthScale();
+  const PylithScalar timeScale = _normalizer->getTimeScale();
   const PylithScalar velocityScale = lengthScale / timeScale;
 
   // Use the Nondimensional::dimensionalize() function to

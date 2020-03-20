@@ -86,7 +86,7 @@ pylith::meshio::FieldFactory::vector(const pylith::topology::FieldBase::Discreti
 
     _fields.add(fieldName, fieldName);
     pylith::topology::Field& field = _fields.get(fieldName);
-    const int spaceDim = field.spaceDim();
+    const int spaceDim = field.getSpaceDim();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -121,7 +121,7 @@ pylith::meshio::FieldFactory::tensor(const pylith::topology::FieldBase::Discreti
 
     _fields.add(fieldName, fieldName);
     pylith::topology::Field& field = _fields.get(fieldName);
-    const int spaceDim = field.spaceDim();
+    const int spaceDim = field.getSpaceDim();
     CPPUNIT_ASSERT(2 == spaceDim || 3 == spaceDim);
 
     pylith::topology::Field::Description description;

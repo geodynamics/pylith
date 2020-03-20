@@ -235,7 +235,7 @@ class TestNeumann(unittest.TestCase):
     fields.solutionName("dispIncr(t->t+dt)")
 
     residual = fields.get("residual")
-    residual.newSection(residual.VERTICES_FIELD, cs.spaceDim())
+    residual.newSection(residual.VERTICES_FIELD, cs.getSpaceDim())
     residual.allocate()
     residual.zero()
 

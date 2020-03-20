@@ -146,7 +146,7 @@ pylith::faults::FaultCohesiveKin::setEqRuptures(const char* const * names,
 void
 pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     if (!solution.hasSubfield("displacement")) {
         std::ostringstream msg;
@@ -171,7 +171,7 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Fi
 pylith::feassemble::Integrator*
 pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
     pylith::feassemble::IntegratorInterface* integrator = new pylith::feassemble::IntegratorInterface(this);assert(integrator);
     integrator->setInterfaceId(getInterfaceId());
@@ -191,7 +191,7 @@ pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field
 pylith::feassemble::Constraint*
 pylith::faults::FaultCohesiveKin::createConstraint(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.getLabel()<<")");
 
     if (0 == strlen(getBuriedEdgesMarkerLabel())) {
         PYLITH_METHOD_RETURN(NULL);
@@ -199,7 +199,7 @@ pylith::faults::FaultCohesiveKin::createConstraint(const pylith::topology::Field
 
     const char* lagrangeName = "lagrange_multiplier_fault";
     // const PylithInt numComponents = solution.subfieldInfo(lagrangeName).fe.numComponents;
-    const PylithInt numComponents = solution.spaceDim();
+    const PylithInt numComponents = solution.getSpaceDim();
 
     pylith::int_array constrainedDOF;
     constrainedDOF.resize(numComponents);
@@ -269,12 +269,12 @@ pylith::topology::Field*
 pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::Field& solution,
                                                        const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     assert(_normalizer);
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->label("FaultCohesiveKin auxiliary field");
+    auxiliaryField->setLabel("FaultCohesiveKin auxiliary field");
 
     // Set default discretization of auxiliary subfields to match lagrange_multiplier_fault subfield in solution.
     assert(_auxiliaryFactory);
@@ -284,7 +284,7 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
 
     assert(_auxiliaryFactory);
     assert(_normalizer);
-    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, solution.spaceDim());
+    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, solution.getSpaceDim());
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
@@ -305,7 +305,7 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
     for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
         KinSrc* src = r_iter->second;
         assert(src);
-        src->initialize(*auxiliaryField, *_normalizer, solution.mesh().coordsys());
+        src->initialize(*auxiliaryField, *_normalizer, solution.mesh().getCoordSys());
     } // for
 
     PYLITH_METHOD_RETURN(auxiliaryField);
@@ -378,7 +378,7 @@ pylith::faults::_FaultCohesiveKin::setKernelsRHSResidual(pylith::feassemble::Int
                                                          const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     // PYLITH_COMPONENT_DEBUG("setKernelsRHSResidual(integrator="<<integrator<<", fault="<<typeid(fault)<<",
-    // solution="<<solution.label()<<")");
+    // solution="<<solution.getLabel()<<")");
 
     const char* nameDispVel = (solution.hasSubfield("velocity")) ? "velocity" : "displacement";
     const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
@@ -410,7 +410,7 @@ pylith::faults::_FaultCohesiveKin::setKernelsRHSJacobian(pylith::feassemble::Int
                                                          const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     // PYLITH_COMPONENT_DEBUG("setKernelsRHSJacobian(integrator="<<integrator<<", fault="<<typeid(fault)<<",
-    // solution="<<solution.label()<<")");
+    // solution="<<solution.getLabel()<<")");
 
     const char* nameDispVel = (solution.hasSubfield("velocity")) ? "velocity" : "displacement";
     const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";

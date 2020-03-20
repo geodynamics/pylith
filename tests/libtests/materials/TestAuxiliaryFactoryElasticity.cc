@@ -41,10 +41,10 @@ pylith::materials::TestAuxiliaryFactoryElasticity::setUp(void) {
     _data = new TestAuxiliaryFactoryElasticity_Data();CPPUNIT_ASSERT(_data);
 
     CPPUNIT_ASSERT(_data->normalizer);
-    _data->normalizer->lengthScale(1.0e+03);
-    _data->normalizer->timeScale(2.0);
-    _data->normalizer->densityScale(3.0e+3);
-    _data->normalizer->pressureScale(2.25e+10);
+    _data->normalizer->setLengthScale(1.0e+03);
+    _data->normalizer->setTimeScale(2.0);
+    _data->normalizer->setDensityScale(3.0e+3);
+    _data->normalizer->setPressureScale(2.25e+10);
 
     pylith::topology::Field::SubfieldInfo info;
     info.dm = NULL;
@@ -59,11 +59,11 @@ pylith::materials::TestAuxiliaryFactoryElasticity::setUp(void) {
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->normalizer->densityScale(),
+        _data->normalizer->getDensityScale(),
         pylith::topology::FieldQuery::validatorPositive
         );
     info.fe = pylith::topology::Field::Discretization(
-						      1, 2, _auxDim, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        1, 2, _auxDim, true, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 0;
     _data->subfields["density"] = info;
@@ -79,10 +79,10 @@ pylith::materials::TestAuxiliaryFactoryElasticity::setUp(void) {
         componentNames,
         componentNames.size(),
         pylith::topology::Field::VECTOR,
-        _data->normalizer->pressureScale() / _data->normalizer->lengthScale()
+        _data->normalizer->getPressureScale() / _data->normalizer->getLengthScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-						      2, 2, _auxDim, false, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 2, _auxDim, false, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 1;
     _data->subfields["body_force"] = info;
@@ -98,10 +98,10 @@ pylith::materials::TestAuxiliaryFactoryElasticity::setUp(void) {
         componentNames,
         componentNames.size(),
         pylith::topology::Field::VECTOR,
-        _data->normalizer->lengthScale() / pow(_data->normalizer->timeScale(), 2)
+        _data->normalizer->getLengthScale() / pow(_data->normalizer->getTimeScale(), 2)
         );
     info.fe = pylith::topology::Field::Discretization(
-						      2, 2, _auxDim, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 2, _auxDim, true, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 2;
     _data->subfields["gravitational_acceleration"] = info;
@@ -172,7 +172,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::testSetValuesFromDB(void) {
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->normalizer);
     _factory->setValuesFromDB();
-    pylith::testing::FieldTester::checkFieldWithDB(*_auxiliaryField, _data->auxiliaryDB, _data->normalizer->lengthScale());
+    pylith::testing::FieldTester::checkFieldWithDB(*_auxiliaryField, _data->auxiliaryDB, _data->normalizer->getLengthScale());
 
     PYLITH_METHOD_END;
 } // testSetValues
@@ -196,12 +196,12 @@ pylith::materials::TestAuxiliaryFactoryElasticity::_initialize(void) {
     CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.", _mesh->numVertices() > 0);
 
     // Setup coordinates.
-    _mesh->coordsys(_data->cs);
+    _mesh->setCoordSys(_data->cs);
     CPPUNIT_ASSERT(_data->normalizer);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
     _auxiliaryField = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_auxiliaryField);
-    _auxiliaryField->label("auxiliary");
+    _auxiliaryField->setLabel("auxiliary");
 
     _factory = new AuxiliaryFactoryElasticity();
     CPPUNIT_ASSERT(_data->auxiliaryDB);

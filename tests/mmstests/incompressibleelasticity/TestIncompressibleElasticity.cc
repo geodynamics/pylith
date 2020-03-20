@@ -86,7 +86,7 @@ pylith::mmstests::TestIncompressibleElasticity::_initialize(void) {
     CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.", _mesh->numVertices() > 0);
 
     // Set up coordinates.
-    _mesh->coordsys(_data->cs);
+    _mesh->setCoordSys(_data->cs);
     CPPUNIT_ASSERT(_data->normalizer);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
@@ -120,7 +120,7 @@ pylith::mmstests::TestIncompressibleElasticity::_initialize(void) {
 
     CPPUNIT_ASSERT(!_solution);
     _solution = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_solution);
-    _solution->label("solution");
+    _solution->setLabel("solution");
     pylith::problems::SolutionFactory factory(*_solution, *_data->normalizer);
     int iField = 0;
     factory.addDisplacement(_data->solnDiscretizations[iField++]);
@@ -162,7 +162,7 @@ pylith::mmstests::TestIncompressibleElasticity_Data::TestIncompressibleElasticit
     CPPUNIT_ASSERT(normalizer);
 
     CPPUNIT_ASSERT(auxDB);
-    auxDB->label("auxiliary field spatial database");
+    auxDB->setLabel("auxiliary field spatial database");
 } // constructor
 
 

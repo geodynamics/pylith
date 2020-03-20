@@ -108,7 +108,7 @@ pylith::bc::DirichletUserFn::getUserFn(void) const {
 void
 pylith::bc::DirichletUserFn::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     if (!solution.hasSubfield(_subfieldName.c_str())) {
         std::ostringstream msg;
@@ -139,7 +139,7 @@ pylith::bc::DirichletUserFn::verifyConfiguration(const pylith::topology::Field& 
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
 pylith::bc::DirichletUserFn::createIntegrator(const pylith::topology::Field& solution) {
-    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.label()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<") empty method");
 
     return NULL;
 } // createIntegrator
@@ -150,7 +150,7 @@ pylith::bc::DirichletUserFn::createIntegrator(const pylith::topology::Field& sol
 pylith::feassemble::Constraint*
 pylith::bc::DirichletUserFn::createConstraint(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.getLabel()<<")");
 
     pylith::feassemble::ConstraintUserFn* constraint = new pylith::feassemble::ConstraintUserFn(this);assert(constraint);
     constraint->setMarkerLabel(getMarkerLabel());
@@ -168,7 +168,7 @@ pylith::topology::Field*
 pylith::bc::DirichletUserFn::createAuxiliaryField(const pylith::topology::Field& solution,
                                                   const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
 
     PYLITH_METHOD_RETURN(NULL);
 } // createAuxiliaryField
@@ -180,7 +180,7 @@ pylith::topology::Field*
 pylith::bc::DirichletUserFn::createDerivedField(const pylith::topology::Field& solution,
                                                 const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
 
     PYLITH_METHOD_RETURN(NULL);
 } // createDerivedField

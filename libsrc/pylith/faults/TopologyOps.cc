@@ -35,7 +35,7 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
     assert(faultMesh);
     PetscErrorCode err;
 
-    faultMesh->coordsys(mesh.coordsys());
+    faultMesh->setCoordSys(mesh.getCoordSys());
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
 
     // Convert fault to a DM
@@ -219,7 +219,7 @@ pylith::faults::TopologyOps::createFaultParallel(pylith::topology::Mesh* faultMe
     const char    *labelname = "material-id";
     PetscErrorCode err;
 
-    faultMesh->coordsys(mesh.coordsys());
+    faultMesh->setCoordSys(mesh.getCoordSys());
 
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
     PetscDM dmFaultMesh;

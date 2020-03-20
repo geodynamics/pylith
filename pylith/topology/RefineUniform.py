@@ -76,7 +76,7 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
         from Mesh import Mesh
         newMesh = Mesh()
         newMesh.debug(mesh.debug())
-        newMesh.coordsys(mesh.coordsys())
+        newMesh.setCoordSys(mesh.getCoordSys())
         ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)
         mesh.cleanup()
 

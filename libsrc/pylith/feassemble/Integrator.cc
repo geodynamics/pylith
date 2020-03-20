@@ -71,7 +71,7 @@ pylith::feassemble::Integrator::needNewLHSJacobian(void) const {
 void
 pylith::feassemble::Integrator::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.getLabel()<<")");
 
     const pylith::topology::Mesh& physicsDomainMesh = getPhysicsDomainMesh();
 
@@ -82,7 +82,7 @@ pylith::feassemble::Integrator::initialize(const pylith::topology::Field& soluti
 
     const bool infoOnly = true;
     _observers->notifyObservers(0.0, 0, solution, infoOnly);
-    _observers->setTimeScale(_physics->getNormalizer().timeScale());
+    _observers->setTimeScale(_physics->getNormalizer().getTimeScale());
 
     PYLITH_METHOD_END;
 } // initialize
@@ -127,7 +127,7 @@ void
 pylith::feassemble::Integrator::_setKernelConstants(const pylith::topology::Field& solution,
                                                     const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_setKernelConstants(solution="<<solution.label()<<", dt="<<dt<<")");
+    PYLITH_JOURNAL_DEBUG("_setKernelConstants(solution="<<solution.getLabel()<<", dt="<<dt<<")");
 
     assert(_physics);
     const pylith::real_array& constants = _physics->getKernelConstants(dt);
@@ -158,7 +158,7 @@ pylith::feassemble::Integrator::_updateStateVars(const PylithReal t,
                                                  const PylithReal dt,
                                                  const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_updateStateVars(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<") empty method");
+    PYLITH_JOURNAL_DEBUG("_updateStateVars(t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
     // Default is to do nothing.
 
@@ -173,7 +173,7 @@ pylith::feassemble::Integrator::_computeDerivedField(const PylithReal t,
                                                      const PylithReal dt,
                                                      const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_computeDerivedField(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<") empty method");
+    PYLITH_JOURNAL_DEBUG("_computeDerivedField(t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
     // Default is to do nothing.
 

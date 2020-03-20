@@ -127,7 +127,7 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
             if (info.fe.quadOrder < _basisOrder) {
                 PYLITH_COMPONENT_WARNING(
                     "Projecting subfield '"
-                        << info.description.label << "' in field '" << fieldIn->label() << " from basis order "
+                        << info.description.label << "' in field '" << fieldIn->getLabel() << " from basis order "
                         << info.fe.basisOrder << " to basis order " << _basisOrder
                         << " with quadrature order " << info.fe.quadOrder << " will result in under integration of the "
                         << "subfield. Accurate projection requires a quadrature order of at least " << _basisOrder << "."
@@ -158,7 +158,7 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
             if (infoIn.fe.quadOrder < _basisOrder) {
                 PYLITH_COMPONENT_WARNING(
                     "Projecting subfield '"
-                        << infoIn.description.label << "' in field ''" << fieldIn->label() << "'' from basis order "
+                        << infoIn.description.label << "' in field ''" << fieldIn->getLabel() << "'' from basis order "
                         << infoIn.fe.basisOrder << " to basis order " << _basisOrder
                         << " with quadrature order " << infoIn.fe.quadOrder << " will result in under integration of the "
                         << "subfield. Accurate projection requires a quadrature order of at least " << _basisOrder << "."
@@ -167,7 +167,7 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
             _fieldProj->subfieldUpdate(subfieldProjNames[i].c_str(), subfieldInNames[i].c_str(), infoIn.description, feP1);
         } // for
     } // if/else
-    _fieldProj->label(fieldIn->label());
+    _fieldProj->setLabel(fieldIn->getLabel());
     _fieldProj->dimensionalizeOkay(true);
 
     if (!_passThruFns) {

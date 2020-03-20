@@ -35,7 +35,6 @@
 
 #include "pylith/utils/journals.hh" // USES journal::debug_t
 
-
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.
 void
@@ -43,15 +42,15 @@ pylith::materials::TestAuxiliaryFactoryElastic::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
     journal::debug_t debug("auxiliaryfactoryelastic");
-    //debug.activate(); // DEBUGGING
+    // debug.activate(); // DEBUGGING
 
     _data = new TestAuxiliaryFactoryElastic_Data();CPPUNIT_ASSERT(_data);
 
     CPPUNIT_ASSERT(_data->normalizer);
-    _data->normalizer->lengthScale(1.0e+03);
-    _data->normalizer->timeScale(2.0);
-    _data->normalizer->densityScale(3.0e+3);
-    _data->normalizer->pressureScale(2.25e+10);
+    _data->normalizer->setLengthScale(1.0e+03);
+    _data->normalizer->setTimeScale(2.0);
+    _data->normalizer->setDensityScale(3.0e+3);
+    _data->normalizer->setPressureScale(2.25e+10);
 
     pylith::topology::Field::SubfieldInfo info;
     info.dm = NULL;
@@ -66,11 +65,11 @@ pylith::materials::TestAuxiliaryFactoryElastic::setUp(void) {
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->normalizer->densityScale(),
+        _data->normalizer->getDensityScale(),
         pylith::topology::FieldQuery::validatorPositive
         );
     info.fe = pylith::topology::Field::Discretization(
-						      2, 2, _auxDim, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 2, _auxDim, true, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 0;
     _data->subfields["density"] = info;
@@ -84,11 +83,11 @@ pylith::materials::TestAuxiliaryFactoryElastic::setUp(void) {
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->normalizer->pressureScale(),
+        _data->normalizer->getPressureScale(),
         pylith::topology::FieldQuery::validatorNonnegative
         );
     info.fe = pylith::topology::Field::Discretization(
-						      1, 2, _auxDim, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        1, 2, _auxDim, true, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 1;
     _data->subfields["shear_modulus"] = info;
@@ -102,11 +101,11 @@ pylith::materials::TestAuxiliaryFactoryElastic::setUp(void) {
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->normalizer->pressureScale(),
+        _data->normalizer->getPressureScale(),
         pylith::topology::FieldQuery::validatorPositive
         );
     info.fe = pylith::topology::Field::Discretization(
-						      1, 2, _auxDim, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        1, 2, _auxDim, true, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 2;
     _data->subfields["bulk_modulus"] = info;
@@ -125,10 +124,10 @@ pylith::materials::TestAuxiliaryFactoryElastic::setUp(void) {
         componentNames,
         componentNames.size(),
         pylith::topology::Field::TENSOR,
-        _data->normalizer->pressureScale()
+        _data->normalizer->getPressureScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-						      2, 2, _auxDim, false, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 2, _auxDim, false, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 3;
     _data->subfields["reference_stress"] = info;
@@ -150,7 +149,7 @@ pylith::materials::TestAuxiliaryFactoryElastic::setUp(void) {
         1.0
         );
     info.fe = pylith::topology::Field::Discretization(
-						      2, 2, _auxDim, false, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 2, _auxDim, false, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 4;
     _data->subfields["reference_strain"] = info;
@@ -227,7 +226,7 @@ pylith::materials::TestAuxiliaryFactoryElastic::testSetValuesFromDB(void) {
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->normalizer);
     _factory->setValuesFromDB();
-    pylith::testing::FieldTester::checkFieldWithDB(*_auxiliaryField, _data->auxiliaryDB, _data->normalizer->lengthScale());
+    pylith::testing::FieldTester::checkFieldWithDB(*_auxiliaryField, _data->auxiliaryDB, _data->normalizer->getLengthScale());
 
     PYLITH_METHOD_END;
 } // testSetValues
@@ -251,12 +250,12 @@ pylith::materials::TestAuxiliaryFactoryElastic::_initialize(void) {
     CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.", _mesh->numVertices() > 0);
 
     // Setup coordinates.
-    _mesh->coordsys(_data->cs);
+    _mesh->setCoordSys(_data->cs);
     CPPUNIT_ASSERT(_data->normalizer);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
     _auxiliaryField = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_auxiliaryField);
-    _auxiliaryField->label("auxiliary");
+    _auxiliaryField->setLabel("auxiliary");
 
     _factory = new AuxiliaryFactoryElastic();
     CPPUNIT_ASSERT(_data->auxiliaryDB);

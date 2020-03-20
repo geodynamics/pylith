@@ -74,7 +74,7 @@ pylith::meshio::OutputSolnBoundary::setLabel(const char* value) {
 void
 pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     OutputSoln::verifyConfiguration(solution);
 
@@ -99,7 +99,7 @@ pylith::meshio::OutputSolnBoundary::_writeSolnStep(const PylithReal t,
                                                    const PylithInt tindex,
                                                    const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     if (!_boundaryMesh) {
         _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.mesh(), _label.c_str());

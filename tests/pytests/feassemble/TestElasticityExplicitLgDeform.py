@@ -187,7 +187,7 @@ class TestElasticityExplicitLgDeform(unittest.TestCase):
 
     from pylith.topology.Field import Field
     jacobian = Field(mesh)
-    spaceDim = mesh.coordsys().spaceDim()
+    spaceDim = mesh.coordsys().getSpaceDim()
     jacobian.subfieldAdd("displacement", spaceDim, jacobian.VECTOR);
     jacobian.subfieldAdd("lagrange_multiplier", spaceDim, jacobian.VECTOR);
 
@@ -323,8 +323,8 @@ class TestElasticityExplicitLgDeform(unittest.TestCase):
     fields.solutionName("disp(t+dt)")
 
     residual = fields.get("residual")
-    spaceDim = mesh.coordsys().spaceDim()
-    lengthScale = normalizer.lengthScale()
+    spaceDim = mesh.coordsys().getSpaceDim()
+    lengthScale = normalizer.getLengthScale()
     residual.subfieldAdd("displacement", spaceDim, residual.VECTOR, lengthScale.value);
     residual.subfieldAdd("lagrange_multiplier", spaceDim, residual.VECTOR);
     

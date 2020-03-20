@@ -39,7 +39,7 @@ pylith::problems::SolutionFactory::SolutionFactory(pylith::topology::Field& solu
                                                    const spatialdata::units::Nondimensional& normalizer) :
     _solution(solution),
     _normalizer(normalizer),
-    _spaceDim(solution.spaceDim()) {
+    _spaceDim(solution.getSpaceDim()) {
     GenericComponent::setName("solutionfactory");
     assert(1 <= _spaceDim && _spaceDim <= 3);
 } // constructor
@@ -69,7 +69,7 @@ pylith::problems::SolutionFactory::addDisplacement(const pylith::topology::Field
     for (int i = 0; i < _spaceDim; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = _normalizer.lengthScale();
+    description.scale = _normalizer.getLengthScale();
     description.validator = NULL;
 
     _solution.subfieldAdd(description, discretization);
@@ -97,7 +97,7 @@ pylith::problems::SolutionFactory::addVelocity(const pylith::topology::Field::Di
     for (int i = 0; i < _spaceDim; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = _normalizer.lengthScale() / _normalizer.timeScale();
+    description.scale = _normalizer.getLengthScale() / _normalizer.getTimeScale();
     description.validator = NULL;
 
     _solution.subfieldAdd(description, discretization);
@@ -123,7 +123,7 @@ pylith::problems::SolutionFactory::addPressure(const pylith::topology::Field::Di
     description.numComponents = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = componentNames[0];
-    description.scale = _normalizer.pressureScale();
+    description.scale = _normalizer.getPressureScale();
     description.validator = NULL;
 
     _solution.subfieldAdd(description, discretization);
@@ -149,7 +149,7 @@ pylith::problems::SolutionFactory::addFluidPressure(const pylith::topology::Fiel
     description.numComponents = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = componentNames[0];
-    description.scale = _normalizer.pressureScale();
+    description.scale = _normalizer.getPressureScale();
     description.validator = NULL;
 
     _solution.subfieldAdd(description, discretization);
@@ -181,7 +181,7 @@ pylith::problems::SolutionFactory::addLagrangeMultiplierFault(const pylith::topo
     for (int i = 0; i < _spaceDim; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = _normalizer.pressureScale();
+    description.scale = _normalizer.getPressureScale();
     description.validator = NULL;
 
     _solution.subfieldAdd(description, discretization);
@@ -207,7 +207,7 @@ pylith::problems::SolutionFactory::addTemperature(const pylith::topology::Field:
     description.numComponents = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = componentNames[0];
-    description.scale = _normalizer.temperatureScale();
+    description.scale = _normalizer.getTemperatureScale();
     description.validator = NULL;
 
     _solution.subfieldAdd(description, discretization);
@@ -227,7 +227,7 @@ pylith::problems::SolutionFactory::setValues(spatialdata::spatialdb::SpatialDB* 
 
     pylith::topology::FieldQuery query(_solution);
     query.initializeWithDefaultQueryFns();
-    query.openDB(db, _normalizer.lengthScale());
+    query.openDB(db, _normalizer.getLengthScale());
     query.queryDB();
     query.closeDB(db);
 

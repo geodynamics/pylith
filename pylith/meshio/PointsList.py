@@ -80,8 +80,6 @@ class PointsList(Component):
         """
         import numpy
 
-        self.coordsys.initialize()
-
         fin = open(self.filename, "r")
         lines = fin.readlines()
         fin.close()

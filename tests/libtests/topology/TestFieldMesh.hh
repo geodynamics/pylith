@@ -82,7 +82,7 @@ public:
     /// Test mesh().
     void testMesh(void);
 
-    /// Test label(), vectorFieldType(), scale(), addDimensionOkay(), spaceDim().
+    /// Test getLabel(), vectorFieldType(), scale(), addDimensionOkay(), getSpaceDim().
     void testGeneralAccessors(void);
 
     /// Test chartSize(), sectionSize(), localSection(), globalSection().

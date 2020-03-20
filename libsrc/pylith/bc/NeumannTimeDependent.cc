@@ -200,7 +200,7 @@ pylith::bc::NeumannTimeDependent::setScaleName(const char* value) {
 pylith::feassemble::Integrator*
 pylith::bc::NeumannTimeDependent::createIntegrator(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
     pylith::feassemble::IntegratorBoundary* integrator = new pylith::feassemble::IntegratorBoundary(this);assert(integrator);
     integrator->setMarkerLabel(getMarkerLabel());
@@ -215,7 +215,7 @@ pylith::bc::NeumannTimeDependent::createIntegrator(const pylith::topology::Field
 // Create constraint and set kernels.
 pylith::feassemble::Constraint*
 pylith::bc::NeumannTimeDependent::createConstraint(const pylith::topology::Field& solution) {
-    PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.label()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.getLabel()<<") empty method");
 
     return NULL;
 } // createConstraint
@@ -227,31 +227,31 @@ pylith::topology::Field*
 pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::Field& solution,
                                                        const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->label("NeumannTimeDependent auxiliary field");
+    auxiliaryField->setLabel("NeumannTimeDependent auxiliary field");
 
     assert(_auxiliaryFactory);
     assert(_normalizer);
     pylith::topology::Field::Description description = solution.subfieldInfo(_subfieldName.c_str()).description;
     if (_scaleName == std::string("pressure")) {
-        description.scale = _normalizer->pressureScale();
+        description.scale = _normalizer->getPressureScale();
     } else if (_scaleName == std::string("velocity")) {
-        description.scale = _normalizer->lengthScale() / _normalizer->pressureScale();
+        description.scale = _normalizer->getLengthScale() / _normalizer->getPressureScale();
     } else if (_scaleName == std::string("length")) {
-        description.scale = _normalizer->pressureScale();
+        description.scale = _normalizer->getPressureScale();
     } else if (_scaleName == std::string("time")) {
-        description.scale = _normalizer->pressureScale();
+        description.scale = _normalizer->getPressureScale();
     } else if (_scaleName == std::string("debsuty")) {
-        description.scale = _normalizer->pressureScale();
+        description.scale = _normalizer->getPressureScale();
     } else {
         std::ostringstream msg;
         msg << "Unknown name of scale ("<<_scaleName<<") for Neumann boundary condition for '" << _boundaryLabel << "'.";
         PYLITH_COMPONENT_ERROR(msg.str());
         throw std::logic_error(msg.str());
     } // if/else
-    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, solution.spaceDim(), &description);
+    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, solution.getSpaceDim(), &description);
 
     // :ATTENTION: The order of the factory methods must match the order of the auxiliary subfields in the FE kernels.
 
@@ -293,7 +293,7 @@ pylith::topology::Field*
 pylith::bc::NeumannTimeDependent::createDerivedField(const pylith::topology::Field& solution,
                                                      const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
 
     PYLITH_METHOD_RETURN(NULL);
 } // createDerivedField
@@ -309,7 +309,7 @@ pylith::bc::NeumannTimeDependent::prestep(pylith::topology::Field* auxiliaryFiel
 
     if (_useTimeHistory) {
         assert(_normalizer);
-        const PylithScalar timeScale = _normalizer->timeScale();
+        const PylithScalar timeScale = _normalizer->getTimeScale();
         TimeDependentAuxiliaryFactory::updateAuxiliaryField(auxiliaryField, t, timeScale, _dbTimeHistory);
     } // if
 
@@ -354,7 +354,7 @@ pylith::bc::_NeumannTimeDependent::setKernelsRHSResidual(pylith::feassemble::Int
     journal::debug_t debug(_NeumannTimeDependent::pyreComponent);
     debug << journal::at(__HERE__)
           << "setKernelsRHSResidual(integrator="<<integrator<<", bc="<<typeid(bc).name()<<", solution="
-          << solution.label()<<")"
+          << solution.getLabel()<<")"
           << journal::endl;
 
     PetscBdPointFunc g0 = NULL;

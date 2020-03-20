@@ -62,7 +62,7 @@ pylith::feassemble::ConstraintSimple::setUserFn(const PetscUserFieldFunc fn) {
 void
 pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.getLabel()<<")");
 
     assert(_physics);
     _observers = NULL;
@@ -133,7 +133,7 @@ void
 pylith::feassemble::ConstraintSimple::setSolution(pylith::topology::Field* solution,
                                                   const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setSolution(solution="<<solution->label()<<", t="<<t<<")");
+    PYLITH_JOURNAL_DEBUG("setSolution(solution="<<solution->getLabel()<<", t="<<t<<")");
 
     assert(solution);
 
