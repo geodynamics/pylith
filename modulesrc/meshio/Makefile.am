@@ -69,6 +69,9 @@ endif
 if ENABLE_SWIG
 $(srcdir)/meshio_wrap.cxx $(srcdir)/meshio.py: $(swig_sources)
 	$(SWIG) $(PETSC_CC_INCLUDES) $(PYLITH_SWIG_CPPFLAGS) -Wall -c++ -python $<
+else
+$(srcdir)/meshio_wrap.cxx $(srcdir)/meshio.py:
+	$(error Missing SWIG generated files. Make sure SWIG is installed and reconfigure with --enable-swig)
 endif
 
 if ENABLE_HDF5

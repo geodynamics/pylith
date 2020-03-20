@@ -55,6 +55,9 @@ endif
 if ENABLE_SWIG
 $(srcdir)/faults_wrap.cxx $(srcdir)/faults.py: $(swig_sources)
 	$(SWIG) $(PETSC_CC_INCLUDES) -Wall -c++ -python $<
+else
+$(srcdir)/faults_wrap.cxx $(srcdir)/faults.py:
+	$(error Missing SWIG generated files. Make sure SWIG is installed and reconfigure with --enable-swig)
 endif
 
 

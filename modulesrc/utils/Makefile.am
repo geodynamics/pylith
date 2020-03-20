@@ -87,6 +87,9 @@ $(srcdir)/petsc_wrap.cxx $(srcdir)/petsc.py: $(petsc_swig_sources)
 
 $(srcdir)/utils_wrap.cxx $(srcdir)/utils.py: $(utils_swig_sources)
 	$(SWIG) $(PETSC_CC_INCLUDES) -Wall -c++ -python $<
+else
+$(srcdir)/petsc_wrap.cxx $(srcdir)/petsc.py $(srcdir)/utils_wrap.cxx $(srcdir)/utils.py:
+	$(error Missing SWIG generated files. Make sure SWIG is installed and reconfigure with --enable-swig)
 endif
 
 
