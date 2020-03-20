@@ -193,10 +193,10 @@ protected:
         _mydata->boundaryLabel = "boundary";
 
         CPPUNIT_ASSERT(_mydata->normalizer);
-        _mydata->normalizer->lengthScale(1.0e+03);
-        _mydata->normalizer->timeScale(2.0);
-        _mydata->normalizer->densityScale(3.0e+3);
-        _mydata->normalizer->pressureScale(2.25e+10);
+        _mydata->normalizer->setLengthScale(1.0e+03);
+        _mydata->normalizer->setTimeScale(2.0);
+        _mydata->normalizer->setDensityScale(3.0e+3);
+        _mydata->normalizer->setPressureScale(2.25e+10);
 
         _mydata->t = 1.0;
         _mydata->dt = 0.05;
@@ -242,7 +242,7 @@ protected:
         _mymaterial->useBodyForce(false);
         _mymaterial->useReferenceState(false);
 
-        _mymaterial->label("Isotropic Linear Elascitity 3D");
+        _mymaterial->setLabel("Isotropic Linear Elascitity 3D");
         _mymaterial->id(24);
     } // setUp
 

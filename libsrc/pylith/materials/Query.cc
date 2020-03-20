@@ -53,7 +53,7 @@ pylith::materials::Query::dbQueryShearModulus(PylithInt dim,
     const int i_vs = 1;
     const char* dbValueNames[numDBValues] = {"density", "vs"};
     try {
-        queryctx->db->queryVals(dbValueNames, numDBValues);
+        queryctx->db->setQueryValues(dbValueNames, numDBValues);
     } catch (const std::exception& err) {
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, err.what());
     } // try/catch
@@ -73,7 +73,7 @@ pylith::materials::Query::dbQueryShearModulus(PylithInt dim,
         msg << "Could not find density and Vs at (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") using spatial database '" << queryctx->db->label() << "'.";
+        msg << ") using spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
@@ -85,7 +85,7 @@ pylith::materials::Query::dbQueryShearModulus(PylithInt dim,
         msg << "Found negative density (" << density << ") at location (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") in spatial database '" << queryctx->db->label() << "'.";
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
     if (vs <= 0) {
@@ -93,7 +93,7 @@ pylith::materials::Query::dbQueryShearModulus(PylithInt dim,
         msg << "Found negative shear wave speed (" << vs << ") at location (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") in spatial database '" << queryctx->db->label() << "'.";
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
@@ -135,7 +135,7 @@ pylith::materials::Query::dbQueryBulkModulus(PylithInt dim,
     const int i_vp = 2;
     const char* dbValueNames[numDBValues] = {"density", "vs", "vp"};
     try {
-        queryctx->db->queryVals(dbValueNames, numDBValues);
+        queryctx->db->setQueryValues(dbValueNames, numDBValues);
     } catch (const std::exception& err) {
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, err.what());
     } // try/catch
@@ -155,7 +155,7 @@ pylith::materials::Query::dbQueryBulkModulus(PylithInt dim,
         msg << "Could not find density, Vs, and Vp at (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") using spatial database '" << queryctx->db->label() << "'.";
+        msg << ") using spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
@@ -168,7 +168,7 @@ pylith::materials::Query::dbQueryBulkModulus(PylithInt dim,
         msg << "Found negative density (" << density << ") at location (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") in spatial database '" << queryctx->db->label() << "'.";
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
     if (vs <= 0) {
@@ -176,7 +176,7 @@ pylith::materials::Query::dbQueryBulkModulus(PylithInt dim,
         msg << "Found negative shear wave speed (" << vs << ") at location (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") in spatial database '" << queryctx->db->label() << "'.";
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
     if (vp <= 0) {
@@ -184,7 +184,7 @@ pylith::materials::Query::dbQueryBulkModulus(PylithInt dim,
         msg << "Found negative dilatational wave speed (" << vp << ") at location (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") in spatial database '" << queryctx->db->label() << "'.";
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
@@ -226,7 +226,7 @@ pylith::materials::Query::dbQueryMaxwellTime(PylithInt dim,
     const int i_viscosity = 2;
     const char* dbValueNames[numDBValues] = {"density", "vs", "viscosity"};
     try {
-        queryctx->db->queryVals(dbValueNames, numDBValues);
+        queryctx->db->setQueryValues(dbValueNames, numDBValues);
     } catch (const std::exception& err) {
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, err.what());
     } // try/catch
@@ -246,7 +246,7 @@ pylith::materials::Query::dbQueryMaxwellTime(PylithInt dim,
         msg << "Could not find density, Vs, and viscosity at (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") using spatial database '" << queryctx->db->label() << "'.";
+        msg << ") using spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
@@ -259,7 +259,7 @@ pylith::materials::Query::dbQueryMaxwellTime(PylithInt dim,
         msg << "Found negative density (" << density << ") at location (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") in spatial database '" << queryctx->db->label() << "'.";
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
     if (vs <= 0) {
@@ -267,7 +267,7 @@ pylith::materials::Query::dbQueryMaxwellTime(PylithInt dim,
         msg << "Found negative shear wave speed (" << vs << ") at location (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") in spatial database '" << queryctx->db->label() << "'.";
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
@@ -312,7 +312,7 @@ pylith::materials::Query::dbQueryMaxwellTimeGeneralizedMaxwell(PylithInt dim,
     const char* dbValueNames[numDBValues] = {"density", "vs", "viscosity_1",
 											 "viscosity_2", "viscosity_3" };
     try {
-        queryctx->db->queryVals(dbValueNames, numDBValues);
+        queryctx->db->setQueryValues(dbValueNames, numDBValues);
     } catch (const std::exception& err) {
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, err.what());
     } // try/catch
@@ -332,7 +332,7 @@ pylith::materials::Query::dbQueryMaxwellTimeGeneralizedMaxwell(PylithInt dim,
         msg << "Could not find density, Vs, viscosity_1, viscosity_2 viscosity_3 at (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") using spatial database '" << queryctx->db->label() << "'.";
+        msg << ") using spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
@@ -347,7 +347,7 @@ pylith::materials::Query::dbQueryMaxwellTimeGeneralizedMaxwell(PylithInt dim,
         msg << "Found negative density (" << density << ") at location (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") in spatial database '" << queryctx->db->label() << "'.";
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
     if (vs <= 0) {
@@ -355,7 +355,7 @@ pylith::materials::Query::dbQueryMaxwellTimeGeneralizedMaxwell(PylithInt dim,
         msg << "Found negative shear wave speed (" << vs << ") at location (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") in spatial database '" << queryctx->db->label() << "'.";
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
@@ -406,7 +406,7 @@ pylith::materials::Query::dbQueryShearModulusRatioGeneralizedMaxwell(PylithInt d
 											 "shear_modulus_ratio_2",
 											 "shear_modulus_ratio_3" };
     try {
-        queryctx->db->queryVals(dbValueNames, numDBValues);
+        queryctx->db->setQueryValues(dbValueNames, numDBValues);
     } catch (const std::exception& err) {
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, err.what());
     } // try/catch
@@ -425,7 +425,7 @@ pylith::materials::Query::dbQueryShearModulusRatioGeneralizedMaxwell(PylithInt d
         msg << "Could not find shear_modulus_ratio_1, shear_modulus_ratio_2 shear_modulus_ratio_3 at (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") using spatial database '" << queryctx->db->label() << "'.";
+        msg << ") using spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
@@ -440,7 +440,7 @@ pylith::materials::Query::dbQueryShearModulusRatioGeneralizedMaxwell(PylithInt d
         msg << "Shear ratio sum greater than one (" << ratioSum << ") at location (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") in spatial database '" << queryctx->db->label() << "'.";
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
@@ -482,7 +482,7 @@ pylith::materials::Query::dbQueryGravityField(PylithInt dim,
     const int i_z = 2;
     const char* dbValueNames[3] = {"gravity_field_x", "gravity_field_y", "gravity_field_z"};
     try {
-        queryctx->db->queryVals(dbValueNames, numDBValues);
+        queryctx->db->setQueryValues(dbValueNames, numDBValues);
     } catch (const std::exception& err) {
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, err.what());
     } // try/catch
@@ -501,7 +501,7 @@ pylith::materials::Query::dbQueryGravityField(PylithInt dim,
         msg << "Could not find gravity field at (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") using spatial database '" << queryctx->db->label() << "'.";
+        msg << ") using spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
@@ -520,7 +520,7 @@ pylith::materials::Query::dbQueryGravityField(PylithInt dim,
         for (int i = 0; i < dim; ++i) {
             msg << "  " << xDim[i];
           } // for
-        msg << ") in spatial database '" << queryctx->db->label() << "'.";
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 

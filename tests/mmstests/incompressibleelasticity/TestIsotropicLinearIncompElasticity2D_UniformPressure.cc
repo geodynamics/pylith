@@ -157,12 +157,11 @@ protected:
         CPPUNIT_ASSERT(!_data->cs);
         _data->cs = new spatialdata::geocoords::CSCart;CPPUNIT_ASSERT(_data->cs);
         _data->cs->setSpaceDim(_data->spaceDim);
-        _data->cs->initialize();
 
         CPPUNIT_ASSERT(_data->normalizer);
-        _data->normalizer->lengthScale(1.0e+03);
-        _data->normalizer->timeScale(2.0);
-        _data->normalizer->pressureScale(2.25e+10);
+        _data->normalizer->setLengthScale(1.0e+03);
+        _data->normalizer->setTimeScale(2.0);
+        _data->normalizer->setPressureScale(2.25e+10);
         _data->normalizer->computeDensityScale();
 
         _data->startTime = 0.0;
@@ -185,7 +184,7 @@ protected:
         _data->auxDB->addValue("density", density, density_units());
         _data->auxDB->addValue("vp", vp, vp_units());
         _data->auxDB->addValue("vs", vs, vs_units());
-        _data->auxDB->coordsys(*_data->cs);
+        _data->auxDB->setCoordSys(*_data->cs);
 
         CPPUNIT_ASSERT(_material);
         _material->useBodyForce(false);

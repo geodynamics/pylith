@@ -60,7 +60,7 @@ class SubfieldVelocity(SolutionSubfield):
         """
         from pylith.topology.Field import Field
         self.vectorFieldType = Field.VECTOR
-        self.scale = normalizer.lengthScale() / normalizer.timeScale()
+        self.scale = normalizer.getLengthScale() / normalizer.getTimeScale()
         self._setComponents(spaceDim)
         return
 

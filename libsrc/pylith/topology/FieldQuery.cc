@@ -176,7 +176,7 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
             _functions[index] = (db || _queryDBs[name]) ? _queryFns[name] : NULL;
 
             _contexts[index].db = (_queryDBs[name]) ? _queryDBs[name] : db;
-            _contexts[index].cs = _field.mesh().coordsys();
+            _contexts[index].cs = _field.mesh().getCoordSys();
         } else {
             _functions[index] = NULL;
             _contexts[index].db = NULL;
@@ -293,7 +293,7 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
         queryValueNames[i] = queryctx->componentNames[i].c_str();
     } // for
     try {
-        queryctx->db->queryVals(queryValueNames, numQueryValues);
+        queryctx->db->setQueryValues(queryValueNames, numQueryValues);
     } catch (const std::runtime_error& err) {
         delete[] queryValueNames;queryValueNames = NULL;
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, err.what());
@@ -318,7 +318,7 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
         for (int i = 0; i < dim; ++i) {
             msg << "  " << xDim[i];
         }
-        msg << ") in spatial database '" << queryctx->db->label() << "'.";
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
         PYLITH_METHOD_RETURN(1);
     } // if
@@ -333,7 +333,7 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
                 for (int i = 0; i < dim; ++i) {
                     msg << "  " << xDim[i];
                 }
-                msg << ") in spatial database '" << queryctx->db->label() << "'. ";
+                msg << ") in spatial database '" << queryctx->db->getLabel() << "'. ";
                 msg << invalidMsg;
                 delete[] queryValueNames;queryValueNames = NULL;
                 PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());

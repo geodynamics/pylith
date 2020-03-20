@@ -102,14 +102,14 @@ pylith::meshio::OutputSoln::setTimeScale(const PylithReal value) {
 void
 pylith::meshio::OutputSoln::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     const size_t numSubfieldNames = _subfieldNames.size();
     if ((numSubfieldNames > 0) && (std::string("all") != _subfieldNames[0])) {
         for (size_t iField = 0; iField < numSubfieldNames; iField++) {
             if (!solution.hasSubfield(_subfieldNames[iField].c_str())) {
                 std::ostringstream msg;
-                msg << "Could not find subfield '" << _subfieldNames[iField] << "' in solution '" << solution.label()
+                msg << "Could not find subfield '" << _subfieldNames[iField] << "' in solution '" << solution.getLabel()
                     << "' for output using solution observer ''" << PyreComponent::getIdentifier() <<"''.";
                 throw std::runtime_error(msg.str());
             } // if
@@ -149,7 +149,7 @@ pylith::meshio::OutputSoln::_open(const pylith::topology::Mesh& mesh) {
 
     assert(_writer);
     const bool isInfo = false;
-    _writer->timeScale(_timeScale);
+    _writer->setTimeScale(_timeScale);
     _writer->open(mesh, isInfo);
 
     PYLITH_METHOD_END;
@@ -205,7 +205,7 @@ pylith::meshio::OutputSoln::_writeSolnStep(const PylithReal t,
                                            const PylithInt tindex,
                                            const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputSoln::_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("OutputSoln::_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<") empty method");
 
     // Empty method.
 
@@ -241,7 +241,7 @@ pylith::meshio::OutputSoln::_appendField(const PylithReal t,
         PYLITH_COMPONENT_ERROR(
             "Unsupported basis order ("
                 << basisOrder <<") for output. Use FieldFilterProject with basis order of 0 or 1. Skipping output of '"
-                << field->label() << "' field."
+                << field->getLabel() << "' field."
             );
     } // switch
 

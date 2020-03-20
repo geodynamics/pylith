@@ -238,11 +238,11 @@ class Problem(PetscComponent, ModuleProblem):
         """
         msg = (
             "Scales for nondimensionalization:",
-            "    Length scale: {}".format(self.normalizer.lengthScale()),
-            "    Time scale: {}".format(self.normalizer.timeScale()),
-            "    Pressure scale: {}".format(self.normalizer.pressureScale()),
-            "    Density scale: {}".format(self.normalizer.densityScale()),
-            "    Temperature scale: {}".format(self.normalizer.temperatureScale()),
+            "    Length scale: {}".format(self.normalizer.getLengthScale()),
+            "    Time scale: {}".format(self.normalizer.getTimeScale()),
+            "    Pressure scale: {}".format(self.normalizer.getPressureScale()),
+            "    Density scale: {}".format(self.normalizer.getDensityScale()),
+            "    Temperature scale: {}".format(self.normalizer.getTemperatureScale()),
         )
         self._info.log("\n".join(msg))
         return

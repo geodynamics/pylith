@@ -4,6 +4,8 @@ from spatialdata.geocoords.CSGeo import CSGeo
 from spatialdata.geocoords.CSGeoProj import CSGeoProj
 
 # Geographic lat/lon coordinates in WGS84 datum
+
+
 def cs_geo():
     """Geographic lat/lon coordinates in WGS84 datum.
     """
@@ -12,7 +14,6 @@ def cs_geo():
     cs.inventory.datumVert = "mean sea level"
     cs.inventory.spaceDim = 2
     cs._configure()
-    cs.initialize()
     return cs
 
 
@@ -26,7 +27,6 @@ def cs_geo3D():
     cs.inventory.datumVert = "mean sea level"
     cs.inventory.spaceDim = 3
     cs._configure()
-    cs.initialize()
     return cs
 
 
@@ -43,7 +43,6 @@ def cs_mesh():
     cs.inventory.projector.inventory.projOptions = "+lat_0=45.5231 +lon_0=-122.6765 +k=0.9996"
     cs.inventory.projector._configure()
     cs._configure()
-    cs.initialize()
     return cs
 
 
@@ -53,6 +52,6 @@ def geoToMesh(xyz):
     from spatialdata.geocoords.Converter import convert
     convert(xyz, cs_mesh(), cs_geo3D())
     return
-    
+
 
 # End of file

@@ -139,14 +139,14 @@ pylith::materials::TestMaterial::testAuxFieldDB(void) {
 
     const std::string label = "test db";
     spatialdata::spatialdb::UserFunctionDB db;
-    db.label(label.c_str());
+    db.setLabel(label.c_str());
 
     Material* material = _material();CPPUNIT_ASSERT(material);
     material->auxFieldDB(&db);
 
     CPPUNIT_ASSERT(material->_auxFactory());
     CPPUNIT_ASSERT(material->_auxFactory()->queryDB());
-    CPPUNIT_ASSERT_EQUAL(label, std::string(material->_auxFactory()->queryDB()->label()));
+    CPPUNIT_ASSERT_EQUAL(label, std::string(material->_auxFactory()->queryDB()->getLabel()));
 
     PYLITH_METHOD_END;
 } // testAuxFieldDB
@@ -160,11 +160,11 @@ pylith::materials::TestMaterial::testNormalizer(void) {
 
     spatialdata::units::Nondimensional normalizer;
     const double scale = 5.0;
-    normalizer.lengthScale(scale);
+    normalizer.setLengthScale(scale);
 
     Material* material = _material();CPPUNIT_ASSERT(material);
     material->normalizer(normalizer);
-    CPPUNIT_ASSERT_EQUAL(scale, material->_normalizer->lengthScale());
+    CPPUNIT_ASSERT_EQUAL(scale, material->_normalizer->getLengthScale());
 
     PYLITH_METHOD_END;
 } // testNormalizer
@@ -188,7 +188,7 @@ pylith::materials::TestMaterial::testVerifyConfiguration(void) {
 
 
 // ----------------------------------------------------------------------
-// Test dimension(), id(), and label().
+// Test dimension(), id(), and getLabel().
 void
 pylith::materials::TestMaterial::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
@@ -203,8 +203,8 @@ pylith::materials::TestMaterial::testAccessors(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of Material::id() failed.", matId, material->id());
 
     const std::string& matLabel = "xyz";
-    material->label(matLabel.c_str());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of Material::label() failed.", matLabel, std::string(material->label()));
+    material->setLabel(matLabel.c_str());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of Material::getLabel() failed.", matLabel, std::string(material->getLabel()));
 
     PYLITH_METHOD_END;
 } // testAccessors
@@ -226,8 +226,8 @@ pylith::materials::TestMaterial::testInitialize(void) {
 
     // Check result
     TestMaterial_Data* data = _data();CPPUNIT_ASSERT(data);
-    CPPUNIT_ASSERT_EQUAL(std::string("auxiliary subfields"), std::string(auxField->label()));
-    CPPUNIT_ASSERT_EQUAL(data->dimension, auxField->spaceDim());
+    CPPUNIT_ASSERT_EQUAL(std::string("auxiliary subfields"), std::string(auxField->getLabel()));
+    CPPUNIT_ASSERT_EQUAL(data->dimension, auxField->getSpaceDim());
 
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
@@ -235,7 +235,7 @@ pylith::materials::TestMaterial::testInitialize(void) {
     pylith::topology::FieldQuery query(*auxField);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->normalizer);
-    query.openDB(data->auxDB, data->normalizer->lengthScale());
+    query.openDB(data->auxDB, data->normalizer->getLengthScale());
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(data->auxDB);
     const PylithReal tolerance = 1.0e-6;
@@ -252,7 +252,7 @@ pylith::materials::TestMaterial::testInitialize(void) {
     pylith::topology::FieldQuery solnQuery(solution);
     solnQuery.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->normalizer);
-    solnQuery.openDB(data->solnDB, data->normalizer->lengthScale());
+    solnQuery.openDB(data->solnDB, data->normalizer->getLengthScale());
     err = DMPlexComputeL2DiffLocal(dmSoln, t, solnQuery.functions(), (void**)solnQuery.contextPtrs(), solution.localVector(), &norm);CPPUNIT_ASSERT(!err);
     solnQuery.closeDB(data->solnDB);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Discretized solution field failed representation test.", 0.0, norm, tolerance);
@@ -263,7 +263,7 @@ pylith::materials::TestMaterial::testInitialize(void) {
     pylith::topology::FieldQuery perturbQuery(perturbation);
     perturbQuery.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->normalizer);
-    perturbQuery.openDB(data->perturbDB, data->normalizer->lengthScale());
+    perturbQuery.openDB(data->perturbDB, data->normalizer->getLengthScale());
     err = DMPlexComputeL2DiffLocal(dmPerturb, t, perturbQuery.functions(), (void**)perturbQuery.contextPtrs(), perturbation.localVector(), &norm);CPPUNIT_ASSERT(!err);
     perturbQuery.closeDB(data->perturbDB);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Discretized perturbation field failed representation test.", 0.0, norm, tolerance);
@@ -289,13 +289,13 @@ pylith::materials::TestMaterial::testComputeResidual(void) {
 
     pylith::topology::Field residualRHS(*_mesh);
     residualRHS.cloneSection(solution);
-    residualRHS.label("residual RHS");
+    residualRHS.setLabel("residual RHS");
     residualRHS.createDiscretization();
     residualRHS.allocate();
 
     pylith::topology::Field residualLHS(*_mesh);
     residualLHS.cloneSection(solution);
-    residualLHS.label("residual LHS");
+    residualLHS.setLabel("residual LHS");
     residualLHS.createDiscretization();
     residualLHS.allocate();
 
@@ -367,13 +367,13 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void) {
 
     pylith::topology::Field residual1(*_mesh);
     residual1.cloneSection(solution);
-    residual1.label("residual1");
+    residual1.setLabel("residual1");
     residual1.createDiscretization();
     residual1.allocate();
 
     pylith::topology::Field residual2(*_mesh);
     residual2.cloneSection(perturbation);
-    residual2.label("residual2");
+    residual2.setLabel("residual2");
     residual2.createDiscretization();
     residual2.allocate();
 
@@ -473,13 +473,13 @@ pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void) {
 
     pylith::topology::Field residual1(*_mesh);
     residual1.cloneSection(solution);
-    residual1.label("residual1");
+    residual1.setLabel("residual1");
     residual1.createDiscretization();
     residual1.allocate();
 
     pylith::topology::Field residual2(*_mesh);
     residual2.cloneSection(perturbation);
-    residual2.label("residual2");
+    residual2.setLabel("residual2");
     residual2.createDiscretization();
     residual2.allocate();
 
@@ -606,7 +606,7 @@ pylith::materials::TestMaterial::testUpdateStateVars(void) {
     pylith::topology::FieldQuery query(*auxField);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->normalizer);
-    query.openDB(data->auxUpdateDB, data->normalizer->lengthScale());
+    query.openDB(data->auxUpdateDB, data->normalizer->getLengthScale());
 #if 0 // :DEBUG:
     PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "1"); // :DEBUG:
     DMSetFromOptions(dm); // :DEBUG:
@@ -638,7 +638,7 @@ pylith::materials::TestMaterial::_initializeMin(void) {
     CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.", _mesh->numVertices() > 0);
 
     // Setup coordinates.
-    _mesh->coordsys(data->cs);
+    _mesh->setCoordSys(data->cs);
     CPPUNIT_ASSERT(data->normalizer);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *data->normalizer);
 
@@ -757,13 +757,13 @@ pylith::materials::TestMaterial_Data::TestMaterial_Data(void) :
     CPPUNIT_ASSERT(normalizer);
 
     CPPUNIT_ASSERT(solnDB);
-    solnDB->label("solution");
+    solnDB->setLabel("solution");
 
     CPPUNIT_ASSERT(perturbDB);
-    perturbDB->label("solution+perturbation");
+    perturbDB->setLabel("solution+perturbation");
 
     CPPUNIT_ASSERT(auxDB);
-    auxDB->label("auxiliary field");
+    auxDB->setLabel("auxiliary field");
 } // constructor
 
 

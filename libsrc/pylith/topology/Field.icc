@@ -73,7 +73,7 @@ pylith::topology::Field::dmMesh(void) const {
 // Get label for field.
 inline
 const char*
-pylith::topology::Field::label(void) const {
+pylith::topology::Field::getLabel(void) const {
     return _label.c_str();
 }
 

@@ -74,7 +74,7 @@ class TestMesh(unittest.TestCase):
 
     mesh = Mesh()
     mesh.coordsys(cs)
-    self.assertEqual(cs.spaceDim(), mesh.coordsys().spaceDim())
+    self.assertEqual(cs.getSpaceDim(), mesh.coordsys().getSpaceDim())
     return
 
 

@@ -91,7 +91,7 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     err = DMPlexSetScale(dmSubdomain, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
 
     pylith::topology::Mesh* submesh = new pylith::topology::Mesh(true);assert(submesh);
-    submesh->coordsys(mesh.coordsys());
+    submesh->setCoordSys(mesh.getCoordSys());
     submesh->dmMesh(dmSubdomain);
 
     PYLITH_METHOD_RETURN(submesh);
@@ -159,7 +159,7 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     err = DMPlexSetScale(dmSubmesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
 
     pylith::topology::Mesh* submesh = new pylith::topology::Mesh(true);assert(submesh);
-    submesh->coordsys(mesh.coordsys());
+    submesh->setCoordSys(mesh.getCoordSys());
     submesh->dmMesh(dmSubmesh);
 
     // Check topology
@@ -177,7 +177,7 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
     PYLITH_METHOD_BEGIN;
 
     PetscVec coordVec;
-    const PylithScalar lengthScale = normalizer.lengthScale();
+    const PylithScalar lengthScale = normalizer.getLengthScale();
     PetscErrorCode err;
 
     PetscDM dmMesh = mesh->dmMesh();assert(dmMesh);

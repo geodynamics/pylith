@@ -89,7 +89,7 @@ pylith::topology::TestFieldMesh::testMesh(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test label(), vectorFieldType(), scale(), addDimensionOkay(), spaceDim().
+// Test getLabel(), vectorFieldType(), scale(), addDimensionOkay(), getSpaceDim().
 void
 pylith::topology::TestFieldMesh::testGeneralAccessors(void) {
     PYLITH_METHOD_BEGIN;
@@ -98,22 +98,22 @@ pylith::topology::TestFieldMesh::testGeneralAccessors(void) {
     _initialize();
     CPPUNIT_ASSERT(_field);
 
-    // Test label()
+    // Test getLabel()
     const std::string label = "velocity";
-    _field->label(label.c_str());
-    CPPUNIT_ASSERT_EQUAL(label, std::string(_field->label()));
+    _field->setLabel(label.c_str());
+    CPPUNIT_ASSERT_EQUAL(label, std::string(_field->getLabel()));
     const char* name = NULL;
     PetscErrorCode err = 0;
     err = PetscObjectGetName((PetscObject)_field->_dm, &name);CPPUNIT_ASSERT(!err);
-    CPPUNIT_ASSERT_EQUAL(label, std::string(name));    
+    CPPUNIT_ASSERT_EQUAL(label, std::string(name));
 
     // Test addDimensionOkay()
     CPPUNIT_ASSERT_EQUAL(false, _field->_dimsOkay);
     _field->dimensionalizeOkay(true);
     CPPUNIT_ASSERT_EQUAL(true, _field->_dimsOkay);
 
-    // Test spaceDim()
-    CPPUNIT_ASSERT_EQUAL(_data->cellDim, _field->spaceDim());
+    // Test getSpaceDim()
+    CPPUNIT_ASSERT_EQUAL(_data->cellDim, _field->getSpaceDim());
 
     PYLITH_METHOD_END;
 } // testGeneralAccessors
@@ -153,14 +153,12 @@ pylith::topology::TestFieldMesh::testVectorAccessors(void) {
     const PetscVec& localVec = _field->localVector();
 
     err = PetscObjectGetName((PetscObject)localVec, &name);CPPUNIT_ASSERT(!err);
-    CPPUNIT_ASSERT_EQUAL(std::string(_field->label()), std::string(name));    
+    CPPUNIT_ASSERT_EQUAL(std::string(_field->getLabel()), std::string(name));
 
     err = VecGetSize(localVec, &size);CPPUNIT_ASSERT(!err);
     const PylithInt fiberDim = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
     CPPUNIT_ASSERT_EQUAL(_data->numVertices * fiberDim, size);
 
-
-    
     PYLITH_METHOD_END;
 } // testVectorAccessors
 
@@ -190,7 +188,7 @@ pylith::topology::TestFieldMesh::testCloneSection(void) {
     Field field(*_mesh);
     const std::string& label = "field A";
     field.cloneSection(*_field);
-    field.label(label.c_str());
+    field.setLabel(label.c_str());
 
     const char *name = NULL;
     err = PetscObjectGetName((PetscObject)field.dmMesh(), &name);CPPUNIT_ASSERT(!err);
@@ -201,7 +199,7 @@ pylith::topology::TestFieldMesh::testCloneSection(void) {
 
     err = PetscObjectGetName((PetscObject) vec, &name);CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_EQUAL(label, std::string(name));
-    
+
     const PylithInt fiberDim = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
     for (PylithInt v = vStart, iV = 0; v < vEnd; ++v, ++iV) {
         PylithInt dof, cdof;
@@ -596,8 +594,7 @@ pylith::topology::TestFieldMesh::_initialize(void) {
 
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim(spaceDim);
-    cs.initialize();
-    _mesh->coordsys(&cs);
+    _mesh->setCoordSys(&cs);
 
     // Setup labels for constraints.
     PetscErrorCode err;
@@ -612,7 +609,7 @@ pylith::topology::TestFieldMesh::_initialize(void) {
 
     // Setup field
     delete _field;_field = new Field(*_mesh);
-    _field->label("solution");
+    _field->setLabel("solution");
     _field->subfieldAdd(_data->descriptionA, _data->discretizationA);
     _field->subfieldAdd(_data->descriptionB, _data->discretizationB);
     _field->subfieldsSetup();

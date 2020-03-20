@@ -83,7 +83,7 @@ pylith::topology::TestMesh::testDMMesh(void)
 } // testDMMesh
 
 // ----------------------------------------------------------------------
-// Test coordsys().
+// Test getCoordSys().
 void
 pylith::topology::TestMesh::testCoordsys(void)
 { // testCoordsys
@@ -94,9 +94,9 @@ pylith::topology::TestMesh::testCoordsys(void)
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim(2);
 
-    mesh.coordsys(&cs);
+    mesh.setCoordSys(&cs);
 
-    CPPUNIT_ASSERT_EQUAL(cs.spaceDim(), mesh.coordsys()->spaceDim());
+    CPPUNIT_ASSERT_EQUAL(cs.getSpaceDim(), mesh.getCoordSys()->getSpaceDim());
 
     PYLITH_METHOD_END;
 } // testCoordsys

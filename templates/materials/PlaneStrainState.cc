@@ -206,8 +206,8 @@ contrib::materials::PlaneStrainState::_nondimProperties(PylithScalar* const valu
 
   // Get scales needed to nondimensional parameters from the
   // Nondimensional object.
-  const PylithScalar densityScale = _normalizer->densityScale();
-  const PylithScalar pressureScale = _normalizer->pressureScale();
+  const PylithScalar densityScale = _normalizer->getDensityScale();
+  const PylithScalar pressureScale = _normalizer->getPressureScale();
 
   // Use the Nondimensional::nondimensionalize() function to
   // nondimensionalize the quantities using the appropriate scale.
@@ -232,8 +232,8 @@ contrib::materials::PlaneStrainState::_dimProperties(PylithScalar* const values,
 
   // Get scales needed to dimensional parameters from the
   // Nondimensional object.
-  const PylithScalar densityScale = _normalizer->densityScale();
-  const PylithScalar pressureScale = _normalizer->pressureScale();
+  const PylithScalar densityScale = _normalizer->getDensityScale();
+  const PylithScalar pressureScale = _normalizer->getPressureScale();
 
   // Use the Nondimensional::dimensionalize() function to
   // dimensionalize the quantities using the appropriate scale.

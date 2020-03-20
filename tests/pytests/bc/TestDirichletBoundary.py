@@ -195,7 +195,7 @@ class TestDirichletBoundary(unittest.TestCase):
     # Setup field
     from pylith.topology.Field import Field
     field = Field(mesh)
-    field.newSection(field.VERTICES_FIELD, cs.spaceDim())
+    field.newSection(field.VERTICES_FIELD, cs.getSpaceDim())
     
     return (mesh, bc, field)
 

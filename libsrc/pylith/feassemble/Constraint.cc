@@ -158,7 +158,7 @@ pylith::feassemble::Constraint::getPhysicsDomainMesh(void) const {
 void
 pylith::feassemble::Constraint::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("initialize(solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("initialize(solution="<<solution.getLabel()<<")");
 
     delete _boundaryMesh;_boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.mesh(), _constraintLabel.c_str());assert(_boundaryMesh);
     PetscDM dmBoundary = _boundaryMesh->dmMesh();assert(dmBoundary);
@@ -168,7 +168,7 @@ pylith::feassemble::Constraint::initialize(const pylith::topology::Field& soluti
     _observers = _physics->getObservers(); // Memory managed by Physics
     if (_observers) {
         _observers->setPhysicsImplementation(this);
-        _observers->setTimeScale(_physics->getNormalizer().timeScale());
+        _observers->setTimeScale(_physics->getNormalizer().getTimeScale());
     } // if
 
     PYLITH_METHOD_END;

@@ -134,7 +134,7 @@ pylith::topology::Field::deallocate(void) {
 // ----------------------------------------------------------------------
 // Set label for field.
 void
-pylith::topology::Field::label(const char* value) {
+pylith::topology::Field::setLabel(const char* value) {
     PYLITH_METHOD_BEGIN;
 
     PetscErrorCode err;
@@ -161,16 +161,16 @@ pylith::topology::Field::label(const char* value) {
     } // for
 
     PYLITH_METHOD_END;
-} // label
+} // setLabel
 
 
 // ----------------------------------------------------------------------
 // Get spatial dimension of domain.
 int
-pylith::topology::Field::spaceDim(void) const {
-    const spatialdata::geocoords::CoordSys* cs = _mesh.coordsys();
-    return (cs) ? cs->spaceDim() : 0;
-} // spaceDim
+pylith::topology::Field::getSpaceDim(void) const {
+    const spatialdata::geocoords::CoordSys* cs = _mesh.getCoordSys();
+    return (cs) ? cs->getSpaceDim() : 0;
+} // getSpaceDim
 
 
 // ----------------------------------------------------------------------
@@ -235,7 +235,7 @@ pylith::topology::Field::cloneSection(const Field& src) {
     // Clear memory
     clear();
 
-    label(origLabel.c_str());
+    setLabel(origLabel.c_str());
 
     PetscErrorCode err;
     const char* name = NULL;
@@ -398,12 +398,12 @@ pylith::topology::Field::copy(const Field& field) {
     const PylithInt dstChartSize = chartSize();
     const PylithInt srcSectionSize = field.sectionSize();
     const PylithInt dstSectionSize = sectionSize();
-    if ((field.spaceDim() != spaceDim()) || (srcChartSize != dstChartSize) || (srcSectionSize != dstSectionSize) ) {
+    if ((field.getSpaceDim() != getSpaceDim()) || (srcChartSize != dstChartSize) || (srcSectionSize != dstSectionSize) ) {
         std::ostringstream msg;
 
         msg << "Cannot copy values from section '" << _label << "' to section '" << _label
             << "'. Sections are incompatible.\n"
-            << "  Source space dim: " << field.spaceDim() << ", Destination space dim: " << spaceDim() << "\n"
+            << "  Source space dim: " << field.getSpaceDim() << ", Destination space dim: " << getSpaceDim() << "\n"
             << "  Source chart size: " << srcChartSize << ", Destination chart size: " << dstChartSize << "\n"
             << "  Source section size: " << srcSectionSize << ", Destination section size: " << dstSectionSize << "\n";
         throw std::runtime_error(msg.str());
@@ -413,7 +413,7 @@ pylith::topology::Field::copy(const Field& field) {
     PetscErrorCode err = VecCopy(field._localVec, _localVec);PYLITH_CHECK_ERROR(err);
 
     // Update metadata
-    label(field._label.c_str());
+    setLabel(field._label.c_str());
 
     PYLITH_METHOD_END;
 } // copy
@@ -852,7 +852,7 @@ pylith::topology::Field::_getScatter(const char* context,
 
     if (isNewScatter && !createOk) {
         std::ostringstream msg;
-        msg << "Scatter for context '" << context << "' does not exist for field '" << label() << "'.";
+        msg << "Scatter for context '" << context << "' does not exist for field '" << getLabel() << "'.";
         throw std::runtime_error(msg.str());
     } // if
 
@@ -879,7 +879,7 @@ pylith::topology::Field::_getScatter(const char* context) const {
         _scatters.find(context);
     if (s_iter == _scatters.end()) {
         std::ostringstream msg;
-        msg << "Scatter for context '" << context << "' does not exist for field '" << label() << "'.";
+        msg << "Scatter for context '" << context << "' does not exist for field '" << getLabel() << "'.";
         throw std::runtime_error(msg.str());
     } // if
 
@@ -996,7 +996,7 @@ pylith::topology::Field::subfieldsSetup(void) {
                 std::ostringstream msg;
                 msg << "PETSc DMPlex routines currently assume all subfields use the same quadrature order. Quaadrature order of "
                     << sinfo.fe.quadOrder << " for subfield '" << sname << "' does not match the quadrature order of " << quadOrder
-                    << " for other subfields in field '" << label() << "'.";
+                    << " for other subfields in field '" << getLabel() << "'.";
                 throw std::runtime_error(msg.str());
             } // if
         } else {
@@ -1051,7 +1051,7 @@ pylith::topology::Field::subfieldInfo(const char* name) const {
     subfields_type::const_iterator iter = _subfields.find(name);
     if (_subfields.end() == iter) {
         std::ostringstream msg;
-        msg << "Could not find subfield '" << name << "' in field '" << label() << "'.\n"
+        msg << "Could not find subfield '" << name << "' in field '" << getLabel() << "'.\n"
             << "Available subfields:";
         for (subfields_type::const_iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
             msg << " '" << s_iter->first << "'";
@@ -1080,7 +1080,7 @@ pylith::topology::Field::copySubfield(const Field& field,
     const SubfieldInfo& subfieldInfo = const_cast<Field&>(field)._subfields[name];
     const int subfieldIndex = subfieldInfo.index;assert(subfieldIndex >= 0);
 
-    label(subfieldInfo.description.label.c_str()); // Use method to insure propagation to subsidiary objects
+    setLabel(subfieldInfo.description.label.c_str()); // Use method to insure propagation to subsidiary objects
 
     const PetscSection& fieldSection = field.localSection();
     const PetscSection& subfieldSection = this->localSection();

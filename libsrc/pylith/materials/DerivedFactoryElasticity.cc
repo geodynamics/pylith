@@ -50,7 +50,7 @@ pylith::materials::DerivedFactoryElasticity::addCauchyStress(void) {
     const char* fieldName = "cauchy_stress";
     const char* componentNames[6] = { "stress_xx", "stress_yy", "stress_zz", "stress_xy", "stress_yz", "stress_xz" };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
-    const PylithReal pressureScale = _normalizer->pressureScale();
+    const PylithReal pressureScale = _normalizer->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;

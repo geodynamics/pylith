@@ -91,7 +91,7 @@ pylith::meshio::TestDataWriterHDF5Material::testWriteVertexField(void) {
     writer.filename(_data->vertexFilename);
 
     const PylithScalar timeScale = 4.0;
-    writer.timeScale(timeScale);
+    writer.setTimeScale(timeScale);
     const PylithScalar t = _data->time / timeScale;
 
     const bool isInfo = false;
@@ -131,7 +131,7 @@ pylith::meshio::TestDataWriterHDF5Material::testWriteCellField(void) {
     writer.filename(_data->cellFilename);
 
     const PylithScalar timeScale = 4.0;
-    writer.timeScale(timeScale);
+    writer.setTimeScale(timeScale);
     const PylithScalar t = _data->time / timeScale;
 
     const bool isInfo = false;

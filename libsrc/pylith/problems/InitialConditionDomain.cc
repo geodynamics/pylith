@@ -87,7 +87,7 @@ pylith::problems::InitialConditionDomain::setValues(pylith::topology::Field* sol
         fieldQuery.queryFn(_subfields[i].c_str(), pylith::topology::FieldQuery::dbQueryGeneric, _db);
     } // for
 
-    fieldQuery.openDB(_db, normalizer.lengthScale());
+    fieldQuery.openDB(_db, normalizer.getLengthScale());
     fieldQuery.queryDB();
     fieldQuery.closeDB(_db);
 

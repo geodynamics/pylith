@@ -274,8 +274,8 @@ class TestElasticityImplicit(unittest.TestCase):
     fields.solutionName("dispIncr(t->t+dt)")
 
     residual = fields.get("residual")
-    spaceDim = mesh.coordsys().spaceDim()
-    lengthScale = normalizer.lengthScale()
+    spaceDim = mesh.coordsys().getSpaceDim()
+    lengthScale = normalizer.getLengthScale()
     residual.subfieldAdd("displacement", spaceDim, residual.VECTOR, lengthScale.value);
     residual.subfieldAdd("lagrange_multiplier", spaceDim, residual.VECTOR);
     

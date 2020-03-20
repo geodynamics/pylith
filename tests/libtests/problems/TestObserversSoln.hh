@@ -65,7 +65,7 @@ public:
     /// Test removeObserver().
     void testRemoveObserver(void);
 
-    /// Test setTimeScale().
+    /// Test setgetTimeScale().
     void testTimeScale(void);
 
     /// Test verifyObservers().

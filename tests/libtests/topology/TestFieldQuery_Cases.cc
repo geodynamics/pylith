@@ -40,20 +40,18 @@ namespace pylith {
     } // topologyfwd
 } // pylith
 
-
 // ---------------------------------------------------------------------
 class pylith::topology::TestFieldQuery_DispTemp : public pylith::topology::TestFieldQuery {
-
 protected:
 
     void setUp(void) {
         TestFieldQuery::setUp();
 
         CPPUNIT_ASSERT(_data->normalizer);
-        _data->normalizer->lengthScale(1000.0);
-        _data->normalizer->timeScale(10.0);
-        _data->normalizer->pressureScale(0.1);
-        _data->normalizer->densityScale(2.0);
+        _data->normalizer->setLengthScale(1000.0);
+        _data->normalizer->setTimeScale(10.0);
+        _data->normalizer->setPressureScale(0.1);
+        _data->normalizer->setDensityScale(2.0);
 
         _data->numAuxSubfields = 2;
         static const char* auxSubfields[2] = { "displacement", "temperature" };
@@ -68,13 +66,13 @@ protected:
                 2,
                 pylith::topology::Field::VECTOR, // vectorFieldType
                 1000.0),
-                pylith::topology::Field::Description(
-                    "temperature", // label
-                    "temperature", // alias
-                    pylith::string_vector(temperatureComponents, temperatureComponents+1),
-                    1,
-                    pylith::topology::Field::SCALAR, // vectorFieldType
-                    1.0),
+            pylith::topology::Field::Description(
+                "temperature", // label
+                "temperature", // alias
+                pylith::string_vector(temperatureComponents, temperatureComponents+1),
+                1,
+                pylith::topology::Field::SCALAR, // vectorFieldType
+                1.0),
         };
         _data->auxDescriptions = const_cast<pylith::topology::Field::Description*>(auxDescriptions);
 
@@ -84,17 +82,17 @@ protected:
         };
         _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(auxDiscretizations);
 
-    }   // setUp
+    } // setUp
 
 }; // TestFieldQuery_DispTemp
 
 // ---------------------------------------------------------------------
 class pylith::topology::TestFieldQuery_DispTemp2D : public pylith::topology::TestFieldQuery_DispTemp {
-
     // Spatial database user functions for auxiliary subfields.
     static const char* disp_units(void) {
         return "m";
     }
+
     static const char* temp_units(void) {
         return "K";
     }
@@ -103,15 +101,16 @@ class pylith::topology::TestFieldQuery_DispTemp2D : public pylith::topology::Tes
                          const double y) {
         return 1.0 + 2.4*x + 3.2*y;
     } // disp_x
+
     static double disp_y(const double x,
                          const double y) {
         return 0.4 - 0.1*x + 0.6*y;
     } // disp_y
+
     static double temp(const double x,
                        const double y) {
         return 20.0 + 0.1*x*x + 0.3*x*y -0.2*y*y;
     } // temp
-
 
 protected:
 
@@ -120,25 +119,24 @@ protected:
 
         CPPUNIT_ASSERT(_data->cs);
         _data->cs->setSpaceDim(2);
-        _data->cs->initialize();
 
         CPPUNIT_ASSERT(_data->auxDB);
-        _data->auxDB->label("Auxiliary db 2D");
-        _data->auxDB->coordsys(*_data->cs);
+        _data->auxDB->setLabel("Auxiliary db 2D");
+        _data->auxDB->setCoordSys(*_data->cs);
         _data->auxDB->addValue("displacement_x", disp_x, disp_units());
         _data->auxDB->addValue("displacement_y", disp_y, disp_units());
         _data->auxDB->addValue("temperature", temp, temp_units());
 
-    }   // setUp
+    } // setUp
 
 }; // TestFieldQuery_DispTemp2D
 
 // ---------------------------------------------------------------------
 class pylith::topology::TestFieldQuery_Tri : public pylith::topology::TestFieldQuery_DispTemp2D {
-
     // Spatial database user functions for auxiliary subfields.
 
 protected:
+
     CPPUNIT_TEST_SUB_SUITE(TestFieldQuery_Tri, TestFieldQuery_DispTemp2D);
     CPPUNIT_TEST_SUITE_END();
 
@@ -163,18 +161,17 @@ protected:
         };
         _data->coordinates = const_cast<PylithScalar*>(_coordinates);
 
-    }   // setUp
+    } // setUp
 
-};  // TestFieldQuery_Tri
+}; // TestFieldQuery_Tri
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestFieldQuery_Tri);
-
 
 // ---------------------------------------------------------------------
 class pylith::topology::TestFieldQuery_Quad : public pylith::topology::TestFieldQuery_DispTemp2D {
-
     // Spatial database user functions for auxiliary subfields.
 
 protected:
+
     CPPUNIT_TEST_SUB_SUITE(TestFieldQuery_Quad, TestFieldQuery_DispTemp2D);
     CPPUNIT_TEST_SUITE_END();
 
@@ -201,19 +198,18 @@ protected:
         };
         _data->coordinates = const_cast<PylithScalar*>(_coordinates);
 
-    }   // setUp
+    } // setUp
 
-};  // TestFieldQuery_Quad
+}; // TestFieldQuery_Quad
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestFieldQuery_Quad);
-
 
 // ---------------------------------------------------------------------
 class pylith::topology::TestFieldQuery_DispTemp3D : public pylith::topology::TestFieldQuery_DispTemp {
-
     // Spatial database user functions for auxiliary subfields.
     static const char* disp_units(void) {
         return "m";
     }
+
     static const char* temp_units(void) {
         return "K";
     }
@@ -223,17 +219,18 @@ class pylith::topology::TestFieldQuery_DispTemp3D : public pylith::topology::Tes
                          const double z) {
         return 1.0 + 2.4*x + 3.2*y - 0.7*z;
     } // disp_x
+
     static double disp_y(const double x,
                          const double y,
                          const double z) {
         return 0.4 - 0.1*x + 0.6*y + 0.3*z;
     } // disp_y
+
     static double temp(const double x,
                        const double y,
                        const double z) {
         return 20.0 + 0.1*x*x + 0.3*x*y -0.2*y*y - 3.0*y*z;
     } // temp
-
 
 protected:
 
@@ -242,25 +239,24 @@ protected:
 
         CPPUNIT_ASSERT(_data->cs);
         _data->cs->setSpaceDim(3);
-        _data->cs->initialize();
 
         CPPUNIT_ASSERT(_data->auxDB);
-        _data->auxDB->label("Auxiliary db 3D");
-        _data->auxDB->coordsys(*_data->cs);
+        _data->auxDB->setLabel("Auxiliary db 3D");
+        _data->auxDB->setCoordSys(*_data->cs);
         _data->auxDB->addValue("displacement_x", disp_x, disp_units());
         _data->auxDB->addValue("displacement_y", disp_y, disp_units());
         _data->auxDB->addValue("temperature", temp, temp_units());
 
-    }   // setUp
+    } // setUp
 
 }; // TestFieldQuery_DispTemp3D
 
 // ---------------------------------------------------------------------
 class pylith::topology::TestFieldQuery_Tet : public pylith::topology::TestFieldQuery_DispTemp3D {
-
     // Spatial database user functions for auxiliary subfields.
 
 protected:
+
     CPPUNIT_TEST_SUB_SUITE(TestFieldQuery_Tet, TestFieldQuery);
     CPPUNIT_TEST_SUITE_END();
 
@@ -286,18 +282,17 @@ protected:
         };
         _data->coordinates = const_cast<PylithScalar*>(_coordinates);
 
-    }   // setUp
+    } // setUp
 
-};  // TestFieldQuery_Tet
+}; // TestFieldQuery_Tet
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestFieldQuery_Tet);
-
 
 // ---------------------------------------------------------------------
 class pylith::topology::TestFieldQuery_Hex : public pylith::topology::TestFieldQuery_DispTemp3D {
-
     // Spatial database user functions for auxiliary subfields.
 
 protected:
+
     CPPUNIT_TEST_SUB_SUITE(TestFieldQuery_Hex, TestFieldQuery);
     CPPUNIT_TEST_SUITE_END();
 
@@ -330,10 +325,9 @@ protected:
         };
         _data->coordinates = const_cast<PylithScalar*>(_coordinates);
 
-    }   // setUp
+    } // setUp
 
-};  // TestFieldQuery_Hex
+}; // TestFieldQuery_Hex
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestFieldQuery_Hex);
-
 
 // End of file

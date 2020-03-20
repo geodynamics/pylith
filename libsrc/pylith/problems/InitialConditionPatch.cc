@@ -105,7 +105,7 @@ pylith::problems::InitialConditionPatch::setDB(spatialdata::spatialdb::SpatialDB
 void
 pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     InitialCondition::verifyConfiguration(solution);
 
@@ -153,7 +153,7 @@ pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solu
         fieldQuery.queryFn(_subfields[i].c_str(), pylith::topology::FieldQuery::dbQueryGeneric, _db);
     } // for
 
-    fieldQuery.openDB(_db, normalizer.lengthScale());
+    fieldQuery.openDB(_db, normalizer.getLengthScale());
     fieldQuery.queryDBLabel(_InitialConditionPatch::labelName, _patchId);
     fieldQuery.closeDB(_db);
 

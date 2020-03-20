@@ -49,7 +49,7 @@ pylith::meshio::DataWriter::deallocate(void) {}
 // ----------------------------------------------------------------------
 // Set time scale for simulation time.
 void
-pylith::meshio::DataWriter::timeScale(const PylithScalar value) {
+pylith::meshio::DataWriter::setTimeScale(const PylithScalar value) {
     PYLITH_METHOD_BEGIN;
 
     if (value <= 0.0) {

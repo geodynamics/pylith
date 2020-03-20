@@ -60,7 +60,7 @@ class SubfieldDisplacement(SolutionSubfield):
         """
         from pylith.topology.Field import Field
         self.vectorFieldType = Field.VECTOR
-        self.scale = normalizer.lengthScale()
+        self.scale = normalizer.getLengthScale()
         self._setComponents(spaceDim)
         return
 

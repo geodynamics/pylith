@@ -36,7 +36,7 @@
 // Default constructor
 pylith::topology::Mesh::Mesh(const bool isSubmesh) :
     _dmMesh(NULL),
-    _coordsys(0),
+    _coordsys(NULL),
     _debug(false),
     _isSubmesh(isSubmesh),
     _isSimplex(true) {}
@@ -47,7 +47,7 @@ pylith::topology::Mesh::Mesh(const bool isSubmesh) :
 pylith::topology::Mesh::Mesh(const int dim,
                              const MPI_Comm& comm) :
     _dmMesh(NULL),
-    _coordsys(0),
+    _coordsys(NULL),
     _debug(false),
     _isSubmesh(false),
     _isSimplex(true) {
@@ -76,7 +76,7 @@ void
 pylith::topology::Mesh::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _coordsys;_coordsys = 0;
+    delete _coordsys;_coordsys = NULL;
     PetscErrorCode err = DMDestroy(&_dmMesh);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
@@ -104,16 +104,13 @@ pylith::topology::Mesh::dmMesh(PetscDM dm,
 // ----------------------------------------------------------------------
 // Set coordinate system.
 void
-pylith::topology::Mesh::coordsys(const spatialdata::geocoords::CoordSys* cs) {
+pylith::topology::Mesh::setCoordSys(const spatialdata::geocoords::CoordSys* cs) {
     PYLITH_METHOD_BEGIN;
 
-    delete _coordsys;_coordsys = (cs) ? cs->clone() : 0;
-    if (_coordsys) {
-        _coordsys->initialize();
-    }
+    delete _coordsys;_coordsys = (cs) ? cs->clone() : NULL;
 
     PYLITH_METHOD_END;
-} // coordsys
+} // setCoordSys
 
 
 // ----------------------------------------------------------------------

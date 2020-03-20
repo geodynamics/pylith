@@ -75,7 +75,7 @@ class TestMeshFields(unittest.TestCase):
     self.fields.add("field", "displacement")
     field = self.fields.get("field")
 
-    self.assertEqual(2, field.spaceDim())
+    self.assertEqual(2, field.getSpaceDim())
     return
 
 
@@ -85,7 +85,7 @@ class TestMeshFields(unittest.TestCase):
     field = self.fields.get("field")
     field.newSection(FieldBase.VERTICES_FIELD, 4)
 
-    self.assertEqual(2, field.spaceDim())
+    self.assertEqual(2, field.getSpaceDim())
     return
 
 

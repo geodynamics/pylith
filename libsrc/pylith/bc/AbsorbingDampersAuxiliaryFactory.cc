@@ -49,7 +49,7 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::addDensity(void) {
     PYLITH_JOURNAL_DEBUG("addDensity(void)");
 
     const char* fieldName = "density";
-    const PylithReal densityScale = _normalizer->densityScale();
+    const PylithReal densityScale = _normalizer->getDensityScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -76,7 +76,7 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::addVs(void) {
     PYLITH_JOURNAL_DEBUG("addVs(void)");
 
     const char* fieldName = "vs";
-    const PylithReal velocityScale = _normalizer->lengthScale() / _normalizer->timeScale();
+    const PylithReal velocityScale = _normalizer->getLengthScale() / _normalizer->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -103,7 +103,7 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::addVp(void) {
     PYLITH_JOURNAL_DEBUG("addVp(void)");
 
     const char* fieldName = "vp";
-    const PylithReal velocityScale = _normalizer->lengthScale() / _normalizer->timeScale();
+    const PylithReal velocityScale = _normalizer->getLengthScale() / _normalizer->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;

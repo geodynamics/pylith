@@ -55,7 +55,7 @@ public :
   /// Test constructor
   void testConstructor(void);
 
-  /// Test label()
+  /// Test getLabel()
   void testLabel(void);
 
   /// Test subdomainMesh()

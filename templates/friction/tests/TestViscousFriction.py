@@ -44,7 +44,7 @@ class TestViscousFriction(unittest.TestCase):
     """
     label = "viscous friction"
     self.model.label(label)
-    self.assertEqual(label, self.model.label())
+    self.assertEqual(label, self.model.getLabel())
     return
 
 

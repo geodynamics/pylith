@@ -90,7 +90,7 @@ pylith::problems::TestObserversSoln::testRemoveObserver(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test setTimeScale().
+// Test setgetTimeScale().
 void
 pylith::problems::TestObserversSoln::testTimeScale(void) {
     CPPUNIT_ASSERT(_observers);

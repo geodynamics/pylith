@@ -132,7 +132,7 @@ pylith::meshio::OutputPhysics::setTimeScale(const PylithReal value) {
 void
 pylith::meshio::OutputPhysics::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputPhysics::verifyConfiguration(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputPhysics::verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     assert(_physics);
 
@@ -155,7 +155,7 @@ pylith::meshio::OutputPhysics::verifyConfiguration(const pylith::topology::Field
             if (!auxiliaryField->hasSubfield(_infoFieldNames[i].c_str())) {
                 std::ostringstream msg;
                 msg << "Could not find subfield '" << _infoFieldNames[i] << "' in auxiliary field '"
-                    << auxiliaryField->label() << "' for physics output '" << PyreComponent::getIdentifier() << "''.";
+                    << auxiliaryField->getLabel() << "' for physics output '" << PyreComponent::getIdentifier() << "''.";
                 throw std::runtime_error(msg.str());
             } // if
         } // for
@@ -170,9 +170,9 @@ pylith::meshio::OutputPhysics::verifyConfiguration(const pylith::topology::Field
             if (derivedField && derivedField->hasSubfield(_dataFieldNames[i].c_str())) { continue;}
 
             std::ostringstream msg;
-            msg << "Could not find subfield '" << _dataFieldNames[i] << "' in solution field '" << solution.label()
-                << ", auxiliary field '" << (auxiliaryField ? auxiliaryField->label() : "NULL") << "', or derived field "
-                << (derivedField ? derivedField->label() : "NULL") << "' for physics output '"
+            msg << "Could not find subfield '" << _dataFieldNames[i] << "' in solution field '" << solution.getLabel()
+                << ", auxiliary field '" << (auxiliaryField ? auxiliaryField->getLabel() : "NULL") << "', or derived field "
+                << (derivedField ? derivedField->getLabel() : "NULL") << "' for physics output '"
                 << PyreComponent::getIdentifier() << "'.";
             throw std::runtime_error(msg.str());
         } // for
@@ -257,7 +257,7 @@ pylith::meshio::OutputPhysics::_open(const pylith::topology::Mesh& mesh,
     _trigger->setTimeScale(_timeScale);
 
     assert(_writer);
-    _writer->timeScale(_timeScale);
+    _writer->setTimeScale(_timeScale);
     _writer->open(mesh, isInfo);
 
     PYLITH_METHOD_END;
@@ -314,7 +314,7 @@ pylith::meshio::OutputPhysics::_writeDataStep(const PylithReal t,
                                               const PylithInt tindex,
                                               const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputPhysics::_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputPhysics::_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     assert(_physics);
     const pylith::topology::Field* auxiliaryField = _physics->getAuxiliaryField();
@@ -378,7 +378,7 @@ pylith::meshio::OutputPhysics::_appendField(const PylithReal t,
         PYLITH_COMPONENT_ERROR(
             "Unsupported basis order ("
                 << basisOrder <<") for output. Use FieldFilterProject with basis order of 0 or 1. Skipping output of '"
-                << field->label() << "' field."
+                << field->getLabel() << "' field."
             );
     } // switch
 

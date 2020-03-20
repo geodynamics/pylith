@@ -44,7 +44,7 @@ pylith::meshio::OutputSolnDomain::_writeSolnStep(const PylithReal t,
                                                  const PylithInt tindex,
                                                  const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     const pylith::string_vector& subfieldNames = _expandSubfieldNames(solution);
 

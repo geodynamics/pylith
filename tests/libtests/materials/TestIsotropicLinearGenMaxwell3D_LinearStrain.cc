@@ -1015,13 +1015,13 @@ protected:
         _mydata->boundaryLabel = "boundary";
 
         CPPUNIT_ASSERT(_mydata->normalizer);
-        _mydata->normalizer->lengthScale(1.0e+03);
-        _mydata->normalizer->timeScale(2.0e+7);
-        _mydata->normalizer->densityScale(3.0e+3);
-        _mydata->normalizer->pressureScale(1.25e+11);
+        _mydata->normalizer->setLengthScale(1.0e+03);
+        _mydata->normalizer->setTimeScale(2.0e+7);
+        _mydata->normalizer->setDensityScale(3.0e+3);
+        _mydata->normalizer->setPressureScale(1.25e+11);
 
-        _mydata->t = constants.t/_mydata->normalizer->timeScale();
-        _mydata->dt = constants.dt/_mydata->normalizer->timeScale();
+        _mydata->t = constants.t/_mydata->normalizer->getTimeScale();
+        _mydata->dt = constants.dt/_mydata->normalizer->getTimeScale();
         _mydata->s_tshift = 1.0 / _mydata->dt;
 
         // solnDiscretizations set in derived class.
@@ -1151,7 +1151,7 @@ protected:
         _mymaterial->useBodyForce(true);
         _mymaterial->useReferenceState(false);
 
-        _mymaterial->label("Isotropic Linear Generalized Maxwell 3D");
+        _mymaterial->setLabel("Isotropic Linear Generalized Maxwell 3D");
         _mymaterial->id(24);
 
     } // setUp

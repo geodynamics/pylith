@@ -60,7 +60,7 @@ class SubfieldPressure(SolutionSubfield):
         """
         from pylith.topology.Field import Field
         self.vectorFieldType = Field.SCALAR
-        self.scale = normalizer.pressureScale()
+        self.scale = normalizer.getPressureScale()
         self._setComponents(spaceDim)
         return
 

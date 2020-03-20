@@ -341,7 +341,7 @@ pylith::problems::TimeDependent::initialize(void) {
                                                                    <<", endTime="<<_endTime);
 
     assert(_normalizer);
-    const PylithReal timeScale = _normalizer->timeScale();
+    const PylithReal timeScale = _normalizer->getTimeScale();
     err = TSSetTime(_ts, _startTime / timeScale);PYLITH_CHECK_ERROR(err);
     err = TSSetTimeStep(_ts, _dtInitial / timeScale);PYLITH_CHECK_ERROR(err);
     err = TSSetMaxSteps(_ts, _maxTimeSteps);PYLITH_CHECK_ERROR(err);
@@ -479,7 +479,7 @@ pylith::problems::TimeDependent::poststep(void) {
 
     if (_monitor) {
         assert(_normalizer);
-        const PylithReal timeScale = _normalizer->timeScale();
+        const PylithReal timeScale = _normalizer->getTimeScale();
         _monitor->update(t*timeScale, _startTime, _endTime);
     } // if
 
@@ -640,7 +640,7 @@ pylith::problems::TimeDependent::_notifyObserversInitialSoln(void) {
     PYLITH_COMPONENT_DEBUG("_notifyObserversInitialSoln()");
 
     assert(_normalizer);
-    const PylithReal timeScale = _normalizer->timeScale();
+    const PylithReal timeScale = _normalizer->getTimeScale();
     const PylithReal tStartNondim = _startTime / timeScale;
     const PylithInt tindex = 0;
     _observers->notifyObservers(tStartNondim, tindex, *_solution);

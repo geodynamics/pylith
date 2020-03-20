@@ -97,7 +97,7 @@ pylith::faults::KinSrcStep::_auxFieldSetup(const spatialdata::units::Nondimensio
 
     assert(_auxFactory);
     assert(cs);
-    _auxFactory->initialize(_auxField, normalizer, cs->spaceDim());
+    _auxFactory->initialize(_auxField, normalizer, cs->getSpaceDim());
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the slip time function
     // kernel.

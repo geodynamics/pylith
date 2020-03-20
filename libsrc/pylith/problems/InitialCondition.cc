@@ -72,7 +72,7 @@ pylith::problems::InitialCondition::setSubfields(const char* subfields[],
 void
 pylith::problems::InitialCondition::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     const size_t numSubfields = _subfields.size();
     for (size_t i = 0; i < numSubfields; ++i) {

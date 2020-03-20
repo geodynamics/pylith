@@ -88,7 +88,7 @@ pylith::topology::Fields::add(const char* name,
     } // if
 
     _fields[name] = new Field(_mesh);
-    _fields[name]->label(label);
+    _fields[name]->setLabel(label);
 
     PYLITH_METHOD_END;
 } // add

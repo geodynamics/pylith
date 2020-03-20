@@ -106,7 +106,7 @@ pylith::problems::TestObserversPhysics::testSetPhysicsImplementation(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test setTimeScale().
+// Test setgetTimeScale().
 void
 pylith::problems::TestObserversPhysics::testTimeScale(void) {
     CPPUNIT_ASSERT(_observers);

@@ -51,7 +51,7 @@ pylith::materials::AuxiliaryFactoryElastic::addShearModulus(void) {
     PYLITH_JOURNAL_DEBUG("addShearModulus(void)");
 
     const char* fieldName = "shear_modulus";
-    const PylithReal pressureScale = _normalizer->pressureScale();
+    const PylithReal pressureScale = _normalizer->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -78,7 +78,7 @@ pylith::materials::AuxiliaryFactoryElastic::addBulkModulus(void) {
     PYLITH_JOURNAL_DEBUG("addBulkModulus(void)");
 
     const char* fieldName = "bulk_modulus";
-    const PylithReal pressureScale = _normalizer->pressureScale();
+    const PylithReal pressureScale = _normalizer->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -107,7 +107,7 @@ pylith::materials::AuxiliaryFactoryElastic::addReferenceStress(void) {
     const char* fieldName = "reference_stress";
     const char* componentNames[6] = { "reference_stress_xx", "reference_stress_yy", "reference_stress_zz", "reference_stress_xy", "reference_stress_yz", "reference_stress_xz" };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
-    const PylithReal pressureScale = _normalizer->pressureScale();
+    const PylithReal pressureScale = _normalizer->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;

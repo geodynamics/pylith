@@ -160,7 +160,7 @@ pylith::feassemble::IntegratorBoundary::setKernelsLHSResidual(const std::vector<
 void
 pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.getLabel()<<")");
 
     delete _boundaryMesh;
     _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.mesh(), _boundaryLabel.c_str());
@@ -181,14 +181,14 @@ pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Fie
                                                            const PylithReal dt,
                                                            const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<")");
 
     if (0 == _kernelsRHSResidual.size()) { PYLITH_METHOD_END;}
 
     _setKernelConstants(solution, dt);
 
     pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
-    solutionDot.label("solution_dot");
+    solutionDot.setLabel("solution_dot");
     _IntegratorBoundary::computeResidual(residual, this, _kernelsRHSResidual, t, dt, solution, solutionDot);
 
     PYLITH_METHOD_END;
@@ -204,7 +204,7 @@ pylith::feassemble::IntegratorBoundary::computeRHSJacobian(PetscMat jacobianMat,
                                                            const PylithReal dt,
                                                            const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<") empty method");
+    PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
     // No implementation needed for boundary.
 
@@ -221,7 +221,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Fie
                                                            const pylith::topology::Field& solution,
                                                            const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("computeLHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<")");
 
     if (0 == _kernelsLHSResidual.size()) { PYLITH_METHOD_END;}
 
@@ -242,7 +242,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobian(PetscMat jacobianMat,
                                                            const pylith::topology::Field& solution,
                                                            const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<") empty method");
+    PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<", solutionDot="<<solutionDot.getLabel()<<") empty method");
 
     // No implementation needed for boundary.
 
@@ -259,7 +259,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobianLumpedInv(pylith::topo
                                                                     const PylithReal s_tshift,
                                                                     const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<") empty method");
+    PYLITH_JOURNAL_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
     // No implementation needed for boundary.
 
@@ -281,8 +281,8 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
     journal::debug_t debug(_IntegratorBoundary::genericComponent);
     debug << journal::at(__HERE__)
           << "_IntegratorBoundary::computeRHSResidual(residual="<<residual<<", integrator="<<integrator
-          <<", # kernels"<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()
-          <<", solutionDot="<<solutionDot.label()<<")"
+          <<", # kernels"<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()
+          <<", solutionDot="<<solutionDot.getLabel()<<")"
           << journal::endl;
 
     assert(integrator);

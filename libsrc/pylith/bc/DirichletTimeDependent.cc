@@ -198,7 +198,7 @@ pylith::bc::DirichletTimeDependent::useTimeHistory(void) const {
 void
 pylith::bc::DirichletTimeDependent::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     if (!solution.hasSubfield(_subfieldName.c_str())) {
         std::ostringstream msg;
@@ -229,7 +229,7 @@ pylith::bc::DirichletTimeDependent::verifyConfiguration(const pylith::topology::
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
 pylith::bc::DirichletTimeDependent::createIntegrator(const pylith::topology::Field& solution) {
-    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.label()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<") empty method");
 
     return NULL;
 } // createIntegrator
@@ -240,7 +240,7 @@ pylith::bc::DirichletTimeDependent::createIntegrator(const pylith::topology::Fie
 pylith::feassemble::Constraint*
 pylith::bc::DirichletTimeDependent::createConstraint(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.getLabel()<<")");
 
     pylith::feassemble::ConstraintSpatialDB* constraint = new pylith::feassemble::ConstraintSpatialDB(this);assert(constraint);
     constraint->setMarkerLabel(getMarkerLabel());
@@ -259,14 +259,14 @@ pylith::topology::Field*
 pylith::bc::DirichletTimeDependent::createAuxiliaryField(const pylith::topology::Field& solution,
                                                          const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->label("DirichletTimeDependent auxiliary field");
+    auxiliaryField->setLabel("DirichletTimeDependent auxiliary field");
 
     assert(_auxiliaryFactory);
     assert(_normalizer);
-    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, solution.spaceDim(),
+    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, solution.getSpaceDim(),
                                   &solution.subfieldInfo(_subfieldName.c_str()).description);
 
     // :ATTENTION: The order of the factory methods must match the order of the auxiliary subfields in the FE kernels.
@@ -303,7 +303,7 @@ pylith::topology::Field*
 pylith::bc::DirichletTimeDependent::createDerivedField(const pylith::topology::Field& solution,
                                                        const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
 
     PYLITH_METHOD_RETURN(NULL);
 } // createDerivedField
@@ -319,7 +319,7 @@ pylith::bc::DirichletTimeDependent::updateAuxiliaryField(pylith::topology::Field
 
     if (_useTimeHistory) {
         assert(_normalizer);
-        const PylithScalar timeScale = _normalizer->timeScale();
+        const PylithScalar timeScale = _normalizer->getTimeScale();
         TimeDependentAuxiliaryFactory::updateAuxiliaryField(auxiliaryField, t, timeScale, _dbTimeHistory);
     } // if
 
@@ -350,7 +350,7 @@ pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::Con
     PYLITH_METHOD_BEGIN;
     journal::debug_t debug(_DirichletTimeDependent::pyreComponent);
     debug << journal::at(__HERE__)
-          << "setKernelConstraint(constraint="<<constraint<<", bc="<<typeid(bc).name()<<", solution="<<solution.label()
+          << "setKernelConstraint(constraint="<<constraint<<", bc="<<typeid(bc).name()<<", solution="<<solution.getLabel()
           <<")" << journal::endl;
 
     PetscBdPointFunc bcKernel = NULL;

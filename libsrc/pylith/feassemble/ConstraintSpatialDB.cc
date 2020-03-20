@@ -60,7 +60,7 @@ pylith::feassemble::ConstraintSpatialDB::setKernelConstraint(const PetscBdPointF
 void
 pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.getLabel()<<")");
 
     assert(_physics);
 
@@ -121,7 +121,7 @@ void
 pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::topology::Field* solution,
                                                      const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setSolution(solution="<<solution->label()<<", t="<<t<<")");
+    PYLITH_JOURNAL_DEBUG("setSolution(solution="<<solution->getLabel()<<", t="<<t<<")");
 
     assert(solution);
     assert(_auxiliaryField);
@@ -169,7 +169,7 @@ void
 pylith::feassemble::ConstraintSpatialDB::_setKernelConstants(const pylith::topology::Field& solution,
                                                              const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_setKernelConstants(solution="<<solution.label()<<", dt="<<dt<<")");
+    PYLITH_JOURNAL_DEBUG("_setKernelConstants(solution="<<solution.getLabel()<<", dt="<<dt<<")");
 
     assert(_physics);
     const pylith::real_array& constants = _physics->getKernelConstants(dt);

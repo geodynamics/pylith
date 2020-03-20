@@ -75,14 +75,13 @@ protected:
         _data->meshFilename = "data/tri.mesh";
         _data->cs = new spatialdata::geocoords::CSCart();CPPUNIT_ASSERT(_data->cs);
         _data->cs->setSpaceDim(_data->dimension);
-        _data->cs->initialize();
 
         CPPUNIT_ASSERT(_data->solutionDB);
         _data->solutionDB->addValue("displacement_x", displacement_x, displacement_units());
         _data->solutionDB->addValue("displacement_y", displacement_y, displacement_units());
         _data->solutionDB->addValue("pressure", pressure, pressure_units());
-        _data->solutionDB->label("solution");
-        _data->solutionDB->coordsys(*_data->cs);
+        _data->solutionDB->setLabel("solution");
+        _data->solutionDB->setCoordSys(*_data->cs);
 
         _data->subfields["displacement"].description.numComponents = 2;
         _data->subfields["velocity"].description.numComponents = 2;
@@ -147,15 +146,14 @@ protected:
         _data->meshFilename = "data/hex.mesh";
         _data->cs = new spatialdata::geocoords::CSCart();CPPUNIT_ASSERT(_data->cs);
         _data->cs->setSpaceDim(_data->dimension);
-        _data->cs->initialize();
 
         CPPUNIT_ASSERT(_data->solutionDB);
         _data->solutionDB->addValue("displacement_x", displacement_x, displacement_units());
         _data->solutionDB->addValue("displacement_y", displacement_y, displacement_units());
         _data->solutionDB->addValue("displacement_z", displacement_z, displacement_units());
         _data->solutionDB->addValue("pressure", pressure, pressure_units());
-        _data->solutionDB->label("solution");
-        _data->solutionDB->coordsys(*_data->cs);
+        _data->solutionDB->setLabel("solution");
+        _data->solutionDB->setCoordSys(*_data->cs);
 
         _initialize();
     } // setUp

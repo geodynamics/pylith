@@ -34,8 +34,7 @@
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::bc::TestBoundaryMesh::setUp(void)
-{ // setUp
+pylith::bc::TestBoundaryMesh::setUp(void) { // setUp
     PYLITH_METHOD_BEGIN;
 
     _data = NULL;
@@ -43,23 +42,23 @@ pylith::bc::TestBoundaryMesh::setUp(void)
     PYLITH_METHOD_END;
 } // setUp
 
+
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::bc::TestBoundaryMesh::tearDown(void)
-{ // tearDown
+pylith::bc::TestBoundaryMesh::tearDown(void) { // tearDown
     PYLITH_METHOD_BEGIN;
 
-    delete _data; _data = NULL;
+    delete _data;_data = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
 
+
 // ----------------------------------------------------------------------
 // Test submesh() without fault.
 void
-pylith::bc::TestBoundaryMesh::testSubmesh(void)
-{ // testSubmesh
+pylith::bc::TestBoundaryMesh::testSubmesh(void) { // testSubmesh
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_data);
@@ -75,8 +74,7 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
     spatialdata::geocoords::CSCart cs;
     spatialdata::units::Nondimensional normalizer;
     cs.setSpaceDim(mesh.dimension());
-    cs.initialize();
-    mesh.coordsys(&cs);
+    mesh.setCoordSys(&cs);
     pylith::topology::MeshOps::nondimensionalize(&mesh, normalizer);
 
     // Create submesh
@@ -110,11 +108,11 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
     PYLITH_METHOD_END;
 } // testSubmesh
 
+
 // ----------------------------------------------------------------------
 // Test submesh() with fault.
 void
-pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
-{ // testSubmeshFault
+pylith::bc::TestBoundaryMesh::testSubmeshFault(void) { // testSubmeshFault
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_data);
@@ -130,14 +128,13 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
     spatialdata::geocoords::CSCart cs;
     spatialdata::units::Nondimensional normalizer;
     cs.setSpaceDim(mesh.dimension());
-    cs.initialize();
-    mesh.coordsys(&cs);
+    mesh.setCoordSys(&cs);
     pylith::topology::MeshOps::nondimensionalize(&mesh, normalizer);
 
     // Adjust topology
     CPPUNIT_ASSERT(_data->faultLabel);
     pylith::faults::FaultCohesiveStub fault;
-    fault.label(_data->faultLabel);
+    fault.setLabel(_data->faultLabel);
     fault.id(_data->faultId);
     fault.adjustTopology(&mesh);
 
@@ -189,14 +186,13 @@ pylith::bc::TestBoundaryMesh_Data::TestBoundaryMesh_Data(void) :
     numCorners(0),
     numCells(0),
     numVerticesNoFault(0),
-    numVerticesWithFault(0)
-{ // constructor
+    numVerticesWithFault(0) { // constructor
 } // constructor
+
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::bc::TestBoundaryMesh_Data::~TestBoundaryMesh_Data(void)
-{ // destructor
+pylith::bc::TestBoundaryMesh_Data::~TestBoundaryMesh_Data(void) { // destructor
 } // destructor
 
 

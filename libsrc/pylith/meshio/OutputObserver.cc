@@ -140,7 +140,7 @@ pylith::topology::Field*
 pylith::meshio::OutputObserver::_getBuffer(const pylith::topology::Field& fieldIn,
                                            const char* name) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputObserver::_getBuffer(fieldIn="<<fieldIn.label()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputObserver::_getBuffer(fieldIn="<<fieldIn.getLabel()<<")");
 
     pylith::topology::FieldBase::VectorFieldEnum fieldType = pylith::topology::FieldBase::MULTI_OTHER;
     if (name) {
@@ -151,7 +151,7 @@ pylith::meshio::OutputObserver::_getBuffer(const pylith::topology::Field& fieldI
         if (size_t(1) == subfieldNames.size()) {
             fieldType = fieldIn.subfieldInfo(subfieldNames[0].c_str()).description.vectorFieldType;
         } else {
-            PYLITH_COMPONENT_ERROR("No subfield specified for field '"<<fieldIn.label() <<"' with multiple subfields.");
+            PYLITH_COMPONENT_ERROR("No subfield specified for field '"<<fieldIn.getLabel() <<"' with multiple subfields.");
             throw std::runtime_error("No subfield specified for field with multiple fields.");
         } // if/else
     } // if/else
@@ -183,7 +183,7 @@ pylith::meshio::OutputObserver::_getBuffer(const pylith::topology::Field& fieldI
         fieldName = "buffer (multiple others)";
         break;
     default:
-        PYLITH_COMPONENT_ERROR("Unknown field type '"<<fieldType<<"' for field '"<<fieldIn.label()<<"'.");
+        PYLITH_COMPONENT_ERROR("Unknown field type '"<<fieldType<<"' for field '"<<fieldIn.getLabel()<<"'.");
         throw std::logic_error("Unknown field type in OutputObserver::_getBuffer().");
     } // switch
 
@@ -193,7 +193,7 @@ pylith::meshio::OutputObserver::_getBuffer(const pylith::topology::Field& fieldI
     } // if
 
     if (!_fields->hasField(fieldName.c_str())) {
-        _fields->add(fieldName.c_str(), fieldIn.label());
+        _fields->add(fieldName.c_str(), fieldIn.getLabel());
         topology::Field& fieldOut = _fields->get(fieldName.c_str());
         if (!name) {
             fieldOut.cloneSection(fieldIn);
@@ -266,7 +266,7 @@ pylith::meshio::OutputObserver::_getBasisOrder(const pylith::topology::Field& fi
     if (1 == numSubfields) {
         basisOrder = field.subfieldInfo(subfieldNames[0].c_str()).fe.basisOrder;
     } else {
-        PYLITH_COMPONENT_ERROR("Expected one subfield in field '"<<field.label()<<"'.");
+        PYLITH_COMPONENT_ERROR("Expected one subfield in field '"<<field.getLabel()<<"'.");
     } // if/else
 
     PYLITH_METHOD_RETURN(basisOrder);

@@ -108,7 +108,7 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
                                    const spatialdata::units::Nondimensional& normalizer,
                                    const spatialdata::geocoords::CoordSys* cs) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("initialize(faultAuxField"<<faultAuxField.label()<<", normalizer, cs="<<typeid(cs).name()<<")");
+    PYLITH_COMPONENT_DEBUG("initialize(faultAuxField"<<faultAuxField.getLabel()<<", normalizer, cs="<<typeid(cs).name()<<")");
 
     // Set default discretization of auxiliary subfields to match slip subfield in integrator auxiliary field.
     assert(_auxFactory);
@@ -118,7 +118,7 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
                                            discretization.feSpace);
 
     delete _auxField;_auxField = new pylith::topology::Field(faultAuxField.mesh());assert(_auxField);
-    _auxField->label("kinsrc auxiliary");
+    _auxField->setLabel("kinsrc auxiliary");
     _auxFieldSetup(normalizer, cs);
     _auxField->subfieldsSetup();
     _auxField->createDiscretization();
@@ -189,7 +189,7 @@ pylith::faults::KinSrc::slip(pylith::topology::Field* const faultAuxField,
 void
 pylith::faults::KinSrc::_setFEConstants(const pylith::topology::Field& faultAuxField) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEConstants(faultAuxField="<<faultAuxField.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_setFEConstants(faultAuxField="<<faultAuxField.getLabel()<<")");
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.

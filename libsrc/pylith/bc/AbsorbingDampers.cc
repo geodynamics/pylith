@@ -103,7 +103,7 @@ pylith::bc::AbsorbingDampers::deallocate(void) {
 void
 pylith::bc::AbsorbingDampers::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     BoundaryCondition::verifyConfiguration(solution);
 
@@ -123,7 +123,7 @@ pylith::bc::AbsorbingDampers::verifyConfiguration(const pylith::topology::Field&
 pylith::feassemble::Integrator*
 pylith::bc::AbsorbingDampers::createIntegrator(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
     pylith::feassemble::IntegratorBoundary* integrator = new pylith::feassemble::IntegratorBoundary(this);assert(integrator);
     integrator->setMarkerLabel(getMarkerLabel());
@@ -148,10 +148,10 @@ pylith::topology::Field*
 pylith::bc::AbsorbingDampers::createAuxiliaryField(const pylith::topology::Field& solution,
                                                    const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->label("AbsorbingDampers auxiliary field");
+    auxiliaryField->setLabel("AbsorbingDampers auxiliary field");
 
     assert(_auxiliaryFactory);
     assert(_normalizer);
@@ -188,7 +188,7 @@ pylith::topology::Field*
 pylith::bc::AbsorbingDampers::createDerivedField(const pylith::topology::Field& solution,
                                                  const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.label()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
 
     PYLITH_METHOD_RETURN(NULL);
 } // createDerivedField
@@ -231,7 +231,7 @@ pylith::bc::_AbsorbingDampers::setKernelsRHSResidual(pylith::feassemble::Integra
     journal::debug_t debug(_AbsorbingDampers::pyreComponent);
     debug << journal::at(__HERE__)
           << "_AbsorbingDampers::_setKernelsRHSResidual(integrator="<<integrator<<", bc="<<typeid(bc).name()
-          <<", solution="<<solution.label()<<")"<<journal::endl;
+          <<", solution="<<solution.getLabel()<<")"<<journal::endl;
 
     PetscBdPointFunc g0 = pylith::fekernels::AbsorbingDampers::g0;
     PetscBdPointFunc g1 = NULL;

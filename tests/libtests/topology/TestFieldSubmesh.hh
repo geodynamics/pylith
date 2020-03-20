@@ -82,7 +82,7 @@ public :
   /// Test mesh().
   void testMesh(void);
 
-  /// Test spaceDim().
+  /// Test getSpaceDim().
   void testSpaceDim(void);
 
   /// Test newSection(points).

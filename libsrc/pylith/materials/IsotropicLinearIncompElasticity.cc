@@ -113,7 +113,7 @@ pylith::materials::IsotropicLinearIncompElasticity::getKernelRHSResidualStress(c
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelRHSResidualStress(coordsys="<<typeid(coordsys).name()<<")");
 
-    const int spaceDim = coordsys->spaceDim();
+    const int spaceDim = coordsys->getSpaceDim();
     PetscPointFunc g1u =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::g1u :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::g1u :
@@ -147,7 +147,7 @@ pylith::materials::IsotropicLinearIncompElasticity::getKernelRHSJacobianElasticC
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelRHSJacobianElasticConstants(coordsys="<<typeid(coordsys).name()<<")");
 
-    const int spaceDim = coordsys->spaceDim();
+    const int spaceDim = coordsys->getSpaceDim();
     PetscPointJac Jg3uu =
         (3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::Jg3uu :
         (2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::Jg3uu :
@@ -177,7 +177,7 @@ pylith::materials::IsotropicLinearIncompElasticity::getKernelDerivedCauchyStress
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelDerivedCauchyStress(coordsys="<<typeid(coordsys).name()<<")");
 
-    const int spaceDim = coordsys->spaceDim();
+    const int spaceDim = coordsys->getSpaceDim();
     PetscPointFunc kernel =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::cauchyStress :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::cauchyStress :

@@ -60,7 +60,7 @@ class SubfieldTemperature(SolutionSubfield):
         """
         from pylith.topology.Field import Field
         self.vectorFieldType = Field.SCALAR
-        self.scale = normalizer.temperatureScale()
+        self.scale = normalizer.getTemperatureScale()
         self._setComponents(spaceDim)
         return
 

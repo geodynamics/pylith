@@ -85,7 +85,7 @@ pylith::meshio::TestDataWriterHDF5Points::testTimeStep(void)
     OutputSolnPoints output;
     DataWriterHDF5 writer;
     spatialdata::units::Nondimensional normalizer;
-    normalizer.lengthScale(10.0);
+    normalizer.setLengthScale(10.0);
 
     writer.filename(_data->timestepFilename);
     output.writer(&writer);
@@ -118,7 +118,7 @@ pylith::meshio::TestDataWriterHDF5Points::testWriteVertexField(void)
     OutputSolnPoints output;
     DataWriterHDF5 writer;
     spatialdata::units::Nondimensional normalizer;
-    normalizer.lengthScale(10.0);
+    normalizer.setLengthScale(10.0);
 
     topology::Fields vertexFields(*_mesh);
     _createVertexFields(&vertexFields);

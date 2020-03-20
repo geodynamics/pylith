@@ -119,7 +119,7 @@ pylith::materials::IsotropicPowerLaw::getKernelRHSResidualStress(const spatialda
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelRHSResidualStress(coordsys="<<typeid(coordsys).name()<<")");
 
-    const int spaceDim = coordsys->spaceDim();
+    const int spaceDim = coordsys->getSpaceDim();
     PetscPointFunc g1u =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::g1v :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::g1v :
@@ -138,7 +138,7 @@ pylith::materials::IsotropicPowerLaw::getKernelRHSJacobianElasticConstants(const
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelRHSJacobianElasticConstants(coordsys="<<typeid(coordsys).name()<<")");
 
-    const int spaceDim = coordsys->spaceDim();
+    const int spaceDim = coordsys->getSpaceDim();
     PetscPointJac Jg3uu =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::Jg3vu :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::Jg3vu :
@@ -157,7 +157,7 @@ pylith::materials::IsotropicPowerLaw::getKernelDerivedCauchyStress(const spatial
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelDerivedCauchyStress(coordsys="<<typeid(coordsys).name()<<")");
 
-    const int spaceDim = coordsys->spaceDim();
+    const int spaceDim = coordsys->getSpaceDim();
     PetscPointFunc kernel =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::cauchyStress :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress :
@@ -195,7 +195,7 @@ pylith::materials::IsotropicPowerLaw::addKernelsUpdateStateVars(std::vector<Proj
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<")");
 
-    const int spaceDim = coordsys->spaceDim();
+    const int spaceDim = coordsys->getSpaceDim();
     const PetscPointFunc funcViscousStrain =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain :

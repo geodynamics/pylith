@@ -128,7 +128,7 @@ void
 pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& target,
                                                 const pylith::topology::Field& auxiliary) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_JOURNAL_DEBUG("checkDiscretization(target="<<target.label()<<", auxiliary="<<auxiliary.label()<<")");
+    // PYLITH_JOURNAL_DEBUG("checkDiscretization(target="<<target.getLabel()<<", auxiliary="<<auxiliary.getLabel()<<")");
 
     // Verify that the quadrature order of the target subfields all
     // match and that they match the quadrature order of the auxiliary
@@ -145,7 +145,7 @@ pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& t
             if (quadOrder > 0) {
                 if (quadOrder != sinfo.fe.quadOrder) {
                     std::ostringstream msg;
-                    msg << "Quadrature order of subfields in target field '" << target.label()
+                    msg << "Quadrature order of subfields in target field '" << target.getLabel()
                         << "' must all be the same. Expected quadrature order of " << quadOrder << ", but subfield '"
                         << subfieldNames[i] << "' has a quadrature order of " << sinfo.fe.quadOrder << ".";
                     throw std::runtime_error(msg.str());
@@ -165,8 +165,8 @@ pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& t
             if (quadOrder > 0) {
                 if (quadOrder != sinfo.fe.quadOrder) {
                     std::ostringstream msg;
-                    msg << "Quadrature order of subfields in auxiliary field '" << auxiliary.label()
-                        << "' must all match the quadrature order in the target subfields '" << target.label()
+                    msg << "Quadrature order of subfields in auxiliary field '" << auxiliary.getLabel()
+                        << "' must all match the quadrature order in the target subfields '" << target.getLabel()
                         << "'. Expected quadrature order of " << quadOrder << ", but subfield '" << subfieldNames[i]
                         << "' has a quadrature order of " << sinfo.fe.quadOrder << ".";
                     throw std::runtime_error(msg.str());
@@ -187,7 +187,7 @@ bool
 pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
                                          const pylith::topology::Field& fieldB) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_JOURNAL_DEBUG("layoutsMatch(fieldA="<<fieldA.label()<<", fieldB="<<fieldB.label()<<")");
+    // PYLITH_JOURNAL_DEBUG("layoutsMatch(fieldA="<<fieldA.getLabel()<<", fieldB="<<fieldB.getLabel()<<")");
 
     bool isMatch = true;
 

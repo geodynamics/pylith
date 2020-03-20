@@ -88,7 +88,7 @@ pylith::mmstests::TestFaultKin::_initialize(void) {
     CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.", _mesh->numVertices() > 0);
 
     // Set up coordinates.
-    _mesh->coordsys(_data->cs);
+    _mesh->setCoordSys(_data->cs);
     CPPUNIT_ASSERT(_data->normalizer);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
@@ -139,7 +139,7 @@ pylith::mmstests::TestFaultKin::_initialize(void) {
 
     CPPUNIT_ASSERT(!_solution);
     _solution = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_solution);
-    _solution->label("solution");
+    _solution->setLabel("solution");
     pylith::problems::SolutionFactory factory(*_solution, *_data->normalizer);
     int iField = 0;
     factory.addDisplacement(_data->solnDiscretizations[iField++]);
@@ -187,10 +187,10 @@ pylith::mmstests::TestFaultKin_Data::TestFaultKin_Data(void) :
     CPPUNIT_ASSERT(normalizer);
 
     CPPUNIT_ASSERT(matAuxDB);
-    matAuxDB->label("material auxiliary field spatial database");
+    matAuxDB->setLabel("material auxiliary field spatial database");
 
     CPPUNIT_ASSERT(faultAuxDB);
-    faultAuxDB->label("fault auxiliary field spatial database");
+    faultAuxDB->setLabel("fault auxiliary field spatial database");
 } // constructor
 
 

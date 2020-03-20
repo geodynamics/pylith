@@ -51,13 +51,13 @@ public:
              *
              * @param cs Coordinate system.
              */
-            void coordsys(const spatialdata::geocoords::CoordSys* cs);
+            void setCoordSys(const spatialdata::geocoords::CoordSys* cs);
 
             /** Get coordinate system.
              *
              * @returns Coordinate system.
              */
-            const spatialdata::geocoords::CoordSys* coordsys(void) const;
+            const spatialdata::geocoords::CoordSys* getCoordSys(void) const;
 
             /** Set debug flag.
              *

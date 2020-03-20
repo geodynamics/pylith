@@ -148,7 +148,7 @@ pylith::topology::TestSubmesh::testCreateSubdomainMesh(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test coordsys(), debug(), comm().
+// Test getCoordSys(), debug(), comm().
 void
 pylith::topology::TestSubmesh::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
@@ -156,9 +156,9 @@ pylith::topology::TestSubmesh::testAccessors(void) {
 
     _buildMesh();
     delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->groupLabel);CPPUNIT_ASSERT(_testMesh);
-    CPPUNIT_ASSERT(_testMesh->coordsys());
+    CPPUNIT_ASSERT(_testMesh->getCoordSys());
 
-    CPPUNIT_ASSERT_EQUAL(_data->cellDim, _testMesh->coordsys()->spaceDim());
+    CPPUNIT_ASSERT_EQUAL(size_t(_data->cellDim), _testMesh->getCoordSys()->getSpaceDim());
 
     CPPUNIT_ASSERT_EQUAL(false, _testMesh->debug());
     _testMesh->debug(true);
@@ -227,8 +227,7 @@ pylith::topology::TestSubmesh::_buildMesh(void) {
 
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim(spaceDim);
-    cs.initialize();
-    _domainMesh->coordsys(&cs);
+    _domainMesh->setCoordSys(&cs);
 
     PetscErrorCode err;
     const int numPoints = _data->groupSize;

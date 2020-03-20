@@ -97,9 +97,8 @@ protected:
         _data->meshFilename = "data/tri.mesh";
         _data->cs = new spatialdata::geocoords::CSCart();CPPUNIT_ASSERT(_data->cs);
         _data->cs->setSpaceDim(_data->dimension);
-        _data->cs->initialize();
 
-        _data->gravityField->gravityDir(0.0, -1.0, 0.0);
+        _data->gravityField->setGravityDir(0.0, -1.0, 0.0);
 
         CPPUNIT_ASSERT(_data->auxiliaryDB);
         _data->auxiliaryDB->addValue("density", density, density_units());
@@ -107,8 +106,8 @@ protected:
         _data->auxiliaryDB->addValue("body_force_y", body_force_y, body_force_units());
         _data->auxiliaryDB->addValue("gravitational_acceleration_x", gravity_field_x, gravity_field_units());
         _data->auxiliaryDB->addValue("gravitational_acceleration_y", gravity_field_y, gravity_field_units());
-        _data->auxiliaryDB->label("auxiliary");
-        _data->auxiliaryDB->coordsys(*_data->cs);
+        _data->auxiliaryDB->setLabel("auxiliary");
+        _data->auxiliaryDB->setCoordSys(*_data->cs);
 
         _data->subfields["body_force"].description.numComponents = 2;
         _data->subfields["gravitational_acceleration"].description.numComponents = 2;
@@ -199,7 +198,6 @@ protected:
         _data->meshFilename = "data/hex.mesh";
         _data->cs = new spatialdata::geocoords::CSCart();CPPUNIT_ASSERT(_data->cs);
         _data->cs->setSpaceDim(_data->dimension);
-        _data->cs->initialize();
 
         CPPUNIT_ASSERT(_data->auxiliaryDB);
         _data->auxiliaryDB->addValue("density", density, density_units());
@@ -209,10 +207,10 @@ protected:
         _data->auxiliaryDB->addValue("gravitational_acceleration_x", gravity_field_x, gravity_field_units());
         _data->auxiliaryDB->addValue("gravitational_acceleration_y", gravity_field_y, gravity_field_units());
         _data->auxiliaryDB->addValue("gravitational_acceleration_z", gravity_field_z, gravity_field_units());
-        _data->auxiliaryDB->label("auxiliary");
-        _data->auxiliaryDB->coordsys(*_data->cs);
+        _data->auxiliaryDB->setLabel("auxiliary");
+        _data->auxiliaryDB->setCoordSys(*_data->cs);
 
-        _data->gravityField->gravityDir(0.0, 0.0, -1.0);
+        _data->gravityField->setGravityDir(0.0, 0.0, -1.0);
 
         _data->subfields["body_force"].description.numComponents = 3;
         _data->subfields["gravitational_acceleration"].description.numComponents = 3;

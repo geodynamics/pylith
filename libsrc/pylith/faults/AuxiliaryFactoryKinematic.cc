@@ -138,7 +138,7 @@ pylith::faults::AuxiliaryFactoryKinematic::addSlip(void) {
     const char* fieldName = "slip";
     const char* componentNames[3] = { "slip_opening", "slip_left_lateral", "slip_reverse" };
 
-    const PylithReal lengthScale = _normalizer->lengthScale();
+    const PylithReal lengthScale = _normalizer->getLengthScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;

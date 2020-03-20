@@ -104,7 +104,7 @@ pylith::meshio::OutputSolnPoints::_writeSolnStep(const PylithReal t,
                                                  const PylithInt tindex,
                                                  const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     if (!_interpolator) {
         _setupInterpolator(solution.mesh());
@@ -145,8 +145,8 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Mes
     PetscErrorCode err = DMInterpolationDestroy(&_interpolator);PYLITH_CHECK_ERROR(err);
     assert(!_interpolator);
 
-    const spatialdata::geocoords::CoordSys* csMesh = mesh.coordsys();assert(csMesh);
-    const int spaceDim = csMesh->spaceDim();
+    const spatialdata::geocoords::CoordSys* csMesh = mesh.getCoordSys();assert(csMesh);
+    const int spaceDim = csMesh->getSpaceDim();
 
     // Setup interpolator object
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
@@ -181,7 +181,7 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Mes
     err = VecRestoreArray(_interpolator->coords, &pointCoordsLocal);PYLITH_CHECK_ERROR(err);
 
     // Set coordinate system and create nondimensionalized coordinates
-    _pointsMesh->coordsys(mesh.coordsys());
+    _pointsMesh->setCoordSys(mesh.getCoordSys());
 
     PylithReal lengthScale = 1.0;
     err = DMPlexGetScale(mesh.dmMesh(), PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
@@ -224,9 +224,9 @@ pylith::meshio::OutputSolnPoints::_interpolateField(const pylith::topology::Fiel
 
     // Create field if necessary for interpolated values or recreate
     // field if mismatch in size between buffer and field.
-    const std::string& fieldName = std::string(field.label()) + " (interpolated)";
+    const std::string& fieldName = std::string(field.getLabel()) + " (interpolated)";
     if (!_fields->hasField(fieldName.c_str())) {
-        _fields->add(fieldName.c_str(), field.label());
+        _fields->add(fieldName.c_str(), field.getLabel());
     } // if
 
     // Determine size of interpolated field that we will have.
@@ -255,7 +255,7 @@ pylith::meshio::OutputSolnPoints::_interpolateField(const pylith::topology::Fiel
         fieldInterp->createDiscretization();
         fieldInterp->allocate();
     } // if
-    fieldInterp->label(field.label());
+    fieldInterp->setLabel(field.getLabel());
     fieldInterp->zeroLocal();
 
     err = DMInterpolationSetDof(_interpolator, numDof);PYLITH_CHECK_ERROR(err);

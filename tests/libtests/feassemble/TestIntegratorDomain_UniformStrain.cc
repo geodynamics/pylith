@@ -166,10 +166,10 @@ protected:
         _data->cs->setSpaceDim(_data->dimension);
 
         CPPUNIT_ASSERT(_data->normalizer);
-        _data->normalizer->lengthScale(1.0e+03);
-        _data->normalizer->timeScale(2.0);
-        _data->normalizer->densityScale(3.0e+3);
-        _data->normalizer->pressureScale(2.25e+10);
+        _data->normalizer->setLengthScale(1.0e+03);
+        _data->normalizer->setTimeScale(2.0);
+        _data->normalizer->setDensityScale(3.0e+3);
+        _data->normalizer->setPressureScale(2.25e+10);
 
         _data->t = 1.0;
         _data->dt = 0.05;
@@ -213,7 +213,7 @@ protected:
         _integrator->useBodyForce(false);
         _integrator->useReferenceState(false);
 
-        _integrator->label("Isotropic Linear Elascitity Plane Strain");
+        _integrator->setLabel("Isotropic Linear Elascitity Plane Strain");
         _integrator->id(24);
     } // setUp
 

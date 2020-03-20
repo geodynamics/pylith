@@ -152,7 +152,6 @@ class EqInfoApp(Application):
         """
         Run the application.
         """
-        self.cs.initialize()
         nfaults = len(self.faults)
 
         if nfaults == 0:
@@ -261,7 +260,7 @@ class EqInfoApp(Application):
         coords = self._ptsToCells(vertices, cells)
         db = self.dbProps
         db.open()
-        db.queryVals(["density", "vs"])
+        db.setQueryValues(["density", "vs"])
         (ncells, ndims) = coords.shape
         data = numpy.zeros((ncells, 2), dtype=numpy.float64)
         err = numpy.zeros((ncells,), dtype=numpy.int32)

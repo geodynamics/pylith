@@ -126,7 +126,7 @@ pylith::problems::ObserversPhysics::setTimeScale(const PylithReal value) {
 void
 pylith::problems::ObserversPhysics::verifyObservers(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("verifyObservers(solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("verifyObservers(solution="<<solution.getLabel()<<")");
 
     for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);
@@ -145,7 +145,7 @@ pylith::problems::ObserversPhysics::notifyObservers(const PylithReal t,
                                                     const pylith::topology::Field& solution,
                                                     const bool infoOnly) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("notifyObservers(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("notifyObservers(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);

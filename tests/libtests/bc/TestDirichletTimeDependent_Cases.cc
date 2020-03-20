@@ -25,22 +25,21 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-
 // ----------------------------------------------------------------------
 namespace pylith {
     namespace bc {
-
         // --------------------------------------------------------------
         class TestDirichletTimeDependent_InitialDisp2D : public TestDirichletTimeDependent {
-
 protected:
 
             static const char* disp_units(void) {
                 return "m";
             }
+
             static const char* vel_units(void) {
                 return "m/s";
             }
+
             static const char* pressure_units(void) {
                 return "Pa";
             }
@@ -51,10 +50,12 @@ protected:
                                 const double y) {
                 return FILL_VALUE;
             } // vel_x
+
             static double vel_y(const double x,
                                 const double y) {
                 return FILL_VALUE;
             } // vel_y
+
             static double fluid_press(const double x,
                                       const double y) {
                 return FILL_VALUE;
@@ -65,17 +66,16 @@ protected:
                 _data = new TestDirichletTimeDependent_Data();CPPUNIT_ASSERT(_data);
                 _data->cs = new spatialdata::geocoords::CSCart();CPPUNIT_ASSERT(_data->cs);
                 _data->cs->setSpaceDim(2);
-                _data->cs->initialize();
 
                 CPPUNIT_ASSERT(_data->normalizer);
-                _data->normalizer->lengthScale(1000.0);
-                _data->normalizer->timeScale(10.0);
-                _data->normalizer->pressureScale(0.1);
-                _data->normalizer->densityScale(2.0);
+                _data->normalizer->setLengthScale(1000.0);
+                _data->normalizer->setTimeScale(10.0);
+                _data->normalizer->setPressureScale(0.1);
+                _data->normalizer->setDensityScale(2.0);
 
                 _data->field = "displacement";
                 _data->vectorFieldType = pylith::topology::Field::VECTOR;
-                _data->scale = _data->normalizer->lengthScale();
+                _data->scale = _data->normalizer->getLengthScale();
                 _data->numConstrainedDOF = 1;
                 static const int constrainedDOF[1] = { 1 };
                 _data->constrainedDOF = const_cast<int*>(constrainedDOF);
@@ -92,12 +92,11 @@ protected:
                 };
                 _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(auxDiscretizations);
             } // setUp
-        }; // class TestDirichletTimeDependent_TriP1
 
+        }; // class TestDirichletTimeDependent_TriP1
 
         // --------------------------------------------------------------
         class TestDirichletTimeDependent_TriP1 : public TestDirichletTimeDependent_InitialDisp2D {
-
             // Spatial database user functions for auxiliary subfields.
 
             // Initial amplitude
@@ -105,6 +104,7 @@ protected:
                                          const double y) {
                 return FILL_VALUE;
             } // initial_disp_x
+
             static double initial_disp_y(const double x,
                                          const double y) {
                 return 2.4*x + 1.8*y;
@@ -116,6 +116,7 @@ protected:
                                  const double y) {
                 return FILL_VALUE;
             } // disp_x
+
             static double disp_y(const double x,
                                  const double y) {
                 return initial_disp_y(x, y);
@@ -131,7 +132,7 @@ protected:
                 _data->bcLabel = "boundary_bottom";
 
                 CPPUNIT_ASSERT(_data->auxDB);
-                _data->auxDB->coordsys(*_data->cs);
+                _data->auxDB->setCoordSys(*_data->cs);
                 _data->auxDB->addValue("initial_amplitude_x", initial_disp_x, disp_units());
                 _data->auxDB->addValue("initial_amplitude_y", initial_disp_y, disp_units());
 
@@ -146,7 +147,7 @@ protected:
                 _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(solnDiscretizations);
 
                 CPPUNIT_ASSERT(_data->solnDB);
-                _data->solnDB->coordsys(*_data->cs);
+                _data->solnDB->setCoordSys(*_data->cs);
                 _data->solnDB->addValue("displacement_x", disp_x, disp_units());
                 _data->solnDB->addValue("displacement_y", disp_y, disp_units());
                 _data->solnDB->addValue("velocity_x", vel_x, vel_units());
@@ -154,12 +155,12 @@ protected:
                 _data->solnDB->addValue("fluid_pressure", fluid_press, pressure_units());
 
             } // setUp
+
         }; // class TestDirichletTimeDependent_TriP1
         CPPUNIT_TEST_SUITE_REGISTRATION(TestDirichletTimeDependent_TriP1);
 
         // --------------------------------------------------------------
         class TestDirichletTimeDependent_TriP2 : public TestDirichletTimeDependent_InitialDisp2D {
-
             // Spatial database user functions for auxiliary subfields.
 
             // Initial amplitude
@@ -167,6 +168,7 @@ protected:
                                          const double y) {
                 return FILL_VALUE;
             } // initial_disp_x
+
             static double initial_disp_y(const double x,
                                          const double y) {
                 return 2.4*x + 1.8*y + 1.8*x*y;
@@ -178,6 +180,7 @@ protected:
                                  const double y) {
                 return FILL_VALUE;
             } // disp_x
+
             static double disp_y(const double x,
                                  const double y) {
                 return initial_disp_y(x, y);
@@ -198,7 +201,7 @@ protected:
                 _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(auxDiscretizations);
 
                 CPPUNIT_ASSERT(_data->auxDB);
-                _data->auxDB->coordsys(*_data->cs);
+                _data->auxDB->setCoordSys(*_data->cs);
                 _data->auxDB->addValue("initial_amplitude_x", initial_disp_x, disp_units());
                 _data->auxDB->addValue("initial_amplitude_y", initial_disp_y, disp_units());
 
@@ -213,7 +216,7 @@ protected:
                 _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(solnDiscretizations);
 
                 CPPUNIT_ASSERT(_data->solnDB);
-                _data->solnDB->coordsys(*_data->cs);
+                _data->solnDB->setCoordSys(*_data->cs);
                 _data->solnDB->addValue("displacement_x", disp_x, disp_units());
                 _data->solnDB->addValue("displacement_y", disp_y, disp_units());
                 _data->solnDB->addValue("velocity_x", vel_x, vel_units());
@@ -221,6 +224,7 @@ protected:
                 _data->solnDB->addValue("fluid_pressure", fluid_press, pressure_units());
 
             } // setUp
+
         }; // class TestDirichletTimeDependent_TriP2
         CPPUNIT_TEST_SUITE_REGISTRATION(TestDirichletTimeDependent_TriP2);
 
@@ -236,9 +240,9 @@ protected:
                 _data->meshFilename = "data/quad_small.mesh";
                 _data->bcLabel = "boundary_top";
             } // setUp
+
         }; // class TestDirichletTimeDependent_QuadP1
         CPPUNIT_TEST_SUITE_REGISTRATION(TestDirichletTimeDependent_QuadP1);
-
 
         // --------------------------------------------------------------
         class TestDirichletTimeDependent_TetP1 : public TestDirichletTimeDependent {
@@ -249,9 +253,9 @@ protected:
                 TestDirichletTimeDependent::setUp();
                 _data = new TestDirichletTimeDependent_Data();CPPUNIT_ASSERT(_data);
             } // setUp
+
         }; // class TestDirichletTimeDependent_TetP1
         CPPUNIT_TEST_SUITE_REGISTRATION(TestDirichletTimeDependent_TetP1);
-
 
         // --------------------------------------------------------------
         class TestDirichletTimeDependent_Hex : public TestDirichletTimeDependent {
@@ -262,12 +266,12 @@ protected:
                 TestDirichletTimeDependent::setUp();
                 _data = new TestDirichletTimeDependent_Data();CPPUNIT_ASSERT(_data);
             } // setUp
+
         }; // class TestDirichletTimeDependent_Hex
         CPPUNIT_TEST_SUITE_REGISTRATION(TestDirichletTimeDependent_Hex);
 #endif
 
     } // namespace bc
 } // namespace pylith
-
 
 // End of file

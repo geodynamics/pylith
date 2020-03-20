@@ -91,7 +91,7 @@ pylith::feassemble::AuxiliaryFactory::setValuesFromDB(void) {
 
     if (_queryDB) {
         assert(_fieldQuery);
-        _fieldQuery->openDB(_queryDB, _normalizer->lengthScale());
+        _fieldQuery->openDB(_queryDB, _normalizer->getLengthScale());
         _fieldQuery->queryDB();
         _fieldQuery->closeDB(_queryDB);
     } else {

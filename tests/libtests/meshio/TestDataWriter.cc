@@ -47,15 +47,13 @@ pylith::meshio::TestDataWriter_Data::TestDataWriter_Data(void) :
     cellScalarNumComponents(0),
     cellVectorNumComponents(0),
     cellTensorNumComponents(0),
-    cellOtherNumComponents(0)
-{ // constructor
+    cellOtherNumComponents(0) { // constructor
 } // constructor
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestDataWriter_Data::~TestDataWriter_Data(void)
-{ // destructor
+pylith::meshio::TestDataWriter_Data::~TestDataWriter_Data(void) { // destructor
 } // destructor
 
 

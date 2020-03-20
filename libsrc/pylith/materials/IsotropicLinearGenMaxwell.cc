@@ -117,7 +117,7 @@ pylith::materials::IsotropicLinearGenMaxwell::getKernelRHSResidualStress(const s
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelRHSResidualStress(coordsys="<<typeid(coordsys).name()<<")");
 
-    const int spaceDim = coordsys->spaceDim();
+    const int spaceDim = coordsys->getSpaceDim();
     PetscPointFunc g1u =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwell3D::g1v :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::g1v :
@@ -136,7 +136,7 @@ pylith::materials::IsotropicLinearGenMaxwell::getKernelRHSJacobianElasticConstan
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelRHSJacobianElasticConstants(coordsys="<<typeid(coordsys).name()<<")");
 
-    const int spaceDim = coordsys->spaceDim();
+    const int spaceDim = coordsys->getSpaceDim();
     PetscPointJac Jg3uu =
         (3 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwell3D::Jg3vu :
         (2 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::Jg3vu :
@@ -153,7 +153,7 @@ pylith::materials::IsotropicLinearGenMaxwell::getKernelDerivedCauchyStress(const
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelDerivedCauchyStress(coordsys="<<typeid(coordsys).name()<<")");
 
-    const int spaceDim = coordsys->spaceDim();
+    const int spaceDim = coordsys->getSpaceDim();
     PetscPointFunc kernel =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwell3D::cauchyStress :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::cauchyStress :
@@ -190,7 +190,7 @@ pylith::materials::IsotropicLinearGenMaxwell::addKernelsUpdateStateVars(std::vec
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<")");
 
-    const int spaceDim = coordsys->spaceDim();
+    const int spaceDim = coordsys->getSpaceDim();
     const PetscPointFunc funcViscousStrain =
         (3 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwell3D::updateViscousStrain :
         (2 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain :

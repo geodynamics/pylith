@@ -16,11 +16,11 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/meshio/Xdmf.py
+# @file pyre/meshio/Xdmf.py
 ##
-## @brief Python class for Xdmf metadata file associated with an HDF5 file.
+# @brief Python class for Xdmf metadata file associated with an HDF5 file.
 ##
-## Factory: xdmf
+# Factory: xdmf
 
 
 class Field(object):
@@ -34,16 +34,16 @@ class Field(object):
         "vertex_fields": DOMAIN_VERTICES,
         "cell_fields": DOMAIN_CELLS,
     }
-    domainToGroup = dict((v,k) for k,v in groupToDomain.iteritems())
-    
+    domainToGroup = dict((v, k) for k, v in groupToDomain.iteritems())
+
     def __init__(self):
         self.name = None
         self.vectorFieldType = None
         self.data = None
         self.domain = None
         return
-    
-    
+
+
 # Xdmf class
 class Xdmf(object):
     """
@@ -59,7 +59,6 @@ class Xdmf(object):
         self.file = None
         return
 
-
     def write(self, filenameH5, filenameXdmf=None, verbose=False):
         """Write Xdmf file corresponding to given HDF5 file.
         """
@@ -74,14 +73,14 @@ class Xdmf(object):
             raise IOError("Cannot create Xdmf file for HDF5 file '%s'. File not found." % filenameH5)
         self.h5 = h5py.File(filenameH5, "r")
 
-        if self._spaceDim() == 1:
+        if self._getSpaceDim() == 1:
             print("WARNING: Xdmf grids are not defined for 1-D domains.\n"
                   "Skipping creation of Xdmf file for HDF5 file '%s'." % filenameH5)
             self.h5.close()
             return
 
         self.file = open(filenameXdmf, "w")
-        
+
         # Header
         self._openXdmf()
 
@@ -96,7 +95,7 @@ class Xdmf(object):
         if not timeStamps is None:
             self._openTimeCollection()
             self._writeTimeStamps(timeStamps)
-            for iTime,timeStamp in enumerate(timeStamps):
+            for iTime, timeStamp in enumerate(timeStamps):
                 self._openTimeGrid()
                 self._writeGridTopology(cells)
                 self._writeGridGeometry(vertices)
@@ -127,7 +126,7 @@ class Xdmf(object):
         self._closeXdmf()
         self._close()
         return
-    
+
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _close(self):
@@ -135,14 +134,12 @@ class Xdmf(object):
         self.file.close()
         return
 
-    
-    def _spaceDim(self):
+    def _getSpaceDim(self):
         vertices = self.h5["/geometry/vertices"]
         assert(2 == len(vertices.shape))
         return vertices.shape[1]
-    
-    
-    def _xdmfCellType(self, cells):
+
+    def _getXdmfCellType(self, cells):
         """
         Get type of cell.
         """
@@ -172,8 +169,7 @@ class Xdmf(object):
             print("WARNING: Unknown cell type with %d vertices and dimension %d." % (numCorners, cellDim))
         return cellType
 
-    
-    def _xdmfVectorFieldType(self, vectorFieldString):
+    def _getXdmfVectorFieldType(self, vectorFieldString):
         """Get Xdmf vector field type.
         """
         vtype = "Matrix"
@@ -185,7 +181,6 @@ class Xdmf(object):
             vtype = "Tensor6"
         return vtype
 
-    
     def _getTimeStamps(self):
         """Get time stamps if they exist, otherwise return None.
         """
@@ -193,7 +188,6 @@ class Xdmf(object):
         if "time" in self.h5:
             timeStamps = self.h5["time"][:]
         return timeStamps
-    
 
     def _getFields(self):
         fields = []
@@ -206,9 +200,10 @@ class Xdmf(object):
                     field.data = dataset[:]
                     field.domain = Field.groupToDomain[group]
                     if "vector_field_type" in dataset.attrs:
-                        field.vectorFieldType = self._xdmfVectorFieldType(dataset.attrs["vector_field_type"])
+                        field.vectorFieldType = self._getXdmfVectorFieldType(dataset.attrs["vector_field_type"])
                     else:
-                        print("WARNING: Field '%s/%s' dataset missing 'vector_field_type' attribute. Guessing vector field type." % (group, name,))
+                        print(
+                            "WARNING: Field '%s/%s' dataset missing 'vector_field_type' attribute. Guessing vector field type." % (group, name,))
                         field.vectorFieldType = "Matrix"
                         if len(dataset.shape) == 2 or len(dataset.shape) == 3:
                             numComponents = dataset.shape[-1]
@@ -218,8 +213,7 @@ class Xdmf(object):
                                 field.vectorFieldType = "Vector"
                     fields.append(field)
         return fields
-    
-    
+
     def _openXdmf(self):
         """Write header and create Xdmf element.
         """
@@ -237,7 +231,6 @@ class Xdmf(object):
         )
         return
 
-    
     def _closeXdmf(self):
         """Close Xdmf element.
         """
@@ -245,8 +238,7 @@ class Xdmf(object):
             "</Xdmf>\n"
         )
         return
-    
-    
+
     def _openDomain(self, cells, vertices):
         self.file.write("  <Domain Name=\"domain\">\n")
 
@@ -274,7 +266,8 @@ class Xdmf(object):
             # Form vector with 3 components using x and y components
             # and then a fake z-component by multiplying the
             # x-component by zero.
-            self.file.write("    <DataItem Name=\"vertices\" ItemType=\"Function\" Dimensions=\"%d 3\" Function=\"JOIN($0, $1, $2)\">\n" % numVertices)
+            self.file.write(
+                "    <DataItem Name=\"vertices\" ItemType=\"Function\" Dimensions=\"%d 3\" Function=\"JOIN($0, $1, $2)\">\n" % numVertices)
             # x component
             self.file.write(
                 "      <DataItem Name=\"verticesX\" ItemType=\"Hyperslab\" Type=\"HyperSlab\" Dimensions=\"%d 1\">\n"
@@ -315,7 +308,6 @@ class Xdmf(object):
             raise ValueError("Unexpected spatial dimension %d when writing domain vertices." % spaceDim)
         return
 
-    
     def _closeDomain(self):
         """Close domain element.
         """
@@ -323,8 +315,7 @@ class Xdmf(object):
             "  </Domain>\n"
         )
         return
-    
-    
+
     def _openTimeCollection(self):
         """Create Grid element for collection of time grids.
         """
@@ -333,7 +324,6 @@ class Xdmf(object):
         )
         return
 
-    
     def _closeTimeCollection(self):
         """Close Grid element for collection of time grids.
         """
@@ -342,7 +332,6 @@ class Xdmf(object):
         )
         return
 
-    
     def _writeTimeStamps(self, tstamps):
         """Write time stamps.
         """
@@ -361,16 +350,14 @@ class Xdmf(object):
         )
         return
 
-    
     def _openTimeGrid(self):
         """Create Grid element for a single time step.
         """
         self.file.write(
-	    "      <Grid Name=\"domain\" GridType=\"Uniform\">\n"
+            "      <Grid Name=\"domain\" GridType=\"Uniform\">\n"
         )
         return
 
-    
     def _closeTimeGrid(self):
         """Close Grid element for a single time step.
         """
@@ -379,14 +366,13 @@ class Xdmf(object):
         )
         return
 
-    
     def _writeGridTopology(self, cells):
         """Write topology information for current grid.
         """
-        cellType = self._xdmfCellType(cells)
+        cellType = self._getXdmfCellType(cells)
         assert(2 == len(cells.shape))
         numCells = cells.shape[0]
-        
+
         self.file.write(
             "        <Topology TopologyType=\"%s\" NumberOfElements=\"%d\">\n"
             "          <DataItem Reference=\"XML\">\n"
@@ -397,7 +383,6 @@ class Xdmf(object):
         )
         return
 
-    
     def _writeGridGeometry(self, vertices):
         """Write vertices information for current grid.
         """
@@ -410,7 +395,6 @@ class Xdmf(object):
         )
         return
 
-    
     def _writeGridFieldComponent(self, field, iTime, iComponent):
         """Write single component of field for current time step.
         """
@@ -418,7 +402,7 @@ class Xdmf(object):
             components = ["_x", "_y", "_z"]
             componentName = field.name + components[iComponent]
         elif field.vectorFieldType == "Tensor6":
-            spaceDim = self._spaceDim()
+            spaceDim = self._getSpaceDim()
             if spaceDim == 2:
                 components = ["_xx", "_yy", "_xy"]
             elif spaceDim == 3:
@@ -440,7 +424,7 @@ class Xdmf(object):
         else:
             assert(3 == len(field.data.shape))
             numTimeSteps, numPoints, numComponents = field.data.shape
-        
+
         self.file.write(
             "        <Attribute Name=\"%(componentName)s\" Type=\"Scalar\" Center=\"%(domain)s\">\n"
             "          <DataItem ItemType=\"HyperSlab\" Dimensions=\"1 %(numPoints)d 1\" Type=\"HyperSlab\">\n"
@@ -460,10 +444,9 @@ class Xdmf(object):
                "numTimeSteps": numTimeSteps,
                "numComponents": numComponents,
                "h5Name": h5Name,
-            }
+               }
         )
         return
-
 
     def _writeGridField(self, field, iTime):
         """Write field for current time step.
@@ -487,13 +470,13 @@ class Xdmf(object):
         else:
             assert(3 == len(field.data.shape))
             numTimeSteps, numPoints, numComponents = field.data.shape
-        
-        if 2 == self._spaceDim() and field.vectorFieldType == "Vector":
-            
+
+        if 2 == self._getSpaceDim() and field.vectorFieldType == "Vector":
+
             self.file.write(
                 "          <DataItem ItemType=\"Function\" Dimensions=\"%d 3\" Function=\"JOIN($0, $1, $2)\">\n"
                 % (numPoints,)
-                )
+            )
             # x component
             self.file.write(
                 "            <DataItem ItemType=\"HyperSlab\" Dimensions=\"%(numPoints)d 1\" Type=\"HyperSlab\">\n"
@@ -529,7 +512,7 @@ class Xdmf(object):
                 "            </DataItem>\n"
                 % {"numPoints": numPoints, "name": field.name, "gridRef": gridRef}
             )
-            
+
             # close
             self.file.write(
                 "          </DataItem>\n"
@@ -538,7 +521,7 @@ class Xdmf(object):
 
         else:
             self.file.write(
-            
+
                 "          <DataItem ItemType=\"HyperSlab\" Dimensions=\"1 %(numPoints)d %(numComponents)d\" Type=\"HyperSlab\">\n"
                 "            <DataItem Dimensions=\"3 3\" Format=\"XML\">\n"
                 "              %(iStep)d 0 0    1 1 1    1 %(numPoints)d %(numComponents)d\n"
@@ -550,8 +533,8 @@ class Xdmf(object):
                 "        </Attribute>\n"
                 % {"numTimeSteps": numTimeSteps, "numPoints": numPoints, "iStep": iStep, "numComponents": numComponents, "h5Name": h5Name}
             )
-            
+
             return
-    
-    
-# End of file 
+
+
+# End of file

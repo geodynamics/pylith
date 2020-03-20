@@ -279,12 +279,12 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
         field.scatterLocalToContext(context);
         PetscVec vector = field.scatterVector(context);assert(vector);
 
-        if (_timesteps.find(field.label()) == _timesteps.end()) {
-            _timesteps[field.label()] = 0;
+        if (_timesteps.find(field.getLabel()) == _timesteps.end()) {
+            _timesteps[field.getLabel()] = 0;
         } else {
-            _timesteps[field.label()] += 1;
+            _timesteps[field.getLabel()] += 1;
         }
-        const int istep = _timesteps[field.label()];
+        const int istep = _timesteps[field.getLabel()];
         // Add time stamp to "/time" if necessary.
         PetscMPIInt commRank;
         err = MPI_Comm_rank(mesh.comm(), &commRank);PYLITH_CHECK_ERROR(err);
@@ -311,20 +311,20 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
             hid_t h5 = -1;
             err = PetscViewerHDF5GetFileId(_viewer, &h5);PYLITH_CHECK_ERROR(err);
             assert(h5 >= 0);
-            std::string fullName = std::string("/vertex_fields/") + field.label();
+            std::string fullName = std::string("/vertex_fields/") + field.getLabel();
             const char* sattr = pylith::topology::FieldBase::vectorFieldString(field.vectorFieldType());
             HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type", sattr);
         } // if
 
     } catch (const std::exception& err) {
         std::ostringstream msg;
-        msg << "Error while writing field '" << field.label() << "' at time "
+        msg << "Error while writing field '" << field.getLabel() << "' at time "
             << t << " to HDF5 file '" << hdf5Filename() << "'.\n" << err.what();
         throw std::runtime_error(msg.str());
 
     } catch (...) {
         std::ostringstream msg;
-        msg << "Error while writing field '" << field.label() << "' at time "
+        msg << "Error while writing field '" << field.getLabel() << "' at time "
             << t << " to HDF5 file '" << hdf5Filename() << "'.";
         throw std::runtime_error(msg.str());
     } // try/catch
@@ -350,12 +350,12 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
         field.scatterLocalToContext(context);
         PetscVec vector = field.scatterVector(context);assert(vector);
 
-        if (_timesteps.find(field.label()) == _timesteps.end()) {
-            _timesteps[field.label()] = 0;
+        if (_timesteps.find(field.getLabel()) == _timesteps.end()) {
+            _timesteps[field.getLabel()] = 0;
         } else {
-            _timesteps[field.label()] += 1;
+            _timesteps[field.getLabel()] += 1;
         }
-        const int istep = _timesteps[field.label()];
+        const int istep = _timesteps[field.getLabel()];
         // Add time stamp to "/time" if necessary.
         PetscMPIInt commRank;
         err = MPI_Comm_rank(field.mesh().comm(), &commRank);PYLITH_CHECK_ERROR(err);
@@ -378,18 +378,18 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
             hid_t h5 = -1;
             err = PetscViewerHDF5GetFileId(_viewer, &h5);PYLITH_CHECK_ERROR(err);
             assert(h5 >= 0);
-            std::string fullName = std::string("/cell_fields/") + field.label();
+            std::string fullName = std::string("/cell_fields/") + field.getLabel();
             const char* sattr = pylith::topology::FieldBase::vectorFieldString(field.vectorFieldType());
             HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type", sattr);
         } // if
     } catch (const std::exception& err) {
         std::ostringstream msg;
-        msg << "Error while writing field '" << field.label() << "' at time "
+        msg << "Error while writing field '" << field.getLabel() << "' at time "
             << t << " to HDF5 file '" << hdf5Filename() << "'.\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
         std::ostringstream msg;
-        msg << "Error while writing field '" << field.label() << "' at time "
+        msg << "Error while writing field '" << field.getLabel() << "' at time "
             << t << " to HDF5 file '" << hdf5Filename() << "'.";
         throw std::runtime_error(msg.str());
     } // try/catch

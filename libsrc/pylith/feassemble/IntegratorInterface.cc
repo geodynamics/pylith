@@ -248,7 +248,7 @@ pylith::feassemble::IntegratorInterface::setKernelsLHSJacobian(const std::vector
 void
 pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.getLabel()<<")");
 
     const bool isSubmesh = true;
     delete _interfaceMesh;_interfaceMesh = new pylith::topology::Mesh(isSubmesh);assert(_interfaceMesh);
@@ -295,14 +295,14 @@ pylith::feassemble::IntegratorInterface::computeRHSResidual(pylith::topology::Fi
                                                             const PylithReal dt,
                                                             const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<")");
 
     if (0 == _kernelsRHSResidual.size()) { PYLITH_METHOD_END;}
 
     _setKernelConstants(solution, dt);
 
     pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
-    solutionDot.label("solution_dot");
+    solutionDot.setLabel("solution_dot");
 
     _IntegratorInterface::computeResidual(residual, this, _kernelsRHSResidual, t, dt, solution, solutionDot);
 
@@ -319,14 +319,14 @@ pylith::feassemble::IntegratorInterface::computeRHSJacobian(PetscMat jacobianMat
                                                             const PylithReal dt,
                                                             const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<") empty method");
+    PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
     if (0 == _kernelsRHSJacobian.size()) { PYLITH_METHOD_END;}
 
     _setKernelConstants(solution, dt);
 
     pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
-    solutionDot.label("solution_dot");
+    solutionDot.setLabel("solution_dot");
     const PylithReal s_tshift = 0.0; // No dependence on time derivative of solution in RHS, so shift isn't applicable.
 
     _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsRHSJacobian, t, dt, s_tshift,
@@ -347,7 +347,7 @@ pylith::feassemble::IntegratorInterface::computeLHSResidual(pylith::topology::Fi
                                                             const pylith::topology::Field& solution,
                                                             const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("computeLHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<")");
 
     if (0 == _kernelsLHSResidual.size()) { PYLITH_METHOD_END;}
 
@@ -370,7 +370,7 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobian(PetscMat jacobianMat
                                                             const pylith::topology::Field& solution,
                                                             const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
+    PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<", solutionDot="<<solutionDot.getLabel()<<")");
 
     if (0 == _kernelsLHSJacobian.size()) { PYLITH_METHOD_END;}
 
@@ -394,7 +394,7 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobianLumpedInv(pylith::top
                                                                      const PylithReal s_tshift,
                                                                      const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<") empty method");
+    PYLITH_JOURNAL_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
     // No implementation needed for interface.
 
@@ -416,8 +416,8 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     journal::debug_t debug(_IntegratorInterface::genericComponent);
     debug << journal::at(__HERE__)
           << "_IntegratorInterface::computeResidual(residual="<<typeid(residual).name()<<", integrator"<<typeid(integrator).name()
-          <<"# kernels="<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="
-          <<solutionDot.label()<<")"
+          <<"# kernels="<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<", solutionDot="
+          <<solutionDot.getLabel()<<")"
           << journal::endl;
 
     assert(integrator);
@@ -480,7 +480,7 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     debug << journal::at(__HERE__)
           << "_IntegratorInterface::computeJacobian(jacobianMat="<<jacobianMat<<", precondMat"<<precondMat
           <<", integrator"<<typeid(integrator).name()<<"# kernels="<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="
-          <<solution.label()<<", solutionDot="<<solutionDot.label()<<")"
+          <<solution.getLabel()<<", solutionDot="<<solutionDot.getLabel()<<")"
           << journal::endl;
 
     assert(jacobianMat);

@@ -25,20 +25,19 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-
 // ----------------------------------------------------------------------
 namespace pylith {
     namespace bc {
-
         // --------------------------------------------------------------
         class TestNeumannTimeDependent_TriP1 : public TestNeumannTimeDependent {
-
             static const char* disp_units(void) {
                 return "m";
             }
+
             static const char* vel_units(void) {
                 return "m/s";
             }
+
             static const char* pressure_units(void) {
                 return "Pa";
             }
@@ -50,6 +49,7 @@ namespace pylith {
                                                       const double y) {
                 return -1.5*x + 2.4*y;
             } // initial_traction_tangential
+
             static double initial_traction_normal(const double x,
                                                   const double y) {
                 return 2.4*x + 1.8*y;
@@ -61,18 +61,22 @@ namespace pylith {
                                  const double y) {
                 return FILL_VALUE;
             } // disp_x
+
             static double disp_y(const double x,
                                  const double y) {
                 return FILL_VALUE;
             } // disp_y
+
             static double vel_x(const double x,
                                 const double y) {
                 return FILL_VALUE;
             } // vel_x
+
             static double vel_y(const double x,
                                 const double y) {
                 return FILL_VALUE;
             } // vel_y
+
             static double fluid_press(const double x,
                                       const double y) {
                 return FILL_VALUE;
@@ -82,6 +86,7 @@ namespace pylith {
             CPPUNIT_TEST_SUITE_END();
 
 protected:
+
             void setUp(void) {
                 TestNeumannTimeDependent::setUp();
                 _data = new TestNeumannTimeDependent_Data();CPPUNIT_ASSERT(_data);
@@ -89,17 +94,16 @@ protected:
                 _data->bcLabel = "boundary_bottom";
                 _data->cs = new spatialdata::geocoords::CSCart();CPPUNIT_ASSERT(_data->cs);
                 _data->cs->setSpaceDim(2);
-                _data->cs->initialize();
 
                 CPPUNIT_ASSERT(_data->normalizer);
-                _data->normalizer->lengthScale(1000.0);
-                _data->normalizer->timeScale(10.0);
-                _data->normalizer->pressureScale(0.1);
-                _data->normalizer->densityScale(2.0);
+                _data->normalizer->setLengthScale(1000.0);
+                _data->normalizer->setTimeScale(10.0);
+                _data->normalizer->setPressureScale(0.1);
+                _data->normalizer->setDensityScale(2.0);
 
                 _data->field = "displacement";
                 _data->vectorFieldType = pylith::topology::Field::VECTOR;
-                _data->scale = _data->normalizer->pressureScale();
+                _data->scale = _data->normalizer->getPressureScale();
 
                 _data->useInitial = true;
                 _data->useRate = false;
@@ -114,7 +118,7 @@ protected:
                 _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(auxDiscretizations);
 
                 CPPUNIT_ASSERT(_data->auxDB);
-                _data->auxDB->coordsys(*_data->cs);
+                _data->auxDB->setCoordSys(*_data->cs);
                 _data->auxDB->addValue("initial_amplitude_tangential", initial_traction_tangential, pressure_units());
                 _data->auxDB->addValue("initial_amplitude_normal", initial_traction_normal, pressure_units());
 
@@ -128,7 +132,7 @@ protected:
                 _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(solnDiscretizations);
 
                 CPPUNIT_ASSERT(_data->solnDB);
-                _data->solnDB->coordsys(*_data->cs);
+                _data->solnDB->setCoordSys(*_data->cs);
                 _data->solnDB->addValue("displacement_x", disp_x, disp_units());
                 _data->solnDB->addValue("displacement_y", disp_y, disp_units());
                 _data->solnDB->addValue("velocity_x", vel_x, vel_units());
@@ -136,6 +140,7 @@ protected:
                 _data->solnDB->addValue("fluid_pressure", fluid_press, pressure_units());
 
             } // setUp
+
         }; // class TestNeumannTimeDependent_TriP1
         CPPUNIT_TEST_SUITE_REGISTRATION(TestNeumannTimeDependent_TriP1);
 
@@ -151,9 +156,9 @@ protected:
                 _data->meshFilename = "data/quad_small.mesh";
                 _data->bcLabel = "boundary_top";
             } // setUp
+
         }; // class TestNeumannTimeDependent_QuadP1
         CPPUNIT_TEST_SUITE_REGISTRATION(TestNeumannTimeDependent_QuadP1);
-
 
         // --------------------------------------------------------------
         class TestNeumannTimeDependent_TetP1 : public TestNeumannTimeDependent {
@@ -164,9 +169,9 @@ protected:
                 TestNeumannTimeDependent::setUp();
                 _data = new TestNeumannTimeDependent_Data();CPPUNIT_ASSERT(_data);
             } // setUp
+
         }; // class TestNeumannTimeDependent_TetP1
         CPPUNIT_TEST_SUITE_REGISTRATION(TestNeumannTimeDependent_TetP1);
-
 
         // --------------------------------------------------------------
         class TestNeumannTimeDependent_Hex : public TestNeumannTimeDependent {
@@ -177,12 +182,12 @@ protected:
                 TestNeumannTimeDependent::setUp();
                 _data = new TestNeumannTimeDependent_Data();CPPUNIT_ASSERT(_data);
             } // setUp
+
         }; // class TestNeumannTimeDependent_Hex
         CPPUNIT_TEST_SUITE_REGISTRATION(TestNeumannTimeDependent_Hex);
 #endif
 
     } // namespace bc
 } // namespace pylith
-
 
 // End of file
