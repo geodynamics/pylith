@@ -48,6 +48,9 @@ _mpimodule_la_LIBADD = \
 if ENABLE_SWIG
 $(srcdir)/mpi_wrap.cxx $(srcdir)/mpi.py: $(swig_sources)
 	$(SWIG) $(PETSC_CC_INCLUDES) -Wall -c++ -python $<
+else
+$(srcdir)/mpi_wrap.cxx $(srcdir)/mpi.py:
+	$(error Missing SWIG generated files. Make sure SWIG is installed and reconfigure with --enable-swig)
 endif
 
 

@@ -53,6 +53,9 @@ _topologymodule_la_LIBADD = \
 if ENABLE_SWIG
 $(srcdir)/topology_wrap.cxx $(srcdir)/topology.py: $(swig_sources)
 	$(SWIG) $(PETSC_CC_INCLUDES) -Wall -c++ -python $<
+else
+$(srcdir)/topology_wrap.cxx $(srcdir)/topology.py:
+	$(error Missing SWIG generated files. Make sure SWIG is installed and reconfigure with --enable-swig)
 endif
 
 
