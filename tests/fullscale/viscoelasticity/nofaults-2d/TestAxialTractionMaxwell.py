@@ -47,6 +47,7 @@ class TestCase(FullTestCase):
         return
 
     def run_pylith(self, testName, args):
+        # pdb.set_trace()
         FullTestCase.run_pylith(self, testName, args, GenerateDB)
         return
 
