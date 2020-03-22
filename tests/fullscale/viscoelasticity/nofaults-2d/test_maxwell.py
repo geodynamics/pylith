@@ -46,7 +46,7 @@ import pylab
 # pdb.set_trace()
 
 # FE input file.
-pylithInput = 'output/axialtraction_maxwell_quad4_onecell-maxwell.h5'
+pylithInput = 'output/axialtraction_maxwell_quad_onecell-maxwell.h5'
 
 # Physical properties.
 p_density = 2500.0
