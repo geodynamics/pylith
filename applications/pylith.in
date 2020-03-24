@@ -22,8 +22,33 @@
 
 if __name__ == "__main__":
 
-    from pylith.apps.PyLithApp import PyLithApp
-    from pyre.applications import start
-    start(applicationClass=PyLithApp)
+    try:
+        from pylith.apps.PyLithApp import PyLithApp
+        from pyre.applications import start
+        start(applicationClass=PyLithApp)
+    except ImportError as err:
+        import subprocess
+        import os
+        import sys
+        
+        print("Error importing PyLithApp.")
+        print("Did you forget to run 'source setup.sh' in the top-level PyLith directory?\n")
+
+        print("Diagnostic information")
+        print("    PyLith application driver: '{}'".format(__file__))
+
+        nemesis_abspath = subprocess.check_output(["which", "nemesis"]).strip()
+        print("    nemesis Python interpreter: '{}'".format(nemesis_abspath))
+
+        bin_path = os.environ.get("PATH")
+        print("    PATH:")
+        for pdir in bin_path.split(":"):
+            print("        {}".format(pdir))
+
+        print("    sys.path (PYTHONPATH):")
+        for pdir in sys.path:
+            print("        {}".format(pdir))
+
+        raise
 
 # End of file 
