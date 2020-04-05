@@ -32,6 +32,17 @@
 #include "pylith/utils/petscfwd.h" // USES PetscFE
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
+#include <map>
+
+// Wrapper for PetscFE
+class pylith::topology::FE {
+public:
+  FE(PetscFE fe) : _fe(fe) {PetscObjectReference((PetscObject) _fe);};
+  FE(const FE& fe) : _fe(fe._fe) {PetscObjectReference((PetscObject) _fe);};
+  ~FE() {PetscObjectDereference((PetscObject) _fe);}
+
+  PetscFE _fe;
+};
 
 // FieldOps -------------------------------------------------------------
 /// @brief C++ class for simple operations for a Field object.
@@ -92,6 +103,8 @@ private:
     FieldOps(void); ///< Not implemented.
     FieldOps(const FieldOps&); ///< Not implemented.
     const FieldOps& operator=(const FieldOps&); ///< Not implemented.
+
+    static std::map<FieldBase::Discretization, pylith::topology::FE> feStore;
 
 }; // FieldOps
 

@@ -130,7 +130,33 @@ public:
             feSpace(feSpaceValue)
         {}
 
+        bool operator==(const Discretization rhs) const
+        {
+          if (basisOrder         != rhs.basisOrder)        return false;
+          if (quadOrder          != rhs.quadOrder)         return false;
+          if (dimension          != rhs.dimension)         return false;
+          if (isBasisContinuous  != rhs.isBasisContinuous) return false;
+          if (feSpace            != rhs.feSpace)           return false;
+          return true;
+        }
 
+        bool operator<(const Discretization rhs) const
+        {
+          if (basisOrder         < rhs.basisOrder)        return true;
+          if (basisOrder        == rhs.basisOrder) {
+            if (quadOrder        < rhs.quadOrder)         return true;
+            if (quadOrder       == rhs.quadOrder)  {
+              if (dimension      < rhs.dimension)         return true;
+              if (dimension     == rhs.dimension) {
+                if (isBasisContinuous  < rhs.isBasisContinuous) return true;
+                if (isBasisContinuous == rhs.isBasisContinuous) {
+                  if (feSpace          < rhs.feSpace)           return true;
+                }
+              }
+            }
+          }
+          return false;
+        }
     }; // Discretization
 
     /// Mapping from field name to discretization (intended for subfields).
