@@ -159,15 +159,20 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
     PetscDMLabel subpointMap = NULL;
     PetscDMLabel subpointMapF = NULL;
 
-    PylithInt dim, dimF, pStart, pEnd, qStart, qEnd, cEnd, cMax, vEnd, vMax;
+    PylithInt dim, dimF, pStart, pEnd, qStart, qEnd, cStart, cEnd, cMax, vEnd, vMax = -1;
     PetscErrorCode err;
 
     err = DMGetCoordinateDM(dmMesh, &dmCoord);PYLITH_CHECK_ERROR(err);assert(dmCoord);
-    err = DMPlexGetHeightStratum(dmCoord, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHeightStratum(dmCoord, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetDepthStratum(dmCoord, 0, NULL, &vEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetHybridBounds(dmCoord, &cMax, NULL, NULL, &vMax);PYLITH_CHECK_ERROR(err);
+    cMax = cStart;
+    for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
+      DMPolytopeType ct;
+      err = DMPlexGetCellType(dmMesh, cell, &ct);PYLITH_CHECK_ERROR(err);
+      if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) break;
+    }
     PylithInt excludeRanges[4] = {cMax, cEnd, vMax, vEnd};
-    PylithInt numExcludes = (cMax >= 0 ? 1 : 0) + (vMax >= 0 ? 1 : 0);
+    PylithInt numExcludes = (cMax < cEnd ? 1 : 0) + (vMax >= 0 ? 1 : 0);
 
     err = DMGetSection(dmCoord, &section);PYLITH_CHECK_ERROR(err);
     err = DMGetDimension(dmMesh,  &dim);PYLITH_CHECK_ERROR(err);
@@ -182,7 +187,7 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
         PylithInt n = 0;
 
         err = PetscSectionGetChart(section, &qStart, &qEnd);PYLITH_CHECK_ERROR(err);
-        err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetSubpointIS(dmMesh, &subpointIS);PYLITH_CHECK_ERROR(err);
         if (subpointIS) {
             err = ISGetLocalSize(subpointIS, &n);PYLITH_CHECK_ERROR(err);
             err = ISGetIndices(subpointIS, &indices);PYLITH_CHECK_ERROR(err);
@@ -204,7 +209,6 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
         } // for
         if (subpointIS) {
             err = ISRestoreIndices(subpointIS, &indices);PYLITH_CHECK_ERROR(err);
-            err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
         } // if
           /* No need to setup section */
         section = subSection;

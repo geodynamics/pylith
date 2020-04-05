@@ -173,17 +173,16 @@ pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
         // Write cells
 
         // Account for censored cells
-        PetscInt cellHeight, cStart, cEnd, cMax, conesSize, numCells, numCorners, numCornersLocal = 0;
+        PetscInt cellHeight, cStart, cEnd, conesSize, numCells, numCorners, numCornersLocal = 0;
         err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);PYLITH_CHECK_ERROR(err);
         err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetHybridBounds(dmMesh, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
-        if (cMax >= 0) {
-            cEnd = PetscMin(cEnd, cMax);
-        } // if
         for (PetscInt cell = cStart; cell < cEnd; ++cell) {
+            DMPolytopeType ct;
             PetscInt *closure = NULL;
             PetscInt closureSize, v;
 
+            err = DMPlexGetCellType(dmMesh, cell, &ct);PYLITH_CHECK_ERROR(err);
+            if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) continue;
             err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
             numCornersLocal = 0;
             for (v = 0; v < closureSize*2; v += 2) {
@@ -212,16 +211,19 @@ pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
         err = PetscObjectSetName((PetscObject) cellVec, "cells");PYLITH_CHECK_ERROR(err);
         err = VecGetArray(cellVec, &vertices);PYLITH_CHECK_ERROR(err);
         for (PetscInt cell = cStart, v = 0; cell < cEnd; ++cell) {
+            DMPolytopeType ct;
             PetscInt *closure = NULL;
             PetscInt closureSize, nC = 0, p;
 
+            err = DMPlexGetCellType(dmMesh, cell, &ct);PYLITH_CHECK_ERROR(err);
+            if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) continue;
             err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
             for (p = 0; p < closureSize*2; p += 2) {
                 if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
                     closure[nC++] = closure[p];
                 } // if
             } // for
-            err = DMPlexInvertCell(meshDim, nC, closure);PYLITH_CHECK_ERROR(err);
+            err = DMPlexInvertCell(ct, closure);PYLITH_CHECK_ERROR(err);
             for (p = 0; p < nC; ++p) {
                 const PetscInt gv = gvertex[closure[p] - vStart];
                 vertices[v++] = gv < 0 ? -(gv+1) : gv;

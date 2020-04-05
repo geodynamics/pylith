@@ -76,7 +76,16 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
     err = MPI_Bcast(&spaceDim, 1, MPIU_INT, 0, comm); PYLITH_CHECK_ERROR(err);
     const PetscInt bound = numCells*numCorners;
     for (PetscInt coff = 0; coff < bound; coff += numCorners) {
-        err = DMPlexInvertCell(dim, numCorners, (int *) &cells[coff]); PYLITH_CHECK_ERROR(err);
+      DMPolytopeType ct;
+
+      if (dim < 3) continue;
+      switch (numCorners) {
+        case 4: ct = DM_POLYTOPE_TETRAHEDRON;break;
+        case 6: ct = DM_POLYTOPE_TRI_PRISM;break;
+        case 8: ct = DM_POLYTOPE_HEXAHEDRON;break;
+        default: continue;
+      }
+      err = DMPlexInvertCell(ct, (int *) &cells[coff]); PYLITH_CHECK_ERROR(err);
     }
     err = DMPlexCreateFromCellList(comm, dim, numCells, numVertices, numCorners, interpolate, &cells[0], spaceDim, &(*coordinates)[0], &dmMesh); PYLITH_CHECK_ERROR(err);
     mesh->dmMesh(dmMesh);

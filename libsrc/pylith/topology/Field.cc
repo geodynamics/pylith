@@ -641,12 +641,17 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
     PetscSection section = NULL, newSection = NULL, gsection = NULL, subSection = NULL;
     PetscSF sf = NULL;
     PetscDMLabel subpointMap = NULL, subpointMapF = NULL;
-    PetscInt dim, dimF, pStart, pEnd, qStart, qEnd, cEnd, cMax, vEnd, vMax;
-    err = DMPlexGetHeightStratum(_dm, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
+    PetscInt dim, dimF, pStart, pEnd, qStart, qEnd, cStart, cEnd, cMax, vEnd, vMax = -1;
+    err = DMPlexGetHeightStratum(_dm, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetDepthStratum(_dm, 0, NULL, &vEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetHybridBounds(_dm, &cMax, NULL, NULL, &vMax);PYLITH_CHECK_ERROR(err);
+    cMax = cStart;
+    for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
+      DMPolytopeType ct;
+      err = DMPlexGetCellType(_dm, cell, &ct);PYLITH_CHECK_ERROR(err);
+      if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) break;
+    }
     PetscInt excludeRanges[4] = {cMax, cEnd, vMax, vEnd};
-    PetscInt numExcludes = (cMax >= 0 ? 1 : 0) + (vMax >= 0 ? 1 : 0);
+    PetscInt numExcludes = (cMax < cEnd ? 1 : 0) + (vMax >= 0 ? 1 : 0);
 
     err = DMGetSection(_dm, &section);PYLITH_CHECK_ERROR(err);
     err = DMGetDimension(dm,  &dim);PYLITH_CHECK_ERROR(err);
@@ -661,7 +666,7 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
         PetscInt n = 0, q = 0;
 
         err = PetscSectionGetChart(section, &qStart, &qEnd);PYLITH_CHECK_ERROR(err);
-        err = DMPlexCreateSubpointIS(dm, &subpointIS);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetSubpointIS(dm, &subpointIS);PYLITH_CHECK_ERROR(err);
         if (subpointIS) {
             err = ISGetLocalSize(subpointIS, &n);PYLITH_CHECK_ERROR(err);
             err = ISGetIndices(subpointIS, &ind);PYLITH_CHECK_ERROR(err);
@@ -683,7 +688,6 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
         } // for
         if (subpointIS) {
             err = ISRestoreIndices(subpointIS, &ind);PYLITH_CHECK_ERROR(err);
-            err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
         } // if
           /* No need to setup section */
         section = subSection;

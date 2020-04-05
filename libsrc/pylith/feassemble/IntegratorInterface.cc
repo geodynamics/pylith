@@ -439,8 +439,13 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
 
     PetscDS prob = NULL;
     PetscInt cMax = 0;
-    err = DMPlexGetHeightStratum(dmSoln, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetHybridBounds(dmSoln, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    cMax = cStart;
+    for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
+      DMPolytopeType ct;
+      err = DMPlexGetCellType(dmSoln, cell, &ct);PYLITH_CHECK_ERROR(err);
+      if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) break;
+    }
     err = DMGetCellDS(dmSoln, cMax, &prob);PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data
@@ -502,8 +507,13 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
 
     PetscDS prob = NULL;
     PetscInt cMax = 0;
-    err = DMPlexGetHeightStratum(dmSoln, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetHybridBounds(dmSoln, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    cMax = cStart;
+    for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
+      DMPolytopeType ct;
+      err = DMPlexGetCellType(dmSoln, cell, &ct);PYLITH_CHECK_ERROR(err);
+      if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) break;
+    }
     err = DMGetCellDS(dmSoln, cMax, &prob);PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data

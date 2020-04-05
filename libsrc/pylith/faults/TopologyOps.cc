@@ -51,7 +51,7 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
         PetscInt defaultValue, cStart, cEnd, vStart, vEnd;
 
         err = DMLabelGetDefaultValue(groupField, &defaultValue);PYLITH_CHECK_ERROR(err);
-        err = DMPlexCreateSubpointIS(subdm, &subpointIS);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetSubpointIS(subdm, &subpointIS);PYLITH_CHECK_ERROR(err);
         err = DMPlexGetHeightStratum(subdm, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
         err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
         err = ISGetIndices(subpointIS, &dmpoints);PYLITH_CHECK_ERROR(err);
@@ -73,13 +73,11 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
                 std::ostringstream msg;
                 msg << "Ambiguous fault surface. Cell "<<dmpoints[c]<<" has all of its vertices on the fault.";
                 err = ISRestoreIndices(subpointIS, &dmpoints);PYLITH_CHECK_ERROR(err);
-                err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
                 err = DMDestroy(&subdm);PYLITH_CHECK_ERROR(err);
                 throw std::runtime_error(msg.str());
             } // if
         } // for
         err = ISRestoreIndices(subpointIS, &dmpoints);PYLITH_CHECK_ERROR(err);
-        err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
     } // if
     err = DMPlexOrient(subdm);PYLITH_CHECK_ERROR(err);
 
@@ -100,13 +98,18 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
     PetscDM sdm = NULL;
     PetscDM dm = mesh->dmMesh();assert(dm);
     PetscDMLabel subpointMap = NULL, label = NULL, mlabel = NULL;
-    PetscInt dim, cMax, cEnd, numCohesiveCellsOld;
+    PetscInt dim, cMax, cStart, cEnd, numCohesiveCellsOld;
     PetscErrorCode err;
 
     // Have to remember the old number of cohesive cells
-    err = DMPlexGetHeightStratum(dm, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetHybridBounds(dm, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
-    numCohesiveCellsOld = cEnd - (cMax < 0 ? cEnd : cMax);
+    err = DMPlexGetHeightStratum(dm, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    cMax = cStart;
+    for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
+      DMPolytopeType ct;
+      err = DMPlexGetCellType(sdm, cell, &ct);PYLITH_CHECK_ERROR(err);
+      if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) break;
+    }
+    numCohesiveCellsOld = cEnd - cMax;
     // Create cohesive cells
     err = DMPlexGetSubpointMap(faultMesh.dmMesh(), &subpointMap);PYLITH_CHECK_ERROR(err);
     err = DMLabelDuplicate(subpointMap, &label);PYLITH_CHECK_ERROR(err);
@@ -184,8 +187,13 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
 
     err = DMGetLabel(sdm, "material-id", &mlabel);PYLITH_CHECK_ERROR(err);
     if (mlabel) {
-        err = DMPlexGetHeightStratum(sdm, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetHybridBounds(sdm, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetHeightStratum(sdm, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+        cMax = cStart;
+        for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
+          DMPolytopeType ct;
+          err = DMPlexGetCellType(sdm, cell, &ct);PYLITH_CHECK_ERROR(err);
+          if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) break;
+        }
         assert(cEnd > cMax + numCohesiveCellsOld);
         for (PetscInt cell = cMax; cell < cEnd - numCohesiveCellsOld; ++cell) {
             PetscInt onBd;

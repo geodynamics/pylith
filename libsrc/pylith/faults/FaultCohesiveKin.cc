@@ -212,15 +212,12 @@ pylith::faults::FaultCohesiveKin::createConstraint(const pylith::topology::Field
     PetscDMLabel buriedCohesiveLabel = NULL;
     PetscIS pointIS = NULL;
     const PetscInt *points = NULL;
-    PetscInt fMax, fEnd, eMax, eEnd, n;
+    PetscInt n;
     std::ostringstream labelstream;
     labelstream << getBuriedEdgesMarkerLabel() << "_cohesive";
     std::string labelname = labelstream.str();
     PetscErrorCode err;
 
-    err = DMPlexGetHybridBounds(dm, NULL, &fMax, &eMax, NULL);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetHeightStratum(dm, 1, NULL, &fEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetDepthStratum(dm, 1, NULL, &eEnd);PYLITH_CHECK_ERROR(err);
     err = DMCreateLabel(dm, labelname.c_str());PYLITH_CHECK_ERROR(err);
     err = DMGetLabel(dm, getBuriedEdgesMarkerLabel(), &buriedLabel);PYLITH_CHECK_ERROR(err);
     err = DMGetLabel(dm, labelname.c_str(), &buriedCohesiveLabel);PYLITH_CHECK_ERROR(err);
@@ -234,9 +231,11 @@ pylith::faults::FaultCohesiveKin::createConstraint(const pylith::topology::Field
         err = DMPlexGetSupportSize(dm, points[p], &supportSize);PYLITH_CHECK_ERROR(err);
         err = DMPlexGetSupport(dm, points[p], &support);PYLITH_CHECK_ERROR(err);
         for (int s = 0; s < supportSize; ++s) {
+            DMPolytopeType ct;
             const PetscInt spoint = support[s];
 
-            if (((spoint >= fMax) && (spoint < fEnd)) || ((spoint >= eMax) && (spoint < eEnd))) {
+            err = DMPlexGetCellType(dm, spoint, &ct);PYLITH_CHECK_ERROR(err);
+            if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_POINT_PRISM_TENSOR)) {
                 const PetscInt *cone = NULL;
                 PetscInt coneSize;
 
