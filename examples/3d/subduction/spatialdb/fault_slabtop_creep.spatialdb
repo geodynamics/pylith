@@ -16,19 +16,8 @@ SimpleGridDB {
   value-names =  slip_rate_left_lateral  slip_rate_reverse  slip_rate_opening  initiation_time
   value-units =  cm/year  cm/year  cm/year  year
   space-dim = 3
-  cs-data = geo-projected {
-    to-meters = 1.0e+3 // Specify coordinates in km for convenience.
-    ellipsoid = WGS84
-    datum-horiz = WGS84
-    datum-vert = mean sea level
-    origin-lon = 0
-    origin-lat = 0
-    rotation-angle = 0
-    projector = projector {
-      projection = tmerc
-      units = m
-      proj-options = +lon_0=-122.6765 +lat_0=45.5231 +k=0.9996
-    } // projector
+  cs-data = geographic {
+    crs-string = +proj=tmerc +datum=WGS84 +lon_0=-122.6765 +lat_0=45.5231 +k=0.9996 +units=km
   } // cs-data
 } // SimpleGridDB
 

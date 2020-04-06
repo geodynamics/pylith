@@ -18,20 +18,9 @@ SimpleGridDB {
   space-dim = 3
   value-names = viscosity viscous_strain_xx viscous_strain_yy viscous_strain_zz viscous_strain_xy viscous_strain_yz viscous_strain_xz total_strain_xx total_strain_yy total_strain_zz total_strain_xy total_strain_yz total_strain_xz
   value-units = Pa*s none none none none none none none none none none none none
-  cs-data = geo-projected {
-    to-meters = 1.0e+3
-    ellipsoid = WGS84
-    datum-horiz = WGS84
-    datum-vert = mean sea level
-    origin-lon = 0
-    origin-lat = 0
-    rotation-angle = 0
-    projector = projector {
-      projection = tmerc
-      units = m
-      proj-options = +lon_0=-122.6765 +lat_0=45.5231 +k=0.9996
-    }
-  }
+  cs-data = geographic {
+    crs-string = +proj=tmerc +datum=WGS84 +lon_0=-122.6765 +lat_0=45.5231 +k=0.9996 +units=km
+  } // cs-data
 }
 
 // x coordinate
