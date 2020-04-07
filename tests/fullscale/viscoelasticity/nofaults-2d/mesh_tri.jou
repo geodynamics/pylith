@@ -14,9 +14,9 @@ surface all size 1000
 surface all scheme trimesh
 mesh surface all
 
-playback 'createbc.jou'
+playback 'bc.jou'
 
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-export mesh "tri3.exo" dimension 2 overwrite
+export mesh "mesh_tri.exo" dimension 2 overwrite
