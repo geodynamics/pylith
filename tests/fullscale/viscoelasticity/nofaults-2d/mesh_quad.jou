@@ -14,9 +14,9 @@ surface all size 1000
 surface all scheme submap
 mesh surface all
 
-playback 'createbc.jou'
+playback 'bc.jou'
 
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-export mesh "quad4.exo" dimension 2 overwrite
+export mesh "mesh_quad.exo" dimension 2 overwrite
