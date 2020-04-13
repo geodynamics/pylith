@@ -24,8 +24,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cstring> // USES strlen()
-#include <stdexcept> \
-    // USES std::runtime_error()
+#include <stdexcept> // USES std::runtime_error()
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
