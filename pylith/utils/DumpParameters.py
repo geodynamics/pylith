@@ -19,6 +19,8 @@
 
 from pyre.components.Component import Component
 
+from PetscManager import PetscManager
+
 
 class DumpParameters(Component):
     """
@@ -123,6 +125,15 @@ class DumpParameters(Component):
                 "properties": facilityProperties,
                 "components": facilityComponents,
             }
+
+        if isinstance(obj, PetscManager):
+            for iname, descriptor in obj.options:
+                properties[iname] = {
+                    "value": str(descriptor.value),
+                    "type": "str",
+                    "description": "N/A",
+                    "setFrom": str(descriptor.locator),
+                }
         return (properties, facilities)
 
     def _createPath(self, filename):
