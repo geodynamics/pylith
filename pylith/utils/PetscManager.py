@@ -27,92 +27,87 @@ import pylith.utils.petsc as petsc
 
 
 class PetscManager(Component):
-  """
-  Python PetscManager object for managing PETSc options.
-
-  Factory: petsc_manager
-  """
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="petsc"):
     """
-    Constructor.
-    """
-    Component.__init__(self, name, facility="petsc_manager")
-    self.options = []
-    return
+    Python PetscManager object for managing PETSc options.
 
-
-  def initialize(self):
+    Factory: petsc_manager
     """
-    Initialize PETSc.
-    """
-    import sys
-    args = [sys.executable]
-    options = self._getOptions()
-    if len(options) > 0:
-      for arg in options:
-        args.append(arg)
-    petsc.initialize(args)
-    from pylith.mpi.Communicator import petsc_comm_world
-    comm = petsc_comm_world()
-    if 0 == comm.rank:
-      self._info.log("Initialized PETSc.")
-    return
 
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def finalize(self):
-    """
-    Finalize PETSc.
-    """
-    from pylith.mpi.Communicator import petsc_comm_world
-    comm = petsc_comm_world()
-    if 0 == comm.rank:
-      self._info.log("Finalizing PETSc.")
-    petsc.finalize()
-    return
+    def __init__(self, name="petsc"):
+        """
+        Constructor.
+        """
+        Component.__init__(self, name, facility="petsc_manager")
+        self.options = []
+        return
 
+    def initialize(self):
+        """
+        Initialize PETSc.
+        """
+        import sys
+        args = [sys.executable]
+        options = self._getOptions()
+        if len(options) > 0:
+            for arg in options:
+                args.append(arg)
+        petsc.initialize(args)
+        from pylith.mpi.Communicator import petsc_comm_world
+        comm = petsc_comm_world()
+        if 0 == comm.rank:
+            self._info.log("Initialized PETSc.")
+        return
 
-  def setOption(self, name, value):
-    """
-    Set option after PETSc initialization.
-    """
-    petsc.optionsSetValue(name, value)
-    return
+    def finalize(self):
+        """
+        Finalize PETSc.
+        """
+        from pylith.mpi.Communicator import petsc_comm_world
+        comm = petsc_comm_world()
+        if 0 == comm.rank:
+            self._info.log("Finalizing PETSc.")
+        petsc.finalize()
+        return
 
+    def setOption(self, name, value):
+        """
+        Set option after PETSc initialization.
+        """
+        petsc.optionsSetValue(name, value)
+        return
 
-  def updateConfiguration(self, registry):
-    """
-    Update Pyre configuration.
-    """
-    self.options = [
-      (name, descriptor.value) for name, descriptor in registry.properties.iteritems()
-      ]
-    return []
+    def updateConfiguration(self, registry):
+        """
+        Update Pyre configuration.
+        """
+        self.options = [
+            (name, descriptor) for name, descriptor in registry.properties.iteritems()
+        ]
+        return []
 
+    # PRIVATE METHODS ////////////////////////////////////////////////////
 
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _getOptions(self):
-    """
-    Cleanup options for PETSc.
-    """
-    args = []
-    for iname, value in self.options:
-      args.append('-' + iname)
-      if value != 'true':
-        args.append(value)
-    return args
+    def _getOptions(self):
+        """
+        Cleanup options for PETSc.
+        """
+        args = []
+        for iname, descriptor in self.options:
+            args.append('-' + iname)
+            if descriptor.value != 'true':
+                args.append(descriptor.value)
+        return args
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def petsc_manager():
-  """
-  Factory associated with PetscManager.
-  """
-  return PetscManager()
+    """
+    Factory associated with PetscManager.
+    """
+    return PetscManager()
 
 
 # End of file
