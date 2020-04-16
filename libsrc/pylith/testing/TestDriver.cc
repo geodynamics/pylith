@@ -20,6 +20,8 @@
 
 #include "TestDriver.hh" // implementation of class methods
 
+#include "pylith/topology/FieldOps.hh" // USES FieldOps::deallocate()
+
 #include "petsc.h"
 #include <Python.h>
 
@@ -103,6 +105,7 @@ pylith::testing::TestDriver::run(int argc,
         Py_Finalize();
 
         // Finalize PETSc
+	pylith::topology::FieldOps::deallocate();
         err = PetscFinalize();CHKERRQ(err);
     } catch (...) {
         abort();
