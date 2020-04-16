@@ -39,7 +39,13 @@ class pylith::topology::FE {
 public:
   FE(PetscFE fe) : _fe(fe) {PetscObjectReference((PetscObject) _fe);};
   FE(const FE& fe) : _fe(fe._fe) {PetscObjectReference((PetscObject) _fe);};
-  ~FE() {PetscObjectDereference((PetscObject) _fe);}
+  ~FE() {
+    PetscInt refct = -1;
+
+    if (_fe) {PetscObjectGetReference((PetscObject) _fe, &refct);}
+    printf("Destructing feKey with ref count %d\n", refct);
+    PetscObjectDereference((PetscObject) _fe);
+  }
 
   PetscFE _fe;
 };
@@ -96,6 +102,11 @@ public:
     static
     bool layoutsMatch(const pylith::topology::Field& fieldA,
                       const pylith::topology::Field& fieldB);
+
+    /** Free saved PetscFE objects.
+    */
+    static
+    void deallocate(void);
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:

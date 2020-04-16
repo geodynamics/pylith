@@ -31,6 +31,11 @@
 
 std::map<pylith::topology::FieldBase::Discretization, pylith::topology::FE> pylith::topology::FieldOps::feStore = std::map<pylith::topology::FieldBase::Discretization, pylith::topology::FE>();
 
+void
+pylith::topology::FieldOps::deallocate(void) {
+  pylith::topology::FieldOps::feStore.clear();
+}
+
 // ----------------------------------------------------------------------
 // Create PetscFE object for discretization.
 PetscFE

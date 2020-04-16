@@ -22,6 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // HASA Field
+#include "pylith/topology/FieldOps.hh" // USES FieldOps
 
 #include "pylith/materials/Material.hh" // USES Material
 #include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
@@ -85,6 +86,8 @@ pylith::problems::Problem::deallocate(void) {
     delete _normalizer;_normalizer = NULL;
     _gravityField = NULL; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
     delete _observers;_observers = NULL;
+
+    pylith::topology::FieldOps::deallocate();
 
     PYLITH_METHOD_END;
 } // deallocate
