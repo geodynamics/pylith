@@ -132,6 +132,7 @@ public:
                              const char* components[],
                              const int numComponents,
                              const double scale,
+                             const bool tensorBasis,
                              const int basisOrder,
                              const int quadOrder,
                              const int dimension,

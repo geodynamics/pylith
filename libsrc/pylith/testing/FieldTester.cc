@@ -83,6 +83,7 @@ pylith::testing::FieldTester::checkSubfieldInfo(const pylith::topology::Field& f
     // Discretization
     const pylith::topology::Field::Discretization& feE = infoE.fe;
     const pylith::topology::Field::Discretization& fe = info.fe;
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.tensorBasis, fe.tensorBasis);
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.basisOrder, fe.basisOrder);
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.quadOrder, fe.quadOrder);
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.dimension, fe.dimension);

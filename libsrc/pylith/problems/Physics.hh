@@ -79,6 +79,7 @@ public:
      * @param[in] feSpace Finite-element space.
      */
     void setAuxiliarySubfieldDiscretization(const char* subfieldName,
+                                            const bool tensorBasis,
                                             const int basisOrder,
                                             const int quadOrder,
                                             const int dimension,
@@ -95,6 +96,7 @@ public:
      * @param[in] feSpace Finite-element space.
      */
     void setDerivedSubfieldDiscretization(const char* subfieldName,
+                                          const bool tensorBasis,
                                           const int basisOrder,
                                           const int quadOrder,
                                           const int dimension,

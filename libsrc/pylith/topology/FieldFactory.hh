@@ -59,6 +59,7 @@ public:
      * @param[in] feSpace Finite-element space.
      */
     void setSubfieldDiscretization(const char* subfieldName,
+                                   const bool tensorBasis,
                                    const int basisOrder,
                                    const int quadOrder,
                                    const int dimension,

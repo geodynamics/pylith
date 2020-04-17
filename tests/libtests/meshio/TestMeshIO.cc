@@ -36,6 +36,28 @@
 #include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::logic_error
 
+static PetscErrorCode DMPlexInvertCell_Private(PetscInt dim, PetscInt numCorners, PetscInt cone[])
+{
+#define SWAPCONE(cone,i,j)  \
+  do {                      \
+    int _cone_tmp;          \
+    _cone_tmp = (cone)[i];  \
+    (cone)[i] = (cone)[j];  \
+    (cone)[j] = _cone_tmp;  \
+  } while (0)
+
+  PetscFunctionBegin;
+  if (dim != 3) PetscFunctionReturn(0);
+  switch (numCorners) {
+  case 4: SWAPCONE(cone,0,1); break;
+  case 6: SWAPCONE(cone,0,1); break;
+  case 8: SWAPCONE(cone,1,3); break;
+  default: break;
+  }
+  PetscFunctionReturn(0);
+#undef SWAPCONE
+}
+
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
@@ -95,7 +117,7 @@ pylith::meshio::TestMeshIO::_createMesh(void) { // _createMesh
         cells[coff] = data->cells[coff];
     }
     for (PylithInt coff = 0; coff < bound; coff += data->numCorners) {
-        err = DMPlexInvertCell(data->cellDim, data->numCorners, &cells[coff]);PYLITH_CHECK_ERROR(err);
+        err = DMPlexInvertCell_Private(data->cellDim, data->numCorners, &cells[coff]);PYLITH_CHECK_ERROR(err);
     } // for
     err = DMPlexCreateFromCellList(_mesh->comm(), data->cellDim, data->numCells, data->numVertices, data->numCorners, interpolateMesh, cells, data->spaceDim, data->vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
     delete [] cells;
@@ -199,7 +221,7 @@ pylith::meshio::TestMeshIO::_checkVals(void) { // _checkVals
                 closure[numCorners++] = point;
             } // if
         } // for
-        err = DMPlexInvertCell(data->cellDim, numCorners, closure);PYLITH_CHECK_ERROR(err);
+        err = DMPlexInvertCell_Private(data->cellDim, numCorners, closure);PYLITH_CHECK_ERROR(err);
         CPPUNIT_ASSERT_EQUAL(data->numCorners, numCorners);
         for (PylithInt p = 0; p < numCorners; ++p, ++index) {
             CPPUNIT_ASSERT_EQUAL(data->cells[index], closure[p]-offset);

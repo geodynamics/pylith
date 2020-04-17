@@ -62,15 +62,17 @@ pylith::topology::FieldFactory::getNumSubfields(void) const {
 // Set discretization information for auxiliary subfield.
 void
 pylith::topology::FieldFactory::setSubfieldDiscretization(const char* subfieldName,
+                                                          const bool tensorBasis,
                                                           const int basisOrder,
                                                           const int quadOrder,
                                                           const int dimension,
                                                           const bool isBasisContinuous,
                                                           const pylith::topology::FieldBase::SpaceEnum feSpace) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setSubfieldDiscretization(subfieldName="<<subfieldName<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", dimension="<<dimension<<", isBasisContinuous="<<isBasisContinuous<<")");
+    PYLITH_JOURNAL_DEBUG("setSubfieldDiscretization(subfieldName="<<subfieldName<<", tensorBasis="<<tensorBasis<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", dimension="<<dimension<<", isBasisContinuous="<<isBasisContinuous<<")");
 
     pylith::topology::FieldBase::Discretization feInfo;
+    feInfo.tensorBasis = tensorBasis;
     feInfo.basisOrder = basisOrder;
     feInfo.quadOrder = quadOrder;
     feInfo.dimension = dimension;

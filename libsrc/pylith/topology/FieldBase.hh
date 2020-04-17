@@ -112,17 +112,20 @@ public:
     }; // Description
 
     struct Discretization {
+        bool tensorBasis; ///< Is this a tensor polynomial basis
         int basisOrder; ///< Order of basis functions.
         int quadOrder; ///< Order of quadrature scheme.
         int dimension; ///< Dimension of point(s) for discretization.
         bool isBasisContinuous; ///< Is basis continuous?
         SpaceEnum feSpace; ///< Finite-element space.
 
-        Discretization(const int basisOrderValue=1,
+        Discretization(const bool tensorBasisValue=false,
+                       const int basisOrderValue=1,
                        const int quadOrderValue=1,
                        const int dimensionValue=-1,
                        const bool isBasisContinuousValue=true,
                        const SpaceEnum feSpaceValue=POLYNOMIAL_SPACE) :
+            tensorBasis(tensorBasisValue),
             basisOrder(basisOrderValue),
             quadOrder(quadOrderValue),
             dimension(dimensionValue),
@@ -132,6 +135,7 @@ public:
 
         bool operator==(const Discretization rhs) const
         {
+          if (tensorBasis        != rhs.tensorBasis)       return false;
           if (basisOrder         != rhs.basisOrder)        return false;
           if (quadOrder          != rhs.quadOrder)         return false;
           if (dimension          != rhs.dimension)         return false;
@@ -142,15 +146,18 @@ public:
 
         bool operator<(const Discretization rhs) const
         {
-          if (basisOrder         < rhs.basisOrder)        return true;
-          if (basisOrder        == rhs.basisOrder) {
-            if (quadOrder        < rhs.quadOrder)         return true;
-            if (quadOrder       == rhs.quadOrder)  {
-              if (dimension      < rhs.dimension)         return true;
-              if (dimension     == rhs.dimension) {
-                if (isBasisContinuous  < rhs.isBasisContinuous) return true;
-                if (isBasisContinuous == rhs.isBasisContinuous) {
-                  if (feSpace          < rhs.feSpace)           return true;
+          if (tensorBasis        < rhs.tensorBasis)       return true;
+          if (tensorBasis       == rhs.tensorBasis) {
+            if (basisOrder         < rhs.basisOrder)        return true;
+            if (basisOrder        == rhs.basisOrder) {
+              if (quadOrder        < rhs.quadOrder)         return true;
+              if (quadOrder       == rhs.quadOrder)  {
+                if (dimension      < rhs.dimension)         return true;
+                if (dimension     == rhs.dimension) {
+                  if (isBasisContinuous  < rhs.isBasisContinuous) return true;
+                  if (isBasisContinuous == rhs.isBasisContinuous) {
+                    if (feSpace          < rhs.feSpace)           return true;
+                  }
                 }
               }
             }

@@ -43,7 +43,6 @@ public:
     PetscInt refct = -1;
 
     if (_fe) {PetscObjectGetReference((PetscObject) _fe, &refct);}
-    printf("Destructing feKey with ref count %d\n", refct);
     PetscObjectDereference((PetscObject) _fe);
   }
 
@@ -81,7 +80,6 @@ public:
     static
     PetscFE createFE(const FieldBase::Discretization& feinfo,
                      const PetscDM dm,
-                     const bool isSimplex,
                      const int numComponents);
 
     /** Check compatibility of discretization of subfields in the auxiliary field and target field.

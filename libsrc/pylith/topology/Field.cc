@@ -93,9 +93,14 @@ pylith::topology::Field::Field(const Mesh& mesh,
     assert(dm);
     assert(localVec);
 
+    PetscInt dim, cStart, coneSize;
     PetscErrorCode err;
+    err = DMGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHeightStratum(dm, 0, &cStart, NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetConeSize(dm, cStart, &coneSize);PYLITH_CHECK_ERROR(err);
 
     Discretization fe;
+    fe.tensorBasis = (dim+1 == coneSize);
     fe.basisOrder = 1;
     fe.quadOrder = 1;
     fe.dimension = -1;
@@ -496,6 +501,7 @@ pylith::topology::Field::view(const char* label,
                 } // for
             } // if
             std::cout << ", scale: " << sinfo.description.scale
+                      << ", tensorBasis: " << sinfo.fe.tensorBasis
                       << ", basisOrder: " << sinfo.fe.basisOrder
                       << ", quadOrder: " << sinfo.fe.quadOrder
                       << ", dimension: " << sinfo.fe.dimension
@@ -900,6 +906,7 @@ pylith::topology::Field::subfieldAdd(const char *name,
                                      const char* components[],
                                      const int numComponents,
                                      const double scale,
+                                     const bool tensorBasis,
                                      const int basisOrder,
                                      const int quadOrder,
                                      const int dimension,
@@ -920,6 +927,7 @@ pylith::topology::Field::subfieldAdd(const char *name,
     description.validator = NULL;
 
     Discretization discretization;
+    discretization.tensorBasis = tensorBasis;
     discretization.basisOrder = basisOrder;
     discretization.quadOrder = quadOrder;
     discretization.dimension = dimension;
@@ -962,6 +970,7 @@ pylith::topology::Field::subfieldUpdate(const char* subfieldName,
 
     subfields_type::iterator iter = _subfields.find(subfieldName);
     assert(iter != _subfields.end());
+    assert(discretization.tensorBasis == iter->second.fe.tensorBasis);
     assert(discretization.basisOrder == iter->second.fe.basisOrder);
     assert(discretization.quadOrder == iter->second.fe.quadOrder);
     assert(discretization.dimension == iter->second.fe.dimension);
@@ -991,9 +1000,9 @@ pylith::topology::Field::subfieldsSetup(void) {
 
     bool quadOrderSet = false;
     int quadOrder = -999;
-    for (subfields_type::const_iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
+    for (subfields_type::iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
         const char* sname = s_iter->first.c_str();
-        const SubfieldInfo& sinfo = s_iter->second;
+        SubfieldInfo& sinfo = s_iter->second;
 
         if (quadOrderSet) {
             if (quadOrder != sinfo.fe.quadOrder) {
@@ -1008,7 +1017,8 @@ pylith::topology::Field::subfieldsSetup(void) {
             quadOrderSet = true;
         } // if/else
 
-        PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, _mesh.isSimplex(), sinfo.description.numComponents);assert(fe);
+        sinfo.fe.tensorBasis = !_mesh.isSimplex();
+        PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, sinfo.description.numComponents);assert(fe);
         err = PetscFESetName(fe, sname);PYLITH_CHECK_ERROR(err);
         err = DMSetField(_dm, sinfo.index, NULL, (PetscObject)fe);PYLITH_CHECK_ERROR(err);
         err = PetscFEDestroy(&fe);PYLITH_CHECK_ERROR(err);
