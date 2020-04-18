@@ -192,7 +192,7 @@ inline
 pylith::topology::MatVisitorSubmesh::~MatVisitorSubmesh(void)
 { // destructor
   clear();
-  
+
   PetscErrorCode err;
   err = PetscSectionDestroy(&_subsection);PYLITH_CHECK_ERROR_NOTHROW(err);assert(!_subsection);
   err = PetscSectionDestroy(&_globalSubsection);PYLITH_CHECK_ERROR_NOTHROW(err);assert(!_globalSubsection);
@@ -279,7 +279,7 @@ pylith::topology::SubmeshIS::SubmeshIS(const Mesh& submesh) :
 { // constructor
   PetscDM dmMesh = submesh.dmMesh();assert(dmMesh);
   PetscErrorCode err;
-  err = DMPlexCreateSubpointIS(dmMesh, &_indexSet);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetSubpointIS(dmMesh, &_indexSet);PYLITH_CHECK_ERROR(err);
   if (_indexSet) {
     err = ISGetSize(_indexSet, &_size);PYLITH_CHECK_ERROR(err);assert(_size >= 0);
     err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);
@@ -303,7 +303,6 @@ pylith::topology::SubmeshIS::deallocate(void)
   PetscErrorCode err;
   if (_indexSet) {
     err = ISRestoreIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);_points=NULL;
-    err = ISDestroy(&_indexSet);PYLITH_CHECK_ERROR(err);assert(!_indexSet);
   } // if
 } // deallocate
 
