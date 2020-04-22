@@ -116,6 +116,7 @@ public:
         int basisOrder; ///< Order of basis functions.
         int quadOrder; ///< Order of quadrature scheme.
         int dimension; ///< Dimension of point(s) for discretization.
+        int components; ///< Number of components for field
         bool isBasisContinuous; ///< Is basis continuous?
         SpaceEnum feSpace; ///< Finite-element space.
 
@@ -123,12 +124,14 @@ public:
                        const int basisOrderValue=1,
                        const int quadOrderValue=1,
                        const int dimensionValue=-1,
+                       const int componentsValue=-1,
                        const bool isBasisContinuousValue=true,
                        const SpaceEnum feSpaceValue=POLYNOMIAL_SPACE) :
             tensorBasis(tensorBasisValue),
             basisOrder(basisOrderValue),
             quadOrder(quadOrderValue),
             dimension(dimensionValue),
+            components(componentsValue),
             isBasisContinuous(isBasisContinuousValue),
             feSpace(feSpaceValue)
         {}
@@ -139,6 +142,7 @@ public:
           if (basisOrder         != rhs.basisOrder)        return false;
           if (quadOrder          != rhs.quadOrder)         return false;
           if (dimension          != rhs.dimension)         return false;
+          if (components         != rhs.components)        return false;
           if (isBasisContinuous  != rhs.isBasisContinuous) return false;
           if (feSpace            != rhs.feSpace)           return false;
           return true;
@@ -154,9 +158,12 @@ public:
               if (quadOrder       == rhs.quadOrder)  {
                 if (dimension      < rhs.dimension)         return true;
                 if (dimension     == rhs.dimension) {
-                  if (isBasisContinuous  < rhs.isBasisContinuous) return true;
-                  if (isBasisContinuous == rhs.isBasisContinuous) {
-                    if (feSpace          < rhs.feSpace)           return true;
+                  if (components   < rhs.components)         return true;
+                  if (components  == rhs.components) {
+                    if (isBasisContinuous  < rhs.isBasisContinuous) return true;
+                    if (isBasisContinuous == rhs.isBasisContinuous) {
+                      if (feSpace          < rhs.feSpace)           return true;
+                    }
                   }
                 }
               }
