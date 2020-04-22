@@ -947,7 +947,6 @@ pylith::topology::Field::subfieldAdd(const Description& description,
     PYLITH_METHOD_BEGIN;
 
     assert(0 == _subfields.count(description.label));
-    assert(discretization.dimension > 0);
 
     // Keep track of name/components until setup
     SubfieldInfo info;
