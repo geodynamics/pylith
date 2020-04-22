@@ -70,6 +70,7 @@ pylith::topology::FieldFactory::setSubfieldDiscretization(const char* subfieldNa
                                                           const pylith::topology::FieldBase::SpaceEnum feSpace) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("setSubfieldDiscretization(subfieldName="<<subfieldName<<", tensorBasis="<<tensorBasis<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", dimension="<<dimension<<", isBasisContinuous="<<isBasisContinuous<<")");
+    assert(dimension > 0);
 
     pylith::topology::FieldBase::Discretization feInfo;
     feInfo.tensorBasis = tensorBasis;
