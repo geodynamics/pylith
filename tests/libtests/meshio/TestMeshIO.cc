@@ -240,7 +240,7 @@ pylith::meshio::TestMeshIO::_checkVals(void) { // _checkVals
     PylithInt numGroups, pStart, pEnd;
     err = DMPlexGetChart(dmMesh, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
     err = DMGetNumLabels(dmMesh, &numGroups);PYLITH_CHECK_ERROR(err);
-    numGroups -= 2; // Remove depth and material labels.
+    numGroups -= 3; // Remove depth, celltype and material labels.
     CPPUNIT_ASSERT_EQUAL(data->numGroups, numGroups);
     PylithInt index = 0;
     for (PylithInt iGroup = 0; iGroup < numGroups; ++iGroup) {
