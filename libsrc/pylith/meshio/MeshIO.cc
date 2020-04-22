@@ -371,13 +371,13 @@ pylith::meshio::MeshIO::_getGroupNames(string_vector* names) const { // _getGrou
     PetscInt numLabels = 0;
     PetscErrorCode err = 0;
     err = DMGetNumLabels(dmMesh, &numLabels);PYLITH_CHECK_ERROR(err);
-    const PetscInt numGroups = numLabels - 2; // Remove depth and material labels.
+    const PetscInt numGroups = numLabels - 3; // Remove depth, celltype, and material labels.
     names->resize(numGroups);
 
     for (int iGroup = 0, iLabel = 0; iLabel < numLabels; ++iLabel) {
         const char* labelName = NULL;
         err = DMGetLabelName(dmMesh, iLabel, &labelName);PYLITH_CHECK_ERROR(err);
-        if ((std::string(labelName) != std::string("depth")) && (std::string(labelName) != std::string("material-id"))) {
+        if ((std::string(labelName) != std::string("depth")) && (std::string(labelName) != std::string("celltype")) && (std::string(labelName) != std::string("material-id"))) {
             (*names)[iGroup++] = labelName;
         } // if
     } // for
