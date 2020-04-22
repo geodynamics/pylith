@@ -95,6 +95,7 @@ pylith::meshio::DataWriterHDF5::DataWriterHDF5(const DataWriterHDF5& w) :
 } // copy constructor
 
 
+#include <iostream>
 // ---------------------------------------------------------------------------------------------------------------------
 // Prepare file for data at a new time step.
 void
@@ -140,7 +141,7 @@ pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
         err = VecDestroy(&coordsGlobalVec);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
 
-        PetscInt vStart, vEnd, cellHeight, cStart, cEnd, conesSize, numCorners, numCornersLocal = 0;
+        PetscInt vStart, vEnd, cellHeight, cStart, cEnd, conesSize = 0, numCorners, numCornersLocal = -1;
 
         PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
         err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);PYLITH_CHECK_ERROR(err);
@@ -152,22 +153,26 @@ pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
             PetscInt closureSize, v;
 
             err = DMPlexGetCellType(dmMesh, cell, &ct);PYLITH_CHECK_ERROR(err);
-            if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) continue;
+            if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
+                (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
+                (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) { continue; }
             err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-            numCornersLocal = 0;
+            PetscInt numCornersCell = 0;
             for (v = 0; v < closureSize*2; v += 2) {
                 if ((closure[v] >= vStart) && (closure[v] < vEnd)) {
-                    ++numCornersLocal;
+                    ++numCornersCell;
                 } // if
             } // for
+            if (-1 == numCornersLocal) {
+                numCornersLocal = numCornersCell;
+            } else {
+                assert(numCornersCell == numCornersLocal); // All cells in output must have the same number of corners.
+            } // if/else
+            conesSize += numCornersCell;
             err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-            if (numCornersLocal) {
-                break;
-            }
         } // for
         err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPIU_INT, MPI_MAX, mesh.comm());PYLITH_CHECK_ERROR(err);
 
-        conesSize = (cEnd - cStart)*numCorners;
         PetscIS globalVertexNumbers = NULL;
         const PetscInt *gvertex = NULL;
         PetscVec cellVec = NULL;
@@ -188,7 +193,9 @@ pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
             PetscInt closureSize, nC = 0, p;
 
             err = DMPlexGetCellType(dmMesh, cell, &ct);PYLITH_CHECK_ERROR(err);
-            if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) continue;
+            if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
+                (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
+                (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) {continue;}
             err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
             for (p = 0; p < closureSize*2; p += 2) {
                 if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
