@@ -180,7 +180,11 @@ pylith::meshio::HDF5::hasDataset(const char* name)
     hid_t obj = H5Oopen(_file, name, H5P_DEFAULT);
     assert(obj >= 0);
     H5O_info_t info;
+#if defined(PYLITH_HDF5_USE_API_112)
     herr_t err = H5Oget_info(obj, &info, H5O_INFO_ALL);
+#else
+    herr_t err = H5Oget_info(obj, &info);
+#endif
     assert(err >= 0);
     if (H5O_TYPE_DATASET == info.type)
       exists = true;
