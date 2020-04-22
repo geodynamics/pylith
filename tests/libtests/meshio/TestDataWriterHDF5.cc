@@ -34,8 +34,7 @@ herr_t
 pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
                                              const char* name,
                                              const H5O_info_t* info,
-                                             void* data)
-{ // checkObject
+                                             void* data) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(info);
@@ -58,8 +57,9 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
         hsize_t* dimsE = (ndimsE > 0) ? new hsize_t[ndimsE] : 0;
         const int ndimsECheck = H5Sget_simple_extent_dims(dataspaceE, dimsE, 0);CPPUNIT_ASSERT_EQUAL(ndimsE, ndimsECheck);
         int sizeE = (ndimsE > 0 && dimsE[0] > 0) ? 1 : 0;
-        for (int i = 0; i < ndimsE; ++i)
+        for (int i = 0; i < ndimsE; ++i) {
             sizeE *= dimsE[i];
+        } // for
 
         // Get dataset
         hid_t dataset = H5Dopen2(*file, name, H5P_DEFAULT);CPPUNIT_ASSERT(dataset >= 0);
@@ -68,13 +68,17 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
         hsize_t* dims = (ndims > 0) ? new hsize_t[ndims] : 0;
         const int ndimsCheck = H5Sget_simple_extent_dims(dataspace, dims, 0);CPPUNIT_ASSERT_EQUAL(ndims, ndimsCheck);
         int size = (ndims > 0 && dims[0] > 0) ? 1 : 0;
-        for (int i = 0; i < ndims; ++i)
+        for (int i = 0; i < ndims; ++i) {
             size *= dims[i];
+        } // for
 
         // Check dimensions.
-        CPPUNIT_ASSERT_EQUAL(ndimsE, ndims);
-        for (int i = 0; i < ndimsE; ++i)
-            CPPUNIT_ASSERT_EQUAL(dimsE[i], dims[i]);
+        CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of dimensions.", ndimsE, ndims);
+        for (int i = 0; i < ndimsE; ++i) {
+            std::ostringstream msg;
+            msg << "Mismatch in dimension "<< i << " of dataset '" << name << "'." << std::endl;
+            CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), dimsE[i], dims[i]);
+        } // for
 
         // Check the expected datatype
         hid_t datatypeE = H5Dget_type(datasetE);CPPUNIT_ASSERT(datatypeE >= 0);
@@ -85,7 +89,6 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
         CPPUNIT_ASSERT_EQUAL(dataclassE, dataclass);
 
         switch (dataclassE) {
-
         case H5T_FLOAT: {
             double* dataE = (sizeE > 0) ? new double[sizeE] : 0;CPPUNIT_ASSERT(sizeE > 0);
             err = H5Dread(datasetE, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) dataE);CPPUNIT_ASSERT(err >= 0);
@@ -93,20 +96,19 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
             double* data = (size > 0) ? new double[size] : 0;CPPUNIT_ASSERT(size > 0);
             err = H5Dread(dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) data);CPPUNIT_ASSERT(err >= 0);
 
-            CPPUNIT_ASSERT_EQUAL(sizeE, size);
+            CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in dataset total size.", sizeE, size);
 
             // Compare data values.
             const double tolerance = 1.0e-6;
             for (int i = 0; i < size; ++i) {
-                if (dataE[i] != 0.0) {
-                    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, double(data[i])/dataE[i], tolerance);
-                } else {
-                    CPPUNIT_ASSERT_DOUBLES_EQUAL(dataE[i], double(data[i]), tolerance);
-                } // if/else
+                const double toleranceV = std::max(tolerance, tolerance*dataE[i]);
+                std::ostringstream msg;
+                msg << "Mismatch in dataset '" << name << ", at index " << i << ".";
+                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), dataE[i], double(data[i]), toleranceV);
             } // for
 
-            delete[] dataE; dataE = 0;
-            delete[] data; data = 0;
+            delete[] dataE;dataE = 0;
+            delete[] data;data = 0;
 
             break;
         } // H5T_DOUBLE
@@ -128,11 +130,13 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
             err = H5Dread(dataset, datatype, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);CPPUNIT_ASSERT(err >= 0);
 
             for (int i = 0; i < size; ++i) {
+                std::ostringstream msg;
+                msg << "Mismatch in dataset '" << name << ", at index " << i << ".";
                 CPPUNIT_ASSERT_EQUAL(dataE[i], data[i]);
             } // for
 
-            delete[] dataE; dataE = 0;
-            delete[] data; data = 0;
+            delete[] dataE;dataE = 0;
+            delete[] data;data = 0;
 
             break;
         } // H5T_C_S1
@@ -141,15 +145,14 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
             CPPUNIT_ASSERT(false);
         } // switch
 
-
         err = H5Sclose(dataspaceE);CPPUNIT_ASSERT(err >= 0);
         err = H5Dclose(datasetE);CPPUNIT_ASSERT(err >= 0);
 
         err = H5Sclose(dataspace);CPPUNIT_ASSERT(err >= 0);
         err = H5Dclose(dataset);CPPUNIT_ASSERT(err >= 0);
 
-        delete[] dimsE; dimsE = 0;
-        delete[] dims; dims = 0;
+        delete[] dimsE;dimsE = 0;
+        delete[] dims;dims = 0;
 
         break;
     } // dataset
@@ -160,11 +163,11 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
     PYLITH_METHOD_RETURN(0);
 } // checkObject
 
+
 // ----------------------------------------------------------------------
 // Check HDF5 file against archived file.
 void
-pylith::meshio::TestDataWriterHDF5::checkFile(const char* filename)
-{ // checkFile
+pylith::meshio::TestDataWriterHDF5::checkFile(const char* filename) {
     PYLITH_METHOD_BEGIN;
 
     const std::string filenameE = "data/" + std::string(filename);
@@ -196,16 +199,12 @@ pylith::meshio::TestDataWriterHDF5::checkFile(const char* filename)
 pylith::meshio::TestDataWriterHDF5_Data::TestDataWriterHDF5_Data(void) :
     opencloseFilename(NULL),
     vertexFilename(NULL),
-    cellFilename(NULL)
-{ // constructor
-} // constructor
+    cellFilename(NULL) {}
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestDataWriterHDF5_Data::~TestDataWriterHDF5_Data(void)
-{ // destructor
-} // destructor
+pylith::meshio::TestDataWriterHDF5_Data::~TestDataWriterHDF5_Data(void) {}
 
 
 // End of file
