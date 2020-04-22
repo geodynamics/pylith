@@ -110,13 +110,14 @@ pylith::feassemble::TestAuxiliaryFactory::testSubfieldDiscretization(void) {
     pylith::topology::FieldBase::Discretization feVel(3, 2, 1, false, pylith::topology::FieldBase::POINT_SPACE);
 
     CPPUNIT_ASSERT(_factory);
-    _factory->setSubfieldDiscretization("displacement", feDisp.basisOrder, feDisp.quadOrder, feDisp.dimension,
+    _factory->setSubfieldDiscretization("displacement", feDisp.tensorBasis, feDisp.basisOrder, feDisp.quadOrder, feDisp.dimension,
                                         feDisp.isBasisContinuous, feDisp.feSpace);
-    _factory->setSubfieldDiscretization("velocity", feVel.basisOrder, feVel.quadOrder, feVel.dimension,
+    _factory->setSubfieldDiscretization("velocity", feVel.tensorBasis, feVel.basisOrder, feVel.quadOrder, feVel.dimension,
                                         feVel.isBasisContinuous, feVel.feSpace);
 
     { // Check displacement discretization
         const pylith::topology::FieldBase::Discretization& feTest = _factory->getSubfieldDiscretization("displacement");
+        CPPUNIT_ASSERT_EQUAL(feDisp.tensorBasis, feTest.tensorBasis);
         CPPUNIT_ASSERT_EQUAL(feDisp.basisOrder, feTest.basisOrder);
         CPPUNIT_ASSERT_EQUAL(feDisp.quadOrder, feTest.quadOrder);
         CPPUNIT_ASSERT_EQUAL(feDisp.dimension, feTest.dimension);
@@ -126,6 +127,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSubfieldDiscretization(void) {
 
     { // Check velocity discretization
         const pylith::topology::FieldBase::Discretization& feTest = _factory->getSubfieldDiscretization("velocity");
+        CPPUNIT_ASSERT_EQUAL(feVel.tensorBasis, feTest.tensorBasis);
         CPPUNIT_ASSERT_EQUAL(feVel.basisOrder, feTest.basisOrder);
         CPPUNIT_ASSERT_EQUAL(feVel.quadOrder, feTest.quadOrder);
         CPPUNIT_ASSERT_EQUAL(feVel.dimension, feTest.dimension);
@@ -135,6 +137,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSubfieldDiscretization(void) {
 
     { // default for unknown discretization
         const pylith::topology::FieldBase::Discretization& feTest = _factory->getSubfieldDiscretization("xyz");
+        CPPUNIT_ASSERT_EQUAL(false, feTest.tensorBasis);
         CPPUNIT_ASSERT_EQUAL(1, feTest.basisOrder);
         CPPUNIT_ASSERT_EQUAL(1, feTest.quadOrder);
         CPPUNIT_ASSERT_EQUAL(-1, feTest.dimension);
