@@ -90,9 +90,11 @@ pylith::topology::TestRefineUniform::testRefine(void) {
     PetscErrorCode err;
     // Normal cells
     for (PetscInt c = cStart; c < _data->numCells; ++c) {
+        DMPolytopeType ct;
         PetscInt *closure = NULL;
         PetscInt closureSize, numCorners = 0;
 
+        err = DMPlexGetCellType(dmMesh, c, &ct);CPPUNIT_ASSERT(!err);
         err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CPPUNIT_ASSERT(!err);
         for (PetscInt p = 0; p < closureSize*2; p += 2) {
             const PetscInt point = closure[p];
@@ -100,16 +102,18 @@ pylith::topology::TestRefineUniform::testRefine(void) {
                 closure[numCorners++] = point;
             } // if
         } // for
-        err = DMPlexInvertCell(_data->cellDim, numCorners, closure);CPPUNIT_ASSERT(!err);
+        err = DMPlexInvertCell(ct, closure);CPPUNIT_ASSERT(!err);
         CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
         err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CPPUNIT_ASSERT(!err);
     } // for
 
     // Cohesive cells
     for (PetscInt c = _data->numCells; c < cEnd; ++c) {
+        DMPolytopeType ct;
         PetscInt *closure = NULL;
         PetscInt closureSize, numCorners = 0;
 
+        err = DMPlexGetCellType(dmMesh, c, &ct);CPPUNIT_ASSERT(!err);
         err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CPPUNIT_ASSERT(!err);
         for (PetscInt p = 0; p < closureSize*2; p += 2) {
             const PetscInt point = closure[p];
@@ -117,7 +121,7 @@ pylith::topology::TestRefineUniform::testRefine(void) {
                 closure[numCorners++] = point;
             } // if
         } // for
-        err = DMPlexInvertCell(_data->cellDim, numCorners, closure);CPPUNIT_ASSERT(!err);
+        err = DMPlexInvertCell(ct, closure);CPPUNIT_ASSERT(!err);
         CPPUNIT_ASSERT_EQUAL(_data->numCornersCohesive, numCorners);
         err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CPPUNIT_ASSERT(!err);
     } // for
