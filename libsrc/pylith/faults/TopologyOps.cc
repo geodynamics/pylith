@@ -106,7 +106,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
     cMax = cStart;
     for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
       DMPolytopeType ct;
-      err = DMPlexGetCellType(sdm, cell, &ct);PYLITH_CHECK_ERROR(err);
+      err = DMPlexGetCellType(dm, cell, &ct);PYLITH_CHECK_ERROR(err);
       if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) break;
     }
     numCohesiveCellsOld = cEnd - cMax;
