@@ -25,8 +25,8 @@
 
 #include <hdf5.h> // USES HDF5 API
 
-#if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8
-#define PYLITH_HDF5_USE_API_18
+#if H5_VERSION_GE(1,12,0)
+  #define PYLITH_HDF5_USE_API_112
 #endif
 
 // ----------------------------------------------------------------------
@@ -177,12 +177,11 @@ pylith::meshio::TestDataWriterHDF5::checkFile(const char* filename) {
     hid_t fileE = H5Fopen(filenameE.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);CPPUNIT_ASSERT(fileE >= 0);
 
     hid_t file = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);CPPUNIT_ASSERT(file >= 0);
-#if defined(PYLITH_HDF5_USE_API_18)
-
+#if defined(PYLITH_HDF5_USE_API_112)
     // Traverse recursively file with expected values.
-    err = H5Ovisit(fileE, H5_INDEX_NAME, H5_ITER_NATIVE, pylith_meshio_TestDataWriterHDF5_checkObject, (void*) &file);CPPUNIT_ASSERT(err >= 0);
-
+    err = H5Ovisit(fileE, H5_INDEX_NAME, H5_ITER_NATIVE, pylith_meshio_TestDataWriterHDF5_checkObject, (void*) &file, H5O_INFO_ALL);CPPUNIT_ASSERT(err >= 0);
 #else
+    err = H5Ovisit(fileE, H5_INDEX_NAME, H5_ITER_NATIVE, pylith_meshio_TestDataWriterHDF5_checkObject, (void*) &file);CPPUNIT_ASSERT(err >= 0);
 #endif
     err = H5Fclose(fileE);
     CPPUNIT_ASSERT(err >= 0);

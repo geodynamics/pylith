@@ -27,8 +27,12 @@
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
-#if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8
-#define PYLITH_HDF5_USE_API_18
+#if H5_VERSION_GE(1,12,0)
+  #define PYLITH_HDF5_USE_API_112
+#endif
+
+#if H5_VERSION_GE(1,8,0)
+  #define PYLITH_HDF5_USE_API_18
 #endif
 
 // ----------------------------------------------------------------------
@@ -52,7 +56,7 @@ pylith::meshio::HDF5::HDF5(const char* filename,
       msg << "Could not create HDF5 file '" << filename << "'.";
       throw std::runtime_error(msg.str());
     } // if
-    
+
   } else {
     _file = H5Fopen(filename, mode, H5P_DEFAULT);
     if (_file < 0) {
@@ -93,7 +97,7 @@ pylith::meshio::HDF5::open(const char* filename,
       msg << "Could not create HDF5 file '" << filename << "'.";
       throw std::runtime_error(msg.str());
     } // if
-    
+
   } else {
     _file = H5Fopen(filename, mode, H5P_DEFAULT);
     if (_file < 0) {
@@ -115,7 +119,7 @@ pylith::meshio::HDF5::close(void)
 
   if (_file >= 0) {
     herr_t err = H5Fclose(_file);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close HDF5 file.");
   } // if
   _file = -1;
@@ -146,14 +150,18 @@ pylith::meshio::HDF5::hasGroup(const char* name)
     hid_t obj = H5Oopen(_file, name, H5P_DEFAULT);
     assert(obj >= 0);
     H5O_info_t info;
+#if defined(PYLITH_HDF5_USE_API_112)
+    herr_t err = H5Oget_info(obj, &info, H5O_INFO_ALL);
+#else
     herr_t err = H5Oget_info(obj, &info);
+#endif
     assert(err >= 0);
     if (H5O_TYPE_GROUP == info.type)
       exists = true;
     err = H5Oclose(obj);
     assert(err >= 0);
   } // if
-  
+
   PYLITH_METHOD_RETURN(exists);
 } // hasGroup
 
@@ -172,14 +180,14 @@ pylith::meshio::HDF5::hasDataset(const char* name)
     hid_t obj = H5Oopen(_file, name, H5P_DEFAULT);
     assert(obj >= 0);
     H5O_info_t info;
-    herr_t err = H5Oget_info(obj, &info);
+    herr_t err = H5Oget_info(obj, &info, H5O_INFO_ALL);
     assert(err >= 0);
     if (H5O_TYPE_DATASET == info.type)
       exists = true;
     err = H5Oclose(obj);
     assert(err >= 0);
   } // if
-  
+
   PYLITH_METHOD_RETURN(exists);
 } // hasDataset
 
@@ -206,7 +214,7 @@ pylith::meshio::HDF5::getDatasetDims(hsize_t** dims,
 #endif
     if (group < 0)
       throw std::runtime_error("Could not open group.");
-    
+
     // Open the dataset
 #if defined(PYLITH_HDF5_USE_API_18)
     hid_t dataset = H5Dopen2(group, name, H5P_DEFAULT);
@@ -215,7 +223,7 @@ pylith::meshio::HDF5::getDatasetDims(hsize_t** dims,
 #endif
     if (dataset < 0)
       throw std::runtime_error("Could not open dataset.");
-    
+
     hid_t dataspace = H5Dget_space(dataset);
     if (dataspace < 0)
       throw std::runtime_error("Could not get dataspace.");
@@ -231,14 +239,14 @@ pylith::meshio::HDF5::getDatasetDims(hsize_t** dims,
     err = H5Dclose(dataset);
     if (err < 0)
       throw std::runtime_error("Could not close dataset.");
-    
+
     err = H5Gclose(group);
     if (err < 0)
       throw std::runtime_error("Could not close group.");
 
   } catch (const std::exception& err) {
     std::ostringstream msg;
-    msg << "Error occurred while reading dataset '" 
+    msg << "Error occurred while reading dataset '"
 	<< parent << "/" << name << "':\n"
 	<< err.what();
     throw std::runtime_error(msg.str());
@@ -247,7 +255,7 @@ pylith::meshio::HDF5::getDatasetDims(hsize_t** dims,
     msg << "Unknown error occurred while reading dataset '"
 	<< parent << "/" << name << "'.";
     throw std::runtime_error(msg.str());
-  } // try/catch  
+  } // try/catch
 
   PYLITH_METHOD_END;
 } // getDatasetDims
@@ -272,27 +280,27 @@ pylith::meshio::HDF5::getGroupDatasets(string_vector* names,
 #endif
     if (group < 0)
       throw std::runtime_error("Could not open group.");
-    
+
     H5G_info_t ginfo;
     herr_t err = H5Gget_info(group, &ginfo);
     if (err < 0)
       throw std::runtime_error("Could not get group info.");
     const int gsize = ginfo.nlinks;
-    
+
     names->resize(gsize);
     for (int i=0, index=0; i < gsize; ++i) {
       char buffer[256];
       ssize_t namelen = H5Lget_name_by_idx(group, ".", H5_INDEX_NAME, H5_ITER_NATIVE, i, buffer, 256, H5P_DEFAULT);assert(namelen > 0);
       (*names)[index++] = buffer;
     } // for
-    
+
     err = H5Gclose(group);
     if (err < 0)
       throw std::runtime_error("Could not close group.");
-    
+
   } catch (const std::exception& err) {
     std::ostringstream msg;
-    msg << "Error occurred while getting names of datasets for group '" 
+    msg << "Error occurred while getting names of datasets for group '"
 	<< parent << "':\n"
 	<< err.what();
     throw std::runtime_error(msg.str());
@@ -301,7 +309,7 @@ pylith::meshio::HDF5::getGroupDatasets(string_vector* names,
     msg << "Unknown error occurred while getting names of datasets for group '"
 	<< parent << "'.";
     throw std::runtime_error(msg.str());
-  } // try/catch  
+  } // try/catch
 
   PYLITH_METHOD_END;
 } // getGroupDatasets
@@ -394,15 +402,15 @@ pylith::meshio::HDF5::writeAttribute(hid_t h5,
       throw std::runtime_error("Could not write");
 
     err = H5Aclose(attribute);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close");
 
     err = H5Dclose(dataset);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close dataset for");
 
     err = H5Sclose(dataspace);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close dataspace for");
 
   } catch (std::exception& err) {
@@ -449,19 +457,19 @@ pylith::meshio::HDF5::writeAttribute(hid_t h5,
 #else
     hid_t dataset = H5Dopen(h5, parent);
 #endif
-    if (dataset < 0) 
+    if (dataset < 0)
       throw std::runtime_error("Could not open parent dataset for");
 
     hid_t dataspace = H5Screate(H5S_SCALAR);
-    if (dataspace < 0) 
+    if (dataspace < 0)
       throw std::runtime_error("Could not create dataspace for");
 
     hid_t datatype = H5Tcopy(H5T_C_S1);
-    if (datatype < 0) 
+    if (datatype < 0)
       throw std::runtime_error("Could not create datatype for");
 
     herr_t err = H5Tset_size(datatype, strlen(value)+1);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not set size of");
 
 #if defined(PYLITH_HDF5_USE_API_18)
@@ -471,27 +479,27 @@ pylith::meshio::HDF5::writeAttribute(hid_t h5,
     hid_t attribute = H5Acreate(dataset, name,
 				datatype, dataspace, H5P_DEFAULT);
 #endif
-    if (attribute < 0) 
+    if (attribute < 0)
       throw std::runtime_error("Could not create");
 
     err = H5Awrite(attribute, datatype, value);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not write");
 
     err = H5Aclose(attribute);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close");
 
     err = H5Tclose(datatype);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close datatype for");
 
     err = H5Dclose(dataset);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close dataset for");
 
     err = H5Sclose(dataspace);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close dataspace for");
 
   } catch (std::exception& err) {
@@ -539,15 +547,15 @@ pylith::meshio::HDF5::readAttribute(const char* parent,
       throw std::runtime_error("Could not read");
 
     err = H5Tclose(dtype);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close datatype for");
 
     err = H5Aclose(attribute);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close");
 
     err = H5Dclose(dataset);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close dataset for");
 
   } catch (std::exception& err) {
@@ -605,15 +613,15 @@ pylith::meshio::HDF5::readAttribute(const char* parent,
       throw std::runtime_error("Could not read");
 
     err = H5Tclose(datatype);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close datatype for");
 
     err = H5Aclose(attribute);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close");
 
     err = H5Dclose(dataset);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close dataset for");
 
   } catch (std::exception& err) {
@@ -649,7 +657,7 @@ pylith::meshio::HDF5::createDataset(const char* parent,
 #else
     hid_t group = H5Gopen(_file, parent);
 #endif
-    if (group < 0) 
+    if (group < 0)
       throw std::runtime_error("Could not open group.");
 
     // Create the dataspace
@@ -662,7 +670,7 @@ pylith::meshio::HDF5::createDataset(const char* parent,
     delete[] curDims; curDims = 0;
     if (dataspace < 0)
       throw std::runtime_error("Could not create dataspace.");
-      
+
     // Create chunked dataset
     hid_t property = H5Pcreate(H5P_DATASET_CREATE);
     if (property < 0)
@@ -671,7 +679,7 @@ pylith::meshio::HDF5::createDataset(const char* parent,
     herr_t err = H5Pset_chunk(property, ndims, dimsChunk);
     if (err < 0)
       throw std::runtime_error("Could not set chunk.");
-      
+
     // Set gzip compression level for chunk.
     H5Pset_deflate(property, 6);
 
@@ -683,7 +691,7 @@ pylith::meshio::HDF5::createDataset(const char* parent,
     hid_t dataset = H5Dcreate(group, name,
 			      datatype, dataspace, property);
 #endif
-    if (dataset < 0) 
+    if (dataset < 0)
       throw std::runtime_error("Could not create dataset.");
 
     err = H5Dclose(dataset);
@@ -691,15 +699,15 @@ pylith::meshio::HDF5::createDataset(const char* parent,
       throw std::runtime_error("Could not close dataset.");
 
     err = H5Pclose(property);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close property.");
 
     err = H5Sclose(dataspace);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close dataspace.");
 
     err = H5Gclose(group);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close group.");
 
   } catch (const std::exception& err) {
@@ -757,7 +765,7 @@ pylith::meshio::HDF5::writeDatasetChunk(const char* parent,
 #endif
     if (group < 0)
       throw std::runtime_error("Could not open group.");
-    
+
     // Open the dataset
 #if defined(PYLITH_HDF5_USE_API_18)
     hid_t dataset = H5Dopen2(group, name, H5P_DEFAULT);
@@ -766,7 +774,7 @@ pylith::meshio::HDF5::writeDatasetChunk(const char* parent,
 #endif
     if (dataset < 0)
       throw std::runtime_error("Could not open dataset.");
-    
+
 #if defined(PYLITH_HDF5_USE_API_18)
     herr_t err = H5Dset_extent(dataset, dims);
 #else
@@ -792,7 +800,7 @@ pylith::meshio::HDF5::writeDatasetChunk(const char* parent,
     if (err < 0)
       throw std::runtime_error("Could not select hyperslab.");
 
-    err = H5Dwrite(dataset, datatype, chunkspace, dataspace, 
+    err = H5Dwrite(dataset, datatype, chunkspace, dataspace,
 		   H5P_DEFAULT, data);
     if (err < 0)
       throw std::runtime_error("Could not write data.");
@@ -808,7 +816,7 @@ pylith::meshio::HDF5::writeDatasetChunk(const char* parent,
     err = H5Dclose(dataset);
     if (err < 0)
       throw std::runtime_error("Could not close dataset.");
-    
+
     err = H5Gclose(group);
     if (err < 0)
       throw std::runtime_error("Could not close group.");
@@ -857,7 +865,7 @@ pylith::meshio::HDF5::readDatasetChunk(const char* parent,
 #endif
     if (group < 0)
       throw std::runtime_error("Could not open group.");
-    
+
     // Open the dataset
 #if defined(PYLITH_HDF5_USE_API_18)
     hid_t dataset = H5Dopen2(group, name, H5P_DEFAULT);
@@ -866,7 +874,7 @@ pylith::meshio::HDF5::readDatasetChunk(const char* parent,
 #endif
     if (dataset < 0)
       throw std::runtime_error("Could not open dataset.");
-    
+
     hid_t dataspace = H5Dget_space(dataset);
     if (dataspace < 0)
       throw std::runtime_error("Could not get dataspace.");
@@ -881,7 +889,7 @@ pylith::meshio::HDF5::readDatasetChunk(const char* parent,
     hsize_t* count = (*ndims > 0) ? new hsize_t[*ndims] : 0;
     hsize_t* stride = (*ndims > 0) ? new hsize_t[*ndims] : 0;
     hsize_t* offset = (*ndims > 0) ? new hsize_t[*ndims] : 0;
-    
+
     for (int i=0; i < *ndims; ++i) {
       (*dimsChunk)[i] = dims[i];
       count[i] = 1;
@@ -909,7 +917,7 @@ pylith::meshio::HDF5::readDatasetChunk(const char* parent,
     delete[] *data; *data = (sizeBytes > 0) ? new char[sizeBytes] : 0;
     delete[] dims; dims = 0;
 
-    err = H5Dread(dataset, datatype, chunkspace, dataspace, 
+    err = H5Dread(dataset, datatype, chunkspace, dataspace,
 		  H5P_DEFAULT, (void*)*data);
     if (err < 0)
       throw std::runtime_error("Could not read data.");
@@ -925,7 +933,7 @@ pylith::meshio::HDF5::readDatasetChunk(const char* parent,
     err = H5Dclose(dataset);
     if (err < 0)
       throw std::runtime_error("Could not close dataset.");
-    
+
     err = H5Gclose(group);
     if (err < 0)
       throw std::runtime_error("Could not close group.");
@@ -971,7 +979,7 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
 #else
     hid_t group = H5Gopen(_file, parent);
 #endif
-    if (group < 0) 
+    if (group < 0)
       throw std::runtime_error("Could not open group.");
 
     // Create the dataspace
@@ -984,7 +992,7 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
     delete[] curDims; curDims = 0;
     if (dataspace < 0)
       throw std::runtime_error("Could not create dataspace.");
-      
+
     // Create property for external dataset
     hid_t property = H5Pcreate(H5P_DATASET_CREATE);
     if (property < 0)
@@ -1004,7 +1012,7 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
     hid_t dataset = H5Dcreate(group, name,
 			      datatype, dataspace, property);
 #endif
-    if (dataset < 0) 
+    if (dataset < 0)
       throw std::runtime_error("Could not create dataset.");
 
     err = H5Dclose(dataset);
@@ -1012,15 +1020,15 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
       throw std::runtime_error("Could not close dataset.");
 
     err = H5Pclose(property);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close property.");
 
     err = H5Sclose(dataspace);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close dataspace.");
 
     err = H5Gclose(group);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close group.");
 
   } catch (const std::exception& err) {
@@ -1060,7 +1068,7 @@ pylith::meshio::HDF5::extendDatasetRawExternal(const char* parent,
 #else
     hid_t group = H5Gopen(_file, parent);
 #endif
-    if (group < 0) 
+    if (group < 0)
       throw std::runtime_error("Could not open group.");
 
     // Open dataset.
@@ -1085,7 +1093,7 @@ pylith::meshio::HDF5::extendDatasetRawExternal(const char* parent,
       throw std::runtime_error("Could not close dataset.");
 
     err = H5Gclose(group);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close group.");
 
   } catch (const std::exception& err) {
@@ -1201,7 +1209,7 @@ pylith::meshio::HDF5::writeDataset(hid_t h5,
     hsize_t dims[ndims]; dims[0] = nstrings;
     hid_t dataspace = H5Screate_simple(ndims, dims, NULL);
     if (dataspace < 0) throw std::runtime_error("Could not create dataspace.");
-      
+
     hid_t datatype = H5Tcopy(H5T_C_S1);
     if (datatype < 0) throw std::runtime_error("Could not create datatype.");
     herr_t err = H5Tset_size(datatype, slen);
@@ -1212,7 +1220,7 @@ pylith::meshio::HDF5::writeDataset(hid_t h5,
 #else
     hid_t dataset = H5Dcreate(group, name, datatype, dataspace, H5P_DEFAULT);
 #endif
-    if (dataset < 0) 
+    if (dataset < 0)
       throw std::runtime_error("Could not create dataset.");
 
     err = H5Dwrite(dataset, datatype, H5S_ALL, H5S_ALL, H5P_DEFAULT, sarray);
@@ -1267,7 +1275,7 @@ pylith::meshio::HDF5::readDataset(const char* parent,
 #endif
     if (group < 0)
       throw std::runtime_error("Could not open group.");
-    
+
     // Open the dataset
 #if defined(PYLITH_HDF5_USE_API_18)
     hid_t dataset = H5Dopen2(group, name, H5P_DEFAULT);
@@ -1279,10 +1287,10 @@ pylith::meshio::HDF5::readDataset(const char* parent,
 
     // Get the datatype
     hid_t datatype = H5Dget_type(dataset);
-    if (datatype < 0) 
+    if (datatype < 0)
       throw std::runtime_error("Could not get datatype.");
     const int slen = H5Tget_size(datatype);
-    if (slen < 0) 
+    if (slen < 0)
       throw std::runtime_error("Could not get size of datatype.");
 
     // Get the dataspace
@@ -1306,7 +1314,7 @@ pylith::meshio::HDF5::readDataset(const char* parent,
     data.resize(nstrings);
     for (int i=0; i < nstrings; ++i) {
       data[i] = &strfixedlen[i*slen];
-    } // for    
+    } // for
     delete[] strfixedlen; strfixedlen = 0;
 
     err = H5Dclose(dataset);
@@ -1314,15 +1322,15 @@ pylith::meshio::HDF5::readDataset(const char* parent,
       throw std::runtime_error("Could not close dataset.");
 
     err = H5Tclose(datatype);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close datatype.");
 
     err = H5Sclose(dataspace);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close dataspace.");
 
     err = H5Gclose(group);
-    if (err < 0) 
+    if (err < 0)
       throw std::runtime_error("Could not close group.");
 
   } catch (const std::exception& err) {
