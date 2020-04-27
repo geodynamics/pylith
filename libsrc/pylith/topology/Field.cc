@@ -928,7 +928,7 @@ pylith::topology::Field::subfieldAdd(const char *name,
                                      const bool isBasisContinuous,
                                      const SpaceEnum feSpace) {
     assert(numComponents > 0);
-    assert(dimension > 0);
+    assert(dimension != 0);
 
     Description description;
     description.label = name;
