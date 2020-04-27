@@ -211,7 +211,11 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void) {
     const int basisOrder = 1;
     const int quadOrder = 1;
     const double scale = 1.2;
-    fieldA.subfieldAdd("displacement", "displacement", Field::SCALAR, components, numComponents, scale, !_mesh->isSimplex(), basisOrder, dim, quadOrder, true, Field::POLYNOMIAL_SPACE);
+    const pylith::topology::FieldBase::CellBasis cellBasis = _mesh->isSimplex() ?
+                                                             pylith::topology::FieldBase::SIMPLEX_BASIS :
+                                                             pylith::topology::FieldBase::TENSOR_BASIS;
+    fieldA.subfieldAdd("displacement", "displacement", Field::SCALAR, components, numComponents, scale, basisOrder, dim,
+                       quadOrder, cellBasis, true, Field::POLYNOMIAL_SPACE);
     fieldA.subfieldsSetup();
     fieldA.createDiscretization();
     fieldA.allocate();

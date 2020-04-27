@@ -55,14 +55,15 @@ public:
      * @param[in] basisOrder Polynomial order for basis.
      * @param[in] quadOrder Order of quadrature rule.
      * @param[in] dimension Dimension of points for discretization.
+     * @param[in] cellBasis Type of basis functions to use (e.g., simplex, tensor, or default).
      * @param[in] isBasisContinuous True if basis is continuous.
      * @param[in] feSpace Finite-element space.
      */
     void setSubfieldDiscretization(const char* subfieldName,
-                                   const bool tensorBasis,
                                    const int basisOrder,
                                    const int quadOrder,
                                    const int dimension,
+                                   const pylith::topology::FieldBase::CellBasis cellBasis,
                                    const bool isBasisContinuous,
                                    const pylith::topology::FieldBase::SpaceEnum feSpace);
 

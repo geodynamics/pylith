@@ -33,8 +33,9 @@ std::map<pylith::topology::FieldBase::Discretization, pylith::topology::FE> pyli
 
 void
 pylith::topology::FieldOps::deallocate(void) {
-  pylith::topology::FieldOps::feStore.clear();
+    pylith::topology::FieldOps::feStore.clear();
 }
+
 
 // ----------------------------------------------------------------------
 // Create PetscFE object for discretization.
@@ -44,85 +45,87 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
                                      const int numComponents) {
     PYLITH_METHOD_BEGIN;
     // Get spatial dimension of mesh.
-    PetscFE        fe;
-    PetscInt       dim;
+    PetscFE fe;
+    PetscInt dim;
     PetscErrorCode err;
 
     err = DMGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
     dim = (feinfo.dimension < 0) ? dim : feinfo.dimension;assert(dim > 0);
-    FieldBase::Discretization feKey = FieldBase::Discretization(feinfo.tensorBasis, feinfo.basisOrder, feinfo.quadOrder, dim, numComponents, feinfo.isBasisContinuous, feinfo.feSpace);
+    FieldBase::Discretization feKey = FieldBase::Discretization(feinfo.basisOrder, feinfo.quadOrder, dim, numComponents,
+                                                                feinfo.cellBasis, feinfo.isBasisContinuous, feinfo.feSpace);
     std::map<FieldBase::Discretization, pylith::topology::FE>::const_iterator hasFE = pylith::topology::FieldOps::feStore.find(feKey);
 
     if (hasFE == pylith::topology::FieldOps::feStore.end()) {
-      const PetscBool simplexBasis = feKey.tensorBasis ? PETSC_FALSE : PETSC_TRUE;
-      const int basisOrder = PetscMax(feKey.basisOrder, 0);
-      const int quadOrder = PetscMax(feKey.quadOrder > 0 ? feKey.quadOrder : basisOrder, 0);
-      const PetscBool basisContinuity = feKey.isBasisContinuous ? PETSC_TRUE : PETSC_FALSE;
-      const PetscBool useTensor = feKey.tensorBasis ? PETSC_TRUE : PETSC_FALSE;
+        const int basisOrder = PetscMax(feKey.basisOrder, 0);
+        const int quadOrder = PetscMax(feKey.quadOrder > 0 ? feKey.quadOrder : basisOrder, 0);
+        const PetscBool simplexBasis = pylith::topology::FieldBase::SIMPLEX_BASIS == feKey.cellBasis ? PETSC_TRUE : PETSC_FALSE;
+        const PetscBool useTensor = pylith::topology::FieldBase::TENSOR_BASIS == feKey.cellBasis ? PETSC_TRUE : PETSC_FALSE;
+        const PetscBool basisContinuity = feKey.isBasisContinuous ? PETSC_TRUE : PETSC_FALSE;
 
-      // Create space
-      PetscSpace space = NULL;
-      err = PetscSpaceCreate(PetscObjectComm((PetscObject) dm), &space);PYLITH_CHECK_ERROR(err);assert(space);
-      err = PetscSpaceSetType(space, feKey.feSpace == FieldBase::POLYNOMIAL_SPACE ? PETSCSPACEPOLYNOMIAL : PETSCSPACEPOINT);PYLITH_CHECK_ERROR(err);
-      err = PetscSpaceSetNumComponents(space, numComponents);PYLITH_CHECK_ERROR(err);
-      err = PetscSpaceSetDegree(space, basisOrder, PETSC_DETERMINE);
-      if (feKey.feSpace == FieldBase::POLYNOMIAL_SPACE) {
-          err = PetscSpacePolynomialSetTensor(space, useTensor);PYLITH_CHECK_ERROR(err);
-      } // if
-      err = PetscSpaceSetNumVariables(space, dim);PYLITH_CHECK_ERROR(err);
-      err = PetscSpaceSetUp(space);PYLITH_CHECK_ERROR(err);
+        // Create space
+        PetscSpace space = NULL;
+        err = PetscSpaceCreate(PetscObjectComm((PetscObject) dm), &space);PYLITH_CHECK_ERROR(err);assert(space);
+        err = PetscSpaceSetType(space, feKey.feSpace == FieldBase::POLYNOMIAL_SPACE ?
+                                PETSCSPACEPOLYNOMIAL : PETSCSPACEPOINT);PYLITH_CHECK_ERROR(err);
+        err = PetscSpaceSetNumComponents(space, numComponents);PYLITH_CHECK_ERROR(err);
+        err = PetscSpaceSetDegree(space, basisOrder, PETSC_DETERMINE);
+        if (feKey.feSpace == FieldBase::POLYNOMIAL_SPACE) {
+            err = PetscSpacePolynomialSetTensor(space, useTensor);PYLITH_CHECK_ERROR(err);
+        } // if
+        err = PetscSpaceSetNumVariables(space, dim);PYLITH_CHECK_ERROR(err);
+        err = PetscSpaceSetUp(space);PYLITH_CHECK_ERROR(err);
 
-      // Create dual space
-      PetscDualSpace dualspace = NULL;
-      PetscDM dmCell = NULL;
-      err = PetscDualSpaceCreate(PetscObjectComm((PetscObject) dm), &dualspace);PYLITH_CHECK_ERROR(err);
-      err = PetscDualSpaceCreateReferenceCell(dualspace, dim, simplexBasis, &dmCell);PYLITH_CHECK_ERROR(err);
-      err = PetscDualSpaceSetDM(dualspace, dmCell);PYLITH_CHECK_ERROR(err);
-      err = DMDestroy(&dmCell);PYLITH_CHECK_ERROR(err);
-      err = PetscDualSpaceSetNumComponents(dualspace, numComponents);PYLITH_CHECK_ERROR(err);
-      err = PetscDualSpaceSetType(dualspace, PETSCDUALSPACELAGRANGE);PYLITH_CHECK_ERROR(err);
-      err = PetscDualSpaceLagrangeSetTensor(dualspace, useTensor);PYLITH_CHECK_ERROR(err);
-      err = PetscDualSpaceSetOrder(dualspace, basisOrder);PYLITH_CHECK_ERROR(err);
-      err = PetscDualSpaceLagrangeSetContinuity(dualspace, basisContinuity);
-      err = PetscDualSpaceSetUp(dualspace);PYLITH_CHECK_ERROR(err);
+        // Create dual space
+        PetscDualSpace dualspace = NULL;
+        PetscDM dmCell = NULL;
+        err = PetscDualSpaceCreate(PetscObjectComm((PetscObject) dm), &dualspace);PYLITH_CHECK_ERROR(err);
+        err = PetscDualSpaceCreateReferenceCell(dualspace, dim, simplexBasis, &dmCell);PYLITH_CHECK_ERROR(err);
+        err = PetscDualSpaceSetDM(dualspace, dmCell);PYLITH_CHECK_ERROR(err);
+        err = DMDestroy(&dmCell);PYLITH_CHECK_ERROR(err);
+        err = PetscDualSpaceSetNumComponents(dualspace, numComponents);PYLITH_CHECK_ERROR(err);
+        err = PetscDualSpaceSetType(dualspace, PETSCDUALSPACELAGRANGE);PYLITH_CHECK_ERROR(err);
+        err = PetscDualSpaceLagrangeSetTensor(dualspace, useTensor);PYLITH_CHECK_ERROR(err);
+        err = PetscDualSpaceSetOrder(dualspace, basisOrder);PYLITH_CHECK_ERROR(err);
+        err = PetscDualSpaceLagrangeSetContinuity(dualspace, basisContinuity);
+        err = PetscDualSpaceSetUp(dualspace);PYLITH_CHECK_ERROR(err);
 
-      // Create element
-      err = PetscFECreate(PetscObjectComm((PetscObject) dm), &fe);PYLITH_CHECK_ERROR(err);
-      err = PetscFESetType(fe, PETSCFEBASIC);PYLITH_CHECK_ERROR(err);
-      err = PetscFESetBasisSpace(fe, space);PYLITH_CHECK_ERROR(err);
-      err = PetscFESetDualSpace(fe, dualspace);PYLITH_CHECK_ERROR(err);
-      err = PetscFESetNumComponents(fe, numComponents);PYLITH_CHECK_ERROR(err);
-      err = PetscFESetUp(fe);PYLITH_CHECK_ERROR(err);
-      err = PetscSpaceDestroy(&space);PYLITH_CHECK_ERROR(err);
-      err = PetscDualSpaceDestroy(&dualspace);PYLITH_CHECK_ERROR(err);
+        // Create element
+        err = PetscFECreate(PetscObjectComm((PetscObject) dm), &fe);PYLITH_CHECK_ERROR(err);
+        err = PetscFESetType(fe, PETSCFEBASIC);PYLITH_CHECK_ERROR(err);
+        err = PetscFESetBasisSpace(fe, space);PYLITH_CHECK_ERROR(err);
+        err = PetscFESetDualSpace(fe, dualspace);PYLITH_CHECK_ERROR(err);
+        err = PetscFESetNumComponents(fe, numComponents);PYLITH_CHECK_ERROR(err);
+        err = PetscFESetUp(fe);PYLITH_CHECK_ERROR(err);
+        err = PetscSpaceDestroy(&space);PYLITH_CHECK_ERROR(err);
+        err = PetscDualSpaceDestroy(&dualspace);PYLITH_CHECK_ERROR(err);
 
-      // Create quadrature
-      PetscQuadrature quadrature = NULL;
-      const int basisNumComponents = 1;
-      const int numPoints = quadOrder + 1;
-      const PylithReal xRefMin = -1.0;
-      const PylithReal xRefMax = +1.0;
-      if (useTensor) {
-        err = PetscDTGaussTensorQuadrature(dim, basisNumComponents, numPoints, xRefMin, xRefMax, &quadrature);PYLITH_CHECK_ERROR(err);
-      } else {
-        err = PetscDTStroudConicalQuadrature(dim, basisNumComponents, numPoints, xRefMin, xRefMax, &quadrature);PYLITH_CHECK_ERROR(err);
-      }
-      err = PetscFESetQuadrature(fe, quadrature);PYLITH_CHECK_ERROR(err);
-      err = PetscQuadratureDestroy(&quadrature);PYLITH_CHECK_ERROR(err);
-      assert (feKey.feSpace == FieldBase::POLYNOMIAL_SPACE);
-      PetscQuadrature faceQuadrature = NULL;
-  	  if (useTensor) {
-        err = PetscDTGaussTensorQuadrature(dim-1, basisNumComponents, numPoints, xRefMin, xRefMax, &faceQuadrature);PYLITH_CHECK_ERROR(err);
-      } else {
-        err = PetscDTStroudConicalQuadrature(dim-1, basisNumComponents, numPoints, xRefMin, xRefMax, &faceQuadrature);PYLITH_CHECK_ERROR(err);
-  	  } // if/else
-      err = PetscFESetFaceQuadrature(fe, faceQuadrature);PYLITH_CHECK_ERROR(err);
-      err = PetscQuadratureDestroy(&faceQuadrature);PYLITH_CHECK_ERROR(err);
+        // Create quadrature
+        PetscQuadrature quadrature = NULL;
+        const int basisNumComponents = 1;
+        const int numPoints = quadOrder + 1;
+        const PylithReal xRefMin = -1.0;
+        const PylithReal xRefMax = +1.0;
+        if (useTensor) {
+            err = PetscDTGaussTensorQuadrature(dim, basisNumComponents, numPoints, xRefMin, xRefMax, &quadrature);PYLITH_CHECK_ERROR(err);
+        } else {
+            err = PetscDTStroudConicalQuadrature(dim, basisNumComponents, numPoints, xRefMin, xRefMax, &quadrature);PYLITH_CHECK_ERROR(err);
+        }
+        err = PetscFESetQuadrature(fe, quadrature);PYLITH_CHECK_ERROR(err);
+        err = PetscQuadratureDestroy(&quadrature);PYLITH_CHECK_ERROR(err);
+        assert(feKey.feSpace == FieldBase::POLYNOMIAL_SPACE);
+        PetscQuadrature faceQuadrature = NULL;
+        if (useTensor) {
+            err = PetscDTGaussTensorQuadrature(dim-1, basisNumComponents, numPoints, xRefMin, xRefMax, &faceQuadrature);PYLITH_CHECK_ERROR(err);
+        } else {
+            err = PetscDTStroudConicalQuadrature(dim-1, basisNumComponents, numPoints, xRefMin, xRefMax, &faceQuadrature);PYLITH_CHECK_ERROR(err);
+        } // if/else
+        err = PetscFESetFaceQuadrature(fe, faceQuadrature);PYLITH_CHECK_ERROR(err);
+        err = PetscQuadratureDestroy(&faceQuadrature);PYLITH_CHECK_ERROR(err);
 
-      pylith::topology::FieldOps::feStore.insert(std::pair<FieldBase::Discretization, pylith::topology::FE>(feKey, fe));
+        pylith::topology::FieldOps::feStore.insert(std::pair<FieldBase::Discretization, pylith::topology::FE>(feKey, fe));
     } else {
-      fe = hasFE->second._fe;
-      err = PetscObjectReference((PetscObject) fe);PYLITH_CHECK_ERROR(err);
+        fe = hasFE->second._fe;
+        err = PetscObjectReference((PetscObject) fe);PYLITH_CHECK_ERROR(err);
     }
 
     PYLITH_METHOD_RETURN(fe);
@@ -135,7 +138,8 @@ void
 pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& target,
                                                 const pylith::topology::Field& auxiliary) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_JOURNAL_DEBUG("checkDiscretization(target="<<target.getLabel()<<", auxiliary="<<auxiliary.getLabel()<<")");
+    // PYLITH_JOURNAL_DEBUG("checkDiscretization(target="<<target.getLabel()<<",
+    // auxiliary="<<auxiliary.getLabel()<<")");
 
     // Verify that the quadrature order of the target subfields all
     // match and that they match the quadrature order of the auxiliary
@@ -215,7 +219,7 @@ pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
             const pylith::topology::Field::SubfieldInfo& infoB = fieldB.subfieldInfo(subfieldNamesB[i].c_str());
 
             if (infoA.description.numComponents != infoB.description.numComponents) { isMatch = false; }
-            if (infoA.fe.tensorBasis != infoB.fe.tensorBasis) { isMatch = false; }
+            if (infoA.fe.cellBasis != infoB.fe.cellBasis) { isMatch = false; }
             if (infoA.fe.basisOrder != infoB.fe.basisOrder) { isMatch = false; }
         } // for
     } // if

@@ -58,6 +58,12 @@ public:
         POINT_SPACE=1, ///< Point finite-element space.
     }; // SpaceEnum
 
+    enum CellBasis {
+        SIMPLEX_BASIS=1, ///< Simplex basis functions.
+        TENSOR_BASIS=2, ///< Tensor product basis functions.
+        DEFAULT_BASIS=10, ///< Use default for cell type.
+    }; // CellBasis
+
     // PUBLIC TYPEDEF ///////////////////////////////////////////////////////
 public:
 
@@ -112,65 +118,65 @@ public:
     }; // Description
 
     struct Discretization {
-        bool tensorBasis; ///< Is this a tensor polynomial basis
         int basisOrder; ///< Order of basis functions.
         int quadOrder; ///< Order of quadrature scheme.
         int dimension; ///< Dimension of point(s) for discretization.
-        int components; ///< Number of components for field
+        int components; ///< Number of components for field.
+        CellBasis cellBasis; ///< Cell basis (simplex, tensor, default).
         bool isBasisContinuous; ///< Is basis continuous?
         SpaceEnum feSpace; ///< Finite-element space.
 
-        Discretization(const bool tensorBasisValue=false,
-                       const int basisOrderValue=1,
+        Discretization(const int basisOrderValue=1,
                        const int quadOrderValue=1,
                        const int dimensionValue=-1,
                        const int componentsValue=-1,
+                       const CellBasis cellBasisValue=DEFAULT_BASIS,
                        const bool isBasisContinuousValue=true,
                        const SpaceEnum feSpaceValue=POLYNOMIAL_SPACE) :
-            tensorBasis(tensorBasisValue),
             basisOrder(basisOrderValue),
             quadOrder(quadOrderValue),
             dimension(dimensionValue),
             components(componentsValue),
+            cellBasis(cellBasisValue),
             isBasisContinuous(isBasisContinuousValue),
             feSpace(feSpaceValue)
         {}
 
-        bool operator==(const Discretization rhs) const
-        {
-          if (tensorBasis        != rhs.tensorBasis)       return false;
-          if (basisOrder         != rhs.basisOrder)        return false;
-          if (quadOrder          != rhs.quadOrder)         return false;
-          if (dimension          != rhs.dimension)         return false;
-          if (components         != rhs.components)        return false;
-          if (isBasisContinuous  != rhs.isBasisContinuous) return false;
-          if (feSpace            != rhs.feSpace)           return false;
-          return true;
+
+        bool operator==(const Discretization rhs) const {
+            if (basisOrder         != rhs.basisOrder) {return false;}
+            if (quadOrder          != rhs.quadOrder) {return false;}
+            if (dimension          != rhs.dimension) {return false;}
+            if (components         != rhs.components) {return false;}
+            if (cellBasis          != rhs.cellBasis) {return false;}
+            if (isBasisContinuous  != rhs.isBasisContinuous) {return false;}
+            if (feSpace            != rhs.feSpace) {return false;}
+            return true;
         }
 
-        bool operator<(const Discretization rhs) const
-        {
-          if (tensorBasis        < rhs.tensorBasis)       return true;
-          if (tensorBasis       == rhs.tensorBasis) {
-            if (basisOrder         < rhs.basisOrder)        return true;
+        bool operator<(const Discretization rhs) const {
+            if (basisOrder         < rhs.basisOrder) {return true;}
             if (basisOrder        == rhs.basisOrder) {
-              if (quadOrder        < rhs.quadOrder)         return true;
-              if (quadOrder       == rhs.quadOrder)  {
-                if (dimension      < rhs.dimension)         return true;
-                if (dimension     == rhs.dimension) {
-                  if (components   < rhs.components)         return true;
-                  if (components  == rhs.components) {
-                    if (isBasisContinuous  < rhs.isBasisContinuous) return true;
-                    if (isBasisContinuous == rhs.isBasisContinuous) {
-                      if (feSpace          < rhs.feSpace)           return true;
+                if (quadOrder        < rhs.quadOrder) {return true;}
+                if (quadOrder       == rhs.quadOrder) {
+                    if (dimension      < rhs.dimension) {return true;}
+                    if (dimension     == rhs.dimension) {
+                        if (components   < rhs.components) {return true;}
+                        if (components  == rhs.components) {
+                            if (cellBasis        < rhs.cellBasis) {return true;}
+                            if (cellBasis       == rhs.cellBasis) {
+                                if (isBasisContinuous  < rhs.isBasisContinuous) {return true;}
+                                if (isBasisContinuous == rhs.isBasisContinuous) {
+                                    if (feSpace          < rhs.feSpace) {return true;}
+                                }
+                            }
+                        }
                     }
-                  }
                 }
-              }
             }
-          }
-          return false;
+            return false;
         }
+
     }; // Discretization
 
     /// Mapping from field name to discretization (intended for subfields).
