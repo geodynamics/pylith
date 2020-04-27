@@ -106,8 +106,8 @@ pylith::feassemble::TestAuxiliaryFactory::testQueryDB(void) {
 // Test setSubfieldDiscretization() and getSubfieldDiscretization().
 void
 pylith::feassemble::TestAuxiliaryFactory::testSubfieldDiscretization(void) {
-    pylith::topology::FieldBase::Discretization feDisp(2, 2, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
-    pylith::topology::FieldBase::Discretization feVel(3, 2, 1, false, pylith::topology::FieldBase::POINT_SPACE);
+    pylith::topology::FieldBase::Discretization feDisp(false, 2, 2, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
+    pylith::topology::FieldBase::Discretization feVel(false, 3, 2, 1, false, pylith::topology::FieldBase::POINT_SPACE);
 
     CPPUNIT_ASSERT(_factory);
     _factory->setSubfieldDiscretization("displacement", feDisp.tensorBasis, feDisp.basisOrder, feDisp.quadOrder, feDisp.dimension,
