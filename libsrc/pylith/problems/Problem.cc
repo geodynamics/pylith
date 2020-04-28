@@ -735,18 +735,19 @@ pylith::problems::Problem::_setupLagrangeMultiplier(pylith::topology::Field* sol
     for (PylithInt iDim = 0; iDim <= dim; ++iDim) {
         err = DMPlexGetDepthStratum(dmSoln, iDim, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
         for (PylithInt p = pStart; p < pEnd; ++p) {
-          DMPolytopeType ct;
+            DMPolytopeType ct;
 
-          err = DMPlexGetCellType(dmSoln, p, &ct);PYLITH_CHECK_ERROR(err);
-          switch (ct) {
+            err = DMPlexGetCellType(dmSoln, p, &ct);PYLITH_CHECK_ERROR(err);
+            switch (ct) {
             case DM_POLYTOPE_POINT_PRISM_TENSOR:
             case DM_POLYTOPE_SEG_PRISM_TENSOR:
             case DM_POLYTOPE_TRI_PRISM_TENSOR:
             case DM_POLYTOPE_QUAD_PRISM_TENSOR:
-              err = DMLabelSetValue(cohesiveLabel, p, 1);PYLITH_CHECK_ERROR(err);
-              break;
-            default: break;
-          }
+                err = DMLabelSetValue(cohesiveLabel, p, 1);PYLITH_CHECK_ERROR(err);
+                break;
+            default:
+                break;
+            } // switch
         } // for
     } // for
 
