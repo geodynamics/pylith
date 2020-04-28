@@ -106,10 +106,10 @@ pylith::mmstests::TestFaultKin::_initialize(void) {
     CPPUNIT_ASSERT(_fault);
     CPPUNIT_ASSERT(_data->kinsrc);
     _fault->adjustTopology(_mesh);
-    static const int numRuptures = 1;
-    static const char* ruptureNames[1] = { "rupture" };
-    static const pylith::faults::KinSrc* ruptures[1] = { _data->kinsrc };
-    _fault->setEqRuptures(ruptureNames, numRuptures, const_cast<pylith::faults::KinSrc**>(ruptures), numRuptures);
+    const int numRuptures = 1;
+    const char* ruptureNames[1] = { "rupture" };
+    pylith::faults::KinSrc* ruptures[1] = { _data->kinsrc };
+    _fault->setEqRuptures(ruptureNames, numRuptures, ruptures, numRuptures);
     _data->kinsrc->auxFieldDB(_data->faultAuxDB);
     for (int i = 0; i < _data->faultNumAuxSubfields; ++i) {
         const pylith::topology::FieldBase::Discretization& info = _data->faultAuxDiscretizations[i];
