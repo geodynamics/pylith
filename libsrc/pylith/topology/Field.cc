@@ -100,10 +100,10 @@ pylith::topology::Field::Field(const Mesh& mesh,
     err = DMPlexGetConeSize(dm, cStart, &coneSize);PYLITH_CHECK_ERROR(err);
 
     Discretization fe;
-    fe.tensorBasis = (dim+1 == coneSize);
     fe.basisOrder = 1;
     fe.quadOrder = 1;
     fe.dimension = -1;
+    fe.cellBasis = (dim+1 == coneSize) ? TENSOR_BASIS : SIMPLEX_BASIS;
     subfieldAdd(description, fe);
     subfieldsSetup();
 
@@ -500,11 +500,26 @@ pylith::topology::Field::view(const char* label,
                     std::cout << " " << sinfo.description.componentNames[i];
                 } // for
             } // if
+            std::string cellBasisString = "default";
+            switch (sinfo.fe.cellBasis) {
+            case SIMPLEX_BASIS:
+                cellBasisString = "simplex";
+                break;
+            case TENSOR_BASIS:
+                cellBasisString = "tensor";
+                break;
+            case DEFAULT_BASIS:
+                cellBasisString = "default";
+                break;
+            default:
+                assert(0);
+                throw std::logic_error("Unknown cell basis");
+            } // switch
             std::cout << ", scale: " << sinfo.description.scale
-                      << ", tensorBasis: " << sinfo.fe.tensorBasis
                       << ", basisOrder: " << sinfo.fe.basisOrder
                       << ", quadOrder: " << sinfo.fe.quadOrder
                       << ", dimension: " << sinfo.fe.dimension
+                      << ", cellBasis: " << cellBasisString
                       << "\n";
         } // for
     } // if
@@ -652,9 +667,9 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
     err = DMPlexGetDepthStratum(_dm, 0, NULL, &vEnd);PYLITH_CHECK_ERROR(err);
     cMax = cStart;
     for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
-      DMPolytopeType ct;
-      err = DMPlexGetCellType(_dm, cell, &ct);PYLITH_CHECK_ERROR(err);
-      if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) break;
+        DMPolytopeType ct;
+        err = DMPlexGetCellType(_dm, cell, &ct);PYLITH_CHECK_ERROR(err);
+        if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) { break;}
     }
     PetscInt excludeRanges[4] = {cMax, cEnd, vMax, vEnd};
     PetscInt numExcludes = (cMax < cEnd ? 1 : 0) + (vMax >= 0 ? 1 : 0);
@@ -906,14 +921,14 @@ pylith::topology::Field::subfieldAdd(const char *name,
                                      const char* components[],
                                      const int numComponents,
                                      const double scale,
-                                     const bool tensorBasis,
                                      const int basisOrder,
                                      const int quadOrder,
                                      const int dimension,
+                                     const CellBasis cellBasis,
                                      const bool isBasisContinuous,
                                      const SpaceEnum feSpace) {
     assert(numComponents > 0);
-    assert(dimension > 0);
+    assert(dimension != 0);
 
     Description description;
     description.label = name;
@@ -928,10 +943,10 @@ pylith::topology::Field::subfieldAdd(const char *name,
     description.validator = NULL;
 
     Discretization discretization;
-    discretization.tensorBasis = tensorBasis;
     discretization.basisOrder = basisOrder;
     discretization.quadOrder = quadOrder;
     discretization.dimension = dimension;
+    discretization.cellBasis = cellBasis;
     discretization.isBasisContinuous = isBasisContinuous;
     discretization.feSpace = feSpace;
 
@@ -971,7 +986,7 @@ pylith::topology::Field::subfieldUpdate(const char* subfieldName,
 
     subfields_type::iterator iter = _subfields.find(subfieldName);
     assert(iter != _subfields.end());
-    assert(discretization.tensorBasis == iter->second.fe.tensorBasis);
+    assert(discretization.cellBasis == iter->second.fe.cellBasis);
     assert(discretization.basisOrder == iter->second.fe.basisOrder);
     assert(discretization.quadOrder == iter->second.fe.quadOrder);
     assert(discretization.dimension == iter->second.fe.dimension);
@@ -1018,7 +1033,7 @@ pylith::topology::Field::subfieldsSetup(void) {
             quadOrderSet = true;
         } // if/else
 
-        sinfo.fe.tensorBasis = !_mesh.isSimplex();
+        sinfo.fe.cellBasis = _mesh.isSimplex() ? SIMPLEX_BASIS : TENSOR_BASIS;
         PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, sinfo.description.numComponents);assert(fe);
         err = PetscFESetName(fe, sname);PYLITH_CHECK_ERROR(err);
         err = DMSetField(_dm, sinfo.index, NULL, (PetscObject)fe);PYLITH_CHECK_ERROR(err);

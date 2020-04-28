@@ -113,8 +113,8 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
     // Set default discretization of auxiliary subfields to match slip subfield in integrator auxiliary field.
     assert(_auxFactory);
     const pylith::topology::FieldBase::Discretization& discretization = faultAuxField.subfieldInfo("slip").fe;
-    _auxFactory->setSubfieldDiscretization("default", discretization.tensorBasis, discretization.basisOrder, discretization.quadOrder,
-                                           discretization.dimension, discretization.isBasisContinuous,
+    _auxFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder,
+                                           discretization.dimension, discretization.cellBasis, discretization.isBasisContinuous,
                                            discretization.feSpace);
 
     delete _auxField;_auxField = new pylith::topology::Field(faultAuxField.mesh());assert(_auxField);

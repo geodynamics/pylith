@@ -23,10 +23,8 @@
 // -----------------------------------------------------------------------------
 namespace pylith {
     namespace topology {
-
         // ---------------------------------------------------------------------
         class TestFieldMesh_Quad : public TestFieldMesh {
-
             CPPUNIT_TEST_SUB_SUITE(TestFieldMesh_Quad, TestFieldMesh);
             CPPUNIT_TEST_SUITE_END();
 
@@ -112,14 +110,12 @@ namespace pylith {
                 _data->bcBNumVertices = 2;
                 static const int _bcBVertices[2] = { 2, 3, };
                 _data->bcBVertices = const_cast<int*>(_bcBVertices);
-            }   // setUp
+            } // setUp
 
-
-        };  // TestFieldMesh_Quad
+        }; // TestFieldMesh_Quad
         CPPUNIT_TEST_SUITE_REGISTRATION(TestFieldMesh_Quad);
 
-    }   // topology
-}   // pylith
-
+    } // topology
+} // pylith
 
 // End of file

@@ -106,41 +106,43 @@ pylith::feassemble::TestAuxiliaryFactory::testQueryDB(void) {
 // Test setSubfieldDiscretization() and getSubfieldDiscretization().
 void
 pylith::feassemble::TestAuxiliaryFactory::testSubfieldDiscretization(void) {
-    pylith::topology::FieldBase::Discretization feDisp(false, 2, 2, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
-    pylith::topology::FieldBase::Discretization feVel(false, 3, 2, 1, false, pylith::topology::FieldBase::POINT_SPACE);
+    pylith::topology::FieldBase::Discretization feDisp(2, 2, -1, 2, pylith::topology::FieldBase::SIMPLEX_BASIS,
+                                                       true, pylith::topology::FieldBase::POLYNOMIAL_SPACE);
+    pylith::topology::FieldBase::Discretization feVel(3, 2, 1, 2, pylith::topology::FieldBase::SIMPLEX_BASIS,
+                                                      false, pylith::topology::FieldBase::POINT_SPACE);
 
     CPPUNIT_ASSERT(_factory);
-    _factory->setSubfieldDiscretization("displacement", feDisp.tensorBasis, feDisp.basisOrder, feDisp.quadOrder, feDisp.dimension,
-                                        feDisp.isBasisContinuous, feDisp.feSpace);
-    _factory->setSubfieldDiscretization("velocity", feVel.tensorBasis, feVel.basisOrder, feVel.quadOrder, feVel.dimension,
-                                        feVel.isBasisContinuous, feVel.feSpace);
+    _factory->setSubfieldDiscretization("displacement", feDisp.basisOrder, feDisp.quadOrder, feDisp.dimension,
+                                        feDisp.cellBasis, feDisp.isBasisContinuous, feDisp.feSpace);
+    _factory->setSubfieldDiscretization("velocity", feVel.basisOrder, feVel.quadOrder, feVel.dimension,
+                                        feVel.cellBasis, feVel.isBasisContinuous, feVel.feSpace);
 
     { // Check displacement discretization
         const pylith::topology::FieldBase::Discretization& feTest = _factory->getSubfieldDiscretization("displacement");
-        CPPUNIT_ASSERT_EQUAL(feDisp.tensorBasis, feTest.tensorBasis);
         CPPUNIT_ASSERT_EQUAL(feDisp.basisOrder, feTest.basisOrder);
         CPPUNIT_ASSERT_EQUAL(feDisp.quadOrder, feTest.quadOrder);
         CPPUNIT_ASSERT_EQUAL(feDisp.dimension, feTest.dimension);
+        CPPUNIT_ASSERT_EQUAL(feDisp.cellBasis, feTest.cellBasis);
         CPPUNIT_ASSERT_EQUAL(feDisp.isBasisContinuous, feTest.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(feDisp.feSpace, feTest.feSpace);
     } // Check displacement discretization
 
     { // Check velocity discretization
         const pylith::topology::FieldBase::Discretization& feTest = _factory->getSubfieldDiscretization("velocity");
-        CPPUNIT_ASSERT_EQUAL(feVel.tensorBasis, feTest.tensorBasis);
         CPPUNIT_ASSERT_EQUAL(feVel.basisOrder, feTest.basisOrder);
         CPPUNIT_ASSERT_EQUAL(feVel.quadOrder, feTest.quadOrder);
         CPPUNIT_ASSERT_EQUAL(feVel.dimension, feTest.dimension);
+        CPPUNIT_ASSERT_EQUAL(feVel.cellBasis, feTest.cellBasis);
         CPPUNIT_ASSERT_EQUAL(feVel.isBasisContinuous, feTest.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(feVel.feSpace, feTest.feSpace);
     } // Check velocity discretization
 
     { // default for unknown discretization
         const pylith::topology::FieldBase::Discretization& feTest = _factory->getSubfieldDiscretization("xyz");
-        CPPUNIT_ASSERT_EQUAL(false, feTest.tensorBasis);
         CPPUNIT_ASSERT_EQUAL(1, feTest.basisOrder);
         CPPUNIT_ASSERT_EQUAL(1, feTest.quadOrder);
         CPPUNIT_ASSERT_EQUAL(-1, feTest.dimension);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::FieldBase::DEFAULT_BASIS, feTest.cellBasis);
         CPPUNIT_ASSERT_EQUAL(true, feTest.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::FieldBase::POLYNOMIAL_SPACE, feTest.feSpace);
     }

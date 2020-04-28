@@ -206,7 +206,6 @@ pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
         const PetscInt *gvertex = NULL;
         PetscVec cellVec = NULL;
         PetscScalar *vertices = NULL;
-        const PetscInt meshDim = mesh.dimension();
 
         err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);PYLITH_CHECK_ERROR(err);
         err = ISGetIndices(globalVertexNumbers, &gvertex);PYLITH_CHECK_ERROR(err);
