@@ -95,7 +95,8 @@ pylith::mmstests::TestElasticity::_initialize(void) {
     for (int i = 0; i < _data->numAuxSubfields; ++i) {
         const pylith::topology::FieldBase::Discretization& info = _data->auxDiscretizations[i];
         _material->setAuxiliarySubfieldDiscretization(_data->auxSubfields[i], info.basisOrder, info.quadOrder,
-                                                      _data->spaceDim, info.isBasisContinuous, info.feSpace);
+                                                      _data->spaceDim, pylith::topology::FieldBase::DEFAULT_BASIS,
+                                                      info.isBasisContinuous, info.feSpace);
     } // for
 
     // Set up problem.
