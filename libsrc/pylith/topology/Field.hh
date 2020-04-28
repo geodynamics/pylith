@@ -210,6 +210,7 @@ public:
      * @param[in] basisOrder Order of basis functions for discretization.
      * @param[in] quadOrder Order of numerical quadrature for discretization.
      * @param[in] dimension Dimension of points for discretization.
+     * @param[in] cellBasis Type of basis functions to use (e.g., simplex, tensor, or default).
      * @param[in] isBasisContinuous True if basis is continuous.
      * @param[in] feSpace Finite-element space (POLYNOMIAL_SPACE or POINT_SPACE).
      */
@@ -219,10 +220,10 @@ public:
                      const char* components[],
                      const int numComponents,
                      const double scale,
-                     const bool tensorBasis,
                      const int basisOrder,
                      const int quadOrder,
                      const int dimension,
+                     const CellBasis cellBasis,
                      const bool isBasisContinuous,
                      const SpaceEnum feSpace);
 

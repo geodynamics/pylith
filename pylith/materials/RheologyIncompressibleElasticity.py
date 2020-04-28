@@ -62,8 +62,8 @@ class RheologyIncompressibleElasticity(PetscComponent, ModuleRheology):
         for subfield in self.auxiliarySubfields.components():
             fieldName = subfield.aliases[-1]
             quadOrder = problem.defaults.quadOrder if subfield.quadOrder < 0 else subfield.quadOrder
-            material.setAuxiliarySubfieldDiscretization(fieldName, subfield.basisOrder, quadOrder,
-                                                        subfield.dimension, subfield.isBasisContinuous, subfield.feSpace)
+            material.setAuxiliarySubfieldDiscretization(fieldName, subfield.basisOrder, quadOrder, subfield.dimension,
+                                                        subfield.cellBasis, subfield.isBasisContinuous, subfield.feSpace)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

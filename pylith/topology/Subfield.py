@@ -33,6 +33,7 @@ class Subfield(Component):
       - *basis_order* Order of basis functions.
       - *quadrature_order* Order of numerical quadrature.
       - *dimension* Topological dimension associated with subfield.
+      - *cell_basis* Type of basis functions to use [simplex, tensor, default (for cell type)].
       - *basis_continuous* Is basis continuous?
       - *finite_element_space* Finite-element space [polynomial, point].
 
@@ -50,11 +51,15 @@ class Subfield(Component):
     quadOrder = pyre.inventory.int("quadrature_order", default=-1)
     quadOrder.meta['tip'] = "Order of numerical quadrature."
 
-    isBasisContinuous = pyre.inventory.bool("is_basis_continous", default=True)
-    isBasisContinuous.meta['tip'] = "Is basis continuous?"
-
     dimension = pyre.inventory.int("dimension", default=-1)
     dimension.meta["tip"] = "Topological dimension associated with subfield (=-1 will use dimension of domain)."
+
+    cellBasisStr = pyre.inventory.str("cell_basis", default="default",
+                                      validator=pyre.inventory.choice(["simplex", "tensor", "default"]))
+    cellBasisStr.meta['tip'] = "Type of cell basis functions (simplex, tensor, or default). Default is to use type matching cell type."
+
+    isBasisContinuous = pyre.inventory.bool("is_basis_continous", default=True)
+    isBasisContinuous.meta['tip'] = "Is basis continuous?"
 
     feSpaceStr = pyre.inventory.str("finite_element_space", default="polynomial",
                                     validator=pyre.inventory.choice(["polynomial", "point"]))
@@ -79,6 +84,14 @@ class Subfield(Component):
         from .topology import FieldBase
 
         Component._configure(self)
+
+        mapBasis = {
+            "simplex": FieldBase.SIMPLEX_BASIS,
+            "tensor": FieldBase.TENSOR_BASIS,
+            "default": FieldBase.DEFAULT_BASIS,
+        }
+        self.cellBasis = mapBasis[self.inventory.cellBasisStr]
+
         mapSpace = {
             "polynomial": FieldBase.POLYNOMIAL_SPACE,
             "point": FieldBase.POINT_SPACE,

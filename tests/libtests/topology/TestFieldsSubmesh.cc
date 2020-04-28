@@ -207,7 +207,11 @@ pylith::topology::TestFieldsSubmesh::testCopyLayout(void) {
     const int basisOrder = 1;
     const int quadOrder = 1;
     const double scale = 1.2;
-    fieldA.subfieldAdd("velocity", "velocity", Field::SCALAR, components, numComponents, scale, !_submesh->isSimplex(), basisOrder, quadOrder, dim, true, Field::POLYNOMIAL_SPACE);
+    const pylith::topology::FieldBase::CellBasis cellBasis = _submesh->isSimplex() ?
+                                                             pylith::topology::FieldBase::SIMPLEX_BASIS :
+                                                             pylith::topology::FieldBase::TENSOR_BASIS;
+    fieldA.subfieldAdd("velocity", "velocity", Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder,
+                       dim, cellBasis, true, Field::POLYNOMIAL_SPACE);
     fieldA.subfieldsSetup();
     fieldA.createDiscretization();
     fieldA.allocate();

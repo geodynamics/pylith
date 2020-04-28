@@ -28,15 +28,17 @@ check_PROGRAMS = test_bc
 
 # Primary source files
 test_bc_SOURCES = \
-	TestBoundaryMesh.cc \
-	TestBoundaryMesh_Cases.cc \
-	TestDirichletTimeDependent.cc \
-	TestDirichletTimeDependent_Cases.cc \
-	TestNeumannTimeDependent.cc \
-	TestNeumannTimeDependent_Cases.cc \
-	TestAbsorbingDampers.cc \
-	TestAbsorbingDampers_Cases.cc \
 	test_driver.cc
+
+#	TestBoundaryMesh.cc \
+#	TestBoundaryMesh_Cases.cc \
+#	TestDirichletTimeDependent.cc \
+#	TestDirichletTimeDependent_Cases.cc \
+#	TestNeumannTimeDependent.cc \
+#	TestNeumannTimeDependent_Cases.cc \
+#	TestAbsorbingDampers.cc \
+#	TestAbsorbingDampers_Cases.cc
+
 
 noinst_HEADERS = \
 	TestBoundaryMesh.hh \

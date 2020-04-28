@@ -88,13 +88,15 @@ class Physics(PetscComponent, ModulePhysics):
             fieldName = subfield.aliases[-1]
             quadOrder = problem.defaults.quadOrder if subfield.quadOrder < 0 else subfield.quadOrder
             ModulePhysics.setAuxiliarySubfieldDiscretization(self, fieldName, subfield.basisOrder, quadOrder,
-                                                             subfield.dimension, subfield.isBasisContinuous, subfield.feSpace)
+                                                             subfield.dimension, subfield.cellBasis,
+                                                             subfield.isBasisContinuous, subfield.feSpace)
 
         for subfield in self.derivedSubfields.components():
             fieldName = subfield.aliases[-1]
             quadOrder = problem.defaults.quadOrder if subfield.quadOrder < 0 else subfield.quadOrder
             ModulePhysics.setDerivedSubfieldDiscretization(self, fieldName, subfield.basisOrder, quadOrder,
-                                                           subfield.dimension, subfield.isBasisContinuous, subfield.feSpace)
+                                                           subfield.dimension, subfield.cellBasis,
+                                                           subfield.isBasisContinuous, subfield.feSpace)
 
         for observer in self.observers.components():
             observer.preinitialize(problem, identifier)

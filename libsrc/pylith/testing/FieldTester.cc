@@ -34,8 +34,8 @@
 // Check to make sure field matches spatial database.
 PylithReal
 pylith::testing::FieldTester::checkFieldWithDB(const pylith::topology::Field& field,
-                                                spatialdata::spatialdb::SpatialDB* fieldDB,
-                                                const PylithReal lengthScale) {
+                                               spatialdata::spatialdb::SpatialDB* fieldDB,
+                                               const PylithReal lengthScale) {
     PYLITH_METHOD_BEGIN;
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
@@ -56,7 +56,7 @@ pylith::testing::FieldTester::checkFieldWithDB(const pylith::topology::Field& fi
 // Test subfield info created by factory.
 void
 pylith::testing::FieldTester::checkSubfieldInfo(const pylith::topology::Field& field,
-                                                 const pylith::topology::Field::SubfieldInfo& infoE) {
+                                                const pylith::topology::Field::SubfieldInfo& infoE) {
     PYLITH_METHOD_BEGIN;
 
     const pylith::topology::Field::SubfieldInfo& info = field.subfieldInfo(infoE.description.label.c_str());
@@ -83,10 +83,10 @@ pylith::testing::FieldTester::checkSubfieldInfo(const pylith::topology::Field& f
     // Discretization
     const pylith::topology::Field::Discretization& feE = infoE.fe;
     const pylith::topology::Field::Discretization& fe = info.fe;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.tensorBasis, fe.tensorBasis);
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.basisOrder, fe.basisOrder);
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.quadOrder, fe.quadOrder);
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.dimension, fe.dimension);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.cellBasis, fe.cellBasis);
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.isBasisContinuous, fe.isBasisContinuous);
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.feSpace, fe.feSpace);
 

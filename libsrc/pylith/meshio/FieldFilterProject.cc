@@ -154,7 +154,7 @@ pylith::meshio::FieldFilterProject::filter(pylith::topology::Field* fieldIn) {
             feP1.feSpace = infoIn.fe.feSpace;
             feP1.quadOrder = infoIn.fe.quadOrder;
             feP1.dimension = infoIn.fe.dimension;
-            feP1.tensorBasis = infoIn.fe.tensorBasis;
+            feP1.cellBasis = infoIn.fe.cellBasis;
 
             if (infoIn.fe.quadOrder < _basisOrder) {
                 PYLITH_COMPONENT_WARNING(
