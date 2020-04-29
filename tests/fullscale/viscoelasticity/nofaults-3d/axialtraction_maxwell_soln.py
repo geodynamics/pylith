@@ -13,28 +13,30 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests/fullscale/viscoelasticity/nofaults-2d/axialtraction_maxwell_soln.py
+# @file tests/fullscale/viscoelasticity/nofaults-3d/axialtraction_maxwell_soln.py
 #
 # @brief Analytical solution to axial traction problem for a Maxwell viscoelastic material.
 #
-# 2-D axial traction solution for linear Maxwell viscoelastic material.
+# 3-D axial traction solution for linear Maxwell viscoelastic material.
 #
-#             Uy=0
+#             Tz=T0
 #          ----------
 #          |        |
-# Ux=0     |        |  Tx=T0
+# Ux=0     |        |  Ux=0
 #          |        |
 #          |        |
 #          ----------
-#            Uy=0
+#            Uz=0
 #
 # Dirichlet boundary conditions
-# Ux(-4000,y) = 0
-# Uy(x,-4000) = 0
-# Uy(x,+4000) = 0
+# Ux(-4000,y,z) = 0
+# Ux(+4000,y,z) = 0
+# Uy(x,-4000,z) = 0
+# Uy(x,+4000,z) = 0
+# Uz(x,y,-8000) = 0
 #
 # Neumann boundary conditions
-# Tx(+4000,y) = T0
+# Tz(x,y,0) = T0
 
 import numpy
 # import pdb
@@ -62,12 +64,14 @@ timeArray = numpy.linspace(startTime, endTime, num=numSteps, dtype=numpy.float64
 
 # Uniform stress field (plane strain).
 T0 = -1.0e7
-sxx = T0*numpy.ones(numSteps, dtype=numpy.float64)
+szz = T0*numpy.ones(numSteps, dtype=numpy.float64)
 timeFac = numpy.exp(-p_youngs*timeArray/(6.0*p_viscosity*(1.0 - p_poissons)))
 poisFac = (2.0*p_poissons - 1.0)/(1.0 - p_poissons)
+sxx = T0*(1.0 + poisFac*timeFac)
 syy = T0*(1.0 + poisFac*timeFac)
-szz = syy
 sxy = numpy.zeros(numSteps, dtype=numpy.float64)
+syz = numpy.zeros(numSteps, dtype=numpy.float64)
+sxz = numpy.zeros(numSteps, dtype=numpy.float64)
 
 # Deviatoric stress.
 meanStress = (sxx + syy + szz)/3.0
@@ -76,27 +80,31 @@ sDevyy = syy - meanStress
 sDevzz = szz - meanStress
 
 # Uniform strain field.
-exx = T0*(1.0 - 2.0*p_poissons)*(3.0 + 2.0*poisFac*timeFac)/p_youngs
+exx = numpy.zeros(numSteps, dtype=numpy.float64)
 eyy = numpy.zeros(numSteps, dtype=numpy.float64)
-ezz = numpy.zeros(numSteps, dtype=numpy.float64)
+ezz = T0*(1.0 - 2.0*p_poissons)*(3.0 + 2.0*poisFac*timeFac)/p_youngs
 exy = numpy.zeros(numSteps, dtype=numpy.float64)
+eyz = numpy.zeros(numSteps, dtype=numpy.float64)
+exz = numpy.zeros(numSteps, dtype=numpy.float64)
 
-outArray = numpy.column_stack((timeArray, syy, exx))
-numpy.savetxt('axialtraction_maxwell_analytical.txt', outArray)
+# outArray = numpy.column_stack((timeArray, syy, ezz))
+# numpy.savetxt('axialtraction_maxwell_analytical.txt', outArray)
 
 # Get viscous strains from deviatoric stress.
 eVisxx = 0.5*sDevxx/p_mu
 eVisyy = 0.5*sDevyy/p_mu
 eViszz = 0.5*sDevzz/p_mu
 eVisxy = 0.5*sxy/p_mu
+eVisyz = 0.5*syz/p_mu
+eVisxz = 0.5*sxz/p_mu
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
     """
     Analytical solution to axial extension problem.
     """
-    SPACE_DIM = 2
-    TENSOR_SIZE = 4
+    SPACE_DIM = 3
+    TENSOR_SIZE = 6
 
     def __init__(self):
         self.fields = {
@@ -111,8 +119,10 @@ class AnalyticalSoln(object):
             "initial_amplitude": {
                 "bc_xneg": self.initial_displacement,
                 "bc_yneg": self.initial_displacement,
+                "bc_zneg": self.initial_displacement,
+                "bc_xpos": self.initial_displacement,
                 "bc_ypos": self.initial_displacement,
-                "bc_xpos": self.initial_traction
+                "bc_zpos": self.initial_traction
             }
         }
         self.key = None
@@ -131,7 +141,7 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         disp = numpy.zeros((numSteps, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[:, :, 0] = numpy.dot(exx.reshape(numSteps, 1), (locs[:, 0] + 4000.0).reshape(1, npts))
+        disp[:, :, 2] = numpy.dot(ezz.reshape(numSteps, 1), (locs[:, 2] + 8000.0).reshape(1, npts))
         return disp
 
     def initial_displacement(self, locs):
@@ -148,7 +158,7 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[:,:,1] = T0
+        traction[:,:,2] = T0
         return traction
 
     def density(self, locs):
@@ -193,6 +203,8 @@ class AnalyticalSoln(object):
         strain[:, :, 1] = eyy.reshape(numSteps, 1)
         strain[:, :, 2] = ezz.reshape(numSteps, 1)
         strain[:, :, 3] = exy.reshape(numSteps, 1)
+        strain[:, :, 4] = eyz.reshape(numSteps, 1)
+        strain[:, :, 5] = exz.reshape(numSteps, 1)
         return strain
 
     def stress(self, locs):
@@ -205,6 +217,8 @@ class AnalyticalSoln(object):
         stress[:, :, 1] = syy.reshape(numSteps, 1)
         stress[:, :, 2] = szz.reshape(numSteps, 1)
         stress[:, :, 3] = sxy.reshape(numSteps, 1)
+        stress[:, :, 4] = syz.reshape(numSteps, 1)
+        stress[:, :, 5] = sxz.reshape(numSteps, 1)
         return stress
 
     def viscous_strain(self, locs):
@@ -217,6 +231,8 @@ class AnalyticalSoln(object):
         viscous_strain[:, :, 1] = eVisyy.reshape(numSteps, 1)
         viscous_strain[:, :, 2] = eViszz.reshape(numSteps, 1)
         viscous_strain[:, :, 3] = eVisxy.reshape(numSteps, 1)
+        viscous_strain[:, :, 4] = eVisyz.reshape(numSteps, 1)
+        viscous_strain[:, :, 5] = eVisxz.reshape(numSteps, 1)
         return viscous_strain
 
 

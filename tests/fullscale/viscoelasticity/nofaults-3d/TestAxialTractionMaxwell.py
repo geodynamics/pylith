@@ -15,9 +15,9 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests/fullscale/viscoelasticity/nofaults-2d/TestAxialTractionMaxwell.py
+# @file tests/fullscale/viscoelasticity/nofaults-3d/TestAxialTractionMaxwell.py
 #
-# @brief Test suite for testing Maxwell material with 2-D axial extension (Neumann BC).
+# @brief Test suite for testing Maxwell material with 3-D axial extension (Neumann BC).
 
 import unittest
 # import pdb
@@ -33,10 +33,10 @@ from axialtraction_maxwell_gendb import GenerateDB
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
     """
-    Test suite for testing Maxwell material with 2-D axial extension (Neumann BC).
+    Test suite for testing Maxwell material with 3-D axial extension (Neumann BC).
     """
-    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_ypos", "bc_yneg"]
-    NEUMANN_BOUNDARIES = ["bc_xpos"]
+    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_ypos", "bc_yneg", "bc_zneg"]
+    NEUMANN_BOUNDARIES = ["bc_zpos"]
 
     def setUp(self):
         """
@@ -103,30 +103,30 @@ class TestCase(FullTestCase):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-class TestQuad(TestCase, meshes.Quad):
-    NAME = "axialtraction_maxwell_quad"
+class TestHex(TestCase, meshes.Hex):
+    NAME = "axialtraction_maxwell_hex"
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["axialtraction_maxwell.cfg", "axialtraction_maxwell_quad.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["axialtraction_maxwell.cfg", "axialtraction_maxwell_hex.cfg"])
         return
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-class TestTri(TestCase, meshes.Tri):
-    NAME = "axialtraction_maxwell_tri"
+class TestTet(TestCase, meshes.Tet):
+    NAME = "axialtraction_maxwell_tet"
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["axialtraction_maxwell.cfg", "axialtraction_maxwell_tri.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["axialtraction_maxwell.cfg", "axialtraction_maxwell_tet.cfg"])
         return
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 def test_cases():
     return [
-        TestQuad,
-        TestTri,
+        TestHex,
+        TestTet,
     ]
 
 
