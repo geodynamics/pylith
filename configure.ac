@@ -58,13 +58,14 @@ AM_CONDITIONAL([ENABLE_FULL_TESTING], [test "$enable_full_testing" = yes])
 AC_ARG_ENABLE([cubit],
     [AC_HELP_STRING([--enable-cubit],
         [enable reading/writing Cubit EXODUS files (requires netcdf) @<:@default=yes@:>@])],
-	[if test "$enableval" = yes ; then
-	  enable_cubit=yes
-	  CPPFLAGS="-DENABLE_CUBIT $CPPFLAGS"; export CPPFLAGS;
-	  PYLITH_SWIG_CPPFLAGS="-DENABLE_CUBIT $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS ;
-	else enable_cubit=no; fi],
+	[if test "$enableval" = yes; then enable_cubit=yes; else enable_cubit=no; fi],
 	[enable_cubit=yes])
+if test "$enable_cubit" = "yes"; then
+  CPPFLAGS="-DENABLE_CUBIT $CPPFLAGS"; export CPPFLAGS
+  PYLITH_SWIG_CPPFLAGS="-DENABLE_CUBIT $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
+fi
 AM_CONDITIONAL([ENABLE_CUBIT], [test "$enable_cubit" = yes])
+AC_SUBST(PYLITH_SWIG_CPPFLAGS)
 
 # PETSc w/HDF5
 AC_ARG_ENABLE([hdf5],
