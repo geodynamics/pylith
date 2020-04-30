@@ -151,10 +151,12 @@ public:
             if (cellBasis          != rhs.cellBasis) {return false;}
             if (isBasisContinuous  != rhs.isBasisContinuous) {return false;}
             if (feSpace            != rhs.feSpace) {return false;}
-            return true;
+            // return true;
+            return false;
         }
 
         bool operator<(const Discretization rhs) const {
+            return true;
             if (basisOrder         < rhs.basisOrder) {return true;}
             if (basisOrder        == rhs.basisOrder) {
                 if (quadOrder        < rhs.quadOrder) {return true;}

@@ -124,6 +124,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
 
         pylith::topology::FieldOps::feStore.insert(std::pair<FieldBase::Discretization, pylith::topology::FE>(feKey, fe));
     } else {
+        throw std::logic_error("FielfOps::createFE() :TODO: Can't reuse PetscFE due to naming of fields, so make a deep copy of fe.");
         fe = hasFE->second._fe;
         err = PetscObjectReference((PetscObject) fe);PYLITH_CHECK_ERROR(err);
     }
