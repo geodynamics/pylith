@@ -38,4 +38,18 @@ EXTRA_DIST = \
 	CHANGES \
 	DEPENDENCIES
 
+coverage-%.info: 
+	lcov --directory libsrc --capture --output-file $@
+	lcov --remove $@ '/usr/*' '/Library/*' "v1" "*/testing/TestDriver.*" -o $@
+	lcov --list $@
+
+coverage-%: coverage-%.info
+	genhtml -o $@ $<
+
+clean-coverage:
+	$(RM) `find . -name "*.gcda"`
+
+# Remove .info files from list of intermediate files
+.SECONDARY: coverage-libtests.info coverage-mmstests.info coverage-fullscale.info
+
 # End of file
