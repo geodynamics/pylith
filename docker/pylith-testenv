@@ -1,14 +1,16 @@
-# docker build --build-arg BASE_IMAGE=${VARIABLE_NAME} -f DOCKERFILE -t IMAGE_NAME .
-
+# docker build --build-arg BASE_IMAGE=${VARIABLE_NAME} --build-arg TEST_COVERAGE=yes/no --build-arg PYTHON_COVERAGE=${COVERAGE_EXECUTABLE} -f DOCKERFILE . -t IMAGE_NAME .
 
 # BUILD CIG DEPENDENCIES ----------
 ARG BASE_IMAGE
 from ${BASE_IMAGE} as base
-MAINTAINER Brad Aagaard <baagaard@usgs.gov>
+ARG TEST_COVERAGE=no
+ARG PYTHON_COVERAGE=coverage2
+ENV TEST_COVERAGE=${TEST_COVERAGE} PYTHON_COVERAGE=${PYTHON_COVERAGE} 
+
+LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
 USER ${PYLITH_USER}
 ENV TOP_DIR /home/${PYLITH_USER}
-
 RUN mkdir -p ${TOP_DIR}/src
 
 # ------------------------------------------------------------------------------
@@ -84,7 +86,6 @@ RUN mkdir -p ${BUILD_DIR}
 
 COPY --chown=pylith-user:pylith-user . ${SRC_DIR}
 WORKDIR ${SRC_DIR}
-RUN git fetch --unshallow
 RUN autoreconf --install --verbose --force
 
 WORKDIR ${BUILD_DIR}
@@ -97,8 +98,8 @@ from src as test
 
 RUN make -j$(nproc) install
 RUN make clean-coverage && make -j$(nproc) check VERBOSE=1 -C tests/libtests && make coverage-libtests
-#RUN make check VERBOSE=1 -C tests/pytests
 RUN make clean-coverage && make -j$(nproc) check VERBOSE=1 -C tests/mmstests && make coverage-mmstests
+#RUN make check VERBOSE=1 -C tests/pytests
 RUN make clean-coverage && make check VERBOSE=1 -C tests/fullscale && make coverage-fullscale
 
 CMD /bin/bash
