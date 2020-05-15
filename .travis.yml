@@ -1,39 +1,50 @@
 # Travis-CI configuration
 
-sudo: true
 services:
     - docker
 
 language: cpp
 
 # :TODO: @brad Add osx build (need homebrew packages)..
-matrix:
+jobs:
   include:
-    - os: linux
+    - name: debian-stable-gcc8
+      os: linux
       env: BASE_IMAGE=geodynamics/pylith-testenv-debian-stable-gcc8 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
-    - os: linux
+    - name: debian-testing-gcc9
+      os: linux
       env: BASE_IMAGE=geodynamics/pylith-testenv-debian-testing-gcc9 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
-    - os: linux
+    - name: ubuntu-18.04
+      os: linux
       env: BASE_IMAGE=geodynamics/pylith-testenv-ubuntu-18.04 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
-    - os: linux
+    - name: ubuntu-19.10
+      os: linux
       env: BASE_IMAGE=geodynamics/pylith-testenv-ubuntu-19.10 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
-    - os: linux
+    - name: ubuntu-20.04
+      os: linux
       env: BASE_IMAGE=geodynamics/pylith-testenv-ubuntu-20.04 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
-    - os: linux
+    - name: fedora-30
+      os: linux
       env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-30 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage2
-    - os: linux
+    - name: fedora-31
+      os: linux
       env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-31 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage2
-    - os: linux
+    - name: fedora-32
+      os: linux
       env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-32
-    - os: linux
+    - name: centos-6
+      os: linux
       env: BASE_IMAGE=geodynamics/pylith-testenv-centos-6
-    - os: linux
+    - name: centos-7
+      os: linux
       env: BASE_IMAGE=geodynamics/pylith-testenv-centos-7
-    - os: linux
+    - name: centos-8
+      os: linux
       env: BASE_IMAGE=geodynamics/pylith-testenv-centos-8
 
 # Permissions problem with BUILD_DIR for nemesis.
-#    - os: linux
+#    - name: fedora-33
+#      os: linux
 #      env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-33
 
 #    - os: linux

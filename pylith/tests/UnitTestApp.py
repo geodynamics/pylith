@@ -26,6 +26,12 @@ class UnitTestApp(Script):
     """
     Test application.
     """
+    cov = None
+    try:
+        import coverage
+        cov = coverage.Coverage(source=["spatialdata"])
+    except ImportError:
+        pass
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -41,6 +47,9 @@ class UnitTestApp(Script):
         """
         Run the application.
         """
+        if self.cov:
+            self.cov.start()
+
         from pylith.utils.PetscManager import PetscManager
         petsc = PetscManager()
         petsc.options = self.petscOptions
@@ -50,7 +59,11 @@ class UnitTestApp(Script):
 
         petsc.finalize()
 
-        if not success:
+        if self.cov:
+            self.cov.stop()
+            self.cov.save()
+        
+         if not success:
             import sys
             sys.exit(1)
         return

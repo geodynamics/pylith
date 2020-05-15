@@ -16,7 +16,7 @@ if [ $? != 0 ]; then exit 1; fi
 make clean-coverage && make -j$(nproc) check -C tests/libtests VERBOSE=1
 if [ $? != 0 ]; then exit 1; fi
 
-make coverage-libtests
+make coverage-libtests.info
 if [ $? != 0 ]; then exit 1; fi
 
 if [ -r coverage-libtests.info ]; then
@@ -33,7 +33,7 @@ fi
 make clean-coverage && make -j$(nproc) check -C tests/mmstests VERBOSE=1
 if [ $? != 0 ]; then exit 1; fi
 
-make coverage-mmstests
+make coverage-mmstests.info
 if [ $? != 0 ]; then exit 1; fi
 
 if [ -r coverage-mmstests.info ]; then
@@ -50,7 +50,7 @@ fi
 #make -j$(nproc) check -C tests/pytests VERBOSE=1
 #if [ $? != 0 ]; then exit 1; fi
 
-#make coverage-pytests
+#make coverage-pytests.xml
 #if [ $? != 0 ]; then exit 1; fi
 
 #if [ -r coverage-pytests.xml ]; then
@@ -67,7 +67,7 @@ fi
 make clean-coverage && make -j$(nproc) check -C tests/fullscale VERBOSE=1
 if [ $? != 0 ]; then exit 1; fi
 
-make coverage-fullscale
+make coverage-fullscale.info
 if [ $? != 0 ]; then exit 1; fi
 
 if [ -r coverage-fullscale.info ]; then
