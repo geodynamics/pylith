@@ -293,7 +293,7 @@ pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile) {
     for (int iGroup = 0; iGroup < numGroups; ++iGroup) {
         std::ostringstream varname;
         varname << "num_nod_ns" << iGroup+1;
-        const int nodesetSize = exofile.getDim(varname.str().c_str());
+        const size_t nodesetSize = exofile.getDim(varname.str().c_str());
         int_array points(nodesetSize);
 
         varname.str("");
@@ -304,7 +304,7 @@ pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile) {
         PYLITH_COMPONENT_INFO("Reading node set '" << groupNames[iGroup] << "' with id " << ids[iGroup] << " containing " << nodesetSize << " nodes.");
         exofile.getVar(&points[0], dims, ndims, varname.str().c_str());
 
-        std::sort(&points[0], &points[nodesetSize]);
+        std::sort(&points[0], &points[0]+nodesetSize);
         points -= 1; // use zero index
 
         GroupPtType type = VERTEX;

@@ -19,11 +19,8 @@
 SUBDIRS = \
 	libtests \
 	pytests \
-	mmstests
-
-if ENABLE_FULL_TESTING
-  SUBDIRS += \
+	mmstests \
 	fullscale
-endif
 
-# End of file 
+
+# End of file

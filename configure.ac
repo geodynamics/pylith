@@ -36,35 +36,37 @@ AC_ARG_ENABLE([swig],
 	[enable_swig=no])
 AM_CONDITIONAL([ENABLE_SWIG], [test "$enable_swig" = yes])
 
-# TESTING w/cppunit
+# TESTING w/cppunit and Python unittest
 AC_ARG_ENABLE([testing],
-    [AC_HELP_STRING([--enable-testing],
-        [enable unit testing with cppunit (requires cppunit) @<:@default=no@:>@])],
+	[  --enable-testing        Enable unit testing with cppunit (requires cppunit) [[default=no]]],
 	[if test "$enableval" = yes ; then enable_testing=yes; else enable_testing=no; fi],
 	[enable_testing=no])
 AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
-# Enable full-scale testing except on cygwin (need to rebase)
-if test "$enable_testing" = yes ; then
-  enable_full_testing=yes
-  AC_CANONICAL_HOST
-  case $host_os in
-    cygwin*)
-      enable_full_testing=no ;;
-  esac
-fi
-AM_CONDITIONAL([ENABLE_FULL_TESTING], [test "$enable_full_testing" = yes])
+
+# TEST COVERAGE w/locv and python-coverage
+AC_ARG_ENABLE([test-coverage],
+	[  --enable-test-coverage  Enable test coverage with lcov and python-coverage [[default=no]]],
+	[if test "$enableval" = yes ; then enable_test_coverage=yes; else enable_test_coverage=no; fi],
+	[enable_test_coverage=no])
+AC_ARG_WITH([python-coverage],
+    [AC_HELP_STRING([--with-python-coverage],
+        [set executable for python-coverage @<:@default=coverage2@:>@])],
+	[python_coverage=$withval],
+	[python_coverage="coverage2"])
+AC_SUBST(python_coverage)
 
 # CUBIT I/O w/netcdf
 AC_ARG_ENABLE([cubit],
     [AC_HELP_STRING([--enable-cubit],
         [enable reading/writing Cubit EXODUS files (requires netcdf) @<:@default=yes@:>@])],
-	[if test "$enableval" = yes ; then
-	  enable_cubit=yes
-	  CPPFLAGS="-DENABLE_CUBIT $CPPFLAGS"; export CPPFLAGS;
-	  PYLITH_SWIG_CPPFLAGS="-DENABLE_CUBIT $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS ;
-	else enable_cubit=no; fi],
+	[if test "$enableval" = yes; then enable_cubit=yes; else enable_cubit=no; fi],
 	[enable_cubit=yes])
+if test "$enable_cubit" = "yes"; then
+  CPPFLAGS="-DENABLE_CUBIT $CPPFLAGS"; export CPPFLAGS
+  PYLITH_SWIG_CPPFLAGS="-DENABLE_CUBIT $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
+fi
 AM_CONDITIONAL([ENABLE_CUBIT], [test "$enable_cubit" = yes])
+AC_SUBST(PYLITH_SWIG_CPPFLAGS)
 
 # PETSc w/HDF5
 AC_ARG_ENABLE([hdf5],
@@ -112,7 +114,7 @@ CIT_HEADER_MPI
 
 # PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.13.0])
+CIT_PATH_PETSC([3.13.1])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -168,26 +170,18 @@ if test "$enable_hdf5" = "yes" ; then
   CIT_HDF5_LIB_PARALLEL
 fi
 
-# Full-scale testing with h5py
-if test "$enable_full_testing" = yes ; then
-  AM_PATH_PYTHON
-  AC_MSG_CHECKING(for python module h5py for full scale testing)
-  $PYTHON -c "import h5py" 2>/dev/null
-  if test $? == 0; then
-    AC_MSG_RESULT([found h5py, enabling full scale testing])
-    enable_full_testing=yes
-  else
-    AC_MSG_RESULT([not found, disabling full scale testing])
-    enable_full_testing=no
+# H5PY
+if test "$install_h5py" = yes ; then
+  if test "$install_python" = no ; then
+    AM_PATH_PYTHON([2.7])
   fi
-fi
-AM_CONDITIONAL([ENABLE_FULL_TESTING], [test "$enable_full_testing" = yes])
-
-# CUDA
-if test "$enable_cuda" = "yes" ; then
-  CIT_CUDA_INCDIR
-  CIT_CUDA_LIB
-  CIT_CUDA_COMPILER
+  if test "$install_six" = no ; then
+    CIT_PYTHON_MODULE([six],[1.0.0])
+  fi
+else
+  if test "$with_h5py" = yes ; then
+    CIT_PYTHON_MODULE([h5py],[2.0.0])
+  fi
 fi
 
 # PROJ
@@ -210,14 +204,16 @@ CIT_SPATIALDATA_HEADER
 CIT_SPATIALDATA_LIB
 CIT_PYTHON_MODULE([spatialdata],[1.10.0])
 
-# DOXYGEN
-if test "$enable_documentation" = "yes" ; then
-  AC_CHECK_PROG([have_doxygen],
-    [doxygen],
-    [yes],
-    [no])
-  if test "$have_doxygen" = "no"; then
-    AC_MSG_ERROR([Doxygen not found in current path.])
+# TEST COVERAGE
+AM_CONDITIONAL([ENABLE_TEST_COVERAGE], [test "$enable_test_coverage" = yes])
+if test "$enable_test_coverage" = "yes" ; then
+  AC_PATH_PROG(LCOV, lcov)
+  if test -z "$LCOV"; then
+    AC_MSG_FAILURE([cannot find 'lcov' program for C++ test coverage.])
+  fi
+  AC_PATH_PROG(PYTHON_COVERAGE, $python_coverage)
+  if test -z "$PYTHON_COVERAGE"; then
+    AC_MSG_FAILURE([cannot find '$python_coverage' program for Python test coverage.])
   fi
 fi
 
