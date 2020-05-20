@@ -268,9 +268,19 @@ protected:
     void _setExactSolution(void) {
         CPPUNIT_ASSERT(_solution);
 
+        PetscDM dm = _solution->dmMesh();
+        PetscDMLabel label;
+        PetscIS is;
+        PetscInt cohesiveCell;
         PetscErrorCode err = 0;
         PetscDS prob = NULL;
-        err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
+        err = DMGetDS(dm, &prob);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
+        err = DMGetLabel(dm, "material-id", &label);CPPUNIT_ASSERT(!err);
+        err = DMLabelGetStratumIS(label, _fault->getInterfaceId(), &is);CPPUNIT_ASSERT(!err);
+        err = ISGetMinMax(is, &cohesiveCell, NULL);CPPUNIT_ASSERT(!err);
+        err = ISDestroy(&is);CPPUNIT_ASSERT(!err);
+        err = DMGetCellDS(dm, cohesiveCell, &prob);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(prob, 1, solnkernel_lagrangemultiplier, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
