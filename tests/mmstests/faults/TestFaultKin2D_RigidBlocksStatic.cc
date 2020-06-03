@@ -128,8 +128,9 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic :
     } // disp_x
 
     static double disp_y(const double x,
-                         const double y) {
-        return (x < 0.0) ? +0.75 : -0.75;
+                         const double y,
+                         PetscInt cell) {
+        return cell < 4 ? +0.75 : -0.75;
     } // disp_y
 
     static double faulttraction_x(const double x,
@@ -154,7 +155,12 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic :
         CPPUNIT_ASSERT(s);
 
         s[0] = disp_x(x[0], x[1]);
-        s[1] = disp_y(x[0], x[1]);
+        PetscInt cell = 0;
+        if (context) {
+          DMPlexGetActivePoint((PetscDM) context, &cell);
+          printf("Cell %d\n", cell);
+        }
+        s[1] = disp_y(x[0], x[1], cell);
 
         return 0;
     } // solnkernel_disp
@@ -275,7 +281,7 @@ protected:
         PetscErrorCode err = 0;
         PetscDS prob = NULL;
         err = DMGetDS(dm, &prob);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, dm);CPPUNIT_ASSERT(!err);
         err = DMGetLabel(dm, "material-id", &label);CPPUNIT_ASSERT(!err);
         err = DMLabelGetStratumIS(label, _fault->getInterfaceId(), &is);CPPUNIT_ASSERT(!err);
         err = ISGetMinMax(is, &cohesiveCell, NULL);CPPUNIT_ASSERT(!err);
@@ -303,7 +309,7 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP1 :
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(1, 1), // disp
-            pylith::topology::Field::Discretization(1, 1), // lagrange_mutiplier_fault
+            pylith::topology::Field::Discretization(1, 1, 1), // lagrange_mutiplier_fault
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
