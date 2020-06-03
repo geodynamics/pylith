@@ -154,8 +154,8 @@ class SlabContoursFile(Component):
             if len(line.split()) == 1:
                 key = int(line)
                 continue
-            pt = map(float, line.strip().split())
-            points.append(pt)
+            pt = map(float, line.strip().split()) # lon/lat/elev
+            points.append([pt[1], pt[0], pt[2]]) # lat/lon/elev
         self.contours = contours
         return
 
