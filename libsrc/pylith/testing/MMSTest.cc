@@ -117,13 +117,16 @@ pylith::testing::MMSTest::testResidual(void) {
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
     if (debug.state()) {
-        _solution->view("Solution field", pylith::topology::Field::VIEW_LAYOUT);
+        _solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
     const PylithReal tolerance = -1.0;
     PylithReal norm = 0.0;
     err = DMSNESCheckResidual(_problem->getPetscSNES(), _problem->getPetscDM(), _solution->scatterVector("mmstest"),
                               tolerance, &norm);CPPUNIT_ASSERT(!err);
+    if (debug.state()) {
+        _solution->view("Solution field");
+    } // if
     CPPUNIT_ASSERT_MESSAGE("L2 normal of residual is exactly zero, which suggests suspicious case with all residuals "
                            "entries exactly zero.", norm > 0.0);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of F(s) - G(s) == 0 failed.", 0.0, norm, 1.0e-10);
@@ -211,6 +214,7 @@ pylith::testing::MMSTest::_initialize(void) {
 
     _problem->initialize();
     _setExactSolution();
+    _problem->prestep();
 
     // Global vector to use for solution in MMS tests.
     _solution->createScatter(_solution->mesh(), "mmstest");
