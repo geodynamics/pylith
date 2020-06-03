@@ -158,7 +158,8 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic :
         PetscInt cell = 0;
         if (context) {
           DMPlexGetActivePoint((PetscDM) context, &cell);
-          printf("Cell %d\n", cell);
+        } else {
+          cell = (x[0] > 0. ? 4 : 0);
         }
         s[1] = disp_y(x[0], x[1], cell);
 
