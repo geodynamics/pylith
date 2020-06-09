@@ -62,8 +62,8 @@ class UnitTestApp(Script):
         if self.cov:
             self.cov.stop()
             self.cov.save()
-        
-         if not success:
+
+        if not success:
             import sys
             sys.exit(1)
         return
