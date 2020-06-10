@@ -103,7 +103,8 @@ pylith::materials::IsotropicLinearGenMaxwell::addAuxiliarySubfields(void) {
     _auxiliaryFactory->addShearModulus();
     _auxiliaryFactory->addBulkModulus();
     _auxiliaryFactory->addMaxwellTimeGeneralizedMaxwell(); // 3
-    _auxiliaryFactory->addViscousStrainGeneralizedMaxwell(); // 4
+    _auxiliaryFactory->addShearModulusRatioGeneralizedMaxwell(); // 4
+    _auxiliaryFactory->addViscousStrainGeneralizedMaxwell(); // 5
     _auxiliaryFactory->addTotalStrain();
 
     PYLITH_METHOD_END;

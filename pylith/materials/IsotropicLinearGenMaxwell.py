@@ -17,8 +17,7 @@
 
 # @file pylith/materials/IsotropicLinearGenMaxwell.py
 ##
-# @brief Python material for isotropic, linear generalized Maxwell viscoelastic, plane
-# strain material.
+# @brief Python material for isotropic, linear, generalized Maxwell viscoelastic material.
 ##
 # Factory: elasticity_rheology
 
