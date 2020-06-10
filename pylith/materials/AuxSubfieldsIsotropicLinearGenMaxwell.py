@@ -38,7 +38,7 @@ class AuxSubfieldsIsotropicLinearGenMaxwell(PetscComponent):
     Facilities
       - *shear_modulus* Shear modulus subfield.
       - *bulk_modulus* Bulk modulus subfield.
-      - *maxwell_time* Maxwell time subfield.
+      - *maxwell_time* Maxwell time subfield for 3 Maxwell elements.
       - *shear_modulus_ratio* Shear modulus ratio for 3 Maxwell elements.
       - *total_strain* Total strain subfield.
       - *viscous_strain* Viscous strain subfield.

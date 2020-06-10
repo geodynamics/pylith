@@ -23,6 +23,7 @@
 #include "pylith/topology/FieldQuery.hh" // USES DBQueryContext
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END, PYLITH_SET_ERROR
+#include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
 
 // ----------------------------------------------------------------------
 // Query for Vs, Vp, and density to determine shear modulus.
@@ -281,8 +282,8 @@ pylith::materials::Query::dbQueryMaxwellTime(PylithInt dim,
 
 
 // ----------------------------------------------------------------------
-// Query for Vs, density, and viscosities to determine Maxwell time for generalized
-// Maxwell model.
+// Query for Vs, density, viscosities, and shear modulus ratios to determine
+// Maxwell times for generalized Maxwell model.
 PetscErrorCode
 pylith::materials::Query::dbQueryMaxwellTimeGeneralizedMaxwell(PylithInt dim,
 															   PylithReal t,
@@ -304,13 +305,14 @@ pylith::materials::Query::dbQueryMaxwellTimeGeneralizedMaxwell(PylithInt dim,
     const pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context; assert(queryctx);
 
     // Tell database which values we want.
-    const int numDBValues = 5;
+    const int numDBValues = 8;
     PylithReal dbValues[numDBValues];
     const int i_density = 0;
     const int i_vs = 1;
     const int i_viscosity = 2;
-    const char* dbValueNames[numDBValues] = {"density", "vs", "viscosity_1",
-											 "viscosity_2", "viscosity_3" };
+    const int i_shear_modulus_ratio = 5;
+    const char* dbValueNames[numDBValues] = {"density", "vs", "viscosity_1", "viscosity_2", "viscosity_3",
+                                             "shear_modulus_ratio_1", "shear_modulus_ratio_2", "shear_modulus_ratio_3"};
     try {
         queryctx->db->setQueryValues(dbValueNames, numDBValues);
     } catch (const std::exception& err) {
@@ -329,7 +331,7 @@ pylith::materials::Query::dbQueryMaxwellTimeGeneralizedMaxwell(PylithInt dim,
     const int err = queryctx->db->query(dbValues, numDBValues, xDim, dim, queryctx->cs);
     if (err) {
         std::ostringstream msg;
-        msg << "Could not find density, Vs, viscosity_1, viscosity_2 viscosity_3 at (";
+        msg << "Could not find density, Vs, viscosity_1, viscosity_2, viscosity_3, shear_modulus_1, shear_modulus_2, shear_modulus_3 at (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
         msg << ") using spatial database '" << queryctx->db->getLabel() << "'.";
@@ -341,6 +343,9 @@ pylith::materials::Query::dbQueryMaxwellTimeGeneralizedMaxwell(PylithInt dim,
     const PylithReal viscosity_1 = dbValues[i_viscosity];
     const PylithReal viscosity_2 = dbValues[i_viscosity + 1];
     const PylithReal viscosity_3 = dbValues[i_viscosity + 2];
+    const PylithReal shear_modulus_ratio_1 = dbValues[i_shear_modulus_ratio];
+    const PylithReal shear_modulus_ratio_2 = dbValues[i_shear_modulus_ratio + 1];
+    const PylithReal shear_modulus_ratio_3 = dbValues[i_shear_modulus_ratio + 2];
 
     if (density <= 0) {
         std::ostringstream msg;
@@ -358,17 +363,88 @@ pylith::materials::Query::dbQueryMaxwellTimeGeneralizedMaxwell(PylithInt dim,
         msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
+    if (viscosity_1 <= 0) {
+        std::ostringstream msg;
+        msg << "Found negative viscosity_1 (" << viscosity_1 << ") at location (";
+        for (int i = 0; i < dim; ++i)
+            msg << "  " << xDim[i];
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
+    } // if
+    if (viscosity_2 <= 0) {
+        std::ostringstream msg;
+        msg << "Found negative viscosity_2 (" << viscosity_2 << ") at location (";
+        for (int i = 0; i < dim; ++i)
+            msg << "  " << xDim[i];
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
+    } // if
+    if (viscosity_3 <= 0) {
+        std::ostringstream msg;
+        msg << "Found negative viscosity_3 (" << viscosity_3 << ") at location (";
+        for (int i = 0; i < dim; ++i)
+            msg << "  " << xDim[i];
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
+    } // if
+    if (shear_modulus_ratio_1 <= 0) {
+        std::ostringstream msg;
+        msg << "Found negative shear_modulus_ratio_1 (" << shear_modulus_ratio_1 << ") at location (";
+        for (int i = 0; i < dim; ++i)
+            msg << "  " << xDim[i];
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
+    } // if
+    if (shear_modulus_ratio_2 <= 0) {
+        std::ostringstream msg;
+        msg << "Found negative shear_modulus_ratio_2 (" << shear_modulus_ratio_2 << ") at location (";
+        for (int i = 0; i < dim; ++i)
+            msg << "  " << xDim[i];
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
+    } // if
+    if (shear_modulus_ratio_3 <= 0) {
+        std::ostringstream msg;
+        msg << "Found negative shear_modulus_ratio_3 (" << shear_modulus_ratio_3 << ") at location (";
+        for (int i = 0; i < dim; ++i)
+            msg << "  " << xDim[i];
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
+    } // if
+
+	const double ratioSum = shear_modulus_ratio_1 + shear_modulus_ratio_2 + shear_modulus_ratio_3;
+	
+    if (ratioSum > 1) {
+        std::ostringstream msg;
+        msg << "Shear ratio sum greater than one (" << ratioSum << ") at location (";
+        for (int i = 0; i < dim; ++i)
+            msg << "  " << xDim[i];
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
+    } // if
 
     const PylithReal shearModulus = density * vs * vs; assert(shearModulus > 0);
-    const PylithReal maxwellTime_1 = viscosity_1/shearModulus; assert(maxwellTime_1 > 0);
+    const PylithReal shearModulus_1 = shear_modulus_ratio_1*shearModulus;
+    PylithReal maxwellTime1 = PYLITH_MAXSCALAR;
+    if (shearModulus_1 > 0.0)
+        maxwellTime1 = viscosity_1/shearModulus_1;
+    const PylithReal maxwellTime_1 = maxwellTime1; assert(maxwellTime_1 > 0);
     assert(queryctx->valueScale > 0);
     values[0] = maxwellTime_1 / queryctx->valueScale;
 
-    const PylithReal maxwellTime_2 = viscosity_2/shearModulus; assert(maxwellTime_2 > 0);
+    const PylithReal shearModulus_2 = shear_modulus_ratio_2*shearModulus;
+    PylithReal maxwellTime2 = PYLITH_MAXSCALAR;
+    if (shearModulus_2 > 0.0)
+        maxwellTime2 = viscosity_2/shearModulus_2;
+    const PylithReal maxwellTime_2 = maxwellTime2; assert(maxwellTime_2 > 0);
     assert(queryctx->valueScale > 0);
     values[1] = maxwellTime_2 / queryctx->valueScale;
 
-    const PylithReal maxwellTime_3 = viscosity_3/shearModulus; assert(maxwellTime_3 > 0);
+    const PylithReal shearModulus_3 = shear_modulus_ratio_3*shearModulus;
+    PylithReal maxwellTime3 = PYLITH_MAXSCALAR;
+    if (shearModulus_3 > 0.0)
+        maxwellTime3 = viscosity_3/shearModulus_3;
+    const PylithReal maxwellTime_3 = maxwellTime3; assert(maxwellTime_3 > 0);
     assert(queryctx->valueScale > 0);
     values[2] = maxwellTime_3 / queryctx->valueScale;
 
@@ -432,6 +508,31 @@ pylith::materials::Query::dbQueryShearModulusRatioGeneralizedMaxwell(PylithInt d
     const PylithReal shear_modulus_ratio_1 = dbValues[i_shear_modulus_ratio];
     const PylithReal shear_modulus_ratio_2 = dbValues[i_shear_modulus_ratio + 1];
     const PylithReal shear_modulus_ratio_3 = dbValues[i_shear_modulus_ratio + 2];
+
+    if (shear_modulus_ratio_1 <= 0) {
+        std::ostringstream msg;
+        msg << "Found negative shear_modulus_ratio_1 (" << shear_modulus_ratio_1 << ") at location (";
+        for (int i = 0; i < dim; ++i)
+            msg << "  " << xDim[i];
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
+    } // if
+    if (shear_modulus_ratio_2 <= 0) {
+        std::ostringstream msg;
+        msg << "Found negative shear_modulus_ratio_2 (" << shear_modulus_ratio_2 << ") at location (";
+        for (int i = 0; i < dim; ++i)
+            msg << "  " << xDim[i];
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
+    } // if
+    if (shear_modulus_ratio_3 <= 0) {
+        std::ostringstream msg;
+        msg << "Found negative shear_modulus_ratio_3 (" << shear_modulus_ratio_3 << ") at location (";
+        for (int i = 0; i < dim; ++i)
+            msg << "  " << xDim[i];
+        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
+    } // if
 
 	const double ratioSum = shear_modulus_ratio_1 + shear_modulus_ratio_2 + shear_modulus_ratio_3;
 	
