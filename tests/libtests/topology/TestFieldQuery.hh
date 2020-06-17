@@ -49,16 +49,16 @@ namespace pylith {
 // TestFieldQuery -------------------------------------------------------------
 /// C++ unit testing for Field.
 class pylith::topology::TestFieldQuery : public CppUnit::TestFixture, public pylith::utils::GenericComponent {
-
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestFieldQuery);
 
     CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testQueryFn);
+    CPPUNIT_TEST(testSetQuery);
     CPPUNIT_TEST(testOpenClose);
     CPPUNIT_TEST(testQuery);
     CPPUNIT_TEST(testQueryNull);
     CPPUNIT_TEST(testValidatorPositive);
+    CPPUNIT_TEST(testValidatorNonnegative);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -74,8 +74,8 @@ public:
     /// Test constructor.
     void testConstructor(void);
 
-    /// Test queryFn().
-    void testQueryFn(void);
+    /// Test setQuery().
+    void testSetQuery(void);
 
     /// Test openDB(), closeDB().
     void testOpenClose(void);
@@ -88,6 +88,9 @@ public:
 
     /// Test validatorPositive().
     void testValidatorPositive(void);
+
+    /// Test validatorNonnegative().
+    void testValidatorNonnegative(void);
 
     // PRIVATE METHODS /////////////////////////////////////////////////////////
 private:
@@ -109,7 +112,6 @@ protected:
 
 // TestFieldQuery_Data-----------------------------------------------------------
 class pylith::topology::TestFieldQuery_Data {
-
     // PUBLIC METHODS //////////////////////////////////////////////////////////
 public:
 
@@ -126,16 +128,16 @@ public:
     /// @{
     int cellDim; ///< Cell dimension (matches space dimension).
     int numVertices; ///< Number of vertices.
-    int numCells;   ///< Number of cells.
+    int numCells; ///< Number of cells.
     int numCorners; ///< Number of vertices per cell.
     const int* cells; ///< Array of vertices in cells [numCells*numCorners].
-    const PylithScalar* coordinates;  ///< Coordinates of vertices [numVertices*cellDim].
+    const PylithScalar* coordinates; ///< Coordinates of vertices [numVertices*cellDim].
 
     spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
     spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
     /// @}
 
-    /// @defgroup SUbfield discretization information
+    /// @defgroup Subfield discretization information
     /// @{
     int numAuxSubfields; ///< Number of auxiliary subfields.
     const char** auxSubfields; ///< Names of auxiliary subfields.
@@ -144,10 +146,8 @@ public:
     spatialdata::spatialdb::UserFunctionDB* auxDB; ///< Spatial database with auxiliary field.
     /// @}
 
-};  // TestFieldQuery_Data
-
+}; // TestFieldQuery_Data
 
 #endif // pylith_topology_testfieldquery_hh
-
 
 // End of file

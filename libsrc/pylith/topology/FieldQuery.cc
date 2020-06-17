@@ -26,8 +26,24 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
-#include "pylith/utils/error.hh" \
-    // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+
+namespace pylith {
+    namespace topology {
+        class _FieldQuery {
+public:
+
+            /** Find indices of spatial database values to use for subfield.
+             *
+             * Allocate buffer for query values.
+             */
+            static
+            void findQueryIndices(FieldQuery::DBQueryContext* context,
+                                  const pylith::string_vector& valuesForSubfield);
+
+        }; // _FieldQuery
+    } // topology
+} // pylith
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -55,8 +71,7 @@ pylith::topology::FieldQuery::deallocate(void) {
     delete[] _contexts;_contexts = NULL;
     delete[] _contextPtrs;_contextPtrs = NULL;
 
-    _queryFns.clear();
-    _queryDBs.clear();
+    _subfieldQueries.clear();
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -65,20 +80,37 @@ pylith::topology::FieldQuery::deallocate(void) {
 // ----------------------------------------------------------------------
 // Set query function information for subfield.
 void
-pylith::topology::FieldQuery::queryFn(const char* subfield,
-                                      const queryfn_type fn,
-                                      spatialdata::spatialdb::SpatialDB* db) {
+pylith::topology::FieldQuery::setQuery(const char* subfield,
+                                       const char* queryValues[],
+                                       const size_t numValues,
+                                       convertfn_type convertFn,
+                                       spatialdata::spatialdb::SpatialDB* db) {
     PYLITH_METHOD_BEGIN;
 
     assert(subfield);
 
-    _queryFns[subfield] = fn;
-    _queryDBs[subfield] = db;
+    SubfieldQuery query;
+
+    if (queryValues && (numValues > 0)) {
+        query.queryValues.resize(numValues);
+        for (size_t i = 0; i < numValues; ++i) {
+            query.queryValues[i] = queryValues[i];
+        } // for
+    } else {
+        const Field::SubfieldInfo& info = _field.subfieldInfo(subfield);
+        query.queryValues = info.description.componentNames;
+    } // if/else
+
+    query.convertFn = convertFn;
+    query.db = db;
+
+    _subfieldQueries[subfield] = query;
 
     PYLITH_METHOD_END;
-} // queryFn
+} // setQuery
 
 
+#if 0
 // ----------------------------------------------------------------------
 // Get query function information for subfield.
 const pylith::topology::FieldQuery::queryfn_type
@@ -86,8 +118,8 @@ pylith::topology::FieldQuery::queryFn(const char* subfield) const {
     PYLITH_METHOD_BEGIN;
 
     assert(subfield);
-    const queryfn_map_type::const_iterator& iter = _queryFns.find(subfield);
-    if (iter == _queryFns.end()) {
+    const queryfn_map_type::const_iterator& iter = _subfieldQueries.find(subfield);
+    if (iter == _subfieldQueries.end()) {
         std::ostringstream msg;
         msg << "Could not find query function for subfield '" << subfield << "'." << std::endl;
         throw std::logic_error(msg.str());
@@ -97,26 +129,30 @@ pylith::topology::FieldQuery::queryFn(const char* subfield) const {
 } // queryFn
 
 
+#endif
+
 // ----------------------------------------------------------------------
-// Initialize query with default query functions.
+// Initialize query with default query information.
 void
-pylith::topology::FieldQuery::initializeWithDefaultQueryFns(void) {
+pylith::topology::FieldQuery::initializeWithDefaultQueries(void) {
     PYLITH_METHOD_BEGIN;
 
-    _queryFns.clear();
-    _queryDBs.clear();
+    _subfieldQueries.clear();
 
-    const pylith::string_vector& subfields = _field.subfieldNames();
-    const unsigned int numSubfields = subfields.size();
-    for (unsigned int i = 0; i < numSubfields; ++i) {
-        _queryFns[subfields[i]] = dbQueryGeneric;
-        _queryDBs[subfields[i]] = NULL;
+    const Field::subfields_type& subfields = _field._subfields;
+    for (Field::subfields_type::const_iterator iter = subfields.begin(); iter != subfields.end(); ++iter) {
+        const std::string& name = iter->first;
+        const pylith::topology::Field::Description& description = iter->second.description;
+        SubfieldQuery query;
+        query.queryValues = description.componentNames;
+        _subfieldQueries[name] = query;
     } // for
 
     PYLITH_METHOD_END;
-} // initializeWithDefaultQueryFns
+} // initializeWithDefaultQueries
 
 
+#if 0
 // ----------------------------------------------------------------------
 // Get spatial database used to get values for subfield.
 const spatialdata::spatialdb::SpatialDB*
@@ -135,6 +171,9 @@ pylith::topology::FieldQuery::queryDB(const char* subfield) const {
 } // queryDB
 
 
+#endif
+
+#if 0
 // ----------------------------------------------------------------------
 // Get array of query functions.
 pylith::topology::FieldQuery::queryfn_type*
@@ -151,6 +190,8 @@ pylith::topology::FieldQuery::contextPtrs(void) const {
 } // contextPtrs
 
 
+#endif
+
 // ----------------------------------------------------------------------
 // Query spatial database to set values in field.
 void
@@ -158,7 +199,7 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
                                      const PylithReal lengthScale) {
     PYLITH_METHOD_BEGIN;
 
-    // Create contexts and funcs. Need to put contexts into an array of
+    // Create contexts. Need to put contexts into an array of
     // pointers, since Petsc function doesn't know the size of the
     // context.
     const Field::subfields_type& subfields = _field._subfields;
@@ -167,27 +208,29 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
     delete[] _contexts;_contexts = (size > 0) ? new DBQueryContext[size] : NULL;
     delete[] _contextPtrs;_contextPtrs = (size > 0) ? new DBQueryContext*[size] : NULL;
 
-    int i = 0;
-    for (Field::subfields_type::const_iterator iter = subfields.begin(); iter != subfields.end(); ++iter, ++i) {
+    for (Field::subfields_type::const_iterator iter = subfields.begin(); iter != subfields.end(); ++iter) {
         const std::string& name = iter->first;
         const PylithInt index = iter->second.index;
         assert(size_t(index) < subfields.size());
-        if (_queryFns.find(name) != _queryFns.end()) {
-            _functions[index] = (db || _queryDBs[name]) ? _queryFns[name] : NULL;
+        const subfieldquery_map_type::const_iterator& query = _subfieldQueries.find(name);
+        if (query != _subfieldQueries.end()) {
+            spatialdata::spatialdb::SpatialDB* dbSubfield = (query->second.db) ? query->second.db : db;
+            _functions[index] = (dbSubfield) ? queryDBPointFn : NULL;
 
-            _contexts[index].db = (_queryDBs[name]) ? _queryDBs[name] : db;
+            _contexts[index].db = dbSubfield;
             _contexts[index].cs = _field.mesh().getCoordSys();
+
+            if (dbSubfield) {
+                _FieldQuery::findQueryIndices(&_contexts[index], query->second.queryValues);
+            } // if
         } else {
             _functions[index] = NULL;
-            _contexts[index].db = NULL;
-            _contexts[index].cs = NULL;
         } // if/else
         _contexts[index].lengthScale = lengthScale;
 
         const pylith::topology::Field::Description& description = iter->second.description;
-        _contexts[index].valueScale = description.scale;
         _contexts[index].description = description.label;
-        _contexts[index].componentNames = description.componentNames;
+        _contexts[index].valueScale = description.scale;
         _contexts[index].validator = description.validator;
 
         _contextPtrs[index] = &_contexts[index];
@@ -242,7 +285,7 @@ pylith::topology::FieldQuery::queryDBLabel(const char* labelName,
                                       INSERT_ALL_VALUES, _field.localVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
-} // queryDB
+} // queryDBLabel
 
 
 // ----------------------------------------------------------------------
@@ -267,7 +310,7 @@ pylith::topology::FieldQuery::closeDB(spatialdata::spatialdb::SpatialDB* db) {
 // ----------------------------------------------------------------------
 // Generic query of values from spatial database.
 PetscErrorCode
-pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
+pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
                                              PylithReal t,
                                              const PylithReal x[],
                                              PylithInt nvalues,
@@ -279,26 +322,10 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
     assert(values);
     assert(context);
 
-    const pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context;assert(queryctx);
+    pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context;assert(queryctx);
     if (!queryctx->db) {
         PYLITH_METHOD_RETURN(0);
     } // if
-
-    const int numQueryValues = queryctx->componentNames.size();
-    assert(numQueryValues == nvalues);
-
-    // Tell database which values we want.
-    const char** queryValueNames = (numQueryValues > 0) ? new const char*[numQueryValues] : NULL;
-    for (int i = 0; i < numQueryValues; ++i) {
-        queryValueNames[i] = queryctx->componentNames[i].c_str();
-    } // for
-    try {
-        queryctx->db->setQueryValues(queryValueNames, numQueryValues);
-    } catch (const std::runtime_error& err) {
-        delete[] queryValueNames;queryValueNames = NULL;
-        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, err.what());
-        PYLITH_METHOD_RETURN(1);
-    } // try/catch
 
     // Dimensionalize query location coordinates.
     assert(queryctx->lengthScale > 0);
@@ -309,12 +336,10 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
 
     // Query database.
     assert(queryctx->cs);
-    const int err = queryctx->db->query(values, nvalues, xDim, dim, queryctx->cs);
-
+    const int err = queryctx->db->query(&queryctx->queryValues[0], queryctx->queryValues.size(), xDim, dim, queryctx->cs);
     if (err) {
-        delete[] queryValueNames;queryValueNames = NULL;
         std::ostringstream msg;
-        msg << "Could not find " << queryctx->description << " at (";
+        msg << "Could not find values for " << queryctx->description << " at (";
         for (int i = 0; i < dim; ++i) {
             msg << "  " << xDim[i];
         }
@@ -323,19 +348,29 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
         PYLITH_METHOD_RETURN(1);
     } // if
 
-    // Validate if validator function was specified.
+    // Convert database values to subfield values if converter function specified.
+    assert(queryctx->queryIndices.size() == nvalues);
+    if (queryctx->converter) {
+        PetscErrorCode err = queryctx->converter(values, nvalues, queryctx->queryValues, queryctx->queryIndices);
+        if (err) { PYLITH_METHOD_RETURN(1); }
+    } else {
+        for (PylithInt i = 0; i < nvalues; ++i) {
+            values[i] = queryctx->queryValues[queryctx->queryIndices[i]];
+        } // for
+    } // if/else
+
+    // Validate subfield values if validator function was specified.
     if (queryctx->validator) {
-        for (int i = 0; i < nvalues; ++i) {
-            const std::string& invalidMsg = queryctx->validator(values[i]);
-            if (invalidMsg.length() > 0) {
+        for (PylithInt i = 0; i < nvalues; ++i) {
+            const char* invalidMsg = queryctx->validator(values[i]);
+            if (invalidMsg) {
                 std::ostringstream msg;
-                msg << "Found invalid " << queryValueNames[i] << " (" << values[i] << ") at location (";
+                msg << "Found invalid value for " << queryctx->description << " (" << values[i] << ") at location (";
                 for (int i = 0; i < dim; ++i) {
                     msg << "  " << xDim[i];
                 }
-                msg << ") in spatial database '" << queryctx->db->getLabel() << "'. ";
+                msg << ") from spatial database '" << queryctx->db->getLabel() << "'. ";
                 msg << invalidMsg;
-                delete[] queryValueNames;queryValueNames = NULL;
                 PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
                 PYLITH_METHOD_RETURN(1);
             } // if
@@ -348,24 +383,60 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
         values[i] /= queryctx->valueScale;
     } // for
 
-    delete[] queryValueNames;queryValueNames = NULL;
-
     PYLITH_METHOD_RETURN(0);
-} // dbQueryGeneric
+} // queryDBPointFn
 
 
 // ----------------------------------------------------------------------
 const char*
 pylith::topology::FieldQuery::validatorPositive(const PylithReal value) {
-    return (value > 0.0) ? "" : "Value must be positive.";
+    return (value > 0.0) ? NULL : "Value must be positive.";
 } // validatorPositive
 
 
 // ----------------------------------------------------------------------
 const char*
 pylith::topology::FieldQuery::validatorNonnegative(const PylithReal value) {
-    return (value >= 0.0) ? "" : "Value must be nonnegative.";
+    return (value >= 0.0) ? NULL : "Value must be nonnegative.";
 } // validatorNonnegative
+
+
+// ----------------------------------------------------------------------
+// Find indices of spatial database values to use for subfield. Allocate buffer for query values.
+void
+pylith::topology::_FieldQuery::findQueryIndices(FieldQuery::DBQueryContext* context,
+                                                const pylith::string_vector& valuesForSubfield) {
+    assert(context);
+
+    const char** dbValues = NULL;
+    size_t numDBValues = 0;
+    context->db->getNamesDBValues(&dbValues, &numDBValues);
+
+    const size_t numValues = valuesForSubfield.size();
+    context->queryIndices.resize(numValues);
+    for (size_t iValue = 0; iValue < numValues; ++iValue) {
+        bool foundName = false;
+        for (size_t index = 0; index < numDBValues; ++index) {
+            if (0 == strcasecmp(dbValues[index], valuesForSubfield[iValue].c_str())) {
+                foundName = true;
+                context->queryIndices[iValue] = index;
+                break;
+            } // if
+        } // for
+        if (!foundName) {
+            std::ostringstream msg;
+            msg << "Could not find value '" << valuesForSubfield[iValue] << "' in spatial database '"
+                << context->db->getLabel() << "'. Available values are:";
+            for (size_t iValueDB = 0; iValueDB < numDBValues; ++iValueDB) {
+                msg << "\n  " << dbValues[iValueDB];
+            } // for
+            msg << "\n";
+            throw std::out_of_range(msg.str());
+        } // if
+    } // for
+
+    context->queryValues.resize(numDBValues);
+} // findQueryIndices
 
 
 // End of file
