@@ -50,21 +50,21 @@ pylith::materials::AuxiliaryFactoryElastic::addShearModulus(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addShearModulus(void)");
 
-    const char* fieldName = "shear_modulus";
+    const char* subfieldName = "shear_modulus";
     const PylithReal pressureScale = _normalizer->getPressureScale();
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
+    description.label = subfieldName;
+    description.alias = subfieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
-    description.componentNames[0] = fieldName;
+    description.componentNames[0] = subfieldName;
     description.scale = pressureScale;
     description.validator = pylith::topology::FieldQuery::validatorNonnegative;
 
-    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::materials::Query::dbQueryShearModulus);
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    pylith::materials::Query::shearModulusFromVM(subfieldName, this);
 
     PYLITH_METHOD_END;
 } // addShearModulus
@@ -77,21 +77,21 @@ pylith::materials::AuxiliaryFactoryElastic::addBulkModulus(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addBulkModulus(void)");
 
-    const char* fieldName = "bulk_modulus";
+    const char* subfieldName = "bulk_modulus";
     const PylithReal pressureScale = _normalizer->getPressureScale();
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
+    description.label = subfieldName;
+    description.alias = subfieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
-    description.componentNames[0] = fieldName;
+    description.componentNames[0] = subfieldName;
     description.scale = pressureScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
-    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::materials::Query::dbQueryBulkModulus);
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    pylith::materials::Query::bulkModulusFromVM(subfieldName, this);
 
     PYLITH_METHOD_END;
 } // addBulkModulus
@@ -104,14 +104,20 @@ pylith::materials::AuxiliaryFactoryElastic::addReferenceStress(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addReferenceStress(void)");
 
-    const char* fieldName = "reference_stress";
-    const char* componentNames[6] = { "reference_stress_xx", "reference_stress_yy", "reference_stress_zz", "reference_stress_xy", "reference_stress_yz", "reference_stress_xz" };
+    const char* subfieldName = "reference_stress";
+    const char* componentNames[6] = {
+        "reference_stress_xx",
+        "reference_stress_yy",
+        "reference_stress_zz",
+        "reference_stress_xy",
+        "reference_stress_yz",
+        "reference_stress_xz" };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
     const PylithReal pressureScale = _normalizer->getPressureScale();
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
+    description.label = subfieldName;
+    description.alias = subfieldName;
     description.vectorFieldType = (3 == _spaceDim) ? pylith::topology::Field::TENSOR : pylith::topology::Field::OTHER;
     description.numComponents = stressSize;
     description.componentNames.resize(stressSize);
@@ -121,8 +127,8 @@ pylith::materials::AuxiliaryFactoryElastic::addReferenceStress(void) {
     description.scale = pressureScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addReferenceStress
@@ -135,13 +141,20 @@ pylith::materials::AuxiliaryFactoryElastic::addReferenceStrain(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addRefrenceStrain(void)");
 
-    const char* fieldName = "reference_strain";
-    const char* componentNames[6] = { "reference_strain_xx", "reference_strain_yy", "reference_strain_zz", "reference_strain_xy", "reference_strain_yz", "reference_strain_xz" };
+    const char* subfieldName = "reference_strain";
+    const char* componentNames[6] = {
+        "reference_strain_xx",
+        "reference_strain_yy",
+        "reference_strain_zz",
+        "reference_strain_xy",
+        "reference_strain_yz",
+        "reference_strain_xz"
+    };
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
+    description.label = subfieldName;
+    description.alias = subfieldName;
     description.vectorFieldType = (3 == _spaceDim) ? pylith::topology::Field::TENSOR : pylith::topology::Field::OTHER;
     description.numComponents = strainSize;
     description.componentNames.resize(strainSize);
@@ -151,8 +164,8 @@ pylith::materials::AuxiliaryFactoryElastic::addReferenceStrain(void) {
     description.scale = 1.0;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addReferenceStrain

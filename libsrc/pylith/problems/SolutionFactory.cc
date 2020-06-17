@@ -226,7 +226,7 @@ pylith::problems::SolutionFactory::setValues(spatialdata::spatialdb::SpatialDB* 
     _solution.zeroLocal();
 
     pylith::topology::FieldQuery query(_solution);
-    query.initializeWithDefaultQueryFns();
+    query.initializeWithDefaultQueries();
     query.openDB(db, _normalizer.getLengthScale());
     query.queryDB();
     query.closeDB(db);

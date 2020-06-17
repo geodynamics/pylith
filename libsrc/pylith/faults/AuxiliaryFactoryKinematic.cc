@@ -64,7 +64,7 @@ pylith::faults::AuxiliaryFactoryKinematic::addStrikeDir(void) {
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, NULL); // Computed during initialization.
+    // No query; computed during initialization.
 
     PYLITH_METHOD_END;
 } // addStrikeDir
@@ -93,7 +93,7 @@ pylith::faults::AuxiliaryFactoryKinematic::addUpDipDir(void) {
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, NULL); // Computed during initialization.
+    // No query; computed during initialization.
 
     PYLITH_METHOD_END;
 } // addUpDipDir
@@ -122,7 +122,7 @@ pylith::faults::AuxiliaryFactoryKinematic::addNormalDir(void) {
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, NULL); // Computed during initialization.
+    // No query; computed during initialization.
 
     PYLITH_METHOD_END;
 } // addNormalDir
@@ -153,7 +153,7 @@ pylith::faults::AuxiliaryFactoryKinematic::addSlip(void) {
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, NULL); // Populated by kinematic source at beginning of time step.
+    // No query; populated by kinematic source at beginning of time step.
 
     PYLITH_METHOD_END;
 } // addSlip

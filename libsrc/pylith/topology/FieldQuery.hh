@@ -25,25 +25,28 @@
 #if !defined(pylith_topology_fieldquery_hh)
 #define pylith_topology_fieldquery_hh
 
-// Include directives ---------------------------------------------------
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/topology/FieldBase.hh" // HASA validatorfn_type
+#include "pylith/testing/testingfwd.hh" // USES FieldTester
+
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 
 #include <map> // HOLDSA std::map
 #include <string> // HASA std::string
 
-// FieldQuery ----------------------------------------------------------------
-/** @brief Set field via query of spatial database, etc.
- *
- * Each subfield is queried separately via user-defined functions to
- * allow for conversions, dimensionalization, etc.
- */
+namespace pylith {
+    namespace feassemble {
+        class TestAuxiliaryFactory;
+    } // feassemble
+} // pylith
+
 class pylith::topology::FieldQuery {
-    friend class TestFieldQuery; // unit testing
     friend class _FieldQuery;
+    friend class TestFieldQuery; // unit testing
+    friend class pylith::testing::FieldTester; // unit testing
+    friend class pylith::feassemble::TestAuxiliaryFactory; // unit testing
 
     // PUBLIC TYPEDEF ///////////////////////////////////////////////////////
 public:
@@ -85,33 +88,17 @@ public:
      * @param[in] subfield Name of subfield.
      * @param[in] queryValues Array of names of spatial database values for subfield.
      * @param[in] numValues Size of names array.
-     * @param[in] convertFn Function to convert spatial database values to subfield value (optional).
+     * @param[in] converter Function to convert spatial database values to subfield value (optional).
      * @param[in] db Spatial database to query (optional).
      */
     void setQuery(const char* subfield,
                   const char* queryValues[]=NULL,
                   const size_t numValues=0,
-                  convertfn_type convertFn=NULL,
+                  convertfn_type converter=NULL,
                   spatialdata::spatialdb::SpatialDB* db=NULL);
 
     /// Initialize query with default query information.
     void initializeWithDefaultQueries(void);
-
-#if 0
-    /** Get spatial database used to get values for subfield.
-     *
-     * @param subfield Name of subfield.
-     * @return Spatial database to use in query (NULL if using default database passed in openDB()).
-     */
-    const spatialdata::spatialdb::SpatialDB* queryDB(const char* subfield) const;
-
-    /// Get array of query functions.
-    queryfn_type* functions(void) const;
-
-    /// Get array of pointers to contexts.
-    const DBQueryContext* const* contextPtrs(void) const;
-
-#endif
 
     /** Open spatial database query for setting values in field.
      *
@@ -180,11 +167,11 @@ private:
 
     struct SubfieldQuery {
         pylith::string_vector queryValues; ///< Values to use from spatial database.
-        convertfn_type convertFn; ///< Function to convert spatial database values to subfield values.
+        convertfn_type converter; ///< Function to convert spatial database values to subfield values.
         spatialdata::spatialdb::SpatialDB* db; ///< Spatial database to query.
 
         SubfieldQuery(void) :
-            convertFn(NULL),
+            converter(NULL),
             db(NULL) {}
 
 

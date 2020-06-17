@@ -37,7 +37,7 @@ namespace pylith {
     namespace topology {
         namespace _TestFieldQuery {
             PetscErrorCode
-            convertFn(PylithScalar valueSubfield[],
+            converter(PylithScalar valueSubfield[],
                       const PylithInt numComponents,
                       const pylith::scalar_array dbValues,
                       const pylith::int_array dbIndices) {
@@ -110,7 +110,7 @@ pylith::topology::TestFieldQuery::testSetQuery(void) {
         const size_t numDBValues = 2;
         const char* dbValues[numDBValues] = { "one", "two" };
         spatialdata::spatialdb::UserFunctionDB dbUser;
-        _query->setQuery(subfieldName, dbValues, numDBValues, &_TestFieldQuery::convertFn, &dbUser);
+        _query->setQuery(subfieldName, dbValues, numDBValues, &_TestFieldQuery::converter, &dbUser);
 
         const pylith::topology::FieldQuery::SubfieldQuery& info = _query->_subfieldQueries[subfieldName];
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield ab: Mismatch in number of database values.",
@@ -120,7 +120,7 @@ pylith::topology::TestFieldQuery::testSetQuery(void) {
                                          std::string(dbValues[i]), info.queryValues[i]);
         } // for
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield ab: Mismatch in convert function.",
-                                     &_TestFieldQuery::convertFn, info.convertFn);
+                                     &_TestFieldQuery::converter, info.converter);
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield ab: Mismatch in database.",
                                      &dbUser, dynamic_cast<spatialdata::spatialdb::UserFunctionDB*>(info.db));
     }
@@ -140,7 +140,7 @@ pylith::topology::TestFieldQuery::testSetQuery(void) {
                                          std::string(dbValues[i]), info.queryValues[i]);
         } // for
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield cd: Mismatch in convert function.",
-                                     pylith::topology::FieldQuery::convertfn_type(NULL), info.convertFn);
+                                     pylith::topology::FieldQuery::convertfn_type(NULL), info.converter);
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield cd: Mismatch in database.",
                                      &dbUser, dynamic_cast<spatialdata::spatialdb::UserFunctionDB*>(info.db));
     }
@@ -149,7 +149,7 @@ pylith::topology::TestFieldQuery::testSetQuery(void) {
         const char* subfieldName = "ef";
         const size_t numDBValues = 1;
         const char* dbValues[numDBValues] = { "two" };
-        _query->setQuery(subfieldName, dbValues, numDBValues, &_TestFieldQuery::convertFn);
+        _query->setQuery(subfieldName, dbValues, numDBValues, &_TestFieldQuery::converter);
 
         const pylith::topology::FieldQuery::SubfieldQuery& info = _query->_subfieldQueries[subfieldName];
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield ef: Mismatch in number of database values.",
@@ -159,7 +159,7 @@ pylith::topology::TestFieldQuery::testSetQuery(void) {
                                          std::string(dbValues[i]), info.queryValues[i]);
         } // for
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield ef: Mismatch in convert function.",
-                                     &_TestFieldQuery::convertFn, info.convertFn);
+                                     &_TestFieldQuery::converter, info.converter);
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield ef: Mismatch in database.",
                                      (spatialdata::spatialdb::SpatialDB*)NULL, info.db);
     }
@@ -168,7 +168,7 @@ pylith::topology::TestFieldQuery::testSetQuery(void) {
         const char* subfieldName = "gh";
         const size_t numDBValues = 3;
         const char* dbValues[numDBValues] = { "three", "two", "one" };
-        _query->setQuery(subfieldName, dbValues, numDBValues, &_TestFieldQuery::convertFn);
+        _query->setQuery(subfieldName, dbValues, numDBValues, &_TestFieldQuery::converter);
 
         const pylith::topology::FieldQuery::SubfieldQuery& info = _query->_subfieldQueries[subfieldName];
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield gh: Mismatch in number of database values.",
@@ -178,7 +178,7 @@ pylith::topology::TestFieldQuery::testSetQuery(void) {
                                          std::string(dbValues[i]), info.queryValues[i]);
         } // for
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield gh: Mismatch in convert function.",
-                                     &_TestFieldQuery::convertFn, info.convertFn);
+                                     &_TestFieldQuery::converter, info.converter);
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield gh: Mismatch in database.",
                                      (spatialdata::spatialdb::SpatialDB*)NULL, info.db);
     }
@@ -198,7 +198,7 @@ pylith::topology::TestFieldQuery::testSetQuery(void) {
                                          std::string(dbValuesE[i]), info.queryValues[i]);
         } // for
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield displacement: Mismatch in convert function.",
-                                     pylith::topology::FieldQuery::convertfn_type(NULL), info.convertFn);
+                                     pylith::topology::FieldQuery::convertfn_type(NULL), info.converter);
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield displacement: Mismatch in database.",
                                      (spatialdata::spatialdb::SpatialDB*)NULL, info.db);
     }

@@ -23,129 +23,76 @@
 #if !defined(pylith_materials_query_hh)
 #define pylith_materials_query_hh
 
-// Include directives ---------------------------------------------------
 #include "pylith/materials/materialsfwd.hh" // forward declarations
 
-#include "pylith/utils/types.hh"
+#include "pylith/feassemble/feassemblefwd.hh" // USES AuxiliaryFactory
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 
-// Query ----------------------------------------------------------------
-/** @brief Query functions associated with material properties.
- */
-class pylith::materials::Query
-{ // Query
+#include <cstddef> // USES size_t
+
+class pylith::materials::Query {
     friend class TestQuery; // unit testing
 
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /** Query for Vs, Vp, and density to determine shear modulus. Works in 2-D and 3-D.
+    /** Setup subfield query in auxiliary factory for shear modulus from density and Vs.
      *
-     * @param[in] dim Spatial dimension.
-     * @param[in] t Current time.
-     * @param[in] x Coordinates (nondimensioned) of point location for query.
-     * @param[in] nvalues Size of values array.
-     * @param[out] values Array of values to be returned.
-     * @param[in] context Query context.
-     * @returns PETSc error code (0 for success).
+     * @param[in] subfieldName Name for shear modulus subfield.
+     * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
     static
-    PetscErrorCode dbQueryShearModulus(PylithInt dim,
-                                       PylithReal t,
-                                       const PylithReal x[],
-                                       PylithInt nvalues,
-                                       PylithScalar* values,
-                                       void* context);
+    void shearModulusFromVM(const char* subfieldName,
+                            pylith::feassemble::AuxiliaryFactory* factory);
 
-    /** Query for Vs, Vp, and density to determine bulk modulus. Works in 2-D and 3-D.
+    /** Setup subfield query in auxiliary factory for bulk modulus from density, Vs, and Vp.
      *
-     * @param[in] dim Spatial dimension.
-     * @param[in] t Current time.
-     * @param[in] x Coordinates (nondimensioned) of point location for query.
-     * @param[in] nvalues Size of values array.
-     * @param[out] values Array of values to be returned.
-     * @param[in] context Query context.
-     * @returns PETSc error code (0 for success).
+     * @param[in] subfieldName Name for bulk modulus subfield.
+     * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
     static
-    PetscErrorCode dbQueryBulkModulus(PylithInt dim,
-                                      PylithReal t,
-                                      const PylithReal x[],
-                                      PylithInt nvalues,
-                                      PylithScalar* values,
-                                      void* context);
+    void bulkModulusFromVM(const char* subfieldName,
+                           pylith::feassemble::AuxiliaryFactory* factory);
 
-    /** Query for Vs, density, and viscosity to determine Maxwell time. Works in 2-D and 3-D.
+    /** Setup subfield query in auxiliary factory for Maxwell time from density, Vs, and viscosity.
      *
-     * @param[in] dim Spatial dimension.
-     * @param[in] t Current time.
-     * @param[in] x Coordinates (nondimensioned) of point location for query.
-     * @param[in] nvalues Size of values array.
-     * @param[out] values Array of values to be returned.
-     * @param[in] context Query context.
-     * @returns PETSc error code (0 for success).
+     * @param[in] subfieldName Name for Maxwell time subfield.
+     * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
     static
-    PetscErrorCode dbQueryMaxwellTime(PylithInt dim,
-				      PylithReal t,
-				      const PylithReal x[],
-				      PylithInt nvalues,
-				      PylithScalar* values,
-				      void* context);
+    void maxwellTimeFromVM(const char* subfieldName,
+                           pylith::feassemble::AuxiliaryFactory* factory);
 
-    /** Query for Vs, density, and viscosities to determine Maxwell time for
-	 * Generalized Maxwell. Works in 2-D and 3-D.
+    /** Setup subfield query in auxiliary factory for generalized Maxwell times from density, Vs, and viscosities.
      *
-     * @param[in] dim Spatial dimension.
-     * @param[in] t Current time.
-     * @param[in] x Coordinates (nondimensioned) of point location for query.
-     * @param[in] nvalues Size of values array.
-     * @param[out] values Array of values to be returned.
-     * @param[in] context Query context.
-     * @returns PETSc error code (0 for success).
+     * @param[in] subfieldName Name for generalized Maxwelltime subfield.
+     * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
     static
-    PetscErrorCode dbQueryMaxwellTimeGeneralizedMaxwell(PylithInt dim,
-														PylithReal t,
-														const PylithReal x[],
-														PylithInt nvalues,
-														PylithScalar* values,
-														void* context);
+    void generalizedMaxwellTimesFromVM(const char* subfieldName,
+                                       pylith::feassemble::AuxiliaryFactory* factory);
 
-    /** Query for shear modulus ratios for generalized Maxwell. Works in 2-D and 3-D.
+    /** Setup subfield query in auxiliary factory for generalized Maxwell shear modulus ratios.
      *
-     * @param[in] dim Spatial dimension.
-     * @param[in] t Current time.
-     * @param[in] x Coordinates (nondimensioned) of point location for query.
-     * @param[in] nvalues Size of values array.
-     * @param[out] values Array of values to be returned.
-     * @param[in] context Query context.
-     * @returns PETSc error code (0 for success).
+     * @param[in] subfieldName Name for generalized Maxwelltime subfield.
+     * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
     static
-    PetscErrorCode dbQueryShearModulusRatioGeneralizedMaxwell(PylithInt dim,
-															  PylithReal t,
-															  const PylithReal x[],
-															  PylithInt nvalues,
-															  PylithScalar* values,
-															  void* context);
+    void generalizedMaxwellShearModulusRatiosFromVM(const char* subfieldName,
+                                                    pylith::feassemble::AuxiliaryFactory* factory);
 
-    /** Query for components of gravity field. Works in 2-D and 3-D.
+    /** Setup subfield query in auxiliary factory for gravity field from GravityField spatial database.
      *
-     * @param[in] dim Spatial dimension.
-     * @param[in] t Current time.
-     * @param[in] x Coordinates (nondimensioned) of point location for query.
-     * @param[in] nvalues Size of values array.
-     * @param[out] values Array of values to be returned.
-     * @param[in] context Query context.
-     * @returns PETSc error code (0 for success).
+     * @param[in] subfieldName Name for shear modulus subfield.
+     * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
+     * @param[in] gravityField Spatial database for gravity field.
+     * @param[in] Spatial dimension of problem.
      */
     static
-    PetscErrorCode dbQueryGravityField(PylithInt dim,
-                                       PylithReal t,
-                                       const PylithReal x[],
-                                       PylithInt nvalues,
-                                       PylithScalar* values,
-                                       void* context);
+    void gravityFieldFromDB(const char* subfieldName,
+                            pylith::feassemble::AuxiliaryFactory* factory,
+                            spatialdata::spatialdb::GravityField* gravityField,
+                            const size_t spaceDim);
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
@@ -157,7 +104,6 @@ private:
 
 }; // Query
 
-#endif // pylith_materials_query_hh */
-
+#endif // pylith_materials_query_hh
 
 // End of file

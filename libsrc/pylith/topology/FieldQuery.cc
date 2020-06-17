@@ -83,7 +83,7 @@ void
 pylith::topology::FieldQuery::setQuery(const char* subfield,
                                        const char* queryValues[],
                                        const size_t numValues,
-                                       convertfn_type convertFn,
+                                       convertfn_type converter,
                                        spatialdata::spatialdb::SpatialDB* db) {
     PYLITH_METHOD_BEGIN;
 
@@ -101,7 +101,7 @@ pylith::topology::FieldQuery::setQuery(const char* subfield,
         query.queryValues = info.description.componentNames;
     } // if/else
 
-    query.convertFn = convertFn;
+    query.converter = converter;
     query.db = db;
 
     _subfieldQueries[subfield] = query;
@@ -109,27 +109,6 @@ pylith::topology::FieldQuery::setQuery(const char* subfield,
     PYLITH_METHOD_END;
 } // setQuery
 
-
-#if 0
-// ----------------------------------------------------------------------
-// Get query function information for subfield.
-const pylith::topology::FieldQuery::queryfn_type
-pylith::topology::FieldQuery::queryFn(const char* subfield) const {
-    PYLITH_METHOD_BEGIN;
-
-    assert(subfield);
-    const queryfn_map_type::const_iterator& iter = _subfieldQueries.find(subfield);
-    if (iter == _subfieldQueries.end()) {
-        std::ostringstream msg;
-        msg << "Could not find query function for subfield '" << subfield << "'." << std::endl;
-        throw std::logic_error(msg.str());
-    } // if
-
-    PYLITH_METHOD_RETURN(*iter->second);
-} // queryFn
-
-
-#endif
 
 // ----------------------------------------------------------------------
 // Initialize query with default query information.
@@ -152,52 +131,17 @@ pylith::topology::FieldQuery::initializeWithDefaultQueries(void) {
 } // initializeWithDefaultQueries
 
 
-#if 0
-// ----------------------------------------------------------------------
-// Get spatial database used to get values for subfield.
-const spatialdata::spatialdb::SpatialDB*
-pylith::topology::FieldQuery::queryDB(const char* subfield) const {
-    PYLITH_METHOD_BEGIN;
-
-    assert(subfield);
-    const querydb_map_type::const_iterator& iter = _queryDBs.find(subfield);
-    if (iter == _queryDBs.end()) {
-        std::ostringstream msg;
-        msg << "Could not find spatial database for subfield '" << subfield << "'." << std::endl;
-        throw std::logic_error(msg.str());
-    } // if
-
-    PYLITH_METHOD_RETURN(iter->second);
-} // queryDB
-
-
-#endif
-
-#if 0
-// ----------------------------------------------------------------------
-// Get array of query functions.
-pylith::topology::FieldQuery::queryfn_type*
-pylith::topology::FieldQuery::functions(void) const {
-    return _functions;
-} // functions
-
-
-// ----------------------------------------------------------------------
-// Get array of pointers to contexts.
-const pylith::topology::FieldQuery::DBQueryContext* const*
-pylith::topology::FieldQuery::contextPtrs(void) const {
-    return _contextPtrs;
-} // contextPtrs
-
-
-#endif
-
 // ----------------------------------------------------------------------
 // Query spatial database to set values in field.
 void
 pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
                                      const PylithReal lengthScale) {
     PYLITH_METHOD_BEGIN;
+
+    // Open spatial database.
+    if (db) {
+        db->open();
+    } // if
 
     // Create contexts. Need to put contexts into an array of
     // pointers, since Petsc function doesn't know the size of the
@@ -217,6 +161,7 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
             spatialdata::spatialdb::SpatialDB* dbSubfield = (query->second.db) ? query->second.db : db;
             _functions[index] = (dbSubfield) ? queryDBPointFn : NULL;
 
+            _contexts[index].converter = query->second.converter;
             _contexts[index].db = dbSubfield;
             _contexts[index].cs = _field.mesh().getCoordSys();
 
@@ -235,11 +180,6 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
 
         _contextPtrs[index] = &_contexts[index];
     } // for
-
-    // Open spatial database.
-    if (db) {
-        db->open();
-    } // if
 
     PYLITH_METHOD_END;
 } // openDB
@@ -344,12 +284,10 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
             msg << "  " << xDim[i];
         }
         msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
-        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
-        PYLITH_METHOD_RETURN(1);
+        PYLITH_ERROR_RETURN(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
     // Convert database values to subfield values if converter function specified.
-    assert(queryctx->queryIndices.size() == nvalues);
     if (queryctx->converter) {
         PetscErrorCode err = queryctx->converter(values, nvalues, queryctx->queryValues, queryctx->queryIndices);
         if (err) { PYLITH_METHOD_RETURN(1); }
@@ -371,8 +309,7 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
                 }
                 msg << ") from spatial database '" << queryctx->db->getLabel() << "'. ";
                 msg << invalidMsg;
-                PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
-                PYLITH_METHOD_RETURN(1);
+                PYLITH_ERROR_RETURN(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
             } // if
         } // for
     } // if
@@ -425,6 +362,11 @@ pylith::topology::_FieldQuery::findQueryIndices(FieldQuery::DBQueryContext* cont
         } // for
         if (!foundName) {
             std::ostringstream msg;
+            if (0 == numDBValues) {
+                msg << "No values found in spatial database '"
+                    << context->db->getLabel() << "'. Did you forget to open the database?";
+                throw std::logic_error(msg.str());
+            } // if
             msg << "Could not find value '" << valuesForSubfield[iValue] << "' in spatial database '"
                 << context->db->getLabel() << "'. Available values are:";
             for (size_t iValueDB = 0; iValueDB < numDBValues; ++iValueDB) {

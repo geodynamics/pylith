@@ -52,7 +52,7 @@
     PetscError(PETSC_COMM_SELF,__LINE__,__FUNCT__,__FILE__,err,PETSC_ERROR_REPEAT, 0, " "); \
     throw std::runtime_error(msg); }
 
-#define PYLITH_SET_ERROR(comm,error,msg) SETERRQ(comm,error,msg)
+#define PYLITH_ERROR_RETURN(comm,error,msg) SETERRQ(comm,error,msg)
 
 #endif // pylith_utils_error_hh
 

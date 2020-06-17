@@ -150,7 +150,10 @@ pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solu
 
     const size_t numSubfields = _subfields.size();
     for (size_t i = 0; i < numSubfields; ++i) {
-        fieldQuery.queryFn(_subfields[i].c_str(), pylith::topology::FieldQuery::dbQueryGeneric, _db);
+        const char** queryValues = NULL;
+        const size_t numValues = 0;
+        const pylith::topology::FieldQuery::convertfn_type convertFn = NULL;
+        fieldQuery.setQuery(_subfields[i].c_str(), queryValues, numValues, convertFn, _db);
     } // for
 
     fieldQuery.openDB(_db, normalizer.getLengthScale());

@@ -72,18 +72,19 @@ public:
     /// Set subfield values using spatial database.
     void setValuesFromDB(void);
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
     /** Set query function for subfield.
      *
      * @param[in] subfieldName Name of subfield.
-     * @param[in] fn Function used for query spatial database.
+     * @param[in] namesDBValues Array of names of values to use from spatial database.
+     * @param[in] numDBValues Size of names array.
+     * @param[in] convertFn Function to convert spatial database values to subfield values.
      * @param[in] db Spatial database to query.
      */
-    void _setSubfieldQueryFn(const char* subfieldName,
-                             pylith::topology::FieldQuery::queryfn_type,
-                             spatialdata::spatialdb::SpatialDB* db = NULL);
+    void setSubfieldQuery(const char* subfieldName,
+                          const char* namesDBValues[]=NULL,
+                          const size_t numDBValues=0,
+                          pylith::topology::FieldQuery::convertfn_type convertFn=NULL,
+                          spatialdata::spatialdb::SpatialDB* db=NULL);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

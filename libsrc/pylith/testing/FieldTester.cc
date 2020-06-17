@@ -42,9 +42,9 @@ pylith::testing::FieldTester::checkFieldWithDB(const pylith::topology::Field& fi
 
     const PetscDM dmField = field.dmMesh();assert(dmField);
     pylith::topology::FieldQuery fieldQuery(field);
-    fieldQuery.initializeWithDefaultQueryFns();
+    fieldQuery.initializeWithDefaultQueries();
     fieldQuery.openDB(fieldDB, lengthScale);
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dmField, t, fieldQuery.functions(), (void**)fieldQuery.contextPtrs(),
+    PetscErrorCode err = DMPlexComputeL2DiffLocal(dmField, t, fieldQuery._functions, (void**)fieldQuery._contextPtrs,
                                                   field.localVector(), &norm);CPPUNIT_ASSERT(!err);
     fieldQuery.closeDB(fieldDB);
 

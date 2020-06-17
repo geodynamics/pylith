@@ -38,7 +38,7 @@
 /** @brief Basic information related to a vector field over the
  * vertices or cells of a finite-element mesh.
  */
-class pylith::topology::FieldBase { // Field
+class pylith::topology::FieldBase {
     // PUBLIC ENUMS /////////////////////////////////////////////////////////
 public:
 

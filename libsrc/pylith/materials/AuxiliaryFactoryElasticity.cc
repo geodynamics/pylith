@@ -51,21 +51,21 @@ pylith::materials::AuxiliaryFactoryElasticity::addDensity(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addDensity(void)");
 
-    const char* fieldName = "density";
+    const char* subfieldName = "density";
     const PylithReal densityScale = _normalizer->getDensityScale();
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
+    description.label = subfieldName;
+    description.alias = subfieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
-    description.componentNames[0] = fieldName;
+    description.componentNames[0] = subfieldName;
     description.scale = densityScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
-    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addDensity
@@ -78,14 +78,14 @@ pylith::materials::AuxiliaryFactoryElasticity::addBodyForce(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addBodyForce(void)");
 
-    const char* fieldName = "body_force";
+    const char* subfieldName = "body_force";
     const char* componentNames[3] = { "body_force_x", "body_force_y", "body_force_z" };
 
     const PylithReal forceScale = _normalizer->getPressureScale() / _normalizer->getLengthScale();
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
+    description.label = subfieldName;
+    description.alias = subfieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
@@ -95,8 +95,8 @@ pylith::materials::AuxiliaryFactoryElasticity::addBodyForce(void) {
     description.scale = forceScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addBodyForce
@@ -109,16 +109,20 @@ pylith::materials::AuxiliaryFactoryElasticity::addGravityField(spatialdata::spat
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addGravityField(void)");
 
-    const char* fieldName = "gravitational_acceleration";
-    const char* componentNames[3] = { "gravitational_acceleration_x", "gravitational_acceleration_y", "gravitational_acceleration_z" };
+    const char* subfieldName = "gravitational_acceleration";
+    const char* componentNames[3] = {
+        "gravitational_acceleration_x",
+        "gravitational_acceleration_y",
+        "gravitational_acceleration_z",
+    };
 
     const PylithReal lengthScale = _normalizer->getLengthScale();
     const PylithReal timeScale = _normalizer->getTimeScale();
     const PylithReal accelerationScale = lengthScale / (timeScale * timeScale);
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
+    description.label = subfieldName;
+    description.alias = subfieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
@@ -128,8 +132,8 @@ pylith::materials::AuxiliaryFactoryElasticity::addGravityField(spatialdata::spat
     description.scale = accelerationScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::materials::Query::dbQueryGravityField, gf);
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    pylith::materials::Query::gravityFieldFromDB(subfieldName, this, gf, _spaceDim);
 
     PYLITH_METHOD_END;
 } // addGravityField
