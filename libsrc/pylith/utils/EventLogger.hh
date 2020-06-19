@@ -41,105 +41,104 @@
  *
  * Each logger object manages the events for a single "logging class".
  */
-class pylith::utils::EventLogger
-{ // EventLogger
-  friend class TestEventLogger; // unit testing
+class pylith::utils::EventLogger { // EventLogger
+    friend class TestEventLogger; // unit testing
 
-// PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public :
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+public:
 
-  /// Constructor
-  EventLogger(void);
+    /// Constructor
+    EventLogger(void);
 
-  /// Destructor
-  ~EventLogger(void);
+    /// Destructor
+    ~EventLogger(void);
 
-  /** Set name of logging class.
-   *
-   * @param name Name of logging class.
-   */
-  void className(const char* name);
+    /** Set name of logging class.
+     *
+     * @param name Name of logging class.
+     */
+    void setClassName(const char* name);
 
-  /** Get name of logging class.
-   *
-   * @returns Name of logging class.
-   */
-  const char* className(void) const;
+    /** Get name of logging class.
+     *
+     * @returns Name of logging class.
+     */
+    const char* getClassName(void) const;
 
-  /// Setup logging class.
-  void initialize(void);
+    /// Setup logging class.
+    void initialize(void);
 
-  /** Register event.
-   *
-   * @prerequisite Must call initialize() before registerEvent().
-   * 
-   * @param name Name of event.
-   * @returns Event identifier.
-   */
-  int registerEvent(const char* name);
+    /** Register event.
+     *
+     * @prerequisite Must call initialize() before registerEvent().
+     *
+     * @param name Name of event.
+     * @returns Event identifier.
+     */
+    int registerEvent(const char* name);
 
-  /** Get event identifier.
-   *
-   * @param name Name of event.
-   * @returns Event identifier.
-   */
-  int eventId(const char* name);
+    /** Get event identifier.
+     *
+     * @param name Name of event.
+     * @returns Event identifier.
+     */
+    int getEventId(const char* name);
 
-  /** Log event begin.
-   *
-   * @param id Event identifier.
-   */
-  void eventBegin(const int id);
+    /** Log event begin.
+     *
+     * @param id Event identifier.
+     */
+    void eventBegin(const int id);
 
-  /** Log event end.
-   *
-   * @param id Event identifier.
-   */
-  void eventEnd(const int id);
+    /** Log event end.
+     *
+     * @param id Event identifier.
+     */
+    void eventEnd(const int id);
 
-  /** Register stage.
-   *
-   * @prerequisite Must call initialize() before registerStage().
-   * 
-   * @param name Name of stage.
-   * @returns Stage identifier.
-   */
-  int registerStage(const char* name);
+    /** Register stage.
+     *
+     * @prerequisite Must call initialize() before registerStage().
+     *
+     * @param name Name of stage.
+     * @returns Stage identifier.
+     */
+    int registerStage(const char* name);
 
-  /** Get stage identifier.
-   *
-   * @param name Name of stage.
-   * @returns Stage identifier.
-   */
-  int stageId(const char* name);
+    /** Get stage identifier.
+     *
+     * @param name Name of stage.
+     * @returns Stage identifier.
+     */
+    int getStageId(const char* name);
 
-  /** Log stage begin.
-   *
-   * @param id Stage identifier.
-   */
-  void stagePush(const int id);
+    /** Log stage begin.
+     *
+     * @param id Stage identifier.
+     */
+    void stagePush(const int id);
 
-  /// Log stage end.
-  void stagePop(void);
+    /// Log stage end.
+    void stagePop(void);
 
-// PRIVATE METHODS //////////////////////////////////////////////////////
-private :
+    // PRIVATE METHODS //////////////////////////////////////////////////////
+private:
 
-  EventLogger(const EventLogger&); ///< Not implemented
-  const EventLogger& operator=(const EventLogger&); ///< Not implemented
+    EventLogger(const EventLogger&); ///< Not implemented
+    const EventLogger& operator=(const EventLogger&); ///< Not implemented
 
-// PRIVATE TYPEDEFS /////////////////////////////////////////////////////
-private :
+    // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
+private:
 
-  typedef std::map<std::string,int> map_event_type;
+    typedef std::map<std::string,int> map_event_type;
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+private:
 
-  std::string _className; ///< Name of logging class
-  int _classId; ///< PETSc logging identifier for class
-  map_event_type _events; ///< PETSc logging identifiers for events
-  map_event_type _stages; ///< PETSc logging identifiers for stages
+    std::string _className; ///< Name of logging class
+    int _classId; ///< PETSc logging identifier for class
+    map_event_type _events; ///< PETSc logging identifiers for events
+    map_event_type _stages; ///< PETSc logging identifiers for stages
 
 }; // EventLogger
 
@@ -147,5 +146,4 @@ private :
 
 #endif // pylith_utils_eventlogger_hh
 
-
-// End of file 
+// End of file

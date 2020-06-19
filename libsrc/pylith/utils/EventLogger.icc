@@ -16,7 +16,6 @@
 // ======================================================================
 //
 
-
 #if !defined(pylith_utils_eventlogger_hh)
 #error "EventLogger.icc must only be included from EventLogger.hh"
 #endif
@@ -24,44 +23,49 @@
 // Set name of logging class.
 inline
 void
-pylith::utils::EventLogger::className(const char* name) {
-  _className = name;
+pylith::utils::EventLogger::setClassName(const char* name) {
+    _className = name;
 }
+
 
 // Get name of logging class.
 inline
 const char*
-pylith::utils::EventLogger::className(void) const {
-  return _className.c_str();
+pylith::utils::EventLogger::getClassName(void) const {
+    return _className.c_str();
 }
+
 
 // Log event begin.
 inline
 void
 pylith::utils::EventLogger::eventBegin(const int id) {
-  PetscLogEventBegin(id, 0, 0, 0, 0);
+    PetscLogEventBegin(id, 0, 0, 0, 0);
 } // eventBegin
-  
+
+
 // Log event end.
 inline
 void
 pylith::utils::EventLogger::eventEnd(const int id) {
-  PetscLogEventEnd(id, 0, 0, 0, 0);
+    PetscLogEventEnd(id, 0, 0, 0, 0);
 } // eventEnd
+
 
 // Log stage begin.
 inline
 void
 pylith::utils::EventLogger::stagePush(const int id) {
-  PetscLogStagePush(id);
+    PetscLogStagePush(id);
 } // stagePush
-  
+
+
 // Log stage end.
 inline
 void
 pylith::utils::EventLogger::stagePop(void) {
-  PetscLogStagePop();
+    PetscLogStagePop();
 } // stagePop
 
 
-// End of file 
+// End of file

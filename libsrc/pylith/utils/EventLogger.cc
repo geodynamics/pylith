@@ -29,114 +29,114 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::utils::EventLogger::EventLogger(void) :
-  _className(""),
-  _classId(0)
-{ // constructor
-} // constructor
+    _className(""),
+    _classId(0)
+{}
+
 
 // ----------------------------------------------------------------------
 // Destructor
 pylith::utils::EventLogger::~EventLogger(void)
-{ // destructor
-} // destructor
+{}
+
 
 // ----------------------------------------------------------------------
 // Setup logging class.
 void
-pylith::utils::EventLogger::initialize(void)
-{ // initialize
-  PYLITH_METHOD_BEGIN;
+pylith::utils::EventLogger::initialize(void) {
+    PYLITH_METHOD_BEGIN;
 
-  if (_className == "")
-    throw std::logic_error("Must set logging class name before "
-			   "initializaing EventLogger.");
-  
-  _events.clear();
-  PetscErrorCode err = PetscClassIdRegister(_className.c_str(), &_classId);
-  if (err) {
-    std::ostringstream msg;
-    msg << "Could not register logging class '" << _className << "'.";
-    throw std::runtime_error(msg.str());
-  } // if
-  assert(_classId);
+    if (_className == "") {
+        throw std::logic_error("Must set logging class name before "
+                               "initializaing EventLogger.");
+    }
 
-  PYLITH_METHOD_END;
+    _events.clear();
+    PetscErrorCode err = PetscClassIdRegister(_className.c_str(), &_classId);
+    if (err) {
+        std::ostringstream msg;
+        msg << "Could not register logging class '" << _className << "'.";
+        throw std::runtime_error(msg.str());
+    } // if
+    assert(_classId);
+
+    PYLITH_METHOD_END;
 } // initialize
+
 
 // ----------------------------------------------------------------------
 // Register event.
 int
-pylith::utils::EventLogger::registerEvent(const char* name)
-{ // registerEvent
-  PYLITH_METHOD_BEGIN;
+pylith::utils::EventLogger::registerEvent(const char* name) {
+    PYLITH_METHOD_BEGIN;
 
-  assert(_classId);
-  int id = 0;
-  PetscErrorCode err = PetscLogEventRegister(name, _classId, &id);
-  if (err) {
-    std::ostringstream msg;
-    msg << "Could not register logging event '" << name
-	<< "' for logging class '" << _className << "'.";
-    throw std::runtime_error(msg.str());
-  } // if  
-  _events[name] = id;
-  PYLITH_METHOD_RETURN(id);
+    assert(_classId);
+    int id = 0;
+    PetscErrorCode err = PetscLogEventRegister(name, _classId, &id);
+    if (err) {
+        std::ostringstream msg;
+        msg << "Could not register logging event '" << name
+            << "' for logging class '" << _className << "'.";
+        throw std::runtime_error(msg.str());
+    } // if
+    _events[name] = id;
+    PYLITH_METHOD_RETURN(id);
 } // registerEvent
+
 
 // ----------------------------------------------------------------------
 // Get event identifier.
 int
-pylith::utils::EventLogger::eventId(const char* name)
-{ // eventId
-  PYLITH_METHOD_BEGIN;
+pylith::utils::EventLogger::getEventId(const char* name) {
+    PYLITH_METHOD_BEGIN;
 
-  map_event_type::iterator iter = _events.find(name);
-  if (iter == _events.end()) {
-    std::ostringstream msg;
-    msg << "Could not find logging event '" << name
-	<< "' in logging class '" << _className << "'.";
-    throw std::runtime_error(msg.str());
-  } // if
+    map_event_type::iterator iter = _events.find(name);
+    if (iter == _events.end()) {
+        std::ostringstream msg;
+        msg << "Could not find logging event '" << name
+            << "' in logging class '" << _className << "'.";
+        throw std::runtime_error(msg.str());
+    } // if
 
-  PYLITH_METHOD_RETURN(iter->second);
-} // eventId
+    PYLITH_METHOD_RETURN(iter->second);
+} // getEventId
+
 
 // ----------------------------------------------------------------------
 // Register stage.
 int
-pylith::utils::EventLogger::registerStage(const char* name)
-{ // registerStage
-  PYLITH_METHOD_BEGIN;
+pylith::utils::EventLogger::registerStage(const char* name) {
+    PYLITH_METHOD_BEGIN;
 
-  assert(_classId);
-  int id = 0;
-  PetscErrorCode err = PetscLogStageRegister(name, &id);
-  if (err) {
-    std::ostringstream msg;
-    msg << "Could not register logging stage '" << name << "'.";
-    throw std::runtime_error(msg.str());
-  } // if  
-  _stages[name] = id;
+    assert(_classId);
+    int id = 0;
+    PetscErrorCode err = PetscLogStageRegister(name, &id);
+    if (err) {
+        std::ostringstream msg;
+        msg << "Could not register logging stage '" << name << "'.";
+        throw std::runtime_error(msg.str());
+    } // if
+    _stages[name] = id;
 
-  PYLITH_METHOD_RETURN(id);
+    PYLITH_METHOD_RETURN(id);
 } // registerStage
+
 
 // ----------------------------------------------------------------------
 // Get stage identifier.
 int
-pylith::utils::EventLogger::stageId(const char* name)
-{ // stageId
-  PYLITH_METHOD_BEGIN;
+pylith::utils::EventLogger::getStageId(const char* name) {
+    PYLITH_METHOD_BEGIN;
 
-  map_event_type::iterator iter = _stages.find(name);
-  if (iter == _stages.end()) {
-    registerStage(name);
-    iter = _stages.find(name);
-    assert(iter != _stages.end());
-  } // if
+    map_event_type::iterator iter = _stages.find(name);
+    if (iter == _stages.end()) {
+        registerStage(name);
+        iter = _stages.find(name);
+        assert(iter != _stages.end());
+    } // if
 
-  PYLITH_METHOD_RETURN(iter->second);
-} // stagesId
+    PYLITH_METHOD_RETURN(iter->second);
+} // getStageId
 
 
-// End of file 
+// End of file
