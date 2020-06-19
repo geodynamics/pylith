@@ -27,6 +27,7 @@
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 namespace pylith {
     namespace topology {
@@ -51,7 +52,14 @@ pylith::topology::FieldQuery::FieldQuery(const Field& field) :
     _field(field),
     _functions(NULL),
     _contexts(NULL),
-    _contextPtrs(NULL) {}
+    _contextPtrs(NULL),
+    _logger(new pylith::utils::EventLogger) {
+    assert(_logger);
+    _logger->className("FieldQuery");
+    _logger->initialize();
+    _logger->registerEvent("Py-FdQu-queryDB");
+    _logger->registerEvent("Py-FdQu-queryPt");
+} // constructor
 
 
 // ----------------------------------------------------------------------
@@ -70,6 +78,7 @@ pylith::topology::FieldQuery::deallocate(void) {
     delete[] _functions;_functions = NULL;
     delete[] _contexts;_contexts = NULL;
     delete[] _contextPtrs;_contextPtrs = NULL;
+    delete _logger;_logger = NULL;
 
     _subfieldQueries.clear();
 
@@ -177,6 +186,7 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
         _contexts[index].description = description.label;
         _contexts[index].valueScale = description.scale;
         _contexts[index].validator = description.validator;
+        _contexts[index].logger = _logger;
 
         _contextPtrs[index] = &_contexts[index];
     } // for
@@ -191,10 +201,16 @@ void
 pylith::topology::FieldQuery::queryDB(void) {
     PYLITH_METHOD_BEGIN;
 
+    assert(_logger);
+    const PylithInt queryEvent = _logger->eventId("Py-FdQu-queryDB");
+    _logger->eventBegin(queryEvent);
+
     PetscErrorCode err = 0;
     PetscReal dummyTime = 0.0;
     err = DMProjectFunctionLocal(_field.dmMesh(), dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES,
                                  _field.localVector());PYLITH_CHECK_ERROR(err);
+
+    _logger->eventEnd(queryEvent);
 
     PYLITH_METHOD_END;
 } // queryDB
@@ -206,6 +222,10 @@ void
 pylith::topology::FieldQuery::queryDBLabel(const char* labelName,
                                            const PylithInt labelValue) {
     PYLITH_METHOD_BEGIN;
+
+    assert(_logger);
+    const PylithInt queryEvent = _logger->eventId("Py-FdQu-queryDB");
+    _logger->eventBegin(queryEvent);
 
     PetscErrorCode err = 0;
     PetscReal dummyTime = 0.0;
@@ -223,6 +243,8 @@ pylith::topology::FieldQuery::queryDBLabel(const char* labelName,
     err = DMProjectFunctionLabelLocal(_field.dmMesh(), dummyTime, dmLabel, 1, &labelValue,
                                       numSubfields, &subfieldIndices[0], _functions, (void**)_contextPtrs,
                                       INSERT_ALL_VALUES, _field.localVector());PYLITH_CHECK_ERROR(err);
+
+    _logger->eventEnd(queryEvent);
 
     PYLITH_METHOD_END;
 } // queryDBLabel
@@ -266,6 +288,10 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
     if (!queryctx->db) {
         PYLITH_METHOD_RETURN(0);
     } // if
+
+    assert(queryctx->logger);
+    const PylithInt pointFnEvent = queryctx->logger->eventId("Py-FdQu-queryPt");
+    queryctx->logger->eventBegin(pointFnEvent);
 
     // Dimensionalize query location coordinates.
     assert(queryctx->lengthScale > 0);
@@ -319,6 +345,8 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
     for (int i = 0; i < nvalues; ++i) {
         values[i] /= queryctx->valueScale;
     } // for
+
+    queryctx->logger->eventEnd(pointFnEvent);
 
     PYLITH_METHOD_RETURN(0);
 } // queryDBPointFn

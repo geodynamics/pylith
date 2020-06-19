@@ -29,6 +29,7 @@
 
 #include "pylith/topology/FieldBase.hh" // HASA validatorfn_type
 #include "pylith/testing/testingfwd.hh" // USES FieldTester
+#include "pylith/utils/utilsfwd.hh" // USES EventLogger
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
@@ -198,6 +199,7 @@ private:
         pylith::int_array queryIndices; ///< Indices of spatial database values to use for subfield.
         convertfn_type converter; ///< Function to convert values to subfield (optional).
         pylith::topology::FieldBase::validatorfn_type validator; ///< Function to validate values (optional).
+        pylith::utils::EventLogger* logger;
 
         DBQueryContext(void) :
             db(NULL),
@@ -206,7 +208,8 @@ private:
             valueScale(1.0),
             description("unknown"),
             converter(NULL),
-            validator(NULL) {}
+            validator(NULL),
+            logger(NULL) {}
 
 
     }; // DBQueryStruct
@@ -221,6 +224,8 @@ private:
     queryfn_type* _functions; ///< Functions implementing queries.
     DBQueryContext* _contexts; ///< Contexts for performing query for each subfield.
     DBQueryContext** _contextPtrs; ///< Array of pointers to contexts.
+
+    pylith::utils::EventLogger* _logger;
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
