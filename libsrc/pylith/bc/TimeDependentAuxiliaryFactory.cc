@@ -110,20 +110,20 @@ pylith::bc::TimeDependentAuxiliaryFactory::addInitialAmplitude(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addInitialAmplitude(void)");
 
-    const char* fieldName = "initial_amplitude";
+    const char* subfieldName = "initial_amplitude";
 
     assert(_defaultDescription);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
 
-    subfieldDescription.label = fieldName;
-    subfieldDescription.alias = fieldName;
+    subfieldDescription.label = subfieldName;
+    subfieldDescription.alias = subfieldName;
     subfieldDescription.validator = NULL;
     switch (subfieldDescription.vectorFieldType) {
     case pylith::topology::FieldBase::SCALAR: {
         const size_t numComponents = 1;
         assert(numComponents == subfieldDescription.numComponents);
         assert(numComponents == subfieldDescription.componentNames.size());
-        subfieldDescription.componentNames[0] = fieldName;
+        subfieldDescription.componentNames[0] = subfieldName;
         break;
     } // SCALAR
     case pylith::topology::FieldBase::VECTOR: {
@@ -135,8 +135,8 @@ pylith::bc::TimeDependentAuxiliaryFactory::addInitialAmplitude(void) {
         throw std::logic_error("Unknown vector field case in TimeDependentAuxiliaryFactory::initialAmplitude().");
     } // switch
 
-    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addInitialAmplitude
@@ -149,13 +149,13 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateAmplitude(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addRateAmplitude(void)");
 
-    const char* fieldName = "rate_amplitude";
+    const char* subfieldName = "rate_amplitude";
 
     assert(_defaultDescription);
     assert(_normalizer);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
-    subfieldDescription.label = fieldName;
-    subfieldDescription.alias = fieldName;
+    subfieldDescription.label = subfieldName;
+    subfieldDescription.alias = subfieldName;
     subfieldDescription.scale = _defaultDescription->scale / _normalizer->getTimeScale();
     subfieldDescription.validator = NULL;
     switch (subfieldDescription.vectorFieldType) {
@@ -163,7 +163,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateAmplitude(void) {
         const size_t numComponents = 1;
         assert(numComponents == subfieldDescription.numComponents);
         assert(numComponents == subfieldDescription.componentNames.size());
-        subfieldDescription.componentNames[0] = fieldName;
+        subfieldDescription.componentNames[0] = subfieldName;
         break;
     } // SCALAR
     case pylith::topology::FieldBase::VECTOR: {
@@ -175,8 +175,8 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateAmplitude(void) {
         throw std::logic_error("Unknown vector field case in TimeDependentAuxiliaryFactory::addRateAmplitude().");
     } // switch
 
-    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addRateAmplitude
@@ -189,22 +189,22 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateStartTime(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addRateStartTime(void)");
 
-    const char* fieldName = "rate_start_time";
+    const char* subfieldName = "rate_start_time";
 
     assert(_defaultDescription);
     assert(_normalizer);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
-    subfieldDescription.label = fieldName;
-    subfieldDescription.alias = fieldName;
+    subfieldDescription.label = subfieldName;
+    subfieldDescription.alias = subfieldName;
     subfieldDescription.vectorFieldType = pylith::topology::FieldBase::SCALAR;
     subfieldDescription.numComponents = 1;
     subfieldDescription.componentNames.resize(1);
-    subfieldDescription.componentNames[0] = fieldName;
+    subfieldDescription.componentNames[0] = subfieldName;
     subfieldDescription.scale = _normalizer->getTimeScale();
     subfieldDescription.validator = NULL;
 
-    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addRateStartTime
@@ -217,19 +217,19 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryAmplitude(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addTimeHistoryAmplitude(void)");
 
-    const char* fieldName = "time_history_amplitude";
+    const char* subfieldName = "time_history_amplitude";
 
     assert(_defaultDescription);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
 
-    subfieldDescription.label = fieldName;
-    subfieldDescription.alias = fieldName;
+    subfieldDescription.label = subfieldName;
+    subfieldDescription.alias = subfieldName;
     switch (subfieldDescription.vectorFieldType) {
     case pylith::topology::FieldBase::SCALAR: {
         const size_t numComponents = 1;
         assert(numComponents == subfieldDescription.numComponents);
         assert(numComponents == subfieldDescription.componentNames.size());
-        subfieldDescription.componentNames[0] = fieldName;
+        subfieldDescription.componentNames[0] = subfieldName;
         break;
     } // SCALAR
     case pylith::topology::FieldBase::VECTOR: {
@@ -241,8 +241,8 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryAmplitude(void) {
         throw std::logic_error("Unknown vector field case in TimeDependentAuxiliaryFactory::addTimeHistoryAmplitude().");
     } // switch
 
-    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addTimeHistoryAmplitude
@@ -255,22 +255,22 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryStartTime(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addTimeHistoryStartTime(void)");
 
-    const char* fieldName = "time_history_start_time";
+    const char* subfieldName = "time_history_start_time";
 
     assert(_defaultDescription);
     assert(_normalizer);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
-    subfieldDescription.label = fieldName;
-    subfieldDescription.alias = fieldName;
+    subfieldDescription.label = subfieldName;
+    subfieldDescription.alias = subfieldName;
     subfieldDescription.vectorFieldType = pylith::topology::FieldBase::SCALAR;
     subfieldDescription.numComponents = 1;
     subfieldDescription.componentNames.resize(1);
-    subfieldDescription.componentNames[0] = fieldName;
+    subfieldDescription.componentNames[0] = subfieldName;
     subfieldDescription.scale = _normalizer->getTimeScale();
     subfieldDescription.validator = NULL;
 
-    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addTimeHistoryStartTime
@@ -283,21 +283,21 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryValue(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addTimeHistoryValue(void)");
 
-    const char* fieldName = "time_history_value";
+    const char* subfieldName = "time_history_value";
 
     assert(_defaultDescription);
     assert(_normalizer);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
-    subfieldDescription.label = fieldName;
-    subfieldDescription.alias = fieldName;
+    subfieldDescription.label = subfieldName;
+    subfieldDescription.alias = subfieldName;
     subfieldDescription.vectorFieldType = pylith::topology::FieldBase::SCALAR;
     subfieldDescription.numComponents = 1;
     subfieldDescription.componentNames.resize(1);
-    subfieldDescription.componentNames[0] = fieldName;
+    subfieldDescription.componentNames[0] = subfieldName;
     subfieldDescription.validator = NULL;
 
-    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, NULL); // populated by integrator or constraint at begining of time step.
+    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
+    // No subfield query; populated by integrator or constraint at begining of time step.
 
     PYLITH_METHOD_END;
 } // addTimeHistoryValue

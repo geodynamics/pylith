@@ -25,49 +25,44 @@
 #if !defined(pylith_topology_fieldquery_hh)
 #define pylith_topology_fieldquery_hh
 
-// Include directives ---------------------------------------------------
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/topology/FieldBase.hh" // HASA validatorfn_type
+#include "pylith/testing/testingfwd.hh" // USES FieldTester
+#include "pylith/utils/utilsfwd.hh" // USES EventLogger
+
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 
 #include <map> // HOLDSA std::map
 #include <string> // HASA std::string
 
-// FieldQuery ----------------------------------------------------------------
-/** @brief Set field via query of spatial database, etc.
- *
- * Each subfield is queried separately via user-defined functions to
- * allow for conversions, dimensionalization, etc.
- */
-class pylith::topology::FieldQuery { // FieldQuery
+namespace pylith {
+    namespace feassemble {
+        class TestAuxiliaryFactory;
+    } // feassemble
+} // pylith
+
+class pylith::topology::FieldQuery {
+    friend class _FieldQuery;
     friend class TestFieldQuery; // unit testing
+    friend class pylith::testing::FieldTester; // unit testing
+    friend class pylith::feassemble::TestAuxiliaryFactory; // unit testing
 
     // PUBLIC TYPEDEF ///////////////////////////////////////////////////////
 public:
 
-    /// Function prototype for query functions.
-    typedef PetscErrorCode (*queryfn_type)(PylithInt,
-                                           PylithReal,
-                                           const PylithReal[],
-                                           PylithInt,
-                                           PylithScalar*,
-                                           void*);
-
-    // PUBLIC STRUCT ////////////////////////////////////////////////////////
-public:
-
-    /// Context for spatial database queries.
-    struct DBQueryContext {
-        spatialdata::spatialdb::SpatialDB* db; ///< Spatial database.
-        const spatialdata::geocoords::CoordSys* cs; ///< Coordinate system of point locations.
-        PylithReal lengthScale; ///< Length scale for dimensionalizing coordinates.
-        PylithReal valueScale; ///< Scale for dimensionalizing values for subfield.
-        std::string description; ///< Name of value;
-        pylith::string_vector componentNames; ///< Names of components to query (optional).
-        pylith::topology::FieldBase::validatorfn_type validator; ///< Function to validate values (optional).
-    }; // DBQueryStruct
+    /** Function prototype for converter functions.
+     *
+     * @param[out] values Values for subfield.
+     * @param[in] nvalues Number of values for subfield.
+     * @param[in] Array of values from spatial database query.
+     * @param[in] Indices of values from spatial database to use for computing subfield values.
+     */
+    typedef PetscErrorCode (*convertfn_type)(PylithScalar[],
+                                             const PylithInt,
+                                             const pylith::scalar_array,
+                                             const pylith::int_array);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
@@ -84,42 +79,27 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Set query function information for subfield.
+    /** Set query information for subfield.
      *
      * The default is to use the database passed in the call to openDB().
-     * Passing in a spatial database in this function overrised use of the
-     * default database.
+     * Passing in a spatial database in this function overrides use of the
+     * default database. If the names of the values to query in the spatial database are not given via queryValues,
+     * then the names of the subfield components are used.
      *
      * @param[in] subfield Name of subfield.
-     * @param[in] fn Query function to use for subfield.
-     * @param[in] db Spatial database to query.
+     * @param[in] queryValues Array of names of spatial database values for subfield.
+     * @param[in] numValues Size of names array.
+     * @param[in] converter Function to convert spatial database values to subfield value (optional).
+     * @param[in] db Spatial database to query (optional).
      */
-    void queryFn(const char* subfield,
-                 const queryfn_type fn,
-                 spatialdata::spatialdb::SpatialDB* db=NULL);
+    void setQuery(const char* subfield,
+                  const char* queryValues[]=NULL,
+                  const size_t numValues=0,
+                  convertfn_type converter=NULL,
+                  spatialdata::spatialdb::SpatialDB* db=NULL);
 
-    /// Initialize query with default query functions.
-    void initializeWithDefaultQueryFns(void);
-
-    /** Get query function for subfield.
-     *
-     * @param subfield Name of subfield.
-     * @return Query function used for subfield.
-     */
-    const queryfn_type queryFn(const char* subfield) const;
-
-    /** Get spatial database used to get values for subfield.
-     *
-     * @param subfield Name of subfield.
-     * @return Spatial database to use in query (NULL if using default database passed in openDB()).
-     */
-    const spatialdata::spatialdb::SpatialDB* queryDB(const char* subfield) const;
-
-    /// Get array of query functions.
-    queryfn_type* functions(void) const;
-
-    /// Get array of pointers to contexts.
-    const DBQueryContext* const* contextPtrs(void) const;
+    /// Initialize query with default query information.
+    void initializeWithDefaultQueries(void);
 
     /** Open spatial database query for setting values in field.
      *
@@ -147,7 +127,7 @@ public:
      */
     void closeDB(spatialdata::spatialdb::SpatialDB* db);
 
-    /** Generic query of values from spatial database.
+    /** Query of values from spatial databaseat point.
      *
      * Includes nondimensionalization but no conversion of values.
      *
@@ -160,7 +140,7 @@ public:
      * @returns PETSc error code (0 for success).
      */
     static
-    PetscErrorCode dbQueryGeneric(PylithInt dim,
+    PetscErrorCode queryDBPointFn(PylithInt dim,
                                   PylithReal t,
                                   const PylithReal x[],
                                   PylithInt nvalues,
@@ -186,20 +166,66 @@ public:
     // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
 private:
 
-    typedef std::map<std::string, queryfn_type> queryfn_map_type;
-    typedef std::map<std::string, spatialdata::spatialdb::SpatialDB*> querydb_map_type;
+    struct SubfieldQuery {
+        pylith::string_vector queryValues; ///< Values to use from spatial database.
+        convertfn_type converter; ///< Function to convert spatial database values to subfield values.
+        spatialdata::spatialdb::SpatialDB* db; ///< Spatial database to query.
+
+        SubfieldQuery(void) :
+            converter(NULL),
+            db(NULL) {}
+
+
+    }; // SubfieldQuery
+
+    typedef std::map<std::string, SubfieldQuery> subfieldquery_map_type;
+
+    /// Function prototype for query functions.
+    typedef PetscErrorCode (*queryfn_type)(PylithInt,
+                                           PylithReal,
+                                           const PylithReal[],
+                                           PylithInt,
+                                           PylithScalar*,
+                                           void*);
+
+    /// Context for spatial database queries.
+    struct DBQueryContext {
+        spatialdata::spatialdb::SpatialDB* db; ///< Spatial database.
+        const spatialdata::geocoords::CoordSys* cs; ///< Coordinate system of input point locations.
+        PylithReal lengthScale; ///< Length scale for dimensionalizing coordinates.
+        PylithReal valueScale; ///< Scale for dimensionalizing values for subfield.
+        std::string description; ///< Name of value;
+        pylith::scalar_array queryValues; ///< Values returned by spatial database query;
+        pylith::int_array queryIndices; ///< Indices of spatial database values to use for subfield.
+        convertfn_type converter; ///< Function to convert values to subfield (optional).
+        pylith::topology::FieldBase::validatorfn_type validator; ///< Function to validate values (optional).
+        pylith::utils::EventLogger* logger;
+
+        DBQueryContext(void) :
+            db(NULL),
+            cs(NULL),
+            lengthScale(1.0),
+            valueScale(1.0),
+            description("unknown"),
+            converter(NULL),
+            validator(NULL),
+            logger(NULL) {}
+
+
+    }; // DBQueryStruct
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
     const pylith::topology::Field& _field; ///< Field associated with query.
 
-    queryfn_map_type _queryFns;
-    querydb_map_type _queryDBs;
+    subfieldquery_map_type _subfieldQueries;
 
     queryfn_type* _functions; ///< Functions implementing queries.
     DBQueryContext* _contexts; ///< Contexts for performing query for each subfield.
     DBQueryContext** _contextPtrs; ///< Array of pointers to contexts.
+
+    pylith::utils::EventLogger* _logger;
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:

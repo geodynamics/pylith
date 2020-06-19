@@ -48,21 +48,21 @@ pylith::faults::KinSrcAuxiliaryFactory::addInitiationTime(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addInitiationTime(void)");
 
-    const char* fieldName = "initiation_time";
+    const char* subfieldName = "initiation_time";
     const PylithReal timeScale = _normalizer->getTimeScale();
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
+    description.label = subfieldName;
+    description.alias = subfieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
-    description.componentNames[0] = fieldName;
+    description.componentNames[0] = subfieldName;
     description.scale = timeScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addInitiationTime
@@ -75,21 +75,21 @@ pylith::faults::KinSrcAuxiliaryFactory::addRiseTime(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addRiseTime(void)");
 
-    const char* fieldName = "rise_time";
+    const char* subfieldName = "rise_time";
     const PylithReal timeScale = _normalizer->getTimeScale();
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
+    description.label = subfieldName;
+    description.alias = subfieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
-    description.componentNames[0] = fieldName;
+    description.componentNames[0] = subfieldName;
     description.scale = timeScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addRiseTime
@@ -102,14 +102,14 @@ pylith::faults::KinSrcAuxiliaryFactory::addFinalSlip(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addFinalSlip(void)");
 
-    const char* fieldName = "final_slip";
+    const char* subfieldName = "final_slip";
     const char* componentNames[3] = { "final_slip_opening", "final_slip_left_lateral", "final_slip_reverse" };
 
     const PylithReal lengthScale = _normalizer->getLengthScale();
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
+    description.label = subfieldName;
+    description.alias = subfieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
@@ -119,8 +119,8 @@ pylith::faults::KinSrcAuxiliaryFactory::addFinalSlip(void) {
     description.scale = lengthScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addFinalSlip
@@ -133,15 +133,15 @@ pylith::faults::KinSrcAuxiliaryFactory::addSlipRate(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addSlipRate(void)");
 
-    const char* fieldName = "slip_rate";
+    const char* subfieldName = "slip_rate";
     const char* componentNames[3] = { "slip_rate_opening", "slip_rate_left_lateral", "slip_rate_reverse" };
 
     const PylithReal lengthScale = _normalizer->getLengthScale();
     const PylithReal timeScale = _normalizer->getTimeScale();
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
+    description.label = subfieldName;
+    description.alias = subfieldName;
     description.vectorFieldType = pylith::topology::Field::VECTOR;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
@@ -151,8 +151,8 @@ pylith::faults::KinSrcAuxiliaryFactory::addSlipRate(void) {
     description.scale = lengthScale / timeScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addSlipRate

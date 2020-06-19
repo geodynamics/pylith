@@ -48,21 +48,21 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::addDensity(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addDensity(void)");
 
-    const char* fieldName = "density";
+    const char* subfieldName = "density";
     const PylithReal densityScale = _normalizer->getDensityScale();
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
+    description.label = subfieldName;
+    description.alias = subfieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
-    description.componentNames[0] = fieldName;
+    description.componentNames[0] = subfieldName;
     description.scale = densityScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
-    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addDensity
@@ -75,21 +75,21 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::addVs(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addVs(void)");
 
-    const char* fieldName = "vs";
+    const char* subfieldName = "vs";
     const PylithReal velocityScale = _normalizer->getLengthScale() / _normalizer->getTimeScale();
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
+    description.label = subfieldName;
+    description.alias = subfieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
-    description.componentNames[0] = fieldName;
+    description.componentNames[0] = subfieldName;
     description.scale = velocityScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addVs
@@ -102,21 +102,21 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::addVp(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addVp(void)");
 
-    const char* fieldName = "vp";
+    const char* subfieldName = "vp";
     const PylithReal velocityScale = _normalizer->getLengthScale() / _normalizer->getTimeScale();
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
+    description.label = subfieldName;
+    description.alias = subfieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
-    description.componentNames[0] = fieldName;
+    description.componentNames[0] = subfieldName;
     description.scale = velocityScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
-    _setSubfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addVp

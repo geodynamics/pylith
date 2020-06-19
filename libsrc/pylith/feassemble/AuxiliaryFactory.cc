@@ -111,14 +111,16 @@ pylith::feassemble::AuxiliaryFactory::setValuesFromDB(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set query function for subfield.
 void
-pylith::feassemble::AuxiliaryFactory::_setSubfieldQueryFn(const char* subfieldName,
-                                                          pylith::topology::FieldQuery::queryfn_type fn,
-                                                          spatialdata::spatialdb::SpatialDB* db) {
+pylith::feassemble::AuxiliaryFactory::setSubfieldQuery(const char* subfieldName,
+                                                       const char* namesDBValues[],
+                                                       const size_t numDBValues,
+                                                       pylith::topology::FieldQuery::convertfn_type convertFn,
+                                                       spatialdata::spatialdb::SpatialDB* db) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_setSubfieldQueryFn(subfieldName="<<subfieldName<<", queryfn_type="<<fn<<")");
+    PYLITH_JOURNAL_DEBUG("setSubfieldQuery(subfieldName="<<subfieldName<<", namesDBValues="<<namesDBValues<<", numDBValues="<<numDBValues<<", convertFn="<<convertFn<<", db="<<db<<")");
 
     assert(_fieldQuery);
-    _fieldQuery->queryFn(subfieldName, fn, db);
+    _fieldQuery->setQuery(subfieldName, namesDBValues, numDBValues, convertFn, db);
 
     PYLITH_METHOD_END;
 } // _setSubfieldQueryFn

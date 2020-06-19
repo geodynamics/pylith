@@ -255,7 +255,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     _factory->initialize(&auxiliaryField, normalizer, spaceDim);
     for (int i = 0; i < numSubfields; ++i) {
         auxiliaryField.subfieldAdd(subfieldDescriptions[i], subfieldDiscretizations[i]);
-        _factory->_setSubfieldQueryFn(subfields[i], pylith::topology::FieldQuery::dbQueryGeneric);
+        _factory->setSubfieldQuery(subfields[i]);
     } // for
     auxiliaryField.subfieldsSetup();
     auxiliaryField.createDiscretization();
@@ -269,9 +269,10 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     PylithReal t = 0.0;
     const PetscDM dmField = auxiliaryField.dmMesh();CPPUNIT_ASSERT(dmField);
     pylith::topology::FieldQuery query(auxiliaryField);
-    query.initializeWithDefaultQueryFns();
+    query.initializeWithDefaultQueries();
     query.openDB(&auxiliaryDB, normalizer.getLengthScale());
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dmField, t, query.functions(), (void**)query.contextPtrs(), auxiliaryField.localVector(), &norm);CPPUNIT_ASSERT(!err);
+    PetscErrorCode err = DMPlexComputeL2DiffLocal(dmField, t, query._functions, (void**)query._contextPtrs,
+                                                  auxiliaryField.localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(&auxiliaryDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of auxiliary field values failed.", 0.0, norm, tolerance);
