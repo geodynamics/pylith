@@ -55,7 +55,7 @@ pylith::topology::FieldQuery::FieldQuery(const Field& field) :
     _contextPtrs(NULL),
     _logger(new pylith::utils::EventLogger) {
     assert(_logger);
-    _logger->className("FieldQuery");
+    _logger->setClassName("FieldQuery");
     _logger->initialize();
     _logger->registerEvent("Py-FdQu-queryDB");
     _logger->registerEvent("Py-FdQu-queryPt");
@@ -202,7 +202,7 @@ pylith::topology::FieldQuery::queryDB(void) {
     PYLITH_METHOD_BEGIN;
 
     assert(_logger);
-    const PylithInt queryEvent = _logger->eventId("Py-FdQu-queryDB");
+    const PylithInt queryEvent = _logger->getEventId("Py-FdQu-queryDB");
     _logger->eventBegin(queryEvent);
 
     PetscErrorCode err = 0;
@@ -224,7 +224,7 @@ pylith::topology::FieldQuery::queryDBLabel(const char* labelName,
     PYLITH_METHOD_BEGIN;
 
     assert(_logger);
-    const PylithInt queryEvent = _logger->eventId("Py-FdQu-queryDB");
+    const PylithInt queryEvent = _logger->getEventId("Py-FdQu-queryDB");
     _logger->eventBegin(queryEvent);
 
     PetscErrorCode err = 0;
@@ -290,7 +290,7 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
     } // if
 
     assert(queryctx->logger);
-    const PylithInt pointFnEvent = queryctx->logger->eventId("Py-FdQu-queryPt");
+    const PylithInt pointFnEvent = queryctx->logger->getEventId("Py-FdQu-queryPt");
     queryctx->logger->eventBegin(pointFnEvent);
 
     // Dimensionalize query location coordinates.

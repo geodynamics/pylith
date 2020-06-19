@@ -31,63 +31,61 @@
 
 /// Namespace for pylith package
 namespace pylith {
-  namespace utils {
-    class TestEventLogger;
-  } // utils
+    namespace utils {
+        class TestEventLogger;
+    } // utils
 } // pylith
 
 /// C++ unit testing for TestEventLogger
-class pylith::utils::TestEventLogger : public CppUnit::TestFixture
-{ // class TestEventLogger
+class pylith::utils::TestEventLogger : public CppUnit::TestFixture { // class TestEventLogger
+                                                                     // CPPUNIT TEST SUITE
+                                                                     // /////////////////////////////////////////////////
+    CPPUNIT_TEST_SUITE(TestEventLogger);
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestEventLogger );
+    CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testClassName);
+    CPPUNIT_TEST(testInitialize);
+    CPPUNIT_TEST(testRegisterEvent);
+    CPPUNIT_TEST(testGetEventId);
+    CPPUNIT_TEST(testEventLogging);
+    CPPUNIT_TEST(testRegisterStage);
+    CPPUNIT_TEST(testGetStageId);
+    CPPUNIT_TEST(testStageLogging);
 
-  CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testClassName );
-  CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testRegisterEvent );
-  CPPUNIT_TEST( testEventId );
-  CPPUNIT_TEST( testEventLogging );
-  CPPUNIT_TEST( testRegisterStage );
-  CPPUNIT_TEST( testStageId );
-  CPPUNIT_TEST( testStageLogging );
+    CPPUNIT_TEST_SUITE_END();
 
-  CPPUNIT_TEST_SUITE_END();
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
-public :
+    /// Test constructor.
+    void testConstructor(void);
 
-  /// Test constructor.
-  void testConstructor(void);
+    /// Test get/setClassName().
+    void testClassName(void);
 
-  /// Test className().
-  void testClassName(void);
+    /// Test initialize().
+    void testInitialize(void);
 
-  /// Test initialize().
-  void testInitialize(void);
+    /// Test registerEvent().
+    void testRegisterEvent(void);
 
-  /// Test registerEvent().
-  void testRegisterEvent(void);
+    /// Test getEventId().
+    void testGetEventId(void);
 
-  /// Test eventId().
-  void testEventId(void);
+    /// Test eventBegin() and eventEnd().
+    void testEventLogging(void);
 
-  /// Test eventBegin() and eventEnd().
-  void testEventLogging(void);
+    /// Test registerStage().
+    void testRegisterStage(void);
 
-  /// Test registerStage().
-  void testRegisterStage(void);
+    /// Test getStageId().
+    void testGetStageId(void);
 
-  /// Test stageId().
-  void testStageId(void);
-
-  /// Test stagePush() and stagePop().
-  void testStageLogging(void);
+    /// Test stagePush() and stagePop().
+    void testStageLogging(void);
 
 }; // class TestEventLogging
 
 #endif // pylith_utils_testeventlogger_hh
 
-
-// End of file 
+// End of file
