@@ -36,9 +36,9 @@
 #
 
 import numpy
-import pdb
+# import pdb
 
-pdb.set_trace()
+# pdb.set_trace()
 
 # Physical properties.
 p_density = 2500.0
@@ -96,7 +96,7 @@ sDevzz = 2.0*p_mu*eDevzz*(p_shear_ratio_0 + p_shear_ratio_1*timeFac1 + p_shear_r
 sDevxy = numpy.zeros_like(sDevxx)
 
 # Total stresses.
-sMean = e0*(3.0*p_lambda + 2.0*p_mu)
+sMean = e0*(3.0*p_lambda + 2.0*p_mu)/3.0
 sxx = sDevxx + sMean
 syy = sDevyy + sMean
 szz = sDevzz + sMean
@@ -116,9 +116,6 @@ eVisyy_3 = eDevyy*timeFac3
 eViszz_3 = eDevzz*timeFac3
 eVisxy_3 = eDevxy
 
-outArray = numpy.column_stack((timeArray, sxx, syy, eVisxx_1))
-numpy.savetxt('axialstrain_genmaxwell_analytical.txt', outArray)
-
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
     """
@@ -133,17 +130,11 @@ class AnalyticalSoln(object):
             "density": self.density,
             "shear_modulus": self.shear_modulus,
             "bulk_modulus": self.bulk_modulus,
-            "shear_modulus_ratio_1": self.shear_modulus_ratio_1,
-            "shear_modulus_ratio_2": self.shear_modulus_ratio_2,
-            "shear_modulus_ratio_3": self.shear_modulus_ratio_3,
-            "maxwell_time_1": self.maxwell_time_1,
-            "maxwell_time_2": self.maxwell_time_2,
-            "maxwell_time_3": self.maxwell_time_3,
+            "shear_modulus_ratio": self.shear_modulus_ratio,
+            "maxwell_time": self.maxwell_time,
             "cauchy_strain": self.strain,
             "cauchy_stress": self.stress,
-            "viscous_strain_1": self.viscous_strain_1,
-            "viscous_strain_2": self.viscous_strain_2,
-            "viscous_strain_3": self.viscous_strain_3,
+            "viscous_strain": self.viscous_strain,
             "initial_amplitude": self.displacement
         }
         self.key = None
@@ -189,53 +180,27 @@ class AnalyticalSoln(object):
         bulk_modulus = (p_lambda + 2.0 / 3.0 * p_mu) * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return bulk_modulus
 
-    def maxwell_time_1(self, locs):
+    def maxwell_time(self, locs):
         """
-        Compute Maxwell time field for first Maxwell element at locations.
+        Compute Maxwell time field at locations.
         """
         (npts, dim) = locs.shape
-        maxwell_time_1 = p_tau_1*numpy.ones((1, npts, 1), dtype=numpy.float64)
-        return maxwell_time_1
+        maxwell_time = numpy.zeros((1, npts, 3), dtype=numpy.float64)
+        maxwell_time[0, :, 0] = p_tau_1
+        maxwell_time[0, :, 1] = p_tau_2
+        maxwell_time[0, :, 2] = p_tau_3
+        return maxwell_time
 
-    def maxwell_time_2(self, locs):
+    def shear_modulus_ratio(self, locs):
         """
-        Compute Maxwell time field for second Maxwell element at locations.
-        """
-        (npts, dim) = locs.shape
-        maxwell_time_2 = p_tau_2*numpy.ones((1, npts, 1), dtype=numpy.float64)
-        return maxwell_time_2
-
-    def maxwell_time_3(self, locs):
-        """
-        Compute Maxwell time field for third Maxwell element at locations.
+        Compute shear modulus ratio field at locations.
         """
         (npts, dim) = locs.shape
-        maxwell_time_3 = p_tau_3*numpy.ones((1, npts, 1), dtype=numpy.float64)
-        return maxwell_time_3
-
-    def shear_modulus_ratio_1(self, locs):
-        """
-        Compute shear modulus field for first Maxwell element at locations.
-        """
-        (npts, dim) = locs.shape
-        shear_modulus_ratio_1 = p_shear_ratio_1 * numpy.ones((1, npts, 1), dtype=numpy.float64)
-        return shear_modulus_ratio_1
-
-    def shear_modulus_ratio_2(self, locs):
-        """
-        Compute shear modulus field for second Maxwell element at locations.
-        """
-        (npts, dim) = locs.shape
-        shear_modulus_ratio_2 = p_shear_ratio_2 * numpy.ones((1, npts, 1), dtype=numpy.float64)
-        return shear_modulus_ratio_2
-
-    def shear_modulus_ratio_3(self, locs):
-        """
-        Compute shear modulus field for third Maxwell element at locations.
-        """
-        (npts, dim) = locs.shape
-        shear_modulus_ratio_3 = p_shear_ratio_3 * numpy.ones((1, npts, 1), dtype=numpy.float64)
-        return shear_modulus_ratio_3
+        shear_modulus_ratio = numpy.zeros((1, npts, 3), dtype=numpy.float64)
+        shear_modulus_ratio[0, :, 0] = p_shear_ratio_1
+        shear_modulus_ratio[0, :, 1] = p_shear_ratio_2
+        shear_modulus_ratio[0, :, 2] = p_shear_ratio_3
+        return shear_modulus_ratio
 
     def strain(self, locs):
         """
@@ -261,41 +226,25 @@ class AnalyticalSoln(object):
         stress[:, :, 3] = sxy.reshape(numSteps, 1)
         return stress
 
-    def viscous_strain_1(self, locs):
+    def viscous_strain(self, locs):
         """
-        Compute viscous strain field for first Maxwell element at locations.
-        """
-        (npts, dim) = locs.shape
-        viscous_strain_1 = numpy.zeros((numSteps, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        viscous_strain_1[:, :, 0] = eVisxx_1.reshape(numSteps, 1)
-        viscous_strain_1[:, :, 1] = eVisyy_1.reshape(numSteps, 1)
-        viscous_strain_1[:, :, 2] = eViszz_1.reshape(numSteps, 1)
-        viscous_strain_1[:, :, 3] = eVisxy_1.reshape(numSteps, 1)
-        return viscous_strain_1
-
-    def viscous_strain_2(self, locs):
-        """
-        Compute viscous strain field for first Maxwell element at locations.
+        Compute viscous strain field at locations.
         """
         (npts, dim) = locs.shape
-        viscous_strain_2 = numpy.zeros((numSteps, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        viscous_strain_2[:, :, 0] = eVisxx_2.reshape(numSteps, 1)
-        viscous_strain_2[:, :, 1] = eVisyy_2.reshape(numSteps, 1)
-        viscous_strain_2[:, :, 2] = eViszz_2.reshape(numSteps, 1)
-        viscous_strain_2[:, :, 3] = eVisxy_2.reshape(numSteps, 1)
-        return viscous_strain_2
-
-    def viscous_strain_3(self, locs):
-        """
-        Compute viscous strain field for first Maxwell element at locations.
-        """
-        (npts, dim) = locs.shape
-        viscous_strain_3 = numpy.zeros((numSteps, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        viscous_strain_3[:, :, 0] = eVisxx_3.reshape(numSteps, 1)
-        viscous_strain_3[:, :, 1] = eVisyy_3.reshape(numSteps, 1)
-        viscous_strain_3[:, :, 2] = eViszz_3.reshape(numSteps, 1)
-        viscous_strain_3[:, :, 3] = eVisxy_3.reshape(numSteps, 1)
-        return viscous_strain_3
+        viscous_strain = numpy.zeros((numSteps, npts, 3*self.TENSOR_SIZE), dtype=numpy.float64)
+        viscous_strain[:, :, 0] = eVisxx_1.reshape(numSteps, 1)
+        viscous_strain[:, :, 1] = eVisyy_1.reshape(numSteps, 1)
+        viscous_strain[:, :, 2] = eViszz_1.reshape(numSteps, 1)
+        viscous_strain[:, :, 3] = eVisxy_1.reshape(numSteps, 1)
+        viscous_strain[:, :, 4] = eVisxx_2.reshape(numSteps, 1)
+        viscous_strain[:, :, 5] = eVisyy_2.reshape(numSteps, 1)
+        viscous_strain[:, :, 6] = eViszz_2.reshape(numSteps, 1)
+        viscous_strain[:, :, 7] = eVisxy_2.reshape(numSteps, 1)
+        viscous_strain[:, :, 8] = eVisxx_3.reshape(numSteps, 1)
+        viscous_strain[:, :, 9] = eVisyy_3.reshape(numSteps, 1)
+        viscous_strain[:, :, 10] = eViszz_3.reshape(numSteps, 1)
+        viscous_strain[:, :, 11] = eVisxy_3.reshape(numSteps, 1)
+        return viscous_strain
 
 
 # End of file

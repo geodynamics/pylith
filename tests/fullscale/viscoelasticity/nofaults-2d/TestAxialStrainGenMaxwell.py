@@ -46,7 +46,7 @@ class TestCase(FullTestCase):
         return
 
     def run_pylith(self, testName, args):
-        pdb.set_trace()
+        # pdb.set_trace()
         FullTestCase.run_pylith(self, testName, args, GenerateDB)
         return
 
@@ -57,17 +57,14 @@ class TestCase(FullTestCase):
         return
 
     def test_material_info(self):
-        vertexFields = ["density", "bulk_modulus", "shear_modulus",
-                        "shear_modulus_ratio_1", "shear_modulus_ratio_2", "shear_modulus_ratio_3",
-                        "maxwell_time_1", "maxwell_time_2", "maxwell_time_3"]
+        vertexFields = ["density", "bulk_modulus", "shear_modulus", "shear_modulus_ratio", "maxwell_time"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
             check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields)
         return
 
     def test_material_solution(self):
-        vertexFields = ["displacement", "cauchy_strain", "cauchy_stress",
-                        "viscous_strain_1", "viscous_strain_2", "viscous_strain_3"]
+        vertexFields = ["displacement", "cauchy_strain", "cauchy_stress", "viscous_strain"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}.h5".format(self.NAME, material)
             check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields)

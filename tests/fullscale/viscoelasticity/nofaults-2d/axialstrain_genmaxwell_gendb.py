@@ -41,7 +41,7 @@ class GenerateDB(object):
         Generate the database.
         """
         # Domain
-        pdb.set_trace()
+        # pdb.set_trace()
         x = numpy.arange(-4000.0, 4000.1, 1000.0)
         y = numpy.arange(-4000.0, 4000.1, 1000.0)
         npts = x.shape[0]
