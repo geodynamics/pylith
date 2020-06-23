@@ -21,8 +21,6 @@
 # boundary conditions for the axial strain test.
 
 import numpy
-import pdb
-
 
 class GenerateDB(object):
     """
@@ -41,7 +39,6 @@ class GenerateDB(object):
         Generate the database.
         """
         # Domain
-        # pdb.set_trace()
         x = numpy.arange(-4000.0, 4000.1, 1000.0)
         y = numpy.arange(-4000.0, 4000.1, 1000.0)
         npts = x.shape[0]
@@ -54,7 +51,7 @@ class GenerateDB(object):
 
         from axialstrain_genmaxwell_soln import AnalyticalSoln
         soln = AnalyticalSoln()
-        disp = soln.displacement(xy)
+        disp = soln.initial_displacement(xy)
 
         from spatialdata.geocoords.CSCart import CSCart
         cs = CSCart()

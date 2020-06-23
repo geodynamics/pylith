@@ -41,9 +41,6 @@
 import numpy
 import h5py
 import pylab
-# import pdb
-
-# pdb.set_trace()
 
 # FE input file.
 pylithInput = 'output/axialtraction_maxwell_quad_onecell-maxwell.h5'

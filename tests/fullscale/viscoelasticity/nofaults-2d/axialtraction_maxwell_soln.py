@@ -37,9 +37,6 @@
 # Tx(+4000,y) = T0
 
 import numpy
-# import pdb
-
-# pdb.set_trace()
 
 # Physical properties.
 p_density = 2500.0

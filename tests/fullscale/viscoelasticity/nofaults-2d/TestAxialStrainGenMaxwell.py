@@ -20,7 +20,6 @@
 # @brief Test suite for testing generalized Maxwell material with 2-D axial strain (Dirichlet BC).
 
 import unittest
-import pdb
 
 from pylith.tests.FullTestApp import check_data
 from pylith.tests.FullTestApp import TestCase as FullTestCase
@@ -46,7 +45,6 @@ class TestCase(FullTestCase):
         return
 
     def run_pylith(self, testName, args):
-        # pdb.set_trace()
         FullTestCase.run_pylith(self, testName, args, GenerateDB)
         return
 

@@ -36,9 +36,6 @@
 #
 
 import numpy
-# import pdb
-
-# pdb.set_trace()
 
 # Physical properties.
 p_density = 2500.0
@@ -81,9 +78,9 @@ exy = numpy.zeros(numSteps, dtype=numpy.float64)
 
 # Deviatoric strains.
 eMean = (exx + eyy + ezz)/3.0
-eDevxx = exx -eMean
-eDevyy = eyy -eMean
-eDevzz = ezz -eMean
+eDevxx = exx - eMean
+eDevyy = eyy - eMean
+eDevzz = ezz - eMean
 eDevxy = exy
 
 # Deviatoric stresses.
@@ -135,7 +132,12 @@ class AnalyticalSoln(object):
             "cauchy_strain": self.strain,
             "cauchy_stress": self.stress,
             "viscous_strain": self.viscous_strain,
-            "initial_amplitude": self.displacement
+            "initial_amplitude": {
+                "bc_xneg": self.initial_displacement,
+                "bc_yneg": self.initial_displacement,
+                "bc_xpos": self.initial_displacement,
+                "bc_ypos": self.initial_displacement
+                }
         }
         self.key = None
         return
@@ -154,6 +156,15 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         disp = numpy.zeros((numSteps, npts, self.SPACE_DIM), dtype=numpy.float64)
         disp[:, :, 0] = numpy.dot(exx.reshape(numSteps, 1), (locs[:, 0] + 4000.0).reshape(1, npts))
+        return disp
+
+    def initial_displacement(self, locs):
+        """
+        Compute initial displacement field at locations.
+        """
+        (npts, dim) = locs.shape
+        disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
+        disp[0, :, 0] = e0*(locs[:, 0] + 4000.0).reshape(1, npts)
         return disp
 
     def density(self, locs):

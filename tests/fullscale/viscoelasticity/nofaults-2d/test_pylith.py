@@ -18,8 +18,6 @@
 from pylith.tests.FullTestApp import TestDriver, TestCase
 
 import unittest
-# import pdb
-
 
 class TestApp(TestDriver):
     """
