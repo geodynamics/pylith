@@ -30,7 +30,7 @@ class Tet(object):
         "nvertices": 149,
     }
     MATERIALS = {
-        "maxwell": {
+        "viscomat": {
             "ncells": 530,
             "ncorners": 4,
             "nvertices": 149,
@@ -80,7 +80,7 @@ class Hex(object):
         "nvertices": 125,
     }
     MATERIALS = {
-        "maxwell": {
+        "viscomat": {
             "ncells": 64,
             "ncorners": 8,
             "nvertices": 125,

@@ -43,6 +43,10 @@ class TestApp(TestDriver):
         for test in TestAxialTractionMaxwell.test_cases():
             suite.addTest(unittest.makeSuite(test))
 
+        import TestAxialStrainGenMaxwell
+        for test in TestAxialStrainGenMaxwell.test_cases():
+            suite.addTest(unittest.makeSuite(test))
+
         return suite
 
 
