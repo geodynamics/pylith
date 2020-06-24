@@ -171,7 +171,7 @@ pylith::topology::Field*
 pylith::materials::Elasticity::createAuxiliaryField(const pylith::topology::Field& solution,
                                                     const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh="<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
     auxiliaryField->setLabel("Elasticity auxiliary field");
@@ -218,7 +218,7 @@ pylith::topology::Field*
 pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field& solution,
                                                   const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh="<<typeid(domainMesh).name()<<")");
 
     assert(_derivedFactory);
     if (_derivedFactory->getNumSubfields() == 1) {

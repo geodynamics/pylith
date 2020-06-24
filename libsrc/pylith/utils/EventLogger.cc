@@ -30,14 +30,12 @@
 // Constructor
 pylith::utils::EventLogger::EventLogger(void) :
     _className(""),
-    _classId(0)
-{}
+    _classId(0) {}
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::utils::EventLogger::~EventLogger(void)
-{}
+pylith::utils::EventLogger::~EventLogger(void) {}
 
 
 // ----------------------------------------------------------------------
@@ -47,8 +45,7 @@ pylith::utils::EventLogger::initialize(void) {
     PYLITH_METHOD_BEGIN;
 
     if (_className == "") {
-        throw std::logic_error("Must set logging class name before "
-                               "initializaing EventLogger.");
+        throw std::logic_error("Must set logging class name before initializing EventLogger.");
     }
 
     _events.clear();
@@ -75,8 +72,7 @@ pylith::utils::EventLogger::registerEvent(const char* name) {
     PetscErrorCode err = PetscLogEventRegister(name, _classId, &id);
     if (err) {
         std::ostringstream msg;
-        msg << "Could not register logging event '" << name
-            << "' for logging class '" << _className << "'.";
+        msg << "Could not register logging event '" << name << "' for logging class '" << _className << "'.";
         throw std::runtime_error(msg.str());
     } // if
     _events[name] = id;
@@ -93,8 +89,7 @@ pylith::utils::EventLogger::getEventId(const char* name) {
     map_event_type::iterator iter = _events.find(name);
     if (iter == _events.end()) {
         std::ostringstream msg;
-        msg << "Could not find logging event '" << name
-            << "' in logging class '" << _className << "'.";
+        msg << "Could not find logging event '" << name << "' in logging class '" << _className << "'.";
         throw std::runtime_error(msg.str());
     } // if
 

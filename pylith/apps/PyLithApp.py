@@ -261,7 +261,7 @@ class PyLithApp(PetscApplication):
         """
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
-        logger.className("PyLith")
+        logger.setClassName("PyLith")
         logger.initialize()
 
         self._eventLogger = logger

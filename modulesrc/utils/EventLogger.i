@@ -42,13 +42,13 @@ namespace pylith {
        *
        * @param name Name of logging class.
        */
-      void className(const char* name);
+      void setClassName(const char* name);
 
       /** Get name of logging class.
        *
        * @returns Name of logging class.
        */
-      const char* className(void) const;
+      const char* getClassName(void) const;
 
       /// Setup logging class.
       void initialize(void);
@@ -67,7 +67,7 @@ namespace pylith {
        * @param name Name of event.
        * @returns Event identifier.
        */
-      int eventId(const char* name);
+      int getEventId(const char* name);
 
       /** Log event begin.
        *
@@ -95,7 +95,7 @@ namespace pylith {
        * @param name Name of stage.
        * @returns Stage identifier.
        */
-      int stageId(const char* name);
+      int getStageId(const char* name);
 
       /** Log stage begin.
        *
