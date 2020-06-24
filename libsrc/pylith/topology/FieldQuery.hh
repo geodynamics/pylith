@@ -59,10 +59,10 @@ public:
      * @param[in] Array of values from spatial database query.
      * @param[in] Indices of values from spatial database to use for computing subfield values.
      */
-    typedef PetscErrorCode (*convertfn_type)(PylithScalar[],
-                                             const PylithInt,
-                                             const pylith::scalar_array,
-                                             const pylith::int_array);
+    typedef std::string (*convertfn_type)(PylithScalar[],
+                                          const PylithInt,
+                                          const pylith::scalar_array,
+                                          const pylith::int_array);
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:

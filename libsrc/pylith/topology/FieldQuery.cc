@@ -315,8 +315,17 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
 
     // Convert database values to subfield values if converter function specified.
     if (queryctx->converter) {
-        PetscErrorCode err = queryctx->converter(values, nvalues, queryctx->queryValues, queryctx->queryIndices);
-        if (err) { PYLITH_METHOD_RETURN(1); }
+        const std::string& invalidMsg = queryctx->converter(values, nvalues, queryctx->queryValues, queryctx->queryIndices);
+        if (invalidMsg.length() > 0) {
+            std::ostringstream msg;
+            msg << "Error converting spatial database values for " << queryctx->description << " at (";
+            for (int i = 0; i < dim; ++i) {
+                msg << "  " << xDim[i];
+            }
+            msg << ") in spatial database '" << queryctx->db->getLabel() << "'. "
+                << invalidMsg;
+            PYLITH_ERROR_RETURN(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
+        }
     } else {
         for (PylithInt i = 0; i < nvalues; ++i) {
             values[i] = queryctx->queryValues[queryctx->queryIndices[i]];

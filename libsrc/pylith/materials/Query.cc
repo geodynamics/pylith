@@ -47,40 +47,40 @@ namespace pylith {
 public:
 
             static
-            PetscErrorCode vmToShearModulus(PylithScalar valueSubfield[],
-                                            const PylithInt numComponents,
-                                            const pylith::scalar_array dbValues,
-                                            const pylith::int_array dbIndices);
+            std::string vmToShearModulus(PylithScalar valueSubfield[],
+                                         const PylithInt numComponents,
+                                         const pylith::scalar_array dbValues,
+                                         const pylith::int_array dbIndices);
 
             static
-            PetscErrorCode vmToBulkModulus(PylithScalar valueSubfield[],
-                                           const PylithInt numComponents,
-                                           const pylith::scalar_array dbValues,
-                                           const pylith::int_array dbIndices);
+            std::string vmToBulkModulus(PylithScalar valueSubfield[],
+                                        const PylithInt numComponents,
+                                        const pylith::scalar_array dbValues,
+                                        const pylith::int_array dbIndices);
 
             static
-            PetscErrorCode vmToMaxwellTime(PylithScalar valueSubfield[],
-                                           const PylithInt numComponents,
-                                           const pylith::scalar_array dbValues,
-                                           const pylith::int_array dbIndices);
+            std::string vmToMaxwellTime(PylithScalar valueSubfield[],
+                                        const PylithInt numComponents,
+                                        const pylith::scalar_array dbValues,
+                                        const pylith::int_array dbIndices);
 
             static
-            PetscErrorCode vmToGeneralizedMaxwellTimes(PylithScalar valueSubfield[],
-                                                       const PylithInt numComponents,
-                                                       const pylith::scalar_array dbValues,
-                                                       const pylith::int_array dbIndices);
+            std::string vmToGeneralizedMaxwellTimes(PylithScalar valueSubfield[],
+                                                    const PylithInt numComponents,
+                                                    const pylith::scalar_array dbValues,
+                                                    const pylith::int_array dbIndices);
 
             static
-            PetscErrorCode vmToGeneralizedMaxwellShearModulusRatios(PylithScalar valueSubfield[],
-                                                                    const PylithInt numComponents,
-                                                                    const pylith::scalar_array dbValues,
-                                                                    const pylith::int_array dbIndices);
+            std::string vmToGeneralizedMaxwellShearModulusRatios(PylithScalar valueSubfield[],
+                                                                 const PylithInt numComponents,
+                                                                 const pylith::scalar_array dbValues,
+                                                                 const pylith::int_array dbIndices);
 
             static
-            PetscErrorCode dbToGravityField(PylithScalar valueSubfield[],
-                                            const PylithInt numComponents,
-                                            const pylith::scalar_array dbValues,
-                                            const pylith::int_array dbIndices);
+            std::string dbToGravityField(PylithScalar valueSubfield[],
+                                         const PylithInt numComponents,
+                                         const pylith::scalar_array dbValues,
+                                         const pylith::int_array dbIndices);
 
         }; // _Query
     } // materials
@@ -185,7 +185,7 @@ pylith::materials::Query::gravityFieldFromDB(const char* subfieldName,
 
 // ----------------------------------------------------------------------
 // Compute shear modules from density and Vs.
-PetscErrorCode
+std::string
 pylith::materials::_Query::vmToShearModulus(PylithScalar valueSubfield[],
                                             const PylithInt numComponents,
                                             const pylith::scalar_array dbValues,
@@ -214,17 +214,14 @@ pylith::materials::_Query::vmToShearModulus(PylithScalar valueSubfield[],
         valuesOkay = false;
         msg << "Found negative shear wave speed (" << vs << ").";
     } // if
-    if (!valuesOkay) {
-        PYLITH_ERROR_RETURN(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
-    } // if
 
-    PYLITH_METHOD_RETURN(0);
+    return msg.str();
 } // vmToShearModulus
 
 
 // ----------------------------------------------------------------------
 // Compute bulk modules from density, Vs, and Vp.
-PetscErrorCode
+std::string
 pylith::materials::_Query::vmToBulkModulus(PylithScalar valueSubfield[],
                                            const PylithInt numComponents,
                                            const pylith::scalar_array dbValues,
@@ -259,17 +256,14 @@ pylith::materials::_Query::vmToBulkModulus(PylithScalar valueSubfield[],
         valuesOkay = false;
         msg << "Found nonpositive dilatational wave speed (" << vp << ").";
     } // if
-    if (!valuesOkay) {
-        PYLITH_ERROR_RETURN(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
-    } // if
 
-    PYLITH_METHOD_RETURN(0);
+    return msg.str();
 } // vmToBulkModulus
 
 
 // ----------------------------------------------------------------------
 // Compute Maxwell time from from density, Vs, and viscosity.
-PetscErrorCode
+std::string
 pylith::materials::_Query::vmToMaxwellTime(PylithScalar valueSubfield[],
                                            const PylithInt numComponents,
                                            const pylith::scalar_array dbValues,
@@ -305,17 +299,14 @@ pylith::materials::_Query::vmToMaxwellTime(PylithScalar valueSubfield[],
         valuesOkay = false;
         msg << "Found nonpositive viscosity (" << viscosity << ").";
     } // if
-    if (!valuesOkay) {
-        PYLITH_ERROR_RETURN(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
-    } // if
 
-    PYLITH_METHOD_RETURN(0);
+    return msg.str();
 } // vmToMaxwellTime
 
 
 // ----------------------------------------------------------------------
 // Compute Maxwell time for generalized Maxwell model (3 elements).
-PetscErrorCode
+std::string
 pylith::materials::_Query::vmToGeneralizedMaxwellTimes(PylithScalar valueSubfield[],
                                                        const PylithInt numComponents,
                                                        const pylith::scalar_array dbValues,
@@ -395,17 +386,14 @@ pylith::materials::_Query::vmToGeneralizedMaxwellTimes(PylithScalar valueSubfiel
         msg << " Shear ratios are " << shearModulusRatio1 << ", " << shearModulusRatio2 << ", " << shearModulusRatio3
             << ".";
     } // if
-    if (!valuesOkay) {
-        PYLITH_ERROR_RETURN(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
-    } // if
 
-    PYLITH_METHOD_RETURN(0);
+    return msg.str();
 } // vmToGeneralizedMaxwellTimes
 
 
 // ----------------------------------------------------------------------
 // Compute Maxwell time for generalized Maxwell model (3 elements).
-PetscErrorCode
+std::string
 pylith::materials::_Query::vmToGeneralizedMaxwellShearModulusRatios(PylithScalar valueSubfield[],
                                                                     const PylithInt numComponents,
                                                                     const pylith::scalar_array dbValues,
@@ -445,17 +433,14 @@ pylith::materials::_Query::vmToGeneralizedMaxwellShearModulusRatios(PylithScalar
         msg << " Shear ratios are " << shearModulusRatio1 << ", " << shearModulusRatio2 << ", " << shearModulusRatio3
             << ".";
     } // if
-    if (!valuesOkay) {
-        PYLITH_ERROR_RETURN(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
-    } // if
 
-    PYLITH_METHOD_RETURN(0);
+    return msg.str();
 } // vmToGeneralizedMaxwellShearModulusRatios
 
 
 // ----------------------------------------------------------------------
 // Compute Maxwell time for generalized Maxwell model (3 elements).
-PetscErrorCode
+std::string
 pylith::materials::_Query::dbToGravityField(PylithScalar valueSubfield[],
                                             const PylithInt numComponents,
                                             const pylith::scalar_array dbValues,
@@ -477,17 +462,16 @@ pylith::materials::_Query::dbToGravityField(PylithScalar valueSubfield[],
         mag += valueSubfield[i] * valueSubfield[i];
     } // for
     const PylithReal tolerance = 1.0e-6;
+    std::ostringstream msg;
     if (mag < tolerance) {
-        std::ostringstream msg;
         msg << "Found near zero magnitude (" << mag << ") for gravity field vector (";
         for (size_t i = 0; i < spaceDim; ++i) {
             msg << "  " << valueSubfield[i];
         } // for
         msg << ".";
-        PYLITH_ERROR_RETURN(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
-    PYLITH_METHOD_RETURN(0);
+    return msg.str();
 } // dbToGravityField
 
 
