@@ -209,7 +209,7 @@ protected:
         // Overwrite component names for control of debugging info at test level.
         GenericComponent::setName("TestFaultKin2D_RigidBlocksStatic");
         journal::debug_t debug(GenericComponent::getName());
-        debug.activate(); // DEBUGGING
+        //debug.activate(); // DEBUGGING
 
         CPPUNIT_ASSERT(!_data);
         _data = new TestFaultKin_Data();CPPUNIT_ASSERT(_data);
