@@ -43,7 +43,8 @@ class Distributor(PetscComponent, ModuleDistributor):
 
     import pyre.inventory
 
-    partitioner = pyre.inventory.str("partitioner", default="chaco", validator=pyre.inventory.choice(["chaco", "metis", "parmetis", "simple"]))
+    partitioner = pyre.inventory.str("partitioner", default="chaco",
+                                     validator=pyre.inventory.choice(["chaco", "metis", "parmetis", "simple"]))
     partitioner.meta['tip'] = "Name of mesh partitioner."
 
     writePartition = pyre.inventory.bool("write_partition", default=False)
@@ -108,7 +109,7 @@ class Distributor(PetscComponent, ModuleDistributor):
         self._loggingPrefix = "Dist "
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
-        logger.className("FE Distribution")
+        logger.setClassName("FE Distribution")
         logger.initialize()
         events = ["distribute"]
         for event in events:

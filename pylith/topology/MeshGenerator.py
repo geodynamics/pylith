@@ -111,7 +111,7 @@ class MeshGenerator(PetscComponent):
 
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
-        logger.className("Mesh Generator")
+        logger.setClassName("Mesh Generator")
         logger.initialize()
 
         events = ["create",

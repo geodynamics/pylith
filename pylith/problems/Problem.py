@@ -256,7 +256,7 @@ class Problem(PetscComponent, ModuleProblem):
 
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
-        logger.className("Problem")
+        logger.setClassName("Problem")
         logger.initialize()
 
         self._eventLogger = logger
