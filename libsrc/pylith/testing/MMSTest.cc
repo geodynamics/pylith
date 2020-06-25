@@ -43,6 +43,7 @@ pylith::testing::MMSTest::setUp(void) {
     _jacobianConvergenceRate = 0.0;
     _isJacobianLinear = false;
     _disableFiniteDifferenceCheck = false;
+    _allowZeroResidual = false;
 } // setUp
 
 
@@ -117,15 +118,20 @@ pylith::testing::MMSTest::testResidual(void) {
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
     if (debug.state()) {
-        _solution->view("Solution field", pylith::topology::Field::VIEW_LAYOUT);
+        _solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
     const PylithReal tolerance = -1.0;
     PylithReal norm = 0.0;
     err = DMSNESCheckResidual(_problem->getPetscSNES(), _problem->getPetscDM(), _solution->scatterVector("mmstest"),
                               tolerance, &norm);CPPUNIT_ASSERT(!err);
-    CPPUNIT_ASSERT_MESSAGE("L2 normal of residual is exactly zero, which suggests suspicious case with all residuals "
-                           "entries exactly zero.", norm > 0.0);
+    if (debug.state()) {
+        _solution->view("Solution field");
+    } // if
+    if (!_allowZeroResidual) {
+        CPPUNIT_ASSERT_MESSAGE("L2 normal of residual is exactly zero, which suggests suspicious case with all residuals "
+                               "entries exactly zero.", norm > 0.0);
+    } // if
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of F(s) - G(s) == 0 failed.", 0.0, norm, 1.0e-10);
 
     PYLITH_METHOD_END;
@@ -182,14 +188,14 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
 
     journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_display", "::ascii_info_detail");CPPUNIT_ASSERT(!err);
+        err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", "::ascii_info_detail");CPPUNIT_ASSERT(!err);
     } // if
     err = PetscOptionsSetValue(NULL, "-snes_test_jacobian", "1.0e-6");CPPUNIT_ASSERT(!err);
     err = PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false");CPPUNIT_ASSERT(!err);
     err = SNESSetFromOptions(_problem->getPetscSNES());CPPUNIT_ASSERT(!err);
     _problem->solve();
     err = PetscOptionsClearValue(NULL, "-snes_test_jacobian");CPPUNIT_ASSERT(!err);
-    err = PetscOptionsClearValue(NULL, "-snes_test_jacobian_display");CPPUNIT_ASSERT(!err);
+    err = PetscOptionsClearValue(NULL, "-snes_test_jacobian_view");CPPUNIT_ASSERT(!err);
 
     PYLITH_METHOD_END;
 } // testJacobianFiniteDiff
@@ -211,6 +217,7 @@ pylith::testing::MMSTest::_initialize(void) {
 
     _problem->initialize();
     _setExactSolution();
+    _problem->prestep();
 
     // Global vector to use for solution in MMS tests.
     _solution->createScatter(_solution->mesh(), "mmstest");

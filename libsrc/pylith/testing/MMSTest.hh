@@ -95,6 +95,7 @@ protected:
     PylithReal _jacobianConvergenceRate; ///< Expected convergence rate for Jacobiab (when not linear).
     bool _isJacobianLinear; ///< Jacobian is should be linear.
     bool _disableFiniteDifferenceCheck; ///< Flag to indicate not to perform finite-difference check of Jacobian.
+    bool _allowZeroResidual; ///< Allow residual to be exactly zero.
 
 }; // MMSTest
 
