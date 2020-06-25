@@ -72,7 +72,7 @@ RUN mkdir -p ${PETSC_DIR}
 RUN git clone --branch knepley/pylith --single-branch https://gitlab.com/petsc/petsc.git ${PETSC_DIR}
 WORKDIR ${PETSC_DIR}
 
-RUN ./configure --download-chaco=1 --download-ml=1 --download-f2cblaslapack=1 --with-hdf5=1 --with-hdf5-include=${HDF5_INCDIR} --with-hdf5-lib=${HDF5_LIBDIR}/lib/libhdf5.so --with-zlib=1 --LIBS=-lz --with-debugging=1 --with-fc=0 --with-64-bit-points=1 --with-large-file-io=1 CPPFLAGS="-I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" CFLAGS="-g -O" && make -j$(nproc) && make check
+RUN python2 ./configure --download-chaco=1 --download-ml=1 --download-f2cblaslapack=1 --with-hdf5=1 --with-hdf5-include=${HDF5_INCDIR} --with-hdf5-lib=${HDF5_LIBDIR}/lib/libhdf5.so --with-zlib=1 --LIBS=-lz --with-debugging=1 --with-fc=0 --with-64-bit-points=1 --with-large-file-io=1 CPPFLAGS="-I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" CFLAGS="-g -O" && make -j$(nproc) && make check
 
 
 # ------------------------------------------------------------------------------
