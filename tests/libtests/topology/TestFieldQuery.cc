@@ -36,12 +36,12 @@ const double pylith::topology::TestFieldQuery::FILL_VALUE = -999.0;
 namespace pylith {
     namespace topology {
         namespace _TestFieldQuery {
-            PetscErrorCode
+            std::string
             converter(PylithScalar valueSubfield[],
                       const PylithInt numComponents,
                       const pylith::scalar_array dbValues,
                       const pylith::int_array dbIndices) {
-                return 0;
+                return std::string("Hello");
             }
 
 
