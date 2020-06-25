@@ -209,7 +209,7 @@ protected:
         // Overwrite component names for control of debugging info at test level.
         GenericComponent::setName("TestFaultKin2D_RigidBlocksStatic");
         journal::debug_t debug(GenericComponent::getName());
-        //debug.activate(); // DEBUGGING
+        // debug.activate(); // DEBUGGING
 
         CPPUNIT_ASSERT(!_data);
         _data = new TestFaultKin_Data();CPPUNIT_ASSERT(_data);
@@ -447,7 +447,7 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP4 :
     } // setUp
 
 }; // TestFaultKin2D_RigidBlocksStatic_TriP4
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP4);
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP4);
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ1 :
@@ -583,6 +583,6 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ4 :
     } // setUp
 
 }; // TestFaultKin2D_RigidBlocksStatic_QuadQ4
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ4);
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ4);
 
 // End of file
