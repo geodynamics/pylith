@@ -19,7 +19,7 @@ SimpleGridDB {
   value-names = viscosity viscous_strain_xx viscous_strain_yy viscous_strain_zz viscous_strain_xy viscous_strain_yz viscous_strain_xz total_strain_xx total_strain_yy total_strain_zz total_strain_xy total_strain_yz total_strain_xz
   value-units = Pa*s none none none none none none none none none none none none
   cs-data = geographic {
-    crs-string = +proj=tmerc +datum=WGS84 +lon_0=-122.6765 +lat_0=45.5231 +k=0.9996 +units=km
+    crs-string = +proj=tmerc +datum=WGS84 +lon_0=-122.6765 +lat_0=45.5231 +k=0.9996 +units=km +vunits=km
   } // cs-data
 }
 
@@ -30,10 +30,10 @@ SimpleGridDB {
 0.0
 
 // z coordinates
-0.0  -20.0  -30.0  -100.0  -400.01
+0.01  -20.0  -30.0  -100.0  -400.01
 
 // z  viscosity viscous_strain_xx viscous_strain_yy viscous_strain_zz viscous_strain_xy viscous_strain_yz viscous_strain_xz total_strain_xx total_strain_yy total_strain_zz total_strain_xy total_strain_yz total_strain_xz
-0.0  0.0     0.0    1.0e+22 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+0.0  0.0     0.01   1.0e+22 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
 0.0  0.0   -20.0    1.0e+21 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
 0.0  0.0   -30.0    4.0e+20 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
 0.0  0.0  -100.0    2.0e+20 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0

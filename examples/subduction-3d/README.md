@@ -121,8 +121,8 @@ To run this example:
 #    - fault_slabtop_slowslip.timedb
 cd spatialdb && ./generate_slowslip.py
 # Change back to the subduction directory and run PyLith
-$ cd ..
-$ pylith step06_slowslip.cfg mat_elastic.cfg solver_fieldsplit.cfg
+cd ..
+pylith step06_slowslip.cfg mat_elastic.cfg solver_fieldsplit.cfg
 ```
 
 
