@@ -1556,15 +1556,12 @@ pylith::fekernels::IsotropicLinearGenMaxwell3D::deviatoricStress(const PylithInt
     const PylithInt numAVis = 3; // Number passed on to visStrain kernel.
     const PylithInt aOffVis[3] = { aOff[i_maxwellTime], aOff[i_viscousStrain],
                                    aOff[i_totalStrain] };
-    const PylithInt aOffVis_x[3] = { aOff_x[i_maxwellTime], aOff_x[i_viscousStrain],
-                                     aOff_x[i_totalStrain] };
 
     PylithScalar visStrainTpdt[18] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // Viscous strain tensor.
 
-    computeViscousStrain(_dim, _numS, numAVis, sOffDisp, sOffDisp_x, s, s_t, s_x,
-                         aOffVis, aOffVis_x, a, a_t, a_x,
+    computeViscousStrain(_dim, _numS, numAVis, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffVis, NULL, a, a_t, NULL,
                          t, x, numConstants, constants, visStrainTpdt);
 
     // Shear modulus ratio factors.
@@ -1697,13 +1694,12 @@ pylith::fekernels::IsotropicLinearGenMaxwell3D::deviatoricStress_refstate(const 
     // Viscous strain.
     const PylithInt numAVis = 3; // Number passed on to visStrain kernel.
     const PylithInt aOffVis[3] = { aOff[i_maxwellTime], aOff[i_viscousStrain], aOff[i_totalStrain] };
-    const PylithInt aOffVis_x[3] = { aOff_x[i_maxwellTime], aOff_x[i_viscousStrain], aOff_x[i_totalStrain] };
 
     PylithScalar visStrainTpdt[18] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // Viscous strain tensor.
 
-    computeViscousStrain(_dim, _numS, numAVis, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffVis, aOffVis_x, a, a_t, a_x,
+    computeViscousStrain(_dim, _numS, numAVis, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffVis, NULL, a, a_t, NULL,
                          t, x, numConstants, constants, visStrainTpdt);
 
     // Compute reference deviatoric values.
@@ -1946,7 +1942,7 @@ pylith::fekernels::IsotropicLinearGenMaxwell3D::updateTotalStrain(const PylithIn
 #endif
 
     assert(_dim == dim);
-    assert(numS >= 3);
+    assert(numS >= 1);
     assert(sOff_x);
     assert(sOff_x[i_disp] >= 0);
     assert(s_x);
