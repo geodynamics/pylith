@@ -39,9 +39,10 @@ class GenerateDB(object):
         Generate the database.
         """
         # Domain
-        x = numpy.arange(-4000.0, 4000.1, 2000.0)
-        y = numpy.arange(-4000.0, 4000.1, 2000.0)
-        z = numpy.arange(-8000.0, 0.1, 2000.0)
+        # Extend beyond mesh boundaries to avoid problems with linear interpolations.
+        x = numpy.arange(-6000.0, 6000.1, 2000.0)
+        y = numpy.arange(-6000.0, 6000.1, 2000.0)
+        z = numpy.arange(-10000.0, 2000.1, 2000.0)
         (x3, y3, z3) = numpy.meshgrid(x, y, z)
         nptsX = x.shape[0]
         nptsY = y.shape[0]
@@ -79,9 +80,6 @@ class GenerateDB(object):
 
         from spatialdata.spatialdb.SimpleGridAscii import SimpleGridAscii
         io = SimpleGridAscii()
-        io.inventory.filename = "axialstrain_genmaxwell_disp.spatialdb"
-        io._configure()
-        io.write(data)
         io.inventory.filename = "axialstrain_genmaxwell_bc.spatialdb"
         io._configure()
         io.write(data)

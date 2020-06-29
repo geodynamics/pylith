@@ -173,7 +173,11 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         disp = numpy.zeros((numSteps, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[:, :, 2] = numpy.dot(ezz.reshape(numSteps, 1), (locs[:, 0] + 8000.0).reshape(1, npts))
+        disp[:, :, 2] = numpy.dot(ezz.reshape(numSteps, 1), (locs[:, 2] + 8000.0).reshape(1, npts))
+        above = numpy.where(locs[:,2] > -0.1)
+        below = numpy.where(locs[:,2] < -7999.9)
+        disp[:, above, 2] = U0
+        disp[:, below, 2] = 0.0
         return disp
 
     def initial_displacement(self, locs):
@@ -182,7 +186,11 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[0, :, 2] = e0*(locs[:, 2] + 4000.0).reshape(1, npts)
+        disp[0, :, 2] = e0*(locs[:, 2] + 8000.0).reshape(1, npts)
+        above = numpy.where(locs[:,2] > -0.1)
+        below = numpy.where(locs[:,2] < -7999.9)
+        disp[0, above, 2] = U0
+        disp[0, below, 2] = 0.0
         return disp
 
     def density(self, locs):

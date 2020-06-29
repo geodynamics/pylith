@@ -39,9 +39,6 @@
 # Tz(x,y,0) = T0
 
 import numpy
-# import pdb
-
-# pdb.set_trace()
 
 # Physical properties.
 p_density = 2500.0
