@@ -116,7 +116,7 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
         ModuleNeumannTimeDependent.useRate(self, self.useRate)
         ModuleNeumannTimeDependent.useTimeHistory(self, self.useTimeHistory)
         if not isinstance(self.dbTimeHistory, NullComponent):
-            ModuleNeumannTimeDependent.dbTimeHistory(self.dbTimeHistory)
+            ModuleNeumannTimeDependent.setTimeHistoryDB(self, self.dbTimeHistory)
         return
 
     def _configure(self):
