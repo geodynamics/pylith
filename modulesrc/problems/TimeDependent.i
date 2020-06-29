@@ -93,6 +93,18 @@ public:
              */
             double getInitialTimeStep(void) const;
 
+	    /** Set formulation for solving equation.
+	     *
+	     * @param[in] value Formulation type.
+	     */
+	    void setFormulation(const FormulationTypeEnum value);
+
+	    /** Get formulation for solving equation.
+	     *
+	     * @returns Formulation type.
+	     */
+	    FormulationTypeEnum getFormulation(void) const;
+	  
             /** Set initial conditions.
              *
              * @param[in] ic Array of initial conditions.

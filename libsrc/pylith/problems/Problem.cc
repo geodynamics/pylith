@@ -595,7 +595,8 @@ pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
         _integrators[i]->computeLHSJacobianLumpedInv(_jacobianLHSLumpedInv, t, dt, s_tshift, *_solution);
     } // for
 
-    // No need to assemble inverse of lumped Jacobian across processes, because it contributes to residual.
+    // Insert values into global vector.
+    _jacobianLHSLumpedInv->scatterLocalToContext("global");
 
     PYLITH_METHOD_END;
 } // computeLHSJacobianLumpedInv

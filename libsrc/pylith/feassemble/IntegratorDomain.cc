@@ -342,7 +342,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
     err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
     PetscVec vecRowSum = NULL;
-    err = DMGetGlobalVector(dmSoln, &vecRowSum);PYLITH_CHECK_ERROR(err);
+    err = DMGetLocalVector(dmSoln, &vecRowSum);PYLITH_CHECK_ERROR(err);
     err = VecSet(vecRowSum, 1.0);PYLITH_CHECK_ERROR(err);
 
     // Compute the local Jacobian action

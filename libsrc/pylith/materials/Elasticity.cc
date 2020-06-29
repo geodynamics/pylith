@@ -437,7 +437,7 @@ pylith::materials::Elasticity::_setKernelsLHSJacobian(pylith::feassemble::Integr
         const PetscPointJac Jf2vu = NULL;
         const PetscPointJac Jf3vu = NULL;
 
-        const PetscPointJac Jf0vv = (_useInertia) ? pylith::fekernels::DispVel::Jf0uu_stshift : NULL;
+        const PetscPointJac Jf0vv = (_useInertia) ? pylith::fekernels::Elasticity::Jf0vv : NULL;
         const PetscPointJac Jf1vv = NULL;
         const PetscPointJac Jf2vv = NULL;
         const PetscPointJac Jf3vv = NULL;

@@ -185,6 +185,27 @@ pylith::problems::TimeDependent::getInitialTimeStep(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Set formulation for solving equation.
+void
+pylith::problems::TimeDependent::setFormulation(const FormulationTypeEnum value) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("setFormulation(value="<<value<<")");
+
+    _formulationType = value;
+
+    PYLITH_METHOD_END;
+} // setFormulation
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get formulation for solving equation.
+pylith::problems::TimeDependent::FormulationTypeEnum
+pylith::problems::TimeDependent::getFormulation(void) const {
+    return _formulationType;
+} // getFormulation
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set initial conditions.
 void
 pylith::problems::TimeDependent::setInitialCondition(pylith::problems::InitialCondition* ic[],
@@ -285,11 +306,12 @@ pylith::problems::TimeDependent::initialize(void) {
     const pylith::topology::Mesh& mesh = _solution->mesh();
     err = TSCreate(mesh.comm(), &_ts);PYLITH_CHECK_ERROR(err);assert(_ts);
     err = TSSetType(_ts, TSBEULER);PYLITH_CHECK_ERROR(err); // Backward Euler is default time stepping method.
-    err = TSSetEquationType(_ts, TS_EQ_IMPLICIT);PYLITH_CHECK_ERROR(err);
+    // err = TSSetEquationType(_ts, TS_EQ_EXPLICIT);PYLITH_CHECK_ERROR(err);
     err = TSSetExactFinalTime(_ts, TS_EXACTFINALTIME_STEPOVER);PYLITH_CHECK_ERROR(err); // Ok to step over final time.
     err = TSSetFromOptions(_ts);PYLITH_CHECK_ERROR(err);
     err = TSSetApplicationContext(_ts, (void*)this);PYLITH_CHECK_ERROR(err);
 
+#if 0
     TSEquationType eqType = TS_EQ_UNSPECIFIED;
     err = TSGetEquationType(_ts, &eqType);PYLITH_CHECK_ERROR(err);
     switch (eqType) {
@@ -320,6 +342,7 @@ pylith::problems::TimeDependent::initialize(void) {
         PYLITH_COMPONENT_DEBUG("Unknown PETSc time stepping equation type.");
         throw std::logic_error("Unknown PETSc time stepping equation type.");
     } // switch
+#endif
 
     // Set time stepping paramters.
     switch (getSolverType()) {
@@ -513,7 +536,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
         problem->Problem::computeLHSJacobianLumpedInv(t, dt, s_tshift, solutionVec);
 
         assert(problem->_jacobianLHSLumpedInv);
-        err = VecPointwiseMult(residualVec, problem->_jacobianLHSLumpedInv->localVector(), residualVec);PYLITH_CHECK_ERROR(err);
+        err = VecPointwiseMult(residualVec, problem->_jacobianLHSLumpedInv->scatterVector("global"), residualVec);PYLITH_CHECK_ERROR(err);
     } // if
 
     PYLITH_METHOD_RETURN(0);

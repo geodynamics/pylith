@@ -44,6 +44,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
       - *start_time* Start time for problem.
       - *end_time* End time for problem.
       - *max_timesteps* Maximum number of time steps.
+      - *formulation* Formulation for equation ('implicit' or 'explicit').
 
     Facilities
       - *initial_conditions* Initial conditions for problem.
@@ -65,11 +66,15 @@ class TimeDependent(Problem, ModuleTimeDependent):
     startTime.meta['tip'] = "Start time for problem."
 
     endTime = pyre.inventory.dimensional("end_time", default=0.1 * year,
-                                           validator=pyre.inventory.greaterEqual(0.0 * year))
+                                         validator=pyre.inventory.greaterEqual(0.0 * year))
     endTime.meta['tip'] = "End time for problem."
 
     maxTimeSteps = pyre.inventory.int("max_timesteps", default=20000, validator=pyre.inventory.greater(0))
     maxTimeSteps.meta['tip'] = "Maximum number of time steps."
+
+    formulation = pyre.inventory.str("formulation", default="implicit",
+                                     validator=pyre.inventory.choice(["implicit", "explicit"]))
+    formulation.meta['tip'] = "Formulation for equation."
 
     ic = pyre.inventory.facilityArray("ic", itemFactory=icFactory, factory=EmptyBin)
     ic.meta['tip'] = "Initial conditions."
@@ -107,6 +112,13 @@ class TimeDependent(Problem, ModuleTimeDependent):
         ModuleTimeDependent.setEndTime(self, self.endTime.value)
         ModuleTimeDependent.setInitialTimeStep(self, self.dtInitial.value)
         ModuleTimeDependent.setMaxTimeSteps(self, self.maxTimeSteps)
+        if self.formulation == "implicit":
+            formulationType = self.IMPLICIT
+        elif self.formulation == "explicit":
+            formulationType = self.EXPLICIT
+        else:
+            raise ValueError("Unknown fornulation '{}'.".format(self.formulation))
+        ModuleTimeDependent.setFormulation(self, formulationType)
         ModuleTimeDependent.setShouldNotifyIC(self, self.shouldNotifyIC)
 
         # Preinitialize initial conditions.
