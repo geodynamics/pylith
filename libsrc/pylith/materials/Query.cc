@@ -329,9 +329,9 @@ pylith::materials::_Query::vmToGeneralizedMaxwellTimes(PylithScalar valueSubfiel
     const PylithScalar viscosity1 = dbValues[dbIndices[i_viscosity+0]];
     const PylithScalar viscosity2 = dbValues[dbIndices[i_viscosity+1]];
     const PylithScalar viscosity3 = dbValues[dbIndices[i_viscosity+2]];
-    const PylithScalar shearModulusRatio1 = dbValues[i_shearModulusRatio+0];
-    const PylithScalar shearModulusRatio2 = dbValues[i_shearModulusRatio+1];
-    const PylithScalar shearModulusRatio3 = dbValues[i_shearModulusRatio+2];
+    const PylithScalar shearModulusRatio1 = dbValues[dbIndices[i_shearModulusRatio+0]];
+    const PylithScalar shearModulusRatio2 = dbValues[dbIndices[i_shearModulusRatio+1]];
+    const PylithScalar shearModulusRatio3 = dbValues[dbIndices[i_shearModulusRatio+2]];
 
     const PylithScalar shearModulus = density * vs * vs;
 
@@ -408,9 +408,9 @@ pylith::materials::_Query::vmToGeneralizedMaxwellShearModulusRatios(PylithScalar
 
     const size_t i_shearModulusRatio = 0;assert(dbIndices[i_shearModulusRatio+2] < dbValues.size());
 
-    const PylithScalar shearModulusRatio1 = valueSubfield[0] = dbValues[i_shearModulusRatio+0];
-    const PylithScalar shearModulusRatio2 = valueSubfield[1] = dbValues[i_shearModulusRatio+1];
-    const PylithScalar shearModulusRatio3 = valueSubfield[2] = dbValues[i_shearModulusRatio+2];
+    const PylithScalar shearModulusRatio1 = valueSubfield[0] = dbValues[dbIndices[i_shearModulusRatio+0]];
+    const PylithScalar shearModulusRatio2 = valueSubfield[1] = dbValues[dbIndices[i_shearModulusRatio+1]];
+    const PylithScalar shearModulusRatio3 = valueSubfield[2] = dbValues[dbIndices[i_shearModulusRatio+2]];
 
     bool valuesOkay = true;
     std::ostringstream msg;
