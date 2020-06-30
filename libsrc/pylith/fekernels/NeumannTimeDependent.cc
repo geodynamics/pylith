@@ -315,7 +315,7 @@ pylith::fekernels::NeumannTimeDependent::g0_timeHistory_vector(const PylithInt d
         const PylithInt _dim = 2;
         const PylithScalar tanDir[2] = {-n[1], n[0] };
         for (PylithInt i = 0; i < _dim; ++i) {
-            g0[i] += a[i_amplitude] * (a[i_value+0]*tanDir[i] + a[i_value+1]*n[i]);
+            g0[i] += a[i_value] * (a[i_amplitude+0]*tanDir[i] + a[i_amplitude+1]*n[i]);
         } // for
         break;
     } // case 2
@@ -327,7 +327,7 @@ pylith::fekernels::NeumannTimeDependent::g0_timeHistory_vector(const PylithInt d
         _tangential_directions(_dim, refDir1, refDir2, n, tanDir1, tanDir2);
 
         for (PylithInt i = 0; i < _dim; ++i) {
-            g0[i] += a[i_amplitude] * (a[i_value+0]*tanDir1[i] + a[i_value+1]*tanDir2[i] + a[i_value+2]*n[i]);
+            g0[i] += a[i_value] * (a[i_amplitude+0]*tanDir1[i] + a[i_amplitude+1]*tanDir2[i] + a[i_amplitude+2]*n[i]);
         } // for
         break;
     } // case 3

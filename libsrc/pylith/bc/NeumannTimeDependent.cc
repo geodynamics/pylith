@@ -29,6 +29,7 @@
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
+#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
@@ -266,6 +267,9 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
         _auxiliaryFactory->addTimeHistoryAmplitude();
         _auxiliaryFactory->addTimeHistoryStartTime();
         _auxiliaryFactory->addTimeHistoryValue();
+        if (_dbTimeHistory) {
+            _dbTimeHistory->open();
+        } // if
     } // _useTimeHistory
 
     auxiliaryField->subfieldsSetup();
@@ -302,10 +306,10 @@ pylith::bc::NeumannTimeDependent::createDerivedField(const pylith::topology::Fie
 // ---------------------------------------------------------------------------------------------------------------------
 // Update auxiliary subfields at beginning of time step.
 void
-pylith::bc::NeumannTimeDependent::prestep(pylith::topology::Field* auxiliaryField,
-                                          const double t) {
+pylith::bc::NeumannTimeDependent::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                                                       const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("prestep(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
+    PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
     if (_useTimeHistory) {
         assert(_normalizer);
@@ -314,7 +318,7 @@ pylith::bc::NeumannTimeDependent::prestep(pylith::topology::Field* auxiliaryFiel
     } // if
 
     PYLITH_METHOD_END;
-} // prestep
+} // updateAuxiliaryField
 
 
 // ---------------------------------------------------------------------------------------------------------------------

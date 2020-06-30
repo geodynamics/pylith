@@ -23,6 +23,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES createLowerDimMesh()
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/problems/Physics.hh" // USES Physics
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
 
 #include "spatialdata/spatialdb/GravityField.hh" // HASA GravityField
@@ -156,6 +157,30 @@ pylith::feassemble::IntegratorBoundary::setKernelsLHSResidual(const std::vector<
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Update at beginning of time step.
+void
+pylith::feassemble::IntegratorBoundary::prestep(const double t,
+                                                const double dt) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<")");
+
+    assert(_physics);
+    _physics->updateAuxiliaryField(_auxiliaryField, t+dt);
+
+    journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        assert(_auxiliaryField);
+        PYLITH_JOURNAL_DEBUG("IntegratorInterface component '" << GenericComponent::getName() << "' for '"
+                                                               <<_physics->getIdentifier()
+                                                               << "': viewing auxiliary field.");
+        _auxiliaryField->view("IntegratorInterface auxiliary field", pylith::topology::Field::VIEW_ALL);
+    } // if
+
+    PYLITH_METHOD_END;
+} // prestep
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Initialize integration domain, auxiliary field, and derived field. Update observers.
 void
 pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field& solution) {
@@ -281,7 +306,7 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
     journal::debug_t debug(_IntegratorBoundary::genericComponent);
     debug << journal::at(__HERE__)
           << "_IntegratorBoundary::computeRHSResidual(residual="<<residual<<", integrator="<<integrator
-          <<", # kernels"<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()
+          <<", # kernels="<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()
           <<", solutionDot="<<solutionDot.getLabel()<<")"
           << journal::endl;
 
