@@ -15,9 +15,9 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests/fullscale/viscoelasticity/nofaults-3d/TestAxialTractionMaxwell.py
+# @file tests/fullscale/viscoelasticity/nofaults-3d/TestAxialStrainGenMaxwell.py
 #
-# @brief Test suite for testing Maxwell material with 3-D axial extension (Neumann BC).
+# @brief Test suite for testing generalized Maxwell material with 3-D axial strain (Dirichlet BC).
 
 import unittest
 
@@ -25,17 +25,16 @@ from pylith.tests.FullTestApp import check_data
 from pylith.tests.FullTestApp import TestCase as FullTestCase
 
 import meshes
-from axialtraction_maxwell_soln import AnalyticalSoln
-from axialtraction_maxwell_gendb import GenerateDB
+from axialstrain_genmaxwell_soln import AnalyticalSoln
+from axialstrain_genmaxwell_gendb import GenerateDB
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
     """
-    Test suite for testing Maxwell material with 3-D axial extension (Neumann BC).
+    Test suite for testing generalized Maxwell material with 3-D axial extension (Dirichlet BC).
     """
-    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_ypos", "bc_yneg", "bc_zneg"]
-    NEUMANN_BOUNDARIES = ["bc_zpos"]
+    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_ypos", "bc_yneg", "bc_zneg", "bc_zpos"]
 
     def setUp(self):
         """
@@ -56,7 +55,7 @@ class TestCase(FullTestCase):
         return
 
     def test_material_info(self):
-        vertexFields = ["density", "bulk_modulus", "shear_modulus", "maxwell_time"]
+        vertexFields = ["density", "bulk_modulus", "shear_modulus", "shear_modulus_ratio", "maxwell_time"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
             check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields)
@@ -84,39 +83,24 @@ class TestCase(FullTestCase):
             check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
         return
 
-    def test_bcneumann_info(self):
-        vertexFields = ["initial_amplitude"]
-        for bc in self.NEUMANN_BOUNDARIES:
-            self.exactsoln.key = bc
-            filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
-        return
-
-    def test_bcneumann_solution(self):
-        vertexFields = ["displacement"]
-        for bc in self.NEUMANN_BOUNDARIES:
-            filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
-        return
-
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestHex(TestCase, meshes.Hex):
-    NAME = "axialtraction_maxwell_hex"
+    NAME = "axialstrain_genmaxwell_hex"
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["axialtraction_maxwell.cfg", "axialtraction_maxwell_hex.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["axialstrain_genmaxwell.cfg", "axialstrain_genmaxwell_hex.cfg"])
         return
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestTet(TestCase, meshes.Tet):
-    NAME = "axialtraction_maxwell_tet"
+    NAME = "axialstrain_genmaxwell_tet"
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["axialtraction_maxwell.cfg", "axialtraction_maxwell_tet.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["axialstrain_genmaxwell.cfg", "axialstrain_genmaxwell_tet.cfg"])
         return
 
 

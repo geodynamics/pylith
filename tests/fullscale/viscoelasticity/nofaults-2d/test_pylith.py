@@ -18,8 +18,6 @@
 from pylith.tests.FullTestApp import TestDriver, TestCase
 
 import unittest
-# import pdb
-
 
 class TestApp(TestDriver):
     """
@@ -41,6 +39,10 @@ class TestApp(TestDriver):
 
         import TestAxialTractionMaxwell
         for test in TestAxialTractionMaxwell.test_cases():
+            suite.addTest(unittest.makeSuite(test))
+
+        import TestAxialStrainGenMaxwell
+        for test in TestAxialStrainGenMaxwell.test_cases():
             suite.addTest(unittest.makeSuite(test))
 
         return suite

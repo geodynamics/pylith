@@ -30,7 +30,7 @@ class Tri(object):
         "nvertices": 92,
     }
     MATERIALS = {
-        "maxwell": {
+        "viscomat": {
             "ncells": 150,
             "ncorners": 3,
             "nvertices": 92,
@@ -70,7 +70,7 @@ class Quad(object):
         "nvertices": 81,
     }
     MATERIALS = {
-        "maxwell": {
+        "viscomat": {
             "ncells": 64,
             "ncorners": 4,
             "nvertices": 81,

@@ -13,30 +13,27 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests/fullscale/viscoelasticity/nofaults-3d/axialtraction_maxwell_soln.py
+# @file tests/fullscale/viscoelasticity/nofaults-2d/axialstrain_genmaxwell_soln.py
 #
-# @brief Analytical solution to axial traction problem for a Maxwell viscoelastic material.
+# @brief Analytical solution to axial strain relaxation problem for a generalized Maxwell viscoelastic material.
 #
-# 3-D axial traction solution for linear Maxwell viscoelastic material.
+# 2-D axial strain solution for linear generalized Maxwell viscoelastic material.
 #
-#             Tz=T0
+#             Uy=0
 #          ----------
 #          |        |
-# Ux=0     |        |  Ux=0
+# Ux=0     |        |  Ux=U0
 #          |        |
 #          |        |
 #          ----------
-#            Uz=0
+#            Uy=0
 #
 # Dirichlet boundary conditions
-# Ux(-4000,y,z) = 0
-# Ux(+4000,y,z) = 0
-# Uy(x,-4000,z) = 0
-# Uy(x,+4000,z) = 0
-# Uz(x,y,-8000) = 0
+# Ux(-4000,y) = 0
+# Ux(+4000,y) = U0
+# Uy(x,-4000) = 0
+# Uy(x,+4000) = 0
 #
-# Neumann boundary conditions
-# Tz(x,y,0) = T0
 
 import numpy
 
@@ -44,12 +41,25 @@ import numpy
 p_density = 2500.0
 p_vs = 3464.1016
 p_vp = 6000.0
-p_viscosity = 9.46728e17
+p_viscosity_1 = 9.46728e17
+p_viscosity_2 = 4.73364e17
+p_viscosity_3 = 1.893456e18
+p_shear_ratio_1 = 0.25
+p_shear_ratio_2 = 0.25
+p_shear_ratio_3 = 0.25
 
+# Applied displacement.
+U0 = 1.0
+
+# Derived properties.
 p_mu = p_density*p_vs*p_vs
 p_lambda = p_density*p_vp*p_vp - 2.0*p_mu
 p_youngs = p_mu*(3.0*p_lambda + 2.0*p_mu)/(p_lambda + p_mu)
 p_poissons = 0.5*p_lambda/(p_lambda + p_mu)
+p_shear_ratio_0 = 1.0 - p_shear_ratio_1 - p_shear_ratio_2 - p_shear_ratio_3
+p_tau_1 = p_viscosity_1/(p_mu*p_shear_ratio_1)
+p_tau_2 = p_viscosity_2/(p_mu*p_shear_ratio_2)
+p_tau_3 = p_viscosity_3/(p_mu*p_shear_ratio_3)
 
 # Time information.
 year = 60.0*60.0*24.0*365.25
@@ -59,49 +69,57 @@ endTime = 1.0*year
 numSteps = 40
 timeArray = numpy.linspace(startTime, endTime, num=numSteps, dtype=numpy.float64)
 
-# Uniform stress field (plane strain).
-T0 = -1.0e7
-szz = T0*numpy.ones(numSteps, dtype=numpy.float64)
-timeFac = numpy.exp(-p_youngs*timeArray/(6.0*p_viscosity*(1.0 - p_poissons)))
-poisFac = (2.0*p_poissons - 1.0)/(1.0 - p_poissons)
-sxx = T0*(1.0 + poisFac*timeFac)
-syy = T0*(1.0 + poisFac*timeFac)
-sxy = numpy.zeros(numSteps, dtype=numpy.float64)
-syz = numpy.zeros(numSteps, dtype=numpy.float64)
-sxz = numpy.zeros(numSteps, dtype=numpy.float64)
-
-# Deviatoric stress.
-meanStress = (sxx + syy + szz)/3.0
-sDevxx = sxx - meanStress
-sDevyy = syy - meanStress
-sDevzz = szz - meanStress
-
-# Uniform strain field.
-exx = numpy.zeros(numSteps, dtype=numpy.float64)
+# Uniform strain field (plane strain).
+e0 = U0/8000.0
+exx = e0*numpy.ones(numSteps, dtype=numpy.float64)
 eyy = numpy.zeros(numSteps, dtype=numpy.float64)
-ezz = T0*(1.0 - 2.0*p_poissons)*(3.0 + 2.0*poisFac*timeFac)/p_youngs
+ezz = numpy.zeros(numSteps, dtype=numpy.float64)
 exy = numpy.zeros(numSteps, dtype=numpy.float64)
-eyz = numpy.zeros(numSteps, dtype=numpy.float64)
-exz = numpy.zeros(numSteps, dtype=numpy.float64)
 
-# outArray = numpy.column_stack((timeArray, syy, ezz))
-# numpy.savetxt('axialtraction_maxwell_analytical.txt', outArray)
+# Deviatoric strains.
+eMean = (exx + eyy + ezz)/3.0
+eDevxx = exx - eMean
+eDevyy = eyy - eMean
+eDevzz = ezz - eMean
+eDevxy = exy
 
-# Get viscous strains from deviatoric stress.
-eVisxx = 0.5*sDevxx/p_mu
-eVisyy = 0.5*sDevyy/p_mu
-eViszz = 0.5*sDevzz/p_mu
-eVisxy = 0.5*sxy/p_mu
-eVisyz = 0.5*syz/p_mu
-eVisxz = 0.5*sxz/p_mu
+# Deviatoric stresses.
+timeFac1 = numpy.exp(-timeArray/p_tau_1)
+timeFac2 = numpy.exp(-timeArray/p_tau_2)
+timeFac3 = numpy.exp(-timeArray/p_tau_3)
+sDevxx = 2.0*p_mu*eDevxx*(p_shear_ratio_0 + p_shear_ratio_1*timeFac1 + p_shear_ratio_2*timeFac2 + p_shear_ratio_3*timeFac3)
+sDevyy = 2.0*p_mu*eDevyy*(p_shear_ratio_0 + p_shear_ratio_1*timeFac1 + p_shear_ratio_2*timeFac2 + p_shear_ratio_3*timeFac3)
+sDevzz = 2.0*p_mu*eDevzz*(p_shear_ratio_0 + p_shear_ratio_1*timeFac1 + p_shear_ratio_2*timeFac2 + p_shear_ratio_3*timeFac3)
+sDevxy = numpy.zeros_like(sDevxx)
+
+# Total stresses.
+sMean = e0*(3.0*p_lambda + 2.0*p_mu)/3.0
+sxx = sDevxx + sMean
+syy = sDevyy + sMean
+szz = sDevzz + sMean
+sxy = sDevxy
+
+# Get viscous strains from initial deviatoric strains (strain rate = 0).
+eVisxx_1 = eDevxx*timeFac1
+eVisyy_1 = eDevyy*timeFac1
+eViszz_1 = eDevzz*timeFac1
+eVisxy_1 = eDevxy
+eVisxx_2 = eDevxx*timeFac2
+eVisyy_2 = eDevyy*timeFac2
+eViszz_2 = eDevzz*timeFac2
+eVisxy_2 = eDevxy
+eVisxx_3 = eDevxx*timeFac3
+eVisyy_3 = eDevyy*timeFac3
+eViszz_3 = eDevzz*timeFac3
+eVisxy_3 = eDevxy
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
     """
     Analytical solution to axial extension problem.
     """
-    SPACE_DIM = 3
-    TENSOR_SIZE = 6
+    SPACE_DIM = 2
+    TENSOR_SIZE = 4
 
     def __init__(self):
         self.fields = {
@@ -109,6 +127,7 @@ class AnalyticalSoln(object):
             "density": self.density,
             "shear_modulus": self.shear_modulus,
             "bulk_modulus": self.bulk_modulus,
+            "shear_modulus_ratio": self.shear_modulus_ratio,
             "maxwell_time": self.maxwell_time,
             "cauchy_strain": self.strain,
             "cauchy_stress": self.stress,
@@ -116,11 +135,9 @@ class AnalyticalSoln(object):
             "initial_amplitude": {
                 "bc_xneg": self.initial_displacement,
                 "bc_yneg": self.initial_displacement,
-                "bc_zneg": self.initial_displacement,
                 "bc_xpos": self.initial_displacement,
-                "bc_ypos": self.initial_displacement,
-                "bc_zpos": self.initial_traction
-            }
+                "bc_ypos": self.initial_displacement
+                }
         }
         self.key = None
         return
@@ -138,7 +155,7 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         disp = numpy.zeros((numSteps, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[:, :, 2] = numpy.dot(ezz.reshape(numSteps, 1), (locs[:, 2] + 8000.0).reshape(1, npts))
+        disp[:, :, 0] = numpy.dot(exx.reshape(numSteps, 1), (locs[:, 0] + 4000.0).reshape(1, npts))
         return disp
 
     def initial_displacement(self, locs):
@@ -147,16 +164,8 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
+        disp[0, :, 0] = e0*(locs[:, 0] + 4000.0).reshape(1, npts)
         return disp
-
-    def initial_traction(self, locs):
-        """
-        Compute initial traction field at locations.
-        """
-        (npts, dim) = locs.shape
-        traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[:,:,2] = T0
-        return traction
 
     def density(self, locs):
         """
@@ -187,8 +196,22 @@ class AnalyticalSoln(object):
         Compute Maxwell time field at locations.
         """
         (npts, dim) = locs.shape
-        maxwell_time = p_viscosity * numpy.ones((1, npts, 1), dtype=numpy.float64)/p_mu
+        maxwell_time = numpy.zeros((1, npts, 3), dtype=numpy.float64)
+        maxwell_time[0, :, 0] = p_tau_1
+        maxwell_time[0, :, 1] = p_tau_2
+        maxwell_time[0, :, 2] = p_tau_3
         return maxwell_time
+
+    def shear_modulus_ratio(self, locs):
+        """
+        Compute shear modulus ratio field at locations.
+        """
+        (npts, dim) = locs.shape
+        shear_modulus_ratio = numpy.zeros((1, npts, 3), dtype=numpy.float64)
+        shear_modulus_ratio[0, :, 0] = p_shear_ratio_1
+        shear_modulus_ratio[0, :, 1] = p_shear_ratio_2
+        shear_modulus_ratio[0, :, 2] = p_shear_ratio_3
+        return shear_modulus_ratio
 
     def strain(self, locs):
         """
@@ -200,8 +223,6 @@ class AnalyticalSoln(object):
         strain[:, :, 1] = eyy.reshape(numSteps, 1)
         strain[:, :, 2] = ezz.reshape(numSteps, 1)
         strain[:, :, 3] = exy.reshape(numSteps, 1)
-        strain[:, :, 4] = eyz.reshape(numSteps, 1)
-        strain[:, :, 5] = exz.reshape(numSteps, 1)
         return strain
 
     def stress(self, locs):
@@ -214,8 +235,6 @@ class AnalyticalSoln(object):
         stress[:, :, 1] = syy.reshape(numSteps, 1)
         stress[:, :, 2] = szz.reshape(numSteps, 1)
         stress[:, :, 3] = sxy.reshape(numSteps, 1)
-        stress[:, :, 4] = syz.reshape(numSteps, 1)
-        stress[:, :, 5] = sxz.reshape(numSteps, 1)
         return stress
 
     def viscous_strain(self, locs):
@@ -223,13 +242,19 @@ class AnalyticalSoln(object):
         Compute viscous strain field at locations.
         """
         (npts, dim) = locs.shape
-        viscous_strain = numpy.zeros((numSteps, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        viscous_strain[:, :, 0] = eVisxx.reshape(numSteps, 1)
-        viscous_strain[:, :, 1] = eVisyy.reshape(numSteps, 1)
-        viscous_strain[:, :, 2] = eViszz.reshape(numSteps, 1)
-        viscous_strain[:, :, 3] = eVisxy.reshape(numSteps, 1)
-        viscous_strain[:, :, 4] = eVisyz.reshape(numSteps, 1)
-        viscous_strain[:, :, 5] = eVisxz.reshape(numSteps, 1)
+        viscous_strain = numpy.zeros((numSteps, npts, 3*self.TENSOR_SIZE), dtype=numpy.float64)
+        viscous_strain[:, :, 0] = eVisxx_1.reshape(numSteps, 1)
+        viscous_strain[:, :, 1] = eVisyy_1.reshape(numSteps, 1)
+        viscous_strain[:, :, 2] = eViszz_1.reshape(numSteps, 1)
+        viscous_strain[:, :, 3] = eVisxy_1.reshape(numSteps, 1)
+        viscous_strain[:, :, 4] = eVisxx_2.reshape(numSteps, 1)
+        viscous_strain[:, :, 5] = eVisyy_2.reshape(numSteps, 1)
+        viscous_strain[:, :, 6] = eViszz_2.reshape(numSteps, 1)
+        viscous_strain[:, :, 7] = eVisxy_2.reshape(numSteps, 1)
+        viscous_strain[:, :, 8] = eVisxx_3.reshape(numSteps, 1)
+        viscous_strain[:, :, 9] = eVisyy_3.reshape(numSteps, 1)
+        viscous_strain[:, :, 10] = eViszz_3.reshape(numSteps, 1)
+        viscous_strain[:, :, 11] = eVisxy_3.reshape(numSteps, 1)
         return viscous_strain
 
 
