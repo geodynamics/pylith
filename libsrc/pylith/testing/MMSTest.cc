@@ -180,19 +180,22 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
         PYLITH_METHOD_END;
     } // if
 
-    _initialize();
-
-    CPPUNIT_ASSERT(_problem);
-    CPPUNIT_ASSERT(_solution);
     PetscErrorCode err = 0;
+    err = PetscOptionsSetValue(NULL, "-ts_max_snes_failures", "1");CPPUNIT_ASSERT(!err);
+    err = PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false");CPPUNIT_ASSERT(!err);
+    _initialize();
 
     journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
         err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", "::ascii_info_detail");CPPUNIT_ASSERT(!err);
     } // if
     err = PetscOptionsSetValue(NULL, "-snes_test_jacobian", "1.0e-6");CPPUNIT_ASSERT(!err);
-    err = PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false");CPPUNIT_ASSERT(!err);
+    err = PetscOptionsSetValue(NULL, "-snes_error_if_not_converged", "false");CPPUNIT_ASSERT(!err);
     err = SNESSetFromOptions(_problem->getPetscSNES());CPPUNIT_ASSERT(!err);
+
+    CPPUNIT_ASSERT(_problem);
+    CPPUNIT_ASSERT(_solution);
+
     _problem->solve();
     err = PetscOptionsClearValue(NULL, "-snes_test_jacobian");CPPUNIT_ASSERT(!err);
     err = PetscOptionsClearValue(NULL, "-snes_test_jacobian_view");CPPUNIT_ASSERT(!err);
