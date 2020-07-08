@@ -25,23 +25,6 @@ from .bc import DirichletTimeDependent as ModuleDirichletTimeDependent
 from pylith.utils.NullComponent import NullComponent
 
 
-def validateDOF(value):
-    """
-    Validate list of constrained degrees of freedom.
-    """
-    try:
-        size = len(value)
-        num = map(int, value)
-        for v in num:
-            if v < 0:
-                raise ValueError
-    except:
-        raise ValueError, \
-            "'constrained_dof' must be a zero based list of indices of degrees of " \
-            "freedom at a vertex."
-    return num
-
-
 class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
     """
     Python object for managing a time-dependent Dirichlet (prescribed values)
@@ -63,8 +46,8 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
 
     import pyre.inventory
 
-    constrainedDOF = pyre.inventory.list("constrained_dof", default=[], validator=validateDOF)
-    constrainedDOF.meta['tip'] = "Constrained degrees of freedom (0=1st DOF, 1=2nd DOF, etc)."
+    constrainedDOF = pyre.inventory.array("constrained_dof", converter=int, default=[])
+    constrainedDOF.meta['tip'] = "Array of constrained degrees of freedom (0=1st DOF, 1=2nd DOF, etc)."
 
     useInitial = pyre.inventory.bool("use_initial", default=True)
     useInitial.meta['tip'] = "Use initial term in time-dependent expression."
@@ -110,7 +93,7 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
         ModuleDirichletTimeDependent.useRate(self, self.useRate)
         ModuleDirichletTimeDependent.useTimeHistory(self, self.useTimeHistory)
         if not isinstance(self.dbTimeHistory, NullComponent):
-            ModuleDirichletTimeDependent.dbTimeHistory(self.dbTimeHistory)
+            ModuleDirichletTimeDependent.setTimeHistoryDB(self, self.dbTimeHistory)
         return
 
     def verifyConfiguration(self):
@@ -129,6 +112,9 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
         """
         Setup members using inventory.
         """
+        if 0 == len(self.constrainedDOF):
+            raise ValueError("'constrained_dof' must be a zero based integer array of indices corresponding to the "
+                             "constrained degrees of freedom.")
         if self.inventory.useTimeHistory and isinstance(self.inventory.dbTimeHistory, NullComponent):
             raise ValueError(
                 "Missing time history database for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
