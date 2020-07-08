@@ -270,7 +270,7 @@ pylith::fekernels::TimeDependentFn::timeHistory_vector(const PylithInt dim,
     const PylithInt i_value = aOff[2];
 
     for (PylithInt i = 0; i < dim; ++i) {
-        value[0] = a[i_amplitude]*a[i_value];
+        value[i] = a[i_amplitude+i]*a[i_value];
     } // for
 } // timeHistory_vector
 

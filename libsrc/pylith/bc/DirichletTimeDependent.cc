@@ -28,6 +28,7 @@
 
 #include "pylith/fekernels/TimeDependentFn.hh" // USES TimeDependentFn kernels
 
+#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
@@ -282,6 +283,9 @@ pylith::bc::DirichletTimeDependent::createAuxiliaryField(const pylith::topology:
         _auxiliaryFactory->addTimeHistoryAmplitude();
         _auxiliaryFactory->addTimeHistoryStartTime();
         _auxiliaryFactory->addTimeHistoryValue();
+        if (_dbTimeHistory) {
+            _dbTimeHistory->open();
+        } // if
     } // _useTimeHistory
 
     auxiliaryField->subfieldsSetup();

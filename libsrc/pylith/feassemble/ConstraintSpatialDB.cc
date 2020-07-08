@@ -152,10 +152,10 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::topology::Field* so
 
     journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        assert(_auxiliaryField);
         debug << journal::at(__HERE__)
               << "Constraint component '" << GenericComponent::getName() << "' for '"
-              <<_physics->getIdentifier()<<"': viewing solution field." << journal::endl;
+              <<_physics->getIdentifier()<<"''." << journal::endl;
+        _auxiliaryField->view("Auxiliary field", pylith::topology::Field::VIEW_ALL);
         solution->view("Solution field after setting constrained values", pylith::topology::Field::VIEW_ALL);
     } // if
 
