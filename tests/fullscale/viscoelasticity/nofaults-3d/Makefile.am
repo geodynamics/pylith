@@ -23,7 +23,10 @@ dist_noinst_PYTHON = \
 	meshes.py \
 	TestAxialTractionMaxwell.py \
 	axialtraction_maxwell_soln.py \
-	axialtraction_maxwell_gendb.py
+	axialtraction_maxwell_gendb.py \
+	TestAxialStrainGenMaxwell.py \
+	axialstrain_genmaxwell_soln.py \
+	axialstrain_genmaxwell_gendb.py
 
 dist_noinst_DATA = \
 	geometry.jou \
@@ -36,7 +39,11 @@ dist_noinst_DATA = \
 	axialtraction_maxwell.cfg \
 	axialtraction_maxwell_tet.cfg \
 	axialtraction_maxwell_hex.cfg \
-	mat_maxwell.spatialdb
+	mat_maxwell.spatialdb \
+	axialstrain_genmaxwell.cfg \
+	axialstrain_genmaxwell_tet.cfg \
+	axialstrain_genmaxwell_hex.cfg \
+	mat_genmaxwell.spatialdb
 
 noinst_TMP = \
 	axialtraction_maxwell_disp.spatialdb
