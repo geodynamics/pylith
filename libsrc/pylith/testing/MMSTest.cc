@@ -80,7 +80,7 @@ pylith::testing::MMSTest::testDiscretization(void) {
     const size_t numSubfields = subfieldNames.size();
     pylith::real_array error(numSubfields);
     err = DMSNESCheckDiscretization(_problem->getPetscSNES(), _problem->getPetscDM(), _solution->scatterVector("mmstest"),
-                                    NULL, NULL, tolerance, &error[0]);CPPUNIT_ASSERT(!err);
+                                    tolerance, &error[0]);CPPUNIT_ASSERT(!err);
 
     bool fail = false;
     std::ostringstream msg;
