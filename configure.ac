@@ -114,7 +114,7 @@ CIT_HEADER_MPI
 
 # PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.13.2])
+CIT_PATH_PETSC([3.13.3])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -325,7 +325,7 @@ AC_CONFIG_FILES([Makefile
 		examples/3d/Makefile
 		examples/3d/box/Makefile
 		examples/3d/subduction/Makefile
-		examples/bar_shearwave/Makefile
+    examples/bar_shearwave/Makefile
 		examples/meshing/Makefile
 		examples/meshing/surface_nurbs/Makefile
 		examples/meshing/surface_nurbs/dem/Makefile
