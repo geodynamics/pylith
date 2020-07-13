@@ -34,7 +34,8 @@ swig_sources = \
 	KinSrcStep.i \
 	KinSrcConstRate.i \
 	KinSrcBrune.i \
-	KinSrcLiuCos.i
+	KinSrcLiuCos.i \
+	KinSrcTimeHistory.i
 
 swig_generated = \
 	faults_wrap.cxx \

@@ -35,9 +35,9 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::KinSrc::KinSrc(void) :
-    _auxFactory(new pylith::faults::KinSrcAuxiliaryFactory),
+    _auxiliaryFactory(new pylith::faults::KinSrcAuxiliaryFactory),
     _slipFnKernel(NULL),
-    _auxField(NULL),
+    _auxiliaryField(NULL),
     _slipLocalVec(NULL),
     _originTime(0.0) {} // constructor
 
@@ -54,8 +54,8 @@ pylith::faults::KinSrc::~KinSrc(void) {
 void
 pylith::faults::KinSrc::deallocate(void) {
     PetscErrorCode err = VecDestroy(&_slipLocalVec);PYLITH_CHECK_ERROR(err);
-    delete _auxField;_auxField = NULL;
-    delete _auxFactory;_auxFactory = NULL;
+    delete _auxiliaryField;_auxiliaryField = NULL;
+    delete _auxiliaryFactory;_auxiliaryFactory = NULL;
 } // deallocate
 
 
@@ -81,9 +81,9 @@ const pylith::topology::Field&
 pylith::faults::KinSrc::auxField(void) const {
     PYLITH_METHOD_BEGIN;
 
-    assert(_auxField);
+    assert(_auxiliaryField);
 
-    PYLITH_METHOD_RETURN(*_auxField);
+    PYLITH_METHOD_RETURN(*_auxiliaryField);
 } // auxField
 
 
@@ -94,8 +94,8 @@ pylith::faults::KinSrc::auxFieldDB(spatialdata::spatialdb::SpatialDB* value) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("auxFieldDB(value="<<typeid(value).name()<<")");
 
-    assert(_auxFactory);
-    _auxFactory->setQueryDB(value);
+    assert(_auxiliaryFactory);
+    _auxiliaryFactory->setQueryDB(value);
 
     PYLITH_METHOD_END;
 } // auxFieldDB
@@ -111,27 +111,27 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
     PYLITH_COMPONENT_DEBUG("initialize(faultAuxField"<<faultAuxField.getLabel()<<", normalizer, cs="<<typeid(cs).name()<<")");
 
     // Set default discretization of auxiliary subfields to match slip subfield in integrator auxiliary field.
-    assert(_auxFactory);
+    assert(_auxiliaryFactory);
     const pylith::topology::FieldBase::Discretization& discretization = faultAuxField.subfieldInfo("slip").fe;
-    _auxFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder,
-                                           discretization.dimension, discretization.cellBasis, discretization.isBasisContinuous,
-                                           discretization.feSpace);
+    _auxiliaryFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder,
+                                                 discretization.dimension, discretization.cellBasis, discretization.isBasisContinuous,
+                                                 discretization.feSpace);
 
-    delete _auxField;_auxField = new pylith::topology::Field(faultAuxField.mesh());assert(_auxField);
-    _auxField->setLabel("kinsrc auxiliary");
-    _auxFieldSetup(normalizer, cs);
-    _auxField->subfieldsSetup();
-    _auxField->createDiscretization();
-    pylith::topology::FieldOps::checkDiscretization(faultAuxField, *_auxField);
-    _auxField->allocate();
-    _auxField->zeroLocal();
+    delete _auxiliaryField;_auxiliaryField = new pylith::topology::Field(faultAuxField.mesh());assert(_auxiliaryField);
+    _auxiliaryField->setLabel("kinsrc auxiliary");
+    _auxiliaryFieldSetup(normalizer, cs);
+    _auxiliaryField->subfieldsSetup();
+    _auxiliaryField->createDiscretization();
+    pylith::topology::FieldOps::checkDiscretization(faultAuxField, *_auxiliaryField);
+    _auxiliaryField->allocate();
+    _auxiliaryField->zeroLocal();
 
-    _auxFactory->setValuesFromDB();
+    _auxiliaryFactory->setValuesFromDB();
 
     journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
         PYLITH_COMPONENT_DEBUG("Displaying kinematic earthquake source auxiliary field");
-        _auxField->view("KinSrc auxiliary field");
+        _auxiliaryField->view("KinSrc auxiliary field");
     } // if
 
     PetscErrorCode err = DMCreateLocalVector(faultAuxField.dmMesh(), &_slipLocalVec);PYLITH_CHECK_ERROR(err);
@@ -143,16 +143,18 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
 // ----------------------------------------------------------------------
 // Set slip subfield in fault integrator's auxiliary field at time t.
 void
-pylith::faults::KinSrc::slip(pylith::topology::Field* const faultAuxField,
-                             const PylithScalar t) {
+pylith::faults::KinSrc::updateSlip(pylith::topology::Field* const faultAuxField,
+                                   const PylithScalar t,
+                                   const PylithScalar timeScale) {
     PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("updateSlip(auxiliaryField="<<faultAuxField<<", t="<<t<<", timeScale="<<timeScale<<")");
 
     if (!_slipFnKernel || (t < _originTime)) {
         PYLITH_METHOD_END;
     } // if
 
     assert(faultAuxField);
-    assert(_auxField);
+    assert(_auxiliaryField);
 
     _setFEConstants(*faultAuxField); // Constants are attached to the auxiliary field.
 
@@ -171,11 +173,14 @@ pylith::faults::KinSrc::slip(pylith::topology::Field* const faultAuxField,
     err = VecSet(_slipLocalVec, 0.0);PYLITH_CHECK_ERROR(err);
 
     PetscDM dmFaultAux = faultAuxField->dmMesh();
-    err = PetscObjectCompose((PetscObject) dmFaultAux, "dmAux", (PetscObject) _auxField->dmMesh());PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmFaultAux, "A", (PetscObject) _auxField->localVector());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmFaultAux, "dmAux", (PetscObject) _auxiliaryField->dmMesh());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmFaultAux, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
     err = DMProjectFieldLocal(dmFaultAux, t, _slipLocalVec, subfieldKernels, INSERT_VALUES,
                               _slipLocalVec);PYLITH_CHECK_ERROR(err);
     delete[] subfieldKernels;subfieldKernels = NULL;
+
+    // :TODO: @brad Replace this with operation on section array. Also remove call to zeroLocal() in
+    // FaultCohesive::updateAuxiliaryField().
 
     // Add contribution of slip for this rupture to slip for all ruptures.
     err = VecAXPY(faultAuxField->localVector(), 1.0, _slipLocalVec);

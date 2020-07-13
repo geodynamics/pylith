@@ -28,6 +28,7 @@ subpkginclude_HEADERS = \
 	KinSrcConstRate.hh \
 	KinSrcBrune.hh \
 	KinSrcLiuCos.hh \
+	KinSrcTimeHistory.hh \
 	KinSrcAuxiliaryFactory.hh \
 	faultsfwd.hh
 

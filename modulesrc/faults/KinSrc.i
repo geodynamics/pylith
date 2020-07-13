@@ -77,9 +77,12 @@ namespace pylith {
 	     *
 	     * @param[out] auxField Fault integrator's auxiliary field.
 	     * @param[in] t Time t.
+	     * @param[in] timeScale Time scale for nondimensionalization..
 	     */
-	    void slip(pylith::topology::Field* const auxField,
-		      const PylithScalar t);
+	    virtual
+	    void updateSlip(pylith::topology::Field* const auxField,
+			    const PylithScalar t,
+			    const PylithScalar timeScale);
 	    
 	    // PROTECTED METHODS //////////////////////////////////////////////////
 	protected:
@@ -98,7 +101,7 @@ namespace pylith {
 	     * @param[in] cs Coordinate system for problem.
 	     */
 	    virtual
-	    void _auxFieldSetup(const spatialdata::units::Nondimensional& normalizer,
+	    void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
 				const spatialdata::geocoords::CoordSys* cs) = 0;
 	  
 	}; // class KinSrc

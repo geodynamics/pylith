@@ -39,17 +39,33 @@ public:
     /// Destructor.
     virtual ~KinSrcAuxiliaryFactory(void);
 
-    /// Add slip initiation time (relative to origin time) subfield to auxiliary fields.
+    /// Add slip initiation time (relative to origin time) subfield to auxiliary field.
     void addInitiationTime(void);
 
-    /// Add rise time subfield to auxiliary fields.
+    /// Add rise time subfield to auxiliary field.
     void addRiseTime(void);
 
-    /// Add finalSlip to auxiliary fields.
+    /// Add final_slip subfield to auxiliary field.
     void addFinalSlip(void);
 
-    /// Add slipRate to auxiliary fields.
+    /// Add slip_rate subfield to auxiliary field.
     void addSlipRate(void);
+
+    /// Add time_history_value subfield to auxiliary field.
+    void addTimeHistoryValue(void);
+
+    /** Update time history value subfield for current time.
+     *
+     * @param[inout] auxiliaryField Auxiliary field to update.
+     * @param[in] t Current time.
+     * @param[in] timeScale Time scale for nondimensionalization.
+     * @param[in] dbTimeHistory Time history database.
+     */
+    static
+    void updateTimeHistoryValue(pylith::topology::Field* auxiliaryField,
+                                const PylithReal t,
+                                const PylithReal timeScale,
+                                spatialdata::spatialdb::TimeHistory* const dbTimeHistory);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

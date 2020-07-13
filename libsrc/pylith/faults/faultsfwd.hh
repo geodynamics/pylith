@@ -38,6 +38,7 @@ namespace pylith {
         class KinSrcStep;
         class KinSrcBrune;
         class KinSrcLiuCos;
+        class KinSrcTimeHistory;
         class KinSrcAuxiliaryFactory;
 
         class TopologyOps;
