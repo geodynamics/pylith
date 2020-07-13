@@ -32,7 +32,9 @@ swig_sources = \
 	FaultCohesiveKin.i \
 	KinSrc.i \
 	KinSrcStep.i \
-	KinSrcConstRate.i
+	KinSrcConstRate.i \
+	KinSrcBrune.i \
+	KinSrcLiuCos.i
 
 swig_generated = \
 	faults_wrap.cxx \

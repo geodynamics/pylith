@@ -46,6 +46,8 @@ libpylith_la_SOURCES = \
 	faults/KinSrc.cc \
 	faults/KinSrcStep.cc \
 	faults/KinSrcConstRate.cc \
+	faults/KinSrcBrune.cc \
+	faults/KinSrcLiuCos.cc \
 	faults/KinSrcAuxiliaryFactory.cc \
 	faults/TopologyOps.cc \
 	feassemble/PhysicsImplementation.cc \
