@@ -102,7 +102,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::testAccessors(void) {
 // ----------------------------------------------------------------------
 // Test auxFieldsSetup().
 void
-pylith::materials::TestIsotropicLinearElasticity3D::test_auxFieldSetup(void) {
+pylith::materials::TestIsotropicLinearElasticity3D::test_auxiliaryFieldSetup(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mymaterial);
@@ -116,13 +116,13 @@ pylith::materials::TestIsotropicLinearElasticity3D::test_auxFieldSetup(void) {
     const PylithReal forceScale = pressureScale / lengthScale;
     const PylithReal accelerationScale = lengthScale / (timeScale * timeScale);
 
-    delete _mymaterial->_auxField;_mymaterial->_auxField = new topology::Field(*_mesh);CPPUNIT_ASSERT(_mymaterial->_auxField);
-    _mymaterial->_auxFieldSetup();
+    delete _mymaterial->_auxiliaryField;_mymaterial->_auxiliaryField = new topology::Field(*_mesh);CPPUNIT_ASSERT(_mymaterial->_auxiliaryField);
+    _mymaterial->_auxiliaryFieldSetup();
 
     // Check discretizations
     { // density
         const char* label = "density";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxiliaryField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
@@ -135,7 +135,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::test_auxFieldSetup(void) {
 
     { // shear modulus
         const char* label = "shear_modulus";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxiliaryField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
@@ -148,7 +148,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::test_auxFieldSetup(void) {
 
     { // bulk modulus
         const char* label = "bulk_modulus";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxiliaryField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
@@ -161,7 +161,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::test_auxFieldSetup(void) {
 
     if (_mymaterial->_gravityField) { // gravity field
         const char* label = "gravitational_acceleration";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxiliaryField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(3), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::VECTOR, info.description.vectorFieldType);
@@ -174,7 +174,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::test_auxFieldSetup(void) {
 
     if (_mymaterial->_useBodyForce) { // body force
         const char* label = "body_force";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxiliaryField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(3), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::VECTOR, info.description.vectorFieldType);
@@ -187,7 +187,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::test_auxFieldSetup(void) {
 
     if (_mymaterial->_useReferenceState) { // reference stress
         const char* label = "reference_stress";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxiliaryField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(6), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
@@ -200,7 +200,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::test_auxFieldSetup(void) {
 
     if (_mymaterial->_useReferenceState) { // reference strain
         const char* label = "reference_strain";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxiliaryField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(6), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
@@ -212,7 +212,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::test_auxFieldSetup(void) {
     } // reference strain
 
     PYLITH_METHOD_END;
-} // test_auxFieldSetup
+} // test_auxiliaryFieldSetup
 
 
 // ----------------------------------------------------------------------

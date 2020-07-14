@@ -103,7 +103,7 @@ public:
     /// Test setSolution().
     void testSetSolution(void);
 
-    /// Test _auxFieldsSetup().
+    /// Test _auxiliaryFieldsSetup().
     void testAuxFieldSetup(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////

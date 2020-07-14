@@ -94,9 +94,9 @@ pylith::materials::TestMaterial::testAuxSubfieldDiscretization(void) {
     material->auxSubfieldDiscretization("A", infoA.basisOrder, infoA.quadOrder, infoA.isBasisContinuous, infoA.feSpace);
     material->auxSubfieldDiscretization("B", infoB.basisOrder, infoB.quadOrder, infoB.isBasisContinuous, infoB.feSpace);
 
-    CPPUNIT_ASSERT(material->_auxFactory());
+    CPPUNIT_ASSERT(material->_auxiliaryFactory());
     { // A
-        const topology::FieldBase::Discretization& test = material->_auxFactory()->getSubfieldDiscretization("A");
+        const topology::FieldBase::Discretization& test = material->_auxiliaryFactory()->getSubfieldDiscretization("A");
         CPPUNIT_ASSERT_EQUAL(infoA.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoA.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoA.isBasisContinuous, test.isBasisContinuous);
@@ -104,7 +104,7 @@ pylith::materials::TestMaterial::testAuxSubfieldDiscretization(void) {
     } // A
 
     { // B
-        const topology::FieldBase::Discretization& test = material->_auxFactory()->getSubfieldDiscretization("B");
+        const topology::FieldBase::Discretization& test = material->_auxiliaryFactory()->getSubfieldDiscretization("B");
         CPPUNIT_ASSERT_EQUAL(infoB.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoB.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoB.isBasisContinuous, test.isBasisContinuous);
@@ -112,7 +112,7 @@ pylith::materials::TestMaterial::testAuxSubfieldDiscretization(void) {
     } // B
 
     { // C (default)
-        const topology::FieldBase::Discretization& test = material->_auxFactory()->getSubfieldDiscretization("C");
+        const topology::FieldBase::Discretization& test = material->_auxiliaryFactory()->getSubfieldDiscretization("C");
         CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
@@ -120,7 +120,7 @@ pylith::materials::TestMaterial::testAuxSubfieldDiscretization(void) {
     } // C (default)
 
     { // default
-        const topology::FieldBase::Discretization& test = material->_auxFactory()->getSubfieldDiscretization("default");
+        const topology::FieldBase::Discretization& test = material->_auxiliaryFactory()->getSubfieldDiscretization("default");
         CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
@@ -144,9 +144,9 @@ pylith::materials::TestMaterial::testAuxFieldDB(void) {
     Material* material = _material();CPPUNIT_ASSERT(material);
     material->auxFieldDB(&db);
 
-    CPPUNIT_ASSERT(material->_auxFactory());
-    CPPUNIT_ASSERT(material->_auxFactory()->queryDB());
-    CPPUNIT_ASSERT_EQUAL(label, std::string(material->_auxFactory()->queryDB()->getLabel()));
+    CPPUNIT_ASSERT(material->_auxiliaryFactory());
+    CPPUNIT_ASSERT(material->_auxiliaryFactory()->queryDB());
+    CPPUNIT_ASSERT_EQUAL(label, std::string(material->_auxiliaryFactory()->queryDB()->getLabel()));
 
     PYLITH_METHOD_END;
 } // testAuxFieldDB
@@ -222,7 +222,7 @@ pylith::materials::TestMaterial::testInitialize(void) {
     Material* material = _material();CPPUNIT_ASSERT(material);
     const pylith::topology::Field* auxField = material->auxField();CPPUNIT_ASSERT(auxField);
 
-    // material->_auxField->view("AUX FIELDS"); // :DEBUGGING:
+    // material->_auxiliaryField->view("AUX FIELDS"); // :DEBUGGING:
 
     // Check result
     TestMaterial_Data* data = _data();CPPUNIT_ASSERT(data);
@@ -592,12 +592,12 @@ pylith::materials::TestMaterial::testUpdateStateVars(void) {
     CPPUNIT_ASSERT(_solutionFields);
     pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
 #if 0
-    material->_auxField->view("INITIAL_AUX FIELDS"); // :DEBUGGING:
+    material->_auxiliaryField->view("INITIAL_AUX FIELDS"); // :DEBUGGING:
 #endif
     material->_updateStateVars(data->t, data->dt, perturbation);
 
     const pylith::topology::Field* auxField = material->auxField();CPPUNIT_ASSERT(auxField);
-    material->_auxField->view("UPDATED_AUX FIELDS"); // :DEBUGGING:
+    material->_auxiliaryField->view("UPDATED_AUX FIELDS"); // :DEBUGGING:
 
     // Check updated auxiliary field.
     PylithReal norm = 0.0;
