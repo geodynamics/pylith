@@ -29,7 +29,11 @@ def validateFilename(value):
     Validate filename.
     """
     if 0 == len(value):
-        raise ValueError("Filename for CUBIT input mesh not specified.")
+        raise ValueError("Filename for CUBIT/Trlis input mesh not specified.")
+    try:
+        open(value, "r")
+    except IOError:
+        raise IOError("CUBIT/Trelis input mesh '{}' not found.".format(value))
     return value
 
 
@@ -51,8 +55,7 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
 
     import pyre.inventory
 
-    filename = pyre.inventory.str("filename", default="mesh.exo",
-                                  validator=validateFilename)
+    filename = pyre.inventory.str("filename", default="mesh.exo", validator=validateFilename)
     filename.meta['tip'] = "Name of Cubit Exodus file."
 
     useNames = pyre.inventory.bool("use_nodeset_names", default=True)

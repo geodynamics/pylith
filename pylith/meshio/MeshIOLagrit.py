@@ -30,6 +30,10 @@ def validateFilenameGmv(value):
     """
     if 0 == len(value):
         raise ValueError("Filename for LaGriT input mesh not specified.")
+    try:
+        open(value, "r")
+    except IOError:
+        raise IOError("LaGriT input mesh '{}' not found.".format(value))
     return value
 
 
@@ -39,6 +43,10 @@ def validateFilenamePset(value):
     """
     if 0 == len(value):
         raise ValueError("Filename for LaGriT pset file not specified.")
+    try:
+        open(value, "r")
+    except IOError:
+        raise IOError("LaGriT pset file '{}' not found.".format(value))
     return value
 
 
