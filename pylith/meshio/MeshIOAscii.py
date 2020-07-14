@@ -32,6 +32,10 @@ def validateFilename(value):
         msg = "Filename for ASCII input mesh not specified.  " + \
             "To test PyLith, run an example as discussed in the manual."
         raise ValueError(msg)
+    try:
+        open(value, "r")
+    except IOError:
+        raise IOError("ASCII input mesh '{}' not found.".format(value))
     return value
 
 
