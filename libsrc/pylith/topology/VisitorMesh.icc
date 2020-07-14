@@ -33,7 +33,7 @@ pylith::topology::VecVisitorMesh::VecVisitorMesh(const Field& field,
     _dm(NULL),
     _localVec(NULL),
     _section(NULL),
-    _localArray(NULL) { // constructor
+    _localArray(NULL) {
     _dm = field.mesh().dmMesh();assert(_dm);
     initialize(field, subfield);
 } // constructor

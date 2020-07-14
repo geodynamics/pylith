@@ -64,14 +64,16 @@ pylith::faults::KinSrcTimeHistory::getTimeHistoryDB(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Update slip subfield to current time.
 void
-pylith::faults::KinSrcTimeHistory::updateSlip(pylith::topology::Field* faultAuxField,
+pylith::faults::KinSrcTimeHistory::updateSlip(PetscVec slipLocalVec,
+                                              pylith::topology::Field* faultAuxiliaryField,
                                               const double t,
                                               const double timeScale) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateSlip(auxiliaryField="<<faultAuxField<<", t="<<t<<", timeScale="<<timeScale<<")");
+    PYLITH_COMPONENT_DEBUG("updateSlip(slipLocalVec="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
+                                                     <<", t="<<t<<", timeScale="<<timeScale<<")");
 
     KinSrcAuxiliaryFactory::updateTimeHistoryValue(_auxiliaryField, t, timeScale, _dbTimeHistory);
-    KinSrc::updateSlip(faultAuxField, t, timeScale);
+    KinSrc::updateSlip(slipLocalVec, faultAuxiliaryField, t, timeScale);
 
     PYLITH_METHOD_END;
 } // updateSlip
