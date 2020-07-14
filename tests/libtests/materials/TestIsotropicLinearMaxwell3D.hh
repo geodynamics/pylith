@@ -48,7 +48,7 @@ class pylith::materials::TestIsotropicLinearMaxwell3D : public TestMaterial {
     CPPUNIT_TEST(testAccessors);
 
     // Tests that explicitly depend on details of this material.
-    CPPUNIT_TEST(test_auxFieldSetup);
+    CPPUNIT_TEST(test_auxiliaryFieldSetup);
     CPPUNIT_TEST(testGetAuxField);
 
     CPPUNIT_TEST_SUITE_END();
@@ -65,8 +65,8 @@ public:
     /// Test useInertia(), useBodyForce(), useReferenceState().
     void testAccessors(void);
 
-    /// Test _auxFieldSetup().
-    void test_auxFieldSetup(void);
+    /// Test _auxiliaryFieldSetup().
+    void test_auxiliaryFieldSetup(void);
 
     /// Test getAuxField().
     void testGetAuxField(void);

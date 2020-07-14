@@ -115,9 +115,9 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldDiscretization(void) {
     _bc->auxSubfieldDiscretization("A", infoA.basisOrder, infoA.quadOrder, infoA.isBasisContinuous, infoA.feSpace);
     _bc->auxSubfieldDiscretization("B", infoB.basisOrder, infoB.quadOrder, infoB.isBasisContinuous, infoB.feSpace);
 
-    CPPUNIT_ASSERT(_bc->_auxFactory());
+    CPPUNIT_ASSERT(_bc->_auxiliaryFactory());
     { // A
-        const topology::FieldBase::Discretization& test = _bc->_auxFactory()->getSubfieldDiscretization("A");
+        const topology::FieldBase::Discretization& test = _bc->_auxiliaryFactory()->getSubfieldDiscretization("A");
         CPPUNIT_ASSERT_EQUAL(infoA.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoA.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoA.isBasisContinuous, test.isBasisContinuous);
@@ -125,7 +125,7 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldDiscretization(void) {
     } // A
 
     { // B
-        const topology::FieldBase::Discretization& test = _bc->_auxFactory()->getSubfieldDiscretization("B");
+        const topology::FieldBase::Discretization& test = _bc->_auxiliaryFactory()->getSubfieldDiscretization("B");
         CPPUNIT_ASSERT_EQUAL(infoB.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoB.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoB.isBasisContinuous, test.isBasisContinuous);
@@ -133,7 +133,7 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldDiscretization(void) {
     } // B
 
     { // C (default)
-        const topology::FieldBase::Discretization& test = _bc->_auxFactory()->getSubfieldDiscretization("C");
+        const topology::FieldBase::Discretization& test = _bc->_auxiliaryFactory()->getSubfieldDiscretization("C");
         CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
@@ -141,7 +141,7 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldDiscretization(void) {
     } // C (default)
 
     { // default
-        const topology::FieldBase::Discretization& test = _bc->_auxFactory()->getSubfieldDiscretization("default");
+        const topology::FieldBase::Discretization& test = _bc->_auxiliaryFactory()->getSubfieldDiscretization("default");
         CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
@@ -165,10 +165,10 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldDB(void) {
     CPPUNIT_ASSERT(_bc);
     _bc->auxFieldDB(&db);
 
-    CPPUNIT_ASSERT(_bc->_auxFactory());
-    CPPUNIT_ASSERT(_bc->_auxFactory()->queryDB());
+    CPPUNIT_ASSERT(_bc->_auxiliaryFactory());
+    CPPUNIT_ASSERT(_bc->_auxiliaryFactory()->queryDB());
 
-    CPPUNIT_ASSERT_EQUAL(label, std::string(_bc->_auxFactory()->queryDB()->getLabel()));
+    CPPUNIT_ASSERT_EQUAL(label, std::string(_bc->_auxiliaryFactory()->queryDB()->getLabel()));
 
     PYLITH_METHOD_END;
 } // testAuxFieldDB
@@ -310,7 +310,7 @@ pylith::bc::TestAbsorbingDampers::testComputeRHSResidual(void) {
     PylithReal norm = 0.0;
     PylithReal t = _data->t;
     const PetscDM dmSoln = _solution->dmMesh();CPPUNIT_ASSERT(dmSoln);
-    pylith::topology::FieldQuery* query = _db->_auxFieldsQuery;
+    pylith::topology::FieldQuery* query = _db->_auxiliaryFieldsQuery;
     query->openDB(queryDB, _data->lengthScale);
 
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query->functions(), (void**)query->contextPtrs(), _solution->localVector(), &norm);CPPUNIT_ASSERT(!err);
@@ -324,7 +324,7 @@ pylith::bc::TestAbsorbingDampers::testComputeRHSResidual(void) {
 
 
 // ----------------------------------------------------------------------
-// Test _auxFieldSetup().
+// Test _auxiliaryFieldSetup().
 void
 pylith::bc::TestAbsorbingDampers::testAuxFieldSetup(void) {
     PYLITH_METHOD_BEGIN;
@@ -341,8 +341,8 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldSetup(void) {
     delete _bc->_boundaryMesh;_bc->_boundaryMesh = new pylith::topology::Mesh(_solution->mesh(), _data->bcLabel);
     CPPUNIT_ASSERT(_bc->_boundaryMesh);
 
-    delete _bc->_auxField;_bc->_auxField = new pylith::topology::Field(*_bc->_boundaryMesh);CPPUNIT_ASSERT(_bc->_auxField);
-    _bc->_auxFieldSetup(*_solution);
+    delete _bc->_auxiliaryField;_bc->_auxiliaryField = new pylith::topology::Field(*_bc->_boundaryMesh);CPPUNIT_ASSERT(_bc->_auxiliaryField);
+    _bc->_auxiliaryFieldSetup(*_solution);
 
     // Check discretizations
     int ifield = 0;
@@ -351,7 +351,7 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldSetup(void) {
         CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(_data->auxSubfields[ifield]));
         const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
 
-        const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _bc->_auxiliaryField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
@@ -370,7 +370,7 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldSetup(void) {
         CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(_data->auxSubfields[ifield]));
         const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
 
-        const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _bc->_auxiliaryField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
@@ -387,7 +387,7 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldSetup(void) {
         CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(_data->auxSubfields[ifield]));
         const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
 
-        const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _bc->_auxiliaryField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);

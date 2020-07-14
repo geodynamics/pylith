@@ -103,7 +103,7 @@ public:
     /// Test computeRHSResidual().
     void testComputeRHSResidual(void);
 
-    /// Test _auxFieldsSetup().
+    /// Test _auxiliaryFieldsSetup().
     void testAuxFieldSetup(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
