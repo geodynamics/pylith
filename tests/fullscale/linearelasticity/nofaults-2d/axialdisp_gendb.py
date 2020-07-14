@@ -62,16 +62,13 @@ class GenerateDB(object):
                             'units': "m",
                             'data': numpy.ravel(disp[0, :, 1])}]}
 
-        from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
-        io = SimpleIOAscii()
-        io.inventory.filename = "axialdisp_bc.spatialdb"
-        io._configure()
+        from spatialdata.spatialdb.SimpleIOAscii import createWriter
+        io = createWriter("axialdisp_bc.spatialdb")
         io.write(data)
 
         data["values"][0]["name"] = "displacement_x"
         data["values"][1]["name"] = "displacement_y"
-        io.inventory.filename = "axialdisp_ic.spatialdb"
-        io._configure()
+        io = createWriter("axialdisp_ic.spatialdb")
         io.write(data)
         return
 

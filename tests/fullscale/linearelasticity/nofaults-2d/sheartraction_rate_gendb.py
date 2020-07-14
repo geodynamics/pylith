@@ -83,10 +83,8 @@ class GenerateDB(object):
                      'data': velocity_time[0, :, 0].ravel()},
                 ]}
 
-        from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
-        io = SimpleIOAscii()
-        io.inventory.filename = "sheartraction_rate_disp.spatialdb"
-        io._configure()
+        from spatialdata.spatialdb.SimpleIOAscii import createWriter
+        io = createWriter("sheartraction_rate_disp.spatialdb")
         io.write(data)
         return
 
