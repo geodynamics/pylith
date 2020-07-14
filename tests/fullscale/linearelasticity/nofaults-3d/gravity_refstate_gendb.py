@@ -126,10 +126,8 @@ class GenerateDB(object):
             ]
         }
 
-        from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
-        io = SimpleIOAscii()
-        io.inventory.filename = "gravity_refstate_matfields.spatialdb"
-        io._configure()
+        from spatialdata.spatialdb.SimpleIOAscii import createWriter
+        io = createWriter("gravity_refstate_matfields.spatialdb")
         io.write(data)
         return
 

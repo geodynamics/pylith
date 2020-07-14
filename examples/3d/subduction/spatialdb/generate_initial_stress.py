@@ -19,14 +19,13 @@
 # Step08b and Step08c using the PyLith output from Step08a.
 
 
+from spatialdata.spatialdb.SimpleIOAscii import createWriter
 import numpy
 import h5py
 import sys
+
 sys.path.append('../mesh')
 
-from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
-from coordsys import cs_mesh
-cs = cs_mesh()
 
 def getCellCenters(vertices, cells):
     """
@@ -36,7 +35,9 @@ def getCellCenters(vertices, cells):
     cellCenters = numpy.mean(cellCoords, axis=1)
     return cellCenters
 
+
 def generate(sim, fileRoot, materials):
+    from coordsys import cs_mesh
 
     for material in materials:
 
@@ -49,50 +50,47 @@ def generate(sim, fileRoot, materials):
         cells = numpy.array(h5['topology/cells'][:], dtype=numpy.int)
 
         # Get stresses from final time step.
-        stress = h5['cell_fields/stress'][-1,:,:]
+        stress = h5['cell_fields/stress'][-1, :, :]
         h5.close()
 
         # Compute coordinates of quadrature points.
         quadCoords = getCellCenters(vertices, cells)
 
         # Create writer for spatial database file
-        writer = SimpleIOAscii()
-        writer.inventory.filename = filenameDB
-        writer._configure()
-  
         values = [{'name': "stress-xx",
                    'units': "Pa",
-                   'data': stress[:,0]},
+                   'data': stress[:, 0]},
                   {'name': "stress-yy",
                    'units': "Pa",
-                   'data': stress[:,1]},
+                   'data': stress[:, 1]},
                   {'name': "stress-zz",
                    'units': "Pa",
-                   'data': stress[:,2]},
+                   'data': stress[:, 2]},
                   {'name': "stress-xy",
                    'units': "Pa",
-                   'data': stress[:,3]},
+                   'data': stress[:, 3]},
                   {'name': "stress-yz",
                    'units': "Pa",
-                   'data': stress[:,4]},
+                   'data': stress[:, 4]},
                   {'name': "stress-xz",
-                  'units': "Pa",
-                   'data': stress[:,5]},
-        ]
-  
-        writer.write({'points': quadCoords,
-                      'coordsys': cs,
-                      'data_dim': 3,
-                      'values': values})
+                   'units': "Pa",
+                   'data': stress[:, 5]},
+                  ]
 
-    return
+        writer = createWriter(filenameDB)
+        writer.write({
+            'points': quadCoords,
+            'coordsys': cs_mesh(),
+            'data_dim': 3,
+            'values': values
+        })
 
 
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--sim", action="store", dest="sim", default="step08a")
+    parser.add_argument("--sim", action="store", dest="sim", default="step08a_gravity_refstate")
     parser.add_argument("--file-root", action="store", dest="fileRoot", default="mat_initial_stress_grav")
     parser.add_argument("--materials", action="store", dest="materials", default="crust,mantle,slab,wedge")
     args = parser.parse_args()

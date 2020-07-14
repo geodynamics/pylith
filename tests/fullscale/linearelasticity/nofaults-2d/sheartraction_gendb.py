@@ -69,10 +69,8 @@ class GenerateDB(object):
                             'units': "m",
                             'data': disp[0, :, 1].ravel()}]}
 
-        from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
-        io = SimpleIOAscii()
-        io.inventory.filename = "sheartraction_disp.spatialdb"
-        io._configure()
+        from spatialdata.spatialdb.SimpleIOAscii import createWriter
+        io = createWriter("sheartraction_disp.spatialdb")
         io.write(data)
         return
 
