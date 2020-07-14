@@ -16,38 +16,36 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/faults/KinSrcConstRate.hh
+/** @file libsrc/faults/KinSrcBrune.hh
  *
  * @brief C++ implementation of a constant slip rate slip time function.
  */
 
-#if !defined(pylith_faults_kinsrcconstrate_hh)
-#define pylith_faults_kinsrcconstrate_hh
+#if !defined(pylith_faults_kinsrcbrune_hh)
+#define pylith_faults_kinsrcbrune_hh
 
 // Include directives ---------------------------------------------------
 #include "KinSrc.hh"
 
-// KinSrcConstRate ------------------------------------------------------
-/** @brief Constant slip rate slip-time function.
+// KinSrcBrune ------------------------------------------------------
+/** @brief Slip function time history corresponding to the integral of Brune's (1970) far-field time function.
  *
- * Slip time function follows the integral of constant slip rate slip
- * time function.
- *
- * slip = slip_rate * (t - t0) for t >= t0.
+ * slip = final_slip * (1.0 - exp(-(t-t0)/tau) * (1.0 + (t-t0)/tau))
+ * tau = 0.21081916 * rise_time
  *
  * slip = 0 for t < t0.
  */
-class pylith::faults::KinSrcConstRate : public KinSrc {
-    friend class TestKinSrcConstRate; // unit testing
+class pylith::faults::KinSrcBrune : public KinSrc {
+    friend class TestKinSrcBrune; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    KinSrcConstRate(void);
+    KinSrcBrune(void);
 
     /// Destructor.
-    ~KinSrcConstRate(void);
+    ~KinSrcBrune(void);
 
     /** Slip time function kernel.
      *
@@ -112,11 +110,11 @@ protected:
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    KinSrcConstRate(const KinSrcConstRate&); ///< Not implemented
-    const KinSrcConstRate& operator=(const KinSrcConstRate&); ///< Not implemented
+    KinSrcBrune(const KinSrcBrune&); ///< Not implemented
+    const KinSrcBrune& operator=(const KinSrcBrune&); ///< Not implemented
 
-}; // class KinSrcConstRate
+}; // class KinSrcBrune
 
-#endif // pylith_faults_kinsrcconstrate_hh
+#endif // pylith_faults_kinsrcbrune_hh
 
 // End of file

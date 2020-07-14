@@ -16,24 +16,24 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file modulesrc/faults/KinSrcConstRate.i
+/** @file modulesrc/faults/KinSrcBrune.i
  *
- * @brief Python interface to C++ KinSrcConstRate object.
+ * @brief Python interface to C++ KinSrcBrune object.
  */
 
 namespace pylith {
     namespace faults {
 
-	class KinSrcConstRate : public pylith::faults::KinSrc {
+	class KinSrcBrune : public pylith::faults::KinSrc {
 
 	    // PUBLIC METHODS /////////////////////////////////////////////////
 	public :
 
 	    /// Default constructor.
-	    KinSrcConstRate(void);
+	    KinSrcBrune(void);
       
 	    /// Destructor.
-	    ~KinSrcConstRate(void);
+	    ~KinSrcBrune(void);
       
 	    // PROTECTED METHODS //////////////////////////////////////////////////
 	protected:
@@ -46,7 +46,7 @@ namespace pylith {
 	    void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
 				const spatialdata::geocoords::CoordSys* cs);
 	    
-	}; // class KinSrcConstRate
+	}; // class KinSrcBrune
 
     } // faults
 } // pylith

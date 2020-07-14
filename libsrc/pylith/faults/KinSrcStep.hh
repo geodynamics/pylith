@@ -99,7 +99,7 @@ protected:
      * @param[in] normalizer Normalizer for nondimensionalizing values.
      * @param[in] cs Coordinate system for problem.
      */
-    void _auxFieldSetup(const spatialdata::units::Nondimensional& normalizer,
+    void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
                         const spatialdata::geocoords::CoordSys* cs);
 
     /** Set kernel for slip time function.

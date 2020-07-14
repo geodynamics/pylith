@@ -102,9 +102,12 @@ public:
      *
      * @param[out] auxField Fault integrator's auxiliary field.
      * @param[in] t Time t.
+     * @param[in] timeScale Time scale for nondimensionalization..
      */
-    void slip(pylith::topology::Field* const auxField,
-              const PylithScalar t);
+    virtual
+    void updateSlip(pylith::topology::Field* const auxField,
+                    const PylithScalar t,
+                    const PylithScalar timeScale);
 
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
@@ -123,7 +126,7 @@ protected:
      * @param[in] cs Coordinate system for problem.
      */
     virtual
-    void _auxFieldSetup(const spatialdata::units::Nondimensional& normalizer,
+    void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
                         const spatialdata::geocoords::CoordSys* cs) = 0;
 
     /** Set constants used in finite-element integrations.
@@ -135,9 +138,9 @@ protected:
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
 
-    pylith::faults::KinSrcAuxiliaryFactory* _auxFactory; ///< Factory for auxiliary subfields.
+    pylith::faults::KinSrcAuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
     PetscPointFunc _slipFnKernel; ///< Kernel for slip time function.
-    pylith::topology::Field* _auxField; ///< Auxiliary field for this integrator.
+    pylith::topology::Field* _auxiliaryField; ///< Auxiliary field for this integrator.
     PetscVec _slipLocalVec; ///< PETSc local Vec to hold slip for this rupture.
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////

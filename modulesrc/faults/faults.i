@@ -24,6 +24,9 @@
 #include "pylith/faults/KinSrc.hh"
 #include "pylith/faults/KinSrcStep.hh"
 #include "pylith/faults/KinSrcConstRate.hh"
+#include "pylith/faults/KinSrcBrune.hh"
+#include "pylith/faults/KinSrcLiuCos.hh"
+#include "pylith/faults/KinSrcTimeHistory.hh"
 %}
 
 %include "exception.i"
@@ -58,5 +61,8 @@ import_array();
 %include "KinSrc.i"
 %include "KinSrcStep.i"
 %include "KinSrcConstRate.i"
+%include "KinSrcBrune.i"
+%include "KinSrcLiuCos.i"
+%include "KinSrcTimeHistory.i"
 
 // End of file

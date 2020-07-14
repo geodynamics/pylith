@@ -16,38 +16,33 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/faults/KinSrcConstRate.hh
+/** @file libsrc/faults/KinSrcLiuCos.hh
  *
- * @brief C++ implementation of a constant slip rate slip time function.
+ * @brief C++ implementation of a Liu cosine-sine slip time function.
  */
 
-#if !defined(pylith_faults_kinsrcconstrate_hh)
-#define pylith_faults_kinsrcconstrate_hh
+#if !defined(pylith_faults_kinsrcliucos_hh)
+#define pylith_faults_kinsrcliucos_hh
 
 // Include directives ---------------------------------------------------
 #include "KinSrc.hh"
 
-// KinSrcConstRate ------------------------------------------------------
-/** @brief Constant slip rate slip-time function.
- *
- * Slip time function follows the integral of constant slip rate slip
- * time function.
- *
- * slip = slip_rate * (t - t0) for t >= t0.
- *
- * slip = 0 for t < t0.
+// KinSrcLiuCos ------------------------------------------------------
+/** @brief Slip function time history from Liu, Archuleta, and Hartzell,
+ * BSSA, 2006 (doi:10.1785/0120060036) which has a rapid rise and then
+ * a gradual falloff with a finite duration.
  */
-class pylith::faults::KinSrcConstRate : public KinSrc {
-    friend class TestKinSrcConstRate; // unit testing
+class pylith::faults::KinSrcLiuCos : public KinSrc {
+    friend class TestKinSrcLiuCos; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    KinSrcConstRate(void);
+    KinSrcLiuCos(void);
 
     /// Destructor.
-    ~KinSrcConstRate(void);
+    ~KinSrcLiuCos(void);
 
     /** Slip time function kernel.
      *
@@ -112,11 +107,11 @@ protected:
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    KinSrcConstRate(const KinSrcConstRate&); ///< Not implemented
-    const KinSrcConstRate& operator=(const KinSrcConstRate&); ///< Not implemented
+    KinSrcLiuCos(const KinSrcLiuCos&); ///< Not implemented
+    const KinSrcLiuCos& operator=(const KinSrcLiuCos&); ///< Not implemented
 
-}; // class KinSrcConstRate
+}; // class KinSrcLiuCos
 
-#endif // pylith_faults_kinsrcconstrate_hh
+#endif // pylith_faults_kinsrcliucos_hh
 
 // End of file

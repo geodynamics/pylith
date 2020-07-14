@@ -16,38 +16,52 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/faults/KinSrcConstRate.hh
+/** @file libsrc/faults/KinSrcTimeHistory.hh
  *
- * @brief C++ implementation of a constant slip rate slip time function.
+ * @brief C++ implementation of a time history data file slip time function.
  */
 
-#if !defined(pylith_faults_kinsrcconstrate_hh)
-#define pylith_faults_kinsrcconstrate_hh
+#if !defined(pylith_faults_kinsrctimehistory_hh)
+#define pylith_faults_kinsrctimehistory_hh
 
 // Include directives ---------------------------------------------------
 #include "KinSrc.hh"
 
-// KinSrcConstRate ------------------------------------------------------
-/** @brief Constant slip rate slip-time function.
- *
- * Slip time function follows the integral of constant slip rate slip
- * time function.
- *
- * slip = slip_rate * (t - t0) for t >= t0.
- *
- * slip = 0 for t < t0.
- */
-class pylith::faults::KinSrcConstRate : public KinSrc {
-    friend class TestKinSrcConstRate; // unit testing
+// KinSrcTimeHistory ------------------------------------------------------
+/// @brief Slip function time history from a user-supplied text file.
+class pylith::faults::KinSrcTimeHistory : public KinSrc {
+    friend class TestKinSrcTimeHistory; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    KinSrcConstRate(void);
+    KinSrcTimeHistory(void);
 
     /// Destructor.
-    ~KinSrcConstRate(void);
+    ~KinSrcTimeHistory(void);
+
+    /** Set time history database.
+     *
+     * @param[in] db Time history database.
+     */
+    void setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th);
+
+    /** Get time history database.
+     *
+     * @preturns Time history database.
+     */
+    const spatialdata::spatialdb::TimeHistory* getTimeHistoryDB(void);
+
+    /** Set slip subfield in fault integrator's auxiliary field at time t.
+     *
+     * @param[out] auxField Fault integrator's auxiliary field.
+     * @param[in] t Time t.
+     * @param[in] timeScale Time scale for nondimensionalization..
+     */
+    void updateSlip(pylith::topology::Field* const auxField,
+                    const PylithScalar t,
+                    const PylithScalar timeScale);
 
     /** Slip time function kernel.
      *
@@ -109,14 +123,19 @@ protected:
      */
     void _setSlipFnKernel(const pylith::topology::Field& auxField) const;
 
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+private:
+
+    spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
+
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    KinSrcConstRate(const KinSrcConstRate&); ///< Not implemented
-    const KinSrcConstRate& operator=(const KinSrcConstRate&); ///< Not implemented
+    KinSrcTimeHistory(const KinSrcTimeHistory&); ///< Not implemented
+    const KinSrcTimeHistory& operator=(const KinSrcTimeHistory&); ///< Not implemented
 
-}; // class KinSrcConstRate
+}; // class KinSrcTimeHistory
 
-#endif // pylith_faults_kinsrcconstrate_hh
+#endif // pylith_faults_kinsrctimehistory_hh
 
 // End of file

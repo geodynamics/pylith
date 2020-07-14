@@ -35,6 +35,9 @@ nobase_pkgpyexec_PYTHON = \
 	faults/KinSrc.py \
 	faults/KinSrcStep.py \
 	faults/KinSrcConstRate.py \
+	faults/KinSrcBrune.py \
+	faults/KinSrcLiuCos.py \
+	faults/KinSrcTimeHistory.py \
 	faults/SingleRupture.py \
 	feassemble/__init__.py \
 	friction/__init__.py \

@@ -35,6 +35,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensionalizer
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include <cmath> // USES pow(), sqrt()
@@ -332,10 +333,11 @@ pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* 
                                  // field.
 
     // Compute slip field at current time step
+    assert(_normalizer);
     const srcs_type::const_iterator rupturesEnd = _ruptures.end();
     for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
         KinSrc* src = r_iter->second;assert(src);
-        src->slip(auxiliaryField, t);
+        src->updateSlip(auxiliaryField, t, _normalizer->getTimeScale());
     } // for
 
     PYLITH_METHOD_END;

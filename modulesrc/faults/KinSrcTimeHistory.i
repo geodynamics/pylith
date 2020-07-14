@@ -16,25 +16,47 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file modulesrc/faults/KinSrcConstRate.i
+/** @file modulesrc/faults/KinSrcBrune.i
  *
- * @brief Python interface to C++ KinSrcConstRate object.
+ * @brief Python interface to C++ KinSrcBrune object.
  */
 
 namespace pylith {
     namespace faults {
 
-	class KinSrcConstRate : public pylith::faults::KinSrc {
+	class KinSrcBrune : public pylith::faults::KinSrc {
 
 	    // PUBLIC METHODS /////////////////////////////////////////////////
 	public :
 
 	    /// Default constructor.
-	    KinSrcConstRate(void);
+	    KinSrcBrune(void);
       
 	    /// Destructor.
-	    ~KinSrcConstRate(void);
+	    ~KinSrcBrune(void);
       
+	  /** Set time history database.
+	   *
+	   * @param[in] db Time history database.
+	   */
+	  void setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th);
+
+	  /** Get time history database.
+	   *
+	   * @preturns Time history database.
+	   */
+	  const spatialdata::spatialdb::TimeHistory* getTimeHistoryDB(void);
+
+	  /** Set slip subfield in fault integrator's auxiliary field at time t.
+	   *
+	   * @param[out] auxField Fault integrator's auxiliary field.
+	   * @param[in] t Time t.
+	   * @param[in] timeScale Time scale for nondimensionalization..
+	   */
+	  void updateSlip(pylith::topology::Field* const auxField,
+			  const PylithScalar t,
+			  const PylithScalar timeScale);
+
 	    // PROTECTED METHODS //////////////////////////////////////////////////
 	protected:
 
@@ -46,7 +68,7 @@ namespace pylith {
 	    void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
 				const spatialdata::geocoords::CoordSys* cs);
 	    
-	}; // class KinSrcConstRate
+	}; // class KinSrcBrune
 
     } // faults
 } // pylith
