@@ -63,12 +63,12 @@ pylith::topology::VecVisitorMesh::initialize(const Field& field,
 
     if (!subfield) {
         _section = fieldSection;
-        err = PetscObjectReference((PetscObject)_section);PYLITH_CHECK_ERROR(err);
     } else {
         const int fieldIndex = field.subfieldInfo(subfield).index;
         assert(fieldIndex >= 0 && fieldIndex < numFields);
         err = PetscSectionGetField(fieldSection, fieldIndex, &_section);PYLITH_CHECK_ERROR(err);
     } // if/else
+    err = PetscObjectReference((PetscObject)_section);PYLITH_CHECK_ERROR(err);
     _localVec = field.localVector();assert(_localVec);
 
     err = VecGetArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);
