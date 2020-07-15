@@ -38,8 +38,7 @@ pylith::faults::KinSrc::KinSrc(void) :
     _auxiliaryFactory(new pylith::faults::KinSrcAuxiliaryFactory),
     _slipFnKernel(NULL),
     _auxiliaryField(NULL),
-    _slipLocalVec(NULL),
-    _originTime(0.0) {} // constructor
+    _originTime(0.0) {}
 
 
 // ----------------------------------------------------------------------
@@ -53,7 +52,6 @@ pylith::faults::KinSrc::~KinSrc(void) {
 // Deallocate PETSc and local data structures.
 void
 pylith::faults::KinSrc::deallocate(void) {
-    PetscErrorCode err = VecDestroy(&_slipLocalVec);PYLITH_CHECK_ERROR(err);
     delete _auxiliaryField;_auxiliaryField = NULL;
     delete _auxiliaryFactory;_auxiliaryFactory = NULL;
 } // deallocate
@@ -134,56 +132,42 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
         _auxiliaryField->view("KinSrc auxiliary field");
     } // if
 
-    PetscErrorCode err = DMCreateLocalVector(faultAuxField.dmMesh(), &_slipLocalVec);PYLITH_CHECK_ERROR(err);
-
     PYLITH_METHOD_END;
 } // initialize
 
 
 // ----------------------------------------------------------------------
-// Set slip subfield in fault integrator's auxiliary field at time t.
+// Set slip values at time t.
 void
-pylith::faults::KinSrc::updateSlip(pylith::topology::Field* const faultAuxField,
+pylith::faults::KinSrc::updateSlip(PetscVec slipLocalVec,
+                                   pylith::topology::Field* faultAuxiliaryField,
                                    const PylithScalar t,
                                    const PylithScalar timeScale) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateSlip(auxiliaryField="<<faultAuxField<<", t="<<t<<", timeScale="<<timeScale<<")");
+    PYLITH_COMPONENT_DEBUG("updateSlip(slipLocalVec="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
+                                                     <<", t="<<t<<", timeScale="<<timeScale<<")");
 
     if (!_slipFnKernel || (t < _originTime)) {
         PYLITH_METHOD_END;
     } // if
 
-    assert(faultAuxField);
+    assert(slipLocalVec);
     assert(_auxiliaryField);
 
-    _setFEConstants(*faultAuxField); // Constants are attached to the auxiliary field.
+    _setFEConstants(*faultAuxiliaryField); // Constants are attached to the auxiliary field for the slip vector.
 
-    // Set update kernel for each fault auxiliary subfield.
-    const pylith::string_vector& subfieldNames = faultAuxField->subfieldNames();
-    const size_t numSubfields = subfieldNames.size();
-    PetscPointFunc* subfieldKernels = (numSubfields > 0) ? new PetscPointFunc[numSubfields] : NULL;
-    // By default, set all auxiliary subfield update kernels to NULL.
-    for (size_t i = 0; i < numSubfields; ++i) {
-        subfieldKernels[i] = NULL;
-    } // for
-    subfieldKernels[faultAuxField->subfieldInfo("slip").index] = _slipFnKernel;
+    PetscPointFunc subfieldKernels[1];
+    subfieldKernels[0] = _slipFnKernel;
 
     // Create local vector for slip for this source.
     PetscErrorCode err = 0;
-    err = VecSet(_slipLocalVec, 0.0);PYLITH_CHECK_ERROR(err);
-
-    PetscDM dmFaultAux = faultAuxField->dmMesh();
-    err = PetscObjectCompose((PetscObject) dmFaultAux, "dmAux", (PetscObject) _auxiliaryField->dmMesh());PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmFaultAux, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
-    err = DMProjectFieldLocal(dmFaultAux, t, _slipLocalVec, subfieldKernels, INSERT_VALUES,
-                              _slipLocalVec);PYLITH_CHECK_ERROR(err);
-    delete[] subfieldKernels;subfieldKernels = NULL;
-
-    // :TODO: @brad Replace this with operation on section array. Also remove call to zeroLocal() in
-    // FaultCohesive::updateAuxiliaryField().
-
-    // Add contribution of slip for this rupture to slip for all ruptures.
-    err = VecAXPY(faultAuxField->localVector(), 1.0, _slipLocalVec);
+    PetscDM faultAuxiliaryDM = faultAuxiliaryField->dmMesh();
+    err = PetscObjectCompose((PetscObject) faultAuxiliaryDM, "dmAux",
+                             (PetscObject) _auxiliaryField->dmMesh());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) faultAuxiliaryDM, "A",
+                             (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMProjectFieldLocal(faultAuxiliaryDM, t, slipLocalVec, subfieldKernels, INSERT_VALUES,
+                              slipLocalVec);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // slip

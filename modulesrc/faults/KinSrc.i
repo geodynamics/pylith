@@ -72,17 +72,19 @@ namespace pylith {
 	    void initialize(const pylith::topology::Field& auxField,
 			    const spatialdata::units::Nondimensional& normalizer,
 			    const spatialdata::geocoords::CoordSys* cs);
-	    
-	    /** Set slip subfield in fault integrator's auxiliary field at time t.
-	     *
-	     * @param[out] auxField Fault integrator's auxiliary field.
-	     * @param[in] t Time t.
-	     * @param[in] timeScale Time scale for nondimensionalization..
-	     */
-	    virtual
-	    void updateSlip(pylith::topology::Field* const auxField,
-			    const PylithScalar t,
-			    const PylithScalar timeScale);
+
+	      /** Set slip values at time t.
+	       *
+	       * @param[inout] slipLocalVec Local PETSc vector for slip values.
+	       * @param[in] faultAuxiliaryField Auxiliary field for fault.
+	       * @param[in] t Time t.
+	       * @param[in] timeScale Time scale for nondimensionalization.
+	       */
+	      virtual
+	      void updateSlip(PetscVec slipLocalVec,
+			      pylith::topology::Field* faultAuxiliaryField,
+			      const PylithScalar t,
+			      const PylithScalar timeScale);
 	    
 	    // PROTECTED METHODS //////////////////////////////////////////////////
 	protected:

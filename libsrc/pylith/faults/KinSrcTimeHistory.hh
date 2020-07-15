@@ -53,13 +53,15 @@ public:
      */
     const spatialdata::spatialdb::TimeHistory* getTimeHistoryDB(void);
 
-    /** Set slip subfield in fault integrator's auxiliary field at time t.
+    /** Set slip values at time t.
      *
-     * @param[out] auxField Fault integrator's auxiliary field.
+     * @param[inout] slipLocalVec Local PETSc vector for slip values.
+     * @param[in] faultAuxiliaryField Auxiliary field for fault.
      * @param[in] t Time t.
-     * @param[in] timeScale Time scale for nondimensionalization..
+     * @param[in] timeScale Time scale for nondimensionalization.
      */
-    void updateSlip(pylith::topology::Field* const auxField,
+    void updateSlip(PetscVec slipLocalVec,
+                    pylith::topology::Field* faultAuxiliaryField,
                     const PylithScalar t,
                     const PylithScalar timeScale);
 
@@ -115,7 +117,7 @@ protected:
      * @param[in] cs Coordinate system for problem.
      */
     void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
-                        const spatialdata::geocoords::CoordSys* cs);
+                              const spatialdata::geocoords::CoordSys* cs);
 
     /** Set kernel for slip time function.
      *

@@ -28,6 +28,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::checkDiscretization()
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "pylith/fekernels/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
@@ -46,8 +47,6 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 #include <typeinfo> // USES typeid()
-
-// #define DETAILED_EVENT_LOGGING
 
 // ---------------------------------------------------------------------------------------------------------------------
 typedef pylith::feassemble::IntegratorInterface::ResidualKernels ResidualKernels;
@@ -92,14 +91,16 @@ public:
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
-    _auxiliaryFactory(new pylith::faults::AuxiliaryFactoryKinematic) {
+    _auxiliaryFactory(new pylith::faults::AuxiliaryFactoryKinematic),
+    _slipVecRupture(NULL),
+    _slipVecTotal(NULL) {
     pylith::utils::PyreComponent::setName("faultcohesivekin");
 } // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void) { // destructor
+pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void) {
     deallocate();
 } // destructor
 
@@ -110,6 +111,8 @@ void
 pylith::faults::FaultCohesiveKin::deallocate(void) {
     FaultCohesive::deallocate();
 
+    PetscErrorCode err = VecDestroy(&_slipVecRupture);PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&_slipVecTotal);PYLITH_CHECK_ERROR(err);
     delete _auxiliaryFactory;_auxiliaryFactory = NULL;
     _ruptures.clear(); // :TODO: Use shared pointers for earthquake ruptures
 } // deallocate
@@ -246,10 +249,10 @@ pylith::faults::FaultCohesiveKin::createConstraint(const pylith::topology::Field
                     PetscInt val;
                     err = DMLabelGetValue(buriedLabel, cone[c], &val);PYLITH_CHECK_ERROR(err);
                     if (val >= 0) {err = DMLabelSetValue(buriedCohesiveLabel, spoint, 1);PYLITH_CHECK_ERROR(err);break;}
-                }
-            }
-        }
-    }
+                } // for
+            } // if
+        } // for
+    } // for
 
     pylith::feassemble::ConstraintSimple *constraint = new pylith::feassemble::ConstraintSimple(this);assert(constraint);
     constraint->setMarkerLabel(labelname.c_str());
@@ -308,6 +311,11 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
         src->initialize(*auxiliaryField, *_normalizer, solution.mesh().getCoordSys());
     } // for
 
+    // Create local PETSc vector to hold current slip.
+    PetscErrorCode err = 0;
+    err = DMCreateLocalVector(auxiliaryField->dmMesh(), &_slipVecRupture);PYLITH_CHECK_ERROR(err);
+    err = DMCreateLocalVector(auxiliaryField->dmMesh(), &_slipVecTotal);PYLITH_CHECK_ERROR(err);
+
     PYLITH_METHOD_RETURN(auxiliaryField);
 } // createAuxiliaryField
 
@@ -329,16 +337,43 @@ pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* 
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
-    auxiliaryField->zeroLocal(); // :KLUDGE: :TEMPORARY: Slip field is only auxiliary field, so we can zero entire
-                                 // field.
-
-    // Compute slip field at current time step
+    assert(auxiliaryField);
     assert(_normalizer);
+
+    // Update slip field at current time step
+    PetscErrorCode err = VecSet(_slipVecTotal, 0.0);PYLITH_CHECK_ERROR(err);
     const srcs_type::const_iterator rupturesEnd = _ruptures.end();
     for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
+        err = VecSet(_slipVecRupture, 0.0);PYLITH_CHECK_ERROR(err);
+
         KinSrc* src = r_iter->second;assert(src);
-        src->updateSlip(auxiliaryField, t, _normalizer->getTimeScale());
+        src->updateSlip(_slipVecRupture, auxiliaryField, t, _normalizer->getTimeScale());
+        err = VecAYPX(_slipVecTotal, 1.0, _slipVecRupture);
     } // for
+
+    // Transfer slip values from local PETSc slip vector to fault auxiliary field.
+    PetscInt pStart = 0, pEnd = 0;
+    err = PetscSectionGetChart(auxiliaryField->localSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+
+    pylith::topology::VecVisitorMesh auxiliaryVisitor(*auxiliaryField, "slip");
+    PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();
+
+    const PylithScalar* slipArray = NULL;
+    err = VecGetArrayRead(_slipVecTotal, &slipArray);PYLITH_CHECK_ERROR(err);
+
+    for (PetscInt p = pStart, iSlip = 0; p < pEnd; ++p) {
+        const PetscInt slipDof = auxiliaryVisitor.sectionDof(p);
+        const PetscInt slipOff = auxiliaryVisitor.sectionOffset(p);
+        for (PetscInt iDof = 0; iDof < slipDof; ++iDof, ++iSlip) {
+            auxiliaryArray[slipOff+iDof] = slipArray[iSlip];
+        } // for
+    } // for
+    err = VecRestoreArrayRead(_slipVecTotal, &slipArray);PYLITH_CHECK_ERROR(err);
+
+    journal::debug_t debug(pylith::utils::PyreComponent::getName());
+    if (debug.state()) {
+        auxiliaryField->view("Fault auxiliary field after setting slip");
+    } // if
 
     PYLITH_METHOD_END;
 } // updateAuxiliaryField

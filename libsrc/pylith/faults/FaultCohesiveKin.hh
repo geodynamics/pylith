@@ -130,6 +130,8 @@ private:
 
     pylith::faults::AuxiliaryFactoryKinematic* _auxiliaryFactory; ///< Factory for auxiliary subfields.
     srcs_type _ruptures; ///< Array of kinematic earthquake ruptures.
+    PetscVec _slipVecRupture; ///< PETSc local Vec to hold slip for one kinematic rupture.
+    PetscVec _slipVecTotal; ///< PETSc local Vec to hold slip for all kinematic ruptures.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
@@ -137,7 +139,17 @@ private:
     FaultCohesiveKin(const FaultCohesiveKin&); ///< Not implemented
     const FaultCohesiveKin& operator=(const FaultCohesiveKin&); ///< Not implemented.
 
-    static PetscErrorCode _zero(PetscInt dim, PetscReal t, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx) {for(int c = 0; c < Nc; ++c) u[c] = 0.0;return 0;}
+    static PetscErrorCode _zero(PetscInt dim,
+                                PetscReal t,
+                                const PetscReal x[],
+                                PetscInt Nc,
+                                PetscScalar *u,
+                                void *ctx) {
+        for (int c = 0; c < Nc; ++c) {
+            u[c] = 0.0;
+        }
+        return 0;
+    }
 
 }; // class FaultCohesiveKin
 
