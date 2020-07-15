@@ -70,4 +70,4 @@ install:
 
 script: 
   - ci_env=`bash <(curl -s https://codecov.io/env)`
-  - travis_wait docker run $ci_env pylith-testenv ../../src/pylith/ci-config/run_test_coverage.sh
+  - docker run $ci_env pylith-testenv ../../src/pylith/ci-config/run_test_coverage.sh
