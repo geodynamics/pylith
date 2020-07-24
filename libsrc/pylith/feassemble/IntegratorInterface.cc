@@ -437,16 +437,13 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     err = DMLabelGetStratumBounds(dmLabel, integrator->getInterfaceId(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cohesiveCells);PYLITH_CHECK_ERROR(err);
 
+    DMPolytopeType ct;
+    err = DMPlexGetCellType(dmSoln, cStart, &ct);PYLITH_CHECK_ERROR(err);
+    assert((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
+           (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
+           (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR));
     PetscDS prob = NULL;
-    PetscInt cMax = 0;
-    err = DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-    cMax = cStart;
-    for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
-      DMPolytopeType ct;
-      err = DMPlexGetCellType(dmSoln, cell, &ct);PYLITH_CHECK_ERROR(err);
-      if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) break;
-    }
-    err = DMGetCellDS(dmSoln, cMax, &prob);PYLITH_CHECK_ERROR(err);
+    err = DMGetCellDS(dmSoln, cStart, &prob);PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
@@ -510,9 +507,9 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     err = DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     cMax = cStart;
     for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
-      DMPolytopeType ct;
-      err = DMPlexGetCellType(dmSoln, cell, &ct);PYLITH_CHECK_ERROR(err);
-      if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) break;
+        DMPolytopeType ct;
+        err = DMPlexGetCellType(dmSoln, cell, &ct);PYLITH_CHECK_ERROR(err);
+        if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) { break;}
     }
     err = DMGetCellDS(dmSoln, cMax, &prob);PYLITH_CHECK_ERROR(err);
 
