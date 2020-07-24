@@ -391,22 +391,29 @@ pylith::problems::TimeDependent::initialize(void) {
     err = TSSetRHSJacobian(_ts, NULL, NULL, computeRHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
     err = TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
 
-    if (IMPLICIT == _formulationType) {
+    if ((IMPLICIT == _formulationType) || _solution->hasSubfield("lagrange_multiplier_fault")) {
         PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks computeLHSJacobian(), and computeLHSFunction().");
         err = TSSetIFunction(_ts, NULL, computeLHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
         err = TSSetIJacobian(_ts, NULL, NULL, computeLHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
     } // if
-
-    // Setup time stepper.
-    err = TSSetUp(_ts);PYLITH_CHECK_ERROR(err);
-
-    // Setup field to hold inverse of lumped LHS Jacobian (if explicit).
     if (EXPLICIT == _formulationType) {
+        // Setup field to hold inverse of lumped LHS Jacobian (if explicit).
         PYLITH_COMPONENT_DEBUG("Setting up field for inverse of lumped LHS Jacobian.");
 
         delete _jacobianLHSLumpedInv;_jacobianLHSLumpedInv = new pylith::topology::Field(_solution->mesh());assert(_jacobianLHSLumpedInv);
         _jacobianLHSLumpedInv->cloneSection(*_solution);
     } // if
+    // Set solve type for solution fields defined over the domain (not Lagrange multipliers).
+    PetscDS prob = NULL;
+    PetscInt numFields = 0;
+    err = DMGetDS(_solution->dmMesh(), &prob);PYLITH_CHECK_ERROR(err);
+    err = PetscDSGetNumFields(prob, &numFields);PYLITH_CHECK_ERROR(err);
+    for (PetscInt iField = 0; iField < numFields; ++iField) {
+        err = PetscDSSetImplicit(prob, iField, (_formulationType == IMPLICIT) ? PETSC_TRUE : PETSC_FALSE);
+    } // for
+
+    // Setup time stepper.
+    err = TSSetUp(_ts);PYLITH_CHECK_ERROR(err);
 
     if (_shouldNotifyIC) {
         _notifyObserversInitialSoln();

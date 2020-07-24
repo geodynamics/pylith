@@ -314,11 +314,7 @@ pylith::problems::Problem::initialize(void) {
 
     // Initialize solution field.
     PetscErrorCode err = DMSetFromOptions(_solution->dmMesh());PYLITH_CHECK_ERROR(err);
-    _solution->subfieldsSetup();
-    if (_solution->hasSubfield("lagrange_multiplier_fault")) {
-        _setupLagrangeMultiplier(_solution);
-    } // if
-    _solution->createDiscretization();
+    _setupSolution();
 
     const pylith::topology::Mesh& mesh = _solution->mesh();
     pylith::topology::CoordsVisitor::optimizeClosure(mesh.dmMesh());
@@ -714,12 +710,57 @@ pylith::problems::Problem::_createConstraints(void) {
 } // _createConstraints
 
 
+#include <iostream>
+// ---------------------------------------------------------------------------------------------------------------------
+// Setup solution subfields and discretization.
+void
+pylith::problems::Problem::_setupSolution(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("Problem::_setupSolution()");
+
+    assert(_solution);
+
+    _solution->subfieldsSetup();
+    if (_solution->hasSubfield("lagrange_multiplier_fault")) {
+        _setupLagrangeMultiplier();
+    } // if
+
+    _solution->createDiscretization();
+
+    if (_solution->hasSubfield("lagrange_multiplier_fault")) {
+        // Mark lagrange_multiplier_fault field for implicit solve.
+        PetscErrorCode err = 0;
+        PetscDS prob = NULL;
+        PetscInt cStart = 0, cEnd = 0;
+        PetscDM dmSoln = _solution->dmMesh();assert(dmSoln);
+        err = DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+        PetscInt cell = cStart;
+        for (; cell < cEnd; ++cell) {
+            DMPolytopeType cellType;
+            err = DMPlexGetCellType(dmSoln, cell, &cellType);PYLITH_CHECK_ERROR(err);
+            if ((cellType == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
+                (cellType == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
+                (cellType == DM_POLYTOPE_QUAD_PRISM_TENSOR)) {
+                break;
+            } // if
+        } // for
+        err = DMGetCellDS(dmSoln, cell, &prob);PYLITH_CHECK_ERROR(err);
+        assert(prob);
+
+        const pylith::topology::Field::SubfieldInfo& lagrangeMultiplierInfo = _solution->subfieldInfo("lagrange_multiplier_fault");
+        err = PetscDSSetImplicit(prob, lagrangeMultiplierInfo.index, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+    } // if
+
+    PYLITH_METHOD_END;
+} // _setupSolution
+
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup field so Lagrange multiplier subfield is limited to degrees of freedom associated with the cohesive cells.
 void
-pylith::problems::Problem::_setupLagrangeMultiplier(pylith::topology::Field* solution) {
+pylith::problems::Problem::_setupLagrangeMultiplier(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::_setupLagrangeMultiplier(solution="<<solution<<")");
+    PYLITH_COMPONENT_DEBUG("Problem::_setupLagrangeMultiplier()");
 
     assert(_solution->hasSubfield("lagrange_multiplier_fault"));
 
@@ -752,6 +793,7 @@ pylith::problems::Problem::_setupLagrangeMultiplier(pylith::topology::Field* sol
         } // for
     } // for
 
+    // Reset discretization (FE), now using label.
     const pylith::topology::Field::SubfieldInfo& lagrangeMultiplierInfo = _solution->subfieldInfo("lagrange_multiplier_fault");
     PetscFE fe = NULL;
     err = DMGetField(dmSoln, lagrangeMultiplierInfo.index, NULL, (PetscObject*)&fe);PYLITH_CHECK_ERROR(err);assert(fe);
