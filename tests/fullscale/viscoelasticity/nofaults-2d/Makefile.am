@@ -43,7 +43,8 @@ dist_noinst_DATA = \
 	axialstrain_genmaxwell_tri.cfg \
 	axialstrain_genmaxwell_quad.cfg \
 	mat_maxwell.spatialdb \
-	mat_genmaxwell.spatialdb
+	mat_genmaxwell_norefstate.spatialdb \
+	mat_genmaxwell_refstate.spatialdb
 
 noinst_TMP = \
 	axialtraction_maxwell_disp.spatialdb \
