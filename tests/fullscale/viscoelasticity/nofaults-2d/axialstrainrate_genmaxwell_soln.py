@@ -23,7 +23,7 @@
 #             Uy=0
 #          ----------
 #          |        |
-# Ux=0     |        |  Vx=V0
+# Ux=0     |        |  Ux = U0 + V0*t
 #          |        |
 #          |        |
 #          ----------
@@ -31,7 +31,7 @@
 #
 # Dirichlet boundary conditions
 # Ux(-4000,y) = 0
-# Vx(+4000,y) = V0
+# Ux(+4000,y) = U0 + V0*t
 # Uy(x,-4000) = 0
 # Uy(x,+4000) = 0
 #
@@ -57,9 +57,9 @@ p_shear_ratio_3 = 0.25
 numMaxElements = 3
 numComponents = 4
 
-# Initial displacement (1 m) and velocity (4 m/year).
-# U0 = 1.0
-V0 = 4.0/year.value
+# Initial displacement (1 m) and velocity (2 m/year).
+U0 = 1.0
+V0 = 2.0/year.value
 
 # Derived properties.
 p_mu = p_density*p_vs*p_vs
@@ -77,16 +77,31 @@ dt = 0.025*year.value
 startTime = dt
 endTime = 0.5*year.value
 numSteps = 20
-timeArray = numpy.linspace(startTime, endTime, num=numSteps, dtype=numpy.float64)
+t = numpy.linspace(startTime, endTime, num=numSteps, dtype=numpy.float64)
 
 # Uniform strain rate field (plane strain).
-# e0 = U0/8000.0
+e0 = U0/8000.0
 edot0 = V0/8000.0
-# exx = e0 + edot0*timeArray
-exx = edot0*timeArray
+exx = e0 + edot0*t
 eyy = numpy.zeros(numSteps, dtype=numpy.float64)
 ezz = numpy.zeros(numSteps, dtype=numpy.float64)
 exy = numpy.zeros(numSteps, dtype=numpy.float64)
+
+# Deviatoric strains at t=0.
+eMean0 = e0/3.0
+eDev0 = numpy.zeros(numComponents, dtype=numpy.float64)
+eDev0[0] = e0 - eMean0
+eDev0[1] = -eMean0
+eDev0[2] = -eMean0
+eDev0[3] = 0.0
+
+# Deviatoric strain rates.
+eMeanDot0 = edot0/3.0
+eDevDot0 = numpy.zeros(numComponents, dtype=numpy.float64)
+eDevDot0[0] = edot0 - eMeanDot0
+eDevDot0[1] = -eMeanDot0
+eDevDot0[2] = -eMeanDot0
+eDevDot0[3] = 0.0
 
 # Deviatoric strains.
 eMean = (exx + eyy + ezz)/3.0
@@ -96,32 +111,18 @@ eDev[:,1] = eyy - eMean
 eDev[:,2] = ezz - eMean
 eDev[:,3] = exy
 
-# Viscous strain factors.
-dh = numpy.zeros(numMaxElements, dtype=numpy.float64)
-timeFac = numpy.zeros(numMaxElements, dtype=numpy.float64)
-timeFac[0] = math.exp(-dt/p_tau_1)
-timeFac[1] = math.exp(-dt/p_tau_2)
-timeFac[2] = math.exp(-dt/p_tau_3)
-dh[0] = p_tau_1*(1.0 - timeFac[0])/dt
-dh[1] = p_tau_2*(1.0 - timeFac[1])/dt
-dh[2] = p_tau_3*(1.0 - timeFac[2])/dt
-
 # Loop over time steps.
 eVis = numpy.zeros((numSteps, numComponents, numMaxElements), dtype=numpy.float64)
 sDev = numpy.zeros((numSteps, numComponents), dtype=numpy.float64)
 
 for timeStep in range(numSteps):
+    timeFac1 = math.exp(-t[timeStep]/p_tau_1)
+    timeFac2 = math.exp(-t[timeStep]/p_tau_2)
+    timeFac3 = math.exp(-t[timeStep]/p_tau_3)
     # Viscous strains.
-    if (timeStep == 0):
-        de = eDev[0,:]
-        eVis[timeStep,:,0] = dh[0]*de
-        eVis[timeStep,:,1] = dh[1]*de
-        eVis[timeStep,:,2] = dh[2]*de
-    else:
-        de = eDev[timeStep,:] - eDev[timeStep - 1,:]
-        eVis[timeStep,:,0] = timeFac[0]*eVis[timeStep - 1,:, 0] + dh[0]*de
-        eVis[timeStep,:,1] = timeFac[1]*eVis[timeStep - 1,:, 1] + dh[1]*de
-        eVis[timeStep,:,2] = timeFac[2]*eVis[timeStep - 1,:, 2] + dh[2]*de
+    eVis[timeStep,:,0] = eDev0*timeFac1 + eDevDot0*p_tau_1*(1.0 - timeFac1)
+    eVis[timeStep,:,1] = eDev0*timeFac2 + eDevDot0*p_tau_2*(1.0 - timeFac2)
+    eVis[timeStep,:,2] = eDev0*timeFac3 + eDevDot0*p_tau_3*(1.0 - timeFac3)
 
     # Deviatoric stresses.
     sDev[timeStep,:] = p_shear_ratio_0*eDev[timeStep,:]
@@ -131,7 +132,7 @@ for timeStep in range(numSteps):
 sDev *= 2.0*p_mu
 
 # Total stresses.
-sMean = eMean*(3.0*p_lambda + 2.0*p_mu)/3.0
+sMean = eMean*(3.0*p_lambda + 2.0*p_mu)
 sxx = sDev[:,0] + sMean
 syy = sDev[:,1] + sMean
 szz = sDev[:,2] + sMean
@@ -200,7 +201,7 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        # disp[0, :, 0] = e0*(locs[:, 0] + 4000.0).reshape(1, npts)
+        disp[0, :, 0] = e0*(locs[:, 0] + 4000.0).reshape(1, npts)
         return disp
 
     def bc_velocity(self, locs):
