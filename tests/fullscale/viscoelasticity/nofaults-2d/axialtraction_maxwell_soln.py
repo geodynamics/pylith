@@ -78,9 +78,6 @@ eyy = numpy.zeros(numSteps, dtype=numpy.float64)
 ezz = numpy.zeros(numSteps, dtype=numpy.float64)
 exy = numpy.zeros(numSteps, dtype=numpy.float64)
 
-outArray = numpy.column_stack((timeArray, syy, exx))
-numpy.savetxt('axialtraction_maxwell_analytical.txt', outArray)
-
 # Get viscous strains from deviatoric stress.
 eVisxx = 0.5*sDevxx/p_mu
 eVisyy = 0.5*sDevyy/p_mu
