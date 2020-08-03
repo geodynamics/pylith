@@ -39,8 +39,6 @@
 import numpy
 import math
 from pyre.units.time import year
-import pdb
-pdb.set_trace()
 
 # Physical properties.
 p_density = 2500.0
