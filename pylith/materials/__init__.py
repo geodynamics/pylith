@@ -29,7 +29,6 @@ __all__ = [
     "AuxSubfieldsIsotropicLinearPoroelasticity",
     "AuxSubfieldsPoroelasticity",
     "DerivedSubfieldsElasticity",
-    "DerivedSubfieldsPoroelasticity",
     "Elasticity",
     "Homogeneous",
     "IncompressibleElasticity",

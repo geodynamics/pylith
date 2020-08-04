@@ -51,9 +51,9 @@ class Poroelasticity(Material, ModulePoroelasticity):
         "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsPoroelasticity)
     auxiliarySubfields.meta['tip'] = "Discretization of Poroelasticity properties."
 
-    from .DerivedSubfieldsPoroelasticity import DerivedSubfieldsPoroelasticity
+    from .DerivedSubfieldsElasticity import DerivedSubfieldsElasticity
     derivedSubfields = pyre.inventory.facilityArray(
-        "derived_subfields", itemFactory=subfieldFactory, factory=DerivedSubfieldsPoroelasticity)
+        "derived_subfields", itemFactory=subfieldFactory, factory=DerivedSubfieldsElasticity)
     derivedSubfields.meta['tip'] = "Discretization of derived subfields (e.g., stress and strain)."
 
     useInertia = pyre.inventory.bool("use_inertia", default=False)
