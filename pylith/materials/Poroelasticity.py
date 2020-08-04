@@ -56,9 +56,6 @@ class Poroelasticity(Material, ModulePoroelasticity):
         "derived_subfields", itemFactory=subfieldFactory, factory=DerivedSubfieldsElasticity)
     derivedSubfields.meta['tip'] = "Discretization of derived subfields (e.g., stress and strain)."
 
-    useInertia = pyre.inventory.bool("use_inertia", default=False)
-    useInertia.meta['tip'] = "Include inertial term in Poroelasticity equation."
-
     useBodyForce = pyre.inventory.bool("use_body_force", default=False)
     useBodyForce.meta['tip'] = "Include body force term in Poroelasticity equation."
 
