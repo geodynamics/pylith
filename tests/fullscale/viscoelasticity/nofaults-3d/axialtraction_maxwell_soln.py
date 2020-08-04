@@ -55,8 +55,8 @@ p_poissons = 0.5*p_lambda/(p_lambda + p_mu)
 year = 60.0*60.0*24.0*365.25
 dt = 0.025*year
 startTime = dt
-endTime = 1.0*year
-numSteps = 40
+endTime = 0.5*year
+numSteps = 20
 timeArray = numpy.linspace(startTime, endTime, num=numSteps, dtype=numpy.float64)
 
 # Uniform stress field (plane strain).
