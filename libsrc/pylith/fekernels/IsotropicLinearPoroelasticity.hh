@@ -27,9 +27,9 @@
  * Auxiliary fields:
  * -- numA : number of auxiliary fields
  ***** Required fields(govening equations) + option fields + required fields (rheology)
- * - 0: addPorosity(1)
- * - 1: addSolidDensity(1)
- * - 2: addFluidDensity(1)
+ * - 0: porosity(1)
+ * - 1: solid_density(1)
+ * - 2: fluid_density(1)
  * - 3: fluid_viscosity(1)
 
  ** Optional fields
@@ -96,134 +96,134 @@ public:
 // ----------------------------------------------------------------------
 // f0u function for quadratic space and linear time MMS.
 static
-void f0_quadratic_linear_u(const PylithInt dim,
-                       const PylithInt numS,
-                       const PylithInt numA,
-                       const PylithInt sOff[],
-                       const PylithInt sOff_x[],
-                       const PylithScalar s[],
-                       const PylithScalar s_t[],
-                       const PylithScalar s_x[],
-                       const PylithInt aOff[],
-                       const PylithInt aOff_x[],
-                       const PylithScalar a[],
-                       const PylithScalar a_t[],
-                       const PylithScalar a_x[],
-                       const PylithReal t,
-                       const PylithScalar x[],
-                       const PylithInt numConstants,
-                       const PylithScalar constants[],
-                       PylithScalar f0u[]);
+void f0_mms_ql_u(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0u[]);
 
 // ----------------------------------------------------------------------
 // f0p function for quadratic space and linear time MMS.
 static
-void f0_quadratic_linear_p(const PylithInt dim,
-                       const PylithInt numS,
-                       const PylithInt numA,
-                       const PylithInt sOff[],
-                       const PylithInt sOff_x[],
-                       const PylithScalar s[],
-                       const PylithScalar s_t[],
-                       const PylithScalar s_x[],
-                       const PylithInt aOff[],
-                       const PylithInt aOff_x[],
-                       const PylithScalar a[],
-                       const PylithScalar a_t[],
-                       const PylithScalar a_x[],
-                       const PylithReal t,
-                       const PylithScalar x[],
-                       const PylithInt numConstants,
-                       const PylithScalar constants[],
-                       PylithScalar f0p[]);
+void f0_mms_ql_p(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0p[]);
 
 // ----------------------------------------------------------------------
 // f0u function for quadratic space and trigonometric time MMS.
 static
-void f0_quadratic_trig_u(const PylithInt dim,
-                       const PylithInt numS,
-                       const PylithInt numA,
-                       const PylithInt sOff[],
-                       const PylithInt sOff_x[],
-                       const PylithScalar s[],
-                       const PylithScalar s_t[],
-                       const PylithScalar s_x[],
-                       const PylithInt aOff[],
-                       const PylithInt aOff_x[],
-                       const PylithScalar a[],
-                       const PylithScalar a_t[],
-                       const PylithScalar a_x[],
-                       const PylithReal t,
-                       const PylithScalar x[],
-                       const PylithInt numConstants,
-                       const PylithScalar constants[],
-                       PylithScalar f0u[]);
+void f0_mms_qt_u(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0u[]);
 
 // ----------------------------------------------------------------------
 // f0p function for quadratic space and trigonometric time MMS.
 static
-void f0_quadratic_trig_p(const PylithInt dim,
-                       const PylithInt numS,
-                       const PylithInt numA,
-                       const PylithInt sOff[],
-                       const PylithInt sOff_x[],
-                       const PylithScalar s[],
-                       const PylithScalar s_t[],
-                       const PylithScalar s_x[],
-                       const PylithInt aOff[],
-                       const PylithInt aOff_x[],
-                       const PylithScalar a[],
-                       const PylithScalar a_t[],
-                       const PylithScalar a_x[],
-                       const PylithReal t,
-                       const PylithScalar x[],
-                       const PylithInt numConstants,
-                       const PylithScalar constants[],
-                       PylithScalar f0p[]);
+void f0_mms_qt_p(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0p[]);
 
 // ----------------------------------------------------------------------
 // f0u function for trigonometric space and linear time MMS.
 static
-void f0_trig_linear_u(const PylithInt dim,
-                       const PylithInt numS,
-                       const PylithInt numA,
-                       const PylithInt sOff[],
-                       const PylithInt sOff_x[],
-                       const PylithScalar s[],
-                       const PylithScalar s_t[],
-                       const PylithScalar s_x[],
-                       const PylithInt aOff[],
-                       const PylithInt aOff_x[],
-                       const PylithScalar a[],
-                       const PylithScalar a_t[],
-                       const PylithScalar a_x[],
-                       const PylithReal t,
-                       const PylithScalar x[],
-                       const PylithInt numConstants,
-                       const PylithScalar constants[],
-                       PylithScalar f0u[]);
+void f0_mms_tl_u(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0u[]);
 
 // ----------------------------------------------------------------------
 // f0p function for trigonometric space and linear time MMS.
 static
-void f0_trig_linear_p(const PylithInt dim,
-                       const PylithInt numS,
-                       const PylithInt numA,
-                       const PylithInt sOff[],
-                       const PylithInt sOff_x[],
-                       const PylithScalar s[],
-                       const PylithScalar s_t[],
-                       const PylithScalar s_x[],
-                       const PylithInt aOff[],
-                       const PylithInt aOff_x[],
-                       const PylithScalar a[],
-                       const PylithScalar a_t[],
-                       const PylithScalar a_x[],
-                       const PylithReal t,
-                       const PylithScalar x[],
-                       const PylithInt numConstants,
-                       const PylithScalar constants[],
-                       PylithScalar f0p[]);
+void f0_mms_tl_p(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0p[]);
 
 // ================================= STD =======================================
 
@@ -233,47 +233,47 @@ void f0_trig_linear_p(const PylithInt dim,
 // f0p function for generic poroelasticity terms (source density).
 // Quasi - Static
 static
-void f0p_QS(const PylithInt dim,
-              const PylithInt numS,
-              const PylithInt numA,
-              const PylithInt sOff[],
-              const PylithInt sOff_x[],
-              const PylithScalar s[],
-              const PylithScalar s_t[],
-              const PylithScalar s_x[],
-              const PylithInt aOff[],
-              const PylithInt aOff_x[],
-              const PylithScalar a[],
-              const PylithScalar a_t[],
-              const PylithScalar a_x[],
-              const PylithReal t,
-              const PylithScalar x[],
-              const PylithInt numConstants,
-              const PylithScalar constants[],
-              PylithScalar f0p[]);
+void f0p_quasistatic(const PylithInt dim,
+                     const PylithInt numS,
+                     const PylithInt numA,
+                     const PylithInt sOff[],
+                     const PylithInt sOff_x[],
+                     const PylithScalar s[],
+                     const PylithScalar s_t[],
+                     const PylithScalar s_x[],
+                     const PylithInt aOff[],
+                     const PylithInt aOff_x[],
+                     const PylithScalar a[],
+                     const PylithScalar a_t[],
+                     const PylithScalar a_x[],
+                     const PylithReal t,
+                     const PylithScalar x[],
+                     const PylithInt numConstants,
+                     const PylithScalar constants[],
+                     PylithScalar f0p[]);
 
 // ----------------------------------------------------------------------
 // f0p function for generic poroelasticity terms (source density).
 // Dynamic
 static
-void f0p_DYN(const PylithInt dim,
-              const PylithInt numS,
-              const PylithInt numA,
-              const PylithInt sOff[],
-              const PylithInt sOff_x[],
-              const PylithScalar s[],
-              const PylithScalar s_t[],
-              const PylithScalar s_x[],
-              const PylithInt aOff[],
-              const PylithInt aOff_x[],
-              const PylithScalar a[],
-              const PylithScalar a_t[],
-              const PylithScalar a_x[],
-              const PylithReal t,
-              const PylithScalar x[],
-              const PylithInt numConstants,
-              const PylithScalar constants[],
-              PylithScalar f0p[]);
+void f0p_inertia(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0p[]);
 
 // ----------------------------------------------------------------------
 /** Jf0_pe entry function for isotropic linear poroelasticity.
@@ -338,24 +338,24 @@ void Jf0pe(const PylithInt dim,
 * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), other poroelastic related param ...]
 */
 static
-void g1p_Grav(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar g1p[]);
+void g1p_gravity(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar g1p[]);
 
  // -----------------------------------------------------------------------------
  /** g1p / darcy flow / including gravity, tensor permeability
@@ -364,24 +364,24 @@ void g1p_Grav(const PylithInt dim,
  * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), other poroelastic related param ...]
  */
  static
- void g1p_Grav_tensorPerm(const PylithInt dim,
-              const PylithInt numS,
-              const PylithInt numA,
-              const PylithInt sOff[],
-              const PylithInt sOff_x[],
-              const PylithScalar s[],
-              const PylithScalar s_t[],
-              const PylithScalar s_x[],
-              const PylithInt aOff[],
-              const PylithInt aOff_x[],
-              const PylithScalar a[],
-              const PylithScalar a_t[],
-              const PylithScalar a_x[],
-              const PylithReal t,
-              const PylithScalar x[],
-              const PylithInt numConstants,
-              const PylithScalar constants[],
-              PylithScalar g1p[]);
+ void g1p_gravity_tensor_permeability(const PylithInt dim,
+                                      const PylithInt numS,
+                                      const PylithInt numA,
+                                      const PylithInt sOff[],
+                                      const PylithInt sOff_x[],
+                                      const PylithScalar s[],
+                                      const PylithScalar s_t[],
+                                      const PylithScalar s_x[],
+                                      const PylithInt aOff[],
+                                      const PylithInt aOff_x[],
+                                      const PylithScalar a[],
+                                      const PylithScalar a_t[],
+                                      const PylithScalar a_x[],
+                                      const PylithReal t,
+                                      const PylithScalar x[],
+                                      const PylithInt numConstants,
+                                      const PylithScalar constants[],
+                                      PylithScalar g1p[]);
 
  // -----------------------------------------------------------------------------
  /** g1p / darcy flow / without gravity
@@ -390,24 +390,24 @@ void g1p_Grav(const PylithInt dim,
  * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), other poroelastic related param ...]
  */
  static
- void g1p_NoGrav(const PylithInt dim,
-                const PylithInt numS,
-                const PylithInt numA,
-                const PylithInt sOff[],
-                const PylithInt sOff_x[],
-                const PylithScalar s[],
-                const PylithScalar s_t[],
-                const PylithScalar s_x[],
-                const PylithInt aOff[],
-                const PylithInt aOff_x[],
-                const PylithScalar a[],
-                const PylithScalar a_t[],
-                const PylithScalar a_x[],
-                const PylithReal t,
-                const PylithScalar x[],
-                const PylithInt numConstants,
-                const PylithScalar constants[],
-                PylithScalar g1p[]);
+ void g1p(const PylithInt dim,
+          const PylithInt numS,
+          const PylithInt numA,
+          const PylithInt sOff[],
+          const PylithInt sOff_x[],
+          const PylithScalar s[],
+          const PylithScalar s_t[],
+          const PylithScalar s_x[],
+          const PylithInt aOff[],
+          const PylithInt aOff_x[],
+          const PylithScalar a[],
+          const PylithScalar a_t[],
+          const PylithScalar a_x[],
+          const PylithReal t,
+          const PylithScalar x[],
+          const PylithInt numConstants,
+          const PylithScalar constants[],
+          PylithScalar g1p[]);
 
 // -----------------------------------------------------------------------------
 /** g1p / darcy flow / without gravity, tensor permeability
@@ -416,24 +416,24 @@ void g1p_Grav(const PylithInt dim,
 * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), other poroelastic related param ...]
 */
 static
-void g1p_NoGrav_tensorPerm(const PylithInt dim,
-               const PylithInt numS,
-               const PylithInt numA,
-               const PylithInt sOff[],
-               const PylithInt sOff_x[],
-               const PylithScalar s[],
-               const PylithScalar s_t[],
-               const PylithScalar s_x[],
-               const PylithInt aOff[],
-               const PylithInt aOff_x[],
-               const PylithScalar a[],
-               const PylithScalar a_t[],
-               const PylithScalar a_x[],
-               const PylithReal t,
-               const PylithScalar x[],
-               const PylithInt numConstants,
-               const PylithScalar constants[],
-               PylithScalar g1p[]);
+void g1p_tensor_permeability(const PylithInt dim,
+                             const PylithInt numS,
+                             const PylithInt numA,
+                             const PylithInt sOff[],
+                             const PylithInt sOff_x[],
+                             const PylithScalar s[],
+                             const PylithScalar s_t[],
+                             const PylithScalar s_x[],
+                             const PylithInt aOff[],
+                             const PylithInt aOff_x[],
+                             const PylithScalar a[],
+                             const PylithScalar a_t[],
+                             const PylithScalar a_x[],
+                             const PylithReal t,
+                             const PylithScalar x[],
+                             const PylithInt numConstants,
+                             const PylithScalar constants[],
+                             PylithScalar g1p[]);
 
 // -----------------------------------------------------------------------------
 /** g1u function for isotropic linear poroelasticity plane strain WITHOUT reference stress and reference strain.
@@ -443,23 +443,23 @@ void g1p_NoGrav_tensorPerm(const PylithInt dim,
 */
 static
 void g1u(const PylithInt dim,
-        const PylithInt numS,
-        const PylithInt numA,
-        const PylithInt sOff[],
-        const PylithInt sOff_x[],
-        const PylithScalar s[],
-        const PylithScalar s_t[],
-        const PylithScalar s_x[],
-        const PylithInt aOff[],
-        const PylithInt aOff_x[],
-        const PylithScalar a[],
-        const PylithScalar a_t[],
-        const PylithScalar a_x[],
-        const PylithReal t,
-        const PylithScalar x[],
-        const PylithInt numConstants,
-        const PylithScalar constants[],
-        PylithScalar g1[]);
+         const PylithInt numS,
+         const PylithInt numA,
+         const PylithInt sOff[],
+         const PylithInt sOff_x[],
+         const PylithScalar s[],
+         const PylithScalar s_t[],
+         const PylithScalar s_x[],
+         const PylithInt aOff[],
+         const PylithInt aOff_x[],
+         const PylithScalar a[],
+         const PylithScalar a_t[],
+         const PylithScalar a_x[],
+         const PylithReal t,
+         const PylithScalar x[],
+         const PylithInt numConstants,
+         const PylithScalar constants[],
+         PylithScalar g1[]);
 
 // -----------------------------------------------------------------------------
 /** g1u function for isotropic linear poroelasticity plane strain WITH reference stress and reference strain.
@@ -498,23 +498,23 @@ void g1u_refstate(const PylithInt dim,
 */
 static
 void g1v(const PylithInt dim,
-        const PylithInt numS,
-        const PylithInt numA,
-        const PylithInt sOff[],
-        const PylithInt sOff_x[],
-        const PylithScalar s[],
-        const PylithScalar s_t[],
-        const PylithScalar s_x[],
-        const PylithInt aOff[],
-        const PylithInt aOff_x[],
-        const PylithScalar a[],
-        const PylithScalar a_t[],
-        const PylithScalar a_x[],
-        const PylithReal t,
-        const PylithScalar x[],
-        const PylithInt numConstants,
-        const PylithScalar constants[],
-        PylithScalar g1[]);
+         const PylithInt numS,
+         const PylithInt numA,
+         const PylithInt sOff[],
+         const PylithInt sOff_x[],
+         const PylithScalar s[],
+         const PylithScalar s_t[],
+         const PylithScalar s_x[],
+         const PylithInt aOff[],
+         const PylithInt aOff_x[],
+         const PylithScalar a[],
+         const PylithScalar a_t[],
+         const PylithScalar a_x[],
+         const PylithReal t,
+         const PylithScalar x[],
+         const PylithInt numConstants,
+         const PylithScalar constants[],
+         PylithScalar g1[]);
 
 // -----------------------------------------------------------------------------
 /** g1v function for isotropic linear poroelasticity plane strain WITH reference stress and reference strain.
@@ -546,24 +546,24 @@ void g1v_refstate(const PylithInt dim,
 // Jg2ue function for isotropic linear poroelasticity.
 static
 void Jg2ue(const PylithInt dim,
-            const PylithInt numS,
-            const PylithInt numA,
-            const PylithInt sOff[],
-            const PylithInt sOff_x[],
-            const PylithScalar s[],
-            const PylithScalar s_t[],
-            const PylithScalar s_x[],
-            const PylithInt aOff[],
-            const PylithInt aOff_x[],
-            const PylithScalar a[],
-            const PylithScalar a_t[],
-            const PylithScalar a_x[],
-            const PylithReal t,
-            const PylithReal utshift,
-            const PylithScalar x[],
-            const PylithInt numConstants,
-            const PylithScalar constants[],
-            PylithScalar Jg2[]);
+           const PylithInt numS,
+           const PylithInt numA,
+           const PylithInt sOff[],
+           const PylithInt sOff_x[],
+           const PylithScalar s[],
+           const PylithScalar s_t[],
+           const PylithScalar s_x[],
+           const PylithInt aOff[],
+           const PylithInt aOff_x[],
+           const PylithScalar a[],
+           const PylithScalar a_t[],
+           const PylithScalar a_x[],
+           const PylithReal t,
+           const PylithReal utshift,
+           const PylithScalar x[],
+           const PylithInt numConstants,
+           const PylithScalar constants[],
+           PylithScalar Jg2[]);
 // ----------------------------------------------------------------------
  /** Jg2_up entry function for isotropic linear poroelasticity.
   * Solution fields: [...]
@@ -651,49 +651,49 @@ void Jg3pp(const PylithInt dim,
 * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), other poroelastic related param ...]
 */
 static
-void Jg3pp_tensorPerm(const PylithInt dim,
-          const PylithInt numS,
-          const PylithInt numA,
-          const PylithInt sOff[],
-          const PylithInt sOff_x[],
-          const PylithScalar s[],
-          const PylithScalar s_t[],
-          const PylithScalar s_x[],
-          const PylithInt aOff[],
-          const PylithInt aOff_x[],
-          const PylithScalar a[],
-          const PylithScalar a_t[],
-          const PylithScalar a_x[],
-          const PylithReal t,
-          const PylithReal utshift,
-          const PylithScalar x[],
-          const PylithInt numConstants,
-          const PylithScalar constants[],
-          PylithScalar Jg3[]);
+void Jg3pp_tensor_permeability(const PylithInt dim,
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithReal utshift,
+                               const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               PylithScalar Jg3[]);
 
  // ----------------------------------------------------------------------
  /* Jg3_uu entry function for isotropic linear poroelasticity.
  */
    static
    void Jg3uu(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithReal utshift,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar Jg3[]);
+              const PylithInt numS,
+              const PylithInt numA,
+              const PylithInt sOff[],
+              const PylithInt sOff_x[],
+              const PylithScalar s[],
+              const PylithScalar s_t[],
+              const PylithScalar s_x[],
+              const PylithInt aOff[],
+              const PylithInt aOff_x[],
+              const PylithScalar a[],
+              const PylithScalar a_t[],
+              const PylithScalar a_x[],
+              const PylithReal t,
+              const PylithReal utshift,
+              const PylithScalar x[],
+              const PylithInt numConstants,
+              const PylithScalar constants[],
+              PylithScalar Jg3[]);
 
  // ----------------------------------------------------------------------
  /* Jg3_vu entry function for isotropic linear poroelasticity.
@@ -711,24 +711,24 @@ void Jg3pp_tensorPerm(const PylithInt dim,
  */
    static
    void Jg3vu(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithReal utshift,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar Jg3[]);
+              const PylithInt numS,
+              const PylithInt numA,
+              const PylithInt sOff[],
+              const PylithInt sOff_x[],
+              const PylithScalar s[],
+              const PylithScalar s_t[],
+              const PylithScalar s_x[],
+              const PylithInt aOff[],
+              const PylithInt aOff_x[],
+              const PylithScalar a[],
+              const PylithScalar a_t[],
+              const PylithScalar a_x[],
+              const PylithReal t,
+              const PylithReal utshift,
+              const PylithScalar x[],
+              const PylithInt numConstants,
+              const PylithScalar constants[],
+              PylithScalar Jg3[]);
 
 // ----------------------------------------------------------------------
 /** Calculate mean stress for isotropic linear
@@ -739,23 +739,23 @@ void Jg3pp_tensorPerm(const PylithInt dim,
 */
 static
 void meanStress(const PylithInt dim,
-               const PylithInt numS,
-               const PylithInt numA,
-               const PylithInt sOff[],
-               const PylithInt sOff_x[],
-               const PylithScalar s[],
-               const PylithScalar s_t[],
-               const PylithScalar s_x[],
-               const PylithInt aOff[],
-               const PylithInt aOff_x[],
-               const PylithScalar a[],
-               const PylithScalar a_t[],
-               const PylithScalar a_x[],
-               const PylithReal t,
-               const PylithScalar x[],
-               const PylithInt numConstants,
-               const PylithScalar constants[],
-               PylithScalar stress[]);
+                const PylithInt numS,
+                const PylithInt numA,
+                const PylithInt sOff[],
+                const PylithInt sOff_x[],
+                const PylithScalar s[],
+                const PylithScalar s_t[],
+                const PylithScalar s_x[],
+                const PylithInt aOff[],
+                const PylithInt aOff_x[],
+                const PylithScalar a[],
+                const PylithScalar a_t[],
+                const PylithScalar a_x[],
+                const PylithReal t,
+                const PylithScalar x[],
+                const PylithInt numConstants,
+                const PylithScalar constants[],
+                PylithScalar stress[]);
 
  /** Calculate deviatoric stress for isotropic linear
  * poroelasticity WITHOUT reference stress and strain.
@@ -765,23 +765,23 @@ void meanStress(const PylithInt dim,
  */
  static
  void deviatoricStress(const PylithInt dim,
-                      const PylithInt numS,
-                      const PylithInt numA,
-                      const PylithInt sOff[],
-                      const PylithInt sOff_x[],
-                      const PylithScalar s[],
-                      const PylithScalar s_t[],
-                      const PylithScalar s_x[],
-                      const PylithInt aOff[],
-                      const PylithInt aOff_x[],
-                      const PylithScalar a[],
-                      const PylithScalar a_t[],
-                      const PylithScalar a_x[],
-                      const PylithReal t,
-                      const PylithScalar x[],
-                      const PylithInt numConstants,
-                      const PylithScalar constants[],
-                      PylithScalar stress[]);
+                       const PylithInt numS,
+                       const PylithInt numA,
+                       const PylithInt sOff[],
+                       const PylithInt sOff_x[],
+                       const PylithScalar s[],
+                       const PylithScalar s_t[],
+                       const PylithScalar s_x[],
+                       const PylithInt aOff[],
+                       const PylithInt aOff_x[],
+                       const PylithScalar a[],
+                       const PylithScalar a_t[],
+                       const PylithScalar a_x[],
+                       const PylithReal t,
+                       const PylithScalar x[],
+                       const PylithInt numConstants,
+                       const PylithScalar constants[],
+                       PylithScalar stress[]);
 
 /** Calculate mean stress for isotropic linear
 * poroelasticity WITH reference stress and reference strain.
@@ -791,23 +791,23 @@ void meanStress(const PylithInt dim,
 */
 static
 void meanStress_refstate(const PylithInt dim,
-                        const PylithInt numS,
-                        const PylithInt numA,
-                        const PylithInt sOff[],
-                        const PylithInt sOff_x[],
-                        const PylithScalar s[],
-                        const PylithScalar s_t[],
-                        const PylithScalar s_x[],
-                        const PylithInt aOff[],
-                        const PylithInt aOff_x[],
-                        const PylithScalar a[],
-                        const PylithScalar a_t[],
-                        const PylithScalar a_x[],
-                        const PylithReal t,
-                        const PylithScalar x[],
-                        const PylithInt numConstants,
-                        const PylithScalar constants[],
-                        PylithScalar stress[]);
+                         const PylithInt numS,
+                         const PylithInt numA,
+                         const PylithInt sOff[],
+                         const PylithInt sOff_x[],
+                         const PylithScalar s[],
+                         const PylithScalar s_t[],
+                         const PylithScalar s_x[],
+                         const PylithInt aOff[],
+                         const PylithInt aOff_x[],
+                         const PylithScalar a[],
+                         const PylithScalar a_t[],
+                         const PylithScalar a_x[],
+                         const PylithReal t,
+                         const PylithScalar x[],
+                         const PylithInt numConstants,
+                         const PylithScalar constants[],
+                         PylithScalar stress[]);
 
  /** Calculate deviatoric stress for isotropic linear
   * poroelasticity WITH reference stress and strain.
@@ -843,59 +843,7 @@ void meanStress_refstate(const PylithInt dim,
 * Auxiliary fields: [bulk_modulus(1)]
 */
 static
-void meanStress_dyn(const PylithInt dim,
-               const PylithInt numS,
-               const PylithInt numA,
-               const PylithInt sOff[],
-               const PylithInt sOff_x[],
-               const PylithScalar s[],
-               const PylithScalar s_t[],
-               const PylithScalar s_x[],
-               const PylithInt aOff[],
-               const PylithInt aOff_x[],
-               const PylithScalar a[],
-               const PylithScalar a_t[],
-               const PylithScalar a_x[],
-               const PylithReal t,
-               const PylithScalar x[],
-               const PylithInt numConstants,
-               const PylithScalar constants[],
-               PylithScalar stress[]);
-
- /** Calculate deviatoric stress for isotropic linear
- * poroelasticity WITHOUT reference stress and strain.
- *
- * Solution fields: [disp(dim), pore_pres(dim), vel(dim, optional)]
- * Auxiliary fields: [shear_modulus(1)]
- */
- static
- void deviatoricStress_dyn(const PylithInt dim,
-                      const PylithInt numS,
-                      const PylithInt numA,
-                      const PylithInt sOff[],
-                      const PylithInt sOff_x[],
-                      const PylithScalar s[],
-                      const PylithScalar s_t[],
-                      const PylithScalar s_x[],
-                      const PylithInt aOff[],
-                      const PylithInt aOff_x[],
-                      const PylithScalar a[],
-                      const PylithScalar a_t[],
-                      const PylithScalar a_x[],
-                      const PylithReal t,
-                      const PylithScalar x[],
-                      const PylithInt numConstants,
-                      const PylithScalar constants[],
-                      PylithScalar stress[]);
-
-/** Calculate mean stress for isotropic linear
-* poroelasticity WITH reference stress and reference strain.
-*
-* Solution fields: [disp(dim), pore_pres(dim), vel(dim, optional)]
-* Auxiliary fields: [bulk_modulus(1), reference_stress(4), reference_strain(4)]
-*/
-static
-void meanStress_dyn_refstate(const PylithInt dim,
+void meanStress_inertia(const PylithInt dim,
                         const PylithInt numS,
                         const PylithInt numA,
                         const PylithInt sOff[],
@@ -915,30 +863,82 @@ void meanStress_dyn_refstate(const PylithInt dim,
                         PylithScalar stress[]);
 
  /** Calculate deviatoric stress for isotropic linear
+ * poroelasticity WITHOUT reference stress and strain.
+ *
+ * Solution fields: [disp(dim), pore_pres(dim), vel(dim, optional)]
+ * Auxiliary fields: [shear_modulus(1)]
+ */
+ static
+ void deviatoricStress_inertia(const PylithInt dim,
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               PylithScalar stress[]);
+
+/** Calculate mean stress for isotropic linear
+* poroelasticity WITH reference stress and reference strain.
+*
+* Solution fields: [disp(dim), pore_pres(dim), vel(dim, optional)]
+* Auxiliary fields: [bulk_modulus(1), reference_stress(4), reference_strain(4)]
+*/
+static
+void meanStress_inertia_refstate(const PylithInt dim,
+                                 const PylithInt numS,
+                                 const PylithInt numA,
+                                 const PylithInt sOff[],
+                                 const PylithInt sOff_x[],
+                                 const PylithScalar s[],
+                                 const PylithScalar s_t[],
+                                 const PylithScalar s_x[],
+                                 const PylithInt aOff[],
+                                 const PylithInt aOff_x[],
+                                 const PylithScalar a[],
+                                 const PylithScalar a_t[],
+                                 const PylithScalar a_x[],
+                                 const PylithReal t,
+                                 const PylithScalar x[],
+                                 const PylithInt numConstants,
+                                 const PylithScalar constants[],
+                                 PylithScalar stress[]);
+
+ /** Calculate deviatoric stress for isotropic linear
   * poroelasticity WITH reference stress and strain.
   *
   * Solution fields: [disp(dim), pore_pres(dim), vel(dim, optional)]
   * Auxiliary fields: [shear_modulus(1), reference_stress(4), reference_strain(4)]
   */
  static
- void deviatoricStress_dyn_refstate(const PylithInt dim,
-                                const PylithInt numS,
-                                const PylithInt numA,
-                                const PylithInt sOff[],
-                                const PylithInt sOff_x[],
-                                const PylithScalar s[],
-                                const PylithScalar s_t[],
-                                const PylithScalar s_x[],
-                                const PylithInt aOff[],
-                                const PylithInt aOff_x[],
-                                const PylithScalar a[],
-                                const PylithScalar a_t[],
-                                const PylithScalar a_x[],
-                                const PylithReal t,
-                                const PylithScalar x[],
-                                const PylithInt numConstants,
-                                const PylithScalar constants[],
-                                PylithScalar stress[]);
+ void deviatoricStress_inertia_refstate(const PylithInt dim,
+                                        const PylithInt numS,
+                                        const PylithInt numA,
+                                        const PylithInt sOff[],
+                                        const PylithInt sOff_x[],
+                                        const PylithScalar s[],
+                                        const PylithScalar s_t[],
+                                        const PylithScalar s_x[],
+                                        const PylithInt aOff[],
+                                        const PylithInt aOff_x[],
+                                        const PylithScalar a[],
+                                        const PylithScalar a_t[],
+                                        const PylithScalar a_x[],
+                                        const PylithReal t,
+                                        const PylithScalar x[],
+                                        const PylithInt numConstants,
+                                        const PylithScalar constants[],
+                                        PylithScalar stress[]);
 
 /** Calculate stress for isotropic linear elasticity WITHOUT a reference stress and strain.
  *

@@ -82,7 +82,7 @@ public:
 
     // ============================= RHS ==================================== //
 
-    /** Get stress kernel for RHS residual, G(t,s).
+    /** Get displacement kernel for RHS residual, G(t,s).
      *
      * @param[in] coordsys Coordinate system.
      *
@@ -90,7 +90,7 @@ public:
      */
     PetscPointFunc getKernelg1u(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    /** Get stress kernel for RHS residual, G(t,s).
+    /** Get velocity kernel for RHS residual, G(t,s).
      *
      * @param[in] coordsys Coordinate system.
      *
@@ -106,7 +106,7 @@ public:
      */
     PetscPointFunc getKernelg1p(const spatialdata::geocoords::CoordSys* coordsys, const bool _gravityField) const;
 
-    /** Get elastic constants kernel for RHS Jacobian G(t,s).
+    /** Get displacement-displacement kernel for RHS Jacobian G(t,s).
      *
      * @param[in] coordsys Coordinate system.
      *
@@ -114,7 +114,7 @@ public:
      */
     PetscPointJac getKernelJg3uu(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    /** Get elastic constants kernel for RHS Jacobian G(t,s).
+    /** Get velocity-displacement kernel for RHS Jacobian G(t,s).
      *
      * @param[in] coordsys Coordinate system.
      *
@@ -122,7 +122,7 @@ public:
      */
     PetscPointJac getKernelJg3vu(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    /** Get Biot Coefficient for RHS Jacobian G(t,s).
+    /** Get displacement-pressure kernel for RHS Jacobian G(t,s).
      *
      * @param[in] coordsys Coordinate system.
      *
@@ -130,7 +130,7 @@ public:
      */
     PetscPointJac getKernelJg2up(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    /** Get Biot Coefficient for RHS Jacobian G(t,s).
+    /** Get velocity-pressure for RHS Jacobian G(t,s).
      *
      * @param[in] coordsys Coordinate system.
      *
@@ -138,7 +138,7 @@ public:
      */
     PetscPointJac getKernelJg2vp(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    /** Get lambda for RHS Jacobian G(t,s).
+    /** Get displacement-trace strain for RHS Jacobian G(t,s).
      *
      * @param[in] coordsys Coordinate system.
      *
@@ -146,7 +146,7 @@ public:
      */
     PetscPointJac getKernelJg2ue(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    /** Get stress kernel for derived field.
+    /** Get pressure-pressure kernel for derived field.
      *
      * @param[in] coordsys Coordinate system.
      *

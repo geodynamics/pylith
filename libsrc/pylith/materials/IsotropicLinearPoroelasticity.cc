@@ -165,10 +165,10 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelg1p(const spatialdata
     PYLITH_COMPONENT_DEBUG("getKernelg1p="<<typeid(coordsys).name()<<")");
 
     PetscPointFunc g1p =
-        (!_gravityField && !_useTensorPermeability) ? pylith::fekernels::IsotropicLinearPoroelasticity::g1p_NoGrav :
-        (!_gravityField && _useTensorPermeability) ? pylith::fekernels::IsotropicLinearPoroelasticity::g1p_NoGrav_tensorPerm :
-        (_gravityField && !_useTensorPermeability) ? pylith::fekernels::IsotropicLinearPoroelasticity::g1p_Grav :
-        (_gravityField && _useTensorPermeability) ?  pylith::fekernels::IsotropicLinearPoroelasticity::g1p_NoGrav_tensorPerm :
+        (!_gravityField && !_useTensorPermeability) ? pylith::fekernels::IsotropicLinearPoroelasticity::g1p :
+        (!_gravityField && _useTensorPermeability) ? pylith::fekernels::IsotropicLinearPoroelasticity::g1p_tensor_permeability :
+        (_gravityField && !_useTensorPermeability) ? pylith::fekernels::IsotropicLinearPoroelasticity::g1p_gravity :
+        (_gravityField && _useTensorPermeability) ?  pylith::fekernels::IsotropicLinearPoroelasticity::g1p_tensor_permeability :
         NULL;
 
     PYLITH_METHOD_RETURN(g1p);
@@ -245,7 +245,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelJg3pp(const spatialda
 
     PetscPointJac Jg3pp =
         (!_useTensorPermeability) ? pylith::fekernels::IsotropicLinearPoroelasticity::Jg3pp :
-        (_useTensorPermeability) ? pylith::fekernels::IsotropicLinearPoroelasticity::Jg3pp_tensorPerm :
+        (_useTensorPermeability) ? pylith::fekernels::IsotropicLinearPoroelasticity::Jg3pp_tensor_permeability :
         NULL;
 
     PYLITH_METHOD_RETURN(Jg3pp);
@@ -261,8 +261,8 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelf0p(const spatialdata
     PYLITH_COMPONENT_DEBUG("getKernelLHSVariationInFluidContent="<<typeid(coordsys).name()<<")");
 
     PetscPointFunc f0p = (!_useInertia) ?
-                          pylith::fekernels::IsotropicLinearPoroelasticity::f0p_QS :
-                          pylith::fekernels::IsotropicLinearPoroelasticity::f0p_DYN;
+                          pylith::fekernels::IsotropicLinearPoroelasticity::f0p_quasistatic :
+                          pylith::fekernels::IsotropicLinearPoroelasticity::f0p_inertia;
 
     PYLITH_METHOD_RETURN(f0p);
   } // getKernelf0p

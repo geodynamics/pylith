@@ -21,7 +21,6 @@
 #include "pylith/fekernels/Poroelasticity.hh"
 
 #include <cassert> // USES assert()
-#include <iostream> // use to output data to screen
 
 // =====================================================================================================================
 // Generic poroelasticity kernels for inertia and body forces.

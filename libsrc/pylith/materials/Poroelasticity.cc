@@ -215,7 +215,6 @@ pylith::materials::Poroelasticity::createAuxiliaryField(const pylith::topology::
 
     // ---------------------------------
     // Required Auxiliary
-    //auxiliaryFactory->addPorosity();      // 0
     auxiliaryFactory->addSolidDensity();  // 0 Rock Density
     auxiliaryFactory->addFluidDensity();  // 1 Fluid Density
     auxiliaryFactory->addFluidViscosity();// 2 Fluid Viscosity
@@ -330,11 +329,9 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
     case 0x1:
         g0p = pylith::fekernels::Poroelasticity::g0p_sourceDensity;
         break;
-    case 0x2:
-        //g0p = NULL;
+    case 0x2: // Use NULL
         break;
-    case 0x4:
-        //const PetscPointFunc g0p = NULL;
+    case 0x4: // Use NULL
         break;
     case 0x3:
         g0p = pylith::fekernels::Poroelasticity::g0p_sourceDensity_grav;
@@ -342,16 +339,12 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
     case 0x5:
         g0p = pylith::fekernels::Poroelasticity::g0p_sourceDensity_body;
         break;
-    case 0x6:
-        // No Source Density
-        //const PetscPointFunc g0p = NULL;
+    case 0x6: // Use NULL
         break;
     case 0x7:
         g0p = pylith::fekernels::Poroelasticity::g0p_sourceDensity_grav_body;
         break;
-    case 0x0:
-        // No Source Density
-        //const PetscPointFunc g0p = NULL;
+    case 0x0: // Use NULL
         break;
     default:
         PYLITH_COMPONENT_ERROR("Unknown combination of flags for source density (_useSourceDensity="<<_useSourceDensity<<", _gravityField="<<_gravityField<<", _useBodyForce="<<_useBodyForce<<").");
