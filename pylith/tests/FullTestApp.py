@@ -70,7 +70,7 @@ class Example(TestCase):
     """
     NAME = None
     PYLITH_ARGS = None
-    
+
     def setUp(self):
         TestCase.setUp(self)
         TestCase.run_pylith(self, self.NAME, self.PYLITH_ARGS)
@@ -78,7 +78,7 @@ class Example(TestCase):
     def test_example(self):
         return
 
-    
+
 # ----------------------------------------------------------------------------------------------------------------------
 class TestDriver(object):
     """
@@ -108,7 +108,7 @@ class TestDriver(object):
 # ----------------------------------------------------------------------------------------------------------------------
 class HDF5Checker(object):
 
-    def __init__(self, filename, testcase, mesh):
+    def __init__(self, filename, testcase, mesh, tolerance=1.e-5):
         """Constructor.
         """
         import h5py
@@ -116,7 +116,7 @@ class HDF5Checker(object):
         self.testcase = testcase
         self.exactsoln = testcase.exactsoln
         self.mesh = mesh
-
+        self.tolerance = tolerance
         self.vertices = None
         self.cellCentroids = None
         return
@@ -189,7 +189,7 @@ class HDF5Checker(object):
         self.testcase.assertEqual(ncompsE, ncomps)
 
         toleranceAbsMask = 0.1
-        tolerance = 1.0e-5
+        tolerance = self.tolerance
         maskZero = fieldE != 0.0
         scale = numpy.mean(numpy.abs(fieldE[maskZero].ravel())) if numpy.sum(maskZero) > 0 else 1.0
         for istep in xrange(nsteps):
@@ -208,7 +208,7 @@ class HDF5Checker(object):
 
                 if not maskField is None:
                     okay[maskField] = True
-                    
+
                 if numpy.sum(okay) != npts:
                     print("Error in component {} of field '{}' at time step {}.".format(icomp, fieldName, istep))
                     print("Expected values: ", fieldE[istep, :, :])
@@ -223,13 +223,13 @@ class HDF5Checker(object):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def check_data(filename, testcase, mesh, vertexFields=[], cellFields=[]):
+def check_data(filename, testcase, mesh, vertexFields=[], cellFields=[], tolerance=1.e-5):
     """Check vertex and cell fields in specified file.
     """
     if not has_h5py():
         return
 
-    checker = HDF5Checker(filename, testcase, mesh)
+    checker = HDF5Checker(filename, testcase, mesh, tolerance=tolerance)
     for field in vertexFields:
         if testcase.VERBOSITY > 0:
             print("Checking vertex field '{}' in file {}.".format(field, filename))

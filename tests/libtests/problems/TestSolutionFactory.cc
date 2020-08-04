@@ -106,20 +106,20 @@ pylith::problems::TestSolutionFactory::setUp(void) {
 
     // fluid_pressure
     componentNames.resize(1);
-    componentNames[0] = "fluid_pressure";
+    componentNames[0] = "trace_strain";
     info.description = pylith::topology::Field::Description(
-        "fluid_pressure",
-        "fluid_pressure",
+        "trace_strain",
+        "trace_strain",
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->normalizer->getPressureScale()
+        _data->1;
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 3, -1, -1, pylith::topology::Field::DEFAULT_BASIS, true, pylith::topology::Field::POINT_SPACE
+        2, 2, -1, -1, pylith::topology::Field::DEFAULT_BASIS, true, pylith::topology::Field::POLYNOMIAL_SPACE
         );
     info.index = 1;
-    _data->subfields["fluid_pressure"] = info;
+    _data->subfields["trace_strain"] = info;
 
     // pressure
     componentNames.resize(3);
@@ -225,7 +225,7 @@ pylith::problems::TestSolutionFactory::testDispLagrangeFault(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test adding pressure and fluid pressure subfields.
+// Test adding pressure and trace strain subfields.
 void
 pylith::problems::TestSolutionFactory::testPressure(void) {
     PYLITH_METHOD_BEGIN;
@@ -233,16 +233,16 @@ pylith::problems::TestSolutionFactory::testPressure(void) {
     CPPUNIT_ASSERT(_factory);
 
     CPPUNIT_ASSERT(!_solution->hasSubfield("pressure"));
-    CPPUNIT_ASSERT(!_solution->hasSubfield("fluid_pressure"));
+    CPPUNIT_ASSERT(!_solution->hasSubfield("trace_strain"));
 
     _factory->addPressure(_data->subfields["pressure"].fe);
-    _factory->addFluidPressure(_data->subfields["fluid_pressure"].fe);
+    _factory->addFluidPressure(_data->subfields["trace_strain"].fe);
 
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->normalizer);
 
     pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["pressure"]);
-    pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["fluid_pressure"]);
+    pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["trace_strain"]);
 
     PYLITH_METHOD_END;
 } // testPressure

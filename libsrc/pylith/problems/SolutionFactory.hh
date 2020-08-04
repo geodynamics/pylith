@@ -71,11 +71,11 @@ public:
      */
     void addPressure(const pylith::topology::FieldBase::Discretization& discretization);
 
-    /** Add fluid pressure subfield to solution field.
+    /** Add trace strain subfield to solution field.
      *
-     * @param[in] discretization Discretization for fluid pressure subfield.
+     * @param[in] discretization Discretization for trace strain subfield.
      */
-    void addFluidPressure(const pylith::topology::FieldBase::Discretization& discretization);
+    void addTraceStrain(const pylith::topology::FieldBase::Discretization& discretization);
 
     /** Add fault Lagrange multiplier subfield to solution field.
      *

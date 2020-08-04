@@ -23,13 +23,19 @@ subpkginclude_HEADERS = \
 	Material.hh \
 	Elasticity.hh \
 	RheologyElasticity.hh \
+	Poroelasticity.hh \
+	RheologyPoroelasticity.hh \
 	AuxiliaryFactoryElasticity.hh \
+	AuxiliaryFactoryPoroelasticity.hh \
+	AuxiliaryFactoryPoroelastic.hh \
 	DerivedFactoryElasticity.hh \
+	DerivedFactoryPoroelasticity.hh \
 	IsotropicLinearElasticity.hh \
 	IsotropicLinearMaxwell.hh \
 	IsotropicLinearGenMaxwell.hh \
 	IsotropicPowerLaw.hh \
 	IsotropicLinearIncompElasticity.hh \
+	IsotropicLinearPoroelasticity.hh \
 	AuxiliaryFactoryElastic.hh \
 	AuxiliaryFactoryViscoelastic.hh \
 	IncompressibleElasticity.hh \

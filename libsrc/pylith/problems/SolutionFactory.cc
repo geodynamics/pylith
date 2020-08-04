@@ -133,14 +133,15 @@ pylith::problems::SolutionFactory::addPressure(const pylith::topology::Field::Di
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Add fluid pressure subfield to solution field.
+// Add trace strain subfield to solution field.
 void
-pylith::problems::SolutionFactory::addFluidPressure(const pylith::topology::Field::Discretization& discretization) {
+pylith::problems::SolutionFactory::addTraceStrain(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("fluidPressure(discretization=typeid(discretization).name())");
+    PYLITH_JOURNAL_DEBUG("traceStrain(discretization=typeid(discretization).name())");
 
-    const char* fieldName = "fluid_pressure";
-    const char* componentNames[1] = { "fluid_pressure" };
+    const char* fieldName = "trace_strain";
+    const char* componentNames[1] = { "trace_strain" };
+    const PylithReal noScale = 1;
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -149,13 +150,13 @@ pylith::problems::SolutionFactory::addFluidPressure(const pylith::topology::Fiel
     description.numComponents = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = componentNames[0];
-    description.scale = _normalizer.getPressureScale();
+    description.scale = noScale;
     description.validator = NULL;
 
     _solution.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // addFluidPressure
+} // addTraceStrain
 
 
 // ---------------------------------------------------------------------------------------------------------------------

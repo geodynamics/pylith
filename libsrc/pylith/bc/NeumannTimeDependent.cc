@@ -244,7 +244,7 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
         description.scale = _normalizer->getPressureScale();
     } else if (_scaleName == std::string("time")) {
         description.scale = _normalizer->getPressureScale();
-    } else if (_scaleName == std::string("debsuty")) {
+    } else if (_scaleName == std::string("density")) {
         description.scale = _normalizer->getPressureScale();
     } else {
         std::ostringstream msg;

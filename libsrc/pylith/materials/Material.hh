@@ -44,6 +44,9 @@
  *
  * Incompressible elasticity
  *   + displacement, pressure, [velocity, Lagrange multipliers]
+ *
+ * Poroelasticity
+ *   + displacement, pressure, trace strain, [velocity, Lagrange multipliers]
  */
 
 class pylith::materials::Material : public pylith::problems::Physics {
