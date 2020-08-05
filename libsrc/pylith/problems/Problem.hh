@@ -44,6 +44,8 @@
 
 #include "pylith/utils/petscfwd.h" // USES PetscVec, PetscMat
 
+#include "pylith/problems/Physics.hh" // USES Problem::Formulation
+
 #include "pylith/utils/array.hh" // HASA std::vector
 
 class pylith::problems::Problem : public pylith::utils::PyreComponent {
@@ -68,6 +70,18 @@ public:
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
+
+    /** Set formulation for equations.
+     *
+     * @param[in] value Formulation type.
+     */
+    void setFormulation(const pylith::problems::Physics::FormulationEnum value);
+
+    /** Get formulation for equations.
+     *
+     * @returns Formulation type.
+     */
+    pylith::problems::Physics::FormulationEnum getFormulation(void) const;
 
     /** Set solver type.
      *
@@ -251,6 +265,7 @@ protected:
     std::vector<pylith::feassemble::Constraint*> _constraints; ///< Array of constraints.
     pylith::problems::ObserversSoln* _observers; ///< Subscribers of solution updates.
 
+    pylith::problems::Physics::FormulationEnum _formulation; ///< Formulation for equations.
     SolverTypeEnum _solverType; ///< Problem (solver) type.
 
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////

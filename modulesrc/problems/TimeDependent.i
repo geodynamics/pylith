@@ -25,14 +25,6 @@
 namespace pylith {
     namespace problems {
         class TimeDependent : public pylith::problems::Problem {
-            // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
-            enum FormulationTypeEnum {
-                IMPLICIT, // Implicit time stepping.
-                EXPLICIT, // Explicit time stepping.
-            }; // FormulationTypeEnum
-
             // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -93,18 +85,6 @@ public:
              */
             double getInitialTimeStep(void) const;
 
-	    /** Set formulation for solving equation.
-	     *
-	     * @param[in] value Formulation type.
-	     */
-	    void setFormulation(const FormulationTypeEnum value);
-
-	    /** Get formulation for solving equation.
-	     *
-	     * @returns Formulation type.
-	     */
-	    FormulationTypeEnum getFormulation(void) const;
-	  
             /** Set initial conditions.
              *
              * @param[in] ic Array of initial conditions.

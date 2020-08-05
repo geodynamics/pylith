@@ -45,6 +45,18 @@ public:
             /// Deallocate PETSc and local data structures.
             void deallocate(void);
 
+            /** Set formulation for equations.
+             *
+             * @param[in] value Formulation type.
+             */
+            void setFormulation(const pylith::problems::Physics::FormulationEnum value);
+
+            /** Get formulation for equations.
+             *
+             * @returns Formulation type.
+             */
+            pylith::problems::Physics::FormulationEnum getFormulation(void) const;
+
             /** Set solver type.
              *
              * @param[in] value Solver type.

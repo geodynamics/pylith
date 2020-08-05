@@ -59,27 +59,31 @@ namespace pylith {
             // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-            /** Set kernels for RHS residual.
+            /** Set kernels for LHS residual.
              *
              * @param[out] integrator Integrator for interface.
              * @param[in] fault Fault object for kinematic ruptures.
              * @param[in] solution Solution field.
+             * @param[in] formulation Formulation for equations.
              */
             static
-            void setKernelsRHSResidual(pylith::feassemble::IntegratorInterface* integrator,
+            void setKernelsLHSResidual(pylith::feassemble::IntegratorInterface* integrator,
                                        const pylith::faults::FaultCohesiveKin& fault,
-                                       const pylith::topology::Field& solution);
+                                       const pylith::topology::Field& solution,
+                                       const pylith::problems::Physics::FormulationEnum formulation);
 
-            /** Set kernels for RHS Jacobian.
+            /** Set kernels for LHS Jacobian.
              *
              * @param[out] integrator Integrator for interface.
              * @param[in] fault Fault object for kinematic ruptures.
              * @param[in] solution Solution field.
+             * @param[in] formulation Formulation for equations.
              */
             static
-            void setKernelsRHSJacobian(pylith::feassemble::IntegratorInterface* integrator,
+            void setKernelsLHSJacobian(pylith::feassemble::IntegratorInterface* integrator,
                                        const pylith::faults::FaultCohesiveKin& fault,
-                                       const pylith::topology::Field& solution);
+                                       const pylith::topology::Field& solution,
+                                       const pylith::problems::Physics::FormulationEnum formulation);
 
         };
 
@@ -152,19 +156,36 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Fi
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
-    if (!solution.hasSubfield("displacement")) {
-        std::ostringstream msg;
-        msg << "Cannot find 'displacement' subfield in solution field for fault implementation in component '"
-            << PyreComponent::getIdentifier() << "'.";
-        throw std::runtime_error(msg.str());
-    } // if
-
     if (!solution.hasSubfield("lagrange_multiplier_fault")) {
         std::ostringstream msg;
         msg << "Cannot find 'lagrange_multiplier_fault' subfield in solution field for fault implementation in component '"
             << PyreComponent::getIdentifier() << "'.";
         throw std::runtime_error(msg.str());
     } // if
+
+    switch (_formulation) {
+    case QUASISTATIC:
+        if (!solution.hasSubfield("displacement")) {
+            std::ostringstream msg;
+            msg << "Cannot find 'displacement' subfield in solution field for fault implementation in component '"
+                << PyreComponent::getIdentifier() << "'.";
+            throw std::runtime_error(msg.str());
+        } // if
+        break;
+    case DYNAMIC:
+        if (!solution.hasSubfield("displacement")) {
+            std::ostringstream msg;
+            msg << "Cannot find 'displacement' subfield in solution field for fault implementation in component '"
+                << PyreComponent::getIdentifier() << "'.";
+            throw std::runtime_error(msg.str());
+        } // if
+        break;
+    default: {
+        journal::firewall_t firewall(PyreComponent::getName());
+        firewall << journal::at(__HERE__)
+                 << "Unknown formulation for equations (" << _formulation << ")." << journal::endl;
+    } // default
+    } // switch
 
     PYLITH_METHOD_END;
 } // verifyConfiguration
@@ -181,8 +202,8 @@ pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field
     integrator->setInterfaceId(getInterfaceId());
     integrator->setSurfaceMarkerLabel(getSurfaceMarkerLabel());
 
-    _FaultCohesiveKin::setKernelsRHSResidual(integrator, *this, solution);
-    _FaultCohesiveKin::setKernelsRHSJacobian(integrator, *this, solution);
+    _FaultCohesiveKin::setKernelsLHSResidual(integrator, *this, solution, _formulation);
+    _FaultCohesiveKin::setKernelsLHSJacobian(integrator, *this, solution, _formulation);
     // No state variables.
     // _FaultCohesiveKin::setKernelsDerivedFields(integrator, *this, solution);
 
@@ -291,7 +312,19 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
-    _auxiliaryFactory->addSlip(); // 0
+    switch (_formulation) {
+    case pylith::problems::Physics::QUASISTATIC:
+        _auxiliaryFactory->addSlip(); // 0
+        break;
+    case pylith::problems::Physics::DYNAMIC:
+        _auxiliaryFactory->addSlipRate(); // 0
+        break;
+    default: {
+        journal::firewall_t firewall(PyreComponent::getName());
+        firewall << journal::at(__HERE__)
+                 << "Unknown formulation for equations (" << _formulation << ")." << journal::endl;
+    } // default
+    } // switch
 
     auxiliaryField->subfieldsSetup();
     auxiliaryField->createDiscretization();
@@ -340,40 +373,19 @@ pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* 
     assert(auxiliaryField);
     assert(_normalizer);
 
-    // Update slip field at current time step
-    PetscErrorCode err = VecSet(_slipVecTotal, 0.0);PYLITH_CHECK_ERROR(err);
-    const srcs_type::const_iterator rupturesEnd = _ruptures.end();
-    for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
-        err = VecSet(_slipVecRupture, 0.0);PYLITH_CHECK_ERROR(err);
-
-        KinSrc* src = r_iter->second;assert(src);
-        src->updateSlip(_slipVecRupture, auxiliaryField, t, _normalizer->getTimeScale());
-        err = VecAYPX(_slipVecTotal, 1.0, _slipVecRupture);
-    } // for
-
-    // Transfer slip values from local PETSc slip vector to fault auxiliary field.
-    PetscInt pStart = 0, pEnd = 0;
-    err = PetscSectionGetChart(auxiliaryField->localSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-
-    pylith::topology::VecVisitorMesh auxiliaryVisitor(*auxiliaryField, "slip");
-    PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();
-
-    const PylithScalar* slipArray = NULL;
-    err = VecGetArrayRead(_slipVecTotal, &slipArray);PYLITH_CHECK_ERROR(err);
-
-    for (PetscInt p = pStart, iSlip = 0; p < pEnd; ++p) {
-        const PetscInt slipDof = auxiliaryVisitor.sectionDof(p);
-        const PetscInt slipOff = auxiliaryVisitor.sectionOffset(p);
-        for (PetscInt iDof = 0; iDof < slipDof; ++iDof, ++iSlip) {
-            auxiliaryArray[slipOff+iDof] = slipArray[iSlip];
-        } // for
-    } // for
-    err = VecRestoreArrayRead(_slipVecTotal, &slipArray);PYLITH_CHECK_ERROR(err);
-
-    journal::debug_t debug(pylith::utils::PyreComponent::getName());
-    if (debug.state()) {
-        auxiliaryField->view("Fault auxiliary field after setting slip");
-    } // if
+    switch (_formulation) {
+    case pylith::problems::Physics::QUASISTATIC:
+        this->_updateSlip(auxiliaryField, t);
+        break;
+    case pylith::problems::Physics::DYNAMIC:
+        this->_updateSlipRate(auxiliaryField, t);
+        break;
+    default: {
+        journal::firewall_t firewall(PyreComponent::getName());
+        firewall << journal::at(__HERE__)
+                 << "Unknown formulation for equations (" << _formulation << ")." << journal::endl;
+    } // default
+    } // switch
 
     PYLITH_METHOD_END;
 } // updateAuxiliaryField
@@ -407,70 +419,201 @@ pylith::faults::FaultCohesiveKin::_updateKernelConstants(const PylithReal dt) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for RHS residual.
+// Update slip subfield in auxiliary field at beginning of time step.
 void
-pylith::faults::_FaultCohesiveKin::setKernelsRHSResidual(pylith::feassemble::IntegratorInterface* integrator,
-                                                         const pylith::faults::FaultCohesiveKin& fault,
-                                                         const pylith::topology::Field& solution) {
+pylith::faults::FaultCohesiveKin::_updateSlip(pylith::topology::Field* auxiliaryField,
+                                              const double t) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_COMPONENT_DEBUG("setKernelsRHSResidual(integrator="<<integrator<<", fault="<<typeid(fault)<<",
-    // solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("updateSlip(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
-    const char* nameDispVel = (solution.hasSubfield("velocity")) ? "velocity" : "displacement";
-    const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
+    assert(auxiliaryField);
+    assert(_normalizer);
+
+    // Update slip subfield at current time step
+    PetscErrorCode err = VecSet(_slipVecTotal, 0.0);PYLITH_CHECK_ERROR(err);
+    const srcs_type::const_iterator rupturesEnd = _ruptures.end();
+    for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
+        err = VecSet(_slipVecRupture, 0.0);PYLITH_CHECK_ERROR(err);
+
+        KinSrc* src = r_iter->second;assert(src);
+        src->updateSlip(_slipVecRupture, auxiliaryField, t, _normalizer->getTimeScale());
+        err = VecAYPX(_slipVecTotal, 1.0, _slipVecRupture);
+    } // for
+
+    // Transfer slip values from local PETSc slip vector to fault auxiliary field.
+    PetscInt pStart = 0, pEnd = 0;
+    err = PetscSectionGetChart(auxiliaryField->localSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+
+    pylith::topology::VecVisitorMesh auxiliaryVisitor(*auxiliaryField, "slip");
+    PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();
+
+    const PylithScalar* slipArray = NULL;
+    err = VecGetArrayRead(_slipVecTotal, &slipArray);PYLITH_CHECK_ERROR(err);
+
+    for (PetscInt p = pStart, iSlip = 0; p < pEnd; ++p) {
+        const PetscInt slipDof = auxiliaryVisitor.sectionDof(p);
+        const PetscInt slipOff = auxiliaryVisitor.sectionOffset(p);
+        for (PetscInt iDof = 0; iDof < slipDof; ++iDof, ++iSlip) {
+            auxiliaryArray[slipOff+iDof] = slipArray[iSlip];
+        } // for
+    } // for
+    err = VecRestoreArrayRead(_slipVecTotal, &slipArray);PYLITH_CHECK_ERROR(err);
+
+    journal::debug_t debug(pylith::utils::PyreComponent::getName());
+    if (debug.state()) {
+        auxiliaryField->view("Fault auxiliary field after setting slip.");
+    } // if
+
+    PYLITH_METHOD_END;
+} // _updateSlip
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Update slip rate subfield in auxiliary field at beginning of time step.
+void
+pylith::faults::FaultCohesiveKin::_updateSlipRate(pylith::topology::Field* auxiliaryField,
+                                                  const double t) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_updateSlipRate(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
+
+    assert(auxiliaryField);
+    assert(_normalizer);
+
+    // Update slip rate subfield at current time step
+    PetscErrorCode err = VecSet(_slipVecTotal, 0.0);PYLITH_CHECK_ERROR(err);
+    const srcs_type::const_iterator rupturesEnd = _ruptures.end();
+    for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
+        err = VecSet(_slipVecRupture, 0.0);PYLITH_CHECK_ERROR(err);
+
+        KinSrc* src = r_iter->second;assert(src);
+        src->updateSlipRate(_slipVecRupture, auxiliaryField, t, _normalizer->getTimeScale());
+        err = VecAYPX(_slipVecTotal, 1.0, _slipVecRupture);
+    } // for
+
+    // Transfer slip values from local PETSc slip vector to fault auxiliary field.
+    PetscInt pStart = 0, pEnd = 0;
+    err = PetscSectionGetChart(auxiliaryField->localSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+
+    pylith::topology::VecVisitorMesh auxiliaryVisitor(*auxiliaryField, "slip_rate");
+    PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();
+
+    const PylithScalar* slipRateArray = NULL;
+    err = VecGetArrayRead(_slipVecTotal, &slipRateArray);PYLITH_CHECK_ERROR(err);
+
+    for (PetscInt p = pStart, iSlipRate = 0; p < pEnd; ++p) {
+        const PetscInt slipRateDof = auxiliaryVisitor.sectionDof(p);
+        const PetscInt slipRateOff = auxiliaryVisitor.sectionOffset(p);
+        for (PetscInt iDof = 0; iDof < slipRateDof; ++iDof, ++iSlipRate) {
+            auxiliaryArray[slipRateOff+iDof] = slipRateArray[iSlipRate];
+        } // for
+    } // for
+    err = VecRestoreArrayRead(_slipVecTotal, &slipRateArray);PYLITH_CHECK_ERROR(err);
+
+    journal::debug_t debug(pylith::utils::PyreComponent::getName());
+    if (debug.state()) {
+        auxiliaryField->view("Fault auxiliary field after setting slip rate.");
+    } // if
+
+    PYLITH_METHOD_END;
+} // _updateSlipRate
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set kernels for LHS residual.
+void
+pylith::faults::_FaultCohesiveKin::setKernelsLHSResidual(pylith::feassemble::IntegratorInterface* integrator,
+                                                         const pylith::faults::FaultCohesiveKin& fault,
+                                                         const pylith::topology::Field& solution,
+                                                         const pylith::problems::Physics::FormulationEnum formulation) {
+    PYLITH_METHOD_BEGIN;
+    // PYLITH_COMPONENT_DEBUG("setKernelsLHSResidual(integrator="<<integrator<<", fault="<<typeid(fault)<<",
+    // solution="<<solution.getLabel()<<")");
 
     std::vector<ResidualKernels> kernels(2);
 
     // Elasticity equation (displacement/velocity).
-    const PetscBdPointFunc g0u = pylith::fekernels::FaultCohesiveKin::g0u;
-    const PetscBdPointFunc g1u = NULL;
+    const PetscBdPointFunc f0u = pylith::fekernels::FaultCohesiveKin::f0u;
+    const PetscBdPointFunc f1u = NULL;
 
-    // Fault slip constraint equation.
-    const PetscBdPointFunc g0l = pylith::fekernels::FaultCohesiveKin::g0l;
-    const PetscBdPointFunc g1l = NULL;
+    switch (formulation) {
+    case pylith::problems::Physics::QUASISTATIC: {
+        // Fault slip constraint equation.
+        const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_u;
+        const PetscBdPointFunc f1l = NULL;
 
-    kernels[0] = ResidualKernels(nameDispVel, g0u, g1u);
-    kernels[1] = ResidualKernels(nameLagrangeMultiplier, g0l, g1l);
+        kernels[0] = ResidualKernels("displacement", f0u, f1u);
+        kernels[1] = ResidualKernels("lagrange_multiplier_fault", f0l, f1l);
+        break;
+    } // QUASISTATIC
+    case pylith::problems::Physics::DYNAMIC: {
+        // Fault slip constraint equation.
+        const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_v;
+        const PetscBdPointFunc f1l = NULL;
+
+        kernels[0] = ResidualKernels("velocity", f0u, f1u);
+        kernels[1] = ResidualKernels("lagrange_multiplier_fault", f0l, f1l);
+        break;
+    } // DYNAMIC
+    default: {
+        journal::firewall_t firewall("faultcohesivekin");
+        firewall << journal::at(__HERE__)
+                 << "Unknown formulation for equations (" << formulation << ")." << journal::endl;
+    } // default
+    } // switch
+
     assert(integrator);
-    integrator->setKernelsRHSResidual(kernels);
+    integrator->setKernelsLHSResidual(kernels);
 
     PYLITH_METHOD_END;
-} // setKernelsRHSResidual
+} // setKernelsLHSResidual
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for RHS Jacobian.
+// Set kernels for LHS Jacobian.
 void
-pylith::faults::_FaultCohesiveKin::setKernelsRHSJacobian(pylith::feassemble::IntegratorInterface* integrator,
+pylith::faults::_FaultCohesiveKin::setKernelsLHSJacobian(pylith::feassemble::IntegratorInterface* integrator,
                                                          const pylith::faults::FaultCohesiveKin& fault,
-                                                         const pylith::topology::Field& solution) {
+                                                         const pylith::topology::Field& solution,
+                                                         const pylith::problems::Physics::FormulationEnum formulation) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_COMPONENT_DEBUG("setKernelsRHSJacobian(integrator="<<integrator<<", fault="<<typeid(fault)<<",
+    // PYLITH_COMPONENT_DEBUG("setKernelsLHSJacobian(integrator="<<integrator<<", fault="<<typeid(fault)<<",
     // solution="<<solution.getLabel()<<")");
-
-    const char* nameDispVel = (solution.hasSubfield("velocity")) ? "velocity" : "displacement";
-    const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
 
     std::vector<JacobianKernels> kernels(2);
 
-    const PetscBdPointJac Jg0ul = pylith::fekernels::FaultCohesiveKin::Jg0ul;
-    const PetscBdPointJac Jg1ul = NULL;
-    const PetscBdPointJac Jg2ul = NULL;
-    const PetscBdPointJac Jg3ul = NULL;
+    const PetscBdPointJac Jf0ul = pylith::fekernels::FaultCohesiveKin::Jf0ul;
+    const PetscBdPointJac Jf1ul = NULL;
+    const PetscBdPointJac Jf2ul = NULL;
+    const PetscBdPointJac Jf3ul = NULL;
 
-    const PetscBdPointJac Jg0lu = pylith::fekernels::FaultCohesiveKin::Jg0lu;
-    const PetscBdPointJac Jg1lu = NULL;
-    const PetscBdPointJac Jg2lu = NULL;
-    const PetscBdPointJac Jg3lu = NULL;
+    const PetscBdPointJac Jf0lu = pylith::fekernels::FaultCohesiveKin::Jf0lu;
+    const PetscBdPointJac Jf1lu = NULL;
+    const PetscBdPointJac Jf2lu = NULL;
+    const PetscBdPointJac Jf3lu = NULL;
 
-    kernels[0] = JacobianKernels(nameDispVel, nameLagrangeMultiplier, Jg0ul, Jg1ul, Jg2ul, Jg3ul);
-    kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameDispVel, Jg0lu, Jg1lu, Jg2lu, Jg3lu);
+    const char* nameDispVel = NULL;
+    const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
+    switch (formulation) {
+    case pylith::problems::Physics::QUASISTATIC:
+        nameDispVel = "displacement";
+        break;
+    case pylith::problems::Physics::DYNAMIC:
+        nameDispVel = "velocity";
+        break;
+    default: {
+        journal::firewall_t firewall("faultcohesivekin");
+        firewall << journal::at(__HERE__)
+                 << "Unknown formulation for equations (" << formulation << ")." << journal::endl;
+    } // default
+    } // switch
+    kernels[0] = JacobianKernels(nameDispVel, nameLagrangeMultiplier, Jf0ul, Jf1ul, Jf2ul, Jf3ul);
+    kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameDispVel, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
+
     assert(integrator);
-    integrator->setKernelsRHSJacobian(kernels);
+    integrator->setKernelsLHSJacobian(kernels);
 
     PYLITH_METHOD_END;
-} // setKernelsRHSJacobian
+} // setKernelsLHSJacobian
 
 
-// ----------------------------------------------------------------------
 // End of file

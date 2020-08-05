@@ -32,14 +32,6 @@ class pylith::problems::TimeDependent : public pylith::problems::Problem {
     friend class TestTimeDependent; // unit testing
     friend class pylith::testing::MMSTest; // Testing with Method of Manufactured Solutions
 
-    // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
-    enum FormulationTypeEnum {
-        IMPLICIT, // Implicit time stepping.
-        EXPLICIT, // Explicit time stepping.
-    }; // FormulationTypeEnum
-
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -99,18 +91,6 @@ public:
      * @returns Initial time step (seconds).
      */
     double getInitialTimeStep(void) const;
-
-    /** Set formulation for solving equation.
-     *
-     * @param[in] value Formulation type.
-     */
-    void setFormulation(const FormulationTypeEnum value);
-
-    /** Get formulation for solving equation.
-     *
-     * @returns Formulation type.
-     */
-    FormulationTypeEnum getFormulation(void) const;
 
     /** Set initial conditions.
      *
@@ -262,7 +242,6 @@ private:
     PetscTS _ts; ///< PETSc time stepper.
     std::vector<pylith::problems::InitialCondition*> _ic; ///< Array of initial conditions.
     pylith::problems::ProgressMonitorTime* _monitor; ///< Monitor for simulation progress.
-    FormulationTypeEnum _formulationType; ///< Type of time stepping.
     bool _shouldNotifyIC;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////

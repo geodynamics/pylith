@@ -56,9 +56,6 @@ class Elasticity(Material, ModuleElasticity):
         "derived_subfields", itemFactory=subfieldFactory, factory=DerivedSubfieldsElasticity)
     derivedSubfields.meta['tip'] = "Discretization of derived subfields (e.g., stress and strain)."
 
-    useInertia = pyre.inventory.bool("use_inertia", default=False)
-    useInertia.meta['tip'] = "Include inertial term in elasticity equation."
-
     useBodyForce = pyre.inventory.bool("use_body_force", default=False)
     useBodyForce.meta['tip'] = "Include body force term in elasticity equation."
 
@@ -83,7 +80,6 @@ class Elasticity(Material, ModuleElasticity):
 
         self.rheology.addAuxiliarySubfields(self, problem)
 
-        ModuleElasticity.useInertia(self, self.useInertia)
         ModuleElasticity.useBodyForce(self, self.useBodyForce)
         return
 

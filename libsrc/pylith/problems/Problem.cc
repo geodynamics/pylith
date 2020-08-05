@@ -52,8 +52,8 @@ pylith::problems::Problem::Problem() :
     _normalizer(NULL),
     _gravityField(NULL),
     _observers(new pylith::problems::ObserversSoln),
-    _solverType(LINEAR) { // constructor
-} // constructor
+    _formulation(pylith::problems::Physics::QUASISTATIC),
+    _solverType(LINEAR) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -91,6 +91,27 @@ pylith::problems::Problem::deallocate(void) {
 
     PYLITH_METHOD_END;
 } // deallocate
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set formulation for solving equation.
+void
+pylith::problems::Problem::setFormulation(const pylith::problems::Physics::FormulationEnum value) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("setFormulation(value="<<value<<")");
+
+    _formulation = value;
+
+    PYLITH_METHOD_END;
+} // setFormulation
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get formulation for solving equation.
+pylith::problems::Physics::FormulationEnum
+pylith::problems::Problem::getFormulation(void) const {
+    return _formulation;
+} // getFormulation
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -246,18 +267,21 @@ pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh) {
         assert(_materials[i]);
         _materials[i]->setNormalizer(*_normalizer);
         _materials[i]->setGravityField(_gravityField);
+        _materials[i]->setFormulation(_formulation);
     } // for
 
     const size_t numInterfaces = _interfaces.size();
     for (size_t i = 0; i < numInterfaces; ++i) {
         assert(_interfaces[i]);
         _interfaces[i]->setNormalizer(*_normalizer);
+        _interfaces[i]->setFormulation(_formulation);
     } // for
 
     const size_t numBC = _bc.size();
     for (size_t i = 0; i < numBC; ++i) {
         assert(_bc[i]);
         _bc[i]->setNormalizer(*_normalizer);
+        _bc[i]->setFormulation(_formulation);
     } // for
 
     PYLITH_METHOD_END;
@@ -496,7 +520,7 @@ pylith::problems::Problem::computeLHSResidual(PetscVec residualVec,
     } // for
 
     // Assemble residual values across processes.
-    PetscErrorCode err = VecSet(residualVec, 0.0);PYLITH_CHECK_ERROR(err); // Move to TSComputeIFunction()?
+    PetscErrorCode err = VecSet(residualVec, 0.0);PYLITH_CHECK_ERROR(err);
     _residual->scatterLocalToVector(residualVec, ADD_VALUES);
 
     PYLITH_METHOD_END;
@@ -545,6 +569,11 @@ pylith::problems::Problem::computeLHSJacobian(PetscMat jacobianMat,
     } // for
 
     // Solver handles assembly.
+
+#if 0 // :DEBUG:
+    std::cout << "LHS Jacobian" << std::endl;
+    MatView(jacobianMat, PETSC_VIEWER_STDOUT_SELF); // TEMPORARY
+#endif
 
     PYLITH_METHOD_END;
 } // computeLHSJacobianImplicit

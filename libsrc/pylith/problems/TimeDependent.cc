@@ -59,7 +59,6 @@ pylith::problems::TimeDependent::TimeDependent(void) :
     _maxTimeSteps(0),
     _ts(NULL),
     _monitor(NULL),
-    _formulationType(IMPLICIT),
     _shouldNotifyIC(false) {
     PyreComponent::setName(_TimeDependent::pyreComponent);
 } // constructor
@@ -185,27 +184,6 @@ pylith::problems::TimeDependent::getInitialTimeStep(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set formulation for solving equation.
-void
-pylith::problems::TimeDependent::setFormulation(const FormulationTypeEnum value) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setFormulation(value="<<value<<")");
-
-    _formulationType = value;
-
-    PYLITH_METHOD_END;
-} // setFormulation
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get formulation for solving equation.
-pylith::problems::TimeDependent::FormulationTypeEnum
-pylith::problems::TimeDependent::getFormulation(void) const {
-    return _formulationType;
-} // getFormulation
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Set initial conditions.
 void
 pylith::problems::TimeDependent::setInitialCondition(pylith::problems::InitialCondition* ic[],
@@ -311,39 +289,6 @@ pylith::problems::TimeDependent::initialize(void) {
     err = TSSetFromOptions(_ts);PYLITH_CHECK_ERROR(err);
     err = TSSetApplicationContext(_ts, (void*)this);PYLITH_CHECK_ERROR(err);
 
-#if 0
-    TSEquationType eqType = TS_EQ_UNSPECIFIED;
-    err = TSGetEquationType(_ts, &eqType);PYLITH_CHECK_ERROR(err);
-    switch (eqType) {
-    case TS_EQ_UNSPECIFIED: {
-        PYLITH_COMPONENT_ERROR("Unspecified time stepping equation type for PETSc time stepping object.");
-        throw std::logic_error("Unspecified time stepping equation type for PETSc time stepping object.");
-        break;
-    } // unspecified
-    case TS_EQ_EXPLICIT:
-    case TS_EQ_ODE_EXPLICIT:
-    case TS_EQ_DAE_SEMI_EXPLICIT_INDEX1:
-    case TS_EQ_DAE_SEMI_EXPLICIT_INDEX2:
-    case TS_EQ_DAE_SEMI_EXPLICIT_INDEX3:
-    case TS_EQ_DAE_SEMI_EXPLICIT_INDEXHI:
-        PYLITH_COMPONENT_DEBUG("Recognized PetscTS as explicit time stepping.");
-        _formulationType = EXPLICIT;
-        break;
-    case TS_EQ_IMPLICIT:
-    case TS_EQ_ODE_IMPLICIT:
-    case TS_EQ_DAE_IMPLICIT_INDEX1:
-    case TS_EQ_DAE_IMPLICIT_INDEX2:
-    case TS_EQ_DAE_IMPLICIT_INDEX3:
-    case TS_EQ_DAE_IMPLICIT_INDEXHI:
-        PYLITH_COMPONENT_DEBUG("Recognized PetscTS as implicit time stepping.");
-        _formulationType = IMPLICIT;
-        break;
-    default:
-        PYLITH_COMPONENT_DEBUG("Unknown PETSc time stepping equation type.");
-        throw std::logic_error("Unknown PETSc time stepping equation type.");
-    } // switch
-#endif
-
     // Set time stepping paramters.
     switch (getSolverType()) {
     case LINEAR:
@@ -391,12 +336,12 @@ pylith::problems::TimeDependent::initialize(void) {
     err = TSSetRHSJacobian(_ts, NULL, NULL, computeRHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
     err = TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
 
-    if ((IMPLICIT == _formulationType) || _solution->hasSubfield("lagrange_multiplier_fault")) {
+    if ((pylith::problems::Physics::QUASISTATIC == _formulation) || _solution->hasSubfield("lagrange_multiplier_fault")) {
         PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks computeLHSJacobian(), and computeLHSFunction().");
         err = TSSetIFunction(_ts, NULL, computeLHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
         err = TSSetIJacobian(_ts, NULL, NULL, computeLHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
     } // if
-    if (EXPLICIT == _formulationType) {
+    if (pylith::problems::Physics::DYNAMIC == _formulation) {
         // Setup field to hold inverse of lumped LHS Jacobian (if explicit).
         PYLITH_COMPONENT_DEBUG("Setting up field for inverse of lumped LHS Jacobian.");
 
@@ -405,12 +350,14 @@ pylith::problems::TimeDependent::initialize(void) {
     } // if
     // Set solve type for solution fields defined over the domain (not Lagrange multipliers).
     PetscDS prob = NULL;
-    PetscInt numFields = 0;
     err = DMGetDS(_solution->dmMesh(), &prob);PYLITH_CHECK_ERROR(err);
+#if 0
+    PetscInt numFields = 0;
     err = PetscDSGetNumFields(prob, &numFields);PYLITH_CHECK_ERROR(err);
     for (PetscInt iField = 0; iField < numFields; ++iField) {
         err = PetscDSSetImplicit(prob, iField, (_formulationType == IMPLICIT) ? PETSC_TRUE : PETSC_FALSE);
     } // for
+#endif
 
     // Setup time stepper.
     err = TSSetUp(_ts);PYLITH_CHECK_ERROR(err);
@@ -421,6 +368,13 @@ pylith::problems::TimeDependent::initialize(void) {
 
     if (_monitor) {
         _monitor->open();
+    } // if
+
+    journal::debug_t debug(pylith::utils::PyreComponent::getName());
+    if (debug.state()) {
+        debug << journal::at(__HERE__)
+              << "Solution Discretization" << journal::endl;
+        PetscDSView(prob, PETSC_VIEWER_STDOUT_SELF);
     } // if
 
     PYLITH_METHOD_END;
@@ -538,7 +492,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
     problem->Problem::computeRHSResidual(residualVec, t, dt, solutionVec);
 
     // If explicit time stepping, multiply RHS, G(t,s), by M^{-1}
-    if (EXPLICIT == problem->_formulationType) {
+    if (pylith::problems::Physics::DYNAMIC == problem->getFormulation()) {
         const PylithReal s_tshift = 1.0; // Keep shift terms on LHS, so use 1.0 for terms moved to RHS.
         problem->Problem::computeLHSJacobianLumpedInv(t, dt, s_tshift, solutionVec);
 

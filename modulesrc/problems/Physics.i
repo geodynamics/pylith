@@ -24,6 +24,14 @@
 namespace pylith {
     namespace problems {
         class Physics : public pylith::utils::PyreComponent {
+        // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////////////
+    public:
+
+        enum FormulationEnum {
+            QUASISTATIC, // Without inertia; implicit time stepping.
+            DYNAMIC, // With inertia; explicit time stepping).
+        }; // FormulationEnum
+
             // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -42,6 +50,18 @@ public:
              * @param dim Nondimensionalizer.
              */
             void setNormalizer(const spatialdata::units::Nondimensional& dim);
+
+            /** Get manager of scales used to nondimensionalize problem.
+             *
+             * @param dim Nondimensionalizer.
+             */
+            const spatialdata::units::Nondimensional& getNormalizer(void) const;
+
+            /** Set formulation for equations.
+             *
+             * @param[in] value Formulation for equations.
+             */
+            void setFormulation(const FormulationEnum value);
 
             /** Set spatial database for populating auxiliary field.
              *
