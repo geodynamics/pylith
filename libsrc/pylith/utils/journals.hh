@@ -29,6 +29,7 @@
 #include "journal/info.h"
 #include "journal/warning.h"
 #include "journal/error.h"
+#include "journal/firewall.h"
 
 #define PYLITH_COMPONENT_DEBUG(msg) \
     do { \
