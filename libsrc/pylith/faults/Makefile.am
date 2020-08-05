@@ -25,6 +25,7 @@ subpkginclude_HEADERS = \
 	AuxiliaryFactoryKinematic.hh \
 	KinSrc.hh \
 	KinSrcStep.hh \
+	KinSrcRamp.hh \
 	KinSrcConstRate.hh \
 	KinSrcBrune.hh \
 	KinSrcLiuCos.hh \

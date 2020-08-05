@@ -159,4 +159,35 @@ pylith::faults::AuxiliaryFactoryKinematic::addSlip(void) {
 } // addSlip
 
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Add fault slip rate subfield to auxiliary fields.
+void
+pylith::faults::AuxiliaryFactoryKinematic::addSlipRate(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("addSlipRate(void)");
+
+    const char* fieldName = "slip_rate";
+    const char* componentNames[3] = { "slip_rate_opening", "slip_rate_left_lateral", "slip_rate_reverse" };
+
+    const PylithReal velocityScale = _normalizer->getLengthScale() / _normalizer->getTimeScale();
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.alias = fieldName;
+    description.vectorFieldType = pylith::topology::Field::VECTOR;
+    description.numComponents = _spaceDim;
+    description.componentNames.resize(_spaceDim);
+    for (int i = 0; i < _spaceDim; ++i) {
+        description.componentNames[i] = componentNames[i];
+    } // for
+    description.scale = velocityScale;
+    description.validator = NULL;
+
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+    // No query; populated by kinematic source at beginning of time step.
+
+    PYLITH_METHOD_END;
+} // addSlipRate
+
+
 // End of file

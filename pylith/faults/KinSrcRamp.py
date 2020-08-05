@@ -13,26 +13,26 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/faults/KinSrcStep.py
+# @file pylith/faults/KinSrcRamp.py
 #
-# @brief Python object for a step slip time function.
+# @brief Python object for a ramp slip time function.
 #
 # Factory: eq_kinematic_src
 
 from .KinSrc import KinSrc
-from .faults import KinSrcStep as ModuleKinSrc
+from .faults import KinSrcRamp as ModuleKinSrc
 
 
-class KinSrcStep(KinSrc, ModuleKinSrc):
+class KinSrcRamp(KinSrc, ModuleKinSrc):
     """
-    Python object for a step slip time function.
+    Python object for a ramp slip time function.
 
     Factory: eq_kinematic_src
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="kinsrcstep"):
+    def __init__(self, name="kinsrcramp"):
         """
         Constructor.
         """
@@ -53,9 +53,9 @@ class KinSrcStep(KinSrc, ModuleKinSrc):
 
 def eq_kinematic_src():
     """
-    Factory associated with KinSrcStep.
+    Factory associated with KinSrcRamp.
     """
-    return KinSrcStep()
+    return KinSrcRamp()
 
 
 # End of file

@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "KinSrcBrune.hh" // implementation of object methods
+#include "KinSrcRamp.hh" // implementation of object methods
 
 #include "pylith/faults/KinSrcAuxiliaryFactory.hh" // USES KinSrcAuxiliaryFactory
 
@@ -31,37 +31,37 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::faults::KinSrcBrune::KinSrcBrune(void) {
-    pylith::utils::PyreComponent::setName("kinsrcbrune");
+pylith::faults::KinSrcRamp::KinSrcRamp(void) {
+    pylith::utils::PyreComponent::setName("kinsrcramp");
 } // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::faults::KinSrcBrune::~KinSrcBrune(void) {}
+pylith::faults::KinSrcRamp::~KinSrcRamp(void) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Slip time function kernel.
 void
-pylith::faults::KinSrcBrune::slipFn(const PylithInt dim,
-                                    const PylithInt numS,
-                                    const PylithInt numA,
-                                    const PylithInt sOff[],
-                                    const PylithInt sOff_x[],
-                                    const PylithScalar s[],
-                                    const PylithScalar s_t[],
-                                    const PylithScalar s_x[],
-                                    const PylithInt aOff[],
-                                    const PylithInt aOff_x[],
-                                    const PylithScalar a[],
-                                    const PylithScalar a_t[],
-                                    const PylithScalar a_x[],
-                                    const PylithReal t,
-                                    const PylithScalar x[],
-                                    const PylithInt numConstants,
-                                    const PylithScalar constants[],
-                                    PylithScalar slip[]) {
+pylith::faults::KinSrcRamp::slipFn(const PylithInt dim,
+                                   const PylithInt numS,
+                                   const PylithInt numA,
+                                   const PylithInt sOff[],
+                                   const PylithInt sOff_x[],
+                                   const PylithScalar s[],
+                                   const PylithScalar s_t[],
+                                   const PylithScalar s_x[],
+                                   const PylithInt aOff[],
+                                   const PylithInt aOff_x[],
+                                   const PylithScalar a[],
+                                   const PylithScalar a_t[],
+                                   const PylithScalar a_x[],
+                                   const PylithReal t,
+                                   const PylithScalar x[],
+                                   const PylithInt numConstants,
+                                   const PylithScalar constants[],
+                                   PylithScalar slip[]) {
     const PylithInt _numA = 3;
 
     assert(_numA == numA);
@@ -80,36 +80,39 @@ pylith::faults::KinSrcBrune::slipFn(const PylithInt dim,
     const PylithScalar originTime = constants[i_originTime];
     const PylithScalar t0 = originTime + initiationTime;
 
-    if (t >= t0) {
-        const PylithScalar tau = 0.21081916 * riseTime;
+    if (t >= t0 + riseTime) {
         for (PylithInt i = 0; i < dim; ++i) {
-            slip[i] = finalSlip[i] * (1.0 - exp(-(t-t0)/tau) * (1.0 + (t-t0)/tau));
+            slip[i] = finalSlip[i];
         } // for
-    } // if
+    } else if (t >= t0) {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slip[i] = finalSlip[i] * (t - t0) / riseTime;
+        } // for
+    } // if/else
 } // slipFn
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Slip rate time function kernel.
 void
-pylith::faults::KinSrcBrune::slipRateFn(const PylithInt dim,
-                                        const PylithInt numS,
-                                        const PylithInt numA,
-                                        const PylithInt sOff[],
-                                        const PylithInt sOff_x[],
-                                        const PylithScalar s[],
-                                        const PylithScalar s_t[],
-                                        const PylithScalar s_x[],
-                                        const PylithInt aOff[],
-                                        const PylithInt aOff_x[],
-                                        const PylithScalar a[],
-                                        const PylithScalar a_t[],
-                                        const PylithScalar a_x[],
-                                        const PylithReal t,
-                                        const PylithScalar x[],
-                                        const PylithInt numConstants,
-                                        const PylithScalar constants[],
-                                        PylithScalar slipRate[]) {
+pylith::faults::KinSrcRamp::slipRateFn(const PylithInt dim,
+                                       const PylithInt numS,
+                                       const PylithInt numA,
+                                       const PylithInt sOff[],
+                                       const PylithInt sOff_x[],
+                                       const PylithScalar s[],
+                                       const PylithScalar s_t[],
+                                       const PylithScalar s_x[],
+                                       const PylithInt aOff[],
+                                       const PylithInt aOff_x[],
+                                       const PylithScalar a[],
+                                       const PylithScalar a_t[],
+                                       const PylithScalar a_x[],
+                                       const PylithReal t,
+                                       const PylithScalar x[],
+                                       const PylithInt numConstants,
+                                       const PylithScalar constants[],
+                                       PylithScalar slipRate[]) {
     const PylithInt _numA = 3;
 
     assert(_numA == numA);
@@ -128,10 +131,9 @@ pylith::faults::KinSrcBrune::slipRateFn(const PylithInt dim,
     const PylithScalar originTime = constants[i_originTime];
     const PylithScalar t0 = originTime + initiationTime;
 
-    if (t >= t0) {
-        const PylithScalar tau = 0.21081916 * riseTime;
+    if ((t >= t0) && (t < t0 + riseTime)) {
         for (PylithInt i = 0; i < dim; ++i) {
-            slipRate[i] = finalSlip[i] * 1.0/tau * exp(-(t-t0)/tau) * (2.0 - (t-t0)/tau);
+            slipRate[i] = finalSlip[i] / riseTime;
         } // for
     } // if
 } // slipRateFn
@@ -140,8 +142,8 @@ pylith::faults::KinSrcBrune::slipRateFn(const PylithInt dim,
 // ---------------------------------------------------------------------------------------------------------------------
 // Preinitialize earthquake source. Set names/sizes of auxiliary subfields.
 void
-pylith::faults::KinSrcBrune::_auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
-                                                  const spatialdata::geocoords::CoordSys* cs) {
+pylith::faults::KinSrcRamp::_auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
+                                                 const spatialdata::geocoords::CoordSys* cs) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_auxiliaryFieldSetup()");
 
@@ -156,8 +158,8 @@ pylith::faults::KinSrcBrune::_auxiliaryFieldSetup(const spatialdata::units::Nond
     _auxiliaryFactory->addFinalSlip(); // 1
     _auxiliaryFactory->addRiseTime(); // 2
 
-    _slipFnKernel = pylith::faults::KinSrcBrune::slipFn;
-    _slipRateFnKernel = pylith::faults::KinSrcBrune::slipRateFn;
+    _slipFnKernel = pylith::faults::KinSrcRamp::slipFn;
+    _slipRateFnKernel = pylith::faults::KinSrcRamp::slipRateFn;
 
     PYLITH_METHOD_END;
 } // _auxiliaryFieldSetup

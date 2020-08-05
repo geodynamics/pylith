@@ -45,6 +45,7 @@ libpylith_la_SOURCES = \
 	faults/AuxiliaryFactoryKinematic.cc \
 	faults/KinSrc.cc \
 	faults/KinSrcStep.cc \
+	faults/KinSrcRamp.cc \
 	faults/KinSrcConstRate.cc \
 	faults/KinSrcBrune.cc \
 	faults/KinSrcLiuCos.cc \

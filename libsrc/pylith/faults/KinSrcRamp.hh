@@ -16,33 +16,41 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/faults/KinSrcLiuCos.hh
+/** @file libsrc/faults/KinSrcRamp.hh
  *
- * @brief C++ implementation of a Liu cosine-sine slip time function.
+ * @brief C++ implementation of a constant slip rate slip time function.
  */
 
-#if !defined(pylith_faults_kinsrcliucos_hh)
-#define pylith_faults_kinsrcliucos_hh
+#if !defined(pylith_faults_kinsrcramp_hh)
+#define pylith_faults_kinsrcramp_hh
 
 // Include directives ---------------------------------------------------
 #include "KinSrc.hh"
 
-// KinSrcLiuCos ------------------------------------------------------
-/** @brief Slip function time history from Liu, Archuleta, and Hartzell,
- * BSSA, 2006 (doi:10.1785/0120060036) which has a rapid rise and then
- * a gradual falloff with a finite duration.
+// KinSrcRamp ------------------------------------------------------
+/** @brief Slip with finite-duration ramp slip-time function.
+ *
+ * Slip time function is a ramp with a given rise time.
+ *
+ * slip = 0 for t < t0
+ *      = final_slip * (t - t0) / rise_time for t0 <= t < t0 + rise_time
+ *      = final_slip for t >= t0 + rise_time
+ *
+ * slip_rate = 0 for t < t0
+ *           = final_slip / rise_time for t0 <= t < t0 + rise_time
+ *           = 0 for t >= t0 + rise_time
  */
-class pylith::faults::KinSrcLiuCos : public KinSrc {
-    friend class TestKinSrcLiuCos; // unit testing
+class pylith::faults::KinSrcRamp : public KinSrc {
+    friend class TestKinSrcRamp; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    KinSrcLiuCos(void);
+    KinSrcRamp(void);
 
     /// Destructor.
-    ~KinSrcLiuCos(void);
+    ~KinSrcRamp(void);
 
     /** Slip time function kernel.
      *
@@ -144,11 +152,11 @@ protected:
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    KinSrcLiuCos(const KinSrcLiuCos&); ///< Not implemented
-    const KinSrcLiuCos& operator=(const KinSrcLiuCos&); ///< Not implemented
+    KinSrcRamp(const KinSrcRamp&); ///< Not implemented
+    const KinSrcRamp& operator=(const KinSrcRamp&); ///< Not implemented
 
-}; // class KinSrcLiuCos
+}; // class KinSrcRamp
 
-#endif // pylith_faults_kinsrcliucos_hh
+#endif // pylith_faults_kinsrcramp_hh
 
 // End of file

@@ -100,13 +100,7 @@ protected:
      * @param[in] cs Coordinate system for problem.
      */
     void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
-                        const spatialdata::geocoords::CoordSys* cs);
-
-    /** Set kernel for slip time function.
-     *
-     * @param[in] auxField Auxiliary field for fault with prescribed slip.
-     */
-    void _setSlipFnKernel(const pylith::topology::Field& auxField) const;
+                              const spatialdata::geocoords::CoordSys* cs);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

@@ -34,6 +34,7 @@ nobase_pkgpyexec_PYTHON = \
 	faults/FaultCohesiveKin.py \
 	faults/KinSrc.py \
 	faults/KinSrcStep.py \
+	faults/KinSrcRamp.py \
 	faults/KinSrcConstRate.py \
 	faults/KinSrcBrune.py \
 	faults/KinSrcLiuCos.py \
