@@ -55,6 +55,7 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
       - *ref_dir_2* Second choice for reference direction to discriminate among tangential directions in 3-D.
 
     Facilities
+      - *time_history* Time history with normalized amplitude as a function of time.
       - *auxiliary_subfields* Discretization of time-dependent Neumann parameters.
 
     FACTORY: boundary_condition
