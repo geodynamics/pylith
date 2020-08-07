@@ -36,6 +36,15 @@
 class pylith::feassemble::Integrator : public pylith::feassemble::PhysicsImplementation {
     friend class TestIntegrator; // unit testing
 
+    // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+
+    enum NewJacobianTriggers {
+        NEW_JACOBIAN_NEVER=0x0, // Never needs new Jacobian.
+        NEW_JACOBIAN_TIME_STEP_CHANGE=0x1, // Needs new Jacobian if time step changes.
+        NEW_JACOBIAN_UPDATE_STATE_VARS=0x10, // Needs new Jacobian after updating state variables.
+    };
+
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -59,6 +68,18 @@ public:
      * @returns True if Jacobian needs to be recomputed, false otherwise.
      */
     bool needNewLHSJacobian(void) const;
+
+    /** Set LHS Jacobian trigger.
+     *
+     * @param[in] value Triggers for needing new LHS Jacobian.
+     */
+    void setLHSJacobianTriggers(const NewJacobianTriggers value);
+
+    /** Set RHS Jacobian trigger.
+     *
+     * @param[in] value Triggers for needing new RHS Jacobian.
+     */
+    void setRHSJacobianTriggers(const NewJacobianTriggers value);
 
     /** Initialize integration domain, auxiliary field, and derived field. Update observers.
      *
@@ -207,6 +228,9 @@ protected:
     /// Default is false;
     bool _needNewRHSJacobian;
     bool _needNewLHSJacobian;
+    int _LHSJacobianTriggers; // Triggers for needing new LHS Jacobian.
+    int _RHSJacobianTriggers; // Triggers for needing new RHS Jacobian.
+    PylithReal _dtPrev; ///< Previous time step.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

@@ -164,6 +164,8 @@ pylith::feassemble::IntegratorBoundary::prestep(const double t,
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<")");
 
+    Integrator::prestep(t, dt);
+
     assert(_physics);
     _physics->updateAuxiliaryField(_auxiliaryField, t+dt);
 

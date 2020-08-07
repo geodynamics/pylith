@@ -39,7 +39,10 @@
 pylith::feassemble::Integrator::Integrator(pylith::problems::Physics* const physics) :
     PhysicsImplementation(physics),
     _needNewRHSJacobian(true),
-    _needNewLHSJacobian(true)
+    _needNewLHSJacobian(true),
+    _LHSJacobianTriggers(NEW_JACOBIAN_NEVER),
+    _RHSJacobianTriggers(NEW_JACOBIAN_NEVER),
+    _dtPrev(-1.0e+30)
 {}
 
 
@@ -64,6 +67,30 @@ bool
 pylith::feassemble::Integrator::needNewLHSJacobian(void) const {
     return _needNewLHSJacobian;
 } // needNewLHSJacobian
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set LHS Jacobian trigger.
+void
+pylith::feassemble::Integrator::setLHSJacobianTriggers(const NewJacobianTriggers value) {
+    if (value == NEW_JACOBIAN_NEVER) {
+        _LHSJacobianTriggers = value;
+    } else {
+        _LHSJacobianTriggers |= value;
+    } // if/else
+} // setLHSJacobianTriggers
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set RHS Jacobian trigger.
+void
+pylith::feassemble::Integrator::setRHSJacobianTriggers(const NewJacobianTriggers value) {
+    if (value == NEW_JACOBIAN_NEVER) {
+        _RHSJacobianTriggers = value;
+    } else {
+        _RHSJacobianTriggers |= value;
+    } // if/else
+} // setRHSJacobianTriggers
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -94,9 +121,17 @@ void
 pylith::feassemble::Integrator::prestep(const PylithReal t,
                                         const PylithReal dt) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<") empty method");
+    PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<")");
 
-    // Default is to do nothing.
+    if (dt != _dtPrev) {
+        if (_LHSJacobianTriggers & NEW_JACOBIAN_TIME_STEP_CHANGE) {
+            _needNewLHSJacobian = true;
+        } // if
+        if (_RHSJacobianTriggers & NEW_JACOBIAN_TIME_STEP_CHANGE) {
+            _needNewRHSJacobian = true;
+        } // if
+        _dtPrev = dt;
+    } // if
 
     PYLITH_METHOD_END;
 } // prestep
