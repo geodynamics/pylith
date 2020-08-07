@@ -462,9 +462,6 @@ pylith::problems::Problem::computeRHSJacobian(PetscMat jacobianMat,
 
     const size_t numIntegrators = _integrators.size();
 
-    PetscErrorCode err;
-    err = MatZeroEntries(precondMat);PYLITH_CHECK_ERROR(err);
-
     // Check to see if we need to compute RHS Jacobian.
     bool needNewRHSJacobian = false;
     for (size_t i = 0; i < numIntegrators; ++i) {
@@ -476,6 +473,10 @@ pylith::problems::Problem::computeRHSJacobian(PetscMat jacobianMat,
     if (!needNewRHSJacobian) {
         PYLITH_METHOD_END;
     } // if
+
+    PetscErrorCode err;
+    err = MatZeroEntries(jacobianMat);PYLITH_CHECK_ERROR(err);
+    err = MatZeroEntries(precondMat);PYLITH_CHECK_ERROR(err);
 
     // Update PyLith view of the solution.
     const PetscVec solutionDotVec = NULL;
@@ -560,6 +561,10 @@ pylith::problems::Problem::computeLHSJacobian(PetscMat jacobianMat,
         PYLITH_METHOD_END;
     } // if
 
+    PetscErrorCode err;
+    err = MatZeroEntries(jacobianMat);PYLITH_CHECK_ERROR(err);
+    err = MatZeroEntries(precondMat);PYLITH_CHECK_ERROR(err);
+
     // Update PyLith view of the solution.
     setSolutionLocal(t, solutionVec, solutionDotVec);
 
@@ -570,13 +575,8 @@ pylith::problems::Problem::computeLHSJacobian(PetscMat jacobianMat,
 
     // Solver handles assembly.
 
-#if 0 // :DEBUG:
-    std::cout << "LHS Jacobian" << std::endl;
-    MatView(jacobianMat, PETSC_VIEWER_STDOUT_SELF); // TEMPORARY
-#endif
-
     PYLITH_METHOD_END;
-} // computeLHSJacobianImplicit
+} // computeLHSJacobian
 
 
 // ----------------------------------------------------------------------

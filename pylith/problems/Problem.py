@@ -93,7 +93,7 @@ class Problem(PetscComponent, ModuleProblem):
     defaults.meta['tip'] = "Default options for problem."
 
     formulation = pyre.inventory.str("formulation", default="quasistatic",
-                                     validator=pyre.inventory.choice(["quasistatic", "dynamic"]))
+                                     validator=pyre.inventory.choice(["quasistatic", "dynamic", "dynamic_imex"]))
     formulation.meta['tip'] = "Formulation for equations."
 
     solverChoice = pyre.inventory.str("solver", default="linear",
@@ -153,8 +153,10 @@ class Problem(PetscComponent, ModuleProblem):
             formulationType = Physics.QUASISTATIC
         elif self.formulation == "dynamic":
             formulationType = Physics.DYNAMIC
+        elif self.formulation == "dynamic_imex":
+            formulationType = Physics.DYNAMIC_IMEX
         else:
-            raise ValueError("Unknown fornulation '{}'.".format(self.formulation))
+            raise ValueError("Unknown formulation '{}'.".format(self.formulation))
         ModuleProblem.setFormulation(self, formulationType)
 
         if self.solverChoice == "linear":

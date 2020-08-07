@@ -228,7 +228,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_u(const PylithInt dim,
     const PylithScalar* slip = &a[aOff[i_slip]];
 
     const PylithInt sOffDispN = sOff[i_disp];
-    const PylithInt sOffDispP = sOff[i_disp]+spaceDim;
+    const PylithInt sOffDispP = sOffDispN+spaceDim;
     const PylithInt fOffLagrange = 0;
 
     const PylithScalar* dispN = &s[sOffDispN];
@@ -370,7 +370,7 @@ pylith::fekernels::FaultCohesiveKin::Jf0ul(const PylithInt dim,
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
     const PylithInt gOffN = 0;
-    const PylithInt gOffP = 0+spaceDim;
+    const PylithInt gOffP = gOffN+spaceDim;
     const PylithInt ncols = spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
@@ -415,7 +415,7 @@ pylith::fekernels::FaultCohesiveKin::Jf0lu(const PylithInt dim,
     const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
 
     const PylithInt gOffN = 0;
-    const PylithInt gOffP = 0+spaceDim;
+    const PylithInt gOffP = gOffN+spaceDim;
     const PylithInt ncols = 2*spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {

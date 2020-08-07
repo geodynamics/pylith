@@ -85,7 +85,10 @@ public:
                                        const pylith::topology::Field& solution,
                                        const pylith::problems::Physics::FormulationEnum formulation);
 
+            static const char* pyreComponent;
+
         };
+        const char* _FaultCohesiveKin::pyreComponent = "faultcohesivekin";
 
         // _FaultCohesiveKin
 
@@ -98,7 +101,7 @@ pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
     _auxiliaryFactory(new pylith::faults::AuxiliaryFactoryKinematic),
     _slipVecRupture(NULL),
     _slipVecTotal(NULL) {
-    pylith::utils::PyreComponent::setName("faultcohesivekin");
+    pylith::utils::PyreComponent::setName(_FaultCohesiveKin::pyreComponent);
 } // constructor
 
 
@@ -172,19 +175,19 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Fi
             throw std::runtime_error(msg.str());
         } // if
         break;
-    case DYNAMIC:
-        if (!solution.hasSubfield("displacement")) {
+    case DYNAMIC_IMEX:
+        if (!solution.hasSubfield("velocity")) {
             std::ostringstream msg;
-            msg << "Cannot find 'displacement' subfield in solution field for fault implementation in component '"
+            msg << "Cannot find 'velocity' subfield in solution field for fault implementation in component '"
                 << PyreComponent::getIdentifier() << "'.";
             throw std::runtime_error(msg.str());
         } // if
         break;
-    default: {
-        journal::firewall_t firewall(PyreComponent::getName());
-        firewall << journal::at(__HERE__)
-                 << "Unknown formulation for equations (" << _formulation << ")." << journal::endl;
-    } // default
+    case DYNAMIC:
+        PYLITH_COMPONENT_FIREWALL("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        break;
+    default:
+        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     PYLITH_METHOD_END;
@@ -313,17 +316,17 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
     switch (_formulation) {
-    case pylith::problems::Physics::QUASISTATIC:
+    case QUASISTATIC:
         _auxiliaryFactory->addSlip(); // 0
         break;
-    case pylith::problems::Physics::DYNAMIC:
+    case DYNAMIC_IMEX:
         _auxiliaryFactory->addSlipRate(); // 0
         break;
-    default: {
-        journal::firewall_t firewall(PyreComponent::getName());
-        firewall << journal::at(__HERE__)
-                 << "Unknown formulation for equations (" << _formulation << ")." << journal::endl;
-    } // default
+    case DYNAMIC:
+        PYLITH_COMPONENT_FIREWALL("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        break;
+    default:
+        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     auxiliaryField->subfieldsSetup();
@@ -374,17 +377,17 @@ pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* 
     assert(_normalizer);
 
     switch (_formulation) {
-    case pylith::problems::Physics::QUASISTATIC:
+    case QUASISTATIC:
         this->_updateSlip(auxiliaryField, t);
         break;
-    case pylith::problems::Physics::DYNAMIC:
+    case DYNAMIC_IMEX:
         this->_updateSlipRate(auxiliaryField, t);
         break;
-    default: {
-        journal::firewall_t firewall(PyreComponent::getName());
-        firewall << journal::at(__HERE__)
-                 << "Unknown formulation for equations (" << _formulation << ")." << journal::endl;
-    } // default
+    case DYNAMIC:
+        PYLITH_COMPONENT_FIREWALL("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        break;
+    default:
+        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     PYLITH_METHOD_END;
@@ -526,8 +529,11 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSResidual(pylith::feassemble::Int
                                                          const pylith::topology::Field& solution,
                                                          const pylith::problems::Physics::FormulationEnum formulation) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_COMPONENT_DEBUG("setKernelsLHSResidual(integrator="<<integrator<<", fault="<<typeid(fault)<<",
-    // solution="<<solution.getLabel()<<")");
+    journal::debug_t debug(_FaultCohesiveKin::pyreComponent);
+    debug << journal::at(__HERE__)
+          << "setKernelsLHSResidual(integrator="<<integrator<<", fault="<<typeid(fault).name()
+          <<", solution="<<solution.getLabel()<<")"
+          << journal::endl;
 
     std::vector<ResidualKernels> kernels(2);
 
@@ -545,17 +551,24 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSResidual(pylith::feassemble::Int
         kernels[1] = ResidualKernels("lagrange_multiplier_fault", f0l, f1l);
         break;
     } // QUASISTATIC
-    case pylith::problems::Physics::DYNAMIC: {
-        // Fault slip constraint equation.
+    case pylith::problems::Physics::DYNAMIC_IMEX: {
+        // Fault slip rate constraint equation.
         const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_v;
         const PetscBdPointFunc f1l = NULL;
 
         kernels[0] = ResidualKernels("velocity", f0u, f1u);
         kernels[1] = ResidualKernels("lagrange_multiplier_fault", f0l, f1l);
         break;
+    } // DYNAMIC_IMEX
+    case pylith::problems::Physics::DYNAMIC: {
+        journal::firewall_t firewall(_FaultCohesiveKin::pyreComponent);
+        firewall << journal::at(__HERE__)
+                 << "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'."
+                 << journal::endl;
+
     } // DYNAMIC
     default: {
-        journal::firewall_t firewall("faultcohesivekin");
+        journal::firewall_t firewall(_FaultCohesiveKin::pyreComponent);
         firewall << journal::at(__HERE__)
                  << "Unknown formulation for equations (" << formulation << ")." << journal::endl;
     } // default
@@ -576,8 +589,10 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSJacobian(pylith::feassemble::Int
                                                          const pylith::topology::Field& solution,
                                                          const pylith::problems::Physics::FormulationEnum formulation) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_COMPONENT_DEBUG("setKernelsLHSJacobian(integrator="<<integrator<<", fault="<<typeid(fault)<<",
-    // solution="<<solution.getLabel()<<")");
+    journal::debug_t debug(_FaultCohesiveKin::pyreComponent);
+    debug << journal::at(__HERE__)
+          << "setKernelsLHSJacobian(integrator="<<integrator<<", fault="<<typeid(fault).name()
+          << ", solution="<<solution.getLabel()<<")" << journal::endl;
 
     std::vector<JacobianKernels> kernels(2);
 
@@ -597,13 +612,21 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSJacobian(pylith::feassemble::Int
     case pylith::problems::Physics::QUASISTATIC:
         nameDispVel = "displacement";
         break;
-    case pylith::problems::Physics::DYNAMIC:
+    case pylith::problems::Physics::DYNAMIC_IMEX:
         nameDispVel = "velocity";
         break;
-    default: {
-        journal::firewall_t firewall("faultcohesivekin");
+    case pylith::problems::Physics::DYNAMIC: {
+        journal::firewall_t firewall(_FaultCohesiveKin::pyreComponent);
         firewall << journal::at(__HERE__)
-                 << "Unknown formulation for equations (" << formulation << ")." << journal::endl;
+                 << "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'."
+                 << journal::endl;
+
+    } // DYNAMIC
+    default: {
+        journal::firewall_t firewall(_FaultCohesiveKin::pyreComponent);
+        firewall << journal::at(__HERE__)
+                 << "Unknown formulation for equations (" << formulation << ")."
+                 << journal::endl;
     } // default
     } // switch
     kernels[0] = JacobianKernels(nameDispVel, nameLagrangeMultiplier, Jf0ul, Jf1ul, Jf2ul, Jf3ul);

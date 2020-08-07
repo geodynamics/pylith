@@ -303,10 +303,11 @@ pylith::problems::TimeDependent::initialize(void) {
         PYLITH_COMPONENT_ERROR("Unknown problem type.");
         throw std::logic_error("Unknown problem type.");
     } // switch
-    PYLITH_COMPONENT_DEBUG("Setting PetscTS parameters: dtInitial="<<_dtInitial
-                                                                   <<", startTime="<<_startTime
-                                                                   <<", maxTimeSteps="<<_maxTimeSteps
-                                                                   <<", endTime="<<_endTime);
+    PYLITH_COMPONENT_DEBUG("Setting PetscTS parameters: "
+                           <<"dtInitial="<<_dtInitial
+                           <<", startTime="<<_startTime
+                           <<", maxTimeSteps="<<_maxTimeSteps
+                           <<", endTime="<<_endTime);
 
     assert(_normalizer);
     const PylithReal timeScale = _normalizer->getTimeScale();
@@ -330,37 +331,44 @@ pylith::problems::TimeDependent::initialize(void) {
     _observers->setTimeScale(timeScale);
 
     // Set callbacks.
-    PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks prestep(), poststep(), computeRHSJacobian(), and computeRHSFunction().");
+    PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks prestep(), poststep(), and computeRHSFunction().");
     err = TSSetPreStep(_ts, prestep);PYLITH_CHECK_ERROR(err);
     err = TSSetPostStep(_ts, poststep);PYLITH_CHECK_ERROR(err);
-    err = TSSetRHSJacobian(_ts, NULL, NULL, computeRHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
     err = TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
 
-    if ((pylith::problems::Physics::QUASISTATIC == _formulation) || _solution->hasSubfield("lagrange_multiplier_fault")) {
-        PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks computeLHSJacobian(), and computeLHSFunction().");
+    switch (_formulation) {
+    case pylith::problems::Physics::QUASISTATIC:
+        PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks computeRHSJacobian().");
+        err = TSSetRHSJacobian(_ts, NULL, NULL, computeRHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
+    case pylith::problems::Physics::DYNAMIC_IMEX:
+        PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks computeLHSJacobian() and computeLHSFunction().");
         err = TSSetIFunction(_ts, NULL, computeLHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
         err = TSSetIJacobian(_ts, NULL, NULL, computeLHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
-    } // if
-    if (pylith::problems::Physics::DYNAMIC == _formulation) {
-        // Setup field to hold inverse of lumped LHS Jacobian (if explicit).
+    case pylith::problems::Physics::DYNAMIC:
         PYLITH_COMPONENT_DEBUG("Setting up field for inverse of lumped LHS Jacobian.");
-
         delete _jacobianLHSLumpedInv;_jacobianLHSLumpedInv = new pylith::topology::Field(_solution->mesh());assert(_jacobianLHSLumpedInv);
         _jacobianLHSLumpedInv->cloneSection(*_solution);
-    } // if
+        break;
+    } // switch
+
+#if 0
     // Set solve type for solution fields defined over the domain (not Lagrange multipliers).
     PetscDS prob = NULL;
     err = DMGetDS(_solution->dmMesh(), &prob);PYLITH_CHECK_ERROR(err);
-#if 0
     PetscInt numFields = 0;
     err = PetscDSGetNumFields(prob, &numFields);PYLITH_CHECK_ERROR(err);
     for (PetscInt iField = 0; iField < numFields; ++iField) {
         err = PetscDSSetImplicit(prob, iField, (_formulationType == IMPLICIT) ? PETSC_TRUE : PETSC_FALSE);
     } // for
 #endif
-
-    // Setup time stepper.
-    err = TSSetUp(_ts);PYLITH_CHECK_ERROR(err);
+    journal::debug_t debug(pylith::utils::PyreComponent::getName());
+    if (debug.state()) {
+        PetscDS prob = NULL;
+        err = DMGetDS(_solution->dmMesh(), &prob);PYLITH_CHECK_ERROR(err);
+        debug << journal::at(__HERE__)
+              << "Solution Discretization" << journal::endl;
+        PetscDSView(prob, PETSC_VIEWER_STDOUT_SELF);
+    } // if
 
     if (_shouldNotifyIC) {
         _notifyObserversInitialSoln();
@@ -368,13 +376,6 @@ pylith::problems::TimeDependent::initialize(void) {
 
     if (_monitor) {
         _monitor->open();
-    } // if
-
-    journal::debug_t debug(pylith::utils::PyreComponent::getName());
-    if (debug.state()) {
-        debug << journal::at(__HERE__)
-              << "Solution Discretization" << journal::endl;
-        PetscDSView(prob, PETSC_VIEWER_STDOUT_SELF);
     } // if
 
     PYLITH_METHOD_END;
@@ -433,8 +434,8 @@ pylith::problems::TimeDependent::poststep(void) {
 
     // Get current solution. After first time step, t==dt, and tindex==1.
     PetscErrorCode err;
-    PylithReal t, dt;
-    PylithInt tindex;
+    PylithReal t = 0.0, dt = 0.0;
+    PylithInt tindex = 0;
     PetscVec solutionVec = NULL;
     err = TSGetTime(_ts, &t);PYLITH_CHECK_ERROR(err);
     err = TSGetTimeStep(_ts, &dt);PYLITH_CHECK_ERROR(err);
@@ -471,6 +472,7 @@ pylith::problems::TimeDependent::poststep(void) {
 } // poststep
 
 
+#include <iostream>
 // ---------------------------------------------------------------------------------------------------------------------
 // Callback static method for computing residual for RHS, G(t,s).
 PetscErrorCode
@@ -491,8 +493,8 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
     pylith::problems::TimeDependent* problem = (pylith::problems::TimeDependent*)context;
     problem->Problem::computeRHSResidual(residualVec, t, dt, solutionVec);
 
-    // If explicit time stepping, multiply RHS, G(t,s), by M^{-1}
-    if (pylith::problems::Physics::DYNAMIC == problem->getFormulation()) {
+    if (pylith::problems::Physics::QUASISTATIC != problem->getFormulation()) {
+        // Multiply RHS, G(t,s), by M^{-1}
         const PylithReal s_tshift = 1.0; // Keep shift terms on LHS, so use 1.0 for terms moved to RHS.
         problem->Problem::computeLHSJacobianLumpedInv(t, dt, s_tshift, solutionVec);
 

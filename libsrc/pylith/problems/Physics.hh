@@ -44,6 +44,7 @@ public:
     enum FormulationEnum {
         QUASISTATIC, // Without inertia; implicit time stepping.
         DYNAMIC, // With inertia; explicit time stepping).
+        DYNAMIC_IMEX, // With inertia; implicit+explicit time stepping).
     }; // FormulationEnum
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////

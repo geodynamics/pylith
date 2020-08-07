@@ -63,6 +63,14 @@
               << msg << journal::endl; \
     } while (0)
 
+#define PYLITH_COMPONENT_FIREWALL(msg) \
+    do { \
+        journal::firewall_t firewall(PyreComponent::getName()); \
+        firewall << journal::at(__HERE__) \
+                 << "Component '"<<PyreComponent::getIdentifier()<<"': " \
+                 << msg << journal::endl; \
+    } while (0)
+
 #define PYLITH_JOURNAL_DEBUG(msg) \
     do { \
         journal::debug_t debug(GenericComponent::getName()); \
