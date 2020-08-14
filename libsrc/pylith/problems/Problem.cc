@@ -474,8 +474,12 @@ pylith::problems::Problem::computeRHSJacobian(PetscMat jacobianMat,
         PYLITH_METHOD_END;
     } // if
 
-    PetscErrorCode err;
-    err = MatZeroEntries(jacobianMat);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = 0;
+    PetscDS solnDS = NULL;
+    PetscBool hasJacobian = PETSC_FALSE;
+    err = DMGetDS(_solution->dmMesh(), &solnDS);PYLITH_CHECK_ERROR(err);
+    err = PetscDSHasJacobian(solnDS, &hasJacobian);PYLITH_CHECK_ERROR(err);
+    if (hasJacobian) { err = MatZeroEntries(jacobianMat);PYLITH_CHECK_ERROR(err); }
     err = MatZeroEntries(precondMat);PYLITH_CHECK_ERROR(err);
 
     // Update PyLith view of the solution.
@@ -561,8 +565,12 @@ pylith::problems::Problem::computeLHSJacobian(PetscMat jacobianMat,
         PYLITH_METHOD_END;
     } // if
 
-    PetscErrorCode err;
-    err = MatZeroEntries(jacobianMat);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = 0;
+    PetscDS solnDS = NULL;
+    PetscBool hasJacobian = PETSC_FALSE;
+    err = DMGetDS(_solution->dmMesh(), &solnDS);PYLITH_CHECK_ERROR(err);
+    err = PetscDSHasJacobian(solnDS, &hasJacobian);PYLITH_CHECK_ERROR(err);
+    if (hasJacobian) { err = MatZeroEntries(jacobianMat);PYLITH_CHECK_ERROR(err); }
     err = MatZeroEntries(precondMat);PYLITH_CHECK_ERROR(err);
 
     // Update PyLith view of the solution.
