@@ -271,7 +271,7 @@ protected:
         _data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
         CPPUNIT_ASSERT(_material);
-        _material->useInertia(false);
+        _material->setFormulation(pylith::problems::Physics::QUASISTATIC);
         _material->useBodyForce(false);
         _material->setDescriptiveLabel("Isotropic Linear Elascitity Plane Strain");
         _material->setMaterialId(24);

@@ -43,18 +43,6 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Include inertia?
-     *
-     * @param[in] value Flag indicating to include inertial term.
-     */
-    void useInertia(const bool value);
-
-    /** Include inertia?
-     *
-     * @returns True if including inertial term, false otherwise.
-     */
-    bool useInertia(void) const;
-
     /** Include body force?
      *
      * @param[in] value Flag indicating to include body force term.
@@ -175,7 +163,7 @@ private:
      * @param[in] solution Solution field.
      */
     void _setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
-                                 const pylith::topology::Field& solution) const;
+                                    const pylith::topology::Field& solution) const;
 
     /** Set kernels for computing derived field.
      *

@@ -111,12 +111,12 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState :
     } // strain_units
 
     static double setGravityAcc_x(const double x,
-                               const double y) {
+                                  const double y) {
         return 0.0;
     } // setGravityAcc_x
 
     static double setGravityAcc_y(const double x,
-                               const double y) {
+                                  const double y) {
         return -GACC;
     } // setGravityAcc_y
 
@@ -228,7 +228,7 @@ protected:
         _data->auxDB->setCoordSys(*_data->cs);
 
         CPPUNIT_ASSERT(_material);
-        _material->useInertia(false);
+        _material->setFormulation(pylith::problems::Physics::QUASISTATIC);
         _material->useBodyForce(false);
         _rheology->useReferenceState(true);
 
