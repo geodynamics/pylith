@@ -248,6 +248,14 @@ pylith::problems::TimeDependent::getPetscSNES(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Get PETSc time stepper.
+PetscTS
+pylith::problems::TimeDependent::getPetscTS(void) {
+    return _ts;
+} // getPetscTS
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration.
 void
 pylith::problems::TimeDependent::verifyConfiguration(void) const {

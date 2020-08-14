@@ -219,6 +219,8 @@ pylith::testing::MMSTest::_initialize(void) {
     _problem->verifyConfiguration();
 
     _problem->initialize();
+    TSSetUp(_problem->getPetscTS());
+
     _setExactSolution();
     _problem->prestep();
 

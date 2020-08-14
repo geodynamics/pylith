@@ -126,6 +126,12 @@ public:
      */
     PetscSNES getPetscSNES(void);
 
+    /** Get PETSc time stepper.
+     *
+     * @returns PETSc TS for problem.
+     */
+    PetscTS getPetscTS(void);
+
     /// Verify configuration.
     void verifyConfiguration(void) const;
 
