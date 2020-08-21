@@ -99,7 +99,7 @@ data from multiple VTK files.}
 (default is 1.0 s).}
 \end{inventory}
 
-\warning{We strongly discourage use of using VTK output. It is slow,
+\userwarning{We strongly discourage use of using VTK output. It is slow,
   inefficient, and not easily read from post-processing scripts. We
   strongly recommwnd using HDF5 output instead, which is the default
   starting in PyLith v3.0.0.}
@@ -193,7 +193,7 @@ datasets in external binary files with just metadata in the HDF5 files
 using the \object{DataWriterHDF5Ext} object. Both methods provide
 similar performance because they will use MPI I/O if it is available.
 
-\warning{Storing the datasets within the HDF5 file in a parallel
+\userwarning{Storing the datasets within the HDF5 file in a parallel
   simulation requires that the HDF5 library be configured with the
   \commandline{-{}-enable-parallel} option. The binary PyLith packages
   include this feature and it is a default setting in building HDF5
@@ -275,7 +275,7 @@ user-specified elasped time. The property is
   \propertyitem{elapsed\_time}{Elasped time between writes (default=0.0*s).}
 \end{inventory}
  
-\tip{Due to roundoff error in determining the simulation time over
+\usertip{Due to roundoff error in determining the simulation time over
   many time steps, a simulation may occasionally skip writing output
   unexpectedly when using \object{OutputTriggerTime}. The best
   workaround is to use an \property{elapsed\_time} that is a fraction

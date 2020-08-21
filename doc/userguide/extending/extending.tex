@@ -205,7 +205,7 @@ of a bulk material as well as several utility routines:
 \item [{\texttt{\_dimProperties()}}] Dimensionalizes the physical properties
   used in the constitutive model equations.
 \item [{\texttt{\_stableTimeStepImplicit()}}] Computes the stable time
-  step for implicit time stepping in quasi-static simulations given
+  step for implicit time stepping in quasistatic simulations given
   the current state (strain, stress, and state variables).
 \item [{\texttt{\_calcDensity()}}] Computes the density given the physical
   properties and state variables. In most cases density is a physical
@@ -229,7 +229,7 @@ S-wave speed, and density rather then Lame's constants $\mu$, $\lambda,$
 and density), each bulk constitutive model component has routines
 to convert the physical property parameters and state variables a
 user specifies via spatial databases to the physical property properties
-and state variables used in the constitutive model equations. In quasi-static
+and state variables used in the constitutive model equations. In quasistatic
 problems, PyLith computes an elastic solution for the first time step
 ($-\Delta t$ to $t$). This means that for inelastic materials, we
 supply two sets of functions for the constitutive behavior: one set

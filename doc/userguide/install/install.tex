@@ -45,10 +45,10 @@ running Windows 10 build 14316 and later can install a Linux bash
 environment and use the PyLith binary for Linux (see
 Section~\vref{sec:install:windows} for more information).
 
-\tip{On Linux systems you can check which version of glibc you have by
+\usertip{On Linux systems you can check which version of glibc you have by
   running \filename{ldd --version}}.
 
-\tip{On Darwin systems running OS X, you can check the operating
+\usertip{On Darwin systems running OS X, you can check the operating
   system version by clicking on the Apple icon and \menu{About this Mac}.}
 
 \subsection{Linux and Mac OS X (Darwin)}
@@ -81,7 +81,7 @@ $ source setup.sh
   \end{shell}
 \end{enumerate}
 
-\warning{The binary distribution contains PyLith and all of its
+\userwarning{The binary distribution contains PyLith and all of its
   dependencies. If you have any of this software already installed on
   your system, you need to be careful in setting up your environment
   so that preexisting software does not conflict with the PyLith
@@ -90,7 +90,7 @@ $ source setup.sh
   (for Linux) environment variables. This will prevent most
   conflicts.}
 
-\warning{The PyLith binary distribution for {\bf Darwin} systems is
+\userwarning{The PyLith binary distribution for {\bf Darwin} systems is
   built using the system clang compiler suite and the system
   Python. {\bf This means the system Python must be in your path to
     use the PyLith binary executable}; ensure \filename{/bin} and
@@ -145,7 +145,7 @@ binary distribution.
   well as header files for PyLith and all of its dependencies.
 \end{description}
 
-\tip{We encourage anyone extending PyLith to fork the PyLith
+\usertip{We encourage anyone extending PyLith to fork the PyLith
   repository and build from source using the PyLith Installer Utility
   to facilitate contributing these features back into the CIG
   repository via pull requests.}
@@ -307,7 +307,7 @@ arguments:
 $ pylith example.cfg
 \end{shell}
 
-\warning{This assumes your machine list has enough nodes for the
+\userwarning{This assumes your machine list has enough nodes for the
   simulation in question.}
 
 You will notice that a machine file \filename{mpirun.nodes} is generated.
