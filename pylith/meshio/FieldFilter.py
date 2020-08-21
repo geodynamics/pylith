@@ -43,6 +43,7 @@ class FieldFilter(PetscComponent):
     def preinitialize(self):
         """Do minimal initialization."""
         self._createModuleObj()
+        self.setIdentifier(self.aliases[-1])
         return
 
 
