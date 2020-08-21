@@ -40,9 +40,10 @@ pylith::feassemble::Integrator::Integrator(pylith::problems::Physics* const phys
     PhysicsImplementation(physics),
     _needNewRHSJacobian(true),
     _needNewLHSJacobian(true),
+    _needNewLHSJacobianLumped(true),
     _LHSJacobianTriggers(NEW_JACOBIAN_NEVER),
-    _RHSJacobianTriggers(NEW_JACOBIAN_NEVER),
-    _dtPrev(-1.0e+30)
+    _LHSJacobianLumpedTriggers(NEW_JACOBIAN_NEVER),
+    _RHSJacobianTriggers(NEW_JACOBIAN_NEVER)
 {}
 
 
@@ -56,7 +57,11 @@ pylith::feassemble::Integrator::~Integrator(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Check whether RHS Jacobian needs to be recomputed.
 bool
-pylith::feassemble::Integrator::needNewRHSJacobian(void) const {
+pylith::feassemble::Integrator::needNewRHSJacobian(const bool dtChanged) {
+    if (dtChanged && (_RHSJacobianTriggers & NEW_JACOBIAN_TIME_STEP_CHANGE)) {
+        _needNewRHSJacobian = true;
+    } // if
+
     return _needNewRHSJacobian;
 } // needNewRHSJacobian
 
@@ -64,9 +69,25 @@ pylith::feassemble::Integrator::needNewRHSJacobian(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Check whether LHS Jacobian needs to be recomputed.
 bool
-pylith::feassemble::Integrator::needNewLHSJacobian(void) const {
+pylith::feassemble::Integrator::needNewLHSJacobian(const bool dtChanged) {
+    if (dtChanged && (_LHSJacobianTriggers & NEW_JACOBIAN_TIME_STEP_CHANGE)) {
+        _needNewLHSJacobian = true;
+    } // if
+
     return _needNewLHSJacobian;
 } // needNewLHSJacobian
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Check whether LHS lumped Jacobian needs to be recomputed.
+bool
+pylith::feassemble::Integrator::needNewLHSJacobianLumped(const bool dtChanged) {
+    if (dtChanged && (_LHSJacobianLumpedTriggers & NEW_JACOBIAN_TIME_STEP_CHANGE)) {
+        _needNewLHSJacobianLumped = true;
+    } // if
+
+    return _needNewLHSJacobianLumped;
+} // needNewLHSJacobianLumped
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -79,6 +100,18 @@ pylith::feassemble::Integrator::setLHSJacobianTriggers(const NewJacobianTriggers
         _LHSJacobianTriggers |= value;
     } // if/else
 } // setLHSJacobianTriggers
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set LHS lumped Jacobian trigger.
+void
+pylith::feassemble::Integrator::setLHSJacobianLumpedTriggers(const NewJacobianTriggers value) {
+    if (value == NEW_JACOBIAN_NEVER) {
+        _LHSJacobianLumpedTriggers = value;
+    } else {
+        _LHSJacobianLumpedTriggers |= value;
+    } // if/else
+} // setLHSJacobianLumpedTriggers
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -115,26 +148,17 @@ pylith::feassemble::Integrator::initialize(const pylith::topology::Field& soluti
 } // initialize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Update auxiliary fields at beginning of time step.
-void
-pylith::feassemble::Integrator::prestep(const PylithReal t,
-                                        const PylithReal dt) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<")");
+#include <iostream>
 
-    if (dt != _dtPrev) {
-        if (_LHSJacobianTriggers & NEW_JACOBIAN_TIME_STEP_CHANGE) {
-            _needNewLHSJacobian = true;
-        } // if
-        if (_RHSJacobianTriggers & NEW_JACOBIAN_TIME_STEP_CHANGE) {
-            _needNewRHSJacobian = true;
-        } // if
-        _dtPrev = dt;
-    } // if
+// ---------------------------------------------------------------------------------------------------------------------
+// Update auxiliary field values to current time.
+void
+pylith::feassemble::Integrator::updateState(const PylithReal t) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("updateState(t="<<t<<") empty method");
 
     PYLITH_METHOD_END;
-} // prestep
+} // updateState
 
 
 // ---------------------------------------------------------------------------------------------------------------------

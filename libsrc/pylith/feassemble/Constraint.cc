@@ -176,20 +176,6 @@ pylith::feassemble::Constraint::initialize(const pylith::topology::Field& soluti
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Update at beginning of time step.
-void
-pylith::feassemble::Constraint::prestep(const double t,
-                                        const double dt) { // prestep
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<") empty method");
-
-    // Default is to do nothing.
-
-    PYLITH_METHOD_END;
-} // prestep
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Update at end of time step.
 void
 pylith::feassemble::Constraint::poststep(const PylithReal t,
@@ -203,6 +189,19 @@ pylith::feassemble::Constraint::poststep(const PylithReal t,
 
     PYLITH_METHOD_END;
 } // poststep
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Update auxiliary field values to current time.
+void
+pylith::feassemble::Constraint::updateState(const PylithReal t) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("updateState(t="<<t<<") empty method");
+
+    // Default is to do nothing.
+
+    PYLITH_METHOD_END;
+} // updateState
 
 
 // End of file

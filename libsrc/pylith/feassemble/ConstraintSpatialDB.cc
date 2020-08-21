@@ -92,15 +92,14 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Update at beginning of time step.
+// Update auxiliary field values to current time.
 void
-pylith::feassemble::ConstraintSpatialDB::prestep(const double t,
-                                                 const double dt) {
+pylith::feassemble::ConstraintSpatialDB::updateState(const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<")");
+    PYLITH_JOURNAL_DEBUG("updateState(t="<<t<<")");
 
     assert(_physics);
-    _physics->updateAuxiliaryField(_auxiliaryField, t+dt);
+    _physics->updateAuxiliaryField(_auxiliaryField, t);
 
     journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
@@ -112,7 +111,7 @@ pylith::feassemble::ConstraintSpatialDB::prestep(const double t,
     } // if
 
     PYLITH_METHOD_END;
-} // prestep
+} // updateState
 
 
 // ---------------------------------------------------------------------------------------------------------------------

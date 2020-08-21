@@ -53,8 +53,8 @@ class pylith::feassemble::TestIntegratorDomain : public CppUnit::TestFixture, pu
 
     CPPUNIT_TEST(testSetKernels);
     CPPUNIT_TEST(testInitialize);
-    CPPUNIT_TEST(testPrestep);
     CPPUNIT_TEST(testPoststep);
+    CPPUNIT_TEST(testUpdateState);
     CPPUNIT_TEST(testComputeResidual);
     CPPUNIT_TEST(testComputeLHSJacobian);
     CPPUNIT_TEST(testComputeRHSJacobian);
@@ -80,11 +80,11 @@ public:
     /// Test initialize().
     void testInitialize(void);
 
-    /// Test prestep().
-    void testPrestep(void);
-
     /// Test poststep().
     void testPoststep(void);
+
+    /// Test updateState().
+    void testUpdateState(void);
 
     /// Test computeRHSResidual(), computeLHSResidual().
     void testComputeResidual(void);

@@ -59,21 +59,36 @@ public:
 
     /** Check whether RHS Jacobian needs to be recomputed.
      *
+     * @param[in] dtChanged True if time step has changed since previous Jacobian computation.
      * @returns True if Jacobian needs to be recomputed, false otherwise.
      */
-    bool needNewRHSJacobian(void) const;
+    bool needNewRHSJacobian(const bool dtChanged);
 
     /** Check whether LHS Jacobian needs to be recomputed.
      *
+     * @param[in] dtChanged True if time step has changed since previous Jacobian computation.
      * @returns True if Jacobian needs to be recomputed, false otherwise.
      */
-    bool needNewLHSJacobian(void) const;
+    bool needNewLHSJacobian(const bool dtChanged);
+
+    /** Check whether LHS lumped Jacobian needs to be recomputed.
+     *
+     * @param[in] dtChanged True if time step has changed since previous Jacobian computation.
+     * @returns True if lumped Jacobian needs to be recomputed, false otherwise.
+     */
+    bool needNewLHSJacobianLumped(const bool dtChanged);
 
     /** Set LHS Jacobian trigger.
      *
      * @param[in] value Triggers for needing new LHS Jacobian.
      */
     void setLHSJacobianTriggers(const NewJacobianTriggers value);
+
+    /** Set LHS lumped Jacobian trigger.
+     *
+     * @param[in] value Triggers for needing new LHS lumped Jacobian.
+     */
+    void setLHSJacobianLumpedTriggers(const NewJacobianTriggers value);
 
     /** Set RHS Jacobian trigger.
      *
@@ -88,15 +103,6 @@ public:
     virtual
     void initialize(const pylith::topology::Field& solution);
 
-    /** Update at beginning of time step.
-     *
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     */
-    virtual
-    void prestep(const PylithReal t,
-                 const PylithReal dt);
-
     /** Update at end of time step.
      *
      * @param[in] t Current time.
@@ -109,6 +115,13 @@ public:
                   const PylithInt tindex,
                   const PylithReal dt,
                   const pylith::topology::Field& solution);
+
+    /** Update auxiliary field values to current time.
+     *
+     * @param[in] t Current time.
+     */
+    virtual
+    void updateState(const PylithReal t);
 
     /** Compute RHS residual for G(t,s).
      *
@@ -228,9 +241,10 @@ protected:
     /// Default is false;
     bool _needNewRHSJacobian;
     bool _needNewLHSJacobian;
+    bool _needNewLHSJacobianLumped;
     int _LHSJacobianTriggers; // Triggers for needing new LHS Jacobian.
+    int _LHSJacobianLumpedTriggers; // Triggers for needing new LHS lumped Jacobian.
     int _RHSJacobianTriggers; // Triggers for needing new RHS Jacobian.
-    PylithReal _dtPrev; ///< Previous time step.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

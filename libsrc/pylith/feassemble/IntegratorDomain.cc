@@ -359,7 +359,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
     // Compute the Jacobian inverse.
     err = VecReciprocal(jacobianInv->localVector());PYLITH_CHECK_ERROR(err);
 
-    _needNewLHSJacobian = false;
+    _needNewLHSJacobianLumped = false;
 
     PYLITH_METHOD_END;
 } // computeLHSJacobianLumpedInv

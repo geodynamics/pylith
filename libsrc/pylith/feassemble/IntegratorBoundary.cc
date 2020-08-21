@@ -157,32 +157,6 @@ pylith::feassemble::IntegratorBoundary::setKernelsLHSResidual(const std::vector<
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Update at beginning of time step.
-void
-pylith::feassemble::IntegratorBoundary::prestep(const double t,
-                                                const double dt) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<")");
-
-    Integrator::prestep(t, dt);
-
-    assert(_physics);
-    _physics->updateAuxiliaryField(_auxiliaryField, t+dt);
-
-    journal::debug_t debug(GenericComponent::getName());
-    if (debug.state()) {
-        assert(_auxiliaryField);
-        PYLITH_JOURNAL_DEBUG("IntegratorInterface component '" << GenericComponent::getName() << "' for '"
-                                                               <<_physics->getIdentifier()
-                                                               << "': viewing auxiliary field.");
-        _auxiliaryField->view("IntegratorInterface auxiliary field", pylith::topology::Field::VIEW_ALL);
-    } // if
-
-    PYLITH_METHOD_END;
-} // prestep
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Initialize integration domain, auxiliary field, and derived field. Update observers.
 void
 pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field& solution) {
@@ -198,6 +172,31 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
 
     PYLITH_METHOD_END;
 } // initialize
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Update auxiliary field values to current time.
+void
+pylith::feassemble::IntegratorBoundary::updateState(const double t) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("updateState(t="<<t<<")");
+
+    Integrator::updateState(t);
+
+    assert(_physics);
+    _physics->updateAuxiliaryField(_auxiliaryField, t);
+
+    journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        assert(_auxiliaryField);
+        PYLITH_JOURNAL_DEBUG("IntegratorInterface component '" << GenericComponent::getName() << "' for '"
+                                                               <<_physics->getIdentifier()
+                                                               << "': viewing auxiliary field.");
+        _auxiliaryField->view("IntegratorInterface auxiliary field", pylith::topology::Field::VIEW_ALL);
+    } // if
+
+    PYLITH_METHOD_END;
+} // updateState
 
 
 // ---------------------------------------------------------------------------------------------------------------------

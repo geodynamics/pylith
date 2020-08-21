@@ -222,7 +222,6 @@ pylith::testing::MMSTest::_initialize(void) {
     TSSetUp(_problem->getPetscTS());
 
     _setExactSolution();
-    _problem->prestep();
 
     // Global vector to use for solution in MMS tests.
     _solution->createScatter(_solution->mesh(), "mmstest");
