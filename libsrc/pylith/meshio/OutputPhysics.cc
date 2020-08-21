@@ -27,6 +27,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "pylith/topology/Fields.hh" // USES Fields
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -161,7 +162,7 @@ pylith::meshio::OutputPhysics::verifyConfiguration(const pylith::topology::Field
         } // for
     } // if/else
 
-    // Data fields should be in solution, constraint's auxiliary field, or constraint's derived field.
+    // Data fields should be in solution, auxiliary field, or derived field.
     const size_t numDataFields = _dataFieldNames.size();
     if ((numDataFields > 0) && (std::string("all") != _dataFieldNames[0])) {
         for (size_t i = 0; i < numDataFields; i++) {
@@ -409,8 +410,7 @@ pylith::meshio::OutputPhysics::_expandDataFieldNames(const pylith::topology::Fie
     PYLITH_METHOD_BEGIN;
 
     if ((1 == _dataFieldNames.size()) && (std::string("all") == _dataFieldNames[0])) {
-        pylith::string_vector dataNames;
-        dataNames = solution.subfieldNames();
+        pylith::string_vector dataNames = pylith::topology::FieldOps::getSubfieldNamesDomain(solution);
 
         if (derivedField) {
             const pylith::string_vector& derivedSubfields = derivedField->subfieldNames();

@@ -194,6 +194,33 @@ pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& t
 
 
 // ----------------------------------------------------------------------
+// Get names of subfields extending over entire domain.
+pylith::string_vector
+pylith::topology::FieldOps::getSubfieldNamesDomain(const pylith::topology::Field& field) {
+    const pylith::string_vector& subfieldNames = field.subfieldNames();
+
+    // Restrict fields to those defined over the entire domain
+    // (as opposed to those defined over a subset like the fault_lagrange_multiplier).
+    PetscDS fieldDS = NULL;
+    PetscErrorCode err = DMGetDS(field.dmMesh(), &fieldDS);PYLITH_CHECK_ERROR(err);
+    PylithInt numFields = 0;
+    err = PetscDSGetNumFields(fieldDS, &numFields);PYLITH_CHECK_ERROR(err);
+    assert(numFields > 0);
+    pylith::string_vector subfieldNamesDomain(numFields);
+    for (PylithInt iField = 0; iField < numFields; ++iField) {
+        PetscObject discretization = NULL;
+        err = PetscDSGetDiscretization(fieldDS, iField, &discretization);PYLITH_CHECK_ERROR(err);
+        PylithInt fieldIndex = -1;
+        err = PetscDSGetFieldIndex(fieldDS, discretization, &fieldIndex);PYLITH_CHECK_ERROR(err);
+        assert(fieldIndex >= 0 && fieldIndex < subfieldNames.size());
+        subfieldNamesDomain[iField] = subfieldNames[fieldIndex];
+    } // for
+
+    PYLITH_METHOD_RETURN(subfieldNamesDomain);
+} // getSubfieldNamesDomain
+
+
+// ----------------------------------------------------------------------
 // Check to see if fields have the same subfields and match in size.
 bool
 pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,

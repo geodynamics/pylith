@@ -37,16 +37,23 @@
 // Wrapper for PetscFE
 class pylith::topology::FE {
 public:
-  FE(PetscFE fe) : _fe(fe) {PetscObjectReference((PetscObject) _fe);};
-  FE(const FE& fe) : _fe(fe._fe) {PetscObjectReference((PetscObject) _fe);};
-  ~FE() {
-    PetscInt refct = -1;
 
-    if (_fe) {PetscObjectGetReference((PetscObject) _fe, &refct);}
-    PetscObjectDereference((PetscObject) _fe);
-  }
+    FE(PetscFE fe) : _fe(fe) {
+        PetscObjectReference((PetscObject) _fe);
+    }
 
-  PetscFE _fe;
+    FE(const FE& fe) : _fe(fe._fe) {
+        PetscObjectReference((PetscObject) _fe);
+    }
+
+    ~FE() {
+        PetscInt refct = -1;
+
+        if (_fe) {PetscObjectGetReference((PetscObject) _fe, &refct);}
+        PetscObjectDereference((PetscObject) _fe);
+    }
+
+    PetscFE _fe;
 };
 
 // FieldOps -------------------------------------------------------------
@@ -91,6 +98,16 @@ public:
     void checkDiscretization(const pylith::topology::Field& target,
                              const pylith::topology::Field& auxiliary);
 
+    /** Get names of subfields extending over the entire domain.
+     *
+     * Excludes subfields extending over only a subset of the domain, like the fault Lagrange multiplier subfield.
+     *
+     * @param[in] field Field with subfields.
+     * @returns Array with names of subfields.
+     */
+    static
+    pylith::string_vector getSubfieldNamesDomain(const pylith::topology::Field& field);
+
     /** Check to see if fields have the same subfields and match in size.
      *
      * @param[in] fieldA Field to check.
@@ -102,7 +119,7 @@ public:
                       const pylith::topology::Field& fieldB);
 
     /** Free saved PetscFE objects.
-    */
+     */
     static
     void deallocate(void);
 
