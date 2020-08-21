@@ -142,7 +142,7 @@ exposed to the user. In this section we describe the data structures
 to give the user greater context for understanding what the parameters
 mean.
 
-\tip{See the dveloper guide in Chapter \vref{cha:developer} for a
+\usertip{See the dveloper guide in Chapter \vref{cha:developer} for a
   detailed discussion of the implementation and organization of the
   PyLith code.}
 
@@ -201,7 +201,7 @@ highest order in the basis functions. For example, a basis order of 0
 has just a constant and a basis order of 2 for a polynomial basis has
 constant, linear, and quadratic terms.
 
-\warning{Currently, the quadrature order {\bf MUST} be the same for
+\userwarning{Currently, the quadrature order {\bf MUST} be the same for
   all subfields in a simulation. This restriction may be relaxed in
   the future. PyLith will check this and indicate if a subfield has a
   quadrature order that does not match the first solution subfield.}

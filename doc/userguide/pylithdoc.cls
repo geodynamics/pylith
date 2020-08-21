@@ -130,7 +130,7 @@
 % Boxes
 \usetikzlibrary{shadows.blur}
 % Warning
-\newcommand{\warning}[1]{%
+\newcommand{\userwarning}[1]{%
   \begin{center}\begin{tikzpicture}
       \node[draw=none,
         shade,
@@ -144,7 +144,7 @@
     \end{tikzpicture}\end{center}}
 %
 % Tip
-\newcommand{\tip}[1]{%
+\newcommand{\usertip}[1]{%
   \begin{center}\begin{tikzpicture}
       \node[draw=none,
         shade,

@@ -75,7 +75,7 @@ Reordering the mesh so that vertices and cells connected topologically
 also reside close together in memory improves overall performance
 and can improve solver performance as well.
 
-\warning{The coordinate system associated with the mesh must be a
+\userwarning{The coordinate system associated with the mesh must be a
   Cartesian coordinate system, such as a generic Cartesian coordinate
   system or a geographic projection.}
 
@@ -127,7 +127,7 @@ and facilities are:
 \facilityitem{coordsys}{Coordinate system associated with mesh.}
 \end{inventory}
 
-\warning{The PyLith developers have not used LaGriT since around 2008
+\userwarning{The PyLith developers have not used LaGriT since around 2008
   and the most recent release appears to have been in 2010.}
 
 \subsubsection{\object{Distributor}}
@@ -195,7 +195,7 @@ so $n$ should be limited to 1-2.
 The problem component specifies the basic parameters of the simulation,
 including the physical properties, the boundary conditions, and interface
 conditions (faults). The current release of PyLith contains two types
-of problems, \object{TimeDependent} for use in static, quasi-static,
+of problems, \object{TimeDependent} for use in static, quasistatic,
 and dynamic simulations and \object{GreensFns} for computing static
 Green's functions. The general properties facilities include:
 \begin{inventory}
@@ -337,7 +337,7 @@ properties:
   problems; however, it may be necessary to change the default values
   in some cases. When doing this, keep in mind that the
   nondimensionalization generally applies to the minimum values
-  encountered for a problem.  For example, in a quasi-static problem,
+  encountered for a problem.  For example, in a quasistatic problem,
   the \property{length\_scale} should be on the order of the minimum
   cell size. Similarly, the \property{relaxation\_time} should be on
   the order of the minimum relaxation time or time scale associated
@@ -500,7 +500,7 @@ See
   linear solver table} for a list of PETSc options for linear solvers
 and preconditioners.
 
-\tip{It is important to keep in mind the resolution of the model and
+\usertip{It is important to keep in mind the resolution of the model and
   observations when setting solver tolerances. For example, matching
   observations with an accuracy of 1.0\si{\milli\meter} does not
   require solving the equations to an accuracy of
@@ -587,7 +587,7 @@ settings are available in
 \end{cfg}
 
 
-\warning{The split fields and algebraic multigrid preconditioning
+\userwarning{The split fields and algebraic multigrid preconditioning
   currently fails in problems with a nonzero null space. This most
   often occurs when a problem contains multiple faults that extend
   through the entire domain and create subdomains without any

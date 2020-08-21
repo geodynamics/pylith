@@ -104,7 +104,7 @@ the trench and then constructs the top and bottom surfaces of the
 slab. The Python script also constructs a splay fault by copying a
 contour to a depth below the slab and above the ground surface.
 
-\tip{We define the coordinate systems we use in the simulations in the
+\usertip{We define the coordinate systems we use in the simulations in the
   the Python script \filename{coordsys.py} to make it easier to
   convert to/from various georeference coordinate systems in the pre-
   and post-processing. PyLith will automatically convert among
@@ -153,7 +153,7 @@ generate the mesh. In the end you will have an Exodus-II file
 \filename{mesh\_tet.exo}, which is a NetCDF file, in the
 \filename{mesh} directory. You can load this file into ParaView.
 
-\tip{We recommend carefully examining the \filename{geometry.jou}
+\usertip{We recommend carefully examining the \filename{geometry.jou}
   journal file to understand how we assemble the 3-D slab and cut the
   rectangular domain into pieces.}
 
@@ -595,7 +595,7 @@ approximately 200 years at a depth of 30 km, 100 years at a depth of
 100 km, and 50 years at a depth of 400 km. Using linear interpolation
 results in a piecewise linear variation in the viscosity with depth.
 
-\tip{The \object{SimpleGridDB} should be used whenever the points in a
+\usertip{The \object{SimpleGridDB} should be used whenever the points in a
   spatial database can be described with a logically rectangular
   grid. The grid points along each direction do not need to be
   uniformly spaced.}
@@ -1339,7 +1339,7 @@ spatial database files. This script reads parameters from
 distribution in geographic coordinates, along with a temporal database
 providing the slip amplitudes at different times.
 
-\tip{The \filename{generate\_slowslip.py} script is one of several
+\usertip{The \filename{generate\_slowslip.py} script is one of several
   examples where we make use of the Python interface to the
   spatialdata package. This provides useful methods for handling
   coordinate systems and spatial databases.}
@@ -1536,7 +1536,7 @@ Each simulation will produce four pairs of HDF5/Xdmf files. For Step
   impulse.
 \end{description}
 
-\tip{To save time, run the two sub-problems simultaneously in separate
+\usertip{To save time, run the two sub-problems simultaneously in separate
   shells (terminal windows or tabs). For a problem this size, this
   should work fine on a laptop. For larger problems, we would run the
   simulations via separate jobs on a cluster with each job running on
@@ -1854,7 +1854,7 @@ configuration is taken into account; Steps 8a and 8b use the default
 formulation should generally be used for viscoelastic problems with
 gravity where you need accurate estimates of the vertical deformation.
 
-\warning{The shear stress variations in the initial stresses will
+\userwarning{The shear stress variations in the initial stresses will
   cause the viscoelastic materials to drive viscous flow, resulting in
   time-dependent deformation. As long as the elastic materials impose
   deviatoric stresses in the viscoelastic materials through continuity

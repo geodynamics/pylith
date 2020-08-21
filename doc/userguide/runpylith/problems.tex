@@ -2,7 +2,7 @@
 
 \subsection{Time-Dependent Problem (\protect\object{TimeDependent})}
 
-This type of problem applies to transient static, quasi-static, and
+This type of problem applies to transient static, quasistatic, and
 dynamic simulations. We use the PETSc \object{TS} object to manage the
 time-stepping. The selection of the time-stepping algorithm is done
 via the PETSc options. By default PyLith use the backward Euler time
@@ -133,7 +133,7 @@ Not yet reimplemented in v3.x.
 %% <f>progres_monitor</f> = pylith.problems.ProgressMonitorTime ; default
 %% \end{cfg}
 
-%% \warning{The \object{GreensFns} problem generates slip impulses on a
+%% \userwarning{The \object{GreensFns} problem generates slip impulses on a
 %%   fault. The current version of PyLith requires that impulses can only
 %%   be applied to a single fault and the fault facility must be set to
 %%   \object{FaultCohesiveImpulses}.}

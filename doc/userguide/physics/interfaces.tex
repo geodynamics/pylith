@@ -9,7 +9,7 @@ fault opening, and in 3D left-lateral-slip, reverse-slip, and fault
 opening. PyLith supports kinematic (prescribed) slip and dynamic
 (spontaneous) rupture simulations.
 
-\warning{Spontaneous rupture is not available in PyLith v3.0; we plan
+\userwarning{Spontaneous rupture is not available in PyLith v3.0; we plan
   to have it reimplemented in v3.1.}
 
 \subsection{Conventions}
@@ -122,7 +122,7 @@ The fault coordinate system is shown in Figure
 system can be transformed to the global coordinate system using the
 direction vectors in the diagnostic output.
 
-\warning{Output of fault orientation information is not yet available
+\userwarning{Output of fault orientation information is not yet available
   in this beta release.}
 \todo{brad}{Implement output of fault orientation information.}
 
@@ -131,7 +131,7 @@ direction vectors in the diagnostic output.
 Kinematic earthquake ruptures use the \object{FaultCohesiveKin} object
 to prescribe the slip as a function of time on the fault surface. Slip
 may evolve simultaneously over the fault surface instantaneously in a
-single time step (as is usually done in quasi-static simulations) or
+single time step (as is usually done in quasistatic simulations) or
 propagate over the fault surface over hundreds and up to thousands of
 time steps (as is usually done in a dynamic simulation).
 
@@ -179,7 +179,7 @@ The current release of PyLith supports specification of the evolution
 of fault slip using analytical expressions for the slip time history
 at each point, where the parameters for the slip time function may
 vary over the fault surface. Currently, two slip time functions are
-available: (1) a step-function for quasi-static modeling of earthquake
+available: (1) a step-function for quasistatic modeling of earthquake
 rupture and (2) a constant slip rate time function for modeling steady
 aseismic slip.  Additional slip time functions will likely be
 available in future releases. The default slip time function is the
@@ -405,7 +405,7 @@ fault surface.
 % As long as the fault is locked, the initial state variables are zero,
 % so specifying the initial state variables for slip-weakening friction
 % is rare. The slip-weakening friction also includes a parameter, \property{force\_healing},
-% to control healing. In quasi-static simulations, one usually wants
+% to control healing. In quasistatic simulations, one usually wants
 % slip confined to a single time step (\property{force\_healing} = True),
 % whereas in a dynamic simulation slip occurs over many time steps (\property{force\_healing}
 % = False; default behavior) and fault healing is often neglected. The
@@ -612,8 +612,8 @@ fault surface.
 % where $V$ is slip rate, $V_{linear}$ is a cutoff for a linear slip
 % rate dependence, $a$ and $b$ are coefficients, $L$ is the characteristic
 % slip distance, $\theta$ is a state variable. With an interative solver
-% in quasi-static simulations with its small, but nonzero residual tolerance
-% we never encounter zero slip rates in quasi-static simulations. Instead
+% in quasistatic simulations with its small, but nonzero residual tolerance
+% we never encounter zero slip rates in quasistatic simulations. Instead
 % we want to avoid significant variations in the coefficient of friction
 % for slip rates on the same order as our residual tolerance. We regularize
 % the rate and state friction model by imposing a linearization of the
@@ -646,7 +646,7 @@ fault surface.
 % The properties include:
 % \begin{inventory}
 % \propertyitem{linear\_slip\_rate}{Nondimensional slip rate at which linearization
-% occurs, $V_{linear}$. In quasi-static simulations it should be about
+% occurs, $V_{linear}$. In quasistatic simulations it should be about
 % one order of magnitude larger than absolute tolerance in solve.}
 % \end{inventory}
 
