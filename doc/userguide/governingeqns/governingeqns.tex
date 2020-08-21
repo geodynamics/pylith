@@ -1,13 +1,10 @@
 \chapter{Governing Equations}
 \label{cha:governing:equations}
 
-We present here a brief derivation of the equations for both quasi-static
-and dynamic computations. Since the general equations are the same
-(except for the absence of inertial terms in the quasi-static case),
-we first derive these equations. We then present solution methods
-for each specific case. In all of our derivations, we use the notation
-described in Table \vref{tab:notation} for both index
-and vector notation.
+This chapter presents the solution schemes we use for solving
+variations of the elasticity equation using the finite-element
+method. In all of our derivations, we use the notation described in
+Table \vref{tab:notation}.
 
 \begin{table}[htbp]
   \caption{Mathematical notation}
@@ -19,6 +16,7 @@ and vector notation.
     $\vec{a}$ & Vector field a \\
     $\tensor{a}$ & Second order tensor field a \\
     $\vec{u}$ & Displacement vector field \\
+    $\vec{v}$ & Velocity vector field \\
     $\vec{{d}}$ & Fault slip vector field \\
     $\vec{f}$ & Body force vector field \\
     $\vec{\tau}$ & Traction vector field \\
@@ -32,7 +30,6 @@ and vector notation.
 \input{governingeqns/elasticity.tex}
 \input{governingeqns/formulation.tex}
 
-\input{governingeqns/elasticity_infstrain.tex}
 \input{governingeqns/elasticity_infstrain_prescribedslip.tex}
 \input{governingeqns/incompressible_elasticity.tex}
-%\input{governingeqns/poroelasticity.tex}
+\input{governingeqns/poroelasticity.tex}

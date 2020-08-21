@@ -1,9 +1,8 @@
 % ----------------------------------------------------------------------
-\section{Incompressible Isotropic Elasticity with Infinitesimal Strain (Bathe) and No Faults or Inertia}
+\section{Incompressible Isotropic Elasticity with Infinitesimal Strain (Bathe)}
 
 Building from the elasticity equation
-(equations~\ref{eqn:velocity:strong:form}
-and~\ref{eqn:elasticity:order1:strong:form}), we consider an
+(equation~\ref{eqn:elasticity:order1:strong:form}), we consider an
 incompressible material. As the bulk modulus ($K$) approaches
 infinity, the volumetric strain ($\Tr(\epsilon)$) approaches zero and
 the pressure remains finite, $p = -K \Tr(\epsilon)$. We consider
@@ -13,35 +12,8 @@ pressure and deviatoric components. As a result, we write the stress tensor in t
   \tensor{\sigma}(\vec{u},p) = \tensor{\sigma}^\mathit{dev}(\vec{u}) - p\tensor{I}.
 \end{equation}
 
-\subsection{Notation}
-\begin{itemize}
-\item Unknowns
-  \begin{description}
-  \item[$\vec{u}$] Displacement field
-  \item[$p$] Pressure field (positive pressure corresponds to negative stress)
-  \end{description}
-\item Derived quantities
-  \begin{description}
-    \item[$\tensor{\sigma}$] Stress tensor
-    \item[$\tensor{\epsilon}$] Strain tensor
-  \end{description}
-\item Constitutive parameters
-  \begin{description}
-  \item[$\mu$] Shear modulus
-  \item[$K$] Bulk modulus
-  \item[$\rho$] Density
-  \end{description}
-\item Source terms
-  \begin{description}
-    \item[$\vec{f}$] Body force per unit volume, for example $\rho \vec{g}$
-  \end{description}
-\end{itemize}
-
-
-\subsection{Implicit Time Stepping}
-
 We only consider the case of an incompressible material while
-neglecting inertia. The time dependence only arises from
+neglecting inertia. The time dependence arises from
 history-dependent constitutive equations and boundary conditions. We
 have
 \begin{gather}
@@ -58,6 +30,26 @@ have
   p = p_0 \text{ on }\Gamma_p.
 \end{gather}
 
+\begin{table}[htbp]
+  \caption{Mathematical notation for incompressible elasticity with
+    infinitesimal strain.}
+  \label{tab:notation:incompressible:elasticity}
+  \begin{tabular}{lcp{3.5in}}
+    \toprule
+    {\bf Category} & {\bf Symbol} & {\bf Description} \\
+    \midrule
+    Unknowns & $\vec{u}$ & Displacement field \\
+    & $p$ & Pressure field ($p>0$ corresponds to negative mean stress \\
+    Derived quantities & $\tensor{\sigma}$ & Cauchy stress tensor \\
+                   & $\tensor{\epsilon}$ & Cauchy strain tensor \\
+    Common constitutive parameters & $\rho$ & Density \\
+  & $\mu$ & Shear modulus \\
+  & $K$ & Bulk modulus \\
+Source terms & $\vec{f}$ & Body force per unit volume, for example $\rho \vec{g}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
 Using trial functions $\trialvec[u]$ and $\trialscalar[p]$ and
 incorporating the Neumann boundary conditions, we write the weak form
 as
@@ -71,6 +63,8 @@ as
 \, d\Omega.
 \end{gather}
 
+\subsection{Residual Pointwise Kernels}
+
 Identifying $G(t,s)$, we have
 \begin{gather}
   \label{eqn:incompressible:elasticity:displacement}
@@ -83,11 +77,9 @@ Identifying $G(t,s)$, we have
 \frac{p}{K} \right)}{g_0^p} \, d\Omega.
 \end{gather}
 
+\subsection{Jacobians Pointwisde Kernels}
 
-\subsubsection{Jacobians}
-
-With two fields we have four Jacobians for the RHS associated with the coupling of 
-the two fields.
+With two fields we have four Jacobian pointwise kernels for the RHS:
 \begin{align}
   J_G^{uu} &= \frac{\partial G^u}{\partial u} = \int_\Omega \nabla \trialvec[u] : 
 \frac{\partial}{\partial u}(-
