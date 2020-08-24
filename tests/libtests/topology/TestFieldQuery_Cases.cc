@@ -48,7 +48,7 @@ protected:
         TestFieldQuery::setUp();
 
         CPPUNIT_ASSERT(_data->normalizer);
-        _data->normalizer->setLengthScale(1000.0);
+        _data->normalizer->setLengthScale(1.0);
         _data->normalizer->setTimeScale(10.0);
         _data->normalizer->setPressureScale(0.1);
         _data->normalizer->setDensityScale(2.0);
