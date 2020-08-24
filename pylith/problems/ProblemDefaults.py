@@ -35,12 +35,12 @@ class ProblemDefaults(Component):
     INVENTORY
 
     Properties
-      - *output_directory* Directory for output.
       - *name* Name of problem.
+      - *output_directory* Directory for output.
       - *quadrature_order* Finite-element quadrature order.
 
     Facilities
-      None
+      - *output_field_filter* Filter applied to output fields (e.g., FieldFilterProject).
     """
 
     import pyre.inventory
@@ -53,6 +53,12 @@ class ProblemDefaults(Component):
 
     quadOrder = pyre.inventory.int("quadrature_order", default=1, validator=pyre.inventory.greater(0))
     quadOrder.meta['tip'] = "Finite-element quadrature order."
+
+    from pylith.meshio.FieldFilterNone import FieldFilterNone
+    outputFieldFilter = pyre.inventory.facility(
+        "output_field_filter", family="output_field_filter", factory=FieldFilterNone)
+    outputFieldFilter.meta['tip'] = "Filter applied to output fields (e.g., FieldFilterProject)."
+
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

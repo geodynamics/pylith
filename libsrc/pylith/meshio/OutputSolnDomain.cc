@@ -22,6 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldOps.hh" // USES FieldOps
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
@@ -46,7 +47,7 @@ pylith::meshio::OutputSolnDomain::_writeSolnStep(const PylithReal t,
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
-    const pylith::string_vector& subfieldNames = _expandSubfieldNames(solution);
+    const pylith::string_vector& subfieldNames = pylith::topology::FieldOps::getSubfieldNamesDomain(solution);
 
     _openSolnStep(t, solution.mesh());
     const size_t numSubfieldNames = subfieldNames.size();

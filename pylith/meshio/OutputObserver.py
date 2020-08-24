@@ -21,6 +21,7 @@
 
 from pylith.utils.PetscComponent import PetscComponent
 from .meshio import OutputObserver as ModuleOutputObserver
+from .FieldFilterNone import FieldFilterNone
 
 
 class OutputObserver(PetscComponent, ModuleOutputObserver):
@@ -51,7 +52,6 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
     writer = pyre.inventory.facility("writer", factory=DataWriterHDF5, family="data_writer")
     writer.meta['tip'] = "Writer for data."
 
-    from .FieldFilterNone import FieldFilterNone
     fieldFilter = pyre.inventory.facility("field_filter", family="output_field_filter", factory=FieldFilterNone)
     fieldFilter.meta['tip'] = "Filter for output fields."
 
@@ -74,8 +74,15 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
         self.trigger.preinitialize()
         ModuleOutputObserver.setTrigger(self, self.trigger)
 
-        self.fieldFilter.preinitialize()
-        ModuleOutputObserver.setFieldFilter(self, self.fieldFilter)
+        if isinstance(self.fieldFilter, FieldFilterNone) and \
+                not isinstance(problem.defaults.outputFieldFilter, FieldFilterNone):
+            import copy
+            fieldFilter = copy.copy(problem.defaults.outputFieldFilter)
+        else:
+            fieldFilter = self.fieldFilter
+        fieldFilter.preinitialize()
+        ModuleOutputObserver.setFieldFilter(self, fieldFilter)
+        self.fieldFilterOverride = fieldFilter
 
         self.writer.preinitialize()
         ModuleOutputObserver.setWriter(self, self.writer)
