@@ -176,16 +176,37 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
                                              const spatialdata::units::Nondimensional& normalizer) {
     PYLITH_METHOD_BEGIN;
 
-    PetscVec coordVec;
+    assert(mesh);
+
+    PetscVec coordVec = NULL;
     const PylithScalar lengthScale = normalizer.getLengthScale();
-    PetscErrorCode err;
+    PetscErrorCode err = 0;
 
     PetscDM dmMesh = mesh->dmMesh();assert(dmMesh);
     err = DMGetCoordinatesLocal(dmMesh, &coordVec);PYLITH_CHECK_ERROR(err);assert(coordVec);
-    // There does not seem to be an advantage to calling nondimensionalize()
     err = VecScale(coordVec, 1.0/lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMPlexSetScale(dmMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMViewFromOptions(dmMesh, NULL, "-pylith_nondim_dm_view");PYLITH_CHECK_ERROR(err);
+
+    PylithReal coordMin[3];
+    PylithReal coordMax[3];
+    err = DMGetBoundingBox(dmMesh, coordMin, coordMax);
+    const PetscInt dim = mesh->dimension();
+    PylithReal volume = 1.0;
+    for (int i = 0; i < dim; ++i) {
+        volume *= coordMax[i] - coordMin[i];
+    } // for
+    assert(dim > 0);
+    const PylithReal avgCellDim = pow(volume / mesh->numCells(), 1.0/dim);
+    const PylithReal avgDimTolerance = 0.02;
+    if (avgCellDim < avgDimTolerance) {
+        std::ostringstream msg;
+        msg << "Nondimensional average cell dimension (" << avgCellDim << ") is less than minimum tolerance ("
+            << avgDimTolerance << "). This usually means the length scale (" << lengthScale << ") used in the "
+            << "nondimensionalization needs to be smaller. Based on the average cell size, a value of about "
+            << pow(10, int(log10(avgCellDim*lengthScale))) << " should be appropriate.";
+        throw std::runtime_error(msg.str());
+    } // if/else
 
     PYLITH_METHOD_END;
 } // nondimensionalize

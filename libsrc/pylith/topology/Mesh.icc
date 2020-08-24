@@ -104,13 +104,13 @@ pylith::topology::Mesh::numCorners(void) const {
 // ----------------------------------------------------------------------
 // Get number of vertices in mesh.
 inline
-int
+PylithInt
 pylith::topology::Mesh::numVertices(void) const {
     PYLITH_METHOD_BEGIN;
 
-    PetscInt nvertices = 0;
+    PylithInt nvertices = 0;
     if (_dmMesh) {
-        PetscInt begin = 0, end = 0;
+        PylithInt begin = 0, end = 0;
         PetscErrorCode err = DMPlexGetDepthStratum(_dmMesh, 0, &begin, &end);PYLITH_CHECK_ERROR(err);
         nvertices = end-begin;
     } // if
@@ -122,13 +122,13 @@ pylith::topology::Mesh::numVertices(void) const {
 // ----------------------------------------------------------------------
 // Get number of cells in mesh.
 inline
-int
+PylithInt
 pylith::topology::Mesh::numCells(void) const {
     PYLITH_METHOD_BEGIN;
 
     PetscInt ncells = 0;
     if (_dmMesh) {
-        PetscInt begin = 0, end = 0;
+        PylithInt begin = 0, end = 0;
         const int cellHeight = _isSubmesh ? 1 : 0;
         PetscErrorCode err = DMPlexGetHeightStratum(_dmMesh, cellHeight, &begin, &end);PYLITH_CHECK_ERROR(err);
         ncells = end-begin;
