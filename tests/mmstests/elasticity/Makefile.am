@@ -17,19 +17,48 @@ subpackage = elasticity
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/check.am
 
-TESTS = test_isotropiclinearelasticity
+TESTS = \
+	test_isotropiclinearelasticity2d \
+	test_isotropiclinearelasticity3d_uniformstrain \
+	test_isotropiclinearelasticity3d_gravity \
+	test_isotropiclinearelasticity3d_gravityrefstate \
+	test_isotropiclinearelasticity3d_bodyforce
 
 check_PROGRAMS = $(TESTS)
 
 
-test_isotropiclinearelasticity_SOURCES = \
-	TestElasticity.cc \
-	TestIsotropicLinearElasticity.cc \
-	TestIsotropicLinearElasticity2D_UniformStrain.cc \
-	TestIsotropicLinearElasticity2D_Gravity.cc \
-	TestIsotropicLinearElasticity2D_GravityRefState.cc \
-	TestIsotropicLinearElasticity2D_BodyForce.cc \
-	test_driver.cc
+test_isotropiclinearelasticity2d_SOURCES = \
+		TestElasticity.cc \
+		TestIsotropicLinearElasticity.cc \
+		TestIsotropicLinearElasticity2D_UniformStrain.cc \
+		TestIsotropicLinearElasticity2D_Gravity.cc \
+		TestIsotropicLinearElasticity2D_GravityRefState.cc \
+		TestIsotropicLinearElasticity2D_BodyForce.cc \
+		test_driver.cc
+
+test_isotropiclinearelasticity3d_uniformstrain_SOURCES = \
+		TestElasticity.cc \
+		TestIsotropicLinearElasticity.cc \
+		TestIsotropicLinearElasticity3D_UniformStrain.cc \
+		test_driver.cc
+
+test_isotropiclinearelasticity3d_gravity_SOURCES = \
+		TestElasticity.cc \
+		TestIsotropicLinearElasticity.cc \
+		TestIsotropicLinearElasticity3D_Gravity.cc \
+		test_driver.cc
+
+test_isotropiclinearelasticity3d_gravityrefstate_SOURCES = \
+		TestElasticity.cc \
+		TestIsotropicLinearElasticity.cc \
+		TestIsotropicLinearElasticity3D_GravityRefState.cc \
+		test_driver.cc
+
+test_isotropiclinearelasticity3d_bodyforce_SOURCES = \
+		TestElasticity.cc \
+		TestIsotropicLinearElasticity.cc \
+		TestIsotropicLinearElasticity3D_BodyForce.cc \
+		test_driver.cc
 
 
 noinst_HEADERS =
