@@ -66,7 +66,7 @@ pylith::meshio::MeshIO::getMeshDim(void) const { // getMeshDim
 // ----------------------------------------------------------------------
 // Read mesh from file.
 void
-pylith::meshio::MeshIO::read(topology::Mesh* mesh) { // read
+pylith::meshio::MeshIO::read(topology::Mesh* mesh) {
     PYLITH_METHOD_BEGIN;
 
     assert(mesh);
@@ -79,11 +79,11 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh) { // read
     PetscErrorCode err = 0;
 
     // Check for bounding box with positive volume.
-    PetscReal cmin[3];
-    PetscReal cmax[3];
+    PylithReal cmin[3];
+    PylithReal cmax[3];
     err = DMGetBoundingBox(_mesh->dmMesh(), cmin, cmax);
     const PetscInt dim = _mesh->dimension();
-    PetscReal volume = 1.0;
+    PylithReal volume = 1.0;
     for (int i = 0; i < dim; ++i) {
         volume *= cmax[i] - cmin[i];
     } // for
@@ -96,7 +96,10 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh) { // read
     const PetscReal tolerance = 1.0e-8;
     if (volume < tolerance) {
         msg.clear();
-        msg << "Domain bounding box volume (" << volume << ") less than minimum tolerance (" << tolerance << ").";
+        msg << "Domain bounding box volume (" << volume << ") is less than minimum tolerance ("
+            << tolerance << "). This usually means you are trying to use a 2D mesh in 3D. Check that you are exporting "
+            << "your mesh from the mesh generation software correctly and that your have specified the correct "
+            << " coordinate system for the problem.";
         throw std::runtime_error(msg.str());
     } // if
 
@@ -105,7 +108,7 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh) { // read
     // Respond to PETSc diagnostic output
     err = DMViewFromOptions(_mesh->dmMesh(), NULL, "-pylith_dm_view");PYLITH_CHECK_ERROR(err);
 
-    _mesh = 0;
+    _mesh = NULL;
 
     PYLITH_METHOD_END;
 } // read

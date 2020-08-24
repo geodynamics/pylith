@@ -615,9 +615,9 @@ pylith::topology::TestFieldMesh::_initialize(void) {
     _field->subfieldsSetup();
 
     err = DMAddBoundary(_field->dmMesh(), DM_BC_ESSENTIAL, "bcA", _data->bcALabel, 0, _data->bcANumConstrainedDOF,
-                        _data->bcAConstrainedDOF, NULL, 1, &_data->bcALabelId, NULL);CPPUNIT_ASSERT(!err);
+                        _data->bcAConstrainedDOF, NULL, NULL, 1, &_data->bcALabelId, NULL);CPPUNIT_ASSERT(!err);
     err = DMAddBoundary(_field->dmMesh(), DM_BC_ESSENTIAL, "bcB", _data->bcBLabel, 0, _data->bcBNumConstrainedDOF,
-                        _data->bcBConstrainedDOF, NULL, 1, &_data->bcBLabelId, NULL);CPPUNIT_ASSERT(!err);
+                        _data->bcBConstrainedDOF, NULL, NULL, 1, &_data->bcBLabelId, NULL);CPPUNIT_ASSERT(!err);
 
     // Allocate field.
     _field->allocate();
