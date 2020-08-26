@@ -1,13 +1,14 @@
 % ----------------------------------------------------------------------
 \section{Incompressible Isotropic Elasticity with Infinitesimal Strain (Bathe)}
 
-Building from the elasticity equation
-(equation~\ref{eqn:elasticity:order1:strong:form}), we consider an
-incompressible material. As the bulk modulus ($K$) approaches
-infinity, the volumetric strain ($\Tr(\epsilon)$) approaches zero and
-the pressure remains finite, $p = -K \Tr(\epsilon)$. We consider
-pressure $p$ as an independent variable and decompose the stress into the
-pressure and deviatoric components. As a result, we write the stress tensor in terms of both the displacement and pressure fields,
+In this section we apply the same approach we use for the elasticity
+equation to the case of an incompressible material. As the bulk
+modulus ($K$) approaches infinity, the volumetric strain
+($\Tr(\epsilon)$) approaches zero and the pressure remains finite,
+$p = -K \Tr(\epsilon)$. We consider pressure $p$ as an independent
+variable and decompose the stress into the pressure and deviatoric
+components. As a result, we write the stress tensor in terms of both
+the displacement and pressure fields,
 \begin{equation}
   \tensor{\sigma}(\vec{u},p) = \tensor{\sigma}^\mathit{dev}(\vec{u}) - p\tensor{I}.
 \end{equation}
