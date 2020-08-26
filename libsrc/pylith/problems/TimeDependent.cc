@@ -354,7 +354,7 @@ pylith::problems::TimeDependent::initialize(void) {
     _residual->setLabel("residual");
 
     // Set callbacks.
-    err = TSSetPreStep(_ts, prestep);PYLITH_CHECK_ERROR(err);
+    // err = TSSetPreStep(_ts, prestep);PYLITH_CHECK_ERROR(err);
     PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks poststep() and computeRHSFunction().");
     err = TSSetPostStep(_ts, poststep);PYLITH_CHECK_ERROR(err);
     err = TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
@@ -548,7 +548,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscVec residualVec,
 
     std::cout << "    RHS RESIDUAL: " << (t == _tResidual ? "no update" : "update state") << ", t=" << t << std::endl;
 
-    // if (t != _tResidual) { _updateState(t); }
+    if (t != _tResidual) { _updateState(t); }
 
     // Update PyLith view of the solution.
     PetscVec solutionDotVec = NULL;
@@ -649,7 +649,7 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscVec residualVec,
 
     std::cout << "    LHS RESIDUAL: " << (t == _tResidual ? "no update" : "update state") << ", t=" << t << std::endl;
 
-    // if (t != _tResidual) { _updateState(t); }
+    if (t != _tResidual) { _updateState(t); }
 
     // Update PyLith view of the solution.
     setSolutionLocal(t, solutionVec, solutionDotVec);
