@@ -91,8 +91,9 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::f1v(const PylithInt dim,
     const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
 
     const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
-                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_stress]};
+    const PylithInt aOffDev[6] = {
+        aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
+        aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_stress]};
 
     PylithScalar stressTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
     IsotropicLinearElasticityPlaneStrain::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
@@ -990,7 +991,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress(const PylithInt di
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
-    const PylithInt i_disp = 2;
+    const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = numA-7;
@@ -1071,7 +1072,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress_refstate(const Pyl
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
-    const PylithInt i_disp = 2;
+    const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
     const PylithInt i_rstress = numA-9;
@@ -1156,7 +1157,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain(const Pylit
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
-    const PylithInt i_disp = 2;
+    const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = numA-7;
@@ -1264,7 +1265,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate(co
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
-    const PylithInt i_disp = 2;
+    const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
     const PylithInt i_rstress = numA-9;
@@ -1374,7 +1375,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress(const PylithInt di
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
-    const PylithInt i_disp = 2;
+    const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = numA-7;
@@ -1451,7 +1452,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress_refstate(const Pyl
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
-    const PylithInt i_disp = 2;
+    const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
     const PylithInt i_rstress = numA-9;
@@ -2582,7 +2583,7 @@ pylith::fekernels::IsotropicPowerLaw3D::updateStress(const PylithInt dim,
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
-    const PylithInt i_disp = 2;
+    const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = numA-7;
@@ -2667,7 +2668,7 @@ pylith::fekernels::IsotropicPowerLaw3D::updateStress_refstate(const PylithInt di
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
-    const PylithInt i_disp = 2;
+    const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
     const PylithInt i_rstress = numA-9;
@@ -2756,7 +2757,7 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain(const PylithInt dim,
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
-    const PylithInt i_disp = 2;
+    const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = numA-7;
@@ -2871,7 +2872,7 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate(const Pylit
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
-    const PylithInt i_disp = 2;
+    const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
     const PylithInt i_rstress = numA-9;
@@ -2987,7 +2988,7 @@ pylith::fekernels::IsotropicPowerLaw3D::cauchyStress(const PylithInt dim,
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
-    const PylithInt i_disp = 2;
+    const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
     const PylithInt i_shearModulus = numA-7;
@@ -3067,7 +3068,7 @@ pylith::fekernels::IsotropicPowerLaw3D::cauchyStress_refstate(const PylithInt di
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
-    const PylithInt i_disp = 2;
+    const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
     const PylithInt i_rstress = numA-9;
