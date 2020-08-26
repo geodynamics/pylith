@@ -158,13 +158,6 @@ pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::g1v_refstate(const Pyli
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
 
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 14);
-    assert(sOff);
-    assert(sOff_x);
-    assert(aOff);
-
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
@@ -1251,13 +1244,6 @@ pylith::fekernels::IsotropicLinearGenMaxwell3D::g1v_refstate(const PylithInt dim
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
 
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 14);
-    assert(sOff);
-    assert(sOff_x);
-    assert(aOff);
-
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
@@ -1989,7 +1975,7 @@ pylith::fekernels::IsotropicLinearGenMaxwell3D::updateViscousStrain(const Pylith
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
-    
+
     // Incoming auxiliary fields.
     const PylithInt i_maxwellTime = numA-4;
     const PylithInt i_shearModulusRatio = numA-3;
@@ -2156,7 +2142,7 @@ pylith::fekernels::IsotropicLinearGenMaxwell3D::cauchyStress(const PylithInt dim
 
     const PylithInt numAMean = 1; // Number passed to mean stress kernel.
     const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
-    
+
     // Shear modulus and (updated) viscous strains.
     const PylithScalar shearModulus = a[aOff[i_shearModulus]];
     const PylithScalar* visStrainTpdt_1 = &a[aOff[i_viscousStrain]];
