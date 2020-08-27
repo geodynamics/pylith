@@ -322,6 +322,7 @@ pylith::feassemble::IntegratorInterface::computeRHSJacobian(PetscMat jacobianMat
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
+    _needNewRHSJacobian = false;
     if (0 == _kernelsRHSJacobian.size()) { PYLITH_METHOD_END;}
 
     _setKernelConstants(solution, dt);
@@ -332,8 +333,6 @@ pylith::feassemble::IntegratorInterface::computeRHSJacobian(PetscMat jacobianMat
 
     _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsRHSJacobian, t, dt, s_tshift,
                                           solution, solutionDot);
-
-    _needNewRHSJacobian = false;
 
     PYLITH_METHOD_END;
 } // computeRHSJacobian
@@ -373,14 +372,13 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobian(PetscMat jacobianMat
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<", solutionDot="<<solutionDot.getLabel()<<")");
 
+    _needNewLHSJacobian = false;
     if (0 == _kernelsLHSJacobian.size()) { PYLITH_METHOD_END;}
 
     _setKernelConstants(solution, dt);
 
     _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsLHSJacobian, t, dt, s_tshift,
                                           solution, solutionDot);
-
-    _needNewLHSJacobian = false;
 
     PYLITH_METHOD_END;
 } // computeLHSJacobian
@@ -397,6 +395,7 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobianLumpedInv(pylith::top
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
+    _needNewLHSJacobianLumped = false;
     // No implementation needed for interface.
 
     PYLITH_METHOD_END;

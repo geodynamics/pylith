@@ -304,11 +304,18 @@ public:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
+    /** Check whether we need to reform the Jacobian.
+     *
+     * @param[in] dt Current time step.
+     * @returns True if we need to reform the Jacobian, false otherwise.
+     */
+    bool _needNewJacobian(const PylithReal dt);
+
     /** Set state (auxiliary field values) of system for time t.
      *
      * * @param[in] t Current time.
      */
-    void _updateState(const PylithReal t);
+    void _updateStateTime(const PylithReal t);
 
     /// Notify observers with solution corresponding to initial conditions.
     void _notifyObserversInitialSoln(void);
@@ -328,10 +335,12 @@ private:
     pylith::topology::Field* _residual; ///< Handle to residual field.
     pylith::topology::Field* _jacobianLHSLumpedInv; ///< Handle to inverse lumped Jacobian.
 
-    PylithReal _dtLHSJacobian; ///< Time step used to compute LHS Jacobian.
+    PylithReal _dtJacobian; ///< Time step used to compute LHS Jacobian.
     PylithReal _dtLHSJacobianLumped; ///< Time step used to compute LHS lumped Jacobian.
-    PylithReal _dtRHSJacobian; ///< Time step used to compute RHS Jacobian.
     PylithReal _tResidual; ///< Time for current residual.
+    bool _needNewRHSJacobian; ///< True if need to recompute RHS Jacobian.
+    bool _needNewLHSJacobian; ///< True if need to recompute LHS Jacobian.
+    bool _haveNewLHSJacobian; ///< True if LHS Jacobian was reformed.
     bool _shouldNotifyIC;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////

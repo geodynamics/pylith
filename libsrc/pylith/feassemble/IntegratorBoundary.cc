@@ -75,8 +75,6 @@ pylith::feassemble::IntegratorBoundary::IntegratorBoundary(pylith::problems::Phy
     _boundaryMesh(NULL),
     _boundaryLabel("") {
     GenericComponent::setName(_IntegratorBoundary::genericComponent);
-    _needNewRHSJacobian = false;
-    _needNewLHSJacobian = false;
 } // constructor
 
 
@@ -232,6 +230,7 @@ pylith::feassemble::IntegratorBoundary::computeRHSJacobian(PetscMat jacobianMat,
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
+    _needNewRHSJacobian = false;
     // No implementation needed for boundary.
 
     PYLITH_METHOD_END;
@@ -270,6 +269,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobian(PetscMat jacobianMat,
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<", solutionDot="<<solutionDot.getLabel()<<") empty method");
 
+    _needNewLHSJacobian = false;
     // No implementation needed for boundary.
 
     PYLITH_METHOD_END;
@@ -287,6 +287,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobianLumpedInv(pylith::topo
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
+    _needNewLHSJacobianLumped = false;
     // No implementation needed for boundary.
 
     PYLITH_METHOD_END;
