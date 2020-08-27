@@ -85,6 +85,14 @@ pylith::problems::Physics::getNormalizer(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Set formulation for equations.
+void
+pylith::problems::Physics::setFormulation(const FormulationEnum value) {
+    _formulation = value;
+} // setFormulation
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set database for auxiliary field.
 void
 pylith::problems::Physics::setAuxiliaryFieldDB(spatialdata::spatialdb::SpatialDB* value) {

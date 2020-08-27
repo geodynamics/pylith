@@ -76,12 +76,12 @@ public:
      * @param[out] f0 [dim].
      */
 
-    /** g0 function for elasticity equation: g0u = -\lambda (pos side), +\lambda (neg side).
+    /** f0 function for elasticity equation: f0u = -\lambda (pos side), +\lambda (neg side).
      *
      * Solution fields: [disp(dim), ..., lagrange(dim)]
      */
     static
-    void g0u(const PylithInt dim,
+    void f0u(const PylithInt dim,
              const PylithInt numS,
              const PylithInt numA,
              const PylithInt sOff[],
@@ -99,39 +99,62 @@ public:
              const PylithReal n[],
              const PylithInt numConstants,
              const PylithScalar constants[],
-             PylithScalar g0[]);
+             PylithScalar f0[]);
 
-    /** g0 function for slip constraint equation: g0\lambda = d - u^+ + u^-
+    /** f0 function for slip constraint equation: f0\lambda = (u^+ - u^-) - d
      *
      * Solution fields: [disp(dim), ..., lagrange(dim)]
      */
     static
-    void g0l(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithReal n[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar g0[]);
+    void f0l_u(const PylithInt dim,
+               const PylithInt numS,
+               const PylithInt numA,
+               const PylithInt sOff[],
+               const PylithInt sOff_x[],
+               const PylithScalar s[],
+               const PylithScalar s_t[],
+               const PylithScalar s_x[],
+               const PylithInt aOff[],
+               const PylithInt aOff_x[],
+               const PylithScalar a[],
+               const PylithScalar a_t[],
+               const PylithScalar a_x[],
+               const PylithReal t,
+               const PylithScalar x[],
+               const PylithReal n[],
+               const PylithInt numConstants,
+               const PylithScalar constants[],
+               PylithScalar f0[]);
 
-    /** Jg0 function for displacement equation: -\lambda (pos side), -\lambda (neg side).
+    /** f0 function for slip rate constraint equation: f0\lambda = (v^+ - v^-) - \dot{d}
      *
-     * Solution fields: [disp(dim), ..., lagrange(dim)]
+     * Solution fields: [disp(dim), vel(dim), ..., lagrange(dim)]
      */
     static
-    void Jg0ul(const PylithInt dim,
+    void f0l_v(const PylithInt dim,
+               const PylithInt numS,
+               const PylithInt numA,
+               const PylithInt sOff[],
+               const PylithInt sOff_x[],
+               const PylithScalar s[],
+               const PylithScalar s_t[],
+               const PylithScalar s_x[],
+               const PylithInt aOff[],
+               const PylithInt aOff_x[],
+               const PylithScalar a[],
+               const PylithScalar a_t[],
+               const PylithScalar a_x[],
+               const PylithReal t,
+               const PylithScalar x[],
+               const PylithReal n[],
+               const PylithInt numConstants,
+               const PylithScalar constants[],
+               PylithScalar f0[]);
+
+    /** Jf0 function for displacement equation: +\lambda (pos side), -\lambda (neg side).
+     */
+    static
+    void Jf0ul(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
                const PylithInt sOff[],
@@ -150,14 +173,14 @@ public:
                const PylithReal n[],
                const PylithInt numConstants,
                const PylithScalar constants[],
-               PylithScalar Jg0[]);
+               PylithScalar Jf0[]);
 
-    /** Jg0 function for slip constraint equation: -\lambda (pos side), +\lambda (neg side).
+    /** Jf0 function for slip constraint equation: +\lambda (pos side), -\lambda (neg side).
      *
      * Solution fields: [disp(dim), ..., lagrange(dim)]
      */
     static
-    void Jg0lu(const PylithInt dim,
+    void Jf0lu(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
                const PylithInt sOff[],
@@ -176,7 +199,7 @@ public:
                const PylithReal n[],
                const PylithInt numConstants,
                const PylithScalar constants[],
-               PylithScalar Jg0[]);
+               PylithScalar Jf0[]);
 
 }; // FaultCohesiveKin
 

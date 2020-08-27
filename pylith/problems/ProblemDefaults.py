@@ -59,7 +59,6 @@ class ProblemDefaults(Component):
         "output_field_filter", family="output_field_filter", factory=FieldFilterNone)
     outputFieldFilter.meta['tip'] = "Filter applied to output fields (e.g., FieldFilterProject)."
 
-
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="problem_defaults"):

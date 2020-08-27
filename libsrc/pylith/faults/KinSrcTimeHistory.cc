@@ -128,6 +128,54 @@ pylith::faults::KinSrcTimeHistory::slipFn(const PylithInt dim,
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Slip rate time function kernel.
+void
+pylith::faults::KinSrcTimeHistory::slipRateFn(const PylithInt dim,
+                                              const PylithInt numS,
+                                              const PylithInt numA,
+                                              const PylithInt sOff[],
+                                              const PylithInt sOff_x[],
+                                              const PylithScalar s[],
+                                              const PylithScalar s_t[],
+                                              const PylithScalar s_x[],
+                                              const PylithInt aOff[],
+                                              const PylithInt aOff_x[],
+                                              const PylithScalar a[],
+                                              const PylithScalar a_t[],
+                                              const PylithScalar a_x[],
+                                              const PylithReal t,
+                                              const PylithScalar x[],
+                                              const PylithInt numConstants,
+                                              const PylithScalar constants[],
+                                              PylithScalar slipRate[]) {
+    const PylithInt _numA = 3;
+
+    assert(_numA == numA);
+    assert(aOff);
+    assert(a);
+    assert(slipRate);
+
+    const PylithInt i_initiationTime = 0;
+    const PylithInt i_finalSlip = 1;
+    const PylithInt i_timeHistoryValue = 2;
+    const PylithScalar initiationTime = a[aOff[i_initiationTime]];
+    const PylithScalar* finalSlip = &a[aOff[i_finalSlip]];
+    const PylithScalar timeHistoryValue = a[aOff[i_timeHistoryValue]];
+
+    const PylithInt i_originTime = 0;
+    const PylithScalar originTime = constants[i_originTime];
+    const PylithScalar t0 = originTime + initiationTime;
+
+    if (t >= t0) {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipRate[i] = finalSlip[i] * timeHistoryValue;
+        } // for
+    } // if
+
+} // slipRateFn
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Preinitialize earthquake source. Set names/sizes of auxiliary subfields.
 void
 pylith::faults::KinSrcTimeHistory::_auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
@@ -150,6 +198,7 @@ pylith::faults::KinSrcTimeHistory::_auxiliaryFieldSetup(const spatialdata::units
     _dbTimeHistory->open();
 
     _slipFnKernel = pylith::faults::KinSrcTimeHistory::slipFn;
+    _slipRateFnKernel = pylith::faults::KinSrcTimeHistory::slipRateFn;
 
     PYLITH_METHOD_END;
 } // _auxiliaryFieldSetup

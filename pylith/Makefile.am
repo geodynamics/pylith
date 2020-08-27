@@ -28,12 +28,14 @@ nobase_pkgpyexec_PYTHON = \
 	bc/NeumannTimeDependent.py \
 	bc/AuxSubfieldsTimeDependent.py \
 	bc/AbsorbingDampers.py \
+	bc/AuxSubfieldsAbsorbingDampers.py \
 	bc/ZeroDB.py \
 	faults/__init__.py \
 	faults/FaultCohesive.py \
 	faults/FaultCohesiveKin.py \
 	faults/KinSrc.py \
 	faults/KinSrcStep.py \
+	faults/KinSrcRamp.py \
 	faults/KinSrcConstRate.py \
 	faults/KinSrcBrune.py \
 	faults/KinSrcLiuCos.py \

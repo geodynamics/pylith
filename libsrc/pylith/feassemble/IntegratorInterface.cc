@@ -264,15 +264,16 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Update at beginning of time step.
+// Update auxiliary field values to current time.
 void
-pylith::feassemble::IntegratorInterface::prestep(const double t,
-                                                 const double dt) {
+pylith::feassemble::IntegratorInterface::updateState(const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<")");
+    PYLITH_JOURNAL_DEBUG("updateState(t="<<t<<")");
+
+    Integrator::updateState(t);
 
     assert(_physics);
-    _physics->updateAuxiliaryField(_auxiliaryField, t+dt);
+    _physics->updateAuxiliaryField(_auxiliaryField, t);
 
     journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
@@ -284,7 +285,7 @@ pylith::feassemble::IntegratorInterface::prestep(const double t,
     } // if
 
     PYLITH_METHOD_END;
-} // prestep
+} // updateState
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -321,6 +322,7 @@ pylith::feassemble::IntegratorInterface::computeRHSJacobian(PetscMat jacobianMat
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
+    _needNewRHSJacobian = false;
     if (0 == _kernelsRHSJacobian.size()) { PYLITH_METHOD_END;}
 
     _setKernelConstants(solution, dt);
@@ -331,8 +333,6 @@ pylith::feassemble::IntegratorInterface::computeRHSJacobian(PetscMat jacobianMat
 
     _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsRHSJacobian, t, dt, s_tshift,
                                           solution, solutionDot);
-
-    _needNewRHSJacobian = false;
 
     PYLITH_METHOD_END;
 } // computeRHSJacobian
@@ -372,14 +372,13 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobian(PetscMat jacobianMat
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<", solutionDot="<<solutionDot.getLabel()<<")");
 
+    _needNewLHSJacobian = false;
     if (0 == _kernelsLHSJacobian.size()) { PYLITH_METHOD_END;}
 
     _setKernelConstants(solution, dt);
 
     _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsLHSJacobian, t, dt, s_tshift,
                                           solution, solutionDot);
-
-    _needNewLHSJacobian = false;
 
     PYLITH_METHOD_END;
 } // computeLHSJacobian
@@ -396,6 +395,7 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobianLumpedInv(pylith::top
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
+    _needNewLHSJacobianLumped = false;
     // No implementation needed for interface.
 
     PYLITH_METHOD_END;
@@ -437,16 +437,13 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     err = DMLabelGetStratumBounds(dmLabel, integrator->getInterfaceId(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cohesiveCells);PYLITH_CHECK_ERROR(err);
 
+    DMPolytopeType ct;
+    err = DMPlexGetCellType(dmSoln, cStart, &ct);PYLITH_CHECK_ERROR(err);
+    assert((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
+           (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
+           (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR));
     PetscDS prob = NULL;
-    PetscInt cMax = 0;
-    err = DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-    cMax = cStart;
-    for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
-      DMPolytopeType ct;
-      err = DMPlexGetCellType(dmSoln, cell, &ct);PYLITH_CHECK_ERROR(err);
-      if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) break;
-    }
-    err = DMGetCellDS(dmSoln, cMax, &prob);PYLITH_CHECK_ERROR(err);
+    err = DMGetCellDS(dmSoln, cStart, &prob);PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
@@ -505,16 +502,13 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     err = DMLabelGetStratumBounds(dmLabel, integrator->getInterfaceId(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cohesiveCells);PYLITH_CHECK_ERROR(err);
 
+    DMPolytopeType ct;
+    err = DMPlexGetCellType(dmSoln, cStart, &ct);PYLITH_CHECK_ERROR(err);
+    assert((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
+           (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
+           (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR));
     PetscDS prob = NULL;
-    PetscInt cMax = 0;
-    err = DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-    cMax = cStart;
-    for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
-      DMPolytopeType ct;
-      err = DMPlexGetCellType(dmSoln, cell, &ct);PYLITH_CHECK_ERROR(err);
-      if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) break;
-    }
-    err = DMGetCellDS(dmSoln, cMax, &prob);PYLITH_CHECK_ERROR(err);
+    err = DMGetCellDS(dmSoln, cStart, &prob);PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);

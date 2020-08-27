@@ -32,14 +32,6 @@ class pylith::problems::TimeDependent : public pylith::problems::Problem {
     friend class TestTimeDependent; // unit testing
     friend class pylith::testing::MMSTest; // Testing with Method of Manufactured Solutions
 
-    // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
-    enum FormulationTypeEnum {
-        IMPLICIT, // Implicit time stepping.
-        EXPLICIT, // Explicit time stepping.
-    }; // FormulationTypeEnum
-
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -134,6 +126,12 @@ public:
      */
     PetscSNES getPetscSNES(void);
 
+    /** Get PETSc time stepper.
+     *
+     * @returns PETSc TS for problem.
+     */
+    PetscTS getPetscTS(void);
+
     /// Verify configuration.
     void verifyConfiguration(void) const;
 
@@ -144,17 +142,91 @@ public:
      */
     void solve(void);
 
-    /** Perform operations before advancing solution one time step.
-     *
-     * Set constraints, etc.
-     */
-    void prestep(void);
-
     /** Perform Perform operations after advancing solution one time step.
      *
      * Update state variables, output.
      */
     void poststep(void);
+
+    /** Set solution values according to constraints (Dirichlet BC).
+     *
+     * @param[in] t Current time.
+     * @param[in] solutionVec PETSc Vec with current global view of solution.
+     * @param[in] solutionDotVec PETSc Vec with current global view of time derivative of solution.
+     */
+    void setSolutionLocal(const PylithReal t,
+                          PetscVec solutionVec,
+                          PetscVec solutionDotVec);
+
+    /** Compute RHS residual, G(t,s) and assemble into global vector.
+     *
+     * @param[out] residualVec PETSc Vec for residual.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solutionVec PETSc Vec with current trial solution.
+     */
+    void computeRHSResidual(PetscVec residualVec,
+                            const PetscReal t,
+                            const PetscReal dt,
+                            PetscVec solutionVec);
+
+    /* Compute RHS Jacobian for G(t,s).
+     *
+     * @param[out] jacobianMat PETSc Mat for Jacobian.
+     * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solutionVec PETSc Vec with current trial solution.
+     */
+    void computeRHSJacobian(PetscMat jacobianMat,
+                            PetscMat precondMat,
+                            const PylithReal t,
+                            const PylithReal dt,
+                            PetscVec solutionVec);
+
+    /** Compute LHS residual, F(t,s,\dot{s}) and assemble into global vector.
+     *
+     * @param[out] residualVec PETSc Vec for residual.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solutionVec PETSc Vec with current trial solution.
+     * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
+     */
+    void computeLHSResidual(PetscVec residualVec,
+                            const PetscReal t,
+                            const PetscReal dt,
+                            PetscVec solutionVec,
+                            PetscVec solutionDotVec);
+
+    /* Compute LHS Jacobian for F(t,s,\dot{s}) for implicit time stepping.
+     *
+     * @param[out] jacobianMat PETSc Mat for Jacobian.
+     * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] s_tshift Scale for time derivative.
+     * @param[in] solutionVec PETSc Vec with current trial solution.
+     * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
+     */
+    void computeLHSJacobian(PetscMat jacobianMat,
+                            PetscMat precondMat,
+                            const PylithReal t,
+                            const PylithReal dt,
+                            const PylithReal s_tshift,
+                            PetscVec solutionVec,
+                            PetscVec solutionDotVec);
+
+    /* Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) for explicit time stepping.
+     *
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] s_tshift Scale for time derivative.
+     * @param[in] solutionVec PETSc Vec with current trial solution.
+     */
+    void computeLHSJacobianLumpedInv(const PylithReal t,
+                                     const PylithReal dt,
+                                     const PylithReal s_tshift,
+                                     PetscVec solutionVec);
 
     /** Callback static method for computing residual for RHS, G(t,s).
      *
@@ -224,11 +296,6 @@ public:
                                       PetscMat precondMat,
                                       void* context);
 
-    /** Callback static method for operations before advancing solution one time step.
-     */
-    static
-    PetscErrorCode prestep(PetscTS ts);
-
     /** Callback static method for operations after advancing solution one time step.
      */
     static
@@ -236,6 +303,19 @@ public:
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
+
+    /** Check whether we need to reform the Jacobian.
+     *
+     * @param[in] dt Current time step.
+     * @returns True if we need to reform the Jacobian, false otherwise.
+     */
+    bool _needNewJacobian(const PylithReal dt);
+
+    /** Set state (auxiliary field values) of system for time t.
+     *
+     * * @param[in] t Current time.
+     */
+    void _updateStateTime(const PylithReal t);
 
     /// Notify observers with solution corresponding to initial conditions.
     void _notifyObserversInitialSoln(void);
@@ -250,7 +330,17 @@ private:
     PetscTS _ts; ///< PETSc time stepper.
     std::vector<pylith::problems::InitialCondition*> _ic; ///< Array of initial conditions.
     pylith::problems::ProgressMonitorTime* _monitor; ///< Monitor for simulation progress.
-    FormulationTypeEnum _formulationType; ///< Type of time stepping.
+
+    pylith::topology::Field* _solutionDot; ///< Time derivative of solution field.
+    pylith::topology::Field* _residual; ///< Handle to residual field.
+    pylith::topology::Field* _jacobianLHSLumpedInv; ///< Handle to inverse lumped Jacobian.
+
+    PylithReal _dtJacobian; ///< Time step used to compute LHS Jacobian.
+    PylithReal _dtLHSJacobianLumped; ///< Time step used to compute LHS lumped Jacobian.
+    PylithReal _tResidual; ///< Time for current residual.
+    bool _needNewRHSJacobian; ///< True if need to recompute RHS Jacobian.
+    bool _needNewLHSJacobian; ///< True if need to recompute LHS Jacobian.
+    bool _haveNewLHSJacobian; ///< True if LHS Jacobian was reformed.
     bool _shouldNotifyIC;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////

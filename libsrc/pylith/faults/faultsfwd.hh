@@ -36,6 +36,7 @@ namespace pylith {
         class KinSrc;
         class KinSrcConstRate;
         class KinSrcStep;
+        class KinSrcRamp;
         class KinSrcBrune;
         class KinSrcLiuCos;
         class KinSrcTimeHistory;

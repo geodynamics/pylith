@@ -65,7 +65,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
     startTime.meta['tip'] = "Start time for problem."
 
     endTime = pyre.inventory.dimensional("end_time", default=0.1 * year,
-                                           validator=pyre.inventory.greaterEqual(0.0 * year))
+                                         validator=pyre.inventory.greaterEqual(0.0 * year))
     endTime.meta['tip'] = "End time for problem."
 
     maxTimeSteps = pyre.inventory.int("max_timesteps", default=20000, validator=pyre.inventory.greater(0))

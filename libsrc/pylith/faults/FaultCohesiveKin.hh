@@ -120,6 +120,22 @@ protected:
      */
     void _updateKernelConstants(const PylithReal dt);
 
+    /** Update slip subfield in auxiliary field at beginning of time step.
+     *
+     * @param[out] auxiliaryField Auxiliary field.
+     * @param[in] t Current time.
+     */
+    void _updateSlip(pylith::topology::Field* auxiliaryField,
+                     const double t);
+
+    /** Update slip rate subfield in auxiliary field at beginning of time step.
+     *
+     * @param[out] auxiliaryField Auxiliary field.
+     * @param[in] t Current time.
+     */
+    void _updateSlipRate(pylith::topology::Field* auxiliaryField,
+                         const double t);
+
     // PRIVATE TYPEDEFS ////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 

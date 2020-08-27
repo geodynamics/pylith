@@ -44,6 +44,8 @@
 
 #include "pylith/utils/petscfwd.h" // USES PetscVec, PetscMat
 
+#include "pylith/problems/Physics.hh" // USES Problem::Formulation
+
 #include "pylith/utils/array.hh" // HASA std::vector
 
 class pylith::problems::Problem : public pylith::utils::PyreComponent {
@@ -68,6 +70,18 @@ public:
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
+
+    /** Set formulation for equations.
+     *
+     * @param[in] value Formulation type.
+     */
+    void setFormulation(const pylith::problems::Physics::FormulationEnum value);
+
+    /** Get formulation for equations.
+     *
+     * @returns Formulation type.
+     */
+    pylith::problems::Physics::FormulationEnum getFormulation(void) const;
 
     /** Set solver type.
      *
@@ -152,93 +166,10 @@ public:
     virtual
     void initialize(void);
 
-    /** Set solution values according to constraints (Dirichlet BC).
-     *
-     * @param[in] t Current time.
-     * @param[in] solutionVec PETSc Vec with current global view of solution.
-     * @param[in] solutionDotVec PETSc Vec with current global view of time derivative of solution.
-     */
-    void setSolutionLocal(const PylithReal t,
-                          PetscVec solutionVec,
-                          PetscVec solutionDotVec);
-
-    /** Compute RHS residual, G(t,s) and assemble into global vector.
-     *
-     * @param[out] residualVec PETSc Vec for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solutionVec PETSc Vec with current trial solution.
-     */
-    void computeRHSResidual(PetscVec residualVec,
-                            const PetscReal t,
-                            const PetscReal dt,
-                            PetscVec solutionVec);
-
-    /* Compute RHS Jacobian for G(t,s).
-     *
-     * @param[out] jacobianMat PETSc Mat for Jacobian.
-     * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solutionVec PETSc Vec with current trial solution.
-     */
-    void computeRHSJacobian(PetscMat jacobianMat,
-                            PetscMat precondMat,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            PetscVec solutionVec);
-
-    /** Compute LHS residual, F(t,s,\dot{s}) and assemble into global vector.
-     *
-     * @param[out] residualVec PETSc Vec for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solutionVec PETSc Vec with current trial solution.
-     * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
-     */
-    void computeLHSResidual(PetscVec residualVec,
-                            const PetscReal t,
-                            const PetscReal dt,
-                            PetscVec solutionVec,
-                            PetscVec solutionDotVec);
-
-    /* Compute LHS Jacobian for F(t,s,\dot{s}) for implicit time stepping.
-     *
-     * @param[out] jacobianMat PETSc Mat for Jacobian.
-     * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] s_tshift Scale for time derivative.
-     * @param[in] solutionVec PETSc Vec with current trial solution.
-     * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
-     */
-    void computeLHSJacobian(PetscMat jacobianMat,
-                            PetscMat precondMat,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const PylithReal s_tshift,
-                            PetscVec solutionVec,
-                            PetscVec solutionDotVec);
-
-    /* Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) for explicit time stepping.
-     *
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] s_tshift Scale for time derivative.
-     * @param[in] solutionVec PETSc Vec with current trial solution.
-     */
-    void computeLHSJacobianLumpedInv(const PylithReal t,
-                                     const PylithReal dt,
-                                     const PylithReal s_tshift,
-                                     PetscVec solutionVec);
-
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::topology::Field* _solution; ///< Handle to solution field.
-    pylith::topology::Field* _solutionDot; ///< Handle to time derivative of solution field.
-    pylith::topology::Field* _residual; ///< Handle to residual field.
-    pylith::topology::Field* _jacobianLHSLumpedInv; ///< Handle to inverse lumped Jacobian.
+    pylith::topology::Field* _solution; ///< Solution field.
 
     spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalization of scales.
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
@@ -251,6 +182,7 @@ protected:
     std::vector<pylith::feassemble::Constraint*> _constraints; ///< Array of constraints.
     pylith::problems::ObserversSoln* _observers; ///< Subscribers of solution updates.
 
+    pylith::problems::Physics::FormulationEnum _formulation; ///< Formulation for equations.
     SolverTypeEnum _solverType; ///< Problem (solver) type.
 
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -265,11 +197,11 @@ private:
     /// Create array of constraints from materials, interfaces, and boundary conditions.
     void _createConstraints(void);
 
-    /** Setup field so Lagrange multiplier subfield is limited to degrees of freedom associated with the cohesive cells.
-     *
-     * @param[inout] solution Solution field.
-     */
-    void _setupLagrangeMultiplier(pylith::topology::Field* solution);
+    /// Setup solution subfields and discretization.
+    void _setupSolution(void);
+
+    // Setup field so Lagrange multiplier subfield is limited to degrees of freedom associated with the cohesive cells.
+    void _setupLagrangeMultiplier(void);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

@@ -46,14 +46,11 @@
 // Constructor
 pylith::problems::Problem::Problem() :
     _solution(NULL),
-    _solutionDot(NULL),
-    _residual(NULL),
-    _jacobianLHSLumpedInv(NULL),
     _normalizer(NULL),
     _gravityField(NULL),
     _observers(new pylith::problems::ObserversSoln),
-    _solverType(LINEAR) { // constructor
-} // constructor
+    _formulation(pylith::problems::Physics::QUASISTATIC),
+    _solverType(LINEAR) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -80,9 +77,6 @@ pylith::problems::Problem::deallocate(void) {
     } // for
 
     _solution = NULL; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
-    delete _solutionDot;_solutionDot = NULL;
-    delete _residual;_residual = NULL;
-    delete _jacobianLHSLumpedInv;_jacobianLHSLumpedInv = NULL;
     delete _normalizer;_normalizer = NULL;
     _gravityField = NULL; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
     delete _observers;_observers = NULL;
@@ -91,6 +85,27 @@ pylith::problems::Problem::deallocate(void) {
 
     PYLITH_METHOD_END;
 } // deallocate
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set formulation for solving equation.
+void
+pylith::problems::Problem::setFormulation(const pylith::problems::Physics::FormulationEnum value) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("setFormulation(value="<<value<<")");
+
+    _formulation = value;
+
+    PYLITH_METHOD_END;
+} // setFormulation
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get formulation for solving equation.
+pylith::problems::Physics::FormulationEnum
+pylith::problems::Problem::getFormulation(void) const {
+    return _formulation;
+} // getFormulation
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -246,18 +261,21 @@ pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh) {
         assert(_materials[i]);
         _materials[i]->setNormalizer(*_normalizer);
         _materials[i]->setGravityField(_gravityField);
+        _materials[i]->setFormulation(_formulation);
     } // for
 
     const size_t numInterfaces = _interfaces.size();
     for (size_t i = 0; i < numInterfaces; ++i) {
         assert(_interfaces[i]);
         _interfaces[i]->setNormalizer(*_normalizer);
+        _interfaces[i]->setFormulation(_formulation);
     } // for
 
     const size_t numBC = _bc.size();
     for (size_t i = 0; i < numBC; ++i) {
         assert(_bc[i]);
         _bc[i]->setNormalizer(*_normalizer);
+        _bc[i]->setFormulation(_formulation);
     } // for
 
     PYLITH_METHOD_END;
@@ -314,11 +332,7 @@ pylith::problems::Problem::initialize(void) {
 
     // Initialize solution field.
     PetscErrorCode err = DMSetFromOptions(_solution->dmMesh());PYLITH_CHECK_ERROR(err);
-    _solution->subfieldsSetup();
-    if (_solution->hasSubfield("lagrange_multiplier_fault")) {
-        _setupLagrangeMultiplier(_solution);
-    } // if
-    _solution->createDiscretization();
+    _setupSolution();
 
     const pylith::topology::Mesh& mesh = _solution->mesh();
     pylith::topology::CoordsVisitor::optimizeClosure(mesh.dmMesh());
@@ -348,257 +362,8 @@ pylith::problems::Problem::initialize(void) {
         _solution->view("Solution field", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
-    // Initialize residual.
-    delete _residual;_residual = new pylith::topology::Field(_solution->mesh());assert(_residual);
-    _residual->cloneSection(*_solution);
-    _residual->setLabel("residual");
-
     PYLITH_METHOD_END;
 } // initialize
-
-
-// ----------------------------------------------------------------------
-// Set solution values according to constraints (Dirichlet BC).
-void
-pylith::problems::Problem::setSolutionLocal(const PylithReal t,
-                                            PetscVec solutionVec,
-                                            PetscVec solutionDotVec) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setSolutionLocal(t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<")");
-
-    // Update PyLith view of the solution.
-    assert(_solution);
-    _solution->scatterVectorToLocal(solutionVec);
-
-    if (solutionDotVec) {
-        if (!_solutionDot) {
-            _solutionDot = new pylith::topology::Field(_solution->mesh());
-            _solutionDot->cloneSection(*_solution);
-            _solutionDot->setLabel("solutionDot");
-        } // if
-        _solutionDot->scatterVectorToLocal(solutionDotVec);
-    } // if
-
-    const size_t numConstraints = _constraints.size();
-    for (size_t i = 0; i < numConstraints; ++i) {
-        _constraints[i]->setSolution(_solution, t);
-    } // for
-
-    // _solution->view("SOLUTION AFTER SETTING VALUES");
-
-    PYLITH_METHOD_END;
-} // setSolutionLocal
-
-
-// ----------------------------------------------------------------------
-// Compute RHS residual for G(t,s).
-void
-pylith::problems::Problem::computeRHSResidual(PetscVec residualVec,
-                                              const PylithReal t,
-                                              const PylithReal dt,
-                                              PetscVec solutionVec) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::computeRHSResidual(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", residualVec="<<residualVec<<")");
-
-    assert(residualVec);
-    assert(solutionVec);
-    assert(_solution);
-
-    // Update PyLith view of the solution.
-    PetscVec solutionDotVec = NULL;
-    setSolutionLocal(t, solutionVec, solutionDotVec);
-
-    // Sum residual contributions across integrators.
-    _residual->zeroLocal();
-    const size_t numIntegrators = _integrators.size();
-    assert(numIntegrators > 0); // must have at least 1 integrator
-    for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->computeRHSResidual(_residual, t, dt, *_solution);
-    } // for
-
-    // Assemble residual values across processes.
-    PetscErrorCode err = VecSet(residualVec, 0.0);PYLITH_CHECK_ERROR(err);
-    _residual->scatterLocalToVector(residualVec, ADD_VALUES);
-
-    PYLITH_METHOD_END;
-} // computeRHSResidual
-
-
-// ----------------------------------------------------------------------
-// Compute RHS Jacobian for G(t,s).
-void
-pylith::problems::Problem::computeRHSJacobian(PetscMat jacobianMat,
-                                              PetscMat precondMat,
-                                              const PylithReal t,
-                                              const PylithReal dt,
-                                              PetscVec solutionVec) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::computeRHSJacobian(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
-
-    assert(jacobianMat);
-    assert(precondMat);
-    assert(solutionVec);
-    assert(_solution);
-
-    const size_t numIntegrators = _integrators.size();
-
-    PetscErrorCode err;
-    err = MatZeroEntries(precondMat);PYLITH_CHECK_ERROR(err);
-
-    // Check to see if we need to compute RHS Jacobian.
-    bool needNewRHSJacobian = false;
-    for (size_t i = 0; i < numIntegrators; ++i) {
-        if (_integrators[i]->needNewRHSJacobian()) {
-            needNewRHSJacobian = true;
-            break;
-        } // if
-    } // for
-    if (!needNewRHSJacobian) {
-        PYLITH_METHOD_END;
-    } // if
-
-    // Update PyLith view of the solution.
-    const PetscVec solutionDotVec = NULL;
-    setSolutionLocal(t, solutionVec, solutionDotVec);
-
-    // Sum Jacobian contributions across integrators.
-    for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->computeRHSJacobian(jacobianMat, precondMat, t, dt, *_solution);
-    } // for
-
-    // Solver handles assembly.
-
-    PYLITH_METHOD_END;
-} // computeRHSJacobian
-
-
-// ----------------------------------------------------------------------
-// Compute LHS residual for F(t,s,\dot{s}).
-void
-pylith::problems::Problem::computeLHSResidual(PetscVec residualVec,
-                                              const PylithReal t,
-                                              const PylithReal dt,
-                                              PetscVec solutionVec,
-                                              PetscVec solutionDotVec) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::computeLHSResidual(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", residualVec="<<residualVec<<")");
-
-    assert(residualVec);
-    assert(solutionVec);
-    assert(solutionDotVec);
-    assert(_solution);
-
-    // Update PyLith view of the solution.
-    setSolutionLocal(t, solutionVec, solutionDotVec);
-
-    // Sum residual across integrators.
-    _residual->zeroLocal();
-    const int numIntegrators = _integrators.size();
-    assert(numIntegrators > 0); // must have at least 1 integrator
-    for (int i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->computeLHSResidual(_residual, t, dt, *_solution, *_solutionDot);
-    } // for
-
-    // Assemble residual values across processes.
-    PetscErrorCode err = VecSet(residualVec, 0.0);PYLITH_CHECK_ERROR(err); // Move to TSComputeIFunction()?
-    _residual->scatterLocalToVector(residualVec, ADD_VALUES);
-
-    PYLITH_METHOD_END;
-} // computeLHSResidual
-
-
-// ----------------------------------------------------------------------
-// Compute LHS Jacobian for F(t,s,\dot{s}) for implicit time stepping.
-void
-pylith::problems::Problem::computeLHSJacobian(PetscMat jacobianMat,
-                                              PetscMat precondMat,
-                                              const PylithReal t,
-                                              const PylithReal dt,
-                                              const PylithReal s_tshift,
-                                              PetscVec solutionVec,
-                                              PetscVec solutionDotVec) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobian(t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
-
-    assert(jacobianMat);
-    assert(precondMat);
-    assert(solutionVec);
-    assert(solutionDotVec);
-    assert(s_tshift > 0);
-
-    const size_t numIntegrators = _integrators.size();
-
-    // Check to see if we need to compute RHS Jacobian.
-    bool needNewLHSJacobian = false;
-    for (size_t i = 0; i < numIntegrators; ++i) {
-        if (_integrators[i]->needNewLHSJacobian()) {
-            needNewLHSJacobian = true;
-            break;
-        } // if
-    } // for
-    if (!needNewLHSJacobian) {
-        PYLITH_METHOD_END;
-    } // if
-
-    // Update PyLith view of the solution.
-    setSolutionLocal(t, solutionVec, solutionDotVec);
-
-    // Sum Jacobian contributions across integrators.
-    for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->computeLHSJacobian(jacobianMat, precondMat, t, dt, s_tshift, *_solution, *_solutionDot);
-    } // for
-
-    // Solver handles assembly.
-
-    PYLITH_METHOD_END;
-} // computeLHSJacobianImplicit
-
-
-// ----------------------------------------------------------------------
-// Compute inverse of LHS Jacobian for F(t,s,\dot{s}) for explicit time stepping.
-void
-pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
-                                                       const PylithReal dt,
-                                                       const PylithReal s_tshift,
-                                                       PetscVec solutionVec) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobianLumpedInv(t="<<t<<", dt="<<dt<<", s_tshift="<<s_tshift<<", solutionVec="<<solutionVec<<")");
-
-    assert(solutionVec);
-    assert(_solution);
-    assert(_jacobianLHSLumpedInv);
-    assert(s_tshift > 0);
-
-    const size_t numIntegrators = _integrators.size();
-
-    // Check to see if we need to compute LHS Jacobian.
-    bool needNewLHSJacobian = false;
-    for (size_t i = 0; i < numIntegrators; ++i) {
-        if (_integrators[i]->needNewLHSJacobian()) {
-            needNewLHSJacobian = true;
-            break;
-        } // if
-    } // for
-    if (!needNewLHSJacobian) {
-        PYLITH_METHOD_END;
-    } // if
-
-    // Set jacobian to zero.
-    _jacobianLHSLumpedInv->zeroLocal();
-
-    // Update PyLith view of the solution.
-    const PetscVec solutionDotVec = NULL;
-    setSolutionLocal(t, solutionVec, solutionDotVec);
-
-    // Sum Jacobian contributions across integrators.
-    for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->computeLHSJacobianLumpedInv(_jacobianLHSLumpedInv, t, dt, s_tshift, *_solution);
-    } // for
-
-    // No need to assemble inverse of lumped Jacobian across processes, because it contributes to residual.
-
-    PYLITH_METHOD_END;
-} // computeLHSJacobianLumpedInv
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -713,12 +478,57 @@ pylith::problems::Problem::_createConstraints(void) {
 } // _createConstraints
 
 
+#include <iostream>
+// ---------------------------------------------------------------------------------------------------------------------
+// Setup solution subfields and discretization.
+void
+pylith::problems::Problem::_setupSolution(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("Problem::_setupSolution()");
+
+    assert(_solution);
+
+    _solution->subfieldsSetup();
+    if (_solution->hasSubfield("lagrange_multiplier_fault")) {
+        _setupLagrangeMultiplier();
+    } // if
+
+    _solution->createDiscretization();
+
+    if (_solution->hasSubfield("lagrange_multiplier_fault")) {
+        // Mark lagrange_multiplier_fault field for implicit solve.
+        PetscErrorCode err = 0;
+        PetscDS prob = NULL;
+        PetscInt cStart = 0, cEnd = 0;
+        PetscDM dmSoln = _solution->dmMesh();assert(dmSoln);
+        err = DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+        PetscInt cell = cStart;
+        for (; cell < cEnd; ++cell) {
+            DMPolytopeType cellType;
+            err = DMPlexGetCellType(dmSoln, cell, &cellType);PYLITH_CHECK_ERROR(err);
+            if ((cellType == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
+                (cellType == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
+                (cellType == DM_POLYTOPE_QUAD_PRISM_TENSOR)) {
+                break;
+            } // if
+        } // for
+        err = DMGetCellDS(dmSoln, cell, &prob);PYLITH_CHECK_ERROR(err);
+        assert(prob);
+
+        const pylith::topology::Field::SubfieldInfo& lagrangeMultiplierInfo = _solution->subfieldInfo("lagrange_multiplier_fault");
+        err = PetscDSSetImplicit(prob, lagrangeMultiplierInfo.index, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+    } // if
+
+    PYLITH_METHOD_END;
+} // _setupSolution
+
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup field so Lagrange multiplier subfield is limited to degrees of freedom associated with the cohesive cells.
 void
-pylith::problems::Problem::_setupLagrangeMultiplier(pylith::topology::Field* solution) {
+pylith::problems::Problem::_setupLagrangeMultiplier(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::_setupLagrangeMultiplier(solution="<<solution<<")");
+    PYLITH_COMPONENT_DEBUG("Problem::_setupLagrangeMultiplier()");
 
     assert(_solution->hasSubfield("lagrange_multiplier_fault"));
 
@@ -751,6 +561,7 @@ pylith::problems::Problem::_setupLagrangeMultiplier(pylith::topology::Field* sol
         } // for
     } // for
 
+    // Reset discretization (FE), now using label.
     const pylith::topology::Field::SubfieldInfo& lagrangeMultiplierInfo = _solution->subfieldInfo("lagrange_multiplier_fault");
     PetscFE fe = NULL;
     err = DMGetField(dmSoln, lagrangeMultiplierInfo.index, NULL, (PetscObject*)&fe);PYLITH_CHECK_ERROR(err);assert(fe);

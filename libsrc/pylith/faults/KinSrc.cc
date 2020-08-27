@@ -37,6 +37,7 @@
 pylith::faults::KinSrc::KinSrc(void) :
     _auxiliaryFactory(new pylith::faults::KinSrcAuxiliaryFactory),
     _slipFnKernel(NULL),
+    _slipRateFnKernel(NULL),
     _auxiliaryField(NULL),
     _originTime(0.0) {}
 
@@ -108,9 +109,10 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("initialize(faultAuxField"<<faultAuxField.getLabel()<<", normalizer, cs="<<typeid(cs).name()<<")");
 
-    // Set default discretization of auxiliary subfields to match slip subfield in integrator auxiliary field.
+    // Set default discretization of auxiliary subfields to match slip/slip_rate subfield in integrator auxiliary field.
     assert(_auxiliaryFactory);
-    const pylith::topology::FieldBase::Discretization& discretization = faultAuxField.subfieldInfo("slip").fe;
+    const char* slipFieldName = faultAuxField.hasSubfield("slip") ? "slip" : "slip_rate";
+    const pylith::topology::FieldBase::Discretization& discretization = faultAuxField.subfieldInfo(slipFieldName).fe;
     _auxiliaryFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder,
                                                  discretization.dimension, discretization.cellBasis, discretization.isBasisContinuous,
                                                  discretization.feSpace);
@@ -170,7 +172,44 @@ pylith::faults::KinSrc::updateSlip(PetscVec slipLocalVec,
                               slipLocalVec);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
-} // slip
+} // updateSlip
+
+
+// ----------------------------------------------------------------------
+// Set slip rate values at time t.
+void
+pylith::faults::KinSrc::updateSlipRate(PetscVec slipRateLocalVec,
+                                       pylith::topology::Field* faultAuxiliaryField,
+                                       const PylithScalar t,
+                                       const PylithScalar timeScale) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("updateSlipRate(slipLocalVec="<<slipRateLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
+                                                         <<", t="<<t<<", timeScale="<<timeScale<<")");
+
+    if (!_slipRateFnKernel || (t < _originTime)) {
+        PYLITH_METHOD_END;
+    } // if
+
+    assert(slipRateLocalVec);
+    assert(_auxiliaryField);
+
+    _setFEConstants(*faultAuxiliaryField); // Constants are attached to the auxiliary field for the slip rate vector.
+
+    PetscPointFunc subfieldKernels[1];
+    subfieldKernels[0] = _slipRateFnKernel;
+
+    // Create local vector for slip for this source.
+    PetscErrorCode err = 0;
+    PetscDM faultAuxiliaryDM = faultAuxiliaryField->dmMesh();
+    err = PetscObjectCompose((PetscObject) faultAuxiliaryDM, "dmAux",
+                             (PetscObject) _auxiliaryField->dmMesh());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) faultAuxiliaryDM, "A",
+                             (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMProjectFieldLocal(faultAuxiliaryDM, t, slipRateLocalVec, subfieldKernels, INSERT_VALUES,
+                              slipRateLocalVec);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+} // updateSlipRate
 
 
 // ----------------------------------------------------------------------

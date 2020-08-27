@@ -21,7 +21,7 @@
 
 from pylith.utils.PetscComponent import PetscComponent
 from .problems import Problem as ModuleProblem
-
+from .problems import Physics
 from pylith.utils.NullComponent import NullComponent
 from .ProblemDefaults import ProblemDefaults
 
@@ -72,6 +72,7 @@ class Problem(PetscComponent, ModuleProblem):
 
     Properties
       - *dimension* Spatial dimension of problem space.
+      - *formulation* Formulation for equations ('quasistatic' or 'dynamic').
       - *solver* Type of solver to use.
 
     Facilities
@@ -90,6 +91,10 @@ class Problem(PetscComponent, ModuleProblem):
 
     defaults = pyre.inventory.facility("defaults", family="problem_defaults", factory=ProblemDefaults)
     defaults.meta['tip'] = "Default options for problem."
+
+    formulation = pyre.inventory.str("formulation", default="quasistatic",
+                                     validator=pyre.inventory.choice(["quasistatic", "dynamic", "dynamic_imex"]))
+    formulation.meta['tip'] = "Formulation for equations."
 
     solverChoice = pyre.inventory.str("solver", default="linear",
                                       validator=pyre.inventory.choice(["linear", "nonlinear"]))
@@ -143,6 +148,16 @@ class Problem(PetscComponent, ModuleProblem):
         self._createModuleObj()
         ModuleProblem.setIdentifier(self, self.aliases[-1])
         self.defaults.preinitialize()
+
+        if self.formulation == "quasistatic":
+            formulationType = Physics.QUASISTATIC
+        elif self.formulation == "dynamic":
+            formulationType = Physics.DYNAMIC
+        elif self.formulation == "dynamic_imex":
+            formulationType = Physics.DYNAMIC_IMEX
+        else:
+            raise ValueError("Unknown formulation '{}'.".format(self.formulation))
+        ModuleProblem.setFormulation(self, formulationType)
 
         if self.solverChoice == "linear":
             ModuleProblem.setSolverType(self, ModuleProblem.LINEAR)
@@ -202,7 +217,7 @@ class Problem(PetscComponent, ModuleProblem):
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
         if 0 == comm.rank:
-            self._info.log("Initializing problem.")
+            self._info.log("Initializing {} problem.".format(self.formulation))
 
         ModuleProblem.initialize(self)
         return

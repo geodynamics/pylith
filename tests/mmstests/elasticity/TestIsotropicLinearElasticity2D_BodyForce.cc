@@ -198,7 +198,7 @@ protected:
         _data->auxDB->setCoordSys(*_data->cs);
 
         CPPUNIT_ASSERT(_material);
-        _material->useInertia(false);
+        _material->setFormulation(pylith::problems::Physics::QUASISTATIC);
         _material->useBodyForce(true);
         _rheology->useReferenceState(false);
 

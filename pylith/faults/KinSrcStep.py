@@ -25,7 +25,7 @@ from .faults import KinSrcStep as ModuleKinSrc
 
 class KinSrcStep(KinSrc, ModuleKinSrc):
     """
-    Python object for a constant slip rate slip time function.
+    Python object for a step slip time function.
 
     Factory: eq_kinematic_src
     """

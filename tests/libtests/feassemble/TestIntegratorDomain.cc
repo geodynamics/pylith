@@ -145,22 +145,6 @@ pylith::feassemble::TestIntegratorDomain::testInitialize(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test prestep().
-void
-pylith::feassemble::TestIntegratorDomain::testPrestep(void) {
-    PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_integrator);
-    CPPUNIT_ASSERT(_data);
-    _integrator->prestep(_data->t, _data->dt);
-
-    // Nothing to check. prestep() should not do anything.
-
-    PYLITH_METHOD_END;
-} // testPrestep
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Test poststep().
 void
 pylith::feassemble::TestIntegratorDomain::testPoststep(void) {
@@ -183,11 +167,27 @@ pylith::feassemble::TestIntegratorDomain::testPoststep(void) {
     CPPUNIT_ASSERT(_data->normalizer);
     const PylithReal lengthScale = _data->normalizer->getLengthScale();
     PylithReal norm = pylith::testing::FieldTester::checkFieldWithDB(*_integrator->getAuxiliaryField(),
-                                                                      _data->auxiliaryUpdateDB, lengthScale);
+                                                                     _data->auxiliaryUpdateDB, lengthScale);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Updated auxiliary field values do not match spatial database.", 0.0, norm, tolerance);
 
     PYLITH_METHOD_END;
 } // testPoststep
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Test updateState().
+void
+pylith::feassemble::TestIntegratorDomain::testUpdateState(void) {
+    PYLITH_METHOD_BEGIN;
+
+    CPPUNIT_ASSERT(_integrator);
+    CPPUNIT_ASSERT(_data);
+    _integrator->updateState(_data->t);
+
+    // Nothing to check. updateState() should not do anything.
+
+    PYLITH_METHOD_END;
+} // testUpdateState
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -323,7 +323,7 @@ pylith::feassemble::TestIntegratorDomain::testComputeLHSJacobian(void) {
     PetscMat precondMat = jacobianMat; // Use Jacobian == preconditioner
 
     _integrator->computeLHSJacobian(jacobianMat, precondMat, t, dt, s_tshift, solution, solutionDot);
-    CPPUNIT_ASSERT_EQUAL(false, _integrator->needNewLHSJacobian());
+    CPPUNIT_ASSERT_EQUAL(false, _integrator->needNewLHSJacobian(false));
     err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
     err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
 
@@ -413,7 +413,7 @@ pylith::feassemble::TestIntegratorDomain::testComputeRHSJacobian(void) {
     PetscMat precondMat = jacobianMat; // Use Jacobian == preconditioner
 
     _integrator->computeRHSJacobian(jacobianMat, precondMat, t, dt, solution);
-    CPPUNIT_ASSERT_EQUAL(false, _integrator->needNewRHSJacobian());
+    CPPUNIT_ASSERT_EQUAL(false, _integrator->needNewRHSJacobian(false));
     // _zeroBoundary(&residual1);
     // _zeroBoundary(&residual2, jacobianMat);
     err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);

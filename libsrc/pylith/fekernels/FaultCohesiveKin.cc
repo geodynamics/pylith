@@ -23,14 +23,10 @@
 #include <cassert> // USES assert()
 
 /* ======================================================================
- * Kernels for time evolution equation with displacement and velocity
- * solution fields.
+ * Kernels for prescribed fault slip.
  *
- * Solution fields = [disp(dim), vel(dim), ...]
- * Auxiliary fields = None
- *
- * \int_V \vec{\phi}_v \cdot \left( \frac{\partial \vec{u}(t)}{\partial t} \right) \, dV =
- *   \int_V \vec{\phi}_v \cdot \vec{v}(t) \, dV.
+ * Solution fields = [disp(dim), vel(dim) [if dynamic], lagrange_multiplier]
+ * Auxiliary fields = [slip (dim)]
  *
  * ======================================================================
  */
@@ -40,16 +36,30 @@ namespace pylith {
         class _FaultCohesiveKin {
 public:
 
-            /** Get offset in s where Lagrange multiplier field starts.
+            /** Get offset in s where velocity subfield starts.
              *
              * Normally this would be sOff, but sOff doesn't account for having DOF for the two sides of the fault
-             * passed to the hybrid kernels. This functions computes the correct offset into s for the Lagrange
-             * multiplier field.
+             * passed to the hybrid kernels. This functions computes the correct offset into s for the velocity
+             * subfield.
              *
              * @param[in] sOff Offset of registered subfields in solution field [numS].
              * @param[in] numS Number of registered subfields in solution field.
              *
-             * @returns Offset of Lagrange multiplier field in s.
+             * @returns Offset of velocity subfield in s.
+             */
+            static PylithInt velocity_sOff(const PylithInt sOff[],
+                                           const PylithInt numS);
+
+            /** Get offset in s where Lagrange multiplier subfield starts.
+             *
+             * Normally this would be sOff, but sOff doesn't account for having DOF for the two sides of the fault
+             * passed to the hybrid kernels. This functions computes the correct offset into s for the Lagrange
+             * multiplier subfield.
+             *
+             * @param[in] sOff Offset of registered subfields in solution field [numS].
+             * @param[in] numS Number of registered subfields in solution field.
+             *
+             * @returns Offset of Lagrange multiplier subfield in s.
              */
             static PylithInt lagrange_sOff(const PylithInt sOff[],
                                            const PylithInt numS);
@@ -73,6 +83,20 @@ public:
         }; // _FaultCohesiveKin
     } // fekernels
 } // pylith
+
+// ----------------------------------------------------------------------
+// Get offset in s where velocity subfield starts.
+PylithInt
+pylith::fekernels::_FaultCohesiveKin::velocity_sOff(const PylithInt sOff[],
+                                                    const PylithInt numS) {
+    PylithInt off = 0;
+    const PylithInt numCount = 1; // [displacement, velocity, ...]
+    for (PylithInt i = 0; i < numCount; ++i) {
+        off += 2*(sOff[i+1] - sOff[i]);
+    } // for
+    return off;
+} // velocity_sOff
+
 
 // ----------------------------------------------------------------------
 // Get offset in s where Lagrange multiplier field starts.
@@ -125,9 +149,9 @@ pylith::fekernels::_FaultCohesiveKin::tangential_directions(const PylithInt dim,
 
 
 // ----------------------------------------------------------------------
-// g0 function for integration of the elasticity equation: g0u = -\lambda.
+// f0 function for elasticity equation: f0u = -\lambda (pos side), +\lambda (neg side).
 void
-pylith::fekernels::FaultCohesiveKin::g0u(const PylithInt dim,
+pylith::fekernels::FaultCohesiveKin::f0u(const PylithInt dim,
                                          const PylithInt numS,
                                          const PylithInt numA,
                                          const PylithInt sOff[],
@@ -145,54 +169,54 @@ pylith::fekernels::FaultCohesiveKin::g0u(const PylithInt dim,
                                          const PylithReal n[],
                                          const PylithInt numConstants,
                                          const PylithScalar constants[],
-                                         PylithScalar g0[]) {
+                                         PylithScalar f0[]) {
     assert(sOff);
     assert(s);
-    assert(g0);
+    assert(f0);
 
     assert(numS >= 2);
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt gOffDispN = 0;
-    const PylithInt gOffDispP = gOffDispN + spaceDim;
+    const PylithInt fOffN = 0;
+    const PylithInt fOffP = fOffN + spaceDim;
     const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKin::lagrange_sOff(sOff, numS);
     const PylithScalar* lagrange = &s[sOffLagrange];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        g0[gOffDispN+i] += +lagrange[i];
-        g0[gOffDispP+i] += -lagrange[i];
+        f0[fOffN+i] += -lagrange[i];
+        f0[fOffP+i] += +lagrange[i];
     } // for
-} // g0u
+} // f0u
 
 
 // ----------------------------------------------------------------------
-// g0 function for integration of the slip constraint equation: g0\lambda = d - u^+ + u^-.
+// f0 function for slip constraint equation: f0\lambda = (u^+ - u^-) - d
 void
-pylith::fekernels::FaultCohesiveKin::g0l(const PylithInt dim,
-                                         const PylithInt numS,
-                                         const PylithInt numA,
-                                         const PylithInt sOff[],
-                                         const PylithInt sOff_x[],
-                                         const PylithScalar s[],
-                                         const PylithScalar s_t[],
-                                         const PylithScalar s_x[],
-                                         const PylithInt aOff[],
-                                         const PylithInt aOff_x[],
-                                         const PylithScalar a[],
-                                         const PylithScalar a_t[],
-                                         const PylithScalar a_x[],
-                                         const PylithReal t,
-                                         const PylithScalar x[],
-                                         const PylithReal n[],
-                                         const PylithInt numConstants,
-                                         const PylithScalar constants[],
-                                         PylithScalar g0[]) {
+pylith::fekernels::FaultCohesiveKin::f0l_u(const PylithInt dim,
+                                           const PylithInt numS,
+                                           const PylithInt numA,
+                                           const PylithInt sOff[],
+                                           const PylithInt sOff_x[],
+                                           const PylithScalar s[],
+                                           const PylithScalar s_t[],
+                                           const PylithScalar s_x[],
+                                           const PylithInt aOff[],
+                                           const PylithInt aOff_x[],
+                                           const PylithScalar a[],
+                                           const PylithScalar a_t[],
+                                           const PylithScalar a_x[],
+                                           const PylithReal t,
+                                           const PylithScalar x[],
+                                           const PylithReal n[],
+                                           const PylithInt numConstants,
+                                           const PylithScalar constants[],
+                                           PylithScalar f0[]) {
     assert(sOff);
     assert(aOff);
     assert(s);
     assert(a);
-    assert(g0);
+    assert(f0);
 
     assert(numS >= 2);
     assert(numA >= 1);
@@ -204,8 +228,8 @@ pylith::fekernels::FaultCohesiveKin::g0l(const PylithInt dim,
     const PylithScalar* slip = &a[aOff[i_slip]];
 
     const PylithInt sOffDispN = sOff[i_disp];
-    const PylithInt sOffDispP = sOff[i_disp]+spaceDim;
-    const PylithInt gOffLagrange = 0;
+    const PylithInt sOffDispP = sOffDispN+spaceDim;
+    const PylithInt fOffLagrange = 0;
 
     const PylithScalar* dispN = &s[sOffDispN];
     const PylithScalar* dispP = &s[sOffDispP];
@@ -216,7 +240,7 @@ pylith::fekernels::FaultCohesiveKin::g0l(const PylithInt dim,
         const PylithScalar tanDir[2] = {-n[1], n[0] };
         for (PylithInt i = 0; i < _spaceDim; ++i) {
             const PylithScalar slipXY = n[i]*slip[0] + tanDir[i]*slip[1];
-            g0[gOffLagrange+i] += slipXY - dispP[i] + dispN[i];
+            f0[fOffLagrange+i] += dispP[i] - dispN[i] - slipXY;
         } // for
         break;
     } // case 2
@@ -229,24 +253,96 @@ pylith::fekernels::FaultCohesiveKin::g0l(const PylithInt dim,
 
         for (PylithInt i = 0; i < _spaceDim; ++i) {
             const PylithScalar slipXYZ = n[i]*slip[0] + tanDir1[i]*slip[1] + tanDir2[i]*slip[2];
-            g0[gOffLagrange+i] += slipXYZ - dispP[i] + dispN[i];
+            f0[fOffLagrange+i] += dispP[i] - dispN[i] - slipXYZ;
         } // for
         break;
     } // case 3
     default:
         assert(0);
     } // switch
-} // g0l
+} // f0l_u
 
 
 // ----------------------------------------------------------------------
-/* Jg0 function for integration of the displacement equation.
+// f0 function for slip rate constraint equation: f0\lambda = (v^+ - v^-) - \dot{d}
+void
+pylith::fekernels::FaultCohesiveKin::f0l_v(const PylithInt dim,
+                                           const PylithInt numS,
+                                           const PylithInt numA,
+                                           const PylithInt sOff[],
+                                           const PylithInt sOff_x[],
+                                           const PylithScalar s[],
+                                           const PylithScalar s_t[],
+                                           const PylithScalar s_x[],
+                                           const PylithInt aOff[],
+                                           const PylithInt aOff_x[],
+                                           const PylithScalar a[],
+                                           const PylithScalar a_t[],
+                                           const PylithScalar a_x[],
+                                           const PylithReal t,
+                                           const PylithScalar x[],
+                                           const PylithReal n[],
+                                           const PylithInt numConstants,
+                                           const PylithScalar constants[],
+                                           PylithScalar f0[]) {
+    assert(sOff);
+    assert(aOff);
+    assert(s);
+    assert(a);
+    assert(f0);
+
+    assert(numS >= 3);
+    assert(numA >= 1);
+
+    const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
+    const PylithInt i_slipRate = numA-1;
+
+    const PylithScalar* slipRate = &a[aOff[i_slipRate]];
+
+    const PylithInt sOffVelN = _FaultCohesiveKin::velocity_sOff(sOff, numS);
+    const PylithInt sOffVelP = sOffVelN+spaceDim;
+    const PylithInt fOffLagrange = 0;
+
+    const PylithScalar* velN = &s[sOffVelN];
+    const PylithScalar* velP = &s[sOffVelP];
+
+    switch (spaceDim) {
+    case 2: {
+        const PylithInt _spaceDim = 2;
+        const PylithScalar tanDir[2] = {-n[1], n[0] };
+        for (PylithInt i = 0; i < _spaceDim; ++i) {
+            const PylithScalar slipRateXY = n[i]*slipRate[0] + tanDir[i]*slipRate[1];
+            f0[fOffLagrange+i] += velP[i] - velN[i] - slipRateXY;
+        } // for
+        break;
+    } // case 2
+    case 3: {
+        const PylithInt _spaceDim = 3;
+        const PylithScalar* refDir1 = &constants[0];
+        const PylithScalar* refDir2 = &constants[3];
+        PylithScalar tanDir1[3], tanDir2[3];
+        pylith::fekernels::_FaultCohesiveKin::tangential_directions(_spaceDim, refDir1, refDir2, n, tanDir1, tanDir2);
+
+        for (PylithInt i = 0; i < _spaceDim; ++i) {
+            const PylithScalar slipRateXYZ = n[i]*slipRate[0] + tanDir1[i]*slipRate[1] + tanDir2[i]*slipRate[2];
+            f0[fOffLagrange+i] += velP[i] - velN[i] - slipRateXYZ;
+        } // for
+        break;
+    } // case 3
+    default:
+        assert(0);
+    } // switch
+} // f0l_v
+
+
+// ----------------------------------------------------------------------
+/* Jf0 function for integration of the displacement equation.
  *
  * Solution fields = [disp(dim), ..., lagrange(dim)]
  * Auxiliary fields = None
  */
 void
-pylith::fekernels::FaultCohesiveKin::Jg0ul(const PylithInt dim,
+pylith::fekernels::FaultCohesiveKin::Jf0ul(const PylithInt dim,
                                            const PylithInt numS,
                                            const PylithInt numA,
                                            const PylithInt sOff[],
@@ -265,21 +361,21 @@ pylith::fekernels::FaultCohesiveKin::Jg0ul(const PylithInt dim,
                                            const PylithReal n[],
                                            const PylithInt numConstants,
                                            const PylithScalar constants[],
-                                           PylithScalar Jg0[]) {
+                                           PylithScalar Jf0[]) {
     assert(numS >= 2);
-    assert(Jg0);
+    assert(Jf0);
     assert(sOff);
     assert(n);
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt gOffDispN = 0;
-    const PylithInt gOffDispP = 0+spaceDim;
+    const PylithInt gOffN = 0;
+    const PylithInt gOffP = gOffN+spaceDim;
     const PylithInt ncols = spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jg0[(gOffDispN+i)*ncols+i] += +1.0;
-        Jg0[(gOffDispP+i)*ncols+i] += -1.0;
+        Jf0[(gOffN+i)*ncols+i] += -1.0;
+        Jf0[(gOffP+i)*ncols+i] += +1.0;
     } // for
 } // Jg0ul
 
@@ -291,7 +387,7 @@ pylith::fekernels::FaultCohesiveKin::Jg0ul(const PylithInt dim,
  * Auxiliary fields = None
  */
 void
-pylith::fekernels::FaultCohesiveKin::Jg0lu(const PylithInt dim,
+pylith::fekernels::FaultCohesiveKin::Jf0lu(const PylithInt dim,
                                            const PylithInt numS,
                                            const PylithInt numA,
                                            const PylithInt sOff[],
@@ -310,21 +406,21 @@ pylith::fekernels::FaultCohesiveKin::Jg0lu(const PylithInt dim,
                                            const PylithReal n[],
                                            const PylithInt numConstants,
                                            const PylithScalar constants[],
-                                           PylithScalar Jg0[]) {
+                                           PylithScalar Jf0[]) {
     assert(numS >= 2);
-    assert(Jg0);
+    assert(Jf0);
     assert(sOff);
     assert(n);
 
     const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt gOffDispN = 0;
-    const PylithInt gOffDispP = 0+spaceDim;
+    const PylithInt gOffN = 0;
+    const PylithInt gOffP = gOffN+spaceDim;
     const PylithInt ncols = 2*spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jg0[i*ncols+gOffDispN+i] += +1.0;
-        Jg0[i*ncols+gOffDispP+i] += -1.0;
+        Jf0[i*ncols+gOffN+i] += -1.0;
+        Jf0[i*ncols+gOffP+i] += +1.0;
     } // for
 } // Jg0lu
 

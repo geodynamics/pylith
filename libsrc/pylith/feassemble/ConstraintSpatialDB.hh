@@ -46,7 +46,7 @@ public:
     ConstraintSpatialDB(pylith::problems::Physics* const physics);
 
     /// Destructor.
-    virtual ~ConstraintSpatialDB(void);
+    ~ConstraintSpatialDB(void);
 
     /** Set constraint kernel.
      *
@@ -58,24 +58,19 @@ public:
      *
      * @param[in] solution Solution field (layout).
      */
-    virtual
     void initialize(const pylith::topology::Field& solution);
 
-    /** Update auxiliary field at beginning of time step.
+    /** Update auxiliary field values to current time.
      *
      * @param[in] t Current time.
-     * @param[in] dt Current time step.
      */
-    virtual
-    void prestep(const double t,
-                 const double dt);
+    void updateState(const PylithReal t);
 
     /** Set constrained values in solution field.
      *
      * @param[out] solution Solution field.
      * @param[in] t Current time.
      */
-    virtual
     void setSolution(pylith::topology::Field* solution,
                      const double t);
 
@@ -87,7 +82,6 @@ protected:
      * @param[in] solution Solution field.
      * @param[in] dt Current time step.
      */
-    virtual
     void _setKernelConstants(const pylith::topology::Field& solution,
                              const PylithReal dt) const;
 

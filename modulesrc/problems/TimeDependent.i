@@ -25,14 +25,6 @@
 namespace pylith {
     namespace problems {
         class TimeDependent : public pylith::problems::Problem {
-            // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
-            enum FormulationTypeEnum {
-                IMPLICIT, // Implicit time stepping.
-                EXPLICIT, // Explicit time stepping.
-            }; // FormulationTypeEnum
-
             // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -122,17 +114,91 @@ public:
              */
             void solve(void);
 
-            /** Perform operations before advancing solution one time step.
-             *
-             * Set constraints, etc.
-             */
-            void prestep(void);
-
             /** Perform Perform operations after advancing solution one time step.
              *
              * Update state variables, output.
              */
             void poststep(void);
+
+            /** Set solution values according to constraints (Dirichlet BC).
+             *
+             * @param[in] t Current time.
+             * @param[in] solutionVec PETSc Vec with current global view of solution.
+             * @param[in] solutionDotVec PETSc Vec with current global view of time derivative of solution.
+             */
+            void setSolutionLocal(const PylithReal t,
+                                  PetscVec solutionVec,
+                                  PetscVec solutionDotVec);
+
+            /** Compute RHS residual, G(t,s) and assemble into global vector.
+             *
+             * @param[out] residualVec PETSc Vec for residual.
+             * @param[in] t Current time.
+             * @param[in] dt Current time step.
+             * @param[in] solutionVec PETSc Vec with current trial solution.
+             */
+            void computeRHSResidual(PetscVec residualVec,
+                                    const PetscReal t,
+                                    const PetscReal dt,
+                                    PetscVec solutionVec);
+
+            /* Compute RHS Jacobian for G(t,s).
+             *
+             * @param[out] jacobianMat PETSc Mat for Jacobian.
+             * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
+             * @param[in] t Current time.
+             * @param[in] dt Current time step.
+             * @param[in] solutionVec PETSc Vec with current trial solution.
+             */
+            void computeRHSJacobian(PetscMat jacobianMat,
+                                    PetscMat precondMat,
+                                    const PylithReal t,
+                                    const PylithReal dt,
+                                    PetscVec solutionVec);
+
+            /** Compute LHS residual, F(t,s,\dot{s}) and assemble into global vector.
+             *
+             * @param[out] residualVec PETSc Vec for residual.
+             * @param[in] t Current time.
+             * @param[in] dt Current time step.
+             * @param[in] solutionVec PETSc Vec with current trial solution.
+             * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
+             */
+            void computeLHSResidual(PetscVec residualVec,
+                                    const PetscReal t,
+                                    const PetscReal dt,
+                                    PetscVec solutionVec,
+                                    PetscVec solutionDotVec);
+
+            /* Compute LHS Jacobian for F(t,s,\dot{s}) for implicit time stepping.
+             *
+             * @param[out] jacobianMat PETSc Mat for Jacobian.
+             * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
+             * @param[in] t Current time.
+             * @param[in] dt Current time step.
+             * @param[in] s_tshift Scale for time derivative.
+             * @param[in] solutionVec PETSc Vec with current trial solution.
+             * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
+             */
+            void computeLHSJacobian(PetscMat jacobianMat,
+                                    PetscMat precondMat,
+                                    const PylithReal t,
+                                    const PylithReal dt,
+                                    const PylithReal s_tshift,
+                                    PetscVec solutionVec,
+                                    PetscVec solutionDotVec);
+
+            /* Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) for explicit time stepping.
+             *
+             * @param[in] t Current time.
+             * @param[in] dt Current time step.
+             * @param[in] s_tshift Scale for time derivative.
+             * @param[in] solutionVec PETSc Vec with current trial solution.
+             */
+            void computeLHSJacobianLumpedInv(const PylithReal t,
+                                             const PylithReal dt,
+                                             const PylithReal s_tshift,
+                                             PetscVec solutionVec);
 
             /** Callback static method for computing residual for RHS, G(t,s).
              *
@@ -201,11 +267,6 @@ public:
                                               PetscMat jacobianMat,
                                               PetscMat precondMat,
                                               void* context);
-
-            /** Callback static method for operations before advancing solution one time step.
-             */
-            static
-            PetscErrorCode prestep(PetscTS ts);
 
             /** Callback static method for operations after advancing solution one time step.
              */

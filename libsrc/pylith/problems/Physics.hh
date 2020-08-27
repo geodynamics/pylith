@@ -38,6 +38,15 @@
 class pylith::problems::Physics : public pylith::utils::PyreComponent {
     friend class TestPhysics; // unit testing
 
+    // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+
+    enum FormulationEnum {
+        QUASISTATIC, // Without inertia; implicit time stepping.
+        DYNAMIC, // With inertia; explicit time stepping).
+        DYNAMIC_IMEX, // With inertia; implicit+explicit time stepping).
+    }; // FormulationEnum
+
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -62,6 +71,12 @@ public:
      * @param dim Nondimensionalizer.
      */
     const spatialdata::units::Nondimensional& getNormalizer(void) const;
+
+    /** Set formulation for equations.
+     *
+     * @param[in] value Formulation for equations.
+     */
+    void setFormulation(const FormulationEnum value);
 
     /** Set spatial database for populating auxiliary field.
      *
@@ -216,6 +231,7 @@ protected:
 protected:
 
     spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer.
+    FormulationEnum _formulation; ///< Formulation for equations.
     pylith::real_array _kernelConstants; ///< Constants used in finite-element kernels (point-wise functions).
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////

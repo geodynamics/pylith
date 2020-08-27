@@ -24,8 +24,6 @@
 #include "FieldOps.hh" // USES FieldOps
 #include "VisitorMesh.hh" // USES VecVisitorMesh
 
-#include "petscds.h" // USES PetscDS
-
 #include "pylith/utils/array.hh" // USES scalar_array
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -1011,7 +1009,6 @@ pylith::topology::Field::subfieldsSetup(void) {
     assert(_dm);
 
     // Setup section now that we know the total number of sub-fields and components.
-    // PetscDS prob = NULL;
     PetscErrorCode err;
 
     bool quadOrderSet = false;

@@ -74,24 +74,6 @@ pylith::materials::Elasticity::deallocate(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Include inertia?
-void
-pylith::materials::Elasticity::useInertia(const bool value) {
-    PYLITH_COMPONENT_DEBUG("useInertia(value="<<value<<")");
-
-    _useInertia = value;
-} // useInertia
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Include inertia?
-bool
-pylith::materials::Elasticity::useInertia(void) const {
-    return _useInertia;
-} // useInertia
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Include body force?
 void
 pylith::materials::Elasticity::useBodyForce(const bool value) {
@@ -136,9 +118,19 @@ pylith::materials::Elasticity::verifyConfiguration(const pylith::topology::Field
     if (!solution.hasSubfield("displacement")) {
         throw std::runtime_error("Cannot find 'displacement' field in solution; required for material 'Elasticity'.");
     } // if
-    if (_useInertia && !solution.hasSubfield("velocity")) {
-        throw std::runtime_error("Cannot find 'velocity' field in solution; required for material 'Elasticity' with inertia.");
-    } // if
+    switch (_formulation) {
+    case QUASISTATIC:
+        break;
+    case DYNAMIC:
+    case DYNAMIC_IMEX:
+        if (!solution.hasSubfield("velocity")) {
+            throw std::runtime_error("Cannot find 'velocity' field in solution; required for material 'Elasticity' using "
+                                     "'dynamic' or 'dynamic_imex' formulation.");
+        } // if
+        break;
+    default:
+        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+    } // switch
 
     PYLITH_METHOD_END;
 } // verifyConfiguration
@@ -153,6 +145,21 @@ pylith::materials::Elasticity::createIntegrator(const pylith::topology::Field& s
 
     pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
     integrator->setMaterialId(getMaterialId());
+
+    switch (_formulation) {
+    case QUASISTATIC:
+        _useInertia = false;
+        break;
+    case DYNAMIC:
+        _useInertia = true;
+        break;
+    case DYNAMIC_IMEX:
+        _useInertia = true;
+        integrator->setLHSJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE);
+        break;
+    default:
+        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+    } // switch
 
     _setKernelsRHSResidual(integrator, solution);
     _setKernelsRHSJacobian(integrator, solution);
@@ -280,7 +287,8 @@ pylith::materials::Elasticity::_setKernelsRHSResidual(pylith::feassemble::Integr
 
     std::vector<ResidualKernels> kernels;
 
-    if (!solution.hasSubfield("velocity")) {
+    switch (_formulation) {
+    case QUASISTATIC: {
         // Displacement
         const PetscPointFunc g0u =
             (_gravityField && _useBodyForce) ? pylith::fekernels::Elasticity::g0v_gravbodyforce :
@@ -291,7 +299,10 @@ pylith::materials::Elasticity::_setKernelsRHSResidual(pylith::feassemble::Integr
 
         kernels.resize(1);
         kernels[0] = ResidualKernels("displacement", g0u, g1u);
-    } else {
+        break;
+    } // QUASISTATIC
+    case DYNAMIC_IMEX:
+    case DYNAMIC: {
         // Displacement
         const PetscPointFunc g0u = pylith::fekernels::DispVel::g0u;
         const PetscPointFunc g1u = NULL;
@@ -306,7 +317,11 @@ pylith::materials::Elasticity::_setKernelsRHSResidual(pylith::feassemble::Integr
         kernels.resize(2);
         kernels[0] = ResidualKernels("displacement", g0u, g1u);
         kernels[1] = ResidualKernels("velocity", g0v, g1v);
-    } // if/else
+        break;
+    } // DYNAMIC
+    default:
+        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+    } // switch
 
     assert(integrator);
     integrator->setKernelsRHSResidual(kernels);
@@ -327,7 +342,8 @@ pylith::materials::Elasticity::_setKernelsRHSJacobian(pylith::feassemble::Integr
 
     std::vector<JacobianKernels> kernels;
 
-    if (!solution.hasSubfield("velocity")) {
+    switch (_formulation) {
+    case QUASISTATIC: {
         const PetscPointJac Jg0uu = NULL;
         const PetscPointJac Jg1uu = NULL;
         const PetscPointJac Jg2uu = NULL;
@@ -335,33 +351,14 @@ pylith::materials::Elasticity::_setKernelsRHSJacobian(pylith::feassemble::Integr
 
         kernels.resize(1);
         kernels[0] = JacobianKernels("displacement", "displacement", Jg0uu, Jg1uu, Jg2uu, Jg3uu);
-    } else {
-        const PetscPointJac Jg0uu = NULL;
-        const PetscPointJac Jg1uu = NULL;
-        const PetscPointJac Jg2uu = NULL;
-        const PetscPointJac Jg3uu = NULL;
-
-        const PetscPointJac Jg0uv = pylith::fekernels::DispVel::Jg0uv;
-        const PetscPointJac Jg1uv = NULL;
-        const PetscPointJac Jg2uv = NULL;
-        const PetscPointJac Jg3uv = NULL;
-
-        const PetscPointJac Jg0vu = NULL;
-        const PetscPointJac Jg1vu = NULL;
-        const PetscPointJac Jg2vu = NULL;
-        const PetscPointJac Jg3vu = _rheology->getKernelRHSJacobianElasticConstants(coordsys);
-
-        const PetscPointJac Jg0vv = NULL;
-        const PetscPointJac Jg1vv = NULL;
-        const PetscPointJac Jg2vv = NULL;
-        const PetscPointJac Jg3vv = NULL;
-
-        kernels.resize(4);
-        kernels[0] = JacobianKernels("displacement", "displacement", Jg0uu, Jg1uu, Jg2uu, Jg3uu);
-        kernels[1] = JacobianKernels("displacement", "velocity", Jg0uv, Jg1uv, Jg2uv, Jg3uv);
-        kernels[2] = JacobianKernels("velocity", "displacement", Jg0vu, Jg1vu, Jg2vu, Jg3vu);
-        kernels[3] = JacobianKernels("velocity", "velocity", Jg0vv, Jg1vv, Jg2vv, Jg3vv);
-    } // if/else
+        break;
+    } // QUASISTATIC
+    case DYNAMIC_IMEX:
+    case DYNAMIC:
+        break;
+    default:
+        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+    } // switch
 
     assert(integrator);
     integrator->setKernelsRHSJacobian(kernels);
@@ -380,21 +377,44 @@ pylith::materials::Elasticity::_setKernelsLHSResidual(pylith::feassemble::Integr
 
     std::vector<ResidualKernels> kernels;
 
-    if (!solution.hasSubfield("velocity")) {
+    switch (_formulation) {
+    case QUASISTATIC: {
         // F(t,s,\dot{s}) = \vec{0}.
-    } else {
+        break;
+    } // QUASISTATIC
+    case DYNAMIC_IMEX: {
         // Displacement
         const PetscPointFunc f0u = pylith::fekernels::DispVel::f0u;
         const PetscPointFunc f1u = NULL;
 
         // Velocity
-        const PetscPointFunc f0v = (_useInertia) ? pylith::fekernels::DispVel::f0v : NULL;
+        assert(_useInertia);
+        const PetscPointFunc f0v = pylith::fekernels::Elasticity::f0v;
         const PetscPointFunc f1v = NULL;
 
         kernels.resize(2);
         kernels[0] = ResidualKernels("displacement", f0u, f1u);
         kernels[1] = ResidualKernels("velocity", f0v, f1v);
-    } // if/else
+        break;
+    } // DYNAMIC
+    case DYNAMIC: {
+        // Displacement
+        const PetscPointFunc f0u = pylith::fekernels::DispVel::f0u;
+        const PetscPointFunc f1u = NULL;
+
+        // Velocity
+        assert(_useInertia);
+        const PetscPointFunc f0v = pylith::fekernels::DispVel::f0v;
+        const PetscPointFunc f1v = NULL;
+
+        kernels.resize(2);
+        kernels[0] = ResidualKernels("displacement", f0u, f1u);
+        kernels[1] = ResidualKernels("velocity", f0v, f1v);
+        break;
+    } // DYNAMIC
+    default:
+        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+    } // switch
 
     assert(integrator);
     integrator->setKernelsLHSResidual(kernels);
@@ -413,7 +433,8 @@ pylith::materials::Elasticity::_setKernelsLHSJacobian(pylith::feassemble::Integr
 
     std::vector<JacobianKernels> kernels;
 
-    if (!solution.hasSubfield("velocity")) {
+    switch (_formulation) {
+    case QUASISTATIC: {
         const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_zero;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
@@ -421,7 +442,10 @@ pylith::materials::Elasticity::_setKernelsLHSJacobian(pylith::feassemble::Integr
 
         kernels.resize(1);
         kernels[0] = JacobianKernels("displacement", "displacement", Jf0uu, Jf1uu, Jf2uu, Jf3uu);
-    } else {
+        break;
+    } // QUASISTATIC
+    case DYNAMIC:
+    case DYNAMIC_IMEX: {
         const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_stshift;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
@@ -437,7 +461,8 @@ pylith::materials::Elasticity::_setKernelsLHSJacobian(pylith::feassemble::Integr
         const PetscPointJac Jf2vu = NULL;
         const PetscPointJac Jf3vu = NULL;
 
-        const PetscPointJac Jf0vv = (_useInertia) ? pylith::fekernels::DispVel::Jf0uu_stshift : NULL;
+        assert(_useInertia);
+        const PetscPointJac Jf0vv = pylith::fekernels::Elasticity::Jf0vv;
         const PetscPointJac Jf1vv = NULL;
         const PetscPointJac Jf2vv = NULL;
         const PetscPointJac Jf3vv = NULL;
@@ -447,7 +472,11 @@ pylith::materials::Elasticity::_setKernelsLHSJacobian(pylith::feassemble::Integr
         kernels[1] = JacobianKernels("displacement", "velocity", Jf0uv, Jf1uv, Jf2uv, Jf3uv);
         kernels[2] = JacobianKernels("velocity", "displacement", Jf0vu, Jf1vu, Jf2vu, Jf3vu);
         kernels[3] = JacobianKernels("velocity", "velocity", Jf0vv, Jf1vv, Jf2vv, Jf3vv);
-    } // if/else
+        break;
+    } // DYNAMIC_IMEX
+    default:
+        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+    } // switch
 
     assert(integrator);
     integrator->setKernelsLHSJacobian(kernels);

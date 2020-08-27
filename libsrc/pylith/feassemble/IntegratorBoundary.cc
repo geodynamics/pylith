@@ -75,8 +75,6 @@ pylith::feassemble::IntegratorBoundary::IntegratorBoundary(pylith::problems::Phy
     _boundaryMesh(NULL),
     _boundaryLabel("") {
     GenericComponent::setName(_IntegratorBoundary::genericComponent);
-    _needNewRHSJacobian = false;
-    _needNewLHSJacobian = false;
 } // constructor
 
 
@@ -157,30 +155,6 @@ pylith::feassemble::IntegratorBoundary::setKernelsLHSResidual(const std::vector<
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Update at beginning of time step.
-void
-pylith::feassemble::IntegratorBoundary::prestep(const double t,
-                                                const double dt) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("prestep(t="<<t<<", dt="<<dt<<")");
-
-    assert(_physics);
-    _physics->updateAuxiliaryField(_auxiliaryField, t+dt);
-
-    journal::debug_t debug(GenericComponent::getName());
-    if (debug.state()) {
-        assert(_auxiliaryField);
-        PYLITH_JOURNAL_DEBUG("IntegratorInterface component '" << GenericComponent::getName() << "' for '"
-                                                               <<_physics->getIdentifier()
-                                                               << "': viewing auxiliary field.");
-        _auxiliaryField->view("IntegratorInterface auxiliary field", pylith::topology::Field::VIEW_ALL);
-    } // if
-
-    PYLITH_METHOD_END;
-} // prestep
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Initialize integration domain, auxiliary field, and derived field. Update observers.
 void
 pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field& solution) {
@@ -196,6 +170,31 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
 
     PYLITH_METHOD_END;
 } // initialize
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Update auxiliary field values to current time.
+void
+pylith::feassemble::IntegratorBoundary::updateState(const double t) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("updateState(t="<<t<<")");
+
+    Integrator::updateState(t);
+
+    assert(_physics);
+    _physics->updateAuxiliaryField(_auxiliaryField, t);
+
+    journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        assert(_auxiliaryField);
+        PYLITH_JOURNAL_DEBUG("IntegratorInterface component '" << GenericComponent::getName() << "' for '"
+                                                               <<_physics->getIdentifier()
+                                                               << "': viewing auxiliary field.");
+        _auxiliaryField->view("IntegratorInterface auxiliary field", pylith::topology::Field::VIEW_ALL);
+    } // if
+
+    PYLITH_METHOD_END;
+} // updateState
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -231,6 +230,7 @@ pylith::feassemble::IntegratorBoundary::computeRHSJacobian(PetscMat jacobianMat,
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
+    _needNewRHSJacobian = false;
     // No implementation needed for boundary.
 
     PYLITH_METHOD_END;
@@ -269,6 +269,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobian(PetscMat jacobianMat,
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<", solutionDot="<<solutionDot.getLabel()<<") empty method");
 
+    _needNewLHSJacobian = false;
     // No implementation needed for boundary.
 
     PYLITH_METHOD_END;
@@ -286,6 +287,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobianLumpedInv(pylith::topo
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
+    _needNewLHSJacobianLumped = false;
     // No implementation needed for boundary.
 
     PYLITH_METHOD_END;

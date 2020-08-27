@@ -106,15 +106,6 @@ public:
     virtual
     void initialize(const pylith::topology::Field& solution);
 
-    /** Update auxiliary field at beginning of time step.
-     *
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     */
-    virtual
-    void prestep(const double t,
-                 const double dt);
-
     /** Update at end of time step.
      *
      * @param[in] t Current time.
@@ -127,6 +118,13 @@ public:
                   const PylithInt tindex,
                   const PylithReal dt,
                   const pylith::topology::Field& solution);
+
+    /** Update auxiliary field values to current time.
+     *
+     * @param[in] t Current time.
+     */
+    virtual
+    void updateState(const PylithReal t);
 
     /** Set constrained values in solution field.
      *
@@ -144,6 +142,7 @@ protected:
     std::string _constraintLabel; ///< Label marking constrained degrees of freedom.
     std::string _subfieldName; ///< Name of solution subfield that is constrained.
     pylith::topology::Mesh* _boundaryMesh; ///< Boundary mesh.
+    PylithReal _tSolution; ///< Time used for current solution.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

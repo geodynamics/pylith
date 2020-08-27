@@ -27,7 +27,6 @@
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include "petscdm.h" // USES PetscDM
-#include "petscds.h" // USES PetscDS
 
 std::map<pylith::topology::FieldBase::Discretization, pylith::topology::FE> pylith::topology::FieldOps::feStore = std::map<pylith::topology::FieldBase::Discretization, pylith::topology::FE>();
 

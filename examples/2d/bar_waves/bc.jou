@@ -1,0 +1,41 @@
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 surface 8 9
+block 1 name "elastic"
+
+# ----------------------------------------------------------------------
+# Create nodeset for fault
+# ----------------------------------------------------------------------
+group "fault" add node in fault_surface
+nodeset 10 group fault
+nodeset 10 name "fault"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +x boundary
+# ----------------------------------------------------------------------
+group "boundary_xpos" add node in curve 14
+nodeset 20 group boundary_xpos
+nodeset 20 name "boundary_xpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x boundary
+# ----------------------------------------------------------------------
+group "boundary_xneg" add node in curve 16
+nodeset 21 group boundary_xneg
+nodeset 21 name "boundary_xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for domain
+# ----------------------------------------------------------------------
+group "domain_all" add node all
+nodeset 22 group domain_all
+nodeset 22 name "domain_all"
+
+# ----------------------------------------------------------------------
+# Create nodeset for all vertices but fault
+# ----------------------------------------------------------------------
+group "domain_nofault" add node all
+group "domain_nofault" remove node in fault
+nodeset 23 group domain_nofault
+nodeset 23 name "domain_nofault"

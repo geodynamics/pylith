@@ -248,6 +248,7 @@ pylith::feassemble::IntegratorDomain::computeRHSJacobian(PetscMat jacobianMat,
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<")");
 
+    _needNewRHSJacobian = false;
     if (0 == _kernelsRHSJacobian.size()) { PYLITH_METHOD_END;}
 
     _setKernelConstants(solution, dt);
@@ -256,7 +257,6 @@ pylith::feassemble::IntegratorDomain::computeRHSJacobian(PetscMat jacobianMat,
     solutionDot.setLabel("solution_dot");
     const PylithReal s_tshift = 0.0; // No dependence on time derivative of solution in RHS, so shift isn't applicable.
     _computeJacobian(jacobianMat, precondMat, _kernelsRHSJacobian, t, dt, s_tshift, solution, solutionDot);
-    _needNewRHSJacobian = false;
 
     PYLITH_METHOD_END;
 } // computeRHSJacobian
@@ -276,8 +276,9 @@ pylith::feassemble::IntegratorDomain::computeLHSResidual(pylith::topology::Field
     if (0 == _kernelsLHSResidual.size()) { PYLITH_METHOD_END;}
 
     _setKernelConstants(solution, dt);
-
     _computeResidual(residual, _kernelsLHSResidual, t, dt, solution, solutionDot);
+
+    PYLITH_METHOD_END;
 } // computeLHSResidual
 
 
@@ -294,12 +295,11 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<", solutionDot="<<solutionDot.getLabel()<<")");
 
+    _needNewLHSJacobian = false;
     if (0 == _kernelsLHSJacobian.size()) { PYLITH_METHOD_END;}
 
     _setKernelConstants(solution, dt);
-
     _computeJacobian(jacobianMat, precondMat, _kernelsLHSJacobian, t, dt, s_tshift, solution, solutionDot);
-    _needNewLHSJacobian = false;
 
     PYLITH_METHOD_END;
 } // computeLHSJacobian
@@ -342,7 +342,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
     err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
     PetscVec vecRowSum = NULL;
-    err = DMGetGlobalVector(dmSoln, &vecRowSum);PYLITH_CHECK_ERROR(err);
+    err = DMGetLocalVector(dmSoln, &vecRowSum);PYLITH_CHECK_ERROR(err);
     err = VecSet(vecRowSum, 1.0);PYLITH_CHECK_ERROR(err);
 
     // Compute the local Jacobian action
@@ -359,7 +359,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
     // Compute the Jacobian inverse.
     err = VecReciprocal(jacobianInv->localVector());PYLITH_CHECK_ERROR(err);
 
-    _needNewLHSJacobian = false;
+    _needNewLHSJacobianLumped = false;
 
     PYLITH_METHOD_END;
 } // computeLHSJacobianLumpedInv

@@ -29,6 +29,7 @@
 #include "journal/info.h"
 #include "journal/warning.h"
 #include "journal/error.h"
+#include "journal/firewall.h"
 
 #define PYLITH_COMPONENT_DEBUG(msg) \
     do { \
@@ -60,6 +61,14 @@
         error << journal::at(__HERE__) \
               << "Component '"<<PyreComponent::getIdentifier()<<"': " \
               << msg << journal::endl; \
+    } while (0)
+
+#define PYLITH_COMPONENT_FIREWALL(msg) \
+    do { \
+        journal::firewall_t firewall(PyreComponent::getName()); \
+        firewall << journal::at(__HERE__) \
+                 << "Component '"<<PyreComponent::getIdentifier()<<"': " \
+                 << msg << journal::endl; \
     } while (0)
 
 #define PYLITH_JOURNAL_DEBUG(msg) \
