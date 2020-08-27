@@ -1,0 +1,199 @@
+% ----------------------------------------------------------------------
+\section{Elasticity with Infinitesimal Strain and No Faults}
+
+We begin with the elasticity equation including the inertial term,
+\begin{gather}
+  \label{eqn:elasticity:strong:form}
+  \rho \frac{\partial^2\vec{u}}{\partial t^2} - \vec{f}(\vec{x},t) - \tensor{\nabla} \cdot 
+\tensor{\sigma}
+(\vec{u}) = \vec{0} \text{ in }\Omega, \\
+%
+  \label{eqn:bc:Neumann}
+  \tensor{\sigma} \cdot \vec{n} = \vec{\tau}(\vec{x},t) \text{ on }\Gamma_\tau, \\
+%
+  \label{eqn:bc:Dirichlet}
+  \vec{u} = \vec{u}_0(\vec{x},t) \text{ on }\Gamma_u,
+\end{gather}
+where $\vec{u}$ is the displacement vector, $\rho$ is the mass
+density, $\vec{f}$ is the body force vector, $\tensor{\sigma}$ is the
+Cauchy stress tensor, $\vec{x}$ is the spatial coordinate, and $t$ is
+time. We specify tractions $\vec{\tau}$ on boundary $\Gamma_\tau$, and
+displacements $\vec{u}_0$ on boundary $\Gamma_u$. Because both $\vec{\tau}$
+and $\vec{u}$ are vector quantities, there can be some spatial overlap
+of boundaries $\Gamma_\tau$ and $\Gamma_u$; however, a degree of freedom at
+any location cannot be associated with both prescribed displacements
+(Dirichlet) and traction (Neumann) boundary conditions simultaneously.
+
+\begin{table}[htbp]
+  \caption{Mathematical notation for elasticity equation with
+    infinitesimal strain.}
+  \label{tab:notation:elasticity}
+  \begin{tabular}{lcp{3in}}
+    \toprule
+    {\bf Category} & {\bf Symbol} & {\bf Description} \\
+    \midrule
+    Unknowns & $\vec{u}$ & Displacement field \\
+    & $\vec{v}$ & Velocity field \\
+    Derived quantities & $\tensor{\sigma}$ & Cauchy stress tensor \\
+                   & $\tensor{\epsilon}$ & Cauchy strain tensor \\
+    Common constitutive parameters & $\rho$ & Density \\
+  & $\mu$ & Shear modulus \\
+  & $K$ & Bulk modulus \\
+Source terms & $\vec{f}$ & Body force per unit volume, for example $\rho \vec{g}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+\subsection{Quastistatic}
+
+If we neglect the inertial term
+($\rho \frac{\partial \vec{v}}{\partial t} \approx \vec{0}$), then
+time dependence only arises from history-dependent constitutive
+equations and boundary conditions. Our solution vector is the
+displacement vector and the elasticity equation reduces to
+\begin{gather}
+  \label{eqn:elasticity:strong:form:quasistatic}
+  \vec{f}(\vec{x},t) + \tensor{\nabla} \cdot \tensor{\sigma}(\vec{u}) = \vec{0} \text{ in }\Omega, \\
+%
+  \tensor{\sigma} \cdot \vec{n} = \vec{\tau}(\vec{x},t) \text{ on }\Gamma_\tau, \\
+%
+  \vec{u} = \vec{u}_0(\vec{x},t) \text{ on }\Gamma_u.
+\end{gather}
+Because we will use implicit time stepping, we place all of the terms
+in the elasticity equation on the LHS. We create the weak form by
+taking the dot product with the trial function $\trialvec[u]$ and
+integrating over the domain:
+\begin{equation}
+    \int_\Omega \trialvec[u] \cdot \left( \vec{f}(t) + \tensor{\nabla}
+      \cdot \tensor{\sigma} (\vec{u}) \right) \, d\Omega = 0. 
+\end{equation}
+Using the divergence theorem and incorporating the Neumann boundary conditions, we have
+\begin{equation}
+% 
+  \int_\Omega \trialvec[u] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}(\vec{u}) \, d\Omega
+  + \int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma = 0
+\end{equation}
+
+\subsubsection{Residual Pointwise Functions}
+
+Identifying $F(t,s,\dot{s})$ and $G(t,s)$, we have
+\begin{align}
+  % Fu
+  F^u(t,s,\dot{s}) &=  \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{\vec{f}^u_0} + \nabla \trialvec[u] : \eqnannotate{-\tensor{\sigma}(\vec{u})}{\tensor{f^u_1}} \, d\Omega
+  + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{\vec{f}^u_0} \, d\Gamma, \\
+  % Gu
+  G^u(t,s) &= 0
+\end{align}
+Note that we have multiple $\vec{f}_0$ functions, each associated with
+a trial function and an integral over a different domain or
+boundary. Each material and boundary condition (except Dirichlet)
+contribute pointwise functions. The integral over the domain $\Omega$
+is subdivided into integrals over the materials and the integral over
+the boundary $\Gamma_\tau$ is subdivided into integrals over the
+Neumann boundaries. Each bulk constitutive model provides a different
+pointwise function for the stress tensor
+$\tensor{\sigma}(\vec{u})$. With $G=0$ it is clear that we have a
+formulation that will use implicit time stepping algorithms.
+
+\subsubsection{Jacobian Pointwise Functions}
+
+We only have a Jacobian for the LHS:
+\begin{align}
+  J_F^{uu} &= \frac{\partial F^u}{\partial u} = \int_\Omega \nabla \trialvec[u] : 
+\frac{\partial}{\partial u}(-\tensor{\sigma}) \, d\Omega 
+  = \int_\Omega \nabla \trialvec[u] : -\tensor{C} : \frac{1}{2}(\nabla + \nabla^T)\basisvec[u] 
+\, d\Omega 
+  = \int_\Omega \trialscalar[u]_{i,k} \, \eqnannotate{\left( -C_{ikjl} \right)}{J_{f3}^{uu}} \, \basisscalar[u]_{j,l}\, d\Omega.
+\end{align}
+
+
+\subsection{Dynamic}
+
+For compatibility with PETSc TS algorithms, we want to turn
+the second order equation~\vref{eqn:elasticity:strong:form} into two first order
+equations. We introduce the velocity as a unknown,
+$\vec{v}=\frac{\partial u}{\partial t}$, which leads to
+\begin{align}
+  % Displacement-velocity
+  \frac{\partial \vec{u}}{\partial t} &= \vec{v} \text{ in } \Omega, \\
+  % Elasticity
+  \rho(\vec{x}) \frac{\partial\vec{v}}{\partial t} &= \vec{f}(\vec{x},t) + \tensor{\nabla} \cdot \tensor{\sigma}(\vec{u}) \text{ in } \Omega, \\
+  % Neumann
+  \tensor{\sigma} \cdot \vec{n} &= \vec{\tau}(\vec{x},t) \text{ on } \Gamma_\tau, \\
+  % Dirichlet
+  \vec{u} &= \vec{u}_0(\vec{x},t) \text{ on } \Gamma_u.
+\end{align}
+We create the weak form by taking the dot product with the trial
+function $\trialvec[u]$ or $\trialvec[v]$ and
+integrating over the domain:
+\begin{gather}
+  % Displacement-velocity
+  \int_\Omega \trialvec[u] \cdot \frac{\partial \vec{u}}{\partial t} \, d\Omega = 
+  \int_\Omega \trialvec[u] \cdot \vec{v} \, d\Omega, \\
+  % Elasticity
+    \int_\Omega \trialvec[v] \cdot \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} \, d\Omega 
+ = \int_\Omega \trialvec[v] \cdot \left( \vec{f}(t) + \tensor{\nabla} \cdot \tensor{\sigma} (\vec{u}) \right) \, d\Omega.
+\end{gather}
+Using the divergence theorem and incorporating the Neumann boundaries, we can rewrite the second equation as
+\begin{equation}
+% 
+  \int_\Omega \trialvec[v] \cdot \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} \, d\Omega
+  = \int_\Omega \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}(\vec{u}) \, d\Omega
+  + \int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma.
+\end{equation}
+
+For explicit time stepping, we want $F(t,s,\dot{s})=\dot{s}$, so we
+solve an augmented system in which we multiply the RHS residual
+function by the inversion of the lumped LHS Jacobian,
+\begin{gather}
+  F^*(t,s,\dot{s}) = G^*(t,s) \text{, where} \\
+  F^*(t,s,\dot{s}) = \dot{s} \text{ and} \\
+  G^*(t,s) = J_F^{-1} G(t,s).
+\end{gather}
+With the augmented system, we have
+\begin{gather}
+  % Displacement-velocity
+  \frac{\partial \vec{u}}{\partial t}  = M_u^{-1} \int_\Omega \trialvec[u] \cdot \vec{v} \, d\Omega, \\
+  % Elasticity
+  \frac{\partial \vec{v}}{\partial t} = M_v^{-1} \int_\Omega \trialvec[v] \cdot \left( \vec{f}(t) + \tensor{\nabla} \cdot \tensor{\sigma} (\vec{u}) \right) \, d\Omega, \\
+  % Mu
+  M_u = \mathit{Lump}\left( \int_\Omega \trialscalar[u]_i \delta_{ij} \basisscalar[u]_j \, d\Omega \right), \\
+  % Mv
+  M_v = \mathit{Lump}\left( \int_\Omega \trialscalar[v]_i \rho(\vec{x}) \delta_{ij} \basisscalar[v]_j \, d\Omega \right).
+\end{gather}
+
+\subsubsection{Residual Pointwise Functions}
+
+With explicit time stepping the PETSc TS assumes the LHS is
+$\dot{s}$, so we only need the RHS residual functions:
+\begin{align}
+  % Gu
+  G^u(t,s) &= \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{v}}{\vec{g}^u_0} \, d\Omega, \\
+  % Gv
+  G^v(t,s) &=  \int_\Omega \trialvec[v] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{\vec{g}^v_0} + \nabla \trialvec[v] : \eqnannotate{-\tensor{\sigma}(\vec{u})}{\tensor{g^v_1}} \, d\Omega
+  + \int_{\Gamma_\tau} \trialvec[v] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{\vec{g}^v_0} \, d\Gamma,
+\end{align}
+In the second equation these are the same pointwise functions as in the
+quasistatic case, only now they are on the RHS instead of the LHS.
+
+
+\subsubsection{Jacobian Pointwise Functions}
+
+These are the pointwise functions associated with $M_u$ and $M_v$ for
+computing the lumped LHS Jacobian. We premultiply the RHS residual
+function by the inverse of the lumped LHS Jacobian while
+$s_\mathit{tshift}$ remains on the LHS with $\dot{s}$. As a result, we
+use LHS Jacobian pointwise functions, but set $s_\mathit{tshift}=1$.
+The LHS Jacobians are:
+\begin{align}
+  % J_F uu
+  M_u = J_F^{uu} &= \frac{\partial F^u}{\partial u} + s_\mathit{tshift} \frac{\partial F^u}{\partial \dot{u}} =
+             \int_\Omega \trialscalar[u]_i \eqnannotate{s_\mathit{tshift} \delta_{ij}}{J^{uu}_{f0}} \basisscalar[u]_j  \, d\Omega, \\
+  % J_F vv
+  M_v = J_F^{vv} &= \frac{\partial F^v}{\partial v} + s_\mathit{tshift} \frac{\partial F^v}{\partial \dot{v}} =
+             \int_\Omega \trialscalar[v]_i \eqnannotate{\rho(\vec{x}) s_\mathit{tshift} \delta_{ij}}{J ^{vv}_{f0}} \basisscalar[v]_j \, d\Omega
+\end{align}
+
+
+% End of file
