@@ -302,7 +302,6 @@ pylith::problems::TimeDependent::initialize(void) {
     const pylith::topology::Mesh& mesh = _solution->mesh();
     err = TSCreate(mesh.comm(), &_ts);PYLITH_CHECK_ERROR(err);assert(_ts);
     err = TSSetType(_ts, TSBEULER);PYLITH_CHECK_ERROR(err); // Backward Euler is default time stepping method.
-    // err = TSSetEquationType(_ts, TS_EQ_EXPLICIT);PYLITH_CHECK_ERROR(err);
     err = TSSetExactFinalTime(_ts, TS_EXACTFINALTIME_STEPOVER);PYLITH_CHECK_ERROR(err); // Ok to step over final time.
     err = TSSetFromOptions(_ts);PYLITH_CHECK_ERROR(err);
     err = TSSetApplicationContext(_ts, (void*)this);PYLITH_CHECK_ERROR(err);
@@ -354,7 +353,6 @@ pylith::problems::TimeDependent::initialize(void) {
     _residual->setLabel("residual");
 
     // Set callbacks.
-    // err = TSSetPreStep(_ts, prestep);PYLITH_CHECK_ERROR(err);
     PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks poststep() and computeRHSFunction().");
     err = TSSetPostStep(_ts, poststep);PYLITH_CHECK_ERROR(err);
     err = TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
@@ -370,6 +368,7 @@ pylith::problems::TimeDependent::initialize(void) {
         PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks computeLHSJacobian() and computeLHSFunction().");
         err = TSSetIFunction(_ts, NULL, computeLHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
         err = TSSetIJacobian(_ts, NULL, NULL, computeLHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
+        err = TSSetEquationType(_ts, TS_EQ_EXPLICIT);PYLITH_CHECK_ERROR(err);
     case pylith::problems::Physics::DYNAMIC:
         PYLITH_COMPONENT_DEBUG("Setting up field for inverse of lumped LHS Jacobian.");
         delete _jacobianLHSLumpedInv;_jacobianLHSLumpedInv = new pylith::topology::Field(_solution->mesh());assert(_jacobianLHSLumpedInv);
@@ -419,36 +418,6 @@ pylith::problems::TimeDependent::solve(void) {
 
     PYLITH_METHOD_END;
 } // solve
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Perform operations before advancing solution one time step.
-void
-pylith::problems::TimeDependent::prestep(void) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("prestep()");
-
-    // Get time of last time step and current time step.
-    PetscErrorCode err;
-    PylithReal dt;
-    PylithReal t;
-    err = TSGetTimeStep(_ts, &dt);PYLITH_CHECK_ERROR(err);
-    err = TSGetTime(_ts, &t);PYLITH_CHECK_ERROR(err);
-
-    // Prepare constraints for a new time step.
-    const size_t numConstraints = _constraints.size();
-    for (size_t i = 0; i < numConstraints; ++i) {
-        _constraints[i]->updateState(t+dt);
-    } // for
-
-    // Prepare integrators for a new time step.
-    const size_t numIntegrators = _integrators.size();
-    for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->updateState(t+dt);
-    } // for
-
-    PYLITH_METHOD_END;
-} // prestep
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -892,23 +861,6 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
 
     PYLITH_METHOD_RETURN(0);
 } // computeLHSJacobian
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Callback static method for operations before advancing solution one time step.
-PetscErrorCode
-pylith::problems::TimeDependent::prestep(PetscTS ts) {
-    PYLITH_METHOD_BEGIN;
-    journal::debug_t debug(_TimeDependent::pyreComponent);
-    debug << journal::at(__HERE__)
-          << "prestep(ts="<<ts<<")" << journal::endl;
-
-    TimeDependent* problem = NULL;
-    PetscErrorCode err = TSGetApplicationContext(ts, (void*)&problem);PYLITH_CHECK_ERROR(err);assert(problem);
-    problem->prestep();
-
-    PYLITH_METHOD_RETURN(0);
-} // prestep
 
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -142,12 +142,6 @@ public:
      */
     void solve(void);
 
-    /** Perform operations before advancing solution one time step.
-     *
-     * Set constraints, etc.
-     */
-    void prestep(void);
-
     /** Perform Perform operations after advancing solution one time step.
      *
      * Update state variables, output.
@@ -301,11 +295,6 @@ public:
                                       PetscMat jacobianMat,
                                       PetscMat precondMat,
                                       void* context);
-
-    /** Callback static method for operations before advancing solution one time step.
-     */
-    static
-    PetscErrorCode prestep(PetscTS ts);
 
     /** Callback static method for operations after advancing solution one time step.
      */
