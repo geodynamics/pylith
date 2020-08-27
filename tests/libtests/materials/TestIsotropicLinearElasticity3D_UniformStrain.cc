@@ -43,20 +43,19 @@ namespace pylith {
     } // materials
 } // pylith
 
-
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain :
     public pylith::materials::TestIsotropicLinearElasticity3D {
-
     /// Spatial database user functions for auxiiliary subfields (includes derived fields).
     static const double SMALL;
 
     // Density
     static double density(const double x,
                           const double y,
-						  const double z) {
+                          const double z) {
         return 2500.0;
     } // density
+
     static const char* density_units(void) {
         return "kg/m**3";
     } // density_units
@@ -64,9 +63,10 @@ class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain :
     // Vs
     static double vs(const double x,
                      const double y,
-					 const double z) {
+                     const double z) {
         return 3000.0;
     } // vs
+
     static const char* vs_units(void) {
         return "m/s";
     } // vs_units
@@ -74,9 +74,10 @@ class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain :
     // Vp
     static double vp(const double x,
                      const double y,
-					 const double z) {
+                     const double z) {
         return sqrt(3.0)*vs(x,y,z);
     } // vp
+
     static const char* vp_units(void) {
         return "m/s";
     } // vp_units
@@ -84,9 +85,10 @@ class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain :
     // shear modulus
     static double shearModulus(const double x,
                                const double y,
-							   const double z) {
+                               const double z) {
         return density(x,y,z) * vs(x,y,z) * vs(x,y,z);
     } // shearModulus
+
     static const char* shearModulus_units(void) {
         return "Pa";
     } // shearModulus_units
@@ -94,9 +96,10 @@ class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain :
     // bulk modulus
     static double bulkModulus(const double x,
                               const double y,
-							  const double z) {
+                              const double z) {
         return density(x,y,z)*(vp(x,y,z)*vp(x,y,z) - 4.0/3.0*vs(x,y,z)*vs(x,y,z));
     } // bulkModulus
+
     static const char* bulkModulus_units(void) {
         return "Pa";
     } // bulkModulus_units
@@ -106,18 +109,23 @@ class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain :
     static double strain_xx(void) {
         return 0.1;
     } // strain_xx
+
     static double strain_yy(void) {
         return 0.25;
     } // strain_yy
+
     static double strain_zz(void) {
         return 0.15;
     } // strain_zz
+
     static double strain_xy(void) {
         return 0.3;
     } // strain_xy
+
     static double strain_yz(void) {
         return 0.35;
     } // strain_yz
+
     static double strain_xz(void) {
         return 0.4;
     } // strain_xz
@@ -125,59 +133,66 @@ class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain :
     // Displacement
     static double disp_x(const double x,
                          const double y,
-						 const double z) {
+                         const double z) {
         return strain_xx()*x + strain_xy()*y + strain_xz()*z;
     } // disp_x
+
     static double disp_y(const double x,
                          const double y,
-						 const double z) {
+                         const double z) {
         return strain_xy()*x + strain_yy()*y + strain_yz()*z;
     } // disp_y
+
     static double disp_z(const double x,
                          const double y,
-						 const double z) {
+                         const double z) {
         return strain_xz()*x + strain_yz()*y + strain_zz()*z;
     } // disp_z
+
     static const char* disp_units(void) {
         return "m";
     } // disp_units
 
     static double disp_dot_x(const double x,
                              const double y,
-							 const double z) {
+                             const double z) {
         return 0.0;
     } // disp_dot_x
+
     static double disp_dot_y(const double x,
                              const double y,
-							 const double z) {
+                             const double z) {
         return 0.0;
     } // disp_dot_y
+
     static double disp_dot_z(const double x,
                              const double y,
-							 const double z) {
+                             const double z) {
         return 0.0;
     } // disp_dot_z
+
     static const char* disp_dot_units(void) {
         return "m/s";
     } // disp_dot_units
 
-
     // Displacement + perturbation
     static double disp_perturb_x(const double x,
                                  const double y,
-								 const double z) {
+                                 const double z) {
         const double perturbation = SMALL * disp_x(z, y, x);
         return disp_x(x, y, z) + perturbation;
     } // disp_perturb_x
+
     static double disp_perturb_y(const double x,
                                  const double y,
-								 const double z) {
+                                 const double z) {
         const double perturbation = SMALL * disp_y(z, y, x);
         return disp_y(x, y, z) + perturbation;
     } // disp_perturb_y
+
     static double disp_perturb_z(const double x,
                                  const double y,
-								 const double z) {
+                                 const double z) {
         const double perturbation = SMALL * disp_z(z, y, x);
         return disp_z(x, y, z) + perturbation;
     } // disp_perturb_z
@@ -186,7 +201,7 @@ protected:
 
     void setUp(void) {
         TestIsotropicLinearElasticity3D::setUp();
-        _mydata = new TestIsotropicLinearElasticity3D_Data(); CPPUNIT_ASSERT(_mydata);
+        _mydata = new TestIsotropicLinearElasticity3D_Data();CPPUNIT_ASSERT(_mydata);
 
         // dimension set in base class.
         // meshFilename set in derived class.
@@ -238,7 +253,7 @@ protected:
         _mydata->perturbDB->addValue("displacement_dot_z", disp_dot_z, disp_dot_units());
 
         CPPUNIT_ASSERT(_mymaterial);
-        _mymaterial->useInertia(false);
+        _material->setFormulation(pylith::problems::Physics::QUASISTATIC);
         _mymaterial->useBodyForce(false);
         _mymaterial->useReferenceState(false);
 
@@ -253,7 +268,6 @@ const double pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain::S
 
 class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_TetP1 :
     public pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain {
-
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_TetP1,
                            TestIsotropicLinearElasticity3D);
     CPPUNIT_TEST_SUITE_END();
@@ -276,11 +290,9 @@ class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_TetP1 :
 }; // TestIsotropicLinearElasticity3D_UniformStrain_TetP1
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_TetP1);
 
-
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_TetP2 :
     public pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain {
-
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_TetP2,
                            TestIsotropicLinearElasticity3D);
     CPPUNIT_TEST_SUITE_END();
@@ -310,11 +322,9 @@ class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_TetP2 :
 }; // TestIsotropicLinearElasticity3D_UniformStrain_TetP2
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_TetP2);
 
-
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_TetP3 :
     public pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain {
-
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_TetP3,
                            TestIsotropicLinearElasticity3D);
     CPPUNIT_TEST_SUITE_END();
@@ -345,11 +355,9 @@ class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_TetP3 :
 // Leave this one out for now since it takes too long.
 // CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_TetP3);
 
-
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_TetP4 :
     public pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain {
-
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_TetP4,
                            TestIsotropicLinearElasticity3D);
     CPPUNIT_TEST_SUITE_END();
@@ -378,13 +386,11 @@ class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_TetP4 :
 
 }; // TestIsotropicLinearElasticity3D_UniformStrain_TetP4
 // Leave this one out for now since it takes too long.
-//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_TetP4);
-
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_TetP4);
 
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_HexQ1 :
     public pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain {
-
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_HexQ1,
                            TestIsotropicLinearElasticity3D);
     CPPUNIT_TEST_SUITE_END();
@@ -414,11 +420,9 @@ class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_HexQ1 :
 }; // TestIsotropicLinearElasticity3D_UniformStrain_HexQ1
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_HexQ1);
 
-
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_HexQ2 :
     public pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain {
-
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_HexQ2,
                            TestIsotropicLinearElasticity3D);
     CPPUNIT_TEST_SUITE_END();
@@ -448,11 +452,9 @@ class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_HexQ2 :
 }; // TestIsotropicLinearElasticity3D_UniformStrain_HexQ2
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_HexQ2);
 
-
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_HexQ3 :
     public pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain {
-
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_HexQ3,
                            TestIsotropicLinearElasticity3D);
     CPPUNIT_TEST_SUITE_END();
@@ -481,13 +483,11 @@ class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_HexQ3 :
 
 }; // TestIsotropicLinearElasticity3D_UniformStrain_HexQ3
 // Leave this one out for now since it takes too long.
-//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_HexQ3);
-
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_HexQ3);
 
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_HexQ4 :
     public pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain {
-
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_HexQ4,
                            TestIsotropicLinearElasticity3D);
     CPPUNIT_TEST_SUITE_END();
@@ -516,7 +516,6 @@ class pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_HexQ4 :
 
 }; // TestIsotropicLinearElasticity3D_UniformStrain_HexQ4
 // Leave this one out for now since it takes too long.
-//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_HexQ4);
-
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticity3D_UniformStrain_HexQ4);
 
 // End of file
