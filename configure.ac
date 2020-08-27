@@ -322,10 +322,10 @@ AC_CONFIG_FILES([Makefile
 		examples/2d/strikeslip/Makefile
 		examples/2d/reverse/Makefile
 		examples/2d/subduction/Makefile
+		examples/2d/bar_waves/Makefile
 		examples/3d/Makefile
 		examples/3d/box/Makefile
 		examples/3d/subduction/Makefile
-    examples/bar_shearwave/Makefile
 		examples/meshing/Makefile
 		examples/meshing/surface_nurbs/Makefile
 		examples/meshing/surface_nurbs/dem/Makefile
