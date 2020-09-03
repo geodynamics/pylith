@@ -333,8 +333,9 @@ The PETSc TS assumes the LHS is $\dot{s}$, so we only need the RHS residual func
 
 \subsubsection{Jacobian Pointwise Kernels}
 
-We premultiply the RHS residual function by the inverse of the lumped
-LHS Jacobian while $s_\mathit{tshift}$ remains on the LHS with
+These are the kernels for computing the lumped LHS Jacobian. We
+premultiply the RHS residual function by the inverse of the lumped LHS
+Jacobian while $s_\mathit{tshift}$ remains on the LHS with
 $\dot{s}$. As a result, we use the usual LHS Jacobian pointwise
 kernel, but set $s_\mathit{tshift}=1$.  The LHS Jacobians are:
 \begin{align}
@@ -349,105 +350,106 @@ kernel, but set $s_\mathit{tshift}=1$.  The LHS Jacobians are:
 
 \subsection{Dynamic}
 
-We use a segragated Runge-Kutta approach \cite{Colomes:Badia:2016} to
-solve the dynamic elasticity equation with prescribed fault slip. This
-approach can be applied in an implicit-explicit Runge-Kutta scheme or
-a pure explicit Runge-Kutta scheme. We prefer the pure explicit
-Runge-Kutta scheme, which involves reducing the system of equations by
-solving for the Lagrange multiplier analytically.
-
-In the segragated Runge-Kutta approach, we solve a system of equations of the form:
+The equation prescribing fault slip is independent of the Lagrange
+multiplier, so we do not have a system of equations that we can put in
+the form $\dot{s} = G^*(t,s)$. Instead, we have a
+differential-algebraic set of equations (DAEs), which we solve using an
+implicit-explicit (IMEX) time integration scheme. The strong form for
+our equations is:
 \begin{gather}
-  \dot{s} = G(t,s) \\
-  F(s,\dot{s}) = 0.
-\end{gather}
-We differentiate the second equation with respect to time and use the
-first equation to substitute for $\dot{s}$, so that the second
-equation has the form $F(G(t,s)) = 0$.
-
-Starting with the strong form, we have 
-\begin{gather}
-  % Displacement-velocity
-  \frac{\partial u}{\partial t} = v \\
+% Displacement-velocituy
+  \frac{\partial \vec{u}}{\partial t} = v, \\
   % Elasticity
-  \rho \frac{\partial \vec{v}}{\partial t} - \vec{f}(\vec{x},t)
-  - \tensor{\nabla} \cdot \tensor{\sigma}(\vec{u}) = \vec{0} \text{ in }\Omega, \\
-% Neumann
-  \tensor{\sigma} \cdot \vec{n} = \vec{\tau}(\vec{x},t) \text{ on }\Gamma_\tau, \\
-% Dirichlet
-  \vec{u} = \vec{u}_0(\vec{x},t) \text{ on }\Gamma_u,\\
-% Prescribed slip
-  \vec{\dot{v}}^+(\vec{x},t) - \vec{\dot{v}}^-(\vec{x},t) - \vec{\ddot{d}}(\vec{x},t) = \vec{0} \text{ on }\Gamma_f,
+  \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} =
+  \vec{f}(\vec{x},t) + \nabla \cdot \tensor{\sigma}, \\
+  % Presribed slip
+  \vec{u}^+ - \vec{u}^- - \vec{d}(\vec{x},t) = \vec{0,} \\
+  % Dirichlet BC
+  \vec{u} = \vec{u}_0 \text{ on } \Gamma_u, \\
+  % Neumann BC
+  \tensor{\sigma} \cdot \vec{n} = \vec{\tau} \text{ on } \Gamma_\tau.
 \end{gather}
-where we have taken the second time derivative of the fault slip
-constraint to match the order of the time derivative in the elasticity
-equation. Our corresponding weak form is
+The differentiation index is 2 because we must take the second time
+derivative of the prescribed slip equation to match the order of the
+time derivative in the elasticity equation. This leads to:
+\begin{gather}
+% Displacement-velocituy
+  \frac{\partial \vec{u}}{\partial t} = v, \\
+  % Elasticity
+  \label{eqn:dynamic:strong:form:elasticity}
+  \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} =
+  \vec{f}(\vec{x},t) + \nabla \cdot \tensor{\sigma}, \\
+  % Presribed slip
+  \label{eqn:dynamic:strong:form:prescribed:slip}
+  \frac{\partial \vec{v}^+}{\partial t} - \frac{\partial \vec{v}^-}{\partial t} -
+  \frac{\partial^2 \vec{d}(\vec{x},t)}{\partial t^2} = \vec{0,} \\
+  % Dirichlet BC
+  \vec{u} = \vec{u}_0 \text{ on } \Gamma_u, \\
+  % Neumann BC
+  \tensor{\sigma} \cdot \vec{n} = \vec{\tau} \text{ on } \Gamma_\tau.
+\end{gather}
+For compatibility with PETSc TS IMEX implementations, we need
+$\lambda$ in the equation for prescribed slip. We can do this by
+solving equation~\ref{eqn:dynamic:strong:form:elasticity} for
+$\frac{\partial \vec{v}}{\partial t}$ and substituting into
+equation~\ref{eqn:dynamic:strong:form:prescribed:slip}.
+
+We generate the weak form in the usual way but keep the prescribed slip equation in its strong form yielding
 \begin{gather}
   % Displacement-velocity
   \int_{\Omega} \trialvec[u] \cdot \frac{\partial \vec{u}}{\partial t} \, d\Omega = 
   \int_{\Omega} \trialvec[u] \cdot \vec{v} \, d\Omega, \\
   % Elasticity
-  \label{eqn:dynamic:prescribed:slip:elasticity}
   \begin{multlined}
-  \int_{\Omega} \trialvec[v] \cdot \frac{\partial \vec{v}}{\partial t} \, d\Omega 
-  = M^{-1} \left( \int_\Omega \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}(\vec{u}) \, d\Omega
-  + \int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma \right) \\
-  + M^{-1} \left( \int_{\Gamma_{f}} \trialvec[v^+] \cdot \left(-\vec{\lambda}(\vec{x},t)\right)
-  + \trialvec[v^-] \cdot \left(+\vec{\lambda}(\vec{x},t)\right)\, d\Gamma \right)
+  \int_{\Omega} \trialvec[v] \cdot \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} \, d\Omega 
+  + \int_{\Gamma_{f}} \trialvec[v^+] \cdot \left(+\vec{\lambda}(\vec{x},t)\right)
+  + \trialvec[v^-] \cdot \left(-\vec{\lambda}(\vec{x},t)\right)\, d\Gamma \\
+  = \int_\Omega \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}(\vec{u}) \, d\Omega
+  + \int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma
   \end{multlined}\\
   % Prescribed slip
-  \label{eqn:dynamic:prescribed:slip:second:derivative}
-  \int_{\Gamma_{f}} \trialvec[\lambda] \cdot \left(
-    \vec{\dot{v}}^+(\vec{x},t) - \vec{\dot{v}}^-(\vec{x},t) - \vec{\ddot{d}}(\vec{x},t) \right) \, d\Gamma = 0, \\
-  % Mass matrix
-  M = \int_{\Omega} \trialscalar[v]_i \rho(\vec{x}) \delta_{ij} \basisscalar[v]_j \, d\Omega.
+  \frac{\partial \vec{v}^+}{\partial t} - \frac{\partial \vec{v}^-}{\partial t} - \frac{\partial^2 \vec{d}(\vec{x},t)}{\partial t^2} = \vec{0}.
 \end{gather}
-We substitute the expression for $\dot{v}$ from
-equation~\ref{eqn:dynamic:prescribed:slip:elasticity} into
-equation~\ref{eqn:dynamic:prescribed:slip:second:derivative},
-\begin{gather}
-M^{-1} \left( h^+ - h^- \right) + M^{-1} \int_{\Gamma_{f}} \trialvec[v^+] \cdot \left(-\vec{\lambda}(\vec{x},t)\right)
-  + \trialvec[v^-] \cdot \left(-\vec{\lambda}(\vec{x},t)\right)\, d\Gamma - \int_{\Gamma_f} \trialvec[\lambda] \cdot \vec{\ddot{d}}(\vec{x},t) \, d\Gamma = 0, \\
-  h^+ = \int_{\Omega} \trialvec[v^+] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v^+] : -\tensor{\sigma}(\vec{u}) \, d\Omega, \\
-  h^- = \int_{\Omega} \trialvec[v^-] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v^-] : -\tensor{\sigma}(\vec{u}) \, d\Omega.
-\end{gather}
-Assuming $\trialvec[v] = \trialvec[\lambda]$, we can rewrite the Lagrange multiplier integration:
-\begin{equation}
-  \int_{\Gamma_{f}} \trialvec[v^+] \cdot \left(-\vec{\lambda}(\vec{x},t)\right)
-    + \trialvec[v^-] \cdot \left(-\vec{\lambda}(\vec{x},t)\right)\, d\Gamma =
-    -2 \int_{\Gamma_f} \trialvec[\lambda] \cdot \vec{\lambda}(\vec{x},t) \, d\Gamma.
-\end{equation}
-Solving for the Lagrange multiplier term yields
-\begin{equation}
-  M^{-1} \int_{\Gamma_f} \trialvec[\lambda] \cdot \vec{\lambda}(\vec{x},t) \, d\Gamma =
-  \frac{1}{2} M^{-1} \left( h^+ - h^- \right)
-  -\frac{1}{2} \int_{\Gamma_f} \trialvec[\lambda] \cdot \vec{\ddot{d}}(\vec{x},t) \, d\Gamma.
-\end{equation}
-We can now write the expressions for the Lagrange multiplier terms in
-equation~\ref{eqn:dynamic:prescribed:slip:elasticity},
-\begin{gather}
-  % v+
-  M^{-1} \int_{\Gamma_f} \trialvec[v^+] \cdot \left(-\vec{\lambda}(\vec{x},t)\right) \, d\Gamma =
--\frac{1}{2} M^{-1} \left( h^+ - h^- \right) +\frac{1}{2} \int_{\Gamma_f} \trialvec[v^+] \cdot \vec{\ddot{d}}(\vec{x},t) \, d\Gamma, \\ 
-% v-
-  M^{-1} \int_{\Gamma_f} \trialvec[v^-] \cdot \left(+\vec{\lambda}(\vec{x},t)\right) \, d\Gamma =
-+\frac{1}{2} M^{-1} \left( h^+ - h^- \right) -\frac{1}{2} \int_{\Gamma_f} \trialvec[v^+] \cdot \vec{\ddot{d}}(\vec{x},t) \, d\Gamma, \\ 
-\end{gather}
-The updated weak form with the Lagrange multipliers eliminated is:
+For compatibility with the IMEX PETSc TS formulation, we need
+$\dot{s}$ on the left hand side for the explicit part
+(displacement-velocity and elasticity equations). We create a lumped
+LHS Jacobian matrix, $M$, so that we have
 \begin{gather}
   % Displacement-velocity
-  \int_{\Omega} \trialvec[u] \cdot \frac{\partial \vec{u}}{\partial t} \, d\Omega = 
-  \int_{\Omega} \trialvec[u] \cdot \vec{v} \, d\Omega, \\
+  \frac{\partial \vec{u}}{\partial t} = M_u^{-1} \int_{\Omega} \trialvec[u] \cdot \vec{v} \, d\Omega, \\
   % Elasticity
- \int_{\Omega} \trialvec[v] \cdot \frac{\partial \vec{v}}{\partial t} \, d\Omega 
-  = \begin{cases}
-    M^{-1} h & v \neq v^+ \text{ or } v^- \\
-    M^{-1} h^+ - \frac{1}{2} M^{-1} \left( h^+-h^- \right) + \frac{1}{2} \int_{\Gamma_f} \trialvec[v^+] \cdot \vec{\ddot{d}}(\vec{x}, t) & v = v^+ \\
-    M^{-1} h^- + \frac{1}{2} M^{-1} \left( h^+-h^- \right) - \frac{1}{2} \int_{\Gamma_f} \trialvec[v^+] \cdot \vec{\ddot{d}}(\vec{x}, t) & v = v^+
-  \end{cases}, \\
-  M = \int_{\Omega} \trialscalar[v]_i \rho(\vec{x}) \delta_{ij} \basisscalar[v]_j \, d\Omega, \\
-  h = \int_{\Omega} \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}(\vec{u}) \, d\Omega.
+  \begin{multlined}
+  \frac{\partial \vec{v}}{\partial t} 
+  + M_{v^+}^{-1} \int_{\Gamma_{f}} \trialvec[v^+] \cdot \vec{\lambda}(\vec{x},t) \, d\Gamma
+  - M_{v^-}^{-1} \int_{\Gamma_{f}}\trialvec[v^-] \cdot \vec{\lambda}(\vec{x},t) \, d\Gamma \\
+  = M_v^{-1} \int_\Omega \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}(\vec{u}) \, d\Omega
+  + M_v^{-1} \int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma,
+\end{multlined}\\
+% Mu
+M_u = \mathit{Lump}\left( \int_\Omega \trialscalar[u]_i \delta_{ij} \basisscalar[u]_j \, d\Omega \right), \\
+% Mv
+M_v = \mathit{Lump}\left( \int_\Omega \trialscalar[v]_i \rho(\vec{x}) \delta_{ij} \basisscalar[v]_j \, d\Omega \right).
 \end{gather}
+
+
+We solve the weak form of the elasticity equation for $\frac{\partial v}{\partial t}$,
+\begin{gather}
+  \frac{\partial \vec{v}}{\partial t} =
+  - M_{v^+}^{-1} \int_{\Gamma_{f}} \trialvec[v^+] \cdot \vec{\lambda}(\vec{x},t) \, d\Gamma
+  + M_{v^-}^{-1} \int_{\Gamma_{f}}\trialvec[v^-] \cdot \vec{\lambda}(\vec{x},t) \, d\Gamma 
+  + M_v^{-1} G_v, \\
+  G_v = \int_\Omega \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}(\vec{u}) \, d\Omega
+  + \int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma,
+\end{gather}
+where $G_v$ is the original RHS residual for the elasticity
+equation. We can now substitute $\frac{\partial \vec{v}}{\partial t}$
+into the prescribed slip equation to get an expression for $\vec{\lambda}$,
+\begin{equation}
+  \int_{\Gamma_f} \trialvec[\lambda] \cdot \vec{\lambda} \, d\Gamma -
+  \frac{1}{M_{v^+}^{-1} + M_{v^-}^{-1}} \left( M_{v^+}^{-1} G_{v^+} - M_{v^-}^{-1} G_{v^-}
+    - \frac{\partial^2 d(\vec{x},t)}{\partial t^2} \right) = 0.
+\end{equation}
+
 
 \subsection{Residual Pointwise Kernels}
 
