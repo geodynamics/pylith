@@ -389,7 +389,7 @@ time derivative in the elasticity equation. This leads to:
   \tensor{\sigma} \cdot \vec{n} = \vec{\tau} \text{ on } \Gamma_\tau.
 \end{gather}
 For compatibility with PETSc TS IMEX implementations, we need
-$\lambda$ in the equation for prescribed slip. We can do this by
+$\vec{\lambda}$ in the equation for prescribed slip. We can do this by
 solving equation~\ref{eqn:dynamic:strong:form:elasticity} for
 $\frac{\partial \vec{v}}{\partial t}$ and substituting into
 equation~\ref{eqn:dynamic:strong:form:prescribed:slip}.
@@ -432,7 +432,7 @@ M_v = \mathit{Lump}\left( \int_\Omega \trialscalar[v]_i \rho(\vec{x}) \delta_{ij
 \end{gather}
 
 
-We solve the weak form of the elasticity equation for $\frac{\partial v}{\partial t}$,
+We solve the weak form of the elasticity equation for $\frac{\partial \vec{v}}{\partial t}$,
 \begin{gather}
   \frac{\partial \vec{v}}{\partial t} =
   - M_{v^+}^{-1} \int_{\Gamma_{f}} \trialvec[v^+] \cdot \vec{\lambda}(\vec{x},t) \, d\Gamma
@@ -450,10 +450,9 @@ into the prescribed slip equation to get an expression for $\vec{\lambda}$,
     - \frac{\partial^2 d(\vec{x},t)}{\partial t^2} \right) = 0.
 \end{equation}
 
-
 \subsection{Residual Pointwise Kernels}
 
-Identifying $G(t,s)$, we have
+%Identifying $G(t,s)$, we have
 %\begin{align}
   % Gu
   % Gv
