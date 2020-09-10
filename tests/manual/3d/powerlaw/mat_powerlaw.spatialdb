@@ -1,0 +1,49 @@
+// -*- C++ -*- (syntax highlighting)
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values =     30
+  value-names =  density  vs  vp power_law_reference_strain_rate power_law_reference_stress power_law_exponent  viscous_strain_xx viscous_strain_yy viscous_strain_zz viscous_strain_xy viscous_strain_yz viscous_strain_xz stress_xx stress_yy stress_zz stress_xy stress_yz stress_xz reference_stress_xx  reference_stress_yy  reference_stress_zz  reference_stress_xy reference_stress_yz reference_stress_xz  reference_strain_xx  reference_strain_yy  reference_strain_zz  reference_strain_xy reference_strain_yz reference_strain_xz
+  value-units =  kg/m**3  m/s  m/s Pa*s Pa*s Pa*s  None None None None None None None None None None None None None None None None None None None None None None None None None None None Pa Pa Pa Pa Pa Pa none none none none none none
+  num-locs =      1
+  data-dim =    0
+  space-dim =    3
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 3
+  }
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) z coordinate (m)
+// (4) density (kg/m**3)
+// (5) vs (m/s)
+// (6) vp (m/s)
+// (7) power_law_reference_strain_rate (1/s)
+// (8) power_law_reference_stress (Pa)
+// (9) power_law_exponent (None)
+// (10) viscous_strain_xx (None)
+// (11) viscous_strain_yy (None)
+// (12) viscous_strain_zz (None)
+// (13) viscous_strain_xy (None)
+// (14) viscous_strain_yz (None)
+// (15) viscous_strain_xz (None)
+// (15) stress_xx (Pa)
+// (17) stress_yy (Pa)
+// (18) stress_zz (Pa)
+// (19) stress_xy (Pa)
+// (20) stress_yz (Pa)
+// (21) stress_xz (Pa)
+// (22) reference_stress_xx (Pa)
+// (23) reference_stress_yy (Pa)
+// (24) reference_stress_zz (Pa)
+// (25) reference_stress_xy (Pa)
+// (26) reference_stress_yz (Pa)
+// (27) reference_stress_xz (Pa)
+// (28) reference_strain_xx (None)
+// (29) reference_strain_yy (None)
+// (30) reference_strain_zz (None)
+// (31) reference_strain_xy (None)
+// (32) reference_strain_yz (None)
+// (33) reference_strain_xz (None)
+  0.0 0.0 0.0  2500.0 3464.1016 6000.0  1.00e-6 1.798919e+10 3.50  -4.16666667e-05 -4.16666667e-05 8.33333333e-05 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0
