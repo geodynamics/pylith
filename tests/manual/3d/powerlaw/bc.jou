@@ -1,0 +1,47 @@
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 volume 1
+block 1 name "viscoelastic"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +x edge
+# ----------------------------------------------------------------------
+group "boundary_xpos" add node in surface 6
+nodeset 20 group boundary_xpos
+nodeset 20 name "boundary_xpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x boundary
+# ----------------------------------------------------------------------
+group "boundary_xneg" add node in surface 4
+nodeset 21 group boundary_xneg
+nodeset 21 name "boundary_xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +y boundary
+# ----------------------------------------------------------------------
+group "boundary_ypos" add node in surface 5
+nodeset 22 group boundary_ypos
+nodeset 22 name "boundary_ypos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y boundary
+# ----------------------------------------------------------------------
+group "boundary_yneg" add node in surface 3
+nodeset 23 group boundary_yneg
+nodeset 23 name "boundary_yneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +z boundary
+# ----------------------------------------------------------------------
+group "boundary_zpos" add node in surface 1
+nodeset 24 group boundary_zpos
+nodeset 24 name "boundary_zpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -z boundary
+# ----------------------------------------------------------------------
+group "boundary_zneg" add node in surface 2
+nodeset 25 group boundary_zneg
+nodeset 25 name "boundary_zneg"

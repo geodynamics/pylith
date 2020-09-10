@@ -1777,182 +1777,148 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
     const PylithScalar j2Tpdt = sqrt(0.5*devStressProdTpdt);
 
     // Compute quantities at intermediate time tau.
+    const PylithScalar devStressTau[6] = {powerLawAlpha*devStressTpdt[0] + (1.0 - powerLawAlpha)*devStressT[0],
+                                          powerLawAlpha*devStressTpdt[1] + (1.0 - powerLawAlpha)*devStressT[1],
+                                          powerLawAlpha*devStressTpdt[2] + (1.0 - powerLawAlpha)*devStressT[2],
+                                          powerLawAlpha*devStressTpdt[3] + (1.0 - powerLawAlpha)*devStressT[3],
+                                          powerLawAlpha*devStressTpdt[4] + (1.0 - powerLawAlpha)*devStressT[4],
+                                          powerLawAlpha*devStressTpdt[5] + (1.0 - powerLawAlpha)*devStressT[5]};
     const PylithScalar j2Tau = powerLawAlpha*j2Tpdt + (1.0 - powerLawAlpha)*j2T;
     const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress),
                                                                   (powerLawExponent - 1.0))/powerLawReferenceStress;
+    const PylithScalar ae = 1.0/(2.0*shearModulus);
+    //********** Finish fixing from here.  Refactor common factors. **********
+    const PylithScalar denom = 2.0*j2Tau*j2Tpdt;
+    const PylithScalar factor1 = powerLawAlpha*dt*gammaTau;
+    const PylithScalar factor2 = factor1*(powerLawExponent - 1.0)/denom;
+    const PylithScalar factor3 = powerLawAlpha*factor2;
+    const PylithScalar factor4 = factor2*(1.0 - powerLawAlpha);
 
     /* Unique components of Jacobian. */
-    const PylithReal C1111 = bulkModulus -
-                             2.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressTpdt[0]*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt) +
-                                       powerLawAlpha*dt*gammaTau +
-                                       powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressT[0]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
-    const PylithReal C1122 = bulkModulus +
-                             1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressTpdt[1]*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt) +
-                                       powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressT[1]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt)));
-    const PylithReal C1133 = bulkModulus +
-                             1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressTpdt[2]*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt) +
-                                       powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressT[2]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt)));
-    const PylithReal C1212 =
-        -1.0/(2.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[3]*devStressTpdt[3]*(powerLawExponent - 1.0)/
-                   (j2Tau*j2Tpdt) +
-                   powerLawAlpha*dt*gammaTau +
-                   powerLawAlpha*dt*gammaTau*devStressTpdt[3]*devStressT[3]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-                   (j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
-    const PylithReal C1313 =
-        -1.0/(2.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[5]*devStressTpdt[5]*(powerLawExponent - 1.0)/
-                   (j2Tau*j2Tpdt) +
-                   powerLawAlpha*dt*gammaTau +
-                   powerLawAlpha*dt*gammaTau*devStressTpdt[5]*devStressT[5]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-                   (j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
-    const PylithReal C2211 = bulkModulus +
-                             1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressTpdt[1]*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt) +
-                                       powerLawAlpha*dt*gammaTau*devStressT[0]*devStressTpdt[1]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt)));
-    const PylithReal C2222 = bulkModulus -
-                             2.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[1]*devStressTpdt[1]*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt) +
-                                       powerLawAlpha*dt*gammaTau +
-                                       powerLawAlpha*dt*gammaTau*devStressTpdt[1]*devStressT[1]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
-    const PylithReal C2233 = bulkModulus +
-                             1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[1]*devStressTpdt[2]*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt) +
-                                       powerLawAlpha*dt*gammaTau*devStressTpdt[1]*devStressT[2]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt)));
-    const PylithReal C2323 =
-        -1.0/(2.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[4]*devStressTpdt[4]*(powerLawExponent - 1.0)/
-                   (j2Tau*j2Tpdt) +
-                   powerLawAlpha*dt*gammaTau +
-                   powerLawAlpha*dt*gammaTau*devStressTpdt[4]*devStressT[4]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-                   (j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
-    const PylithReal C3311 = bulkModulus +
-                             1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[0]*devStressTpdt[2]*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt) +
-                                       powerLawAlpha*dt*gammaTau*devStressT[0]*devStressTpdt[2]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt)));
-    const PylithReal C3322 = bulkModulus +
-                             1.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[1]*devStressTpdt[2]*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt) +
-                                       powerLawAlpha*dt*gammaTau*devStressT[1]*devStressTpdt[2]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt)));
-    const PylithReal C3333 = bulkModulus -
-                             2.0/(3.0*(powerLawAlpha*powerLawAlpha*dt*gammaTau*devStressTpdt[2]*devStressTpdt[2]*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt) +
-                                       powerLawAlpha*dt*gammaTau +
-                                       powerLawAlpha*dt*gammaTau*devStressTpdt[2]*devStressT[2]*(-powerLawAlpha + 1.0)*(powerLawExponent - 1.0)/
-                                       (2.0*j2Tau*j2Tpdt) + 1.0/(2.0*shearModulus)));
+    const PylithReal C1111 = bulkModulus + 2/(3*(factor3*devStressTpdt[0]*devStressTpdt[0] + factor1 +
+                                                 factor4*devStressTpdt[0]*devStressT[0] + ae));
+    const PylithReal C1122 = bulkModulus - 1/(3*(factor3*devStressTpdt[0]*devStressTpdt[0] + factor1 +
+                                                 factor4*devStressTpdt[0]*devStressT[0] + ae));
+    const PylithReal C1212 = 1/(2*(factor3*devStressTpdt[3]*devStressTpdt[3] + factor1 +
+                                   factor4*devStressTpdt[3]*devStressT[3] + ae));
+    const PylithReal C1313 = 1/(2*(factor3*devStressTpdt[5]*devStressTpdt[5] + factor1 +
+                                   factor4*devStressTpdt[5]*devStressT[5] + ae));
+    const PylithReal C2211 = bulkModulus - 1/(3*(factor3*devStressTpdt[1]*devStressTpdt[1] + factor1 +
+                                                 factor4*devStressTpdt[1]*devStressT[1] + ae));
+    const PylithReal C2222 = bulkModulus + 2/(3*(factor3*devStressTpdt[1]*devStressTpdt[1] + factor1 +
+                                                 factor4*devStressTpdt[1]*devStressT[1] + ae));
+    const PylithReal C2323 = 1/(2*(factor3*devStressTpdt[4]*devStressTpdt[4] + factor1 +
+                                   factor4*devStressTpdt[4]*devStressT[4] + ae));
+    const PylithReal C3311 = bulkModulus - 1/(3*(factor3*devStressTpdt[2]*devStressTpdt[2] + factor1 +
+                                                 factor4*devStressTpdt[2]*devStressT[2] + ae));
+    const PylithReal C3333 = bulkModulus + 2/(3*(factor3*devStressTpdt[2]*devStressTpdt[2] + factor1 +
+                                                 factor4*devStressTpdt[2]*devStressT[2] + ae));
+
     /* j(f,g,df,dg) = C(f,df,g,dg)
-     *
-     * 0:  j0000 = C1111 = bulkModulus - 2/(3*(alpha**2*deltaT*gammaFTau*s11**2*(n - 1)/(2*j2FTau*j2FTplusDt) +
-     * alpha*deltaT*gammaFTau + alpha*deltaT*gammaFTau*s11*s11T*(-alpha + 1)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*mu)))
-     * 1:  j0001 = C1112 = 0
-     * 2:  j0002 = C1113 = 0
-     * 3:  j0010 = C1211 = 0
-     * 4:  j0011 = C1212 = -1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau
-     * + alpha*deltaT*gammaFTau*s12*s12T*(-alpha + 1)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*mu)))
-     * 5:  j0012 = C1213 = 0
-     * 6:  j0020 = C1311 = 0
-     * 7:  j0021 = C1312 = 0
-     * 8:  j0022 = C1313 = -1/(2*(alpha**2*deltaT*gammaFTau*s13**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau
-     * + alpha*deltaT*gammaFTau*s13*s13T*(-alpha + 1)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*mu)))
-     * 9:  j0100 = C1121 = 0
-     * 10:  j0101 = C1122 = bulkModulus + 1/(3*(alpha**2*deltaT*gammaFTau*s11*s22*(n - 1)/(2*j2FTau*j2FTplusDt) +
-     * alpha*deltaT*gammaFTau*s11*s22T*(-alpha + 1)*(n - 1)/(2*j2FTau*j2FTplusDt)))
-     * 11:  j0102 = C1123 = 0
-     * 12:  j0110 = C1221 = -1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau
-     * + alpha*deltaT*gammaFTau*s12*s12T*(-alpha + 1)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*mu)))
-     * 13:  j0111 = C1222 = 0
-     * 14:  j0112 = C1223 = 0
-     * 15:  j0120 = C1321 = 0
-     * 16:  j0121 = C1322 = 0
-     * 17:  j0122 = C1323 = 0
-     * 18:  j0200 = C1131 = 0
-     * 19:  j0201 = C1132 = 0
-     * 20:  j0202 = C1133 = bulkModulus + 1/(3*(alpha**2*deltaT*gammaFTau*s11*s33*(n - 1)/(2*j2FTau*j2FTplusDt) +
-     * alpha*deltaT*gammaFTau*s11*s33T*(-alpha + 1)*(n - 1)/(2*j2FTau*j2FTplusDt)))
-     * 21:  j0210 = C1231 = 0
-     * 22:  j0211 = C1232 = 0
-     * 23:  j0212 = C1233 = 0
-     * 24:  j0220 = C1331 = -1/(2*(alpha**2*deltaT*gammaFTau*s13**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau
-     * + alpha*deltaT*gammaFTau*s13*s13T*(-alpha + 1)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*mu)))
-     * 25:  j0221 = C1332 = 0
-     * 26:  j0222 = C1333 = 0
-     * 27:  j1000 = C2111 = 0
-     * 28:  j1001 = C2112 = -1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau
-     * + alpha*deltaT*gammaFTau*s12*s12T*(-alpha + 1)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*mu)))
-     * 29:  j1002 = C2113 = 0
-     * 30:  j1010 = C2211 = bulkModulus + 1/(3*(alpha**2*deltaT*gammaFTau*s11*s22*(n - 1)/(2*j2FTau*j2FTplusDt) +
-     * alpha*deltaT*gammaFTau*s11T*s22*(-alpha + 1)*(n - 1)/(2*j2FTau*j2FTplusDt)))
-     * 31:  j1011 = C2212 = 0
-     * 32:  j1012 = C2213 = 0
-     * 33:  j1020 = C2311 = 0
-     * 34:  j1021 = C2312 = 0
-     * 35:  j1022 = C2313 = 0
-     * 36:  j1100 = C2121 = -1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau
-     * + alpha*deltaT*gammaFTau*s12*s12T*(-alpha + 1)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*mu)))
-     * 37:  j1101 = C2122 = 0
-     * 38:  j1102 = C2123 = 0
-     * 39:  j1110 = C2221 = 0
-     * 40:  j1111 = C2222 = bulkModulus - 2/(3*(alpha**2*deltaT*gammaFTau*s22**2*(n - 1)/(2*j2FTau*j2FTplusDt) +
-     * alpha*deltaT*gammaFTau + alpha*deltaT*gammaFTau*s22*s22T*(-alpha + 1)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*mu)))
-     * 41:  j1112 = C2223 = 0
-     * 42:  j1120 = C2321 = 0
-     * 43:  j1121 = C2322 = 0
-     * 44:  j1122 = C2323 = -1/(2*(alpha**2*deltaT*gammaFTau*s23**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau
-     * + alpha*deltaT*gammaFTau*s23*s23T*(-alpha + 1)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*mu)))
-     * 45:  j1200 = C2131 = 0
-     * 46:  j1201 = C2132 = 0
-     * 47:  j1202 = C2133 = 0
-     * 48:  j1210 = C2231 = 0
-     * 49:  j1211 = C2232 = 0
-     * 50:  j1212 = C2233 = bulkModulus + 1/(3*(alpha**2*deltaT*gammaFTau*s22*s33*(n - 1)/(2*j2FTau*j2FTplusDt) +
-     * alpha*deltaT*gammaFTau*s22*s33T*(-alpha + 1)*(n - 1)/(2*j2FTau*j2FTplusDt)))
-     * 51:  j1220 = C2331 = 0
-     * 52:  j1221 = C2332 = -1/(2*(alpha**2*deltaT*gammaFTau*s23**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau
-     * + alpha*deltaT*gammaFTau*s23*s23T*(-alpha + 1)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*mu)))
-     * 53:  j1222 = C2333 = 0
-     * 54:  j2000 = C3111 = 0
-     * 55:  j2001 = C3112 = 0
-     * 56:  j2002 = C3113 = -1/(2*(alpha**2*deltaT*gammaFTau*s13**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau
-     * + alpha*deltaT*gammaFTau*s13*s13T*(-alpha + 1)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*mu)))
-     * 57:  j2010 = C3211 = 0
-     * 58:  j2011 = C3212 = 0
-     * 59:  j2012 = C3213 = 0
-     * 60:  j2020 = C3311 = bulkModulus + 1/(3*(alpha**2*deltaT*gammaFTau*s11*s33*(n - 1)/(2*j2FTau*j2FTplusDt) +
-     * alpha*deltaT*gammaFTau*s11T*s33*(-alpha + 1)*(n - 1)/(2*j2FTau*j2FTplusDt)))
-     * 61:  j2021 = C3312 = 0
-     * 62:  j2022 = C3313 = 0
-     * 63:  j2100 = C3121 = 0
-     * 64:  j2101 = C3122 = 0
-     * 65:  j2102 = C3123 = 0
-     * 66:  j2110 = C3221 = 0
-     * 67:  j2111 = C3222 = 0
-     * 68:  j2112 = C3223 = -1/(2*(alpha**2*deltaT*gammaFTau*s23**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau
-     * + alpha*deltaT*gammaFTau*s23*s23T*(-alpha + 1)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*mu)))
-     * 69:  j2120 = C3321 = 0
-     * 70:  j2121 = C3322 = bulkModulus + 1/(3*(alpha**2*deltaT*gammaFTau*s22*s33*(n - 1)/(2*j2FTau*j2FTplusDt) +
-     * alpha*deltaT*gammaFTau*s22T*s33*(-alpha + 1)*(n - 1)/(2*j2FTau*j2FTplusDt)))
-     * 71:  j2122 = C3323 = 0
-     * 72:  j2200 = C3131 = -1/(2*(alpha**2*deltaT*gammaFTau*s13**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau
-     * + alpha*deltaT*gammaFTau*s13*s13T*(-alpha + 1)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*mu)))
-     * 73:  j2201 = C3132 = 0
-     * 74:  j2202 = C3133 = 0
-     * 75:  j2210 = C3231 = 0
-     * 76:  j2211 = C3232 = -1/(2*(alpha**2*deltaT*gammaFTau*s23**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau
-     * + alpha*deltaT*gammaFTau*s23*s23T*(-alpha + 1)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*mu)))
-     * 77:  j2212 = C3233 = 0
-     * 78:  j2220 = C3331 = 0
-     * 79:  j2221 = C3332 = 0
-     * 80:  j2222 = C3333 = bulkModulus - 2/(3*(alpha**2*deltaT*gammaFTau*s33**2*(n - 1)/(2*j2FTau*j2FTplusDt) +
-     * alpha*deltaT*gammaFTau + alpha*deltaT*gammaFTau*s33*s33T*(-alpha + 1)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*mu)))
-     */
+
+    0:  j0000 = C1111 = bulkModulus + 2/(3*(alpha**2*deltaT*gammaFTau*s11**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s11*s11T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    1:  j0001 = C1112 = 0
+    2:  j0002 = C1113 = 0
+    3:  j0010 = C1211 = 0
+    4:  j0011 = C1212 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    5:  j0012 = C1213 = 0
+    6:  j0020 = C1311 = 0
+    7:  j0021 = C1312 = 0
+    8:  j0022 = C1313 = 1/(2*(alpha**2*deltaT*gammaFTau*s13**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s13*s13T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    9:  j0100 = C1121 = 0
+    10: j0101 = C1122 = bulkModulus - 1/(3*(alpha**2*deltaT*gammaFTau*s11**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s11*s11T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    11: j0102 = C1123 = 0
+    12: j0110 = C1221 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    13: j0111 = C1222 = 0
+    14: j0112 = C1223 = 0
+    15: j0120 = C1321 = 0
+    16: j0121 = C1322 = 0
+    17: j0122 = C1323 = 0
+    18: j0200 = C1131 = 0
+    19: j0201 = C1132 = 0
+    20: j0202 = C1133 = bulkModulus - 1/(3*(alpha**2*deltaT*gammaFTau*s11**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s11*s11T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    21: j0210 = C1231 = 0
+    22: j0211 = C1232 = 0
+    23: j0212 = C1233 = 0
+    24: j0220 = C1331 = 1/(2*(alpha**2*deltaT*gammaFTau*s13**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s13*s13T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    25: j0221 = C1332 = 0
+    26: j0222 = C1333 = 0
+    27: j1000 = C2111 = 0
+    28: j1001 = C2112 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    29: j1002 = C2113 = 0
+    30: j1010 = C2211 = bulkModulus - 1/(3*(alpha**2*deltaT*gammaFTau*s22**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s22*s22T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    31: j1011 = C2212 = 0
+    32: j1012 = C2213 = 0
+    33: j1020 = C2311 = 0
+    34: j1021 = C2312 = 0
+    35: j1022 = C2313 = 0
+    36: j1100 = C2121 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    37: j1101 = C2122 = 0
+    38: j1102 = C2123 = 0
+    39: j1110 = C2221 = 0
+    40: j1111 = C2222 = bulkModulus + 2/(3*(alpha**2*deltaT*gammaFTau*s22**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s22*s22T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    41: j1112 = C2223 = 0
+    42: j1120 = C2321 = 0
+    43: j1121 = C2322 = 0
+    44: j1122 = C2323 = 1/(2*(alpha**2*deltaT*gammaFTau*s23**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s23*s23T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    45: j1200 = C2131 = 0
+    46: j1201 = C2132 = 0
+    47: j1202 = C2133 = 0
+    48: j1210 = C2231 = 0
+    49: j1211 = C2232 = 0
+    50: j1212 = C2233 = bulkModulus - 1/(3*(alpha**2*deltaT*gammaFTau*s22**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s22*s22T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    51: j1220 = C2331 = 0
+    52: j1221 = C2332 = 1/(2*(alpha**2*deltaT*gammaFTau*s23**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s23*s23T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    53: j1222 = C2333 = 0
+    54: j2000 = C3111 = 0
+    55: j2001 = C3112 = 0
+    56: j2002 = C3113 = 1/(2*(alpha**2*deltaT*gammaFTau*s13**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s13*s13T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    57: j2010 = C3211 = 0
+    58: j2011 = C3212 = 0
+    59: j2012 = C3213 = 0
+    60: j2020 = C3311 = bulkModulus - 1/(3*(alpha**2*deltaT*gammaFTau*s33**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s33*s33T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    61: j2021 = C3312 = 0
+    62: j2022 = C3313 = 0
+    63: j2100 = C3121 = 0
+    64: j2101 = C3122 = 0
+    65: j2102 = C3123 = 0
+    66: j2110 = C3221 = 0
+    67: j2111 = C3222 = 0
+    68: j2112 = C3223 = 1/(2*(alpha**2*deltaT*gammaFTau*s23**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s23*s23T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    69: j2120 = C3321 = 0
+    70: j2121 = C3322 = bulkModulus - 1/(3*(alpha**2*deltaT*gammaFTau*s33**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s33*s33T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    71: j2122 = C3323 = 0
+    72: j2200 = C3131 = 1/(2*(alpha**2*deltaT*gammaFTau*s13**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s13*s13T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    73: j2201 = C3132 = 0
+    74: j2202 = C3133 = 0
+    75: j2210 = C3231 = 0
+    76: j2211 = C3232 = 1/(2*(alpha**2*deltaT*gammaFTau*s23**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s23*s23T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    77: j2212 = C3233 = 0
+    78: j2220 = C3331 = 0
+    79: j2221 = C3332 = 0
+    80: j2222 = C3333 = bulkModulus + 2/(3*(alpha**2*deltaT*gammaFTau*s33**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s33*s33T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    */
 
     /* Nonzero Jacobian entries. */
     Jf3[0] -= C1111; /* j0000 */
@@ -1960,25 +1926,24 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
     Jf3[8] -= C1313; /* j0022 */
     Jf3[10] -= C1122; /* j0101 */
     Jf3[12] -= C1212; /* j0110 */
-    Jf3[20] -= C1133; /* j0202 */
+    Jf3[20] -= C1122; /* j0202 */
     Jf3[24] -= C1313; /* j0220 */
     Jf3[28] -= C1212; /* j1001 */
     Jf3[30] -= C2211; /* j1010 */
     Jf3[36] -= C1212; /* j1100 */
     Jf3[40] -= C2222; /* j1111 */
     Jf3[44] -= C2323; /* j1122 */
-    Jf3[50] -= C2233; /* j1212 */
+    Jf3[50] -= C2211; /* j1212 */
     Jf3[52] -= C2323; /* j1221 */
     Jf3[56] -= C1313; /* j2002 */
     Jf3[60] -= C3311; /* j2020 */
     Jf3[68] -= C2323; /* j2112 */
-    Jf3[70] -= C3322; /* j2121 */
+    Jf3[70] -= C3311; /* j2121 */
     Jf3[72] -= C1313; /* j2200 */
     Jf3[76] -= C2323; /* j2211 */
     Jf3[80] -= C3333; /* j2222 */
 
 } // Jf3vu
-
 
 // ---------------------------------------------------------------------------------------------------------------------
 /* Jf3_vu entry function for 3-D isotropic power-law viscoelastic material WITH reference stress/strain.
