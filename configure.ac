@@ -255,6 +255,8 @@ AC_CONFIG_FILES([Makefile
 		tests/mmstests/incompressibleelasticity/Makefile
 		tests/mmstests/faults/Makefile
 		tests/fullscale/Makefile
+		tests/fullscale/cornercases/Makefile
+		tests/fullscale/cornercases/2d/Makefile
 		tests/fullscale/linearelasticity/Makefile
 		tests/fullscale/linearelasticity/nofaults-2d/Makefile
 		tests/fullscale/linearelasticity/nofaults-3d/Makefile
