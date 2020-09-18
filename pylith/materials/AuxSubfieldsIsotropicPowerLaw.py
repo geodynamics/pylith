@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,15 +13,12 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/materials/AuxSubfieldsIsotropicPowerLaw.py
 ##
 # @brief Python subfields container for isotropic power-law
 # viscoelastic subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
-
-# AuxSubfieldsIsotropicPowerLaw class
 
 
 class AuxSubfieldsIsotropicPowerLaw(PetscComponent):
