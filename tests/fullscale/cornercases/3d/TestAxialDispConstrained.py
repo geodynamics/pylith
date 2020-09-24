@@ -84,6 +84,16 @@ class TestCase(FullTestCase):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
+class TestTet(TestCase, meshes.Tet):
+    NAME = "dofconstrained_tet"
+
+    def setUp(self):
+        TestCase.setUp(self)
+        TestCase.run_pylith(self, self.NAME, ["dofconstrained.cfg", "dofconstrained_tet.cfg"])
+        return
+
+
+# ----------------------------------------------------------------------------------------------------------------------
 class TestHex(TestCase, meshes.Hex):
     NAME = "dofconstrained_hex"
 
@@ -96,6 +106,7 @@ class TestHex(TestCase, meshes.Hex):
 # ----------------------------------------------------------------------------------------------------------------------
 def test_cases():
     return [
+        TestTet,
         TestHex,
     ]
 

@@ -20,6 +20,31 @@
 # @brief Mesh information for test cases.
 
 
+class Tri(object):
+    """
+    Mesh information for one cell tri mesh.
+    """
+    DOMAIN = {
+        "ncells": 1,
+        "ncorners": 3,
+        "nvertices": 3,
+    }
+    MATERIALS = {
+        "elastic": {
+            "ncells": 1,
+            "ncorners": 3,
+            "nvertices": 3,
+        },
+    }
+    BOUNDARIES = {
+        "bc_domain": {
+            "ncells": 3,
+            "ncorners": 2,
+            "nvertices": 3,
+        },
+    }
+
+
 class Quad(object):
     """
     Mesh information for one cell quad mesh.

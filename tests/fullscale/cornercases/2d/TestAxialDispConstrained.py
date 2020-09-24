@@ -84,6 +84,16 @@ class TestCase(FullTestCase):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
+class TestTri(TestCase, meshes.Tri):
+    NAME = "dofconstrained_tri"
+
+    def setUp(self):
+        TestCase.setUp(self)
+        TestCase.run_pylith(self, self.NAME, ["dofconstrained.cfg", "dofconstrained_tri.cfg"])
+        return
+
+
+# ----------------------------------------------------------------------------------------------------------------------
 class TestQuad(TestCase, meshes.Quad):
     NAME = "dofconstrained_quad"
 
@@ -96,6 +106,7 @@ class TestQuad(TestCase, meshes.Quad):
 # ----------------------------------------------------------------------------------------------------------------------
 def test_cases():
     return [
+        TestTri,
         TestQuad,
     ]
 

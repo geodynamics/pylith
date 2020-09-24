@@ -27,11 +27,13 @@ dist_noinst_PYTHON = \
 	axialdisp_gendb.py
 
 dist_noinst_DATA = \
+	onecell_tri.mesh \
 	onecell_quad.mesh \
 	pylithapp.cfg \
 	axialdisp.cfg \
 	axialdisp_quad.cfg \
 	dofconstrained.cfg \
+	dofconstrained_tri.cfg \
 	dofconstrained_quad.cfg
 
 noinst_TMP = \

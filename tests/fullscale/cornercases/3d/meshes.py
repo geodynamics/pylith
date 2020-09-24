@@ -20,6 +20,31 @@
 # @brief Mesh information for test cases.
 
 
+class Tet(object):
+    """
+    Mesh information for tet mesh.
+    """
+    DOMAIN = {
+        "ncells": 1,
+        "ncorners": 4,
+        "nvertices": 4,
+    }
+    MATERIALS = {
+        "elastic": {
+            "ncells": 1,
+            "ncorners": 4,
+            "nvertices": 4,
+        },
+    }
+    BOUNDARIES = {
+        "bc_domain": {
+            "ncells": 4,
+            "ncorners": 3,
+            "nvertices": 4,
+        },
+    }
+
+
 class Hex(object):
     """
     Mesh information for hex mesh.
