@@ -262,11 +262,16 @@ AC_CONFIG_FILES([Makefile
 		tests/manual/Makefile
 		tests/manual/powerlaw-2d/Makefile
 		tests/manual/powerlaw-3d/Makefile
+		tests/manual/petsc/Makefile
+		tests/manual/petsc/sliderblock/Makefile
         developer/Makefile
-		doc-latex/Makefile
-		doc-latex/userguide/Makefile
 		docs/Makefile
 		release-notes/Makefile
+		developer/Makefile
+		doc/Makefile
+		doc/install/Makefile
+		doc/releasenotes/Makefile
+		doc/userguide/Makefile
 		examples/Makefile
 		examples/barwaves-2d/Makefile
 		examples/box-2d/Makefile
