@@ -243,9 +243,10 @@ protected:
     bool _needNewRHSJacobian;
     bool _needNewLHSJacobian;
     bool _needNewLHSJacobianLumped;
-    int _LHSJacobianTriggers; // Triggers for needing new LHS Jacobian.
-    int _LHSJacobianLumpedTriggers; // Triggers for needing new LHS lumped Jacobian.
-    int _RHSJacobianTriggers; // Triggers for needing new RHS Jacobian.
+
+    int _lhsJacobianTriggers; // Triggers for needing new LHS Jacobian.
+    int _lhsJacobianLumpedTriggers; // Triggers for needing new LHS lumped Jacobian.
+    int _rhsJacobianTriggers; // Triggers for needing new RHS Jacobian.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

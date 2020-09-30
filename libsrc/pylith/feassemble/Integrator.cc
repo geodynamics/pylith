@@ -41,9 +41,9 @@ pylith::feassemble::Integrator::Integrator(pylith::problems::Physics* const phys
     _needNewRHSJacobian(true),
     _needNewLHSJacobian(true),
     _needNewLHSJacobianLumped(true),
-    _LHSJacobianTriggers(NEW_JACOBIAN_NEVER),
-    _LHSJacobianLumpedTriggers(NEW_JACOBIAN_NEVER),
-    _RHSJacobianTriggers(NEW_JACOBIAN_NEVER)
+    _lhsJacobianTriggers(NEW_JACOBIAN_NEVER),
+    _lhsJacobianLumpedTriggers(NEW_JACOBIAN_NEVER),
+    _rhsJacobianTriggers(NEW_JACOBIAN_NEVER)
 {}
 
 
@@ -58,9 +58,9 @@ pylith::feassemble::Integrator::~Integrator(void) {
 // Check whether RHS Jacobian needs to be recomputed.
 bool
 pylith::feassemble::Integrator::needNewRHSJacobian(const bool dtChanged) {
-    if (_RHSJacobianTriggers & NEW_JACOBIAN_ALWAYS) {
+    if (_rhsJacobianTriggers & NEW_JACOBIAN_ALWAYS) {
         _needNewRHSJacobian = true;
-    } else if (dtChanged && (_RHSJacobianTriggers & NEW_JACOBIAN_TIME_STEP_CHANGE)) {
+    } else if (dtChanged && (_rhsJacobianTriggers & NEW_JACOBIAN_TIME_STEP_CHANGE)) {
         _needNewRHSJacobian = true;
     } // if
 
@@ -72,9 +72,9 @@ pylith::feassemble::Integrator::needNewRHSJacobian(const bool dtChanged) {
 // Check whether LHS Jacobian needs to be recomputed.
 bool
 pylith::feassemble::Integrator::needNewLHSJacobian(const bool dtChanged) {
-    if (_LHSJacobianTriggers & NEW_JACOBIAN_ALWAYS) {
+    if (_lhsJacobianTriggers & NEW_JACOBIAN_ALWAYS) {
         _needNewLHSJacobian = true;
-    } else if (dtChanged && (_LHSJacobianTriggers & NEW_JACOBIAN_TIME_STEP_CHANGE)) {
+    } else if (dtChanged && (_lhsJacobianTriggers & NEW_JACOBIAN_TIME_STEP_CHANGE)) {
         _needNewLHSJacobian = true;
     } // if
 
@@ -86,9 +86,9 @@ pylith::feassemble::Integrator::needNewLHSJacobian(const bool dtChanged) {
 // Check whether LHS lumped Jacobian needs to be recomputed.
 bool
 pylith::feassemble::Integrator::needNewLHSJacobianLumped(const bool dtChanged) {
-    if (_LHSJacobianLumpedTriggers & NEW_JACOBIAN_ALWAYS) {
+    if (_lhsJacobianLumpedTriggers & NEW_JACOBIAN_ALWAYS) {
         _needNewLHSJacobianLumped = true;
-    } else if (dtChanged && (_LHSJacobianLumpedTriggers & NEW_JACOBIAN_TIME_STEP_CHANGE)) {
+    } else if (dtChanged && (_lhsJacobianLumpedTriggers & NEW_JACOBIAN_TIME_STEP_CHANGE)) {
         _needNewLHSJacobianLumped = true;
     } // if
 
@@ -101,9 +101,9 @@ pylith::feassemble::Integrator::needNewLHSJacobianLumped(const bool dtChanged) {
 void
 pylith::feassemble::Integrator::setLHSJacobianTriggers(const NewJacobianTriggers value) {
     if (value == NEW_JACOBIAN_NEVER) {
-        _LHSJacobianTriggers = value;
+        _lhsJacobianTriggers = value;
     } else {
-        _LHSJacobianTriggers |= value;
+        _lhsJacobianTriggers |= value;
     } // if/else
 } // setLHSJacobianTriggers
 
@@ -113,9 +113,9 @@ pylith::feassemble::Integrator::setLHSJacobianTriggers(const NewJacobianTriggers
 void
 pylith::feassemble::Integrator::setLHSJacobianLumpedTriggers(const NewJacobianTriggers value) {
     if (value == NEW_JACOBIAN_NEVER) {
-        _LHSJacobianLumpedTriggers = value;
+        _lhsJacobianLumpedTriggers = value;
     } else {
-        _LHSJacobianLumpedTriggers |= value;
+        _lhsJacobianLumpedTriggers |= value;
     } // if/else
 } // setLHSJacobianLumpedTriggers
 
@@ -125,9 +125,9 @@ pylith::feassemble::Integrator::setLHSJacobianLumpedTriggers(const NewJacobianTr
 void
 pylith::feassemble::Integrator::setRHSJacobianTriggers(const NewJacobianTriggers value) {
     if (value == NEW_JACOBIAN_NEVER) {
-        _RHSJacobianTriggers = value;
+        _rhsJacobianTriggers = value;
     } else {
-        _RHSJacobianTriggers |= value;
+        _rhsJacobianTriggers |= value;
     } // if/else
 } // setRHSJacobianTriggers
 
