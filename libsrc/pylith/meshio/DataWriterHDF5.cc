@@ -118,7 +118,7 @@ pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
         err = MPI_Comm_rank(mesh.comm(), &commRank);PYLITH_CHECK_ERROR(err);
         const int localSize = (!commRank) ? 1 : 0;
         err = VecCreateMPI(mesh.comm(), localSize, 1, &_tstamp);PYLITH_CHECK_ERROR(err);assert(_tstamp);
-        err = VecSetBlockSize(_tstamp, 1);PYLITH_CHECK_ERROR(err);PYLITH_CHECK_ERROR(err);
+        err = VecSetBlockSize(_tstamp, 1);PYLITH_CHECK_ERROR(err);
         err = PetscObjectSetName((PetscObject) _tstamp, "time");PYLITH_CHECK_ERROR(err);
 
         err = PetscViewerHDF5Open(mesh.comm(), filename.c_str(), FILE_MODE_WRITE, &_viewer);PYLITH_CHECK_ERROR(err);

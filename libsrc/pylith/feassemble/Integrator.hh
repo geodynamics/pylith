@@ -41,8 +41,9 @@ public:
 
     enum NewJacobianTriggers {
         NEW_JACOBIAN_NEVER=0x0, // Never needs new Jacobian.
-        NEW_JACOBIAN_TIME_STEP_CHANGE=0x1, // Needs new Jacobian if time step changes.
-        NEW_JACOBIAN_UPDATE_STATE_VARS=0x10, // Needs new Jacobian after updating state variables.
+        NEW_JACOBIAN_ALWAYS=0x1, // Always needs new Jacobian.
+        NEW_JACOBIAN_TIME_STEP_CHANGE=0x2, // Needs new Jacobian if time step changes.
+        NEW_JACOBIAN_UPDATE_STATE_VARS=0x4, // Needs new Jacobian after updating state variables.
     };
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
