@@ -20,6 +20,8 @@
 
 #include "pylith/materials/RheologyElasticity.hh" // implementation of object methods
 
+#include "pylith/feassemble/Integrator.hh" // USES NEW_JACOBIAN_NEVER
+
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_DEBUG
 
@@ -29,7 +31,9 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::materials::RheologyElasticity::RheologyElasticity(void) {}
+pylith::materials::RheologyElasticity::RheologyElasticity(void) :
+    _rhsJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_NEVER)
+{}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -43,6 +47,14 @@ pylith::materials::RheologyElasticity::~RheologyElasticity(void) {
 // Deallocate PETSc and local data structures.
 void
 pylith::materials::RheologyElasticity::deallocate(void) {}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get triggers for needing to compute the elastic constants for the RHS Jacobian.
+int
+pylith::materials::RheologyElasticity::getRHSJacobianTriggers(void) const {
+    return _rhsJacobianTriggers;
+} // getRHSJacobianTriggers
 
 
 // ---------------------------------------------------------------------------------------------------------------------

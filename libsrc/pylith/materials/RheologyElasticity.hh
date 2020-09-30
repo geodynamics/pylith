@@ -79,6 +79,12 @@ public:
     virtual
     PetscPointJac getKernelRHSJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
+    /** Get triggers for needing to compute the elastic constants for the RHS Jacobian.
+     *
+     * @returns Triggers for needing to recompute the RHS Jacobian.
+     */
+    int getRHSJacobianTriggers(void) const;
+
     /** Get stress kernel for derived field.
      *
      * @param[in] coordsys Coordinate system.
@@ -105,6 +111,10 @@ public:
     virtual
     void updateKernelConstants(pylith::real_array* kernelConstants,
                                const PylithReal dt) const;
+
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    int _rhsJacobianTriggers; ///< Triggers for needing to recompute the RHS Jacobian.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
