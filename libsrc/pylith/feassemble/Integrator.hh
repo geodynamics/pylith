@@ -83,19 +83,19 @@ public:
      *
      * @param[in] value Triggers for needing new LHS Jacobian.
      */
-    void setLHSJacobianTriggers(const NewJacobianTriggers value);
+    void setLHSJacobianTriggers(const int value);
 
     /** Set LHS lumped Jacobian trigger.
      *
      * @param[in] value Triggers for needing new LHS lumped Jacobian.
      */
-    void setLHSJacobianLumpedTriggers(const NewJacobianTriggers value);
+    void setLHSJacobianLumpedTriggers(const int value);
 
     /** Set RHS Jacobian trigger.
      *
      * @param[in] value Triggers for needing new RHS Jacobian.
      */
-    void setRHSJacobianTriggers(const NewJacobianTriggers value);
+    void setRHSJacobianTriggers(const int value);
 
     /** Initialize integration domain, auxiliary field, and derived field. Update observers.
      *

@@ -99,36 +99,24 @@ pylith::feassemble::Integrator::needNewLHSJacobianLumped(const bool dtChanged) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set LHS Jacobian trigger.
 void
-pylith::feassemble::Integrator::setLHSJacobianTriggers(const NewJacobianTriggers value) {
-    if (value == NEW_JACOBIAN_NEVER) {
-        _lhsJacobianTriggers = value;
-    } else {
-        _lhsJacobianTriggers |= value;
-    } // if/else
+pylith::feassemble::Integrator::setLHSJacobianTriggers(const int value) {
+    _lhsJacobianTriggers |= value;
 } // setLHSJacobianTriggers
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set LHS lumped Jacobian trigger.
 void
-pylith::feassemble::Integrator::setLHSJacobianLumpedTriggers(const NewJacobianTriggers value) {
-    if (value == NEW_JACOBIAN_NEVER) {
-        _lhsJacobianLumpedTriggers = value;
-    } else {
-        _lhsJacobianLumpedTriggers |= value;
-    } // if/else
+pylith::feassemble::Integrator::setLHSJacobianLumpedTriggers(const int value) {
+    _lhsJacobianLumpedTriggers |= value;
 } // setLHSJacobianLumpedTriggers
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set RHS Jacobian trigger.
 void
-pylith::feassemble::Integrator::setRHSJacobianTriggers(const NewJacobianTriggers value) {
-    if (value == NEW_JACOBIAN_NEVER) {
-        _rhsJacobianTriggers = value;
-    } else {
-        _rhsJacobianTriggers |= value;
-    } // if/else
+pylith::feassemble::Integrator::setRHSJacobianTriggers(const int value) {
+    _rhsJacobianTriggers |= value;
 } // setRHSJacobianTriggers
 
 
