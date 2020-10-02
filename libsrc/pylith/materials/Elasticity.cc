@@ -348,6 +348,7 @@ pylith::materials::Elasticity::_setKernelsRHSJacobian(pylith::feassemble::Integr
         const PetscPointJac Jg1uu = NULL;
         const PetscPointJac Jg2uu = NULL;
         const PetscPointJac Jg3uu = _rheology->getKernelRHSJacobianElasticConstants(coordsys);
+        integrator->setRHSJacobianTriggers(_rheology->getRHSJacobianTriggers());
 
         kernels.resize(1);
         kernels[0] = JacobianKernels("displacement", "displacement", Jg0uu, Jg1uu, Jg2uu, Jg3uu);
