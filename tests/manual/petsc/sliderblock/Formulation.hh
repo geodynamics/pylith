@@ -7,6 +7,8 @@
 
 typedef struct _p_Mat* PetscMat;
 typedef struct _p_Vec* PetscVec;
+typedef struct _p_DM* PetscDM;
+typedef struct _p_SNES* PetscSNES;
 typedef struct _p_TS* PetscTS;
 
 #define CHECK_ERROR(err) do {if (PetscUnlikely(err)) {PetscError(PETSC_COMM_SELF,__LINE__,PETSC_FUNCTION_NAME,__FILE__,err,PETSC_ERROR_REPEAT,0);throw std::runtime_error("Error detected while in PETSc function.");}} while (0)
@@ -83,6 +85,9 @@ protected:
                              const PetscVec,
                              PetscMat,
                              PetscMat);
+
+    virtual
+    void _setSolutionBounds(PetscTS ts);
 
     bool _hasLHSResidual;
     bool _hasRHSResidual;

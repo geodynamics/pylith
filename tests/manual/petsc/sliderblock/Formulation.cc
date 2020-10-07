@@ -13,7 +13,7 @@ const double Formulation::_dtInitial = 0.1;
 const double Formulation::_ka = 1.0;
 const double Formulation::_ma = 1.0;
 
-const double Formulation::_kb = 2.0;
+const double Formulation::_kb = 1.0;
 const double Formulation::_mb = 1.5;
 
 const size_t Formulation::_numDOFDisp = 4;
@@ -94,12 +94,15 @@ Formulation::initialize(const char* const outputFilename) {
     err = TSSetTimeStep(_ts, _dtInitial);CHECK_ERROR(err);
     err = TSSetMaxTime(_ts, _duration);CHECK_ERROR(err);
 
+    err = TSSetSolution(_ts, _solution);CHECK_ERROR(err);
     err = TSSetPostStep(_ts, poststep);CHECK_ERROR(err);
 
     if (_hasLHSResidual) { err = TSSetIFunction(_ts, NULL, computeLHSResidual, (void*)this);CHECK_ERROR(err); }
     if (_hasRHSResidual) { err = TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this);CHECK_ERROR(err); }
     if (_hasLHSJacobian) { err = TSSetIJacobian(_ts, _jacobianLHS, _jacobianLHS, computeLHSJacobian, (void*)this);CHECK_ERROR(err);}
     if (_hasRHSJacobian) { err = TSSetRHSJacobian(_ts, _jacobianRHS, _jacobianRHS, computeRHSJacobian, (void*)this);CHECK_ERROR(err);}
+
+    _setSolutionBounds(_ts);
 
     const int tsize = 1;
     err = VecCreateMPI(PETSC_COMM_WORLD, tsize, 1, &_tstamp);CHECK_ERROR(err);assert(_tstamp);
@@ -113,7 +116,7 @@ Formulation::initialize(const char* const outputFilename) {
 // --------------------------------------------------------------------------------------------------
 void
 Formulation::solve(void) {
-    PetscErrorCode err = TSSolve(_ts, _solution);CHECK_ERROR(err);
+    PetscErrorCode err = TSSolve(_ts, NULL);CHECK_ERROR(err);
 }
 
 
@@ -142,6 +145,7 @@ Formulation::_poststep(void) {
 }
 
 
+#include <iostream>
 // --------------------------------------------------------------------------------------------------
 PetscErrorCode
 Formulation::computeLHSResidual(PetscTS ts,
@@ -155,6 +159,11 @@ Formulation::computeLHSResidual(PetscTS ts,
     Formulation* formulation = (Formulation*)context;assert(formulation);
     assert(formulation->_hasLHSResidual);
     formulation->_computeLHSResidual(t, solution, solutionDot, residual);
+
+    std::cout << "Solution" << std::endl;
+    VecView(solution, PETSC_VIEWER_STDOUT_WORLD);
+    std::cout << "LHS Residual" << std::endl;
+    VecView(residual, PETSC_VIEWER_STDOUT_WORLD);
 
     PetscFunctionReturn(0);
 }
@@ -200,6 +209,9 @@ Formulation::computeLHSJacobian(PetscTS ts,
         err = MatAssemblyBegin(preconditioner, MAT_FINAL_ASSEMBLY);CHECK_ERROR(err);
         err = MatAssemblyEnd(preconditioner, MAT_FINAL_ASSEMBLY);CHECK_ERROR(err);
     } // if
+
+    std::cout << "LHS Jacobian" << std::endl;
+    MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD);
 
     PetscFunctionReturn(0);
 }
@@ -283,6 +295,11 @@ Formulation::_computeRHSJacobian(const PetscReal,
                                  PetscMat) {
     throw std::logic_error("_computeRHSJacobian() not implemented.");
 }
+
+
+// --------------------------------------------------------------------------------------------------
+void
+Formulation::_setSolutionBounds(PetscTS ts) {}
 
 
 // End of file

@@ -3,7 +3,7 @@
 #include "SliderBlockApp.hh"
 
 #include "QuasistaticPrescribedSlip.hh"
-// #include "QuasistaticSpontaneousRupture.hh"
+#include "QuasistaticSpontaneousRupture.hh"
 #include "DynamicPrescribedSlip.hh"
 // #include "DynamicSpontaneousRupture.hh"
 
@@ -103,9 +103,9 @@ SliderBlockApp::_initialize(void) {
         _formulation = new QuasistaticPrescribedSlip();
     } else if (( _optEquations == "dynamic") && ( _optRupture == "prescribed_slip") ) {
         _formulation = new DynamicPrescribedSlip();
-#if 0
     } else if (( _optEquations == "quasistatic") && ( _optRupture == "spontaneous_rupture") ) {
         _formulation = new QuasistaticSpontaneousRupture();
+#if 0
     } else if (( _optEquations == "dynamic") && ( _optRupture == "spontaneous_rupture") ) {
         _formulation = new DynamicSpontaneousRupture();
 #endif

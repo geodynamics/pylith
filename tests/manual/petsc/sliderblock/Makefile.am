@@ -7,16 +7,20 @@ sliderblock_SOURCES = \
 	Formulation.cc \
 	QuasistaticPrescribedSlip.cc \
 	DynamicPrescribedSlip.cc \
+	QuasistaticSpontaneousRupture.cc \
 	PrescribedSlip.cc \
 	DisplacementBC.cc \
+	Friction.cc \
 	sliderblock.cc
 
 noinst_HEADERS = \
 	SliderBlockApp.hh \
 	Formulation.hh \
 	QuasistaticPrescribedSlip.hh \
-	DynamicPrescribedSlip.cc \
+	DynamicPrescribedSlip.hh \
+	QuasistaticSpontaneousRupture.hh \
 	PrescribedSlip.hh \
+	Friction.hh \
 	DisplacementBC.hh
 
 
