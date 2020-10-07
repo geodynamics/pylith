@@ -55,8 +55,12 @@ QuasistaticSpontaneousRupture::_setSolutionBounds(PetscTS ts) {
 
     PetscSNES snes = NULL;
     err = TSGetSNES(ts, &snes);CHECK_ERROR(err);
-    err = SNESSetType(snes, SNESVINEWTONRSLS);CHECK_ERROR(err);
-    err = SNESVISetVariableBounds(snes, lowerBound, upperBound);CHECK_ERROR(err);
+    // err = SNESSetType(snes, SNESVINEWTONRSLS);CHECK_ERROR(err);
+    SNESLineSearch snesLineSearch = NULL;
+    err = SNESGetLineSearch(snes, &snesLineSearch);CHECK_ERROR(err);
+    err = SNESLineSearchSetType(snesLineSearch, SNESLINESEARCHBASIC);CHECK_ERROR(err);
+    err = SNESSetFromOptions(snes);CHECK_ERROR(err);
+    // err = SNESVISetVariableBounds(snes, lowerBound, upperBound);CHECK_ERROR(err);
 
     err = VecSetValue(_solution, _numDOFAll-1, 1.0, INSERT_VALUES);
 }
@@ -95,8 +99,6 @@ QuasistaticSpontaneousRupture::_computeLHSResidual(const PetscReal t,
     std::cout << "t:" << t
               << ", u1:" << u[1]
               << ", u2:" << u[2]
-              << ", ka*(u1-u0):" << _ka*(u[1]-u[0])
-              << ", kb*(u3-u2):" << _kb*(u[3]-u[2])
               << ", f:" << friction
               << ", l:" << lambda
               << ", slip:" << slip

@@ -145,7 +145,6 @@ Formulation::_poststep(void) {
 }
 
 
-#include <iostream>
 // --------------------------------------------------------------------------------------------------
 PetscErrorCode
 Formulation::computeLHSResidual(PetscTS ts,
@@ -159,11 +158,6 @@ Formulation::computeLHSResidual(PetscTS ts,
     Formulation* formulation = (Formulation*)context;assert(formulation);
     assert(formulation->_hasLHSResidual);
     formulation->_computeLHSResidual(t, solution, solutionDot, residual);
-
-    std::cout << "Solution" << std::endl;
-    VecView(solution, PETSC_VIEWER_STDOUT_WORLD);
-    std::cout << "LHS Residual" << std::endl;
-    VecView(residual, PETSC_VIEWER_STDOUT_WORLD);
 
     PetscFunctionReturn(0);
 }
@@ -209,9 +203,6 @@ Formulation::computeLHSJacobian(PetscTS ts,
         err = MatAssemblyBegin(preconditioner, MAT_FINAL_ASSEMBLY);CHECK_ERROR(err);
         err = MatAssemblyEnd(preconditioner, MAT_FINAL_ASSEMBLY);CHECK_ERROR(err);
     } // if
-
-    std::cout << "LHS Jacobian" << std::endl;
-    MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD);
 
     PetscFunctionReturn(0);
 }
