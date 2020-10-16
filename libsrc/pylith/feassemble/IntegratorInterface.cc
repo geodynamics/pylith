@@ -437,11 +437,7 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     err = DMLabelGetStratumBounds(dmLabel, integrator->getInterfaceId(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cohesiveCells);PYLITH_CHECK_ERROR(err);
 
-    DMPolytopeType ct;
-    err = DMPlexGetCellType(dmSoln, cStart, &ct);PYLITH_CHECK_ERROR(err);
-    assert((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
-           (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
-           (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR));
+    assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, cStart));
     PetscDS prob = NULL;
     err = DMGetCellDS(dmSoln, cStart, &prob);PYLITH_CHECK_ERROR(err);
 
@@ -502,11 +498,7 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     err = DMLabelGetStratumBounds(dmLabel, integrator->getInterfaceId(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cohesiveCells);PYLITH_CHECK_ERROR(err);
 
-    DMPolytopeType ct;
-    err = DMPlexGetCellType(dmSoln, cStart, &ct);PYLITH_CHECK_ERROR(err);
-    assert((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
-           (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
-           (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR));
+    assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, cStart));
     PetscDS prob = NULL;
     err = DMGetCellDS(dmSoln, cStart, &prob);PYLITH_CHECK_ERROR(err);
 

@@ -504,13 +504,7 @@ pylith::problems::Problem::_setupSolution(void) {
         err = DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
         PetscInt cell = cStart;
         for (; cell < cEnd; ++cell) {
-            DMPolytopeType cellType;
-            err = DMPlexGetCellType(dmSoln, cell, &cellType);PYLITH_CHECK_ERROR(err);
-            if ((cellType == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
-                (cellType == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
-                (cellType == DM_POLYTOPE_QUAD_PRISM_TENSOR)) {
-                break;
-            } // if
+            if (pylith::topology::MeshOps::isCohesiveCell(dmSoln, cell)) { break; }
         } // for
         err = DMGetCellDS(dmSoln, cell, &prob);PYLITH_CHECK_ERROR(err);
         assert(prob);
@@ -536,6 +530,7 @@ pylith::problems::Problem::_setupLagrangeMultiplier(void) {
     PylithInt dim = 0;
     PylithInt pStart = 0;
     PylithInt pEnd = 0;
+    PylithInt pMax = 0;
     PetscErrorCode err;
 
     PetscDM dmSoln = _solution->dmMesh();assert(dmSoln);
@@ -543,21 +538,10 @@ pylith::problems::Problem::_setupLagrangeMultiplier(void) {
     err = DMCreateLabel(dmSoln, "cohesive interface");PYLITH_CHECK_ERROR(err);
     err = DMGetLabel(dmSoln, "cohesive interface", &cohesiveLabel);PYLITH_CHECK_ERROR(err);
     for (PylithInt iDim = 0; iDim <= dim; ++iDim) {
-        err = DMPlexGetDepthStratum(dmSoln, iDim, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-        for (PylithInt p = pStart; p < pEnd; ++p) {
-            DMPolytopeType ct;
-
-            err = DMPlexGetCellType(dmSoln, p, &ct);PYLITH_CHECK_ERROR(err);
-            switch (ct) {
-            case DM_POLYTOPE_POINT_PRISM_TENSOR:
-            case DM_POLYTOPE_SEG_PRISM_TENSOR:
-            case DM_POLYTOPE_TRI_PRISM_TENSOR:
-            case DM_POLYTOPE_QUAD_PRISM_TENSOR:
-                err = DMLabelSetValue(cohesiveLabel, p, 1);PYLITH_CHECK_ERROR(err);
-                break;
-            default:
-                break;
-            } // switch
+        err = DMPlexGetHeightStratum(dmSoln, iDim, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetSimplexOrBoxCells(dmSoln, iDim, NULL, &pMax);PYLITH_CHECK_ERROR(err);
+        for (PylithInt p = pMax; p < pEnd; ++p) {
+          err = DMLabelSetValue(cohesiveLabel, p, 1);PYLITH_CHECK_ERROR(err);
         } // for
     } // for
 

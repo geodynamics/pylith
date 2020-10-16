@@ -223,7 +223,7 @@ pylith::testing::MMSTest::_initialize(void) {
 
     _setExactSolution();
 
-    // Global vector to use for solution in MMS tests.
+    // Global vector to use for analytical solution in MMS tests.
     _solution->createScatter(_solution->mesh(), "mmstest");
 
     PYLITH_METHOD_END;

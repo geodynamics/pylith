@@ -25,6 +25,7 @@
 #include "pylith/topology/Mesh.hh" /// USES Mesh
 #include "pylith/topology/Field.hh" /// USES Field
 #include "pylith/topology/Stratum.hh" /// USES StratumIS
+#include "pylith/topology/MeshOps.hh" /// USES isCohesiveCell
 
 #include "spatialdata/geocoords/CoordSys.hh" /// USES CoordSys
 
@@ -177,14 +178,10 @@ pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
         err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);PYLITH_CHECK_ERROR(err);
         err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
         for (PetscInt cell = cStart; cell < cEnd; ++cell) {
-            DMPolytopeType ct;
             PetscInt *closure = NULL;
             PetscInt closureSize, v;
 
-            err = DMPlexGetCellType(dmMesh, cell, &ct);PYLITH_CHECK_ERROR(err);
-            if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
-                (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
-                (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR))  {continue; }
+	    if (pylith::topology::MeshOps::isCohesiveCell(dmMesh, cell)) { continue; }
             err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
             PetscInt numCornersCell = 0;
             for (v = 0; v < closureSize*2; v += 2) {
@@ -216,18 +213,18 @@ pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
         err = PetscObjectSetName((PetscObject) cellVec, "cells");PYLITH_CHECK_ERROR(err);
         err = VecGetArray(cellVec, &vertices);PYLITH_CHECK_ERROR(err);
         for (PetscInt cell = cStart, v = 0; cell < cEnd; ++cell) {
-            DMPolytopeType ct;
             PetscInt *closure = NULL;
             PetscInt closureSize, nC = 0, p;
 
-            err = DMPlexGetCellType(dmMesh, cell, &ct);PYLITH_CHECK_ERROR(err);
-            if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) {continue;}
+	    if (pylith::topology::MeshOps::isCohesiveCell(dmMesh, cell)) { continue; }
             err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
             for (p = 0; p < closureSize*2; p += 2) {
                 if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
                     closure[nC++] = closure[p];
                 } // if
             } // for
+	    DMPolytopeType ct;
+	    err = DMPlexGetCellType(dmMesh, cell, &ct);PYLITH_CHECK_ERROR(err);
             err = DMPlexInvertCell(ct, closure);PYLITH_CHECK_ERROR(err);
             for (p = 0; p < nC; ++p) {
                 const PetscInt gv = gvertex[closure[p] - vStart];
