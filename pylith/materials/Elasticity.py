@@ -32,7 +32,6 @@ class Elasticity(Material, ModuleElasticity):
     INVENTORY
 
     Properties
-      - *use_inertia* Include inertial term in elasticity equation.
       - *use_body_force* Include body force term in elasticity equation.
 
     Facilities
