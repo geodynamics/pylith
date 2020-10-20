@@ -56,7 +56,7 @@ F = vertical_stress
 # Height of column, m
 H = zmax - zmin
 L = H
-a = (xmax - xmin) 
+a = (xmax - xmin)
 b = (ymax - ymin)
 
 K_d = K_u - alpha*alpha*M # Pa,      Cheng (B.5)
@@ -112,7 +112,7 @@ class AnalyticalSoln(object):
 
     def zero_scalar(self, locs):
         (npts, dim) = locs.shape
-        ntpts = tsteps.shape[0]        
+        ntpts = tsteps.shape[0]
         return numpy.zeros((ntpts, npts, 1), dtype=numpy.float64)
 
     def zero_vector(self, locs):
@@ -192,7 +192,7 @@ class AnalyticalSoln(object):
         ntpts = tsteps.shape[0]
         displacement = numpy.zeros((ntpts, npts, dim), dtype=numpy.float64)
         x = locs[:,0]
-        z = locs[:,1] 
+        z = locs[:,1]
         t_track = 0
         zeroArray = self.mandelZeros()
 
@@ -204,11 +204,11 @@ class AnalyticalSoln(object):
                 A_x = 0.0
                 B_x = 0.0
 
-                for n in numpy.arange(1,self.ITERATIONS+1,1):            
+                for n in numpy.arange(1,self.ITERATIONS+1,1):
                     a_n = zeroArray[n-1]
                     A_x += (numpy.sin(a_n)*numpy.cos(a_n) / (a_n - numpy.sin(a_n)*numpy.cos(a_n)))*numpy.exp(-1.0*(a_n*a_n*c*t)/(a*a))
                     B_x += (numpy.cos(a_n) / (a_n - numpy.sin(a_n)*numpy.cos(a_n))) * numpy.sin( (a_n*x)/a) * numpy.exp(-1.0*(a_n*a_n*c*t)/(a*a))
-                
+
                 displacement[t_track,:,0] = ((F*nu)/(2.0*G*a) - (F*nu_u)/(G*a) * A_x ) * x + F/G * B_x
                 displacement[t_track,:,1] = (-1*(F*(1.0-nu))/(2*G*a) + (F*(1-nu_u))/(G*a) * A_x)*z
             t_track += 1
@@ -223,15 +223,15 @@ class AnalyticalSoln(object):
         ntpts = tsteps.shape[0]
         pressure = numpy.zeros((ntpts, npts), dtype=numpy.float64)
         x = locs[:,0]
-        z = locs[:,1] 
+        z = locs[:,1]
         t_track = 0
         zeroArray = self.mandelZeros()
 
         for t in tsteps:
-            
+
             if t == 0.0:
                 pressure[t_track,:] = (1./(3.*a))*(B*(1.+nu_u))*F
-            else:          
+            else:
                 p = 0.0
                 for n in numpy.arange(1, self.ITERATIONS+1,1):
                     x_n = zeroArray[n-1]
@@ -248,17 +248,17 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
         trace_strain = numpy.zeros((ntpts, npts), dtype=numpy.float64)
-        x = locs[:,0]        
-        z = locs[:,1] 
+        x = locs[:,0]
+        z = locs[:,1]
         t_track = 0
-        zeroArray = self.mandelZeros()        
+        zeroArray = self.mandelZeros()
 
         for t in tsteps:
-        
+
             eps_A = 0.0
             eps_B = 0.0
             eps_C = 0.0
-            
+
             for i in numpy.arange(1, self.ITERATIONS+1,1):
                 x_n = zeroArray[i-1]
                 eps_A += (x_n * numpy.exp( (-1.0*x_n*x_n*c*t)/(a*a)) * numpy.cos(x_n)*numpy.cos( (x_n*x)/a)) / (a  (x_n - numpy.sin(x_n)*numpy.cos(x_n)))
@@ -275,9 +275,9 @@ class AnalyticalSoln(object):
     def mandelZeros(self):
         """
         Compute roots for analytical mandel problem solutions
-        """   
+        """
         zeroArray = numpy.zeros(self.ITERATIONS)
-        
+
         for i in numpy.arange(1, self.ITERATIONS+1,1):
             a1 = (i - 1.0) * numpy.pi * numpy.pi / 4.0 + self.EPS
             a2 = a1 + numpy.pi / 2
@@ -285,8 +285,8 @@ class AnalyticalSoln(object):
             for j in numpy.arange(0, self.ITERATIONS,1):
                 y1 = numpy.tan(a1) - ((1.0 - nu) / (nu_u - nu))*a1
                 y2 = numpy.tan(a2) - ((1.0 - nu) / (nu_u - nu))*a2
-                am = (a1 + a2) / 2.0 
-                ym = numpy.tan(am) - (1 - nu) / (nu_u - nu)*am                
+                am = (a1 + a2) / 2.0
+                ym = numpy.tan(am) - (1 - nu) / (nu_u - nu)*am
                 if ((ym*y1) > 0):
                     a1 = am
                 else:
@@ -334,41 +334,41 @@ class AnalyticalSoln(object):
         stress[:, :, 3] = 2*p_G*e_xy
         return stress
 
-    def y_pos(self, locs):
+    def initial_traction(self, locs):
         """Compute traction at locations.
         """
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
         traction = numpy.zeros((ntpts, npts, self.SPACE_DIM), dtype=numpy.float64)
         x = locs[:,0]
-        z = locs[:,1] 
+        z = locs[:,1]
         t_track = 0
         zeroArray = self.mandelZeros()
-        
+
         for t in tsteps:
-                    
+
             sigma_zz_A = 0.0
             sigma_zz_B = 0.0
-            
+
             for i in np.arange(1, self.ITERATIONS+1,1):
                 x_n = zeroArray[i-1]
                 sigma_zz_A += ( numpy.sin(x_n) / (x_n - numpy.sin(x_n)*numpy.cos(x_n)) )*numpy.cos( (x_n*x)/a )*numpy.exp(-1.0*(x_n*x_n*c*t)/(a*a))
                 sigma_zz_B += ( (numpy.sin(x_n)*numpy.cos(x_n)) / (x_n - numpy.sin(x_n)*numpy.cos(x_n) ) )*numpy.exp(-1.0*(x_n*x_n*c*t)/(a*a))
-            
+
             traction[t_track, :, 0] = 0.0
             traction[t_track, :, 1] = -(F/a) - ( (2.0*F*(nu_u - nu)) / (a*(1.0-nu)) ) * sigma_zz_A + ( (2.0*F)/a )*sigma_zz_B
             t_track += 1
-                        
+
         return traction
-        
+
     def initial_displacement(self, locs):
         """
         Compute initial displacement at locations
         """
         (npts, dim) = locs.shape
         displacement = numpy.zeros((1, npts, dim), dtype=numpy.float64)
-        x = locs[:,0]        
-        z = locs[:,1] 
+        x = locs[:,0]
+        z = locs[:,1]
 
         displacement[0,:,0] = (F*nu_u*x)/(2.*G*a)
         displacement[0,:,1] = -1.*(F*(1.-nu_u)*z)/(2.*G*a)
@@ -381,14 +381,14 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         pressure = numpy.zeros((1, npts), dtype=numpy.float64)
-        x = locs[:,0]        
+        x = locs[:,0]
         z = locs[:,1]
         t = 0.0
 
         pressure[0,:] = (1./(3.*a))*B*(1.+nu_u)*F
-        
+
         return pressure
-        
+
     def initial_trace_strain(self, locs):
         """
         Compute initial trace strain field at locations.
@@ -396,13 +396,13 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         zeroArray = self.mandelZeros()
         trace_strain = numpy.zeros((1, npts), dtype=numpy.float64)
-        x = locs[:,0]        
+        x = locs[:,0]
         z = locs[:,1]
         t = 0.0
 
         trace_strain[0,:] = 0.0
 
-        return trace_strain        
-        
+        return trace_strain
+
 
 # End of file
