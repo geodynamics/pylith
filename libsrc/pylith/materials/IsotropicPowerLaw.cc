@@ -22,6 +22,7 @@
 
 #include "pylith/materials/AuxiliaryFactoryViscoelastic.hh" // USES AuxiliaryFactoryViscoelastic
 #include "pylith/fekernels/IsotropicPowerLaw.hh" // USES IsotropicPowerLaw kernels
+#include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
@@ -36,7 +37,9 @@ typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 // Default constructor.
 pylith::materials::IsotropicPowerLaw::IsotropicPowerLaw(void) :
     _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryViscoelastic),
-    _useReferenceState(false) {
+    _useReferenceState(false),
+    _rhsJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_ALWAYS)
+{
     pylith::utils::PyreComponent::setName("isotropicpowerlaw");
 } // constructor
 

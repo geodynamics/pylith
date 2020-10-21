@@ -22,6 +22,7 @@
 
 #include "pylith/materials/AuxiliaryFactoryViscoelastic.hh" // USES AuxiliaryFactoryViscoelastic
 #include "pylith/fekernels/IsotropicLinearGenMaxwell.hh" // USES IsotropicLinearGenMaxwell kernels
+#include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
@@ -36,7 +37,9 @@ typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 // Default constructor.
 pylith::materials::IsotropicLinearGenMaxwell::IsotropicLinearGenMaxwell(void) :
     _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryViscoelastic),
-    _useReferenceState(false) {
+    _useReferenceState(false),
+    _rhsJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE)
+{
     pylith::utils::PyreComponent::setName("isotropiclineargenmaxwell");
 } // constructor
 
