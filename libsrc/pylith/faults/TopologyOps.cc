@@ -20,6 +20,7 @@
 
 #include "TopologyOps.hh" // implementation of object methods
 
+#include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
 #include <iostream> // USES std::cout
@@ -105,10 +106,8 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
     err = DMPlexGetHeightStratum(dm, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     cMax = cStart;
     for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
-      DMPolytopeType ct;
-      err = DMPlexGetCellType(dm, cell, &ct);PYLITH_CHECK_ERROR(err);
-      if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) break;
-    }
+      if (pylith::topology::MeshOps::isCohesiveCell(dm, cell)) { break; }
+    } // for
     numCohesiveCellsOld = cEnd - cMax;
     // Create cohesive cells
     err = DMPlexGetSubpointMap(faultMesh.dmMesh(), &subpointMap);PYLITH_CHECK_ERROR(err);
@@ -190,9 +189,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
         err = DMPlexGetHeightStratum(sdm, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
         cMax = cStart;
         for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
-          DMPolytopeType ct;
-          err = DMPlexGetCellType(sdm, cell, &ct);PYLITH_CHECK_ERROR(err);
-          if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) break;
+	  if (pylith::topology::MeshOps::isCohesiveCell(sdm, cell)) { break; }
         }
         assert(cEnd > cMax + numCohesiveCellsOld);
         for (PetscInt cell = cMax; cell < cEnd - numCohesiveCellsOld; ++cell) {

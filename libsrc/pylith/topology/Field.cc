@@ -24,6 +24,8 @@
 #include "FieldOps.hh" // USES FieldOps
 #include "VisitorMesh.hh" // USES VecVisitorMesh
 
+#include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
+
 #include "pylith/utils/array.hh" // USES scalar_array
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -665,9 +667,7 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
     err = DMPlexGetDepthStratum(_dm, 0, NULL, &vEnd);PYLITH_CHECK_ERROR(err);
     cMax = cStart;
     for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
-        DMPolytopeType ct;
-        err = DMPlexGetCellType(_dm, cell, &ct);PYLITH_CHECK_ERROR(err);
-        if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) { break;}
+        if (pylith::topology::MeshOps::isCohesiveCell(_dm, cell)) { break; }
     }
     PetscInt excludeRanges[4] = {cMax, cEnd, vMax, vEnd};
     PetscInt numExcludes = (cMax < cEnd ? 1 : 0) + (vMax >= 0 ? 1 : 0);
@@ -1034,6 +1034,7 @@ pylith::topology::Field::subfieldsSetup(void) {
         PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, sinfo.description.numComponents);assert(fe);
         err = PetscFESetName(fe, sname);PYLITH_CHECK_ERROR(err);
         err = DMSetField(_dm, sinfo.index, NULL, (PetscObject)fe);PYLITH_CHECK_ERROR(err);
+        err = DMSetFieldAvoidTensor(_dm, sinfo.index, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
         err = PetscFEDestroy(&fe);PYLITH_CHECK_ERROR(err);
     } // for
 

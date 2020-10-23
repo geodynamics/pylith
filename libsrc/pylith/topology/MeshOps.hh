@@ -27,6 +27,7 @@
 
 #include "topologyfwd.hh" // forward declarations
 
+#include "pylith/utils/petscfwd.h" // USES PetscDM
 #include "pylith/utils/array.hh" // USES int_array
 
 #include "spatialdata/units/unitsfwd.hh" // forward declarations
@@ -34,7 +35,7 @@
 class pylith::topology::MeshOps {
     friend class TestMeshOps; // unit testing
 
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /** Create subdomain mesh using label.
@@ -85,6 +86,10 @@ public:
      */
     static
     bool isSimplexMesh(const Mesh& mesh);
+
+    static
+    bool isCohesiveCell(const PetscDM dmMesh,
+                        const PetscInt cell);
 
     /** Check to make sure material id of every cell matches the id of
      *  one of the materials.

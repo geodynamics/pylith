@@ -32,9 +32,6 @@ jobs:
     - name: fedora-32
       os: linux
       env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-32
-    - name: centos-6
-      os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-centos-6
     - name: centos-7
       os: linux
       env: BASE_IMAGE=geodynamics/pylith-testenv-centos-7

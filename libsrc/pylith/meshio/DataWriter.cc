@@ -21,6 +21,7 @@
 #include "DataWriter.hh" // Implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
 
 #include "pylith/utils/error.hh" \
     // USES PYLITH_METHOD_BEGIN/END
@@ -167,9 +168,7 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
     err = DMPlexGetDepthStratum(dmCoord, 0, NULL, &vEnd);PYLITH_CHECK_ERROR(err);
     cMax = cStart;
     for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
-      DMPolytopeType ct;
-      err = DMPlexGetCellType(dmMesh, cell, &ct);PYLITH_CHECK_ERROR(err);
-      if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) || (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) break;
+      if (pylith::topology::MeshOps::isCohesiveCell(dmMesh, cell)) { break; }
     }
     PylithInt excludeRanges[4] = {cMax, cEnd, vMax, vEnd};
     PylithInt numExcludes = (cMax < cEnd ? 1 : 0) + (vMax >= 0 ? 1 : 0);

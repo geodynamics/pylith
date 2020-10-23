@@ -213,6 +213,22 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+bool
+pylith::topology::MeshOps::isCohesiveCell(const PetscDM dmMesh,
+                                          const PetscInt cell) {
+    bool isCohesive = false;
+
+    DMPolytopeType ct;
+    PetscErrorCode err = DMPlexGetCellType(dmMesh, cell, &ct);PYLITH_CHECK_ERROR(err);
+    if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
+        (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
+        (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) { isCohesive = true; }
+
+    return isCohesive;
+} // isCohesiveCell
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Check topology of mesh.
 void
 pylith::topology::MeshOps::checkTopology(const Mesh& mesh) {
