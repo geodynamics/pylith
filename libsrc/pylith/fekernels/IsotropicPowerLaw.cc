@@ -2388,7 +2388,7 @@ pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress(const PylithInt dim,
     stressTensor[1] += devStressTpdt[3];
     stressTensor[5] += devStressTpdt[4];
     stressTensor[2] += devStressTpdt[5];
-    stressTensor[3] += devStressTpdt[1];
+    stressTensor[3] += devStressTpdt[3];
     stressTensor[6] += devStressTpdt[5];
     stressTensor[7] += devStressTpdt[4];
 
@@ -2549,7 +2549,7 @@ pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress_refstate(const PylithIn
     stressTensor[1] += devStressTpdt[3];
     stressTensor[5] += devStressTpdt[4];
     stressTensor[2] += devStressTpdt[5];
-    stressTensor[3] += devStressTpdt[1];
+    stressTensor[3] += devStressTpdt[3];
     stressTensor[6] += devStressTpdt[5];
     stressTensor[7] += devStressTpdt[4];
 
