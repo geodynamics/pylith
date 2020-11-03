@@ -90,7 +90,7 @@ class TimeStepUser(TimeStep):
     filename.meta['tip'] = "Name of file with tme step sizes."
 
     stabilityFactor = pyre.inventory.float("stability_factor", default=2.0,
-                                           validator=pyre.inventory.greater(0.0)))
+                                           validator=pyre.inventory.greater(0.0))
     stabilityFactor.meta['tip'] = "'Safety factor' for stable time step."
 
     loopSteps = pyre.inventory.bool("loop_steps", default=False)
