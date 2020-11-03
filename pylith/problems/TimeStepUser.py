@@ -72,6 +72,7 @@ class TimeStepUser(TimeStep):
     ## \b Properties
     ## @li \b total_time Time duration for simulation.
     ## @li \b filename Name of file with time step sizes.
+    ## @li \b stability_factor "Safety factor" for stable time step.
     ## @li \b loop_steps Loop over steps if true, otherwise keep
     ##   using last time step size.
     ##
@@ -87,6 +88,10 @@ class TimeStepUser(TimeStep):
 
     filename = pyre.inventory.str("filename", default="timesteps.txt")
     filename.meta['tip'] = "Name of file with tme step sizes."
+
+    stabilityFactor = pyre.inventory.float("stability_factor", default=2.0,
+                                           validator=pyre.inventory.greater(0.0)))
+    stabilityFactor.meta['tip'] = "'Safety factor' for stable time step."
 
     loopSteps = pyre.inventory.bool("loop_steps", default=False)
     loopSteps.meta['tip'] = "Loop over steps if true, otherwise keep " \
@@ -166,10 +171,10 @@ class TimeStepUser(TimeStep):
       self.index = 0
 
     dtStable = self._stableTimeStep(mesh, integrators)
-    if dtStable < self.dtN:
+    if dtStable/self.stabilityFactor < self.dtN:
       raise RuntimeError("Current time step of %s exceeds the stable time "
                          "step of %s." % (self.dtN*self.timeScale,
-                                          dtStable*self.timeScale))
+                                          dtStable/self.stabilityFactor*self.timeScale))
 
     return self.dtN
 
@@ -183,6 +188,7 @@ class TimeStepUser(TimeStep):
     TimeStep._configure(self)
     self.totalTime = self.inventory.totalTime
     self.filename = self.inventory.filename
+    self.stabilityFactor = self.inventory.stabilityFactor
     self.loopSteps = self.inventory.loopSteps
     return
 
