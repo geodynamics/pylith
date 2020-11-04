@@ -7,8 +7,6 @@
 
 ## Build status
 * Master: [![Build Status](https://travis-ci.org/geodynamics/pylith.svg?branch=master)](https://travis-ci.org/geodynamics/pylith)
-* Maint: [![Build Status](https://travis-ci.org/geodynamics/pylith.svg?branch=maint)](https://travis-ci.org/geodynamics/pylith)
-* Next: [![Build Status](https://travis-ci.org/geodynamics/pylith.svg?branch=next)](https://travis-ci.org/geodynamics/pylith)
 
 ## Description
 
@@ -20,12 +18,14 @@ and volcanoes.
   * User Manual
   * Binary packages
   * Utility to build PyLith and all of its dependencies from source
+*
+  [PyLith parameter viewer](https://geodynamics.github.io/pylith_parameters/) for viewing `.json` parameter files.
 * PyLith Wiki: [https://wiki.geodynamics.org/software:pylith:start](https://wiki.geodynamics.org/software:pylith:start)
   * Archive of online tutorials
   * Hints, tips, tricks, etc
-  * PyLith development plan 
-* Submit bug reports via https://github.com/geodynamics/pylith/issues
-* Send all questions to: cig-short@geodynamics.org
+  * [PyLith development plan](https://github.com/geodynamics/pylith/wiki/Development-Plans)
+* Submit bug reports via [GitHub issues](https://github.com/geodynamics/pylith/issues).
+* Post all questions to the [PyLith category](https://community.geodynamics.org/c/pylith/29) on the [CIG Community Forum](https://community.geodynamics.org).
 
 
 ## Features
@@ -52,6 +52,6 @@ See [CHANGES](CHANGES) for a complete list of changes for each release.
 
 ## Authors
 
-* Brad Aagaard, Earthquake Science Center, USGS, USA
-* Matthew Knepley, Computational and Applied Mathematics, Rice University, USA
+* Brad Aagaard, Geologic Hazards Science Center, U.S. Geological Survey, USA
+* Matthew Knepley, Computer Science and Engineering, University at Buffalo, USA
 * Charles Williams, Tectonophysics, GNS Science, New Zealand
