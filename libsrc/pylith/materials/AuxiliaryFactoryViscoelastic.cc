@@ -273,11 +273,12 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addStress(void) {
         "stress_xz"
     };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
+    const PylithReal pressureScale = _normalizer->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
     description.alias = subfieldName;
-    description.vectorFieldType = pylith::topology::Field::OTHER;
+    description.vectorFieldType = (3 == _spaceDim) ? pylith::topology::Field::TENSOR : pylith::topology::Field::OTHER;
     description.numComponents = stressSize;
     description.componentNames.resize(stressSize);
     description.hasHistory = true;
@@ -285,7 +286,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addStress(void) {
     for (int i = 0; i < stressSize; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = 1.0;
+    description.scale = pressureScale;
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
@@ -316,7 +317,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addViscousStrain(void) {
     pylith::topology::Field::Description description;
     description.label = subfieldName;
     description.alias = subfieldName;
-    description.vectorFieldType = pylith::topology::Field::OTHER;
+    description.vectorFieldType = (3 == _spaceDim) ? pylith::topology::Field::TENSOR : pylith::topology::Field::OTHER;
     description.numComponents = strainSize;
     description.componentNames.resize(strainSize);
     description.hasHistory = true;
