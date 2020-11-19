@@ -81,7 +81,6 @@ class Poroelasticity(Material, ModulePoroelasticity):
 
         self.rheology.addAuxiliarySubfields(self, problem)
 
-        ModulePoroelasticity.useInertia(self, self.useInertia)
         ModulePoroelasticity.useBodyForce(self, self.useBodyForce)
         return
 

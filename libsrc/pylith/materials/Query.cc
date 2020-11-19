@@ -82,6 +82,12 @@ public:
                                          const pylith::scalar_array dbValues,
                                          const pylith::int_array dbIndices);
 
+            static
+            std::string inputToBiotModulus(PylithScalar valueSubfield[],
+                                           const PylithInt numComponents,
+                                           const pylith::scalar_array dbValues,
+                                           const pylith::int_array dbIndices);
+
         }; // _Query
     } // materials
 } // pylith
@@ -181,6 +187,23 @@ pylith::materials::Query::gravityFieldFromDB(const char* subfieldName,
     assert(factory);
     factory->setSubfieldQuery(subfieldName, dbValues, spaceDim, _Query::dbToGravityField, gravityField);
 } // gravityFieldFromDB
+
+// ----------------------------------------------------------------------
+// Setup subfield query in auxiliary factory for bulk modulus from density, Vs, and Vp.
+void
+pylith::materials::Query::biotModulusFromInput(const char* subfieldName,
+                                            pylith::feassemble::AuxiliaryFactory* factory) {
+    const size_t numDBValues = 4;
+    const char* dbValues[numDBValues] = {
+        "fluid_bulk_modulus",
+        "solid_bulk_modulus",
+        "biot_coefficient",
+        "porosity"
+    };
+
+    assert(factory);
+    factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::inputToBiotModulus);
+} // biotModulusFromInput
 
 
 // ----------------------------------------------------------------------
@@ -474,5 +497,53 @@ pylith::materials::_Query::dbToGravityField(PylithScalar valueSubfield[],
     return msg.str();
 } // dbToGravityField
 
+// ----------------------------------------------------------------------
+// Compute Biot's modulus from Biot's coefficient, solid grain bulk moduls,
+// fluid bulk modulus, and porosity
+std::string
+pylith::materials::_Query::inputToBiotModulus(PylithScalar valueSubfield[],
+                                            const PylithInt numComponents,
+                                            const pylith::scalar_array dbValues,
+                                            const pylith::int_array dbIndices) {
+    PYLITH_METHOD_BEGIN;
+
+    const size_t _numComponents = 1;
+
+    assert(valueSubfield);
+    assert(_numComponents == size_t(numComponents));
+    assert(4 == dbIndices.size());
+
+    const size_t i_fluid_bulk_modulus = 0;assert(dbIndices[i_fluid_bulk_modulus] < dbValues.size());
+    const size_t i_solid_bulk_modulus = 1;assert(dbIndices[i_solid_bulk_modulus] < dbValues.size());
+    const size_t i_biot_coefficient = 2;assert(dbIndices[i_biot_coefficient] < dbValues.size());
+    const size_t i_porosity = 3;assert(dbIndices[i_porosity] < dbValues.size());
+
+    const PylithScalar fluid_bulk_modulus = dbValues[dbIndices[i_fluid_bulk_modulus]];
+    const PylithScalar solid_bulk_modulus = dbValues[dbIndices[i_solid_bulk_modulus]];
+    const PylithScalar biot_coefficient = dbValues[dbIndices[i_biot_coefficient]];
+    const PylithScalar porosity = dbValues[dbIndices[i_porosity]];
+
+    valueSubfield[0] = 1.0 / ( porosity / fluid_bulk_modulus + (biot_coefficient - porosity) / solid_bulk_modulus );
+
+    bool valuesOkay = true;
+    std::ostringstream msg;
+    if (porosity < 0) {
+        valuesOkay = false;
+        msg << "Found negative porosity (" << porosity << ").";
+    } // if
+    if (biot_coefficient <= 0) {
+        valuesOkay = false;
+        msg << "Found negative biot coefficient (" << biot_coefficient << ").";
+    } // if
+
+    // Debug
+    PylithScalar biot_modulus = 1.0 / ( porosity / fluid_bulk_modulus + (biot_coefficient - porosity) / solid_bulk_modulus );
+    if (biot_modulus <= 0) {
+        valuesOkay = false;
+        msg << "biot modulus (" << biot_modulus << ") wrong. Kfl: " << fluid_bulk_modulus << " Ksg: " << solid_bulk_modulus << " phi: " << porosity << " alpha: " << biot_coefficient;
+    } // if
+
+    return msg.str();
+} // inputToBiotModulus
 
 // End of file

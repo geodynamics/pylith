@@ -28,15 +28,16 @@ import meshes
 from mandel_soln import AnalyticalSoln
 from mandel_gendb import GenerateDB
 
-
+ratio_tolerance = 1e-0
+diff_tolerance = 1e-2
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
     """
     Test suite for testing PyLith with one dimensional poroelasticity
     by means of Mandel's problem.
     """
-    DIRICHLET_BOUNDARIES = ["x_neg", "x_pos", "y_neg"]
-    NEUMANN_BOUNDARIES = ["y_pos"]
+    DIRICHLET_BOUNDARIES = ["x_neg", "x_pos", "y_neg", "y_pos"]
+    #NEUMANN_BOUNDARIES = ["y_pos"]
 
     def setUp(self):
         """
@@ -53,52 +54,52 @@ class TestCase(FullTestCase):
     def test_domain_solution(self):
         filename = "output/{}-domain.h5".format(self.NAME)
         vertexFields = ["displacement", "pressure", "trace_strain"]
-        check_data(filename, self, self.DOMAIN, vertexFields=vertexFields)
+        check_data(filename, self, self.DOMAIN, vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
     def test_material_info(self):
-        cellFields = ["solid_density", "fluid_density", "fluid_viscosity", "shear_modulus", "undrained_bulk_modulus", "biot_coefficient", "biot_modulus", "isotropic_permeability"]
+        vertexFields = ["solid_density", "fluid_density", "fluid_viscosity", "biot_modulus", "shear_modulus", "drained_bulk_modulus", "biot_coefficient", "isotropic_permeability"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], cellFields=cellFields)
+            check_data(filename, self, self.MATERIALS[material], cellFields=cellFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
     def test_material_solution(self):
         vertexFields = ["displacement", "pressure", "trace_strain"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields)
+            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
-#    def test_bcdirichlet_info(self):
-#        vertexFields = ["initial_amplitude"]
-#        for bc in self.DIRICHLET_BOUNDARIES:
-#            self.exactsoln.key = bc
-#            filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-#            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
-#        return
+    def test_bcdirichlet_info(self):
+        vertexFields = ["initial_amplitude"]
+        for bc in self.DIRICHLET_BOUNDARIES:
+            self.exactsoln.key = bc
+            filename = "output/{}-{}_info.h5".format(self.NAME, bc)
+            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+        return
 
-#    def test_bcdirichlet_solution(self):
-#        vertexFields = ["displacement", "pressure", "trace_strain"]
-#        for bc in self.DIRICHLET_BOUNDARIES:
-#            filename = "output/{}-{}.h5".format(self.NAME, bc)
-#            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
-#        return
+    def test_bcdirichlet_solution(self):
+        vertexFields = ["displacement", "pressure", "trace_strain"]
+        for bc in self.DIRICHLET_BOUNDARIES:
+            filename = "output/{}-{}.h5".format(self.NAME, bc)
+            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+        return
 
-#    def test_bcneumann_info(self):
-#        vertexFields = ["initial_amplitude"]
-#        for bc in self.NEUMANN_BOUNDARIES:
-#            self.exactsoln.key = bc
-#            filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-#            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
-#        return
-
-#    def test_bcneumann_solution(self):
-#        vertexFields = ["displacement", "pressure", "trace_strain"]
-#        for bc in self.NEUMANN_BOUNDARIES:
-#            filename = "output/{}-{}.h5".format(self.NAME, bc)
-#            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
-#        return
+    # def test_bcneumann_info(self):
+    #     vertexFields = ["initial_amplitude"]
+    #     for bc in self.NEUMANN_BOUNDARIES:
+    #         self.exactsoln.key = bc
+    #         filename = "output/{}-{}_info.h5".format(self.NAME, bc)
+    #         check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+    #     return
+    #
+    # def test_bcneumann_solution(self):
+    #     vertexFields = ["displacement", "pressure", "trace_strain"]
+    #     for bc in self.NEUMANN_BOUNDARIES:
+    #         filename = "output/{}-{}.h5".format(self.NAME, bc)
+    #         check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+    #     return
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestQuad(TestCase, meshes.Quad):

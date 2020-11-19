@@ -35,40 +35,50 @@
 import numpy
 
 # Physical properties
-solid_density = 2500 # kg / m**3
-fluid_density = 1000 # kg / m**3
-fluid_dynamic_viscosity = 1.0 # Pa*s
-G = 0.75 # Pa
-K_u = 2.6941176470588233 # Pa
+rho_s = 2500 # kg / m**3
+rho_f = 1000 # kg / m**3
+mu_f = 1.0 # Pa*s
+G = 3.0 # Pa
+K_sg = 10.0 # Pa
+K_fl = 8.0 # Pa
+K_d = 4.0 # Pa
+#K_u = 2.6941176470588233 # Pa
 alpha = 0.6 # -
-M = 4.705882352941176 # Pa
-isotropic_permeability = 1.5 # m**2
+phi = 0.1 #
+#M = 4.705882352941176 # Pa
+k = 1.5 # m**2
 
-zmax = 0.1 # m
-zmin = 0.0 # m
-ymax = 0.1 # m
-ymin = 0.0 # m
-xmax = 1.0 # m
 xmin = 0.0 # m
+xmax = 10.0 # m
+ymin = 0.0 # m
+ymax = 1.0 # m
+
 vertical_stress = 1.0 # Pa
 F = vertical_stress
 
 # Height of column, m
-H = zmax - zmin
-L = H
 a = (xmax - xmin)
 b = (ymax - ymin)
 
-K_d = K_u - alpha*alpha*M # Pa,      Cheng (B.5)
+M = 1.0 / ( phi / K_fl + ( alpha - phi ) / K_sg ) # Pa
+K_u = K_d + alpha*alpha*M # Pa,      Cheng (B.5)
+#K_d = K_u - alpha*alpha*M # Pa,      Cheng (B.5)
 nu = (3.0*K_d - 2.0*G) / (2.0*(3.0*K_d + G)) # -,       Cheng (B.8)
 nu_u = (3.0*K_u - 2.0*G) / (2.0*(3.0*K_u + G)) # -,       Cheng (B.9)
 eta = (3.0*alpha*G) /(3.0*K_d + 4.0*G) #  -,       Cheng (B.11)
 S = (3.0*K_u + 4.0*G) / (M*(3.0*K_d + 4.0*G)) # Pa^{-1}, Cheng (B.14)
-c = (isotropic_permeability / fluid_dynamic_viscosity) / S # m^2 / s, Cheng (B.16)
+c = (k / mu_f) / S # m^2 / s, Cheng (B.16)
 B = (3. * (nu_u - nu) )/(alpha*(1.-2.*nu)*(1.+nu_u))
 
 # Time steps
-tsteps = numpy.arange(0.0, 0.0057333334, 0.0028666667) # sec
+#tsteps = numpy.arange(0.0, 0.0057333334, 0.0028666667) # sec
+
+# Time steps
+#ts = 0.0028666667 # sec
+ts = 0.1
+nts = 2
+tsteps = numpy.arange(0.0, ts*nts, ts) + ts # sec
+
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
@@ -77,7 +87,7 @@ class AnalyticalSoln(object):
     """
     SPACE_DIM = 2
     TENSOR_SIZE = 4
-    ITERATIONS = 1000
+    ITERATIONS = 2000
     EPS = 1e-5
 
     def __init__(self):
@@ -85,11 +95,13 @@ class AnalyticalSoln(object):
             "displacement": self.displacement,
             "pressure": self.pressure,
             "trace_strain": self.trace_strain,
+            "porosity": self.porosity,
             "solid_density": self.solid_density,
             "fluid_density": self.fluid_density,
             "fluid_viscosity": self.fluid_viscosity,
             "shear_modulus": self.shear_modulus,
             "undrained_bulk_modulus": self.undrained_bulk_modulus,
+            "drained_bulk_modulus": self.drained_bulk_modulus,
             "biot_coefficient": self.biot_coefficient,
             "biot_modulus": self.biot_modulus,
             "isotropic_permeability": self.isotropic_permeability,
@@ -97,7 +109,7 @@ class AnalyticalSoln(object):
                 "x_neg": self.zero_vector,
                 "x_pos": self.zero_vector,
                 "y_neg": self.zero_scalar,
-                "y_pos": self.zero_vector,
+                "y_pos": self.displacement,
             }
         }
         self.key = None
@@ -113,19 +125,19 @@ class AnalyticalSoln(object):
     def zero_scalar(self, locs):
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
-        return numpy.zeros((ntpts, npts, 1), dtype=numpy.float64)
+        return numpy.zeros((1, npts, 1), dtype=numpy.float64)
 
     def zero_vector(self, locs):
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
-        return numpy.zeros((ntpts, npts, self.SPACE_DIM), dtype=numpy.float64)
+        return numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
 
     def solid_density(self, locs):
         """
         Compute solid_density field at locations.
         """
         (npts, dim) = locs.shape
-        solid_density = solid_density * numpy.ones((1, npts, 1), dtype=numpy.float64)
+        solid_density = rho_s * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return solid_density
 
     def fluid_density(self, locs):
@@ -133,8 +145,16 @@ class AnalyticalSoln(object):
         Compute fluid density field at locations.
         """
         (npts, dim) = locs.shape
-        fluid_density = fluid_density * numpy.ones((1, npts, 1), dtype=numpy.float64)
+        fluid_density = rho_f * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return fluid_density
+
+    def porosity(self, locs):
+        """
+        Compute solid_density field at locations.
+        """
+        (npts, dim) = locs.shape
+        porosity = phi * numpy.ones((1, npts, 1), dtype=numpy.float64)
+        return porosity
 
     def shear_modulus(self, locs):
         """
@@ -149,7 +169,7 @@ class AnalyticalSoln(object):
         Compute fluid_viscosity field at locations.
         """
         (npts, dim) = locs.shape
-        fluid_viscosity = fluid_dynamic_viscosity * numpy.ones((1, npts, 1), dtype=numpy.float64)
+        fluid_viscosity = mu_f * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return fluid_viscosity
 
     def undrained_bulk_modulus(self, locs):
@@ -159,6 +179,14 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         undrained_bulk_modulus = K_u * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return undrained_bulk_modulus
+
+    def drained_bulk_modulus(self, locs):
+        """
+        Compute undrained bulk modulus field at locations.
+        """
+        (npts, dim) = locs.shape
+        drained_bulk_modulus = K_d * numpy.ones((1, npts, 1), dtype=numpy.float64)
+        return drained_bulk_modulus
 
     def biot_coefficient(self, locs):
         """
@@ -181,8 +209,22 @@ class AnalyticalSoln(object):
         Compute isotropic permeability field at locations.
         """
         (npts, dim) = locs.shape
-        isotropic_permeability = isotropic_permeability * numpy.ones((1, npts, 1), dtype=numpy.float64)
+        isotropic_permeability = k * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return isotropic_permeability
+
+    def y_pos(self, locs):
+        """Compute initial traction at locations.
+        """
+        (npts, dim) = locs.shape
+        ntpts = tsteps.shape[0]
+        t_track = 0
+
+        displacement = numpy.zeros((ntpts, npts, self.SPACE_DIM), dtype=numpy.float64)
+        displacement[:, :, 0] = 0.0
+        for t in tsteps:
+            displacement[t_track, :, 1] = F
+            t_track += 1
+        return traction
 
     def displacement(self, locs):
         """
@@ -197,20 +239,16 @@ class AnalyticalSoln(object):
         zeroArray = self.mandelZeros()
 
         for t in tsteps:
-            if t == 0.0:
-                displacement[t_track,:,0] = (F*nu_u*x)/(2.*G*a)
-                displacement[t_track,:,1] = -1.*(F*(1.-nu_u)*z)/(2.*G*a)
-            else:
-                A_x = 0.0
-                B_x = 0.0
+            A_x = 0.0
+            B_x = 0.0
 
-                for n in numpy.arange(1,self.ITERATIONS+1,1):
-                    a_n = zeroArray[n-1]
-                    A_x += (numpy.sin(a_n)*numpy.cos(a_n) / (a_n - numpy.sin(a_n)*numpy.cos(a_n)))*numpy.exp(-1.0*(a_n*a_n*c*t)/(a*a))
-                    B_x += (numpy.cos(a_n) / (a_n - numpy.sin(a_n)*numpy.cos(a_n))) * numpy.sin( (a_n*x)/a) * numpy.exp(-1.0*(a_n*a_n*c*t)/(a*a))
+            for n in numpy.arange(1,self.ITERATIONS+1,1):
+                a_n = zeroArray[n-1]
+                A_x += (numpy.sin(a_n)*numpy.cos(a_n) / (a_n - numpy.sin(a_n)*numpy.cos(a_n)))*numpy.exp(-1.0*(a_n*a_n*c*t)/(a*a))
+                B_x += (numpy.cos(a_n) / (a_n - numpy.sin(a_n)*numpy.cos(a_n))) * numpy.sin( (a_n*x)/a) * numpy.exp(-1.0*(a_n*a_n*c*t)/(a*a))
 
-                displacement[t_track,:,0] = ((F*nu)/(2.0*G*a) - (F*nu_u)/(G*a) * A_x ) * x + F/G * B_x
-                displacement[t_track,:,1] = (-1*(F*(1.0-nu))/(2*G*a) + (F*(1-nu_u))/(G*a) * A_x)*z
+            displacement[t_track,:,0] = ((F*nu)/(2.0*G*a) - (F*nu_u)/(G*a) * A_x ) * x + F/G * B_x
+            displacement[t_track,:,1] = (-1*(F*(1.0-nu))/(2*G*a) + (F*(1-nu_u))/(G*a) * A_x)*z
             t_track += 1
 
         return displacement
@@ -403,6 +441,33 @@ class AnalyticalSoln(object):
         trace_strain[0,:] = 0.0
 
         return trace_strain
+
+    def sigma_zz(self, locs):
+        """Compute traction at locations.
+        """
+        (npts, dim) = locs.shape
+        ntpts = tsteps.shape[0]
+        traction = numpy.zeros((ntpts, npts, self.SPACE_DIM), dtype=numpy.float64)
+        x = locs[:,0]
+        z = locs[:,1]
+        t_track = 0
+        zeroArray = self.mandelZeros()
+
+        for t in tsteps:
+
+            sigma_zz_A = 0.0
+            sigma_zz_B = 0.0
+
+            for i in np.arange(1, self.ITERATIONS+1,1):
+                x_n = zeroArray[i-1]
+                sigma_zz_A += ( numpy.sin(x_n) / (x_n - numpy.sin(x_n)*numpy.cos(x_n)) )*numpy.cos( (x_n*x)/a )*numpy.exp(-1.0*(x_n*x_n*c*t)/(a*a))
+                sigma_zz_B += ( (numpy.sin(x_n)*numpy.cos(x_n)) / (x_n - numpy.sin(x_n)*numpy.cos(x_n) ) )*numpy.exp(-1.0*(x_n*x_n*c*t)/(a*a))
+
+            traction[t_track, :, 0] = 0.0
+            traction[t_track, :, 1] = -(F/a) - ( (2.0*F*(nu_u - nu)) / (a*(1.0-nu)) ) * sigma_zz_A + ( (2.0*F)/a )*sigma_zz_B
+            t_track += 1
+
+        return traction
 
 
 # End of file

@@ -34,8 +34,8 @@ class GenerateDB(object):
         Generate the database.
         """
         # Domain
-        x = numpy.arange(0.0, 1.1, 0.1)
-        y = numpy.arange(0.0, 0.11, 0.01)
+        x = numpy.arange(0.0, 10.1, 0.1)
+        y = numpy.arange(0.0, 1.01, 0.01)
         npts = x.shape[0]
 
         xx = x * numpy.ones((npts, 1), dtype=numpy.float64)
@@ -54,7 +54,10 @@ class GenerateDB(object):
         cs = CSCart()
         cs.inventory.spaceDim = 2
         cs._configure()
-        data = {'points': xy,
+        data = {
+                'x' : x,
+                'y' : y,
+                'points': xy,
                 'coordsys': cs,
                 'data_dim': 2,
                 'values': [{'name': "initial_amplitude_x",
@@ -67,18 +70,20 @@ class GenerateDB(object):
                             'units': "Pa",
                             'data': numpy.ravel(pres[0, :])},
                            {'name': "initial_trace_strain",
-                            'units': "m",
+                            'units': "none",
                             'data': numpy.ravel(trace_strain[0, :])}]}
 
-        from spatialdata.spatialdb.SimpleIOAscii import createWriter
-        io = createWriter("mandel_bc.spatialdb")
+        from spatialdata.spatialdb.SimpleGridAscii import SimpleGridAscii
+        io = SimpleGridAscii()
+        io.inventory.filename = "mandel_bc.spatialdb"
+        io._configure()
         io.write(data)
 
         data["values"][0]["name"] = "displacement_x"
         data["values"][1]["name"] = "displacement_y"
         data["values"][2]["name"] = "pressure"
         data["values"][3]["name"] = "trace_strain"
-        io = createWriter("mandel_ic.spatialdb")
+        io.inventory.filename = "mandel_ic.spatialdb"
         io.write(data)
         return
 

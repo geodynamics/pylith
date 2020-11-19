@@ -50,6 +50,18 @@ public:
        */
       bool useReferenceState(void) const;
 
+      /** Include full tensor permeability?
+      *
+      * @param value Flag indicating to include full tensor permeability.
+      */
+      void useTensorPermeability(const bool value);
+
+      /** Use full tensor permeability?
+      *
+      * @returns True if using full tensor permeability, false otherwise.
+      */
+      bool useTensorPermeability(void) const;
+
       /** Get auxiliary factory associated with physics.
        *
        * @return Auxiliary factory for physics object.
@@ -146,14 +158,6 @@ public:
        */
       PetscPointFunc getKernelf0p(const spatialdata::geocoords::CoordSys* coordsys, const bool _useInertia) const;
 
-      /** Get kernel for RHS Jacobian G(t,s).
-       *
-       * @param[in] coordsys Coordinate system.
-       *
-       * @return RHS Jacobian kernel for tshift * 1/M (Jf0pp)
-       */
-      PetscPointJac getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const;
-
       /** Get biot coefficient for LHS residual, F(t,s,\dot{s})
        *
        * @param[in] coordsys Coordinate system.
@@ -161,6 +165,14 @@ public:
        * @return LHS jacobian kernel for biot coefficient.
        */
       PetscPointJac getKernelJf0pe(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+      /** Get kernel for RHS Jacobian G(t,s).
+       *
+       * @param[in] coordsys Coordinate system.
+       *
+       * @return RHS Jacobian kernel for tshift * 1/M (Jf0pp)
+       */
+      PetscPointJac getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const;
 
       // ============================ DERIVED FIELDS ========================== //
 

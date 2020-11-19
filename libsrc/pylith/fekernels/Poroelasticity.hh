@@ -319,30 +319,78 @@ public:
                   const PylithInt numConstants,
                   const PylithScalar constants[],
                   PylithScalar Jg1[]);
+};
 
-    // --------------------------------------------------------------------------------
-    // cauchyStrain - Calculate Cauchy strain for poroelasticity
-    static
-      void cauchyStrain(const PylithInt dim,
-                        const PylithInt numS,
-                        const PylithInt numA,
-                        const PylithInt sOff[],
-                        const PylithInt sOff_x[],
-                        const PylithScalar s[],
-                        const PylithScalar s_t[],
-                        const PylithScalar s_x[],
-                        const PylithInt aOff[],
-                        const PylithInt aOff_x[],
-                        const PylithScalar a[],
-                        const PylithScalar a_t[],
-                        const PylithScalar a_x[],
-                        const PylithReal t,
-                        const PylithScalar x[],
-                        const PylithInt numConstants,
-                        const PylithScalar constants[],
-                        PylithScalar strain[]);
+// Poroelasticity
 
-}; // Poroelasticity
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Kernels specific to poroelasticity plane strain.
+class pylith::fekernels::PoroelasticityPlaneStrain {
+  // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+
+  /** Calculate Cauchy strain for 2-D plane strain poroelasticity.
+   *
+   * Order of output components is xx, yy, zz, xy.
+   *
+   * Solution fields: [disp(dim)]
+   */
+static
+  void cauchyStrain(const PylithInt dim,
+                    const PylithInt numS,
+                    const PylithInt numA,
+                    const PylithInt sOff[],
+                    const PylithInt sOff_x[],
+                    const PylithScalar s[],
+                    const PylithScalar s_t[],
+                    const PylithScalar s_x[],
+                    const PylithInt aOff[],
+                    const PylithInt aOff_x[],
+                    const PylithScalar a[],
+                    const PylithScalar a_t[],
+                    const PylithScalar a_x[],
+                    const PylithReal t,
+                    const PylithScalar x[],
+                    const PylithInt numConstants,
+                    const PylithScalar constants[],
+                    PylithScalar strain[]);
+
+}; // PoroelasticityPlaneStrain
+
+// ---------------------------------------------------------------------------------------------------------------------
+/// Kernels specific to poroelasticity in 3D.
+class pylith::fekernels::Poroelasticity3D {
+  // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+
+  /** Calculate Cauchy strain for 3-D poroelasticity.
+   *
+   * Order of output components is xx, yy, zz, xy, yz, xz.
+   *
+   * Solution fields: [disp(dim)]
+   */
+static
+  void cauchyStrain(const PylithInt dim,
+                    const PylithInt numS,
+                    const PylithInt numA,
+                    const PylithInt sOff[],
+                    const PylithInt sOff_x[],
+                    const PylithScalar s[],
+                    const PylithScalar s_t[],
+                    const PylithScalar s_x[],
+                    const PylithInt aOff[],
+                    const PylithInt aOff_x[],
+                    const PylithScalar a[],
+                    const PylithScalar a_t[],
+                    const PylithScalar a_x[],
+                    const PylithReal t,
+                    const PylithScalar x[],
+                    const PylithInt numConstants,
+                    const PylithScalar constants[],
+                    PylithScalar strain[]);
+
+}; // Poroelasticity3D
 
 #endif // pylith_fekernels_poroelasticity_hh
 

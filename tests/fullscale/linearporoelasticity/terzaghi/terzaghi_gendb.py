@@ -26,7 +26,7 @@ import numpy
 
 class GenerateDB(object):
     """
-    Python object to generate spatial database with initial conditions 
+    Python object to generate spatial database with initial conditions
     for the terzaghi poroelastic test.
     """
 
@@ -55,31 +55,37 @@ class GenerateDB(object):
         cs = CSCart()
         cs.inventory.spaceDim = 2
         cs._configure()
-        data = {'points': xy,
-                'coordsys': cs,
-                'data_dim': 2,
-                'values': [{'name': "displacement_x",
-                            'units': "m",
-                            'data': numpy.ravel(disp[0, :, 0])},
-                           {'name': "displacement_y",
-                            'units': "m",
-                            'data': numpy.ravel(disp[0, :, 1])},
-                           {'name': "pressure",
-                            'units': "Pa",
-                            'data': numpy.ravel(pres[0, :])},
-                           {'name': "trace_strain",
-                            'units': "none",
-                            'data': numpy.ravel(trace_strain[0, :])}]}
+        data = {
+            'x' : x,
+            'y' : y,
+            'points': xy,
+            'coordsys': cs,
+            'data_dim': 2,
+            'values': [{'name': "displacement_x",
+                        'units': "m",
+                        'data': numpy.ravel(disp[0, :, 0])},
+                       {'name': "displacement_y",
+                        'units': "m",
+                        'data': numpy.ravel(disp[0, :, 1])},
+                       {'name': "pressure",
+                        'units': "Pa",
+                        'data': numpy.ravel(pres[0, :])},
+                       {'name': "trace_strain",
+                        'units': "none",
+                        'data': numpy.ravel(trace_strain[0, :])}]}
 
-        from spatialdata.spatialdb.SimpleIOAscii import createWriter
-        io = createWriter("terzaghi_ic.spatialdb")
+        from spatialdata.spatialdb.SimpleGridAscii import SimpleGridAscii
+        io = SimpleGridAscii()
+        io.inventory.filename = "terzaghi_ic.spatialdb"
+        io._configure()
         io.write(data)
 
 #        data["values"][0]["name"] = "displacement_x"
 #        data["values"][1]["name"] = "displacement_y"
 #        data["values"][2]["name"] = "pressure"
 #        data["values"][3]["name"] = "trace_strain"
-#        io = createWriter("terzaghi_ic.spatialdb")
+#        io.inventory.filename = "terzaghi_ic.spatialdb"
+#        io._configure()
 #        io.write(data)
         return
 

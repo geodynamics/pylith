@@ -148,7 +148,7 @@ public:
        * @return RHS Jacobian kernel for tshift * 1/M (Jf0pp)
        */
       virtual
-      PetscPointJac getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+      PetscPointJac getKernelJf0pe(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
       /** Get kernel for RHS Jacobian G(t,s).
        *
@@ -157,7 +157,7 @@ public:
        * @return LHS jacobian kernel for biot coefficient.
        */
       virtual
-      PetscPointJac getKernelJf0pe(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+      PetscPointJac getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
       // ============================ DERIVED FIELDS ========================== //
 

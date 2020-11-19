@@ -67,15 +67,16 @@ pylith::fekernels::Poroelasticity::g0v_grav(const PylithInt dim,
     // Poroelasticity
     const PylithInt i_solid_density     = 0;
     const PylithInt i_fluid_density     = 1;
+    const PylithInt i_porosity     = 3;
 
     // 2 + n
-    const PylithInt i_gravityField = 3;
+    const PylithInt i_gravityField = 4;
 
-    const PylithScalar bulk_density = a[aOff[i_solid_density]]; //(1 - a[aOff[i_porosity]]) * a[aOff[i_density]] + a[aOff[i_porosity]] * a[aOff[i_fluidDensity]];
+    const PylithScalar bulkDensity = (1 - a[aOff[i_porosity]]) * a[aOff[i_solid_density]] + a[aOff[i_porosity]] * a[aOff[i_fluid_density]];
     const PylithScalar* gravityField = &a[aOff[i_gravityField]];
 
     for (PylithInt i = 0; i < dim; ++i) {
-        g0[i] += bulk_density * gravityField[i];
+        g0[i] += bulkDensity * gravityField[i];
     } // for
 
 } // g0v_grav
@@ -107,7 +108,7 @@ pylith::fekernels::Poroelasticity::g0v_bodyforce(const PylithInt dim,
   // Poroelasticity
 
   // 2 + n
-  const PylithInt i_bodyForce = 3;
+  const PylithInt i_bodyForce = 4;
 
   const PylithScalar* bodyForce = &a[aOff[i_bodyForce]];
 
@@ -144,18 +145,19 @@ pylith::fekernels::Poroelasticity::g0v_gravbodyforce(const PylithInt dim,
     // Poroelasticity
     const PylithInt i_solid_density = 0;
     const PylithInt i_fluid_density = 1;
+    const PylithInt i_porosity = 3;
 
     // 3 + n
-    const PylithInt i_bodyForce = 3;
-    const PylithInt i_gravityField = 4;
+    const PylithInt i_bodyForce = 4;
+    const PylithInt i_gravityField = 5;
 
-    const PylithScalar bulk_density =  a[aOff[i_solid_density]]; //(1 - a[aOff[i_porosity]]) * a[aOff[i_density]] + a[aOff[i_porosity]] * a[aOff[i_fluidDensity]];
+    const PylithScalar bulkDensity = (1 - a[aOff[i_porosity]]) * a[aOff[i_solid_density]] + a[aOff[i_porosity]] * a[aOff[i_fluid_density]];
     const PylithScalar* gravityField = &a[aOff[i_gravityField]];
     const PylithScalar* bodyForce = &a[aOff[i_bodyForce]];
 
     // gravity field
     for (PylithInt i = 0; i < dim; ++i) {
-        g0[i] += bulk_density * gravityField[i];
+        g0[i] += bulkDensity * gravityField[i];
     } // for
 
     // body force
@@ -206,23 +208,23 @@ pylith::fekernels::Poroelasticity::g0p_source(const PylithInt dim,
 // g0p function for isotropic linear Poroelasticity plane strain with source density, gravity, and body force.
 void
 pylith::fekernels::Poroelasticity::g0p_sourceDensity(const PylithInt dim,
-                                                                       const PylithInt numS,
-                                                                       const PylithInt numA,
-                                                                       const PylithInt sOff[],
-                                                                       const PylithInt sOff_x[],
-                                                                       const PylithScalar s[],
-                                                                       const PylithScalar s_t[],
-                                                                       const PylithScalar s_x[],
-                                                                       const PylithInt aOff[],
-                                                                       const PylithInt aOff_x[],
-                                                                       const PylithScalar a[],
-                                                                       const PylithScalar a_t[],
-                                                                       const PylithScalar a_x[],
-                                                                       const PylithReal t,
-                                                                       const PylithScalar x[],
-                                                                       const PylithInt numConstants,
-                                                                       const PylithScalar constants[],
-                                                                       PylithScalar g0p[]) {
+                                                       const PylithInt numS,
+                                                       const PylithInt numA,
+                                                       const PylithInt sOff[],
+                                                       const PylithInt sOff_x[],
+                                                       const PylithScalar s[],
+                                                       const PylithScalar s_t[],
+                                                       const PylithScalar s_x[],
+                                                       const PylithInt aOff[],
+                                                       const PylithInt aOff_x[],
+                                                       const PylithScalar a[],
+                                                       const PylithScalar a_t[],
+                                                       const PylithScalar a_x[],
+                                                       const PylithReal t,
+                                                       const PylithScalar x[],
+                                                       const PylithInt numConstants,
+                                                       const PylithScalar constants[],
+                                                       PylithScalar g0p[]) {
 
 
 
@@ -233,7 +235,7 @@ pylith::fekernels::Poroelasticity::g0p_sourceDensity(const PylithInt dim,
     // Poroelasticity
 
     // 3 + n
-    const PylithInt i_sourceDensity = 3;
+    const PylithInt i_sourceDensity = 4;
 
     const PylithInt _numS = 1; // Number passed on to g0p_source.
 
@@ -280,7 +282,7 @@ pylith::fekernels::Poroelasticity::g0p_sourceDensity_grav(const PylithInt dim,
     // Poroelasticity
 
     // 2 + n
-    const PylithInt i_sourceDensity = 4;
+    const PylithInt i_sourceDensity = 5;
 
     const PylithInt _numS = 1; // Number passed on to g0p_source.
 
@@ -325,7 +327,7 @@ pylith::fekernels::Poroelasticity::g0p_sourceDensity_body(const PylithInt dim,
     // Poroelasticity
 
     // 3 + n
-    const PylithInt i_sourceDensity = 4;
+    const PylithInt i_sourceDensity = 5;
 
     const PylithInt _numS = 1; // Number passed on to g0p_source.
 
@@ -371,7 +373,7 @@ pylith::fekernels::Poroelasticity::g0p_sourceDensity_grav_body(const PylithInt d
     // Poroelasticity
 
     // 3 + n
-    const PylithInt i_sourceDensity = 5;
+    const PylithInt i_sourceDensity = 6;
 
     const PylithInt _numS = 1; // Number passed on to g0p_source.
 
@@ -499,11 +501,12 @@ pylith::fekernels::Poroelasticity::Jg1eu(const PylithInt dim,
 } // Jg1eu
 
 // =====================================================================================================================
-// Kernels for linear isotropic poroelasticity
+// Kernels for poroelasticity plane strain.
 // =====================================================================================================================
 
+
 void
-pylith::fekernels::Poroelasticity::cauchyStrain(const PylithInt dim,
+pylith::fekernels::PoroelasticityPlaneStrain::cauchyStrain(const PylithInt dim,
                                                        const PylithInt numS,
                                                        const PylithInt numA,
                                                        const PylithInt sOff[],
@@ -521,9 +524,9 @@ pylith::fekernels::Poroelasticity::cauchyStrain(const PylithInt dim,
                                                        const PylithInt numConstants,
                                                        const PylithScalar constants[],
                                                        PylithScalar strain[]) {
-//    const PylithInt _dim = 2;
+    const PylithInt _dim = 2;
 
-//    assert(_dim == dim);
+    assert(_dim == dim);
     assert(numS >= 1);
     assert(sOff_x);
     assert(s_x);
@@ -533,31 +536,64 @@ pylith::fekernels::Poroelasticity::cauchyStrain(const PylithInt dim,
     const PylithInt i_disp = 0;
     const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
 
-    if (dim == 2) {
-        const PylithScalar strain_xx = disp_x[0*dim+0];
-        const PylithScalar strain_yy = disp_x[1*dim+1];
-        const PylithScalar strain_zz = 0.0;
-        const PylithScalar strain_xy = 0.5*(disp_x[0*dim+1] + disp_x[1*dim+0]);
+    const PylithScalar strain_xx = disp_x[0*_dim+0];
+    const PylithScalar strain_yy = disp_x[1*_dim+1];
+    const PylithScalar strain_zz = 0.0;
+    const PylithScalar strain_xy = 0.5*(disp_x[0*_dim+1] + disp_x[1*_dim+0]);
 
-        strain[0] = strain_xx;
-        strain[1] = strain_yy;
-        strain[2] = strain_zz;
-        strain[3] = strain_xy;
+    strain[0] = strain_xx;
+    strain[1] = strain_yy;
+    strain[2] = strain_zz;
+    strain[3] = strain_xy;
+} // cauchyStrain
 
-    } else if (dim == 3) {
+// =====================================================================================================================
+// Kernels for poroelasticity in 3D
+// =====================================================================================================================
 
-        const PylithScalar strain_xx = disp_x[0*dim+0];
-        const PylithScalar strain_yy = disp_x[1*dim+1];
-        const PylithScalar strain_zz = disp_x[2*dim+2];
-        const PylithScalar strain_xy = 0.5*(disp_x[0*dim+1] + disp_x[1*dim+0]);
-        const PylithScalar strain_yz = 0.5*(disp_x[1*dim+2] + disp_x[2*dim+1]);
-        const PylithScalar strain_xz = 0.5*(disp_x[0*dim+2] + disp_x[2*dim+0]);
 
-        strain[0] = strain_xx;
-        strain[1] = strain_yy;
-        strain[2] = strain_zz;
-        strain[3] = strain_xy;
-        strain[4] = strain_yz;
-        strain[5] = strain_xz;
-    }
+void
+pylith::fekernels::Poroelasticity3D::cauchyStrain(const PylithInt dim,
+                                                       const PylithInt numS,
+                                                       const PylithInt numA,
+                                                       const PylithInt sOff[],
+                                                       const PylithInt sOff_x[],
+                                                       const PylithScalar s[],
+                                                       const PylithScalar s_t[],
+                                                       const PylithScalar s_x[],
+                                                       const PylithInt aOff[],
+                                                       const PylithInt aOff_x[],
+                                                       const PylithScalar a[],
+                                                       const PylithScalar a_t[],
+                                                       const PylithScalar a_x[],
+                                                       const PylithReal t,
+                                                       const PylithScalar x[],
+                                                       const PylithInt numConstants,
+                                                       const PylithScalar constants[],
+                                                       PylithScalar strain[]) {
+    const PylithInt _dim = 3;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(sOff_x);
+    assert(s_x);
+    assert(strain);
+
+    // Incoming solution field.
+    const PylithInt i_disp = 0;
+    const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
+
+    const PylithScalar strain_xx = disp_x[0*_dim+0];
+    const PylithScalar strain_yy = disp_x[1*_dim+1];
+    const PylithScalar strain_zz = disp_x[2*_dim+2];
+    const PylithScalar strain_xy = 0.5*(disp_x[0*_dim+1] + disp_x[1*_dim+0]);
+    const PylithScalar strain_yz = 0.5*(disp_x[1*_dim+2] + disp_x[2*_dim+1]);
+    const PylithScalar strain_xz = 0.5*(disp_x[0*_dim+2] + disp_x[2*_dim+0]);
+
+    strain[0] = strain_xx;
+    strain[1] = strain_yy;
+    strain[2] = strain_zz;
+    strain[3] = strain_xy;
+    strain[4] = strain_yz;
+    strain[5] = strain_xz;
 } // cauchyStrain

@@ -25,7 +25,7 @@
 #include <cassert> // USES assert()
 
 // =====================================================================================================================
-// Kernels for isotropic, linear elatsicity plane strain.
+// Kernels for isotropic, linear elasticity plane strain.
 // =====================================================================================================================
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -522,7 +522,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::meanStress_refstate(con
     const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
 
     const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
-    const PylithScalar* refstress = &a[aOff[i_rstress]]; // stress_xx, stress_yy, streass_zz, stress_xy
+    const PylithScalar* refstress = &a[aOff[i_rstress]]; // stress_xx, stress_yy, stress_zz, stress_xy
     const PylithScalar* refstrain = &a[aOff[i_rstrain]]; // strain_xx, strain_yy, strain_zz, strain_xy
 
     const PylithReal strainTrace = disp_x[0*_dim+0] + disp_x[1*_dim+1];

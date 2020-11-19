@@ -39,13 +39,15 @@ rho_s = 2500 # kg / m**3
 rho_f = 1000 # kg / m**3
 mu_f = 1.0 # Pa*s
 G = 3.0 # Pa
-K_u = 9.76 # Pa
+K_sg = 10.0 # Pa
+K_fl = 8.0 # Pa
+K_d = 4.0 # Pa
+#K_u = 2.6941176470588233 # Pa
 alpha = 0.6 # -
-M = 16.0 # Pa
+phi = 0.1 # -
+#M = 4.705882352941176# Pa
 k = 1.5 # m**2
 
-zmax = 10.0 # m
-zmin = 0.0 # m
 ymax = 10.0 # m
 ymin = 0.0 # m
 xmax = 1.0 # m
@@ -56,7 +58,9 @@ P_0 = 1.0 # Pa
 L = ymax - ymin
 H = xmax - xmin
 
-K_d = K_u - alpha*alpha*M # Pa,      Cheng (B.5)
+M = 1.0 / ( phi / K_fl + ( alpha - phi ) / K_sg ) # Pa
+K_u = K_d + alpha*alpha*M # Pa,      Cheng (B.5)
+#K_d = K_u - alpha*alpha*M # Pa,      Cheng (B.5)
 nu = (3.0*K_d - 2.0*G) / (2.0*(3.0*K_d + G)) # -,       Cheng (B.8)
 nu_u = (3.0*K_u - 2.0*G) / (2.0*(3.0*K_u + G)) # -,       Cheng (B.9)
 eta = (3.0*alpha*G) /(3.0*K_d + 4.0*G) #  -,       Cheng (B.11)
@@ -77,18 +81,19 @@ class AnalyticalSoln(object):
     """
     SPACE_DIM = 2
     TENSOR_SIZE = 4
-    ITERATIONS = 15000
+    ITERATIONS = 25000
 
     def __init__(self):
         self.fields = {
             "displacement": self.displacement,
             "pressure": self.pressure,
+            "porosity": self.porosity,
             "trace_strain": self.trace_strain,
             "solid_density": self.solid_density,
             "fluid_density": self.fluid_density,
             "fluid_viscosity": self.fluid_viscosity,
             "shear_modulus": self.shear_modulus,
-            "undrained_bulk_modulus": self.undrained_bulk_modulus,
+            "drained_bulk_modulus": self.drained_bulk_modulus,
             "biot_coefficient": self.biot_coefficient,
             "biot_modulus": self.biot_modulus,
             "isotropic_permeability": self.isotropic_permeability,
@@ -112,13 +117,13 @@ class AnalyticalSoln(object):
 
     def zero_scalar(self, locs):
         (npts, dim) = locs.shape
-        ntpts = tsteps.shape[0]        
-        return numpy.zeros((ntpts, npts, 1), dtype=numpy.float64)
+        ntpts = tsteps.shape[0]
+        return numpy.zeros((1, npts, 1), dtype=numpy.float64)
 
     def zero_vector(self, locs):
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
-        return numpy.zeros((ntpts, npts, self.SPACE_DIM), dtype=numpy.float64)
+        return numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
 
     def solid_density(self, locs):
         """
@@ -144,6 +149,14 @@ class AnalyticalSoln(object):
         shear_modulus = G * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return shear_modulus
 
+    def porosity(self, locs):
+        """
+        Compute porosity field at locations.
+        """
+        (npts, dim) = locs.shape
+        porosity = phi * numpy.ones((1, npts, 1), dtype=numpy.float64)
+        return porosity
+
     def fluid_viscosity(self, locs):
         """
         Compute fluid_viscosity field at locations.
@@ -152,12 +165,12 @@ class AnalyticalSoln(object):
         fluid_viscosity = mu_f * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return fluid_viscosity
 
-    def undrained_bulk_modulus(self, locs):
+    def drained_bulk_modulus(self, locs):
         """
         Compute undrained bulk modulus field at locations.
         """
         (npts, dim) = locs.shape
-        undrained_bulk_modulus = K_u * numpy.ones((1, npts, 1), dtype=numpy.float64)
+        undrained_bulk_modulus = K_d * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return undrained_bulk_modulus
 
     def biot_coefficient(self, locs):
@@ -191,7 +204,7 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
         displacement = numpy.zeros((ntpts, npts, dim), dtype=numpy.float64)
-        z = locs[:,1] 
+        z = locs[:,1]
         t_track = 0
         z_star = z/L
 
@@ -212,7 +225,7 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
         pressure = numpy.zeros((ntpts, npts, 1), dtype=numpy.float64)
-        z = locs[:,1] 
+        z = locs[:,1]
         t_track = 0
 
         for t in tsteps:
@@ -230,7 +243,7 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
         trace_strain = numpy.zeros((ntpts, npts, 1), dtype=numpy.float64)
-        z = locs[:,1] 
+        z = locs[:,1]
         t_track = 0
 
         for t in tsteps:
@@ -309,16 +322,16 @@ class AnalyticalSoln(object):
         traction[:, :, 0] = 0.0
         traction[:, :, 1] = P_0
         return traction
-        
+
     def initial_displacement(self, locs):
         """
         Compute initial displacement at locations
         """
         (npts, dim) = locs.shape
         displacement = numpy.zeros((1, npts, dim), dtype=numpy.float64)
-        z = locs[:,1] 
-        z_star = z/L        
-        
+        z = locs[:,1]
+        z_star = z/L
+
         displacement[0,:,1] = ( (P_0*L*(1.0 - 2.0*nu_u) ) / (2.0*G*(1.0 - nu_u)) ) * (1.0 - z_star)
         return displacement
 
@@ -328,13 +341,12 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         pressure = numpy.zeros((1, npts), dtype=numpy.float64)
-        z = locs[:,1] 
-        z_star = z/L        
+        z = locs[:,1]
 
         pressure[0,:] = (P_0 * eta) / (G * S)
-        
+
         return pressure
-        
+
     def initial_trace_strain(self, locs):
         """
         Compute initial trace strain field at locations.
@@ -342,12 +354,12 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
 
         trace_strain = numpy.zeros((1, npts), dtype=numpy.float64)
-        z = locs[:,1] 
+        z = locs[:,1]
         z_star = z/L
 
         trace_strain[0,:] = -(P_0*(1.0 - 2.0*nu_u)) / (2.0*G*(1.0 - nu_u))
 
-        return trace_strain        
-        
+        return trace_strain
+
 
 # End of file

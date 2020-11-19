@@ -71,9 +71,9 @@ class Quad(object):
     }
     MATERIALS = {
         "poroelastic": {
-            "ncells": 100,
+            "ncells": 160,
             "ncorners": 4,
-            "nvertices": 121,
+            "nvertices": 205,
         }
     }
     BOUNDARIES = {

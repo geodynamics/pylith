@@ -36,18 +36,6 @@ public:
             /// Deallocate PETSc and local data structures.
             void deallocate(void);
 
-            /** Include inertia?
-             *
-             * @param[in] value Flag indicating to include inertial term.
-             */
-            void useInertia(const bool value);
-
-            /** Include inertia?
-             *
-             * @returns True if including inertial term, false otherwise.
-             */
-            bool useInertia(void) const;
-
             /** Include body force?
              *
              * @param[in] value Flag indicating to include body force term.
@@ -59,6 +47,18 @@ public:
              * @returns True if including body force term, false otherwise.
              */
             bool useBodyForce(void) const;
+
+            /** Include source density?
+             *
+             * @param[in] value Flag indicating to include source density term.
+             */
+            void useSourceDensity(const bool value);
+
+            /** Include source density?
+             *
+             * @returns True if including source density term, false otherwise.
+             */
+            bool useSourceDensity(void) const;
 
             /** Set bulk rheology.
              *
@@ -120,6 +120,12 @@ protected:
              * @param[in] dt Current time step.
              */
             void _updateKernelConstants(const PylithReal dt);
+
+            /** Get derived factory associated with physics.
+             *
+             * @return Derived factory for physics object.
+             */
+            pylith::topology::FieldFactory* _getDerivedFactory(void);            
 
         }; // class Poroelasticity
 

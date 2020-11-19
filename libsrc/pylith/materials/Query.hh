@@ -94,6 +94,16 @@ public:
                             spatialdata::spatialdb::GravityField* gravityField,
                             const size_t spaceDim);
 
+    /** Setup subfield query in auxiliary factory for bulk modulus from  gravity field from input parameters.
+     *
+     * @param[in] subfieldName Name for shear modulus subfield.
+     * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
+     */
+    static
+    void biotModulusFromInput(const char* subfieldName,
+                            pylith::feassemble::AuxiliaryFactory* factory);
+
+
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
