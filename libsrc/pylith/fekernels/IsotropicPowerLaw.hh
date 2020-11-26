@@ -415,7 +415,6 @@ public:
                                       PylithScalar visStrain[]);
 
     /** Calculate stress for 2-D plane strain isotropic power-law
-     * WITHOUT a reference stress and strain.
      *
      * Used in outputing the stress field.
      *
@@ -442,36 +441,6 @@ public:
                       const PylithInt numConstants,
                       const PylithScalar constants[],
                       PylithScalar stressVector[]);
-
-    /** Calculate stress for 2-D plane strain isotropic power-law
-     * WITH a reference stress/strain.
-     *
-     * Used in outputing the stress field.
-     *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., reference_stress(4), reference_strain(4), shear_modulus(1), bulk_modulus(1),
-     *                    power_law_reference_strain_rate(1), power_law_reference_stress(1), power_law_exponent(1),
-     *                    viscous_strain(4), stress(4)]
-     */
-    static
-    void cauchyStress_refstate(const PylithInt dim,
-                               const PylithInt numS,
-                               const PylithInt numA,
-                               const PylithInt sOff[],
-                               const PylithInt sOff_x[],
-                               const PylithScalar s[],
-                               const PylithScalar s_t[],
-                               const PylithScalar s_x[],
-                               const PylithInt aOff[],
-                               const PylithInt aOff_x[],
-                               const PylithScalar a[],
-                               const PylithScalar a_t[],
-                               const PylithScalar a_x[],
-                               const PylithReal t,
-                               const PylithScalar x[],
-                               const PylithInt numConstants,
-                               const PylithScalar constants[],
-                               PylithScalar stressVector[]);
 
 }; // IsotropicPowerLawPlaneStrain
 
@@ -746,7 +715,7 @@ public:
                                       const PylithScalar constants[],
                                       PylithScalar visStrain[]);
 
-    /** Calculate stress for 3-D isotropic power-law viscoelasticity WITHOUT a reference stress and strain.
+    /** Calculate stress for 3-D isotropic power-law viscoelasticity
      *
      * Used in outputing the stress field.
      *
@@ -773,35 +742,6 @@ public:
                       const PylithInt numConstants,
                       const PylithScalar constants[],
                       PylithScalar stressVector[]);
-
-    /** Calculate stress for 3-D isotropic power-law viscoelasticity WITH a reference stress/strain.
-     *
-     * Used in outputing the stress field.
-     *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., reference_stress(4), reference_strain(4), shear_modulus(1), bulk_modulus(1),
-     *                    power_law_reference_strain_rate(1), power_law_reference_stress(1), power_law_exponent(1),
-     *                    viscous_strain(4), stress(4)]
-     */
-    static
-    void cauchyStress_refstate(const PylithInt dim,
-                               const PylithInt numS,
-                               const PylithInt numA,
-                               const PylithInt sOff[],
-                               const PylithInt sOff_x[],
-                               const PylithScalar s[],
-                               const PylithScalar s_t[],
-                               const PylithScalar s_x[],
-                               const PylithInt aOff[],
-                               const PylithInt aOff_x[],
-                               const PylithScalar a[],
-                               const PylithScalar a_t[],
-                               const PylithScalar a_x[],
-                               const PylithReal t,
-                               const PylithScalar x[],
-                               const PylithInt numConstants,
-                               const PylithScalar constants[],
-                               PylithScalar stressVector[]);
 
 }; // IsotropicPowerLaw3D
 // ---------------------------------------------------------------------------------------------------------------------

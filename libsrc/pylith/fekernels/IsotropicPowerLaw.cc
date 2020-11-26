@@ -26,6 +26,7 @@
 #include <cassert> // USES assert()
 #include <cmath> // USES exp()
 #include <stdexcept> // USES runtime_error
+#include <iostream> // USES std::cout
 
 // =====================================================================================================================
 // Kernels for isotropic power-law viscoelastic material.
@@ -1355,8 +1356,9 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate(co
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Calculate stress for 2-D plane strain isotropic power-law viscoelastic material WITHOUT a reference stress and
-// strain.
+// Calculate stress for 2-D plane strain isotropic power-law viscoelastic material.
+// Assumption is that stress state variable has already been updated, which means
+// that the Cauchy stress is just the value of the state variable.
 void
 pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress(const PylithInt dim,
                                                               const PylithInt numS,
@@ -1406,113 +1408,12 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress(const PylithInt di
     assert(aOff[i_viscousStrain] >= 0);
     assert(aOff[i_stress] >= 0);
 
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+    const PylithScalar* stressTpdt = &a[aOff[i_stress]];
+    for (PylithInt i = 0; i < 4; ++i) {
+        stressVector[i] = stressTpdt[i];
+    } // for
 
-    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
-                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_stress]};
-
-    PylithScalar stressTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
-    IsotropicLinearElasticityPlaneStrain::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL,
-                                                     a, a_t, NULL, t, x, numConstants, constants, stressTensor);
-    stressVector[0] = stressTensor[0];
-    stressVector[1] = stressTensor[0];
-    stressVector[2] = stressTensor[0];
-    stressVector[3] = 0.0;
-
-    // Compute deviatoric stress vector (4 components).
-    deviatoricStress4(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                      t, x, numConstants, constants, stressVector);
-
-} // stress
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Calculate stress for 2-D plane strain isotropic linear power-law viscoelastic material WITH a reference
-// stress/strain.
-void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress_refstate(const PylithInt dim,
-                                                                       const PylithInt numS,
-                                                                       const PylithInt numA,
-                                                                       const PylithInt sOff[],
-                                                                       const PylithInt sOff_x[],
-                                                                       const PylithScalar s[],
-                                                                       const PylithScalar s_t[],
-                                                                       const PylithScalar s_x[],
-                                                                       const PylithInt aOff[],
-                                                                       const PylithInt aOff_x[],
-                                                                       const PylithScalar a[],
-                                                                       const PylithScalar a_t[],
-                                                                       const PylithScalar a_x[],
-                                                                       const PylithReal t,
-                                                                       const PylithScalar x[],
-                                                                       const PylithInt numConstants,
-                                                                       const PylithScalar constants[],
-                                                                       PylithScalar stressVector[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_rstress = numA-9;
-    const PylithInt i_rstrain = numA-8;
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 9);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
-    assert(aOff[i_powerLawReferenceStress] >= 0);
-    assert(aOff[i_powerLawExponent] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
-    assert(aOff[i_rstress] >= 0);
-    assert(aOff[i_rstrain] >= 0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 3; // Pass bulk modulus, reference stress, and reference strain.
-    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
-                                  aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrain],
-                                  aOff[i_stress]};
-
-    PylithScalar stressTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
-    IsotropicLinearElasticityPlaneStrain::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean,
-                                                              NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
-    stressVector[0] = stressTensor[0];
-    stressVector[1] = stressTensor[0];
-    stressVector[2] = stressTensor[0];
-    stressVector[3] = 0.0;
-
-    // Compute deviatoric stress vector (4 components).
-    deviatoricStress4_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                               t, x, numConstants, constants, stressVector);
-
-} // stress_refstate
+} // cauchyStress
 
 
 // =====================================================================================================================
@@ -1798,6 +1699,18 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
     PylithReal C2323 = C1212;
     PylithReal C3311 = C1122;
     PylithReal C3333 = C1111;
+#if 1
+    std::cout << "Elastic Jacobian:" << std::endl;
+    std::cout << "    C1111:" << C1111 << std::endl;
+    std::cout << "    C1122:" << C1122 << std::endl;
+    std::cout << "    C1212:" << C1212 << std::endl;
+    std::cout << "    C1313:" << C1313 << std::endl;
+    std::cout << "    C2211:" << C2211 << std::endl;
+    std::cout << "    C2222:" << C2222 << std::endl;
+    std::cout << "    C2323:" << C2323 << std::endl;
+    std::cout << "    C3311:" << C3311 << std::endl;
+    std::cout << "    C3333:" << C3333 << std::endl;
+#endif
 
     // Compute viscoelastic Jacobian if effective stress is nonzero.
     if (j2Tpdt != 0.0 && j2Tau != 0.0) {
@@ -1827,6 +1740,18 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
                                     factor4*devStressTpdt[2]*devStressT[2] + ae));
         C3333 = bulkModulus + 2/(3*(factor3*devStressTpdt[2]*devStressTpdt[2] + factor1 +
                                     factor4*devStressTpdt[2]*devStressT[2] + ae));
+#if 1
+    std::cout << "Viscoelastic Jacobian:" << std::endl;
+    std::cout << "    C1111:" << C1111 << std::endl;
+    std::cout << "    C1122:" << C1122 << std::endl;
+    std::cout << "    C1212:" << C1212 << std::endl;
+    std::cout << "    C1313:" << C1313 << std::endl;
+    std::cout << "    C2211:" << C2211 << std::endl;
+    std::cout << "    C2222:" << C2222 << std::endl;
+    std::cout << "    C2323:" << C2323 << std::endl;
+    std::cout << "    C3311:" << C3311 << std::endl;
+    std::cout << "    C3333:" << C3333 << std::endl;
+#endif
     } // if
 
     /* j(f,g,df,dg) = C(f,df,g,dg)
@@ -3033,118 +2958,12 @@ pylith::fekernels::IsotropicPowerLaw3D::cauchyStress(const PylithInt dim,
     assert(aOff[i_viscousStrain] >= 0);
     assert(aOff[i_stress] >= 0);
 
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+    const PylithScalar* stressTpdt = &a[aOff[i_stress]];
+    for (PylithInt i = 0; i < 6; ++i) {
+        stressVector[i] = stressTpdt[i];
+    } // for
 
-    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
-                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_stress]};
-
-    PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    IsotropicLinearElasticity3D::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
-                                            aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
-
-    // Compute deviatoric stress (4 components).
-    deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                     t, x, numConstants, constants, stressTensor);
-
-    stressVector[0] = stressTensor[0];
-    stressVector[1] = stressTensor[4];
-    stressVector[2] = stressTensor[8];
-    stressVector[3] = stressTensor[1];
-    stressVector[4] = stressTensor[5];
-    stressVector[5] = stressTensor[2];
-
-} // stress
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Calculate stress for 3-D isotropic power-law viscoelastic material WITH a reference stress/strain.
-void
-pylith::fekernels::IsotropicPowerLaw3D::cauchyStress_refstate(const PylithInt dim,
-                                                              const PylithInt numS,
-                                                              const PylithInt numA,
-                                                              const PylithInt sOff[],
-                                                              const PylithInt sOff_x[],
-                                                              const PylithScalar s[],
-                                                              const PylithScalar s_t[],
-                                                              const PylithScalar s_x[],
-                                                              const PylithInt aOff[],
-                                                              const PylithInt aOff_x[],
-                                                              const PylithScalar a[],
-                                                              const PylithScalar a_t[],
-                                                              const PylithScalar a_x[],
-                                                              const PylithReal t,
-                                                              const PylithScalar x[],
-                                                              const PylithInt numConstants,
-                                                              const PylithScalar constants[],
-                                                              PylithScalar stressVector[]) {
-    const PylithInt _dim = 3;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_rstress = numA-9;
-    const PylithInt i_rstrain = numA-8;
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 9);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
-    assert(aOff[i_powerLawReferenceStress] >= 0);
-    assert(aOff[i_powerLawExponent] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
-    assert(aOff[i_rstress] >= 0);
-    assert(aOff[i_rstrain] >= 0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 3; // Pass bulk modulus, reference stress, and reference strain.
-    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
-                                  aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrain],
-                                  aOff[i_stress]};
-
-    PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-    IsotropicLinearElasticity3D::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
-                                                     aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
-
-    // Compute deviatoric stress tensor.
-    deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                              t, x, numConstants, constants, stressTensor);
-
-    stressVector[0] = stressTensor[0];
-    stressVector[1] = stressTensor[4];
-    stressVector[2] = stressTensor[8];
-    stressVector[3] = stressTensor[1];
-    stressVector[4] = stressTensor[5];
-    stressVector[5] = stressTensor[2];
-
-} // stress_refstate
+} // cauchyStress
 
 
 // =====================================================================================================================

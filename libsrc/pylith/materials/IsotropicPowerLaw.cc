@@ -161,10 +161,8 @@ pylith::materials::IsotropicPowerLaw::getKernelDerivedCauchyStress(const spatial
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFunc kernel =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::cauchyStress :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::cauchyStress_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress_refstate :
+        (3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::cauchyStress :
+        (2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress :
         NULL;
 
     PYLITH_METHOD_RETURN(kernel);
