@@ -22,7 +22,7 @@
 
 #include "pylith/materials/RheologyPoroelasticity.hh" // HASA RheologyPoroelasticity
 #include "pylith/materials/AuxiliaryFactoryPoroelastic.hh" // USES AuxiliaryFactory
-#include "pylith/materials/DerivedFactoryPoroelasticity.hh" // USES DerivedFactoryPoroelasticity
+#include "pylith/materials/DerivedFactoryElasticity.hh" // USES DerivedFactoryElasticity
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
@@ -53,7 +53,7 @@ pylith::materials::Poroelasticity::Poroelasticity(void) :
     _useSourceDensity(false),
     _useReferenceState(false),
     _rheology(NULL),
-    _derivedFactory(new pylith::materials::DerivedFactoryPoroelasticity) {
+    _derivedFactory(new pylith::materials::DerivedFactoryElasticity) {
     pylith::utils::PyreComponent::setName("poroelasticity");
 } // constructor
 
@@ -332,30 +332,13 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
     // is the integer in order that describes where the source density auxiliary
     // is.
     const int bitSourceDensity = _useSourceDensity ? 0x1 : 0x0;
-    const int bitGravityField = _gravityField ? 0x2 : 0x0;
-    const int bitBodyForce = _useBodyForce ? 0x4 : 0x0;
-    const int bitUse = bitSourceDensity | bitGravityField | bitBodyForce;
+    const int bitUse = bitSourceDensity;
 
     PetscPointFunc g0p = NULL;
 
     switch (bitUse) {
     case 0x1:
         g0p = pylith::fekernels::Poroelasticity::g0p_sourceDensity;
-        break;
-    case 0x2: // Use NULL
-        break;
-    case 0x4: // Use NULL
-        break;
-    case 0x3:
-        g0p = pylith::fekernels::Poroelasticity::g0p_sourceDensity_grav;
-        break;
-    case 0x5:
-        g0p = pylith::fekernels::Poroelasticity::g0p_sourceDensity_body;
-        break;
-    case 0x6: // Use NULL
-        break;
-    case 0x7:
-        g0p = pylith::fekernels::Poroelasticity::g0p_sourceDensity_grav_body;
         break;
     case 0x0: // Use NULL
         break;

@@ -29,7 +29,6 @@ subpkginclude_HEADERS = \
 	AuxiliaryFactoryPoroelasticity.hh \
 	AuxiliaryFactoryPoroelastic.hh \
 	DerivedFactoryElasticity.hh \
-	DerivedFactoryPoroelasticity.hh \
 	IsotropicLinearElasticity.hh \
 	IsotropicLinearMaxwell.hh \
 	IsotropicLinearGenMaxwell.hh \

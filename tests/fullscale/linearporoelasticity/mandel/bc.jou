@@ -1,25 +1,34 @@
 # ----------------------------------------------------------------------
-# Generate geometry
+# Create blocks for materials
 # ----------------------------------------------------------------------
-playback 'geometry.jou'
+block 1 surface 1
+block 1 name "poroelastic"
+block 1 element type tri
 
 # ----------------------------------------------------------------------
-# Set discretization size
+# Create nodeset for -x edge
 # ----------------------------------------------------------------------
-#surface all size 1.0
+group "x_neg" add node in curve 1
+nodeset 1 group x_neg
+nodeset 1 name "x_neg"
 
 # ----------------------------------------------------------------------
-# Generate the mesh
+# Create nodeset for +y edge
 # ----------------------------------------------------------------------
-surface all scheme trimesh
-mesh surface all
+group "y_pos" add node in curve  2
+nodeset 2 group y_pos
+nodeset 2 name "y_pos"
 
 # ----------------------------------------------------------------------
-# Mark entities for boundary conditions, etc.
+# Create nodeset for +x edge
 # ----------------------------------------------------------------------
-playback 'bc.jou'
+group "x_pos" add node in curve 3
+nodeset 3 group x_pos
+nodeset 3 name "x_pos"
 
 # ----------------------------------------------------------------------
-# Export exodus file
+# Create nodeset for -y edge Dirichlet
 # ----------------------------------------------------------------------
-export mesh "mesh_tri.exo" dimension 2 overwrite
+group "y_neg" add node in curve  4
+nodeset 4 group y_neg
+nodeset 4 name "y_neg"

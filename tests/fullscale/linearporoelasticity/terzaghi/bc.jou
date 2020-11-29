@@ -1,59 +1,41 @@
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 surface 4 5
-block 1 name "poroelastic_xneg"
-
-block 2 surface 3
-block 2 name "poroelastic_xpos"
-
-# ----------------------------------------------------------------------
-# Create nodeset for faults
-# ----------------------------------------------------------------------
-group "fault_x" add node in curve 5
-nodeset 10 group fault_x
-nodeset 10 name "fault_x"
-
-group "fault_x2" add node in curve 10
-nodeset 11 group fault_x2
-nodeset 11 name "fault_x2"
-
-# ----------------------------------------------------------------------
-# Create nodeset for +x edge
-# ----------------------------------------------------------------------
-group "edge_xpos" add node in curve 3
-nodeset 20 group edge_xpos
-nodeset 20 name "edge_xpos"
+block 1 surface 1
+block 1 name "poroelastic"
+block 1 element type quad
 
 # ----------------------------------------------------------------------
 # Create nodeset for -x edge
 # ----------------------------------------------------------------------
-group "edge_xneg" add node in curve 1
-nodeset 21 group edge_xneg
-nodeset 21 name "edge_xneg"
+group "x_neg" add node in curve 1
+nodeset 1 group x_neg
+nodeset 1 name "x_neg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +y edge
 # ----------------------------------------------------------------------
-group "edge_ypos" add node in curve  8
-group "edge_ypos" add node in curve 11
-group "edge_ypos" add node in curve 14
-nodeset 22 group edge_ypos
-nodeset 22 name "edge_ypos"
+group "y_pos" add node in curve  2
+nodeset 2 group y_pos
+nodeset 2 name "y_pos"
 
 # ----------------------------------------------------------------------
-# Create nodeset for -y edge
+# Create nodeset for +x edge
 # ----------------------------------------------------------------------
-group "edge_yneg" add node in curve  9
-group "edge_yneg" add node in curve 12
-group "edge_yneg" add node in curve 13
-nodeset 23 group edge_yneg
-nodeset 23 name "edge_yneg"
+group "x_pos" add node in curve 3
+nodeset 3 group x_pos
+nodeset 3 name "x_pos"
 
 # ----------------------------------------------------------------------
-# Create nodeset for -y edge w/o overlap with fault
+# Create nodeset for -y edge Dirichlet
 # ----------------------------------------------------------------------
-group "edge_yneg_nofault" add node in edge_yneg
-group "edge_yneg_nofault" remove node in fault_x
-nodeset 24 group edge_yneg_nofault
-nodeset 24 name "edge_yneg_nofault"
+group "y_neg_dir" add node in curve  4
+nodeset 4 group y_neg_dir
+nodeset 4 name "y_neg_dir"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y edge Neumann
+# ----------------------------------------------------------------------
+group "y_neg_neu" add node in curve  4
+nodeset 5 group y_neg_neu
+nodeset 5 name "y_neg_neu"

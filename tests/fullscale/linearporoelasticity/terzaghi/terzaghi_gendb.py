@@ -80,13 +80,6 @@ class GenerateDB(object):
         io._configure()
         io.write(data)
 
-#        data["values"][0]["name"] = "displacement_x"
-#        data["values"][1]["name"] = "displacement_y"
-#        data["values"][2]["name"] = "pressure"
-#        data["values"][3]["name"] = "trace_strain"
-#        io.inventory.filename = "terzaghi_ic.spatialdb"
-#        io._configure()
-#        io.write(data)
         return
 
 

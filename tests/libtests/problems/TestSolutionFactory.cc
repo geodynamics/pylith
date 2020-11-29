@@ -104,7 +104,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
     info.index = 0;
     _data->subfields["pressure"] = info;
 
-    // fluid_pressure
+    // trace_strain
     componentNames.resize(1);
     componentNames[0] = "trace_strain";
     info.description = pylith::topology::Field::Description(
@@ -113,7 +113,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->1;
+        _data->normalizer->getLengthScale() / _data->normalizer->getLengthScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 2, -1, -1, pylith::topology::Field::DEFAULT_BASIS, true, pylith::topology::Field::POLYNOMIAL_SPACE
@@ -236,7 +236,7 @@ pylith::problems::TestSolutionFactory::testPressure(void) {
     CPPUNIT_ASSERT(!_solution->hasSubfield("trace_strain"));
 
     _factory->addPressure(_data->subfields["pressure"].fe);
-    _factory->addFluidPressure(_data->subfields["trace_strain"].fe);
+    _factory->addTraceStrain(_data->subfields["trace_strain"].fe);
 
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_data->normalizer);

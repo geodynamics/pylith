@@ -233,7 +233,7 @@ private:
     bool _useReferenceState;   ///< Flag to use reference stress and strain.
     bool _useSourceDensity;   ///< Flag to use source density.
     pylith::materials::RheologyPoroelasticity* _rheology; ///< Bulk rheology for elasticity.
-    pylith::materials::DerivedFactoryPoroelasticity* _derivedFactory; ///< Factory for creating derived fields.
+    pylith::materials::DerivedFactoryElasticity* _derivedFactory; ///< Factory for creating derived fields.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
