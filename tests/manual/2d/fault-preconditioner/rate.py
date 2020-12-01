@@ -11,6 +11,15 @@ i2mult = numpy.array([
     [119, 19.9],
     [172, 95.3],
     ])
+i3lower = numpy.array([
+    [30, 2.6],
+    [47, 2.7],
+    [70, 2.8],
+    [98, 5.1],
+    [156, 8.3],
+    [239, 31.1],
+    [391, 160.7],
+    ])
 i2user = numpy.array([ # rtol=1.0e-4
     [17+7, 3.6],
     [32, 2.6],
@@ -20,7 +29,7 @@ i2user = numpy.array([ # rtol=1.0e-4
     [46, 80.3],
     [49, 445.1],
     ])
-i3user = numpy.array([ # rtol=0.01
+i3user = numpy.array([ # rtol=1.0e-2
     [38, 2.9],
     [54, 2.7],
     [72, 3.4],
@@ -55,6 +64,7 @@ class Figure():
         self.plot(dof, i3user[:,0], i3user[:,1], "v3 Schur upper + user")
         self.plot(dof, i2user[:,0], i2user[:,1], "v2 Schur upper + user")
         self.plot(dof, i2mult[:,0], i2mult[:,1], "v2 Custom PC w/mult")
+        self.plot(dof, i3lower[:,0], i3lower[:,1], "v3 Schur lower + selfp")
 
         self.axR.legend(loc="upper left")
         pyplot.show()
