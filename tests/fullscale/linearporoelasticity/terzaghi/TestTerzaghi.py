@@ -140,7 +140,7 @@ class TestTri(TestCase, meshes.Tri):
 def test_cases():
     return [
         TestQuad,
-#        TestTri,
+        TestTri,
     ]
 
 

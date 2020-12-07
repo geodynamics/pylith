@@ -86,21 +86,6 @@ class TestCase(FullTestCase):
             check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
-    # def test_bcneumann_info(self):
-    #     vertexFields = ["initial_amplitude"]
-    #     for bc in self.NEUMANN_BOUNDARIES:
-    #         self.exactsoln.key = bc
-    #         filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-    #         check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
-    #     return
-    #
-    # def test_bcneumann_solution(self):
-    #     vertexFields = ["displacement", "pressure", "trace_strain"]
-    #     for bc in self.NEUMANN_BOUNDARIES:
-    #         filename = "output/{}-{}.h5".format(self.NAME, bc)
-    #         check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
-    #     return
-
 # ----------------------------------------------------------------------------------------------------------------------
 class TestQuad(TestCase, meshes.Quad):
     NAME = "mandel_quad"
@@ -125,7 +110,7 @@ class TestTri(TestCase, meshes.Tri):
 def test_cases():
     return [
         TestQuad,
-#        TestTri,
+        TestTri,
     ]
 
 
