@@ -360,7 +360,7 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
         g0v = pylith::fekernels::Poroelasticity::g0v_gravbodyforce;
         g0p = pylith::fekernels::Poroelasticity::g0p_sourceDensity_grav_body;  // aOff for sourceDensity is 5
         break;
-    case 0x0: {
+    case 0x0:
             break;
     default:
             PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
