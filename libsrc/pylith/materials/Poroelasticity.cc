@@ -327,24 +327,43 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
     // quasi-static to dynamic
 
     // Generate pressure residuals
-
-    // The following nonsense serves only to point to kernels whose only distinction
-    // is the integer in order that describes where the source density auxiliary
-    // is.
-    const int bitSourceDensity = _useSourceDensity ? 0x1 : 0x0;
-    const int bitUse = bitSourceDensity;
+    const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
+    const int bitGravity = _gravityField ? 0x2 : 0x0;
+    const int bitSourceDensity = _useSourceDensity ? 0x4 : 0x0;
+    const int bitUse = bitBodyForce | bitGravity | bitSourceDensity;
 
     PetscPointFunc g0p = NULL;
+    PetscPointFunc g0v = NULL; // serves as displacement in QS, velocity in DYN
 
     switch (bitUse) {
     case 0x1:
-        g0p = pylith::fekernels::Poroelasticity::g0p_sourceDensity;
+        g0v = pylith::fekernels::Poroelasticity::g0v_bodyforce;
         break;
-    case 0x0: // Use NULL
+    case 0x2:
+        g0v = pylith::fekernels::Poroelasticity::g0v_gravity;
         break;
+    case 0x4:
+        g0p = pylith::fekernels::Poroelasticity::g0p_sourceDensity; // aOff for sourceDensity is 3
+        break;
+    case 0x3:
+        g0v = pylith::fekernels::Poroelasticity::g0v_gravity_bodyforce;
+        break;
+    case 0x5:
+        g0v = pylith::fekernels::Poroelasticity::g0v_bodyforce;
+        g0p = pylith::fekernels::Poroelasticity::g0p_bodyforce_sourceDensity; // aOff for sourceDensity is 4
+        break;
+    case 0x6:
+        g0v = pylith::fekernels::Poroelasticity::g0v_gravity;
+        g0p = pylith::fekernels::Poroelasticity::g0p_gravity_sourceDensity;  // aOff for sourceDensity is 4
+        break;
+    case 0x7:
+        g0v = pylith::fekernels::Poroelasticity::g0v_gravity_bodyforce;
+        g0p = pylith::fekernels::Poroelasticity::g0p_gravity_bodyforce_sourceDensity;  // aOff for sourceDensity is 5
+        break;
+    case 0x0: {
+            break;
     default:
-        PYLITH_COMPONENT_ERROR("Unknown combination of flags for source density (_useSourceDensity="<<_useSourceDensity<<", _gravityField="<<_gravityField<<", _useBodyForce="<<_useBodyForce<<").");
-        throw std::logic_error("Unknown combination of flags for source density.");
+            PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
     } // switch
 
     // g1p is darcy velocity, ship over to rheology section
@@ -355,10 +374,7 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
     switch (_formulation) {
         case QUASISTATIC : {
             // 0) Displacement - use velocity kernels, as they are the same for RHS
-            const PetscPointFunc g0u = (_gravityField && _useBodyForce) ? pylith::fekernels::Poroelasticity::g0v_gravbodyforce :
-                                       (_gravityField) ? pylith::fekernels::Poroelasticity::g0v_grav :
-                                       (_useBodyForce) ? pylith::fekernels::Poroelasticity::g0v_bodyforce :
-                                       NULL;
+            const PetscPointFunc g0u = g0v;
             const PetscPointFunc g1u = _rheology->getKernelg1u(coordsys);
 
             // 2) Volumetric Strain
@@ -379,10 +395,7 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
             const PetscPointFunc g1u = NULL;
 
             // 2) Velocity - same kernels as displacement in quasi-static
-            const PetscPointFunc g0v = (_gravityField && _useBodyForce) ? pylith::fekernels::Poroelasticity::g0v_gravbodyforce :
-                                       (_gravityField) ? pylith::fekernels::Poroelasticity::g0v_grav :
-                                       (_useBodyForce) ? pylith::fekernels::Poroelasticity::g0v_bodyforce :
-                                       NULL;
+            
             const PetscPointFunc g1v = _rheology->getKernelg1v(coordsys);
 
             kernels.resize(3);
