@@ -340,25 +340,25 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
         g0v = pylith::fekernels::Poroelasticity::g0v_bodyforce;
         break;
     case 0x2:
-        g0v = pylith::fekernels::Poroelasticity::g0v_gravity;
+        g0v = pylith::fekernels::Poroelasticity::g0v_grav;
         break;
     case 0x4:
         g0p = pylith::fekernels::Poroelasticity::g0p_sourceDensity; // aOff for sourceDensity is 3
         break;
     case 0x3:
-        g0v = pylith::fekernels::Poroelasticity::g0v_gravity_bodyforce;
+        g0v = pylith::fekernels::Poroelasticity::g0v_gravbodyforce;
         break;
     case 0x5:
         g0v = pylith::fekernels::Poroelasticity::g0v_bodyforce;
-        g0p = pylith::fekernels::Poroelasticity::g0p_bodyforce_sourceDensity; // aOff for sourceDensity is 4
+        g0p = pylith::fekernels::Poroelasticity::g0p_sourceDensity_body; // aOff for sourceDensity is 4
         break;
     case 0x6:
-        g0v = pylith::fekernels::Poroelasticity::g0v_gravity;
-        g0p = pylith::fekernels::Poroelasticity::g0p_gravity_sourceDensity;  // aOff for sourceDensity is 4
+        g0v = pylith::fekernels::Poroelasticity::g0v_grav;
+        g0p = pylith::fekernels::Poroelasticity::g0p_sourceDensity_grav;  // aOff for sourceDensity is 4
         break;
     case 0x7:
-        g0v = pylith::fekernels::Poroelasticity::g0v_gravity_bodyforce;
-        g0p = pylith::fekernels::Poroelasticity::g0p_gravity_bodyforce_sourceDensity;  // aOff for sourceDensity is 5
+        g0v = pylith::fekernels::Poroelasticity::g0v_gravbodyforce;
+        g0p = pylith::fekernels::Poroelasticity::g0p_sourceDensity_grav_body;  // aOff for sourceDensity is 5
         break;
     case 0x0: {
             break;
@@ -395,7 +395,7 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
             const PetscPointFunc g1u = NULL;
 
             // 2) Velocity - same kernels as displacement in quasi-static
-            
+
             const PetscPointFunc g1v = _rheology->getKernelg1v(coordsys);
 
             kernels.resize(3);
