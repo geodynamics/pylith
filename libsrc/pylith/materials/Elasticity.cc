@@ -286,15 +286,32 @@ pylith::materials::Elasticity::_setKernelsRHSResidual(pylith::feassemble::Integr
     const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
 
     std::vector<ResidualKernels> kernels;
+    PetscPointFunc g0v = NULL;
+
+    const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
+    const int bitGravity = _gravityField ? 0x2 : 0x0;
+    const int bitUse = bitBodyForce | bitGravity;
+
+    switch (bitUse) {
+    case 0x1:
+        g0v = pylith::fekernels::Elasticity::g0v_bodyforce;
+        break;
+    case 0x2:
+        g0v = pylith::fekernels::Elasticity::g0v_grav;
+        break;
+    case 0x3:
+        g0v = pylith::fekernels::Elasticity::g0v_gravbodyforce;
+        break;
+    case 0x0:
+        break;
+    default:
+        PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Elasticity RHS residual kernels.");
+    } // switch
 
     switch (_formulation) {
     case QUASISTATIC: {
         // Displacement
-        const PetscPointFunc g0u =
-            (_gravityField && _useBodyForce) ? pylith::fekernels::Elasticity::g0v_gravbodyforce :
-            (_gravityField) ? pylith::fekernels::Elasticity::g0v_grav :
-            (_useBodyForce) ? pylith::fekernels::Elasticity::g0v_bodyforce :
-            NULL;
+        const PetscPointFunc g0u = g0v;
         const PetscPointFunc g1u = _rheology->getKernelRHSResidualStress(coordsys);
 
         kernels.resize(1);
@@ -308,10 +325,6 @@ pylith::materials::Elasticity::_setKernelsRHSResidual(pylith::feassemble::Integr
         const PetscPointFunc g1u = NULL;
 
         // Velocity
-        const PetscPointFunc g0v = (_gravityField && _useBodyForce) ? pylith::fekernels::Elasticity::g0v_gravbodyforce :
-                                   (_gravityField) ? pylith::fekernels::Elasticity::g0v_grav :
-                                   (_useBodyForce) ? pylith::fekernels::Elasticity::g0v_bodyforce :
-                                   NULL;
         const PetscPointFunc g1v = _rheology->getKernelRHSResidualStress(coordsys);
 
         kernels.resize(2);
