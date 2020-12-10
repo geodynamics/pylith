@@ -220,7 +220,6 @@ pylith::testing::MMSTest::_initialize(void) {
 
     _problem->initialize();
     TSSetUp(_problem->getPetscTS());
-
     _setExactSolution();
 
     // Global vector to use for analytical solution in MMS tests.

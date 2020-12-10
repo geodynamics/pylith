@@ -19,6 +19,7 @@ PyLith.egg-info
 autom4te.cache
 *~
 *.pyc
+.dirstamp
 examples/*/*/output
 examples/*/*/*/output/
 examples/3d/subduction/mesh/geometry_surfs.jou
@@ -36,3 +37,5 @@ doc/userguide/userguide.lof
 doc/userguide/userguide.log
 doc/userguide/userguide.lot
 doc/userguide/userguide.out
+*.log
+*.status

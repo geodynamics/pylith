@@ -70,7 +70,7 @@ class Example(TestCase):
     """
     NAME = None
     PYLITH_ARGS = None
-    
+
     def setUp(self):
         TestCase.setUp(self)
         TestCase.run_pylith(self, self.NAME, self.PYLITH_ARGS)
@@ -78,7 +78,7 @@ class Example(TestCase):
     def test_example(self):
         return
 
-    
+
 # ----------------------------------------------------------------------------------------------------------------------
 class TestDriver(object):
     """
@@ -108,7 +108,7 @@ class TestDriver(object):
 # ----------------------------------------------------------------------------------------------------------------------
 class HDF5Checker(object):
 
-    def __init__(self, filename, testcase, mesh):
+    def __init__(self, filename, testcase, mesh, ratio_tolerance=1.e-5, diff_tolerance=1e-5):
         """Constructor.
         """
         import h5py
@@ -116,7 +116,8 @@ class HDF5Checker(object):
         self.testcase = testcase
         self.exactsoln = testcase.exactsoln
         self.mesh = mesh
-
+        self.ratio_tolerance = ratio_tolerance
+        self.diff_tolerance = diff_tolerance
         self.vertices = None
         self.cellCentroids = None
         return
@@ -189,47 +190,65 @@ class HDF5Checker(object):
         self.testcase.assertEqual(ncompsE, ncomps)
 
         toleranceAbsMask = 0.1
-        tolerance = 1.0e-5
+        ratio_tolerance = self.ratio_tolerance
+        diff_tolerance = self.diff_tolerance
         maskZero = fieldE != 0.0
         scale = numpy.mean(numpy.abs(fieldE[maskZero].ravel())) if numpy.sum(maskZero) > 0 else 1.0
         for istep in xrange(nsteps):
             for icomp in xrange(ncomps):
                 okay = numpy.zeros((npts,), dtype=numpy.bool)
+                ratio = numpy.zeros((npts,))
 
                 maskR = numpy.abs(fieldE[istep, :, icomp]) > toleranceAbsMask
-                ratio = numpy.abs(1.0 - field[istep, maskR, icomp] / fieldE[istep, maskR, icomp])
-                if len(ratio) > 0:
-                    okay[maskR] = ratio < tolerance
+                ratio[maskR] = numpy.abs(1.0 - field[istep, maskR, icomp] / fieldE[istep, maskR, icomp])
+                if numpy.sum(maskR) > 0:
+                    okay[maskR] = ratio[maskR] < ratio_tolerance
 
                 maskD = ~maskR
-                diff = numpy.abs(field[istep, maskD, icomp] - fieldE[istep, maskD, icomp]) / scale
-                if len(diff) > 0:
-                    okay[maskD] = diff < tolerance
+                diff = numpy.abs(field[istep, :, icomp] - fieldE[istep, :, icomp]) / scale
+                if numpy.sum(maskD) > 0:
+                    okay[maskD] = diff[maskD] < diff_tolerance
 
                 if not maskField is None:
                     okay[maskField] = True
-                    
+
                 if numpy.sum(okay) != npts:
                     print("Error in component {} of field '{}' at time step {}.".format(icomp, fieldName, istep))
-                    print("Expected values: ", fieldE[istep, :, :])
-                    print("Output values: ", field[istep, :, :])
-                    print("Expected values (not okay): ", fieldE[istep, ~okay, icomp])
-                    print("Computed values (not okay): ", field[istep, ~okay, icomp])
-                    print("Relative diff (not okay): ", diff[~okay[maskD]])
-                    print("Coordinates (not okay): ", pts[~okay, :])
+                #    print("Expected values: ", fieldE[istep, :, :])
+                #    print("Output values: ", field[istep, :, :])
+                    print("# ~Okay: ", numpy.sum(~okay))
+                    n_okay_maskR = numpy.logical_and(~okay, maskR)
+                    if numpy.sum(n_okay_maskR) > 0:
+                        print("Ratio (maskR), # ", numpy.sum(n_okay_maskR))
+                        print("Expected values (not okay): ", fieldE[istep, n_okay_maskR, icomp])
+                        print("Computed values (not okay): ", field[istep, n_okay_maskR, icomp])
+                        print("Ratio (not okay): ", ratio[n_okay_maskR])
+                        print("Ratio Coordinates (not okay): ", pts[n_okay_maskR, :])
+                        print("Tolerance Absolute Mask: ", toleranceAbsMask)
+                        print("Ratio Tolerance: ", ratio_tolerance)
+
+                    n_okay_maskD = numpy.logical_and(~okay, maskD)
+                    if numpy.sum(n_okay_maskD) > 0:
+                        print("Relative Diff (maskD), # ", numpy.sum(n_okay_maskD))
+                        print("Expected values (not okay): ", fieldE[istep, n_okay_maskD, icomp])
+                        print("Computed values (not okay): ", field[istep, n_okay_maskD, icomp])
+                        print("Relative diff (not okay): ", diff[n_okay_maskD])
+                        print("Relative diff Coordinates (not okay): ", pts[n_okay_maskD, :])
+                        print("Diff Tolerance: ", diff_tolerance)
+                        print("Scale: ", scale)
                     self.testcase.assertEqual(npts, numpy.sum(okay))
 
         return
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def check_data(filename, testcase, mesh, vertexFields=[], cellFields=[]):
+def check_data(filename, testcase, mesh, vertexFields=[], cellFields=[], ratio_tolerance=1.e-5, diff_tolerance=1.e-5):
     """Check vertex and cell fields in specified file.
     """
     if not has_h5py():
         return
 
-    checker = HDF5Checker(filename, testcase, mesh)
+    checker = HDF5Checker(filename, testcase, mesh, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
     for field in vertexFields:
         if testcase.VERBOSITY > 0:
             print("Checking vertex field '{}' in file {}.".format(field, filename))

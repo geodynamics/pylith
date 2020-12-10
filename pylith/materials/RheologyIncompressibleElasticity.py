@@ -36,7 +36,7 @@ class RheologyIncompressibleElasticity(PetscComponent, ModuleRheology):
     Facilities
       - None
 
-    FACTORY: eincompressible_lasticity_rheology
+    FACTORY: incompressible_elasticity_rheology
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

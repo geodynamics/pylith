@@ -71,6 +71,8 @@ libpylith_la_SOURCES = \
 	fekernels/IsotropicPowerLaw.cc \
 	fekernels/IncompressibleElasticity.cc \
 	fekernels/IsotropicLinearIncompElasticity.cc \
+  fekernels/Poroelasticity.cc \
+  fekernels/IsotropicLinearPoroelasticity.cc \
 	fekernels/DispVel.cc \
 	fekernels/TimeDependentFn.cc \
 	fekernels/NeumannTimeDependent.cc \
@@ -87,9 +89,14 @@ libpylith_la_SOURCES = \
 	materials/IsotropicPowerLaw.cc \
 	materials/AuxiliaryFactoryElastic.cc \
 	materials/AuxiliaryFactoryViscoelastic.cc \
+	materials/AuxiliaryFactoryPoroelasticity.cc \
+	materials/AuxiliaryFactoryPoroelastic.cc \
 	materials/IncompressibleElasticity.cc \
 	materials/RheologyIncompressibleElasticity.cc \
 	materials/IsotropicLinearIncompElasticity.cc \
+  materials/Poroelasticity.cc \
+  materials/RheologyPoroelasticity.cc \
+  materials/IsotropicLinearPoroelasticity.cc \
 	materials/Query.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \

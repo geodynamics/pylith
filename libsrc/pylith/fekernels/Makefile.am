@@ -33,7 +33,9 @@ subpkginclude_HEADERS = \
 	TimeDependentFn.hh \
 	NeumannTimeDependent.hh \
 	AbsorbingDampers.hh \
-	FaultCohesiveKin.hh
+	FaultCohesiveKin.hh \
+	IsotropicLinearPoroelasticity.hh \
+	Poroelasticity.hh
 
 noinst_HEADERS =
 
