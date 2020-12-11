@@ -262,13 +262,29 @@ pylith::materials::IncompressibleElasticity::_setKernelsRHSResidual(pylith::feas
     const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
 
     std::vector<ResidualKernels> kernels(2);
+    PetscPointFunc g0u = NULL;
+
+    const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
+    const int bitGravity = _gravityField ? 0x2 : 0x0;
+    const int bitUse = bitBodyForce | bitGravity;
+
+    switch (bitUse) {
+    case 0x1:
+        g0u = pylith::fekernels::Elasticity::g0v_bodyforce;
+        break;
+    case 0x2:
+        g0u = pylith::fekernels::Elasticity::g0v_grav;
+        break;
+    case 0x3:
+        g0u = pylith::fekernels::Elasticity::g0v_gravbodyforce;
+        break;
+    case 0x0:
+        break;
+    default:
+        PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for IncompressibleElasticity RHS residual kernels.");
+    } // switch
 
     // Displacement
-    const PetscPointFunc g0u =
-        (_gravityField && _useBodyForce) ? pylith::fekernels::Elasticity::g0v_gravbodyforce :
-        (_gravityField) ? pylith::fekernels::Elasticity::g0v_grav :
-        (_useBodyForce) ? pylith::fekernels::Elasticity::g0v_bodyforce :
-        NULL;
     const PetscPointFunc g1u = _rheology->getKernelRHSResidualStress(coordsys);
 
     // Pressure
