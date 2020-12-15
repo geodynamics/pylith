@@ -232,7 +232,7 @@ class EqInfoApp(Application):
         Setup members using inventory.
         """
         Application._configure(self)
-        self.snapshots = map(float, self.snapshots)
+        self.snapshots = list(map(float, self.snapshots))
 
         return
 

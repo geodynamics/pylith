@@ -113,7 +113,7 @@ class PointsList(Component):
             fields = line.split(self.valueDelimiter)
 
             stations.append(fields[0].strip())
-            points[ipoint, :] = map(float, fields[1:])
+            points[ipoint, :] = list(map(float, fields[1:]))
 
             ipoint += 1
 

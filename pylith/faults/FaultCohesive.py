@@ -45,7 +45,7 @@ def validateDir(value):
     if 3 != len(value):
         raise ValueError(msg)
     try:
-        nums = map(float, value)
+        nums = list(map(float, value))
     except:
         raise ValueError(msg)
     return nums
