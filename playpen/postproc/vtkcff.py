@@ -247,9 +247,9 @@ class VtkCff(Application):
         if numFilesToProcess < 1:
             try:
                 raise TooFewFilesError(numFilesToProcess)
-            except TooFewFilesError, e:
+            except TooFewFilesError as err:
                 print('Not enough files found for search string:  ', searchString)
-                print('Number of files found:  ', e.value)
+                print('Number of files found:  ', err.value)
 
         # Create output directory if it doesn't exist
         if not os.path.isdir(self.vtkOutputDir):
