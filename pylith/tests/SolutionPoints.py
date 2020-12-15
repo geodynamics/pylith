@@ -49,8 +49,8 @@ def check_displacements(testcase, filename, npoints, spaceDim):
     testcase.assertEqual(nverticesE, nvertices)
     testcase.assertEqual(ncompsE, ncomps)
 
-    for istep in xrange(nsteps):
-        for icomp in xrange(ncomps):
+    for istep in range(nsteps):
+        for icomp in range(ncomps):
             okay = numpy.zeros((nvertices,), dtype=numpy.bool)
 
             maskR = numpy.abs(dispE[istep, :, icomp]) > toleranceAbsMask

@@ -92,8 +92,8 @@ fig.open(9.0, 7.0, margins=[[0.45, 0.25, 0.1],
 
 
 icomp = 0
-for irow in xrange(1, 3):
-    for icol in xrange(1, 4):
+for irow in range(1, 3):
+    for icol in range(1, 4):
         ax = fig.axes(nrows, ncols, irow, icol)
 
         ax.plot(t, stressE[:, icomp], 'r-',

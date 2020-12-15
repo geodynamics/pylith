@@ -17,7 +17,7 @@ def printdata(data):
     """
     (nrows, ncols) = data.shape
     style = " %16.12f,"*ncols
-    for row in xrange(nrows):
+    for row in range(nrows):
         print (style % tuple(data[row,:]))
     return
 

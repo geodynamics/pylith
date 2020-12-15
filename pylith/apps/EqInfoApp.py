@@ -76,7 +76,7 @@ class RuptureStats(object):
 
     def _writeArray(self, name, fout):
         vals = self.__getattribute__(name)
-        for i in xrange(len(vals)):
+        for i in range(len(vals)):
             if math.isnan(vals[i]) or math.isinf(vals[i]):
                 if vals[i] > 0:
                     vals[i] = 1.0e+30
@@ -283,7 +283,7 @@ class EqInfoApp(Application):
     def _vectorMag(self, v):
         (npts, ndims) = v.shape
         mag = numpy.zeros((npts,), dtype=numpy.float64)
-        for i in xrange(ndims):
+        for i in range(ndims):
             mag += v[:, i]**2
         mag = mag**0.5
         return mag
@@ -293,12 +293,12 @@ class EqInfoApp(Application):
         if len(valueP.shape) > 1:
             (nvertices, nvals) = valueP.shape
             valueC = numpy.zeros((ncells, nvals), dtype=numpy.float64)
-            for i in xrange(ncorners):
+            for i in range(ncorners):
                 valueC[:, :] += valueP[cells[:, i], :]
         else:
             nvertices = valueP.shape
             valueC = numpy.zeros((ncells,), dtype=numpy.float64)
-            for i in xrange(ncorners):
+            for i in range(ncorners):
                 valueC[:] += valueP[cells[:, i]]
         valueC /= ncorners
         return valueC

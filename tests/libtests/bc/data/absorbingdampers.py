@@ -350,8 +350,8 @@ def calcHex8():
             dampingConsts[0]*j32, dampingConsts[1]*j32, dampingConsts[2]*j32,
             dampingConsts[0]*j33, dampingConsts[1]*j33, dampingConsts[2]*j33]
       index = 0
-      for i in xrange(4):
-        for j in xrange(4):
+      for i in range(4):
+        for j in range(4):
           jacobian[cell[i],0,cell[j],0] += numpy.array(jj[index  ])
           jacobian[cell[i],1,cell[j],1] += numpy.array(jj[index+1])
           jacobian[cell[i],2,cell[j],2] += numpy.array(jj[index+2])

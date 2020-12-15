@@ -194,8 +194,8 @@ class HDF5Checker(object):
         diff_tolerance = self.diff_tolerance
         maskZero = fieldE != 0.0
         scale = numpy.mean(numpy.abs(fieldE[maskZero].ravel())) if numpy.sum(maskZero) > 0 else 1.0
-        for istep in xrange(nsteps):
-            for icomp in xrange(ncomps):
+        for istep in range(nsteps):
+            for icomp in range(ncomps):
                 okay = numpy.zeros((npts,), dtype=numpy.bool)
                 ratio = numpy.zeros((npts,))
 

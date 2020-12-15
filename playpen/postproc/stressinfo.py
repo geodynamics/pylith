@@ -196,7 +196,7 @@ class StressInfo(Application):
     self.dpPlasYieldFunc = numpy.empty(self.numTensorPoints,
                                        dtype=numpy.float64)
     # Loop over integration points.
-    for point in xrange(self.numTensorPoints):
+    for point in range(self.numTensorPoints):
       tensor = self.tensorSorted[point, :]
       pressure, devInvariant2 = self._compStressInfo(tensor)
       self.pressure[point] = pressure

@@ -242,7 +242,7 @@ class SlabExtender(Component):
 
         contoursUpDip = {}
         numContours = int(math.ceil(math.log((self.upDipDist/distHoriz)+1)/math.log(2.0)))
-        for i in xrange(numContours):
+        for i in range(numContours):
             contour = numpy.array(contourTop)
             contour[:,0] += (2**i)*dx.value
             contour[:,1] += (2**i)*dy.value

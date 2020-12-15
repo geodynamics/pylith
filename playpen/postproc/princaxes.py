@@ -214,7 +214,7 @@ class PrincAxes(Application):
     self.intEigenValue = numpy.empty(self.numTensorPoints, dtype=numpy.float64)
     self.maxEigenValue = numpy.empty(self.numTensorPoints, dtype=numpy.float64)
     # Loop over integration points.
-    for point in xrange(self.numTensorPoints):
+    for point in range(self.numTensorPoints):
       tensor = self.tensorSorted[point, :]
       tensorOrdered, eigenValuesOrdered = self._compPrincAxes(tensor)
       self.minPrincAxis[point,:] = tensorOrdered[:,0]

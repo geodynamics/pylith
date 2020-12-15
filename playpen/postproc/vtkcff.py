@@ -392,7 +392,7 @@ class VtkCff(Application):
     # Loop over stress points, compute total stress and the associated
     # principal stresses, as well as the stress difference, and then
     # compute CFF.
-    for point in xrange(self.numStressPoints):
+    for point in range(self.numStressPoints):
       totStress = newStress[point, :]
       deltaStress = newStress[point, :] - refStress[point, :]
       (totPrincStress, totPrincAxes) = self._princStress(totStress)
@@ -473,7 +473,7 @@ class VtkCff(Application):
     # Loop over stress points, compute total stress and the associated
     # principal stresses, as well as the stress difference, and then
     # compute CFF.
-    for point in xrange(self.numStressPoints):
+    for point in range(self.numStressPoints):
       totStress = newStress[point, :]
       deltaStress = newStress[point, :] - refStress[point, :]
       (totPrincStress, totPrincAxes) = self._princStress(totStress)
