@@ -31,7 +31,7 @@ o = open(outFile, 'w')
 lines = i.readlines()
 numLines = len(lines)
 for lineNum in range(numLines):
-  o.write(lines[lineNum])
+    o.write(lines[lineNum])
 
 numPoints = 12
 x = numpy.zeros(numPoints, dtype=numpy.float64)
@@ -40,21 +40,21 @@ z = numpy.zeros(numPoints, dtype=numpy.float64)
 pointNum = 0
 
 # Get coordinates.
-for lineNum in range(5,numPoints+5):
-  line = lines[lineNum]
-  lineSplit = line.split()
-  x[pointNum] = float(lineSplit[0])
-  y[pointNum] = float(lineSplit[1])
-  z[pointNum] = float(lineSplit[2])
-  pointNum += 1
-  
+for lineNum in range(5, numPoints + 5):
+    line = lines[lineNum]
+    lineSplit = line.split()
+    x[pointNum] = float(lineSplit[0])
+    y[pointNum] = float(lineSplit[1])
+    z[pointNum] = float(lineSplit[2])
+    pointNum += 1
+
 # Solution constants.
 density = 4000.0
 vs = 5600.0
-vp = math.sqrt(3.0)*vs
+vp = math.sqrt(3.0) * vs
 viscosity = 7.91700159488e+19
-shearModulus = density*vs*vs
-maxwellTime = viscosity/shearModulus
+shearModulus = density * vs * vs
+maxwellTime = viscosity / shearModulus
 
 a = 1.0e-7
 b = 2.5e-7
@@ -64,60 +64,60 @@ t = 5.0e7
 dt = 5.0e7
 
 # Solution and perturbed solution.
-dispX = (a*x*x + 2.0*b*x*y + c*y*y) * math.exp(-t/maxwellTime)
-dispY = (a*y*y + 2.0*b*x*y + c*x*x) * math.exp(-t/maxwellTime)
+dispX = (a * x * x + 2.0 * b * x * y + c * y * y) * math.exp(-t / maxwellTime)
+dispY = (a * y * y + 2.0 * b * x * y + c * x * x) * math.exp(-t / maxwellTime)
 dispOut = numpy.column_stack((dispX, dispY, numpy.zeros_like(dispX)))
 dispPertX = dispX + d * x
 dispPertY = dispY + d * x
 dispPertOut = numpy.column_stack((dispPertX, dispPertY, numpy.zeros_like(dispPertX)))
 
 # Total strain and total perturbed strain.
-totalStrainXX = (2.0*a*x + 2.0*b*y) * math.exp(-t/maxwellTime)
-totalStrainYY = (2.0*b*x + 2.0*a*y) * math.exp(-t/maxwellTime)
-totalStrainXY = (b*(x+y) + c*(x+y)) * math.exp(-t/maxwellTime)
+totalStrainXX = (2.0 * a * x + 2.0 * b * y) * math.exp(-t / maxwellTime)
+totalStrainYY = (2.0 * b * x + 2.0 * a * y) * math.exp(-t / maxwellTime)
+totalStrainXY = (b * (x + y) + c * (x + y)) * math.exp(-t / maxwellTime)
 totalStrainZZ = numpy.zeros(numPoints, dtype=numpy.float64)
-totalStrainPertXX = (2.0*a*x + 2.0*b*y) * math.exp(-t/maxwellTime) + d
-totalStrainPertYY = (2.0*b*x + 2.0*a*y) * math.exp(-t/maxwellTime)
-totalStrainPertXY = (b*(x+y) + c*(x+y)) * math.exp(-t/maxwellTime) + d/2.0
+totalStrainPertXX = (2.0 * a * x + 2.0 * b * y) * math.exp(-t / maxwellTime) + d
+totalStrainPertYY = (2.0 * b * x + 2.0 * a * y) * math.exp(-t / maxwellTime)
+totalStrainPertXY = (b * (x + y) + c * (x + y)) * math.exp(-t / maxwellTime) + d / 2.0
 totalStrainPertZZ = numpy.zeros(numPoints, dtype=numpy.float64)
 
 # Viscous strain.
-viscousStrainTXX = 2.0*maxwellTime*(math.exp(t/maxwellTime) - 1.0) * \
-                (a*(2.0*x-y)-b*(x-2.0*y))*math.exp(-2.0*t/maxwellTime)/(3.0*t)
-viscousStrainTYY = -2.0*maxwellTime*(math.exp(t/maxwellTime) - 1.0) * \
-                (a*(x-2.0*y)-b*(2.0*x-y))*math.exp(-2.0*t/maxwellTime)/(3.0*t)
-viscousStrainTZZ = -2.0*maxwellTime*(math.exp(t/maxwellTime) - 1.0) * \
-                   (a*(x+y)+b*(x+y))*math.exp(-2.0*t/maxwellTime)/(3.0*t)
-viscousStrainTXY = maxwellTime*(math.exp(t/maxwellTime) - 1.0) * \
-                   (b*(x+y)+c*(x+y))*math.exp(-2.0*t/maxwellTime)/t
+viscousStrainTXX = 2.0 * maxwellTime * (math.exp(t / maxwellTime) - 1.0) * \
+    (a * (2.0 * x - y) - b * (x - 2.0 * y)) * math.exp(-2.0 * t / maxwellTime) / (3.0 * t)
+viscousStrainTYY = -2.0 * maxwellTime * (math.exp(t / maxwellTime) - 1.0) * \
+    (a * (x - 2.0 * y) - b * (2.0 * x - y)) * math.exp(-2.0 * t / maxwellTime) / (3.0 * t)
+viscousStrainTZZ = -2.0 * maxwellTime * (math.exp(t / maxwellTime) - 1.0) * \
+    (a * (x + y) + b * (x + y)) * math.exp(-2.0 * t / maxwellTime) / (3.0 * t)
+viscousStrainTXY = maxwellTime * (math.exp(t / maxwellTime) - 1.0) * \
+    (b * (x + y) + c * (x + y)) * math.exp(-2.0 * t / maxwellTime) / t
 
 # Deviatoric strains.
-meanStrainT = (totalStrainXX + totalStrainYY)/3.0
+meanStrainT = (totalStrainXX + totalStrainYY) / 3.0
 devStrainTXX = totalStrainXX - meanStrainT
 devStrainTYY = totalStrainYY - meanStrainT
 devStrainTZZ = totalStrainZZ - meanStrainT
 devStrainTXY = totalStrainXY
-meanStrainTplusDt = (totalStrainPertXX + totalStrainPertYY)/3.0
+meanStrainTplusDt = (totalStrainPertXX + totalStrainPertYY) / 3.0
 devStrainTplusDtXX = totalStrainPertXX - meanStrainTplusDt
 devStrainTplusDtYY = totalStrainPertYY - meanStrainTplusDt
 devStrainTplusDtZZ = totalStrainPertZZ - meanStrainTplusDt
 devStrainTplusDtXY = totalStrainPertXY
 
 # Time constants.
-expFac = math.exp(-dt/maxwellTime)
-dq = maxwellTime * (1.0 - expFac)/dt
-print 'expFac = %f' % expFac
-print 'dq = %f' % dq
+expFac = math.exp(-dt / maxwellTime)
+dq = maxwellTime * (1.0 - expFac) / dt
+print("expFac = %f" % expFac)
+print("dq = %f" % dq)
 
 # Perturbed viscous strains.
 viscousStrainTplusDtXX = expFac * viscousStrainTXX + \
-                         dq*(devStrainTplusDtXX - devStrainTXX)
+    dq * (devStrainTplusDtXX - devStrainTXX)
 viscousStrainTplusDtYY = expFac * viscousStrainTYY + \
-                         dq*(devStrainTplusDtYY - devStrainTYY)
+    dq * (devStrainTplusDtYY - devStrainTYY)
 viscousStrainTplusDtZZ = expFac * viscousStrainTZZ + \
-                         dq*(devStrainTplusDtZZ - devStrainTZZ)
+    dq * (devStrainTplusDtZZ - devStrainTZZ)
 viscousStrainTplusDtXY = expFac * viscousStrainTXY + \
-                         dq*(totalStrainPertXY - totalStrainXY)
+    dq * (totalStrainPertXY - totalStrainXY)
 
 # Write results to output file.
 head = 'POINT_DATA 12\n'
@@ -218,7 +218,3 @@ o.write(head22)
 o.write(headscalar)
 numpy.savetxt(o, viscousStrainTplusDtXY)
 o.close()
-
-
-
-
