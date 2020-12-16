@@ -20,7 +20,7 @@
 # Factory: mesh_io
 
 from pylith.utils.PetscComponent import PetscComponent
-from meshio import MeshIO as ModuleMeshIO
+from .meshio import MeshIO as ModuleMeshIO
 
 
 class MeshIOObj(PetscComponent, ModuleMeshIO):

@@ -17,31 +17,30 @@
 #
 # @brief Python NullComponent object that is an empty component.
 
-from PetscComponent import PetscComponent
+from .PetscComponent import PetscComponent
 
 
 class NullComponent(PetscComponent):
-  """
-  Python NullComponent object that is an empty component.
-  """
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self):
     """
-    Constructor.
+    Python NullComponent object that is an empty component.
     """
-    PetscComponent.__init__(self, name="nullcomponent", facility="nullcomponent")
-    return
 
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  # PRIVATE METHODS ////////////////////////////////////////////////////
+    def __init__(self):
+        """
+        Constructor.
+        """
+        PetscComponent.__init__(self, name="nullcomponent", facility="nullcomponent")
+        return
 
-  def _cleanup(self):
-    """
-    Deallocate locally managed data structures.
-    """
-    return
+    # PRIVATE METHODS ////////////////////////////////////////////////////
+
+    def _cleanup(self):
+        """
+        Deallocate locally managed data structures.
+        """
+        return
 
 
 # End of file

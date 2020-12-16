@@ -54,7 +54,7 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
 
     import pyre.inventory
 
-    from SingleRupture import SingleRupture
+    from .SingleRupture import SingleRupture
     eqRuptures = pyre.inventory.facilityArray("eq_ruptures", itemFactory=eqsrcFactory, factory=SingleRupture)
     eqRuptures.meta['tip'] = "Kinematic earthquake sources information."
 

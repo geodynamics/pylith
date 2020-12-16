@@ -18,8 +18,8 @@
 # @brief Python object for writing finite-element data to HDF5 file
 # with datasets stored in external binary files.
 
-from DataWriter import DataWriter
-from meshio import DataWriterHDF5Ext as ModuleDataWriterHDF5Ext
+from .DataWriter import DataWriter
+from .meshio import DataWriterHDF5Ext as ModuleDataWriterHDF5Ext
 
 
 class DataWriterHDF5Ext(DataWriter, ModuleDataWriterHDF5Ext):
@@ -77,7 +77,7 @@ class DataWriterHDF5Ext(DataWriter, ModuleDataWriterHDF5Ext):
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
         if not comm.rank:
-            from Xdmf import Xdmf
+            from .Xdmf import Xdmf
             xdmf = Xdmf()
             xdmf.write(ModuleDataWriterHDF5Ext.hdf5Filename(
                 self), verbose=False)

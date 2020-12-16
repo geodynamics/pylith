@@ -19,7 +19,7 @@
 
 from pyre.components.Component import Component
 
-from PetscManager import PetscManager
+from .PetscManager import PetscManager
 
 
 class DumpParameters(Component):
