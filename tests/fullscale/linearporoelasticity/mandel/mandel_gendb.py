@@ -62,16 +62,16 @@ class GenerateDB(object):
                 'data_dim': 2,
                 'values': [{'name': "initial_amplitude_x",
                             'units': "m",
-                            'data': numpy.ravel(disp[0, :, 0])},
+                            'data': numpy.ravel(disp[0,:, 0])},
                            {'name': "initial_amplitude_y",
                             'units': "m",
-                            'data': numpy.ravel(disp[0, :, 1])},
+                            'data': numpy.ravel(disp[0,:, 1])},
                            {'name': "initial_pressure",
                             'units': "Pa",
-                            'data': numpy.ravel(pres[0, :])},
+                            'data': numpy.ravel(pres[0,:])},
                            {'name': "initial_trace_strain",
                             'units': "none",
-                            'data': numpy.ravel(trace_strain[0, :])}]}
+                            'data': numpy.ravel(trace_strain[0,:])}]}
 
         from spatialdata.spatialdb.SimpleGridAscii import SimpleGridAscii
         io = SimpleGridAscii()

@@ -171,12 +171,12 @@ class StressInfo(Application):
     tensor = cellData.get_array(self.tensorIndex).to_array()
     (self.numTensorPoints, numCols) = tensor.shape
     
-    sxx = tensor[:,self.tensorComponentsOrder[0]]
-    syy = tensor[:,self.tensorComponentsOrder[1]]
-    szz = tensor[:,self.tensorComponentsOrder[2]]
-    sxy = tensor[:,self.tensorComponentsOrder[3]]
-    syz = tensor[:,self.tensorComponentsOrder[4]]
-    sxz = tensor[:,self.tensorComponentsOrder[5]]
+    sxx = tensor[:, self.tensorComponentsOrder[0]]
+    syy = tensor[:, self.tensorComponentsOrder[1]]
+    szz = tensor[:, self.tensorComponentsOrder[2]]
+    sxy = tensor[:, self.tensorComponentsOrder[3]]
+    syz = tensor[:, self.tensorComponentsOrder[4]]
+    sxz = tensor[:, self.tensorComponentsOrder[5]]
     self.tensorSorted = numpy.column_stack((sxx, syy, szz, sxy, syz, sxz))
 
     return
@@ -197,7 +197,7 @@ class StressInfo(Application):
                                        dtype=numpy.float64)
     # Loop over integration points.
     for point in range(self.numTensorPoints):
-      tensor = self.tensorSorted[point, :]
+      tensor = self.tensorSorted[point,:]
       pressure, devInvariant2 = self._compStressInfo(tensor)
       self.pressure[point] = pressure
       self.devInvariant2[point] = devInvariant2

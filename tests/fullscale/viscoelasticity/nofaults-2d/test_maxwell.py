@@ -62,9 +62,9 @@ time = h5['time'][:].flatten()
 timeYears = time/year
 numSteps = time.shape[0]
 stress = h5['vertex_fields/cauchy_stress'][:]
-syyFE = stress[:,0,1]
+syyFE = stress[:, 0, 1]
 strain = h5['vertex_fields/cauchy_strain'][:]
-exxFE = strain[:,0,0]
+exxFE = strain[:, 0, 0]
 h5.close()
 
 # Uniform stress field (plane strain).

@@ -39,19 +39,19 @@ def computeStressInvar(fileName):
     numSteps = time.shape[0]
     stressInvarMean = numpy.zeros(numSteps, dtype=numpy.float64)
 
-    pres = (stress[:, :, 0] + stress[:, :, 1] + stress[:, :, 2]) / 3.0
-    s11 = stress[:, :, 0] - pres
-    s22 = stress[:, :, 1] - pres
-    s12 = stress[:, :, 2]
+    pres = (stress[:,:, 0] + stress[:,:, 1] + stress[:,:, 2]) / 3.0
+    s11 = stress[:,:, 0] - pres
+    s22 = stress[:,:, 1] - pres
+    s12 = stress[:,:, 2]
 
     stressInvar = numpy.sqrt(0.5 * (s11 * s11 + s22 * s22 + 2.0 * (s12 * s12)))
 
     print("File %s:" % fileName)
     for stepNum in range(numSteps):
-        meanVal = numpy.mean(stressInvar[stepNum, :])
-        minVal = numpy.amin(stressInvar[stepNum, :])
-        maxVal = numpy.amax(stressInvar[stepNum, :])
-        stdDev = numpy.std(stressInvar[stepNum, :])
+        meanVal = numpy.mean(stressInvar[stepNum,:])
+        minVal = numpy.amin(stressInvar[stepNum,:])
+        maxVal = numpy.amax(stressInvar[stepNum,:])
+        stdDev = numpy.std(stressInvar[stepNum,:])
         print("Step number:  %d" % stepNum)
         print("Stress values in MPa:")
         print("  Mean of stress invariant:                %g" % meanVal)
@@ -74,22 +74,22 @@ def computeStrainInvar(fileName):
     numSteps = times.shape[0]
     strainInvarMean = numpy.zeros(numSteps, dtype=numpy.float64)
 
-    plasStrain = h5['cell_fields/plastic_strain'][:, :, :] / strainUnits
+    plasStrain = h5['cell_fields/plastic_strain'][:,:,:] / strainUnits
     h5.close()
-    e11 = plasStrain[:, :, 0]
-    e22 = plasStrain[:, :, 1]
-    e33 = plasStrain[:, :, 2]
-    e12 = plasStrain[:, :, 3]
+    e11 = plasStrain[:,:, 0]
+    e22 = plasStrain[:,:, 1]
+    e33 = plasStrain[:,:, 2]
+    e12 = plasStrain[:,:, 3]
 
     strainInvar = numpy.sqrt(0.5 * (e11 * e11 + e22 * e22 + e33 * e33 +
                                     2.0 * (e12 * e12)))
 
     print("File %s:" % fileName)
     for stepNum in range(numSteps):
-        meanVal = numpy.mean(strainInvar[stepNum, :])
-        minVal = numpy.amin(strainInvar[stepNum, :])
-        maxVal = numpy.amax(strainInvar[stepNum, :])
-        stdDev = numpy.std(strainInvar[stepNum, :])
+        meanVal = numpy.mean(strainInvar[stepNum,:])
+        minVal = numpy.amin(strainInvar[stepNum,:])
+        maxVal = numpy.amax(strainInvar[stepNum,:])
+        stdDev = numpy.std(strainInvar[stepNum,:])
         print("Step number:  %d" % stepNum)
         print("Strain values in microStrain:")
         print("  Mean of plastic strain invariant:                %g" % meanVal)

@@ -70,7 +70,7 @@ class AnalyticalSoln(object):
 
         (npts, dim) = locs.shape
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[:, :, 2] = p_density * gacc / (p_lambda + 2 * p_mu) * \
+        disp[:,:, 2] = p_density * gacc / (p_lambda + 2 * p_mu) * \
             (0.5 * (locs[:, 2]**2 - zmin**2) - zmax * (locs[:, 2] - zmin))
         return disp
 
@@ -115,12 +115,12 @@ class AnalyticalSoln(object):
 
         (npts, dim) = locs.shape
         strain = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        strain[:, :, 0] = exx
-        strain[:, :, 1] = eyy
-        strain[:, :, 2] = ezz
-        strain[:, :, 3] = exy
-        strain[:, :, 4] = eyz
-        strain[:, :, 5] = exz
+        strain[:,:, 0] = exx
+        strain[:,:, 1] = eyy
+        strain[:,:, 2] = ezz
+        strain[:,:, 3] = exy
+        strain[:,:, 4] = eyz
+        strain[:,:, 5] = exz
         return strain
 
     def stress(self, locs):
@@ -136,12 +136,12 @@ class AnalyticalSoln(object):
 
         (npts, dim) = locs.shape
         stress = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        stress[0, :, 0] = sxx
-        stress[0, :, 1] = syy
-        stress[0, :, 2] = szz
-        stress[0, :, 3] = sxy
-        stress[0, :, 4] = syz
-        stress[0, :, 5] = sxz
+        stress[0,:, 0] = sxx
+        stress[0,:, 1] = syy
+        stress[0,:, 2] = szz
+        stress[0,:, 3] = sxy
+        stress[0,:, 4] = syz
+        stress[0,:, 5] = sxz
         return stress
 
     def gacc(self, locs):
@@ -149,7 +149,7 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         gravacc = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        gravacc[0, :, 2] = -gacc
+        gravacc[0,:, 2] = -gacc
         return gravacc
 
 

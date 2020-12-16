@@ -27,9 +27,9 @@ def globalToFault(v, R):
     """
     Convert vector from global coordinate system to fault coordinate system.
     """
-    (m,ndof) = v.shape
+    (m, ndof) = v.shape
 
-    vF = numpy.dot(C, v.reshape(m*ndof,1))
+    vF = numpy.dot(C, v.reshape(m*ndof, 1))
     return vF.reshape((m, ndof))
 
 
@@ -38,9 +38,9 @@ def faultToGlobal(v, R):
     """
     Convert vector from fault coordinate system to global coordinate system.
     """
-    (m,ndof) = v.shape
+    (m, ndof) = v.shape
 
-    vG = numpy.dot(C.transpose(), v.reshape(m*ndof,1))
+    vG = numpy.dot(C.transpose(), v.reshape(m*ndof, 1))
     return vG.reshape((m, ndof))
 
 
@@ -48,9 +48,9 @@ def faultToGlobal(v, R):
 if cell == "tri3" or cell == "tri3d" or cell == "quad4":
     if cell == "tri3":
         dlagrange1 = numpy.zeros(2)
-        indexL = numpy.arange(12,16)
-        indexN = numpy.arange(2,6)
-        indexP = numpy.arange(8,12)
+        indexL = numpy.arange(12, 16)
+        indexN = numpy.arange(2, 6)
+        indexP = numpy.arange(8, 12)
         n = 16
         m = 4
         DOF = 2
@@ -118,12 +118,12 @@ if cell == "tri3" or cell == "tri3d" or cell == "quad4":
         m = 6
         DOF = 2
 
-        fieldT = numpy.array([[-3.8,-4.8],
+        fieldT = numpy.array([[-3.8, -4.8],
                               [-3.0, 4.0],
                               [3.2, -4.2]])
-        fieldIncr = numpy.array([[-1.8,+3.6],
+        fieldIncr = numpy.array([[-1.8, +3.6],
                                  [-1.0, 1.1],
-                                 [ 1.7,-1.2]])
+                                 [ 1.7, -1.2]])
 
         L = numpy.array([[2.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                          [0.0, 2.0, 0.0, 0.0, 0.0, 0.0],
@@ -164,9 +164,9 @@ if cell == "tri3" or cell == "tri3d" or cell == "quad4":
                             [ 6.2, 8.2,],
                             [ 6.3, 8.3,],
                             [ 6.5, 8.5,],
-                            [-3.8,-4.8,],
+                            [-3.8, -4.8,],
                             [-3.0, 4.0,],
-                            [ 3.2,-4.2,],])
+                            [ 3.2, -4.2,],])
 
         if testCase == "slip":
             dispIncr = numpy.array([[ 1.1, 2.1,],
@@ -178,9 +178,9 @@ if cell == "tri3" or cell == "tri3d" or cell == "quad4":
                                     [ 1.2, 2.2,],
                                     [ 1.3, 2.3,],
                                     [ 1.5, 2.5,],
-                                    [-1.8,+3.6,],
+                                    [-1.8, +3.6,],
                                     [-1.0, 1.1,],
-                                    [ 1.7,-1.2,],])            
+                                    [ 1.7, -1.2,],])            
         elif testCase == "open":
             dispIncr = numpy.array([[ 1.1, 2.1,],
                                     [ 1.2, 2.2,],
@@ -198,9 +198,9 @@ if cell == "tri3" or cell == "tri3d" or cell == "quad4":
 
     elif cell == "quad4":
         dlagrange1 = numpy.zeros(2)
-        indexL = numpy.arange(16,20)
-        indexN = numpy.arange(4,8)
-        indexP = numpy.arange(12,16)
+        indexL = numpy.arange(16, 20)
+        indexN = numpy.arange(4, 8)
+        indexP = numpy.arange(12, 16)
         n = 20
         m = 4
         DOF = 2
@@ -272,19 +272,19 @@ if cell == "tri3" or cell == "tri3d" or cell == "quad4":
 
     fieldTpdt = globalToFault(fieldTpdt, C)
 
-    tractionShear = abs(fieldTpdt[:,0])
-    tractionNormal = fieldTpdt[:,1]
+    tractionShear = abs(fieldTpdt[:, 0])
+    tractionNormal = fieldTpdt[:, 1]
 
-    print "tractionShear",tractionShear
-    print "tractionNormal",tractionNormal
+    print "tractionShear", tractionShear
+    print "tractionNormal", tractionNormal
 
     friction = -0.6 * tractionNormal;
 
-    print "friction",friction
+    print "friction", friction
 
-    dlagrange0 = (friction - tractionShear) * fieldTpdt[:,0] / tractionShear
+    dlagrange0 = (friction - tractionShear) * fieldTpdt[:, 0] / tractionShear
   
-    print "dlagrange0",dlagrange0
+    print "dlagrange0", dlagrange0
 
     if testCase == "slip": 
         dLagrange = numpy.vstack((dlagrange0, dlagrange1))
@@ -297,10 +297,10 @@ if cell == "tri3" or cell == "tri3d" or cell == "quad4":
     print "dLagrange \n", dLagrange
 
     L /= lengthScale**1
-    RHS = numpy.dot(numpy.transpose(L),dLagrange)
-    print "RHS",RHS
-    duN = numpy.dot(inv(jacobianN),RHS)
-    duP = -numpy.dot(inv(jacobianP),RHS)
+    RHS = numpy.dot(numpy.transpose(L), dLagrange)
+    print "RHS", RHS
+    duN = numpy.dot(inv(jacobianN), RHS)
+    duP = -numpy.dot(inv(jacobianP), RHS)
     
     dispRelIncr = duP - duN
 
@@ -308,11 +308,11 @@ if cell == "tri3" or cell == "tri3d" or cell == "quad4":
     dispTpdt = numpy.reshape(dispTpdt, n)
 
     slipVertex = dispRelIncr + dispTpdt[indexP]-dispTpdt[indexN]
-    slipVertex = numpy.reshape(slipVertex, (m/DOF,DOF))
+    slipVertex = numpy.reshape(slipVertex, (m/DOF, DOF))
     slipVertex = globalToFault(slipVertex, C)
-    mask = slipVertex[:,1] < 0.0
+    mask = slipVertex[:, 1] < 0.0
     #slipVertex[:,1] = 0
-    print "slip",slipVertex
+    print "slip", slipVertex
     slipVertex = faultToGlobal(slipVertex, C)
     slipVertex = numpy.reshape(slipVertex, m)
     disp = numpy.reshape(disp, n)
@@ -326,9 +326,9 @@ if cell == "tri3" or cell == "tri3d" or cell == "quad4":
     dispIncrE[indexL] = dispIncrE[indexL] + dLagrange
     dispIncrE[indexN] = dispIncrE[indexN] - 0.5*slipIncrVertex
     dispIncrE[indexP] = dispIncrE[indexP] + 0.5*slipIncrVertex
-    dispIncrE = numpy.reshape(dispIncrE, (n/DOF,DOF))
+    dispIncrE = numpy.reshape(dispIncrE, (n/DOF, DOF))
 
-    slipVertex = numpy.reshape(slipVertex, (m/DOF,DOF))
+    slipVertex = numpy.reshape(slipVertex, (m/DOF, DOF))
     slipVertex = globalToFault(slipVertex, C)
 
     print "dispIncrE\n", printdata(dispIncrE)
@@ -342,9 +342,9 @@ elif cell == "tet4" or cell == "hex8":
     if cell == "tet4":
 
         dlagrange2 = numpy.zeros(3)
-        indexL = numpy.arange(24,33)
-        indexN = numpy.arange(3,12)
-        indexP = numpy.arange(15,24)
+        indexL = numpy.arange(24, 33)
+        indexN = numpy.arange(3, 12)
+        indexP = numpy.arange(15, 24)
         n = 33
         m = 9
         DOF = 3
@@ -356,20 +356,20 @@ elif cell == "tet4" or cell == "hex8":
                                  [-4.9, 5.9, 6.9],
                                  [-4.1, 5.1, 6.1]])
         
-        L = numpy.array([[1.0/3.0,0,0, 0.0,0,0, 0.0,0,0,],
-                         [0,1.0/3.0,0, 0,0.0,0, 0,0.0,0,],
-                         [0,0,1.0/3.0, 0,0,0.0, 0,0,0.0,],
-                         [0.0,0,0, 1.0/3.0,0,0, 0.0,0,0,],
-                         [0,0.0,0, 0,1.0/3.0,0, 0,0.0,0,],
-                         [0,0,0.0, 0,0,1.0/3.0, 0,0,0.0,],
-                         [0.0,0,0, 0.0,0,0, 1.0/3.0,0,0,],
-                         [0,0.0,0, 0,0.0,0, 0,1.0/3.0,0,],
-                         [0,0,0.0, 0,0,0.0, 0,0,1.0/3.0,]])
+        L = numpy.array([[1.0/3.0, 0, 0, 0.0, 0, 0, 0.0, 0, 0,],
+                         [0, 1.0/3.0, 0, 0, 0.0, 0, 0, 0.0, 0,],
+                         [0, 0, 1.0/3.0, 0, 0, 0.0, 0, 0, 0.0,],
+                         [0.0, 0, 0, 1.0/3.0, 0, 0, 0.0, 0, 0,],
+                         [0, 0.0, 0, 0, 1.0/3.0, 0, 0, 0.0, 0,],
+                         [0, 0, 0.0, 0, 0, 1.0/3.0, 0, 0, 0.0,],
+                         [0.0, 0, 0, 0.0, 0, 0, 1.0/3.0, 0, 0,],
+                         [0, 0.0, 0, 0, 0.0, 0, 0, 1.0/3.0, 0,],
+                         [0, 0, 0.0, 0, 0, 0.0, 0, 0, 1.0/3.0,]])
 
         Cv = numpy.array([[ 0, +1, 0,],
                           [ 0, 0, +1,],
                           [ +1, 0, 0,],])
-        Zv = numpy.zeros([3,3])
+        Zv = numpy.zeros([3, 3])
         C = numpy.vstack( (numpy.hstack((Cv, Zv, Zv)),
                            numpy.hstack((Zv, Cv, Zv)),
                            numpy.hstack((Zv, Zv, Cv)) ) )
@@ -436,9 +436,9 @@ elif cell == "tet4" or cell == "hex8":
 
     elif cell == "hex8":
         dlagrange2 = numpy.zeros(4)
-        indexL = numpy.arange(48,60)
-        indexN = numpy.arange(12,24)
-        indexP = numpy.arange(36,48)
+        indexL = numpy.arange(48, 60)
+        indexN = numpy.arange(12, 24)
+        indexP = numpy.arange(36, 48)
         n = 60
         m = 12
         DOF = 3
@@ -471,7 +471,7 @@ elif cell == "tet4" or cell == "hex8":
         Cv = numpy.array([[ 0, +1, 0,],
                           [ 0, 0, +1,],
                           [ +1, 0, 0,],])
-        Zv = numpy.zeros([3,3])
+        Zv = numpy.zeros([3, 3])
         C = numpy.vstack( (numpy.hstack((Cv, Zv, Zv, Zv)),
                            numpy.hstack((Zv, Cv, Zv, Zv)),
                            numpy.hstack((Zv, Zv, Cv, Zv)),
@@ -576,21 +576,21 @@ elif cell == "tet4" or cell == "hex8":
 
     fieldTpdt = globalToFault(fieldTpdt, C)
 
-    tractionShear = (fieldTpdt[:,0]**2 + fieldTpdt[:,1]**2)**0.5
-    tractionNormal = fieldTpdt[:,2]
+    tractionShear = (fieldTpdt[:, 0]**2 + fieldTpdt[:, 1]**2)**0.5
+    tractionNormal = fieldTpdt[:, 2]
 
-    print "tractionShear",tractionShear
-    print "tractionNormal",tractionNormal
+    print "tractionShear", tractionShear
+    print "tractionNormal", tractionNormal
 
     friction = -0.6 * tractionNormal;
 
-    print "friction",friction
+    print "friction", friction
 
-    dlagrange0 = (friction - tractionShear) * fieldTpdt[:,0] / tractionShear
-    dlagrange1 = (friction - tractionShear) * fieldTpdt[:,1] / tractionShear
+    dlagrange0 = (friction - tractionShear) * fieldTpdt[:, 0] / tractionShear
+    dlagrange1 = (friction - tractionShear) * fieldTpdt[:, 1] / tractionShear
                            
-    print "dlagrange0",dlagrange0
-    print "dlagrange1",dlagrange1
+    print "dlagrange0", dlagrange0
+    print "dlagrange1", dlagrange1
 
     if testCase == "slip": 
         dLagrange = numpy.vstack((dlagrange0, dlagrange1, dlagrange2))
@@ -603,10 +603,10 @@ elif cell == "tet4" or cell == "hex8":
     print "dLagrange \n", dLagrange
 
     L /= lengthScale**2
-    RHS = numpy.dot(numpy.transpose(L),dLagrange)
-    print "RHS",RHS
-    duN = numpy.dot(inv(jacobianN),RHS)
-    duP = -numpy.dot(inv(jacobianP),RHS)
+    RHS = numpy.dot(numpy.transpose(L), dLagrange)
+    print "RHS", RHS
+    duN = numpy.dot(inv(jacobianN), RHS)
+    duP = -numpy.dot(inv(jacobianP), RHS)
     
     dispRel = duP - duN
 
@@ -614,12 +614,12 @@ elif cell == "tet4" or cell == "hex8":
     dispTpdt = numpy.reshape(dispTpdt, n)
 
     slipVertex = dispRel + dispTpdt[indexP]-dispTpdt[indexN]
-    slipVertex = numpy.reshape(slipVertex, (m/DOF,DOF))
+    slipVertex = numpy.reshape(slipVertex, (m/DOF, DOF))
     slipVertex = globalToFault(slipVertex, C)
     if testCase == "slip":
-        slipVertex[:,2] = 0
-    mask = slipVertex[:,2] < 0.0
-    slipVertex[mask,2] = 0
+        slipVertex[:, 2] = 0
+    mask = slipVertex[:, 2] < 0.0
+    slipVertex[mask, 2] = 0
     slipVertex = faultToGlobal(slipVertex, C)
     slipVertex = numpy.reshape(slipVertex, m)
     disp = numpy.reshape(disp, n)
@@ -634,9 +634,9 @@ elif cell == "tet4" or cell == "hex8":
     dispIncrE[indexL] = dispIncrE[indexL] + dLagrange
     dispIncrE[indexN] = dispIncrE[indexN] - 0.5*slipIncrVertex
     dispIncrE[indexP] = dispIncrE[indexP] + 0.5*slipIncrVertex
-    dispIncrE = numpy.reshape(dispIncrE, (n/DOF,DOF))
+    dispIncrE = numpy.reshape(dispIncrE, (n/DOF, DOF))
 
-    slipVertex = numpy.reshape(slipVertex, (m/DOF,DOF))
+    slipVertex = numpy.reshape(slipVertex, (m/DOF, DOF))
     slipVertex = globalToFault(slipVertex, C)
 
     print "dispIncrE\n", printdata(dispIncrE)

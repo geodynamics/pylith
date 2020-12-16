@@ -76,35 +76,35 @@ class GenerateDB(object):
                 }, {
                     'name': "reference_stress_xx",
                     'units': "Pa",
-                    'data': numpy.ravel(stress[0, :, 0]),
+                    'data': numpy.ravel(stress[0,:, 0]),
                 }, {
                     'name': "reference_stress_yy",
                     'units': "Pa",
-                    'data': numpy.ravel(stress[0, :, 1]),
+                    'data': numpy.ravel(stress[0,:, 1]),
                 }, {
                     'name': "reference_stress_zz",
                     'units': "Pa",
-                    'data': numpy.ravel(stress[0, :, 2]),
+                    'data': numpy.ravel(stress[0,:, 2]),
                 }, {
                     'name': "reference_stress_xy",
                     'units': "Pa",
-                    'data': numpy.ravel(stress[0, :, 3]),
+                    'data': numpy.ravel(stress[0,:, 3]),
                 }, {
                     'name': "reference_strain_xx",
                     'units': "none",
-                    'data': numpy.ravel(strain[0, :, 0]),
+                    'data': numpy.ravel(strain[0,:, 0]),
                 }, {
                     'name': "reference_strain_yy",
                     'units': "none",
-                    'data': numpy.ravel(strain[0, :, 1]),
+                    'data': numpy.ravel(strain[0,:, 1]),
                 }, {
                     'name': "reference_strain_zz",
                     'units': "none",
-                    'data': numpy.ravel(strain[0, :, 2]),
+                    'data': numpy.ravel(strain[0,:, 2]),
                 }, {
                     'name': "reference_strain_xy",
                     'units': "none",
-                    'data': numpy.ravel(strain[0, :, 3]),
+                    'data': numpy.ravel(strain[0,:, 3]),
                 }
             ]
         }

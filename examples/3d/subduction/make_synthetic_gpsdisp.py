@@ -131,9 +131,9 @@ class MakeSyntheticGpsdisp(Application):
     Function to add noise to computed displacements.
     """
     self.dispNoise = self.dispRaw.copy()
-    self.dispNoise[:,0] += self.sigmaEast * numpy.random.randn(self.numStations)
-    self.dispNoise[:,1] += self.sigmaNorth * numpy.random.randn(self.numStations)
-    self.dispNoise[:,2] += self.sigmaUp * numpy.random.randn(self.numStations)
+    self.dispNoise[:, 0] += self.sigmaEast * numpy.random.randn(self.numStations)
+    self.dispNoise[:, 1] += self.sigmaNorth * numpy.random.randn(self.numStations)
+    self.dispNoise[:, 2] += self.sigmaUp * numpy.random.randn(self.numStations)
     return
     
 
@@ -149,11 +149,11 @@ class MakeSyntheticGpsdisp(Application):
 
     for stationNum in range(self.numStations):
       outLine = outFmt % (self.stations[stationNum],
-                          self.coords[stationNum,0], self.coords[stationNum,1],
-                          self.coords[stationNum,2],
-                          self.dispNoise[stationNum,0],
-                          self.dispNoise[stationNum,1],
-                          self.dispNoise[stationNum,2],
+                          self.coords[stationNum, 0], self.coords[stationNum, 1],
+                          self.coords[stationNum, 2],
+                          self.dispNoise[stationNum, 0],
+                          self.dispNoise[stationNum, 1],
+                          self.dispNoise[stationNum, 2],
                           self.sigmaEast, self.sigmaNorth, self.sigmaUp)
       f.write(outLine)
 
@@ -168,9 +168,9 @@ class MakeSyntheticGpsdisp(Application):
     """
 
     sigma = numpy.ones((self.numStations, 3), dtype=numpy.float64)
-    sigma[:,0] *= self.sigmaEast
-    sigma[:,1] *= self.sigmaNorth
-    sigma[:,2] *= self.sigmaUp
+    sigma[:, 0] *= self.sigmaEast
+    sigma[:, 1] *= self.sigmaNorth
+    sigma[:, 2] *= self.sigmaUp
 
     vtkHead = "# vtk DataFile Version 2.0\n" + \
               "Synthetic GPS stations\n" + \

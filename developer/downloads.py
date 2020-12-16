@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-packages = ["pylith","pylith_installer","spatialdata"]
+packages = ["pylith", "pylith_installer", "spatialdata"]
 baseurl = "https://api.github.com/repos/geodynamics/%s/releases"
 
 import urllib2
@@ -15,7 +15,7 @@ for package in packages:
     for release in data:
         print("    %s" % release['name'])
         for asset in release['assets']:
-            print("        %s: %d" % (asset['name'],asset['download_count']))
+            print("        %s: %d" % (asset['name'], asset['download_count']))
             if package == "pylith":
                 if not "petsc" in asset['name'] and not "manual" in asset['name'] and not "installer" in asset['name']:
                     count += asset['download_count']

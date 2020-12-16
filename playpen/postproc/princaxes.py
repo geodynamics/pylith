@@ -141,11 +141,11 @@ class PrincAxes(Application):
     s3 = float(self.inventory.regionalSigma1[0])
     sVec = numpy.array([s1, s2, s3], dtype=numpy.float64)
     self.regionalSigma = numpy.diag(sVec)
-    self.regionalAxes = numpy.zeros((3,3), dtype=numpy.float64)
+    self.regionalAxes = numpy.zeros((3, 3), dtype=numpy.float64)
     for i in range(3):
-      self.regionalAxes[0,i] = float(self.inventory.regionalSigma1[i+1])
-      self.regionalAxes[1,i] = float(self.inventory.regionalSigma2[i+1])
-      self.regionalAxes[2,i] = float(self.inventory.regionalSigma3[i+1])
+      self.regionalAxes[0, i] = float(self.inventory.regionalSigma1[i+1])
+      self.regionalAxes[1, i] = float(self.inventory.regionalSigma2[i+1])
+      self.regionalAxes[2, i] = float(self.inventory.regionalSigma3[i+1])
 
     return
 
@@ -187,12 +187,12 @@ class PrincAxes(Application):
     tensor = cellData.get_array(self.vtkTensorIndex).to_array()
     (self.numTensorPoints, numCols) = tensor.shape
     
-    sxx = tensor[:,self.vtkTensorComponentsOrder[0]]
-    syy = tensor[:,self.vtkTensorComponentsOrder[1]]
-    szz = tensor[:,self.vtkTensorComponentsOrder[2]]
-    sxy = tensor[:,self.vtkTensorComponentsOrder[3]]
-    syz = tensor[:,self.vtkTensorComponentsOrder[4]]
-    sxz = tensor[:,self.vtkTensorComponentsOrder[5]]
+    sxx = tensor[:, self.vtkTensorComponentsOrder[0]]
+    syy = tensor[:, self.vtkTensorComponentsOrder[1]]
+    szz = tensor[:, self.vtkTensorComponentsOrder[2]]
+    sxy = tensor[:, self.vtkTensorComponentsOrder[3]]
+    syz = tensor[:, self.vtkTensorComponentsOrder[4]]
+    sxz = tensor[:, self.vtkTensorComponentsOrder[5]]
     self.tensorSorted = numpy.column_stack((sxx, syy, szz, sxy, syz, sxz))
 
     return
@@ -215,11 +215,11 @@ class PrincAxes(Application):
     self.maxEigenValue = numpy.empty(self.numTensorPoints, dtype=numpy.float64)
     # Loop over integration points.
     for point in range(self.numTensorPoints):
-      tensor = self.tensorSorted[point, :]
+      tensor = self.tensorSorted[point,:]
       tensorOrdered, eigenValuesOrdered = self._compPrincAxes(tensor)
-      self.minPrincAxis[point,:] = tensorOrdered[:,0]
-      self.intPrincAxis[point,:] = tensorOrdered[:,1]
-      self.maxPrincAxis[point,:] = tensorOrdered[:,2]
+      self.minPrincAxis[point,:] = tensorOrdered[:, 0]
+      self.intPrincAxis[point,:] = tensorOrdered[:, 1]
+      self.maxPrincAxis[point,:] = tensorOrdered[:, 2]
       self.minEigenValue[point] = eigenValuesOrdered[0]
       self.intEigenValue[point] = eigenValuesOrdered[1]
       self.maxEigenValue[point] = eigenValuesOrdered[2]
@@ -239,7 +239,7 @@ class PrincAxes(Application):
     (eigenValue, princAxes) = numpy.linalg.eigh(tensorMat)
     idx = eigenValue.argsort()
     eigenValuesOrdered = eigenValue[idx]
-    princAxesOrdered = princAxes[:,idx]
+    princAxesOrdered = princAxes[:, idx]
     # tensorOrdered = numpy.empty_like(princAxesOrdered)
     # tensorOrdered[0,:] = eigenValuesOrdered[0] * princAxesOrdered[0,:]
     # tensorOrdered[1,:] = eigenValuesOrdered[1] * princAxesOrdered[1,:]

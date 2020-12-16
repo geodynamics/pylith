@@ -242,7 +242,7 @@ class SlipInvert(Application):
             slipAlongRake[invNum, self.impulseInds, 0] = solution
             slipVec[invNum, self.impulseInds, 0] = self.llComp * solution
             slipVec[invNum, self.impulseInds, 1] = self.udComp * solution
-            predictedDisp[invNum, :, :] = predicted.reshape(self.numDataPoints, 3,
+            predictedDisp[invNum,:,:] = predicted.reshape(self.numDataPoints, 3,
                                                             order='F')
 
             print("    Data residual:              %e" % dataResidualNorm)
@@ -289,7 +289,7 @@ class SlipInvert(Application):
         self.faultCells = numpy.array(impulsesLl['topology/cells'][:],
                                       dtype=numpy.int)
         self.numFaultCells = self.faultCells.shape[0]
-        llSlip = impulsesLl['vertex_fields/slip'][:, :, 0]
+        llSlip = impulsesLl['vertex_fields/slip'][:,:, 0]
         llImpInds = numpy.nonzero(llSlip != 0.0)
         self.impulseCoords = self.faultVertCoords[llImpInds[1]]
         self.numImpulses = self.impulseCoords.shape[0]
@@ -305,14 +305,14 @@ class SlipInvert(Application):
         sys.stdout.flush()
         impulsesUd = h5py.File(self.gfImpulsesUdFile, 'r')
         udCoords = impulsesUd['geometry/vertices'][:]
-        udSlip = impulsesUd['vertex_fields/slip'][:, :, 1]
+        udSlip = impulsesUd['vertex_fields/slip'][:,:, 1]
         udImpInds = numpy.nonzero(udSlip != 0.0)
         numUdImpulses = udImpInds[0].shape[0]
         udCoordsUsed = udCoords[udImpInds[1]]
         udSlipUsed = udSlip[udImpInds[0], udImpInds[1]]
         (distances, udCoordInds) = self.matchCoords(udCoordsUsed,
                                                     self.impulseCoords)
-        udCoordsUsed = udCoordsUsed[udCoordInds, :]
+        udCoordsUsed = udCoordsUsed[udCoordInds,:]
         impulsesUd.close()
 
         # Read responses.
@@ -334,7 +334,7 @@ class SlipInvert(Application):
         responseUd = h5py.File(self.gfResponsesUdFile, 'r')
         udResponseCoords = responseUd['geometry/vertices'][:]
         responseUdVals = responseUd['vertex_fields/displacement'][:]
-        udResponseVals = responseUdVals[udCoordInds, :, :]
+        udResponseVals = responseUdVals[udCoordInds,:,:]
 
         (distances, udDataInds) = self.matchCoords(udResponseCoords,
                                                    self.dataCoords)
@@ -351,11 +351,11 @@ class SlipInvert(Application):
         nU = self.numDataPoints
         self.design = numpy.zeros((self.numDesignRows, self.numImpulses),
                                   dtype=numpy.float64)
-        self.design[0:nE, :] = numpy.transpose(self.llComp * llResponsesEast +
+        self.design[0:nE,:] = numpy.transpose(self.llComp * llResponsesEast +
                                                self.udComp * udResponsesEast)
-        self.design[nE:nE + nN, :] = numpy.transpose(
+        self.design[nE:nE + nN,:] = numpy.transpose(
             self.llComp * llResponsesNorth + self.udComp * udResponsesNorth)
-        self.design[nE + nN:nE + nN + nU, :] = numpy.transpose(
+        self.design[nE + nN:nE + nN + nU,:] = numpy.transpose(
             self.llComp * llResponsesUp + self.udComp * udResponsesUp)
 
         return
@@ -373,7 +373,7 @@ class SlipInvert(Application):
     (distances, inds) = tree.query(coords)
     """
 
-        diff = coordsRef[:, :, None] - coords[:, :, None].transpose()
+        diff = coordsRef[:,:, None] - coords[:,:, None].transpose()
         dist = numpy.linalg.norm(diff, axis=1)
         inds = numpy.argmin(dist, axis=0)
         distances = dist[inds].diagonal()

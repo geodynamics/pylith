@@ -146,7 +146,7 @@ class HDF5Checker(object):
             ncells, ncorners = cells.shape
             centroids = numpy.zeros((ncells, self.exactsoln.SPACE_DIM), dtype=numpy.float64)
             for icorner in range(ncorners):
-                centroids[:, :] += vertices[cells[:, icorner], :]
+                centroids[:,:] += vertices[cells[:, icorner],:]
             centroids /= float(ncorners)
             self.cellCentroids = centroids
         return self.cellCentroids
@@ -199,13 +199,13 @@ class HDF5Checker(object):
                 okay = numpy.zeros((npts,), dtype=numpy.bool)
                 ratio = numpy.zeros((npts,))
 
-                maskR = numpy.abs(fieldE[istep, :, icomp]) > toleranceAbsMask
+                maskR = numpy.abs(fieldE[istep,:, icomp]) > toleranceAbsMask
                 ratio[maskR] = numpy.abs(1.0 - field[istep, maskR, icomp] / fieldE[istep, maskR, icomp])
                 if numpy.sum(maskR) > 0:
                     okay[maskR] = ratio[maskR] < ratio_tolerance
 
                 maskD = ~maskR
-                diff = numpy.abs(field[istep, :, icomp] - fieldE[istep, :, icomp]) / scale
+                diff = numpy.abs(field[istep,:, icomp] - fieldE[istep,:, icomp]) / scale
                 if numpy.sum(maskD) > 0:
                     okay[maskD] = diff[maskD] < diff_tolerance
 
@@ -223,7 +223,7 @@ class HDF5Checker(object):
                         print("Expected values (not okay): ", fieldE[istep, n_okay_maskR, icomp])
                         print("Computed values (not okay): ", field[istep, n_okay_maskR, icomp])
                         print("Ratio (not okay): ", ratio[n_okay_maskR])
-                        print("Ratio Coordinates (not okay): ", pts[n_okay_maskR, :])
+                        print("Ratio Coordinates (not okay): ", pts[n_okay_maskR,:])
                         print("Tolerance Absolute Mask: ", toleranceAbsMask)
                         print("Ratio Tolerance: ", ratio_tolerance)
 
@@ -233,7 +233,7 @@ class HDF5Checker(object):
                         print("Expected values (not okay): ", fieldE[istep, n_okay_maskD, icomp])
                         print("Computed values (not okay): ", field[istep, n_okay_maskD, icomp])
                         print("Relative diff (not okay): ", diff[n_okay_maskD])
-                        print("Relative diff Coordinates (not okay): ", pts[n_okay_maskD, :])
+                        print("Relative diff Coordinates (not okay): ", pts[n_okay_maskD,:])
                         print("Diff Tolerance: ", diff_tolerance)
                         print("Scale: ", scale)
                     self.testcase.assertEqual(npts, numpy.sum(okay))

@@ -244,9 +244,9 @@ class SlabExtender(Component):
         numContours = int(math.ceil(math.log((self.upDipDist/distHoriz)+1)/math.log(2.0)))
         for i in range(numContours):
             contour = numpy.array(contourTop)
-            contour[:,0] += (2**i)*dx.value
-            contour[:,1] += (2**i)*dy.value
-            contour[:,2] = self.upDipElev.value
+            contour[:, 0] += (2**i)*dx.value
+            contour[:, 1] += (2**i)*dy.value
+            contour[:, 2] = self.upDipElev.value
             contoursUpDip[-i] = contour
         self.contoursUpDip = contoursUpDip
         return
@@ -280,7 +280,7 @@ class SlabExtender(Component):
     def _decimate(self, stride):
         """Decimate the number of points in a contour.
         """
-        for key,points in self.contours.items():
+        for key, points in self.contours.items():
             pointsD = points[::self.pointsStride]
             if (len(points)-1) % self.pointsStride:
                 pointsD = numpy.vstack((pointsD, points[-1],))
@@ -297,7 +297,7 @@ class SlabExtender(Component):
         import coordsys
         for points in self.contours.values():
             coordsys.geoToMesh(points)
-            points[:,2] *= 1.0e+3
+            points[:, 2] *= 1.0e+3
         return
 
 
@@ -368,23 +368,23 @@ class SurfaceApp(Application):
         
         self.modeler.newSurface()
         for contour in self.extender.getUpDipContours():
-            contour[:,2] = -self.slabThickness.value
+            contour[:, 2] = -self.slabThickness.value
             self.modeler.addContour(contour)
         
         for contour in self.extender.getContours():
-            contour[:,0] -= self.slabNormalDir[0]*self.slabThickness.value
-            contour[:,1] -= self.slabNormalDir[1]*self.slabThickness.value
-            contour[:,2] -= self.slabNormalDir[2]*self.slabThickness.value
+            contour[:, 0] -= self.slabNormalDir[0]*self.slabThickness.value
+            contour[:, 1] -= self.slabNormalDir[1]*self.slabThickness.value
+            contour[:, 2] -= self.slabNormalDir[2]*self.slabThickness.value
             self.modeler.addContour(contour)
         self.modeler.skinSurface(self.slabBotFilename)
 
         # Splay fault
         self.modeler.newSurface()
         contour = self.extender.contours[15]
-        contour[:,2] -= 8.0e+3
+        contour[:, 2] -= 8.0e+3
         self.modeler.addContour(contour)
-        contour[:,2] = 1.0e+3
-        contour[:,0] -= 24.0e+3
+        contour[:, 2] = 1.0e+3
+        contour[:, 0] -= 24.0e+3
         self.modeler.addContour(contour)
         self.modeler.skinSurface(self.splayFilename)
         

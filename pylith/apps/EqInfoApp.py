@@ -181,7 +181,7 @@ class EqInfoApp(Application):
             for snapshot in self.snapshots:
                 # Get slip at snapshot
                 istep = self._findTimeStep(snapshot, timestamps)
-                slip = h5['vertex_fields/slip'][istep, :, :]
+                slip = h5['vertex_fields/slip'][istep,:,:]
                 if len(slip.shape) > 2:
                     slip = slip.squeeze(axis=0)
 
@@ -294,7 +294,7 @@ class EqInfoApp(Application):
             (nvertices, nvals) = valueP.shape
             valueC = numpy.zeros((ncells, nvals), dtype=numpy.float64)
             for i in range(ncorners):
-                valueC[:, :] += valueP[cells[:, i], :]
+                valueC[:,:] += valueP[cells[:, i],:]
         else:
             nvertices = valueP.shape
             valueC = numpy.zeros((ncells,), dtype=numpy.float64)

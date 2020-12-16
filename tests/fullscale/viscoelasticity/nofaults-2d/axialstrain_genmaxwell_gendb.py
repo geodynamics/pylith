@@ -63,10 +63,10 @@ class GenerateDB(object):
                 'data_dim': 2,
                 'values': [{'name': "initial_amplitude_x",
                             'units': "m",
-                            'data': disp[0, :, 0].ravel()},
+                            'data': disp[0,:, 0].ravel()},
                            {'name': "initial_amplitude_y",
                             'units': "m",
-                            'data': disp[0, :, 1].ravel()}]}
+                            'data': disp[0,:, 1].ravel()}]}
 
         from spatialdata.spatialdb.SimpleIOAscii import createWriter
         io = createWriter("axialstrain_genmaxwell_disp.spatialdb")

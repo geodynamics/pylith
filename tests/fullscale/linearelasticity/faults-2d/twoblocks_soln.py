@@ -84,7 +84,7 @@ class AnalyticalSoln(object):
     def getMask(self, name, pts):
         mask = None
         if name == "displacement":
-            mask = pts[:,0] == 0.0
+            mask = pts[:, 0] == 0.0
         return mask
     
     def displacement(self, locs):
@@ -95,7 +95,7 @@ class AnalyticalSoln(object):
         disp = numpy.zeros((1, npts, 2), dtype=numpy.float64)
         maskN = locs[:, 0] < 0
         maskP = locs[:, 0] > 0
-        disp[0, :, 1] = +1.0 * maskN - 1.0 * maskP
+        disp[0,:, 1] = +1.0 * maskN - 1.0 * maskP
         return disp
 
     def density(self, locs):
@@ -128,10 +128,10 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         strain = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        strain[0, :, 0] = exx
-        strain[0, :, 1] = eyy
-        strain[0, :, 2] = ezz
-        strain[0, :, 3] = exy
+        strain[0,:, 0] = exx
+        strain[0,:, 1] = eyy
+        strain[0,:, 2] = ezz
+        strain[0,:, 3] = exy
         return strain
 
     def stress(self, locs):
@@ -140,10 +140,10 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         stress = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        stress[0, :, 0] = sxx
-        stress[0, :, 1] = syy
-        stress[0, :, 2] = szz
-        stress[0, :, 3] = sxy
+        stress[0,:, 0] = sxx
+        stress[0,:, 1] = syy
+        stress[0,:, 2] = szz
+        stress[0,:, 3] = sxy
         return stress
 
 

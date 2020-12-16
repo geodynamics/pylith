@@ -73,7 +73,7 @@ class Mesh(ModuleMesh):
     groups = []
     names  = ModuleMesh.groups(self)
     for name in names:
-      groups.append((name,ModuleMesh.groupSize(self, name)))
+      groups.append((name, ModuleMesh.groupSize(self, name)))
     return groups
 
 

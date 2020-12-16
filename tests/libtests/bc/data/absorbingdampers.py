@@ -126,8 +126,8 @@ def calcQuad4():
   for v in dampingConsts:
       print "  %16.8e" % v
   print "vel:"
-  print "  vel1: ",vel1X,"  ",vel1Y
-  print "  vel2: ",vel2X,"  ",vel2Y
+  print "  vel1: ", vel1X, "  ", vel1Y
+  print "  vel2: ", vel2X, "  ", vel2Y
   print "values for residual:"
   for v in residual:
       print "  %16.8e" % v
@@ -306,10 +306,10 @@ def calcHex8():
       residualX = -dampingConsts[0] * velX * area * jacobianDet
       residualY = -dampingConsts[1] * velY * area * jacobianDet
       residualZ = -dampingConsts[2] * velZ * area * jacobianDet
-      residual[cell[0],:] += N0*numpy.array([residualX,residualY,residualZ])
-      residual[cell[1],:] += N1*numpy.array([residualX,residualY,residualZ])
-      residual[cell[2],:] += N2*numpy.array([residualX,residualY,residualZ])
-      residual[cell[3],:] += N3*numpy.array([residualX,residualY,residualZ])
+      residual[cell[0],:] += N0*numpy.array([residualX, residualY, residualZ])
+      residual[cell[1],:] += N1*numpy.array([residualX, residualY, residualZ])
+      residual[cell[2],:] += N2*numpy.array([residualX, residualY, residualZ])
+      residual[cell[3],:] += N3*numpy.array([residualX, residualY, residualZ])
       
 
     for b in basis:
@@ -352,9 +352,9 @@ def calcHex8():
       index = 0
       for i in range(4):
         for j in range(4):
-          jacobian[cell[i],0,cell[j],0] += numpy.array(jj[index  ])
-          jacobian[cell[i],1,cell[j],1] += numpy.array(jj[index+1])
-          jacobian[cell[i],2,cell[j],2] += numpy.array(jj[index+2])
+          jacobian[cell[i], 0, cell[j], 0] += numpy.array(jj[index  ])
+          jacobian[cell[i], 1, cell[j], 1] += numpy.array(jj[index+1])
+          jacobian[cell[i], 2, cell[j], 2] += numpy.array(jj[index+2])
           index += 3
           
 

@@ -74,11 +74,11 @@ stressE[:, 4] = 2.0 * mu_t * strain0[4]
 stressE[:, 5] = 2.0 * mu_t * strain0[5]
 stressE /= 1.0e+6
 
-print(stress[0:2, 0, :])
-print(stress[ntimesteps - 1, 0, :])
-print(stressE[0, :])
-print(stressE[1, :])
-print(stressE[ntimesteps - 1, :])
+print(stress[0:2, 0,:])
+print(stress[ntimesteps - 1, 0,:])
+print(stressE[0,:])
+print(stressE[1,:])
+print(stressE[ntimesteps - 1,:])
 
 # ----------------------------------------------------------------------
 nrows = 2

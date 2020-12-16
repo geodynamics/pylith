@@ -116,7 +116,7 @@ class GrabFaces(Application):
     # Get vertex coordinates
     for lineCount in range(1, numVerts+1):
       data = lines[lineCount].split()
-      for dim in range(1,4):
+      for dim in range(1, 4):
         vertCoords.append(float(data[dim]))
 
     # Get cell connectivities

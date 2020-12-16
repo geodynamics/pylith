@@ -383,8 +383,8 @@ class VtkCff(Application):
         # principal stresses, as well as the stress difference, and then
         # compute CFF.
         for point in range(self.numStressPoints):
-            totStress = newStress[point, :]
-            deltaStress = newStress[point, :] - refStress[point, :]
+            totStress = newStress[point,:]
+            deltaStress = newStress[point,:] - refStress[point,:]
             (totPrincStress, totPrincAxes) = self._princStress(totStress)
             # Rotate stress changes into principal axis coordinate system for
             # total stress.
@@ -411,8 +411,8 @@ class VtkCff(Application):
             # Get failure planes by rotating vector in principal axis coordinate
             # system into global coordinate system.
             # NOTE:  make sure I'm applying the rotation the right way.
-            failDir1[point, :] = numpy.dot(totPrincAxes.transpose(), vec1)
-            failDir2[point, :] = numpy.dot(totPrincAxes.transpose(), vec2)
+            failDir1[point,:] = numpy.dot(totPrincAxes.transpose(), vec1)
+            failDir2[point,:] = numpy.dot(totPrincAxes.transpose(), vec2)
 
         # Set up mesh info for VTK file
         mesh = tvtk.UnstructuredGrid(points=self.vertArray)
@@ -462,8 +462,8 @@ class VtkCff(Application):
         # principal stresses, as well as the stress difference, and then
         # compute CFF.
         for point in range(self.numStressPoints):
-            totStress = newStress[point, :]
-            deltaStress = newStress[point, :] - refStress[point, :]
+            totStress = newStress[point,:]
+            deltaStress = newStress[point,:] - refStress[point,:]
             (totPrincStress, totPrincAxes) = self._princStress(totStress)
             # Rotate stress changes into principal axis coordinate system for
             # total stress.
@@ -490,8 +490,8 @@ class VtkCff(Application):
             # Get failure planes by rotating vector in principal axis coordinate
             # system into global coordinate system.
             # NOTE:  make sure I'm applying the rotation the right way.
-            failDir1[point, :] = numpy.dot(totPrincAxes.transpose(), vec1)
-            failDir2[point, :] = numpy.dot(totPrincAxes.transpose(), vec2)
+            failDir1[point,:] = numpy.dot(totPrincAxes.transpose(), vec1)
+            failDir2[point,:] = numpy.dot(totPrincAxes.transpose(), vec2)
 
         # Set up mesh info for VTK file
         mesh = tvtk.UnstructuredGrid(points=self.vertArray)
