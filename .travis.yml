@@ -23,9 +23,6 @@ jobs:
     - name: ubuntu-20.04
       os: linux
       env: BASE_IMAGE=geodynamics/pylith-testenv-ubuntu-20.04 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
-    - name: fedora-30
-      os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-30 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage2
     - name: fedora-31
       os: linux
       env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-31 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage2
