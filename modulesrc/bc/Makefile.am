@@ -20,7 +20,7 @@ subpackage = bc
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _bcmodule.la
+subpkgpyexec_LTLIBRARIES = _bc.la
 
 subpkgpyexec_PYTHON = bc.py
 
@@ -37,18 +37,18 @@ swig_generated = \
 	bc_wrap.cxx \
 	bc.py
 
-_bcmodule_la_LDFLAGS = -module -avoid-version \
+_bc_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist__bcmodule_la_SOURCES = $(swig_sources) $(swig_generated)
+dist__bc_la_SOURCES = $(swig_sources) $(swig_generated)
 
-_bcmodule_la_LIBADD = \
+_bc_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 if ENABLE_CUBIT
-  _bcmodule_la_LIBADD += -lnetcdf
+  _bc_la_LIBADD += -lnetcdf
 endif
 
 if ENABLE_SWIG

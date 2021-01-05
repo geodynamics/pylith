@@ -20,7 +20,7 @@ subpackage = feassemble
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _feassemblemodule.la
+subpkgpyexec_LTLIBRARIES = _feassemble.la
 
 subpkgpyexec_PYTHON = feassemble.py
 
@@ -31,18 +31,18 @@ swig_generated = \
 	feassemble_wrap.cxx \
 	feassemble.py
 
-_feassemblemodule_la_LDFLAGS = -module -avoid-version \
+_feassemble_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist__feassemblemodule_la_SOURCES = $(swig_sources) $(swig_generated)
+dist__feassemble_la_SOURCES = $(swig_sources) $(swig_generated)
 
-_feassemblemodule_la_LIBADD = \
+_feassemble_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 if ENABLE_CUBIT
-  _feassemblemodule_la_LIBADD += -lnetcdf
+  _feassemble_la_LIBADD += -lnetcdf
 endif
 
 if ENABLE_SWIG

@@ -20,7 +20,7 @@ subpackage = meshio
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _meshiomodule.la
+subpkgpyexec_LTLIBRARIES = _meshio.la
 
 subpkgpyexec_PYTHON = meshio.py
 
@@ -52,18 +52,18 @@ swig_generated = \
 	meshio_wrap.cxx \
 	meshio.py
 
-_meshiomodule_la_LDFLAGS = -module -avoid-version \
+_meshio_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist__meshiomodule_la_SOURCES = $(swig_sources) $(swig_generated)
+dist__meshio_la_SOURCES = $(swig_sources) $(swig_generated)
 
-_meshiomodule_la_LIBADD = \
+_meshio_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 if ENABLE_CUBIT
-  _meshiomodule_la_LIBADD += -lnetcdf
+  _meshio_la_LIBADD += -lnetcdf
 endif
 
 if ENABLE_SWIG

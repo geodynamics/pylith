@@ -20,7 +20,7 @@ subpackage = problems
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _problemsmodule.la
+subpkgpyexec_LTLIBRARIES = _problems.la
 
 subpkgpyexec_PYTHON = problems.py
 
@@ -47,18 +47,18 @@ swig_generated = \
 	problems_wrap.cxx \
 	problems.py
 
-_problemsmodule_la_LDFLAGS = -module -avoid-version \
+_problems_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist__problemsmodule_la_SOURCES = $(swig_sources) $(swig_generated)
+dist__problems_la_SOURCES = $(swig_sources) $(swig_generated)
 
-_problemsmodule_la_LIBADD = \
+_problems_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 if ENABLE_CUBIT
-  _problemsmodule_la_LIBADD += -lnetcdf
+  _problems_la_LIBADD += -lnetcdf
 endif
 
 if ENABLE_SWIG

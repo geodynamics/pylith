@@ -20,7 +20,7 @@ subpackage = materials
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _materialsmodule.la
+subpkgpyexec_LTLIBRARIES = _materials.la
 
 subpkgpyexec_PYTHON = materials.py
 
@@ -50,18 +50,18 @@ swig_generated = \
 	materials_wrap.cxx \
 	materials.py
 
-_materialsmodule_la_LDFLAGS = -module -avoid-version \
+_materials_la_LDFLAGS = -module -avoid-version \
 	-g $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist__materialsmodule_la_SOURCES = $(swig_sources) $(swig_generated)
+dist__materials_la_SOURCES = $(swig_sources) $(swig_generated)
 
-_materialsmodule_la_LIBADD = \
+_materials_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 if ENABLE_CUBIT
-  _materialsmodule_la_LIBADD += -lnetcdf
+  _materials_la_LIBADD += -lnetcdf
 endif
 
 if ENABLE_SWIG

@@ -20,7 +20,7 @@ subpackage = topology
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _topologymodule.la
+subpkgpyexec_LTLIBRARIES = _topology.la
 
 subpkgpyexec_PYTHON = topology.py
 
@@ -39,12 +39,12 @@ swig_generated = \
 	topology_wrap.cxx \
 	topology.py
 
-_topologymodule_la_LDFLAGS = -module -avoid-version \
+_topology_la_LDFLAGS = -module -avoid-version \
 	-g $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist__topologymodule_la_SOURCES = $(swig_sources) $(swig_generated)
+dist__topology_la_SOURCES = $(swig_sources) $(swig_generated)
 
-_topologymodule_la_LIBADD = \
+_topology_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) \

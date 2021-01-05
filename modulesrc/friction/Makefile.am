@@ -20,7 +20,7 @@ subpackage = friction
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _frictionmodule.la
+subpkgpyexec_LTLIBRARIES = _friction.la
 
 subpkgpyexec_PYTHON = friction.py
 
@@ -36,18 +36,18 @@ swig_generated = \
 	friction_wrap.cxx \
 	friction.py
 
-_frictionmodule_la_LDFLAGS = -module -avoid-version \
+_friction_la_LDFLAGS = -module -avoid-version \
 	-g $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist__frictionmodule_la_SOURCES = $(swig_sources) $(swig_generated)
+dist__friction_la_SOURCES = $(swig_sources) $(swig_generated)
 
-_frictionmodule_la_LIBADD = \
+_friction_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 if ENABLE_CUBIT
-  _frictionmodule_la_LIBADD += -lnetcdf
+  _friction_la_LIBADD += -lnetcdf
 endif
 
 if ENABLE_SWIG

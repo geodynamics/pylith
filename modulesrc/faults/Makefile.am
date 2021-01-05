@@ -20,7 +20,7 @@ subpackage = faults
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _faultsmodule.la
+subpkgpyexec_LTLIBRARIES = _faults.la
 
 subpkgpyexec_PYTHON = faults.py
 
@@ -42,18 +42,18 @@ swig_generated = \
 	faults_wrap.cxx \
 	faults.py
 
-_faultsmodule_la_LDFLAGS = -module -avoid-version \
+_faults_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist__faultsmodule_la_SOURCES = $(swig_sources) $(swig_generated)
+dist__faults_la_SOURCES = $(swig_sources) $(swig_generated)
 
-_faultsmodule_la_LIBADD = \
+_faults_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 if ENABLE_CUBIT
-  _faultsmodule_la_LIBADD += -lnetcdf
+  _faults_la_LIBADD += -lnetcdf
 endif
 
 if ENABLE_SWIG

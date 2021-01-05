@@ -21,8 +21,8 @@ include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
 subpkgpyexec_LTLIBRARIES = \
-	_petscmodule.la \
-	_utilsmodule.la
+	_petsc.la \
+	_utils.la
 
 subpkgpyexec_PYTHON = \
 	petsc.py \
@@ -58,24 +58,24 @@ swig_sources = $(petsc_swig_sources) $(utils_swig_sources)
 swig_generated = $(petsc_swig_generated) $(utils_swig_generated)
 
 # PETSc module
-_petscmodule_la_LDFLAGS = -module -avoid-version \
+_petsc_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist__petscmodule_la_SOURCES = $(petsc_swig_sources) $(petsc_swig_generated)
+dist__petsc_la_SOURCES = $(petsc_swig_sources) $(petsc_swig_generated)
 
-_petscmodule_la_LIBADD = \
+_petsc_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 # utils module
-_utilsmodule_la_LDFLAGS = -module -avoid-version \
+_utils_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist__utilsmodule_la_SOURCES = $(utils_swig_sources) $(utils_swig_generated)
+dist__utils_la_SOURCES = $(utils_swig_sources) $(utils_swig_generated)
 
-_utilsmodule_la_LIBADD = \
+_utils_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) \
