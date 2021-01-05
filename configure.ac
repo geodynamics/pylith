@@ -193,7 +193,7 @@ CIT_PROJ6_LIB
 # PYTHIA
 CIT_PYTHON_MODULE([pyre],[0.8.1])
 CIT_PYTHON_MODULE([journal],[0.8.1])
-eval p=`$PYTHON -c "import pyre; print pyre.__""file__.replace('pyre/__init__.pyc','')"`
+eval p=`$PYTHON -c "import pyre; print(pyre.__""file__.replace('pyre/__init__.py',''))"`
 PYTHON_EGG_CPPFLAGS="-I$p"
 AC_SUBST(PYTHON_EGG_CPPFLAGS)
 
