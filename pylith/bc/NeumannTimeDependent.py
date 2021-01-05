@@ -85,18 +85,16 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
     refDir2 = pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
     refDir2.meta['tip'] = "Second choice for reference direction to discriminate among tangential directions in 3-D."
 
-    from .AuxSubfieldsTimeDependent import AuxSubfieldsTimeDependent
-    from pylith.topology.Subfield import subfieldFactory
-    auxiliarySubfields = pyre.inventory.facilityArray(
-        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsTimeDependent)
-    auxiliarySubfields.meta['tip'] = "Discretization of time-dependent Neumann parameters."
-
     def __init__(self, name="neumanntimedependent"):
         """
         Constructor.
         """
         BoundaryCondition.__init__(self, name)
         return
+
+    def _defaults(self):
+        from .AuxSubfieldsTimeDependent import AuxSubfieldsTimeDependent
+        self.auxiliarySubfields = AuxSubfieldsTimeDependent("auxiliary_subfields")
 
     def preinitialize(self, problem):
         """

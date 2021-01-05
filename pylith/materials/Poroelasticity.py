@@ -43,19 +43,6 @@ class Poroelasticity(Material, ModulePoroelasticity):
 
     import pyre.inventory
 
-    from pylith.topology.Subfield import subfieldFactory
-    from pylith.utils.EmptyBin import EmptyBin
-
-    from .AuxSubfieldsPoroelasticity import AuxSubfieldsPoroelasticity
-    auxiliarySubfields = pyre.inventory.facilityArray(
-        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsPoroelasticity)
-    auxiliarySubfields.meta['tip'] = "Discretization of Poroelasticity properties."
-
-    from .DerivedSubfieldsElasticity import DerivedSubfieldsElasticity
-    derivedSubfields = pyre.inventory.facilityArray(
-        "derived_subfields", itemFactory=subfieldFactory, factory=DerivedSubfieldsElasticity)
-    derivedSubfields.meta['tip'] = "Discretization of derived subfields (e.g., stress and strain)."
-
     useBodyForce = pyre.inventory.bool("use_body_force", default=False)
     useBodyForce.meta['tip'] = "Include body force term in Poroelasticity equation."
 
@@ -71,6 +58,13 @@ class Poroelasticity(Material, ModulePoroelasticity):
         """
         Material.__init__(self, name)
         return
+
+    def _defaults(self):
+        from .AuxSubfieldsPoroelasticity import AuxSubfieldsPoroelasticity
+        self.auxiliarySubfields = AuxSubfieldsPoroelasticity("auxiliary_subfields")
+
+        from .DerivedSubfieldsElasticity import DerivedSubfieldsElasticity
+        self.derivedSubfields = DerivedSubfieldsElasticity("derived_subfields")
 
     def preinitialize(self, problem):
         """

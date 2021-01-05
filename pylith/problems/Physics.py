@@ -46,11 +46,23 @@ class Physics(PetscComponent, ModulePhysics):
       - None
 
     Facilities
+      - *auxiliary_subfields* Discretization information for auxiliary subfields.
       - *db_auxiliary_field* Database for physical property parameters.
       - *observers* Observers of integrator (e.g., output).
     """
 
     import pyre.inventory
+
+    from pylith.topology.Subfield import subfieldFactory
+    from pylith.utils.EmptyBin import EmptyBin
+
+    auxiliarySubfields = pyre.inventory.facilityArray(
+        "auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin)
+    auxiliarySubfields.meta['tip'] = "Discretization information for auxiliary subfields."
+
+    derivedSubfields = pyre.inventory.facilityArray(
+        "derived_subfields", itemFactory=subfieldFactory, factory=EmptyBin)
+    derivedSubfields.meta['tip'] = "Discretization of derived subfields."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     auxiliaryFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
@@ -67,10 +79,6 @@ class Physics(PetscComponent, ModulePhysics):
         Constructor.
         """
         PetscComponent.__init__(self, name, facility)
-
-        from pylith.utils.EmptyBin import EmptyBin
-        self.auxiliarySubfields = EmptyBin()
-        self.derivedSubfields = EmptyBin()
         return
 
     def preinitialize(self, problem):
