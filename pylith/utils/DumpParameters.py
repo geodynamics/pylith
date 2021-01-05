@@ -52,7 +52,7 @@ class DumpParameters(Component):
         """
         Collect version information and parameters.
         """
-        from CollectVersionInfo import CollectVersionInfo
+        from .CollectVersionInfo import CollectVersionInfo
         import datetime
         self.info = CollectVersionInfo.asDict()
         self.info["timestamp"] = datetime.datetime.now().isoformat()

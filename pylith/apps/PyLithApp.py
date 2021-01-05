@@ -20,7 +20,7 @@
 ##
 # @brief Python PyLith application
 
-from PetscApplication import PetscApplication
+from .PetscApplication import PetscApplication
 
 # PyLithApp class
 
