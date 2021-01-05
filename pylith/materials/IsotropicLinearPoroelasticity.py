@@ -34,7 +34,7 @@ class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelas
       - *use_reference_state* Use reference stress/strain state.
 
     Facilities
-      - *auxiliary_subfields* Discretization of physical properties and state variables.
+      - None
 
     FACTORY: poroelasticity_rheology
     """
@@ -44,12 +44,6 @@ class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelas
     useReferenceState = pyre.inventory.bool("use_reference_state", default=False)
     useReferenceState.meta['tip'] = "Use reference stress/strain state."
 
-    from .AuxSubfieldsIsotropicLinearPoroelasticity import AuxSubfieldsIsotropicLinearPoroelasticity
-    from pylith.topology.Subfield import subfieldFactory
-    auxiliarySubfields = pyre.inventory.facilityArray(
-        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsIsotropicLinearPoroelasticity)
-    auxiliarySubfields.meta['tip'] = "Discretization of linear poroelastic rheology physical properties."
-
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="isotropiclinearporoelasticity"):
@@ -58,6 +52,10 @@ class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelas
         """
         RheologyPoroelasticity.__init__(self, name)
         return
+
+    def _defaults(self):
+        from .AuxSubfieldsIsotropicLinearPoroelasticity import AuxSubfieldsIsotropicLinearPoroelasticity
+        self.auxiliarySubfields = AuxSubfieldsIsotropicLinearPoroelasticity("auxiliary_subfields")
 
     def preinitialize(self, mesh):
         RheologyPoroelasticity.preinitialize(self, mesh)

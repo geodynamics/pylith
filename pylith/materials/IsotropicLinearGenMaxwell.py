@@ -35,7 +35,7 @@ class IsotropicLinearGenMaxwell(RheologyElasticity, ModuleLinearElasticity):
       - *use_reference_state* Use reference stress/strain state.
 
     Facilities
-      - *auxiliary_subfields* Discretization of physical properties and state variables.
+      - None
 
     FACTORY: elasticity_rheology
     """
@@ -45,12 +45,6 @@ class IsotropicLinearGenMaxwell(RheologyElasticity, ModuleLinearElasticity):
     useReferenceState = pyre.inventory.bool("use_reference_state", default=False)
     useReferenceState.meta['tip'] = "Use reference stress/strain state."
 
-    from .AuxSubfieldsIsotropicLinearGenMaxwell import AuxSubfieldsIsotropicLinearGenMaxwell
-    from pylith.topology.Subfield import subfieldFactory
-    auxiliarySubfields = pyre.inventory.facilityArray(
-        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsIsotropicLinearGenMaxwell)
-    auxiliarySubfields.meta['tip'] = "Discretization of physical properties and state variables."
-
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="isotropiclineargenmaxwell"):
@@ -59,6 +53,10 @@ class IsotropicLinearGenMaxwell(RheologyElasticity, ModuleLinearElasticity):
         """
         RheologyElasticity.__init__(self, name)
         return
+
+    def _defaults(self):
+        from .AuxSubfieldsIsotropicLinearGenMaxwell import AuxSubfieldsIsotropicLinearGenMaxwell
+        self.auxiliarySubfields = AuxSubfieldsIsotropicLinearGenMaxwell("auxiliary_subfields")
 
     def preinitialize(self, problem):
         RheologyElasticity.preinitialize(self, problem)
