@@ -23,8 +23,6 @@
 
 from mpi import Application
 
-# PetscApplication class
-
 
 class PetscApplication(Application):
     """
@@ -70,15 +68,15 @@ class PetscApplication(Application):
                 citationsRegister(entry)
 
         try:
-
             self.main(*args, **kwds)
-
         except Exception as err:
+            import traceback
+            import sys
+
             self.cleanup()  # Attempt to clean up memory.
             print("Fatal error. Calling MPI_Abort() to abort PyLith application.")
-            # Print stacktrace
-            from traceback import print_exc
-            print_exc()
+            traceback.print_exc(file=sys.stdout)
+            sys.stdout.flush()
             from pylith.mpi import mpi
             errorCode = -1
             mpi.mpi_abort(mpi.petsc_comm_world(), errorCode)
