@@ -141,26 +141,6 @@ if test "$enable_cubit" = "yes" ; then
   AX_LIB_NETCDF4()
 fi
 
-# TETGEN
-if test "$enable_tetgen" = "yes" ; then
-  AC_REQUIRE_CPP
-  AC_LANG(C++)
-  tetgen_save_CPPFLAGS="$CPPFLAGS"
-  CPPFLAGS="$PETSC_CC_INCLUDES $PETSC_CXX_INCLUDE $CPPFLAGS"
-  AC_CHECK_HEADER([tetgen.h], [], [
-    AC_MSG_ERROR([tetgen header not found; check PETSc installation.])
-  ])
-  AC_MSG_CHECKING([for tetgenbehavior in -ltetgen])
-  AC_COMPILE_IFELSE(
-    [AC_LANG_PROGRAM([[#include <tetgen.h>]],
-	             [[tetgenbehavior  behavior;]])],
-    [AC_MSG_RESULT(yes)],
-    [AC_MSG_RESULT(no)
-     AC_MSG_ERROR([tetgen library not found; check PETSc installation.])
-  ])
-  CPPFLAGS=$tetgen_save_CPPFLAGS
-fi
-
 # HDF5
 if test "$enable_hdf5" = "yes" ; then
   AC_REQUIRE_CPP
@@ -168,20 +148,9 @@ if test "$enable_hdf5" = "yes" ; then
   CIT_HDF5_HEADER
   CIT_HDF5_LIB
   CIT_HDF5_LIB_PARALLEL
-fi
 
-# H5PY
-if test "$install_h5py" = yes ; then
-  if test "$install_python" = no ; then
-    AM_PATH_PYTHON([2.7])
-  fi
-  if test "$install_six" = no ; then
-    CIT_PYTHON_MODULE([six],[1.0.0])
-  fi
-else
-  if test "$with_h5py" = yes ; then
-    CIT_PYTHON_MODULE([h5py],[2.0.0])
-  fi
+  CIT_PYTHON_MODULE([six],[1.0.0])
+  CIT_PYTHON_MODULE([h5py],[2.0.0])
 fi
 
 # PROJ
