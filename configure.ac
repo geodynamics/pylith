@@ -127,7 +127,7 @@ CIT_NUMPY_INCDIR
 
 # SWIG
 if test "$enable_swig" = "yes" ; then
-  AC_PROG_SWIG([4.0.0],[4.0.2])
+  AC_PROG_SWIG([4.0.0])
 fi
 
 # CPPUNIT
@@ -191,8 +191,8 @@ CIT_PROJ6_HEADER
 CIT_PROJ6_LIB
 
 # PYTHIA
-CIT_PYTHON_MODULE([pyre],[0.8.1])
-CIT_PYTHON_MODULE([journal],[0.8.1])
+CIT_PYTHON_MODULE([pyre],[0.9.0])
+CIT_PYTHON_MODULE([journal],[0.9.0])
 eval p=`$PYTHON -c "import pyre; print(pyre.__""file__.replace('pyre/__init__.py',''))"`
 PYTHON_EGG_CPPFLAGS="-I$p"
 AC_SUBST(PYTHON_EGG_CPPFLAGS)
@@ -202,7 +202,7 @@ AC_REQUIRE_CPP
 AC_LANG(C++)
 CIT_SPATIALDATA_HEADER
 CIT_SPATIALDATA_LIB
-CIT_PYTHON_MODULE([spatialdata],[1.10.0])
+CIT_PYTHON_MODULE([spatialdata],[2.0.0])
 
 # TEST COVERAGE
 AM_CONDITIONAL([ENABLE_TEST_COVERAGE], [test "$enable_test_coverage" = yes])
