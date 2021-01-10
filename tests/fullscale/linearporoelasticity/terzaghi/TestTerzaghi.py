@@ -54,8 +54,6 @@ class TestCase(FullTestCase):
     def test_domain_solution(self):
         filename = "output/{}-domain.h5".format(self.NAME)
         vertexFields = ["displacement", "pressure", "trace_strain"]
-        print(" Domain Solution: ", self.NAME)
-        print("===================================================")
         check_data(filename, self, self.DOMAIN, vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
@@ -63,8 +61,6 @@ class TestCase(FullTestCase):
         vertexFields = ["solid_density", "fluid_density", "fluid_viscosity", "shear_modulus", "drained_bulk_modulus", "biot_coefficient", "isotropic_permeability", "porosity"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
-            print("===================================================")
-            print(" Material Info: ", material)
             check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
@@ -72,8 +68,6 @@ class TestCase(FullTestCase):
         vertexFields = ["displacement", "pressure", "trace_strain"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}.h5".format(self.NAME, material)
-            print("===================================================")
-            print(" Material Solution: ", material)
             check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
@@ -83,8 +77,6 @@ class TestCase(FullTestCase):
         for bc in self.DIRICHLET_BOUNDARIES:
             self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            print("===================================================")
-            print(" BC Dirichlet Info: ", bc)
             check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
@@ -92,8 +84,6 @@ class TestCase(FullTestCase):
         vertexFields = ["displacement", "pressure", "trace_strain"]
         for bc in self.DIRICHLET_BOUNDARIES:
             filename = "output/{}-{}.h5".format(self.NAME, bc)
-            print("===================================================")
-            print(" BC Dirichlet Solution: ", bc)
             check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
@@ -102,8 +92,6 @@ class TestCase(FullTestCase):
         for bc in self.NEUMANN_BOUNDARIES:
             self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            print("===================================================")
-            print(" BC Neumann Info: ", bc)
             check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
@@ -111,8 +99,6 @@ class TestCase(FullTestCase):
         vertexFields = ["displacement", "pressure", "trace_strain"]
         for bc in self.NEUMANN_BOUNDARIES:
             filename = "output/{}-{}.h5".format(self.NAME, bc)
-            print("===================================================")
-            print(" BC Neumann Solution: ", bc)
             check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
