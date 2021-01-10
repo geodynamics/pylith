@@ -309,6 +309,9 @@ AC_CONFIG_FILES([Makefile
 		tests/fullscale/viscoelasticity/Makefile
 		tests/fullscale/viscoelasticity/nofaults-2d/Makefile
 		tests/fullscale/viscoelasticity/nofaults-3d/Makefile
+		tests/fullscale/linearporoelasticity/Makefile
+		tests/fullscale/linearporoelasticity/terzaghi/Makefile
+		tests/fullscale/linearporoelasticity/mandel/Makefile
 		tests/fullscale/petsc/Makefile
 		tests/fullscale/eqinfo/Makefile
         	developer/Makefile
