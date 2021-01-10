@@ -1,5 +1,7 @@
 # Travis-CI configuration
 
+dist: bionic
+
 services:
     - docker
 
@@ -10,41 +12,28 @@ jobs:
   include:
     - name: debian-stable-gcc8
       os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-debian-stable-gcc8 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
+      env: BASE_IMAGE=geodynamics/pylith-testenv-debian-stable-gcc8:py2 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
     - name: debian-testing-gcc9
       os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-debian-testing-gcc9 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
+      env: BASE_IMAGE=geodynamics/pylith-testenv-debian-testing-gcc9:py2 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
     - name: ubuntu-18.04
       os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-ubuntu-18.04 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
-    - name: ubuntu-19.10
-      os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-ubuntu-19.10 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
+      env: BASE_IMAGE=geodynamics/pylith-testenv-ubuntu-18.04:py2 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
     - name: ubuntu-20.04
       os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-ubuntu-20.04 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
-    - name: fedora-31
-      os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-31 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage2
+      env: BASE_IMAGE=geodynamics/pylith-testenv-ubuntu-20.04:py2 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
     - name: fedora-32
       os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-32
+      env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-32:py2
+    - name: fedora-33
+      os: linux
+      env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-33:py2
     - name: centos-7
       os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-centos-7
+      env: BASE_IMAGE=geodynamics/pylith-testenv-centos-7:py2
     - name: centos-8
       os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-centos-8
-
-# Permissions problem with BUILD_DIR for nemesis.
-#    - name: fedora-33
-#      os: linux
-#      env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-33
-
-#    - os: linux
-#      env: BASE_IMAGE=geodynamics/pylith-testenv-debian-testing-clang8
-#    - os: linux
-#      env: BASE_IMAGE=geodynamics/pylith-testenv-debian-testing-clang9
+      env: BASE_IMAGE=geodynamics/pylith-testenv-centos-8:py2
 
 
 addons:

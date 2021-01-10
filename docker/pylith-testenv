@@ -29,7 +29,7 @@ ENV PYTHONPATH ${PYTHONPATH}:${CIG_DIR}/lib/python${PYTHON_VERSION}/site-package
 ENV SRC_DIR ${TOP_DIR}/src/pythia
 RUN mkdir -p ${CIG_DIR}/lib/python${PYTHON_VERSION}/site-packages
 
-RUN git clone --depth 1 --recursive https://github.com/geodynamics/pythia.git ${SRC_DIR}
+RUN git clone --branch v0.8.1.20 --depth 1 --recursive https://github.com/geodynamics/pythia.git ${SRC_DIR}
 WORKDIR ${SRC_DIR}
 RUN python2 setup.py install --prefix=${CIG_DIR}
 
@@ -40,7 +40,7 @@ ENV SRC_DIR $TOP_DIR/src/nemesis
 ENV BUILD_DIR $TOP_DIR/build/nemesis
 RUN mkdir -p ${BUILD_DIR}
 
-RUN git clone --depth 1 --recursive https://github.com/geodynamics/nemesis.git ${SRC_DIR}
+RUN git clone --branch v1.1.1 --depth 1 --recursive https://github.com/geodynamics/nemesis.git ${SRC_DIR}
 WORKDIR ${SRC_DIR}
 RUN autoreconf --install --verbose
 WORKDIR ${BUILD_DIR}
@@ -54,7 +54,7 @@ ENV SRC_DIR $TOP_DIR/src/spatialdata
 ENV BUILD_DIR $TOP_DIR/build/spatialdata
 RUN mkdir -p ${BUILD_DIR}
 
-RUN git clone --depth 100 --recursive https://github.com/geodynamics/spatialdata.git ${SRC_DIR}
+RUN git clone --branch v2.0.0 --depth 100 --recursive https://github.com/geodynamics/spatialdata.git ${SRC_DIR}
 WORKDIR ${SRC_DIR}
 
 RUN autoreconf --install --verbose --force
