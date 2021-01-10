@@ -2,7 +2,7 @@
 # Create surface using vertices
 # ----------------------------------------------------------------------
 
-# Block is 1.0m x 0.1m
+# Block is 10.0m x 1.0m
 # 0 m <= x <= 10.0 m
 # 0 m <= y <= 1.0 m
 reset
