@@ -226,7 +226,7 @@ class Transform(Application):
     for point in range(self.numPoints):
       inRange = self._testRange(points[point])
       if inRange:
-        velocity = self._local2Global(points[point],normalsArr[point])
+        velocity = self._local2Global(points[point], normalsArr[point])
         vlocal = self._localTrans(velocity, normalsArr[point])
         velocity = vlocal
       else:
@@ -290,10 +290,10 @@ class Transform(Application):
     distMin = 1.0e20
     iSeg = -10
     for seg in range(self.numSegs):
-      sx1 = self.segInfo[seg,0]
-      sy1 = self.segInfo[seg,1]
-      sx2 = self.segInfo[seg,2]
-      sy2 = self.segInfo[seg,3]
+      sx1 = self.segInfo[seg, 0]
+      sy1 = self.segInfo[seg, 1]
+      sx2 = self.segInfo[seg, 2]
+      sy2 = self.segInfo[seg, 3]
       sxmid = 0.5*(sx1 + sx2)
       symid = 0.5*(sy1 + sy2)
       dx = px - sxmid
@@ -309,21 +309,21 @@ class Transform(Application):
     Converts initial local coordinate system to global.
     """
     iSeg = self._findSeg(points)
-    sx1 = self.segInfo[iSeg,0]
-    sy1 = self.segInfo[iSeg,1]
-    sx2 = self.segInfo[iSeg,2]
-    sy2 = self.segInfo[iSeg,3]
-    dip = self.segInfo[iSeg,4]
-    ss = self.segInfo[iSeg,5]
-    ds = self.segInfo[iSeg,6]
-    ts = self.segInfo[iSeg,7]
+    sx1 = self.segInfo[iSeg, 0]
+    sy1 = self.segInfo[iSeg, 1]
+    sx2 = self.segInfo[iSeg, 2]
+    sy2 = self.segInfo[iSeg, 3]
+    dip = self.segInfo[iSeg, 4]
+    ss = self.segInfo[iSeg, 5]
+    ds = self.segInfo[iSeg, 6]
+    ts = self.segInfo[iSeg, 7]
     dx = sx2 - sx1
     dy = sy2 - sy1
     asVec = numpy.array([dx, dy, 0.0], dtype=numpy.float64)
-    mag = math.sqrt(numpy.dot(asVec,asVec))
+    mag = math.sqrt(numpy.dot(asVec, asVec))
     asVec /= mag
     horPerp = numpy.cross(self.upVec, asVec)
-    mag = math.sqrt(numpy.dot(horPerp,horPerp))
+    mag = math.sqrt(numpy.dot(horPerp, horPerp))
     horPerp /= mag
     if dip > 90.0:
       horPerp *= -1.0
@@ -337,10 +337,10 @@ class Transform(Application):
     else:
       udVec = numpy.array([0.0, 0.0, dipCos], dtype=numpy.float64)
     normVec = numpy.cross(asVec, udVec)
-    slipVec = numpy.array([ss, ds,ts], dtype=numpy.float64)
+    slipVec = numpy.array([ss, ds, ts], dtype=numpy.float64)
     rot1 = numpy.vstack((asVec, udVec, normVec))
     rot = rot1.transpose()
-    velocity = numpy.dot(rot,slipVec)
+    velocity = numpy.dot(rot, slipVec)
     return velocity
     
     

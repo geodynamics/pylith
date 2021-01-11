@@ -85,21 +85,21 @@ fig = pylab.Figure()
 p = 2
 
 ax = pylab.subplot(1, 4, 1)
-ax.plot(time, slip[:,p,0], 'r--')
+ax.plot(time, slip[:, p, 0], 'r--')
 
 ax = pylab.subplot(1, 4, 2)
 ax.plot(t, numpy.log10(numpy.abs(slipRateE)), 'b-',
-        time, numpy.log10(numpy.abs(slipRate[:,p,0])), 'r--')
+        time, numpy.log10(numpy.abs(slipRate[:, p, 0])), 'r--')
 ax.set_ylim(-12, 0.0)
 
 ax = pylab.subplot(1, 4, 3)
 ax.plot(t, numpy.log10(stateVarE), 'b-',
-        time, numpy.log10(stateVar[:,p,0]), 'r--')
-ax.set_ylim(-2.0,6.0)
+        time, numpy.log10(stateVar[:, p, 0]), 'r--')
+ax.set_ylim(-2.0, 6.0)
 
 ax = pylab.subplot(1, 4, 4)
 ax.plot(t, muE, 'b-',
-        time, numpy.fabs(traction[:,p,0]/traction[:,p,1]), 'r--')
+        time, numpy.fabs(traction[:, p, 0]/traction[:, p, 1]), 'r--')
 
 
 pylab.show()

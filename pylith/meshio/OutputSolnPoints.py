@@ -47,7 +47,7 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
     label = pyre.inventory.str("label", default="points")
     label.meta['tip'] = "Label identifier for points (used in constructing default filenames)."
 
-    from PointsList import PointsList
+    from .PointsList import PointsList
     reader = pyre.inventory.facility("reader", factory=PointsList, family="points_list")
     reader.meta['tip'] = "Reader for points list."
 

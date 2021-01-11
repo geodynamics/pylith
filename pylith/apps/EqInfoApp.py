@@ -76,7 +76,7 @@ class RuptureStats(object):
 
     def _writeArray(self, name, fout):
         vals = self.__getattribute__(name)
-        for i in xrange(len(vals)):
+        for i in range(len(vals)):
             if math.isnan(vals[i]) or math.isinf(vals[i]):
                 if vals[i] > 0:
                     vals[i] = 1.0e+30
@@ -181,7 +181,7 @@ class EqInfoApp(Application):
             for snapshot in self.snapshots:
                 # Get slip at snapshot
                 istep = self._findTimeStep(snapshot, timestamps)
-                slip = h5['vertex_fields/slip'][istep, :, :]
+                slip = h5['vertex_fields/slip'][istep,:,:]
                 if len(slip.shape) > 2:
                     slip = slip.squeeze(axis=0)
 
@@ -232,7 +232,7 @@ class EqInfoApp(Application):
         Setup members using inventory.
         """
         Application._configure(self)
-        self.snapshots = map(float, self.snapshots)
+        self.snapshots = list(map(float, self.snapshots))
 
         return
 
@@ -283,7 +283,7 @@ class EqInfoApp(Application):
     def _vectorMag(self, v):
         (npts, ndims) = v.shape
         mag = numpy.zeros((npts,), dtype=numpy.float64)
-        for i in xrange(ndims):
+        for i in range(ndims):
             mag += v[:, i]**2
         mag = mag**0.5
         return mag
@@ -293,12 +293,12 @@ class EqInfoApp(Application):
         if len(valueP.shape) > 1:
             (nvertices, nvals) = valueP.shape
             valueC = numpy.zeros((ncells, nvals), dtype=numpy.float64)
-            for i in xrange(ncorners):
-                valueC[:, :] += valueP[cells[:, i], :]
+            for i in range(ncorners):
+                valueC[:,:] += valueP[cells[:, i],:]
         else:
             nvertices = valueP.shape
             valueC = numpy.zeros((ncells,), dtype=numpy.float64)
-            for i in xrange(ncorners):
+            for i in range(ncorners):
                 valueC[:] += valueP[cells[:, i]]
         valueC /= ncorners
         return valueC

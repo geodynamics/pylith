@@ -97,7 +97,7 @@ class TestXdmf(unittest.TestCase):
         self.assertEqual(len(linesE), len(lines), "Number of lines for Xdmf file '%s' doesn't match." % filename)
 
         numLines = len(linesE)
-        for i in xrange(numLines):
+        for i in range(numLines):
             self.assertEqual(linesE[i], lines[i], "Line %d of file '%s' doesn't match." % (i, filename))
         return
   

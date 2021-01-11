@@ -20,8 +20,8 @@
 #
 # Factory: mesh_io
 
-from MeshIOObj import MeshIOObj
-from meshio import MeshIOAscii as ModuleMeshIOAscii
+from .MeshIOObj import MeshIOObj
+from .meshio import MeshIOAscii as ModuleMeshIOAscii
 
 
 def validateFilename(value):

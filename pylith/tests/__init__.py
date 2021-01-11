@@ -29,10 +29,10 @@ def has_h5py():
             import h5py
             has_h5py.flag = True
         except ImportError:
-            print "WARNING: Cannot find h5py Python modele."
-            print "         Tests limited to running PyLith without errors."
-            print "         Install h5py (available via the installer utility) "
-            print "         in order to enable verification of output."
+            print("WARNING: Cannot find h5py Python modele.")
+            print("         Tests limited to running PyLith without errors.")
+            print("         Install h5py (available via the installer utility) ")
+            print("         in order to enable verification of output.")
             has_h5py.flag = False
     return has_h5py.flag
 

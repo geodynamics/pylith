@@ -204,16 +204,16 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
         displacement = numpy.zeros((ntpts, npts, dim), dtype=numpy.float64)
-        z = locs[:,1]
+        z = locs[:, 1]
         t_track = 0
         z_star = z/L
 
         for t in tsteps:
             if t < 0.0:
-                displacement[0,:,1] = ( (P_0*L*(1.0 - 2.0*nu_u) ) / (2.0*G*(1.0 - nu_u)) ) * (1.0 - z_star)
+                displacement[0,:, 1] = ( (P_0*L*(1.0 - 2.0*nu_u) ) / (2.0*G*(1.0 - nu_u)) ) * (1.0 - z_star)
             else:
                 t_star = (c*t) / ( (2*L)**2 )
-                displacement[t_track,:,1] = ((P_0*L*(1.0 - 2.0*nu_u)) / (2.0*G*(1.0 - nu_u))) * (1.0 - z_star) + ((P_0*L*(nu_u - nu)) / (2.0*G*(1.0 - nu_u)*(1.0 - nu)))*self.F2(z_star, t_star)
+                displacement[t_track,:, 1] = ((P_0*L*(1.0 - 2.0*nu_u)) / (2.0*G*(1.0 - nu_u))) * (1.0 - z_star) + ((P_0*L*(nu_u - nu)) / (2.0*G*(1.0 - nu_u)*(1.0 - nu)))*self.F2(z_star, t_star)
             t_track += 1
 
         return displacement
@@ -225,13 +225,13 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
         pressure = numpy.zeros((ntpts, npts, 1), dtype=numpy.float64)
-        z = locs[:,1]
+        z = locs[:, 1]
         t_track = 0
 
         for t in tsteps:
             z_star = z/L
             t_star = (c*t) / (4.*L**2)
-            pressure[t_track,:,0] = ( (P_0 * eta) / (G * S) ) * self.F1(z_star, t_star)
+            pressure[t_track,:, 0] = ( (P_0 * eta) / (G * S) ) * self.F1(z_star, t_star)
             t_track += 1
 
         return pressure
@@ -243,13 +243,13 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
         trace_strain = numpy.zeros((ntpts, npts, 1), dtype=numpy.float64)
-        z = locs[:,1]
+        z = locs[:, 1]
         t_track = 0
 
         for t in tsteps:
             z_star = z/L
             t_star = (c*t) / (4*L**2)
-            trace_strain[t_track,:,0] = -((P_0*L*(1.0 - 2.0*nu_u)) / (2.0*G*(1.0 - nu_u)*L)) \
+            trace_strain[t_track,:, 0] = -((P_0*L*(1.0 - 2.0*nu_u)) / (2.0*G*(1.0 - nu_u)*L)) \
                                       + ((P_0*L*(nu_u - nu)) / (2.0*G*(1.0 - nu_u)*(1.0 - nu)))*self.F3(z_star, t_star)
             t_track += 1
 
@@ -259,19 +259,19 @@ class AnalyticalSoln(object):
 
     def F1(self, z_star, t_star):
         F1 = 0.
-        for m in numpy.arange(1,2*self.ITERATIONS+1,2):
+        for m in numpy.arange(1, 2*self.ITERATIONS+1, 2):
             F1 += 4./(m*numpy.pi) * numpy.sin(0.5*m*numpy.pi*z_star)*numpy.exp( -(m*numpy.pi)**2 * t_star)
         return F1
 
     def F2(self, z_star, t_star):
         F2 = 0.
-        for m in numpy.arange(1,2*self.ITERATIONS+1,2):
+        for m in numpy.arange(1, 2*self.ITERATIONS+1, 2):
             F2 += ( 8. / (m*numpy.pi)**2 )  * numpy.cos(0.5*m*numpy.pi*z_star) * (1. - numpy.exp( -(m * numpy.pi)**2 * t_star) )
         return F2
 
     def F3(self, z_star, t_star):
         F3 = 0.
-        for m in numpy.arange(1,2*self.ITERATIONS+1,2):
+        for m in numpy.arange(1, 2*self.ITERATIONS+1, 2):
             F3 += (-4.0 / (m*numpy.pi*L)) * numpy.sin(0.5*m*numpy.pi*z_star) * (1.0 - numpy.exp( -(m*numpy.pi)**2 * t_star))
         return F3
 
@@ -287,10 +287,10 @@ class AnalyticalSoln(object):
         e_xy = 0.0
 
         strain = numpy.zeros((ntpts, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        strain[:, :, 0] = exx
-        strain[:, :, 1] = eyy
-        strain[:, :, 2] = ezz
-        strain[:, :, 3] = exy
+        strain[:,:, 0] = exx
+        strain[:,:, 1] = eyy
+        strain[:,:, 2] = ezz
+        strain[:,:, 3] = exy
         return strain
 
     def stress(self, locs):
@@ -307,10 +307,10 @@ class AnalyticalSoln(object):
         e_xy = 0.0
 
         stress = numpy.zeros((ntpts, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        stress[:, :, 0] = ( (2*G*poisson_ratio) / (1 - 2*poisson_ratio) )*trace_strain + 2*G*e_xx - alpha*pressure
-        stress[:, :, 1] = ( (2*G*poisson_ratio) / (1 - 2*poisson_ratio) )*trace_strain + 2*G*e_yy - alpha*pressure
-        stress[:, :, 2] = ( (2*G*poisson_ratio) / (1 - 2*poisson_ratio) )*trace_strain - alpha*pressure
-        stress[:, :, 3] = 2*G*e_xy
+        stress[:,:, 0] = ( (2*G*poisson_ratio) / (1 - 2*poisson_ratio) )*trace_strain + 2*G*e_xx - alpha*pressure
+        stress[:,:, 1] = ( (2*G*poisson_ratio) / (1 - 2*poisson_ratio) )*trace_strain + 2*G*e_yy - alpha*pressure
+        stress[:,:, 2] = ( (2*G*poisson_ratio) / (1 - 2*poisson_ratio) )*trace_strain - alpha*pressure
+        stress[:,:, 3] = 2*G*e_xy
         return stress
 
     def y_neg_neu(self, locs):
@@ -319,8 +319,8 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
         traction = numpy.zeros((ntpts, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[:, :, 0] = 0.0
-        traction[:, :, 1] = P_0
+        traction[:,:, 0] = 0.0
+        traction[:,:, 1] = P_0
         return traction
 
     def initial_displacement(self, locs):
@@ -329,10 +329,10 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         displacement = numpy.zeros((1, npts, dim), dtype=numpy.float64)
-        z = locs[:,1]
+        z = locs[:, 1]
         z_star = z/L
 
-        displacement[0,:,1] = ( (P_0*L*(1.0 - 2.0*nu_u) ) / (2.0*G*(1.0 - nu_u)) ) * (1.0 - z_star)
+        displacement[0,:, 1] = ( (P_0*L*(1.0 - 2.0*nu_u) ) / (2.0*G*(1.0 - nu_u)) ) * (1.0 - z_star)
         return displacement
 
     def initial_pressure(self, locs):
@@ -341,7 +341,7 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         pressure = numpy.zeros((1, npts), dtype=numpy.float64)
-        z = locs[:,1]
+        z = locs[:, 1]
 
         pressure[0,:] = (P_0 * eta) / (G * S)
 
@@ -354,7 +354,7 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
 
         trace_strain = numpy.zeros((1, npts), dtype=numpy.float64)
-        z = locs[:,1]
+        z = locs[:, 1]
         z_star = z/L
 
         trace_strain[0,:] = -(P_0*(1.0 - 2.0*nu_u)) / (2.0*G*(1.0 - nu_u))

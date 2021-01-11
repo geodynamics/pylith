@@ -107,11 +107,11 @@ else:
 # Axial components
 ax = pylab.subplot(1, 2, 1)
 ax.plot(analytic['t'], analytic['sxx'], 'k-',
-        time, stress[:,0,0:48:6], 'r--',
+        time, stress[:, 0, 0:48:6], 'r--',
         analytic['t'], analytic['syy'], 'k-',
-        time, stress[:,0,1:48:6], 'r--',
+        time, stress[:, 0, 1:48:6], 'r--',
         analytic['t'], analytic['szz'], 'k-',
-        time, stress[:,0,2:48:6], 'r--')
+        time, stress[:, 0, 2:48:6], 'r--')
 ax.set_xlim(xlim)
 ax.set_ylim(ylim)
 ax.set_xlabel("Time (usec)")
@@ -120,11 +120,11 @@ ax.set_ylabel("Stress (MPa)")
 # Shear components
 ax = pylab.subplot(1, 2, 2)
 ax.plot(analytic['t'], analytic['sxy'], 'k-',
-        time, stress[:,0,3:48:6], 'r--',
+        time, stress[:, 0, 3:48:6], 'r--',
         analytic['t'], analytic['syz'], 'k-',
-        time, stress[:,0,4:48:6], 'r--',
+        time, stress[:, 0, 4:48:6], 'r--',
         analytic['t'], analytic['sxz'], 'k-',
-        time, stress[:,0,5:48:6], 'r--')
+        time, stress[:, 0, 5:48:6], 'r--')
 ax.set_xlim(xlim)
 ax.set_ylim(ylim)
 ax.set_xlabel("Time (usec)")

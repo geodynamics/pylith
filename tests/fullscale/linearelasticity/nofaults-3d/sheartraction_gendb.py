@@ -72,13 +72,13 @@ class GenerateDB(object):
             "values": [
                 {"name": "initial_amplitude_x",
                  "units": "m",
-                 "data": numpy.ravel(disp[0, :, 0])},
+                 "data": numpy.ravel(disp[0,:, 0])},
                 {"name": "initial_amplitude_y",
                  "units": "m",
-                 "data": numpy.ravel(disp[0, :, 1])},
+                 "data": numpy.ravel(disp[0,:, 1])},
                 {"name": "initial_amplitude_z",
                  "units": "m",
-                 "data": numpy.ravel(disp[0, :, 2])},
+                 "data": numpy.ravel(disp[0,:, 2])},
             ]}
 
         from spatialdata.spatialdb.SimpleGridAscii import SimpleGridAscii

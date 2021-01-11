@@ -50,9 +50,9 @@ class GenerateDB(object):
         nptsZ = z.shape[0]
 
         xyz = numpy.zeros((nptsX * nptsY * nptsZ, 3), dtype=numpy.float64)
-        xyz[:,0] = x3.ravel()
-        xyz[:,1] = y3.ravel()
-        xyz[:,2] = z3.ravel()
+        xyz[:, 0] = x3.ravel()
+        xyz[:, 1] = y3.ravel()
+        xyz[:, 2] = z3.ravel()
 
         from axialtraction_maxwell_soln import AnalyticalSoln
         soln = AnalyticalSoln()
@@ -71,13 +71,13 @@ class GenerateDB(object):
             'data_dim': 3,
             'values': [{'name': "initial_amplitude_x",
                         'units': "m",
-                        'data': disp[0, :, 0].ravel()},
+                        'data': disp[0,:, 0].ravel()},
                        {'name': "initial_amplitude_y",
                         'units': "m",
-                        'data': disp[0, :, 1].ravel()},
+                        'data': disp[0,:, 1].ravel()},
                        {'name': "initial_amplitude_z",
                         'units': "m",
-                        'data': disp[0, :, 2].ravel()},
+                        'data': disp[0,:, 2].ravel()},
             ]}
 
         from spatialdata.spatialdb.SimpleGridAscii import SimpleGridAscii

@@ -24,14 +24,14 @@ fields = {'stress': (stressA, stressB),
 
 iB = 0
 iA = iB+1
-for name,fields in fields.items():
-    fieldA,fieldB = fields
+for name, fields in fields.items():
+    fieldA, fieldB = fields
     small = 1.0e-6
     mask = numpy.abs(fieldA[iA,:,:]) > small
     norm = mask*fieldA[iA,:,:] + ~mask*small
     diff = (fieldA[iA,:,:] - fieldB[iB,:,:]) / norm
     if numpy.sum(numpy.abs(diff)) > 1.0e-4:
         print name
-        print fieldA[iA,:,:],fieldB[iB,:,:],norm,diff
+        print fieldA[iA,:,:], fieldB[iB,:,:], norm, diff
     else:
-        print name,"OK"
+        print name, "OK"

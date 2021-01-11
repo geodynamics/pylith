@@ -40,7 +40,7 @@ three = sympy.sympify(3)
 from sympy.abc import x, y, z
 u1, u2, u3 = sympy.symbols('u1 u2 u3', type="Function")
 X = [x, y, z]
-U = [u1(x,y,z), u2(x,y,z), u3(x,y,z)]
+U = [u1(x, y, z), u2(x, y, z), u3(x, y, z)]
 
 # Deformation gradient, transpose, and strain tensor.
 defGrad = sympy.tensor.array.derive_by_array(U, X)
@@ -54,7 +54,7 @@ devStrain = strain - volStrainArr/three
 
 # Define displacements and strains for previous time step.
 un1, un2, un3 = sympy.symbols('un1 un2 un3', type="Function")
-Un = [un1(x,y,z), un2(x,y,z), un3(x,y,z)]
+Un = [un1(x, y, z), un2(x, y, z), un3(x, y, z)]
 defGradN = sympy.tensor.array.derive_by_array(Un, X)
 defGradNTranspose = sympy.tensor.array.Array(defGradN.tomatrix().transpose())
 strainN = (defGradN + defGradNTranspose)/two
@@ -91,12 +91,12 @@ def writeJacobianUniqueVals(f, jacobian):
     jj = j + 1
     kk = k + 1
     ll = l + 1
-    if (jacobian[i,j,k,l] in uniqueVals and jacobian[i,j,k,l] not in usedVals):
-      testInd = uniqueVals.index(jacobian[i,j,k,l])
+    if (jacobian[i, j, k, l] in uniqueVals and jacobian[i, j, k, l] not in usedVals):
+      testInd = uniqueVals.index(jacobian[i, j, k, l])
       comp = "C" + repr(ii) + repr(jj) + repr(kk) + repr(ll)
-      f.write(outFmt % (comp, jacobian[i,j,k,l]))
+      f.write(outFmt % (comp, jacobian[i, j, k, l]))
       uniqueValNames[testInd] = comp
-      usedVals[ui] = jacobian[i,j,k,l]
+      usedVals[ui] = jacobian[i, j, k, l]
       ui += 1
     if (ui == numUniqueVals):
       break
@@ -121,7 +121,7 @@ def writeJacobianComments(f, jacobian):
     ll = l + 1
     pyComp = "C" + repr(ii) + repr(jj) + repr(kk) + repr(ll)
     peComp = "j" + repr(i) + repr(k) + repr(j) + repr(l)
-    f.write(outFmt % (ui, peComp, pyComp, jacobian[i,j,k,l]))
+    f.write(outFmt % (ui, peComp, pyComp, jacobian[i, j, k, l]))
     ui += 1
             
   f.write("*/\n\n")
@@ -146,8 +146,8 @@ def writeJacobianNonzero(f, jacobian, uniqueVals, uniqueValNames):
     kk = k + 1
     ll = l + 1
     peComp = "j" + repr(i) + repr(k) + repr(j) + repr(l)
-    if (jacobian[i,j,k,l] != 0):
-      ind = uniqueVals.index(jacobian[i,j,k,l])
+    if (jacobian[i, j, k, l] != 0):
+      ind = uniqueVals.index(jacobian[i, j, k, l])
       f.write(outFmt % (ui, uniqueValNames[ind], peComp))
 
     ui += 1

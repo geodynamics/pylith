@@ -34,7 +34,7 @@ def calcQuadCoords(vertices, cells, qpts):
 
   quadCoords = numpy.zeros((ncells, nqpts, spaceDim), dtype=numpy.float64)
   cellCoords = vertices[cells,:]
-  for iDim in xrange(spaceDim):
+  for iDim in range(spaceDim):
     quadCoords[:,:,iDim] = numpy.dot(cellCoords[:,:,iDim], qpts.transpose())
 
   quadCoords = quadCoords.reshape((ncells*nqpts, spaceDim))

@@ -178,7 +178,7 @@ class PowerLawApp(Application):
         if errSum > 0:
             msg = "Query for %s failed at %d points.\n" \
                 "Coordinates of points:\n" % (valueName, errSum)
-            msg += "%s" % points[err, :]
+            msg += "%s" % points[err,:]
             raise ValueError(msg)
 
         return data

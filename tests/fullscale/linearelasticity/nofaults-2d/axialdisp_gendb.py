@@ -57,10 +57,10 @@ class GenerateDB(object):
                 'data_dim': 2,
                 'values': [{'name': "initial_amplitude_x",
                             'units': "m",
-                            'data': numpy.ravel(disp[0, :, 0])},
+                            'data': numpy.ravel(disp[0,:, 0])},
                            {'name': "initial_amplitude_y",
                             'units': "m",
-                            'data': numpy.ravel(disp[0, :, 1])}]}
+                            'data': numpy.ravel(disp[0,:, 1])}]}
 
         from spatialdata.spatialdb.SimpleIOAscii import createWriter
         io = createWriter("axialdisp_bc.spatialdb")

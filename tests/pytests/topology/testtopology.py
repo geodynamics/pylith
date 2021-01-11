@@ -16,72 +16,71 @@
 # ======================================================================
 #
 
-## @file tests/topology/testdriver.py
+# @file tests/topology/testdriver.py
 
-## @brief Python application for testing topology code.
+# @brief Python application for testing topology code.
 
 from pylith.tests.UnitTestApp import UnitTestApp
 
 import unittest
 
+
 class TestApp(UnitTestApp):
-  """
-  Test application.
-  """
-
-  def __init__(self):
     """
-    Constructor.
-    """
-    UnitTestApp.__init__(self)
-    return
-
-
-  def _suite(self):
-    """
-    Setup the test suite.
+    Test application.
     """
 
-    suite = unittest.TestSuite()
+    def __init__(self):
+        """
+        Constructor.
+        """
+        UnitTestApp.__init__(self)
+        return
 
-    from TestMesh import TestMesh
-    suite.addTest(unittest.makeSuite(TestMesh))
+    def _suite(self):
+        """
+        Setup the test suite.
+        """
 
-    from TestSubmesh import TestSubmesh
-    suite.addTest(unittest.makeSuite(TestSubmesh))
+        suite = unittest.TestSuite()
 
-    from TestFieldBase import TestFieldBase
-    suite.addTest(unittest.makeSuite(TestFieldBase))
+        from TestMesh import TestMesh
+        suite.addTest(unittest.makeSuite(TestMesh))
 
-    from TestMeshField import TestMeshField
-    suite.addTest(unittest.makeSuite(TestMeshField))
+        from TestSubmesh import TestSubmesh
+        suite.addTest(unittest.makeSuite(TestSubmesh))
 
-    from TestMeshFields import TestMeshFields
-    suite.addTest(unittest.makeSuite(TestMeshFields))
+        from TestFieldBase import TestFieldBase
+        suite.addTest(unittest.makeSuite(TestFieldBase))
 
-    from TestSolutionFields import TestSolutionFields
-    suite.addTest(unittest.makeSuite(TestSolutionFields))
+        from TestMeshField import TestMeshField
+        suite.addTest(unittest.makeSuite(TestMeshField))
 
-    from TestJacobian import TestJacobian
-    suite.addTest(unittest.makeSuite(TestJacobian))
+        from TestMeshFields import TestMeshFields
+        suite.addTest(unittest.makeSuite(TestMeshFields))
 
-    from TestMeshGenerator import TestMeshGenerator
-    suite.addTest(unittest.makeSuite(TestMeshGenerator))
+        from TestSolutionFields import TestSolutionFields
+        suite.addTest(unittest.makeSuite(TestSolutionFields))
 
-    from TestMeshImporter import TestMeshImporter
-    suite.addTest(unittest.makeSuite(TestMeshImporter))
+        from TestJacobian import TestJacobian
+        suite.addTest(unittest.makeSuite(TestJacobian))
 
-    #print "WARNING: TestRefineUniform NOT IMPLEMENTED"
-    from TestRefineUniform import TestRefineUniform
-    suite.addTest(unittest.makeSuite(TestRefineUniform))
+        from TestMeshGenerator import TestMeshGenerator
+        suite.addTest(unittest.makeSuite(TestMeshGenerator))
 
-    return suite
+        from TestMeshImporter import TestMeshImporter
+        suite.addTest(unittest.makeSuite(TestMeshImporter))
+
+        from TestRefineUniform import TestRefineUniform
+        suite.addTest(unittest.makeSuite(TestRefineUniform))
+
+        return suite
 
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
-  app = TestApp()
-  app.run()
+    app = TestApp()
+    app.run()
 
 
-# End of file 
+# End of file

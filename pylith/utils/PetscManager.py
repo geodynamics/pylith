@@ -83,7 +83,7 @@ class PetscManager(Component):
         Update Pyre configuration.
         """
         self.options = [
-            (name, descriptor) for name, descriptor in registry.properties.iteritems()
+            (name, descriptor) for name, descriptor in registry.properties.items()
         ]
         return []
 

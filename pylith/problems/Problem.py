@@ -100,7 +100,7 @@ class Problem(PetscComponent, ModuleProblem):
                                       validator=pyre.inventory.choice(["linear", "nonlinear"]))
     solverChoice.meta['tip'] = "Type of solver to use ['linear', 'nonlinear']."
 
-    from Solution import Solution
+    from .Solution import Solution
     solution = pyre.inventory.facility("solution", family="solution", factory=Solution)
     solution.meta['tip'] = "Solution field for problem."
 
