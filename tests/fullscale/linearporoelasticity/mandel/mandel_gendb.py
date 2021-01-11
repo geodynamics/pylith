@@ -34,15 +34,13 @@ class GenerateDB(object):
         Generate the database.
         """
         # Domain
-        x = numpy.arange(0.0, 10.1, 0.1)
-        y = numpy.arange(0.0, 1.01, 0.01)
-        npts = x.shape[0]
-
-        xx = x * numpy.ones((npts, 1), dtype=numpy.float64)
-        yy = y * numpy.ones((npts, 1), dtype=numpy.float64)
-        xy = numpy.zeros((npts**2, 2), dtype=numpy.float64)
-        xy[:, 0] = numpy.ravel(xx)
-        xy[:, 1] = numpy.ravel(numpy.transpose(yy))
+        x1 = numpy.arange(-0.1, 10.1, 0.1)
+        y1 = numpy.arange(-0.1, 1.01, 0.1)
+        x,y = numpy.meshgrid(x1, y1)
+        
+        xy = numpy.zeros((len(x1)*len(y1), 2), dtype=numpy.float64)
+        xy[:, 0] = x.ravel()
+        xy[:, 1] = y.ravel()
 
         from mandel_soln import AnalyticalSoln
         soln = AnalyticalSoln()
@@ -55,8 +53,8 @@ class GenerateDB(object):
         cs.inventory.spaceDim = 2
         cs._configure()
         data = {
-                'x' : x,
-                'y' : y,
+                'x' : x1,
+                'y' : y1,
                 'points': xy,
                 'coordsys': cs,
                 'data_dim': 2,
@@ -78,12 +76,26 @@ class GenerateDB(object):
         io.inventory.filename = "mandel_bc.spatialdb"
         io._configure()
         io.write(data)
-
-        data["values"][0]["name"] = "displacement_x"
-        data["values"][1]["name"] = "displacement_y"
-        data["values"][2]["name"] = "pressure"
-        data["values"][3]["name"] = "trace_strain"
+        data["values"] = [
+            {
+                'name': "displacement_x",
+                'units': "m",
+                'data': numpy.ravel(disp[0, :, 0])
+            },{
+                'name': "displacement_y",
+                'units': "m",
+                'data': numpy.ravel(disp[0, :, 1])
+            },{
+                'name': "pressure",
+                'units': "Pa",
+                'data': numpy.ravel(pres[0, :])
+            },{
+                'name': "trace_strain",
+                'units': "none",
+                'data': numpy.ravel(trace_strain[0, :])
+                }]
         io.inventory.filename = "mandel_ic.spatialdb"
+        io._configure()
         io.write(data)
         return
 
