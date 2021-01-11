@@ -107,9 +107,9 @@ class AnalyticalSoln(object):
             "isotropic_permeability": self.isotropic_permeability,
             "initial_amplitude": {
                 "x_neg": self.zero_vector,
-                "x_pos": self.zero_vector,
-                "y_neg": self.zero_scalar,
-                "y_pos": self.displacement,
+                "x_pos": self.zero_scalar,
+                "y_neg": self.zero_vector,
+                "y_pos": self.initial_displacement,
             }
         }
         self.key = None
@@ -124,12 +124,10 @@ class AnalyticalSoln(object):
 
     def zero_scalar(self, locs):
         (npts, dim) = locs.shape
-        ntpts = tsteps.shape[0]
         return numpy.zeros((1, npts, 1), dtype=numpy.float64)
 
     def zero_vector(self, locs):
         (npts, dim) = locs.shape
-        ntpts = tsteps.shape[0]
         return numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
 
     def solid_density(self, locs):
@@ -214,6 +212,8 @@ class AnalyticalSoln(object):
 
     def y_pos(self, locs):
         """Compute initial traction at locations.
+
+        :TODO: If this is the initial traction, then it should be a single time point (0).
         """
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
@@ -374,6 +374,8 @@ class AnalyticalSoln(object):
 
     def initial_traction(self, locs):
         """Compute traction at locations.
+
+        :TODO: If this is the initial traction, then it should be a single time point (0).
         """
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
