@@ -117,12 +117,10 @@ class AnalyticalSoln(object):
 
     def zero_scalar(self, locs):
         (npts, dim) = locs.shape
-        ntpts = tsteps.shape[0]
         return numpy.zeros((1, npts, 1), dtype=numpy.float64)
 
     def zero_vector(self, locs):
         (npts, dim) = locs.shape
-        ntpts = tsteps.shape[0]
         return numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
 
     def solid_density(self, locs):
@@ -317,10 +315,9 @@ class AnalyticalSoln(object):
         """Compute initial traction at locations.
         """
         (npts, dim) = locs.shape
-        ntpts = tsteps.shape[0]
-        traction = numpy.zeros((ntpts, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[:,:, 0] = 0.0
-        traction[:,:, 1] = P_0
+        traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
+        traction[:, :, 0] = 0.0
+        traction[:, :, 1] = P_0
         return traction
 
     def initial_displacement(self, locs):
