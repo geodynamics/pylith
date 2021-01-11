@@ -35,15 +35,13 @@ class GenerateDB(object):
         Generate the database.
         """
         # Domain
-        x = numpy.arange(0.0, 1.1, 0.1)
-        y = numpy.arange(0.0, 10.1, 1.0)
-        npts = x.shape[0]
-
-        xx = x * numpy.ones((npts, 1), dtype=numpy.float64)
-        yy = y * numpy.ones((npts, 1), dtype=numpy.float64)
-        xy = numpy.zeros((npts**2, 2), dtype=numpy.float64)
-        xy[:, 0] = numpy.ravel(xx)
-        xy[:, 1] = numpy.ravel(numpy.transpose(yy))
+        x1 = numpy.arange(-1.0, 11.01, 1.0)
+        y1 = numpy.arange(-1.0, 11.01, 1.0)
+        x,y = numpy.meshgrid(x1, y1)
+        
+        xy = numpy.zeros((len(x1)*len(y1), 2), dtype=numpy.float64)
+        xy[:, 0] = x.ravel()
+        xy[:, 1] = y.ravel()
 
         from terzaghi_soln import AnalyticalSoln
         soln = AnalyticalSoln()
@@ -56,8 +54,8 @@ class GenerateDB(object):
         cs.inventory.spaceDim = 2
         cs._configure()
         data = {
-            'x' : x,
-            'y' : y,
+            'x' : x1,
+            'y' : y1,
             'points': xy,
             'coordsys': cs,
             'data_dim': 2,
