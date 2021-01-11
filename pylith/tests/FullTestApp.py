@@ -43,9 +43,9 @@ class TestCase(unittest.TestCase):
         return
 
     def run_pylith(self, testName, args, generatedb=None):
-        if self.VERBOSITY > 0:
-            print("Running Pylith with args '{}' ...".format(" ".join(args)))
         if self.RUN_PYLITH:
+            if self.VERBOSITY > 0:
+                print("Running Pylith with args '{}' ...".format(" ".join(args)))
             run_pylith(testName, args, generatedb)
         return
 
@@ -185,9 +185,12 @@ class HDF5Checker(object):
     def _checkField(self, fieldName, fieldE, field, pts, maskField):
         (nstepsE, nptsE, ncompsE) = fieldE.shape
         (nsteps, npts, ncomps) = field.shape
-        self.testcase.assertEqual(nstepsE, nsteps)
-        self.testcase.assertEqual(nptsE, npts)
-        self.testcase.assertEqual(ncompsE, ncomps)
+        self.testcase.assertEqual(nstepsE, nsteps, msg="Expected {} time steps, got {} for field {}".format(
+            nstepsE, nsteps, fieldName))
+        self.testcase.assertEqual(nptsE, npts, msg="Expected {} points, got {} for field {}".format(
+            nptsE, npts, fieldName))
+        self.testcase.assertEqual(ncompsE, ncomps, msg="Expected {} components, got {} for field: {}".format(
+            ncompsE, ncomps, fieldName))
 
         toleranceAbsMask = 0.1
         ratio_tolerance = self.ratio_tolerance
@@ -216,26 +219,26 @@ class HDF5Checker(object):
                     print("Error in component {} of field '{}' at time step {}.".format(icomp, fieldName, istep))
                 #    print("Expected values: ", fieldE[istep, :, :])
                 #    print("Output values: ", field[istep, :, :])
-                    print("# ~Okay: ", numpy.sum(~okay))
+                    print("Total # not okay: %d" % numpy.sum(~okay))
                     n_okay_maskR = numpy.logical_and(~okay, maskR)
                     if numpy.sum(n_okay_maskR) > 0:
-                        print("Ratio (maskR), # ", numpy.sum(n_okay_maskR))
-                        print("Expected values (not okay): ", fieldE[istep, n_okay_maskR, icomp])
-                        print("Computed values (not okay): ", field[istep, n_okay_maskR, icomp])
-                        print("Ratio (not okay): ", ratio[n_okay_maskR])
-                        print("Ratio Coordinates (not okay): ", pts[n_okay_maskR,:])
-                        print("Tolerance Absolute Mask: ", toleranceAbsMask)
-                        print("Ratio Tolerance: ", ratio_tolerance)
+                        print("Ratio (maskR), # not okay: %d" % numpy.sum(n_okay_maskR))
+                        print("Expected values (not okay): %s" % fieldE[istep, n_okay_maskR, icomp])
+                        print("Computed values (not okay): %s" % field[istep, n_okay_maskR, icomp])
+                        print("Ratio (not okay): %s" % ratio[n_okay_maskR])
+                        print("Ratio Coordinates (not okay): %s" % pts[n_okay_maskR, :])
+                        print("Tolerance Absolute Mask: %s" % toleranceAbsMask)
+                        print("Ratio Tolerance: %s" % ratio_tolerance)
 
                     n_okay_maskD = numpy.logical_and(~okay, maskD)
                     if numpy.sum(n_okay_maskD) > 0:
-                        print("Relative Diff (maskD), # ", numpy.sum(n_okay_maskD))
-                        print("Expected values (not okay): ", fieldE[istep, n_okay_maskD, icomp])
-                        print("Computed values (not okay): ", field[istep, n_okay_maskD, icomp])
-                        print("Relative diff (not okay): ", diff[n_okay_maskD])
-                        print("Relative diff Coordinates (not okay): ", pts[n_okay_maskD,:])
-                        print("Diff Tolerance: ", diff_tolerance)
-                        print("Scale: ", scale)
+                        print("Relative Diff (maskD), # not okay: %d" % numpy.sum(n_okay_maskD))
+                        print("Expected values (not okay): %s" % fieldE[istep, n_okay_maskD, icomp])
+                        print("Computed values (not okay): %s" % field[istep, n_okay_maskD, icomp])
+                        print("Relative diff (not okay): %s" % diff[n_okay_maskD])
+                        print("Relative diff Coordinates (not okay): %s" % pts[n_okay_maskD, :])
+                        print("Diff Tolerance: %f" % diff_tolerance)
+                        print("Scale: %10.4e" % scale)
                     self.testcase.assertEqual(npts, numpy.sum(okay))
 
         return
