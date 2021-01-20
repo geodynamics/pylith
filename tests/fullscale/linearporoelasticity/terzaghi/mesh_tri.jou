@@ -6,7 +6,7 @@ playback 'geometry.jou'
 # ----------------------------------------------------------------------
 # Set discretization size
 # ----------------------------------------------------------------------
-surface all size 1.0
+surface all size 0.5
 
 # ----------------------------------------------------------------------
 # Generate the mesh
@@ -30,3 +30,5 @@ playback 'bc.jou'
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "mesh_tri.exo" dimension 2 overwrite
+
+

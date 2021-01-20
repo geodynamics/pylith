@@ -50,7 +50,7 @@ k = 1.5 # m**2
 
 ymax = 10.0 # m
 ymin = 0.0 # m
-xmax = 1.0 # m
+xmax = 10.0 # m
 xmin = 0.0 # m
 P_0 = 1.0 # Pa
 
@@ -60,7 +60,6 @@ H = xmax - xmin
 
 M = 1.0 / ( phi / K_fl + ( alpha - phi ) / K_sg ) # Pa
 K_u = K_d + alpha*alpha*M # Pa,      Cheng (B.5)
-#K_d = K_u - alpha*alpha*M # Pa,      Cheng (B.5)
 nu = (3.0*K_d - 2.0*G) / (2.0*(3.0*K_d + G)) # -,       Cheng (B.8)
 nu_u = (3.0*K_u - 2.0*G) / (2.0*(3.0*K_u + G)) # -,       Cheng (B.9)
 eta = (3.0*alpha*G) /(3.0*K_d + 4.0*G) #  -,       Cheng (B.11)
@@ -69,11 +68,9 @@ c = (k / mu_f) / S # m^2 / s, Cheng (B.16)
 
 # Time steps
 ts = 0.0028666667 # sec
-#ts = 0.001
 nts = 2
 tsteps = numpy.arange(0.0, ts*nts, ts) + ts # sec
 
-#tsteps = numpy.arange(ts, ts*(nts+1), ts) # sec
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
     """
@@ -81,7 +78,7 @@ class AnalyticalSoln(object):
     """
     SPACE_DIM = 2
     TENSOR_SIZE = 4
-    ITERATIONS = 25000
+    ITERATIONS = 16000
 
     def __init__(self):
         self.fields = {

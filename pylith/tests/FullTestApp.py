@@ -248,15 +248,24 @@ class HDF5Checker(object):
 def check_data(filename, testcase, mesh, vertexFields=[], cellFields=[], ratio_tolerance=1.e-5, diff_tolerance=1.e-5):
     """Check vertex and cell fields in specified file.
     """
+    separateChecker = False
     if not has_h5py():
         return
 
+    if type(ratio_tolerance) is map:
+        separateChecker = True
+        defaultRatio = 1e-5
+
     checker = HDF5Checker(filename, testcase, mesh, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
     for field in vertexFields:
+        if separateChecker:
+            checker = HDF5Checker(filename, testcase, mesh, ratio_tolerance=ratio_tolerance.get(str(field), defaultRatio), diff_tolerance=diff_tolerance.get(str(field), defaultRatio))
         if testcase.VERBOSITY > 0:
             print("Checking vertex field '{}' in file {}.".format(field, filename))
         checker.checkVertexField(field)
     for field in cellFields:
+        if separateChecker:
+            checker = HDF5Checker(filename, testcase, mesh, ratio_tolerance=ratio_tolerance.get(str(field), defaultRatio), diff_tolerance=diff_tolerance.get(str(field), defaultRatio))
         if testcase.VERBOSITY > 0:
             print("Checking cell field '{}' in file {}.".format(field, filename))
         checker.checkCellField(field)
