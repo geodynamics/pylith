@@ -6,11 +6,11 @@ nodeset 1 group x_neg
 nodeset 1 name "x_neg"
 
 # ----------------------------------------------------------------------
-# Create nodeset for +y edge
+# Create nodeset for -y edge
 # ----------------------------------------------------------------------
-group "y_pos" add node in curve  2
-nodeset 2 group y_pos
-nodeset 2 name "y_pos"
+group "y_neg" add node in curve  4
+nodeset 2 group y_neg
+nodeset 2 name "y_neg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +x edge
@@ -20,15 +20,15 @@ nodeset 3 group x_pos
 nodeset 3 name "x_pos"
 
 # ----------------------------------------------------------------------
-# Create nodeset for -y edge Dirichlet
+# Create nodeset for +y edge Dirichlet
 # ----------------------------------------------------------------------
-group "y_neg_dir" add node in curve  4
-nodeset 4 group y_neg_dir
-nodeset 4 name "y_neg_dir"
+group "y_pos_dir" add node in curve  2
+nodeset 4 group y_pos_dir
+nodeset 4 name "y_pos_dir"
 
 # ----------------------------------------------------------------------
-# Create nodeset for -y edge Neumann
+# Create nodeset for +y edge Neumann
 # ----------------------------------------------------------------------
-group "y_neg_neu" add node in curve  4
-nodeset 5 group y_neg_neu
-nodeset 5 name "y_neg_neu"
+group "y_pos_neu" add node in curve  2
+nodeset 5 group y_pos_neu
+nodeset 5 name "y_pos_neu"

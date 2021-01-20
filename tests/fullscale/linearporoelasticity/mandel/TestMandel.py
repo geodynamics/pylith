@@ -28,8 +28,8 @@ import meshes
 from mandel_soln import AnalyticalSoln
 from mandel_gendb import GenerateDB
 
-ratio_tolerance = 1e-0
-diff_tolerance = 1e-2
+ratio_tolerance = {'displacement':1e-0, 'pressure':1e-0, 'trace_strain':1e-0}
+diff_tolerance = {'displacement':1e-1, 'pressure':1e-1, 'trace_strain':1e-0}
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
     """
@@ -37,7 +37,6 @@ class TestCase(FullTestCase):
     by means of Mandel's problem.
     """
     DIRICHLET_BOUNDARIES = ["x_neg", "x_pos", "y_neg", "y_pos"]
-    #NEUMANN_BOUNDARIES = ["y_pos"]
 
     def setUp(self):
         """

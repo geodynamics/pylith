@@ -57,8 +57,8 @@ vertical_stress = 1.0 # Pa
 F = vertical_stress
 
 # Height of column, m
-a = (xmax - xmin)
-b = (ymax - ymin)
+b = (xmax - xmin)
+a = (ymax - ymin)
 
 M = 1.0 / ( phi / K_fl + ( alpha - phi ) / K_sg ) # Pa
 K_u = K_d + alpha*alpha*M # Pa,      Cheng (B.5)
@@ -71,13 +71,9 @@ c = (k / mu_f) / S # m^2 / s, Cheng (B.16)
 B = (3. * (nu_u - nu) )/(alpha*(1.-2.*nu)*(1.+nu_u))
 
 # Time steps
-#tsteps = numpy.arange(0.0, 0.0057333334, 0.0028666667) # sec
-
-# Time steps
-#ts = 0.0028666667 # sec
-ts = 0.1
+ts = 0.0028666667 # sec
 nts = 2
-tsteps = numpy.arange(0.0, ts*nts, ts) + ts # sec
+tsteps = numpy.arange(0.0, ts*nts, ts) # sec
 
 
 # ----------------------------------------------------------------------
@@ -87,7 +83,7 @@ class AnalyticalSoln(object):
     """
     SPACE_DIM = 2
     TENSOR_SIZE = 4
-    ITERATIONS = 2000
+    ITERATIONS = 1000
     EPS = 1e-5
 
     def __init__(self):
@@ -259,9 +255,9 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
-        pressure = numpy.zeros((ntpts, npts), dtype=numpy.float64)
-        x = locs[:, 0]
-        z = locs[:, 1]
+        pressure = numpy.zeros((ntpts, npts, 1), dtype=numpy.float64)
+        x = locs[:,0]
+        z = locs[:,1]
         t_track = 0
         zeroArray = self.mandelZeros()
 
@@ -274,7 +270,7 @@ class AnalyticalSoln(object):
                 for n in numpy.arange(1, self.ITERATIONS+1, 1):
                     x_n = zeroArray[n-1]
                     p += (numpy.sin(x_n) / (x_n - numpy.sin(x_n)*numpy.cos(x_n))) * (numpy.cos( (x_n*x) / a) - numpy.cos(x_n)) * numpy.exp(-1.0*(x_n*x_n * c * t)/(a*a))
-                pressure[t_track,:] = ( (2.0 * (F*B*(1.0 + nu_u)) ) / (3.0*a) ) * p
+                pressure[t_track,:, 0] = ( (2.0 * (F*B*(1.0 + nu_u)) ) / (3.0*a) ) * p
             t_track += 1
 
         return pressure
@@ -285,26 +281,26 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
-        trace_strain = numpy.zeros((ntpts, npts), dtype=numpy.float64)
-        x = locs[:, 0]
-        z = locs[:, 1]
+        trace_strain = numpy.zeros((ntpts, npts,1), dtype=numpy.float64)
+        x = locs[:,0]
+        z = locs[:,1]
         t_track = 0
-        zeroArray = self.mandelZeros()
-
-        for t in tsteps:
-
-            eps_A = 0.0
-            eps_B = 0.0
-            eps_C = 0.0
-
-            for i in numpy.arange(1, self.ITERATIONS+1, 1):
-                x_n = zeroArray[i-1]
-                eps_A += (x_n * numpy.exp( (-1.0*x_n*x_n*c*t)/(a*a)) * numpy.cos(x_n)*numpy.cos( (x_n*x)/a)) / (a  (x_n - numpy.sin(x_n)*numpy.cos(x_n)))
-                eps_B += ( numpy.exp( (-1.0*x_n*x_n*c*t)/(a*a)) * numpy.sin(x_n)*numpy.cos(x_n)) / (x_n - numpy.sin(x_n)*numpy.cos(x_n))
-                eps_C += ( numpy.exp( (-1.0*x_n*x_n*c*t)/(x_n*x_n)) * numpy.sin(x_n)*numpy.cos(x_n)) / (x_n - numpy.sin(x_n)*numpy.cos(x_n))
-
-            trace_strain[t_track,:] = (F/G)*eps_A + ( (F*nu)/(2.0*G*a)) - eps_B/(G*a) - (F*(1.0-nu))/(2/0*G*a) + eps_C/(G*a)
-            t_track += 1
+        # zeroArray = self.mandelZeros()
+        #
+        # for t in tsteps:
+        #
+        #     eps_A = 0.0
+        #     eps_B = 0.0
+        #     eps_C = 0.0
+        #
+        #     for i in numpy.arange(1, self.ITERATIONS+1,1):
+        #         x_n = zeroArray[i-1]
+        #         eps_A += (x_n * numpy.exp( (-1.0*x_n*x_n*c*t)/(a*a)) * numpy.cos(x_n)*numpy.cos( (x_n*x)/a)) / (a * (x_n - numpy.sin(x_n)*numpy.cos(x_n)))
+        #         eps_B += ( numpy.exp( (-1.0*x_n*x_n*c*t)/(a*a)) * numpy.sin(x_n)*numpy.cos(x_n)) / (x_n - numpy.sin(x_n)*numpy.cos(x_n))
+        #         eps_C += ( numpy.exp( (-1.0*x_n*x_n*c*t)/(x_n*x_n)) * numpy.sin(x_n)*numpy.cos(x_n)) / (x_n - numpy.sin(x_n)*numpy.cos(x_n))
+        #
+        #     trace_strain[t_track,:,0] = (F/G)*eps_A + ( (F*nu)/(2.0*G*a)) - eps_B/(G*a) - (F*(1.0-nu))/(2/0*G*a) + eps_C/(G*a)
+        #     t_track += 1
 
         return trace_strain
 
@@ -410,8 +406,8 @@ class AnalyticalSoln(object):
         x = locs[:, 0]
         z = locs[:, 1]
 
-        displacement[0,:, 0] = (F*nu_u*x)/(2.*G*a)
-        displacement[0,:, 1] = -1.*(F*(1.-nu_u)*z)/(2.*G*a)
+        displacement[0,:,0] = 0.0 #(F*nu_u*x)/(2.*G*a)
+        displacement[0,:,1] = 0.0 #-1.*(F*(1.-nu_u)*z)/(2.*G*a)
 
         return displacement
 

@@ -28,16 +28,16 @@ import meshes
 from terzaghi_soln import AnalyticalSoln
 from terzaghi_gendb import GenerateDB
 
-ratio_tolerance = 1e-0
-diff_tolerance = 1e-1
+ratio_tolerance = {'displacement':1e-1, 'pressure':1e-1, 'trace_strain':1e-0}
+diff_tolerance = {'displacement':1e-2, 'pressure':1e-2, 'trace_strain':1e-0}
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
     """
     Test suite for testing PyLith with one dimensional poroelasticity
     by means of Terzaghi's problem.
     """
-    DIRICHLET_BOUNDARIES = ["x_neg", "x_pos", "y_neg_dir", "y_pos"]
-    NEUMANN_BOUNDARIES = ["y_neg_neu"]
+    DIRICHLET_BOUNDARIES = ["x_neg", "x_pos", "y_pos_dir", "y_neg"]
+    NEUMANN_BOUNDARIES = ["y_pos_neu"]
 
     def setUp(self):
         """
@@ -70,7 +70,6 @@ class TestCase(FullTestCase):
             filename = "output/{}-{}.h5".format(self.NAME, material)
             check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
-
 
     def test_bcdirichlet_info(self):
         vertexFields = ["initial_amplitude"]
