@@ -47,17 +47,17 @@ class Tri(object):
             "ncorners": 2,
             "nvertices": 21,
         },
-        "y_neg_neu": {
+        "y_pos_neu": {
             "ncells": 20,
             "ncorners": 2,
             "nvertices": 21,
         },
-        "y_neg_dir": {
+        "y_pos_dir": {
             "ncells": 20,
             "ncorners": 2,
             "nvertices": 21,
         },
-        "y_pos": {
+        "y_neg": {
             "ncells": 20,
             "ncorners": 2,
             "nvertices": 21,
@@ -92,17 +92,17 @@ class Quad(object):
             "ncorners": 2,
             "nvertices": 21,
         },
-        "y_neg_neu": {
+        "y_pos_neu": {
             "ncells": 20,
             "ncorners": 2,
             "nvertices": 21,
         },
-        "y_neg_dir": {
+        "y_pos_dir": {
             "ncells": 20,
             "ncorners": 2,
             "nvertices": 21,
         },
-        "y_pos": {
+        "y_neg": {
             "ncells": 20,
             "ncorners": 2,
             "nvertices": 21,

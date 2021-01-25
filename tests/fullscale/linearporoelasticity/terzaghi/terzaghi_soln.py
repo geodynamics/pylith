@@ -52,7 +52,7 @@ ymax = 10.0 # m
 ymin = 0.0 # m
 xmax = 10.0 # m
 xmin = 0.0 # m
-P_0 = 1.0 # Pa
+P_0 = -1.0 # Pa
 
 # Height of column, m
 L = ymax - ymin
@@ -97,9 +97,9 @@ class AnalyticalSoln(object):
             "initial_amplitude": {
                 "x_neg": self.zero_vector,
                 "x_pos": self.zero_vector,
-                "y_neg_neu": self.y_neg_neu,
-                "y_neg_dir": self.zero_scalar,
-                "y_pos": self.zero_vector,
+                "y_pos_neu": self.y_pos_neu,
+                "y_pos_dir": self.zero_scalar,
+                "y_neg": self.zero_vector,
             }
         }
         self.key = None
@@ -201,7 +201,7 @@ class AnalyticalSoln(object):
         displacement = numpy.zeros((ntpts, npts, dim), dtype=numpy.float64)
         z = locs[:,1]
         t_track = 0
-        z_star = z/L
+        z_star = 1 - z/L
 
         for t in tsteps:
             if t < 0.0:
@@ -224,7 +224,7 @@ class AnalyticalSoln(object):
         t_track = 0
 
         for t in tsteps:
-            z_star = z/L
+            z_star = 1 - z/L
             t_star = (c*t) / (4.*L**2)
             pressure[t_track,:,0] = ( (P_0 * eta) / (G * S) ) * self.F1(z_star, t_star)
             t_track += 1
@@ -308,7 +308,7 @@ class AnalyticalSoln(object):
         stress[:, :, 3] = 2*G*e_xy
         return stress
 
-    def y_neg_neu(self, locs):
+    def y_pos_neu(self, locs):
         """Compute initial traction at locations.
         """
         (npts, dim) = locs.shape
