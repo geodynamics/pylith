@@ -50,9 +50,9 @@ if test == "tri3" or test == "quad4":
     dduPx = -jL / jP * duLx
     dduPy = -jL / jP * duLy
             
-    print duNx+dduNx,duNy+dduNy
-    print duPx+dduPx,duPy+dduPy
-    print duLx,duLy
+    print duNx+dduNx, duNy+dduNy
+    print duPx+dduPx, duPy+dduPy
+    print duLx, duLy
 
 # ----------------------------------------------------------------------
 elif test == "tet4" or test == "hex8":
@@ -137,7 +137,7 @@ elif test == "tet4" or test == "hex8":
     dduPy = -jL / jP * duLy
     dduPz = -jL / jP * duLz
             
-    print duNx+dduNx,duNy+dduNy, duNz+dduNz
-    print duPx+dduPx,duPy+dduPy, duPz+dduPz
-    print duLx,duLy, duLz
+    print duNx+dduNx, duNy+dduNy, duNz+dduNz
+    print duPx+dduPx, duPy+dduPy, duPz+dduPz
+    print duLx, duLy, duLz
 

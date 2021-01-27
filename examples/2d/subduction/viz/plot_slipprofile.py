@@ -18,7 +18,7 @@ def calcDist(vertices):
     dist = numpy.zeros(vertices.shape[0])
     pt0 = vertices[:-1,:]
     pt1 = vertices[1:,:]
-    dx = ((pt1[:,0]-pt0[:,0])**2 + (pt1[:,1]-pt0[:,1])**2)**0.5
+    dx = ((pt1[:, 0]-pt0[:, 0])**2 + (pt1[:, 1]-pt0[:, 1])**2)**0.5
     dist[1:] = numpy.cumsum(dx)
     return dist
 
@@ -47,25 +47,25 @@ def plot(sim):
     data = getData(sim)
     
     # Create sort key corresponding to increasing depth.
-    indices = numpy.argsort(data["vertices"][:,1])[::-1]
+    indices = numpy.argsort(data["vertices"][:, 1])[::-1]
 
     # Calculate down-dip distance from trench and get sorted data.
     #dist = calcDist(data["vertices"][indices,:])
-    dist = -data["vertices"][indices,1]
-    slip = data["slip"][:,indices,:]
+    dist = -data["vertices"][indices, 1]
+    slip = data["slip"][:, indices,:]
 
     figure = pyplot.figure(figsize=(5.0, 3.0), facecolor='white', dpi=150)
     figure.set_facecolor('white')
 
     axes = figure.add_axes([0.15, 0.15, 0.80, 0.82])
 
-    for i,t in enumerate(data["time"]):
+    for i, t in enumerate(data["time"]):
         color = "blue"
         lw = 0.5
         if i % 10 == 0:
             color = "red"
             lw = 1.0
-        axes.plot(-slip[i,:,0], dist/1.0e+3, '-', color=color, linewidth=lw)
+        axes.plot(-slip[i,:, 0], dist/1.0e+3, '-', color=color, linewidth=lw)
     axes.set_xlabel("Slip (m)")
     #axes.set_ylabel("Down-dip Dist. (km)")
     axes.set_ylabel("Depth (km)")

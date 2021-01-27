@@ -135,11 +135,11 @@ class AnalyticalSoln(object):
         strain = self.strain(locs)
         (ntpts, npts, tensorSize) = strain.shape
         disp = numpy.zeros((ntpts, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[:, :, 0] = strain[:, :, 0] * locs[:, 0] + strain[:, :, 3] * locs[:, 1]
-        disp[:, :, 1] = strain[:, :, 3] * locs[:, 0] + strain[:, :, 1] * locs[:, 1]
-        disp[:, :, 0] = strain[:, :, 0] * locs[:, 0] + strain[:, :, 3] * locs[:, 1] + strain[:, :, 5] * locs[:, 2]
-        disp[:, :, 1] = strain[:, :, 3] * locs[:, 0] + strain[:, :, 1] * locs[:, 1] + strain[:, :, 4] * locs[:, 2]
-        disp[:, :, 2] = strain[:, :, 5] * locs[:, 0] + strain[:, :, 4] * locs[:, 1] + strain[:, :, 2] * locs[:, 2]
+        disp[:,:, 0] = strain[:,:, 0] * locs[:, 0] + strain[:,:, 3] * locs[:, 1]
+        disp[:,:, 1] = strain[:,:, 3] * locs[:, 0] + strain[:,:, 1] * locs[:, 1]
+        disp[:,:, 0] = strain[:,:, 0] * locs[:, 0] + strain[:,:, 3] * locs[:, 1] + strain[:,:, 5] * locs[:, 2]
+        disp[:,:, 1] = strain[:,:, 3] * locs[:, 0] + strain[:,:, 1] * locs[:, 1] + strain[:,:, 4] * locs[:, 2]
+        disp[:,:, 2] = strain[:,:, 5] * locs[:, 0] + strain[:,:, 4] * locs[:, 1] + strain[:,:, 2] * locs[:, 2]
         return disp
 
     def density(self, locs):
@@ -171,19 +171,19 @@ class AnalyticalSoln(object):
         Compute strain field at locations.
         """
         stress = self.stress(locs)
-        sxx = stress[:, :, 0]
-        syy = stress[:, :, 1]
-        szz = stress[:, :, 2]
-        sxy = stress[:, :, 3]
-        syz = stress[:, :, 4]
-        sxz = stress[:, :, 5]
+        sxx = stress[:,:, 0]
+        syy = stress[:,:, 1]
+        szz = stress[:,:, 2]
+        sxy = stress[:,:, 3]
+        syz = stress[:,:, 4]
+        sxz = stress[:,:, 5]
         strain = numpy.zeros(stress.shape, dtype=numpy.float64)
-        strain[:, :, 0] = 1.0 / (2 * p_mu) * (sxx - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
-        strain[:, :, 1] = 1.0 / (2 * p_mu) * (syy - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
-        strain[:, :, 2] = 1.0 / (2 * p_mu) * (szz - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
-        strain[:, :, 3] = 1.0 / (2 * p_mu) * (sxy)
-        strain[:, :, 4] = 1.0 / (2 * p_mu) * (syz)
-        strain[:, :, 5] = 1.0 / (2 * p_mu) * (sxz)
+        strain[:,:, 0] = 1.0 / (2 * p_mu) * (sxx - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
+        strain[:,:, 1] = 1.0 / (2 * p_mu) * (syy - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
+        strain[:,:, 2] = 1.0 / (2 * p_mu) * (szz - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + syy + szz))
+        strain[:,:, 3] = 1.0 / (2 * p_mu) * (sxy)
+        strain[:,:, 4] = 1.0 / (2 * p_mu) * (syz)
+        strain[:,:, 5] = 1.0 / (2 * p_mu) * (sxz)
         return strain
 
     def stress(self, locs):
@@ -202,12 +202,12 @@ class AnalyticalSoln(object):
 
         ones = numpy.ones((1, npts), dtype=numpy.float64)
         stress = numpy.zeros((ntpts, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        stress[:, :, 0] = numpy.dot(sxx.reshape((ntpts, 1)), ones)
-        stress[:, :, 1] = numpy.dot(syy.reshape((ntpts, 1)), ones)
-        stress[:, :, 2] = numpy.dot(szz.reshape((ntpts, 1)), ones)
-        stress[:, :, 3] = numpy.dot(sxy.reshape((ntpts, 1)), ones)
-        stress[:, :, 4] = numpy.dot(syz.reshape((ntpts, 1)), ones)
-        stress[:, :, 5] = numpy.dot(sxz.reshape((ntpts, 1)), ones)
+        stress[:,:, 0] = numpy.dot(sxx.reshape((ntpts, 1)), ones)
+        stress[:,:, 1] = numpy.dot(syy.reshape((ntpts, 1)), ones)
+        stress[:,:, 2] = numpy.dot(szz.reshape((ntpts, 1)), ones)
+        stress[:,:, 3] = numpy.dot(sxy.reshape((ntpts, 1)), ones)
+        stress[:,:, 4] = numpy.dot(syz.reshape((ntpts, 1)), ones)
+        stress[:,:, 5] = numpy.dot(sxz.reshape((ntpts, 1)), ones)
         return stress
 
     def bc_initial_displacement(self, locs):
@@ -221,9 +221,9 @@ class AnalyticalSoln(object):
         exz = 1.0 / (2 * p_mu) * (s0xz)
         (npts, dim) = locs.shape
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[0, :, 0] = exx * locs[:, 0] + exy * locs[:, 1] + exz * locs[:, 2]
-        disp[0, :, 1] = exy * locs[:, 0] + eyy * locs[:, 1] + eyz * locs[:, 2]
-        disp[0, :, 2] = exz * locs[:, 0] + eyz * locs[:, 1] + ezz * locs[:, 2]
+        disp[0,:, 0] = exx * locs[:, 0] + exy * locs[:, 1] + exz * locs[:, 2]
+        disp[0,:, 1] = exy * locs[:, 0] + eyy * locs[:, 1] + eyz * locs[:, 2]
+        disp[0,:, 2] = exz * locs[:, 0] + eyz * locs[:, 1] + ezz * locs[:, 2]
         return disp
 
     def bc_velocity(self, locs):
@@ -237,9 +237,9 @@ class AnalyticalSoln(object):
         eRxz = 1.0 / (2 * p_mu) * (sRxz)
         (npts, dim) = locs.shape
         velocity = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        velocity[0, :, 0] = (eRxx * locs[:, 0] + eRxy * locs[:, 1] + eRxz * locs[:, 2]) / year.value
-        velocity[0, :, 1] = (eRxy * locs[:, 0] + eRyy * locs[:, 1] + eRyz * locs[:, 2]) / year.value
-        velocity[0, :, 2] = (eRxz * locs[:, 0] + eRyz * locs[:, 1] + eRzz * locs[:, 2]) / year.value
+        velocity[0,:, 0] = (eRxx * locs[:, 0] + eRxy * locs[:, 1] + eRxz * locs[:, 2]) / year.value
+        velocity[0,:, 1] = (eRxy * locs[:, 0] + eRyy * locs[:, 1] + eRyz * locs[:, 2]) / year.value
+        velocity[0,:, 2] = (eRxz * locs[:, 0] + eRyz * locs[:, 1] + eRzz * locs[:, 2]) / year.value
         return velocity
 
     def bc_xpos_initial_traction(self, locs):
@@ -247,9 +247,9 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[0, :, 0] = s0xy
-        traction[0, :, 1] = 0.0
-        traction[0, :, 2] = 0.0
+        traction[0,:, 0] = s0xy
+        traction[0,:, 1] = 0.0
+        traction[0,:, 2] = 0.0
         return traction
 
     def bc_ypos_initial_traction(self, locs):
@@ -257,9 +257,9 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[0, :, 0] = -s0xy
-        traction[0, :, 1] = 0.0
-        traction[0, :, 2] = 0.0
+        traction[0,:, 0] = -s0xy
+        traction[0,:, 1] = 0.0
+        traction[0,:, 2] = 0.0
         return traction
 
     def bc_rate_time(self, locs):
@@ -273,9 +273,9 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[0, :, 0] = sRxy / year.value
-        traction[0, :, 1] = 0.0
-        traction[0, :, 2] = 0.0
+        traction[0,:, 0] = sRxy / year.value
+        traction[0,:, 1] = 0.0
+        traction[0,:, 2] = 0.0
         return traction
 
     def bc_ypos_rate_traction(self, locs):
@@ -283,9 +283,9 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[0, :, 0] = -sRxy / year.value
-        traction[0, :, 1] = 0.0
-        traction[0, :, 2] = 0.0
+        traction[0,:, 0] = -sRxy / year.value
+        traction[0,:, 1] = 0.0
+        traction[0,:, 2] = 0.0
         return traction
 
 

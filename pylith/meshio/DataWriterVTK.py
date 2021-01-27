@@ -17,8 +17,8 @@
 #
 # @brief Python object for writing finite-element data to VTK file.
 
-from DataWriter import DataWriter
-from meshio import DataWriterVTK as ModuleDataWriterVTK
+from .DataWriter import DataWriter
+from .meshio import DataWriterVTK as ModuleDataWriterVTK
 
 
 class DataWriterVTK(DataWriter, ModuleDataWriterVTK):

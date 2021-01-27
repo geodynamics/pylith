@@ -89,8 +89,8 @@ class AnalyticalSoln(object):
 
         (npts, dim) = locs.shape
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[:, :, 0] = strain[:, :, 0] * locs[:, 0] + strain[:, :, 3] * locs[:, 1]
-        disp[:, :, 1] = strain[:, :, 3] * locs[:, 0] + strain[:, :, 1] * (ymax - locs[:, 1])
+        disp[:,:, 0] = strain[:,:, 0] * locs[:, 0] + strain[:,:, 3] * locs[:, 1]
+        disp[:,:, 1] = strain[:,:, 3] * locs[:, 0] + strain[:,:, 1] * (ymax - locs[:, 1])
         return disp
 
     def pressure(self, locs):
@@ -99,7 +99,7 @@ class AnalyticalSoln(object):
         """
         stress = self.stress(locs)
         (npts, dim) = locs.shape
-        pressure = -stress[:, :, 1].reshape(1, npts, 1)
+        pressure = -stress[:,:, 1].reshape(1, npts, 1)
         return pressure
 
     def zero_vector(self, locs):
@@ -153,10 +153,10 @@ class AnalyticalSoln(object):
 
         (npts, dim) = locs.shape
         stress = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        stress[0, :, 0] = sxx
-        stress[0, :, 1] = syy
-        stress[0, :, 2] = szz
-        stress[0, :, 3] = sxy
+        stress[0,:, 0] = sxx
+        stress[0,:, 1] = syy
+        stress[0,:, 2] = szz
+        stress[0,:, 3] = sxy
         return stress
 
     def gacc(self, locs):
@@ -164,7 +164,7 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         gravacc = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        gravacc[0, :, 1] = -gacc
+        gravacc[0,:, 1] = -gacc
         return gravacc
 
 

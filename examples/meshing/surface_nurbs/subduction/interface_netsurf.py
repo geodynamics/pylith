@@ -56,7 +56,7 @@ j.write("${idCEnd=Id('curve')}\n\n")
 
 # Loop over profiles (v-lines).
 for iProfile in range(pointsPerContour):
-    points = intCoords[:,iProfile,:]
+    points = intCoords[:, iProfile,:]
     for iPoint in range(numContours):
         point = points[iPoint,:]
         j.write("create vertex x %10.2e y %10.2e z %10.2e\n" % \

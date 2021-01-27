@@ -20,7 +20,7 @@
 # Factory: output_field_filter
 
 from .FieldFilter import FieldFilter
-from meshio import FieldFilterNone as ModuleFieldFilterNone
+from .meshio import FieldFilterNone as ModuleFieldFilterNone
 
 
 class FieldFilterNone(FieldFilter, ModuleFieldFilterNone):

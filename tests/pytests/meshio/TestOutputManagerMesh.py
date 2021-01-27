@@ -73,7 +73,7 @@ class TestProvider(object):
     """
     Get vertex field.
     """
-    from pylith.field.field.FieldBase import SCALAR,VECTOR,OTHER
+    from pylith.field.field.FieldBase import SCALAR, VECTOR, OTHER
     if name == "vertex info":
       fieldType = FieldBase.SCALAR
       fiberDim = 1

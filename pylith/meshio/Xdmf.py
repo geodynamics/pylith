@@ -34,7 +34,7 @@ class Field(object):
         "vertex_fields": DOMAIN_VERTICES,
         "cell_fields": DOMAIN_CELLS,
     }
-    domainToGroup = dict((v, k) for k, v in groupToDomain.iteritems())
+    domainToGroup = dict((v, k) for k, v in groupToDomain.items())
 
     def __init__(self):
         self.name = None

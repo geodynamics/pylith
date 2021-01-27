@@ -104,10 +104,10 @@ eDevDot0[3] = 0.0
 # Deviatoric strains.
 eMean = (exx + eyy + ezz)/3.0
 eDev = numpy.zeros((numSteps, numComponents), dtype=numpy.float64)
-eDev[:,0] = exx - eMean
-eDev[:,1] = eyy - eMean
-eDev[:,2] = ezz - eMean
-eDev[:,3] = exy
+eDev[:, 0] = exx - eMean
+eDev[:, 1] = eyy - eMean
+eDev[:, 2] = ezz - eMean
+eDev[:, 3] = exy
 
 # Loop over time steps.
 eVis = numpy.zeros((numSteps, numComponents, numMaxElements), dtype=numpy.float64)
@@ -118,23 +118,23 @@ for timeStep in range(numSteps):
     timeFac2 = math.exp(-t[timeStep]/p_tau_2)
     timeFac3 = math.exp(-t[timeStep]/p_tau_3)
     # Viscous strains.
-    eVis[timeStep,:,0] = eDev0*timeFac1 + eDevDot0*p_tau_1*(1.0 - timeFac1)
-    eVis[timeStep,:,1] = eDev0*timeFac2 + eDevDot0*p_tau_2*(1.0 - timeFac2)
-    eVis[timeStep,:,2] = eDev0*timeFac3 + eDevDot0*p_tau_3*(1.0 - timeFac3)
+    eVis[timeStep,:, 0] = eDev0*timeFac1 + eDevDot0*p_tau_1*(1.0 - timeFac1)
+    eVis[timeStep,:, 1] = eDev0*timeFac2 + eDevDot0*p_tau_2*(1.0 - timeFac2)
+    eVis[timeStep,:, 2] = eDev0*timeFac3 + eDevDot0*p_tau_3*(1.0 - timeFac3)
 
     # Deviatoric stresses.
     sDev[timeStep,:] = p_shear_ratio_0*eDev[timeStep,:]
     for elementNum in range(numMaxElements):
-        sDev[timeStep,:] += p_shear_ratio[elementNum]*eVis[timeStep,:,elementNum]
+        sDev[timeStep,:] += p_shear_ratio[elementNum]*eVis[timeStep,:, elementNum]
 
 sDev *= 2.0*p_mu
 
 # Total stresses.
 sMean = eMean*(3.0*p_lambda + 2.0*p_mu)
-sxx = sDev[:,0] + sMean
-syy = sDev[:,1] + sMean
-szz = sDev[:,2] + sMean
-sxy = sDev[:,3]
+sxx = sDev[:, 0] + sMean
+syy = sDev[:, 1] + sMean
+szz = sDev[:, 2] + sMean
+sxy = sDev[:, 3]
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
@@ -190,7 +190,7 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         disp = numpy.zeros((numSteps, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[:, :, 0] = numpy.dot(exx.reshape(numSteps, 1), (locs[:, 0] + 4000.0).reshape(1, npts))
+        disp[:,:, 0] = numpy.dot(exx.reshape(numSteps, 1), (locs[:, 0] + 4000.0).reshape(1, npts))
         return disp
 
     def initial_displacement(self, locs):
@@ -199,7 +199,7 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[0, :, 0] = e0*(locs[:, 0] + 4000.0).reshape(1, npts)
+        disp[0,:, 0] = e0*(locs[:, 0] + 4000.0).reshape(1, npts)
         return disp
 
     def bc_velocity(self, locs):
@@ -208,7 +208,7 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         velocity = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        velocity[0, :, 0] = edot0*(locs[:, 0] + 4000.0).reshape(1, npts)
+        velocity[0,:, 0] = edot0*(locs[:, 0] + 4000.0).reshape(1, npts)
         return velocity
 
     def bc_rate_time(self, locs):
@@ -249,9 +249,9 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         maxwell_time = numpy.zeros((1, npts, 3), dtype=numpy.float64)
-        maxwell_time[0, :, 0] = p_tau_1
-        maxwell_time[0, :, 1] = p_tau_2
-        maxwell_time[0, :, 2] = p_tau_3
+        maxwell_time[0,:, 0] = p_tau_1
+        maxwell_time[0,:, 1] = p_tau_2
+        maxwell_time[0,:, 2] = p_tau_3
         return maxwell_time
 
     def shear_modulus_ratio(self, locs):
@@ -260,9 +260,9 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         shear_modulus_ratio = numpy.zeros((1, npts, 3), dtype=numpy.float64)
-        shear_modulus_ratio[0, :, 0] = p_shear_ratio_1
-        shear_modulus_ratio[0, :, 1] = p_shear_ratio_2
-        shear_modulus_ratio[0, :, 2] = p_shear_ratio_3
+        shear_modulus_ratio[0,:, 0] = p_shear_ratio_1
+        shear_modulus_ratio[0,:, 1] = p_shear_ratio_2
+        shear_modulus_ratio[0,:, 2] = p_shear_ratio_3
         return shear_modulus_ratio
 
     def strain(self, locs):
@@ -271,10 +271,10 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         strain = numpy.zeros((numSteps, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        strain[:, :, 0] = exx.reshape(numSteps, 1)
-        strain[:, :, 1] = eyy.reshape(numSteps, 1)
-        strain[:, :, 2] = ezz.reshape(numSteps, 1)
-        strain[:, :, 3] = exy.reshape(numSteps, 1)
+        strain[:,:, 0] = exx.reshape(numSteps, 1)
+        strain[:,:, 1] = eyy.reshape(numSteps, 1)
+        strain[:,:, 2] = ezz.reshape(numSteps, 1)
+        strain[:,:, 3] = exy.reshape(numSteps, 1)
         return strain
 
     def stress(self, locs):
@@ -283,10 +283,10 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         stress = numpy.zeros((numSteps, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        stress[:, :, 0] = sxx.reshape(numSteps, 1)
-        stress[:, :, 1] = syy.reshape(numSteps, 1)
-        stress[:, :, 2] = szz.reshape(numSteps, 1)
-        stress[:, :, 3] = sxy.reshape(numSteps, 1)
+        stress[:,:, 0] = sxx.reshape(numSteps, 1)
+        stress[:,:, 1] = syy.reshape(numSteps, 1)
+        stress[:,:, 2] = szz.reshape(numSteps, 1)
+        stress[:,:, 3] = sxy.reshape(numSteps, 1)
         return stress
 
     def viscous_strain(self, locs):
@@ -295,18 +295,18 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         viscous_strain = numpy.zeros((numSteps, npts, 3*self.TENSOR_SIZE), dtype=numpy.float64)
-        viscous_strain[:, :, 0] = eVis[:,0,0].reshape(numSteps, 1)
-        viscous_strain[:, :, 1] = eVis[:,1,0].reshape(numSteps, 1)
-        viscous_strain[:, :, 2] = eVis[:,2,0].reshape(numSteps, 1)
-        viscous_strain[:, :, 3] = eVis[:,3,0].reshape(numSteps, 1)
-        viscous_strain[:, :, 4] = eVis[:,0,1].reshape(numSteps, 1)
-        viscous_strain[:, :, 5] = eVis[:,1,1].reshape(numSteps, 1)
-        viscous_strain[:, :, 6] = eVis[:,2,1].reshape(numSteps, 1)
-        viscous_strain[:, :, 7] = eVis[:,3,1].reshape(numSteps, 1)
-        viscous_strain[:, :, 8] = eVis[:,0,2].reshape(numSteps, 1)
-        viscous_strain[:, :, 9] = eVis[:,1,2].reshape(numSteps, 1)
-        viscous_strain[:, :, 10] = eVis[:,2,2].reshape(numSteps, 1)
-        viscous_strain[:, :, 11] = eVis[:,3,2].reshape(numSteps, 1)
+        viscous_strain[:,:, 0] = eVis[:, 0, 0].reshape(numSteps, 1)
+        viscous_strain[:,:, 1] = eVis[:, 1, 0].reshape(numSteps, 1)
+        viscous_strain[:,:, 2] = eVis[:, 2, 0].reshape(numSteps, 1)
+        viscous_strain[:,:, 3] = eVis[:, 3, 0].reshape(numSteps, 1)
+        viscous_strain[:,:, 4] = eVis[:, 0, 1].reshape(numSteps, 1)
+        viscous_strain[:,:, 5] = eVis[:, 1, 1].reshape(numSteps, 1)
+        viscous_strain[:,:, 6] = eVis[:, 2, 1].reshape(numSteps, 1)
+        viscous_strain[:,:, 7] = eVis[:, 3, 1].reshape(numSteps, 1)
+        viscous_strain[:,:, 8] = eVis[:, 0, 2].reshape(numSteps, 1)
+        viscous_strain[:,:, 9] = eVis[:, 1, 2].reshape(numSteps, 1)
+        viscous_strain[:,:, 10] = eVis[:, 2, 2].reshape(numSteps, 1)
+        viscous_strain[:,:, 11] = eVis[:, 3, 2].reshape(numSteps, 1)
         return viscous_strain
 
 

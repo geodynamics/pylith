@@ -145,7 +145,7 @@ class GrabPoints(Application):
       vertex = self.indices[vertInd]
       if vertex == ucdInd:
         data = lines[lineCount].split()
-        for dim in range(1,4):
+        for dim in range(1, 4):
           self.pointCoords.append(float(data[dim]))
         vertInd += 1
         vertInd = min([vertInd, len(self.indices) - 1])

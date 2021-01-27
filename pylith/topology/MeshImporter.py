@@ -19,7 +19,7 @@
 #
 # Factory: mesh_generator.
 
-from MeshGenerator import MeshGenerator
+from .MeshGenerator import MeshGenerator
 
 
 class MeshImporter(MeshGenerator):
@@ -48,11 +48,11 @@ class MeshImporter(MeshGenerator):
     reader = pyre.inventory.facility("reader", family="mesh_io", factory=MeshIOAscii)
     reader.meta['tip'] = "Mesh reader."
 
-    from Distributor import Distributor
+    from .Distributor import Distributor
     distributor = pyre.inventory.facility("distributor", family="mesh_distributor", factory=Distributor)
     distributor.meta['tip'] = "Mesh distributor."
 
-    from MeshRefiner import MeshRefiner
+    from .MeshRefiner import MeshRefiner
     refiner = pyre.inventory.facility("refiner", family="mesh_refiner", factory=MeshRefiner)
     refiner.meta['tip'] = "Mesh refiner."
 

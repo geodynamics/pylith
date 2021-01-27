@@ -19,7 +19,7 @@
 
 from pyre.components.Component import Component
 
-from PetscManager import PetscManager
+from .PetscManager import PetscManager
 
 
 class DumpParameters(Component):
@@ -71,8 +71,7 @@ class DumpParameters(Component):
         """
         Get objects properties and components.
         """
-        propertyNames = obj.inventory.propertyNames()
-        propertyNames.sort()
+        propertyNames = sorted(obj.inventory.propertyNames())
 
         facilityNames = obj.inventory.facilityNames()
         facilityNames.sort()

@@ -20,7 +20,7 @@
 # Factory: mesh_io
 
 from pylith.utils.PetscComponent import PetscComponent
-from meshio import MeshIO as ModuleMeshIO
+from .meshio import MeshIO as ModuleMeshIO
 
 
 class MeshIOObj(PetscComponent, ModuleMeshIO):
@@ -60,7 +60,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
 
         # Initialize coordinate system
         if self.coordsys is None:
-            raise ValueError, "Coordinate system for mesh is unknown."
+            raise ValueError("Coordinate system for mesh is unknown.")
 
         from pylith.mpi.Communicator import petsc_comm_world
         from pylith.topology.Mesh import Mesh

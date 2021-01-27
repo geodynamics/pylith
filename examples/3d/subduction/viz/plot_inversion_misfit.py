@@ -33,8 +33,8 @@ def readInversionSummary():
 
   # Open inversion summary file and get misfits.
   data = numpy.loadtxt(summaryFile, dtype=numpy.float64)
-  dataWeightResid = data[:,2]
-  penaltyResid = data[:,3]
+  dataWeightResid = data[:, 2]
+  penaltyResid = data[:, 3]
 
   # Sort by penalty residual.
   inds = numpy.argsort(penaltyResid)

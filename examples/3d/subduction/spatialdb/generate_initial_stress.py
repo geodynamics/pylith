@@ -31,7 +31,7 @@ def getCellCenters(vertices, cells):
     """
     Function to compute cell centers.
     """
-    cellCoords = vertices[cells, :]
+    cellCoords = vertices[cells,:]
     cellCenters = numpy.mean(cellCoords, axis=1)
     return cellCenters
 
@@ -50,7 +50,7 @@ def generate(sim, fileRoot, materials):
         cells = numpy.array(h5['topology/cells'][:], dtype=numpy.int)
 
         # Get stresses from final time step.
-        stress = h5['cell_fields/stress'][-1, :, :]
+        stress = h5['cell_fields/stress'][-1,:,:]
         h5.close()
 
         # Compute coordinates of quadrature points.

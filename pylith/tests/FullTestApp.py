@@ -146,7 +146,7 @@ class HDF5Checker(object):
             ncells, ncorners = cells.shape
             centroids = numpy.zeros((ncells, self.exactsoln.SPACE_DIM), dtype=numpy.float64)
             for icorner in range(ncorners):
-                centroids[:, :] += vertices[cells[:, icorner], :]
+                centroids[:,:] += vertices[cells[:, icorner],:]
             centroids /= float(ncorners)
             self.cellCentroids = centroids
         return self.cellCentroids
@@ -197,18 +197,18 @@ class HDF5Checker(object):
         diff_tolerance = self.diff_tolerance
         maskZero = fieldE != 0.0
         scale = numpy.mean(numpy.abs(fieldE[maskZero].ravel())) if numpy.sum(maskZero) > 0 else 1.0
-        for istep in xrange(nsteps):
-            for icomp in xrange(ncomps):
+        for istep in range(nsteps):
+            for icomp in range(ncomps):
                 okay = numpy.zeros((npts,), dtype=numpy.bool)
                 ratio = numpy.zeros((npts,))
 
-                maskR = numpy.abs(fieldE[istep, :, icomp]) > toleranceAbsMask
+                maskR = numpy.abs(fieldE[istep,:, icomp]) > toleranceAbsMask
                 ratio[maskR] = numpy.abs(1.0 - field[istep, maskR, icomp] / fieldE[istep, maskR, icomp])
                 if numpy.sum(maskR) > 0:
                     okay[maskR] = ratio[maskR] < ratio_tolerance
 
                 maskD = ~maskR
-                diff = numpy.abs(field[istep, :, icomp] - fieldE[istep, :, icomp]) / scale
+                diff = numpy.abs(field[istep,:, icomp] - fieldE[istep,:, icomp]) / scale
                 if numpy.sum(maskD) > 0:
                     okay[maskD] = diff[maskD] < diff_tolerance
 

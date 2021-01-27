@@ -20,7 +20,7 @@
 # Factory: mesh_distributor.
 
 from pylith.utils.PetscComponent import PetscComponent
-from topology import Distributor as ModuleDistributor
+from .topology import Distributor as ModuleDistributor
 
 
 class Distributor(PetscComponent, ModuleDistributor):

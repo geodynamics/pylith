@@ -20,8 +20,8 @@
 #
 # Factory: mesh_io
 
-from MeshIOObj import MeshIOObj
-from meshio import MeshIOLagrit as ModuleMeshIOLagrit
+from .MeshIOObj import MeshIOObj
+from .meshio import MeshIOLagrit as ModuleMeshIOLagrit
 
 
 def validateFilenameGmv(value):

@@ -17,8 +17,8 @@
 #
 # @brief Python object for writing finite-element data to HDF5 file.
 
-from DataWriter import DataWriter
-from meshio import DataWriterHDF5 as ModuleDataWriterHDF5
+from .DataWriter import DataWriter
+from .meshio import DataWriterHDF5 as ModuleDataWriterHDF5
 
 
 class DataWriterHDF5(DataWriter, ModuleDataWriterHDF5):

@@ -18,7 +18,7 @@ import h5py
 # Load in change in tractions from coseismic simulation
 h5 = h5py.File("output/step01_coseismic-fault.h5", 'r')
 vertices = h5['geometry/vertices'][:]
-tractions_change = h5['vertex_fields/traction_change'][0, :, :]
+tractions_change = h5['vertex_fields/traction_change'][0,:,:]
 h5.close()
 
 # Parameters for tractions associated with background stress field

@@ -20,8 +20,8 @@
 #
 # Factory: mesh_refiner.
 
-from MeshRefiner import MeshRefiner
-from topology import RefineUniform as ModuleRefineUniform
+from .MeshRefiner import MeshRefiner
+from .topology import RefineUniform as ModuleRefineUniform
 
 
 class RefineUniform(MeshRefiner, ModuleRefineUniform):
@@ -73,7 +73,7 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
         if 0 == comm.rank:
             self._info.log("Refining mesh using uniform refinement.")
 
-        from Mesh import Mesh
+        from .Mesh import Mesh
         newMesh = Mesh()
         newMesh.debug(mesh.debug())
         newMesh.setCoordSys(mesh.getCoordSys())

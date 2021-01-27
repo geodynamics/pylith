@@ -38,13 +38,13 @@ writer._configure()
 
 values = [{'name': "stress-xx",
            'units': "Pa",
-           'data': stress[:,0]},
+           'data': stress[:, 0]},
           {'name': "stress-yy",
            'units': "Pa",
-           'data': stress[:,1]},
+           'data': stress[:, 1]},
           {'name': "stress-xy",
            'units': "Pa",
-           'data': stress[:,2]},
+           'data': stress[:, 2]},
         ]
 
 #if "mantle" in material:
@@ -54,7 +54,7 @@ if True:
   vp = 10000.0
   modulus_mu = density*vs**2
   modulus_lambda = density*vp**2 - 2.0*modulus_mu
-  stressZZ = modulus_lambda * (strain[:,0] + strain[:,1])
+  stressZZ = modulus_lambda * (strain[:, 0] + strain[:, 1])
   zeros = numpy.zeros(stressZZ.shape)
   values += [{'name': "stress-zz-initial",
               'units': "Pa",
@@ -71,16 +71,16 @@ if True:
 
              {'name': "plastic-strain-xx",
               'units': "None",
-              'data': strainPlastic[:,0]},
+              'data': strainPlastic[:, 0]},
              {'name': "plastic-strain-yy",
               'units': "None",
-              'data': strainPlastic[:,1]},
+              'data': strainPlastic[:, 1]},
              {'name': "plastic-strain-zz",
               'units': "None",
-              'data': strainPlastic[:,2]},
+              'data': strainPlastic[:, 2]},
              {'name': "plastic-strain-xy",
               'units': "None",
-              'data': strainPlastic[:,3]},
+              'data': strainPlastic[:, 3]},
         ]
 
 writer.write({'points': cellCenters,

@@ -23,7 +23,7 @@
 import unittest
 from pylith.problems.TimeStepUser import TimeStepUser
 
-from pyre.units.time import second,year
+from pyre.units.time import second, year
 
 stepsE = [2*1.0, 2*2.0, 2*3.0]
 

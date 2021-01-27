@@ -98,8 +98,8 @@ if not 'num_nod_var' in exodus.dimensions.keys():
 
     name_nod_var = exodus.createVariable('name_nod_var', 'S1',
                                          ('num_nod_var', 'len_string',))
-    name_nod_var[0, :] = netCDF4.stringtoarr("cell_size_db", 33)
-    name_nod_var[1, :] = netCDF4.stringtoarr("cell_size_fn", 33)
+    name_nod_var[0,:] = netCDF4.stringtoarr("cell_size_db", 33)
+    name_nod_var[1,:] = netCDF4.stringtoarr("cell_size_fn", 33)
 
     vals_nod_var = exodus.createVariable('vals_nod_var', numpy.float64,
                                          ('time_step', 'num_nod_var', 'num_nodes',))
@@ -108,8 +108,8 @@ if not 'num_nod_var' in exodus.dimensions.keys():
 time_whole = exodus.variables['time_whole']
 time_whole[0] = 0.0
 vals_nod_var = exodus.variables['vals_nod_var']
-vals_nod_var[0, 0, :] = cellSizeDB.transpose()
-vals_nod_var[0, 1, :] = cellSizeFn.transpose()
+vals_nod_var[0, 0,:] = cellSizeDB.transpose()
+vals_nod_var[0, 1,:] = cellSizeFn.transpose()
 
 exodus.close()
 

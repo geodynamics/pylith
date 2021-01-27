@@ -16,110 +16,107 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/topology/MeshImporterDist.py
+# @file pylith/topology/MeshImporterDist.py
 ##
-## @brief Python implementation of importing a mesh that is already
-## partitioned (distributed).
+# @brief Python implementation of importing a mesh that is already
+# partitioned (distributed).
 ##
-## Factory: mesh_generator.
+# Factory: mesh_generator.
 
-from MeshGenerator import MeshGenerator
+from .MeshGenerator import MeshGenerator
 
-# MeshImporterDist class
+
 class MeshImporterDist(MeshGenerator):
-  """
-  Python implementation of importing a mesh.
-
-  Factory: mesh_generator.
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(MeshGenerator.Inventory):
     """
-    Python object for managing MeshImporterDist facilities and properties.
+    Python implementation of importing a mesh.
+
+    Factory: mesh_generator.
     """
 
-    ## @class Inventory
-    ## Python object for managing MeshImporterDist facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li \b reader Mesh reader.
-    ## @li \b refiner Mesh refiner.
+    # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    class Inventory(MeshGenerator.Inventory):
+        """
+        Python object for managing MeshImporterDist facilities and properties.
+        """
 
-    from pylith.meshio.MeshIOAscii import MeshIOAscii
-    reader = pyre.inventory.facility("reader", family="mesh_io",
-                                       factory=MeshIOAscii)
-    reader.meta['tip'] = "Mesh reader."
+        # @class Inventory
+        # Python object for managing MeshImporterDist facilities and properties.
+        ##
+        # \b Properties
+        # @li None
+        ##
+        # \b Facilities
+        # @li \b reader Mesh reader.
+        # @li \b refiner Mesh refiner.
 
-    from MeshRefiner import MeshRefiner
-    refiner = pyre.inventory.facility("refiner",
-                                      family="mesh_refiner",
-                                      factory=MeshRefiner)
-    refiner.meta['tip'] = "Mesh refiner."
+        import pyre.inventory
 
+        from pylith.meshio.MeshIOAscii import MeshIOAscii
+        reader = pyre.inventory.facility("reader", family="mesh_io",
+                                         factory=MeshIOAscii)
+        reader.meta['tip'] = "Mesh reader."
 
-  # PUBLIC METHODS /////////////////////////////////////////////////////
+        from .MeshRefiner import MeshRefiner
+        refiner = pyre.inventory.facility("refiner",
+                                          family="mesh_refiner",
+                                          factory=MeshRefiner)
+        refiner.meta['tip'] = "Mesh refiner."
 
-  def __init__(self, name="meshimporter"):
-    """
-    Constructor.
-    """
-    MeshGenerator.__init__(self, name)
-    self._loggingPrefix = "MeIm "
-    return
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
+    def __init__(self, name="meshimporter"):
+        """
+        Constructor.
+        """
+        MeshGenerator.__init__(self, name)
+        self._loggingPrefix = "MeIm "
+        return
 
-  def create(self, normalizer, faults=None):
-    """
-    Hook for creating mesh.
-    """
-    from pylith.utils.profiling import resourceUsageString
+    def create(self, normalizer, faults=None):
+        """
+        Hook for creating mesh.
+        """
+        from pylith.utils.profiling import resourceUsageString
 
-    self._setupLogging()
-    logEvent = "%screate" % self._loggingPrefix
-    self._eventLogger.eventBegin(logEvent)    
+        self._setupLogging()
+        logEvent = "%screate" % self._loggingPrefix
+        self._eventLogger.eventBegin(logEvent)
 
-    mesh = self.reader.read(self.debug, self.interpolate)
-    if self.debug:
-      mesh.view()
-    self._debug.log(resourceUsageString())
+        mesh = self.reader.read(self.debug, self.interpolate)
+        if self.debug:
+            mesh.view()
+        self._debug.log(resourceUsageString())
 
-    # refine mesh (if necessary)
-    mesh = self.refiner.refine(mesh)
+        # refine mesh (if necessary)
+        mesh = self.refiner.refine(mesh)
 
-    # Nondimensionalize mesh (coordinates of vertices).
-    from pylith.topology.topology import MeshOps_nondimensionalize
-    MeshOps_nondimensionalize(mesh, normalizer)
+        # Nondimensionalize mesh (coordinates of vertices).
+        from pylith.topology.topology import MeshOps_nondimensionalize
+        MeshOps_nondimensionalize(mesh, normalizer)
 
-    self._eventLogger.eventEnd(logEvent)    
-    return mesh
+        self._eventLogger.eventEnd(logEvent)
+        return mesh
 
+    # PRIVATE METHODS ////////////////////////////////////////////////////
 
-  # PRIVATE METHODS ////////////////////////////////////////////////////
+    def _configure(self):
+        """
+        Set members based on inventory.
+        """
+        MeshGenerator._configure(self)
+        self.reader = self.inventory.reader
+        self.refiner = self.inventory.refiner
+        return
 
-  def _configure(self):
-    """
-    Set members based on inventory.
-    """
-    MeshGenerator._configure(self)
-    self.reader = self.inventory.reader
-    self.refiner = self.inventory.refiner
-    return
-  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def mesh_generator():
-  """
-  Factory associated with MeshImporterDist.
-  """
-  return MeshImporterDist()
+    """
+    Factory associated with MeshImporterDist.
+    """
+    return MeshImporterDist()
 
 
-# End of file 
+# End of file

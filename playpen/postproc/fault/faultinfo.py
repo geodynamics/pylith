@@ -197,17 +197,17 @@ class FaultInfo(Application):
     from enthought.tvtk.api import tvtk
 
     # Compute stress vectors in global coordinates.
-    strikeStress = numpy.tile(numpy.expand_dims(self.stressVec[:,0], 1), (1,3))
+    strikeStress = numpy.tile(numpy.expand_dims(self.stressVec[:, 0], 1), (1, 3))
     strikeStressArr = self.stressScaleFactor * self.strikeVec * strikeStress
     strikeStressVec = tvtk.DoubleArray(name='left_lateral_shear')
     strikeStressVec.from_array(strikeStressArr)
     
-    dipStress = numpy.tile(numpy.expand_dims(self.stressVec[:,1], 1), (1,3))
+    dipStress = numpy.tile(numpy.expand_dims(self.stressVec[:, 1], 1), (1, 3))
     dipStressArr = self.stressScaleFactor * self.dipVec * dipStress
     dipStressVec = tvtk.DoubleArray(name='up_dip_shear')
     dipStressVec.from_array(dipStressArr)
 
-    normalStress = numpy.tile(numpy.expand_dims(self.stressVec[:,2], 1), (1,3))
+    normalStress = numpy.tile(numpy.expand_dims(self.stressVec[:, 2], 1), (1, 3))
     normalStressArr = self.stressScaleFactor * self.normalVec * normalStress
     normalStressVec = tvtk.DoubleArray(name='normal_stress')
     normalStressVec.from_array(normalStressArr)
@@ -217,17 +217,17 @@ class FaultInfo(Application):
     shearStressVec.from_array(shearStressArr)
 
     # Compute slip vectors in global coordinates.
-    strikeSlip = numpy.tile(numpy.expand_dims(self.slipVec[:,0], 1), (1,3))
+    strikeSlip = numpy.tile(numpy.expand_dims(self.slipVec[:, 0], 1), (1, 3))
     strikeSlipArr = self.slipScaleFactor * self.strikeVec * strikeSlip
     strikeSlipVec = tvtk.DoubleArray(name='left_lateral_slip')
     strikeSlipVec.from_array(strikeSlipArr)
 
-    dipSlip = numpy.tile(numpy.expand_dims(self.slipVec[:,1], 1), (1,3))
+    dipSlip = numpy.tile(numpy.expand_dims(self.slipVec[:, 1], 1), (1, 3))
     dipSlipArr = self.slipScaleFactor * self.dipVec * dipSlip
     dipSlipVec = tvtk.DoubleArray(name='up_dip_slip')
     dipSlipVec.from_array(dipSlipArr)
     
-    normalSlip = numpy.tile(numpy.expand_dims(self.slipVec[:,2], 1), (1,3))
+    normalSlip = numpy.tile(numpy.expand_dims(self.slipVec[:, 2], 1), (1, 3))
     normalSlipArr = self.slipScaleFactor * self.normalVec * normalSlip
     normalSlipVec = tvtk.DoubleArray(name='normal_slip')
     normalSlipVec.from_array(normalSlipArr)
@@ -238,15 +238,15 @@ class FaultInfo(Application):
 
     # Compute CFF
     shearMag = self.stressScaleFactor * \
-               numpy.sqrt(numpy.square(self.stressVec[:,0]) + \
-                          numpy.square(self.stressVec[:,1]))
+               numpy.sqrt(numpy.square(self.stressVec[:, 0]) + \
+                          numpy.square(self.stressVec[:, 1]))
     
     shearDirVec = numpy.array(self.shearDirection, dtype=numpy.float64)
-    shearDirMat = numpy.tile(shearDirVec, (self.numVerts,1))
+    shearDirMat = numpy.tile(shearDirVec, (self.numVerts, 1))
     shearSlipDot = shearStressVec * shearDirMat
     shearSlipSign = numpy.sign(numpy.sum(shearSlipDot, axis=1))
     CffArr = shearSlipSign * shearMag + \
-             self.stressScaleFactor * self.frictionCoeff * self.stressVec[:,2]
+             self.stressScaleFactor * self.frictionCoeff * self.stressVec[:, 2]
     CFF = tvtk.DoubleArray(name='CFF')
     CFF.from_array(CffArr)
 
