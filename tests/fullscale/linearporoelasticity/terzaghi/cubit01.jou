@@ -1,7 +1,0 @@
-## /opt/Trelis-16.1/bin/trelis
-## Trelis Version 16.1.1
-## Trelis Build 1b15f60
-## Revised Tue Aug 23 16:17:41 2016 -0600
-## Running 01/22/2021 07:39:42 PM
-## Command Options:
-import mesh geometry "/home/dockimble/pylith_ii/cig/pylith-baagaard/fix-poroelasticity-fullscale-tests/tests/fullscale/linearporoelasticity/mandel/mesh_quad.exo" block all use nodeset sideset feature_angle 135 linear merge
