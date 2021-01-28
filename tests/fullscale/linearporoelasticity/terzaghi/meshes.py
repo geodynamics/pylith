@@ -25,42 +25,42 @@ class Tri(object):
     Mesh information for tri mesh.
     """
     DOMAIN = {
-        "ncells": 234,
+        "ncells": 902,
         "ncorners": 3,
-        "nvertices": 138,
+        "nvertices": 492,
     }
     MATERIALS = {
         "poroelastic": {
-            "ncells": 234,
+            "ncells": 902,
             "ncorners": 3,
-            "nvertices": 138,
+            "nvertices": 492,
         }
     }
     BOUNDARIES = {
         "x_neg": {
-            "ncells": 10,
+            "ncells": 20,
             "ncorners": 2,
-            "nvertices": 11,
+            "nvertices": 21,
         },
         "x_pos": {
-            "ncells": 10,
+            "ncells": 20,
             "ncorners": 2,
-            "nvertices": 11,
+            "nvertices": 21,
         },
         "y_pos_neu": {
             "ncells": 20,
             "ncorners": 2,
-            "nvertices": 11,
+            "nvertices": 21,
         },
         "y_pos_dir": {
             "ncells": 20,
             "ncorners": 2,
-            "nvertices": 11,
+            "nvertices": 21,
         },
         "y_neg": {
             "ncells": 20,
             "ncorners": 2,
-            "nvertices": 11,
+            "nvertices": 21,
         },
     }
 
