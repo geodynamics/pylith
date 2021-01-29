@@ -21,7 +21,6 @@ ACLOCAL_AMFLAGS = -I ./m4
 SUBDIRS = tests
 
 subpkgpythondir = $(pythondir)/pylith/friction/contrib
-subpkgpyexecdir = $(pyexecdir)/pylith/friction/contrib
 
 
 # LIBRARY --------------------------------------------------------------
@@ -44,9 +43,9 @@ AM_CPPFLAGS += $(PETSC_CC_INCLUDES)
 
 # MODULE ---------------------------------------------------------------
 
-subpkgpyexec_LTLIBRARIES = _frictioncontribmodule.la
+subpkgpython_LTLIBRARIES = _frictioncontribmodule.la
 
-subpkgpyexec_PYTHON = \
+subpkgpython_PYTHON = \
 	frictioncontrib.py \
 	__init__.py
 
@@ -78,7 +77,7 @@ MAINTAINERCLEANFILES = $(swig_generated)
 
 # PYTHON ---------------------------------------------------------------
 
-nobase_subpkgpyexec_PYTHON = \
+nobase_subpkgpython_PYTHON = \
 	__init__.py \
 	ViscousFriction.py
 

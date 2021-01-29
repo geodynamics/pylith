@@ -20,9 +20,9 @@ subpackage = mpi
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _mpi.la
+subpkgpython_LTLIBRARIES = _mpi.la
 
-subpkgpyexec_PYTHON = mpi.py
+subpkgpython_PYTHON = mpi.py
 
 swig_sources = \
 	mpi.i \

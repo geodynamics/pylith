@@ -20,11 +20,11 @@ subpackage = utils
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = \
+subpkgpython_LTLIBRARIES = \
 	_petsc.la \
 	_utils.la
 
-subpkgpyexec_PYTHON = \
+subpkgpython_PYTHON = \
 	petsc.py \
 	utils.py
 

@@ -20,9 +20,9 @@ subpackage = faults
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _faults.la
+subpkgpython_LTLIBRARIES = _faults.la
 
-subpkgpyexec_PYTHON = faults.py
+subpkgpython_PYTHON = faults.py
 
 swig_sources = \
 	faults.i \

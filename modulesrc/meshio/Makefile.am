@@ -20,9 +20,9 @@ subpackage = meshio
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _meshio.la
+subpkgpython_LTLIBRARIES = _meshio.la
 
-subpkgpyexec_PYTHON = meshio.py
+subpkgpython_PYTHON = meshio.py
 
 swig_sources = \
 	meshio.i \

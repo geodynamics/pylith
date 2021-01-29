@@ -20,9 +20,9 @@ subpackage = topology
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _topology.la
+subpkgpython_LTLIBRARIES = _topology.la
 
-subpkgpyexec_PYTHON = topology.py
+subpkgpython_PYTHON = topology.py
 
 swig_sources = \
 	topology.i \

@@ -20,9 +20,9 @@ subpackage = materials
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _materials.la
+subpkgpython_LTLIBRARIES = _materials.la
 
-subpkgpyexec_PYTHON = materials.py
+subpkgpython_PYTHON = materials.py
 
 swig_sources = \
 	materials.i \

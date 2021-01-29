@@ -20,9 +20,9 @@ subpackage = bc
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _bc.la
+subpkgpython_LTLIBRARIES = _bc.la
 
-subpkgpyexec_PYTHON = bc.py
+subpkgpython_PYTHON = bc.py
 
 swig_sources = \
 	bc.i \

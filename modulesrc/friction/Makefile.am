@@ -20,9 +20,9 @@ subpackage = friction
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _friction.la
+subpkgpython_LTLIBRARIES = _friction.la
 
-subpkgpyexec_PYTHON = friction.py
+subpkgpython_PYTHON = friction.py
 
 swig_sources = \
 	friction.i \

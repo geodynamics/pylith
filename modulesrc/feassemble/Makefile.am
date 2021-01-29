@@ -20,9 +20,9 @@ subpackage = feassemble
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _feassemble.la
+subpkgpython_LTLIBRARIES = _feassemble.la
 
-subpkgpyexec_PYTHON = feassemble.py
+subpkgpython_PYTHON = feassemble.py
 
 swig_sources = \
 	feassemble.i
