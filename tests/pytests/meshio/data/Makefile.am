@@ -24,16 +24,7 @@ dist_noinst_DATA = \
 	twohex8.exo \
 	twohex8.txt \
 	point.txt \
-	points.txt
-
-noinst_TMP = \
-	cube2_test.txt \
-	mesh2Din3D_test.txt \
-	twohex8_test.txt
-
-
-if ENABLE_HDF5
-  dist_noinst_DATA += \
+	points.txt \
 	tri3.h5 \
 	tri3.xmf \
 	tri3_vertex.h5 \
@@ -99,7 +90,11 @@ if ENABLE_HDF5
 	hex8_surf_cell.h5 \
 	hex8_surf_cell.xmf
 
-endif
+noinst_TMP = \
+	cube2_test.txt \
+	mesh2Din3D_test.txt \
+	twohex8_test.txt
+
 
 # 'export' the input files by performing a mock install
 export_datadir = $(abs_top_builddir)/tests/pytests/meshio/data
@@ -113,4 +108,4 @@ BUILT_SOURCES = export-data
 clean-local: clean-data
 
 
-# End of file 
+# End of file

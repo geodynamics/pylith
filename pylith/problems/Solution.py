@@ -38,11 +38,11 @@ class Solution(PetscComponent):
     FACTORY: solution.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from .SolnDisp import SolnDisp
     from .SolutionSubfield import subfieldFactory
-    subfields = pyre.inventory.facilityArray("subfields", family="soln_subfields",
+    subfields = pythia.pyre.inventory.facilityArray("subfields", family="soln_subfields",
                                              itemFactory=subfieldFactory, factory=SolnDisp)
     subfields.meta['tip'] = "Subfields in solution."
 

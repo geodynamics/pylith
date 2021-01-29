@@ -275,7 +275,7 @@ pylith::feassemble::IntegratorInterface::updateState(const double t) {
     assert(_physics);
     _physics->updateAuxiliaryField(_auxiliaryField, t);
 
-    journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
         assert(_auxiliaryField);
         PYLITH_JOURNAL_DEBUG("IntegratorInterface component '" << GenericComponent::getName() << "' for '"
@@ -413,12 +413,12 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
                                                           const pylith::topology::Field& solution,
                                                           const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    journal::debug_t debug(_IntegratorInterface::genericComponent);
-    debug << journal::at(__HERE__)
+    pythia::journal::debug_t debug(_IntegratorInterface::genericComponent);
+    debug << pythia::journal::at(__HERE__)
           << "_IntegratorInterface::computeResidual(residual="<<typeid(residual).name()<<", integrator"<<typeid(integrator).name()
           <<"# kernels="<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<", solutionDot="
           <<solutionDot.getLabel()<<")"
-          << journal::endl;
+          << pythia::journal::endl;
 
     assert(integrator);
     assert(residual);
@@ -474,12 +474,12 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
                                                           const pylith::topology::Field& solution,
                                                           const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    journal::debug_t debug(_IntegratorInterface::genericComponent);
-    debug << journal::at(__HERE__)
+    pythia::journal::debug_t debug(_IntegratorInterface::genericComponent);
+    debug << pythia::journal::at(__HERE__)
           << "_IntegratorInterface::computeJacobian(jacobianMat="<<jacobianMat<<", precondMat"<<precondMat
           <<", integrator"<<typeid(integrator).name()<<"# kernels="<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="
           <<solution.getLabel()<<", solutionDot="<<solutionDot.getLabel()<<")"
-          << journal::endl;
+          << pythia::journal::endl;
 
     assert(jacobianMat);
     assert(precondMat);

@@ -111,7 +111,7 @@ pylith::feassemble::ConstraintUserFn::setSolution(pylith::topology::Field* solut
                                               &labelId, _fn, context, solution->localVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
 
-    journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
         PYLITH_JOURNAL_DEBUG("Displaying solution field");
         solution->view("solution field");

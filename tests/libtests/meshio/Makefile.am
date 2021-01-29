@@ -21,9 +21,9 @@ include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
-TESTS = test_meshio test_vtk
+TESTS = test_meshio test_vtk test_hdf5
 
-check_PROGRAMS = test_meshio test_vtk
+check_PROGRAMS = $(TESTS)
 
 # general meshio
 test_meshio_SOURCES = \
@@ -69,74 +69,7 @@ test_vtk_SOURCES = \
 # TestOutputSolnPoints.cc
 
 
-noinst_HEADERS = \
-	TestMeshIO.hh \
-	TestMeshIOAscii.hh \
-	TestMeshIOLagrit.hh \
-	TestOutputTriggerStep.hh \
-	TestOutputTriggerTime.hh \
-	FieldFactory.hh \
-	TestOutputManager.hh \
-	TestOutputSolnSubset.hh \
-	TestOutputSolnPoints.hh \
-	TestVertexFilterVecNorm.hh \
-	TestDataWriter.hh \
-	TestDataWriterMesh.hh \
-	TestDataWriterMaterial.hh \
-	TestDataWriterSubmesh.hh \
-	TestDataWriterVTK.hh \
-	TestDataWriterVTKMesh.hh \
-	TestDataWriterVTKMaterial.hh \
-	TestDataWriterVTKSubmesh.hh
-
-# :TODO: @brad
-# TestDataWriterPoints.hh \
-# TestDataWriterVTKPoints.hh
-# TestDataWriterFaultMesh.hh \
-# TestDataWriterVTKFaultMesh.hh
-
-
-AM_CPPFLAGS += \
-	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES) \
-	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
-
-test_meshio_LDFLAGS = \
-	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
-
-test_meshio_LDADD = \
-	-lcppunit -ldl \
-	$(top_builddir)/libsrc/pylith/libpylith.la \
-	-lspatialdata \
-	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-
-test_vtk_LDFLAGS = \
-	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
-
-test_vtk_LDADD = \
-	-lcppunit -ldl \
-	$(top_builddir)/libsrc/pylith/libpylith.la \
-	-lspatialdata \
-	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-
-if ENABLE_CUBIT
-  test_meshio_SOURCES += \
-	TestExodusII.cc \
-	TestMeshIOCubit.cc \
-	TestMeshIOCubit_Cases.cc
-  noinst_HEADERS += \
-	TestExodusII.hh \
-	TestMeshIOCubit.hh
-  test_meshio_LDADD += -lnetcdf
-  test_vtk_LDADD += -lnetcdf
-endif
-
-if ENABLE_HDF5
-  TESTS += test_hdf5
-
-  check_PROGRAMS += test_hdf5
-
-  # HDF5 data writer
-  test_hdf5_SOURCES = \
+test_hdf5_SOURCES = \
 	test_driver.cc \
 	FieldFactory.cc \
 	TestDataWriter.cc \
@@ -169,7 +102,25 @@ if ENABLE_HDF5
 # TestDataWriterHDF5ExtFaultMeshCases.cc
 
 
-  noinst_HEADERS += \
+noinst_HEADERS = \
+	TestMeshIO.hh \
+	TestMeshIOAscii.hh \
+	TestMeshIOLagrit.hh \
+	TestOutputTriggerStep.hh \
+	TestOutputTriggerTime.hh \
+	FieldFactory.hh \
+	TestOutputManager.hh \
+	TestOutputSolnSubset.hh \
+	TestOutputSolnPoints.hh \
+	TestVertexFilterVecNorm.hh \
+	TestDataWriter.hh \
+	TestDataWriterMesh.hh \
+	TestDataWriterMaterial.hh \
+	TestDataWriterSubmesh.hh \
+	TestDataWriterVTK.hh \
+	TestDataWriterVTKMesh.hh \
+	TestDataWriterVTKMaterial.hh \
+	TestDataWriterVTKSubmesh.hh \
 	TestHDF5.hh \
 	TestDataWriterHDF5.hh \
 	TestDataWriterHDF5Mesh.hh \
@@ -179,26 +130,67 @@ if ENABLE_HDF5
 	TestDataWriterHDF5ExtMaterial.hh \
 	TestDataWriterHDF5ExtSubmesh.hh
 
+# :TODO: @brad
+# TestDataWriterPoints.hh \
+# TestDataWriterVTKPoints.hh
+# TestDataWriterFaultMesh.hh \
+# TestDataWriterVTKFaultMesh.hh
 # TestDataWriterHDF5Points.hh \
 # TestDataWriterHDF5FaultMesh.hh \
 # TestDataWriterHDF5ExtPoints.hh \
 # TestDataWriterHDF5ExtFaultMesh.hh
 
 
-  test_hdf5_LDFLAGS = \
+AM_CPPFLAGS += \
+	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES) \
+	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
+
+# test_meshio
+test_meshio_LDFLAGS = \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-  test_hdf5_LDADD = \
+test_meshio_LDADD = \
+	-lcppunit -ldl \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
+	-lspatialdata \
+	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+
+# test_vtk
+test_vtk_LDFLAGS = \
+	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+
+test_vtk_LDADD = \
+	-lcppunit -ldl \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
+	-lspatialdata \
+	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+
+# test_hdf5
+test_hdf5_LDFLAGS = \
+	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+
+test_hdf5_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS) \
 	-lhdf5
 
-if ENABLE_CUBIT
-  test_hdf5_LDADD += -lnetcdf
-endif
 
+if ENABLE_CUBIT
+  test_meshio_SOURCES += \
+	TestExodusII.cc \
+	TestMeshIOCubit.cc \
+	TestMeshIOCubit_Cases.cc
+  noinst_HEADERS += \
+	TestExodusII.hh \
+	TestMeshIOCubit.hh
+  test_meshio_LDADD += -lnetcdf
+  test_vtk_LDADD += -lnetcdf
+
+	if ENABLE_CUBIT
+	  test_hdf5_LDADD += -lnetcdf
+	endif
 endif
 
 

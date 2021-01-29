@@ -25,7 +25,7 @@ import unittest
 from pylith.faults.FaultCohesiveDyn import FaultCohesiveDyn
 
 from spatialdata.geocoords.CSCart import CSCart
-from pyre.units.time import second
+from pythia.pyre.units.time import second
 
 # ----------------------------------------------------------------------
 class TestFaultCohesiveDyn(unittest.TestCase):
@@ -321,7 +321,7 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     fault.preinitialize(mesh)
     fault.timeStep(dt)
     fault.verifyConfiguration()
-    from pyre.units.time import s
+    from pythia.pyre.units.time import s
     fault.initialize(totalTime=0.0*s, numTimeSteps=1, normalizer=normalizer)
 
     # Setup fields

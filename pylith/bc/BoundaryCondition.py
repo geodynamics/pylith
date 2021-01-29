@@ -55,12 +55,12 @@ class BoundaryCondition(Physics,
     FACTORY: boundary_condition
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    field = pyre.inventory.str("field", default="displacement")
+    field = pythia.pyre.inventory.str("field", default="displacement")
     field.meta['tip'] = "Solution subfield associated with boundary condition."
 
-    label = pyre.inventory.str("label", default="", validator=validateLabel)
+    label = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Label identifier for boundary."
 
     def __init__(self, name="boundarycondition"):

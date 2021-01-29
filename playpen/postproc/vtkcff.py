@@ -28,9 +28,9 @@ import numpy
 import os
 import re
 import glob
-from pyre.units.time import s
+from pythia.pyre.units.time import s
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 
 class VtkCff(Application):
@@ -63,52 +63,52 @@ class VtkCff(Application):
         # @li \b cff_plane_normal Normal to plane on which to compute CFF
         # @li \b isotropic_poroelastic Use isotropic poroelastic model instead of constant apparent friction model.
 
-        import pyre.inventory
+        import pythia.pyre.inventory
 
-        stressRefMode = pyre.inventory.str("stress_ref_mode",
+        stressRefMode = pythia.pyre.inventory.str("stress_ref_mode",
                                            default="initial_state",
-                                           validator=pyre.inventory.choice(["constant_state",
+                                           validator=pythia.pyre.inventory.choice(["constant_state",
                                                                             "initial_state", "previous_state"]))
         stressRefMode.meta['tip'] = "Stress state against which to compute differences."
 
-        orientationMode = pyre.inventory.str("orientation_mode",
+        orientationMode = pythia.pyre.inventory.str("orientation_mode",
                                              default="optimally_oriented",
-                                             validator=pyre.inventory.choice(["optimally_oriented",
+                                             validator=pythia.pyre.inventory.choice(["optimally_oriented",
                                                                               "predefined_plane"]))
         orientationMode.meta['tip'] = "Compute CFF on predefined plane or optimally-oriented planes."
 
-        vtkInputRoot = pyre.inventory.str("vtk_input_root",
+        vtkInputRoot = pythia.pyre.inventory.str("vtk_input_root",
                                           default="stress_t0001.vtk")
         vtkInputRoot.meta['tip'] = "Root filename for VTK input files."
 
-        vtkOutputRoot = pyre.inventory.str("vtk_output_root", default="output.vtk")
+        vtkOutputRoot = pythia.pyre.inventory.str("vtk_output_root", default="output.vtk")
         vtkOutputRoot.meta['tip'] = "Root filename for VTK output files."
 
-        vtkStressIndex = pyre.inventory.int("vtk_stress_index", default=1)
+        vtkStressIndex = pythia.pyre.inventory.int("vtk_stress_index", default=1)
         vtkStressIndex.meta['tip'] = "Index indicating which VTK field array contains stresses."
 
-        vtkStressComponentsOrder = pyre.inventory.list("vtk_stress_components_order",
+        vtkStressComponentsOrder = pythia.pyre.inventory.list("vtk_stress_components_order",
                                                        default=[0, 1, 2, 3, 4, 5])
         vtkStressComponentsOrder.meta['tip'] = "Indices corresponding to Sxx, Syy, Szz, Sxy, Syz, Sxz."
 
-        frictionCoeff = pyre.inventory.float("friction_coeff", default=0.6)
+        frictionCoeff = pythia.pyre.inventory.float("friction_coeff", default=0.6)
         frictionCoeff.meta['tip'] = "Coefficient of friction."
 
-        skemptonCoeff = pyre.inventory.float("skempton_coeff", default=0.5)
+        skemptonCoeff = pythia.pyre.inventory.float("skempton_coeff", default=0.5)
         skemptonCoeff.meta['tip'] = "Skempton's pore pressure coefficient B."
 
-        initialStateIndex = pyre.inventory.int("initial_state_indes", default=0)
+        initialStateIndex = pythia.pyre.inventory.int("initial_state_indes", default=0)
         initialStateIndex.meta['tip'] = "Initial state time step number for initial state mode."
 
-        constantStateValues = pyre.inventory.list("constant_state_values",
+        constantStateValues = pythia.pyre.inventory.list("constant_state_values",
                                                   default=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         constantStateValues.meta['tip'] = "Initial stress values to use with constant state mode."
 
-        cffPlaneNormal = pyre.inventory.list("cff_plane_normal",
+        cffPlaneNormal = pythia.pyre.inventory.list("cff_plane_normal",
                                              default=[1.0, 0.0, 0.0])
         cffPlaneNormal.meta['tip'] = "Plane normal for predefined CFF plane."
 
-        isotropicPoroelastic = pyre.inventory.bool("isotropic_poroelastic",
+        isotropicPoroelastic = pythia.pyre.inventory.bool("isotropic_poroelastic",
                                                    default=False)
         isotropicPoroelastic.meta['tip'] = "Use isotropic poroelastic model instead of constant apparent friction model."
 

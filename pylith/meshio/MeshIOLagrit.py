@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/MeshIOLagrit.py
+# @file pythia.pyre/meshio/MeshIOLagrit.py
 #
 # @brief Python object for reading/writing finite-element mesh from
 # LaGriT.
@@ -69,29 +69,29 @@ class MeshIOLagrit(MeshIOObj, ModuleMeshIOLagrit):
     FACTORY: mesh_io
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    filenameGmv = pyre.inventory.str("filename_gmv", default="mesh.gmv",
+    filenameGmv = pythia.pyre.inventory.str("filename_gmv", default="mesh.gmv",
                                      validator=validateFilenameGmv)
     filenameGmv.meta['tip'] = "Name of mesh GMV file."
 
-    filenamePset = pyre.inventory.str("filename_pset", default="mesh.pset",
+    filenamePset = pythia.pyre.inventory.str("filename_pset", default="mesh.pset",
                                       validator=validateFilenamePset)
     filenamePset.meta['tip'] = "Name of mesh PSET file."
 
-    flipEndian = pyre.inventory.bool("flip_endian", default=False)
+    flipEndian = pythia.pyre.inventory.bool("flip_endian", default=False)
     flipEndian.meta['tip'] = "Flip endian type when reading/writing binary " \
                              "files."
 
-    ioInt32 = pyre.inventory.bool("io_int32", default=True)
+    ioInt32 = pythia.pyre.inventory.bool("io_int32", default=True)
     ioInt32.meta['tip'] = "PSTE files use 32-bit integers."
 
-    isRecordHeader32Bit = pyre.inventory.bool("record_header_32bit",
+    isRecordHeader32Bit = pythia.pyre.inventory.bool("record_header_32bit",
                                               default=True)
     isRecordHeader32Bit.meta['tip'] = "Fortran record header is 32-bit."
 
     from spatialdata.geocoords.CSCart import CSCart
-    coordsys = pyre.inventory.facility("coordsys", family="coordsys",
+    coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys",
                                        factory=CSCart)
     coordsys.meta['tip'] = "Coordinate system associated with mesh."
 

@@ -37,6 +37,8 @@ swig_sources = \
 	OutputTriggerStep.i \
 	OutputTriggerTime.i \
 	DataWriter.i \
+	DataWriterHDF5.i \
+	DataWriterHDF5Ext.i \
 	DataWriterVTK.i \
 	OutputObserver.i \
 	OutputSoln.i \
@@ -72,12 +74,6 @@ $(srcdir)/meshio_wrap.cxx $(srcdir)/meshio.py: $(swig_sources)
 else
 $(srcdir)/meshio_wrap.cxx $(srcdir)/meshio.py:
 	$(error Missing SWIG generated files. Make sure SWIG is installed and reconfigure with --enable-swig)
-endif
-
-if ENABLE_HDF5
-  swig_sources += \
-	DataWriterHDF5.i \
-	DataWriterHDF5Ext.i
 endif
 
 

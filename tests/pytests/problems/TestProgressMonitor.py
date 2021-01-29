@@ -23,7 +23,7 @@
 import unittest
 from pylith.problems.ProgressMonitor import ProgressMonitor
 
-from pyre.units.time import year
+from pythia.pyre.units.time import year
 
 # ----------------------------------------------------------------------
 class TestProgressMonitor(unittest.TestCase):

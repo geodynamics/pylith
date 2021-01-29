@@ -21,7 +21,7 @@
 # boundary conditions for the axial strain test.
 
 import numpy
-from pyre.units.time import year
+from pythia.pyre.units.time import year
 
 
 class GenerateDB(object):

@@ -40,12 +40,12 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
     FACTORY: material
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    useBodyForce = pyre.inventory.bool("use_body_force", default=False)
+    useBodyForce = pythia.pyre.inventory.bool("use_body_force", default=False)
     useBodyForce.meta['tip'] = "Include body force term in elasticity equation."
 
-    rheology = pyre.inventory.facility(
+    rheology = pythia.pyre.inventory.facility(
         "bulk_rheology", family="incompressible_elasticity_rheology", factory=IsotropicLinearIncompElasticity)
     rheology.meta['tip'] = "Bulk rheology for elastic material."
 

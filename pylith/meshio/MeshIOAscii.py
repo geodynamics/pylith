@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/MeshIOAscii.py
+# @file pythia.pyre/meshio/MeshIOAscii.py
 #
 # @brief Python object for reading/writing finite-element mesh from
 # simple ASCII file.
@@ -55,14 +55,14 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
     Factory: mesh_io
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    filename = pyre.inventory.str("filename", default="",
+    filename = pythia.pyre.inventory.str("filename", default="",
                                   validator=validateFilename)
     filename.meta['tip'] = "Name of mesh file"
 
     from spatialdata.geocoords.CSCart import CSCart
-    coordsys = pyre.inventory.facility("coordsys", family="coordsys",
+    coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys",
                                        factory=CSCart)
     coordsys.meta['tip'] = "Coordinate system associated with mesh."
 

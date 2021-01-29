@@ -71,10 +71,10 @@ public:
 void
 pylith::utils::TestGenericComponent::testJournals(void) {
     const char* name = "test";
-    journal::info_t info(name);info.activate();
-    journal::debug_t debug(name);debug.activate();
-    journal::warning_t warning(name);warning.activate();
-    journal::error_t error(name);error.activate();
+    pythia::journal::info_t info(name);info.activate();
+    pythia::journal::debug_t debug(name);debug.activate();
+    pythia::journal::warning_t warning(name);warning.activate();
+    pythia::journal::error_t error(name);error.activate();
 
     TestGenericJournals journals;
     journals.setName("test");

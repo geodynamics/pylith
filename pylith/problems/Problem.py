@@ -32,7 +32,7 @@ def materialFactory(name):
     """
     Factory for material items.
     """
-    from pyre.inventory import facility
+    from pythia.pyre.inventory import facility
     from pylith.materials.Elasticity import Elasticity
     return facility(name, family="material", factory=Elasticity)
 
@@ -41,7 +41,7 @@ def bcFactory(name):
     """
     Factory for boundary condition items.
     """
-    from pyre.inventory import facility
+    from pythia.pyre.inventory import facility
     from pylith.bc.DirichletTimeDependent import DirichletTimeDependent
     return facility(name, family="boundary_condition", factory=DirichletTimeDependent)
 
@@ -50,7 +50,7 @@ def faultFactory(name):
     """
     Factory for fault items.
     """
-    from pyre.inventory import facility
+    from pythia.pyre.inventory import facility
     from pylith.faults.FaultCohesiveKin import FaultCohesiveKin
     return facility(name, family="fault", factory=FaultCohesiveKin)
 
@@ -59,7 +59,7 @@ def observerFactory(name):
     """
     Factory for output items.
     """
-    from pyre.inventory import facility
+    from pythia.pyre.inventory import facility
     from pylith.meshio.OutputSolnDomain import OutputSolnDomain
     return facility(name, family="observer", factory=OutputSolnDomain)
 
@@ -86,44 +86,44 @@ class Problem(PetscComponent, ModuleProblem):
       - *defaults* Default options for problem.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
     from pylith.utils.EmptyBin import EmptyBin
 
-    defaults = pyre.inventory.facility("defaults", family="problem_defaults", factory=ProblemDefaults)
+    defaults = pythia.pyre.inventory.facility("defaults", family="problem_defaults", factory=ProblemDefaults)
     defaults.meta['tip'] = "Default options for problem."
 
-    formulation = pyre.inventory.str("formulation", default="quasistatic",
-                                     validator=pyre.inventory.choice(["quasistatic", "dynamic", "dynamic_imex"]))
+    formulation = pythia.pyre.inventory.str("formulation", default="quasistatic",
+                                     validator=pythia.pyre.inventory.choice(["quasistatic", "dynamic", "dynamic_imex"]))
     formulation.meta['tip'] = "Formulation for equations."
 
-    solverChoice = pyre.inventory.str("solver", default="linear",
-                                      validator=pyre.inventory.choice(["linear", "nonlinear"]))
+    solverChoice = pythia.pyre.inventory.str("solver", default="linear",
+                                      validator=pythia.pyre.inventory.choice(["linear", "nonlinear"]))
     solverChoice.meta['tip'] = "Type of solver to use ['linear', 'nonlinear']."
 
     from .Solution import Solution
-    solution = pyre.inventory.facility("solution", family="solution", factory=Solution)
+    solution = pythia.pyre.inventory.facility("solution", family="solution", factory=Solution)
     solution.meta['tip'] = "Solution field for problem."
 
     from spatialdata.units.NondimElasticQuasistatic import NondimElasticQuasistatic
-    normalizer = pyre.inventory.facility("normalizer", family="nondimensional", factory=NondimElasticQuasistatic)
+    normalizer = pythia.pyre.inventory.facility("normalizer", family="nondimensional", factory=NondimElasticQuasistatic)
     normalizer.meta['tip'] = "Nondimensionalizer for problem."
 
     from pylith.materials.Homogeneous import Homogeneous
-    materials = pyre.inventory.facilityArray("materials", itemFactory=materialFactory, factory=Homogeneous)
+    materials = pythia.pyre.inventory.facilityArray("materials", itemFactory=materialFactory, factory=Homogeneous)
     materials.meta['tip'] = "Materials in problem."
 
-    bc = pyre.inventory.facilityArray("bc", itemFactory=bcFactory, factory=EmptyBin)
+    bc = pythia.pyre.inventory.facilityArray("bc", itemFactory=bcFactory, factory=EmptyBin)
     bc.meta['tip'] = "Boundary conditions."
 
-    interfaces = pyre.inventory.facilityArray("interfaces", itemFactory=faultFactory, factory=EmptyBin)
+    interfaces = pythia.pyre.inventory.facilityArray("interfaces", itemFactory=faultFactory, factory=EmptyBin)
     interfaces.meta['tip'] = "Interior surfaces with constraints or constitutive models."
 
     from pylith.problems.SingleObserver import SingleSolnObserver
-    observers = pyre.inventory.facilityArray(
+    observers = pythia.pyre.inventory.facilityArray(
         "solution_observers", itemFactory=observerFactory, factory=SingleSolnObserver)
     observers.meta['tip'] = "Observers (e.g., output) for solution."
 
-    gravityField = pyre.inventory.facility("gravity_field", family="spatial_database", factory=NullComponent)
+    gravityField = pythia.pyre.inventory.facility("gravity_field", family="spatial_database", factory=NullComponent)
     gravityField.meta['tip'] = "Database used for gravity field."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

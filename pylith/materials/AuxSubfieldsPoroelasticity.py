@@ -38,26 +38,26 @@ class AuxSubfieldsPoroelasticity(PetscComponent):
       - *gravitational_acceleration* Gravitational acceleration subfield.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from pylith.topology.Subfield import Subfield
 
-    porosity = pyre.inventory.facility("porosity", family="auxiliary_subfield", factory=Subfield)
+    porosity = pythia.pyre.inventory.facility("porosity", family="auxiliary_subfield", factory=Subfield)
     porosity.meta['tip'] = "Porosity subfield."
 
-    solidDensity = pyre.inventory.facility("solid_density", family="auxiliary_subfield", factory=Subfield)
+    solidDensity = pythia.pyre.inventory.facility("solid_density", family="auxiliary_subfield", factory=Subfield)
     solidDensity.meta['tip'] = "Solid density subfield."
 
-    fluidDensity = pyre.inventory.facility("fluid_density", family="auxiliary_subfield", factory=Subfield)
+    fluidDensity = pythia.pyre.inventory.facility("fluid_density", family="auxiliary_subfield", factory=Subfield)
     fluidDensity.meta['tip'] = "Fluid density subfield."
 
-    fluidViscosity = pyre.inventory.facility("fluid_viscosity", family="auxiliary_subfield", factory=Subfield)
+    fluidViscosity = pythia.pyre.inventory.facility("fluid_viscosity", family="auxiliary_subfield", factory=Subfield)
     fluidViscosity.meta['tip'] = "Fluid viscosity subfield."
 
-    bodyForce = pyre.inventory.facility("body_force", family="auxiliary_subfield", factory=Subfield)
+    bodyForce = pythia.pyre.inventory.facility("body_force", family="auxiliary_subfield", factory=Subfield)
     bodyForce.meta['tip'] = "Body force subfield."
 
-    gravitationalAcceleration = pyre.inventory.facility(
+    gravitationalAcceleration = pythia.pyre.inventory.facility(
         "gravitational_acceleration", family="auxiliary_subfield", factory=Subfield)
     gravitationalAcceleration.meta['tip'] = "Gravitational acceleration subfield."
 

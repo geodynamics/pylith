@@ -50,15 +50,15 @@ class MeshImporterDist(MeshGenerator):
         # @li \b reader Mesh reader.
         # @li \b refiner Mesh refiner.
 
-        import pyre.inventory
+        import pythia.pyre.inventory
 
         from pylith.meshio.MeshIOAscii import MeshIOAscii
-        reader = pyre.inventory.facility("reader", family="mesh_io",
+        reader = pythia.pyre.inventory.facility("reader", family="mesh_io",
                                          factory=MeshIOAscii)
         reader.meta['tip'] = "Mesh reader."
 
         from .MeshRefiner import MeshRefiner
-        refiner = pyre.inventory.facility("refiner",
+        refiner = pythia.pyre.inventory.facility("refiner",
                                           family="mesh_refiner",
                                           factory=MeshRefiner)
         refiner.meta['tip'] = "Mesh refiner."

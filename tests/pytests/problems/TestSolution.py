@@ -25,9 +25,9 @@ import unittest
 
 from pylith.problems.Solution import Solution
 
-from pyre.units.time import second
-from pyre.units.length import km
-from pyre.units.pressure import MPa
+from pythia.pyre.units.time import second
+from pythia.pyre.units.length import km
+from pythia.pyre.units.pressure import MPa
 timeScale = 2.0*second
 lengthScale = 3.0*km
 pressureScale = 0.2*MPa

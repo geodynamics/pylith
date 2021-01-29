@@ -34,14 +34,14 @@ class DerivedSubfieldsElasticity(PetscComponent):
       - *cauchy_strain* Cauchy strain subfield.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from pylith.topology.Subfield import Subfield
 
-    cauchyStress = pyre.inventory.facility("cauchy_stress", family="subfield", factory=Subfield)
+    cauchyStress = pythia.pyre.inventory.facility("cauchy_stress", family="subfield", factory=Subfield)
     cauchyStress.meta['tip'] = "Cauchy stress subfield."
 
-    cauchyStrain = pyre.inventory.facility("cauchy_strain", family="subfield", factory=Subfield)
+    cauchyStrain = pythia.pyre.inventory.facility("cauchy_strain", family="subfield", factory=Subfield)
     cauchyStrain.meta['tip'] = "Cauchy strain subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

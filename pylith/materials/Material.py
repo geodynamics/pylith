@@ -49,12 +49,12 @@ class Material(Physics, ModuleMaterial):
     FACTORY: material
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    materialId = pyre.inventory.int("id", default=0)
+    materialId = pythia.pyre.inventory.int("id", default=0)
     materialId.meta['tip'] = "Material identifier (from mesh generator)."
 
-    label = pyre.inventory.str("label", default="", validator=validateLabel)
+    label = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Descriptive label for material."
 
     def __init__(self, name="material"):

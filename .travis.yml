@@ -10,30 +10,34 @@ language: cpp
 # :TODO: @brad Add osx build (need homebrew packages)..
 jobs:
   include:
-    - name: debian-stable-gcc8
+    - name: debian-stable
       os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-debian-stable-gcc8:py2 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
-    - name: debian-testing-gcc9
+      env: BASE_IMAGE=geodynamics/pylith-testenv-debian-stable TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+    - name: debian-testing
       os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-debian-testing-gcc9:py2 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
+      env: BASE_IMAGE=geodynamics/pylith-testenv-debian-testing TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
     - name: ubuntu-18.04
       os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-ubuntu-18.04:py2 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
+      env: BASE_IMAGE=geodynamics/pylith-testenv-ubuntu-18.04 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
     - name: ubuntu-20.04
       os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-ubuntu-20.04:py2 TEST_COVERAGE=yes PYTHON_COVERAGE=python2-coverage
+      env: BASE_IMAGE=geodynamics/pylith-testenv-ubuntu-20.04 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+    - name: ubuntu-20.10
+      os: linux
+      env: BASE_IMAGE=geodynamics/pylith-testenv-ubuntu-20.10 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
     - name: fedora-32
       os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-32:py2
+      env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-32 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage3
     - name: fedora-33
       os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-33:py2
-    - name: centos-7
-      os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-centos-7:py2
+      env: BASE_IMAGE=geodynamics/pylith-testenv-fedora-33 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage3
     - name: centos-8
       os: linux
-      env: BASE_IMAGE=geodynamics/pylith-testenv-centos-8:py2
+      env: BASE_IMAGE=geodynamics/pylith-testenv-centos-8
+
+#    - name: centos-7
+#      os: linux
+#      env: BASE_IMAGE=geodynamics/pylith-testenv-centos-7
 
 
 addons:
@@ -53,4 +57,4 @@ install:
 
 script: 
   - ci_env=`bash <(curl -s https://codecov.io/env)`
-  - docker run $ci_env pylith-testenv ../../src/pylith/ci-config/run_test_coverage.sh
+  - docker run $ci_env pylith-testenv ci-config/run_test_coverage.sh

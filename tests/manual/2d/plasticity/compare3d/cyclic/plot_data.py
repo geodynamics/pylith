@@ -24,7 +24,7 @@ def get_data(sim, dim, form):
     timeStamps =  h5.root.time[:].ravel()
 
     # Scales for time and stress
-    from pyre.units.time import year
+    from pythia.pyre.units.time import year
     timescale = 1.0*year
     stressscale = 1.0e+6
 

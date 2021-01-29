@@ -20,7 +20,7 @@
 
 ## @brief Python application for testing PetscManager.
 
-from pyre.applications.Script import Script
+from pythia.pyre.applications.Script import Script
 
 import unittest
 

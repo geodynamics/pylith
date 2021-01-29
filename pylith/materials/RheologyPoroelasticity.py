@@ -39,12 +39,12 @@ class RheologyPoroelasticity(PetscComponent, ModuleRheology):
     FACTORY: poroelasticity_rheology
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from pylith.topology.Subfield import subfieldFactory
     from pylith.utils.EmptyBin import EmptyBin
 
-    auxiliarySubfields = pyre.inventory.facilityArray(
+    auxiliarySubfields = pythia.pyre.inventory.facilityArray(
         "auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin)
     auxiliarySubfields.meta['tip'] = "Discretization information for physical properties and state variables."
 

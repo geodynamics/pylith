@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-# @file pyre/meshio/Xdmf.py
+# @file pythia.pyre/meshio/Xdmf.py
 ##
 # @brief Python class for Xdmf metadata file associated with an HDF5 file.
 ##

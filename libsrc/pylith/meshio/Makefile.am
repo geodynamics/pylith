@@ -21,6 +21,12 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	DataWriter.hh \
+	HDF5.hh \
+	Xdmf.hh \
+	DataWriterHDF5.hh \
+	DataWriterHDF5.icc \
+	DataWriterHDF5Ext.hh \
+	DataWriterHDF5Ext.icc \
 	DataWriterVTK.hh \
 	DataWriterVTK.icc \
 	MeshBuilder.hh \
@@ -44,15 +50,6 @@ subpkginclude_HEADERS = \
 	OutputTriggerTime.hh \
 	meshiofwd.hh
 
-if ENABLE_HDF5
-  subpkginclude_HEADERS += \
-	HDF5.hh \
-	Xdmf.hh \
-	DataWriterHDF5.hh \
-	DataWriterHDF5.icc \
-	DataWriterHDF5Ext.hh \
-	DataWriterHDF5Ext.icc
-endif
 
 if ENABLE_CUBIT
   subpkginclude_HEADERS += \

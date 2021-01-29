@@ -35,17 +35,17 @@ class AuxSubfieldsElasticity(PetscComponent):
       - *gravitational_acceleration* Gravitational acceleration subfield.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from pylith.topology.Subfield import Subfield
 
-    density = pyre.inventory.facility("density", family="auxiliary_subfield", factory=Subfield)
+    density = pythia.pyre.inventory.facility("density", family="auxiliary_subfield", factory=Subfield)
     density.meta['tip'] = "Density subfield."
 
-    bodyForce = pyre.inventory.facility("body_force", family="auxiliary_subfield", factory=Subfield)
+    bodyForce = pythia.pyre.inventory.facility("body_force", family="auxiliary_subfield", factory=Subfield)
     bodyForce.meta['tip'] = "Body force subfield."
 
-    gravitationalAcceleration = pyre.inventory.facility(
+    gravitationalAcceleration = pythia.pyre.inventory.facility(
         "gravitational_acceleration", family="auxiliary_subfield", factory=Subfield)
     gravitationalAcceleration.meta['tip'] = "Gravitational acceleration subfield."
 

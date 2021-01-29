@@ -1,20 +1,20 @@
-# -*- autoconf -*-
-#
-# ----------------------------------------------------------------------
-#
-# Brad T. Aagaard, U.S. Geological Survey
-# Charles A. Williams, GNS Science
-# Matthew G. Knepley, University of Chicago
-#
-# This code was developed as part of the Computational Infrastructure
-# for Geodynamics (http://geodynamics.org).
-#
-# Copyright (c) 2010-2017 University of California, Davis
-#
-# See COPYING for license information.
-#
-# ----------------------------------------------------------------------
-# Process this file with autoconf to produce a configure script.
+dnl -*- autoconf -*-
+dnl
+dnl ----------------------------------------------------------------------
+dnl
+dnl Brad T. Aagaard, U.S. Geological Survey
+dnl Charles A. Williams, GNS Science
+dnl Matthew G. Knepley, University of Chicago
+dnl
+dnl This code was developed as part of the Computational Infrastructure
+dnl for Geodynamics (http://geodynamics.org).
+dnl
+dnl Copyright (c) 2010-2017 University of California, Davis
+dnl
+dnl See COPYING for license information.
+dnl
+dnl ----------------------------------------------------------------------
+dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
 AC_INIT([PyLith], [3.0.0beta2], [cig-short@geodynamics.org])
@@ -23,12 +23,12 @@ AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 
-# ----------------------------------------------------------------------
-# PYTHON
+dnl ----------------------------------------------------------------------
+dnl PYTHON
 AC_ARG_VAR(PYTHON, [Python interpreter])
 AC_ARG_VAR(PYTHONPATH, [Python module search path])
 
-# SWIG
+dnl SWIG
 AC_ARG_ENABLE([swig],
     [AC_HELP_STRING([--enable-swig],
         [enable generating modules with SWIG) @<:@default=no@:>@])],
@@ -36,14 +36,14 @@ AC_ARG_ENABLE([swig],
 	[enable_swig=no])
 AM_CONDITIONAL([ENABLE_SWIG], [test "$enable_swig" = yes])
 
-# TESTING w/cppunit and Python unittest
+dnl TESTING w/cppunit and Python unittest
 AC_ARG_ENABLE([testing],
 	[  --enable-testing        Enable unit testing with cppunit (requires cppunit) [[default=no]]],
 	[if test "$enableval" = yes ; then enable_testing=yes; else enable_testing=no; fi],
 	[enable_testing=no])
 AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
 
-# TEST COVERAGE w/locv and python-coverage
+dnl TEST COVERAGE w/locv and python-coverage
 AC_ARG_ENABLE([test-coverage],
 	[  --enable-test-coverage  Enable test coverage with lcov and python-coverage [[default=no]]],
 	[if test "$enableval" = yes ; then enable_test_coverage=yes; else enable_test_coverage=no; fi],
@@ -55,7 +55,7 @@ AC_ARG_WITH([python-coverage],
 	[python_coverage="coverage2"])
 AC_SUBST(python_coverage)
 
-# CUBIT I/O w/netcdf
+dnl CUBIT I/O w/netcdf
 AC_ARG_ENABLE([cubit],
     [AC_HELP_STRING([--enable-cubit],
         [enable reading/writing Cubit EXODUS files (requires netcdf) @<:@default=yes@:>@])],
@@ -68,7 +68,7 @@ fi
 AM_CONDITIONAL([ENABLE_CUBIT], [test "$enable_cubit" = yes])
 AC_SUBST(PYLITH_SWIG_CPPFLAGS)
 
-# PETSc w/HDF5
+dnl PETSc w/HDF5
 AC_ARG_ENABLE([hdf5],
     [AC_HELP_STRING([--enable-hdf5],
         [enable output to HDF5 files via PETSc @<:@default=yes@:>@])],
@@ -81,16 +81,9 @@ fi
 AM_CONDITIONAL([ENABLE_HDF5], [test "$enable_hdf5" = yes])
 AC_SUBST(PYLITH_SWIG_CPPFLAGS)
 
-# DOCUMENTATION w/doxygen
-AC_ARG_ENABLE([documentation],
-    [AC_HELP_STRING([--enable-api-documentation],
-        [enable building HTML documentation (requires doxygen) @<:@default=no@:>@])],
-	[if test "$enableval" = yes ; then enable_documentation=yes; else enable_documentation=no; fi],
-	[enable_documentation=no])
-AM_CONDITIONAL([ENABLE_DOCUMENTATION], [test "$enable_documentation" = yes])
 
-# ----------------------------------------------------------------------
-# C/C++/libtool/install
+dnl ----------------------------------------------------------------------
+dnl C/C++/libtool/install
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_CXXCPP
@@ -99,49 +92,49 @@ AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 
-# PYTHON
+dnl PYTHON/PYTHIA (nemesis must be set before python)
 CIT_PATH_NEMESIS
 AM_PATH_PYTHON([3.6])
 CIT_PYTHON_SYSCONFIG
 CIT_CHECK_PYTHON_HEADER
 CIT_CHECK_PYTHON_SHARED
+CIT_PYTHON_MODULE([pythia],[1.0.0])
 
-# MPI
+dnl MPI
 AC_LANG(C++)
-#CIT_PROG_MPICXX
-CIT_HEADER_MPI
-#CIT_CHECK_LIB_MPI
+AC_SEARCH_LIBS([MPI_Init], [mpi mpich], [], [AC_MSG_ERROR([MPI library not found])])
+AC_CHECK_HEADER([mpi.h], [], [AC_MSG_ERROR([header 'mpi.h' not found])])
 
-# PETSC
+dnl PETSC
 AC_LANG(C)
 CIT_PATH_PETSC([3.14.0])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
-# Large file support
+dnl Large file support
 AC_SYS_LARGEFILE
 
-# NUMPY
+dnl NUMPY
 CIT_NUMPY_PYTHON_MODULE
 CIT_NUMPY_INCDIR
 
-# SWIG
+dnl SWIG
 if test "$enable_swig" = "yes" ; then
   AC_PROG_SWIG([4.0.0])
 fi
 
-# CPPUNIT
+dnl CPPUNIT
 if test "$enable_testing" = "yes" ; then
   CIT_CPPUNIT_HEADER
   CIT_CPPUNIT_LIB
 fi
 
-# CUBIT (netcdf)
+dnl CUBIT (netcdf)
 if test "$enable_cubit" = "yes" ; then
   AX_LIB_NETCDF4()
 fi
 
-# HDF5
+dnl HDF5
 if test "$enable_hdf5" = "yes" ; then
   AC_REQUIRE_CPP
   AC_LANG(C++)
@@ -153,27 +146,20 @@ if test "$enable_hdf5" = "yes" ; then
   CIT_PYTHON_MODULE([h5py],[2.0.0])
 fi
 
-# PROJ
+dnl PROJ
 AC_REQUIRE_CPP
 AC_LANG(C)
 CIT_PROJ6_HEADER
 CIT_PROJ6_LIB
 
-# PYTHIA
-CIT_PYTHON_MODULE([pyre],[0.9.0])
-CIT_PYTHON_MODULE([journal],[0.9.0])
-eval p=`$PYTHON -c "import pyre; print(pyre.__""file__.replace('pyre/__init__.py',''))"`
-PYTHON_EGG_CPPFLAGS="-I$p"
-AC_SUBST(PYTHON_EGG_CPPFLAGS)
-
-# SPATIALDATA
+dnl SPATIALDATA
 AC_REQUIRE_CPP
 AC_LANG(C++)
 CIT_SPATIALDATA_HEADER
 CIT_SPATIALDATA_LIB
-CIT_PYTHON_MODULE([spatialdata],[2.0.0])
+CIT_PYTHON_MODULE([spatialdata],[3.0.0])
 
-# TEST COVERAGE
+dnl TEST COVERAGE
 AM_CONDITIONAL([ENABLE_TEST_COVERAGE], [test "$enable_test_coverage" = yes])
 if test "$enable_test_coverage" = "yes" ; then
   AC_PATH_PROG(LCOV, lcov)
@@ -186,18 +172,18 @@ if test "$enable_test_coverage" = "yes" ; then
   fi
 fi
 
-# Check whether compiler sets variable with function names.
+dnl Check whether compiler sets variable with function names.
 CIT_FUNCTIONSTRING
 
-# VERSION
+dnl VERSION
 CIG_PKG_GIT(PYLITH)
 AC_DEFINE_UNQUOTED([PYLITH_VERSION], ["$PACKAGE_VERSION"], [Define PyLith version])
 AC_DEFINE_UNQUOTED([PYLITH_DOI], ["10.5281/zenodo.886600"], [Define PyLith doi])
 
-# ENDIANNESS
+dnl ENDIANNESS
 AC_C_BIGENDIAN
 
-# ----------------------------------------------------------------------
+dnl ----------------------------------------------------------------------
 AC_CONFIG_FILES([Makefile
 		pylith/Makefile
 		libsrc/Makefile
@@ -225,8 +211,6 @@ AC_CONFIG_FILES([Makefile
 		modulesrc/problems/Makefile
 		modulesrc/topology/Makefile
 		modulesrc/utils/Makefile
-		applications/Makefile
-		applications/utilities/Makefile
 		tests/Makefile
 		tests/libtests/Makefile
 		tests/libtests/bc/Makefile
@@ -283,7 +267,7 @@ AC_CONFIG_FILES([Makefile
 		tests/fullscale/poroelasticity/mandel/Makefile
 		tests/fullscale/petsc/Makefile
 		tests/fullscale/eqinfo/Makefile
-        	developer/Makefile
+    developer/Makefile
 		doc/Makefile
 		doc/install/Makefile
 		doc/releasenotes/Makefile
@@ -312,6 +296,7 @@ AC_CONFIG_FILES([Makefile
 		templates/Makefile
 		share/Makefile
 		])
+
 
 AC_OUTPUT
 

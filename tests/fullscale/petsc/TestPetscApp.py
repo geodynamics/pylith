@@ -21,7 +21,7 @@
 
 import unittest
 
-import pyre.inventory
+import pythia.pyre.inventory
 
 from pylith.utils.PetscComponent import PetscComponent
 from pylith.apps.PetscApplication import PetscApplication
@@ -29,7 +29,7 @@ from pylith.apps.PetscApplication import PetscApplication
 
 class FooBar(PetscComponent):
 
-    value = pyre.inventory.int("value", default=0)
+    value = pythia.pyre.inventory.int("value", default=0)
 
     def __init__(self, name="foobar", facility="foo"):
         PetscComponent.__init__(self, name, facility)
@@ -44,7 +44,7 @@ class TestApp(PetscApplication):
     """
     PetscApplication with one facility, 'foo'.
     """
-    foo = pyre.inventory.facility("foo", factory=FooBar)
+    foo = pythia.pyre.inventory.facility("foo", factory=FooBar)
 
     def __init__(self):
         PetscApplication.__init__(self, name="testapp")

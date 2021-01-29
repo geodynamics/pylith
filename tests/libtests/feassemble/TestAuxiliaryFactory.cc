@@ -278,7 +278,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of auxiliary field values failed.", 0.0, norm, tolerance);
 
     AuxiliaryFactory emptyFactory;
-    journal::error_t error("auxiliaryfactory");
+    pythia::journal::error_t error("auxiliaryfactory");
     error.deactivate();
     CPPUNIT_ASSERT_THROW(emptyFactory.setValuesFromDB(), std::logic_error);
 } // testSetValuesFromDB

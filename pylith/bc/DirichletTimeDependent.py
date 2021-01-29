@@ -44,21 +44,21 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
     Factory: boundary_condition
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    constrainedDOF = pyre.inventory.array("constrained_dof", converter=int, default=[])
+    constrainedDOF = pythia.pyre.inventory.array("constrained_dof", converter=int, default=[])
     constrainedDOF.meta['tip'] = "Array of constrained degrees of freedom (0=1st DOF, 1=2nd DOF, etc)."
 
-    useInitial = pyre.inventory.bool("use_initial", default=True)
+    useInitial = pythia.pyre.inventory.bool("use_initial", default=True)
     useInitial.meta['tip'] = "Use initial term in time-dependent expression."
 
-    useRate = pyre.inventory.bool("use_rate", default=False)
+    useRate = pythia.pyre.inventory.bool("use_rate", default=False)
     useRate.meta['tip'] = "Use rate term in time-dependent expression."
 
-    useTimeHistory = pyre.inventory.bool("use_time_history", default=False)
+    useTimeHistory = pythia.pyre.inventory.bool("use_time_history", default=False)
     useTimeHistory.meta['tip'] = "Use time history term in time-dependent expression."
 
-    dbTimeHistory = pyre.inventory.facility("time_history", factory=NullComponent, family="temporal_database")
+    dbTimeHistory = pythia.pyre.inventory.facility("time_history", factory=NullComponent, family="temporal_database")
     dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
 
     def __init__(self, name="dirichlettimedependent"):

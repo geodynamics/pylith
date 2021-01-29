@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/FieldFilterProject.py
+# @file pythia.pyre/meshio/FieldFilterProject.py
 #
 # @brief Python class for projecting field to another basis.
 #
@@ -39,9 +39,9 @@ class FieldFilterProject(FieldFilter, ModuleFieldFilterProject):
     FACTORY: output_field_filter
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    basisOrder = pyre.inventory.int("basis_order", default=1, validator=pyre.inventory.greaterEqual(0))
+    basisOrder = pythia.pyre.inventory.int("basis_order", default=1, validator=pythia.pyre.inventory.greaterEqual(0))
     basisOrder.meta["tip"] = "Basis order of projected field."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

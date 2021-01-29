@@ -42,28 +42,28 @@ class PyLithApp(PetscApplication):
       - *problem* Computational problem to solve.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    pdbOn = pyre.inventory.bool("start_python_debugger", default=False)
+    pdbOn = pythia.pyre.inventory.bool("start_python_debugger", default=False)
     pdbOn.meta['tip'] = "Start python debugger at beginning of main()."
 
-    typos = pyre.inventory.str("typos", default="pedantic",
-                               validator=pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
+    typos = pythia.pyre.inventory.str("typos", default="pedantic",
+                               validator=pythia.pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
     typos.meta['tip'] = "Specifies the handling of unknown properties and facilities"
 
-    initializeOnly = pyre.inventory.bool("initialize_only", default=False)
+    initializeOnly = pythia.pyre.inventory.bool("initialize_only", default=False)
     initializeOnly.meta['tip'] = "Stop simulation after initializing problem."
 
     from pylith.utils.DumpParametersJson import DumpParametersJson
-    parameters = pyre.inventory.facility("dump_parameters", family="dump_parameters", factory=DumpParametersJson)
+    parameters = pythia.pyre.inventory.facility("dump_parameters", family="dump_parameters", factory=DumpParametersJson)
     parameters.meta['tip'] = "Dump parameters used and version information to file."
 
     from pylith.topology.MeshImporter import MeshImporter
-    mesher = pyre.inventory.facility("mesh_generator", family="mesh_generator", factory=MeshImporter)
+    mesher = pythia.pyre.inventory.facility("mesh_generator", family="mesh_generator", factory=MeshImporter)
     mesher.meta['tip'] = "Generates or imports the computational mesh."
 
     from pylith.problems.TimeDependent import TimeDependent
-    problem = pyre.inventory.facility("problem", family="problem", factory=TimeDependent)
+    problem = pythia.pyre.inventory.facility("problem", family="problem", factory=TimeDependent)
     problem.meta['tip'] = "Computational problem to solve."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -250,9 +250,6 @@ class PyLithApp(PetscApplication):
         Setup members using inventory.
         """
         PetscApplication._configure(self)
-
-        import journal
-        self._debug = journal.debug(self.name)
         return
 
     def _setupLogging(self):

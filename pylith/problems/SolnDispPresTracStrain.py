@@ -42,18 +42,18 @@ class SolnDispPresTracStrain(PetscComponent):
       - *trace_strain* TraceStrain subfield.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from .SubfieldDisplacement import SubfieldDisplacement
-    displacement = pyre.inventory.facility("displacement", family="soln_subfield", factory=SubfieldDisplacement)
+    displacement = pythia.pyre.inventory.facility("displacement", family="soln_subfield", factory=SubfieldDisplacement)
     displacement.meta['tip'] = "Displacement subfield."
 
     from .SubfieldPressure import SubfieldPressure
-    pressure = pyre.inventory.facility("pressure", family="soln_subfield", factory=SubfieldPressure)
+    pressure = pythia.pyre.inventory.facility("pressure", family="soln_subfield", factory=SubfieldPressure)
     pressure.meta['tip'] = "Pressure subfield."
 
     from .SubfieldTraceStrain import SubfieldTraceStrain
-    traceStrain = pyre.inventory.facility("trace_strain", family="soln_subfield", factory=SubfieldTraceStrain)
+    traceStrain = pythia.pyre.inventory.facility("trace_strain", family="soln_subfield", factory=SubfieldTraceStrain)
     traceStrain.meta['tip'] = "Trace strain subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -82,10 +82,10 @@ class Solution(SolutionBase):
     """Python solution field with displacement, pressure, and trace strain subfields.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from .SolutionSubfield import subfieldFactory
-    subfields = pyre.inventory.facilityArray("subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispPresTracStrain)
+    subfields = pythia.pyre.inventory.facilityArray("subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispPresTracStrain)
     subfields.meta['tip'] = "Subfields in solution."
 
 

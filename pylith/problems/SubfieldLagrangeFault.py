@@ -37,10 +37,10 @@ class SubfieldLagrangeFault(SolutionSubfield):
     FACTORY: subfield
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from .SolutionSubfield import validateAlias
-    userAlias = pyre.inventory.str("alias", default="lagrange_multiplier_fault", validator=validateAlias)
+    userAlias = pythia.pyre.inventory.str("alias", default="lagrange_multiplier_fault", validator=validateAlias)
     userAlias.meta['tip'] = "Name for subfield."
 
     fieldName = "lagrange_multiplier_fault"

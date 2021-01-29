@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/DataWriterHDF5.py
+# @file pythia.pyre/meshio/DataWriterHDF5.py
 #
 # @brief Python object for writing finite-element data to HDF5 file.
 
@@ -36,9 +36,9 @@ class DataWriterHDF5(DataWriter, ModuleDataWriterHDF5):
 
     # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    filename = pyre.inventory.str("filename", default="")
+    filename = pythia.pyre.inventory.str("filename", default="")
     filename.meta['tip'] = "Name of HDF5 file."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

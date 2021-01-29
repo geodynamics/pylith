@@ -36,10 +36,10 @@ class OutputTriggerTime(OutputTrigger, ModuleOutputTriggerTime):
       - None
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    from pyre.units.time import s
-    timeSkip = pyre.inventory.dimensional("elapsed_time", default=0.0*s)
+    from pythia.pyre.units.time import s
+    timeSkip = pythia.pyre.inventory.dimensional("elapsed_time", default=0.0*s)
     timeSkip.meta['tip'] = "Elapsed time between writes."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

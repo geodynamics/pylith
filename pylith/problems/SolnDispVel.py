@@ -38,14 +38,14 @@ class SolnDispVel(PetscComponent):
       - *velocity* Velocity subfield.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from .SubfieldDisplacement import SubfieldDisplacement
-    displacement = pyre.inventory.facility("displacement", family="soln_subfield", factory=SubfieldDisplacement)
+    displacement = pythia.pyre.inventory.facility("displacement", family="soln_subfield", factory=SubfieldDisplacement)
     displacement.meta['tip'] = "Displacement subfield."
 
     from .SubfieldVelocity import SubfieldVelocity
-    velocity = pyre.inventory.facility("velocity", family="soln_subfield", factory=SubfieldVelocity)
+    velocity = pythia.pyre.inventory.facility("velocity", family="soln_subfield", factory=SubfieldVelocity)
     velocity.meta['tip'] = "Velocity subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -74,10 +74,10 @@ class Solution(SolutionBase):
     """Python solution field with displacement and velocity subfields.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from .SolutionSubfield import subfieldFactory
-    subfields = pyre.inventory.facilityArray("subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispVel)
+    subfields = pythia.pyre.inventory.facilityArray("subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispVel)
     subfields.meta['tip'] = "Subfields in solution."
 
 

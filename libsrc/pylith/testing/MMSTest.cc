@@ -53,7 +53,7 @@ void
 pylith::testing::MMSTest::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
-    journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(GenericComponent::getName());
     debug.deactivate(); // DEBUGGING
 
     delete _problem;_problem = NULL;
@@ -107,7 +107,7 @@ pylith::testing::MMSTest::testResidual(void) {
 
     PetscErrorCode err = 0;
 
-    journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
         err = PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");CPPUNIT_ASSERT(!err);
         err = PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2");CPPUNIT_ASSERT(!err);
@@ -185,7 +185,7 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     err = PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false");CPPUNIT_ASSERT(!err);
     _initialize();
 
-    journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
         err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", "::ascii_info_detail");CPPUNIT_ASSERT(!err);
     } // if

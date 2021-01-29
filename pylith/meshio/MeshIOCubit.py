@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/MeshIOCubit.py
+# @file pythia.pyre/meshio/MeshIOCubit.py
 #
 # @brief Python object for reading/writing finite-element mesh from
 # Cubit.
@@ -53,16 +53,16 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
     FACTORY: mesh_io
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    filename = pyre.inventory.str("filename", default="mesh.exo", validator=validateFilename)
+    filename = pythia.pyre.inventory.str("filename", default="mesh.exo", validator=validateFilename)
     filename.meta['tip'] = "Name of Cubit Exodus file."
 
-    useNames = pyre.inventory.bool("use_nodeset_names", default=True)
+    useNames = pythia.pyre.inventory.bool("use_nodeset_names", default=True)
     useNames.meta['tip'] = "Use nodeset names instead of ids."
 
     from spatialdata.geocoords.CSCart import CSCart
-    coordsys = pyre.inventory.facility("coordsys", family="coordsys",
+    coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys",
                                        factory=CSCart)
     coordsys.meta['tip'] = "Coordinate system associated with mesh."
 

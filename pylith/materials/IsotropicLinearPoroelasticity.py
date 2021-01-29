@@ -39,9 +39,9 @@ class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelas
     FACTORY: poroelasticity_rheology
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    useReferenceState = pyre.inventory.bool("use_reference_state", default=False)
+    useReferenceState = pythia.pyre.inventory.bool("use_reference_state", default=False)
     useReferenceState.meta['tip'] = "Use reference stress/strain state."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

@@ -19,7 +19,7 @@
 #
 # Factory: problem_defaults.
 
-from pyre.components.Component import Component
+from pythia.pyre.components.Component import Component
 
 
 def validateName(value):
@@ -43,19 +43,19 @@ class ProblemDefaults(Component):
       - *output_field_filter* Filter applied to output fields (e.g., FieldFilterProject).
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    outputDir = pyre.inventory.str("output_directory", default="output")
+    outputDir = pythia.pyre.inventory.str("output_directory", default="output")
     outputDir.meta['tip'] = "Directory for output."
 
-    simName = pyre.inventory.str("name", default="", validator=validateName)
+    simName = pythia.pyre.inventory.str("name", default="", validator=validateName)
     simName.meta['tip'] = "Name for the problem (used with output_directory for default output filenames)."
 
-    quadOrder = pyre.inventory.int("quadrature_order", default=1, validator=pyre.inventory.greater(0))
+    quadOrder = pythia.pyre.inventory.int("quadrature_order", default=1, validator=pythia.pyre.inventory.greater(0))
     quadOrder.meta['tip'] = "Finite-element quadrature order."
 
     from pylith.meshio.FieldFilterNone import FieldFilterNone
-    outputFieldFilter = pyre.inventory.facility(
+    outputFieldFilter = pythia.pyre.inventory.facility(
         "output_field_filter", family="output_field_filter", factory=FieldFilterNone)
     outputFieldFilter.meta['tip'] = "Filter applied to output fields (e.g., FieldFilterProject)."
 

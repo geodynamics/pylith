@@ -41,12 +41,12 @@ class Poroelasticity(Material, ModulePoroelasticity):
     FACTORY: material
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    useBodyForce = pyre.inventory.bool("use_body_force", default=False)
+    useBodyForce = pythia.pyre.inventory.bool("use_body_force", default=False)
     useBodyForce.meta['tip'] = "Include body force term in Poroelasticity equation."
 
-    rheology = pyre.inventory.facility(
+    rheology = pythia.pyre.inventory.facility(
         "bulk_rheology", family="poroelasticity_rheology", factory=IsotropicLinearPoroelasticity)
     rheology.meta['tip'] = "Bulk rheology for poroelastic material."
 

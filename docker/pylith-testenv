@@ -14,52 +14,43 @@ ENV TOP_DIR /home/${PYLITH_USER}
 RUN mkdir -p ${TOP_DIR}/src
 
 # ------------------------------------------------------------------------------
-# Environment for CIG dependencies
+# Environment for CIG code
 # ------------------------------------------------------------------------------
 ENV DEPS_DIR /opt/pylith/dependencies
 ENV CIG_DIR /opt/pylith/cig
 ENV PATH ${PATH}:${CIG_DIR}/bin
 ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CIG_DIR}/lib:${CIG_DIR}/lib64
 ENV PYTHONPATH ${PYTHONPATH}:${CIG_DIR}/lib/python${PYTHON_VERSION}/site-packages:${CIG_DIR}/lib64/python${PYTHON_VERSION}/site-packages
+RUN mkdir -p ${CIG_DIR}/lib/python${PYTHON_VERSION}/site-packages
 
 
 # ------------------------------------------------------------------------------
 # Install pythia
 # ------------------------------------------------------------------------------
-ENV SRC_DIR ${TOP_DIR}/src/pythia
-RUN mkdir -p ${CIG_DIR}/lib/python${PYTHON_VERSION}/site-packages
+ENV src_dir $TOP_DIR/src/pythia
+ENV build_dir $TOP_DIR/build/pythia
+RUN mkdir -p ${build_dir}
 
-RUN git clone --branch v0.8.1.20 --depth 1 --recursive https://github.com/geodynamics/pythia.git ${SRC_DIR}
-WORKDIR ${SRC_DIR}
-RUN python2 setup.py install --prefix=${CIG_DIR}
+RUN git clone --depth 1 --recursive https://github.com/geodynamics/pythia.git ${src_dir}
+WORKDIR ${src_dir}
 
-# ------------------------------------------------------------------------------
-# Install nemesis
-# ------------------------------------------------------------------------------
-ENV SRC_DIR $TOP_DIR/src/nemesis
-ENV BUILD_DIR $TOP_DIR/build/nemesis
-RUN mkdir -p ${BUILD_DIR}
-
-RUN git clone --branch v1.1.1 --depth 1 --recursive https://github.com/geodynamics/nemesis.git ${SRC_DIR}
-WORKDIR ${SRC_DIR}
 RUN autoreconf --install --verbose
-WORKDIR ${BUILD_DIR}
-RUN ${SRC_DIR}/configure --prefix=${CIG_DIR} CPPFLAGS=-I${CIG_DIR} && make && make install
-
+WORKDIR ${build_dir}
+RUN ${src_dir}/configure --enable-testing --prefix=${CIG_DIR} CPPFLAGS=-I${CIG_DIR} && make && make install && make check VERBOSE=1
 
 # ------------------------------------------------------------------------------
 # Install spatialdata
 # ------------------------------------------------------------------------------
-ENV SRC_DIR $TOP_DIR/src/spatialdata
-ENV BUILD_DIR $TOP_DIR/build/spatialdata
-RUN mkdir -p ${BUILD_DIR}
+ENV src_dir $TOP_DIR/src/spatialdata
+ENV build_dir $TOP_DIR/build/spatialdata
+RUN mkdir -p ${build_dir}
 
-RUN git clone --branch v2.0.0 --depth 100 --recursive https://github.com/geodynamics/spatialdata.git ${SRC_DIR}
-WORKDIR ${SRC_DIR}
+RUN git clone  --depth 100 --branch=baagaard/update-python-3 --recursive https://github.com/geodynamics/spatialdata.git ${src_dir}
+WORKDIR ${src_dir}
 
 RUN autoreconf --install --verbose --force
-WORKDIR ${BUILD_DIR}
-RUN ${SRC_DIR}/configure --prefix=${CIG_DIR} --enable-testing --enable-swig CPPFLAGS="-I${DEPS_DIR}/include -I${CIG_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib -L${CIG_DIR}/lib" CXXFLAGS="-g -O" && make -j$(nproc) && make install && make -j$(nproc) check VERBOSE=1
+WORKDIR ${build_dir}
+RUN ${src_dir}/configure --prefix=${CIG_DIR} --enable-testing --enable-swig CPPFLAGS="-I${DEPS_DIR}/include -I${CIG_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib -L${CIG_DIR}/lib" CXXFLAGS="-g -O" && make -j$(nproc) && make install && make -j$(nproc) check VERBOSE=1
 
 
 # ------------------------------------------------------------------------------
@@ -72,7 +63,7 @@ RUN mkdir -p ${PETSC_DIR}
 RUN git clone --branch knepley/pylith --single-branch https://gitlab.com/petsc/petsc.git ${PETSC_DIR}
 WORKDIR ${PETSC_DIR}
 
-RUN python2 ./configure --download-chaco=1 --download-ml=1 --download-f2cblaslapack=1 --with-hdf5=1 --with-hdf5-include=${HDF5_INCDIR} --with-hdf5-lib=${HDF5_LIBDIR}/lib/libhdf5.so --with-zlib=1 --LIBS=-lz --with-debugging=1 --with-fc=0 --with-64-bit-points=1 --with-large-file-io=1 CPPFLAGS="-I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" CFLAGS="-g -O" && make -j$(nproc) && make check
+RUN python3 ./configure --download-chaco=1 --download-ml=1 --download-f2cblaslapack=1 --with-hdf5=1 --with-hdf5-include=${HDF5_INCDIR} --with-hdf5-lib=${HDF5_LIBDIR}/lib/libhdf5.so --with-zlib=1 --LIBS=-lz --with-debugging=1 --with-fc=0 --with-64-bit-points=1 --with-large-file-io=1 CPPFLAGS="-I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" CFLAGS="-g -O" && make -j$(nproc) && make check
 
 
 # ------------------------------------------------------------------------------
@@ -80,22 +71,23 @@ RUN python2 ./configure --download-chaco=1 --download-ml=1 --download-f2cblaslap
 # ------------------------------------------------------------------------------
 from base as src
 
-ENV SRC_DIR ${TOP_DIR}/src/pylith
-ENV BUILD_DIR ${TOP_DIR}/build/pylith
-RUN mkdir -p ${BUILD_DIR}
+ENV src_dir ${TOP_DIR}/src/pylith
+ENV build_dir ${TOP_DIR}/build/pylith
+RUN mkdir -p ${build_dir}
 
-COPY --chown=pylith-user:pylith-user . ${SRC_DIR}
-WORKDIR ${SRC_DIR}
+COPY --chown=pylith-user:pylith-user . ${src_dir}
+WORKDIR ${src_dir}
 RUN autoreconf --install --verbose --force
 
-WORKDIR ${BUILD_DIR}
-RUN ${SRC_DIR}/configure --prefix=${CIG_DIR}  --enable-hdf5 --enable-cubit --enable-testing --enable-swig CPPFLAGS="-I${DEPS_DIR}/include -I${CIG_DIR}/include -I${HDF5_INCDIR}" LDFLAGS="-L${DEPS_DIR}/lib -L${CIG_DIR}/lib -L${HDF5_LIBDIR} --coverage" CXXFLAGS="-g -O --coverage" CC=mpicc CXX=mpicxx
+WORKDIR ${build_dir}
+RUN ${src_dir}/configure --prefix=${CIG_DIR}  --enable-hdf5 --enable-cubit --enable-testing --enable-swig CPPFLAGS="-I${DEPS_DIR}/include -I${CIG_DIR}/include -I${HDF5_INCDIR}" LDFLAGS="-L${DEPS_DIR}/lib -L${CIG_DIR}/lib -L${HDF5_LIBDIR} --coverage" CXXFLAGS="-g -O --coverage" CC=mpicc CXX=mpicxx
 
-
+WORKDIR ${src_dir}
 
 # TESTING ----------
 from src as test
 
+WORKDIR ${build_dir}/build/pythia
 RUN make -j$(nproc) install
 RUN make clean-coverage && make -j$(nproc) check VERBOSE=1 -C tests/libtests && make coverage-libtests
 RUN make clean-coverage && make -j$(nproc) check VERBOSE=1 -C tests/mmstests && make coverage-mmstests

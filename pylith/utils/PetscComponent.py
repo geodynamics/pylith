@@ -18,7 +18,7 @@
 # @brief Python PetscComponent object for aid in deallocating data
 # structures before calling PetscFinalize().
 
-from pyre.components.Component import Component
+from pythia.pyre.components.Component import Component
 
 
 class PetscComponent(Component):

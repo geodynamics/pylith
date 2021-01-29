@@ -41,9 +41,9 @@ class ProgressMonitorTime(ProgressMonitor, ModuleProgressMonitorTime):
     Factory: progress_monitor.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    tUnits = pyre.inventory.str("t_units", default="year")
+    tUnits = pythia.pyre.inventory.str("t_units", default="year")
     tUnits.meta['tip'] = "Units for simulation time in output."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

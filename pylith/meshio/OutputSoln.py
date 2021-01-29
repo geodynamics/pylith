@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/OutputSoln.py
+# @file pythia.pyre/meshio/OutputSoln.py
 #
 # @brief Python object for managing output of finite-element
 # solution information.
@@ -40,9 +40,9 @@ class OutputSoln(OutputObserver, ModuleOutputSoln):
     FACTORY: observer
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    dataFields = pyre.inventory.list("data_fields", default=["all"])
+    dataFields = pythia.pyre.inventory.list("data_fields", default=["all"])
     dataFields.meta['tip'] = "Names of data fields to output."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

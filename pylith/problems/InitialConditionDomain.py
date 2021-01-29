@@ -36,10 +36,10 @@ class InitialConditionDomain(InitialCondition, ModuleInitialCondition):
       - *db* Spatial database with values for initial conditions.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
     from spatialdata.spatialdb.SimpleDB import SimpleDB
 
-    db = pyre.inventory.facility("db", family="spatial_database", factory=SimpleDB)
+    db = pythia.pyre.inventory.facility("db", family="spatial_database", factory=SimpleDB)
     db.meta["tip"] = "Spatial database with values for initial condition."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

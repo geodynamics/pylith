@@ -42,15 +42,15 @@ class DumpParametersAscii(DumpParameters):
           - None
         """
 
-        import pyre.inventory
+        import pythia.pyre.inventory
 
-        filename = pyre.inventory.str("filename", default="pylith_paramters.txt")
+        filename = pythia.pyre.inventory.str("filename", default="pylith_paramters.txt")
         filename.meta["tip"] = "Name of file written with parameters."
 
-        indent = pyre.inventory.int("indent", default=4)
+        indent = pythia.pyre.inventory.int("indent", default=4)
         indent.meta["tip"] = "Nmber of spaces to indent."
 
-        verbose = pyre.inventory.bool("verbose", default=True)
+        verbose = pythia.pyre.inventory.bool("verbose", default=True)
         verbose.meta["tip"] = "Include description, location, and aliases."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

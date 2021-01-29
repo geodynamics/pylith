@@ -36,9 +36,9 @@ class InitialCondition(PetscComponent, ModuleInitialCondition):
       - None
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    subfields = pyre.inventory.list("subfields", default=["displacement"])
+    subfields = pythia.pyre.inventory.list("subfields", default=["displacement"])
     subfields.meta["tip"] = "Names of solution subfields for initial condition."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

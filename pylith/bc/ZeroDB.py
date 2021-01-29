@@ -39,13 +39,13 @@ class ZeroDB(UniformDB):
     Factory: spatial_database
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    from pyre.units.length import m
+    from pythia.pyre.units.length import m
     values = ["initial_amplitude", "initial_amplitude_x", "initial_amplitude_y", "initial_amplitude_z"]
     data = [0.0, 0.0, 0.0, 0.0]
 
-    label = pyre.inventory.str("label", default="Zero initial amplitude spatial database.")
+    label = pythia.pyre.inventory.str("label", default="Zero initial amplitude spatial database.")
     label.meta["tip"] = "Label for ZeroDB spatial database."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

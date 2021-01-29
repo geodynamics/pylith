@@ -20,8 +20,8 @@ include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
-TESTS = testmeshio.py
-dist_check_SCRIPTS = testmeshio.py 
+TESTS = testmeshio.py testhdf5.py
+dist_check_SCRIPTS = $(TESTS)
 
 noinst_PYTHON = \
 	TestMeshIOAscii.py \
@@ -40,15 +40,10 @@ noinst_PYTHON = \
 	TestXdmf.py
 
 
-if ENABLE_HDF5
-  TESTS += testhdf5.py
-  dist_check_SCRIPTS += testhdf5.py
-endif	
-
 if ENABLE_CUBIT
   TESTS += testcubit.py
   dist_check_SCRIPTS += testcubit.py
-endif	
+endif
 
 noinst_tmp = \
 	output_sub_t20.vtk
@@ -60,4 +55,4 @@ clean-local: clean-local-tmp
 clean-local-tmp:
 	-rm *.vtk *.dat *.dat.info *.h5 *.xmf
 
-# End of file 
+# End of file

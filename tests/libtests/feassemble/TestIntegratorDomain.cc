@@ -33,12 +33,11 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/testing/FieldTester.hh" // USES FieldTester
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // pythia::journal
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
-
-#include "journal/debug.h" // USES journal::debug_t
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.

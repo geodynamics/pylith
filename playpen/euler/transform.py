@@ -26,7 +26,7 @@
 import math
 import numpy
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 class Transform(Application):
   """
@@ -64,58 +64,58 @@ class Transform(Application):
     ## @li \b src_coordsys Coordinate system to convert from.
     ## @li \b dest_coordsys Coordinate system to convert to.
 
-    import pyre.inventory
-    from pyre.units.angle import deg
-    from pyre.units.length import m
-    from pyre.units.length import km
+    import pythia.pyre.inventory
+    from pythia.pyre.units.angle import deg
+    from pythia.pyre.units.length import m
+    from pythia.pyre.units.length import km
 
-    dataDim = pyre.inventory.int("data_dim", default=2)
+    dataDim = pythia.pyre.inventory.int("data_dim", default=2)
     dataDim.meta['tip'] = "Dimension of data."
 
-    pointsFile = pyre.inventory.str("points_file", default="points.def")
+    pointsFile = pythia.pyre.inventory.str("points_file", default="points.def")
     pointsFile.meta['tip'] = "Filename of file containing point coordinates."
 
-    segsFile = pyre.inventory.str("segs_file", default="segs.def")
+    segsFile = pythia.pyre.inventory.str("segs_file", default="segs.def")
     segsFile.meta['tip'] = "Filename of file containing fault segments."
 
-    slipScale = pyre.inventory.float("slip_scale", default=1.0)
+    slipScale = pythia.pyre.inventory.float("slip_scale", default=1.0)
     slipScale.meta['tip'] = "Scaling factor for fault slip."
 
-    pointsSpatialDB = pyre.inventory.str("points_spatialdb",
+    pointsSpatialDB = pythia.pyre.inventory.str("points_spatialdb",
                                          default="points.spatialdb")
     pointsSpatialDB.meta['tip'] = "Filename of output spatial database."
 
-    upDir = pyre.inventory.list("up_dir", default=[0.0, 0.0, 1.0])
+    upDir = pythia.pyre.inventory.list("up_dir", default=[0.0, 0.0, 1.0])
     upDir.meta['tip'] = "Up direction."
 
-    normalDir = pyre.inventory.list("normal_dir", default=[1.0, 0.0, 0.0])
+    normalDir = pythia.pyre.inventory.list("normal_dir", default=[1.0, 0.0, 0.0])
     normalDir.meta['tip'] = "General preferred normal direction."
 
-    dipSlip = pyre.inventory.bool("dip_slip", default=True)
+    dipSlip = pythia.pyre.inventory.bool("dip_slip", default=True)
     dipSlip.meta['tip'] = "Allow dip-slip to take up non-strike-slip movement."
 
-    dipCutoff = pyre.inventory.dimensional("dip_cutoff", default=75.0*deg)
+    dipCutoff = pythia.pyre.inventory.dimensional("dip_cutoff", default=75.0*deg)
     dipCutoff.meta['tip'] = "Cutoff dip below which dip-slip is allowed."
 
-    xMin = pyre.inventory.dimensional("x_min", default=-1.0e8*m)
+    xMin = pythia.pyre.inventory.dimensional("x_min", default=-1.0e8*m)
     xMin.meta['tip'] = "Minimum x-value for which to apply rotation."
 
-    xMax = pyre.inventory.dimensional("x_max", default=1.0e8*m)
+    xMax = pythia.pyre.inventory.dimensional("x_max", default=1.0e8*m)
     xMax.meta['tip'] = "Maximum x-value for which to apply rotation."
 
-    yMin = pyre.inventory.dimensional("y_min", default=-1.0e8*m)
+    yMin = pythia.pyre.inventory.dimensional("y_min", default=-1.0e8*m)
     yMin.meta['tip'] = "Minimum y-value for which to apply rotation."
 
-    yMax = pyre.inventory.dimensional("y_max", default=1.0e8*m)
+    yMax = pythia.pyre.inventory.dimensional("y_max", default=1.0e8*m)
     yMax.meta['tip'] = "Maximum y-value for which to apply rotation."
 
-    zMin = pyre.inventory.dimensional("z_min", default=-1.0e8*m)
+    zMin = pythia.pyre.inventory.dimensional("z_min", default=-1.0e8*m)
     zMin.meta['tip'] = "Minimum z-value for which to apply rotation."
 
-    zMax = pyre.inventory.dimensional("z_max", default=1.0e8*m)
+    zMax = pythia.pyre.inventory.dimensional("z_max", default=1.0e8*m)
     zMax.meta['tip'] = "Maximum z-value for which to apply rotation."
 
-    defaultValues = pyre.inventory.list("default_values",
+    defaultValues = pythia.pyre.inventory.list("default_values",
                                         default=[ 0.0, 0.0, 0.0])
     defaultValues.meta['tip'] = "Values used for out-of-range points."
 

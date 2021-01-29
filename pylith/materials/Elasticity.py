@@ -40,12 +40,12 @@ class Elasticity(Material, ModuleElasticity):
     FACTORY: material
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    useBodyForce = pyre.inventory.bool("use_body_force", default=False)
+    useBodyForce = pythia.pyre.inventory.bool("use_body_force", default=False)
     useBodyForce.meta['tip'] = "Include body force term in elasticity equation."
 
-    rheology = pyre.inventory.facility("bulk_rheology", family="elasticity_rheology", factory=IsotropicLinearElasticity)
+    rheology = pythia.pyre.inventory.facility("bulk_rheology", family="elasticity_rheology", factory=IsotropicLinearElasticity)
     rheology.meta['tip'] = "Bulk rheology for elastic material."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

@@ -20,8 +20,7 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = \
 	libsrc \
 	modulesrc \
-	pylith \
-	applications
+	pylith
 
 if ENABLE_TESTING
   SUBDIRS += \

@@ -21,7 +21,7 @@
 # @brief Python PETSc application for creating an MPI application
 # that uses PETSc.
 
-from mpi import Application
+from pythia.mpi import Application
 
 
 class PetscApplication(Application):
@@ -35,14 +35,14 @@ class PetscApplication(Application):
 
     # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     # Dummy facility for passing options to PETSc
     from pylith.utils.PetscManager import PetscManager
-    petsc = pyre.inventory.facility("petsc", family="petsc_manager", factory=PetscManager)
+    petsc = pythia.pyre.inventory.facility("petsc", family="petsc_manager", factory=PetscManager)
     petsc.meta['tip'] = "Manager for PETSc options."
 
-    includeCitations = pyre.inventory.bool("include-citations", default=False)
+    includeCitations = pythia.pyre.inventory.bool("include-citations", default=False)
     includeCitations.meta['tip'] = "At end of simulation, display information on how to cite PyLith and components used."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

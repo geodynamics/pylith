@@ -128,7 +128,7 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
 
     _auxiliaryFactory->setValuesFromDB();
 
-    journal::debug_t debug(PyreComponent::getName());
+    pythia::journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
         PYLITH_COMPONENT_DEBUG("Displaying kinematic earthquake source auxiliary field");
         _auxiliaryField->view("KinSrc auxiliary field");

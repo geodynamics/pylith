@@ -44,7 +44,7 @@ class TestTractPerturbation(unittest.TestCase):
     """
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
-    from pyre.units.time import second
+    from pythia.pyre.units.time import second
 
     ioInitial = SimpleIOAscii()
     ioInitial.inventory.filename = "tri3_initialtractions.spatialdb"

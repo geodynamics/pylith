@@ -17,7 +17,7 @@
 #
 # @brief Python DumpParameters object for dumping PyLith parameter information to a file.
 
-from pyre.components.Component import Component
+from pythia.pyre.components.Component import Component
 
 from .PetscManager import PetscManager
 

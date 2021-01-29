@@ -1,0 +1,7 @@
+.dockerignore
+.git
+.git*
+autom4te.cache
+aux-config
+docker
+build

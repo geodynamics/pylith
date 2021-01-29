@@ -42,14 +42,14 @@ class KinSrc(PetscComponent, ModuleKinSrc):
     Factory: eq_kinematic_src
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
-    auxFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
+    auxFieldDB = pythia.pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
     auxFieldDB.meta['tip'] = "Database for slip time function parameters."
 
-    from pyre.units.time import second
-    originTime = pyre.inventory.dimensional("origin_time", default=0.0 * second)
+    from pythia.pyre.units.time import second
+    originTime = pythia.pyre.inventory.dimensional("origin_time", default=0.0 * second)
     originTime.meta['tip'] = "Origin time for earthquake rupture."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

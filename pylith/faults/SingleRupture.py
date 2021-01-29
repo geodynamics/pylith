@@ -36,10 +36,10 @@ class SingleRupture(PetscComponent):
 
     # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from .KinSrcStep import KinSrcStep
-    rupture = pyre.inventory.facility("rupture", family="eq_kinematic_src", factory=KinSrcStep)
+    rupture = pythia.pyre.inventory.facility("rupture", family="eq_kinematic_src", factory=KinSrcStep)
     rupture.meta['tip'] = "Kinematic earthquake rupture in problem."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

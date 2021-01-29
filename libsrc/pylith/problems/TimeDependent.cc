@@ -388,12 +388,12 @@ pylith::problems::TimeDependent::initialize(void) {
         err = PetscDSSetImplicit(prob, iField, (_formulationType == IMPLICIT) ? PETSC_TRUE : PETSC_FALSE);
     } // for
 #endif
-    journal::debug_t debug(pylith::utils::PyreComponent::getName());
+    pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
     if (debug.state()) {
         PetscDS prob = NULL;
         err = DMGetDS(_solution->dmMesh(), &prob);PYLITH_CHECK_ERROR(err);
-        debug << journal::at(__HERE__)
-              << "Solution Discretization" << journal::endl;
+        debug << pythia::journal::at(__HERE__)
+              << "Solution Discretization" << pythia::journal::endl;
         PetscDSView(prob, PETSC_VIEWER_STDOUT_SELF);
     } // if
 
@@ -743,9 +743,9 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
                                                     PetscVec residualVec,
                                                     void* context) {
     PYLITH_METHOD_BEGIN;
-    journal::debug_t debug(_TimeDependent::pyreComponent);
-    debug << journal::at(__HERE__)
-          << "computeRHSResidual(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", residualVec="<<residualVec<<", context="<<context<<")" << journal::endl;
+    pythia::journal::debug_t debug(_TimeDependent::pyreComponent);
+    debug << pythia::journal::at(__HERE__)
+          << "computeRHSResidual(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", residualVec="<<residualVec<<", context="<<context<<")" << pythia::journal::endl;
 
     // Get current time step.
     PylithReal dt;
@@ -777,9 +777,9 @@ pylith::problems::TimeDependent::computeRHSJacobian(PetscTS ts,
                                                     PetscMat precondMat,
                                                     void* context) {
     PYLITH_METHOD_BEGIN;
-    journal::debug_t debug(_TimeDependent::pyreComponent);
-    debug << journal::at(__HERE__)
-          << "computeRHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" << journal::endl;
+    pythia::journal::debug_t debug(_TimeDependent::pyreComponent);
+    debug << pythia::journal::at(__HERE__)
+          << "computeRHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" << pythia::journal::endl;
 
     // Get current time step.
     PylithReal dt;
@@ -802,9 +802,9 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
                                                     PetscVec residualVec,
                                                     void* context) {
     PYLITH_METHOD_BEGIN;
-    journal::debug_t debug(_TimeDependent::pyreComponent);
-    debug << journal::at(__HERE__)
-          << "computeLHSResidual(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", residualVec="<<residualVec<<", context="<<context<<")" << journal::endl;
+    pythia::journal::debug_t debug(_TimeDependent::pyreComponent);
+    debug << pythia::journal::at(__HERE__)
+          << "computeLHSResidual(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", residualVec="<<residualVec<<", context="<<context<<")" << pythia::journal::endl;
 
     // Get current time step.
     PylithReal dt;
@@ -829,10 +829,10 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
                                                     PetscMat precondMat,
                                                     void* context) {
     PYLITH_METHOD_BEGIN;
-    journal::debug_t debug(_TimeDependent::pyreComponent);
-    debug << journal::at(__HERE__)
+    pythia::journal::debug_t debug(_TimeDependent::pyreComponent);
+    debug << pythia::journal::at(__HERE__)
           << "computeLHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", s_tshift="<<s_tshift<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" <<
-        journal::endl;
+        pythia::journal::endl;
 
     // Get current time step.
     PylithReal dt;
@@ -850,9 +850,9 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
 PetscErrorCode
 pylith::problems::TimeDependent::poststep(PetscTS ts) {
     PYLITH_METHOD_BEGIN;
-    journal::debug_t debug(_TimeDependent::pyreComponent);
-    debug << journal::at(__HERE__)
-          << "poststep(ts="<<ts<<")" << journal::endl;
+    pythia::journal::debug_t debug(_TimeDependent::pyreComponent);
+    debug << pythia::journal::at(__HERE__)
+          << "poststep(ts="<<ts<<")" << pythia::journal::endl;
 
     TimeDependent* problem = NULL;
     PetscErrorCode err = TSGetApplicationContext(ts, (void*)&problem);PYLITH_CHECK_ERROR(err);assert(problem);

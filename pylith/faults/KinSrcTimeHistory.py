@@ -37,10 +37,10 @@ class KinSrcTimeHistory(KinSrc, ModuleKinSrc):
 
     Factory: eq_kinematic_src
     """
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from spatialdata.spatialdb.TimeHistory import TimeHistory
-    dbTimeHistory = pyre.inventory.facility("time_history", factory=TimeHistory, family="temporal_database")
+    dbTimeHistory = pythia.pyre.inventory.facility("time_history", factory=TimeHistory, family="temporal_database")
     dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
