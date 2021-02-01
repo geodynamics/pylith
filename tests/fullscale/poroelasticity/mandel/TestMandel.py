@@ -28,8 +28,12 @@ import meshes
 from mandel_soln import AnalyticalSoln
 from mandel_gendb import GenerateDB
 
-ratio_tolerance = {'displacement': 1e-0, 'pressure': 1e-0, 'trace_strain': 1e-0}
-diff_tolerance = {'displacement': 1e-1, 'pressure': 1e-1, 'trace_strain': 1e-0}
+# We do not include trace_strain in the solution fields, because of the
+# poor convergence of the series solution. 
+SOLUTION_FIELDS = ["displacement", "pressure"]
+
+ratio_tolerance = {'displacement': 1.0, 'pressure': 1.0}
+diff_tolerance = {'displacement': 0.1, 'pressure': 0.1}
 # ----------------------------------------------------------------------------------------------------------------------
 
 
@@ -54,7 +58,7 @@ class TestCase(FullTestCase):
 
     def test_domain_solution(self):
         filename = "output/{}-domain.h5".format(self.NAME)
-        vertexFields = ["displacement", "pressure", "trace_strain"]
+        vertexFields = ["displacement", "pressure"]
         check_data(filename, self, self.DOMAIN, vertexFields=vertexFields,
                    ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
@@ -69,7 +73,7 @@ class TestCase(FullTestCase):
         return
 
     def test_material_solution(self):
-        vertexFields = ["displacement", "pressure", "trace_strain"]
+        vertexFields = ["displacement", "pressure"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}.h5".format(self.NAME, material)
             check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields,
@@ -86,7 +90,7 @@ class TestCase(FullTestCase):
         return
 
     def test_bcdirichlet_solution(self):
-        vertexFields = ["displacement", "pressure", "trace_strain"]
+        vertexFields = ["displacement", "pressure"]
         for bc in self.DIRICHLET_BOUNDARIES:
             filename = "output/{}-{}.h5".format(self.NAME, bc)
             check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields,

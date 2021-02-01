@@ -288,22 +288,22 @@ class AnalyticalSoln(object):
         x = locs[:, 0]
         z = locs[:, 1]
         t_track = 0
-        # zeroArray = self.mandelZeros()
-        #
-        # for t in tsteps:
-        #
-        #     eps_A = 0.0
-        #     eps_B = 0.0
-        #     eps_C = 0.0
-        #
-        #     for i in numpy.arange(1, self.ITERATIONS+1,1):
-        #         x_n = zeroArray[i-1]
-        #         eps_A += (x_n * numpy.exp( (-1.0*x_n*x_n*c*t)/(a*a)) * numpy.cos(x_n)*numpy.cos( (x_n*x)/a)) / (a * (x_n - numpy.sin(x_n)*numpy.cos(x_n)))
-        #         eps_B += ( numpy.exp( (-1.0*x_n*x_n*c*t)/(a*a)) * numpy.sin(x_n)*numpy.cos(x_n)) / (x_n - numpy.sin(x_n)*numpy.cos(x_n))
-        #         eps_C += ( numpy.exp( (-1.0*x_n*x_n*c*t)/(x_n*x_n)) * numpy.sin(x_n)*numpy.cos(x_n)) / (x_n - numpy.sin(x_n)*numpy.cos(x_n))
-        #
-        #     trace_strain[t_track,:,0] = (F/G)*eps_A + ( (F*nu)/(2.0*G*a)) - eps_B/(G*a) - (F*(1.0-nu))/(2/0*G*a) + eps_C/(G*a)
-        #     t_track += 1
+        zeroArray = self.mandelZeros()
+        
+        for t in tsteps:
+        
+            eps_A = 0.0
+            eps_B = 0.0
+            eps_C = 0.0
+        
+            for i in numpy.arange(1, self.ITERATIONS+1,1):
+                x_n = zeroArray[i-1]
+                eps_A += (x_n * numpy.exp( (-1.0*x_n*x_n*c*t)/(a*a)) * numpy.cos(x_n)*numpy.cos( (x_n*x)/a)) / (a * (x_n - numpy.sin(x_n)*numpy.cos(x_n)))
+                eps_B += ( numpy.exp( (-1.0*x_n*x_n*c*t)/(a*a)) * numpy.sin(x_n)*numpy.cos(x_n)) / (x_n - numpy.sin(x_n)*numpy.cos(x_n))
+                eps_C += ( numpy.exp( (-1.0*x_n*x_n*c*t)/(x_n*x_n)) * numpy.sin(x_n)*numpy.cos(x_n)) / (x_n - numpy.sin(x_n)*numpy.cos(x_n))
+        
+            trace_strain[t_track,:,0] = (F/G)*eps_A + ( (F*nu)/(2.0*G*a)) - eps_B/(G*a) - (F*(1.0-nu))/(2/0*G*a) + eps_C/(G*a)
+            t_track += 1
 
         return trace_strain
 
