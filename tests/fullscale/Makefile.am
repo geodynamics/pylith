@@ -18,9 +18,9 @@
 SUBDIRS = \
 	linearelasticity \
 	viscoelasticity \
-	linearporoelasticity \
+	poroelasticity \
 	petsc \
 	eqinfo
 
 
-# End of file 
+# End of file

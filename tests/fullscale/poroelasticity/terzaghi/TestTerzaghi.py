@@ -15,7 +15,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests/fullscale/linearporoelasticity/terzaghi/TestTerzaghi.py
+# @file tests/fullscale/poroelasticity/terzaghi/TestTerzaghi.py
 #
 # @brief Test suite for testing pylith with Terzaghi's problem.
 
@@ -28,9 +28,11 @@ import meshes
 from terzaghi_soln import AnalyticalSoln
 from terzaghi_gendb import GenerateDB
 
-ratio_tolerance = {'displacement':1e-1, 'pressure':1e-1, 'trace_strain':1e-0}
-diff_tolerance = {'displacement':1e-2, 'pressure':1e-2, 'trace_strain':1e-0}
+ratio_tolerance = {'displacement': 1e-1, 'pressure': 1e-1, 'trace_strain': 1e-0}
+diff_tolerance = {'displacement': 1e-2, 'pressure': 1e-2, 'trace_strain': 1e-0}
 # ----------------------------------------------------------------------------------------------------------------------
+
+
 class TestCase(FullTestCase):
     """
     Test suite for testing PyLith with one dimensional poroelasticity
@@ -54,21 +56,25 @@ class TestCase(FullTestCase):
     def test_domain_solution(self):
         filename = "output/{}-domain.h5".format(self.NAME)
         vertexFields = ["displacement", "pressure", "trace_strain"]
-        check_data(filename, self, self.DOMAIN, vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+        check_data(filename, self, self.DOMAIN, vertexFields=vertexFields,
+                   ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
     def test_material_info(self):
-        vertexFields = ["solid_density", "fluid_density", "fluid_viscosity", "shear_modulus", "drained_bulk_modulus", "biot_coefficient", "isotropic_permeability", "porosity"]
+        vertexFields = ["solid_density", "fluid_density", "fluid_viscosity", "shear_modulus",
+                        "drained_bulk_modulus", "biot_coefficient", "isotropic_permeability", "porosity"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields,
+                       ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
     def test_material_solution(self):
         vertexFields = ["displacement", "pressure", "trace_strain"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields,
+                       ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
     def test_bcdirichlet_info(self):
@@ -76,14 +82,16 @@ class TestCase(FullTestCase):
         for bc in self.DIRICHLET_BOUNDARIES:
             self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields,
+                       ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
     def test_bcdirichlet_solution(self):
         vertexFields = ["displacement", "pressure", "trace_strain"]
         for bc in self.DIRICHLET_BOUNDARIES:
             filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields,
+                       ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
     def test_bcneumann_info(self):
@@ -91,17 +99,21 @@ class TestCase(FullTestCase):
         for bc in self.NEUMANN_BOUNDARIES:
             self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields,
+                       ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
     def test_bcneumann_solution(self):
         vertexFields = ["displacement", "pressure", "trace_strain"]
         for bc in self.NEUMANN_BOUNDARIES:
             filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields,
+                       ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
 # ----------------------------------------------------------------------------------------------------------------------
+
+
 class TestQuad(TestCase, meshes.Quad):
     NAME = "terzaghi_quad"
 

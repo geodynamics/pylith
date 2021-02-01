@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests/fullscale/linearporoelasticity/terzaghi/terzaghi_soln.py
+# @file tests/fullscale/poroelasticity/terzaghi/terzaghi_soln.py
 #
 # @brief Analytical solution to Mandel's problem.
 #
@@ -35,45 +35,45 @@
 import numpy
 
 # Physical properties
-rho_s = 2500 # kg / m**3
-rho_f = 1000 # kg / m**3
-mu_f = 1.0 # Pa*s
-G = 3.0 # Pa
-K_sg = 10.0 # Pa
-K_fl = 8.0 # Pa
-K_d = 4.0 # Pa
-#K_u = 2.6941176470588233 # Pa
-alpha = 0.6 # -
-phi = 0.1 #
-#M = 4.705882352941176 # Pa
-k = 1.5 # m**2
+rho_s = 2500  # kg / m**3
+rho_f = 1000  # kg / m**3
+mu_f = 1.0  # Pa*s
+G = 3.0  # Pa
+K_sg = 10.0  # Pa
+K_fl = 8.0  # Pa
+K_d = 4.0  # Pa
+# K_u = 2.6941176470588233 # Pa
+alpha = 0.6  # -
+phi = 0.1
+# M = 4.705882352941176 # Pa
+k = 1.5  # m**2
 
-xmin = 0.0 # m
-xmax = 10.0 # m
-ymin = 0.0 # m
-ymax = 1.0 # m
+xmin = 0.0  # m
+xmax = 10.0  # m
+ymin = 0.0  # m
+ymax = 1.0  # m
 
-vertical_stress = 1.0 # Pa
+vertical_stress = 1.0  # Pa
 F = vertical_stress
 
 # Height of column, m
 b = (xmax - xmin)
 a = (ymax - ymin)
 
-M = 1.0 / ( phi / K_fl + ( alpha - phi ) / K_sg ) # Pa
-K_u = K_d + alpha*alpha*M # Pa,      Cheng (B.5)
-#K_d = K_u - alpha*alpha*M # Pa,      Cheng (B.5)
-nu = (3.0*K_d - 2.0*G) / (2.0*(3.0*K_d + G)) # -,       Cheng (B.8)
-nu_u = (3.0*K_u - 2.0*G) / (2.0*(3.0*K_u + G)) # -,       Cheng (B.9)
-eta = (3.0*alpha*G) /(3.0*K_d + 4.0*G) #  -,       Cheng (B.11)
-S = (3.0*K_u + 4.0*G) / (M*(3.0*K_d + 4.0*G)) # Pa^{-1}, Cheng (B.14)
-c = (k / mu_f) / S # m^2 / s, Cheng (B.16)
-B = (3. * (nu_u - nu) )/(alpha*(1.-2.*nu)*(1.+nu_u))
+M = 1.0 / (phi / K_fl + (alpha - phi) / K_sg)  # Pa
+K_u = K_d + alpha * alpha * M  # Pa,      Cheng (B.5)
+# K_d = K_u - alpha*alpha*M # Pa,      Cheng (B.5)
+nu = (3.0 * K_d - 2.0 * G) / (2.0 * (3.0 * K_d + G))  # -,       Cheng (B.8)
+nu_u = (3.0 * K_u - 2.0 * G) / (2.0 * (3.0 * K_u + G))  # -,       Cheng (B.9)
+eta = (3.0 * alpha * G) / (3.0 * K_d + 4.0 * G)  # -,       Cheng (B.11)
+S = (3.0 * K_u + 4.0 * G) / (M * (3.0 * K_d + 4.0 * G))  # Pa^{-1}, Cheng (B.14)
+c = (k / mu_f) / S  # m^2 / s, Cheng (B.16)
+B = (3. * (nu_u - nu)) / (alpha * (1. - 2. * nu) * (1. + nu_u))
 
 # Time steps
-ts = 0.0028666667 # sec
+ts = 0.0028666667  # sec
 nts = 2
-tsteps = numpy.arange(0.0, ts*nts, ts) # sec
+tsteps = numpy.arange(0.0, ts * nts, ts)  # sec
 
 
 # ----------------------------------------------------------------------
@@ -216,9 +216,9 @@ class AnalyticalSoln(object):
         t_track = 0
 
         displacement = numpy.zeros((ntpts, npts, self.SPACE_DIM), dtype=numpy.float64)
-        displacement[:,:, 0] = 0.0
+        displacement[:, :, 0] = 0.0
         for t in tsteps:
-            displacement[t_track,:, 1] = F
+            displacement[t_track, :, 1] = F
             t_track += 1
         return traction
 
@@ -238,13 +238,15 @@ class AnalyticalSoln(object):
             A_x = 0.0
             B_x = 0.0
 
-            for n in numpy.arange(1, self.ITERATIONS+1, 1):
-                a_n = zeroArray[n-1]
-                A_x += (numpy.sin(a_n)*numpy.cos(a_n) / (a_n - numpy.sin(a_n)*numpy.cos(a_n)))*numpy.exp(-1.0*(a_n*a_n*c*t)/(a*a))
-                B_x += (numpy.cos(a_n) / (a_n - numpy.sin(a_n)*numpy.cos(a_n))) * numpy.sin( (a_n*x)/a) * numpy.exp(-1.0*(a_n*a_n*c*t)/(a*a))
+            for n in numpy.arange(1, self.ITERATIONS + 1, 1):
+                a_n = zeroArray[n - 1]
+                A_x += (numpy.sin(a_n) * numpy.cos(a_n) / (a_n - numpy.sin(a_n) * numpy.cos(a_n))) * \
+                    numpy.exp(-1.0 * (a_n * a_n * c * t) / (a * a))
+                B_x += (numpy.cos(a_n) / (a_n - numpy.sin(a_n) * numpy.cos(a_n))) * \
+                    numpy.sin((a_n * x) / a) * numpy.exp(-1.0 * (a_n * a_n * c * t) / (a * a))
 
-            displacement[t_track,:, 0] = ((F*nu)/(2.0*G*a) - (F*nu_u)/(G*a) * A_x ) * x + F/G * B_x
-            displacement[t_track,:, 1] = (-1*(F*(1.0-nu))/(2*G*a) + (F*(1-nu_u))/(G*a) * A_x)*z
+            displacement[t_track, :, 0] = ((F * nu) / (2.0 * G * a) - (F * nu_u) / (G * a) * A_x) * x + F / G * B_x
+            displacement[t_track, :, 1] = (-1 * (F * (1.0 - nu)) / (2 * G * a) + (F * (1 - nu_u)) / (G * a) * A_x) * z
             t_track += 1
 
         return displacement
@@ -256,21 +258,22 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
         pressure = numpy.zeros((ntpts, npts, 1), dtype=numpy.float64)
-        x = locs[:,0]
-        z = locs[:,1]
+        x = locs[:, 0]
+        z = locs[:, 1]
         t_track = 0
         zeroArray = self.mandelZeros()
 
         for t in tsteps:
 
             if t == 0.0:
-                pressure[t_track,:] = (1./(3.*a))*(B*(1.+nu_u))*F
+                pressure[t_track, :] = (1. / (3. * a)) * (B * (1. + nu_u)) * F
             else:
                 p = 0.0
-                for n in numpy.arange(1, self.ITERATIONS+1, 1):
-                    x_n = zeroArray[n-1]
-                    p += (numpy.sin(x_n) / (x_n - numpy.sin(x_n)*numpy.cos(x_n))) * (numpy.cos( (x_n*x) / a) - numpy.cos(x_n)) * numpy.exp(-1.0*(x_n*x_n * c * t)/(a*a))
-                pressure[t_track,:, 0] = ( (2.0 * (F*B*(1.0 + nu_u)) ) / (3.0*a) ) * p
+                for n in numpy.arange(1, self.ITERATIONS + 1, 1):
+                    x_n = zeroArray[n - 1]
+                    p += (numpy.sin(x_n) / (x_n - numpy.sin(x_n) * numpy.cos(x_n))) * \
+                        (numpy.cos((x_n * x) / a) - numpy.cos(x_n)) * numpy.exp(-1.0 * (x_n * x_n * c * t) / (a * a))
+                pressure[t_track, :, 0] = ((2.0 * (F * B * (1.0 + nu_u))) / (3.0 * a)) * p
             t_track += 1
 
         return pressure
@@ -281,9 +284,9 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
-        trace_strain = numpy.zeros((ntpts, npts,1), dtype=numpy.float64)
-        x = locs[:,0]
-        z = locs[:,1]
+        trace_strain = numpy.zeros((ntpts, npts, 1), dtype=numpy.float64)
+        x = locs[:, 0]
+        z = locs[:, 1]
         t_track = 0
         # zeroArray = self.mandelZeros()
         #
@@ -312,22 +315,22 @@ class AnalyticalSoln(object):
         """
         zeroArray = numpy.zeros(self.ITERATIONS)
 
-        for i in numpy.arange(1, self.ITERATIONS+1, 1):
+        for i in numpy.arange(1, self.ITERATIONS + 1, 1):
             a1 = (i - 1.0) * numpy.pi * numpy.pi / 4.0 + self.EPS
             a2 = a1 + numpy.pi / 2
             am = a1
             for j in numpy.arange(0, self.ITERATIONS, 1):
-                y1 = numpy.tan(a1) - ((1.0 - nu) / (nu_u - nu))*a1
-                y2 = numpy.tan(a2) - ((1.0 - nu) / (nu_u - nu))*a2
+                y1 = numpy.tan(a1) - ((1.0 - nu) / (nu_u - nu)) * a1
+                y2 = numpy.tan(a2) - ((1.0 - nu) / (nu_u - nu)) * a2
                 am = (a1 + a2) / 2.0
-                ym = numpy.tan(am) - (1 - nu) / (nu_u - nu)*am
-                if ((ym*y1) > 0):
+                ym = numpy.tan(am) - (1 - nu) / (nu_u - nu) * am
+                if ((ym * y1) > 0):
                     a1 = am
                 else:
                     a2 = am
                 if (numpy.abs(y2) < self.EPS):
                     am = a2
-            zeroArray[i-1] = am
+            zeroArray[i - 1] = am
         return zeroArray
 
     def strain(self, locs):
@@ -342,10 +345,10 @@ class AnalyticalSoln(object):
         e_xy = 0.0
 
         strain = numpy.zeros((ntpts, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        strain[:,:, 0] = exx
-        strain[:,:, 1] = eyy
-        strain[:,:, 2] = ezz
-        strain[:,:, 3] = exy
+        strain[:, :, 0] = exx
+        strain[:, :, 1] = eyy
+        strain[:, :, 2] = ezz
+        strain[:, :, 3] = exy
         return strain
 
     def stress(self, locs):
@@ -354,7 +357,7 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
-        p_poisson_ratio = (3*p_K_d - 2*p_G) / (2*(3*p_K_d + p_G))
+        p_poisson_ratio = (3 * p_K_d - 2 * p_G) / (2 * (3 * p_K_d + p_G))
         trace_strain = self.trace_strain(locs)
         pressure = self.pressure(locs)
         e_xx = 0.0
@@ -362,10 +365,12 @@ class AnalyticalSoln(object):
         e_xy = 0.0
 
         stress = numpy.zeros((ntpts, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        stress[:,:, 0] = ( (2*p_G*p_poisson_ratio) / (1 - 2*p_poisson_ratio) )*trace_strain + 2*p_G*e_xx - p_alpha*pressure
-        stress[:,:, 1] = ( (2*p_G*p_poisson_ratio) / (1 - 2*p_poisson_ratio) )*trace_strain + 2*p_G*e_yy - p_alpha*pressure
-        stress[:,:, 2] = ( (2*p_G*p_poisson_ratio) / (1 - 2*p_poisson_ratio) )*trace_strain - p_alpha*pressure
-        stress[:,:, 3] = 2*p_G*e_xy
+        stress[:, :, 0] = ((2 * p_G * p_poisson_ratio) / (1 - 2 * p_poisson_ratio)) * \
+            trace_strain + 2 * p_G * e_xx - p_alpha * pressure
+        stress[:, :, 1] = ((2 * p_G * p_poisson_ratio) / (1 - 2 * p_poisson_ratio)) * \
+            trace_strain + 2 * p_G * e_yy - p_alpha * pressure
+        stress[:, :, 2] = ((2 * p_G * p_poisson_ratio) / (1 - 2 * p_poisson_ratio)) * trace_strain - p_alpha * pressure
+        stress[:, :, 3] = 2 * p_G * e_xy
         return stress
 
     def initial_traction(self, locs):
@@ -386,13 +391,16 @@ class AnalyticalSoln(object):
             sigma_zz_A = 0.0
             sigma_zz_B = 0.0
 
-            for i in np.arange(1, self.ITERATIONS+1, 1):
-                x_n = zeroArray[i-1]
-                sigma_zz_A += ( numpy.sin(x_n) / (x_n - numpy.sin(x_n)*numpy.cos(x_n)) )*numpy.cos( (x_n*x)/a )*numpy.exp(-1.0*(x_n*x_n*c*t)/(a*a))
-                sigma_zz_B += ( (numpy.sin(x_n)*numpy.cos(x_n)) / (x_n - numpy.sin(x_n)*numpy.cos(x_n) ) )*numpy.exp(-1.0*(x_n*x_n*c*t)/(a*a))
+            for i in np.arange(1, self.ITERATIONS + 1, 1):
+                x_n = zeroArray[i - 1]
+                sigma_zz_A += (numpy.sin(x_n) / (x_n - numpy.sin(x_n) * numpy.cos(x_n))) * \
+                    numpy.cos((x_n * x) / a) * numpy.exp(-1.0 * (x_n * x_n * c * t) / (a * a))
+                sigma_zz_B += ((numpy.sin(x_n) * numpy.cos(x_n)) / (x_n - numpy.sin(x_n) *
+                                                                    numpy.cos(x_n))) * numpy.exp(-1.0 * (x_n * x_n * c * t) / (a * a))
 
-            traction[t_track,:, 0] = 0.0
-            traction[t_track,:, 1] = -(F/a) - ( (2.0*F*(nu_u - nu)) / (a*(1.0-nu)) ) * sigma_zz_A + ( (2.0*F)/a )*sigma_zz_B
+            traction[t_track, :, 0] = 0.0
+            traction[t_track, :, 1] = -(F / a) - ((2.0 * F * (nu_u - nu)) / (a * (1.0 - nu))
+                                                  ) * sigma_zz_A + ((2.0 * F) / a) * sigma_zz_B
             t_track += 1
 
         return traction
@@ -406,8 +414,8 @@ class AnalyticalSoln(object):
         x = locs[:, 0]
         z = locs[:, 1]
 
-        displacement[0,:,0] = 0.0 #(F*nu_u*x)/(2.*G*a)
-        displacement[0,:,1] = 0.0 #-1.*(F*(1.-nu_u)*z)/(2.*G*a)
+        displacement[0, :, 0] = 0.0  # (F*nu_u*x)/(2.*G*a)
+        displacement[0, :, 1] = 0.0  # -1.*(F*(1.-nu_u)*z)/(2.*G*a)
 
         return displacement
 
@@ -421,7 +429,7 @@ class AnalyticalSoln(object):
         z = locs[:, 1]
         t = 0.0
 
-        pressure[0,:] = (1./(3.*a))*B*(1.+nu_u)*F
+        pressure[0, :] = (1. / (3. * a)) * B * (1. + nu_u) * F
 
         return pressure
 
@@ -436,7 +444,7 @@ class AnalyticalSoln(object):
         z = locs[:, 1]
         t = 0.0
 
-        trace_strain[0,:] = 0.0
+        trace_strain[0, :] = 0.0
 
         return trace_strain
 
@@ -456,13 +464,16 @@ class AnalyticalSoln(object):
             sigma_zz_A = 0.0
             sigma_zz_B = 0.0
 
-            for i in np.arange(1, self.ITERATIONS+1, 1):
-                x_n = zeroArray[i-1]
-                sigma_zz_A += ( numpy.sin(x_n) / (x_n - numpy.sin(x_n)*numpy.cos(x_n)) )*numpy.cos( (x_n*x)/a )*numpy.exp(-1.0*(x_n*x_n*c*t)/(a*a))
-                sigma_zz_B += ( (numpy.sin(x_n)*numpy.cos(x_n)) / (x_n - numpy.sin(x_n)*numpy.cos(x_n) ) )*numpy.exp(-1.0*(x_n*x_n*c*t)/(a*a))
+            for i in np.arange(1, self.ITERATIONS + 1, 1):
+                x_n = zeroArray[i - 1]
+                sigma_zz_A += (numpy.sin(x_n) / (x_n - numpy.sin(x_n) * numpy.cos(x_n))) * \
+                    numpy.cos((x_n * x) / a) * numpy.exp(-1.0 * (x_n * x_n * c * t) / (a * a))
+                sigma_zz_B += ((numpy.sin(x_n) * numpy.cos(x_n)) / (x_n - numpy.sin(x_n) *
+                                                                    numpy.cos(x_n))) * numpy.exp(-1.0 * (x_n * x_n * c * t) / (a * a))
 
-            traction[t_track,:, 0] = 0.0
-            traction[t_track,:, 1] = -(F/a) - ( (2.0*F*(nu_u - nu)) / (a*(1.0-nu)) ) * sigma_zz_A + ( (2.0*F)/a )*sigma_zz_B
+            traction[t_track, :, 0] = 0.0
+            traction[t_track, :, 1] = -(F / a) - ((2.0 * F * (nu_u - nu)) / (a * (1.0 - nu))
+                                                  ) * sigma_zz_A + ((2.0 * F) / a) * sigma_zz_B
             t_track += 1
 
         return traction

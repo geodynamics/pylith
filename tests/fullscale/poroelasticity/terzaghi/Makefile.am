@@ -21,9 +21,9 @@ dist_check_SCRIPTS = test_pylith.py
 
 dist_noinst_PYTHON = \
 	meshes.py \
-	TestMandel.py \
-	mandel_soln.py \
-	mandel_gendb.py
+	TestTerzaghi.py \
+	terzaghi_soln.py \
+	terzaghi_gendb.py
 
 dist_noinst_DATA = \
 	geometry.jou \
@@ -32,19 +32,18 @@ dist_noinst_DATA = \
 	mesh_tri.exo \
 	mesh_quad.jou \
 	mesh_quad.exo \
-	mandel.cfg \
-	mandel_tri.cfg \
-	mandel_quad.cfg \
-	displacement.timedb
+	terzaghi.cfg \
+	terzaghi_tri.cfg \
+	terzaghi_quad.cfg
 
 noinst_TMP = \
-	mandel_bc.spatialdb \
-	mandel_ic.spatialdb
+	terzaghi_bc.spatialdb \
+	terzaghi_ic.spatialdb
 
 
 
 # 'export' the input files by performing a mock install
-export_datadir = $(abs_top_builddir)/tests/fullscale/linearporoelasticity/mandel
+export_datadir = $(abs_top_builddir)/tests/fullscale/poroelasticity/terzaghi
 export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 
