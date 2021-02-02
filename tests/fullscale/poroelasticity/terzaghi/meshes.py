@@ -25,37 +25,42 @@ class Tri(object):
     Mesh information for tri mesh.
     """
     DOMAIN = {
-        "ncells": 266,
+        "ncells": 902,
         "ncorners": 3,
-        "nvertices": 170,
+        "nvertices": 492,
     }
     MATERIALS = {
         "poroelastic": {
-            "ncells": 266,
+            "ncells": 902,
             "ncorners": 3,
-            "nvertices": 170,
+            "nvertices": 492,
         }
     }
     BOUNDARIES = {
         "x_neg": {
-            "ncells": 3,
+            "ncells": 20,
             "ncorners": 2,
-            "nvertices": 4,
+            "nvertices": 21,
         },
         "x_pos": {
-            "ncells": 3,
+            "ncells": 20,
             "ncorners": 2,
-            "nvertices": 4,
+            "nvertices": 21,
+        },
+        "y_pos_neu": {
+            "ncells": 20,
+            "ncorners": 2,
+            "nvertices": 21,
+        },
+        "y_pos_dir": {
+            "ncells": 20,
+            "ncorners": 2,
+            "nvertices": 21,
         },
         "y_neg": {
-            "ncells": 33,
+            "ncells": 20,
             "ncorners": 2,
-            "nvertices": 34,
-        },
-        "y_pos": {
-            "ncells": 33,
-            "ncorners": 2,
-            "nvertices": 34,
+            "nvertices": 21,
         },
     }
 
@@ -65,37 +70,42 @@ class Quad(object):
     Mesh information for quad mesh.
     """
     DOMAIN = {
-        "ncells": 160,
+        "ncells": 400,
         "ncorners": 4,
-        "nvertices": 205,
+        "nvertices": 441,
     }
     MATERIALS = {
         "poroelastic": {
-            "ncells": 160,
+            "ncells": 400,
             "ncorners": 4,
-            "nvertices": 205,
+            "nvertices": 441,
         }
     }
     BOUNDARIES = {
         "x_neg": {
-            "ncells": 4,
+            "ncells": 20,
             "ncorners": 2,
-            "nvertices": 5,
+            "nvertices": 21,
         },
         "x_pos": {
-            "ncells": 4,
+            "ncells": 20,
             "ncorners": 2,
-            "nvertices": 5,
+            "nvertices": 21,
+        },
+        "y_pos_neu": {
+            "ncells": 20,
+            "ncorners": 2,
+            "nvertices": 21,
+        },
+        "y_pos_dir": {
+            "ncells": 20,
+            "ncorners": 2,
+            "nvertices": 21,
         },
         "y_neg": {
-            "ncells": 40,
+            "ncells": 20,
             "ncorners": 2,
-            "nvertices": 41,
-        },
-        "y_pos": {
-            "ncells": 40,
-            "ncorners": 2,
-            "nvertices": 41,
+            "nvertices": 21,
         },
     }
 

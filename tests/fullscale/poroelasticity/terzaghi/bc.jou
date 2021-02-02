@@ -1,32 +1,34 @@
 # ----------------------------------------------------------------------
-# Generate geometry
+# Create nodeset for -x edge
 # ----------------------------------------------------------------------
-playback 'geometry.jou'
+group "x_neg" add node in curve 1
+nodeset 1 group x_neg
+nodeset 1 name "x_neg"
 
 # ----------------------------------------------------------------------
-# Set discretization size
+# Create nodeset for -y edge
 # ----------------------------------------------------------------------
-surface all size 1.0
+group "y_neg" add node in curve  4
+nodeset 2 group y_neg
+nodeset 2 name "y_neg"
 
 # ----------------------------------------------------------------------
-# Generate the mesh
+# Create nodeset for +x edge
 # ----------------------------------------------------------------------
-surface all scheme submap
-mesh surface all
+group "x_pos" add node in curve 3
+nodeset 3 group x_pos
+nodeset 3 name "x_pos"
 
 # ----------------------------------------------------------------------
-# Create blocks for materials
+# Create nodeset for +y edge Dirichlet
 # ----------------------------------------------------------------------
-block 1 surface 1
-block 1 name "poroelastic"
-block 1 element type quad
+group "y_pos_dir" add node in curve  2
+nodeset 4 group y_pos_dir
+nodeset 4 name "y_pos_dir"
 
 # ----------------------------------------------------------------------
-# Mark entities for boundary conditions, etc.
+# Create nodeset for +y edge Neumann
 # ----------------------------------------------------------------------
-playback 'bc.jou'
-
-# ----------------------------------------------------------------------
-# Export exodus file
-# ----------------------------------------------------------------------
-export mesh "mesh_quad.exo" dimension 2 overwrite
+group "y_pos_neu" add node in curve  2
+nodeset 5 group y_pos_neu
+nodeset 5 name "y_pos_neu"

@@ -68,10 +68,10 @@ pylith::fekernels::Poroelasticity::g0v_grav(const PylithInt dim,
     // Poroelasticity
     const PylithInt i_solid_density     = 0;
     const PylithInt i_fluid_density     = 1;
-    const PylithInt i_porosity     = 3;
+    const PylithInt i_porosity          = 3;
 
-    // 2 + n
-    const PylithInt i_gravityField = 4;
+    // 3 + n
+    const PylithInt i_gravityField      = 4;
 
     const PylithScalar bulkDensity = (1 - a[aOff[i_porosity]]) * a[aOff[i_solid_density]] + a[aOff[i_porosity]] * a[aOff[i_fluid_density]];
     const PylithScalar* gravityField = &a[aOff[i_gravityField]];
@@ -108,7 +108,7 @@ pylith::fekernels::Poroelasticity::g0v_bodyforce(const PylithInt dim,
 
   // Poroelasticity
 
-  // 2 + n
+  // 3 + n
   const PylithInt i_bodyForce = 4;
 
   const PylithScalar* bodyForce = &a[aOff[i_bodyForce]];
@@ -426,9 +426,9 @@ pylith::fekernels::Poroelasticity::g0e(const PylithInt dim,
     const PylithScalar trace_strain = s[sOff[i_trace_strain]];
 
     for (PylithInt d = 0; d < dim; ++d) {
-      g0e[0] -= disp_x[d*dim+d];
+      g0e[0] += disp_x[d*dim+d];
     }
-    g0e[0] += trace_strain;
+    g0e[0] -= trace_strain;
 } // g0e
 
 
@@ -469,7 +469,7 @@ pylith::fekernels::Poroelasticity::Jg0ee(const PylithInt dim,
     assert(aOff);
     assert(a);
 
-    Jg0[0] = 1;
+    Jg0[0] = -1.0;
 } // Jg0ee
 
 // -----------------------------------------------------------------------------
@@ -496,7 +496,7 @@ pylith::fekernels::Poroelasticity::Jg1eu(const PylithInt dim,
                                                 PylithScalar Jg1[]) {
 
     for (PylithInt d = 0; d < dim; ++d) {
-        Jg1[d*dim+d] = -1.0;
+        Jg1[d*dim+d] = 1.0;
     } // for
 } // Jg1eu
 

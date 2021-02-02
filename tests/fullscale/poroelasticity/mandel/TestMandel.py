@@ -15,7 +15,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests/fullscale/linearporoelasticity/mandel/TestMandel.py
+# @file tests/fullscale/poroelasticity/mandel/TestMandel.py
 #
 # @brief Test suite for testing pylith with Mandel's problem.
 
@@ -28,16 +28,21 @@ import meshes
 from mandel_soln import AnalyticalSoln
 from mandel_gendb import GenerateDB
 
-ratio_tolerance = 1e-0
-diff_tolerance = 1e-2
+# We do not include trace_strain in the solution fields, because of the
+# poor convergence of the series solution. 
+SOLUTION_FIELDS = ["displacement", "pressure"]
+
+ratio_tolerance = {'displacement': 1.0, 'pressure': 1.0}
+diff_tolerance = {'displacement': 0.1, 'pressure': 0.1}
 # ----------------------------------------------------------------------------------------------------------------------
+
+
 class TestCase(FullTestCase):
     """
     Test suite for testing PyLith with one dimensional poroelasticity
     by means of Mandel's problem.
     """
     DIRICHLET_BOUNDARIES = ["x_neg", "x_pos", "y_neg", "y_pos"]
-    #NEUMANN_BOUNDARIES = ["y_pos"]
 
     def setUp(self):
         """
@@ -53,22 +58,26 @@ class TestCase(FullTestCase):
 
     def test_domain_solution(self):
         filename = "output/{}-domain.h5".format(self.NAME)
-        vertexFields = ["displacement", "pressure", "trace_strain"]
-        check_data(filename, self, self.DOMAIN, vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+        vertexFields = ["displacement", "pressure"]
+        check_data(filename, self, self.DOMAIN, vertexFields=vertexFields,
+                   ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
     def test_material_info(self):
-        vertexFields = ["solid_density", "fluid_density", "fluid_viscosity", "biot_modulus", "shear_modulus", "drained_bulk_modulus", "biot_coefficient", "isotropic_permeability"]
+        vertexFields = ["solid_density", "fluid_density", "fluid_viscosity", "biot_modulus",
+                        "shear_modulus", "drained_bulk_modulus", "biot_coefficient", "isotropic_permeability"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], cellFields=cellFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields,
+                       ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
     def test_material_solution(self):
-        vertexFields = ["displacement", "pressure", "trace_strain"]
+        vertexFields = ["displacement", "pressure"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields,
+                       ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
     def test_bcdirichlet_info(self):
@@ -76,17 +85,21 @@ class TestCase(FullTestCase):
         for bc in self.DIRICHLET_BOUNDARIES:
             self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields,
+                       ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
     def test_bcdirichlet_solution(self):
-        vertexFields = ["displacement", "pressure", "trace_strain"]
+        vertexFields = ["displacement", "pressure"]
         for bc in self.DIRICHLET_BOUNDARIES:
             filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
+            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields,
+                       ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
         return
 
 # ----------------------------------------------------------------------------------------------------------------------
+
+
 class TestQuad(TestCase, meshes.Quad):
     NAME = "mandel_quad"
 

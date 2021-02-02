@@ -25,42 +25,37 @@ class Tri(object):
     Mesh information for tri mesh.
     """
     DOMAIN = {
-        "ncells": 902,
+        "ncells": 320,
         "ncorners": 3,
-        "nvertices": 492,
+        "nvertices": 205,
     }
     MATERIALS = {
         "poroelastic": {
-            "ncells": 902,
+            "ncells": 320,
             "ncorners": 3,
-            "nvertices": 492,
+            "nvertices": 205,
         }
     }
     BOUNDARIES = {
         "x_neg": {
-            "ncells": 20,
+            "ncells": 4,
             "ncorners": 2,
-            "nvertices": 21,
+            "nvertices": 5,
         },
         "x_pos": {
-            "ncells": 20,
+            "ncells": 4,
             "ncorners": 2,
-            "nvertices": 21,
+            "nvertices": 5,
         },
-        "y_neg_neu": {
-            "ncells": 20,
+        "y_neg": {
+            "ncells": 40,
             "ncorners": 2,
-            "nvertices": 21,
-        },
-        "y_neg_dir": {
-            "ncells": 20,
-            "ncorners": 2,
-            "nvertices": 21,
+            "nvertices": 41,
         },
         "y_pos": {
-            "ncells": 20,
+            "ncells": 40,
             "ncorners": 2,
-            "nvertices": 21,
+            "nvertices": 41,
         },
     }
 
@@ -83,29 +78,24 @@ class Quad(object):
     }
     BOUNDARIES = {
         "x_neg": {
-            "ncells": 40,
+            "ncells": 4,
             "ncorners": 2,
-            "nvertices": 41,
+            "nvertices": 5,
         },
         "x_pos": {
+            "ncells": 4,
+            "ncorners": 2,
+            "nvertices": 5,
+        },
+        "y_neg": {
             "ncells": 40,
             "ncorners": 2,
             "nvertices": 41,
         },
-        "y_neg_neu": {
-            "ncells": 4,
-            "ncorners": 2,
-            "nvertices": 5,
-        },
-        "y_neg_dir": {
-            "ncells": 4,
-            "ncorners": 2,
-            "nvertices": 5,
-        },
         "y_pos": {
-            "ncells": 4,
+            "ncells": 40,
             "ncorners": 2,
-            "nvertices": 5,
+            "nvertices": 41,
         },
     }
 

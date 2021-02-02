@@ -16,11 +16,8 @@
 # ----------------------------------------------------------------------
 
 SUBDIRS = \
-	linearelasticity \
-	viscoelasticity \
-	poroelasticity \
-	petsc \
-	eqinfo
+	terzaghi \
+	mandel
 
 
-# End of file
+# End of file 
