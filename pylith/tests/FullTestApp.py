@@ -195,7 +195,8 @@ class HDF5Checker(object):
         toleranceAbsMask = 0.1
         ratio_tolerance = self.ratio_tolerance
         diff_tolerance = self.diff_tolerance
-        maskZero = fieldE != 0.0
+        #maskZero = fieldE != 0.0
+        maskZero = numpy.abs(fieldE) > 1e-15
         scale = numpy.mean(numpy.abs(fieldE[maskZero].ravel())) if numpy.sum(maskZero) > 0 else 1.0
         for istep in range(nsteps):
             for icomp in range(ncomps):
@@ -217,8 +218,10 @@ class HDF5Checker(object):
 
                 if numpy.sum(okay) != npts:
                     print("Error in component {} of field '{}' at time step {}.".format(icomp, fieldName, istep))
-                #    print("Expected values: ", fieldE[istep, :, :])
-                #    print("Output values: ", field[istep, :, :])
+                    # Debug Output
+                    print("Expected values: ", fieldE[istep, :, :])
+                    print("Output values: ", field[istep, :, :])
+
                     print("Total # not okay: %d" % numpy.sum(~okay))
                     n_okay_maskR = numpy.logical_and(~okay, maskR)
                     if numpy.sum(n_okay_maskR) > 0:
