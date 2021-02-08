@@ -29,11 +29,11 @@ from terzaghi_soln import AnalyticalSoln
 from terzaghi_gendb import GenerateDB
 
 # We do not include trace_strain in the solution fields, because of the
-# poor convergence of the series solution. 
+# poor convergence of the series solution.
 SOLUTION_FIELDS = ["displacement", "pressure"]
 
-ratio_tolerance = {'displacement': 1.0, 'pressure': 1.0}
-diff_tolerance = {'displacement': 0.1, 'pressure': 0.1}
+ratio_tolerance = {'displacement': 0.1, 'pressure': 1.0}
+diff_tolerance = {'displacement': 0.1, 'pressure': 1.0}
 # ----------------------------------------------------------------------------------------------------------------------
 
 

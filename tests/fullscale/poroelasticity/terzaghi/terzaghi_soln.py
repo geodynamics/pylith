@@ -69,7 +69,7 @@ c = (k / mu_f) / S  # m^2 / s, Cheng (B.16)
 # Time steps
 ts = 0.0028666667  # sec
 nts = 2
-tsteps = numpy.arange(0.0, ts * nts, ts) + ts  # sec
+tsteps = numpy.arange(0.0, ts * nts, ts)  + ts # sec
 
 # ----------------------------------------------------------------------
 
@@ -210,7 +210,7 @@ class AnalyticalSoln(object):
                 displacement[0, :, 1] = ((P_0 * L * (1.0 - 2.0 * nu_u)) / (2.0 * G * (1.0 - nu_u))) * (1.0 - z_star)
             else:
                 t_star = (c * t) / ((2 * L)**2)
-                displacement[t_track, :, 1] = ((P_0 * L * (1.0 - 2.0 * nu_u)) / (2.0 * G * (1.0 - nu_u))) * (1.0 - z_star) + ((P_0 * L * (nu_u - nu)) / (2.0 * G * (1.0 - nu_u) * (1.0 - nu))) * self.F2(z_star, t_star)
+                displacement[t_track, :, 1] =  (((P_0 * L * (1.0 - 2.0 * nu_u)) / (2.0 * G * (1.0 - nu_u))) * (1.0 - z_star) + ((P_0 * L * (nu_u - nu)) / (2.0 * G * (1.0 - nu_u) * (1.0 - nu))) * self.F2(z_star, t_star))
             t_track += 1
 
         return displacement
@@ -228,7 +228,7 @@ class AnalyticalSoln(object):
         for t in tsteps:
             z_star = 1 - z / L
             t_star = (c * t) / (4. * L**2)
-            pressure[t_track, :, 0] = ((-P_0 * eta) / (G * S)) * self.F1(z_star, t_star)
+            pressure[t_track, :, 0] = -((P_0 * eta) / (G * S)) * self.F1(z_star, t_star)
             t_track += 1
 
         return pressure

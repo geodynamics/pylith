@@ -53,12 +53,12 @@ xmax = 10.0  # m
 ymin = 0.0  # m
 ymax = 1.0  # m
 
-vertical_stress = 1.0  # Pa
+vertical_stress = 10.0  # Pa
 F = vertical_stress
 
 # Height of column, m
-b = (xmax - xmin)
-a = (ymax - ymin)
+a = (xmax - xmin)
+b = (ymax - ymin)
 
 M = 1.0 / (phi / K_fl + (alpha - phi) / K_sg)  # Pa
 K_u = K_d + alpha * alpha * M  # Pa,      Cheng (B.5)
@@ -73,7 +73,7 @@ B = (3. * (nu_u - nu)) / (alpha * (1. - 2. * nu) * (1. + nu_u))
 # Time steps
 ts = 0.0028666667  # sec
 nts = 2
-tsteps = numpy.arange(0.0, ts * nts, ts)  # sec
+tsteps = numpy.arange(0.0, ts * nts, ts) + ts  # sec
 
 
 # ----------------------------------------------------------------------
@@ -83,8 +83,8 @@ class AnalyticalSoln(object):
     """
     SPACE_DIM = 2
     TENSOR_SIZE = 4
-    ITERATIONS = 1000
-    EPS = 1e-5
+    ITERATIONS = 300
+    EPS = 1e-25
 
     def __init__(self):
         self.fields = {
@@ -289,19 +289,19 @@ class AnalyticalSoln(object):
         z = locs[:, 1]
         t_track = 0
         zeroArray = self.mandelZeros()
-        
+
         for t in tsteps:
-        
+
             eps_A = 0.0
             eps_B = 0.0
             eps_C = 0.0
-        
+
             for i in numpy.arange(1, self.ITERATIONS+1,1):
                 x_n = zeroArray[i-1]
                 eps_A += (x_n * numpy.exp( (-1.0*x_n*x_n*c*t)/(a*a)) * numpy.cos(x_n)*numpy.cos( (x_n*x)/a)) / (a * (x_n - numpy.sin(x_n)*numpy.cos(x_n)))
                 eps_B += ( numpy.exp( (-1.0*x_n*x_n*c*t)/(a*a)) * numpy.sin(x_n)*numpy.cos(x_n)) / (x_n - numpy.sin(x_n)*numpy.cos(x_n))
                 eps_C += ( numpy.exp( (-1.0*x_n*x_n*c*t)/(x_n*x_n)) * numpy.sin(x_n)*numpy.cos(x_n)) / (x_n - numpy.sin(x_n)*numpy.cos(x_n))
-        
+
             trace_strain[t_track,:,0] = (F/G)*eps_A + ( (F*nu)/(2.0*G*a)) - eps_B/(G*a) - (F*(1.0-nu))/(2/0*G*a) + eps_C/(G*a)
             t_track += 1
 
@@ -314,10 +314,11 @@ class AnalyticalSoln(object):
         Compute roots for analytical mandel problem solutions
         """
         zeroArray = numpy.zeros(self.ITERATIONS)
+        x0 = 0
 
         for i in numpy.arange(1, self.ITERATIONS + 1, 1):
-            a1 = (i - 1.0) * numpy.pi * numpy.pi / 4.0 + self.EPS
-            a2 = a1 + numpy.pi / 2
+            a1 = x0 + numpy.pi/4
+            a2 = x0 + numpy.pi/2 - 10000*2.2204e-16
             am = a1
             for j in numpy.arange(0, self.ITERATIONS, 1):
                 y1 = numpy.tan(a1) - ((1.0 - nu) / (nu_u - nu)) * a1
@@ -331,6 +332,7 @@ class AnalyticalSoln(object):
                 if (numpy.abs(y2) < self.EPS):
                     am = a2
             zeroArray[i - 1] = am
+            x0 += numpy.pi
         return zeroArray
 
     def strain(self, locs):
@@ -415,7 +417,7 @@ class AnalyticalSoln(object):
         z = locs[:, 1]
 
         displacement[0, :, 0] = 0.0  # (F*nu_u*x)/(2.*G*a)
-        displacement[0, :, 1] = 0.0  # -1.*(F*(1.-nu_u)*z)/(2.*G*a)
+        displacement[0, :, 1] = -1.0  # -1.*(F*(1.-nu_u)*z)/(2.*G*a)
 
         return displacement
 

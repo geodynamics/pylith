@@ -29,7 +29,7 @@ from mandel_soln import AnalyticalSoln
 from mandel_gendb import GenerateDB
 
 # We do not include trace_strain in the solution fields, because of the
-# poor convergence of the series solution. 
+# poor convergence of the series solution.
 SOLUTION_FIELDS = ["displacement", "pressure"]
 
 ratio_tolerance = {'displacement': 1.0, 'pressure': 1.0}

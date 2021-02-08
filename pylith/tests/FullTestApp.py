@@ -219,8 +219,8 @@ class HDF5Checker(object):
                 if numpy.sum(okay) != npts:
                     print("Error in component {} of field '{}' at time step {}.".format(icomp, fieldName, istep))
                     # Debug Output
-                    print("Expected values: ", fieldE[istep, :, :])
-                    print("Output values: ", field[istep, :, :])
+                #    print("Expected values: ", fieldE[istep, :, :])
+                #    print("Output values: ", field[istep, :, :])
 
                     print("Total # not okay: %d" % numpy.sum(~okay))
                     n_okay_maskR = numpy.logical_and(~okay, maskR)
