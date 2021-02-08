@@ -34,8 +34,7 @@ dist_noinst_DATA = \
 	mesh_quad.exo \
 	mandel.cfg \
 	mandel_tri.cfg \
-	mandel_quad.cfg \
-	displacement.timedb
+	mandel_quad.cfg 
 
 noinst_TMP = \
 	mandel_bc.spatialdb \
