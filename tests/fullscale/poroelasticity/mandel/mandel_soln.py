@@ -13,24 +13,26 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests/fullscale/poroelasticity/terzaghi/terzaghi_soln.py
+# @file tests/fullscale/poroelasticity/mandel/mandel_soln.py
 #
 # @brief Analytical solution to Mandel's problem.
+# Owing to the symmetry of the problem, we only need consider the quarter
+# domain case.
 #
-#          -2F
-#       ----------
-#       |        |
-#  P=0  |        | P=0
-#       |        |
-#       |        |
-#       ----------
-#         +2F
+#           -F
+#        ----------
+#        |        |
+#  Ux=0  |        | P=0
+#        |        |
+#        |        |
+#        ----------
+#          Uy=0
 #
 # Dirichlet boundary conditions
-#   Ux(+-1,0) = 0
-#   Uy(x,+1) = 0
+#   Ux(0,y) = 0
+#   Uy(x,0) = 0
 # Neumann boundary conditions
-#   \tau_normal(x,+1) = 1*Pa
+#   \tau_normal(x,ymax) = -1*Pa
 
 import numpy
 
@@ -53,12 +55,14 @@ xmax = 10.0  # m
 ymin = 0.0  # m
 ymax = 1.0  # m
 
-vertical_stress = 10.0  # Pa
-F = vertical_stress
 
 # Height of column, m
 a = (xmax - xmin)
 b = (ymax - ymin)
+
+
+vertical_stress = 1.0  # Pa
+F = vertical_stress*a
 
 M = 1.0 / (phi / K_fl + (alpha - phi) / K_sg)  # Pa
 K_u = K_d + alpha * alpha * M  # Pa,      Cheng (B.5)
