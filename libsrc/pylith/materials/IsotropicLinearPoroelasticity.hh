@@ -18,7 +18,7 @@
 
 /** @file libsrc/materials/IsotropicLinearPoroelasticity.hh
  *
- * @brief C++ class for isotropic linear incompressible elasticity.
+ * @brief C++ class for isotropic linear poroelasticity.
  */
 
 #if !defined(pylith_materials_isotropiclinearporoelasticity_hh)
