@@ -1,0 +1,47 @@
+// -*- C++ -*- (syntax highlighting)
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values =     28
+  value-names =  density  vs  vp viscosity viscous_strain_xx viscous_strain_yy viscous_strain_zz viscous_strain_xy viscous_strain_yz viscous_strain_xz total_strain_xx total_strain_yy total_strain_zz total_strain_xy total_strain_yz total_strain_xz  reference_stress_xx  reference_stress_yy  reference_stress_zz  reference_stress_xy reference_stress_yz reference_stress_xz  reference_strain_xx  reference_strain_yy  reference_strain_zz  reference_strain_xy reference_strain_yz reference_strain_xz
+  value-units =  kg/m**3  m/s  m/s Pa*s None None None None None None None None None None None None Pa Pa Pa Pa Pa Pa None None None None None None
+  num-locs =      1
+  data-dim =    0
+  space-dim =    3
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 3
+  }
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) z coordinate (m)
+// (4) density (kg/m**3)
+// (5) vs (m/s)
+// (6) vp (m/s)
+// (7) viscosity (Pa-s)
+// (8) viscous_strain_xx (None)
+// (9) viscous_strain_yy (None)
+// (10) viscous_strain_zz (None)
+// (11) viscous_strain_xy (None)
+// (12) viscous_strain_yz (None)
+// (13) viscous_strain_xz (None)
+// (14) total_strain_xx (None)
+// (15) total_strain_yy (None)
+// (16) total_strain_zz (None)
+// (17) total_strain_xy (None)
+// (18) total_strain_yz (None)
+// (19) total_strain_xz (None)
+// (20) reference_stress_xx (Pa)
+// (21) reference_stress_yy (Pa)
+// (22) reference_stress_zz (Pa)
+// (23) reference_stress_xy (Pa)
+// (24) reference_stress_yz (Pa)
+// (25) reference_stress_xz (Pa)
+// (26) reference_strain_xx (None)
+// (27) reference_strain_yy (None)
+// (28) reference_strain_zz (None)
+// (29) reference_strain_xy (None)
+// (30) reference_strain_yz (None)
+// (31) reference_strain_xz (None)
+0.00 0.00 0.00  2500.0  3464.1016  6000.0  9.467279917257993e+17  0.00 0.00 0.00 0.0 0.0 0.0  0.0 0.0 0.00 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0
