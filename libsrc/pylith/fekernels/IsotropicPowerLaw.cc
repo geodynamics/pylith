@@ -1483,10 +1483,13 @@ pylith::fekernels::IsotropicPowerLaw3D::f1v(const PylithInt dim,
                                   aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_stress]};
 
     PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-    IsotropicLinearElasticity3D::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
-                                            aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, stressTensor);
+    IsotropicLinearElasticity3D::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
+                                            aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
+    //*********DEBUG*********
+    // stressTensor[1] = 0.0;
+    // stressTensor[3] = 0.0;
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
         f1[i] -= stressTensor[i];
     } // for
@@ -1562,10 +1565,13 @@ pylith::fekernels::IsotropicPowerLaw3D::f1v_refstate(const PylithInt dim,
                                   aOff[i_stress]};
 
     PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-    IsotropicLinearElasticity3D::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
-                                                     aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, stressTensor);
+    IsotropicLinearElasticity3D::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
+                                                     aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
+    //*********DEBUG*********
+    // stressTensor[1] = 0.0;
+    // stressTensor[3] = 0.0;
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
         f1[i] -= stressTensor[i];
     } // for
@@ -1646,6 +1652,9 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
     PylithScalar devStressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, devStressTensor);
+    //*********DEBUG*********
+    // devStressTensor[1] = 0.0;
+    // devStressTensor[3] = 0.0;
     const PylithScalar devStressTpdt[6] = {
         devStressTensor[0],
         devStressTensor[4],
@@ -1654,6 +1663,7 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
         devStressTensor[5],
         devStressTensor[2],
     };
+    devStressTensor[0] = 0.0;
 
     const PylithScalar shearModulus = a[aOff[i_shearModulus]];
     const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
@@ -1699,7 +1709,7 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
     PylithReal C2323 = C1212;
     PylithReal C3311 = C1122;
     PylithReal C3333 = C1111;
-#if 1
+#if 0
     std::cout << "Elastic Jacobian:" << std::endl;
     std::cout << "    C1111:" << C1111 << std::endl;
     std::cout << "    C1122:" << C1122 << std::endl;
@@ -2318,6 +2328,19 @@ pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress(const PylithInt dim,
     stressTensor[3] += devStressTpdt[3];
     stressTensor[6] += devStressTpdt[5];
     stressTensor[7] += devStressTpdt[4];
+#if 1
+    const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
+    const PylithScalar j2Test = sqrt(0.5*devStressProdTpdt);
+    PylithScalar dtTest = 0.0;
+    if (j2Test <= 0.0) {
+        dtTest = 1.0e30;
+    } else {
+        dtTest = pow((powerLawReferenceStress/j2Test), (powerLawExponent - 1.0)) *
+            (powerLawReferenceStress/shearModulus)/(powerLawReferenceStrainRate * 6.0);
+    } //else
+    std::cout << "Relaxation time:" << dtTest << std::endl;
+#endif
+
 
 } // deviatoricStress
 

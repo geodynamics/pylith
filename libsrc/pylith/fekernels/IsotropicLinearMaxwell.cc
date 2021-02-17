@@ -25,6 +25,7 @@
 
 #include <cassert> // USES assert()
 #include <cmath> // USES exp()
+#include <iostream> // USES std::cout
 
 // =====================================================================================================================
 // Kernels for isotropic, linear Maxwell viscoelastic plane strain.
@@ -1064,6 +1065,24 @@ pylith::fekernels::IsotropicLinearMaxwell3D::Jf3vu(const PylithInt dim,
     const PylithReal C1111 = bulkModulus + 4.0*dq*shearModulus/3.0;
     const PylithReal C1122 = bulkModulus - 2.0*dq*shearModulus/3.0;
     const PylithReal C1212 = dq*shearModulus;
+#if 1
+    const PylithReal C2222 = C1111;
+    const PylithReal C3333 = C1111;
+    const PylithReal C1313 = C1212;
+    const PylithReal C2323 = C1212;
+    const PylithReal C2211 = C1122;
+    const PylithReal C3311 = C1122;
+    std::cout << "Viscoelastic Jacobian:" << std::endl;
+    std::cout << "    C1111:" << C1111 << std::endl;
+    std::cout << "    C1122:" << C1122 << std::endl;
+    std::cout << "    C1212:" << C1212 << std::endl;
+    std::cout << "    C1313:" << C1313 << std::endl;
+    std::cout << "    C2211:" << C2211 << std::endl;
+    std::cout << "    C2222:" << C2222 << std::endl;
+    std::cout << "    C2323:" << C2323 << std::endl;
+    std::cout << "    C3311:" << C3311 << std::endl;
+    std::cout << "    C3333:" << C3333 << std::endl;
+#endif
 
     /* j(f,g,df,dg) = C(f,df,g,dg)
      *
@@ -1252,6 +1271,10 @@ pylith::fekernels::IsotropicLinearMaxwell3D::deviatoricStress(const PylithInt di
     stress[6] += stress[2]; // stress_zx
     stress[7] += stress[5]; // stress_zy
     stress[8] += 2.0 * shearModulus * visStrainTpdt[2]; // stress_zz
+#if 1
+    const PylithScalar maxwellTime = a[aOff[i_maxwellTime]];
+     std::cout << "Maxwell time:" << maxwellTime << std::endl;
+#endif
 } // deviatoricStress
 
 
