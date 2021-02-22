@@ -17,7 +17,7 @@
 #
 # @brief Python DumpParameters object for dumping PyLith parameter information to a file.
 
-from pyre.components.Component import Component
+from pythia.pyre.components.Component import Component
 
 from .PetscManager import PetscManager
 
@@ -52,7 +52,7 @@ class DumpParameters(Component):
         """
         Collect version information and parameters.
         """
-        from CollectVersionInfo import CollectVersionInfo
+        from .CollectVersionInfo import CollectVersionInfo
         import datetime
         self.info = CollectVersionInfo.asDict()
         self.info["timestamp"] = datetime.datetime.now().isoformat()

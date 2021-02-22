@@ -39,9 +39,9 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
     Factory: mesh_refiner
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    levels = pyre.inventory.int("levels", default=1, validator=pyre.inventory.greaterEqual(1))
+    levels = pythia.pyre.inventory.int("levels", default=1, validator=pythia.pyre.inventory.greaterEqual(1))
     levels.meta['tip'] = "Number of refinement levels."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

@@ -45,7 +45,7 @@ pylith::meshio::TestMeshIOLagrit::setUp(void) {
 
     _io->PyreComponent::setIdentifier("TestMeshIOLagrit");
     const char* journalName = _io->PyreComponent::getName();
-    journal::debug_t debug(journalName);
+    pythia::journal::debug_t debug(journalName);
     // debug.activate(); // DEBUGGING
 } // setUp
 
@@ -55,7 +55,7 @@ pylith::meshio::TestMeshIOLagrit::setUp(void) {
 void
 pylith::meshio::TestMeshIOLagrit::tearDown(void) {
     const char* journalName = _io->PyreComponent::getName();
-    journal::debug_t debug(journalName);
+    pythia::journal::debug_t debug(journalName);
     debug.deactivate(); // DEBUGGING
 
     TestMeshIO::tearDown();

@@ -28,7 +28,7 @@ def icFactory(name):
     """
     Factory for initial conditions items.
     """
-    from pyre.inventory import facility
+    from pythia.pyre.inventory import facility
     from pylith.problems.InitialConditionDomain import InitialConditionDomain
     return facility(name, family="initial_conditions", factory=InitialConditionDomain)
 
@@ -53,32 +53,32 @@ class TimeDependent(Problem, ModuleTimeDependent):
     FACTORY: problem.
     """
 
-    import pyre.inventory
-    from pyre.units.time import year
+    import pythia.pyre.inventory
+    from pythia.pyre.units.time import year
     from pylith.utils.EmptyBin import EmptyBin
 
-    dtInitial = pyre.inventory.dimensional("initial_dt", default=1.0 * year,
-                                           validator=pyre.inventory.greater(0.0 * year))
+    dtInitial = pythia.pyre.inventory.dimensional("initial_dt", default=1.0 * year,
+                                           validator=pythia.pyre.inventory.greater(0.0 * year))
     dtInitial.meta['tip'] = "Initial time step."
 
-    startTime = pyre.inventory.dimensional("start_time", default=0.0 * year)
+    startTime = pythia.pyre.inventory.dimensional("start_time", default=0.0 * year)
     startTime.meta['tip'] = "Start time for problem."
 
-    endTime = pyre.inventory.dimensional("end_time", default=0.1 * year,
-                                         validator=pyre.inventory.greaterEqual(0.0 * year))
+    endTime = pythia.pyre.inventory.dimensional("end_time", default=0.1 * year,
+                                         validator=pythia.pyre.inventory.greaterEqual(0.0 * year))
     endTime.meta['tip'] = "End time for problem."
 
-    maxTimeSteps = pyre.inventory.int("max_timesteps", default=20000, validator=pyre.inventory.greater(0))
+    maxTimeSteps = pythia.pyre.inventory.int("max_timesteps", default=20000, validator=pythia.pyre.inventory.greater(0))
     maxTimeSteps.meta['tip'] = "Maximum number of time steps."
 
-    ic = pyre.inventory.facilityArray("ic", itemFactory=icFactory, factory=EmptyBin)
+    ic = pythia.pyre.inventory.facilityArray("ic", itemFactory=icFactory, factory=EmptyBin)
     ic.meta['tip'] = "Initial conditions."
 
-    shouldNotifyIC = pyre.inventory.bool("notify_observers_ic", default=False)
+    shouldNotifyIC = pythia.pyre.inventory.bool("notify_observers_ic", default=False)
     shouldNotifyIC.meta["tip"] = "Notify observers of solution with initial conditions."
 
     from .ProgressMonitorTime import ProgressMonitorTime
-    progressMonitor = pyre.inventory.facility(
+    progressMonitor = pythia.pyre.inventory.facility(
         "progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
     progressMonitor.meta['tip'] = "Simple progress monitor via text file."
 

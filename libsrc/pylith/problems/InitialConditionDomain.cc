@@ -94,7 +94,7 @@ pylith::problems::InitialConditionDomain::setValues(pylith::topology::Field* sol
     fieldQuery.queryDB();
     fieldQuery.closeDB(_db);
 
-    journal::debug_t debug(PyreComponent::getName());
+    pythia::journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
         PYLITH_COMPONENT_DEBUG("Displaying solution field");
         solution->view("Solution field with initial values", pylith::topology::Field::VIEW_ALL);

@@ -49,7 +49,7 @@
 
 import numpy
 
-from pyre.units.time import year
+from pythia.pyre.units.time import year
 
 # Physical properties
 p_density = 2500.0

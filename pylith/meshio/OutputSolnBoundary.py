@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/OutputSolnBoundary.py
+# @file pythia.pyre/meshio/OutputSolnBoundary.py
 #
 # @brief Python object for managing output of finite-element solution
 # information over a subdomain.
@@ -49,9 +49,9 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
     Factory: observer
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    label = pyre.inventory.str("label", default="", validator=validateLabel)
+    label = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Label identifier for boundary."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

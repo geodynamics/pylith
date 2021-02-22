@@ -35,17 +35,17 @@ class AuxSubfieldsAbsorbingDampers(PetscComponent):
       - *vp* Dilatational (P) wave speed subfield.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from pylith.topology.Subfield import Subfield
 
-    density = pyre.inventory.facility("density", family="auxiliary_subfield", factory=Subfield)
+    density = pythia.pyre.inventory.facility("density", family="auxiliary_subfield", factory=Subfield)
     density.meta['tip'] = "Mass density subfield."
 
-    vs = pyre.inventory.facility("vs", family="auxiliary_subfield", factory=Subfield)
+    vs = pythia.pyre.inventory.facility("vs", family="auxiliary_subfield", factory=Subfield)
     vs.meta['tip'] = "Shear (S) wave speed subfield."
 
-    vp = pyre.inventory.facility("vp", family="auxiliary_subfield", factory=Subfield)
+    vp = pythia.pyre.inventory.facility("vp", family="auxiliary_subfield", factory=Subfield)
     vp.meta['tip'] = "Dilatational (P) wave speed subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

@@ -35,9 +35,9 @@
 # J. Geophys. Res., 117, B01302, doi:10.1029/2011JB008524.
 
 # ----------------------------------------------------------------------
-from pyre.applications.Script import Script as Application
-from pyre.components.Component import Component
-import pyre.inventory
+from pythia.pyre.applications.Script import Script as Application
+from pythia.pyre.components.Component import Component
+import pythia.pyre.inventory
 
 import numpy
 
@@ -49,7 +49,7 @@ class JournalFile(Component):
     class Inventory(Component.Inventory):
         """Pyre properties and facilities for JournalFile.
         """
-        filename = pyre.inventory.str("filename", default="geometry_surfs.jou")
+        filename = pythia.pyre.inventory.str("filename", default="geometry_surfs.jou")
         filename.meta["tip"] = "Name of generated CUBIT/Trelis journal file."
         
     
@@ -123,7 +123,7 @@ class SlabContoursFile(Component):
     class Inventory(Component.Inventory):
         """Pyre properties and facilities for SlabContourFile.
         """
-        filename = pyre.inventory.str("filename", default="cas_contours_dep.in.txt.gz")
+        filename = pythia.pyre.inventory.str("filename", default="cas_contours_dep.in.txt.gz")
         filename.meta["tip"] = "Name of ASCII file with slab contours."
         
     
@@ -172,25 +172,25 @@ class SlabExtender(Component):
     class Inventory(Component.Inventory):
         """Pyre properties and facilities for SlabExtender.
         """
-        from pyre.units.length import km
-        from pyre.units.angle import deg
+        from pythia.pyre.units.length import km
+        from pythia.pyre.units.angle import deg
         
-        upDipElev = pyre.inventory.dimensional("up_dip_elev", default=1.0*km)
+        upDipElev = pythia.pyre.inventory.dimensional("up_dip_elev", default=1.0*km)
         upDipElev.meta["tip"] = "Elevation of contours extended in up-dip direction."
         
-        upDipDist = pyre.inventory.dimensional("up_dip_dist", default=600.0*km)
+        upDipDist = pythia.pyre.inventory.dimensional("up_dip_dist", default=600.0*km)
         upDipDist.meta["tip"] = "Distance to extend contours in up-dip direction."
         
-        upDipAngle = pyre.inventory.dimensional("up_dip_angle", default=10.0*deg)
+        upDipAngle = pythia.pyre.inventory.dimensional("up_dip_angle", default=10.0*deg)
         upDipAngle.meta["tip"] = "Distance to extend contours in up-dip direction."
         
-        faultStrike = pyre.inventory.dimensional("fault_strike", default=0.0*deg)
+        faultStrike = pythia.pyre.inventory.dimensional("fault_strike", default=0.0*deg)
         faultStrike.meta["tip"] = "Approximate strike of fault."
 
-        contoursStride = pyre.inventory.int("contour_stride", default=4)
+        contoursStride = pythia.pyre.inventory.int("contour_stride", default=4)
         contoursStride.meta["tip"] = "Stride to use in decimating number of contours."
 
-        pointsStride = pyre.inventory.int("points_stride", default=20)
+        pointsStride = pythia.pyre.inventory.int("points_stride", default=20)
         pointsStride.meta["tip"] = "Stride to use in decimating number of points in a contour."
         
 
@@ -230,7 +230,7 @@ class SlabExtender(Component):
 
         """
         import math
-        from pyre.units.length import m
+        from pythia.pyre.units.length import m
         
         key = min(self.contours.keys())
         contourTop = self.contours[key]
@@ -309,31 +309,31 @@ class SurfaceApp(Application):
     class Inventory(Application.Inventory):
         """Pyre properties and facilities for SurfaceApp.
         """
-        from pyre.units.length import km
-        from pyre.units.angle import deg
+        from pythia.pyre.units.length import km
+        from pythia.pyre.units.angle import deg
 
-        modeler = pyre.inventory.facility("cubit", factory=JournalFile)
+        modeler = pythia.pyre.inventory.facility("cubit", factory=JournalFile)
         modeler.meta["tip"] = "Surface modeler for slab."
 
-        contours = pyre.inventory.facility("slab", factory=SlabContoursFile)
+        contours = pythia.pyre.inventory.facility("slab", factory=SlabContoursFile)
         contours.meta["tip"] = "Slab contours."
 
-        extender = pyre.inventory.facility("extender", factory=SlabExtender)
+        extender = pythia.pyre.inventory.facility("extender", factory=SlabExtender)
         extender.meta["tip"] = "Extender for slab."
         
-        slabTopFilename = pyre.inventory.str("slab_top_filename", default="surf_slabtop.sat")
+        slabTopFilename = pythia.pyre.inventory.str("slab_top_filename", default="surf_slabtop.sat")
         slabTopFilename.meta["tip"] = "Name of ACIS file with slab top surface."
         
-        slabBotFilename = pyre.inventory.str("slab_bot_filename", default="surf_slabbot.sat")
+        slabBotFilename = pythia.pyre.inventory.str("slab_bot_filename", default="surf_slabbot.sat")
         slabBotFilename.meta["tip"] = "Name of ACIS file with slab bottom surface."
         
-        splayFilename = pyre.inventory.str("splay_filename", default="surf_splay.sat")
+        splayFilename = pythia.pyre.inventory.str("splay_filename", default="surf_splay.sat")
         splayFilename.meta["tip"] = "Name of ACIS file with splay fault surface."
 
-        slabThickness = pyre.inventory.dimensional("slab_thickness", default=50.0*km)
+        slabThickness = pythia.pyre.inventory.dimensional("slab_thickness", default=50.0*km)
         slabThickness.meta["tip"] = "Thickness of slab."
         
-        slabNormalDir = pyre.inventory.list("slab_normal_dir", default=[+0.209, -0.016, +0.979])
+        slabNormalDir = pythia.pyre.inventory.list("slab_normal_dir", default=[+0.209, -0.016, +0.979])
         slabNormalDir.meta["tip"] = "Approximate average upward normal direction for slab."
         
     
@@ -406,7 +406,7 @@ class SurfaceApp(Application):
 # ======================================================================
 if __name__ == "__main__":
 
-    from pyre.applications import start
+    from pythia.pyre.applications import start
     start(applicationClass=SurfaceApp)
 
     

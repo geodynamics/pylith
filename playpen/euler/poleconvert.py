@@ -24,7 +24,7 @@
 import math
 import numpy
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 class PoleConvert(Application):
   """
@@ -45,17 +45,17 @@ class PoleConvert(Application):
     ## @li \b geog_to_cart Flag to indicate geographic to Cartesian.
     ##
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    polesInputFile = pyre.inventory.str("poles_input_file",
+    polesInputFile = pythia.pyre.inventory.str("poles_input_file",
                                         default="input.poles")
     polesInputFile.meta['tip'] = "Filename of file containing input poles."
 
-    polesOutputFile = pyre.inventory.str("poles_output_file",
+    polesOutputFile = pythia.pyre.inventory.str("poles_output_file",
                                          default="output.poles")
     polesOutputFile.meta['tip'] = "Filename of output poles file."
 
-    geogToCart = pyre.inventory.bool("geog_to_cart", default=True)
+    geogToCart = pythia.pyre.inventory.bool("geog_to_cart", default=True)
     geogToCart.meta['tip'] = "Convert geographic to Cartesian."
 
 

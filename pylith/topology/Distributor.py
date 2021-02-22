@@ -41,17 +41,17 @@ class Distributor(PetscComponent, ModuleDistributor):
 
     # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    partitioner = pyre.inventory.str("partitioner", default="chaco",
-                                     validator=pyre.inventory.choice(["chaco", "metis", "parmetis", "simple"]))
+    partitioner = pythia.pyre.inventory.str("partitioner", default="chaco",
+                                     validator=pythia.pyre.inventory.choice(["chaco", "metis", "parmetis", "simple"]))
     partitioner.meta['tip'] = "Name of mesh partitioner."
 
-    writePartition = pyre.inventory.bool("write_partition", default=False)
+    writePartition = pythia.pyre.inventory.bool("write_partition", default=False)
     writePartition.meta['tip'] = "Write partition information to file."
 
     from pylith.meshio.DataWriterVTK import DataWriterVTK
-    dataWriter = pyre.inventory.facility("data_writer", factory=DataWriterVTK, family="data_writer")
+    dataWriter = pythia.pyre.inventory.facility("data_writer", factory=DataWriterVTK, family="data_writer")
     dataWriter.meta['tip'] = "Data writer for partition information."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

@@ -356,7 +356,7 @@ pylith::problems::Problem::initialize(void) {
     _solution->allocate();
     _solution->createScatter(_solution->mesh(), "global");
 
-    journal::debug_t debug(PyreComponent::getName());
+    pythia::journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
         PYLITH_COMPONENT_DEBUG("Displaying solution field layout");
         _solution->view("Solution field", pylith::topology::Field::VIEW_LAYOUT);

@@ -20,9 +20,9 @@ subpackage = mpi
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/modulesrc/module.am
 
-subpkgpyexec_LTLIBRARIES = _mpimodule.la
+subpkgpython_LTLIBRARIES = _mpi.la
 
-subpkgpyexec_PYTHON = mpi.py
+subpkgpython_PYTHON = mpi.py
 
 swig_sources = \
 	mpi.i \
@@ -34,12 +34,12 @@ swig_generated = \
 	mpi_wrap.cxx \
 	mpi.py
 
-_mpimodule_la_LDFLAGS = -module -avoid-version \
+_mpi_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist__mpimodule_la_SOURCES = $(swig_sources) $(swig_generated)
+dist__mpi_la_SOURCES = $(swig_sources) $(swig_generated)
 
-_mpimodule_la_LIBADD = \
+_mpi_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) \

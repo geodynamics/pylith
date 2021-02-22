@@ -15,9 +15,7 @@
 
 include $(top_srcdir)/check.am
 
-if ENABLE_HDF5
 TESTS = test_eqinfo.py
-endif
 
 dist_check_SCRIPTS = test_eqinfo.py
 

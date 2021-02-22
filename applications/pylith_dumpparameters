@@ -1,4 +1,4 @@
-#!@INTERPRETER@
+#!/usr/bin/env nemesis
 # -*- Python -*-
 #
 # ======================================================================
@@ -23,7 +23,7 @@
 # description of the parameter along with where it's current value was
 # set.
 #
-# Usage: pylithinfo.py [--verbose] [--fileout=FILE] [PyLith args]
+# Usage: pylith_dumpparameters [--quiet] [--fileout=FILE] [PyLith args]
 
 
 # ======================================================================
@@ -34,7 +34,7 @@ class ParametersApp(object):
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="pylithinfo"):
+    def __init__(self, name="infoapp"):
         """
         Constructor.
         """
@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     import argparse
     parser = argparse.ArgumentParser(description=description, epilog=addInfo)
-    parser.add_argument("--verbose-false", action="store_false", dest="verbose", help="Don't include description, location, and aliases in output.")
+    parser.add_argument("--quiet", action="store_false", dest="verbose", help="Don't include description, location, and aliases in output.")
     parser.add_argument("--format", action="store", dest="format", default="json", help="Format of output file.", choices=("ascii", "json"))
     parser.add_argument("--filename", action="store", dest="filename", default="pylith_parameters.json", help="Name of output file")
     args, extraArgs = parser.parse_known_args()

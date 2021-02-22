@@ -33,18 +33,10 @@ class AbsorbingDampers(BoundaryCondition, ModuleAbsorbingDampers):
       - None
 
     Facilities
-      - *auxiliary_subfields* Discretization of time-dependent Neumann parameters.
+      - *auxiliary_subfields* Discretization of absorbing dampers parameters.
 
     FACTORY: boundary_condition
     """
-
-    import pyre.inventory
-
-    from .AuxSubfieldsAbsorbingDampers import AuxSubfieldsAbsorbingDampers
-    from pylith.topology.Subfield import subfieldFactory
-    auxiliarySubfields = pyre.inventory.facilityArray(
-        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsAbsorbingDampers)
-    auxiliarySubfields.meta['tip'] = "Discretization of absorbing dampers parameters."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -54,6 +46,10 @@ class AbsorbingDampers(BoundaryCondition, ModuleAbsorbingDampers):
         """
         BoundaryCondition.__init__(self, name)
         return
+
+    def _defaults(self):
+        from .AuxSubfieldsAbsorbingDampers import AuxSubfieldsAbsorbingDampers
+        self.auxiliarySubfields = AuxSubfieldsAbsorbingDampers("auxiliary_subfields")
 
     def preinitialize(self, problem):
         """

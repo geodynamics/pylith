@@ -352,10 +352,10 @@ pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::Con
                                                          const pylith::bc::DirichletTimeDependent& bc,
                                                          const topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    journal::debug_t debug(_DirichletTimeDependent::pyreComponent);
-    debug << journal::at(__HERE__)
+    pythia::journal::debug_t debug(_DirichletTimeDependent::pyreComponent);
+    debug << pythia::journal::at(__HERE__)
           << "setKernelConstraint(constraint="<<constraint<<", bc="<<typeid(bc).name()<<", solution="<<solution.getLabel()
-          <<")" << journal::endl;
+          <<")" << pythia::journal::endl;
 
     PetscBdPointFunc bcKernel = NULL;
 
@@ -396,18 +396,18 @@ pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::Con
                    pylith::fekernels::TimeDependentFn::initialRateTimeHistory_vector;
         break;
     case 0x0: {
-        journal::warning_t warning(_DirichletTimeDependent::pyreComponent);
-        warning << journal::at(__HERE__)
+        pythia::journal::warning_t warning(_DirichletTimeDependent::pyreComponent);
+        warning << pythia::journal::at(__HERE__)
                 << "Dirichlet BC provides no constraints."
-                << journal::endl;
+                << pythia::journal::endl;
         break;
     } // case 0x0
     default: {
-        journal::error_t error(_DirichletTimeDependent::pyreComponent);
-        error << journal::at(__HERE__)
+        pythia::journal::error_t error(_DirichletTimeDependent::pyreComponent);
+        error << pythia::journal::at(__HERE__)
               << "Unknown combination of flags for Dirichlet BC terms (useInitial="<<bc.useInitial()
               << ", useRate="<<bc.useRate()<<", useTimeHistory="<<bc.useTimeHistory()<<")."
-              << journal::endl;
+              << pythia::journal::endl;
         throw std::logic_error("Unknown combination of flags for Dirichlet BC terms.");
     } // default
     } // switch

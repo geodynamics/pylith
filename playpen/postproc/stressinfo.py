@@ -28,7 +28,7 @@ import os
 import re
 import glob
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 class StressInfo(Application):
   """
@@ -53,29 +53,29 @@ class StressInfo(Application):
     ## @li \b friction_angle Friction angle for plasticity calculation.
     ## @li \b cohesion Cohesion for plasticity calculation.
 
-    import pyre.inventory
-    from pyre.units.pressure import MPa
-    from pyre.units.angle import degree
+    import pythia.pyre.inventory
+    from pythia.pyre.units.pressure import MPa
+    from pythia.pyre.units.angle import degree
 
-    vtkInputFile = pyre.inventory.str("vtk_input_file",
+    vtkInputFile = pythia.pyre.inventory.str("vtk_input_file",
                                           default="stress_t0001.vtk")
     vtkInputFile.meta['tip'] = "Name of VTK input file."
 
-    vtkOutputFile = pyre.inventory.str("vtk_output_file", default="output.vtk")
+    vtkOutputFile = pythia.pyre.inventory.str("vtk_output_file", default="output.vtk")
     vtkOutputFile.meta['tip'] = "Name of VTK output file."
 
-    tensorIndex = pyre.inventory.int("tensor_index", default=1)
+    tensorIndex = pythia.pyre.inventory.int("tensor_index", default=1)
     tensorIndex.meta['tip'] = "Index of desired input VTK field array."
 
-    tensorComponentsOrder = pyre.inventory.list("tensor_components_order",
+    tensorComponentsOrder = pythia.pyre.inventory.list("tensor_components_order",
                                                 default=[0, 1, 2, 3, 4, 5])
     tensorComponentsOrder.meta['tip'] = "Indices of xx, yy, zz, xy, yz, xz."
 
-    frictionAngle = pyre.inventory.dimensional("friction_angle",
+    frictionAngle = pythia.pyre.inventory.dimensional("friction_angle",
                                                default=30.0*degree)
     frictionAngle.meta['tip'] = "Friction angle for plasticity calculation."
 
-    cohesion = pyre.inventory.dimensional("cohesion",
+    cohesion = pythia.pyre.inventory.dimensional("cohesion",
                                           default=1.0*MPa)
     cohesion.meta['tip'] = "Cohesion for plasticity calculation."
     

@@ -19,7 +19,7 @@
 #
 # Each logger object manages the events for a single "logging class".
 
-from utils import EventLogger as ModuleEventLogger
+from .utils import EventLogger as ModuleEventLogger
 
 
 class EventLogger(ModuleEventLogger):

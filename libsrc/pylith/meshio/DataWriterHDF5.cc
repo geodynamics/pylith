@@ -251,8 +251,8 @@ pylith::meshio::DataWriterHDF5::close(void) {
             try {
                 Xdmf::write(hdf5Filename().c_str());
             } catch (const std::exception& err) {
-                journal::error_t error("datawriter");
-                error << err.what() << journal::endl;
+                pythia::journal::error_t error("datawriter");
+                error << err.what() << pythia::journal::endl;
             } // catch
         } // if
     } // if

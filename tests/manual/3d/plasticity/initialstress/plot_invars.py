@@ -3,8 +3,8 @@
 import numpy
 import h5py
 import matplotlib.pyplot as pyplot
-from pyre.units.time import year
-from pyre.units.unitparser import parser
+from pythia.pyre.units.time import year
+from pythia.pyre.units.unitparser import parser
 
 stepSizes = ["dt01", "dt02", "dt05", "dt10"]
 

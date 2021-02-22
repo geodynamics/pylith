@@ -61,35 +61,29 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
     FACTORY: boundary_condition
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    scaleName = pyre.inventory.str("scale_name", default="pressure",
-                                   validator=pyre.inventory.choice(["length", "time", "pressure", "density", "velocity"]))
+    scaleName = pythia.pyre.inventory.str("scale_name", default="pressure",
+                                   validator=pythia.pyre.inventory.choice(["length", "time", "pressure", "density", "velocity"]))
     scaleName.meta['tip'] = "Type of scale for nondimensionalizing Neumann boundary condition ('pressure' for elasticity)."
 
-    useInitial = pyre.inventory.bool("use_initial", default=True)
+    useInitial = pythia.pyre.inventory.bool("use_initial", default=True)
     useInitial.meta['tip'] = "Use initial term in time-dependent expression."
 
-    useRate = pyre.inventory.bool("use_rate", default=False)
+    useRate = pythia.pyre.inventory.bool("use_rate", default=False)
     useRate.meta['tip'] = "Use rate term in time-dependent expression."
 
-    useTimeHistory = pyre.inventory.bool("use_time_history", default=False)
+    useTimeHistory = pythia.pyre.inventory.bool("use_time_history", default=False)
     useTimeHistory.meta['tip'] = "Use time history term in time-dependent expression."
 
-    dbTimeHistory = pyre.inventory.facility("time_history", factory=NullComponent, family="temporal_database")
+    dbTimeHistory = pythia.pyre.inventory.facility("time_history", factory=NullComponent, family="temporal_database")
     dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
 
-    refDir1 = pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
+    refDir1 = pythia.pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
     refDir1.meta['tip'] = "First choice for reference direction to discriminate among tangential directions in 3-D."
 
-    refDir2 = pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
+    refDir2 = pythia.pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
     refDir2.meta['tip'] = "Second choice for reference direction to discriminate among tangential directions in 3-D."
-
-    from .AuxSubfieldsTimeDependent import AuxSubfieldsTimeDependent
-    from pylith.topology.Subfield import subfieldFactory
-    auxiliarySubfields = pyre.inventory.facilityArray(
-        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsTimeDependent)
-    auxiliarySubfields.meta['tip'] = "Discretization of time-dependent Neumann parameters."
 
     def __init__(self, name="neumanntimedependent"):
         """
@@ -97,6 +91,10 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
         """
         BoundaryCondition.__init__(self, name)
         return
+
+    def _defaults(self):
+        from .AuxSubfieldsTimeDependent import AuxSubfieldsTimeDependent
+        self.auxiliarySubfields = AuxSubfieldsTimeDependent("auxiliary_subfields")
 
     def preinitialize(self, problem):
         """

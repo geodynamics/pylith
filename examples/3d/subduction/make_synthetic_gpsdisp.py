@@ -31,14 +31,14 @@ import numpy
 import h5py
 import pdb
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 class MakeSyntheticGpsdisp(Application):
   """
   Python application to create synthetic data from PyLith points output.
   """
   
-  import pyre.inventory
+  import pythia.pyre.inventory
   ## Python object for managing MakeSyntheticGpsdisp facilities and properties.
   ##
   ## \b Properties
@@ -51,25 +51,25 @@ class MakeSyntheticGpsdisp(Application):
   ## @li \b vtk_output_file Name of VTK output file.
   ##
 
-  pointInputFile = pyre.inventory.str("point_input_file", default="cascadia-cgps_points.h5")
+  pointInputFile = pythia.pyre.inventory.str("point_input_file", default="cascadia-cgps_points.h5")
   pointInputFile.meta['tip'] = "HDF5 point output file from PyLith."
 
-  timeStep = pyre.inventory.int("time_step", default=0)
+  timeStep = pythia.pyre.inventory.int("time_step", default=0)
   timeStep.meta['tip'] = "Time step to use for data generation."
 
-  sigmaEast = pyre.inventory.float("sigma_east", default=0.0005)
+  sigmaEast = pythia.pyre.inventory.float("sigma_east", default=0.0005)
   sigmaEast.meta['tip'] = "Sigma value for East displacements."
 
-  sigmaNorth = pyre.inventory.float("sigma_north", default=0.0005)
+  sigmaNorth = pythia.pyre.inventory.float("sigma_north", default=0.0005)
   sigmaNorth.meta['tip'] = "Sigma value for North displacements."
 
-  sigmaUp = pyre.inventory.float("sigma_up", default=0.001)
+  sigmaUp = pythia.pyre.inventory.float("sigma_up", default=0.001)
   sigmaUp.meta['tip'] = "Sigma value for Up displacements."
 
-  outputFile = pyre.inventory.str("output_file", default="cascadia-cgps_disp.txt")
+  outputFile = pythia.pyre.inventory.str("output_file", default="cascadia-cgps_disp.txt")
   outputFile.meta['tip'] = "Name of ASCII output file."
 
-  vtkOutputFile = pyre.inventory.str("vtk_output_file", default="cascadia-cgps_disp.vtk")
+  vtkOutputFile = pythia.pyre.inventory.str("vtk_output_file", default="cascadia-cgps_disp.vtk")
   vtkOutputFile.meta['tip'] = "Name of VTK output file."
 
 

@@ -184,7 +184,7 @@ pylith::feassemble::IntegratorBoundary::updateState(const double t) {
     assert(_physics);
     _physics->updateAuxiliaryField(_auxiliaryField, t);
 
-    journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
         assert(_auxiliaryField);
         PYLITH_JOURNAL_DEBUG("IntegratorInterface component '" << GenericComponent::getName() << "' for '"
@@ -305,12 +305,12 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
                                                          const pylith::topology::Field& solution,
                                                          const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
-    journal::debug_t debug(_IntegratorBoundary::genericComponent);
-    debug << journal::at(__HERE__)
+    pythia::journal::debug_t debug(_IntegratorBoundary::genericComponent);
+    debug << pythia::journal::at(__HERE__)
           << "_IntegratorBoundary::computeRHSResidual(residual="<<residual<<", integrator="<<integrator
           <<", # kernels="<<kernels.size()<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()
           <<", solutionDot="<<solutionDot.getLabel()<<")"
-          << journal::endl;
+          << pythia::journal::endl;
 
     assert(integrator);
     assert(residual);

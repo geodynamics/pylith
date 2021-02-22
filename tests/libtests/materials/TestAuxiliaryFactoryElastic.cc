@@ -33,7 +33,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include "pylith/utils/journals.hh" // USES journal::debug_t
+#include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.
@@ -41,7 +41,7 @@ void
 pylith::materials::TestAuxiliaryFactoryElastic::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
-    journal::debug_t debug("auxiliaryfactoryelastic");
+    pythia::journal::debug_t debug("auxiliaryfactoryelastic");
     // debug.activate(); // DEBUGGING
 
     _data = new TestAuxiliaryFactoryElastic_Data();CPPUNIT_ASSERT(_data);

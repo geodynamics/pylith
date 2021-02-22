@@ -40,10 +40,10 @@ class SubfieldTraceStrain(SolutionSubfield):
     FACTORY: subfield
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from .SolutionSubfield import validateAlias
-    userAlias = pyre.inventory.str("alias", default="trace_strain", validator=validateAlias)
+    userAlias = pythia.pyre.inventory.str("alias", default="trace_strain", validator=validateAlias)
     userAlias.meta['tip'] = "Name for subfield."
 
     fieldName = "trace_strain"
@@ -62,7 +62,7 @@ class SubfieldTraceStrain(SolutionSubfield):
         Initialize subfield metadata.
         """
         from pylith.topology.Field import Field
-        from pyre.units.unit import one
+        from pythia.pyre.units.unit import one
         self.vectorFieldType = Field.SCALAR
         self.scale = one
         self._setComponents(spaceDim)

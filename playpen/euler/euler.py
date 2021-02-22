@@ -24,7 +24,7 @@
 import math
 import numpy
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 class Euler(Application):
   """
@@ -65,79 +65,79 @@ class Euler(Application):
     ## @li \b src_coordsys Coordinate system to convert from.
     ## @li \b dest_coordsys Coordinate system to convert to.
 
-    import pyre.inventory
-    from pyre.units.angle import deg
-    from pyre.units.length import m
-    from pyre.units.length import km
+    import pythia.pyre.inventory
+    from pythia.pyre.units.angle import deg
+    from pythia.pyre.units.length import m
+    from pythia.pyre.units.length import km
 
     from spatialdata.geocoords.CSGeoProj import CSGeoProj
-    srcCoordSys = pyre.inventory.facility("src_coordsys",
+    srcCoordSys = pythia.pyre.inventory.facility("src_coordsys",
                                           family="src_coordsys",
                                           factory=CSGeoProj)
     srcCoordSys.meta['tip'] = "Source coordinate system."
 
     from spatialdata.geocoords.CSGeo import CSGeo
-    destCoordSys = pyre.inventory.facility("dest_coordsys",
+    destCoordSys = pythia.pyre.inventory.facility("dest_coordsys",
                                            family="dest_coordsys",
                                            factory=CSGeo)
     destCoordSys.meta['tip'] = "Destination coordinate system."
 
-    dataDim = pyre.inventory.int("data_dim", default=2)
+    dataDim = pythia.pyre.inventory.int("data_dim", default=2)
     dataDim.meta['tip'] = "Dimension of data."
 
-    bcType = pyre.inventory.str("bc_type", default="dislocation")
+    bcType = pythia.pyre.inventory.str("bc_type", default="dislocation")
     bcType.meta['tip'] = "Type of BC (dislocation or displacement)."
 
-    pointsFile = pyre.inventory.str("points_file", default="points.def")
+    pointsFile = pythia.pyre.inventory.str("points_file", default="points.def")
     pointsFile.meta['tip'] = "Filename of file containing point coordinates."
 
-    pointsSpatialDB = pyre.inventory.str("points_spatialdb",
+    pointsSpatialDB = pythia.pyre.inventory.str("points_spatialdb",
                                          default="points.spatialdb")
     pointsSpatialDB.meta['tip'] = "Filename of output spatial database."
 
-    bcScale = pyre.inventory.float("bc_scale", default=1.0)
+    bcScale = pythia.pyre.inventory.float("bc_scale", default=1.0)
     bcScale.meta['tip'] = "Scaling factor for output BC."
 
-    upDir = pyre.inventory.list("up_dir", default=[0.0, 0.0, 1.0])
+    upDir = pythia.pyre.inventory.list("up_dir", default=[0.0, 0.0, 1.0])
     upDir.meta['tip'] = "Up direction."
 
-    normalDir = pyre.inventory.list("normal_dir", default=[1.0, 0.0, 0.0])
+    normalDir = pythia.pyre.inventory.list("normal_dir", default=[1.0, 0.0, 0.0])
     normalDir.meta['tip'] = "General preferred normal direction."
 
-    eulerLat = pyre.inventory.dimensional("euler_lat", default=0.0*deg)
+    eulerLat = pythia.pyre.inventory.dimensional("euler_lat", default=0.0*deg)
     eulerLat.meta['tip'] = "Latitude of Euler pole."
 
-    eulerLon = pyre.inventory.dimensional("euler_lon", default=0.0*deg)
+    eulerLon = pythia.pyre.inventory.dimensional("euler_lon", default=0.0*deg)
     eulerLon.meta['tip'] = "Longitude of Euler pole."
 
-    eulerRot = pyre.inventory.dimensional("euler_rot", default=0.0*deg)
+    eulerRot = pythia.pyre.inventory.dimensional("euler_rot", default=0.0*deg)
     eulerRot.meta['tip'] = "Rotation of Euler pole (CCW positive)."
 
-    dipSlip = pyre.inventory.bool("dip_slip", default=True)
+    dipSlip = pythia.pyre.inventory.bool("dip_slip", default=True)
     dipSlip.meta['tip'] = "Allow dip-slip to take up non-strike-slip movement."
 
-    dipCutoff = pyre.inventory.dimensional("dip_cutoff", default=75.0*deg)
+    dipCutoff = pythia.pyre.inventory.dimensional("dip_cutoff", default=75.0*deg)
     dipCutoff.meta['tip'] = "Cutoff dip below which dip-slip is allowed."
 
-    xMin = pyre.inventory.dimensional("x_min", default=-1.0e8*m)
+    xMin = pythia.pyre.inventory.dimensional("x_min", default=-1.0e8*m)
     xMin.meta['tip'] = "Minimum x-value for which to apply rotation."
 
-    xMax = pyre.inventory.dimensional("x_max", default=1.0e8*m)
+    xMax = pythia.pyre.inventory.dimensional("x_max", default=1.0e8*m)
     xMax.meta['tip'] = "Maximum x-value for which to apply rotation."
 
-    yMin = pyre.inventory.dimensional("y_min", default=-1.0e8*m)
+    yMin = pythia.pyre.inventory.dimensional("y_min", default=-1.0e8*m)
     yMin.meta['tip'] = "Minimum y-value for which to apply rotation."
 
-    yMax = pyre.inventory.dimensional("y_max", default=1.0e8*m)
+    yMax = pythia.pyre.inventory.dimensional("y_max", default=1.0e8*m)
     yMax.meta['tip'] = "Maximum y-value for which to apply rotation."
 
-    zMin = pyre.inventory.dimensional("z_min", default=-1.0e8*m)
+    zMin = pythia.pyre.inventory.dimensional("z_min", default=-1.0e8*m)
     zMin.meta['tip'] = "Minimum z-value for which to apply rotation."
 
-    zMax = pyre.inventory.dimensional("z_max", default=1.0e8*m)
+    zMax = pythia.pyre.inventory.dimensional("z_max", default=1.0e8*m)
     zMax.meta['tip'] = "Maximum z-value for which to apply rotation."
 
-    defaultValues = pyre.inventory.list("default_values",
+    defaultValues = pythia.pyre.inventory.list("default_values",
                                         default=[ 0.0, 0.0, 0.0])
     defaultValues.meta['tip'] = "Values used for out-of-range points."
 
@@ -356,7 +356,7 @@ class Euler(Application):
     Computes velocities in local Cartesian system from rotation about an
     Euler pole.
     """
-    from pyre.units.angle import deg
+    from pythia.pyre.units.angle import deg
     lonDeg = pointsLL[0]*deg
     latDeg = pointsLL[1]*deg
     lonPoint = lonDeg.value

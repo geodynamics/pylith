@@ -25,7 +25,7 @@
 import math
 import numpy
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 class GrabFaces(Application):
   """
@@ -51,22 +51,22 @@ class GrabFaces(Application):
     ## \b Facilities
     ## @li None
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    ucdFaceFile = pyre.inventory.str("ucd_face_file", default="test_face.inp")
+    ucdFaceFile = pythia.pyre.inventory.str("ucd_face_file", default="test_face.inp")
     ucdFaceFile.meta['tip'] = "Filename of ucd file containing face descriptions."
 
-    faultIDNum = pyre.inventory.int("fault_id_num", default=1)
+    faultIDNum = pythia.pyre.inventory.int("fault_id_num", default=1)
     faultIDNum.meta['tip'] = "ID number (material number) of fault to use."
 
-    pointOutputFile = pyre.inventory.str("point_output_file",
+    pointOutputFile = pythia.pyre.inventory.str("point_output_file",
                                          default="points.coordnorm")
     pointOutputFile.meta['tip'] = "Filename of output coordinates and normals."
 
-    nodeValuesList = pyre.inventory.list("node_values_list", default=[1, 2, 3])
+    nodeValuesList = pythia.pyre.inventory.list("node_values_list", default=[1, 2, 3])
     nodeValuesList.meta['tip'] = "Position of desired values in UCD face nodal attributes."
 
-    excludeZeroNormals = pyre.inventory.bool("exclude_zero_normals",
+    excludeZeroNormals = pythia.pyre.inventory.bool("exclude_zero_normals",
                                              default=False)
     excludeZeroNormals.meta['tip'] = "Whether to exclude points with zero normals."
 

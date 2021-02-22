@@ -33,10 +33,10 @@ class Homogeneous(PetscComponent):
       - *material* Material in problem.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from .IsotropicLinearElasticity import IsotropicLinearElasticity
-    material = pyre.inventory.facility("material", family="material", factory=IsotropicLinearElasticity)
+    material = pythia.pyre.inventory.facility("material", family="material", factory=IsotropicLinearElasticity)
     material.meta['tip'] = "Material in problem."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

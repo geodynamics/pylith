@@ -64,44 +64,44 @@ class AuxSubfieldsIsotropicLinearPoroelasticity(PetscComponent):
     # @li \b fluid_bulk_modulus fluid bulk modulus subfield.
     # @li \b biot_coefficient biot coefficient subfield.
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from pylith.topology.Subfield import Subfield
 
-    referenceStress = pyre.inventory.facility("reference_stress", family="auxiliary_subfield", factory=Subfield)
+    referenceStress = pythia.pyre.inventory.facility("reference_stress", family="auxiliary_subfield", factory=Subfield)
     referenceStress.meta['tip'] = "Reference stress subfield."
 
-    referenceStrain = pyre.inventory.facility("reference_strain", family="auxiliary_subfield", factory=Subfield)
+    referenceStrain = pythia.pyre.inventory.facility("reference_strain", family="auxiliary_subfield", factory=Subfield)
     referenceStrain.meta['tip'] = "Reference strain subfield."
 
-    shearModulus = pyre.inventory.facility("shear_modulus", family="auxiliary_subfield", factory=Subfield)
+    shearModulus = pythia.pyre.inventory.facility("shear_modulus", family="auxiliary_subfield", factory=Subfield)
     shearModulus.meta['tip'] = "Shear modulus subfield."
 
-    biotCoefficient = pyre.inventory.facility("biot_coefficient", family="auxiliary_subfield", factory=Subfield)
+    biotCoefficient = pythia.pyre.inventory.facility("biot_coefficient", family="auxiliary_subfield", factory=Subfield)
     biotCoefficient.meta['tip'] = "Biot coefficient subfield."
 
-    isotropicPermeability = pyre.inventory.facility("isotropic_permeability", family="auxiliary_subfield", factory=Subfield)
+    isotropicPermeability = pythia.pyre.inventory.facility("isotropic_permeability", family="auxiliary_subfield", factory=Subfield)
     isotropicPermeability.meta['tip'] = "Isotropic permeability subfield."
 
-    solidBulkModulus = pyre.inventory.facility("solid_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
+    solidBulkModulus = pythia.pyre.inventory.facility("solid_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
     solidBulkModulus.meta['tip'] = "Solid bulk modulus subfield."
     
-    fluidBulkModulus = pyre.inventory.facility("fluid_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
+    fluidBulkModulus = pythia.pyre.inventory.facility("fluid_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
     fluidBulkModulus.meta['tip'] = "Fluid bulk modulus subfield."
 
-    drainedBulkModulus = pyre.inventory.facility("drained_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
+    drainedBulkModulus = pythia.pyre.inventory.facility("drained_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
     drainedBulkModulus.meta['tip'] = "Drained bulk modulus subfield."
 
-    undrainedBulkModulus = pyre.inventory.facility("undrained_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
+    undrainedBulkModulus = pythia.pyre.inventory.facility("undrained_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
     undrainedBulkModulus.meta['tip'] = "Undrained bulk modulus subfield."
 
-    biotModulus = pyre.inventory.facility("biot_modulus", family="auxiliary_subfield", factory=Subfield)
+    biotModulus = pythia.pyre.inventory.facility("biot_modulus", family="auxiliary_subfield", factory=Subfield)
     biotModulus.meta['tip'] = "Biot modulus subfield."
 
-    youngsModulus = pyre.inventory.facility("youngs_modulus", family="auxiliary_subfield", factory=Subfield)
+    youngsModulus = pythia.pyre.inventory.facility("youngs_modulus", family="auxiliary_subfield", factory=Subfield)
     youngsModulus.meta['tip'] = "Young's modulus subfield."
 
-    poissonsRatio = pyre.inventory.facility("poissons_ratio", family="auxiliary_subfield", factory=Subfield)
+    poissonsRatio = pythia.pyre.inventory.facility("poissons_ratio", family="auxiliary_subfield", factory=Subfield)
     poissonsRatio.meta['tip'] = "Poisson's ratio subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

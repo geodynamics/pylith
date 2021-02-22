@@ -40,25 +40,12 @@ class Elasticity(Material, ModuleElasticity):
     FACTORY: material
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    from pylith.topology.Subfield import subfieldFactory
-    from pylith.utils.EmptyBin import EmptyBin
-
-    from .AuxSubfieldsElasticity import AuxSubfieldsElasticity
-    auxiliarySubfields = pyre.inventory.facilityArray(
-        "auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxSubfieldsElasticity)
-    auxiliarySubfields.meta['tip'] = "Discretization of elasticity properties."
-
-    from .DerivedSubfieldsElasticity import DerivedSubfieldsElasticity
-    derivedSubfields = pyre.inventory.facilityArray(
-        "derived_subfields", itemFactory=subfieldFactory, factory=DerivedSubfieldsElasticity)
-    derivedSubfields.meta['tip'] = "Discretization of derived subfields (e.g., stress and strain)."
-
-    useBodyForce = pyre.inventory.bool("use_body_force", default=False)
+    useBodyForce = pythia.pyre.inventory.bool("use_body_force", default=False)
     useBodyForce.meta['tip'] = "Include body force term in elasticity equation."
 
-    rheology = pyre.inventory.facility("bulk_rheology", family="elasticity_rheology", factory=IsotropicLinearElasticity)
+    rheology = pythia.pyre.inventory.facility("bulk_rheology", family="elasticity_rheology", factory=IsotropicLinearElasticity)
     rheology.meta['tip'] = "Bulk rheology for elastic material."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -69,6 +56,13 @@ class Elasticity(Material, ModuleElasticity):
         """
         Material.__init__(self, name)
         return
+
+    def _defaults(self):
+        from .AuxSubfieldsElasticity import AuxSubfieldsElasticity
+        self.auxiliarySubfields = AuxSubfieldsElasticity("auxiliary_subfields")
+
+        from .DerivedSubfieldsElasticity import DerivedSubfieldsElasticity
+        self.derivedSubfields = DerivedSubfieldsElasticity("derived_subfields")
 
     def preinitialize(self, problem):
         """

@@ -22,7 +22,7 @@
 #
 # Factory: petsc_manager
 
-from pyre.components.Component import Component
+from pythia.pyre.components.Component import Component
 import pylith.utils.petsc as petsc
 
 

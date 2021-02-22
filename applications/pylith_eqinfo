@@ -1,4 +1,4 @@
-#!@INTERPRETER@
+#!/usr/bin/env nemesis
 # -*- Python -*-
 #
 # ======================================================================
@@ -38,4 +38,4 @@ if __name__ == "__main__":
     from pyre.applications import start
     start(applicationClass=EqInfoApp)
 
-# End of file 
+# End of file

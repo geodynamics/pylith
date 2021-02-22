@@ -71,21 +71,21 @@ class FaultCohesive(Physics, ModuleFaultCohesive):
     FACTORY: fault
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    matId = pyre.inventory.int("id", default=100)
+    matId = pythia.pyre.inventory.int("id", default=100)
     matId.meta['tip'] = "Fault identifier (must be unique across all faults and materials)."
 
-    label = pyre.inventory.str("label", default="", validator=validateLabel)
+    label = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Label identifier for fault."
 
-    edge = pyre.inventory.str("edge", default="")
+    edge = pythia.pyre.inventory.str("edge", default="")
     edge.meta['tip'] = "Label identifier for buried fault edges."
 
-    refDir1 = pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
+    refDir1 = pythia.pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
     refDir1.meta['tip'] = "First choice for reference direction to discriminate among tangential directions in 3-D."
 
-    refDir2 = pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
+    refDir2 = pythia.pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
     refDir2.meta['tip'] = "Second choice for reference direction to discriminate among tangential directions in 3-D."
 
     def __init__(self, name="fault"):

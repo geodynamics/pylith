@@ -270,7 +270,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     """
     Test _estimateNumSteps().
     """
-    from pyre.units.time import second
+    from pythia.pyre.units.time import second
 
     output = OutputManager()
     output.inventory.outputFreq = "skip"

@@ -1,4 +1,4 @@
-#!@INTERPRETER@
+#!/usr/bin/env nemesis
 # -*- Python -*-
 #
 # ======================================================================
@@ -45,20 +45,20 @@ class GenXdmfApp(object):
         """
         import glob
         from pylith.meshio.Xdmf import Xdmf
-    
+
         xdmf = Xdmf()
         for filenameHDF5 in glob.iglob(self.filepattern):
               xdmf.write(filenameHDF5, verbose=True)
         return
 
-      
+
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
 
     usage = "%prog --files=FILE_OR_FILE_PATTERN"
     from optparse import OptionParser
     parser = OptionParser(usage=usage)
-    parser.add_option("-f", "--files", 
+    parser.add_option("-f", "--files",
                       dest="filepattern",
                       type="string", metavar="FILE",
                       help="Create Xdmf file for HDF5 file FILE. [*.h5]",
@@ -70,4 +70,4 @@ if __name__ == "__main__":
     app.main()
 
 
-# End of file 
+# End of file

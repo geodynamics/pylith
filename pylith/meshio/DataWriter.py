@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/DataWriter.py
+# @file pythia.pyre/meshio/DataWriter.py
 #
 # @brief Python abstract base class for writing finite-element data.
 #

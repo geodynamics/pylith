@@ -192,11 +192,11 @@ pylith::faults::KinSrcAuxiliaryFactory::updateTimeHistoryValue(pylith::topology:
                                                                const PylithReal timeScale,
                                                                spatialdata::spatialdb::TimeHistory* const dbTimeHistory) {
     PYLITH_METHOD_BEGIN;
-    journal::debug_t debug("kinsrcauxiliaryfactory");
-    debug << journal::at(__HERE__)
+    pythia::journal::debug_t debug("kinsrcauxiliaryfactory");
+    debug << pythia::journal::at(__HERE__)
           << "KinSrcAuxiliaryFactory::updateTimeHistoryValue(auxiliaryField="<<auxiliaryField<<", t="<<t
           <<", timeScale="<<timeScale<<", dbTimeHistory="<<dbTimeHistory<<")"
-          << journal::endl;
+          << pythia::journal::endl;
 
     assert(auxiliaryField);
     assert(dbTimeHistory);

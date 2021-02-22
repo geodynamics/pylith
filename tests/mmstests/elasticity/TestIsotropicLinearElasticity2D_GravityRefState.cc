@@ -26,7 +26,7 @@
 #include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
 
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
-#include "pylith/utils/journals.hh" // USES journal::debug_t
+#include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
@@ -161,7 +161,7 @@ protected:
 
         // Overwrite component names for control of debugging info at test level.
         GenericComponent::setName("TestIsotropicLinearElasticity2D_GravityRefState");
-        journal::debug_t debug(GenericComponent::getName());
+        pythia::journal::debug_t debug(GenericComponent::getName());
         // debug.activate(); // DEBUGGING
         _disableFiniteDifferenceCheck = true;
 

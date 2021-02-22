@@ -1,4 +1,4 @@
-#!@INTERPRETER@
+#!/usr/bin/env nemesis
 # -*- Python -*-
 #
 # ----------------------------------------------------------------------
@@ -24,13 +24,13 @@ if __name__ == "__main__":
 
     try:
         from pylith.apps.PyLithApp import PyLithApp
-        from pyre.applications import start
+        from pythia.pyre.applications import start
         start(applicationClass=PyLithApp)
     except ImportError as err:
         import subprocess
         import os
         import sys
-        
+
         print("Error importing PyLithApp.")
         print("Did you forget to run 'source setup.sh' in the top-level PyLith directory?\n")
 
@@ -51,4 +51,4 @@ if __name__ == "__main__":
 
         raise
 
-# End of file 
+# End of file

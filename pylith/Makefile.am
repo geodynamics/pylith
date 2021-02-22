@@ -16,141 +16,21 @@
 # ----------------------------------------------------------------------
 #
 
-nobase_pkgpyexec_PYTHON = \
-	__init__.py \
-	apps/__init__.py \
-	apps/PyLithApp.py \
-	apps/PetscApplication.py \
-	apps/EqInfoApp.py \
-	bc/__init__.py \
-	bc/BoundaryCondition.py \
-	bc/DirichletTimeDependent.py \
-	bc/NeumannTimeDependent.py \
-	bc/AuxSubfieldsTimeDependent.py \
-	bc/AbsorbingDampers.py \
-	bc/AuxSubfieldsAbsorbingDampers.py \
-	bc/ZeroDB.py \
-	faults/__init__.py \
-	faults/FaultCohesive.py \
-	faults/FaultCohesiveKin.py \
-	faults/KinSrc.py \
-	faults/KinSrcStep.py \
-	faults/KinSrcRamp.py \
-	faults/KinSrcConstRate.py \
-	faults/KinSrcBrune.py \
-	faults/KinSrcLiuCos.py \
-	faults/KinSrcTimeHistory.py \
-	faults/SingleRupture.py \
-	feassemble/__init__.py \
-	friction/__init__.py \
-	materials/__init__.py \
-	materials/Homogeneous.py \
-	materials/Material.py \
-	materials/Elasticity.py \
-	materials/AuxSubfieldsElasticity.py \
-	materials/DerivedSubfieldsElasticity.py \
-	materials/RheologyElasticity.py \
-	materials/IsotropicLinearElasticity.py \
-	materials/IsotropicLinearMaxwell.py \
-	materials/IsotropicLinearGenMaxwell.py \
-	materials/IsotropicPowerLaw.py \
-	materials/AuxSubfieldsIsotropicLinearElasticity.py \
-	materials/AuxSubfieldsIsotropicLinearMaxwell.py \
-	materials/AuxSubfieldsIsotropicLinearGenMaxwell.py \
-	materials/AuxSubfieldsIsotropicLinearPoroelasticity.py \
-	materials/IncompressibleElasticity.py \
-	materials/AuxSubfieldsIsotropicPowerLaw.py \
-	materials/RheologyIncompressibleElasticity.py \
-	materials/IsotropicLinearIncompElasticity.py \
-	materials/AuxSubfieldsPoroelasticity.py \
-	materials/IsotropicLinearPoroelasticity.py \
-	materials/Poroelasticity.py \
-	materials/RheologyPoroelasticity.py \
-	meshio/__init__.py \
-	meshio/DataWriter.py \
-	meshio/DataWriterVTK.py \
-	meshio/MeshIOObj.py \
-	meshio/MeshIOAscii.py \
-	meshio/MeshIOLagrit.py \
-	meshio/PointsList.py \
-	meshio/FieldFilter.py \
-	meshio/FieldFilterNone.py \
-	meshio/FieldFilterProject.py \
-	meshio/OutputObserver.py \
-	meshio/OutputSoln.py \
-	meshio/OutputSolnDomain.py \
-	meshio/OutputSolnBoundary.py \
-	meshio/OutputSolnPoints.py \
-	meshio/OutputPhysics.py \
-	meshio/OutputTrigger.py \
-	meshio/OutputTriggerStep.py \
-	meshio/OutputTriggerTime.py \
-	mpi/__init__.py \
-	mpi/Communicator.py \
-	problems/__init__.py \
-	problems/Physics.py \
-	problems/Problem.py \
-	problems/TimeDependent.py \
-	problems/ProblemDefaults.py \
-	problems/Solution.py \
-	problems/SolutionSubfield.py \
-	problems/SolnDisp.py \
-	problems/SolnDispLagrange.py \
-	problems/SolnDispVel.py \
-	problems/SolnDispVelLagrange.py \
-	problems/SolnDispPres.py \
-	problems/SolnDispPresLagrange.py \
-	problems/SubfieldDisplacement.py \
-	problems/SubfieldVelocity.py \
-	problems/SubfieldPressure.py \
-	problems/SubfieldTemperature.py \
-	problems/SubfieldLagrangeFault.py \
-	problems/SingleObserver.py \
-	problems/InitialCondition.py \
-	problems/InitialConditionDomain.py \
-	problems/InitialConditionPatch.py \
-	problems/ProgressMonitor.py \
-	problems/ProgressMonitorTime.py \
-	problems/SolnDispPresTracStrain.py \
-	problems/SubfieldTraceStrain.py \
-	topology/__init__.py \
-	topology/Distributor.py \
-	topology/Mesh.py \
-	topology/Field.py \
-	topology/Fields.py \
-	topology/Subfield.py \
-	topology/MeshGenerator.py \
-	topology/MeshImporter.py \
-	topology/MeshImporterDist.py \
-	topology/MeshRefiner.py \
-	topology/RefineUniform.py \
-	topology/ReverseCuthillMcKee.py \
-	utils/__init__.py \
-	utils/EmptyBin.py \
-	utils/EventLogger.py \
-	utils/NullComponent.py \
-	utils/PetscComponent.py \
-	utils/PetscManager.py \
-	utils/CollectVersionInfo.py \
-	utils/DumpParameters.py \
-	utils/DumpParametersAscii.py \
-	utils/DumpParametersJson.py \
-	utils/profiling.py \
-	utils/testarray.py \
-	tests/__init__.py \
-	tests/UnitTestApp.py \
-	tests/FullTestApp.py
-
 if ENABLE_CUBIT
-  nobase_pkgpyexec_PYTHON += meshio/MeshIOCubit.py
+make-manifest:
+else
+make-manifest:
+	echo "exclude meshio/MeshIOCubit.py" > $@
 endif
 
-if ENABLE_HDF5
-  nobase_pkgpyexec_PYTHON += \
-	meshio/DataWriterHDF5.py \
-	meshio/DataWriterHDF5Ext.py \
-	meshio/Xdmf.py
-endif
+install-exec-local: make-manifest
+		cd $(top_srcdir) && \
+			$(PYTHON) setup.py egg_info && \
+			PYTHONUSERBASE=$(DESTDIR)$(prefix) $(PYTHON) setup.py install --record record.txt --single-version-externally-managed --user && \
+			cd $(abs_builddir)
 
+# Pip install is too slow, because it makes a copy of the entire source tree, including .git.
+# See https://github.com/pypa/pip/issues/2195
+#PYTHONUSERBASE=$(DESTDIR)$(prefix) $(PYTHON) -m pip install --no-index --user $(top_srcdir)
 
 # End of file

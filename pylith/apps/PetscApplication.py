@@ -21,9 +21,7 @@
 # @brief Python PETSc application for creating an MPI application
 # that uses PETSc.
 
-from mpi import Application
-
-# PetscApplication class
+from pythia.mpi import Application
 
 
 class PetscApplication(Application):
@@ -37,14 +35,14 @@ class PetscApplication(Application):
 
     # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     # Dummy facility for passing options to PETSc
     from pylith.utils.PetscManager import PetscManager
-    petsc = pyre.inventory.facility("petsc", family="petsc_manager", factory=PetscManager)
+    petsc = pythia.pyre.inventory.facility("petsc", family="petsc_manager", factory=PetscManager)
     petsc.meta['tip'] = "Manager for PETSc options."
 
-    includeCitations = pyre.inventory.bool("include-citations", default=False)
+    includeCitations = pythia.pyre.inventory.bool("include-citations", default=False)
     includeCitations.meta['tip'] = "At end of simulation, display information on how to cite PyLith and components used."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -70,15 +68,15 @@ class PetscApplication(Application):
                 citationsRegister(entry)
 
         try:
-
             self.main(*args, **kwds)
-
         except Exception as err:
+            import traceback
+            import sys
+
             self.cleanup()  # Attempt to clean up memory.
             print("Fatal error. Calling MPI_Abort() to abort PyLith application.")
-            # Print stacktrace
-            from traceback import print_exc
-            print_exc()
+            traceback.print_exc(file=sys.stdout)
+            sys.stdout.flush()
             from pylith.mpi import mpi
             errorCode = -1
             mpi.mpi_abort(mpi.petsc_comm_world(), errorCode)

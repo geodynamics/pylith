@@ -42,17 +42,17 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
     FACTORY: observer
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from .OutputTriggerStep import OutputTriggerStep
-    trigger = pyre.inventory.facility("trigger", family="output_trigger", factory=OutputTriggerStep)
+    trigger = pythia.pyre.inventory.facility("trigger", family="output_trigger", factory=OutputTriggerStep)
     trigger.meta['tip'] = "Trigger defining how often output is written."
 
     from .DataWriterHDF5 import DataWriterHDF5
-    writer = pyre.inventory.facility("writer", factory=DataWriterHDF5, family="data_writer")
+    writer = pythia.pyre.inventory.facility("writer", factory=DataWriterHDF5, family="data_writer")
     writer.meta['tip'] = "Writer for data."
 
-    fieldFilter = pyre.inventory.facility("field_filter", family="output_field_filter", factory=FieldFilterNone)
+    fieldFilter = pythia.pyre.inventory.facility("field_filter", family="output_field_filter", factory=FieldFilterNone)
     fieldFilter.meta['tip'] = "Filter for output fields."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

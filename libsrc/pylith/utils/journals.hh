@@ -25,78 +25,74 @@
 #if !defined(pylith_utils_journals_hh)
 #define pylith_utils_journals_hh
 
-#include "journal/debug.h"
-#include "journal/info.h"
-#include "journal/warning.h"
-#include "journal/error.h"
-#include "journal/firewall.h"
+#include "pythia/journal/diagnostics.h"
 
 #define PYLITH_COMPONENT_DEBUG(msg) \
     do { \
-        journal::debug_t debug(PyreComponent::getName()); \
-        debug << journal::at(__HERE__) \
+        pythia::journal::debug_t debug(PyreComponent::getName()); \
+        debug << pythia::journal::at(__HERE__) \
               << "Component '"<<PyreComponent::getIdentifier()<<"': " \
-              << msg << journal::endl; \
+              << msg << pythia::journal::endl; \
     } while (0)
 
 #define PYLITH_COMPONENT_INFO(msg) \
     do { \
-        journal::info_t info(PyreComponent::getName()); \
-        info << journal::at(__HERE__) \
+        pythia::journal::info_t info(PyreComponent::getName()); \
+        info << pythia::journal::at(__HERE__) \
              << "Component '"<<PyreComponent::getIdentifier()<<"': " \
-             << msg << journal::endl; \
+             << msg << pythia::journal::endl; \
     } while (0)
 
 #define PYLITH_COMPONENT_WARNING(msg) \
     do { \
-        journal::warning_t warning(PyreComponent::getName()); \
-        warning << journal::at(__HERE__) \
+        pythia::journal::warning_t warning(PyreComponent::getName()); \
+        warning << pythia::journal::at(__HERE__) \
                 << "Component '"<<PyreComponent::getIdentifier()<<"': " \
-                << msg << journal::endl; \
+                << msg << pythia::journal::endl; \
     } while (0)
 
 #define PYLITH_COMPONENT_ERROR(msg) \
     do { \
-        journal::error_t error(PyreComponent::getName()); \
-        error << journal::at(__HERE__) \
+        pythia::journal::error_t error(PyreComponent::getName()); \
+        error << pythia::journal::at(__HERE__) \
               << "Component '"<<PyreComponent::getIdentifier()<<"': " \
-              << msg << journal::endl; \
+              << msg << pythia::journal::endl; \
     } while (0)
 
 #define PYLITH_COMPONENT_FIREWALL(msg) \
     do { \
-        journal::firewall_t firewall(PyreComponent::getName()); \
-        firewall << journal::at(__HERE__) \
+        pythia::journal::firewall_t firewall(PyreComponent::getName()); \
+        firewall << pythia::journal::at(__HERE__) \
                  << "Component '"<<PyreComponent::getIdentifier()<<"': " \
-                 << msg << journal::endl; \
+                 << msg << pythia::journal::endl; \
     } while (0)
 
 #define PYLITH_JOURNAL_DEBUG(msg) \
     do { \
-        journal::debug_t debug(GenericComponent::getName()); \
-        debug << journal::at(__HERE__) \
-              << msg << journal::endl; \
+        pythia::journal::debug_t debug(GenericComponent::getName()); \
+        debug << pythia::journal::at(__HERE__) \
+              << msg << pythia::journal::endl; \
     } while (0)
 
 #define PYLITH_JOURNAL_INFO(msg) \
     do { \
-        journal::info_t info(GenericComponent::getName()); \
-        info << journal::at(__HERE__) \
-             << msg << journal::endl; \
+        pythia::journal::info_t info(GenericComponent::getName()); \
+        info << pythia::journal::at(__HERE__) \
+             << msg << pythia::journal::endl; \
     } while (0)
 
 #define PYLITH_JOURNAL_WARNING(msg) \
     do { \
-        journal::warning_t warning(GenericComponent::getName()); \
-        warning << journal::at(__HERE__) \
-                << msg << journal::endl; \
+        pythia::journal::warning_t warning(GenericComponent::getName()); \
+        warning << pythia::journal::at(__HERE__) \
+                << msg << pythia::journal::endl; \
     } while (0)
 
 #define PYLITH_JOURNAL_ERROR(msg) \
     do { \
-        journal::error_t error(GenericComponent::getName()); \
-        error << journal::at(__HERE__) \
-              << msg << journal::endl; \
+        pythia::journal::error_t error(GenericComponent::getName()); \
+        error << pythia::journal::at(__HERE__) \
+              << msg << pythia::journal::endl; \
     } while (0)
 
 #endif // pylith_utils_journals_hh

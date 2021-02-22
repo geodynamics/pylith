@@ -35,10 +35,10 @@ class SingleSolnObserver(PetscComponent):
     FACTORY: N/A
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from pylith.meshio.OutputSolnDomain import OutputSolnDomain
-    output = pyre.inventory.facility("observer", family="observer", factory=OutputSolnDomain)
+    output = pythia.pyre.inventory.facility("observer", family="observer", factory=OutputSolnDomain)
     output.meta['tip'] = "Observer of subject."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -66,10 +66,10 @@ class SinglePhysicsObserver(PetscComponent):
     FACTORY: N/A
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from pylith.meshio.OutputPhysics import OutputPhysics
-    output = pyre.inventory.facility("observer", family="observer", factory=OutputPhysics)
+    output = pythia.pyre.inventory.facility("observer", family="observer", factory=OutputPhysics)
     output.meta['tip'] = "Observer of subject."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

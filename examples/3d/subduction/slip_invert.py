@@ -34,10 +34,10 @@ import math
 import numpy
 import sys
 import os
-from pyre.units.angle import degree
+from pythia.pyre.units.angle import degree
 import h5py
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 
 class SlipInvert(Application):
@@ -63,42 +63,42 @@ class SlipInvert(Application):
     # \b Facilities
     # @li None
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    dataFile = pyre.inventory.str("data_file", default="data.txt")
+    dataFile = pythia.pyre.inventory.str("data_file", default="data.txt")
     dataFile.meta['tip'] = "File with displ., locations, and stdDev."
 
-    rake = pyre.inventory.dimensional("rake", default=90.0 * degree)
+    rake = pythia.pyre.inventory.dimensional("rake", default=90.0 * degree)
     rake.meta['tip'] = "Assumed rake angle."
 
-    gfImpulsesLlFile = pyre.inventory.str("gfimpulses_ll_file", default="gfimpulse_ll.h5")
+    gfImpulsesLlFile = pythia.pyre.inventory.str("gfimpulses_ll_file", default="gfimpulse_ll.h5")
     gfImpulsesLlFile.meta['tip'] = "HDF5 file with left-lateral GF impulses."
 
-    gfImpulsesUdFile = pyre.inventory.str("gfimpulses_ud_file", default="gfimpulse_ud.h5")
+    gfImpulsesUdFile = pythia.pyre.inventory.str("gfimpulses_ud_file", default="gfimpulse_ud.h5")
     gfImpulsesUdFile.meta['tip'] = "HDF5 file with updip GF impulses."
 
-    gfResponsesLlFile = pyre.inventory.str("gfresponses_ll_file", default="gfresponse_ll.h5")
+    gfResponsesLlFile = pythia.pyre.inventory.str("gfresponses_ll_file", default="gfresponse_ll.h5")
     gfResponsesLlFile.meta['tip'] = "HDF5 file with left-lateral GF responses."
 
-    gfResponsesUdFile = pyre.inventory.str("gfresponses_ud_file", default="gfresponse_ud.h5")
+    gfResponsesUdFile = pythia.pyre.inventory.str("gfresponses_ud_file", default="gfresponse_ud.h5")
     gfResponsesUdFile.meta['tip'] = "HDF5 file with updip GF responses."
 
-    aPrioriValue = pyre.inventory.float("a_priori_value", default=0.0)
+    aPrioriValue = pythia.pyre.inventory.float("a_priori_value", default=0.0)
     aPrioriValue.meta['tip'] = "A priori value for parameters."
 
-    penaltyWeightVals = pyre.inventory.list("penalty_weight_vals", default=[0.1, 0.5, 1.0, 5.0, 10.0])
+    penaltyWeightVals = pythia.pyre.inventory.list("penalty_weight_vals", default=[0.1, 0.5, 1.0, 5.0, 10.0])
     penaltyWeightVals.meta['tip'] = "List of penalty weights."
 
-    dataScale = pyre.inventory.float("data_scale", default=1.0)
+    dataScale = pythia.pyre.inventory.float("data_scale", default=1.0)
     dataScale.meta['tip'] = "Scaling factor to apply to data and stdDev."
 
-    resultSummaryFile = pyre.inventory.str("result_summary_file", default='result_summary.txt')
+    resultSummaryFile = pythia.pyre.inventory.str("result_summary_file", default='result_summary.txt')
     resultSummaryFile.meta['tip'] = "Text file summarizing inversion results."
 
-    slipOutputFile = pyre.inventory.str("slip_output_file", default='predicted_slip.h5')
+    slipOutputFile = pythia.pyre.inventory.str("slip_output_file", default='predicted_slip.h5')
     slipOutputFile.meta['tip'] = "HDF5 file with predicted slip results."
 
-    displacementOutputFile = pyre.inventory.str("displacement_output_file", default='predicted_displacement.h5')
+    displacementOutputFile = pythia.pyre.inventory.str("displacement_output_file", default='predicted_displacement.h5')
     displacementOutputFile.meta['tip'] = "HDF5 file with predicted displacements."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

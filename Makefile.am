@@ -20,8 +20,7 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = \
 	libsrc \
 	modulesrc \
-	pylith \
-	applications
+	pylith
 
 if ENABLE_TESTING
   SUBDIRS += \
@@ -39,8 +38,6 @@ EXTRA_DIST = \
 	DEPENDENCIES
 
 
-.PHONY: coverage-libtests coverage-mmstests coverage-pytests coverage-html clean-coverage
-
 if ENABLE_TEST_COVERAGE
 coverage-%.info: 
 	lcov --directory libsrc --capture --output-file $@
@@ -51,10 +48,10 @@ coverage-pytests.xml:
 	$(PYTHON_COVERAGE) combine tests/pytests/*/.coverage
 	$(PYTHON_COVERAGE) xml -o coverage-pytests.xml
 
-html-coverage-%: coverage-%.info
-	genhtml -o coverage-% coverage-%.info
+coverage-%: coverage-%.info
+	genhtml -o $@ $^
 
-html-coverage-pytests: coverage-pytests.xml 
+coverage-pytests: coverage-pytests.xml 
 	$(PYTHON_COVERAGE) html -d coverage-pytests
 
 clean-coverage:
@@ -62,7 +59,7 @@ clean-coverage:
 	$(RM) `find . -name ".coverage"`
 
 else
-coverage-libtests.info coverage-mmstests.info coverage-pytests.xml coverage-fullscale.info:
+coverage-libtests.info coverage-mmstests.info coverage-pytests.xml coverage-fullscale.info coverage-libtests coverage-mmstests coverage-pytests coverage-fullscale:
 	$(warning Test coverage not enabled. Ignoring test coverage targets)
 
 clean-coverage:

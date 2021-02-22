@@ -33,10 +33,10 @@ class SolnDisp(PetscComponent):
       - *displacement* Displacement subfield.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from .SubfieldDisplacement import SubfieldDisplacement
-    displacement = pyre.inventory.facility("displacement", family="soln_subfield", factory=SubfieldDisplacement)
+    displacement = pythia.pyre.inventory.facility("displacement", family="soln_subfield", factory=SubfieldDisplacement)
     displacement.meta['tip'] = "Displacement subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

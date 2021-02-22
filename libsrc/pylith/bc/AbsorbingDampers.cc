@@ -228,10 +228,10 @@ pylith::bc::_AbsorbingDampers::setKernelsRHSResidual(pylith::feassemble::Integra
                                                      const pylith::bc::AbsorbingDampers& bc,
                                                      const topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    journal::debug_t debug(_AbsorbingDampers::pyreComponent);
-    debug << journal::at(__HERE__)
+    pythia::journal::debug_t debug(_AbsorbingDampers::pyreComponent);
+    debug << pythia::journal::at(__HERE__)
           << "_AbsorbingDampers::_setKernelsRHSResidual(integrator="<<integrator<<", bc="<<typeid(bc).name()
-          <<", solution="<<solution.getLabel()<<")"<<journal::endl;
+          <<", solution="<<solution.getLabel()<<")"<<pythia::journal::endl;
 
     PetscBdPointFunc g0 = pylith::fekernels::AbsorbingDampers::g0;
     PetscBdPointFunc g1 = NULL;

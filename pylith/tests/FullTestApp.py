@@ -255,7 +255,7 @@ def check_data(filename, testcase, mesh, vertexFields=[], cellFields=[], ratio_t
     if not has_h5py():
         return
 
-    if type(ratio_tolerance) is dict:
+    if isinstance(ratio_tolerance, dict):
         separateChecker = True
         defaultRatio = 1e-5
 

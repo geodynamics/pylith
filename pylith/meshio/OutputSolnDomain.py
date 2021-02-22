@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/OutputSoln.py
+# @file pythia.pyre/meshio/OutputSoln.py
 #
 # @brief Python object for managing output of solution information over the domain.
 #

@@ -129,7 +129,7 @@ class TestOutputSolnSubset(unittest.TestCase):
     output.preinitialize()
     output.initialize(self.mesh, self.normalizer)
 
-    from pyre.units.time import s
+    from pythia.pyre.units.time import s
     output.open(totalTime=5.0*s, numTimeSteps=2)
     output.close()
     return

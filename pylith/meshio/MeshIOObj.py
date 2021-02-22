@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/MeshIOObj.py
+# @file pythia.pyre/meshio/MeshIOObj.py
 #
 # @brief Python abstract base class for finite-element mesh I/O.
 #

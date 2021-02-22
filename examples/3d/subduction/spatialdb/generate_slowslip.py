@@ -9,7 +9,7 @@ from spatialdata.spatialdb.SimpleGridAscii import createWriter
 from spatialdata.spatialdb import TimeHistoryIO
 from spatialdata.geocoords.CSGeo import CSGeo
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 
 class GenerateSlowslip(Application):
@@ -18,7 +18,7 @@ class GenerateSlowslip(Application):
     SSE with time-varying Gaussian slip.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
     # Python object for managing GenerateSlowslip facilities and properties.
     ##
     # \b Properties
@@ -40,49 +40,49 @@ class GenerateSlowslip(Application):
     # \b Facilities
     # @li \b coordsys Coordinate system for output database.
 
-    rake = pyre.inventory.float("rake", default=1.0)
+    rake = pythia.pyre.inventory.float("rake", default=1.0)
     rake.meta['tip'] = "Rake of fault slip (degrees)."
 
-    slipCenter = pyre.inventory.list("slip_center", default=[0.0, 0.0])
+    slipCenter = pythia.pyre.inventory.list("slip_center", default=[0.0, 0.0])
     slipCenter.meta['tip'] = "(lon,lat) coordinates of slip center."
 
-    slipRadius = pyre.inventory.float("slip_radius", default=1.0)
+    slipRadius = pythia.pyre.inventory.float("slip_radius", default=1.0)
     slipRadius.meta['tip'] = "Radius of slip region (degrees)."
 
-    slipMax = pyre.inventory.float("slip_max", default=5.0)
+    slipMax = pythia.pyre.inventory.float("slip_max", default=5.0)
     slipMax.meta['tip'] = "Maximum slip value (meters)."
 
-    slipSigmaLon = pyre.inventory.float("slip_sigma_lon", default=0.2)
+    slipSigmaLon = pythia.pyre.inventory.float("slip_sigma_lon", default=0.2)
     slipSigmaLon.meta['tip'] = "Sigma value for longitude."
 
-    slipSigmaLat = pyre.inventory.float("slip_sigma_lat", default=0.2)
+    slipSigmaLat = pythia.pyre.inventory.float("slip_sigma_lat", default=0.2)
     slipSigmaLat.meta['tip'] = "Sigma value for latitude."
 
-    slipTimes = pyre.inventory.list("slip_times", default=[0.0, 0.5, 1.0])
+    slipTimes = pythia.pyre.inventory.list("slip_times", default=[0.0, 0.5, 1.0])
     slipTimes.meta['tip'] = "List of times for which to provide amplitudes."
 
-    slipTimeUnits = pyre.inventory.str("slip_time_units", default="year")
+    slipTimeUnits = pythia.pyre.inventory.str("slip_time_units", default="year")
     slipTimeUnits.meta['tip'] = "Units used for slip times."
 
-    slipAmplitudes = pyre.inventory.list("slip_amplitudes", default=[0.0, 0.5, 1.0])
+    slipAmplitudes = pythia.pyre.inventory.list("slip_amplitudes", default=[0.0, 0.5, 1.0])
     slipAmplitudes.meta['tip'] = "List of slip amplitudes."
 
-    gridLonRange = pyre.inventory.list("grid_lon_range", default=[-123.0, -124.0])
+    gridLonRange = pythia.pyre.inventory.list("grid_lon_range", default=[-123.0, -124.0])
     gridLonRange.meta['tip'] = "Min and max longitude values for grid."
 
-    gridLatRange = pyre.inventory.list("grid_lat_range", default=[45.0, 46.0])
+    gridLatRange = pythia.pyre.inventory.list("grid_lat_range", default=[45.0, 46.0])
     gridLatRange.meta['tip'] = "Min and max latitude values for grid."
 
-    gridIncr = pyre.inventory.float("grid_incr", default=0.05)
+    gridIncr = pythia.pyre.inventory.float("grid_incr", default=0.05)
     gridIncr.meta['tip'] = "Sigma value for latitude."
 
-    timeDbFilename = pyre.inventory.str("time_db_filename", default="slip.timedb")
+    timeDbFilename = pythia.pyre.inventory.str("time_db_filename", default="slip.timedb")
     timeDbFilename.meta['tip'] = "Filename of temporal DB output file."
 
-    coordsys = pyre.inventory.facility("coordsys", family="coordsys", factory=CSGeo)
+    coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSGeo)
     coordsys.meta['tip'] = "Coordinate system for output database."
 
-    dbFilename = pyre.inventory.str("database_filename", default="slip.spatialdb")
+    dbFilename = pythia.pyre.inventory.str("database_filename", default="slip.spatialdb")
     dbFilename.meta['tip'] = "Filename for generated spatial database."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

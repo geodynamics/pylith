@@ -18,7 +18,7 @@
 # @brief Python CollectVersionInfo object to collect version infofmation for PyLith
 # and its dependencies.
 
-from pyre.components.Component import Component
+from pythia.pyre.components.Component import Component
 
 import pylith.utils.utils as utils
 
@@ -204,7 +204,7 @@ class CollectVersionInfo(Component):
             "compiler": platform.python_compiler(),
             "modules": {},
         }
-        pkgs = ("numpy", "spatialdata", "h5py", "netCDF4", "pyre")
+        pkgs = ("numpy", "spatialdata", "h5py", "netCDF4", "pythia")
         for pkg in pkgs:
             ver, loc = cls._getPackageVersion(pkg)
             info["modules"][pkg] = {

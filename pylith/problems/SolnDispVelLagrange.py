@@ -41,18 +41,18 @@ class SolnDispVelLagrange(PetscComponent):
       - *lagrange_fault* Fault Lagrange multiplier subfield.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from .SubfieldDisplacement import SubfieldDisplacement
-    displacement = pyre.inventory.facility("displacement", family="soln_subfield", factory=SubfieldDisplacement)
+    displacement = pythia.pyre.inventory.facility("displacement", family="soln_subfield", factory=SubfieldDisplacement)
     displacement.meta['tip'] = "Displacement subfield."
 
     from .SubfieldVelocity import SubfieldVelocity
-    velocity = pyre.inventory.facility("velocity", family="soln_subfield", factory=SubfieldVelocity)
+    velocity = pythia.pyre.inventory.facility("velocity", family="soln_subfield", factory=SubfieldVelocity)
     velocity.meta['tip'] = "Velocity subfield."
 
     from .SubfieldLagrangeFault import SubfieldLagrangeFault
-    lagrangeFault = pyre.inventory.facility("lagrange_fault", family="soln_subfield", factory=SubfieldLagrangeFault)
+    lagrangeFault = pythia.pyre.inventory.facility("lagrange_fault", family="soln_subfield", factory=SubfieldLagrangeFault)
     lagrangeFault.meta['tip'] = "Fault Lagrange multiplier subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -81,10 +81,10 @@ class Solution(SolutionBase):
     """Python solution field with displacement, velocity, and Lagrange multiplier subfields.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from .SolutionSubfield import subfieldFactory
-    subfields = pyre.inventory.facilityArray("subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispVelLagrange)
+    subfields = pythia.pyre.inventory.facilityArray("subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispVelLagrange)
     subfields.meta['tip'] = "Subfields in solution."
 
 

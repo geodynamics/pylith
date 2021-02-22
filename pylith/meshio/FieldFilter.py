@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/FieldFilter.py
+# @file pythia.pyre/meshio/FieldFilter.py
 #
 # @brief Python abstract base class for filtering vertex fields when
 # writing finite-element data.

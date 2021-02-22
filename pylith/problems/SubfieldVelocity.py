@@ -37,10 +37,10 @@ class SubfieldVelocity(SolutionSubfield):
     FACTORY: subfield
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from .SolutionSubfield import validateAlias
-    userAlias = pyre.inventory.str("alias", default="velocity", validator=validateAlias)
+    userAlias = pythia.pyre.inventory.str("alias", default="velocity", validator=validateAlias)
     userAlias.meta['tip'] = "Name for subfield."
 
     fieldName = "velocity"

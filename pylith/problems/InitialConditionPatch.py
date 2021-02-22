@@ -36,13 +36,13 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
       - *db* Spatial database with values for initial conditions.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
     from spatialdata.spatialdb.SimpleDB import SimpleDB
 
-    matId = pyre.inventory.int("id", default=0)
+    matId = pythia.pyre.inventory.int("id", default=0)
     matId.meta["tip"] = "Material id associated with patch."
 
-    db = pyre.inventory.facility("db", family="spatial_database", factory=SimpleDB)
+    db = pythia.pyre.inventory.facility("db", family="spatial_database", factory=SimpleDB)
     db.meta["tip"] = "Spatial database with values for initial condition."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

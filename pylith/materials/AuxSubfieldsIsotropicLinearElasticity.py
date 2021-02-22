@@ -36,20 +36,20 @@ class AuxSubfieldsIsotropicLinearElasticity(PetscComponent):
       - *references_strain* Reference strain.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     from pylith.topology.Subfield import Subfield
 
-    shearModulus = pyre.inventory.facility("shear_modulus", family="auxiliary_subfield", factory=Subfield)
+    shearModulus = pythia.pyre.inventory.facility("shear_modulus", family="auxiliary_subfield", factory=Subfield)
     shearModulus.meta['tip'] = "Shear modulus subfield."
 
-    bulkModulus = pyre.inventory.facility("bulk_modulus", family="auxiliary_subfield", factory=Subfield)
+    bulkModulus = pythia.pyre.inventory.facility("bulk_modulus", family="auxiliary_subfield", factory=Subfield)
     bulkModulus.meta['tip'] = "Bulk modulus subfield."
 
-    referenceStress = pyre.inventory.facility("reference_stress", family="auxiliary_subfield", factory=Subfield)
+    referenceStress = pythia.pyre.inventory.facility("reference_stress", family="auxiliary_subfield", factory=Subfield)
     referenceStress.meta['tip'] = "Reference stress subfield."
 
-    referenceStrain = pyre.inventory.facility("reference_strain", family="auxiliary_subfield", factory=Subfield)
+    referenceStrain = pythia.pyre.inventory.facility("reference_strain", family="auxiliary_subfield", factory=Subfield)
     referenceStrain.meta['tip'] = "Reference strain subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

@@ -19,7 +19,7 @@
 #
 # @brief Python PyLith application
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 import math
 import os
@@ -108,34 +108,34 @@ class EqInfoApp(Application):
     # @li \b db_properties Spatial database for elastic properties.
     # @li \b coordsys Coordinate system associated with mesh.
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    faults = pyre.inventory.list("faults", default=[])
+    faults = pythia.pyre.inventory.list("faults", default=[])
     faults.meta['tip'] = "Array of fault names."
 
-    filenamePattern = pyre.inventory.str("filename_pattern", default="output/fault_%s.h5")
+    filenamePattern = pythia.pyre.inventory.str("filename_pattern", default="output/fault_%s.h5")
     filenamePattern.meta['tip'] = "Pattern for fault files."
 
-    snapshots = pyre.inventory.list("snapshots", default=[-1])
+    snapshots = pythia.pyre.inventory.list("snapshots", default=[-1])
     snapshots.meta['tip'] = "Array of timestamps for slip snapshots (-1 == last time step)."
 
-    from pyre.units.time import second
-    snapshotUnits = pyre.inventory.dimensional("snapshot_units", default=1 * second)
+    from pythia.pyre.units.time import second
+    snapshotUnits = pythia.pyre.inventory.dimensional("snapshot_units", default=1 * second)
     snapshotUnits.meta['tip'] = "Units for timestamps in array of snapshots."
 
-    filenameOut = pyre.inventory.str("output_filename", default="eqstats.py")
+    filenameOut = pythia.pyre.inventory.str("output_filename", default="eqstats.py")
     filenameOut.meta['tip'] = "Filename for output."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
-    dbProps = pyre.inventory.facility("db_properties", family="spatial_database", factory=SimpleDB)
+    dbProps = pythia.pyre.inventory.facility("db_properties", family="spatial_database", factory=SimpleDB)
     dbProps.meta['tip'] = "Spatial database for elastic properties."
 
     from spatialdata.geocoords.CSCart import CSCart
-    cs = pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
+    cs = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
     cs.meta['tip'] = "Coordinate system associated with mesh."
 
-    typos = pyre.inventory.str("typos", default="pedantic",
-                               validator=pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
+    typos = pythia.pyre.inventory.str("typos", default="pedantic",
+                               validator=pythia.pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
     typos.meta['tip'] = "Specifies the handling of unknown properties and " \
         "facilities"
 

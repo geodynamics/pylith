@@ -23,9 +23,9 @@
 
 import math
 import numpy
-from pyre.units.time import s
+from pythia.pyre.units.time import s
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 
 class VtkDiff(Application):
@@ -47,15 +47,15 @@ class VtkDiff(Application):
         # @li \b vtk_output_root Root filename for VTK output files.
         # @li \b scale_factor Scale factor to apply to results.
 
-        import pyre.inventory
+        import pythia.pyre.inventory
 
-        vtkInputRoot = pyre.inventory.str("vtk_input_root", default="input.vtk")
+        vtkInputRoot = pythia.pyre.inventory.str("vtk_input_root", default="input.vtk")
         vtkInputRoot.meta['tip'] = "Root filename for VTK input files."
 
-        vtkOutputRoot = pyre.inventory.str("vtk_output_root", default="output.vtk")
+        vtkOutputRoot = pythia.pyre.inventory.str("vtk_output_root", default="output.vtk")
         vtkOutputRoot.meta['tip'] = "Root filename for VTK output files."
 
-        scaleFactor = pyre.inventory.float("scale_factor", default=1.0)
+        scaleFactor = pythia.pyre.inventory.float("scale_factor", default=1.0)
         scaleFactor.meta['tip'] = "Scaling factor to apply to results."
 
     class TooFewFilesError(IOError):

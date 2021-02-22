@@ -38,12 +38,12 @@ class MeshGenerator(PetscComponent):
     FACTORY: mesh_generator
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    debug = pyre.inventory.bool("debug", default=False)
+    debug = pythia.pyre.inventory.bool("debug", default=False)
     debug.meta['tip'] = "Debugging flag for mesh."
 
-    interpolate = pyre.inventory.bool("interpolate", default=True)
+    interpolate = pythia.pyre.inventory.bool("interpolate", default=True)
     interpolate.meta['tip'] = "Build intermediate mesh topology elements"
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

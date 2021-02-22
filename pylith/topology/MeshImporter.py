@@ -39,21 +39,21 @@ class MeshImporter(MeshGenerator):
     FACTORY: mesh_generator.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    reorderMesh = pyre.inventory.bool("reorder_mesh", default=True)
+    reorderMesh = pythia.pyre.inventory.bool("reorder_mesh", default=True)
     reorderMesh.meta['tip'] = "Reorder mesh using reverse Cuthill-McKee."
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
-    reader = pyre.inventory.facility("reader", family="mesh_io", factory=MeshIOAscii)
+    reader = pythia.pyre.inventory.facility("reader", family="mesh_io", factory=MeshIOAscii)
     reader.meta['tip'] = "Mesh reader."
 
     from .Distributor import Distributor
-    distributor = pyre.inventory.facility("distributor", family="mesh_distributor", factory=Distributor)
+    distributor = pythia.pyre.inventory.facility("distributor", family="mesh_distributor", factory=Distributor)
     distributor.meta['tip'] = "Mesh distributor."
 
     from .MeshRefiner import MeshRefiner
-    refiner = pyre.inventory.facility("refiner", family="mesh_refiner", factory=MeshRefiner)
+    refiner = pythia.pyre.inventory.facility("refiner", family="mesh_refiner", factory=MeshRefiner)
     refiner.meta['tip'] = "Mesh refiner."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

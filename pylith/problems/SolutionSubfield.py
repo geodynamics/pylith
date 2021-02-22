@@ -50,10 +50,10 @@ class SolutionSubfield(Subfield):
     FACTORY: soln_subfield
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
     # Override userAlias in derived class with appropriate default.
-    userAlias = pyre.inventory.str("alias", default="", validator=validateAlias)
+    userAlias = pythia.pyre.inventory.str("alias", default="", validator=validateAlias)
     userAlias.meta['tip'] = "Name for subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -107,7 +107,7 @@ def subfieldFactory(name):
     """
     Factory for subfield items.
     """
-    from pyre.inventory import facility
+    from pythia.pyre.inventory import facility
     return facility(name, family="soln_subfield", factory=SolutionSubfield)
 
 

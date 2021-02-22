@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/OutputSolnPoints.py
+# @file pythia.pyre/meshio/OutputSolnPoints.py
 #
 # @brief Python object for managing output of finite-element solution
 # information over a subdomain.
@@ -42,13 +42,13 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
 
     # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    label = pyre.inventory.str("label", default="points")
+    label = pythia.pyre.inventory.str("label", default="points")
     label.meta['tip'] = "Label identifier for points (used in constructing default filenames)."
 
     from .PointsList import PointsList
-    reader = pyre.inventory.facility("reader", factory=PointsList, family="points_list")
+    reader = pythia.pyre.inventory.facility("reader", factory=PointsList, family="points_list")
     reader.meta['tip'] = "Reader for points list."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

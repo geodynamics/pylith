@@ -25,8 +25,7 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
-
-#include "journal/info.h" // USES journal::info_t
+#include "pylith/utils/journals.hh" // pythia::journal
 
 #include <cstring> // USES strlen()
 #include <strings.h> // USES strcasecmp()
@@ -51,15 +50,15 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
                                           const topology::Mesh& origMesh,
                                           const char* partitionerName) {
     PYLITH_METHOD_BEGIN;
-    journal::info_t info("mesh_distributor");
+    pythia::journal::info_t info("mesh_distributor");
 
     assert(newMesh);
     newMesh->setCoordSys(origMesh.getCoordSys());
 
     const int commRank = origMesh.commRank();
     if (0 == commRank) {
-        info << journal::at(__HERE__)
-             << "Partitioning mesh using PETSc '" << partitionerName << "' partitioner." << journal::endl;
+        info << pythia::journal::at(__HERE__)
+             << "Partitioning mesh using PETSc '" << partitionerName << "' partitioner." << pythia::journal::endl;
     } // if
 
     PetscErrorCode err = 0;
@@ -69,8 +68,8 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
     err = PetscPartitionerSetType(partitioner, partitionerName);PYLITH_CHECK_ERROR(err);
 
     if (0 == commRank) {
-        info << journal::at(__HERE__)
-             << "Distributing partitioned mesh." << journal::endl;
+        info << pythia::journal::at(__HERE__)
+             << "Distributing partitioned mesh." << pythia::journal::endl;
     } // if
 
     PetscDM dmNew = NULL;
@@ -90,9 +89,9 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
 
     const int commRank = mesh.commRank();
     if (0 == commRank) {
-        journal::info_t info("mesh_distributor");
-        info << journal::at(__HERE__)
-             << "Writing partition." << journal::endl;
+        pythia::journal::info_t info("mesh_distributor");
+        info << pythia::journal::at(__HERE__)
+             << "Writing partition." << pythia::journal::endl;
     } // if
 
     // Setup and allocate field

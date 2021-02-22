@@ -10,7 +10,7 @@ import math
 import numpy
 import pdb
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 
 class Dem2Lines(Application):
@@ -44,46 +44,46 @@ class Dem2Lines(Application):
         # @li \b y_max Maximum y-value for full resolution.
         # @li \b skip_interval Increment by which to increase points skipped.
 
-        import pyre.inventory
-        from pyre.units.angle import degree
+        import pythia.pyre.inventory
+        from pythia.pyre.units.angle import degree
 
-        inputDem = pyre.inventory.str("input_dem", default="DEM.txt")
+        inputDem = pythia.pyre.inventory.str("input_dem", default="DEM.txt")
         inputDem.meta['tip'] = "Input DEM file."
 
-        vtkOutputFile = pyre.inventory.str("vtk_output_file", default="DEM.vtk")
+        vtkOutputFile = pythia.pyre.inventory.str("vtk_output_file", default="DEM.vtk")
         vtkOutputFile.meta['tip'] = "VTK output file."
 
-        masterJournal = pyre.inventory.str("master_journal", default="mktopo.jou")
+        masterJournal = pythia.pyre.inventory.str("master_journal", default="mktopo.jou")
         masterJournal.meta['tip'] = "Filename of output master journal file."
 
-        uLinePrefix = pyre.inventory.str("u_line_prefix", default="u_lines")
+        uLinePrefix = pythia.pyre.inventory.str("u_line_prefix", default="u_lines")
         uLinePrefix.meta['tip'] = "Prefix for u (east) lines."
 
-        uLineJournal = pyre.inventory.str("u_line_journal", default="u_lines.jou")
+        uLineJournal = pythia.pyre.inventory.str("u_line_journal", default="u_lines.jou")
         uLineJournal.meta['tip'] = "Outputjournal file for u (east) lines."
 
-        vLinePrefix = pyre.inventory.str("v_line_prefix", default="v_lines")
+        vLinePrefix = pythia.pyre.inventory.str("v_line_prefix", default="v_lines")
         vLinePrefix.meta['tip'] = "Prefix for v (north) lines."
 
-        vLineJournal = pyre.inventory.str("v_line_journal", default="v_lines.jou")
+        vLineJournal = pythia.pyre.inventory.str("v_line_journal", default="v_lines.jou")
         vLineJournal.meta['tip'] = "Outputjournal file for v (north) lines."
 
-        acisFilename = pyre.inventory.str("acis_filename", default="topo.sab")
+        acisFilename = pythia.pyre.inventory.str("acis_filename", default="topo.sab")
         acisFilename.meta['tip'] = "Name of ACIS output file created by Cubit."
 
-        xMin = pyre.inventory.float("x_min", default=-1.0)
+        xMin = pythia.pyre.inventory.float("x_min", default=-1.0)
         xMin.meta['tip'] = "Minimum x-value for full resolution."
 
-        xMax = pyre.inventory.float("x_max", default=1.0)
+        xMax = pythia.pyre.inventory.float("x_max", default=1.0)
         xMax.meta['tip'] = "Maximum x-value for full resolution."
 
-        yMin = pyre.inventory.float("y_min", default=-1.0)
+        yMin = pythia.pyre.inventory.float("y_min", default=-1.0)
         yMin.meta['tip'] = "Minimum y-value for full resolution."
 
-        yMax = pyre.inventory.float("y_max", default=1.0)
+        yMax = pythia.pyre.inventory.float("y_max", default=1.0)
         yMax.meta['tip'] = "Maximum y-value for full resolution."
 
-        skipInterval = pyre.inventory.int("skip_interval", default=1)
+        skipInterval = pythia.pyre.inventory.int("skip_interval", default=1)
         skipInterval.meta['tip'] = "Increment by which to increase points skipped."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

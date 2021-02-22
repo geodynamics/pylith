@@ -21,9 +21,9 @@ import numpy
 import os
 import re
 import glob
-from pyre.units.time import s
+from pythia.pyre.units.time import s
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 class PrincAxes(Application):
   """
@@ -50,34 +50,34 @@ class PrincAxes(Application):
     ## @li \b regional_sigma2 Value and direction cosines for sigma_2.
     ## @li \b regional_sigma3 Value and direction cosines for sigma_3.
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    vtkInputFile = pyre.inventory.str("vtk_input_file",
+    vtkInputFile = pythia.pyre.inventory.str("vtk_input_file",
                                           default="stress_t0001.vtk")
     vtkInputFile.meta['tip'] = "Name of VTK input file."
 
-    vtkOutputFile = pyre.inventory.str("vtk_output_file", default="output.vtk")
+    vtkOutputFile = pythia.pyre.inventory.str("vtk_output_file", default="output.vtk")
     vtkOutputFile.meta['tip'] = "Name of VTK output file."
 
-    vtkTensorIndex = pyre.inventory.int("vtk_tensor_index", default=1)
+    vtkTensorIndex = pythia.pyre.inventory.int("vtk_tensor_index", default=1)
     vtkTensorIndex.meta['tip'] = "Index of desired VTK field array."
 
-    vtkTensorComponentsOrder = pyre.inventory.list(
+    vtkTensorComponentsOrder = pythia.pyre.inventory.list(
       "vtk_tensor_components_order", default=[0, 1, 2, 3, 4, 5])
     vtkTensorComponentsOrder.meta['tip'] = "Indices of xx, yy, zz, xy, yz, xz."
 
-    addRegionalField = pyre.inventory.bool("add_regional_field", default=False)
+    addRegionalField = pythia.pyre.inventory.bool("add_regional_field", default=False)
     addRegionalField.meta['tip'] = "Add regional field?"
 
-    regionalSigma1 = pyre.inventory.list("regional_sigma1",
+    regionalSigma1 = pythia.pyre.inventory.list("regional_sigma1",
                                          default=[-1.5e7, 1.0, 0.0, 0.0])
     regionalSigma1.meta['tip'] = "Value and direction cosines of sigma1."
 
-    regionalSigma2 = pyre.inventory.list("regional_sigma2",
+    regionalSigma2 = pythia.pyre.inventory.list("regional_sigma2",
                                          default=[-1.0e7, 0.0, 0.0, 1.0])
     regionalSigma2.meta['tip'] = "Value and direction cosines of sigma2."
 
-    regionalSigma3 = pyre.inventory.list("regional_sigma3",
+    regionalSigma3 = pythia.pyre.inventory.list("regional_sigma3",
                                          default=[-5.0e6, 0.0, 1.0, 0.0])
     regionalSigma3.meta['tip'] = "Value and direction cosines of sigma3."
     

@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/OutputPhysics.py
+# @file pythia.pyre/meshio/OutputPhysics.py
 #
 # @brief Python object for managing output over points with constrained degrees of freedom.
 #
@@ -39,12 +39,12 @@ class OutputPhysics(OutputObserver, ModuleOutputPhysics):
     Factory: observer
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    infoFields = pyre.inventory.list("info_fields", default=["all"])
+    infoFields = pythia.pyre.inventory.list("info_fields", default=["all"])
     infoFields.meta['tip'] = "Names of info fields to output."
 
-    dataFields = pyre.inventory.list("data_fields", default=["all"])
+    dataFields = pythia.pyre.inventory.list("data_fields", default=["all"])
     dataFields.meta['tip'] = "Names of data fields to output."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

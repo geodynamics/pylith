@@ -20,6 +20,8 @@ autom4te.cache
 *~
 *.pyc
 .dirstamp
+/build
+/dist
 examples/*/*/output
 examples/*/*/*/output/
 examples/3d/subduction/mesh/geometry_surfs.jou

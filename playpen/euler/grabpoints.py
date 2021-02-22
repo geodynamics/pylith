@@ -25,7 +25,7 @@
 import math
 import numpy
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 class GrabPoints(Application):
   """
@@ -52,25 +52,25 @@ class GrabPoints(Application):
     ## \b Facilities
     ## @li None
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    psetFile = pyre.inventory.str("pset_file", default="test.pset")
+    psetFile = pythia.pyre.inventory.str("pset_file", default="test.pset")
     psetFile.meta['tip'] = "Filename of pset file specifying vertex indices."
 
-    ucdFile = pyre.inventory.str("ucd_file", default="test.inp")
+    ucdFile = pythia.pyre.inventory.str("ucd_file", default="test.inp")
     ucdFile.meta['tip'] = "Filename of ucd file containing mesh and attributes."
 
-    pointOutputFile = pyre.inventory.str("point_output_file",
+    pointOutputFile = pythia.pyre.inventory.str("point_output_file",
                                          default="points.coordnorm")
     pointOutputFile.meta['tip'] = "Filename of output coordinates and normals."
 
-    valuesList = pyre.inventory.list("values_list", default=[1, 2, 3])
+    valuesList = pythia.pyre.inventory.list("values_list", default=[1, 2, 3])
     valuesList.meta['tip'] = "Position of desired values in UCD attributes."
 
-    outputIndex = pyre.inventory.bool("output_index", default=False)
+    outputIndex = pythia.pyre.inventory.bool("output_index", default=False)
     outputIndex.meta['tip'] = "Whether to output vertex indices."
 
-    excludeZeroNormals = pyre.inventory.bool("exclude_zero_normals",
+    excludeZeroNormals = pythia.pyre.inventory.bool("exclude_zero_normals",
                                              default=False)
     excludeZeroNormals.meta['tip'] = "Whether to exclude points with zero normals."
 

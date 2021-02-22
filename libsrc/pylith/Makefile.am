@@ -113,6 +113,10 @@ libpylith_la_SOURCES = \
 	meshio/FieldFilterNone.cc \
 	meshio/FieldFilterProject.cc \
 	meshio/DataWriter.cc \
+	meshio/HDF5.cc \
+	meshio/Xdmf.cc \
+	meshio/DataWriterHDF5.cc \
+	meshio/DataWriterHDF5Ext.cc \
 	meshio/DataWriterVTK.cc \
 	meshio/OutputObserver.cc \
 	meshio/OutputSoln.cc \
@@ -159,6 +163,7 @@ libpylith_la_SOURCES = \
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \
 	-lspatialdata \
+	-lhdf5 \
 	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
@@ -166,15 +171,6 @@ AM_CPPFLAGS = -I$(top_srcdir)/libsrc
 AM_CPPFLAGS += $(PETSC_CC_INCLUDES)
 
 AM_CPPFLAGS += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR)
-
-if ENABLE_HDF5
-  libpylith_la_SOURCES += \
-	meshio/HDF5.cc \
-	meshio/Xdmf.cc \
-	meshio/DataWriterHDF5.cc \
-	meshio/DataWriterHDF5Ext.cc
-  libpylith_la_LIBADD += -lhdf5
-endif
 
 if ENABLE_CUBIT
   libpylith_la_SOURCES += \

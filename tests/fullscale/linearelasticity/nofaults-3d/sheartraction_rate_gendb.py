@@ -23,7 +23,7 @@
 
 import numpy
 
-from pyre.units.time import year
+from pythia.pyre.units.time import year
 
 
 class GenerateDB(object):

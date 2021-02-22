@@ -13,13 +13,13 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/PointsList.py
+# @file pythia.pyre/meshio/PointsList.py
 #
 # @brief Python object for reading list of points from a file.
 #
 # Factory: output_manager
 
-from pyre.components.Component import Component
+from pythia.pyre.components.Component import Component
 
 
 def validateFilename(value):
@@ -50,19 +50,19 @@ class PointsList(Component):
 
     # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    filename = pyre.inventory.str("filename", default="", validator=validateFilename)
+    filename = pythia.pyre.inventory.str("filename", default="", validator=validateFilename)
     filename.meta['tip'] = "Filename for list of points."
 
-    commentDelimiter = pyre.inventory.str("comment_delimiter", default="#")
+    commentDelimiter = pythia.pyre.inventory.str("comment_delimiter", default="#")
     commentDelimiter.meta['tip'] = "Delimiter for comments."
 
-    valueDelimiter = pyre.inventory.str("value_delimiter", default=None)
+    valueDelimiter = pythia.pyre.inventory.str("value_delimiter", default=None)
     valueDelimiter.meta['tip'] = "Delimiter used to separate values."
 
     from spatialdata.geocoords.CSCart import CSCart
-    coordsys = pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
+    coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
     coordsys.meta['tip'] = "Coordinate system associated with points."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

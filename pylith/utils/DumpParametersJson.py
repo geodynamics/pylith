@@ -40,15 +40,15 @@ class DumpParametersJson(DumpParameters):
         Python object for managing DumpParametersJson facilities and properties.
         """
 
-        import pyre.inventory
+        import pythia.pyre.inventory
 
-        filename = pyre.inventory.str("filename", default="pylith_parameters.json")
+        filename = pythia.pyre.inventory.str("filename", default="pylith_parameters.json")
         filename.meta["tip"] = "Name of file written with parameters."
 
-        style = pyre.inventory.str("style", default="normal", validator=pyre.inventory.choice(["normal", "compact"]))
+        style = pythia.pyre.inventory.str("style", default="normal", validator=pythia.pyre.inventory.choice(["normal", "compact"]))
         style.meta['tip'] = "Style of JSON file [compact, normal]."
 
-        indent = pyre.inventory.int("indent", default=4)
+        indent = pythia.pyre.inventory.int("indent", default=4)
         indent.meta['tip'] = "Nmber of spaces to indent, use a negative number for no newlines."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

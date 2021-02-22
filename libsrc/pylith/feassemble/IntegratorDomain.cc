@@ -204,7 +204,7 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
         _updateState->initialize(*_auxiliaryField);
     } // if
 
-    journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
         PYLITH_JOURNAL_DEBUG("Viewing auxiliary field.");
         assert(_auxiliaryField);
@@ -439,7 +439,7 @@ pylith::feassemble::IntegratorDomain::_computeDerivedField(const PylithReal t,
     err = DMProjectFieldLocal(derivedDM, t, solution.localVector(), kernelsArray, INSERT_VALUES, _derivedField->localVector());PYLITH_CHECK_ERROR(err);
     delete[] kernelsArray;kernelsArray = NULL;
 
-    journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
         PYLITH_JOURNAL_DEBUG("Viewing derived field.");
         _derivedField->view("Derived field");

@@ -281,7 +281,7 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
     assert(_auxiliaryFactory);
     _auxiliaryFactory->setValuesFromDB();
 
-    journal::debug_t debug(PyreComponent::getName());
+    pythia::journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
         PYLITH_COMPONENT_DEBUG("Displaying auxiliary field");
         auxiliaryField->view("Neumann auxiliary field");
@@ -355,11 +355,11 @@ pylith::bc::_NeumannTimeDependent::setKernelsRHSResidual(pylith::feassemble::Int
                                                          const pylith::bc::NeumannTimeDependent& bc,
                                                          const topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    journal::debug_t debug(_NeumannTimeDependent::pyreComponent);
-    debug << journal::at(__HERE__)
+    pythia::journal::debug_t debug(_NeumannTimeDependent::pyreComponent);
+    debug << pythia::journal::at(__HERE__)
           << "setKernelsRHSResidual(integrator="<<integrator<<", bc="<<typeid(bc).name()<<", solution="
           << solution.getLabel()<<")"
-          << journal::endl;
+          << pythia::journal::endl;
 
     PetscBdPointFunc g0 = NULL;
     PetscBdPointFunc g1 = NULL;
@@ -401,18 +401,18 @@ pylith::bc::_NeumannTimeDependent::setKernelsRHSResidual(pylith::feassemble::Int
              pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_vector;
         break;
     case 0x0: {
-        journal::warning_t warning(_NeumannTimeDependent::pyreComponent);
-        warning << journal::at(__HERE__)
+        pythia::journal::warning_t warning(_NeumannTimeDependent::pyreComponent);
+        warning << pythia::journal::at(__HERE__)
                 << "Neumann time-dependent BC provides no values."
-                << journal::endl;
+                << pythia::journal::endl;
         break;
     } // case 0x0
     default: {
-        journal::error_t error(_NeumannTimeDependent::pyreComponent);
-        error << journal::at(__HERE__)
+        pythia::journal::error_t error(_NeumannTimeDependent::pyreComponent);
+        error << pythia::journal::at(__HERE__)
               << "Unknown combination of flags for Neumann BC terms (useInitial="<<bc.useInitial()
               << ", useRate="<<bc.useRate()<<", useTimeHistory="<<bc.useTimeHistory()<<")."
-              << journal::endl;
+              << pythia::journal::endl;
         throw std::logic_error("Unknown combination of flags for Neumann time-dependent BC terms.");
     } // default
     } // switch

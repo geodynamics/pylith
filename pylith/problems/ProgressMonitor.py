@@ -42,12 +42,12 @@ class ProgressMonitor(PetscComponent, ModuleProgressMonitor):
     Factory: progress_monitor.
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    filename = pyre.inventory.str("filename", default="progress.txt")
+    filename = pythia.pyre.inventory.str("filename", default="progress.txt")
     filename.meta['tip'] = "Name of output file."
 
-    updatePercent = pyre.inventory.float("update_percent", default=5.0, validator=pyre.inventory.greater(0))
+    updatePercent = pythia.pyre.inventory.float("update_percent", default=5.0, validator=pythia.pyre.inventory.greater(0))
     updatePercent.meta['tip'] = "Frequency of progress updates (percent)."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

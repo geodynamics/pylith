@@ -38,9 +38,9 @@ class OutputTriggerStep(OutputTrigger, ModuleOutputTriggerStep):
 
     # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    numSkip = pyre.inventory.int("num_skip", default=0, validator=pyre.inventory.greaterEqual(0))
+    numSkip = pythia.pyre.inventory.int("num_skip", default=0, validator=pythia.pyre.inventory.greaterEqual(0))
     numSkip.meta['tip'] = "Number of solution steps to skip between writes."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

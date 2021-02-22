@@ -27,7 +27,7 @@
 
 import numpy
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 class FaultInfo(Application):
   """
@@ -56,30 +56,30 @@ class FaultInfo(Application):
     ## @li \b slip_scale_factor Fault slip scale factor.
     ## @li \b shear_direction General direction associated with positive shear.
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    faultInfoFile = pyre.inventory.str("fault_info_file",
+    faultInfoFile = pythia.pyre.inventory.str("fault_info_file",
                                           default="fault_info.vtk")
     faultInfoFile.meta['tip'] = "VTK file containing fault information."
 
-    faultResultsFile = pyre.inventory.str("fault_results_file",
+    faultResultsFile = pythia.pyre.inventory.str("fault_results_file",
                                           default="fault_t00000.vtk")
     faultResultsFile.meta['tip'] = "VTK file containing computed fault results."
 
-    faultOutputFile = pyre.inventory.str("fault_output_file",
+    faultOutputFile = pythia.pyre.inventory.str("fault_output_file",
                                          default="fault_stress_t00000.vtk")
     faultOutputFile.meta['tip'] = "VTK output file."
 
-    frictionCoeff = pyre.inventory.float("friction_coeff", default=0.2)
+    frictionCoeff = pythia.pyre.inventory.float("friction_coeff", default=0.2)
     frictionCoeff.meta['tip'] = "Effective coefficient of friction."
 
-    stressScaleFactor = pyre.inventory.float("stress_scale_factor", default=1.0)
+    stressScaleFactor = pythia.pyre.inventory.float("stress_scale_factor", default=1.0)
     stressScaleFactor.meta['tip'] = "Scale factor to apply to stresses."
 
-    slipScaleFactor = pyre.inventory.float("slip_scale_factor", default=1.0)
+    slipScaleFactor = pythia.pyre.inventory.float("slip_scale_factor", default=1.0)
     slipScaleFactor.meta['tip'] = "Scale factor to apply to slip."
 
-    shearDirection = pyre.inventory.list("shear_direction",
+    shearDirection = pythia.pyre.inventory.list("shear_direction",
                                          default=[1.0, 0.0, 1.0])
     shearDirection.meta['tip'] = "General direction associated with positive shear stress."
 

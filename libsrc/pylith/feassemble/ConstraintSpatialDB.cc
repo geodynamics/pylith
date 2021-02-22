@@ -101,12 +101,12 @@ pylith::feassemble::ConstraintSpatialDB::updateState(const double t) {
     assert(_physics);
     _physics->updateAuxiliaryField(_auxiliaryField, t);
 
-    journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
         assert(_auxiliaryField);
-        debug << journal::at(__HERE__)
+        debug << pythia::journal::at(__HERE__)
               << "Constraint component '" << GenericComponent::getName() << "' for '"
-              <<_physics->getIdentifier()<<"': viewing auxiliary field." << journal::endl;
+              <<_physics->getIdentifier()<<"': viewing auxiliary field." << pythia::journal::endl;
         _auxiliaryField->view("Constraint auxiliary field", pylith::topology::Field::VIEW_ALL);
     } // if
 
@@ -149,11 +149,11 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::topology::Field* so
                                                      _kernelConstraint, context, solution->localVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
 
-    journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        debug << journal::at(__HERE__)
+        debug << pythia::journal::at(__HERE__)
               << "Constraint component '" << GenericComponent::getName() << "' for '"
-              <<_physics->getIdentifier()<<"''." << journal::endl;
+              <<_physics->getIdentifier()<<"''." << pythia::journal::endl;
         _auxiliaryField->view("Auxiliary field", pylith::topology::Field::VIEW_ALL);
         solution->view("Solution field after setting constrained values", pylith::topology::Field::VIEW_ALL);
     } // if

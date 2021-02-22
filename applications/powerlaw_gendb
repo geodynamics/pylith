@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ----------------------------------------------------------------------
 #
@@ -27,7 +27,7 @@
 import numpy
 import math
 
-from pyre.applications.Script import Script as Application
+from pythia.pyre.applications.Script import Script as Application
 
 
 class PowerLawApp(Application):
@@ -52,42 +52,42 @@ class PowerLawApp(Application):
     # @li \b geometry Geometry for output database.
     # @li \b database_filename Object for writing database.
 
-    import pyre.inventory
-    from pyre.units.pressure import MPa
-    from pyre.units.time import s
+    import pythia.pyre.inventory
+    from pythia.pyre.units.pressure import MPa
+    from pythia.pyre.units.time import s
 
-    refSelection = pyre.inventory.str("reference_value",
-                                      default="strain_rate",
-                                      validator=pyre.inventory.choice(['stress',
-                                                                       'strain_rate']))
+    refSelection = pythia.pyre.inventory.str("reference_value",
+                                             default="strain_rate",
+                                             validator=pythia.pyre.inventory.choice(['stress',
+                                                                                     'strain_rate']))
     refSelection.meta['tip'] = "Indicates whether reference stress or " \
         "reference strain rate is provided as input."
 
-    refStress = pyre.inventory.dimensional("reference_stress", default=1.0 * MPa)
+    refStress = pythia.pyre.inventory.dimensional("reference_stress", default=1.0 * MPa)
     refStress.meta['tip'] = "Reference stress value."
 
-    refStrainRate = pyre.inventory.dimensional("reference_strain_rate", default=1.0e-6 / s)
+    refStrainRate = pythia.pyre.inventory.dimensional("reference_strain_rate", default=1.0e-6 / s)
     refStrainRate.meta['tip'] = "Reference strain rate value."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
 
-    dbExponent = pyre.inventory.facility("db_exponent", family="spatial_database", factory=SimpleDB)
+    dbExponent = pythia.pyre.inventory.facility("db_exponent", family="spatial_database", factory=SimpleDB)
     dbExponent.meta['tip'] = "Spatial db for power-law exponent, n."
 
-    dbActivationE = pyre.inventory.facility("db_activation_energy", family="spatial_database", factory=SimpleDB)
+    dbActivationE = pythia.pyre.inventory.facility("db_activation_energy", family="spatial_database", factory=SimpleDB)
     dbActivationE.meta['tip'] = "Spatial db for activation energy, Q."
 
-    dbTemperature = pyre.inventory.facility("db_temperature", family="spatial_database", factory=SimpleDB)
+    dbTemperature = pythia.pyre.inventory.facility("db_temperature", family="spatial_database", factory=SimpleDB)
     dbTemperature.meta['tip'] = "Spatial db for temperature, T."
 
-    dbAe = pyre.inventory.facility("db_powerlaw_coefficient", family="spatial_database", factory=SimpleDB)
+    dbAe = pythia.pyre.inventory.facility("db_powerlaw_coefficient", family="spatial_database", factory=SimpleDB)
     dbAe.meta['tip'] = "Spatial db for power-law coefficient, Ae."
 
     from spatialdata.spatialdb.generator.Geometry import Geometry
-    geometry = pyre.inventory.facility("geometry", family="geometry", factory=Geometry)
+    geometry = pythia.pyre.inventory.facility("geometry", family="geometry", factory=Geometry)
     geometry.meta['tip'] = "Geometry for output database."
 
-    dbFilename = pyre.inventory.str("database_filename", default="powerlaw.spatialdb")
+    dbFilename = pythia.pyre.inventory.str("database_filename", default="powerlaw.spatialdb")
     dbFilename.meta['tip'] = "Filename for generated spatial database."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -119,7 +119,7 @@ class PowerLawApp(Application):
 
         # Compute power-law parameters
         self._info.log("Computing parameters at output points.")
-        from pyre.handbook.constants.fundamental import R
+        from pythia.pyre.handbook.constants.fundamental import R
         Ae = 10**(logAe - scaleAe * n)
         At = 3**(0.5 * (n + 1)) / 2.0 * Ae * numpy.exp(-Q / (R.value * T))
 
@@ -178,7 +178,7 @@ class PowerLawApp(Application):
         if errSum > 0:
             msg = "Query for %s failed at %d points.\n" \
                 "Coordinates of points:\n" % (valueName, errSum)
-            msg += "%s" % points[err,:]
+            msg += "%s" % points[err, :]
             raise ValueError(msg)
 
         return data

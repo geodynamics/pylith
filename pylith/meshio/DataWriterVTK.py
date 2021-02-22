@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pyre/meshio/DataWriterVTK.py
+# @file pythia.pyre/meshio/DataWriterVTK.py
 #
 # @brief Python object for writing finite-element data to VTK file.
 
@@ -38,21 +38,21 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
     FACTORY: data_writer
     """
 
-    import pyre.inventory
+    import pythia.pyre.inventory
 
-    filename = pyre.inventory.str("filename", default="")
+    filename = pythia.pyre.inventory.str("filename", default="")
     filename.meta['tip'] = "Name of VTK file."
 
-    timeFormat = pyre.inventory.str("time_format", default="%f")
+    timeFormat = pythia.pyre.inventory.str("time_format", default="%f")
     timeFormat.meta['tip'] = "C style format string for time stamp in filename."
 
-    from pyre.units.time import second
-    timeConstant = pyre.inventory.dimensional(
-        "time_constant", default=1.0 * second, validator=pyre.inventory.greater(0.0 * second))
+    from pythia.pyre.units.time import second
+    timeConstant = pythia.pyre.inventory.dimensional(
+        "time_constant", default=1.0 * second, validator=pythia.pyre.inventory.greater(0.0 * second))
     timeConstant.meta['tip'] = "Values used to normalize time stamp in filename."
 
-    precision = pyre.inventory.int("float_precision", default=6,
-                                   validator=pyre.inventory.greater(0))
+    precision = pythia.pyre.inventory.int("float_precision", default=6,
+                                   validator=pythia.pyre.inventory.greater(0))
     precision.meta['tip'] = "Precision of floating point values in output."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

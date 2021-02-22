@@ -34,10 +34,19 @@ class RheologyPoroelasticity(PetscComponent, ModuleRheology):
       - None
 
     Facilities
-      - None
+      - *auxiliary_subfields* Discretization of physical properties and state variables.
 
     FACTORY: poroelasticity_rheology
     """
+
+    import pythia.pyre.inventory
+
+    from pylith.topology.Subfield import subfieldFactory
+    from pylith.utils.EmptyBin import EmptyBin
+
+    auxiliarySubfields = pythia.pyre.inventory.facilityArray(
+        "auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin)
+    auxiliarySubfields.meta['tip'] = "Discretization information for physical properties and state variables."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

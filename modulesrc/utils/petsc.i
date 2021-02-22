@@ -38,7 +38,5 @@
 
 // Interfaces
 %include "petsc_general.i"
-//%include "petsc_memory.i" // was ALE memory logging stuff
 
 // End of file
-
