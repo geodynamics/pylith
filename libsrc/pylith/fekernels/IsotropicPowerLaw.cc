@@ -1170,8 +1170,8 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain(const Pylit
     const PylithInt i_powerLawReferenceStrainRate = numA-5;
     const PylithInt i_powerLawReferenceStress = numA-4;
     const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
+    const PylithInt i_viscousStrainT = numA-2;
+    const PylithInt i_stressT = numA-1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -1186,8 +1186,8 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain(const Pylit
     assert(aOff[i_powerLawReferenceStrainRate] >= 0);
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
+    assert(aOff[i_viscousStrainT] >= 0);
+    assert(aOff[i_stressT] >= 0);
     assert(constants);
 
     // Constants.
@@ -1205,7 +1205,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain(const Pylit
 
     const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
-                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_stress]};
+                                  aOff[i_powerLawExponent], aOff[i_viscousStrainT], aOff[i_stressT]};
 
     // Compute current deviatoric stress.
     PylithScalar devStressTpdt[4] = { 0.0, 0.0, 0.0, 0.0 };
@@ -1215,7 +1215,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain(const Pylit
     const PylithScalar j2Tpdt = sqrt(0.5*devStressProdTpdt);
 
     // Compute stress quantities at time T.
-    const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy at t = T.
+    const PylithScalar* stressT = &a[aOff[i_stressT]]; // stress_xx, stress_yy, stress_zz, stress_xy at t = T.
     const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
     const PylithScalar devStressT[4] = {stressT[0] - meanStressT,
                                         stressT[1] - meanStressT,
@@ -1234,10 +1234,12 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain(const Pylit
                                                                   (powerLawExponent - 1.0))/powerLawReferenceStress;
 
     // Update viscous strain.
-    visStrain[0] += dt*gammaTau*devStressTau[0];
-    visStrain[1] += dt*gammaTau*devStressTau[1];
-    visStrain[2] += dt*gammaTau*devStressTau[2];
-    visStrain[3] += dt*gammaTau*devStressTau[3];
+    const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrainT]]; // viscous_strain_xx, viscous_strain_yy, viscous_strain_zz,
+                                                                     // viscous_strain_xy
+    visStrain[0] = viscousStrainT[0] + dt*gammaTau*devStressTau[0];
+    visStrain[1] = viscousStrainT[1] + dt*gammaTau*devStressTau[1];
+    visStrain[2] = viscousStrainT[2] + dt*gammaTau*devStressTau[2];
+    visStrain[3] = viscousStrainT[3] + dt*gammaTau*devStressTau[3];
 
 } // updateViscousStrain
 
@@ -1280,8 +1282,8 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate(co
     const PylithInt i_powerLawReferenceStrainRate = numA-5;
     const PylithInt i_powerLawReferenceStress = numA-4;
     const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
+    const PylithInt i_viscousStrainT = numA-2;
+    const PylithInt i_stressT = numA-1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -1296,8 +1298,8 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate(co
     assert(aOff[i_powerLawReferenceStrainRate] >= 0);
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
+    assert(aOff[i_viscousStrainT] >= 0);
+    assert(aOff[i_stressT] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
     assert(constants);
@@ -1317,8 +1319,8 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate(co
 
     const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
-                                  aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrain],
-                                  aOff[i_stress]};
+                                  aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrainT],
+                                  aOff[i_stressT]};
 
     // Compute current deviatoric stress.
     PylithScalar devStressTpdt[4] = { 0.0, 0.0, 0.0, 0.0 };
@@ -1328,7 +1330,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate(co
     const PylithScalar j2Tpdt = sqrt(0.5*devStressProdTpdt);
 
     // Compute stress quantities at time T.
-    const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy at t = T.
+    const PylithScalar* stressT = &a[aOff[i_stressT]]; // stress_xx, stress_yy, stress_zz, stress_xy at t = T.
     const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
     const PylithScalar devStressT[4] = {stressT[0] - meanStressT,
                                         stressT[1] - meanStressT,
@@ -1347,10 +1349,12 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate(co
                                                                   (powerLawExponent - 1.0))/powerLawReferenceStress;
 
     // Update viscous strain.
-    visStrain[0] += dt*gammaTau*devStressTau[0];
-    visStrain[1] += dt*gammaTau*devStressTau[1];
-    visStrain[2] += dt*gammaTau*devStressTau[2];
-    visStrain[3] += dt*gammaTau*devStressTau[3];
+    const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrainT]]; // viscous_strain_xx, viscous_strain_yy, viscous_strain_zz,
+                                                                     // viscous_strain_xy
+    visStrain[0] = viscousStrainT[0] + dt*gammaTau*devStressTau[0];
+    visStrain[1] = viscousStrainT[1] + dt*gammaTau*devStressTau[1];
+    visStrain[2] = viscousStrainT[2] + dt*gammaTau*devStressTau[2];
+    visStrain[3] = viscousStrainT[3] + dt*gammaTau*devStressTau[3];
 
 } // updateViscousStrain_refstate
 
@@ -1750,7 +1754,7 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
                                     factor4*devStressTpdt[2]*devStressT[2] + ae));
         C3333 = bulkModulus + 2/(3*(factor3*devStressTpdt[2]*devStressTpdt[2] + factor1 +
                                     factor4*devStressTpdt[2]*devStressT[2] + ae));
-#if 1
+#if 0
     std::cout << "Viscoelastic Jacobian:" << std::endl;
     std::cout << "    C1111:" << C1111 << std::endl;
     std::cout << "    C1122:" << C1122 << std::endl;
@@ -2328,7 +2332,7 @@ pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress(const PylithInt dim,
     stressTensor[3] += devStressTpdt[3];
     stressTensor[6] += devStressTpdt[5];
     stressTensor[7] += devStressTpdt[4];
-#if 1
+#if 0
     const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
     const PylithScalar j2Test = sqrt(0.5*devStressProdTpdt);
     PylithScalar dtTest = 0.0;
@@ -2717,8 +2721,8 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain(const PylithInt dim,
     const PylithInt i_powerLawReferenceStrainRate = numA-5;
     const PylithInt i_powerLawReferenceStress = numA-4;
     const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
+    const PylithInt i_viscousStrainT = numA-2;
+    const PylithInt i_stressT = numA-1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -2733,8 +2737,8 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain(const PylithInt dim,
     assert(aOff[i_powerLawReferenceStrainRate] >= 0);
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
+    assert(aOff[i_viscousStrainT] >= 0);
+    assert(aOff[i_stressT] >= 0);
     assert(constants);
 
     // Constants.
@@ -2752,7 +2756,7 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain(const PylithInt dim,
 
     const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
-                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_stress]};
+                                  aOff[i_powerLawExponent], aOff[i_viscousStrainT], aOff[i_stressT]};
 
     // Compute current deviatoric stress.
     PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
@@ -2769,8 +2773,8 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain(const PylithInt dim,
     const PylithScalar j2Tpdt = sqrt(0.5*devStressProdTpdt);
 
     // Compute stress quantities at time T.
-    const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy, stress_yz,
-                                                      // stress_xz at t = T.
+    const PylithScalar* stressT = &a[aOff[i_stressT]]; // stress_xx, stress_yy, stress_zz, stress_xy, stress_yz,
+                                                          // stress_xz at t = T.
     const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
     const PylithScalar devStressT[6] = {stressT[0] - meanStressT,
                                         stressT[1] - meanStressT,
@@ -2793,12 +2797,14 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain(const PylithInt dim,
                                                                   (powerLawExponent - 1.0))/powerLawReferenceStress;
 
     // Update viscous strain.
-    visStrain[0] += dt*gammaTau*devStressTau[0];
-    visStrain[1] += dt*gammaTau*devStressTau[1];
-    visStrain[2] += dt*gammaTau*devStressTau[2];
-    visStrain[3] += dt*gammaTau*devStressTau[3];
-    visStrain[4] += dt*gammaTau*devStressTau[4];
-    visStrain[5] += dt*gammaTau*devStressTau[5];
+    const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrainT]]; // viscous_strain_xx, viscous_strain_yy, viscous_strain_zz,
+                                                                     // viscous_strain_xy, viscous_strain_yz, viscous_strain_xz at t = T.
+    visStrain[0] = viscousStrainT[0] + dt*gammaTau*devStressTau[0];
+    visStrain[1] = viscousStrainT[1] + dt*gammaTau*devStressTau[1];
+    visStrain[2] = viscousStrainT[2] + dt*gammaTau*devStressTau[2];
+    visStrain[3] = viscousStrainT[3] + dt*gammaTau*devStressTau[3];
+    visStrain[4] = viscousStrainT[4] + dt*gammaTau*devStressTau[4];
+    visStrain[5] = viscousStrainT[5] + dt*gammaTau*devStressTau[5];
 
 } // updateViscousStrain
 
@@ -2841,8 +2847,8 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate(const Pylit
     const PylithInt i_powerLawReferenceStrainRate = numA-5;
     const PylithInt i_powerLawReferenceStress = numA-4;
     const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
+    const PylithInt i_viscousStrainT = numA-2;
+    const PylithInt i_stressT = numA-1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -2857,8 +2863,8 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate(const Pylit
     assert(aOff[i_powerLawReferenceStrainRate] >= 0);
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
+    assert(aOff[i_viscousStrainT] >= 0);
+    assert(aOff[i_stressT] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
     assert(constants);
@@ -2878,8 +2884,8 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate(const Pylit
 
     const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
-                                  aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrain],
-                                  aOff[i_stress]};
+                                  aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrainT],
+                                  aOff[i_stressT]};
 
     // Compute current deviatoric stress.
     PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
@@ -2896,8 +2902,8 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate(const Pylit
     const PylithScalar j2Tpdt = sqrt(0.5*devStressProdTpdt);
 
     // Compute stress quantities at time T.
-    const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy, stress_yz,
-                                                      // stress_xz at t = T.
+    const PylithScalar* stressT = &a[aOff[i_stressT]]; // stress_xx, stress_yy, stress_zz, stress_xy, stress_yz,
+                                                       // stress_xz at t = T.
     const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
     const PylithScalar devStressT[6] = {stressT[0] - meanStressT,
                                         stressT[1] - meanStressT,
@@ -2920,12 +2926,14 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate(const Pylit
                                                                   (powerLawExponent - 1.0))/powerLawReferenceStress;
 
     // Update viscous strain.
-    visStrain[0] += dt*gammaTau*devStressTau[0];
-    visStrain[1] += dt*gammaTau*devStressTau[1];
-    visStrain[2] += dt*gammaTau*devStressTau[2];
-    visStrain[3] += dt*gammaTau*devStressTau[3];
-    visStrain[4] += dt*gammaTau*devStressTau[4];
-    visStrain[5] += dt*gammaTau*devStressTau[5];
+    const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrainT]]; // viscous_strain_xx, viscous_strain_yy, viscous_strain_zz,
+                                                                     // viscous_strain_xy, viscous_strain_yz, viscous_strain_xz at t = T.
+    visStrain[0] = viscousStrainT[0] + dt*gammaTau*devStressTau[0];
+    visStrain[1] = viscousStrainT[1] + dt*gammaTau*devStressTau[1];
+    visStrain[2] = viscousStrainT[2] + dt*gammaTau*devStressTau[2];
+    visStrain[3] = viscousStrainT[3] + dt*gammaTau*devStressTau[3];
+    visStrain[4] = viscousStrainT[4] + dt*gammaTau*devStressTau[4];
+    visStrain[5] = viscousStrainT[5] + dt*gammaTau*devStressTau[5];
 
 } // updateViscousStrain_refstate
 
