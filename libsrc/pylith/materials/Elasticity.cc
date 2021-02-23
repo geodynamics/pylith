@@ -144,7 +144,8 @@ pylith::materials::Elasticity::createIntegrator(const pylith::topology::Field& s
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
     pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
-    integrator->setMaterialId(getMaterialId());
+    integrator->setLabelName("material-id");
+    integrator->setLabelValue(getMaterialId());
 
     switch (_formulation) {
     case QUASISTATIC:

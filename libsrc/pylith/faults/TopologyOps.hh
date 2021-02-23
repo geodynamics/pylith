@@ -33,11 +33,10 @@
 // TopologyOps ----------------------------------------------------------
 /// Helper object for creation of cohesive cells.
 class pylith::faults::TopologyOps {
-
     // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
 public:
 
-    typedef std::set<PetscInt> PointSet;
+    typedef std::set < PetscInt > PointSet;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
@@ -74,14 +73,16 @@ public:
      *
      * @param faultMesh Finite-element mesh of fault (output).
      * @param mesh Finite-element mesh.
-     * @param materialId Material id for cohesive elements.
-     * @param label Fault label.
+     * @param labelValue Value of label associated with integration domain.
+     * @param labelName Name of label associated with integration domain.
+     * @param surfaceLabel Name of label for interface surface.
      */
     static
     void createFaultParallel(topology::Mesh* faultMesh,
                              const topology::Mesh& mesh,
-                             const int materialId,
-                             const char* label);
+                             const int labelValue,
+                             const char* labelName,
+                             const char* surfaceLabel);
 
     /** Classify cells adjacent to the fault as to the side of the fault each cell is on.
      */
@@ -98,6 +99,5 @@ public:
 }; // class TopologyOps
 
 #endif // pylith_faults_topologyops_hh
-
 
 // End of file

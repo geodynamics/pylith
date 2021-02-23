@@ -115,9 +115,10 @@ public:
 pylith::feassemble::IntegratorInterface::IntegratorInterface(pylith::problems::Physics* const physics) :
     Integrator(physics),
     _interfaceMesh(NULL),
-    _interfaceId(100),
-    _interfaceLabel("") {
+    _interfaceSurfaceLabel("") {
     GenericComponent::setName(_IntegratorInterface::genericComponent);
+    _labelValue = 100;
+    _labelName = "material-id";
 } // constructor
 
 
@@ -143,24 +144,6 @@ pylith::feassemble::IntegratorInterface::deallocate(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set value of label material-id used to identify interface cells.
-void
-pylith::feassemble::IntegratorInterface::setInterfaceId(const int value) {
-    PYLITH_JOURNAL_DEBUG("setInterfaceId(value="<<value<<")");
-
-    _interfaceId = value;
-} // setInterfaceId
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get value of label material-id used to identify interface cells.
-int
-pylith::feassemble::IntegratorInterface::getInterfaceId(void) const {
-    return _interfaceId;
-} // getInterfaceId
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Set label marking boundary associated with boundary condition surface.
 void
 pylith::feassemble::IntegratorInterface::setSurfaceMarkerLabel(const char* value) {
@@ -170,7 +153,7 @@ pylith::feassemble::IntegratorInterface::setSurfaceMarkerLabel(const char* value
         throw std::runtime_error("Empty string given for boundary condition label.");
     } // if
 
-    _interfaceLabel = value;
+    _interfaceSurfaceLabel = value;
 } // setSurfaceMarkerLabel
 
 
@@ -178,7 +161,7 @@ pylith::feassemble::IntegratorInterface::setSurfaceMarkerLabel(const char* value
 // Get label marking boundary associated with boundary condition surface.
 const char*
 pylith::feassemble::IntegratorInterface::getSurfaceMarkerLabel(void) const {
-    return _interfaceLabel.c_str();
+    return _interfaceSurfaceLabel.c_str();
 } // getSurfaceMarkerLabel
 
 
@@ -252,8 +235,8 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
 
     const bool isSubmesh = true;
     delete _interfaceMesh;_interfaceMesh = new pylith::topology::Mesh(isSubmesh);assert(_interfaceMesh);
-    pylith::faults::TopologyOps::createFaultParallel(_interfaceMesh, solution.mesh(), _interfaceId,
-                                                     _interfaceLabel.c_str());
+    pylith::faults::TopologyOps::createFaultParallel(_interfaceMesh, solution.mesh(), _labelValue, _labelName.c_str(),
+                                                     _interfaceSurfaceLabel.c_str());
     pylith::topology::MeshOps::checkTopology(*_interfaceMesh);
     pylith::topology::CoordsVisitor::optimizeClosure(_interfaceMesh->dmMesh());
 
@@ -429,17 +412,16 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
 
     PetscDM dmSoln = solution.dmMesh();
     PetscDM dmAux = auxiliaryField->dmMesh();
-
-    PetscDMLabel dmLabel = NULL;
     PetscIS cohesiveCells = NULL;
-    PetscInt cStart = 0, cEnd = 0;
-    err = DMGetLabel(dmSoln, "material-id", &dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetStratumBounds(dmLabel, integrator->getInterfaceId(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-    err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cohesiveCells);PYLITH_CHECK_ERROR(err);
+    PetscInt numCohesiveCells = 0;
+    const PetscInt* cellIndices = NULL;
+    err = DMGetStratumIS(dmSoln, integrator->getLabelName(), integrator->getLabelValue(), &cohesiveCells);PYLITH_CHECK_ERROR(err);
+    err = ISGetSize(cohesiveCells, &numCohesiveCells);PYLITH_CHECK_ERROR(err);assert(numCohesiveCells > 0);
+    err = ISGetIndices(cohesiveCells, &cellIndices);PYLITH_CHECK_ERROR(err);assert(cellIndices);
 
-    assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, cStart));
+    assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, cellIndices[0]));
     PetscDS prob = NULL;
-    err = DMGetCellDS(dmSoln, cStart, &prob);PYLITH_CHECK_ERROR(err);
+    err = DMGetCellDS(dmSoln, cellIndices[0], &prob);PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
@@ -455,7 +437,6 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     err = DMPlexComputeResidual_Hybrid_Internal(dmSoln, cohesiveCells, t, solution.localVector(),
                                                 solutionDot.localVector(), t,
                                                 residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&cohesiveCells);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeResidual
@@ -491,16 +472,16 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     PetscDM dmSoln = solution.dmMesh();
     PetscDM dmAux = auxiliaryField->dmMesh();
 
-    PetscDMLabel dmLabel = NULL;
     PetscIS cohesiveCells = NULL;
-    PetscInt cStart = 0, cEnd = 0;
-    err = DMGetLabel(dmSoln, "material-id", &dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetStratumBounds(dmLabel, integrator->getInterfaceId(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-    err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cohesiveCells);PYLITH_CHECK_ERROR(err);
+    PetscInt numCohesiveCells = 0;
+    const PetscInt* cellIndices = NULL;
+    err = DMGetStratumIS(dmSoln, integrator->getLabelName(), integrator->getLabelValue(), &cohesiveCells);PYLITH_CHECK_ERROR(err);
+    err = ISGetSize(cohesiveCells, &numCohesiveCells);PYLITH_CHECK_ERROR(err);assert(numCohesiveCells > 0);
+    err = ISGetIndices(cohesiveCells, &cellIndices);PYLITH_CHECK_ERROR(err);assert(cellIndices);
 
-    assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, cStart));
+    assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, cellIndices[0]));
     PetscDS prob = NULL;
-    err = DMGetCellDS(dmSoln, cStart, &prob);PYLITH_CHECK_ERROR(err);
+    err = DMGetCellDS(dmSoln, cellIndices[0], &prob);PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);

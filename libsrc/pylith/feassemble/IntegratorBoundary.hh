@@ -193,7 +193,7 @@ private:
     std::vector<ResidualKernels> _kernelsLHSResidual; ///< kernels for LHS residual.
 
     pylith::topology::Mesh* _boundaryMesh; ///< Boundary mesh.
-    std::string _boundaryLabel; ///< Label to identify boundary condition points in mesh.
+    std::string _boundarySurfaceLabel; ///< Name of label identifying boundary surface.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

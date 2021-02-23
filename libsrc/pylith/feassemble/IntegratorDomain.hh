@@ -123,18 +123,6 @@ public:
     virtual
     void deallocate(void);
 
-    /** Set value of label material-id used to identify material cells.
-     *
-     * @param value Material identifier
-     */
-    void setMaterialId(const int value);
-
-    /** Get value of label material-id used to identify material cells.
-     *
-     * @returns Material identifier
-     */
-    int getMaterialId(void) const;
-
     /** Get mesh associated with integrator domain.
      *
      * @returns Mesh associated with integrator domain.
@@ -326,7 +314,6 @@ private:
     std::vector<ProjectKernels> _kernelsUpdateStateVars; ///< kernels for updating state variables.
     std::vector<ProjectKernels> _kernelsDerivedField; ///< kernels for computing derived field.
 
-    int _materialId;
     pylith::topology::Mesh* _materialMesh; ///< Mesh associated with material.
 
     pylith::feassemble::UpdateStateVars* _updateState; ///< Data structure for layout needed to update state vars.

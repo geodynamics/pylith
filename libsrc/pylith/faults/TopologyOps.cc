@@ -106,7 +106,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
     err = DMPlexGetHeightStratum(dm, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     cMax = cStart;
     for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
-      if (pylith::topology::MeshOps::isCohesiveCell(dm, cell)) { break; }
+        if (pylith::topology::MeshOps::isCohesiveCell(dm, cell)) { break; }
     } // for
     numCohesiveCellsOld = cEnd - cMax;
     // Create cohesive cells
@@ -189,7 +189,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
         err = DMPlexGetHeightStratum(sdm, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
         cMax = cStart;
         for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
-	  if (pylith::topology::MeshOps::isCohesiveCell(sdm, cell)) { break; }
+            if (pylith::topology::MeshOps::isCohesiveCell(sdm, cell)) { break; }
         }
         assert(cEnd > cMax + numCohesiveCellsOld);
         for (PetscInt cell = cMax; cell < cEnd - numCohesiveCellsOld; ++cell) {
@@ -216,24 +216,24 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
 void
 pylith::faults::TopologyOps::createFaultParallel(pylith::topology::Mesh* faultMesh,
                                                  const pylith::topology::Mesh& mesh,
-                                                 const int materialId,
-                                                 const char* label) {
+                                                 const int labelValue,
+                                                 const char* labelName,
+                                                 const char* surfaceLabel) {
     PYLITH_METHOD_BEGIN;
 
     assert(faultMesh);
-    const char    *labelname = "material-id";
     PetscErrorCode err;
 
     faultMesh->setCoordSys(mesh.getCoordSys());
 
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-    PetscDM dmFaultMesh;
+    PetscDM dmFaultMesh = NULL;
 
     const PetscBool hasLagrangeConstraints = PETSC_TRUE;
-    err = DMPlexCreateCohesiveSubmesh(dmMesh, hasLagrangeConstraints, labelname, materialId, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateCohesiveSubmesh(dmMesh, hasLagrangeConstraints, labelName, labelValue, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
     err = DMViewFromOptions(dmFaultMesh, NULL, "-pylith_fault_dm_view");PYLITH_CHECK_ERROR(err);
     err = DMPlexOrient(dmFaultMesh);PYLITH_CHECK_ERROR(err);
-    std::string meshLabel = "fault_" + std::string(label);
+    std::string meshLabel = "fault_" + std::string(surfaceLabel);
 
     PetscReal lengthScale = 1.0;
     err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);

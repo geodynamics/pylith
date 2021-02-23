@@ -58,6 +58,30 @@ public:
     /// Destructor
     virtual ~Integrator(void);
 
+    /** Set name of label used to identify integration domain.
+     *
+     * @param name Name of label.
+     */
+    void setLabelName(const char* name);
+
+    /** Get name of label used to identify integration domain.
+     *
+     * @returns Name of label.
+     */
+    const char* getLabelName(void) const;
+
+    /** Set value of label used to identify integration domain.
+     *
+     * @param value Label value.
+     */
+    void setLabelValue(const int value);
+
+    /** Get value of label used to identify integration domain.
+     *
+     * @returns Label value
+     */
+    int getLabelValue(void) const;
+
     /** Check whether RHS Jacobian needs to be recomputed.
      *
      * @param[in] dtChanged True if time step has changed since previous Jacobian computation.
@@ -238,15 +262,18 @@ protected:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
+    std::string _labelName; ///< Name of label associated with integration domain.
+    int _labelValue; ///< Value of label associated with integration domain.
+
+    int _lhsJacobianTriggers; // Triggers for needing new LHS Jacobian.
+    int _lhsJacobianLumpedTriggers; // Triggers for needing new LHS lumped Jacobian.
+    int _rhsJacobianTriggers; // Triggers for needing new RHS Jacobian.
+
     /// True if we need to recompute Jacobian for operator, false otherwise.
     /// Default is false;
     bool _needNewRHSJacobian;
     bool _needNewLHSJacobian;
     bool _needNewLHSJacobianLumped;
-
-    int _lhsJacobianTriggers; // Triggers for needing new LHS Jacobian.
-    int _lhsJacobianLumpedTriggers; // Triggers for needing new LHS lumped Jacobian.
-    int _rhsJacobianTriggers; // Triggers for needing new RHS Jacobian.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
