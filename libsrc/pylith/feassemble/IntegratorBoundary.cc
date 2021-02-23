@@ -73,7 +73,7 @@ public:
 pylith::feassemble::IntegratorBoundary::IntegratorBoundary(pylith::problems::Physics* const physics) :
     Integrator(physics),
     _boundaryMesh(NULL),
-    _boundaryLabel("") {
+    _boundarySurfaceLabel("") {
     GenericComponent::setName(_IntegratorBoundary::genericComponent);
 } // constructor
 
@@ -109,7 +109,7 @@ pylith::feassemble::IntegratorBoundary::setMarkerLabel(const char* value) {
         throw std::runtime_error("Empty string given for boundary condition integrator label.");
     } // if
 
-    _boundaryLabel = value;
+    _boundarySurfaceLabel = value;
 } // setMarkerLabel
 
 
@@ -117,7 +117,7 @@ pylith::feassemble::IntegratorBoundary::setMarkerLabel(const char* value) {
 // Get label marking boundary associated with boundary condition surface.
 const char*
 pylith::feassemble::IntegratorBoundary::getMarkerLabel(void) const {
-    return _boundaryLabel.c_str();
+    return _boundarySurfaceLabel.c_str();
 } // getMarkerLabel
 
 
@@ -162,7 +162,7 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
     PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.getLabel()<<")");
 
     delete _boundaryMesh;
-    _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.mesh(), _boundaryLabel.c_str());
+    _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.mesh(), _boundarySurfaceLabel.c_str());
     assert(_boundaryMesh);
     pylith::topology::CoordsVisitor::optimizeClosure(_boundaryMesh->dmMesh());
 
@@ -335,14 +335,14 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
     assert(residual->localVector());
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmSoln, integrator->getMarkerLabel(), &dmLabel);PYLITH_CHECK_ERROR(err);
-    const int labelId = 1;
+    const int labelValue = integrator->getLabelValue();
 
     // solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
 
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
         err = PetscDSSetBdResidual(prob, i_field, kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
-        err = DMPlexComputeBdResidualSingle(dmSoln, t, dmLabel, 1, &labelId, i_field, solution.localVector(), solutionDot.localVector(), residual->localVector());PYLITH_CHECK_ERROR(err);
+        err = DMPlexComputeBdResidualSingle(dmSoln, t, dmLabel, 1, &labelValue, i_field, solution.localVector(), solutionDot.localVector(), residual->localVector());PYLITH_CHECK_ERROR(err);
     } // for
 
     PYLITH_METHOD_END;

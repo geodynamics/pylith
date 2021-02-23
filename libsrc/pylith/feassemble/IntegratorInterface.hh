@@ -105,25 +105,13 @@ public:
     virtual
     void deallocate(void);
 
-    /** Set value of label material-id used to identify interface cells.
-     *
-     * @param value Material identifier
-     */
-    void setInterfaceId(const int value);
-
-    /** Get value of label material-id used to identify interface cells.
-     *
-     * @returns Material identifier
-     */
-    int getInterfaceId(void) const;
-
-    /** Set label marking boundary associated with interface surface.
+    /** Set label marking interior interface surface.
      *
      * @param[in] value Label of surface (from mesh generator).
      */
     void setSurfaceMarkerLabel(const char* value);
 
-    /** Get label marking boundary associated with interface surface.
+    /** Get label marking interior interface surface.
      *
      * @returns Label of surface (from mesh generator).
      */
@@ -253,9 +241,7 @@ private:
     std::vector<JacobianKernels> _kernelsLHSJacobian; /// > kernels for LHS Jacobian.
 
     pylith::topology::Mesh* _interfaceMesh; ///< Boundary mesh.
-
-    int _interfaceId;
-    std::string _interfaceLabel; ///< Label value associated with interface.
+    std::string _interfaceSurfaceLabel; ///< Name of label identifying interface surface.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

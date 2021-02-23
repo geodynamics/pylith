@@ -38,12 +38,14 @@
 // Constructor
 pylith::feassemble::Integrator::Integrator(pylith::problems::Physics* const physics) :
     PhysicsImplementation(physics),
-    _needNewRHSJacobian(true),
-    _needNewLHSJacobian(true),
-    _needNewLHSJacobianLumped(true),
+    _labelName(""),
+    _labelValue(1),
     _lhsJacobianTriggers(NEW_JACOBIAN_NEVER),
     _lhsJacobianLumpedTriggers(NEW_JACOBIAN_NEVER),
-    _rhsJacobianTriggers(NEW_JACOBIAN_NEVER)
+    _rhsJacobianTriggers(NEW_JACOBIAN_NEVER),
+    _needNewRHSJacobian(true),
+    _needNewLHSJacobian(true),
+    _needNewLHSJacobianLumped(true)
 {}
 
 
@@ -52,6 +54,45 @@ pylith::feassemble::Integrator::Integrator(pylith::problems::Physics* const phys
 pylith::feassemble::Integrator::~Integrator(void) {
     deallocate();
 } // destructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set name of label used to identify integration domain.
+void
+pylith::feassemble::Integrator::setLabelName(const char* name) {
+    PYLITH_JOURNAL_DEBUG("setLabelName(name="<<name<<")");
+
+    if (strlen(name) == 0) {
+        throw std::runtime_error("Empty string given for name of label for integration domain.");
+    } // if
+
+    _labelName = name;
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get name of label used to identify integration domain.
+const char*
+pylith::feassemble::Integrator::getLabelName(void) const {
+    return _labelName.c_str();
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set value of label used to identify integration domain.
+void
+pylith::feassemble::Integrator::setLabelValue(const int value) {
+    PYLITH_JOURNAL_DEBUG("setLabelValue(value="<<value<<")");
+    _labelValue = value;
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get value of label used to identify integration domain.
+int
+pylith::feassemble::Integrator::getLabelValue(void) const {
+    return _labelValue;
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

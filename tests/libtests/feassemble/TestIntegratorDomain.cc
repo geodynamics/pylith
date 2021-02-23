@@ -88,8 +88,16 @@ pylith::feassemble::TestIntegratorDomain::testAccessors(void) {
     CPPUNIT_ASSERT_EQUAL(std::string("derived subfields"), std::string(derivedField->getLabel()));
 
     CPPUNIT_ASSERT(_data);
-    _integrator->setMaterialId(_data->materialId);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of get/setMaterialId() failed.", _data->materialId, _integrator->getMaterialId());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of default label name failed.",
+                                 std::string("material-id"), std::string(_integrator->getLabelName()));
+    const std::string& labelName = "material-label";
+    _integrator->setLabelName(labelName.c_str());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of custom label name failed.",
+                                 labelName, std::string(_integrator->getLabelName()));
+                                 
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of default label value.", 1, _integrator->getLabelValue());
+    _integrator->setLabelValue(_data->materialId);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of custom label value.", _data->materialId, _integrator->getLabelValue());
 
     PYLITH_METHOD_END;
 } // testAccessors

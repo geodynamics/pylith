@@ -202,7 +202,7 @@ pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
     pylith::feassemble::IntegratorInterface* integrator = new pylith::feassemble::IntegratorInterface(this);assert(integrator);
-    integrator->setInterfaceId(getInterfaceId());
+    integrator->setLabelValue(getInterfaceId());
     integrator->setSurfaceMarkerLabel(getSurfaceMarkerLabel());
 
     _FaultCohesiveKin::setKernelsLHSResidual(integrator, *this, solution, _formulation);
