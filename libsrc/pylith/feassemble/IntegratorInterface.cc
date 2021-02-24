@@ -437,6 +437,8 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     err = DMPlexComputeResidual_Hybrid_Internal(dmSoln, cohesiveCells, t, solution.localVector(),
                                                 solutionDot.localVector(), t,
                                                 residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
+    err = ISRestoreIndices(cohesiveCells, &cellIndices);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&cohesiveCells);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeResidual
@@ -498,6 +500,7 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     err = DMPlexComputeJacobian_Hybrid_Internal(dmSoln, cohesiveCells, t, s_tshift, solution.localVector(),
                                                 solutionDot.localVector(), jacobianMat, precondMat,
                                                 NULL);PYLITH_CHECK_ERROR(err);
+    err = ISRestoreIndices(cohesiveCells, &cellIndices);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&cohesiveCells);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;

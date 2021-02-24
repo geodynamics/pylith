@@ -331,6 +331,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
     PetscIS cells = NULL;
     err = DMGetStratumIS(dmSoln, _labelName.c_str(), _labelValue, &cells);PYLITH_CHECK_ERROR(err);
     err = DMPlexComputeJacobianAction(dmSoln, cells, t, s_tshift, vecRowSum, NULL, vecRowSum, jacobianInv->localVector(), NULL);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&cells);PYLITH_CHECK_ERROR(err);
 
     // Compute the Jacobian inverse.
     err = VecReciprocal(jacobianInv->localVector());PYLITH_CHECK_ERROR(err);
@@ -469,6 +470,7 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     err = DMGetStratumIS(dmSoln, _labelName.c_str(), _labelValue, &cells);PYLITH_CHECK_ERROR(err);
     err = ISGetSize(cells, &numCells);PYLITH_CHECK_ERROR(err);assert(numCells > 0);
     err = DMPlexComputeResidual_Internal(dmSoln, cells, PETSC_MIN_REAL, solution.localVector(), solutionDot.localVector(), residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&cells);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _computeResidual
@@ -518,6 +520,7 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
     err = DMGetStratumIS(dmSoln, _labelName.c_str(), _labelValue, &cells);PYLITH_CHECK_ERROR(err);
     PYLITH_JOURNAL_DEBUG("DMPlexComputeJacobian_Internal() with label name '"<<_labelName<<"' and value '"<<_labelValue<<".");
     err = DMPlexComputeJacobian_Internal(dmSoln, cells, t, s_tshift, solution.localVector(), solutionDot.localVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&cells);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _computeJacobian
