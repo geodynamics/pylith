@@ -355,14 +355,12 @@ pylith::problems::TimeDependent::initialize(void) {
     _residual->setLabel("residual");
 
     // Set callbacks.
-    PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks poststep() and computeRHSFunction().");
+    PYLITH_COMPONENT_DEBUG("Setting PetscTS callback for poststep().");
     err = TSSetPostStep(_ts, poststep);PYLITH_CHECK_ERROR(err);
-    err = TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
 
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC:
-        PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks computeRHSJacobian() and computeIJacobian().");
-        err = TSSetRHSJacobian(_ts, NULL, NULL, computeRHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
+        PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks computeIFunction() and computeIJacobian().");
         err = TSSetIFunction(_ts, NULL, computeLHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
         err = TSSetIJacobian(_ts, NULL, NULL, computeLHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
         break;
@@ -372,10 +370,15 @@ pylith::problems::TimeDependent::initialize(void) {
         err = TSSetIJacobian(_ts, NULL, NULL, computeLHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
         err = TSSetEquationType(_ts, TS_EQ_EXPLICIT);PYLITH_CHECK_ERROR(err);
     case pylith::problems::Physics::DYNAMIC:
+        PYLITH_COMPONENT_DEBUG("Setting PetscTS callback for computeRHSFunction().");
+        err = TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
         PYLITH_COMPONENT_DEBUG("Setting up field for inverse of lumped LHS Jacobian.");
         delete _jacobianLHSLumpedInv;_jacobianLHSLumpedInv = new pylith::topology::Field(_solution->mesh());assert(_jacobianLHSLumpedInv);
         _jacobianLHSLumpedInv->cloneSection(*_solution);
         break;
+    default: {
+        PYLITH_COMPONENT_FIREWALL("Unknown time stepping formulation '" << _formulation << "'.");
+    } // default
     } // switch
 
 #if 0
