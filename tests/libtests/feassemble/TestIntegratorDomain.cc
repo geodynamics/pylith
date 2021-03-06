@@ -94,7 +94,7 @@ pylith::feassemble::TestIntegratorDomain::testAccessors(void) {
     _integrator->setLabelName(labelName.c_str());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of custom label name failed.",
                                  labelName, std::string(_integrator->getLabelName()));
-                                 
+
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of default label value.", 1, _integrator->getLabelValue());
     _integrator->setLabelValue(_data->materialId);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of custom label value.", _data->materialId, _integrator->getLabelValue());
@@ -104,7 +104,7 @@ pylith::feassemble::TestIntegratorDomain::testAccessors(void) {
 
 
 // ----------------------------------------------------------------------
-// Test setKernelsRHSResidual(), setKernelsRHSJacobian(), setKernelsLHSResidual(), setKernelsLHSJacobian().
+// Test setKernelsRHSResidual(), setKernelsLHSResidual(), setKernelsLHSJacobian().
 void
 pylith::feassemble::TestIntegratorDomain::testSetKernels(void) {
     PYLITH_METHOD_BEGIN;
@@ -268,10 +268,10 @@ pylith::feassemble::TestIntegratorDomain::testComputeResidual(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Test computeLHSJacobian().
 void
-pylith::feassemble::TestIntegratorDomain::testComputeLHSJacobian(void) {
+pylith::feassemble::TestIntegratorDomain::testComputeJacobian(void) {
     PYLITH_METHOD_BEGIN;
 
-    // Create linear problem (MMS) with two trial solutions, s,s_dor and p,p_dot.
+    // Create linear problem (MMS) with two trial solutions, s,s_dot and p,p_dot.
     //
     // Check that Jf(s,s_dot)*(p - s) = F(p,p_dot) - F(s,s_dot).
 
@@ -364,107 +364,7 @@ pylith::feassemble::TestIntegratorDomain::testComputeLHSJacobian(void) {
     CPPUNIT_ASSERT_MESSAGE("Norm of resulting vector is exactly zero, which is suspicious.", (0 < normResidual && 0 < norm) || (0 == normResidual && 0 == norm));
 
     PYLITH_METHOD_END;
-} // testComputeLHSJacobian
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Test computeRHSJacobian().
-void
-pylith::feassemble::TestIntegratorDomain::testComputeRHSJacobian(void) {
-    PYLITH_METHOD_BEGIN;
-
-    // Create linear problem (MMS) with two trial solutions, s and p.
-    //
-    // Check that Jg(s)*(p - s) = G(p) - G(s).
-
-    // Call initialize()
-    _initializeFull();
-
-    CPPUNIT_ASSERT(_mesh);
-    CPPUNIT_ASSERT(_solutionFields);
-    pylith::topology::Field& solution = _solutionFields->get("solution");
-    pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
-
-    pylith::topology::Field residual1(*_mesh);
-    residual1.cloneSection(solution);
-    residual1.setLabel("residual1");
-    residual1.createDiscretization();
-    residual1.allocate();
-
-    pylith::topology::Field residual2(*_mesh);
-    residual2.cloneSection(perturbation);
-    residual2.setLabel("residual2");
-    residual2.createDiscretization();
-    residual2.allocate();
-
-#if 0 // :DEBUG:
-    PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "3"); // :DEBUG:
-    DMSetFromOptions(_solution1->dmMesh()); // :DEBUG:
-#endif // :DEBUG:
-
-    CPPUNIT_ASSERT(_data);
-    const PylithReal t = _data->t;
-    const PylithReal dt = _data->dt;
-    CPPUNIT_ASSERT(_integrator);
-    _integrator->computeRHSResidual(&residual1, t, dt, solution);
-    _integrator->computeRHSResidual(&residual2, t, dt, perturbation);
-
-    // residual1.view("RESIDUAL 1 RHS"); // :DEBUG:
-    // residual2.view("RESIDUAL 2 RHS"); // :DEBUG:
-
-    // Compute Jacobian
-    PetscErrorCode err;
-    PetscMat jacobianMat = NULL;
-    err = DMCreateMatrix(solution.dmMesh(), &jacobianMat);CPPUNIT_ASSERT(!err);
-    err = MatZeroEntries(jacobianMat);CPPUNIT_ASSERT(!err);
-    PetscMat precondMat = jacobianMat; // Use Jacobian == preconditioner
-
-    _integrator->computeRHSJacobian(jacobianMat, precondMat, t, dt, solution);
-    CPPUNIT_ASSERT_EQUAL(false, _integrator->needNewRHSJacobian(false));
-    // _zeroBoundary(&residual1);
-    // _zeroBoundary(&residual2, jacobianMat);
-    err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
-    err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
-
-    // Check that J(s)*(p - s) = G(p) - G(s).
-
-    PetscVec residualVec = NULL;
-    err = VecDuplicate(residual1.localVector(), &residualVec);CPPUNIT_ASSERT(!err);
-    err = VecWAXPY(residualVec, -1.0, residual1.localVector(), residual2.localVector());CPPUNIT_ASSERT(!err);
-
-    PetscVec solutionIncrVec = NULL;
-    err = VecDuplicate(solution.localVector(), &solutionIncrVec);CPPUNIT_ASSERT(!err);
-    err = VecWAXPY(solutionIncrVec, -1.0, solution.localVector(), perturbation.localVector());CPPUNIT_ASSERT(!err);
-
-    // result = Jg*(-solutionIncr) + residual
-    PetscVec resultVec = NULL;
-    err = VecDuplicate(residualVec, &resultVec);CPPUNIT_ASSERT(!err);
-    err = VecZeroEntries(resultVec);CPPUNIT_ASSERT(!err);
-    err = VecScale(solutionIncrVec, -1.0);CPPUNIT_ASSERT(!err);
-    err = MatMultAdd(jacobianMat, solutionIncrVec, residualVec, resultVec);CPPUNIT_ASSERT(!err);
-
-#if 0 // :DEBUG:
-    std::cout << "Solution INCR" << std::endl;
-    VecView(solutionIncrVec, PETSC_VIEWER_STDOUT_SELF);
-    std::cout << "G2-G1" << std::endl;
-    VecView(residualVec, PETSC_VIEWER_STDOUT_SELF);
-    std::cout << "RESULT" << std::endl;
-    VecView(resultVec, PETSC_VIEWER_STDOUT_SELF);
-#endif // :DEBUG:
-
-    PylithReal norm = 0.0;
-    err = VecNorm(resultVec, NORM_2, &norm);CPPUNIT_ASSERT(!err);
-    err = VecDestroy(&resultVec);CPPUNIT_ASSERT(!err);
-    err = VecDestroy(&solutionIncrVec);CPPUNIT_ASSERT(!err);
-    err = VecDestroy(&residualVec);CPPUNIT_ASSERT(!err);
-    err = MatDestroy(&jacobianMat);CPPUNIT_ASSERT(!err);
-
-    const PylithReal tolerance = 1.0e-6;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Check of Jg(s)*(p-s) - (G(p) - G(s)) == 0 failed.", 0.0, norm, tolerance);
-    CPPUNIT_ASSERT_MESSAGE("Norm of resulting vector is exactly zero, which is suspicious.", norm > 0.0);
-
-    PYLITH_METHOD_END;
-} // testComputeRHSJacobian
+} // testComputeJacobian
 
 
 // ---------------------------------------------------------------------------------------------------------------------

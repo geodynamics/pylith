@@ -220,24 +220,6 @@ pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Fie
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Compute RHS Jacobian for G(t,s).
-void
-pylith::feassemble::IntegratorBoundary::computeRHSJacobian(PetscMat jacobianMat,
-                                                           PetscMat precondMat,
-                                                           const PylithReal t,
-                                                           const PylithReal dt,
-                                                           const pylith::topology::Field& solution) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
-
-    _needNewRHSJacobian = false;
-    // No implementation needed for boundary.
-
-    PYLITH_METHOD_END;
-} // computeRHSJacobian
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Compute LHS residual for F(t,s,\dot{s}).
 void
 pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Field* residual,

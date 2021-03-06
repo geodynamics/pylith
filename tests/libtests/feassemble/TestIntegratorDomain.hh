@@ -56,8 +56,7 @@ class pylith::feassemble::TestIntegratorDomain : public CppUnit::TestFixture, pu
     CPPUNIT_TEST(testPoststep);
     CPPUNIT_TEST(testUpdateState);
     CPPUNIT_TEST(testComputeResidual);
-    CPPUNIT_TEST(testComputeLHSJacobian);
-    CPPUNIT_TEST(testComputeRHSJacobian);
+    CPPUNIT_TEST(testComputeJacobian);
 
     CPPUNIT_TEST_SUITE_END_ABSTRACT();
 
@@ -74,7 +73,7 @@ public:
     /// Test getPhysicsDomainMesh(), getAuxiliaryField(), getDerivedField(), getMaterialId(), setMaterialId().
     void testAccessors(void);
 
-    /// Test setKernelsRHSResidual(), setKernelsRHSJacobian(), setKernelsLHSResidual(), setKernelsLHSJacobian().
+    /// Test setKernelsRHSResidual(), setKernelsLHSResidual(), setKernelsLHSJacobian().
     void testSetKernels(void);
 
     /// Test initialize().
@@ -90,10 +89,7 @@ public:
     void testComputeResidual(void);
 
     /// Test computeLHSJacobian().
-    void testComputeLHSJacobian(void);
-
-    /// Test computeRHSJacobian().
-    void testComputeRHSJacobian(void);
+    void testComputeJacobian(void);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
@@ -165,7 +161,6 @@ public:
 
     std::vector<IntegratorDomain::ResidualKernels> kernelsRHSResidual;
     std::vector<IntegratorDomain::ResidualKernels> kernelsLHSResidual;
-    std::vector<IntegratorDomain::JacobianKernels> kernelsRHSJacobian;
     std::vector<IntegratorDomain::JacobianKernels> kernelsLHSJacobian;
     std::vector<IntegratorDomain::ProjectKernels> kernelsUpdateStateVars;
     std::vector<IntegratorDomain::ProjectKernels> kernelsDerivedField;

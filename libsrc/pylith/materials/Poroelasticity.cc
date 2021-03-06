@@ -50,8 +50,8 @@ typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 pylith::materials::Poroelasticity::Poroelasticity(void) :
     _useInertia(false),
     _useBodyForce(false),
-    _useSourceDensity(false),
     _useReferenceState(false),
+    _useSourceDensity(false),
     _rheology(NULL),
     _derivedFactory(new pylith::materials::DerivedFactoryElasticity) {
     pylith::utils::PyreComponent::setName("poroelasticity");

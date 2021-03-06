@@ -55,12 +55,12 @@ class pylith::fekernels::IncompressibleElasticity {
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /** Jg1pu function for pressure equation for incompressible elasticity.
+    /** Jf1pu function for pressure equation for incompressible elasticity.
      *
      * Solution fields: [disp(dim), pressure(1)]
      */
     static
-    void Jg1pu(const PylithInt dim,
+    void Jf1pu(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
                const PylithInt sOff[],
@@ -78,14 +78,14 @@ public:
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
-               PylithScalar Jg1[]);
+               PylithScalar Jf1[]);
 
-    /** Jg2up function for elasticity equation for incompressible elasticity.
+    /** Jf2up function for elasticity equation for incompressible elasticity.
      *
      * Solution fields: [disp(dim), pressure(1)]
      */
     static
-    void Jg2up(const PylithInt dim,
+    void Jf2up(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
                const PylithInt sOff[],
@@ -103,7 +103,7 @@ public:
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
-               PylithScalar Jg2[]);
+               PylithScalar Jf2[]);
 
 };
 

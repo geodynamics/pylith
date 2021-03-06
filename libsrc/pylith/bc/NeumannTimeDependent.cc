@@ -55,11 +55,13 @@ public:
              * @param[out] integrator Integrator for boundary condition.
              * @param[in] bc Neumann time-dependent boundary condition.
              * @param[in] solution Solution field.
+             * @param[in] formulation Formulation for equations.
              */
             static
-            void setKernelsRHSResidual(pylith::feassemble::IntegratorBoundary* integrator,
-                                       const pylith::bc::NeumannTimeDependent& bc,
-                                       const pylith::topology::Field& solution);
+            void setKernelsResidual(pylith::feassemble::IntegratorBoundary* integrator,
+                                    const pylith::bc::NeumannTimeDependent& bc,
+                                    const pylith::topology::Field& solution,
+                                    const pylith::problems::Physics::FormulationEnum formulation);
 
             static const char* pyreComponent;
 
@@ -206,7 +208,7 @@ pylith::bc::NeumannTimeDependent::createIntegrator(const pylith::topology::Field
     pylith::feassemble::IntegratorBoundary* integrator = new pylith::feassemble::IntegratorBoundary(this);assert(integrator);
     integrator->setMarkerLabel(getMarkerLabel());
 
-    _NeumannTimeDependent::setKernelsRHSResidual(integrator, *this, solution);
+    _NeumannTimeDependent::setKernelsResidual(integrator, *this, solution, _formulation);
 
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
@@ -349,15 +351,16 @@ pylith::bc::NeumannTimeDependent::_updateKernelConstants(const PylithReal dt) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for RHS residual G(t,s).
+// Set kernels for residual.
 void
-pylith::bc::_NeumannTimeDependent::setKernelsRHSResidual(pylith::feassemble::IntegratorBoundary* integrator,
-                                                         const pylith::bc::NeumannTimeDependent& bc,
-                                                         const topology::Field& solution) {
+pylith::bc::_NeumannTimeDependent::setKernelsResidual(pylith::feassemble::IntegratorBoundary* integrator,
+                                                      const pylith::bc::NeumannTimeDependent& bc,
+                                                      const topology::Field& solution,
+                                                      const pylith::problems::Physics::FormulationEnum formulation) {
     PYLITH_METHOD_BEGIN;
     pythia::journal::debug_t debug(_NeumannTimeDependent::pyreComponent);
     debug << pythia::journal::at(__HERE__)
-          << "setKernelsRHSResidual(integrator="<<integrator<<", bc="<<typeid(bc).name()<<", solution="
+          << "setKernelsResidual(integrator="<<integrator<<", bc="<<typeid(bc).name()<<", solution="
           << solution.getLabel()<<")"
           << pythia::journal::endl;
 
@@ -408,12 +411,11 @@ pylith::bc::_NeumannTimeDependent::setKernelsRHSResidual(pylith::feassemble::Int
         break;
     } // case 0x0
     default: {
-        pythia::journal::error_t error(_NeumannTimeDependent::pyreComponent);
-        error << pythia::journal::at(__HERE__)
-              << "Unknown combination of flags for Neumann BC terms (useInitial="<<bc.useInitial()
-              << ", useRate="<<bc.useRate()<<", useTimeHistory="<<bc.useTimeHistory()<<")."
-              << pythia::journal::endl;
-        throw std::logic_error("Unknown combination of flags for Neumann time-dependent BC terms.");
+        pythia::journal::firewall_t firewall(_NeumannTimeDependent::pyreComponent);
+        firewall << pythia::journal::at(__HERE__)
+                 << "Unknown combination of flags for Neumann BC terms (useInitial="<<bc.useInitial()
+                 << ", useRate="<<bc.useRate()<<", useTimeHistory="<<bc.useTimeHistory()<<")."
+                 << pythia::journal::endl;
     } // default
     } // switch
 
@@ -421,10 +423,24 @@ pylith::bc::_NeumannTimeDependent::setKernelsRHSResidual(pylith::feassemble::Int
     kernels[0] = ResidualKernels(bc.getSubfieldName(), g0, g1);
 
     assert(integrator);
-    integrator->setKernelsRHSResidual(kernels);
+    switch (formulation) {
+    case pylith::problems::Physics::QUASISTATIC:
+        integrator->setKernelsLHSResidual(kernels);
+        break;
+    case pylith::problems::Physics::DYNAMIC_IMEX:
+    case pylith::problems::Physics::DYNAMIC:
+        integrator->setKernelsRHSResidual(kernels);
+        break;
+    default: {
+        pythia::journal::firewall_t firewall(_NeumannTimeDependent::pyreComponent);
+        firewall << pythia::journal::at(__HERE__)
+                 << "Unknown formulation for equations ("<<formulation<<")."
+                 << pythia::journal::endl;
+    } // default
+    } // switch
 
     PYLITH_METHOD_END;
-} // setKernelsRHSResidual
+} // setKernelsResidual
 
 
 // End of file

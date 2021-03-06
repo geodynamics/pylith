@@ -32,7 +32,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::RheologyElasticity::RheologyElasticity(void) :
-    _rhsJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_NEVER)
+    _lhsJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_NEVER)
 {}
 
 
@@ -52,9 +52,9 @@ pylith::materials::RheologyElasticity::deallocate(void) {}
 // ---------------------------------------------------------------------------------------------------------------------
 // Get triggers for needing to compute the elastic constants for the RHS Jacobian.
 int
-pylith::materials::RheologyElasticity::getRHSJacobianTriggers(void) const {
-    return _rhsJacobianTriggers;
-} // getRHSJacobianTriggers
+pylith::materials::RheologyElasticity::getLHSJacobianTriggers(void) const {
+    return _lhsJacobianTriggers;
+} // getLHSJacobianTriggers
 
 
 // ---------------------------------------------------------------------------------------------------------------------
