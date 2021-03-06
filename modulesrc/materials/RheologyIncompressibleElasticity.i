@@ -54,7 +54,7 @@ public:
              * @return RHS residual kernel for stress.
              */
             virtual
-            PetscPointFunc getKernelRHSResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscPointFunc getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get pressure kernel for RHS residual, G(t,s).
              *
@@ -63,7 +63,7 @@ public:
              * @return RHS residual kernel for pressure.
              */
             virtual
-            PetscPointFunc getKernelRHSResidualPressure(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscPointFunc getKernelResidualPressure(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get elastic constants kernel for RHS Jacobian G(t,s).
              *
@@ -72,7 +72,7 @@ public:
              * @return RHS Jacobian kernel for elastic constants.
              */
             virtual
-            PetscPointJac getKernelRHSJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscPointJac getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get inverse of the bulk modulus kernel for RHS Jacobian G(t,s).
              *
@@ -81,7 +81,7 @@ public:
              * @return RHS Jacobian kernel for inverse of bulk modulus.
              */
             virtual
-            PetscPointJac getKernelRHSJacobianInverseBulkModulus(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscPointJac getKernelJacobianInverseBulkModulus(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get stress kernel for derived field.
              *

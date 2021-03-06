@@ -139,8 +139,7 @@ pylith::materials::IncompressibleElasticity::createIntegrator(const pylith::topo
     integrator->setLabelName(pylith::topology::Mesh::getCellsLabelName());
     integrator->setLabelValue(getMaterialId());
 
-    _setKernelsRHSResidual(integrator, solution);
-    _setKernelsRHSJacobian(integrator, solution);
+    _setKernelsLHSResidual(integrator, solution);
     _setKernelsLHSJacobian(integrator, solution);
     // No state variables.
     _setKernelsDerivedField(integrator, solution);
@@ -255,15 +254,15 @@ pylith::materials::IncompressibleElasticity::_getDerivedFactory(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for RHS residual G(t,s).
 void
-pylith::materials::IncompressibleElasticity::_setKernelsRHSResidual(pylith::feassemble::IntegratorDomain* integrator,
+pylith::materials::IncompressibleElasticity::_setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
                                                                     const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
 
     std::vector<ResidualKernels> kernels(2);
-    PetscPointFunc g0u = NULL;
+    PetscPointFunc f0u = NULL;
 
     const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
     const int bitGravity = _gravityField ? 0x2 : 0x0;
@@ -271,13 +270,13 @@ pylith::materials::IncompressibleElasticity::_setKernelsRHSResidual(pylith::feas
 
     switch (bitUse) {
     case 0x1:
-        g0u = pylith::fekernels::Elasticity::g0v_bodyforce;
+        f0u = pylith::fekernels::Elasticity::g0v_bodyforce;
         break;
     case 0x2:
-        g0u = pylith::fekernels::Elasticity::g0v_grav;
+        f0u = pylith::fekernels::Elasticity::g0v_grav;
         break;
     case 0x3:
-        g0u = pylith::fekernels::Elasticity::g0v_gravbodyforce;
+        f0u = pylith::fekernels::Elasticity::g0v_gravbodyforce;
         break;
     case 0x0:
         break;
@@ -286,64 +285,20 @@ pylith::materials::IncompressibleElasticity::_setKernelsRHSResidual(pylith::feas
     } // switch
 
     // Displacement
-    const PetscPointFunc g1u = _rheology->getKernelRHSResidualStress(coordsys);
+    const PetscPointFunc f1u = _rheology->getKernelResidualStress(coordsys);
 
     // Pressure
-    const PetscPointFunc g0p = _rheology->getKernelRHSResidualPressure(coordsys);
-    const PetscPointFunc g1p = NULL;
+    const PetscPointFunc f0p = _rheology->getKernelResidualPressure(coordsys);
+    const PetscPointFunc f1p = NULL;
 
-    kernels[0] = ResidualKernels("displacement", g0u, g1u);
-    kernels[1] = ResidualKernels("pressure", g0p, g1p);
-
-    assert(integrator);
-    integrator->setKernelsRHSResidual(kernels);
-
-    PYLITH_METHOD_END;
-} // _setKernelsRHSResidual
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for RHS Jacobian G(t,s).
-void
-pylith::materials::IncompressibleElasticity::_setKernelsRHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                                                                    const topology::Field& solution) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
-
-    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
-
-    std::vector<JacobianKernels> kernels(4);
-
-    const PetscPointJac Jg0uu = NULL;
-    const PetscPointJac Jg1uu = NULL;
-    const PetscPointJac Jg2uu = NULL;
-    const PetscPointJac Jg3uu = _rheology->getKernelRHSJacobianElasticConstants(coordsys);
-
-    const PetscPointJac Jg0up = NULL;
-    const PetscPointJac Jg1up = NULL;
-    const PetscPointJac Jg2up = pylith::fekernels::IncompressibleElasticity::Jg2up;
-    const PetscPointJac Jg3up = NULL;
-
-    const PetscPointJac Jg0pu = NULL;
-    const PetscPointJac Jg1pu = pylith::fekernels::IncompressibleElasticity::Jg1pu;
-    const PetscPointJac Jg2pu = NULL;
-    const PetscPointJac Jg3pu = NULL;
-
-    const PetscPointJac Jg0pp = _rheology->getKernelRHSJacobianInverseBulkModulus(coordsys);
-    const PetscPointJac Jg1pp = NULL;
-    const PetscPointJac Jg2pp = NULL;
-    const PetscPointJac Jg3pp = NULL;
-
-    kernels[0] = JacobianKernels("displacement", "displacement", Jg0uu, Jg1uu, Jg2uu, Jg3uu);
-    kernels[1] = JacobianKernels("displacement", "pressure", Jg0up, Jg1up, Jg2up, Jg3up);
-    kernels[2] = JacobianKernels("pressure", "displacement", Jg0pu, Jg1pu, Jg2pu, Jg3pu);
-    kernels[3] = JacobianKernels("pressure", "pressure", Jg0pp, Jg1pp, Jg2pp, Jg3pp);
+    kernels[0] = ResidualKernels("displacement", f0u, f1u);
+    kernels[1] = ResidualKernels("pressure", f0p, f1p);
 
     assert(integrator);
-    integrator->setKernelsRHSJacobian(kernels);
+    integrator->setKernelsLHSResidual(kernels);
 
     PYLITH_METHOD_END;
-} // setKernelsRHSJacobian
+} // _setKernelsLHSResidual
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -354,18 +309,34 @@ pylith::materials::IncompressibleElasticity::_setKernelsLHSJacobian(pylith::feas
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
-    std::vector<JacobianKernels> kernels;
+    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
 
-    const PetscPointJac Jf0 = pylith::fekernels::DispVel::Jf0uu_zero;
-    const PetscPointJac Jf1 = NULL;
-    const PetscPointJac Jf2 = NULL;
-    const PetscPointJac Jf3 = NULL;
+    std::vector<JacobianKernels> kernels(4);
 
-    kernels.resize(4);
-    kernels[0] = JacobianKernels("displacement", "displacement", Jf0, Jf1, Jf2, Jf3);
-    kernels[1] = JacobianKernels("displacement", "pressure", Jf0, Jf1, Jf2, Jf3);
-    kernels[2] = JacobianKernels("pressure", "displacement", Jf0, Jf1, Jf2, Jf3);
-    kernels[3] = JacobianKernels("pressure", "pressure", Jf0, Jf1, Jf2, Jf3);
+    const PetscPointJac Jf0uu = NULL;
+    const PetscPointJac Jf1uu = NULL;
+    const PetscPointJac Jf2uu = NULL;
+    const PetscPointJac Jf3uu = _rheology->getKernelJacobianElasticConstants(coordsys);
+
+    const PetscPointJac Jf0up = NULL;
+    const PetscPointJac Jf1up = NULL;
+    const PetscPointJac Jf2up = pylith::fekernels::IncompressibleElasticity::Jf2up;
+    const PetscPointJac Jf3up = NULL;
+
+    const PetscPointJac Jf0pu = NULL;
+    const PetscPointJac Jf1pu = pylith::fekernels::IncompressibleElasticity::Jf1pu;
+    const PetscPointJac Jf2pu = NULL;
+    const PetscPointJac Jf3pu = NULL;
+
+    const PetscPointJac Jf0pp = _rheology->getKernelJacobianInverseBulkModulus(coordsys);
+    const PetscPointJac Jf1pp = NULL;
+    const PetscPointJac Jf2pp = NULL;
+    const PetscPointJac Jf3pp = NULL;
+
+    kernels[0] = JacobianKernels("displacement", "displacement", Jf0uu, Jf1uu, Jf2uu, Jf3uu);
+    kernels[1] = JacobianKernels("displacement", "pressure", Jf0up, Jf1up, Jf2up, Jf3up);
+    kernels[2] = JacobianKernels("pressure", "displacement", Jf0pu, Jf1pu, Jf2pu, Jf3pu);
+    kernels[3] = JacobianKernels("pressure", "pressure", Jf0pp, Jf1pp, Jf2pp, Jf3pp);
 
     assert(integrator);
     integrator->setKernelsLHSJacobian(kernels);

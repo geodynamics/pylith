@@ -69,21 +69,21 @@ public:
      */
     void addAuxiliarySubfields(void);
 
-    /** Get stress kernel for RHS residual, G(t,s).
+    /** Get stress kernel for LHS residual, F(t,s,\dot{s}).
      *
      * @param[in] coordsys Coordinate system.
      *
-     * @return RHS residual kernel for stress.
+     * @return LHS residual kernel for stress.
      */
-    PetscPointFunc getKernelRHSResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointFunc getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    /** Get elastic constants kernel for RHS Jacobian G(t,s).
+    /** Get elastic constants kernel for LHS Jacobian F(t,s,\dot{s}).
      *
      * @param[in] coordsys Coordinate system.
      *
-     * @return RHS Jacobian kernel for elastic constants.
+     * @return LHS Jacobian kernel for elastic constants.
      */
-    PetscPointJac getKernelRHSJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointJac getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     /** Get stress kernel for derived field.
      *

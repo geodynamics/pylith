@@ -323,7 +323,7 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
         _auxiliaryFactory->addSlipRate(); // 0
         break;
     case DYNAMIC:
-        PYLITH_COMPONENT_FIREWALL("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_FIREWALL("Fault implementation is incompatible with 'dynamic' time-stepping formulation. Use 'dynamic_imex'.");
         break;
     default:
         PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
@@ -620,7 +620,6 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSJacobian(pylith::feassemble::Int
         firewall << pythia::journal::at(__HERE__)
                  << "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'."
                  << pythia::journal::endl;
-
     } // DYNAMIC
     default: {
         pythia::journal::firewall_t firewall(_FaultCohesiveKin::pyreComponent);

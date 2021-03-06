@@ -135,12 +135,6 @@ public:
      */
     void setKernelsRHSResidual(const std::vector<ResidualKernels>& kernels);
 
-    /** Set kernels for RHS Jacobian.
-     *
-     * @param kernels Array of kernerls for computing the RHS Jacobian.
-     */
-    void setKernelsRHSJacobian(const std::vector<JacobianKernels>& kernels);
-
     /** Set kernels for LHS residual.
      *
      * @param kernels Array of kernerls for computing the LHS residual.
@@ -179,20 +173,6 @@ public:
      * @param[in] solution Field with current trial solution.
      */
     void computeRHSResidual(pylith::topology::Field* residual,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution);
-
-    /** Compute RHS Jacobian and preconditioner for G(t,s).
-     *
-     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
-     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
-     */
-    void computeRHSJacobian(PetscMat jacobianMat,
-                            PetscMat preconMat,
                             const PylithReal t,
                             const PylithReal dt,
                             const pylith::topology::Field& solution);
@@ -308,7 +288,6 @@ private:
     std::vector<ResidualKernels> _kernelsRHSResidual; ///< kernels for RHS residual.
     std::vector<ResidualKernels> _kernelsLHSResidual; ///< kernels for LHS residual.
 
-    std::vector<JacobianKernels> _kernelsRHSJacobian; ///< kernels for RHS Jacobian.
     std::vector<JacobianKernels> _kernelsLHSJacobian; /// > kernels for LHS Jacobian.
 
     std::vector<ProjectKernels> _kernelsUpdateStateVars; ///< kernels for updating state variables.

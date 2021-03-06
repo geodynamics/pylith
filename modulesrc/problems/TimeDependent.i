@@ -142,20 +142,6 @@ public:
                                     const PetscReal dt,
                                     PetscVec solutionVec);
 
-            /* Compute RHS Jacobian for G(t,s).
-             *
-             * @param[out] jacobianMat PETSc Mat for Jacobian.
-             * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
-             * @param[in] t Current time.
-             * @param[in] dt Current time step.
-             * @param[in] solutionVec PETSc Vec with current trial solution.
-             */
-            void computeRHSJacobian(PetscMat jacobianMat,
-                                    PetscMat precondMat,
-                                    const PylithReal t,
-                                    const PylithReal dt,
-                                    PetscVec solutionVec);
-
             /** Compute LHS residual, F(t,s,\dot{s}) and assemble into global vector.
              *
              * @param[out] residualVec PETSc Vec for residual.
@@ -213,23 +199,6 @@ public:
                                               PetscReal t,
                                               PetscVec solutionVec,
                                               PetscVec residualVec,
-                                              void* context);
-
-            /* Callback static method for computing Jacobian for RHS, Jacobian of G(t,s).
-             *
-             * @param[in] ts PETSc time stepper.
-             * @param[in] t Current time.
-             * @param[in] solution PetscVec for solution.
-             * @param[out] jacobianMat Jacobian matrix.
-             * @param[out] precondMat Preconditioner matrix.
-             * @param[in] context User context (TimeDependent).
-             */
-            static
-            PetscErrorCode computeRHSJacobian(PetscTS ts,
-                                              PetscReal t,
-                                              PetscVec solutionVec,
-                                              PetscMat jacobianMat,
-                                              PetscMat precondMat,
                                               void* context);
 
             /** Callback static method for computing residual for LHS, F(t,s,\dot{s}).

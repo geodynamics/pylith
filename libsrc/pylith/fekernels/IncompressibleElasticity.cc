@@ -27,9 +27,9 @@
 // =====================================================================================================================
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Jg1pu function for pressure equation for incompressible elasticity.
+// Jf1pu function for pressure equation for incompressible elasticity.
 void
-pylith::fekernels::IncompressibleElasticity::Jg1pu(const PylithInt dim,
+pylith::fekernels::IncompressibleElasticity::Jf1pu(const PylithInt dim,
                                                    const PylithInt numS,
                                                    const PylithInt numA,
                                                    const PylithInt sOff[],
@@ -47,8 +47,8 @@ pylith::fekernels::IncompressibleElasticity::Jg1pu(const PylithInt dim,
                                                    const PylithScalar x[],
                                                    const PylithInt numConstants,
                                                    const PylithScalar constants[],
-                                                   PylithScalar Jg1[]) {
-    assert(Jg1);
+                                                   PylithScalar Jf1[]) {
+    assert(Jf1);
 
     /* j(f,g,dg), f=0, g=0..dim, dg=0..dim
      *
@@ -67,15 +67,15 @@ pylith::fekernels::IncompressibleElasticity::Jg1pu(const PylithInt dim,
      */
 
     for (PylithInt i = 0; i < dim; ++i) {
-        Jg1[i*dim+i] += 1.0;
+        Jf1[i*dim+i] += 1.0;
     } // for
-} // Jg1pu
+} // Jf1pu
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Jg2up function for elasticity equation.
+// Jf2up function for elasticity equation.
 void
-pylith::fekernels::IncompressibleElasticity::Jg2up(const PylithInt dim,
+pylith::fekernels::IncompressibleElasticity::Jf2up(const PylithInt dim,
                                                    const PylithInt numS,
                                                    const PylithInt numA,
                                                    const PylithInt sOff[],
@@ -93,8 +93,8 @@ pylith::fekernels::IncompressibleElasticity::Jg2up(const PylithInt dim,
                                                    const PylithScalar x[],
                                                    const PylithInt numConstants,
                                                    const PylithScalar constants[],
-                                                   PylithScalar Jg2[]) {
-    assert(Jg2);
+                                                   PylithScalar Jf2[]) {
+    assert(Jf2);
 
     /* j(f,g,df), f=0..dim, df=0..dim, g=0
      *
@@ -113,9 +113,9 @@ pylith::fekernels::IncompressibleElasticity::Jg2up(const PylithInt dim,
      */
 
     for (PylithInt i = 0; i < dim; ++i) {
-        Jg2[i*dim+i] += 1.0;
+        Jf2[i*dim+i] += 1.0;
     } // for
-} // Jg2up
+} // Jf2up
 
 
 // End of file

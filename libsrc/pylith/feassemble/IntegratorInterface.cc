@@ -189,19 +189,6 @@ pylith::feassemble::IntegratorInterface::setKernelsRHSResidual(const std::vector
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for RHS Jacobian.
-void
-pylith::feassemble::IntegratorInterface::setKernelsRHSJacobian(const std::vector<JacobianKernels>& kernels) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setKernelsRHSJacobian(# kernels="<<kernels.size()<<")");
-
-    _kernelsRHSJacobian = kernels;
-
-    PYLITH_METHOD_END;
-} // setKernelsRHSJacobian
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for LHS residual.
 void
 pylith::feassemble::IntegratorInterface::setKernelsLHSResidual(const std::vector<ResidualKernels>& kernels) {
@@ -293,33 +280,6 @@ pylith::feassemble::IntegratorInterface::computeRHSResidual(pylith::topology::Fi
 
     PYLITH_METHOD_END;
 } // computeRHSResidual
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Compute RHS Jacobian for G(t,s).
-void
-pylith::feassemble::IntegratorInterface::computeRHSJacobian(PetscMat jacobianMat,
-                                                            PetscMat precondMat,
-                                                            const PylithReal t,
-                                                            const PylithReal dt,
-                                                            const pylith::topology::Field& solution) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
-
-    _needNewRHSJacobian = false;
-    if (0 == _kernelsRHSJacobian.size()) { PYLITH_METHOD_END;}
-
-    _setKernelConstants(solution, dt);
-
-    pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
-    solutionDot.setLabel("solution_dot");
-    const PylithReal s_tshift = 0.0; // No dependence on time derivative of solution in RHS, so shift isn't applicable.
-
-    _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, _kernelsRHSJacobian, t, dt, s_tshift,
-                                          solution, solutionDot);
-
-    PYLITH_METHOD_END;
-} // computeRHSJacobian
 
 
 // ---------------------------------------------------------------------------------------------------------------------

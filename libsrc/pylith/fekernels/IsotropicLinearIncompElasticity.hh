@@ -74,13 +74,13 @@ class pylith::fekernels::IsotropicLinearIncompElasticity {
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /** g0p function for isotropic linear incompressible elasticity WITHOUT reference stress and reference strain.
+    /** f0p function for isotropic linear incompressible elasticity WITHOUT reference stress and reference strain.
      *
      * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void g0p(const PylithInt dim,
+    void f0p(const PylithInt dim,
              const PylithInt numS,
              const PylithInt numA,
              const PylithInt sOff[],
@@ -97,15 +97,15 @@ public:
              const PylithScalar x[],
              const PylithInt numConstants,
              const PylithScalar constants[],
-             PylithScalar g0[]);
+             PylithScalar f0[]);
 
-    /** g0p function for isotropic linear incompressible elasticity WITH reference stress and reference strain.
+    /** f0p function for isotropic linear incompressible elasticity WITH reference stress and reference strain.
      *
      * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void g0p_refstate(const PylithInt dim,
+    void f0p_refstate(const PylithInt dim,
                       const PylithInt numS,
                       const PylithInt numA,
                       const PylithInt sOff[],
@@ -122,15 +122,15 @@ public:
                       const PylithScalar x[],
                       const PylithInt numConstants,
                       const PylithScalar constants[],
-                      PylithScalar g0[]);
+                      PylithScalar f0[]);
 
-    /** Jg0_pp function for isotropic linear incompressible elasticity .
+    /** Jf0_pp function for isotropic linear incompressible elasticity .
      *
      * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void Jg0pp(const PylithInt dim,
+    void Jf0pp(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
                const PylithInt sOff[],
@@ -148,7 +148,7 @@ public:
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
-               PylithScalar Jg0[]);
+               PylithScalar Jf0[]);
 
 };
 
@@ -159,14 +159,14 @@ class pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain {
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /** g1 function for 2-D plane strain isotropic linear incompressible elasticity WITHOUT reference stress and
+    /** f1 function for 2-D plane strain isotropic linear incompressible elasticity WITHOUT reference stress and
      * reference strain.
      *
      * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void g1u(const PylithInt dim,
+    void f1u(const PylithInt dim,
              const PylithInt numS,
              const PylithInt numA,
              const PylithInt sOff[],
@@ -183,16 +183,16 @@ public:
              const PylithScalar x[],
              const PylithInt numConstants,
              const PylithScalar constants[],
-             PylithScalar g1[]);
+             PylithScalar f1[]);
 
-    /** g1 function for 2-D plane strain isotropic linear incompressible elasticity WITH reference stress and reference
+    /** f1 function for 2-D plane strain isotropic linear incompressible elasticity WITH reference stress and reference
      * strain.
      *
      * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., refstress(4), refstrain(4), shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void g1u_refstate(const PylithInt dim,
+    void f1u_refstate(const PylithInt dim,
                       const PylithInt numS,
                       const PylithInt numA,
                       const PylithInt sOff[],
@@ -209,15 +209,15 @@ public:
                       const PylithScalar x[],
                       const PylithInt numConstants,
                       const PylithScalar constants[],
-                      PylithScalar g1[]);
+                      PylithScalar f1[]);
 
-    /** Jg3_uu entry function for 2-D plane strain isotropic linear incompressible elasticity.
+    /** Jf3_uu entry function for 2-D plane strain isotropic linear incompressible elasticity.
      *
      * Solution fields: [...]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void Jg3uu(const PylithInt dim,
+    void Jf3uu(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
                const PylithInt sOff[],
@@ -235,7 +235,7 @@ public:
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
-               PylithScalar Jg3[]);
+               PylithScalar Jf3[]);
 
     /** Calculate stress for 2-D plane strain isotropic linear incompressible elasticity WITHOUT a reference stress and
      * strain.
@@ -351,13 +351,13 @@ class pylith::fekernels::IsotropicLinearIncompElasticity3D {
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /** g1 function for 3-D isotropic linear incompressible elasticity WITHOUT reference stress and reference strain.
+    /** f1 function for 3-D isotropic linear incompressible elasticity WITHOUT reference stress and reference strain.
      *
      * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void g1u(const PylithInt dim,
+    void f1u(const PylithInt dim,
              const PylithInt numS,
              const PylithInt numA,
              const PylithInt sOff[],
@@ -374,15 +374,15 @@ public:
              const PylithScalar x[],
              const PylithInt numConstants,
              const PylithScalar constants[],
-             PylithScalar g1[]);
+             PylithScalar f1[]);
 
-    /** g1 function for 3-D isotropic linear incompressible elasticity WITH reference stress and reference strain.
+    /** f1 function for 3-D isotropic linear incompressible elasticity WITH reference stress and reference strain.
      *
      * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., refstress(4), refstrain(4), shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void g1u_refstate(const PylithInt dim,
+    void f1u_refstate(const PylithInt dim,
                       const PylithInt numS,
                       const PylithInt numA,
                       const PylithInt sOff[],
@@ -399,15 +399,15 @@ public:
                       const PylithScalar x[],
                       const PylithInt numConstants,
                       const PylithScalar constants[],
-                      PylithScalar g1[]);
+                      PylithScalar f1[]);
 
-    /** Jg3_uu entry function for 3-D isotropic linear incompressible elasticity.
+    /** Jf3_uu entry function for 3-D isotropic linear incompressible elasticity.
      *
      * Solution fields: [...]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
     static
-    void Jg3uu(const PylithInt dim,
+    void Jf3uu(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
                const PylithInt sOff[],
@@ -425,7 +425,7 @@ public:
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
-               PylithScalar Jg3[]);
+               PylithScalar Jf3[]);
 
     /** Calculate stress for 3-D isotropic linear incompressible elasticity WITHOUT a reference stress and strain.
      *
