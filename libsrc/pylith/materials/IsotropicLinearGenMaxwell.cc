@@ -114,9 +114,9 @@ pylith::materials::IsotropicLinearGenMaxwell::addAuxiliarySubfields(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Get stress kernel for LHS residual, F(t,s,\dot{s}).
 PetscPointFunc
-pylith::materials::IsotropicLinearGenMaxwell::getKernelLHSResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearGenMaxwell::getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelLHSResidualStress(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG("getKernelResidualStress(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFunc f1u =
@@ -127,15 +127,15 @@ pylith::materials::IsotropicLinearGenMaxwell::getKernelLHSResidualStress(const s
         NULL;
 
     PYLITH_METHOD_RETURN(f1u);
-} // getKernelLHSResidualStress
+} // getKernelResidualStress
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get elastic constants kernel for LHS Jacobian G(t,s,\dot{s}).
 PetscPointJac
-pylith::materials::IsotropicLinearGenMaxwell::getKernelLHSJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearGenMaxwell::getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelLHSJacobianElasticConstants(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG("getKernelJacobianElasticConstants(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointJac Jf3uu =
@@ -144,7 +144,7 @@ pylith::materials::IsotropicLinearGenMaxwell::getKernelLHSJacobianElasticConstan
         NULL;
 
     PYLITH_METHOD_RETURN(Jf3uu);
-} // getKernelLHSJacobianElasticConstants
+} // getKernelJacobianElasticConstants
 
 
 // ---------------------------------------------------------------------------------------------------------------------

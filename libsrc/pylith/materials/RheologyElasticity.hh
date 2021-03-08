@@ -68,7 +68,7 @@ public:
      * @return RHS residual kernel for stress.
      */
     virtual
-    PetscPointFunc getKernelLHSResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+    PetscPointFunc getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
     /** Get elastic constants kernel for RHS Jacobian G(t,s).
      *
@@ -77,7 +77,7 @@ public:
      * @return RHS Jacobian kernel for elastic constants.
      */
     virtual
-    PetscPointJac getKernelLHSJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+    PetscPointJac getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
     /** Get triggers for needing to compute the elastic constants for the RHS Jacobian.
      *

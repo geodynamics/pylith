@@ -109,65 +109,65 @@ pylith::materials::IsotropicLinearIncompElasticity::addAuxiliarySubfields(void) 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get stress kernel for RHS residual, G(t,s).
 PetscPointFunc
-pylith::materials::IsotropicLinearIncompElasticity::getKernelRHSResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearIncompElasticity::getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelRHSResidualStress(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
-    PetscPointFunc g1u =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::g1u :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::g1u :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::g1u_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::g1u_refstate :
+    PetscPointFunc f1u =
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f1u :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f1u :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f1u_refstate :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f1u_refstate :
         NULL;
 
-    PYLITH_METHOD_RETURN(g1u);
+    PYLITH_METHOD_RETURN(f1u);
 } // getKernelRHSResidualStress
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get pressure kernel for RHS residual, G(t,s).
 PetscPointFunc
-pylith::materials::IsotropicLinearIncompElasticity::getKernelRHSResidualPressure(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearIncompElasticity::getKernelResidualPressure(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelRHSResidualPressure(coordsys="<<typeid(coordsys).name()<<")");
 
-    PetscPointFunc g0p = (!_useReferenceState) ?
-                         pylith::fekernels::IsotropicLinearIncompElasticity::g0p :
-                         pylith::fekernels::IsotropicLinearIncompElasticity::g0p_refstate;
+    PetscPointFunc f0p = (!_useReferenceState) ?
+                         pylith::fekernels::IsotropicLinearIncompElasticity::f0p :
+                         pylith::fekernels::IsotropicLinearIncompElasticity::f0p_refstate;
 
-    PYLITH_METHOD_RETURN(g0p);
-} // getKernelRHSREsidualPressure
+    PYLITH_METHOD_RETURN(f0p);
+} // getKernelResidualPressure
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get elastic constants kernel for RHS Jacobian G(t,s).
 PetscPointJac
-pylith::materials::IsotropicLinearIncompElasticity::getKernelRHSJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearIncompElasticity::getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelRHSJacobianElasticConstants(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG("getKernelJacobianElasticConstants(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointJac Jg3uu =
-        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::Jg3uu :
-        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::Jg3uu :
+        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::Jf3uu :
+        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::Jf3uu :
         NULL;
 
     PYLITH_METHOD_RETURN(Jg3uu);
-} // getKernelRHSJacobianElasticConstants
+} // getKernelJacobianElasticConstants
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get inverse of the bulk modulus kernel for RHS Jacobian G(t,s).
+// Get inverse of the bulk modulus kernel for LHS Jacobian F(t,s,\dot{s}).
 PetscPointJac
-pylith::materials::IsotropicLinearIncompElasticity::getKernelRHSJacobianInverseBulkModulus(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearIncompElasticity::getKernelJacobianInverseBulkModulus(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelRHSJacobianInverseBulkModulus(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG("getKernelJacobianInverseBulkModulus(coordsys="<<typeid(coordsys).name()<<")");
 
-    PetscPointJac Jg0pp = pylith::fekernels::IsotropicLinearIncompElasticity::Jg0pp;
+    PetscPointJac Jf0pp = pylith::fekernels::IsotropicLinearIncompElasticity::Jf0pp;
 
-    PYLITH_METHOD_RETURN(Jg0pp);
-} // getKernelRHSJacobianInverseBulkModulus
+    PYLITH_METHOD_RETURN(Jf0pp);
+} // getKernelJacobianInverseBulkModulus
 
 
 // ---------------------------------------------------------------------------------------------------------------------

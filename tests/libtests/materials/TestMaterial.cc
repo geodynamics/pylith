@@ -344,9 +344,9 @@ pylith::materials::TestMaterial::testComputeResidual(void) {
 
 
 // ----------------------------------------------------------------------
-// Test computeRHSJacobian().
+// Test computeJacobian().
 void
-pylith::materials::TestMaterial::testComputeRHSJacobian(void) {
+pylith::materials::TestMaterial::testComputeJacobian(void) {
     PYLITH_METHOD_BEGIN;
 
     // Create linear problem (MMS) with two trial solutions, s and p.
@@ -383,8 +383,8 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void) {
 
     const PylithReal t = data->t;
     const PylithReal dt = data->dt;
-    material->computeRHSResidual(&residual1, t, dt, solution);
-    material->computeRHSResidual(&residual2, t, dt, perturbation);
+    material->computeLHSResidual(&residual1, t, dt, solution);
+    material->computeLHSResidual(&residual2, t, dt, perturbation);
 
     // residual1.view("RESIDUAL 1 RHS"); // :DEBUG:
     // residual2.view("RESIDUAL 2 RHS"); // :DEBUG:
@@ -396,8 +396,8 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void) {
     err = MatZeroEntries(jacobianMat);CPPUNIT_ASSERT(!err);
     PetscMat precondMat = jacobianMat; // Use Jacobian == preconditioner
 
-    material->computeRHSJacobian(jacobianMat, precondMat, t, dt, solution);
-    CPPUNIT_ASSERT_EQUAL(false, material->needNewRHSJacobian());
+    material->computeLHSJacobian(jacobianMat, precondMat, t, dt, solution);
+    CPPUNIT_ASSERT_EQUAL(false, material->needNewLHSJacobian());
     // _zeroBoundary(&residual1);
     // _zeroBoundary(&residual2, jacobianMat);
     err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
@@ -441,7 +441,7 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void) {
     CPPUNIT_ASSERT_MESSAGE("Norm of resulting vector is exactly zero, which is suspicious.", norm > 0.0);
 
     PYLITH_METHOD_END;
-} // testComputeRHSJacobian
+} // testComputeJacobian
 
 
 // ----------------------------------------------------------------------

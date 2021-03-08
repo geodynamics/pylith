@@ -318,7 +318,7 @@ pylith::materials::Elasticity::_setKernelsRHSResidual(pylith::feassemble::Integr
             PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Elasticity RHS residual kernels.");
         } // switch
 
-        const PetscPointFunc g1v = _rheology->getKernelLHSResidualStress(coordsys);
+        const PetscPointFunc g1v = _rheology->getKernelResidualStress(coordsys);
 
         kernels.resize(2);
         kernels[0] = ResidualKernels("displacement", g0u, g1u);
@@ -371,7 +371,7 @@ pylith::materials::Elasticity::_setKernelsLHSResidual(pylith::feassemble::Integr
             PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Elasticity LHS residual kernels.");
         } // switch
 
-        const PetscPointFunc f1u = _rheology->getKernelLHSResidualStress(coordsys);
+        const PetscPointFunc f1u = _rheology->getKernelResidualStress(coordsys);
 
         kernels.resize(1);
         kernels[0] = ResidualKernels("displacement", f0u, f1u);
@@ -435,7 +435,7 @@ pylith::materials::Elasticity::_setKernelsLHSJacobian(pylith::feassemble::Integr
         const PetscPointJac Jf0uu = NULL;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
-        const PetscPointJac Jf3uu = _rheology->getKernelLHSJacobianElasticConstants(coordsys);
+        const PetscPointJac Jf3uu = _rheology->getKernelJacobianElasticConstants(coordsys);
         integrator->setLHSJacobianTriggers(_rheology->getLHSJacobianTriggers());
 
         kernels.resize(1);

@@ -75,7 +75,7 @@ public:
      *
      * @return LHS residual kernel for stress.
      */
-    PetscPointFunc getKernelLHSResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointFunc getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     /** Get elastic constants kernel for LHS Jacobian F(t,s,\dot{s}).
      *
@@ -83,7 +83,7 @@ public:
      *
      * @return LHS Jacobian kernel for elastic constants.
      */
-    PetscPointJac getKernelLHSJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointJac getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     /** Get stress kernel for derived field.
      *

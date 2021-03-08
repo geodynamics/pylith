@@ -65,7 +65,6 @@ pylith::problems::TimeDependent::TimeDependent(void) :
     _dtJacobian(-1.0),
     _dtLHSJacobianLumped(-1.0),
     _tResidual(-1.0e+30),
-    _needNewRHSJacobian(true),
     _needNewLHSJacobian(true),
     _haveNewLHSJacobian(false),
     _shouldNotifyIC(false) {
@@ -544,58 +543,6 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscVec residualVec,
 
 
 // ----------------------------------------------------------------------
-// Compute RHS Jacobian for G(t,s).
-void
-pylith::problems::TimeDependent::computeRHSJacobian(PetscMat jacobianMat,
-                                                    PetscMat precondMat,
-                                                    const PylithReal t,
-                                                    const PylithReal dt,
-                                                    PetscVec solutionVec) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("TimeDependent::computeRHSJacobian(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
-
-    assert(jacobianMat);
-    assert(precondMat);
-    assert(solutionVec);
-    assert(_solution);
-
-    // Always zero the RHS Jacobian, because PETSc TS will add it to the LHS Jacobian.
-    // If we don't need to recompute, then we want to prevent the RHS Jacobian being added to the LHS Jacobian again.
-    PetscErrorCode err = 0;
-    PetscDS solnDS = NULL;
-    PetscBool hasJacobian = PETSC_FALSE;
-    err = DMGetDS(_solution->dmMesh(), &solnDS);PYLITH_CHECK_ERROR(err);
-    err = PetscDSHasJacobian(solnDS, &hasJacobian);PYLITH_CHECK_ERROR(err);
-    if (hasJacobian) { err = MatZeroEntries(jacobianMat);PYLITH_CHECK_ERROR(err); }
-    err = MatZeroEntries(precondMat);PYLITH_CHECK_ERROR(err);
-
-    // Check to see if we need to compute RHS Jacobian.
-
-    if (!_needNewJacobian(dt)) {
-        PYLITH_COMPONENT_DEBUG("KEEP RHS Jacobian; t="<<t<<", dt="<<dt);
-        PYLITH_METHOD_END;
-    } // if
-    PYLITH_COMPONENT_DEBUG("NEW RHS Jacobian; t="<<t<<", dt="<<dt);
-
-    // Update PyLith view of the solution.
-    const PetscVec solutionDotVec = NULL;
-    setSolutionLocal(t, solutionVec, solutionDotVec);
-
-    // Sum Jacobian contributions across integrators.
-    const size_t numIntegrators = _integrators.size();
-    for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->computeRHSJacobian(jacobianMat, precondMat, t, dt, *_solution);
-    } // for
-    _needNewRHSJacobian = false;
-    _haveNewLHSJacobian = false; // Assumes LHS Jacobian is always calculated before RHS Jacobian.
-
-    // Solver handles assembly.
-
-    PYLITH_METHOD_END;
-} // computeRHSJacobian
-
-
-// ----------------------------------------------------------------------
 // Compute LHS residual for F(t,s,\dot{s}).
 void
 pylith::problems::TimeDependent::computeLHSResidual(PetscVec residualVec,
@@ -679,7 +626,7 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscMat jacobianMat,
     } // for
 
     _needNewLHSJacobian = false;
-    _haveNewLHSJacobian = true; // Assumes LHS Jacobian is always calculated before RHS Jacobian.
+    _haveNewLHSJacobian = true;
     _dtJacobian = dt;
 
     // Solver handles assembly.
@@ -771,31 +718,6 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Callback static method for computing Jacobian for RHS, Jacobian of G(t,s).
-PetscErrorCode
-pylith::problems::TimeDependent::computeRHSJacobian(PetscTS ts,
-                                                    PetscReal t,
-                                                    PetscVec solutionVec,
-                                                    PetscMat jacobianMat,
-                                                    PetscMat precondMat,
-                                                    void* context) {
-    PYLITH_METHOD_BEGIN;
-    pythia::journal::debug_t debug(_TimeDependent::pyreComponent);
-    debug << pythia::journal::at(__HERE__)
-          << "computeRHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" << pythia::journal::endl;
-
-    // Get current time step.
-    PylithReal dt;
-    PetscErrorCode err = TSGetTimeStep(ts, &dt);PYLITH_CHECK_ERROR(err);
-
-    pylith::problems::TimeDependent* problem = (pylith::problems::TimeDependent*)context;
-    problem->computeRHSJacobian(jacobianMat, precondMat, t, dt, solutionVec);
-
-    PYLITH_METHOD_RETURN(0);
-} // computeRHSJacobian
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Callback static method for computing residual for LHS, F(t,s,\dot{s}).
 PetscErrorCode
 pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
@@ -871,11 +793,8 @@ bool
 pylith::problems::TimeDependent::_needNewJacobian(const PylithReal dt) {
     PYLITH_METHOD_BEGIN;
 
-    // If we recomputed the LHS Jacobian, then we must recompute the RHS Jacobian.
-    if (_haveNewLHSJacobian || _needNewLHSJacobian) { _needNewRHSJacobian = true; }
-
-    // If we already know we need to recompute the LHS or RHS Jacobian, then return true.
-    if (_needNewLHSJacobian || _needNewRHSJacobian) { PYLITH_METHOD_RETURN(true); }
+    // If we already know we need to recompute the LHS Jacobian, then return true.
+    if (_needNewLHSJacobian) { PYLITH_METHOD_RETURN(true); }
 
     const bool dtChanged = dt != _dtJacobian;
     const size_t numIntegrators = _integrators.size();
@@ -886,14 +805,8 @@ pylith::problems::TimeDependent::_needNewJacobian(const PylithReal dt) {
             break;
         } // if
     } // for
-    for (size_t i = 0; i < numIntegrators; ++i) {
-        if (_integrators[i]->needNewRHSJacobian(dtChanged)) {
-            _needNewRHSJacobian = true;
-            break;
-        } // if
-    } // for
 
-    PYLITH_METHOD_RETURN(_needNewLHSJacobian || _needNewRHSJacobian);
+    PYLITH_METHOD_RETURN(_needNewLHSJacobian);
 } // _needNewJacobian
 
 

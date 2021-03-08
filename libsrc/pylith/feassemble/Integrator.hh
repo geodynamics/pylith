@@ -82,13 +82,6 @@ public:
      */
     int getLabelValue(void) const;
 
-    /** Check whether RHS Jacobian needs to be recomputed.
-     *
-     * @param[in] dtChanged True if time step has changed since previous Jacobian computation.
-     * @returns True if Jacobian needs to be recomputed, false otherwise.
-     */
-    bool needNewRHSJacobian(const bool dtChanged);
-
     /** Check whether LHS Jacobian needs to be recomputed.
      *
      * @param[in] dtChanged True if time step has changed since previous Jacobian computation.
@@ -114,12 +107,6 @@ public:
      * @param[in] value Triggers for needing new LHS lumped Jacobian.
      */
     void setLHSJacobianLumpedTriggers(const int value);
-
-    /** Set RHS Jacobian trigger.
-     *
-     * @param[in] value Triggers for needing new RHS Jacobian.
-     */
-    void setRHSJacobianTriggers(const int value);
 
     /** Initialize integration domain, auxiliary field, and derived field. Update observers.
      *
@@ -157,21 +144,6 @@ public:
      */
     virtual
     void computeRHSResidual(pylith::topology::Field* residual,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution) = 0;
-
-    /** Compute RHS Jacobian and preconditioner for G(t,s).
-     *
-     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
-     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
-     */
-    virtual
-    void computeRHSJacobian(PetscMat jacobianMat,
-                            PetscMat preconMat,
                             const PylithReal t,
                             const PylithReal dt,
                             const pylith::topology::Field& solution) = 0;
@@ -267,11 +239,9 @@ protected:
 
     int _lhsJacobianTriggers; // Triggers for needing new LHS Jacobian.
     int _lhsJacobianLumpedTriggers; // Triggers for needing new LHS lumped Jacobian.
-    int _rhsJacobianTriggers; // Triggers for needing new RHS Jacobian.
 
     /// True if we need to recompute Jacobian for operator, false otherwise.
     /// Default is false;
-    bool _needNewRHSJacobian;
     bool _needNewLHSJacobian;
     bool _needNewLHSJacobianLumped;
 

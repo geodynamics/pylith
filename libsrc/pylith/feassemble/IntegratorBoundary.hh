@@ -126,20 +126,6 @@ public:
                             const PylithReal dt,
                             const pylith::topology::Field& solution);
 
-    /** Compute RHS Jacobian and preconditioner for G(t,s).
-     *
-     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
-     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
-     */
-    void computeRHSJacobian(PetscMat jacobianMat,
-                            PetscMat preconMat,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution);
-
     /** Compute LHS residual for F(t,s,\dot{s}).
      *
      * @param[out] residual Field for residual.
