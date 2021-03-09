@@ -1,25 +1,16 @@
 % ----------------------------------------------------------------------
-\section{Poroelasticity with Infinitesimal Strain}
+\section{Poroelasticity with Infinitesimal Strain and No Faults}
 
-Formulation based on Zheng et al. and Detournay and Cheng (1993).
-
-In this poroelasticity formulation we assume a slightly compressible fluid that
-completely saturates a porous solid, undergoing infinitesimal
+We base this formulation for poroelsticity on Zheng et al. and
+Detournay and Cheng (1993). We assume a slightly compressible fluid
+that completely saturates a porous solid, undergoing infinitesimal
 strain.
 
-\subsection{Balance Equations}
-
-\subsubsection{Conservation of Momentum}
-
-We write the full term for conservation of linear momentum, including the intertia,
+We begin with the conservation of linear momentum, including inertia,
 borrowed from linear elasticity:
-
-\begin{gather}
-    \nabla \cdot \tensor{\sigma}\left(\vec{u},p\right) + \vec{f}\left(t\right) = \rho_{b}\ddot{\vec{u}},
-\end{gather}
-
-\subsubsection{Conservation of Mass}
-
+\begin{equation}
+    \rho_s\frac{\partial^2 \vec{u}}{\partial t^2} = \vec{f}(t) + \nabla \cdot \tensor{\sigma}(\vec{u},p),
+\end{equation}
 Enforcing mass balance of the fluid gives
 \begin{gather}
   \frac{\partial \zeta(\vec{u},p)}{\partial t} + \nabla \cdot \vec{q}(p) =
@@ -35,11 +26,11 @@ the rate of injected fluid per unit volume of the porous solid, $q_0$
 is the outward fluid velocity normal to the boundary $\Gamma_q$, and
 $p_0$ is the fluid pressure on boundary $\Gamma_p$.\\
 
-We require the fluid flow to follow Darcy's law (Navier-Stokes equation neglecting inertial
-effects),
-\begin{gather}
+We require the fluid flow to follow Darcy's law (Navier-Stokes
+equation neglecting inertial effects),
+\begin{equation}
   \vec{q}(p) = -\frac{\tensor{k}}{\mu_{f}}(\nabla p - \vec{f}_f), \\
-\end{gather}
+\end{equation}
 where $\tensor{k}$ is the intrinsic permeability, $\mu_f$ is the viscosity of the
 fluid, $p$ is the fluid pressure, and $\vec{f}_f$ is the body force
 in the fluid. If gravity is included in a problem, then usually
@@ -48,30 +39,28 @@ fluid and $\vec{g}$ is the gravitational acceleration vector.\\
 
 \subsection{Constitutive Behavior}
 
-\subsubsection{Solid Phase}
-
 We assume linear elasticity for the solid phase, so the constitutive behavior can be expressed
 as
-\begin{gather}
+\begin{equation}
   \tensor{\sigma}(\vec{u},p) = \tensor{C} : \tensor{\epsilon} - \alpha p \tensor{I},
-\end{gather}
+\end{equation}
 where $\tensor{\sigma}$ is the stress tensor, $\tensor{C}$ is the
 tensor of elasticity constants, $\alpha$ is the Biot coefficient
 (effective stress coefficient), $\tensor{\epsilon}$ is the strain
 tensor, and $\tensor{I}$ is the identity tensor.\\
 For this case, we will assume that the material properties are isotropic, resulting
 in the following formulation for the stress tensor:
-\begin{align}
-    \tensor{\sigma}\left(\vec{u},p \right) = \tensor{C}:\tensor{\epsilon} - \alpha p \tensor{I}
+\begin{equation}
+    \tensor{\sigma}(\vec{u},p) = \tensor{C}:\tensor{\epsilon} - \alpha p \tensor{I}
                                            = \lambda \tensor{I} \epsilon_{v} + 2 \mu - \alpha \tensor{I} p
-\end{align}
-where $\lambda$ and $\mu$ are Lam\'e's parameters, $\lambda = K_{d} - \frac{2 \mu}{3}$, $\mu$ is the shear modulus,
-and the volumetric strain is defined as  $\epsilon_{v} = \nabla \cdot \vec{u}$.
+\end{equation}
+where $\lambda$ and $\mu$ are Lam\'e's parameters,
+$\lambda = K_{d} - \frac{2 \mu}{3}$, $\mu$ is the shear modulus, and
+the volumetric strain is defined as
+$\epsilon_{v} = \nabla \cdot \vec{u}$.
 
-\subsubsection{Fluid Phase}
-
-For the constitutive behavior of the fluid, we use the volumetric strain to couple the fluid-
-solid behavior,
+For the constitutive behavior of the fluid, we use the volumetric
+strain to couple the fluid-solid behavior,
 \begin{gather}
   \zeta(\vec{u},p) = \alpha \Tr({\tensor{\epsilon}}) + \frac{p}{M}, \\
 %
@@ -79,52 +68,22 @@ solid behavior,
 \end{gather}
 where $1/M$ is the specific storage coefficient at constant strain,
 $K_s$ is the bulk modulus of the solid, and $K_f$ is the bulk modulus
-of the fluid. We can write the trace of the strain tensor as the dot product of the gradient
-and displacement
-field, so we have
-\begin{gather}
+of the fluid. We can write the trace of the strain tensor as the dot
+product of the gradient and displacement field, so we have
+\begin{equation}
   \zeta(\vec{u},p) = \alpha (\nabla \cdot \vec{u}) + \frac{p}{M}.
-\end{gather}
-
-
-
-
-
-\subsection{Quasi-Static Case}
-
-
-For ease of solution in the quasi-static case, we introduce a third variable in the form of volumetric strain ($\epsilon_){v}$).
-The strong form of the problem may be expressed as:
-
-\begin{align}
-% Solution
-\vec{s}^{T} &= \left(\vec{u}, p, \epsilon_{v}\right) \\
-% Elasticity
-\vec{0} &= \vec{f}(t) + \nabla \cdot \tensor{\sigma}(\vec{u},p) \text{ in } \Omega \\
-% Pressure
-\zeta(\vec{u},p) &= \gamma(\vec{x},t) + \nabla \cdot \vec{q}(p) \text{ in } \Omega \\
-% Vol. Strain
-\epsilon_{v} &= \nabla \cdot \vec{u} \text{ in } \Omega \\
-% Neumann traction
-\tensor{\sigma} \cdot \vec{n} &= \vec{\tau}(\vec{x},t) \text{ on } \Gamma_{\tau} \\
-% Dirichlet displacement
-\vec{u} &= \vec{u}_{0}(\vec{x}, t) \text{ on } \Gamma_{u} \\
-% Neumann flow
-\vec{q} \cdot \vec{n} &= q_{0}(\vec{x}, t) \text{ on } \Gamma_{q} \\
-% Dirichlet pressure
-p &= p_{0}(\vec{x},t) \text{ on } \Gamma_{p}
-\end{align}
-
+\end{equation}
 
 \begin{table}[htbp]
   \caption{Mathematical notation for poroelasticity with
-    infinitesimal strain, neglecting inertia.}
+    infinitesimal strain.}
   \label{tab:notation:poroelasticity}
   \begin{tabular}{lcp{3.5in}}
     \toprule
     {\bf Category} & {\bf Symbol} & {\bf Description} \\
     \midrule
     Unknowns           & $\vec{u}$ & Displacement field \\
+                       & $\vec{v}$ & Velocity field \\
                        & $p$       & Pressure field (corresponds to pore fluid pressure) \\
                        & $\epsilon_{v}$ & Volumetric (trace) strain \\
     \hline
@@ -150,63 +109,79 @@ p &= p_{0}(\vec{x},t) \text{ on } \Gamma_{p}
                        & $\gamma$ & Source density; rate of injected fluid per unit volume of the porous solid \\
     \bottomrule
   \end{tabular}
-\end{table}\\
+\end{table}
 
 
+\subsection{Quasistatic}
 
-For trial functions $\trialvec[u]$, $\trialscalar[p]$, and $\trialscalar[\epsilon_{v}]$, we write the weak form as
-\begin{align}
-% Weak conservation of momentum
-0 &= \int_\Omega \trialvec[u] \cdot \left( \vec{f}(\vec{x},t) + \tensor{\nabla} \cdot \tensor{\sigma} (\vec{u},p) \right) \, d\Omega, \\
-% Weak conservation of mass
-\int_\Omega  \trialscalar[p] \frac{\partial \zeta(\vec{u},p)}{\partial t} \, d\Omega &= \int_\Omega \trialscalar[p] \left(\gamma(\vec{x},t) - \nabla \cdot \vec{q}(p)\right) \, d\Omega \\
-% Weak vol. strain
-\int_{\Omega} \trialscalar[\epsilon_{v}]\cdot \nabla \cdot \vec{u} \, d\Omega &= \int_{\Omega} \trialscalar[\epsilon_{v}] \cdot \epsilon_{v} \, d\Omega
-\end{align}
-
-Applying the divergence theorem to each of these two equations and incorporating the Neumann
-boundary conditions
-yields
-
-\begin{align}
-% Weak conservation of momentum
-0 &= \int_\Omega \trialvec[u] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[u] : -\tensor{\sigma}(\vec{u},p_f) \,
-d\Omega + \int_{\Gamma_\tau} \trialvec[u] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma, \\
-% Weak conservation of mass
- \int_\Omega  \trialscalar[p] \frac{\partial \zeta(\vec{u},p_f)}{\partial t} \, d\Omega &=
- \int_\Omega \trialscalar[p] \gamma(\vec{x},t) + \nabla \trialscalar[p] \cdot \vec{q}(p_f) \,
-d\Omega + \int_{\Gamma_q} \trialscalar[p] (-q_0(\vec{x},t)) \, d\Gamma \\
-% Weak vol. strain
-\vec{0} &= \int_{\Omega} \trialscalar[\epsilon_{v}] \cdot \left(\nabla \cdot \vec{u} - \epsilon_{v} \right) d\Omega
-\end{align}
-
-\subsubsection{Residual Pointwise Kernels}
-
-Identifying $F(t,s,\dot{s})$ and $G(t,s)$ we have
-
-\begin{alignat}{2}
-    % Displacement
-  F^u(t,s,\dot{s}) &= \vec{0};
-  & \quad
-  G^u(t,s) &= \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{g^u_0} + \nabla
-\trialvec[u] :
-\eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{g^u_1} \, d\Omega + \int_{\Gamma_\tau}
-\trialvec[u] \cdot
-\eqnannotate{\vec{\tau}(\vec{x},t)}{g^u_0} \, d\Gamma, \\
+For ease of solution in the quasistatic case, we introduce a third
+variable in the form of volumetric strain ($\epsilon_v$).  The
+strong form of the problem may be expressed as
+\begin{gather}
+% Solution
+\vec{s}^{T} = \left(\vec{u} \quad p \quad \epsilon_v\right), \\
+% Elasticity
+\vec{f}(t) + \nabla \cdot \tensor{\sigma}(\vec{u},p) = \vec{0} \text{ in } \Omega, \\
 % Pressure
-  F^p(t,s,\dot{s}) &= \int_\Omega  \trialscalar[p] \eqnannotate{\frac{\partial
-\zeta(\vec{u},p_f)}{\partial t}} {f^p_0} \, d\Omega;
-  & \quad
-  G^p(t,s) &= \int_\Omega \trialscalar[p] \eqnannotate{\gamma(\vec{x},t)}{g^p_0} + \nabla
-\trialscalar[p] \cdot \eqnannotate{\vec{q}(p_f)}{g^p_1} \, d\Omega
- + \int_{\Gamma_q} \trialscalar[p] (\eqnannotate{-q_0(\vec{x},t)}{g^p_0}) \, d\Gamma, \\
- % Volumetric Strain
- F^{\epsilon_{v}}(t,s,\dot{s}) &= \vec{0};
- & \quad
- G^{\epsilon_{v}} &= \trialscalar[\epsilon_{v}] \cdot \eqnannotate{\left(\nabla \cdot \vec{u} - \epsilon_{v} \right)}{g^{\epsilon_{v}}_{0}} \, d\Omega.
-\end{alignat}
+\frac{\partial \zeta(\vec{u},p)}{\partial t} - \gamma(\vec{x},t) + \nabla \cdot \vec{q}(p) = 0 \text{ in } \Omega, \\
+% Vol. Strain
+\nabla \cdot \vec{u} - \epsilon_{v} = 0 \text{ in } \Omega, \\
+% Neumann traction
+\tensor{\sigma} \cdot \vec{n} = \vec{\tau}(\vec{x},t) \text{ on } \Gamma_{\tau}, \\
+% Dirichlet displacement
+\vec{u} = \vec{u}_0(\vec{x}, t) \text{ on } \Gamma_{u}, \\
+% Neumann flow
+\vec{q} \cdot \vec{n} = q_0(\vec{x}, t) \text{ on } \Gamma_{q}, \text{ and } \\
+% Dirichlet pressure
+p = p_0(\vec{x},t) \text{ on } \Gamma_{p}.
+\end{gather}
+%
+We create the weak form by taking the dot product with the trial
+functions $\trialvec[u]$, $\trialscalar[p]$, and
+$\trialscalar[\epsilon_{v}]$ and
+integrating over the domain:
+\begin{gather}
+% Weak conservation of momentum
+\int_\Omega \trialvec[u] \cdot \left( \vec{f}(\vec{x},t) + \tensor{\nabla} \cdot \tensor{\sigma} (\vec{u},p) \right) \, d\Omega = 0, \\
+% Weak conservation of mass
+\int_\Omega  \trialscalar[p] \left( \frac{\partial \zeta(\vec{u},p)}{\partial t} - \gamma(\vec{x},t) + \nabla \cdot \vec{q}(p)\right) \, d\Omega = 0,\\
+% Weak vol. strain
+\int_{\Omega} \trialscalar[\epsilon_{v}]\cdot \left( \nabla \cdot \vec{u} - \epsilon_v \right) \, d\Omega.
+\end{gather}
+%
+Applying the divergence theorem to the first two equations and
+incorporating the Neumann boundary conditions yields
+\begin{gather}
+% Weak conservation of momentum
+\int_\Omega \trialvec[u] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[u] : -\tensor{\sigma}(\vec{u},p_f) \,
+d\Omega + \int_{\Gamma_\tau} \trialvec[u] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma = 0, \\
+% Weak conservation of mass
+\int_\Omega  \trialscalar[p] \left( \frac{\partial \zeta(\vec{u},p_f)}{\partial t} - \gamma(\vec{x},t)\right)
++ \nabla \trialscalar[p] \cdot \left(-\vec{q}(p_f)\right) \, d\Omega + \int_{\Gamma_q} \trialscalar[p] q_0(\vec{x},t))\, d\Gamma = 0, \text{ and } \\
+% Weak vol. strain
+\int_{\Omega} \trialscalar[\epsilon_{v}] \cdot \left(\nabla \cdot \vec{u} - \epsilon_{v} \right) d\Omega = 0
+\end{gather}
 
-\subsubsection{Jacobians Pointwise Kernels}
+\subsubsection{Residual Pointwise Functions}
+
+Identifying $F(t,s,\dot{s})$ and $G(t,s)$we have
+\begin{align}
+    % Displacement
+  F^u(t,s,\dot{s}) &= \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{g^u_0}
+                     + \nabla \trialvec[u] : \eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{g^u_1} \, d\Omega
+                     + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{g^u_0} \, d\Gamma, \\
+% Pressure
+  F^p(t,s,\dot{s}) &= \int_\Omega  \trialscalar[p] \eqnannotate{\frac{\partial \zeta(\vec{u},p_f)}{\partial t} - \gamma(\vec{x},t)} {f^p_0} \, d\Omega
+                     + \nabla \trialscalar[p] \cdot \eqnannotate{-\vec{q}(p_f)}{f^p_1} \, d\Omega
+                     + \int_{\Gamma_q} \trialscalar[p] (\eqnannotate{q_0(\vec{x},t)}{f^p_0}) \, d\Gamma, \\
+ % Volumetric Strain
+  F^{\epsilon_{v}}(t,s,\dot{s}) &= \trialscalar[\epsilon_{v}] \cdot \eqnannotate{\left(\nabla \cdot \vec{u} - \epsilon_{v} \right)}{g^{\epsilon_{v}}_{0}} \, d\Omega. \\
+  G^u(t,s) &= 0, \\
+             G^p(t,s) &= 0, \\
+ G^{\epsilon_v} &= 0. 
+\end{align}
+
+\subsubsection{Jacobian Pointwise Functions}
 
 The LHS Jacobians are:
 
@@ -287,67 +262,33 @@ J_G^{\epsilon_{v} \epsilon_{v}} &= \frac{\partial G^{\epsilon_{v}}}{\partial
 \end{align} \\
 
 
-\subsection{Dynamic Case}
+\subsection{Dynamic}
 
-For the dynamic case, we consider velocity as a unknown variable, resulting in a slightly different
-three field problem. The strong form may be expressed as:
-
-\begin{align}
+For compatibility with PETSc TS algorithms, we want to turn the second
+order equation elasticity equation into two first order equations. We
+introduce the velocity as a unknown,
+$\vec{v}=\frac{\partial u}{\partial t}$, which leads to a slightly
+different three field problem,
+\begin{gather}
 % Solution
-\vec{s}^{T} &= \left(\vec{u}, p, \vec{v}\right) \\
+\vec{s}^{T} = \left(\vec{u} \quad p \quad \vec{v}\right) \\
 % Displacement
-\frac{\partial \vec{u}}{\partial t} &= \vec{v} \text{ in } \Omega \\
+\frac{\partial \vec{u}}{\partial t} = \vec{v} \text{ in } \Omega \\
 % Pressure
-\zeta(\vec{u},p) &= \gamma(\vec{x},t) + \nabla \cdot \vec{q}(p) \text{ in } \Omega \\
+\zeta(\vec{u},p) = \gamma(\vec{x},t) + \nabla \cdot \vec{q}(p) \text{ in } \Omega \\
 % Velocity
-\rho_{b} \frac{\partial \vec{v}}{\partial t} &= \vec{f}(\vec{x},t) + \nabla \cdot \tensor{\sigma}(\vec{u},p) \text{ in } \Omega \\
+\rho_{b} \frac{\partial \vec{v}}{\partial t} = \vec{f}(\vec{x},t) + \nabla \cdot \tensor{\sigma}(\vec{u},p) \text{ in } \Omega \\
 % Neumann traction
-\tensor{\sigma} \cdot \vec{n} &= \vec{\tau}(\vec{x},t) \text{ on } \Gamma_{\tau} \\
+\tensor{\sigma} \cdot \vec{n} = \vec{\tau}(\vec{x},t) \text{ on } \Gamma_{\tau} \\
 % Dirichlet displacement
-\vec{u} &= \vec{u}_{0}(\vec{x}, t) \text{ on } \Gamma_{u} \\
+\vec{u} = \vec{u}_{0}(\vec{x}, t) \text{ on } \Gamma_{u} \\
 % Neumann flow
-\vec{q} \cdot \vec{n} &= q_{0}(\vec{x}, t) \text{ on } \Gamma_{q} \\
+\vec{q} \cdot \vec{n} = q_{0}(\vec{x}, t) \text{ on } \Gamma_{q} \\
 % Dirichlet pressure
-p &= p_{0}(\vec{x},t) \text{ on } \Gamma_{p}
-\end{align}
+p = p_{0}(\vec{x},t) \text{ on } \Gamma_{p}
+\end{gather}
 
 
-
-\begin{table}[htbp]
-  \caption{Mathematical notation for poroelasticity with
-    infinitesimal strain, neglecting inertia.}
-  \label{tab:notation:poroelasticity}
-  \begin{tabular}{lcp{3.5in}}
-    \toprule
-    {\bf Category} & {\bf Symbol} & {\bf Description} \\
-    \midrule
-    Unknowns           & $\vec{u}$ & Displacement field \\
-                       & $p$       & Pressure field (corresponds to pore fluid pressure) \\
-                       & $\vec{v}$ & Velocity field \\
-    \hline
-    Derived quantities & $\tensor{\sigma}$ & Cauchy stress tensor \\
-                       & $\tensor{\epsilon}$ & Cauchy strain tensor \\
-                       & $\zeta$ & Variation of fluid content (variation of fluid vol. per unit vol. of PM), $\alpha \epsilon_{v} + \frac{p}{M}$ \\
-                       & $\rho_{b}$ & Bulk density, $\left(1 - \phi\right) \rho_{s} + \phi \rho_{f}$ \\
-                       & $\vec{q}$ & Darcy flux, $-\frac{\tensor{k}}{\mu_{f}} \cdot \left(\nabla p - \vec{f}_{f}\right)$ \\
-                       & $M$ & Biot Modulus, $\frac{K_{f}}{\phi} + \frac{K_{s}}{\alpha - \phi}$ \\
-    \hline
-    Common constitutive parameters & $\rho_{f}$ & Fluid density \\
-                       & $\rho_{s}$ & Solid (matrix) density \\
-                       & $\phi$ & Porosity \\
-                       & $\tensor{k}$ & Permeability \\
-                       & $\mu_{f}$ & Fluid viscosity \\
-                       & $K_{s}$ & Solid grain bulk modulus \\
-                       & $K_{f}$ & Fluid bulk modulus \\
-                       & $K_{d}$ & Drained bulk modulus \\
-                       & $\alpha$ & Biot coefficient, $1 - \frac{K_{d}}{K_{s}}$ \\
-    \hline
-    Source terms       & $\vec{f}$ & Body force per unit volume, for example: $\rho_{b} \vec{g}$ \\
-                       & $\vec{f}_{f}$ & Fluid body force, for example: $\rho_{f} \vec{g}$ \\
-                       & $\gamma$ & Source density; rate of injected fluid per unit volume of the porous solid \\
-    \bottomrule
-  \end{tabular}
-\end{table}\\
 
 Using trial functions $\trialvec[u]$, $\trialscalar[p]$, and $\trialvec[v]$, and incorporating the
 Neumann boundary conditions, the weak form may be written as:
