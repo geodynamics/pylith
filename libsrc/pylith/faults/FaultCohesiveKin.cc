@@ -59,31 +59,60 @@ namespace pylith {
             // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-            /** Set kernels for LHS residual.
+            /** Set kernels for quasistatic formulation of LHS residual.
              *
              * @param[out] integrator Integrator for interface.
              * @param[in] fault Fault object for kinematic ruptures.
              * @param[in] solution Solution field.
-             * @param[in] formulation Formulation for equations.
              */
             static
-            void setKernelsLHSResidual(pylith::feassemble::IntegratorInterface* integrator,
-                                       const pylith::faults::FaultCohesiveKin& fault,
-                                       const pylith::topology::Field& solution,
-                                       const pylith::problems::Physics::FormulationEnum formulation);
+            void setKernelsLHSResidualQuasistatic(pylith::feassemble::IntegratorInterface* integrator,
+                                                  const pylith::faults::FaultCohesiveKin& fault,
+                                                  const pylith::topology::Field& solution);
 
             /** Set kernels for LHS Jacobian.
              *
              * @param[out] integrator Integrator for interface.
              * @param[in] fault Fault object for kinematic ruptures.
              * @param[in] solution Solution field.
-             * @param[in] formulation Formulation for equations.
              */
             static
-            void setKernelsLHSJacobian(pylith::feassemble::IntegratorInterface* integrator,
-                                       const pylith::faults::FaultCohesiveKin& fault,
-                                       const pylith::topology::Field& solution,
-                                       const pylith::problems::Physics::FormulationEnum formulation);
+            void setKernelsLHSJacobianQuasistatic(pylith::feassemble::IntegratorInterface* integrator,
+                                                  const pylith::faults::FaultCohesiveKin& fault,
+                                                  const pylith::topology::Field& solution);
+
+            /** Set kernels for dynamic IMEX formulation of LHS residual.
+             *
+             * @param[out] integrator Integrator for interface.
+             * @param[in] fault Fault object for kinematic ruptures.
+             * @param[in] solution Solution field.
+             */
+            static
+            void setKernelsLHSResidualDynamicIMEX(pylith::feassemble::IntegratorInterface* integrator,
+                                                  const pylith::faults::FaultCohesiveKin& fault,
+                                                  const pylith::topology::Field& solution);
+
+            /** Set kernels for LHS Jacobian.
+             *
+             * @param[out] integrator Integrator for interface.
+             * @param[in] fault Fault object for kinematic ruptures.
+             * @param[in] solution Solution field.
+             */
+            static
+            void setKernelsLHSJacobianDynamicIMEX(pylith::feassemble::IntegratorInterface* integrator,
+                                                  const pylith::faults::FaultCohesiveKin& fault,
+                                                  const pylith::topology::Field& solution);
+
+            /** Set kernels for dynamic IMEX formulation of RHS residual.
+             *
+             * @param[out] integrator Integrator for interface.
+             * @param[in] fault Fault object for kinematic ruptures.
+             * @param[in] solution Solution field.
+             */
+            static
+            void setKernelsRHSResidualDynamicIMEX(pylith::feassemble::IntegratorInterface* integrator,
+                                                  const pylith::faults::FaultCohesiveKin& fault,
+                                                  const pylith::topology::Field& solution);
 
             static const char* pyreComponent;
 
@@ -202,13 +231,36 @@ pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
     pylith::feassemble::IntegratorInterface* integrator = new pylith::feassemble::IntegratorInterface(this);assert(integrator);
+#if 0
     integrator->setLabelValue(getInterfaceId());
     integrator->setSurfaceMarkerLabel(getSurfaceMarkerLabel());
 
     _FaultCohesiveKin::setKernelsLHSResidual(integrator, *this, solution, _formulation);
     _FaultCohesiveKin::setKernelsLHSJacobian(integrator, *this, solution, _formulation);
+    _FaultCohesiveKin::setKernelsRHSResidual(integrator, *this, solution, _formulation);
     // No state variables.
     // _FaultCohesiveKin::setKernelsDerivedFields(integrator, *this, solution);
+#else
+    integrator->setSurfaceMarkerLabel(getSurfaceMarkerLabel());
+
+    switch (_formulation) {
+    case pylith::problems::Physics::QUASISTATIC:
+        _createIntegrationPatch(integrator);
+        _FaultCohesiveKin::setKernelsLHSResidualQuasistatic(integrator, *this, solution);
+        _FaultCohesiveKin::setKernelsLHSJacobianQuasistatic(integrator, *this, solution);
+        break;
+    case pylith::problems::Physics::DYNAMIC_IMEX:
+        _createIntegrationPatches(integrator, solution.dmMesh());
+        _FaultCohesiveKin::setKernelsLHSResidualDynamicIMEX(integrator, *this, solution);
+        _FaultCohesiveKin::setKernelsLHSJacobianDynamicIMEX(integrator, *this, solution);
+        _FaultCohesiveKin::setKernelsRHSResidualDynamicIMEX(integrator, *this, solution);
+        break;
+    case pylith::problems::Physics::DYNAMIC:
+        PYLITH_COMPONENT_FIREWALL("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+    default:
+        PYLITH_COMPONENT_FIREWALL("Unknown formulation '"<<_formulation<<"'.");
+    } // switch
+#endif
 
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
@@ -524,76 +576,48 @@ pylith::faults::FaultCohesiveKin::_updateSlipRate(pylith::topology::Field* auxil
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for LHS residual.
+// Set kernels for quasistatic formulation of LHS residual.
 void
-pylith::faults::_FaultCohesiveKin::setKernelsLHSResidual(pylith::feassemble::IntegratorInterface* integrator,
-                                                         const pylith::faults::FaultCohesiveKin& fault,
-                                                         const pylith::topology::Field& solution,
-                                                         const pylith::problems::Physics::FormulationEnum formulation) {
+pylith::faults::_FaultCohesiveKin::setKernelsLHSResidualQuasistatic(pylith::feassemble::IntegratorInterface* integrator,
+                                                                    const pylith::faults::FaultCohesiveKin& fault,
+                                                                    const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     pythia::journal::debug_t debug(_FaultCohesiveKin::pyreComponent);
     debug << pythia::journal::at(__HERE__)
-          << "setKernelsLHSResidual(integrator="<<integrator<<", fault="<<typeid(fault).name()
+          << "setKernelsLHSResidualQuasistatic(integrator="<<integrator<<", fault="<<typeid(fault).name()
           <<", solution="<<solution.getLabel()<<")"
           << pythia::journal::endl;
 
     std::vector<ResidualKernels> kernels(2);
 
-    // Elasticity equation (displacement/velocity).
+    // Elasticity equation (displacement).
     const PetscBdPointFunc f0u = pylith::fekernels::FaultCohesiveKin::f0u;
     const PetscBdPointFunc f1u = NULL;
 
-    switch (formulation) {
-    case pylith::problems::Physics::QUASISTATIC: {
-        // Fault slip constraint equation.
-        const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_u;
-        const PetscBdPointFunc f1l = NULL;
+    // Fault slip constraint equation.
+    const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_u;
+    const PetscBdPointFunc f1l = NULL;
 
-        kernels[0] = ResidualKernels("displacement", f0u, f1u);
-        kernels[1] = ResidualKernels("lagrange_multiplier_fault", f0l, f1l);
-        break;
-    } // QUASISTATIC
-    case pylith::problems::Physics::DYNAMIC_IMEX: {
-        // Fault slip rate constraint equation.
-        const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_v;
-        const PetscBdPointFunc f1l = NULL;
-
-        kernels[0] = ResidualKernels("velocity", f0u, f1u);
-        kernels[1] = ResidualKernels("lagrange_multiplier_fault", f0l, f1l);
-        break;
-    } // DYNAMIC_IMEX
-    case pylith::problems::Physics::DYNAMIC: {
-        pythia::journal::firewall_t firewall(_FaultCohesiveKin::pyreComponent);
-        firewall << pythia::journal::at(__HERE__)
-                 << "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'."
-                 << pythia::journal::endl;
-
-    } // DYNAMIC
-    default: {
-        pythia::journal::firewall_t firewall(_FaultCohesiveKin::pyreComponent);
-        firewall << pythia::journal::at(__HERE__)
-                 << "Unknown formulation for equations (" << formulation << ")." << pythia::journal::endl;
-    } // default
-    } // switch
+    kernels[0] = ResidualKernels("displacement", f0u, f1u);
+    kernels[1] = ResidualKernels("lagrange_multiplier_fault", f0l, f1l);
 
     assert(integrator);
     integrator->setKernelsLHSResidual(kernels);
 
     PYLITH_METHOD_END;
-} // setKernelsLHSResidual
+} // setKernelsLHSResidualQuasistatic
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for LHS Jacobian.
+// Set kernels for quasistatic formulation of LHS Jacobian.
 void
-pylith::faults::_FaultCohesiveKin::setKernelsLHSJacobian(pylith::feassemble::IntegratorInterface* integrator,
-                                                         const pylith::faults::FaultCohesiveKin& fault,
-                                                         const pylith::topology::Field& solution,
-                                                         const pylith::problems::Physics::FormulationEnum formulation) {
+pylith::faults::_FaultCohesiveKin::setKernelsLHSJacobianQuasistatic(pylith::feassemble::IntegratorInterface* integrator,
+                                                                    const pylith::faults::FaultCohesiveKin& fault,
+                                                                    const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     pythia::journal::debug_t debug(_FaultCohesiveKin::pyreComponent);
     debug << pythia::journal::at(__HERE__)
-          << "setKernelsLHSJacobian(integrator="<<integrator<<", fault="<<typeid(fault).name()
+          << "setKernelsLHSJacobianQuasistatic(integrator="<<integrator<<", fault="<<typeid(fault).name()
           << ", solution="<<solution.getLabel()<<")" << pythia::journal::endl;
 
     std::vector<JacobianKernels> kernels(2);
@@ -608,36 +632,107 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSJacobian(pylith::feassemble::Int
     const PetscBdPointJac Jf2lu = NULL;
     const PetscBdPointJac Jf3lu = NULL;
 
-    const char* nameDispVel = NULL;
+    const char* nameDisplacement = "displacement";
     const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
-    switch (formulation) {
-    case pylith::problems::Physics::QUASISTATIC:
-        nameDispVel = "displacement";
-        break;
-    case pylith::problems::Physics::DYNAMIC_IMEX:
-        nameDispVel = "velocity";
-        break;
-    case pylith::problems::Physics::DYNAMIC: {
-        pythia::journal::firewall_t firewall(_FaultCohesiveKin::pyreComponent);
-        firewall << pythia::journal::at(__HERE__)
-                 << "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'."
-                 << pythia::journal::endl;
-    } // DYNAMIC
-    default: {
-        pythia::journal::firewall_t firewall(_FaultCohesiveKin::pyreComponent);
-        firewall << pythia::journal::at(__HERE__)
-                 << "Unknown formulation for equations (" << formulation << ")."
-                 << pythia::journal::endl;
-    } // default
-    } // switch
-    kernels[0] = JacobianKernels(nameDispVel, nameLagrangeMultiplier, Jf0ul, Jf1ul, Jf2ul, Jf3ul);
-    kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameDispVel, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
+    kernels[0] = JacobianKernels(nameDisplacement, nameLagrangeMultiplier, Jf0ul, Jf1ul, Jf2ul, Jf3ul);
+    kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameDisplacement, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
 
     assert(integrator);
     integrator->setKernelsLHSJacobian(kernels);
 
     PYLITH_METHOD_END;
-} // setKernelsLHSJacobian
+} // setKernelsLHSJacobianQuasistatic
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set kernels for dynamic IMEX formulation of LHS residual.
+void
+pylith::faults::_FaultCohesiveKin::setKernelsLHSResidualDynamicIMEX(pylith::feassemble::IntegratorInterface* integrator,
+                                                                    const pylith::faults::FaultCohesiveKin& fault,
+                                                                    const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    pythia::journal::debug_t debug(_FaultCohesiveKin::pyreComponent);
+    debug << pythia::journal::at(__HERE__)
+          << "setKernelsLHSResidualDynamicIMEX(integrator="<<integrator<<", fault="<<typeid(fault).name()
+          <<", solution="<<solution.getLabel()<<")"
+          << pythia::journal::endl;
+
+    std::vector<ResidualKernels> kernels(2);
+
+    // Elasticity equation (velocity).
+    const PetscBdPointFunc f0v = pylith::fekernels::FaultCohesiveKin::f0u;
+    const PetscBdPointFunc f1v = NULL;
+
+    // Fault slip acceleration constraint equation.
+    const PetscBdPointFunc f0l = NULL; // pylith::fekernels::FaultCohesiveKin::f0l_a;
+    const PetscBdPointFunc f1l = NULL;
+
+    kernels[0] = ResidualKernels("velocity", f0v, f1v);
+    kernels[1] = ResidualKernels("lagrange_multiplier_fault", f0l, f1l);
+
+    assert(integrator);
+    integrator->setKernelsLHSResidual(kernels);
+
+    PYLITH_METHOD_END;
+} // setKernelsLHSResidualDynamicIMEX
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set kernels for dynamic IMEX formualtion of LHS Jacobian.
+void
+pylith::faults::_FaultCohesiveKin::setKernelsLHSJacobianDynamicIMEX(pylith::feassemble::IntegratorInterface* integrator,
+                                                                    const pylith::faults::FaultCohesiveKin& fault,
+                                                                    const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    pythia::journal::debug_t debug(_FaultCohesiveKin::pyreComponent);
+    debug << pythia::journal::at(__HERE__)
+          << "setKernelsLHSJacobianDynamicIMEX(integrator="<<integrator<<", fault="<<typeid(fault).name()
+          << ", solution="<<solution.getLabel()<<")" << pythia::journal::endl;
+
+    std::vector<JacobianKernels> kernels(1);
+
+    const PetscBdPointJac Jf0lu = pylith::fekernels::FaultCohesiveKin::Jf0lu;
+    const PetscBdPointJac Jf1lu = NULL;
+    const PetscBdPointJac Jf2lu = NULL;
+    const PetscBdPointJac Jf3lu = NULL;
+
+    const char* nameDisplacement = "displacement";
+    const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
+    kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameDisplacement, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
+
+    assert(integrator);
+    integrator->setKernelsLHSJacobian(kernels);
+
+    PYLITH_METHOD_END;
+} // setKernelsLHSJacobianDynamicIMEX
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set kernels for dynamic IMEX formulation of RHS residual.
+void
+pylith::faults::_FaultCohesiveKin::setKernelsRHSResidualDynamicIMEX(pylith::feassemble::IntegratorInterface* integrator,
+                                                                    const pylith::faults::FaultCohesiveKin& fault,
+                                                                    const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    pythia::journal::debug_t debug(_FaultCohesiveKin::pyreComponent);
+    debug << pythia::journal::at(__HERE__)
+          << "setKernelsRHSResidualDynamicIMEX(integrator="<<integrator<<", fault="<<typeid(fault).name()
+          <<", solution="<<solution.getLabel()<<")"
+          << pythia::journal::endl;
+
+    std::vector<ResidualKernels> kernels(1);
+
+    // Elasticity equation (velocity).
+    const PetscBdPointFunc f0v = pylith::fekernels::FaultCohesiveKin::f0u;
+    const PetscBdPointFunc f1v = NULL;
+
+    kernels[0] = ResidualKernels("velocity", f0v, f1v);
+
+    assert(integrator);
+    integrator->setKernelsRHSResidual(kernels);
+
+    PYLITH_METHOD_END;
+} // setKernelsRHSResidualDynamicIMEX
 
 
 // End of file

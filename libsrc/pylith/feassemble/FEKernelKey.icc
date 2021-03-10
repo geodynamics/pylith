@@ -1,0 +1,80 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2017 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ======================================================================
+//
+
+#if !defined(pylith_feassemble_fekernelkey_hh)
+#error "Stratum.icc must be included only from FEKernelKey.hh"
+#else
+
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Default constructor.
+inline
+pylith::feassemble::FEKernelKey::FEKernelKey(void) :
+    _name(""),
+    _field(""),
+    _value(-1) {}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Default destructor.
+inline
+pylith::feassemble::FEKernelKey::~FEKernelKey(void) {}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Factory for creating FEKernelKeyGet starting point.
+inline
+pylith::feassemble::FEKernelKey*
+pylith::feassemble::FEKernelKey::create(const char* name,
+                                        const int value,
+                                        const char* field) {
+    FEKernelKey* key = new FEKernelKey();assert(key);
+    if (key) {
+        key->_name = name ? name : "";
+        key->_value = value;
+        key->_field = field ? field : "";
+    } // if
+    return key;
+} // create
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get PETSc weak form key.
+inline
+PetscHashFormKey
+pylith::feassemble::FEKernelKey::petscKey(const pylith::topology::Field& solution) const {
+    PetscDM dmSoln = solution.dmMesh();
+    PetscDMLabel label = NULL;
+    PetscErrorCode err = DMGetLabel(dmSoln, _name.c_str(), &label);PYLITH_CHECK_ERROR(err);
+
+    const PetscInt index = (!_field.empty()) ? solution.subfieldInfo(_field.c_str()).index : -1;
+
+    PetscHashFormKey hashKey;
+    hashKey.label = label;
+    hashKey.value = _value;
+    hashKey.field = index;
+
+    return hashKey;
+} // petscKey
+
+
+#endif
+
+// End of file

@@ -28,6 +28,7 @@
 #include "feassemblefwd.hh" // forward declarations
 
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
+#include "pylith/feassemble/FEKernelKey.hh" // HASA FEKernelKey
 #include "pylith/utils/arrayfwd.hh" // HASA std::vector
 
 class pylith::feassemble::IntegratorInterface : public pylith::feassemble::Integrator {
@@ -35,6 +36,12 @@ class pylith::feassemble::IntegratorInterface : public pylith::feassemble::Integ
 
     // PUBLIC STRUCTS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
+
+    struct WeakFormKeys {
+        FEKernelKey cohesive;
+        FEKernelKey negative;
+        FEKernelKey positive;
+    }; // WeakFormKeys
 
     /// Kernels (point-wise functions) for residual.
     struct ResidualKernels {
@@ -122,6 +129,14 @@ public:
      * @returns Mesh associated with integrator domain.
      */
     const pylith::topology::Mesh& getPhysicsDomainMesh(void) const;
+
+    /** Set weak form keys for integration patch.
+     *
+     * @param[in] labelValue Value of label for integration patch.
+     * @param[in] keys Keys for finite-element integration of weak form.
+     */
+    void setPatchWeakFormKeys(const int labelValue,
+                              const WeakFormKeys& keys);
 
     /** Set kernels for RHS residual.
      *
@@ -221,6 +236,8 @@ private:
 
     pylith::topology::Mesh* _interfaceMesh; ///< Boundary mesh.
     std::string _interfaceSurfaceLabel; ///< Name of label identifying interface surface.
+
+    std::map<int, WeakFormKeys> _patchesWeakFormKeys; ///< Map patch label value to weak form integation keys.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

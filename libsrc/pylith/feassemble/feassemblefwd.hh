@@ -33,6 +33,7 @@ namespace pylith {
 
         class PhysicsImplementation; ///< Abstract base class for constraints and integrators.
 
+        class FEKernelKey; ///< Utility class for managing keys for pointwise functions in finite-element integrations.
         class Integrator; ///< Abstract base class for finite-element integration.
         class IntegratorDomain; ///< Abstract base class for finite-element integration over portions on the domain.
         class IntegratorBoundary; ///< Abstract base class for finite-element integration over a boundary.
@@ -42,7 +43,7 @@ namespace pylith {
         class Constraint; ///< Abstract base class for finite-element constraints.
         class ConstraintSpatialDB; ///< Finite-element constraints via auxiliary field from spatial database.
         class ConstraintUserFn; ///< Finite-element constraints via user-specified function (testing).
-        class ConstraintSimple;///< Finite-element simple constraints via user-specified function (testing).
+        class ConstraintSimple; ///< Finite-element simple constraints via user-specified function (testing).
 
     } // feassemble
 } // pylith

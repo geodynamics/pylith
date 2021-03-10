@@ -55,15 +55,15 @@ extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(PetscDM dm,
                                                          PetscMat JacP,
                                                          void *user);
 
-extern "C" PetscErrorCode DMPlexComputeJacobian_Action_Internal(DM,
+extern "C" PetscErrorCode DMPlexComputeJacobian_Action_Internal(PetscDM,
                                                                 PetscFormKey,
-                                                                IS,
+                                                                PetscIS,
                                                                 PetscReal,
                                                                 PetscReal,
-                                                                Vec,
-                                                                Vec,
-                                                                Vec,
-                                                                Vec,
+                                                                PetscVec,
+                                                                PetscVec,
+                                                                PetscVec,
+                                                                PetscVec,
                                                                 void *);
 
 // ---------------------------------------------------------------------------------------------------------------------
