@@ -3,7 +3,7 @@
 dist: bionic
 
 services:
-    - docker
+  - docker
 
 language: cpp
 
@@ -15,22 +15,22 @@ jobs:
       env: BASE_IMAGE=testenv-debian-stable TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
     - name: debian-testing
       os: linux
-      env: BASE_IMAGE=testenv-debian-testing TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+      env: BASE_IMAGE=testenv-debian-testing
     - name: ubuntu-18.04
       os: linux
-      env: BASE_IMAGE=testenv-ubuntu-18.04 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+      env: BASE_IMAGE=testenv-ubuntu-18.04
     - name: ubuntu-20.04
       os: linux
-      env: BASE_IMAGE=testenv-ubuntu-20.04 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+      env: BASE_IMAGE=testenv-ubuntu-20.04
     - name: ubuntu-20.10
       os: linux
-      env: BASE_IMAGE=testenv-ubuntu-20.10 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+      env: BASE_IMAGE=testenv-ubuntu-20.10
     - name: fedora-32
       os: linux
-      env: BASE_IMAGE=testenv-fedora-32 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage3
+      env: BASE_IMAGE=testenv-fedora-32
     - name: fedora-33
       os: linux
-      env: BASE_IMAGE=testenv-fedora-33 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage3
+      env: BASE_IMAGE=testenv-fedora-33
     - name: centos-7
       os: linux
       env: BASE_IMAGE=testenv-centos-7
@@ -38,23 +38,18 @@ jobs:
       os: linux
       env: BASE_IMAGE=testenv-centos-8
 
-
-
 addons:
   apt:
     packages:
       - docker-ce
 
-
 # Limit number of commits in cloning (but keep enough so that 'git describe' works)
 git:
   depth: 100
 
-
 install:
   - docker build -t pylith-testenv --build-arg BASE_IMAGE=registry.gitlab.com/cig-pylith/pylith_installer/$BASE_IMAGE --build-arg TEST_COVERAGE=$TEST_COVERAGE --build-arg PYTHON_COVERAGE=$PYTHON_COVERAGE --target build -f docker/pylith-testenv .
 
-
-script: 
+script:
   - ci_env=`bash <(curl -s https://codecov.io/env)`
   - docker run $ci_env pylith-testenv ci-config/run_test_coverage.sh
