@@ -23,8 +23,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()
-#include <stdexcept> \
-    // USES std::runtime_error
+#include <stdexcept> // USES std::runtime_error
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.

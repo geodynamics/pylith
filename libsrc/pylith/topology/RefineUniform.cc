@@ -18,10 +18,10 @@
 
 #include <portinfo>
 
-#include "RefineUniform.hh" // implementation of class methods
+#include "pylith/topology/RefineUniform.hh" // implementation of class methods
 
-#include "Mesh.hh" // USES Mesh
-#include "MeshOps.hh" // USES MeshOps
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -88,13 +88,14 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
 
     newMesh->dmMesh(dmNew);
 
-    // Remove all non-cells from material-id label
+    // Remove all non-cells from material id label
+    const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
     PetscDMLabel matidLabel = NULL;
     PetscIS valuesIS = NULL;
     const PetscInt *values = NULL;
     PetscInt cStart, cEnd, labelNumValues;
     err = DMPlexGetHeightStratum(dmNew, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dmNew, "material-id", &matidLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmNew, labelName, &matidLabel);PYLITH_CHECK_ERROR(err);
     err = DMLabelGetNumValues(matidLabel, &labelNumValues);PYLITH_CHECK_ERROR(err);
     err = DMLabelGetValueIS(matidLabel, &valuesIS);PYLITH_CHECK_ERROR(err);
     err = ISGetIndices(valuesIS, &values);PYLITH_CHECK_ERROR(err);

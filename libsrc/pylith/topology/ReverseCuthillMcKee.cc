@@ -28,13 +28,15 @@
 void
 pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh) {
     assert(mesh);
-    DMLabel dmLabel = NULL;
-    PetscIS permutation = NULL;
-    PetscDM dmOrig = mesh->dmMesh();
-    PetscDM dmNew = NULL;
-    PetscErrorCode err;
+    PetscErrorCode err = 0;
 
-    err = DMGetLabel(dmOrig, "material-id", &dmLabel);PYLITH_CHECK_ERROR(err);
+    PetscDMLabel dmLabel = NULL;
+    PetscDM dmOrig = mesh->dmMesh();
+    const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
+    err = DMGetLabel(dmOrig, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
+
+    PetscIS permutation = NULL;
+    PetscDM dmNew = NULL;
     err = DMPlexGetOrdering(dmOrig, MATORDERINGRCM, dmLabel, &permutation);PYLITH_CHECK_ERROR(err);
     err = DMPlexPermute(dmOrig, permutation, &dmNew);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&permutation);PYLITH_CHECK_ERROR(err);
@@ -44,7 +46,7 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh) {
     PetscIS valuesIS = NULL;
     PetscInt numValues = 0;
     const PetscInt* values = NULL;
-    err = DMGetLabel(dmNew, "material-id", &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmNew, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
     err = DMLabelGetValueIS(dmLabel, &valuesIS);PYLITH_CHECK_ERROR(err);
     err = ISGetLocalSize(valuesIS, &numValues);PYLITH_CHECK_ERROR(err);
     err = ISGetIndices(valuesIS, &values);PYLITH_CHECK_ERROR(err);

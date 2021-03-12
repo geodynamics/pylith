@@ -77,6 +77,13 @@ public:
     void dmMesh(PetscDM dm,
                 const char* label="domain");
 
+    /** Get name of label for all mesh cells, including hybrid cells.
+     *
+     * @returns Name of label.
+     */
+    static
+    const char* const getCellsLabelName(void);
+
     /** Set coordinate system.
      *
      * @param cs Coordinate system.

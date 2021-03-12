@@ -136,7 +136,7 @@ pylith::materials::IncompressibleElasticity::createIntegrator(const pylith::topo
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
     pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
-    integrator->setLabelName("material-id");
+    integrator->setLabelName(pylith::topology::Mesh::getCellsLabelName());
     integrator->setLabelValue(getMaterialId());
 
     _setKernelsRHSResidual(integrator, solution);

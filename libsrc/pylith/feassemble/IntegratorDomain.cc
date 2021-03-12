@@ -59,7 +59,7 @@ pylith::feassemble::IntegratorDomain::IntegratorDomain(pylith::problems::Physics
     _materialMesh(NULL),
     _updateState(NULL) {
     GenericComponent::setName("integratordomain");
-    _labelName = "material-id";
+    _labelName = pylith::topology::Mesh::getCellsLabelName();
 } // constructor
 
 

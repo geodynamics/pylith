@@ -101,6 +101,14 @@ pylith::topology::Mesh::dmMesh(PetscDM dm,
 }
 
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Get name of label for all mesh cells, including hybrid cells.
+const char* const
+pylith::topology::Mesh::getCellsLabelName(void) {
+    return "material-id";
+} // getCellsLabelName
+
+
 // ----------------------------------------------------------------------
 // Set coordinate system.
 void

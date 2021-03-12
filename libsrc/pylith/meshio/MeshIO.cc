@@ -253,8 +253,9 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds) { // _setMat
             throw std::runtime_error(msg.str());
         } // if
         PetscErrorCode err = 0;
+        const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
         for (PetscInt c = cStart; c < cEnd; ++c) {
-            err = DMSetLabelValue(dmMesh, "material-id", c, materialIds[c-cStart]);PYLITH_CHECK_ERROR(err);
+            err = DMSetLabelValue(dmMesh, labelName, c, materialIds[c-cStart]);PYLITH_CHECK_ERROR(err);
         } // for
     } // if
 
@@ -265,7 +266,7 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds) { // _setMat
 // ----------------------------------------------------------------------
 // Get material identifiers for cells.
 void
-pylith::meshio::MeshIO::_getMaterials(int_array* materialIds) const { // _getMaterials
+pylith::meshio::MeshIO::_getMaterials(int_array* materialIds) const {
     PYLITH_METHOD_BEGIN;
 
     assert(materialIds);
@@ -279,8 +280,9 @@ pylith::meshio::MeshIO::_getMaterials(int_array* materialIds) const { // _getMat
     materialIds->resize(cellsStratum.size());
     PetscErrorCode err = 0;
     PetscInt matId = 0;
+    const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
     for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
-        err = DMGetLabelValue(dmMesh, "material-id", c, &matId);PYLITH_CHECK_ERROR(err);
+        err = DMGetLabelValue(dmMesh, labelName, c, &matId);PYLITH_CHECK_ERROR(err);
         (*materialIds)[index++] = matId;
     } // for
 
@@ -377,10 +379,13 @@ pylith::meshio::MeshIO::_getGroupNames(string_vector* names) const { // _getGrou
     const PetscInt numGroups = numLabels - 3; // Remove depth, celltype, and material labels.
     names->resize(numGroups);
 
+    const std::string& materialLabelName = pylith::topology::Mesh::getCellsLabelName();
     for (int iGroup = 0, iLabel = 0; iLabel < numLabels; ++iLabel) {
         const char* labelName = NULL;
         err = DMGetLabelName(dmMesh, iLabel, &labelName);PYLITH_CHECK_ERROR(err);
-        if ((std::string(labelName) != std::string("depth")) && (std::string(labelName) != std::string("celltype")) && (std::string(labelName) != std::string("material-id"))) {
+        if ((std::string(labelName) != std::string("depth"))
+            && (std::string(labelName) != std::string("celltype"))
+            && (std::string(labelName) != materialLabelName)) {
             (*names)[iGroup++] = labelName;
         } // if
     } // for
