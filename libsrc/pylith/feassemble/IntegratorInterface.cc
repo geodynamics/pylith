@@ -118,7 +118,7 @@ pylith::feassemble::IntegratorInterface::IntegratorInterface(pylith::problems::P
     _interfaceSurfaceLabel("") {
     GenericComponent::setName(_IntegratorInterface::genericComponent);
     _labelValue = 100;
-    _labelName = "material-id";
+    _labelName = pylith::topology::Mesh::getCellsLabelName();
 } // constructor
 
 

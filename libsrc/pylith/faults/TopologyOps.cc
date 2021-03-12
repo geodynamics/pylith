@@ -184,7 +184,8 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
     err = DMPlexLabelCohesiveComplete(dm, label, faultBdLabel, PETSC_FALSE, faultMesh.dmMesh());PYLITH_CHECK_ERROR(err);
     err = DMPlexConstructCohesiveCells(dm, label, NULL, &sdm);PYLITH_CHECK_ERROR(err);
 
-    err = DMGetLabel(sdm, "material-id", &mlabel);PYLITH_CHECK_ERROR(err);
+    const char* interfaceLabelName = pylith::topology::Mesh::getCellsLabelName();
+    err = DMGetLabel(sdm, interfaceLabelName, &mlabel);PYLITH_CHECK_ERROR(err);
     if (mlabel) {
         err = DMPlexGetHeightStratum(sdm, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
         cMax = cStart;

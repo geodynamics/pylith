@@ -21,22 +21,15 @@
 #include "InitialConditionPatch.hh" // implementation of class methods
 
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
-
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
+
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include <cassert> // USES assert()
-
-namespace pylith {
-    namespace problems {
-        namespace _InitialConditionPatch {
-            static const char* labelName = "material-id";
-        } // _InitialConditionPatch
-    } // problems
-} // pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
@@ -111,21 +104,22 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
 
     const PetscDM dmSoln = solution.dmMesh();
     PetscBool hasLabel = PETSC_FALSE;
-    PetscErrorCode err = DMHasLabel(dmSoln, _InitialConditionPatch::labelName, &hasLabel);PYLITH_CHECK_ERROR(err);
+    const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
+    PetscErrorCode err = DMHasLabel(dmSoln, labelName, &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel) {
         std::ostringstream msg;
-        msg << "Could not find label '" << _InitialConditionPatch::labelName << "' for setting patch for initial condition '"
+        msg << "Could not find label '" << labelName << "' for setting patch for initial condition '"
             << PyreComponent::getIdentifier() << "'.";
         throw std::runtime_error(msg.str());
     } // if
 
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(solution.dmMesh(), _InitialConditionPatch::labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(solution.dmMesh(), labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
     PetscBool hasValue = PETSC_FALSE;
     err = DMLabelHasValue(dmLabel, _patchId, &hasValue);PYLITH_CHECK_ERROR(err);
     if (!hasValue) {
         std::ostringstream msg;
-        msg << "Label '" << _InitialConditionPatch::labelName << "' missing value '" << _patchId << "' for initial condition '"
+        msg << "Label '" << labelName << "' missing value '" << _patchId << "' for initial condition '"
             << PyreComponent::getIdentifier() << "'.";
         throw std::runtime_error(msg.str());
     } // if
@@ -157,7 +151,8 @@ pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solu
     } // for
 
     fieldQuery.openDB(_db, normalizer.getLengthScale());
-    fieldQuery.queryDBLabel(_InitialConditionPatch::labelName, _patchId);
+    const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
+    fieldQuery.queryDBLabel(labelName, _patchId);
     fieldQuery.closeDB(_db);
 
     pythia::journal::debug_t debug(PyreComponent::getName());
