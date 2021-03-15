@@ -1754,7 +1754,7 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
                                     factor4*devStressTpdt[2]*devStressT[2] + ae));
         C3333 = bulkModulus + 2/(3*(factor3*devStressTpdt[2]*devStressTpdt[2] + factor1 +
                                     factor4*devStressTpdt[2]*devStressT[2] + ae));
-#if 0
+#if 1
     std::cout << "Viscoelastic Jacobian:" << std::endl;
     std::cout << "    C1111:" << C1111 << std::endl;
     std::cout << "    C1122:" << C1122 << std::endl;
@@ -2332,7 +2332,7 @@ pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress(const PylithInt dim,
     stressTensor[3] += devStressTpdt[3];
     stressTensor[6] += devStressTpdt[5];
     stressTensor[7] += devStressTpdt[4];
-#if 0
+#if 1
     const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
     const PylithScalar j2Test = sqrt(0.5*devStressProdTpdt);
     PylithScalar dtTest = 0.0;
@@ -2343,6 +2343,9 @@ pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress(const PylithInt dim,
             (powerLawReferenceStress/shearModulus)/(powerLawReferenceStrainRate * 6.0);
     } //else
     std::cout << "Relaxation time:" << dtTest << std::endl;
+    std::cout << "strainTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << strainTpdt[i]; } std::cout << std::endl;
+    std::cout << "devStressT:"; for(int i=0;i<6;++i) {std::cout << " " << devStressT[i]; } std::cout << std::endl;
+    std::cout << "devStressTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << devStressTpdt[i]; } std::cout << std::endl;
 #endif
 
 
