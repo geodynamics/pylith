@@ -40,7 +40,7 @@ debugging = True
 
 # Parameter values.
 alpha = 0.5
-dt = numpy.array([0.025, 30000.0, 5.0], dtype=numpy.float64)
+dt = numpy.array([0.025, 0.05, 0.1], dtype=numpy.float64)
 density = numpy.array([2500.0, 2500.0, 2500.0], dtype=numpy.float64)
 vs = numpy.array([3464.1016, 3464.1016, 3464.1016], dtype=numpy.float64)
 vp = numpy.array([6000.0, 6000.0, 6000.0], dtype=numpy.float64)
