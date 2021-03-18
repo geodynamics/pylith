@@ -664,7 +664,7 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSResidualDynamicIMEX(pylith::feas
     const PetscBdPointFunc f1v = NULL;
 
     // Fault slip acceleration constraint equation.
-    const PetscBdPointFunc f0l = NULL; // pylith::fekernels::FaultCohesiveKin::f0l_a;
+    const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_a;
     const PetscBdPointFunc f1l = NULL;
 
     kernels[0] = ResidualKernels("velocity", f0v, f1v);
