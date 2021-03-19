@@ -167,12 +167,12 @@ d\Omega + \int_{\Gamma_\tau} \trialvec[u] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma
 Identifying $F(t,s,\dot{s})$ and $G(t,s)$we have
 \begin{align}
     % Displacement
-  F^u(t,s,\dot{s}) &= \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{f^u_0}
-                     + \nabla \trialvec[u] : \eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{f^u_1} \, d\Omega
-                     + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{f^u_0} \, d\Gamma, \\
+  F^u(t,s,\dot{s}) &= \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{\vec{f}^u_0}
+                     + \nabla \trialvec[u] : \eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{\tensor{f}^u_1} \, d\Omega
+                     + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{\vec{f}^u_0} \, d\Gamma, \\
 % Pressure
   F^p(t,s,\dot{s}) &= \int_\Omega  \trialscalar[p] \left[\eqnannotate{\frac{\partial \zeta(\vec{u},p_f)}{\partial t} - \gamma(\vec{x},t)} {f^p_0}\right]
-                     + \nabla \trialscalar[p] \cdot \eqnannotate{-\vec{q}(p_f)}{f^p_1} \, d\Omega
+                     + \nabla \trialscalar[p] \cdot \eqnannotate{-\vec{q}(p_f)}{\vec{f}^p_1} \, d\Omega
                      + \int_{\Gamma_q} \trialscalar[p] (\eqnannotate{q_0(\vec{x},t)}{f^p_0}) \, d\Gamma, \\
  % Volumetric Strain
   F^{\epsilon_{v}}(t,s,\dot{s}) &= \int_{\Omega} \trialscalar[\epsilon_{v}] \cdot \eqnannotate{\left(\nabla \cdot \vec{u} - \epsilon_{v} \right)}{f^{\epsilon_{v}}_{0}} \, d\Omega. \\
@@ -312,8 +312,8 @@ With explicit time stepping the PETSc TS assumes the LHS is $\dot{s}$ , so we on
 % Displacement
   G^u(t,s) &= \int_{\Omega} \trialvec[u] \cdot \eqnannotate{\left( \vec{v} \right)}{\vec{g}_0^u} d \Omega, \\
 % Pressure
-  G^p(t,s) &= \int_\Omega \trialscalar[p] \left[ \eqnannotate{\gamma(\vec{x},t) - \alpha \left(\nabla \cdot \dot{\vec{u}} \right)}{\vec{g}^p_0} \right] + \nabla \trialscalar[p] \cdot \eqnannotate{\vec{q}(p_f)}{\tensor{g^p_1}} \, d\Omega
- + \int_{\Gamma_q} \trialscalar[p] (\eqnannotate{-q_0(\vec{x},t)}{\vec{g}^p_0}) \, d\Gamma, \\
+  G^p(t,s) &= \int_\Omega \trialscalar[p] \left[ \eqnannotate{\gamma(\vec{x},t) - \alpha \left(\nabla \cdot \dot{\vec{u}} \right)}{g^p_0} \right] + \nabla \trialscalar[p] \cdot \eqnannotate{\vec{q}(p_f)}{\vec{g}^p_1} \, d\Omega
+ + \int_{\Gamma_q} \trialscalar[p] (\eqnannotate{-q_0(\vec{x},t)}{g^p_0}) \, d\Gamma, \\
  % Velocity
  G^v(t,s) &= \int_\Omega \trialvec[v] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{\vec{g}^v_0} + \nabla \trialvec[v] :\eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{\tensor{g}^v_1} \, d\Omega + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{\vec{g}^v_0} \, d\Gamma.
 \end{align}

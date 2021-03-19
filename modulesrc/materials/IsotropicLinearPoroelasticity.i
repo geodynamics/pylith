@@ -27,166 +27,121 @@ namespace pylith {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
+    /// Default constructor.
+    IsotropicLinearPoroelasticity(void);
 
-      /// Default constructor.
-      IsotropicLinearPoroelasticity(void);
+    /// Destructor.
+    ~IsotropicLinearPoroelasticity(void);
 
-      /// Destructor.
-      ~IsotropicLinearPoroelasticity(void);
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
 
-      /// Deallocate PETSc and local data structures.
-      void deallocate(void);
+    /** Include reference stress/strain?
+     *
+     * @param value Flag indicating to include reference stress/strain.
+     */
+    void useReferenceState(const bool value);
 
-      /** Include reference stress/strain?
-       *
-       * @param value Flag indicating to include reference stress/strain.
-       */
-      void useReferenceState(const bool value);
+    /** Use reference stress and strain in computation of stress and
+     * strain?
+     *
+     * @returns True if using reference stress and strain, false otherwise.
+     */
+    bool useReferenceState(void) const;
 
-      /** Use reference stress and strain in computation of stress and
-       * strain?
-       *
-       * @returns True if using reference stress and strain, false otherwise.
-       */
-      bool useReferenceState(void) const;
+    /** Include tensor permeability?
+     *
+     * @param value Flag indicating to include tensor permeability.
+     */
+    void useTensorPermeability(const bool value);
 
-      /** Include full tensor permeability?
-      *
-      * @param value Flag indicating to include full tensor permeability.
-      */
-      void useTensorPermeability(const bool value);
+    /** Use full tensor permeability?
+     *
+     * @returns True if using full tensor permeability, false otherwise.
+     */
+    bool useTensorPermeability(void) const;
 
-      /** Use full tensor permeability?
-      *
-      * @returns True if using full tensor permeability, false otherwise.
-      */
-      bool useTensorPermeability(void) const;
+    /** Get auxiliary factory associated with physics.
+     *
+     * @return Auxiliary factory for physics object.
+     */
+    pylith::materials::AuxiliaryFactoryPoroelastic* getAuxiliaryFactory(void);
 
-      /** Get auxiliary factory associated with physics.
-       *
-       * @return Auxiliary factory for physics object.
-       */
-      pylith::materials::AuxiliaryFactoryPoroelasticity* getAuxiliaryFactory(void);
+    /** Add rheology subfields to auxiliary field.
+     *
+     * @param[inout] auxiliaryField Auxiliary field.
+     */
+    void addAuxiliarySubfields(void);
 
-      /** Add rheology subfields to auxiliary field.
-       *
-       * @param[inout] auxiliaryField Auxiliary field.
-       */
-      void addAuxiliarySubfields(void);
+    // ============================ Either Side ====================================
+    // ---------------------------------------------------------------------------------------------------------------------
+    // Get stress kernel for RHS residual, G(t,s).
+    PetscPointFunc getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys, const bool _useInertia) const;
 
-      // ============================= RHS ==================================== //
+    /** Get pressure kernel for RHS residual, G(t,s).
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return RHS residual kernel for Darcy velocity.
+     */
+    PetscPointFunc getKernelDarcy(const spatialdata::geocoords::CoordSys* coordsys, const bool _gravityField) const;
 
-      /** Get stress kernel for RHS residual, G(t,s).
-       *
-       * @param[in] coordsys Coordinate system.
-       *
-       * @return RHS residual kernel for stress.
-       */
-      PetscPointFunc getKernelg1u(const spatialdata::geocoords::CoordSys* coordsys) const;
+    // ============================= RHS ==================================== //
 
-      /** Get stress kernel for RHS residual, G(t,s).
-       *
-       * @param[in] coordsys Coordinate system.
-       *
-       * @return RHS residual kernel for stress.
-       */
-      PetscPointFunc getKernelg1v(const spatialdata::geocoords::CoordSys* coordsys) const;
+    // ---------------------------------------------------------------------------------------------------------------------
+    // Select g0p function. Will only be used for the dynamic case.
+    PetscPointFunc getKernelg0p(const spatialdata::geocoords::CoordSys* coordsys,
+                                                                   const bool _useBodyForce,
+                                                                   const bool _gravityField,
+                                                                   const bool _useSourceDensity) const;
 
-      /** Get pressure kernel for RHS residual, G(t,s).
-       *
-       * @param[in] coordsys Coordinate system.
-       *
-       * @return RHS residual kernel for Darcy velocity.
-       */
-      PetscPointFunc getKernelg1p(const spatialdata::geocoords::CoordSys* coordsys, const bool _gravityField) const;
+   // ---------------------------------------------------------------------------------------------------------------------
+   // Get variation in fluid content kernel for LHS residual, F(t,s,\dot{s})
+   PetscPointFunc getKernelf0p_explicit(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-      /** Get elastic constants kernel for RHS Jacobian G(t,s).
-       *
-       * @param[in] coordsys Coordinate system.
-       *
-       * @return RHS Jacobian kernel for elastic constants.
-       */
-      PetscPointJac getKernelJg3uu(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-      /** Get elastic constants kernel for RHS Jacobian G(t,s).
-       *
-       * @param[in] coordsys Coordinate system.
-       *
-       * @return RHS Jacobian kernel for elastic constants.
-       */
-      PetscPointJac getKernelJg3vu(const spatialdata::geocoords::CoordSys* coordsys) const;
+   // ---------------------------------------------------------------------------------------------------------------------
+   // Select implicit f0p function.
+   PetscPointFunc getKernelf0p_implicit(const spatialdata::geocoords::CoordSys* coordsys,
+                                                                  const bool _useBodyForce,
+                                                                  const bool _gravityField,
+                                                                  const bool _useSourceDensity) const;
 
-      /** Get Biot Coefficient for RHS Jacobian G(t,s).
-       *
-       * @param[in] coordsys Coordinate system.
-       *
-       * @return RHS Jacobian kernel for Biot Coefficient.
-       */
-      PetscPointJac getKernelJg2up(const spatialdata::geocoords::CoordSys* coordsys) const;
+  // ---------------------------------------------------------------------------------------------------------------------
+  // Get poroelastic constants kernel for LHS Jacobian
+  PetscPointJac getKernelJf3uu(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-      /** Get Biot Coefficient for RHS Jacobian G(t,s).
-       *
-       * @param[in] coordsys Coordinate system.
-       *
-       * @return RHS Jacobian kernel for Biot Coefficient.
-       */
-      PetscPointJac getKernelJg2vp(const spatialdata::geocoords::CoordSys* coordsys) const;
+  // ---------------------------------------------------------------------------------------------------------------------
+  // Get biot coefficient kernel for LHS Jacobian
+  PetscPointJac getKernelJf2up(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-      /** Get lambda for RHS Jacobian G(t,s).
-       *
-       * @param[in] coordsys Coordinate system.
-       *
-       * @return RHS Jacobian kernel for lambda.
-       */
-      PetscPointJac getKernelJg2ue(const spatialdata::geocoords::CoordSys* coordsys) const;
+  // ---------------------------------------------------------------------------------------------------------------------
+  // Get lambda kernel for LHS Jacobian
+  PetscPointJac getKernelJf2ue(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-      /** Get stress kernel for derived field.
-       *
-       * @param[in] coordsys Coordinate system.
-       *
-       * @return Project kernel for computing stress subfield in derived field.
-       */
-      PetscPointJac getKernelJg3pp(const spatialdata::geocoords::CoordSys* coordsys) const;
+  // ---------------------------------------------------------------------------------------------------------------------
+  // Get Specific storage kernel for LHS Jacobian F(t,s, \dot{s}).
+  PetscPointJac getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-      // ============================= LHS ==================================== //
+  // ---------------------------------------------------------------------------------------------------------------------
+  // Get Darcy Conductivity kernel for LHS Jacobian
+  PetscPointJac getKernelJf3pp(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-      /** Get variation in fluid content for LHS residual, F(t,s,\dot{s})
-       *
-       * @param[in] coordsys Coordinate system.
-       *
-       * @return LHS residual kernel for variation in fluid contenty.
-       */
-      PetscPointFunc getKernelf0p(const spatialdata::geocoords::CoordSys* coordsys, const bool _useInertia) const;
+  // ---------------------------------------------------------------------------------------------------------------------
+  // Get biot coefficient kernel for LHS Jacobian F(t,s, \dot{s}).
+  PetscPointJac getKernelJf0pe(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-      /** Get biot coefficient for LHS residual, F(t,s,\dot{s})
-       *
-       * @param[in] coordsys Coordinate system.
-       *
-       * @return LHS jacobian kernel for biot coefficient.
-       */
-      PetscPointJac getKernelJf0pe(const spatialdata::geocoords::CoordSys* coordsys) const;
+    // ============================ DERIVED FIELDS ========================== //
 
-      /** Get kernel for RHS Jacobian G(t,s).
-       *
-       * @param[in] coordsys Coordinate system.
-       *
-       * @return RHS Jacobian kernel for tshift * 1/M (Jf0pp)
-       */
-      PetscPointJac getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const;
+    /** Get stress kernel for derived field.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return Project kernel for computing stress subfield in derived field.
+     */
+    PetscPointFunc getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-      // ============================ DERIVED FIELDS ========================== //
-
-      /** Get stress kernel for derived field.
-       *
-       * @param[in] coordsys Coordinate system.
-       *
-       * @return Project kernel for computing stress subfield in derived field.
-       */
-      PetscPointFunc getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const;
-
-      };
-
-      // class IsotropicLinearPoroelasticity
+    };      // class IsotropicLinearPoroelasticity
 
     } // materials
 } // pylith
