@@ -28,10 +28,16 @@ check_PROGRAMS = test_faults
 
 # Primary source files
 test_faults_SOURCES = \
+	TestAdjustTopology.cc \
+	TestAdjustTopology_tri.cc \
+	TestAdjustTopology_quad.cc \
+	TestAdjustTopology_tet.cc \
+	TestAdjustTopology_hex.cc \
 	test_driver.cc
 
 
-noinst_HEADERS =
+noinst_HEADERS = \
+	TestAdjustTopology.hh
 
 AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
