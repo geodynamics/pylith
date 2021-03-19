@@ -35,7 +35,8 @@
 #include <stdexcept> // USES std::runtime_error
 
 extern "C" PetscErrorCode DMPlexComputeResidual_Internal(PetscDM dm,
-                                                         IS cellIS,
+                                                         PetscHashFormKey key,
+                                                         PetscIS cellIS,
                                                          PetscReal time,
                                                          PetscVec locX,
                                                          PetscVec locX_t,
@@ -43,7 +44,8 @@ extern "C" PetscErrorCode DMPlexComputeResidual_Internal(PetscDM dm,
                                                          void *user);
 
 extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(PetscDM dm,
-                                                         IS cellIS,
+                                                         PetscHashFormKey key,
+                                                         PetscIS cellIS,
                                                          PetscReal t,
                                                          PetscReal X_tShift,
                                                          PetscVec X,
@@ -442,16 +444,21 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     assert(_auxiliaryField);
 
     PetscDS prob = NULL;
-    PetscIS cells = NULL;
+    PetscIS cellsIS = NULL;
     PetscInt numCells = 0;
     PetscErrorCode err;
 
     PetscDM dmSoln = solution.dmMesh();
     PetscDM dmAux = _auxiliaryField->dmMesh();
 
+    PetscHashFormKey key;
+    key.label = NULL;
+    key.value = 0;
+    key.field = 0;
+
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.
-
+    //
     // Set pointwise function (kernels) in DS
     err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
     for (size_t i = 0; i < kernels.size(); ++i) {
@@ -467,10 +474,10 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     assert(solution.localVector());
     assert(residual->localVector());
     PYLITH_JOURNAL_DEBUG("DMPlexComputeResidual_Internal() with label name '"<<_labelName<<"' and value '"<<_labelValue<<").");
-    err = DMGetStratumIS(dmSoln, _labelName.c_str(), _labelValue, &cells);PYLITH_CHECK_ERROR(err);
-    err = ISGetSize(cells, &numCells);PYLITH_CHECK_ERROR(err);assert(numCells > 0);
-    err = DMPlexComputeResidual_Internal(dmSoln, cells, PETSC_MIN_REAL, solution.localVector(), solutionDot.localVector(), residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&cells);PYLITH_CHECK_ERROR(err);
+    err = DMGetStratumIS(dmSoln, _labelName.c_str(), _labelValue, &cellsIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetSize(cellsIS, &numCells);PYLITH_CHECK_ERROR(err);assert(numCells > 0);
+    err = DMPlexComputeResidual_Internal(dmSoln, key, cellsIS, PETSC_MIN_REAL, solution.localVector(), solutionDot.localVector(), residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&cellsIS);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _computeResidual
@@ -495,14 +502,19 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
     assert(_auxiliaryField);
 
     PetscDS prob = NULL;
-    PetscIS cells = NULL;
+    PetscIS cellsIS = NULL;
     PetscErrorCode err;
     PetscDM dmSoln = solution.dmMesh();
     PetscDM dmAux = _auxiliaryField->dmMesh();
 
+    PetscHashFormKey key;
+    key.label = NULL;
+    key.value = 0;
+    key.field = 0;
+
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.
-
+    //
     // Set pointwise function (kernels) in DS
     err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
     for (size_t i = 0; i < kernels.size(); ++i) {
@@ -517,10 +529,10 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
 
     // Compute the local Jacobian
     assert(solution.localVector());
-    err = DMGetStratumIS(dmSoln, _labelName.c_str(), _labelValue, &cells);PYLITH_CHECK_ERROR(err);
+    err = DMGetStratumIS(dmSoln, _labelName.c_str(), _labelValue, &cellsIS);PYLITH_CHECK_ERROR(err);
     PYLITH_JOURNAL_DEBUG("DMPlexComputeJacobian_Internal() with label name '"<<_labelName<<"' and value '"<<_labelValue<<".");
-    err = DMPlexComputeJacobian_Internal(dmSoln, cells, t, s_tshift, solution.localVector(), solutionDot.localVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&cells);PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeJacobian_Internal(dmSoln, key, cellsIS, t, s_tshift, solution.localVector(), solutionDot.localVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&cellsIS);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _computeJacobian
