@@ -1,0 +1,11 @@
+Metadata-Version: 1.2
+Name: pylith
+Version: 3.0.0
+Summary: :TODO:
+Home-page: http://www.geodynamics.org/cig/software/pylith
+Author: Brad Aagaard, Matthew Knepley, Charles Williams
+Author-email: baagaard@usgs.gov, knepley@buffalo.edu, c.williams@gns.cri.nz
+License: MIT
+Description: UNKNOWN
+Platform: UNKNOWN
+Requires-Python: >=3.6
