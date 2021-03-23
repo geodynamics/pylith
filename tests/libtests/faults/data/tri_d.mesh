@@ -1,0 +1,99 @@
+// Original mesh
+//
+// Cells are 0-3, vertices are 4-9.
+//
+//
+//         9
+//        / \
+//       /   \
+//      /     \
+//     /       \
+//    8---------5
+//     \       /|\
+//      \     / | \
+//       \   /  |  \
+//        \ /   |   \
+//         4    |    7
+//          \   |   /
+//           \  |  /
+//            \ | /
+//             \|/
+//              6
+//
+//
+// After adding cohesive elements
+//
+// Cells are 0-3, 4-5, vertices are 6-14.
+//
+//        11
+//        / \
+//       /   \
+//      /     \
+//     /       \
+//   10---------  7
+//    |          /|
+//   14--------12 |
+//     \       /| |\
+//      \     / | | \
+//       \   /  | |  \
+//        \ /   | |   \
+//         6    | |    9
+//          \   | |   /
+//           \  | |  /
+//            \ | | /
+//             \| |/
+//             13-8
+//
+
+mesh = {
+  dimension = 2
+  use-index-zero = true
+  vertices = {
+    dimension = 2
+    count = 6
+    coordinates = {
+             0     -1.0  0.0
+             1      0.0  1.0
+             2      0.0 -1.0
+             3      1.0  0.0
+             4     -2.0  1.0
+             5     -1.0  2.0
+    }
+  }
+  cells = {
+    count = 4
+    num-corners = 3
+    simplices = {
+             0       0  2  1
+             1       1  2  3
+             2       4  0  1
+             3       4  1  5
+    }
+    material-ids = {
+             0   0
+             1   0
+             2   0
+             3   0
+    }
+  }
+  group = {
+    name = fault
+    type = vertices
+    count = 3
+    indices = {
+      1
+      2
+      4
+    }
+  }
+  group = {
+    name = output
+    type = vertices
+    count = 3
+    indices = {
+      1
+      2
+      3
+    }
+  }
+}

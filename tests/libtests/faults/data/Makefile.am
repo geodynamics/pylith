@@ -18,17 +18,15 @@
 
 dist_noinst_DATA = \
 	slipfn.timedb \
-	static_friction_2d.spatialdb \
-	static_friction_3d.spatialdb \
-	tri3.mesh \
-	tri3b.mesh \
-	tri3c.mesh \
-	tri3d.mesh \
-	tri3e.mesh \
-	tri3f.mesh \
-	tri3g.mesh \
-	tri3h.mesh \
-	tri3i.mesh \
+	tri_a.mesh \
+	tri_b.mesh \
+	tri_c.mesh \
+	tri_d.mesh \
+	tri_e.mesh \
+	tri_f.mesh \
+	tri_g.mesh \
+	tri_h.mesh \
+	tri_i.mesh \
 	tri3_finalslip.spatialdb \
 	tri3_finalslipB.spatialdb \
 	tri3_sliptime.spatialdb \
@@ -44,15 +42,15 @@ dist_noinst_DATA = \
 	tri3_changetract.spatialdb \
 	tri3d_initialtract.spatialdb \
 	tri3_impulses.spatialdb \
-	quad4.mesh \
-	quad4b.mesh \
-	quad4c.mesh \
-	quad4d.mesh \
-	quad4e.mesh \
-	quad4f.mesh \
-	quad4g.mesh \
-	quad4h.mesh \
-	quad4i.mesh \
+	quad_a.mesh \
+	quad_b.mesh \
+	quad_c.mesh \
+	quad_d.mesh \
+	quad_e.mesh \
+	quad_f.mesh \
+	quad_g.mesh \
+	quad_h.mesh \
+	quad_i.mesh \
 	quad4_finalslip.spatialdb \
 	quad4_sliptime.spatialdb \
 	quad4_risetime.spatialdb \
@@ -64,18 +62,18 @@ dist_noinst_DATA = \
 	quad4i_risetime.spatialdb \
 	quad4_initialtract.spatialdb \
 	quad4_impulses.spatialdb \
-	tet4.mesh \
-	tet4b.mesh \
-	tet4c.mesh \
-	tet4d.mesh \
-	tet4e.mesh \
-	tet4f.mesh \
-	tet4g.mesh \
-	tet4h.mesh \
-	tet4i.mesh \
-	tet4j.mesh \
-	tet4k.jou \
-	tet4k.mesh \
+	tet_a.mesh \
+	tet_b.mesh \
+	tet_c.mesh \
+	tet_d.mesh \
+	tet_e.mesh \
+	tet_f.mesh \
+	tet_g.mesh \
+	tet_h.mesh \
+	tet_i.mesh \
+	tet_j.mesh \
+	tet_k.jou \
+	tet_k.mesh \
 	tet4_finalslip.spatialdb \
 	tet4_sliptime.spatialdb \
 	tet4_risetime.spatialdb \
@@ -85,16 +83,16 @@ dist_noinst_DATA = \
 	tet4e_risetime.spatialdb \
 	tet4_initialtract.spatialdb \
 	tet4_impulses.spatialdb \
-	hex8.mesh \
-	hex8b.mesh \
-	hex8c.mesh \
-	hex8d.mesh \
-	hex8e.mesh \
-	hex8f.mesh \
-	hex8g.mesh \
-	hex8h.mesh \
-	hex8i.mesh \
-	hex8j.mesh \
+	hex_a.mesh \
+	hex_b.mesh \
+	hex_c.mesh \
+	hex_d.mesh \
+	hex_e.mesh \
+	hex_f.mesh \
+	hex_g.mesh \
+	hex_h.mesh \
+	hex_i.mesh \
+	hex_j.mesh \
 	hex8_finalslip.spatialdb \
 	hex8_sliptime.spatialdb \
 	hex8_risetime.spatialdb \
