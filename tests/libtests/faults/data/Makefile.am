@@ -51,6 +51,7 @@ dist_noinst_DATA = \
 	quad_g.mesh \
 	quad_h.mesh \
 	quad_i.mesh \
+	quad_patches_a.mesh \
 	quad4_finalslip.spatialdb \
 	quad4_sliptime.spatialdb \
 	quad4_risetime.spatialdb \

@@ -33,11 +33,14 @@ test_faults_SOURCES = \
 	TestAdjustTopology_quad.cc \
 	TestAdjustTopology_tet.cc \
 	TestAdjustTopology_hex.cc \
+	TestFaultCohesive.cc \
+	TestFaultCohesive_Cases.cc \
 	test_driver.cc
 
 
 noinst_HEADERS = \
-	TestAdjustTopology.hh
+	TestAdjustTopology.hh \
+	TestFaultCohesive.hh
 
 AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
