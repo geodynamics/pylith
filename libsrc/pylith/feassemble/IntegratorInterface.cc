@@ -35,23 +35,24 @@
 #include <typeinfo> // USES typeid()
 #include <stdexcept> // USES std::runtime_error
 
-extern "C" PetscErrorCode DMPlexComputeResidual_Hybrid_Internal(DM dm,
-                                                                IS cellIS,
+extern "C" PetscErrorCode DMPlexComputeResidual_Hybrid_Internal(PetscDM dm,
+                                                                PetscHashFormKey key[],
+                                                                PetscIS cellIS,
                                                                 PetscReal time,
-                                                                Vec locX,
-                                                                Vec locX_t,
+                                                                PetscVec locX,
+                                                                PetscVec locX_t,
                                                                 PetscReal t,
-                                                                Vec locF,
+                                                                PetscVec locF,
                                                                 void *user);
 
-extern "C" PetscErrorCode DMPlexComputeJacobian_Hybrid_Internal(DM dm,
-                                                                IS cellIS,
+extern "C" PetscErrorCode DMPlexComputeJacobian_Hybrid_Internal(PetscDM dm,
+                                                                PetscIS cellIS,
                                                                 PetscReal t,
                                                                 PetscReal X_tShift,
-                                                                Vec locX,
-                                                                Vec locX_t,
-                                                                Mat Jac,
-                                                                Mat JacP,
+                                                                PetscVec locX,
+                                                                PetscVec locX_t,
+                                                                PetscMat Jac,
+                                                                PetscMat JacP,
                                                                 void *user);
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -412,12 +413,12 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
 
     PetscDM dmSoln = solution.dmMesh();
     PetscDM dmAux = auxiliaryField->dmMesh();
-    PetscIS cohesiveCells = NULL;
+    PetscIS cohesiveCellsIS = NULL;
     PetscInt numCohesiveCells = 0;
     const PetscInt* cellIndices = NULL;
-    err = DMGetStratumIS(dmSoln, integrator->getLabelName(), integrator->getLabelValue(), &cohesiveCells);PYLITH_CHECK_ERROR(err);
-    err = ISGetSize(cohesiveCells, &numCohesiveCells);PYLITH_CHECK_ERROR(err);assert(numCohesiveCells > 0);
-    err = ISGetIndices(cohesiveCells, &cellIndices);PYLITH_CHECK_ERROR(err);assert(cellIndices);
+    err = DMGetStratumIS(dmSoln, integrator->getLabelName(), integrator->getLabelValue(), &cohesiveCellsIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetSize(cohesiveCellsIS, &numCohesiveCells);PYLITH_CHECK_ERROR(err);assert(numCohesiveCells > 0);
+    err = ISGetIndices(cohesiveCellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);assert(cellIndices);
 
     assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, cellIndices[0]));
     PetscDS prob = NULL;
@@ -427,6 +428,17 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
     err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
+    PetscHashFormKey keys[3];
+    keys[0].label = NULL;
+    keys[0].value = 0;
+    keys[0].field = 0;
+    keys[1].label = NULL;
+    keys[1].value = 0;
+    keys[1].field = 0;
+    keys[2].label = NULL;
+    keys[2].value = 0;
+    keys[2].field = 0;
+
     // Compute the local residual
     assert(solution.localVector());
     assert(residual->localVector());
@@ -434,11 +446,11 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
         const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
         err = PetscDSSetBdResidual(prob, i_field, kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
     } // for
-    err = DMPlexComputeResidual_Hybrid_Internal(dmSoln, cohesiveCells, t, solution.localVector(),
+    err = DMPlexComputeResidual_Hybrid_Internal(dmSoln, keys, cohesiveCellsIS, t, solution.localVector(),
                                                 solutionDot.localVector(), t,
                                                 residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
-    err = ISRestoreIndices(cohesiveCells, &cellIndices);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&cohesiveCells);PYLITH_CHECK_ERROR(err);
+    err = ISRestoreIndices(cohesiveCellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&cohesiveCellsIS);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeResidual

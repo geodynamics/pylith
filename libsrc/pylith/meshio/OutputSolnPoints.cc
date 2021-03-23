@@ -155,7 +155,8 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Mes
     err = DMInterpolationSetDim(_interpolator, spaceDim);PYLITH_CHECK_ERROR(err);
     err = DMInterpolationAddPoints(_interpolator, _pointCoords.size(), (PetscReal*) &_pointCoords[0]);PYLITH_CHECK_ERROR(err);
     const PetscBool pointsAllProcs = PETSC_TRUE;
-    err = DMInterpolationSetUp(_interpolator, dmMesh, pointsAllProcs);PYLITH_CHECK_ERROR(err);
+    const PetscBool ignoreOutsideDomain = PETSC_FALSE;
+    err = DMInterpolationSetUp(_interpolator, dmMesh, pointsAllProcs, ignoreOutsideDomain);PYLITH_CHECK_ERROR(err);
 
     // Create mesh corresponding to local points.
     const int meshDim = 0;
