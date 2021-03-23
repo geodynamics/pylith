@@ -38,6 +38,7 @@ namespace pylith {
         class IntegratorDomain; ///< Abstract base class for finite-element integration over portions on the domain.
         class IntegratorBoundary; ///< Abstract base class for finite-element integration over a boundary.
         class IntegratorInterface; ///< Abstract base class for finite-element integration over an interior interface.
+        class InterfacePatches; ///< Interface integration patches.
         class UpdateStateVars; ///< Manager for updating state variables.
 
         class Constraint; ///< Abstract base class for finite-element constraints.

@@ -23,6 +23,7 @@
 #include "pylith/faults/KinSrc.hh" // USES KinSrc
 #include "pylith/faults/AuxiliaryFactoryKinematic.hh" // USES AuxiliaryFactoryKinematic
 #include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
+#include "pylith/feassemble/InterfacePatches.hh" // USES InterfacePatches
 #include "pylith/feassemble/ConstraintSimple.hh" // USES ConstraintSimple
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
@@ -243,23 +244,28 @@ pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field
 #else
     integrator->setSurfaceMarkerLabel(getSurfaceMarkerLabel());
 
+    pylith::feassemble::InterfacePatches* patches = NULL;
     switch (_formulation) {
-    case pylith::problems::Physics::QUASISTATIC:
-        _createIntegrationPatch(integrator);
+    case pylith::problems::Physics::QUASISTATIC: {
+        patches = pylith::feassemble::InterfacePatches::createSingle(this, solution.dmMesh());
         _FaultCohesiveKin::setKernelsLHSResidualQuasistatic(integrator, *this, solution);
         _FaultCohesiveKin::setKernelsLHSJacobianQuasistatic(integrator, *this, solution);
         break;
-    case pylith::problems::Physics::DYNAMIC_IMEX:
-        _createIntegrationPatches(integrator, solution.dmMesh());
+    } // QUASISTATIC
+    case pylith::problems::Physics::DYNAMIC_IMEX: {
+        patches = pylith::feassemble::InterfacePatches::createMaterialPairs(this, solution.dmMesh());
         _FaultCohesiveKin::setKernelsLHSResidualDynamicIMEX(integrator, *this, solution);
         _FaultCohesiveKin::setKernelsLHSJacobianDynamicIMEX(integrator, *this, solution);
         _FaultCohesiveKin::setKernelsRHSResidualDynamicIMEX(integrator, *this, solution);
         break;
+    } // DYNAMIC_IMEX
     case pylith::problems::Physics::DYNAMIC:
         PYLITH_COMPONENT_FIREWALL("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
     default:
         PYLITH_COMPONENT_FIREWALL("Unknown formulation '"<<_formulation<<"'.");
     } // switch
+
+    integrator->setIntegrationPatches(patches);
 #endif
 
     PYLITH_METHOD_RETURN(integrator);

@@ -20,6 +20,7 @@
 
 #include "IntegratorInterface.hh" // implementation of object methods
 
+#include "pylith/feassemble/InterfacePatches.hh" // USES InterfacePatches
 #include "pylith/problems/Physics.hh" // USES Physics
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
@@ -105,14 +106,29 @@ public:
                                  const pylith::topology::Field& solution,
                                  const pylith::topology::Field& solutionDot);
 
+            /** Set cohesive cell integration kernels.
+             *
+             * @param[in] integrator Integrator for interface.
+             * @param[in] kernels Integration kernels (pointwise functions) for cohesive cells.
+             * @param[in] solution Field with current trial solution.
+             */
             static
-            void transferWeakForms(const pylith::topology::Field& solution,
-                                   const pylith::feassemble::IntegratorInterface::WeakFormKeys& weakFormKeys,
-                                   const PetscInt cohesiveCell,
-                                   const PetscInt adjacentCellNegative,
-                                   const PetscInt adjacentCellPositive);
+            void setWeakFormKernels(const pylith::feassemble::IntegratorInterface* integrator,
+                                    const std::vector<pylith::feassemble::IntegratorInterface::ResidualKernels>& kernels,
+                                    const pylith::topology::Field& solution);
+
+            /** Set cohesive cell integration kernels.
+             *
+             * @param[in] integrator Integrator for interface.
+             * @param[in] kernels Integration kernels (pointwise functions) for cohesive cells.
+             * @param[in] solution Field with current trial solution.
+             */
+            static
+            void transferWeakFormKernels(const pylith::feassemble::IntegratorInterface* integrator,
+                                         const pylith::topology::Field& solution);
 
             static const char* genericComponent;
+
         }; // _IntegratorInterface
         const char* _IntegratorInterface::genericComponent = "integratorinterface";
 
@@ -124,7 +140,8 @@ public:
 pylith::feassemble::IntegratorInterface::IntegratorInterface(pylith::problems::Physics* const physics) :
     Integrator(physics),
     _interfaceMesh(NULL),
-    _interfaceSurfaceLabel("") {
+    _interfaceSurfaceLabel(""),
+    _integrationPatches(NULL) {
     GenericComponent::setName(_IntegratorInterface::genericComponent);
     _labelValue = 100;
     _labelName = pylith::topology::Mesh::getCellsLabelName();
@@ -186,15 +203,14 @@ pylith::feassemble::IntegratorInterface::getPhysicsDomainMesh(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set weak form keys for integration patch.
 void
-pylith::feassemble::IntegratorInterface::setPatchWeakFormKeys(const int labelValue,
-                                                              const WeakFormKeys& keys) {
+pylith::feassemble::IntegratorInterface::setIntegrationPatches(pylith::feassemble::InterfacePatches* patches) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setPatchWeakFormKeys(labelValue="<<labelValue<<", keys="<<typeid(keys).name()<<")");
+    PYLITH_JOURNAL_DEBUG("setIntegrationPatches(patches="<<patches<<")");
 
-    PYLITH_JOURNAL_LOGICERROR(":TODO: Implement.");
+    delete _integrationPatches;_integrationPatches = patches;
 
     PYLITH_METHOD_END;
-} // setPatchWeakFormKeys
+} // setIntegrationPatches
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -379,6 +395,8 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
                                                           const pylith::topology::Field& solution,
                                                           const pylith::topology::Field& solutionDot) {
     PYLITH_METHOD_BEGIN;
+    typedef InterfacePatches::keysmap_t keysmap_t;
+
     pythia::journal::debug_t debug(_IntegratorInterface::genericComponent);
     debug << pythia::journal::at(__HERE__)
           << "_IntegratorInterface::computeResidual(residual="<<typeid(residual).name()<<", integrator"<<typeid(integrator).name()
@@ -389,15 +407,45 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     assert(integrator);
     assert(residual);
 
-    const pylith::topology::Field* auxiliaryField = integrator->getAuxiliaryField();assert(auxiliaryField);
+    setWeakFormKernels(integrator, kernels, solution);
+    transferWeakFormKernels(integrator, solution);
 
-    // Get auxiliary data
-    PetscDMLabel dmLabel = NULL;
-    PetscInt labelValue = 0;
+    // Loop over integration patches.
+    PetscErrorCode err = 0;
     PetscDM dmSoln = solution.dmMesh();
-    PetscErrorCode err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    const pylith::topology::Field* auxiliaryField = integrator->getAuxiliaryField();assert(auxiliaryField);
+    const InterfacePatches* patches = integrator->_integrationPatches;assert(patches);
+    const keysmap_t& keysmap = patches->getKeys();
+    for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
+        PetscHashFormKey weakFormKeys[3]; // :TODO: @matt What is the order?
+        weakFormKeys[0] = iter->second.negative.petscKey(solution);
+        weakFormKeys[1] = iter->second.positive.petscKey(solution);
+        weakFormKeys[2] = iter->second.cohesive.petscKey(solution);
 
-    // Loop over integration patches using label.
+        const PetscInt labelValue = weakFormKeys[2].value;
+        PetscIS cohesiveCellIS = NULL;
+        PetscInt numCohesiveCells = 0;
+        const PetscInt* cohesiveCells = NULL;
+        err = DMGetStratumIS(dmSoln, integrator->getLabelName(), labelValue, &cohesiveCellIS);PYLITH_CHECK_ERROR(err);
+        err = ISGetSize(cohesiveCellIS, &numCohesiveCells);PYLITH_CHECK_ERROR(err);assert(numCohesiveCells > 0);
+        err = ISGetIndices(cohesiveCellIS, &cohesiveCells);PYLITH_CHECK_ERROR(err);assert(cohesiveCells);
+        assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, cohesiveCells[0]));
+
+        // Get auxiliary data
+        // :TODO: FIX THIS. This needs to be updated. We need to provide the auxiliary field(s) for the cohesive cells
+        // and the adjacent cells on the negative and positive sides of the fault.
+        PetscErrorCode err = DMSetAuxiliaryVec(dmSoln, NULL, 0, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+
+        assert(solution.localVector());
+        assert(residual->localVector());
+        err = DMPlexComputeResidual_Hybrid_Internal(dmSoln, weakFormKeys, cohesiveCellIS, t, solution.localVector(),
+                                                    solutionDot.localVector(), t,
+                                                    residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
+        err = ISRestoreIndices(cohesiveCellIS, &cohesiveCells);PYLITH_CHECK_ERROR(err);
+        err = ISDestroy(&cohesiveCellIS);PYLITH_CHECK_ERROR(err);
+    } // for
+
+#if 0
     PetscIS labelValueIS = NULL;
     PetscInt numLabelValues = 0;
     const PetscInt* labelValues = NULL;
@@ -442,6 +490,7 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     } // for
     err = ISRestoreIndices(labelValueIS, &labelValues);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&labelValueIS);PYLITH_CHECK_ERROR(err);
+#endif
 
 #if 0
     PetscDS prob = NULL;
@@ -541,51 +590,61 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
 
 // ---------------------------------------------------------------------------------------------------------------------
 void
-pylith::feassemble::_IntegratorInterface::transferWeakForms(const pylith::topology::Field& solution,
-                                                            const pylith::feassemble::IntegratorInterface::WeakFormKeys& weakFormKeys,
-                                                            const PetscInt cohesiveCell,
-                                                            const PetscInt adjacentCellNegative,
-                                                            const PetscInt adjacentCellPositive) {
+pylith::feassemble::_IntegratorInterface::setWeakFormKernels(const pylith::feassemble::IntegratorInterface* integrator,
+                                                             const std::vector<pylith::feassemble::IntegratorInterface::ResidualKernels>& kernels,
+                                                             const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-#if 0
+    typedef InterfacePatches::keysmap_t keysmap_t;
 
-    const char* const patchLabelName = weakFormKeys.cohesive.name.c_str();
+    assert(integrator);
+    const InterfacePatches* patches = integrator->_integrationPatches;assert(patches);
 
-    const char* const materialsLabelName = weakFormKeys.negative.name.c_str();
-    assert(weakFormKeys.negative.name == weakFormKeys.positive.name);
-    const PylithInt labelValueNegative = weakFormKeys.negative.value;
-    const PylithInt labelValuePositive = weakFormKeys.positive.value;
-
-    PetscDM dmSoln = solution.dmMesh();
-    const PetscInt i_lagrange = solution.subfieldInfo("lagrange_multiplier_fault").index;
-
-    // Transfer residual kernels for negative/positive face from material weak form to fault weak form.
     PetscErrorCode err = 0;
-    PetscDMLabel labelMaterial = NULL, labelCohesive = NULL;
-    err = DMGetLabel(dmSoln, materialsLabelName, &labelMaterial);PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dmSoln, patchLabelName, &labelCohesive);PYLITH_CHECK_ERROR(err);
+    const keysmap_t& keysmap = patches->getKeys();
+    for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
+        PetscHashFormKey key = iter->second.cohesive.petscKey(solution);
+        const PetscWeakForm weakForm = iter->second.cohesive.getWeakForm();
 
-    PetscDS probMaterial = NULL, probCohesive = NULL;
-    PetscWeakForm weakFormMaterial = NULL, weakFormCohesive = NULL;
-    err = DMGetCellDS(dmSoln, cohesiveCell, &probCohesive);PYLITH_CHECK_ERROR(err);
-    err = PetscDSGetWeakForm(probCohesive, &weakFormCohesive);PYLITH_CHECK_ERROR(err);
-
-    PetscBdPointFunc* f0 = NULL;
-    PetscBdPointFunc* f1 = NULL;
-    PylithInt f0Count = 0, f1Count = 0;
-    err = DMGetCellDS(dmSoln, adjacentCellNegative, &probMaterial);PYLITH_CHECK_ERROR(err);
-    err = PetscDSGetWeakForm(probMaterial, &weakFormMaterial);PYLITH_CHECK_ERROR(err);
-    err = PetscWeakFormGetBdResidual(weakFormMaterial, labelMaterial, labelValueNegative, i_lagrange, &f0Count, &f0, &f1Count, &f1);PYLITH_CHECK_ERROR(err);
-    err = PetscWeakFormSetBdResidual(weakFormCohesive, labelMaterial, labelValueNegative, i_lagrange, f0Count, f0, f1Count, f1);PYLITH_CHECK_ERROR(err);
-
-    err = DMGetCellDS(dmSoln, adjacentCellPositive, &probMaterial);PYLITH_CHECK_ERROR(err);
-    err = PetscDSGetWeakForm(probMaterial, &weakFormMaterial);PYLITH_CHECK_ERROR(err);
-    err = PetscWeakFormGetBdResidual(weakFormMaterial, labelMaterial, labelValuePositive, i_lagrange, &f0Count, &f0, &f1Count, &f1);PYLITH_CHECK_ERROR(err);
-    err = PetscWeakFormSetBdResidual(weakFormCohesive, labelCohesive, labelValuePositive, i_lagrange, f0Count, f0, f1Count, f1);PYLITH_CHECK_ERROR(err);
-#endif
+        for (size_t i = 0; i < kernels.size(); ++i) {
+            err = PetscWeakFormSetIndexBdResidual(weakForm, key.label, key.value, key.field,
+                                                  i, kernels[i].r0, i, kernels[i].r1);PYLITH_CHECK_ERROR(err);
+        } // for
+    } // for
 
     PYLITH_METHOD_END;
-} // _transferWeakForms
+} // TMP_setWeakFormKernels
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+void
+pylith::feassemble::_IntegratorInterface::transferWeakFormKernels(const pylith::feassemble::IntegratorInterface* integrator,
+                                                                  const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    typedef InterfacePatches::keysmap_t keysmap_t;
+
+    assert(integrator);
+    const InterfacePatches* patches = integrator->_integrationPatches;assert(patches);
+
+    PetscErrorCode err = 0;
+    const keysmap_t& keysmap = patches->getKeys();
+    for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
+        PetscBdPointFunc* f0 = NULL;
+        PetscBdPointFunc* f1 = NULL;
+        PylithInt f0Count = 0, f1Count = 0;
+
+        const PetscWeakForm weakFormCohesive = iter->second.cohesive.getWeakForm();
+
+        const PetscWeakForm weakFormNegative = iter->second.negative.getWeakForm();
+        PetscHashFormKey keyNegative = iter->second.negative.petscKey(solution);
+        err = PetscWeakFormGetBdResidual(weakFormNegative, keyNegative.label, keyNegative.value, keyNegative.field, &f0Count, &f0, &f1Count, &f1);PYLITH_CHECK_ERROR(err);
+        err = PetscWeakFormSetBdResidual(weakFormCohesive, keyNegative.label, keyNegative.value, keyNegative.field, f0Count, f0, f1Count, f1);PYLITH_CHECK_ERROR(err);
+
+        const PetscWeakForm weakFormPositive = iter->second.positive.getWeakForm();
+        PetscHashFormKey keyPositive = iter->second.positive.petscKey(solution);
+        err = PetscWeakFormGetBdResidual(weakFormPositive, keyPositive.label, keyPositive.value, keyPositive.field, &f0Count, &f0, &f1Count, &f1);PYLITH_CHECK_ERROR(err);
+        err = PetscWeakFormSetBdResidual(weakFormCohesive, keyPositive.label, keyPositive.value, keyPositive.field, f0Count, f0, f1Count, f1);PYLITH_CHECK_ERROR(err);
+    } // for
+} // transferWeakForms
 
 
 // End of file

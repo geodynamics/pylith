@@ -32,16 +32,11 @@
 #include "pylith/utils/arrayfwd.hh" // HASA std::vector
 
 class pylith::feassemble::IntegratorInterface : public pylith::feassemble::Integrator {
+    friend class _IntegratorInterface; // private utility class
     friend class TestIntegratorInterface; // unit testing
 
     // PUBLIC STRUCTS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
-
-    struct WeakFormKeys {
-        FEKernelKey cohesive;
-        FEKernelKey negative;
-        FEKernelKey positive;
-    }; // WeakFormKeys
 
     /// Kernels (point-wise functions) for residual.
     struct ResidualKernels {
@@ -130,13 +125,11 @@ public:
      */
     const pylith::topology::Mesh& getPhysicsDomainMesh(void) const;
 
-    /** Set weak form keys for integration patch.
+    /** Set integration patches.
      *
-     * @param[in] labelValue Value of label for integration patch.
-     * @param[in] keys Keys for finite-element integration of weak form.
+     * @param[in] patches Interface integration patches.
      */
-    void setPatchWeakFormKeys(const int labelValue,
-                              const WeakFormKeys& keys);
+    void setIntegrationPatches(pylith::feassemble::InterfacePatches* patches);
 
     /** Set kernels for RHS residual.
      *
@@ -231,13 +224,12 @@ private:
 
     std::vector<ResidualKernels> _kernelsRHSResidual; ///< kernels for RHS residual.
     std::vector<ResidualKernels> _kernelsLHSResidual; ///< kernels for LHS residual.
-
     std::vector<JacobianKernels> _kernelsLHSJacobian; /// > kernels for LHS Jacobian.
 
     pylith::topology::Mesh* _interfaceMesh; ///< Boundary mesh.
     std::string _interfaceSurfaceLabel; ///< Name of label identifying interface surface.
 
-    std::map<int, WeakFormKeys> _patchesWeakFormKeys; ///< Map patch label value to weak form integation keys.
+    pylith::feassemble::InterfacePatches* _integrationPatches; ///< Integration patches.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

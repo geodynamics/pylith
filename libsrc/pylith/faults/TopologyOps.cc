@@ -426,20 +426,14 @@ pylith::faults::TopologyOps::getAdjacentCells(PylithInt* adjacentCellNegative,
         err = DMPlexGetSupport(dmMesh, cone[iCone], &support);PYLITH_CHECK_ERROR(err);
         err = DMPlexGetSupportSize(dmMesh, cone[iCone], &supportSize);PYLITH_CHECK_ERROR(err);
         if (2 != supportSize) {
-            pythia::journal::firewall_t firewall("pylith::faults::ToplogyOps");
-            firewall << pythia::journal::at(__HERE__)
-                     << "Inconsistent topology. Expected support of size 2 for cohesive cell "
-                     <<cohesiveCell<<". Support has size "<<supportSize<<"."
-                     << pythia::journal::endl;
+            PYLITH_JOURNAL_LOGICERROR("Inconsistent topology. Expected support of size 2 for cohesive cell "
+                                      <<cohesiveCell<<". Support has size "<<supportSize<<".");
         } // if
         assert(2 == supportSize);
-        if ((cohesiveCell != support[0]) || (cohesiveCell != support[1]) ) {
-            pythia::journal::firewall_t firewall("pylith::faults::ToplogyOps");
-            firewall << pythia::journal::at(__HERE__)
-                     << "Inconsistent topology. Cohesive cell "
-                     <<cohesiveCell<<" not in support of its own cone. "
-                     <<"Support: "<<support[0]<< ", "<<support[1]<<"."
-                     << pythia::journal::endl;
+        if ((cohesiveCell != support[0]) && (cohesiveCell != support[1]) ) {
+            PYLITH_JOURNAL_LOGICERROR("Inconsistent topology. Cohesive cell "
+                                      <<cohesiveCell<<" not in support of its own cone. "
+                                      <<"Support: "<<support[0]<< ", "<<support[1]<<".");
         } // if
         adjacentCells[iCone] = (support[0] == cohesiveCell) ? support[1] : support[0];
     } // for

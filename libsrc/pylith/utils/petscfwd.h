@@ -73,6 +73,9 @@ typedef struct _p_PetscDS* PetscDS;
 /// forward declaration for PETSc FE
 typedef struct _p_PetscFE* PetscFE;
 
+/// forward declaration for PETSc weak form
+typedef struct _p_PetscWeakForm* PetscWeakForm;
+
 #endif // pylith_utils_petscfwd_h
 
 // End of file

@@ -23,7 +23,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 inline
 pylith::feassemble::FEKernelKey::FEKernelKey(void) :
@@ -32,21 +32,32 @@ pylith::feassemble::FEKernelKey::FEKernelKey(void) :
     _value(-1) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default destructor.
 inline
 pylith::feassemble::FEKernelKey::~FEKernelKey(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+// Get PETSc weak form.
+inline
+const PetscWeakForm
+pylith::feassemble::FEKernelKey::getWeakForm(void) const {
+    return _weakForm;
+} // getWeakForm
+
+
+// ------------------------------------------------------------------------------------------------
 // Factory for creating FEKernelKeyGet starting point.
 inline
 pylith::feassemble::FEKernelKey*
-pylith::feassemble::FEKernelKey::create(const char* name,
+pylith::feassemble::FEKernelKey::create(PetscWeakForm weakForm,
+                                        const char* name,
                                         const int value,
                                         const char* field) {
     FEKernelKey* key = new FEKernelKey();assert(key);
     if (key) {
+        key->_weakForm = weakForm;
         key->_name = name ? name : "";
         key->_value = value;
         key->_field = field ? field : "";
@@ -55,7 +66,7 @@ pylith::feassemble::FEKernelKey::create(const char* name,
 } // create
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get PETSc weak form key.
 inline
 PetscHashFormKey

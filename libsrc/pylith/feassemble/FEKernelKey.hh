@@ -31,6 +31,7 @@
 
 class pylith::feassemble::FEKernelKey {
     friend class TestFEKernelKey; // unit testing
+    friend class TestInterfacePatches; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
@@ -43,16 +44,24 @@ public:
 
     /** Factory for creating FEKernelKeyGet starting point.
      *
+     * @param[in] weakForm PETSc weak form object.
      * @param[in] name Name of label designating integration domain.
      * @param[in] value Value of label designating integration domain.
      * @param[in] field Name of solution subfield associated with integration kernels.
      *
-     * @return Index of starting point.
+     * @return Key for finite-element integration.
      */
     static
-    FEKernelKey* create(const char* name,
+    FEKernelKey* create(PetscWeakForm weakForm,
+                        const char* name,
                         const int value,
                         const char* field="");
+
+    /** Get PETSc weak form.
+     *
+     * @returns PETSc weak form object.
+     */
+    const PetscWeakForm getWeakForm(void) const;
 
     /** Get PETSc weak form key.
      *
@@ -65,6 +74,7 @@ public:
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
+    PetscWeakForm _weakForm; ///< PETSc weak form object associated with integration key.
     std::string _name; ///< Name of label designating integration domain.
     std::string _field; ///< Name of solution subfield associated with integration kernels.
     int _value; ///< Value of label designating integration domain.
