@@ -52,6 +52,7 @@ U = [u1, u2, u3]
 defGrad = sympy.derive_by_array(U, X)
 defGradTranspose = defGrad.transpose()
 strain = ((defGrad + defGradTranspose)/two).tomatrix()
+strainTensor = (defGrad + defGradTranspose)/two
 
 # Define volumetric strain and deviatoric strain.
 volStrain = sympy.tensorcontraction(strain, (0, 1))
