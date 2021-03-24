@@ -96,6 +96,18 @@ public:
                                                                    const bool _useSourceDensity) const;
 
    // ---------------------------------------------------------------------------------------------------------------------
+   /** Get pressure kernel for RHS residual, G(t,s).
+   *
+   * @param[in] coordsys Coordinate system.
+   *
+   * @return RHS residual kernel for Darcy velocity.
+   */
+   PetscPointFunc getKernelg1p_explicit(const spatialdata::geocoords::CoordSys* coordsys,
+                                          const bool _gravityField) const;
+
+   // ============================= LHS ==================================== //
+
+   // ---------------------------------------------------------------------------------------------------------------------
    // Get variation in fluid content kernel for LHS residual, F(t,s,\dot{s})
    PetscPointFunc getKernelf0p_explicit(const spatialdata::geocoords::CoordSys* coordsys) const;
 
@@ -106,6 +118,16 @@ public:
                                                                   const bool _useBodyForce,
                                                                   const bool _gravityField,
                                                                   const bool _useSourceDensity) const;
+
+  // ---------------------------------------------------------------------------------------------------------------------
+  /** Get pressure kernel for LHS residual.
+  *
+  * @param[in] coordsys Coordinate system.
+  *
+  * @return RHS residual kernel for Darcy velocity.
+  */
+  PetscPointFunc getKernelf1p_implicit(const spatialdata::geocoords::CoordSys* coordsys,
+                                         const bool _gravityField) const;
 
   // ---------------------------------------------------------------------------------------------------------------------
   // Get poroelastic constants kernel for LHS Jacobian

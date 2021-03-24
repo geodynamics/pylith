@@ -336,7 +336,7 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
 
         // Pressure
         const PetscPointFunc g0p = _rheology->getKernelg0p(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
-        const PetscPointFunc g1p = _rheology->getKernelDarcy(coordsys, _gravityField,_useInertia);     // darcy velocity
+        const PetscPointFunc g1p = _rheology->getKernelg1p_explicit(coordsys, _gravityField);    // darcy velocity
 
         // Velocity
         PetscPointFunc g0v = NULL;
@@ -440,7 +440,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
 
         // Pressure
         PetscPointFunc f0p = _rheology->getKernelf0p_implicit(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
-        PetscPointFunc f1p = _rheology->getKernelDarcy(coordsys, _gravityField, _useInertia);     // darcy velocity
+        PetscPointFunc f1p = _rheology->getKernelf1p_implicit(coordsys, _gravityField);     // darcy velocity
 
         // Volumetric Strain
         const PetscPointFunc f0e = pylith::fekernels::Poroelasticity::f0e;

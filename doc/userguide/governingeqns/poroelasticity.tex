@@ -215,11 +215,11 @@ J_F^{pu} &= \frac{\partial F^p}{\partial u} + t_{shift} \frac{\partial F^p}{\par
 % JF_PP
 % Jf0pp
 J_F^{pp} &= \frac{\partial F^p}{\partial p} + t_{shift} \frac{\partial F^p}{\partial \dot{p}} =
-\int_{\Omega} \nabla \trialscalar[p] \cdot \frac{\partial}{\partial p} \left[-\frac{\tensor{k}}{\mu_{f}} \left(\nabla p - \vec{f} \right) \right] \ d\Omega  +
+\int_{\Omega} \nabla \trialscalar[p] \cdot \frac{\partial}{\partial p} -\left[-\frac{\tensor{k}}{\mu_{f}} \left(\nabla p - \vec{f} \right) \right] \ d\Omega  +
 t_{shift}\int_{\Omega} \trialscalar[p] \frac{\partial}{\partial \dot{p}} \left[\alpha\dot{\epsilon}_{v} + \frac{\dot{p}}{M} - \gamma\left(\vec{x},t\right)\right] \ d\Omega \\
-&= \int_{\Omega} \nabla \psi_{trial}^ p \left(-\frac{\tensor{k}}{\mu_{f}} \nabla \cdot \psi_{basis}^p \right) \ d\Omega +
+&= \int_{\Omega} \nabla \psi_{trial}^ p \left(\frac{\tensor{k}}{\mu_{f}} \nabla \cdot \psi_{basis}^p \right) \ d\Omega +
  \int_{\Omega} \trialscalar[p] \left(t_{shift} \frac{1}{M}\right) \basisscalar[p] \ d\Omega \\
-&= \int_{\Omega} \psi_{trial,k}^p \eqnannotate{\left(-\frac{\tensor{k}}{\mu_{f}} \delta_{kl}\right)}{J_{f3}^{pp}} \psi_{basis,l}^p \ d\Omega +
+&= \int_{\Omega} \psi_{trial,k}^p \eqnannotate{\left(\frac{\tensor{k}}{\mu_{f}} \delta_{kl}\right)}{J_{f3}^{pp}} \psi_{basis,l}^p \ d\Omega +
 \int_{\Omega} \trialscalar[p] \eqnannotate{\left(t_{shift} \frac{1}{M}\right)}{J_{f0}^{pp}} \basisscalar[p] \ d\Omega \\
 %
 % JF_PE

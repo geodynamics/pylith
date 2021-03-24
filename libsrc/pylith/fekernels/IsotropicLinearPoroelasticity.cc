@@ -1178,7 +1178,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1p_tensor_permeabi
      const PylithScalar fluidViscosity = a[aOff[i_fluidViscosity]];
 
      for (PylithInt d = 0; d < _dim; ++d) {
-       Jf3[d*_dim+d] -= isotropicPermeablity/fluidViscosity;
+       Jf3[d*_dim+d] += isotropicPermeablity/fluidViscosity;
      }
  } // Jf3pp
 
@@ -1225,7 +1225,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1p_tensor_permeabi
 
      for (PylithInt i = 0; i < _dim; ++i) {
          for (PylithInt j = 0; j < _dim; j++) {
-             Jf3[i*_dim+j] -= tensorPerm[i*_dim+j]/fluidViscosity;
+             Jf3[i*_dim+j] += tensorPerm[i*_dim+j]/fluidViscosity;
          } // for
      } // for
  } // Jf3pp_tensorPerm
@@ -3351,7 +3351,7 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf3pp(const PylithInt dim,
     const PylithScalar fluidViscosity = a[aOff[i_fluidViscosity]];
 
     for (PylithInt d = 0; d < _dim; ++d) {
-      Jf3[d*_dim+d] -= isotropicPermeablity/fluidViscosity;
+      Jf3[d*_dim+d] += isotropicPermeablity/fluidViscosity;
     }
 } // Jf3pp
 
@@ -3398,7 +3398,7 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf3pp_tensor_permeability(co
 
     for (PylithInt i = 0; i < _dim; ++i) {
         for (PylithInt j = 0; j < _dim; j++) {
-            Jf3[i*_dim+j] -= tensorPerm[i*_dim+j]/fluidViscosity;
+            Jf3[i*_dim+j] += tensorPerm[i*_dim+j]/fluidViscosity;
         } // for
     } // for
 } // Jf3pp_tensorPerm

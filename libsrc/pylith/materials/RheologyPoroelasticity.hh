@@ -88,6 +88,19 @@ public:
                                                                      const bool _useSourceDensity) const = 0;
 
      // ---------------------------------------------------------------------------------------------------------------------
+     /** Get pressure kernel for RHS residual, G(t,s).
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return RHS residual kernel for Darcy velocity.
+     */
+     virtual
+     PetscPointFunc getKernelg1p_explicit(const spatialdata::geocoords::CoordSys* coordsys,
+                                            const bool _gravityField) const = 0;
+
+     // =============================== LHS =================================== //
+
+     // ---------------------------------------------------------------------------------------------------------------------
      // Get variation in fluid content kernel for LHS residual, F(t,s,\dot{s})
      virtual
      PetscPointFunc getKernelf0p_explicit(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
@@ -100,6 +113,17 @@ public:
                                                                     const bool _useBodyForce,
                                                                     const bool _gravityField,
                                                                     const bool _useSourceDensity) const = 0;
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    /** Get pressure kernel for LHS residual.
+    *
+    * @param[in] coordsys Coordinate system.
+    *
+    * @return LHS residual kernel for Darcy velocity.
+    */
+    virtual
+    PetscPointFunc getKernelf1p_implicit(const spatialdata::geocoords::CoordSys* coordsys,
+                                           const bool _gravityField) const = 0;
 
     // ---------------------------------------------------------------------------------------------------------------------
     // Get poroelastic constants kernel for LHS Jacobian
