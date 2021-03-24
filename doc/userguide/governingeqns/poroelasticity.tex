@@ -167,100 +167,83 @@ d\Omega + \int_{\Gamma_\tau} \trialvec[u] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma
 Identifying $F(t,s,\dot{s})$ and $G(t,s)$we have
 \begin{align}
     % Displacement
-  F^u(t,s,\dot{s}) &= \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{g^u_0}
-                     + \nabla \trialvec[u] : \eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{g^u_1} \, d\Omega
-                     + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{g^u_0} \, d\Gamma, \\
+  F^u(t,s,\dot{s}) &= \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{\vec{f}^u_0}
+                     + \nabla \trialvec[u] : \eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{\tensor{f}^u_1} \, d\Omega
+                     + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{\vec{f}^u_0} \, d\Gamma, \\
 % Pressure
-  F^p(t,s,\dot{s}) &= \int_\Omega  \trialscalar[p] \eqnannotate{\frac{\partial \zeta(\vec{u},p_f)}{\partial t} - \gamma(\vec{x},t)} {f^p_0} \, d\Omega
-                     + \nabla \trialscalar[p] \cdot \eqnannotate{-\vec{q}(p_f)}{f^p_1} \, d\Omega
+  F^p(t,s,\dot{s}) &= \int_\Omega  \trialscalar[p] \left[\eqnannotate{\frac{\partial \zeta(\vec{u},p_f)}{\partial t} - \gamma(\vec{x},t)} {f^p_0}\right]
+                     + \nabla \trialscalar[p] \cdot \eqnannotate{-\vec{q}(p_f)}{\vec{f}^p_1} \, d\Omega
                      + \int_{\Gamma_q} \trialscalar[p] (\eqnannotate{q_0(\vec{x},t)}{f^p_0}) \, d\Gamma, \\
  % Volumetric Strain
-  F^{\epsilon_{v}}(t,s,\dot{s}) &= \trialscalar[\epsilon_{v}] \cdot \eqnannotate{\left(\nabla \cdot \vec{u} - \epsilon_{v} \right)}{f^{\epsilon_{v}}_{0}} \, d\Omega. \\
+  F^{\epsilon_{v}}(t,s,\dot{s}) &= \int_{\Omega} \trialscalar[\epsilon_{v}] \cdot \eqnannotate{\left(\nabla \cdot \vec{u} - \epsilon_{v} \right)}{f^{\epsilon_{v}}_{0}} \, d\Omega. \\
   G^u(t,s) &= 0, \\
              G^p(t,s) &= 0, \\
- G^{\epsilon_v} &= 0. 
+ G^{\epsilon_v} &= 0.
 \end{align}
 
 \subsubsection{Jacobian Pointwise Functions}
 
-The LHS Jacobians are:
+Three field results in a potential nine Jacobian pointwise functions for the LHS:
 
 \begin{align}
-    %
-J_F^{uu} &= \frac{\partial F^u}{\partial u} + t_{shift} \frac{\partial F^u}{\partial \dot{u}} = 0 \\
 %
-J_F^{up} &= \frac{\partial F^u}{\partial p} + t_{shift} \frac{\partial F^u}{\partial \dot{p}} = 0 \\
+% JF_UU
+% Jf3uu
+J_F^{uu} &= \frac{\partial F^u}{\partial u} + t_{shift} \frac{\partial F^u}{\partial \dot{u}} = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial u} (- \sigma(\vec{u},p,\epsilon_{v})) \
+d\Omega = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial u} (-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega \\
+&= \int_{\Omega} \nabla \trialvec[u] : -\tensor{C}: \frac{1}{2} (\nabla + \nabla^T) \basisvec[u] \ d\Omega = \int_{\Omega} \trialscalar[u]_{i,k}
+\eqnannotate{\left(-C_{ikjl}\right)}{J_{f3}^{uu}} \basisscalar[u]_{j,l} \ d\Omega \\
 %
-J_F^{u \epsilon_{v}} &= \frac{\partial F^u}{\partial \epsilon_{v}} + t_{shift} \frac{\partial F^u}{\partial \dot{\epsilon_{v}}} = 0 \\
+% JF_UP
+% Jf2up
+J_F^{up} &= \frac{\partial F^u}{\partial p} + t_{shift} \frac{\partial F^u}{\partial \dot{p}} = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial p}(-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega =
+\int_{\Omega} \trialscalar[u]_{i,j} \eqnannotate{\left(\alpha \delta_{ij}\right)}{J_{f2}^{up}} \basisscalar[p] \ d\Omega \\
+%
+% JF_UE
+% Jf2ue
+J_F^{u \epsilon_{v}} &= \frac{\partial F^u}{\partial \epsilon_{v}} + t_{shift} \frac{\partial F^u}{\partial \dot{\epsilon_{v}}} = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial \epsilon_{v}}
+(-\sigma(\vec{u},p,\epsilon_{v})) \ d\Omega = \int_{\Omega} \nabla \trialvec[u] :
+\frac{\partial}{\partial \epsilon_{v}} (-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega \\
+&= \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial \epsilon_{v}} \
+\left[-\left(2 \mu \tensor{\epsilon} + \lambda \tensor{I} \epsilon_{v} - \alpha \tensor{I} p \right) \right] d\Omega =
+\int_{\Omega} \trialscalar[u]_{i,j} \eqnannotate{\left(-\lambda \delta_{ij} \right)}{J_{f2}^{u \epsilon_{v}}} \basisscalar[\epsilon_{v}] d\Omega  \\
+%
+% JF_PU
 %
 J_F^{pu} &= \frac{\partial F^p}{\partial u} + t_{shift} \frac{\partial F^p}{\partial \dot{u}} = 0 \\
+%
+% JF_PP
 % Jf0pp
-J_F^{pp} &= \frac{\partial F^p}{\partial p} + t_{shift} \frac{\partial F^p}{\partial \dot{p}} = \int_{\Omega} \trialscalar[p]
-\eqnannotate{\left(t_{shift} \frac{1}{M}\right)}{J_{f0}^{pp}} \basisscalar[p] \ d\Omega \\
+J_F^{pp} &= \frac{\partial F^p}{\partial p} + t_{shift} \frac{\partial F^p}{\partial \dot{p}} =
+\int_{\Omega} \nabla \trialscalar[p] \cdot \frac{\partial}{\partial p} \left[-\frac{\tensor{k}}{\mu_{f}} \left(\nabla p - \vec{f} \right) \right] \ d\Omega  +
+t_{shift}\int_{\Omega} \trialscalar[p] \frac{\partial}{\partial \dot{p}} \left[\alpha\dot{\epsilon}_{v} + \frac{\dot{p}}{M} - \gamma\left(\vec{x},t\right)\right] \ d\Omega \\
+&= \int_{\Omega} \nabla \psi_{trial}^ p \left(-\frac{\tensor{k}}{\mu_{f}} \nabla \cdot \psi_{basis}^p \right) \ d\Omega +
+ \int_{\Omega} \trialscalar[p] \left(t_{shift} \frac{1}{M}\right) \basisscalar[p] \ d\Omega \\
+&= \int_{\Omega} \psi_{trial,k}^p \eqnannotate{\left(-\frac{\tensor{k}}{\mu_{f}} \delta_{kl}\right)}{J_{f3}^{pp}} \psi_{basis,l}^p \ d\Omega +
+\int_{\Omega} \trialscalar[p] \eqnannotate{\left(t_{shift} \frac{1}{M}\right)}{J_{f0}^{pp}} \basisscalar[p] \ d\Omega \\
+%
+% JF_PE
 % Jf0pe
 J_F^{p\epsilon_{v}} &= \frac{\partial F^p}{\partial \epsilon_{v}} + t_{shift} \frac{\partial
 F^p}{\partial \dot{\epsilon_{v}}} = \int_{\Omega} \trialscalar[p] \eqnannotate{\left(t_{shift} \alpha \right)}{J_{f0}^{p\epsilon_{v}}}
 \basisscalar[\epsilon_{v}] \ d\Omega \\
 %
-J_F^{\epsilon_{v}u} &= \frac{\partial F^{\epsilon_{v}}}{\partial u} + t_{shift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{u}} = 0 \\
+% JF_EU
+% Jf1eu
+J_F^{\epsilon_{v}u} &= \frac{\partial F^{\epsilon_{v}}}{\partial u} + t_{shift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{u}} =
+\int_{\Omega} \psi_{trial}^{\epsilon_{v}} \nabla \cdot \vec{\psi}_{basis}^u \ d\Omega = \int_{\Omega}
+\basisscalar[\epsilon_{v}] \eqnannotate{\left(\delta_{ij}\right)}{J_{f1}^{\epsilon_{v}u}}
+\basisscalar[u]_{i,j} \ d\Omega\\
+%
+% JF_EP
 %
 J_F^{\epsilon_{v}p} &= \frac{\partial F^{\epsilon_{v}}}{\partial p} + t_{shift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{p}} = 0 \\
 %
-J_F^{\epsilon_{v}\epsilon_{v}} &= \frac{\partial F^\epsilon_{v}}{\epsilon_{v}} + t_{shift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{\epsilon_{v}}} = 0
+% JF_EE
+%
+J_F^{\epsilon_{v}\epsilon_{v}} &= \frac{\partial F^\epsilon_{v}}{\epsilon_{v}} + t_{shift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{\epsilon_{v}}} =
+\int_{\Omega} \basisscalar[\epsilon_{v}] \eqnannotate{\left(-1\right)}{J_{f0}^{\epsilon_{v}\epsilon_{v}}} \basisscalar[\epsilon_{v}] \ d\Omega
 \end{align}
-
-The RHS Jacobians are:
-
-\begin{align}
-%% Jg3uu
-J_G^{uu} &= \frac{\partial G^u}{\partial u} = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial u} (- \sigma(\vec{u},p,\epsilon_{v})) \
-d\Omega = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial u} (-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega \\
-&= \int_{\Omega} \nabla \trialvec[u] : -\tensor{C}: \frac{1}{2} (\nabla + \nabla^T) \basisvec[u] \ d\Omega = \int_{\Omega} \trialscalar[u]_{i,k}
-\eqnannotate{\left(-C_{ikjl}\right)}{J_{g3}^{uu}} \basisscalar[u]_{j,l} \ d\Omega
-\\
-%
-%% Jg2up
-J_G^{up} &= \frac{\partial G^u}{\partial p} = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial p}(-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega =
-\int_{\Omega} \trialscalar[u]_{i,j} \eqnannotate{\left(\alpha \delta_{ij}\right)}{J_{g2}^{up}} \basisscalar[p] \ d\Omega \\
-%
-%% Jg2ue
-J_G^{u\epsilon_{v}} &= \frac{\partial G^u}{\partial \epsilon_{v}} = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial \epsilon_{v}}
-(-\sigma(\vec{u},p,\epsilon_{v})) \ d\Omega = \int_{\Omega} \nabla \trialvec[u] :
-\frac{\partial}{\partial \epsilon_{v}} (-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega \\
-&= \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial \epsilon_{v}} \
-\left[-\left(2 \mu \tensor{\epsilon} + \lambda \tensor{I} \epsilon_{v} - \alpha \tensor{I} p \right) \right] d\Omega =
-\int_{\Omega} \trialscalar[u]_{i,j} \eqnannotate{\left(-\lambda \delta_{ij} \right)}{J_{g2}^{u \epsilon_{v}}} \basisscalar[\epsilon_{v}] d\Omega  \\
-%
-J_G^{pu} &= \frac{\partial G^p}{\partial u} = 0 \\
-%
-%% Jg3pp
-J_G^{pp} &= \frac{\partial G^p}{\partial p} = \int_{\Omega} \nabla
-\trialscalar[p] \cdot \frac{\partial}{\partial p} \left[-\frac{\tensor{k}}{\mu_{f}} \left(\nabla p -
-\vec{f} \right) \right] \ d\Omega \\
-&= \int_{\Omega} \nabla \psi_{trial}^ p \left(-\frac{\tensor{k}}{\mu_{f}}
-\nabla \cdot \psi_{basis}^p \right) \ d\Omega \\
-&= \int_{\Omega} \psi_{trial,k}^p \eqnannotate{\left(-\frac{\tensor{k}}{\mu_{f}}
-\delta_{kl}\right)}{J_{g3}^{pp}}
-\psi_{basis,l}^p \ d\Omega \\
-%
-J_G^{p\epsilon_{v}} &= \frac{\partial G^p}{\partial \epsilon_{v}} = 0 \\
-% Jg1eu
-J_G^{\epsilon_{v}u} &= \frac{\partial G^{\epsilon_{v}}}{\partial u} =
-\int_{\Omega} \psi_{trial}^{\epsilon_{v}} \nabla \cdot \vec{\psi}_{basis}^u \ d\Omega = \int_{\Omega}
-\psi_{trial}^{\epsilon_{v}}
-\eqnannotate{\left(\delta_{ij}\right)}{J_{g1}^{\epsilon_{v}u}}
-\psi_{basis
-i,j}^u \
-d\Omega\\
-%
-J_G^{\epsilon_{v}p} &= \frac{\partial G^{\epsilon_{v}}}{\partial p} = 0 \\
-% Jg0ee
-J_G^{\epsilon_{v} \epsilon_{v}} &= \frac{\partial G^{\epsilon_{v}}}{\partial
-\epsilon_{v}} = \int_{\Omega} \psi_{trial}^{\epsilon_{v}}
-\eqnannotate{\left(-1\right)}{J_{g0}^{\epsilon_{v}\epsilon_{v}}}
-\psi_{basis}^{\epsilon_{v}} \ d\Omega
-\end{align} \\
-
 
 \subsection{Dynamic}
 
@@ -275,7 +258,7 @@ different three field problem,
 % Displacement
 \frac{\partial \vec{u}}{\partial t} = \vec{v} \text{ in } \Omega \\
 % Pressure
-\zeta(\vec{u},p) = \gamma(\vec{x},t) + \nabla \cdot \vec{q}(p) \text{ in } \Omega \\
+\frac{\partial \zeta(\vec{u},p)}{\partial t } - \gamma(\vec{x},t) + \nabla \cdot \vec{q}(p) = 0 \text{ in } \Omega \\
 % Velocity
 \rho_{b} \frac{\partial \vec{v}}{\partial t} = \vec{f}(\vec{x},t) + \nabla \cdot \tensor{\sigma}(\vec{u},p) \text{ in } \Omega \\
 % Neumann traction
@@ -288,7 +271,18 @@ different three field problem,
 p = p_{0}(\vec{x},t) \text{ on } \Gamma_{p}
 \end{gather}
 
-
+In order to fit the fit the explicit time stepping format used, the equation used to resolve the pressure
+unknown, $p$, must be rewritten such that $F = \left(t,s,\dot{s}) = \dot{s}$. This is commenced by
+replacing the variation of fluid content variable, $\zeta$, with its definition in the conservation of fluid mass equation.
+\begin{align}
+    \frac{\partial}{\partial t}\left[\alpha \epsilon_{v} + \frac{p}{M}\right] - \gamma\left(\vec{x},t\right) + \nabla \cdot \vec{q} &= 0 \\
+    \alpha \dot{\epsilon}_{v} + \frac{\dot{p}}{M} - \gamma \left(\vec{x},t\right) + \nabla \cdot \vec{q} &= 0 \\
+    \frac{\dot{p}}{M} &= \gamma \left(\vec{x},t \right) - \alpha \dot{\epsilon}_{v} -\nabla \cdot \vec{q} \\
+    \frac{\dot{p}}{M} &= \gamma \left(\vec{x},t \right) - \alpha \left( \nabla \cdot \dot{\vec{u}} \right) -\nabla \cdot \vec{q}.
+\end{align}
+In the last line of the above transformation, volumetric strain
+was written in terms of displacement, as this dynamic formulation does not explicity solve
+for $\epsilon_{v}$.
 
 Using trial functions $\trialvec[u]$, $\trialscalar[p]$, and $\trialvec[v]$, and incorporating the
 Neumann boundary conditions, the weak form may be written as:
@@ -297,9 +291,9 @@ Neumann boundary conditions, the weak form may be written as:
     % Displacement
     \int_{\Omega} \trialvec[u] \cdot \left( \frac{\partial \vec{u}}{\partial t} \right)d \Omega &= \int_{\Omega} \trialvec[u] \cdot \left( \vec{v} \right) d \Omega \\
     % Pressure
-    \int_{\Omega} \trialscalar[p] \left( \frac{\partial \zeta (\vec{u},p_f)}{\partial t} \right) d\Omega &=
-    \int_{\Omega} \trialscalar[p] \gamma(\vec{x},t) + \nabla \trialscalar[p] \cdot \vec{q}(p_f) \ d\Omega +
-   \int_{\Gamma_q} \trialscalar[p] (-q_0(\vec{x},t)) \ d\Gamma, \\
+    \int_{\Omega} \trialscalar[p] \left( \frac{1}{M}\frac{\partial p}{\partial t} \right) d\Omega &=
+    \int_{\Omega} \trialscalar[p] \left[\gamma(\vec{x},t) - \alpha \left(\nabla \cdot \dot{\vec{u}}\right) \right]  + \nabla \trialscalar[p] \cdot \vec{q}(p) \ d\Omega +
+    \int_{\Gamma_q} \trialscalar[p] (-q_0(\vec{x},t)) \ d\Gamma, \\
    % Velocity
    \int_\Omega \trialvec[v] \cdot \left( \rho_{b} \frac{\partial
    \vec{v}}{\partial t} \right) \,
@@ -308,82 +302,36 @@ Neumann boundary conditions, the weak form may be written as:
    \cdot \vec{\tau}(\vec{x},t) \, d\Gamma.
 \end{align}
 
-\subsubsection{Residual Pointwise Kernels}
 
-Identifying $F(t,s,\dot{s})$ and $G(t,s)$ we have
 
-\begin{alignat}{2}
+\subsubsection{Residual Pointwise Functions}
+
+With explicit time stepping the PETSc TS assumes the LHS is $\dot{s}$ , so we only need the RHS residual functions:
+
+\begin{align}
 % Displacement
-  F^u(t,s,\dot{s}) &= \int_{\Omega} \trialvec[u] \cdot \eqnannotate{\left( \frac{\partial \vec{u}}{\partial t} \right)}{f_{0}^{u}} d \Omega;
-  & \quad
-  G^u(t,s) &= \int_{\Omega} \trialvec[u] \cdot \eqnannotate{\left( \vec{v} \right)}{g_{0}^{u}} d \Omega, \\
+  G^u(t,s) &= \int_{\Omega} \trialvec[u] \cdot \eqnannotate{\left( \vec{v} \right)}{\vec{g}_0^u} d \Omega, \\
 % Pressure
-  F^p(t,s,\dot{s}) &= \int_\Omega  \trialscalar[p] \eqnannotate{\frac{\partial \zeta(\vec{u},p_f)}{\partial t}} {f^p_0} \, d\Omega;
-  & \quad
-  G^p(t,s) &= \int_\Omega \trialscalar[p] \eqnannotate{\gamma(\vec{x},t)}{g^p_0} + \nabla
-\trialscalar[p] \cdot \eqnannotate{\vec{q}(p_f)}{g^p_1} \, d\Omega
+  G^p(t,s) &= \int_\Omega \trialscalar[p] \left[ \eqnannotate{\gamma(\vec{x},t) - \alpha \left(\nabla \cdot \dot{\vec{u}} \right)}{g^p_0} \right] + \nabla \trialscalar[p] \cdot \eqnannotate{\vec{q}(p_f)}{\vec{g}^p_1} \, d\Omega
  + \int_{\Gamma_q} \trialscalar[p] (\eqnannotate{-q_0(\vec{x},t)}{g^p_0}) \, d\Gamma, \\
  % Velocity
-  F^v(t,s,\dot{s}) &= \int_\Omega \trialvec[v] \cdot \eqnannotate{\left( \rho_{b} \frac{\partial \vec{v}}{\partial t} \right)}{f^{v}_{0}} \, d\Omega;
- & \quad
- G^v(t,s) &= \int_\Omega \trialvec[v] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{g^{v}_{0}} + \nabla \trialvec[v] :\eqnannotate{-\tensor{\sigma} (\vec{u},p_f)}{g^{v}_{1}} \, d\Omega + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{g^{v}_{0}} \, d\Gamma.
-\end{alignat}
-
-\subsubsection{Jacobians Pointwise Kernels}
-
-The LHS Jacobians are:
-
-\begin{align}
-% Jf0uu
-J_F^{uu} &= \frac{\partial F^u}{\partial u} + t_{shift} \frac{\partial F^u}{\partial \dot{u}} =
-\int_{\Omega} \trialscalar[u]_{i} \eqnannotate{t_{shift} \delta_{ij}}{J^{uu}_{f0}} \basisscalar[u]_{j} \, d \Omega \\
-%
-J_F^{up} &= \frac{\partial F^u}{\partial p} + t_{shift} \frac{\partial F^u}{\partial \dot{p}} = 0 \\
-%
-J_F^{uv} &= \frac{\partial F^u}{\partial v} + t_{shift} \frac{\partial F^u}{\partial \dot{v}} = 0 \\
-%
-J_F^{pu} &= \frac{\partial F^p}{\partial u} + t_{shift} \frac{\partial F^p}{\partial \dot{u}} = 0 \\
-% Jf0pp
-J_F^{pp} &= \frac{\partial F^p}{\partial p} + t_{shift} \frac{\partial F^p}{\partial \dot{p}} = \int_{\Omega} \trialscalar[p]
-\eqnannotate{\left(t_{shift} \frac{1}{M}\right)}{J_{f0}^{pp}} \basisscalar[p] \ d\Omega \\
-%
-J_F^{pv} &= \frac{\partial F^p}{\partial v} + t_{shift} \frac{\partial F^p}{\partial \dot{v}} = 0 \\
-%
-J_F^{vu} &= \frac{\partial F^v}{\partial u} + t_{shift} \frac{\partial F^v}{\partial \dot{u}} = 0 \\
-%
-J_F^{vp} &= \frac{\partial F^v}{\partial p} + t_{shift} \frac{\partial F^v}{\partial \dot{p}} = 0 \\
-% Jf0vv
-J_F^{vv} &= \frac{\partial F^v}{\partial v} + t_{shift} \frac{\partial F^v}{\partial \dot{v}} =
-\int_{\Omega} \trialscalar[v]_{i}\eqnannotate{\rho_{b}(\vec{x}) t_{shift} \delta_{ij}}{J^{vv}_{f0}} \basisscalar[v]_{j} \ , d \Omega
+ G^v(t,s) &= \int_\Omega \trialvec[v] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{\vec{g}^v_0} + \nabla \trialvec[v] :\eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{\tensor{g}^v_1} \, d\Omega + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{\vec{g}^v_0} \, d\Gamma.
 \end{align}
 
-The RHS Jacobians are:
+\subsubsection{Jacobians Pointwise Functions}
+
+These are the pointwise functions associated with $M_{u}$, $M_{p}$, and $M_{v}$ for computing the lumped LHS Jacobian. We premultiply the
+RHS residual function by the inverse of the lumped LHS Jacobian while s tshift remains on the LHS with $\dot{s}$ . As a result, we use
+LHS Jacobian pointwise functions, but set s tshift = 1 . The LHS Jacobians are:
 
 \begin{align}
-%%
-J_G^{uu} = \frac{\partial G^u}{\partial u} &= 0 \\
-%
-J_G^{up} = \frac{\partial G^u}{\partial p} &= 0 \\
-% Jg0uv
-J_G^{uv} = \frac{\partial G^u}{\partial v} &= \int_{\Omega} \trialscalar[u]_{i} \eqnannotate{\delta_{ij}}{J^{uv}_{g0}} \basisscalar[v]_{j} \, d\Omega \\
-J_G^{pu} = \frac{\partial G^p}{\partial u} &= 0 \\
-% Jg3pp
-J_G^{pp} = \frac{\partial G^p}{\partial p} &= \int_{\Omega} \nabla
-\trialscalar[p] \cdot \frac{\partial}{\partial p} \left[-\frac{\tensor{k}}{\mu_{f}} \left(\nabla p -
-\vec{f} \right) \right] \ d\Omega \\
-&= \int_{\Omega} \nabla \psi_{trial}^ p \left(-\frac{\tensor{k}}{\mu_{f}}
-\nabla \cdot \psi_{basis}^p \right) \ d\Omega \\
-&= \int_{\Omega} \trialscalar[p]_{k} \eqnannotate{\left(-\frac{\tensor{k}}{\mu_{f}}
-\delta_{kl}\right)}{J_{g3}^{pp}}
-\basisscalar[p]_{l} \ d\Omega \\
-%
-J_G^{pv} = \frac{\partial G^p}{\partial v} &= 0 \\
-% Jg3vu
-J_G^{vu} = \frac{\partial G^v}{\partial u} &= \int_{\Omega} \nabla \trialvec[v] : \frac{\partial}{\partial u} \left(- \sigma(\vec{u},p)\right) \, d\Omega
-= \int_{\Omega} \nabla \trialvec[v] : \frac{\partial}{\partial u} \left[ -\left(\tensor{C} : \tensor{\varepsilon} -\alpha p \tensor{I} \right)\right] \ d\Omega \\
-&= \int_{\Omega} \nabla \trialvec[v] : -\tensor{C}: \frac{1}{2} (\nabla + \nabla^T) \basisvec[u] \, d\Omega = \int_{\Omega} \trialscalar[v]_{i,k} \eqnannotate{ \left(-C_{ikjl} \right) }{J_{g3}^{vu} } \basisscalar[u]_{j,l} \, d \Omega \\
-% Jg2vp
-J_G^{vp} = \frac{\partial G^u}{\partial p} &= \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial p}(-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega = \int_{\Omega} \trialscalar[u]_{i,j} \eqnannotate{\left(\alpha \delta_{ij}\right)}{J_{g2}^{up}} \basisscalar[p] \ d\Omega \\
-%
-J_G^{vv} = \frac{\partial G^v}{\partial v} &= 0
+% Displacement
+M_{u} &= J_F^{uu} = \frac{\partial F^u}{\partial u} + s_{tshift} \frac{\partial F^u}{\partial \dot{u}} =
+\int_{\Omega} \trialscalar[u]_{i} \eqnannotate{s_{tshift} \delta_{ij}}{J^{uu}_{f0}} \basisscalar[u]_{j} \, d \Omega \\
+% Pressure
+M_{p} &= J_F^{pp} = \frac{\partial F^p}{\partial p} + t_{shift} \frac{\partial F^p}{\partial \dot{p}} =
+\int_{\Omega} \trialscalar[p] \eqnannotate{\left(s_{tshift} \frac{1}{M}\right)}{J_{f0}^{pp}} \basisscalar[p] \ d\Omega \\
+% Velocity
+M_{v} &= J_F^{vv} = \frac{\partial F^v}{\partial v} + t_{shift} \frac{\partial F^v}{\partial \dot{v}} =
+\int_{\Omega} \trialscalar[v]_{i}\eqnannotate{\rho_{b}(\vec{x}) s_{tshift} \delta_{ij}}{J^{vv}_{f0}} \basisscalar[v]_{j} \  d \Omega
 \end{align}

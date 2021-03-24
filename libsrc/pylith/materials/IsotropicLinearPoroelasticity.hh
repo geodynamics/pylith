@@ -91,7 +91,7 @@ public:
      *
      * @return RHS residual kernel for Darcy velocity.
      */
-    PetscPointFunc getKernelDarcy(const spatialdata::geocoords::CoordSys* coordsys, const bool _gravityField) const;
+    PetscPointFunc getKernelDarcy(const spatialdata::geocoords::CoordSys* coordsys, const bool _gravityField, const bool _useInertia) const;
 
     // ============================= RHS ==================================== //
 

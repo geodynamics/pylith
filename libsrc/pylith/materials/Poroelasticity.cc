@@ -336,7 +336,7 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
 
         // Pressure
         const PetscPointFunc g0p = _rheology->getKernelg0p(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
-        const PetscPointFunc g1p = _rheology->getKernelDarcy(coordsys, _gravityField);     // darcy velocity
+        const PetscPointFunc g1p = _rheology->getKernelDarcy(coordsys, _gravityField,_useInertia);     // darcy velocity
 
         // Velocity
         PetscPointFunc g0v = NULL;
@@ -348,6 +348,8 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
         const int bitUse = bitBodyForce | bitGravity | bitSourceDensity;
 
         switch (bitUse) {
+        case 0x0:
+            break;
         case 0x1:
             g0v = pylith::fekernels::Poroelasticity::g0v_bodyforce;
             break;
@@ -367,8 +369,6 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
             break;
         case 0x7:
             g0v = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
-            break;
-        case 0x0:
             break;
         default:
             PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
@@ -405,14 +405,14 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
 
         // Displacement
         PetscPointFunc f0u = NULL;
-        const PetscPointFunc f1u = _rheology->getKernelResidualStress(coordsys, _useInertia);
-
         const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
         const int bitGravity = _gravityField ? 0x2 : 0x0;
         const int bitSourceDensity = _useSourceDensity ? 0x4 : 0x0;
         const int bitUse = bitBodyForce | bitGravity | bitSourceDensity;
 
         switch (bitUse) {
+        case 0x0:
+            break;
         case 0x1:
             f0u = pylith::fekernels::Poroelasticity::g0v_bodyforce;
             break;
@@ -433,15 +433,14 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
         case 0x7:
             f0u = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
             break;
-        case 0x0:
-            break;
         default:
             PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
         } // switch
+        const PetscPointFunc f1u = _rheology->getKernelResidualStress(coordsys, _useInertia);
 
         // Pressure
         PetscPointFunc f0p = _rheology->getKernelf0p_implicit(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
-        const PetscPointFunc f1p = _rheology->getKernelDarcy(coordsys, _gravityField);     // darcy velocity
+        PetscPointFunc f1p = _rheology->getKernelDarcy(coordsys, _gravityField, _useInertia);     // darcy velocity
 
         // Volumetric Strain
         const PetscPointFunc f0e = pylith::fekernels::Poroelasticity::f0e;
