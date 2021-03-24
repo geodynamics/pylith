@@ -28,7 +28,7 @@ import numpy
 dimension = 3
 numElasticConsts = 36
 tensorSize = 6
-numLocs = 3
+numLocs = 4
 year = 60.0*60.0*24.0*365.25
 debugOutput = True
 debugging = True
@@ -37,29 +37,31 @@ debugging = True
 # axialstrain_powerlaw_n1_norefstate
 # axialstrain_powerlaw_norefstate
 # axialtraction_powerlaw_norefstate
+# shearstrain_powerlaw_norefstate
 
 # Parameter values.
 alpha = 0.5
-dt = numpy.array([0.025, 0.05, 0.1], dtype=numpy.float64)
-density = numpy.array([2500.0, 2500.0, 2500.0], dtype=numpy.float64)
-vs = numpy.array([3464.1016, 3464.1016, 3464.1016], dtype=numpy.float64)
-vp = numpy.array([6000.0, 6000.0, 6000.0], dtype=numpy.float64)
-powerLawReferenceStrainRate = numpy.array([1.0e-6, 1.0e-6, 1.0e-6], dtype=numpy.float64)
-powerLawReferenceStress = numpy.array([5680367950354.795, 1.798919e+10, 1.798919e+10], dtype=numpy.float64)
-powerLawExponent = numpy.array([1.00, 3.50, 3.50], dtype=numpy.float64)
+dt = numpy.array([0.025, 0.05, 0.1, 0.1], dtype=numpy.float64)
+density = numpy.array([2500.0, 2500.0, 2500.0, 2500.0], dtype=numpy.float64)
+vs = numpy.array([3464.1016, 3464.1016, 3464.1016, 3464.1016], dtype=numpy.float64)
+vp = numpy.array([6000.0, 6000.0, 6000.0, 6000.0], dtype=numpy.float64)
+powerLawReferenceStrainRate = numpy.array([1.0e-6, 1.0e-6, 1.0e-6, 1.0e-6], dtype=numpy.float64)
+powerLawReferenceStress = numpy.array([5680367950354.795, 1.798919e+10, 1.798919e+10, 1.798919e+10], dtype=numpy.float64)
+powerLawExponent = numpy.array([1.00, 3.50, 3.50, 3.50], dtype=numpy.float64)
 totalStrain = numpy.array([[0.00, 0.00, 0.00025, 0.00, 0.00, 0.00],
                            [0.00, 0.00, 0.00025, 0.00, 0.00, 0.00],
-                           [0.00, 0.00, -0.0111111, 0.00, 0.00, 0.00]], dtype=numpy.float64)
+                           [0.00, 0.00, -0.0111111, 0.00, 0.00, 0.00],
+                           [0.00, 0.00, 0.00, 0.00, 0.000318649, 0.000238987]], dtype=numpy.float64)
 initialStress = numpy.zeros((numLocs, tensorSize), dtype=numpy.float64)
 initialStrain = numpy.zeros((numLocs, tensorSize), dtype=numpy.float64)
 visStrainT = numpy.zeros((numLocs, tensorSize), dtype=numpy.float64)
 stressT = numpy.zeros((numLocs, tensorSize), dtype=numpy.float64)
 
 # Normalization.
-lengthScale = numpy.array([1000.0, 1000.0, 1000.0], dtype=numpy.float64)
-timeScale = year*numpy.array([1.0, 600000.0, 50.0], dtype=numpy.float64)
-pressureScale = numpy.array([3.0e10, 3.0e10, 3.0e10], dtype=numpy.float64)
-densityScale = numpy.array([2.98765e19, 1.07555e+31, 7.46912e+22], dtype=numpy.float64)
+lengthScale = numpy.array([1000.0, 1000.0, 1000.0, 1000.0], dtype=numpy.float64)
+timeScale = year*numpy.array([1.0, 600000.0, 50.0, 50000.0], dtype=numpy.float64)
+pressureScale = numpy.array([3.0e10, 3.0e10, 3.0e10, 3.0e10], dtype=numpy.float64)
+densityScale = numpy.array([2.98765e19, 1.07555e+31, 7.46912e+22, 7.46912e+28], dtype=numpy.float64)
 
 # Derived parameters.
 strainRateScale = 1.0/timeScale
