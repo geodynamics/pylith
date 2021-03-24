@@ -1491,9 +1491,6 @@ pylith::fekernels::IsotropicPowerLaw3D::f1v(const PylithInt dim,
                      t, x, numConstants, constants, stressTensor);
     IsotropicLinearElasticity3D::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
                                             aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
-    //*********DEBUG*********
-    // stressTensor[1] = 0.0;
-    // stressTensor[3] = 0.0;
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
         f1[i] -= stressTensor[i];
     } // for
@@ -1573,9 +1570,6 @@ pylith::fekernels::IsotropicPowerLaw3D::f1v_refstate(const PylithInt dim,
                               t, x, numConstants, constants, stressTensor);
     IsotropicLinearElasticity3D::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
                                                      aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
-    //*********DEBUG*********
-    // stressTensor[1] = 0.0;
-    // stressTensor[3] = 0.0;
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
         f1[i] -= stressTensor[i];
     } // for
@@ -1656,9 +1650,6 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
     PylithScalar devStressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, devStressTensor);
-    //*********DEBUG*********
-    // devStressTensor[1] = 0.0;
-    // devStressTensor[3] = 0.0;
     const PylithScalar devStressTpdt[6] = {
         devStressTensor[0],
         devStressTensor[4],
@@ -1667,7 +1658,6 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
         devStressTensor[5],
         devStressTensor[2],
     };
-    devStressTensor[0] = 0.0;
 
     const PylithScalar shearModulus = a[aOff[i_shearModulus]];
     const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
@@ -2509,6 +2499,21 @@ pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress_refstate(const PylithIn
     stressTensor[3] += devStressTpdt[3];
     stressTensor[6] += devStressTpdt[5];
     stressTensor[7] += devStressTpdt[4];
+#if 1
+    const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
+    const PylithScalar j2Test = sqrt(0.5*devStressProdTpdt);
+    PylithScalar dtTest = 0.0;
+    if (j2Test <= 0.0) {
+        dtTest = 1.0e30;
+    } else {
+        dtTest = pow((powerLawReferenceStress/j2Test), (powerLawExponent - 1.0)) *
+            (powerLawReferenceStress/shearModulus)/(powerLawReferenceStrainRate * 6.0);
+    } //else
+    std::cout << "Relaxation time:" << dtTest << std::endl;
+    std::cout << "strainTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << strainTpdt[i]; } std::cout << std::endl;
+    std::cout << "devStressT:"; for(int i=0;i<6;++i) {std::cout << " " << devStressT[i]; } std::cout << std::endl;
+    std::cout << "devStressTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << devStressTpdt[i]; } std::cout << std::endl;
+#endif
 
 } // deviatoricStress_refstate
 
