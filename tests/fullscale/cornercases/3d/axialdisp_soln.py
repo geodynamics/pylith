@@ -36,7 +36,7 @@ p_vp = 5291.502622129181
 p_mu = p_density * p_vs**2
 p_lambda = p_density * p_vp**2 - 2 * p_mu
 
-# Uniform stress field (plane strain)
+# Uniform stress field
 sxx = +5.0e+6
 syy = 0.0
 szz = 0.0
