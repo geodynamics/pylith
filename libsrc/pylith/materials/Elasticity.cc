@@ -116,16 +116,17 @@ pylith::materials::Elasticity::verifyConfiguration(const pylith::topology::Field
 
     // Verify solution contains expected fields.
     if (!solution.hasSubfield("displacement")) {
-        throw std::runtime_error("Cannot find 'displacement' field in solution; required for material 'Elasticity'.");
+        throw std::runtime_error("Cannot find 'displacement' field in solution; required for 'Elasticity'.");
     } // if
+
     switch (_formulation) {
     case QUASISTATIC:
         break;
     case DYNAMIC:
     case DYNAMIC_IMEX:
         if (!solution.hasSubfield("velocity")) {
-            throw std::runtime_error("Cannot find 'velocity' field in solution; required for material 'Elasticity' using "
-                                     "'dynamic' or 'dynamic_imex' formulation.");
+            throw std::runtime_error("Cannot find 'velocity' field in solution; required for 'dynamic' and "
+                                     "'dynamic_imex' time stepping formulations of 'Elasticity'.");
         } // if
         break;
     default:
@@ -163,7 +164,6 @@ pylith::materials::Elasticity::createIntegrator(const pylith::topology::Field& s
     } // switch
 
     _setKernelsRHSResidual(integrator, solution);
-    _setKernelsRHSJacobian(integrator, solution);
     _setKernelsLHSResidual(integrator, solution);
     _setKernelsLHSJacobian(integrator, solution);
     _setKernelsUpdateStateVars(integrator, solution);
@@ -287,36 +287,8 @@ pylith::materials::Elasticity::_setKernelsRHSResidual(pylith::feassemble::Integr
     const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
 
     std::vector<ResidualKernels> kernels;
-    PetscPointFunc g0v = NULL;
-
-    const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
-    const int bitGravity = _gravityField ? 0x2 : 0x0;
-    const int bitUse = bitBodyForce | bitGravity;
-
-    switch (bitUse) {
-    case 0x1:
-        g0v = pylith::fekernels::Elasticity::g0v_bodyforce;
-        break;
-    case 0x2:
-        g0v = pylith::fekernels::Elasticity::g0v_grav;
-        break;
-    case 0x3:
-        g0v = pylith::fekernels::Elasticity::g0v_gravbodyforce;
-        break;
-    case 0x0:
-        break;
-    default:
-        PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Elasticity RHS residual kernels.");
-    } // switch
-
     switch (_formulation) {
     case QUASISTATIC: {
-        // Displacement
-        const PetscPointFunc g0u = g0v;
-        const PetscPointFunc g1u = _rheology->getKernelRHSResidualStress(coordsys);
-
-        kernels.resize(1);
-        kernels[0] = ResidualKernels("displacement", g0u, g1u);
         break;
     } // QUASISTATIC
     case DYNAMIC_IMEX:
@@ -326,7 +298,27 @@ pylith::materials::Elasticity::_setKernelsRHSResidual(pylith::feassemble::Integr
         const PetscPointFunc g1u = NULL;
 
         // Velocity
-        const PetscPointFunc g1v = _rheology->getKernelRHSResidualStress(coordsys);
+        PetscPointFunc g0v = NULL;
+        const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
+        const int bitGravity = _gravityField ? 0x2 : 0x0;
+        const int bitUse = bitBodyForce | bitGravity;
+        switch (bitUse) {
+        case 0x1:
+            g0v = pylith::fekernels::Elasticity::g0v_bodyforce;
+            break;
+        case 0x2:
+            g0v = pylith::fekernels::Elasticity::g0v_grav;
+            break;
+        case 0x3:
+            g0v = pylith::fekernels::Elasticity::g0v_gravbodyforce;
+            break;
+        case 0x0:
+            break;
+        default:
+            PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Elasticity RHS residual kernels.");
+        } // switch
+
+        const PetscPointFunc g1v = _rheology->getKernelResidualStress(coordsys);
 
         kernels.resize(2);
         kernels[0] = ResidualKernels("displacement", g0u, g1u);
@@ -345,44 +337,6 @@ pylith::materials::Elasticity::_setKernelsRHSResidual(pylith::feassemble::Integr
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for RHS Jacobian G(t,s).
-void
-pylith::materials::Elasticity::_setKernelsRHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                                                      const topology::Field& solution) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsRHSJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
-
-    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
-
-    std::vector<JacobianKernels> kernels;
-
-    switch (_formulation) {
-    case QUASISTATIC: {
-        const PetscPointJac Jg0uu = NULL;
-        const PetscPointJac Jg1uu = NULL;
-        const PetscPointJac Jg2uu = NULL;
-        const PetscPointJac Jg3uu = _rheology->getKernelRHSJacobianElasticConstants(coordsys);
-        integrator->setRHSJacobianTriggers(_rheology->getRHSJacobianTriggers());
-
-        kernels.resize(1);
-        kernels[0] = JacobianKernels("displacement", "displacement", Jg0uu, Jg1uu, Jg2uu, Jg3uu);
-        break;
-    } // QUASISTATIC
-    case DYNAMIC_IMEX:
-    case DYNAMIC:
-        break;
-    default:
-        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
-    } // switch
-
-    assert(integrator);
-    integrator->setKernelsRHSJacobian(kernels);
-
-    PYLITH_METHOD_END;
-} // _setKernelsRHSJacobian
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for LHS residual F(t,s,\dot{s}).
 void
 pylith::materials::Elasticity::_setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
@@ -390,11 +344,37 @@ pylith::materials::Elasticity::_setKernelsLHSResidual(pylith::feassemble::Integr
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsLHSResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
+    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
+
     std::vector<ResidualKernels> kernels;
 
     switch (_formulation) {
     case QUASISTATIC: {
-        // F(t,s,\dot{s}) = \vec{0}.
+        const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
+        const int bitGravity = _gravityField ? 0x2 : 0x0;
+        const int bitUse = bitBodyForce | bitGravity;
+
+        PetscPointFunc f0u = NULL;
+        switch (bitUse) {
+        case 0x1:
+            f0u = pylith::fekernels::Elasticity::g0v_bodyforce;
+            break;
+        case 0x2:
+            f0u = pylith::fekernels::Elasticity::g0v_grav;
+            break;
+        case 0x3:
+            f0u = pylith::fekernels::Elasticity::g0v_gravbodyforce;
+            break;
+        case 0x0:
+            break;
+        default:
+            PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Elasticity LHS residual kernels.");
+        } // switch
+
+        const PetscPointFunc f1u = _rheology->getKernelResidualStress(coordsys);
+
+        kernels.resize(1);
+        kernels[0] = ResidualKernels("displacement", f0u, f1u);
         break;
     } // QUASISTATIC
     case DYNAMIC_IMEX: {
@@ -446,14 +426,17 @@ pylith::materials::Elasticity::_setKernelsLHSJacobian(pylith::feassemble::Integr
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsLHSJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
+    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
+
     std::vector<JacobianKernels> kernels;
 
     switch (_formulation) {
     case QUASISTATIC: {
-        const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_zero;
+        const PetscPointJac Jf0uu = NULL;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
-        const PetscPointJac Jf3uu = NULL;
+        const PetscPointJac Jf3uu = _rheology->getKernelJacobianElasticConstants(coordsys);
+        integrator->setLHSJacobianTriggers(_rheology->getLHSJacobianTriggers());
 
         kernels.resize(1);
         kernels[0] = JacobianKernels("displacement", "displacement", Jf0uu, Jf1uu, Jf2uu, Jf3uu);

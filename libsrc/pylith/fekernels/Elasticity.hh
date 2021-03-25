@@ -110,7 +110,7 @@ public:
 
     /** g0 function for elasticity equation with gravitational body force.
      *
-     * g0_Elasticity: \vec{g0} = \vec{f}(t)
+     * \vec{g0} = \vec{f}(t)
      *
      * Solution fields: []
      * Auxiliary fields: [density, gravity_field(dim)]
@@ -137,7 +137,7 @@ public:
 
     /** g0 function for elasticity equation with body force.
      *
-     * g0_Elasticity: \vec{g0} = \vec{f}(t)
+     * \vec{g0} = \vec{f}(t)
      *
      * Auxiliary fields: [body_force(dim)]
      */

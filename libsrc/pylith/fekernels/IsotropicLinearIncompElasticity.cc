@@ -29,9 +29,9 @@
 // =====================================================================================================================
 
 // ---------------------------------------------------------------------------------------------------------------------
-// g1 function for isotropic linear incompressible elasticity plane strain WITHOUT reference stress and strain.
+// f0p function for isotropic linear incompressible elasticity plane strain WITHOUT reference stress and strain.
 void
-pylith::fekernels::IsotropicLinearIncompElasticity::g0p(const PylithInt dim,
+pylith::fekernels::IsotropicLinearIncompElasticity::f0p(const PylithInt dim,
                                                         const PylithInt numS,
                                                         const PylithInt numA,
                                                         const PylithInt sOff[],
@@ -48,7 +48,7 @@ pylith::fekernels::IsotropicLinearIncompElasticity::g0p(const PylithInt dim,
                                                         const PylithScalar x[],
                                                         const PylithInt numConstants,
                                                         const PylithScalar constants[],
-                                                        PylithScalar g0[]) {
+                                                        PylithScalar f0[]) {
     // Incoming solution subfields
     const PylithInt i_disp = 0;
     const PylithInt i_pres = 1;
@@ -67,7 +67,7 @@ pylith::fekernels::IsotropicLinearIncompElasticity::g0p(const PylithInt dim,
     assert(aOff);
     assert(aOff[i_bulkModulus] >= 0);
     assert(a);
-    assert(g0);
+    assert(f0);
 
     const PylithScalar* disp_x = &s_x[sOff[i_disp]];
     const PylithScalar pressure = s[sOff[i_pres]];
@@ -78,14 +78,14 @@ pylith::fekernels::IsotropicLinearIncompElasticity::g0p(const PylithInt dim,
     for (PylithInt i = 0; i < dim; ++i) {
         strainTrace += disp_x[i*dim+i];
     } // for
-    g0[0] += strainTrace + pressure / bulkModulus;
-} // g0p
+    f0[0] += strainTrace + pressure / bulkModulus;
+} // f0p
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// g1 function for isotropic linear incompressible elasticity plane strain WITH reference stress and strain.
+// f1 function for isotropic linear incompressible elasticity plane strain WITH reference stress and strain.
 void
-pylith::fekernels::IsotropicLinearIncompElasticity::g0p_refstate(const PylithInt dim,
+pylith::fekernels::IsotropicLinearIncompElasticity::f0p_refstate(const PylithInt dim,
                                                                  const PylithInt numS,
                                                                  const PylithInt numA,
                                                                  const PylithInt sOff[],
@@ -102,7 +102,7 @@ pylith::fekernels::IsotropicLinearIncompElasticity::g0p_refstate(const PylithInt
                                                                  const PylithScalar x[],
                                                                  const PylithInt numConstants,
                                                                  const PylithScalar constants[],
-                                                                 PylithScalar g0[]) {
+                                                                 PylithScalar f0[]) {
     // Incoming solution subfields
     const PylithInt i_disp = 0;
     const PylithInt i_pres = 1;
@@ -125,7 +125,7 @@ pylith::fekernels::IsotropicLinearIncompElasticity::g0p_refstate(const PylithInt
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
     assert(a);
-    assert(g0);
+    assert(f0);
 
     const PylithScalar* disp_x = &s_x[sOff[i_disp]];
     const PylithScalar pressure = s[sOff[i_pres]];
@@ -141,14 +141,14 @@ pylith::fekernels::IsotropicLinearIncompElasticity::g0p_refstate(const PylithInt
     for (PylithInt i = 0; i < dim; ++i) {
         strainTrace += disp_x[i*dim+i];
     } // for
-    g0[0] += (strainTrace - refStrainTrace) + (pressure + meanRefStress) / bulkModulus;
-} // g0p
+    f0[0] += (strainTrace - refStrainTrace) + (pressure + meanRefStress) / bulkModulus;
+} // f0p
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Jg0_pp function for isotropic linear incompressible elasticity.
+// Jf0_pp function for isotropic linear incompressible elasticity.
 void
-pylith::fekernels::IsotropicLinearIncompElasticity::Jg0pp(const PylithInt dim,
+pylith::fekernels::IsotropicLinearIncompElasticity::Jf0pp(const PylithInt dim,
                                                           const PylithInt numS,
                                                           const PylithInt numA,
                                                           const PylithInt sOff[],
@@ -166,7 +166,7 @@ pylith::fekernels::IsotropicLinearIncompElasticity::Jg0pp(const PylithInt dim,
                                                           const PylithScalar x[],
                                                           const PylithInt numConstants,
                                                           const PylithScalar constants[],
-                                                          PylithScalar Jg0[]) {
+                                                          PylithScalar Jf0[]) {
     // Incoming auxiliary subfields
     const PylithInt i_bulkModulus = numA-1;
 
@@ -174,12 +174,12 @@ pylith::fekernels::IsotropicLinearIncompElasticity::Jg0pp(const PylithInt dim,
     assert(aOff);
     assert(aOff[i_bulkModulus] >= 0);
     assert(a);
-    assert(Jg0);
+    assert(Jf0);
 
     const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
 
-    Jg0[0] += 1.0 / bulkModulus;
-} // Jg0pp
+    Jf0[0] += 1.0 / bulkModulus;
+} // Jf0pp
 
 
 // =====================================================================================================================
@@ -187,9 +187,9 @@ pylith::fekernels::IsotropicLinearIncompElasticity::Jg0pp(const PylithInt dim,
 // =====================================================================================================================
 
 // ---------------------------------------------------------------------------------------------------------------------
-// g1 function for isotropic linear incompressible elasticity plane strain WITHOUT reference stress and strain.
+// f1 function for isotropic linear incompressible elasticity plane strain WITHOUT reference stress and strain.
 void
-pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::g1u(const PylithInt dim,
+pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f1u(const PylithInt dim,
                                                                    const PylithInt numS,
                                                                    const PylithInt numA,
                                                                    const PylithInt sOff[],
@@ -206,7 +206,7 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::g1u(const PylithI
                                                                    const PylithScalar x[],
                                                                    const PylithInt numConstants,
                                                                    const PylithScalar constants[],
-                                                                   PylithScalar g1[]) {
+                                                                   PylithScalar f1[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution subfields.
@@ -229,7 +229,7 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::g1u(const PylithI
     assert(aOff);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
-    assert(g1);
+    assert(f1);
 
     const PylithInt numSMean = 2; // Number passed on to mean stress kernel.
     const PylithInt sOffMean[2] = { sOff[i_disp], sOff[i_pres] };
@@ -252,15 +252,15 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::g1u(const PylithI
                                                            aOffDev, NULL, a, a_t, NULL,
                                                            t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        g1[i] -= stressTensor[i];
+        f1[i] -= stressTensor[i];
     } // for
-} // g1u
+} // f1u
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// g1 function for isotropic linear incompressible elasticity plane strain WITH reference stress and strain.
+// f1 function for isotropic linear incompressible elasticity plane strain WITH reference stress and strain.
 void
-pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::g1u_refstate(const PylithInt dim,
+pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f1u_refstate(const PylithInt dim,
                                                                             const PylithInt numS,
                                                                             const PylithInt numA,
                                                                             const PylithInt sOff[],
@@ -277,7 +277,7 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::g1u_refstate(cons
                                                                             const PylithScalar x[],
                                                                             const PylithInt numConstants,
                                                                             const PylithScalar constants[],
-                                                                            PylithScalar g1[]) {
+                                                                            PylithScalar f1[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution subfields.
@@ -304,7 +304,7 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::g1u_refstate(cons
     assert(aOff[i_bulkModulus] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
-    assert(g1);
+    assert(f1);
 
     const PylithInt numSMean = 2; // Number passed on to mean stress kernel.
     const PylithInt sOffMean[2] = { sOff[i_disp], sOff[i_pres] };
@@ -327,15 +327,15 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::g1u_refstate(cons
                                                            aOffDev, NULL, a, a_t, NULL,
                                                            t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        g1[i] -= stressTensor[i];
+        f1[i] -= stressTensor[i];
     } // for
-} // g1u_refstate
+} // f1u_refstate
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Jg3_uu entry function for 2-D plane strain isotropic linear incompressible elasticity.
+// Jf3_uu entry function for 2-D plane strain isotropic linear incompressible elasticity.
 void
-pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::Jg3uu(const PylithInt dim,
+pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::Jf3uu(const PylithInt dim,
                                                                      const PylithInt numS,
                                                                      const PylithInt numA,
                                                                      const PylithInt sOff[],
@@ -353,7 +353,7 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::Jg3uu(const Pylit
                                                                      const PylithScalar x[],
                                                                      const PylithInt numConstants,
                                                                      const PylithScalar constants[],
-                                                                     PylithScalar Jg3[]) {
+                                                                     PylithScalar Jf3[]) {
     const PylithInt _dim = 2;
 
     // Incoming auxiliary fields.
@@ -365,7 +365,7 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::Jg3uu(const Pylit
     assert(aOff);
     assert(aOff[i_shearModulus] >= 0);
     assert(a);
-    assert(Jg3);
+    assert(Jf3);
 
     const PylithScalar shearModulus = a[aOff[i_shearModulus]];
 
@@ -397,15 +397,15 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::Jg3uu(const Pylit
      * 15: j1111 = C2222
      */
 
-    Jg3[ 0] -= C1111; // j0000
-    Jg3[ 3] -= C1212; // j0011
-    Jg3[ 5] -= C1122; // j0101
-    Jg3[ 6] -= C1212; // j0110, C1221
-    Jg3[ 9] -= C1212; // j1001, C2112
-    Jg3[10] -= C1122; // j1010, C2211
-    Jg3[12] -= C1212; // j1100, C2121
-    Jg3[15] -= C2222; // j1111
-} // Jg3uu
+    Jf3[ 0] -= C1111; // j0000
+    Jf3[ 3] -= C1212; // j0011
+    Jf3[ 5] -= C1122; // j0101
+    Jf3[ 6] -= C1212; // j0110, C1221
+    Jf3[ 9] -= C1212; // j1001, C2112
+    Jf3[10] -= C1122; // j1010, C2211
+    Jf3[12] -= C1212; // j1100, C2121
+    Jf3[15] -= C2222; // j1111
+} // Jf3uu
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -668,9 +668,9 @@ pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::meanStress_refsta
 // =====================================================================================================================
 
 // ---------------------------------------------------------------------------------------------------------------------
-// g1 function for 3-D isotropic linear incompressible elasticity WITHOUT reference stress and strain.
+// f1 function for 3-D isotropic linear incompressible elasticity WITHOUT reference stress and strain.
 void
-pylith::fekernels::IsotropicLinearIncompElasticity3D::g1u(const PylithInt dim,
+pylith::fekernels::IsotropicLinearIncompElasticity3D::f1u(const PylithInt dim,
                                                           const PylithInt numS,
                                                           const PylithInt numA,
                                                           const PylithInt sOff[],
@@ -687,7 +687,7 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::g1u(const PylithInt dim,
                                                           const PylithScalar x[],
                                                           const PylithInt numConstants,
                                                           const PylithScalar constants[],
-                                                          PylithScalar g1[]) {
+                                                          PylithScalar f1[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution subfields.
@@ -710,7 +710,7 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::g1u(const PylithInt dim,
     assert(aOff);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
-    assert(g1);
+    assert(f1);
 
     const PylithInt numSMean = 2; // Number passed on to mean stress kernel.
     const PylithInt sOffMean[2] = { sOff[i_disp], sOff[i_pres] };
@@ -733,15 +733,15 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::g1u(const PylithInt dim,
                                                   aOffDev, NULL, a, a_t, NULL,
                                                   t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        g1[i] -= stressTensor[i];
+        f1[i] -= stressTensor[i];
     } // for
-} // g1u
+} // f1u
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// g1 function for 3-D isotropic linear incompressible elasticity WITH reference stress and strain.
+// f1 function for 3-D isotropic linear incompressible elasticity WITH reference stress and strain.
 void
-pylith::fekernels::IsotropicLinearIncompElasticity3D::g1u_refstate(const PylithInt dim,
+pylith::fekernels::IsotropicLinearIncompElasticity3D::f1u_refstate(const PylithInt dim,
                                                                    const PylithInt numS,
                                                                    const PylithInt numA,
                                                                    const PylithInt sOff[],
@@ -758,7 +758,7 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::g1u_refstate(const PylithI
                                                                    const PylithScalar x[],
                                                                    const PylithInt numConstants,
                                                                    const PylithScalar constants[],
-                                                                   PylithScalar g1[]) {
+                                                                   PylithScalar f1[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution subfields.
@@ -785,7 +785,7 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::g1u_refstate(const PylithI
     assert(aOff[i_bulkModulus] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
-    assert(g1);
+    assert(f1);
 
     const PylithInt numSMean = 2; // Number passed on to mean stress kernel.
     const PylithInt sOffMean[2] = { sOff[i_disp], sOff[i_pres] };
@@ -808,15 +808,15 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::g1u_refstate(const PylithI
                                                   aOffDev, NULL, a, a_t, NULL,
                                                   t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        g1[i] -= stressTensor[i];
+        f1[i] -= stressTensor[i];
     } // for
-} // g1u_refstate
+} // f1u_refstate
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Jg3_uu entry function for 3-D isotropic linear incompressible elasticity.
+// Jf3_uu entry function for 3-D isotropic linear incompressible elasticity.
 void
-pylith::fekernels::IsotropicLinearIncompElasticity3D::Jg3uu(const PylithInt dim,
+pylith::fekernels::IsotropicLinearIncompElasticity3D::Jf3uu(const PylithInt dim,
                                                             const PylithInt numS,
                                                             const PylithInt numA,
                                                             const PylithInt sOff[],
@@ -834,7 +834,7 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::Jg3uu(const PylithInt dim,
                                                             const PylithScalar x[],
                                                             const PylithInt numConstants,
                                                             const PylithScalar constants[],
-                                                            PylithScalar Jg3[]) {
+                                                            PylithScalar Jf3[]) {
     const PylithInt _dim = 3;
 
     // Incoming auxiliary fields.
@@ -845,7 +845,7 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::Jg3uu(const PylithInt dim,
     assert(aOff);
     assert(aOff[i_shearModulus] >= 0);
     assert(a);
-    assert(Jg3);
+    assert(Jf3);
 
     const PylithScalar shearModulus = a[aOff[i_shearModulus]];
 
@@ -946,28 +946,28 @@ pylith::fekernels::IsotropicLinearIncompElasticity3D::Jg3uu(const PylithInt dim,
      */
 
     // Nonzero Jacobian entries.
-    Jg3[ 0] -= C1111; // j0000
-    Jg3[ 4] -= C1212; // j0011
-    Jg3[ 8] -= C1313; // j0022
-    Jg3[10] -= C1122; // j0101
-    Jg3[12] -= C1212; // j0110
-    Jg3[20] -= C1133; // j0202
-    Jg3[24] -= C1313; // j0220
-    Jg3[28] -= C1212; // j1001
-    Jg3[30] -= C1122; // j1010
-    Jg3[36] -= C1212; // j1100
-    Jg3[40] -= C2222; // j1111
-    Jg3[44] -= C2323; // j1122
-    Jg3[50] -= C2233; // j1212
-    Jg3[52] -= C2323; // j1221
-    Jg3[56] -= C1313; // j2002
-    Jg3[60] -= C1133; // j2020
-    Jg3[68] -= C2323; // j2112
-    Jg3[70] -= C2233; // j2121
-    Jg3[72] -= C1313; // j2200
-    Jg3[76] -= C2323; // j2211
-    Jg3[80] -= C3333; // j2222
-} // Jg3uu
+    Jf3[ 0] -= C1111; // j0000
+    Jf3[ 4] -= C1212; // j0011
+    Jf3[ 8] -= C1313; // j0022
+    Jf3[10] -= C1122; // j0101
+    Jf3[12] -= C1212; // j0110
+    Jf3[20] -= C1133; // j0202
+    Jf3[24] -= C1313; // j0220
+    Jf3[28] -= C1212; // j1001
+    Jf3[30] -= C1122; // j1010
+    Jf3[36] -= C1212; // j1100
+    Jf3[40] -= C2222; // j1111
+    Jf3[44] -= C2323; // j1122
+    Jf3[50] -= C2233; // j1212
+    Jf3[52] -= C2323; // j1221
+    Jf3[56] -= C1313; // j2002
+    Jf3[60] -= C1133; // j2020
+    Jf3[68] -= C2323; // j2112
+    Jf3[70] -= C2233; // j2121
+    Jf3[72] -= C1313; // j2200
+    Jf3[76] -= C2323; // j2211
+    Jf3[80] -= C3333; // j2222
+} // Jf3uu
 
 
 // ---------------------------------------------------------------------------------------------------------------------

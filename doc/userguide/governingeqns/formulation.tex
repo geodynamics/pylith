@@ -30,17 +30,13 @@ corresponding boundaries.
 For consistency with the PETSc time stepping formulation, we call
 $G(t,s)$ the RHS function and call $F(t,s,\dot{s})$ the LHS (or I)
 function. Likewise, the Jacobian of $G(t,s)$ is the RHS Jacobian and
-the Jacobian of $F(t,s,\dot{s})$ is the LHS Jacobian. In most cases,
-we can take $F(t,s,\dot{s}) = \dot{s}$, or as close to this as
-possible. This results in miminal changes to the formulation in order
-to accommodate both implicit and explicit time stepping algorithms.
-
-Using a finite-element discretization we break up the domain and
-boundary integrals into sums over the cells and boundary faces/edges,
+the Jacobian of $F(t,s,\dot{s})$ is the LHS Jacobian.  Using a
+finite-element discretization we break up the domain and boundary
+integrals into sums over the cells and boundary faces/edges,
 respectively. Using numerical quadrature those sums in turn involve
 sums over the values at the quadrature points with appropriate
-weights. Thus, computation of the RHS function boils down to
-pointwise evaluation of $\vec{g}_0(t,s)$ and $\tensor{g}_1(t,s)$, and
+weights. Thus, computation of the RHS function boils down to pointwise
+evaluation of $\vec{g}_0(t,s)$ and $\tensor{g}_1(t,s)$, and
 computation of the LHS function boils down to pointwise evaluation of
 $\vec{f}_0(t,s,\dot{s})$ and $\tensor{f}_1(t,s,\dot{s})$.
 
@@ -93,22 +89,18 @@ is a matrix of the derivatives of the trial functions.
 
 \subsection{PETSc TS Notes}
 
+\subsubsection{Explicit Time Stepping}
+
+Explicit time stepping with the PETSc TS requires
+$F(t,s,\dot{s}) = \dot{s}$.
 \begin{itemize}
-\item If no LHS (or I) function is given, then the PETSc TS assumes $F(t,s,\dot{s}) = \dot{s}
-$.
-\item If no RHS function is given, then the PETSc TS assumes $G(t,s) = 0$.
-\item Explicit time stepping with the PETSc TS requires
-  $F(t,s,\dot{s}) = \dot{s}$.
-  \begin{itemize}
-  \item Because $F(t,s,\dot{s}) = \dot{s}$, we do not specify the
-    functions $\vec{f}_0(t,s,\dot{s})$ and $\tensor{f}_1(t,s,\dot{s})$
-    because the PETSc TS will assume this is the case if no LHS (or I)
-    function is given.
-  \item We also do not specify $J_F$ or $J_G$.
-  \item This leaves us with only needing to specify $\vec{g}_0(t,s)$
-    and $\tensor{g}_1(t,s)$. 
-  \item The PETSc TS will verify that the LHS (or I) function is null.
-  \end{itemize}
+\item We do not specify the functions $\vec{f}_0(t,s,\dot{s})$ and
+  $\tensor{f}_1(t,s,\dot{s})$ because the PETSc TS will assume
+  $F(t,s,\dot{s}) = \dot{s}$ if no LHS (or I) function is given.
+\item The PETSc TS will verify that the LHS (or I) function is null.
+\item We also do not specify $J_F$ or $J_G$.
+\item This leaves us with only needing to specify $\vec{g}_0(t,s)$
+  and $\tensor{g}_1(t,s)$. 
 \end{itemize}
 
 For explicit time stepping with the PETSc TS, we need
@@ -117,9 +109,28 @@ elastodynamics, $F(t,s,\dot{s})$ generally involves integrals of the
 inertia over the domain. It is tempting to simply move these terms to
 the RHS, but that introduces inertial terms into the boundary
 conditions, which makes them less intuitive. Instead, we transform our
-equation into the form $\dot{s} = G^*(t,s)$ where writing
+equation into the form $\dot{s} = G^*(t,s)$ where
 $G^*(t,s) = M^{-1} G(t,s)$. We take $M$ to be a lumped (diagonal)
 matrix, so that $M^{-1}$ is trivial to compute. In computing the RHS
 function, $G^*(t,s)$, we compute $G(t,s)$, then compute $M$ and
 $M^{-1}$, and then $M^{-1}G(t,s)$. For the elasticity equation with
 inertial terms, $M$ contains the mass matrix.
+
+\subsubsection{Implicit Time Stepping}
+
+The LHS (or I) function is associated with implicit time-stepping.
+When using implicit time-stepping, we place all of the terms on the
+LHS. Even though placing all of the terms on the LHS sometimes
+requires different pointwise functions for implicit and explicit time
+stepping, it minimizes the number of pointwise functions needed for
+implicit time stepping.  If no RHS function is given, then the PETSc
+TS assumes $G(t,s) = 0$, so we only need to specify $F(t,s,\dot{s})$
+and $J_f$.
+
+\subsubsection{Implicit-Explicit Time Stepping}
+
+For implicit-explicit time stepping algorithms, the equations
+integrated with explicit time stepping have $\dot{s}$ as the LHS
+function, and the equations integrated with implicit time stepping
+have 0 as the RHS function.
+

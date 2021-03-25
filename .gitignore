@@ -16,6 +16,8 @@ Makefile.in
 portinfo.in
 aux-config
 PyLith.egg-info
+pylith.egg-info
+record.txt
 autom4te.cache
 *~
 *.pyc
@@ -40,4 +42,3 @@ doc/userguide/userguide.log
 doc/userguide/userguide.lot
 doc/userguide/userguide.out
 *.log
-*.status

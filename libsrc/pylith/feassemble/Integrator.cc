@@ -42,8 +42,6 @@ pylith::feassemble::Integrator::Integrator(pylith::problems::Physics* const phys
     _labelValue(1),
     _lhsJacobianTriggers(NEW_JACOBIAN_NEVER),
     _lhsJacobianLumpedTriggers(NEW_JACOBIAN_NEVER),
-    _rhsJacobianTriggers(NEW_JACOBIAN_NEVER),
-    _needNewRHSJacobian(true),
     _needNewLHSJacobian(true),
     _needNewLHSJacobianLumped(true)
 {}
@@ -96,20 +94,6 @@ pylith::feassemble::Integrator::getLabelValue(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Check whether RHS Jacobian needs to be recomputed.
-bool
-pylith::feassemble::Integrator::needNewRHSJacobian(const bool dtChanged) {
-    if (_rhsJacobianTriggers & NEW_JACOBIAN_ALWAYS) {
-        _needNewRHSJacobian = true;
-    } else if (dtChanged && (_rhsJacobianTriggers & NEW_JACOBIAN_TIME_STEP_CHANGE)) {
-        _needNewRHSJacobian = true;
-    } // if
-
-    return _needNewRHSJacobian;
-} // needNewRHSJacobian
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Check whether LHS Jacobian needs to be recomputed.
 bool
 pylith::feassemble::Integrator::needNewLHSJacobian(const bool dtChanged) {
@@ -151,14 +135,6 @@ void
 pylith::feassemble::Integrator::setLHSJacobianLumpedTriggers(const int value) {
     _lhsJacobianLumpedTriggers |= value;
 } // setLHSJacobianLumpedTriggers
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set RHS Jacobian trigger.
-void
-pylith::feassemble::Integrator::setRHSJacobianTriggers(const int value) {
-    _rhsJacobianTriggers |= value;
-} // setRHSJacobianTriggers
 
 
 // ---------------------------------------------------------------------------------------------------------------------

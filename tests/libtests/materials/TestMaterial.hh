@@ -42,12 +42,11 @@ namespace pylith {
         class TestMaterial;
 
         class TestMaterial_Data; // test data
-    }   // materials
+    } // materials
 } // pylith
 
 /// C++ abstract base class for testing material objects.
 class pylith::materials::TestMaterial : public CppUnit::TestFixture, public pylith::utils::GenericComponent {
-
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestMaterial);
 
@@ -62,7 +61,7 @@ class pylith::materials::TestMaterial : public CppUnit::TestFixture, public pyli
     CPPUNIT_TEST(testInitialize);
 
     CPPUNIT_TEST(testComputeResidual);
-    CPPUNIT_TEST(testComputeRHSJacobian);
+    CPPUNIT_TEST(testComputeJacobian);
     CPPUNIT_TEST(testComputeLHSJacobianImplicit);
     CPPUNIT_TEST(testComputeLHSJacobianInverseExplicit);
     CPPUNIT_TEST(testUpdateStateVars);
@@ -106,8 +105,8 @@ public:
     /// Test computeRHSResidual(), computeLHSResidual().
     void testComputeResidual(void);
 
-    /// Test computeRHSJacobian().
-    void testComputeRHSJacobian(void);
+    /// Test computeJacobian().
+    void testComputeJacobian(void);
 
     /// Test computeLHSJacobianImplicit().
     void testComputeLHSJacobianImplicit(void);
@@ -155,15 +154,13 @@ protected:
 protected:
 
     // TestMaterial
-    pylith::topology::Mesh* _mesh;   ///< Finite-element mesh.
+    pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
     pylith::topology::Fields* _solutionFields; ///< Contrainer for solution fields.
 
 }; // class TestMaterial
 
-
 // =============================================================================
 class pylith::materials::TestMaterial_Data {
-
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
@@ -203,8 +200,6 @@ public:
     bool isExplicit; ///< True for explicit time stepping.
 };
 
-
 #endif // pylith_materials_testMaterial_hh
-
 
 // End of file

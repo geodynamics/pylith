@@ -29,7 +29,7 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
-#include <typeinfo>  // USES typeid()
+#include <typeinfo> // USES typeid()
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -40,11 +40,13 @@ pylith::materials::IsotropicLinearPoroelasticity::IsotropicLinearPoroelasticity(
     pylith::utils::PyreComponent::setName("isotopiclinearporoelasticity");
 } // constructor
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::materials::IsotropicLinearPoroelasticity::~IsotropicLinearPoroelasticity(void) {
     deallocate();
 } // destructor
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
@@ -55,6 +57,7 @@ pylith::materials::IsotropicLinearPoroelasticity::deallocate(void) {
     delete _auxiliaryFactory;_auxiliaryFactory = NULL;
 } // deallocate
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Use reference stress and strain in computation of stress and strain?
 void
@@ -64,12 +67,14 @@ pylith::materials::IsotropicLinearPoroelasticity::useReferenceState(const bool v
     _useReferenceState = value;
 } // useReferenceState
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Use reference stress and strain in computation of stress and strain?
 bool
 pylith::materials::IsotropicLinearPoroelasticity::useReferenceState(void) const {
     return _useReferenceState;
 } // useReferenceState
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Use full tensor permeability?
@@ -80,6 +85,7 @@ pylith::materials::IsotropicLinearPoroelasticity::useTensorPermeability(const bo
     _useTensorPermeability = value;
 } // useTensorPermeability
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Use full tensor permeability?
 bool
@@ -87,12 +93,14 @@ pylith::materials::IsotropicLinearPoroelasticity::useTensorPermeability(void) co
     return _useTensorPermeability;
 } // useTensorPermeability
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::materials::AuxiliaryFactoryPoroelastic*
 pylith::materials::IsotropicLinearPoroelasticity::getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // getAuxiliaryFactory
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Add rheology subfields to auxiliary field.
@@ -110,62 +118,203 @@ pylith::materials::IsotropicLinearPoroelasticity::addAuxiliarySubfields(void) {
     } // if
     _auxiliaryFactory->addShearModulus(); // Shear Modulus, G, numA - 5
     _auxiliaryFactory->addDrainedBulkModulus(); // K_d, numA - 4
-    _auxiliaryFactory->addBiotCoefficient();  // alpha, numA - 3
+    _auxiliaryFactory->addBiotCoefficient(); // alpha, numA - 3
     _auxiliaryFactory->addBiotModulus(); // M, numA - 2
     if (_useTensorPermeability) {
         _auxiliaryFactory->addTensorPermeability(); // k, numA - 1
     } else {
-        _auxiliaryFactory->addIsotropicPermeability();  // k, numA - 1
+        _auxiliaryFactory->addIsotropicPermeability(); // k, numA - 1
     }
-
 
     PYLITH_METHOD_END;
 } // addAuxiliarySubfields
 
-// ================================ RHS ========================================
+
+// ============================ Either Side ====================================
 // ---------------------------------------------------------------------------------------------------------------------
 // Get stress kernel for RHS residual, G(t,s).
 PetscPointFunc
-pylith::materials::IsotropicLinearPoroelasticity::getKernelg1u(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearPoroelasticity::getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys,
+                                                                            const bool _useInertia) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelg1u(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
-    PetscPointFunc g1u =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1u :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1u :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1u_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1u_refstate :
-        NULL;
+    const int bitInertia = _useInertia ? 0x1 : 0x0;
+    const int bitReferenceState = _useReferenceState ? 0x2 : 0x0;
+    const int bitUse = bitInertia | bitReferenceState;
+
+    PetscPointFunc g1u = NULL;
+
+    switch (bitUse) {
+    case 0x0:
+        g1u = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f1u :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1u :
+              NULL;
+        break;
+    case 0x1:
+        g1u = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1v :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1v :
+              NULL;
+        break;
+    case 0x2:
+        g1u = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f1u_refstate :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1u_refstate :
+              NULL;
+        break;
+    case 0x3:
+        g1u = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1v_refstate :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1v_refstate :
+              NULL;
+        break;
+    default:
+        PYLITH_COMPONENT_ERROR("Unknown combination of flags for getKernelResidualStress.");
+        throw std::logic_error("Unknown combination of flags.");
+    } // switch
 
     PYLITH_METHOD_RETURN(g1u);
-} // getKernelg1u
+} // getKernelResidualStress
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get stress kernel for RHS residual, G(t,s).
+// Get darcy velocity kernel
 PetscPointFunc
-pylith::materials::IsotropicLinearPoroelasticity::getKernelg1v(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearPoroelasticity::getKernelDarcy(const spatialdata::geocoords::CoordSys* coordsys,
+                                                               const bool _gravityField, const bool _useInertia) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelg1v(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG("getKernelDarcy="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
-    PetscPointFunc g1v =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1v :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1v :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1v_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1v_refstate :
-        NULL;
+    const int bitInertia = _useInertia ? 0x1 : 0x0;
+    const int bitTensorPermeability = _useTensorPermeability ? 0x2 : 0x0;
+    const int bitGravityField = _gravityField ? 0x4 : 0x0;
+    const int bitUse = bitTensorPermeability | bitGravityField;
 
-    PYLITH_METHOD_RETURN(g1v);
-} // getKernelg1v
+    PetscPointFunc g1p = NULL;
 
+    switch (bitUse) {
+    case 0x0:
+        g1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f1p :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1p :
+              NULL;
+        break;
+    case 0x1:
+        g1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1p :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1p :
+              NULL;
+        break;
+    case 0x2:
+        g1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f1p_tensor_permeability :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1p_tensor_permeability :
+              NULL;
+        break;
+    case 0x3:
+        g1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1p_tensor_permeability :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1p_tensor_permeability :
+              NULL;
+        break;
+    case 0x4:
+        g1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f1p_gravity :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1p_gravity :
+              NULL;
+        break;
+    case 0x5:
+        g1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1p_gravity :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1p_gravity :
+              NULL;
+        break;
+    case 0x6:
+        g1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f1p_gravity_tensor_permeability :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1p_gravity_tensor_permeability :
+              NULL;
+        break;
+    case 0x7:
+        g1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1p_gravity_tensor_permeability :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1p_gravity_tensor_permeability :
+              NULL;
+        break;
+    default:
+        PYLITH_COMPONENT_ERROR("Unknown combination of flags for  (_useInertia="<<_useInertia<<",_useTensorPermeability="<<_useTensorPermeability<<", _gravityField="<<_gravityField<<").");
+        throw std::logic_error("Unknown combination of flags.");
+    } // switch
+
+    PYLITH_METHOD_RETURN(g1p);
+} // getKernelg1p
+
+// ================================ RHS ========================================
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get darcy velocity kernel for RHS residual, G(t,s)
+// Select g0p function. Will only be used for the dynamic case.
 PetscPointFunc
-pylith::materials::IsotropicLinearPoroelasticity::getKernelg1p(const spatialdata::geocoords::CoordSys* coordsys, const bool _gravityField) const {
+pylith::materials::IsotropicLinearPoroelasticity::getKernelg0p(const spatialdata::geocoords::CoordSys* coordsys,
+                                                               const bool _useBodyForce,
+                                                               const bool _gravityField,
+                                                               const bool _useSourceDensity) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelg1p="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG("getKernelf0p="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
+    const int bitGravity = _gravityField ? 0x2 : 0x0;
+    const int bitSourceDensity = _useSourceDensity ? 0x4 : 0x0;
+    const int bitUse = bitBodyForce | bitGravity | bitSourceDensity;
+
+    PetscPointFunc g0p = NULL;
+
+    switch (bitUse) {
+    case 0x0:
+        g0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g0p :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g0p :
+              NULL;
+        break;
+    case 0x1:
+        g0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g0p :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g0p :
+              NULL;
+        break;
+    case 0x2:
+        g0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g0p :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g0p :
+              NULL;
+        break;
+    case 0x4:
+        g0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g0p_source :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g0p_source :
+              NULL; // aOff for sourceDensity is 3
+        break;
+    case 0x3:
+        g0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g0p :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g0p :
+              NULL;
+        break;
+    case 0x5:
+        g0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g0p_source_body :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g0p_source_body :
+              NULL; // aOff for sourceDensity is 4
+        break;
+    case 0x6:
+        g0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g0p_source_grav :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g0p_source_grav :
+              NULL; // aOff for sourceDensity is 4
+        break;
+    case 0x7:
+        g0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g0p_source_grav_body :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g0p_source_grav_body :
+              NULL; // aOff for sourceDensity is 5
+        break;
+    default:
+        PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
+    } // switch
+
+    PYLITH_METHOD_RETURN(g0p);
+} // getKernelg0p
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get darcy velocity kernel
+PetscPointFunc
+pylith::materials::IsotropicLinearPoroelasticity::getKernelg1p_explicit(const spatialdata::geocoords::CoordSys* coordsys,
+                                                               const bool _gravityField) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getKernelg1p_implicit="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     const int bitTensorPermeability = _useTensorPermeability ? 0x1 : 0x0;
@@ -175,153 +324,247 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelg1p(const spatialdata
     PetscPointFunc g1p = NULL;
 
     switch (bitUse) {
-        case 0x1:
-            g1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1p_tensor_permeability :
-                  (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1p_tensor_permeability :
-                  NULL;
-            break;
-        case 0x2:
-            g1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1p_gravity :
-                  (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1p_gravity :
-                  NULL;
-            break;
-        case 0x3:
-            g1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1p_gravity_tensor_permeability :
-                  (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1p_gravity_tensor_permeability :
-                  NULL;
-            break;
-        case 0x0:
+    case 0x0:
         g1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1p :
               (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1p :
               NULL;
-            break;
-        default:
-            PYLITH_COMPONENT_ERROR("Unknown combination of flags for  (_useTensorPermeability="<<_useTensorPermeability<<", _gravityField="<<_gravityField<<").");
-            throw std::logic_error("Unknown combination of flags.");
-        } // switch
+        break;
+    case 0x1:
+        g1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1p_tensor_permeability :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1p_tensor_permeability :
+              NULL;
+        break;
+    case 0x2:
+        g1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1p_gravity :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1p_gravity :
+              NULL;
+        break;
+    case 0x3:
+        g1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1p_gravity_tensor_permeability :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1p_gravity_tensor_permeability :
+              NULL;
+        break;
+    default:
+        PYLITH_COMPONENT_ERROR("Unknown combination of flags for  _useTensorPermeability="<<_useTensorPermeability<<", _gravityField="<<_gravityField<<").");
+        throw std::logic_error("Unknown combination of flags.");
+    } // switch
 
     PYLITH_METHOD_RETURN(g1p);
-  } // getKernelg1p
+} // getKernelg1p_implicit
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Get poroelastic constants kernel for RHS Jacobian G(t,s).
-PetscPointJac
-pylith::materials::IsotropicLinearPoroelasticity::getKernelJg3uu(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelJg3uu(coordsys="<<typeid(coordsys).name()<<")");
-
-    const int spaceDim = coordsys->getSpaceDim();
-    PetscPointJac Jg3uu =
-        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jg3uu :
-        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jg3uu :
-        NULL;
-
-    PYLITH_METHOD_RETURN(Jg3uu);
-} // getKernelRHSJacobianElasticConstants
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get poroelastic constants kernel for RHS Jacobian G(t,s).
-PetscPointJac
-pylith::materials::IsotropicLinearPoroelasticity::getKernelJg3vu(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelJg3vu(coordsys="<<typeid(coordsys).name()<<")");
-
-    const int spaceDim = coordsys->getSpaceDim();
-    PetscPointJac Jg3vu =
-        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jg3vu :
-        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jg3vu :
-        NULL;
-
-    PYLITH_METHOD_RETURN(Jg3vu);
-} // getKernelJg3vu
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get biot coefficient kernel for RHS Jacobian G(t,s).
-PetscPointJac
-pylith::materials::IsotropicLinearPoroelasticity::getKernelJg2up(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelJg2up(coordsys="<<typeid(coordsys).name()<<")");
-
-    const int spaceDim = coordsys->getSpaceDim();
-    PetscPointJac Jg2up =
-        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jg2up :
-        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jg2up :
-        NULL;
-
-    PYLITH_METHOD_RETURN(Jg2up);
-} // getKernelJg2up
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get biot coefficient kernel for RHS Jacobian G(t,s).
-PetscPointJac
-pylith::materials::IsotropicLinearPoroelasticity::getKernelJg2vp(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelRHSJacobianBiotCoefficient(coordsys="<<typeid(coordsys).name()<<")");
-
-    const int spaceDim = coordsys->getSpaceDim();
-    PetscPointJac Jg2vp =
-        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jg2vp :
-        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jg2vp :
-        NULL;
-
-    PYLITH_METHOD_RETURN(Jg2vp);
-} // getKerneJg2vp
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get lambda kernel for RHS Jacobian G(t,s).
-PetscPointJac
-pylith::materials::IsotropicLinearPoroelasticity::getKernelJg2ue(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelJg2ue(coordsys="<<typeid(coordsys).name()<<")");
-
-    const int spaceDim = coordsys->getSpaceDim();
-    PetscPointJac Jg2ue =
-        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jg2ue :
-        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jg2ue :
-        NULL;
-
-    PYLITH_METHOD_RETURN(Jg2ue);
-} // getKernelJg2ue
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get Darcy Conductivity kernel for RHS Jacobian G(t,s).
-PetscPointJac
-pylith::materials::IsotropicLinearPoroelasticity::getKernelJg3pp(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelJg3pp(coordsys="<<typeid(coordsys).name()<<")");
-
-    const int spaceDim = coordsys->getSpaceDim();
-    PetscPointJac Jg3pp =
-        (!_useTensorPermeability && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jg3pp :
-        (!_useTensorPermeability && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jg3pp :
-        (_useTensorPermeability && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jg3pp_tensor_permeability :
-        (_useTensorPermeability && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jg3pp_tensor_permeability :
-        NULL;
-
-    PYLITH_METHOD_RETURN(Jg3pp);
-} // getKerneJg3pp
 
 // =============================== LHS =========================================
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get variation in fluid content kernel for LHS residual, F(t,s,\dot{s})
 PetscPointFunc
-pylith::materials::IsotropicLinearPoroelasticity::getKernelf0p(const spatialdata::geocoords::CoordSys* coordsys, const bool _useInertia) const {
+pylith::materials::IsotropicLinearPoroelasticity::getKernelf0p_explicit(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelLHSVariationInFluidContent="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG("getKernelf0p_explicit="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFunc f0p =
-        (!_useInertia && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_quasistatic :
-        (!_useInertia && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_quasistatic :
-        (_useInertia && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_inertia :
-        (_useInertia && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_inertia :
+        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_explicit:
+        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_explicit :
         NULL;
 
     PYLITH_METHOD_RETURN(f0p);
-  } // getKernelf0p
+} // getKernelf0p_explicit
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Select implicit f0p function.
+PetscPointFunc
+pylith::materials::IsotropicLinearPoroelasticity::getKernelf0p_implicit(const spatialdata::geocoords::CoordSys* coordsys,
+                                                               const bool _useBodyForce,
+                                                               const bool _gravityField,
+                                                               const bool _useSourceDensity) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getKernelf0p="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
+    const int bitGravity = _gravityField ? 0x2 : 0x0;
+    const int bitSourceDensity = _useSourceDensity ? 0x4 : 0x0;
+    const int bitUse = bitBodyForce | bitGravity | bitSourceDensity;
+
+    PetscPointFunc f0p = NULL;
+
+    switch (bitUse) {
+    case 0x0:
+        f0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_implicit :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_implicit :
+              NULL;
+        break;
+    case 0x1:
+        f0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_implicit :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_implicit :
+              NULL;
+        break;
+    case 0x2:
+        f0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_implicit :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_implicit :
+              NULL;
+        break;
+    case 0x4:
+        f0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_implicit_source :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_implicit_source :
+              NULL; // aOff for sourceDensity is 3
+        break;
+    case 0x3:
+        f0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_implicit :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_implicit :
+              NULL;
+        break;
+    case 0x5:
+        f0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_implicit_source_body :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_implicit_source_body :
+              NULL; // aOff for sourceDensity is 4
+        break;
+    case 0x6:
+        f0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_implicit_source_grav :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_implicit_source_grav :
+              NULL; // aOff for sourceDensity is 4
+        break;
+    case 0x7:
+        f0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_implicit_source_grav_body :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_implicit_source_grav_body :
+              NULL; // aOff for sourceDensity is 5
+        break;
+    default:
+        PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Poroelasticity LHS residual kernels.");
+    } // switch
+
+    PYLITH_METHOD_RETURN(f0p);
+} // getKernelf0p_implicit
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get darcy velocity kernel
+PetscPointFunc
+pylith::materials::IsotropicLinearPoroelasticity::getKernelf1p_implicit(const spatialdata::geocoords::CoordSys* coordsys,
+                                                               const bool _gravityField) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getKernelf1p_implicit="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    const int bitTensorPermeability = _useTensorPermeability ? 0x1 : 0x0;
+    const int bitGravityField = _gravityField ? 0x2 : 0x0;
+    const int bitUse = bitTensorPermeability | bitGravityField;
+
+    PetscPointFunc f1p = NULL;
+
+    switch (bitUse) {
+    case 0x0:
+        f1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f1p :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1p :
+              NULL;
+        break;
+    case 0x1:
+        f1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f1p_tensor_permeability :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1p_tensor_permeability :
+              NULL;
+        break;
+    case 0x2:
+        f1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f1p_gravity :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1p_gravity :
+              NULL;
+        break;
+    case 0x3:
+        f1p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f1p_gravity_tensor_permeability :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1p_gravity_tensor_permeability :
+              NULL;
+        break;
+    default:
+        PYLITH_COMPONENT_ERROR("Unknown combination of flags for  _useTensorPermeability="<<_useTensorPermeability<<", _gravityField="<<_gravityField<<").");
+        throw std::logic_error("Unknown combination of flags.");
+    } // switch
+
+    PYLITH_METHOD_RETURN(f1p);
+} // getKernelf1p_implicit
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get poroelastic constants kernel for LHS Jacobian
+PetscPointJac
+pylith::materials::IsotropicLinearPoroelasticity::getKernelJf3uu(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getKernelJf3uu(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscPointJac Jf3uu =
+        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf3uu :
+        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf3uu :
+        NULL;
+
+    PYLITH_METHOD_RETURN(Jf3uu);
+} // getKernelLHSJacobianElasticConstants
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get biot coefficient kernel for LHS Jacobian
+PetscPointJac
+pylith::materials::IsotropicLinearPoroelasticity::getKernelJf2up(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getKernelJf2up(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscPointJac Jf2up =
+        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf2up :
+        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf2up :
+        NULL;
+
+    PYLITH_METHOD_RETURN(Jf2up);
+} // getKernelJf2up
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get lambda kernel for LHS Jacobian
+PetscPointJac
+pylith::materials::IsotropicLinearPoroelasticity::getKernelJf2ue(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getKernelJf2ue(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscPointJac Jf2ue =
+        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf2ue :
+        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf2ue :
+        NULL;
+
+    PYLITH_METHOD_RETURN(Jf2ue);
+} // getKernelJf2ue
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get Specific storage kernel for LHS Jacobian F(t,s, \dot{s}).
+PetscPointJac
+pylith::materials::IsotropicLinearPoroelasticity::getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getKernelJf0pp(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscPointJac Jf0pp =
+        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf0pp :
+        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf0pp :
+        NULL;
+
+    PYLITH_METHOD_RETURN(Jf0pp);
+} // getKernelJf0pp
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get Darcy Conductivity kernel for LHS Jacobian
+PetscPointJac
+pylith::materials::IsotropicLinearPoroelasticity::getKernelJf3pp(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getKernelJf3pp(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscPointJac Jf3pp =
+        (!_useTensorPermeability && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf3pp :
+        (!_useTensorPermeability && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf3pp :
+        (_useTensorPermeability && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf3pp_tensor_permeability :
+        (_useTensorPermeability && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf3pp_tensor_permeability :
+        NULL;
+
+    PYLITH_METHOD_RETURN(Jf3pp);
+} // getKerneJf3pp
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get biot coefficient kernel for LHS Jacobian F(t,s, \dot{s}).
@@ -336,25 +579,8 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelJf0pe(const spatialda
         (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf0pe :
         NULL;
 
-  PYLITH_METHOD_RETURN(Jf0pe);
+    PYLITH_METHOD_RETURN(Jf0pe);
 } // getKernelJf0pe
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get Specific storage kernel for LHS Jacobian F(t,s, \dot{s}).
-PetscPointJac
-pylith::materials::IsotropicLinearPoroelasticity::getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const {
-  PYLITH_METHOD_BEGIN;
-  PYLITH_COMPONENT_DEBUG("getKernelJf0pp(coordsys="<<typeid(coordsys).name()<<")");
-
-  const int spaceDim = coordsys->getSpaceDim();
-  PetscPointJac Jf0pp =
-      (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf0pp :
-      (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf0pp :
-      NULL;
-
-  PYLITH_METHOD_RETURN(Jf0pp);
-} // getKernelJf0pp
-
 
 // =========================== DERIVED FIELDS ==================================
 

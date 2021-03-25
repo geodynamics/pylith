@@ -32,9 +32,9 @@
 // =====================================================================================================================
 
 // ---------------------------------------------------------------------------------------------------------------------
-// g1 function for isotropic power-law plane strain WITHOUT reference stress and strain.
+// f1 function for isotropic power-law plane strain WITHOUT reference stress and strain.
 void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::g1v(const PylithInt dim,
+pylith::fekernels::IsotropicPowerLawPlaneStrain::f1v(const PylithInt dim,
                                                      const PylithInt numS,
                                                      const PylithInt numA,
                                                      const PylithInt sOff[],
@@ -51,7 +51,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::g1v(const PylithInt dim,
                                                      const PylithScalar x[],
                                                      const PylithInt numConstants,
                                                      const PylithScalar constants[],
-                                                     PylithScalar g1[]) {
+                                                     PylithScalar f1[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -81,6 +81,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::g1v(const PylithInt dim,
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrain] >= 0);
     assert(aOff[i_stress] >= 0);
+    assert(f1);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -99,16 +100,16 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::g1v(const PylithInt dim,
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        g1[i] -= stressTensor[i];
+        f1[i] -= stressTensor[i];
     } // for
-} // g1v
+} // f1v
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// g1 function for isotropic power-law viscoelastic plane strain with reference
+// f1 function for isotropic power-law viscoelastic plane strain with reference
 // stress and strain.
 void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::g1v_refstate(const PylithInt dim,
+pylith::fekernels::IsotropicPowerLawPlaneStrain::f1v_refstate(const PylithInt dim,
                                                               const PylithInt numS,
                                                               const PylithInt numA,
                                                               const PylithInt sOff[],
@@ -125,7 +126,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::g1v_refstate(const PylithInt di
                                                               const PylithScalar x[],
                                                               const PylithInt numConstants,
                                                               const PylithScalar constants[],
-                                                              PylithScalar g1[]) {
+                                                              PylithScalar f1[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -159,6 +160,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::g1v_refstate(const PylithInt di
     assert(aOff[i_stress] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
+    assert(f1);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -178,13 +180,13 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::g1v_refstate(const PylithInt di
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        g1[i] -= stressTensor[i];
+        f1[i] -= stressTensor[i];
     } // for
-} // g1v_refstate
+} // f1v_refstate
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-/* Jg3_vu entry function for 2-D plane strain isotropic power-law viscoelastic WITHOUT reference stress/strain.
+/* Jf3_vu entry function for 2-D plane strain isotropic power-law viscoelastic WITHOUT reference stress/strain.
  *
  * stress_ij = C_ijkl strain_kl
  *
@@ -195,7 +197,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::g1v_refstate(const PylithInt di
  *   + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk - 2/3*delta_ij*delta_kl)
  */
 void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::Jg3vu(const PylithInt dim,
+pylith::fekernels::IsotropicPowerLawPlaneStrain::Jf3vu(const PylithInt dim,
                                                        const PylithInt numS,
                                                        const PylithInt numA,
                                                        const PylithInt sOff[],
@@ -213,7 +215,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::Jg3vu(const PylithInt dim,
                                                        const PylithScalar x[],
                                                        const PylithInt numConstants,
                                                        const PylithScalar constants[],
-                                                       PylithScalar Jg3[]) {
+                                                       PylithScalar Jf3[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -344,20 +346,20 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::Jg3vu(const PylithInt dim,
      */
 
     /* Nonzero Jacobian entries. */
-    Jg3[0] -= C1111; /* j0000 */
-    Jg3[3] -= C1212; /* j0011 */
-    Jg3[5] -= C1122; /* j0101 */
-    Jg3[6] -= C1212; /* j0110 */
-    Jg3[9] -= C1212; /* j1001 */
-    Jg3[10] -= C2211; /* j1010 */
-    Jg3[12] -= C1212; /* j1100 */
-    Jg3[15] -= C2222; /* j1111 */
+    Jf3[0] -= C1111; /* j0000 */
+    Jf3[3] -= C1212; /* j0011 */
+    Jf3[5] -= C1122; /* j0101 */
+    Jf3[6] -= C1212; /* j0110 */
+    Jf3[9] -= C1212; /* j1001 */
+    Jf3[10] -= C2211; /* j1010 */
+    Jf3[12] -= C1212; /* j1100 */
+    Jf3[15] -= C2222; /* j1111 */
 
-} // Jg3vu
+} // Jf3vu
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-/* Jg3_vu entry function for 2-D plane strain isotropic power-law viscoelastic WITH reference stress/strain.
+/* Jf3_vu entry function for 2-D plane strain isotropic power-law viscoelastic WITH reference stress/strain.
  *
  * stress_ij = C_ijkl strain_kl
  *
@@ -368,7 +370,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::Jg3vu(const PylithInt dim,
  *   + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk - 2/3*delta_ij*delta_kl)
  */
 void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::Jg3vu_refstate(const PylithInt dim,
+pylith::fekernels::IsotropicPowerLawPlaneStrain::Jf3vu_refstate(const PylithInt dim,
                                                                 const PylithInt numS,
                                                                 const PylithInt numA,
                                                                 const PylithInt sOff[],
@@ -386,7 +388,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::Jg3vu_refstate(const PylithInt 
                                                                 const PylithScalar x[],
                                                                 const PylithInt numConstants,
                                                                 const PylithScalar constants[],
-                                                                PylithScalar Jg3[]) {
+                                                                PylithScalar Jf3[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -521,16 +523,16 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::Jg3vu_refstate(const PylithInt 
      */
 
     /* Nonzero Jacobian entries. */
-    Jg3[0] -= C1111; /* j0000 */
-    Jg3[3] -= C1212; /* j0011 */
-    Jg3[5] -= C1122; /* j0101 */
-    Jg3[6] -= C1212; /* j0110 */
-    Jg3[9] -= C1212; /* j1001 */
-    Jg3[10] -= C2211; /* j1010 */
-    Jg3[12] -= C1212; /* j1100 */
-    Jg3[15] -= C2222; /* j1111 */
+    Jf3[0] -= C1111; /* j0000 */
+    Jf3[3] -= C1212; /* j0011 */
+    Jf3[5] -= C1122; /* j0101 */
+    Jf3[6] -= C1212; /* j0110 */
+    Jf3[9] -= C1212; /* j1001 */
+    Jf3[10] -= C2211; /* j1010 */
+    Jf3[12] -= C1212; /* j1100 */
+    Jf3[15] -= C2222; /* j1111 */
 
-} // Jg3vu_refstate
+} // Jf3vu_refstate
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1511,9 +1513,9 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress_refstate(const Pyl
 // =====================================================================================================================
 
 // ---------------------------------------------------------------------------------------------------------------------
-// g1 function for isotropic power-law 3D viscoelastic material WITHOUT reference stress and strain.
+// f1 function for isotropic power-law 3D viscoelastic material WITHOUT reference stress and strain.
 void
-pylith::fekernels::IsotropicPowerLaw3D::g1v(const PylithInt dim,
+pylith::fekernels::IsotropicPowerLaw3D::f1v(const PylithInt dim,
                                             const PylithInt numS,
                                             const PylithInt numA,
                                             const PylithInt sOff[],
@@ -1530,7 +1532,7 @@ pylith::fekernels::IsotropicPowerLaw3D::g1v(const PylithInt dim,
                                             const PylithScalar x[],
                                             const PylithInt numConstants,
                                             const PylithScalar constants[],
-                                            PylithScalar g1[]) {
+                                            PylithScalar f1[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
@@ -1578,16 +1580,16 @@ pylith::fekernels::IsotropicPowerLaw3D::g1v(const PylithInt dim,
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        g1[i] -= stressTensor[i];
+        f1[i] -= stressTensor[i];
     } // for
-} // g1v
+} // f1v
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// g1 function for isotropic power-law viscoelastic 3D material with reference
+// f1 function for isotropic power-law viscoelastic 3D material with reference
 // stress and strain.
 void
-pylith::fekernels::IsotropicPowerLaw3D::g1v_refstate(const PylithInt dim,
+pylith::fekernels::IsotropicPowerLaw3D::f1v_refstate(const PylithInt dim,
                                                      const PylithInt numS,
                                                      const PylithInt numA,
                                                      const PylithInt sOff[],
@@ -1604,7 +1606,7 @@ pylith::fekernels::IsotropicPowerLaw3D::g1v_refstate(const PylithInt dim,
                                                      const PylithScalar x[],
                                                      const PylithInt numConstants,
                                                      const PylithScalar constants[],
-                                                     PylithScalar g1[]) {
+                                                     PylithScalar f1[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
@@ -1657,13 +1659,13 @@ pylith::fekernels::IsotropicPowerLaw3D::g1v_refstate(const PylithInt dim,
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        g1[i] -= stressTensor[i];
+        f1[i] -= stressTensor[i];
     } // for
-} // g1v_refstate
+} // f1v_refstate
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-/* Jg3_vu entry function for 3-D isotropic power-law viscoelastic material WITHOUT reference stress/strain.
+/* Jf3_vu entry function for 3-D isotropic power-law viscoelastic material WITHOUT reference stress/strain.
  *
  * stress_ij = C_ijkl strain_kl
  *
@@ -1674,7 +1676,7 @@ pylith::fekernels::IsotropicPowerLaw3D::g1v_refstate(const PylithInt dim,
  *   + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk - 2/3*delta_ij*delta_kl)
  */
 void
-pylith::fekernels::IsotropicPowerLaw3D::Jg3vu(const PylithInt dim,
+pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
                                               const PylithInt numS,
                                               const PylithInt numA,
                                               const PylithInt sOff[],
@@ -1692,7 +1694,7 @@ pylith::fekernels::IsotropicPowerLaw3D::Jg3vu(const PylithInt dim,
                                               const PylithScalar x[],
                                               const PylithInt numConstants,
                                               const PylithScalar constants[],
-                                              PylithScalar Jg3[]) {
+                                              PylithScalar Jf3[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
@@ -1953,33 +1955,33 @@ pylith::fekernels::IsotropicPowerLaw3D::Jg3vu(const PylithInt dim,
      */
 
     /* Nonzero Jacobian entries. */
-    Jg3[0] -= C1111; /* j0000 */
-    Jg3[4] -= C1212; /* j0011 */
-    Jg3[8] -= C1313; /* j0022 */
-    Jg3[10] -= C1122; /* j0101 */
-    Jg3[12] -= C1212; /* j0110 */
-    Jg3[20] -= C1133; /* j0202 */
-    Jg3[24] -= C1313; /* j0220 */
-    Jg3[28] -= C1212; /* j1001 */
-    Jg3[30] -= C2211; /* j1010 */
-    Jg3[36] -= C1212; /* j1100 */
-    Jg3[40] -= C2222; /* j1111 */
-    Jg3[44] -= C2323; /* j1122 */
-    Jg3[50] -= C2233; /* j1212 */
-    Jg3[52] -= C2323; /* j1221 */
-    Jg3[56] -= C1313; /* j2002 */
-    Jg3[60] -= C3311; /* j2020 */
-    Jg3[68] -= C2323; /* j2112 */
-    Jg3[70] -= C3322; /* j2121 */
-    Jg3[72] -= C1313; /* j2200 */
-    Jg3[76] -= C2323; /* j2211 */
-    Jg3[80] -= C3333; /* j2222 */
+    Jf3[0] -= C1111; /* j0000 */
+    Jf3[4] -= C1212; /* j0011 */
+    Jf3[8] -= C1313; /* j0022 */
+    Jf3[10] -= C1122; /* j0101 */
+    Jf3[12] -= C1212; /* j0110 */
+    Jf3[20] -= C1133; /* j0202 */
+    Jf3[24] -= C1313; /* j0220 */
+    Jf3[28] -= C1212; /* j1001 */
+    Jf3[30] -= C2211; /* j1010 */
+    Jf3[36] -= C1212; /* j1100 */
+    Jf3[40] -= C2222; /* j1111 */
+    Jf3[44] -= C2323; /* j1122 */
+    Jf3[50] -= C2233; /* j1212 */
+    Jf3[52] -= C2323; /* j1221 */
+    Jf3[56] -= C1313; /* j2002 */
+    Jf3[60] -= C3311; /* j2020 */
+    Jf3[68] -= C2323; /* j2112 */
+    Jf3[70] -= C3322; /* j2121 */
+    Jf3[72] -= C1313; /* j2200 */
+    Jf3[76] -= C2323; /* j2211 */
+    Jf3[80] -= C3333; /* j2222 */
 
-} // Jg3vu
+} // Jf3vu
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-/* Jg3_vu entry function for 3-D isotropic power-law viscoelastic material WITH reference stress/strain.
+/* Jf3_vu entry function for 3-D isotropic power-law viscoelastic material WITH reference stress/strain.
  *
  * stress_ij = C_ijkl strain_kl
  *
@@ -1990,7 +1992,7 @@ pylith::fekernels::IsotropicPowerLaw3D::Jg3vu(const PylithInt dim,
  *   + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk - 2/3*delta_ij*delta_kl)
  */
 void
-pylith::fekernels::IsotropicPowerLaw3D::Jg3vu_refstate(const PylithInt dim,
+pylith::fekernels::IsotropicPowerLaw3D::Jf3vu_refstate(const PylithInt dim,
                                                        const PylithInt numS,
                                                        const PylithInt numA,
                                                        const PylithInt sOff[],
@@ -2008,7 +2010,7 @@ pylith::fekernels::IsotropicPowerLaw3D::Jg3vu_refstate(const PylithInt dim,
                                                        const PylithScalar x[],
                                                        const PylithInt numConstants,
                                                        const PylithScalar constants[],
-                                                       PylithScalar Jg3[]) {
+                                                       PylithScalar Jf3[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
@@ -2270,29 +2272,29 @@ pylith::fekernels::IsotropicPowerLaw3D::Jg3vu_refstate(const PylithInt dim,
      */
 
     /* Nonzero Jacobian entries. */
-    Jg3[0] -= C1111; /* j0000 */
-    Jg3[4] -= C1212; /* j0011 */
-    Jg3[8] -= C1313; /* j0022 */
-    Jg3[10] -= C1122; /* j0101 */
-    Jg3[12] -= C1212; /* j0110 */
-    Jg3[20] -= C1133; /* j0202 */
-    Jg3[24] -= C1313; /* j0220 */
-    Jg3[28] -= C1212; /* j1001 */
-    Jg3[30] -= C2211; /* j1010 */
-    Jg3[36] -= C1212; /* j1100 */
-    Jg3[40] -= C2222; /* j1111 */
-    Jg3[44] -= C2323; /* j1122 */
-    Jg3[50] -= C2233; /* j1212 */
-    Jg3[52] -= C2323; /* j1221 */
-    Jg3[56] -= C1313; /* j2002 */
-    Jg3[60] -= C3311; /* j2020 */
-    Jg3[68] -= C2323; /* j2112 */
-    Jg3[70] -= C3322; /* j2121 */
-    Jg3[72] -= C1313; /* j2200 */
-    Jg3[76] -= C2323; /* j2211 */
-    Jg3[80] -= C3333; /* j2222 */
+    Jf3[0] -= C1111; /* j0000 */
+    Jf3[4] -= C1212; /* j0011 */
+    Jf3[8] -= C1313; /* j0022 */
+    Jf3[10] -= C1122; /* j0101 */
+    Jf3[12] -= C1212; /* j0110 */
+    Jf3[20] -= C1133; /* j0202 */
+    Jf3[24] -= C1313; /* j0220 */
+    Jf3[28] -= C1212; /* j1001 */
+    Jf3[30] -= C2211; /* j1010 */
+    Jf3[36] -= C1212; /* j1100 */
+    Jf3[40] -= C2222; /* j1111 */
+    Jf3[44] -= C2323; /* j1122 */
+    Jf3[50] -= C2233; /* j1212 */
+    Jf3[52] -= C2323; /* j1221 */
+    Jf3[56] -= C1313; /* j2002 */
+    Jf3[60] -= C3311; /* j2020 */
+    Jf3[68] -= C2323; /* j2112 */
+    Jf3[70] -= C3322; /* j2121 */
+    Jf3[72] -= C1313; /* j2200 */
+    Jf3[76] -= C2323; /* j2211 */
+    Jf3[80] -= C3333; /* j2222 */
 
-} // Jg3vu_refstate
+} // Jf3vu_refstate
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -3180,6 +3182,8 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::computeEffectiveStress(cons
                                                                             const PylithScalar powerLawReferenceStrainRate,
                                                                             const PylithScalar powerLawReferenceStress) { //
                                                                                                                           //
+                                                                                                                          //
+                                                                                                                          //
                                                                                                                           // computeEffectiveStress
     // Check parameters
     assert(j2InitialGuess >= 0.0);
@@ -3251,6 +3255,8 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::_effStressFuncDerivFunc(Pyl
                                                                              const PylithScalar powerLawExponent,
                                                                              const PylithScalar powerLawReferenceStrainRate,
                                                                              const PylithScalar powerLawReferenceStress) { //
+                                                                                                                           //
+                                                                                                                           //
                                                                                                                            //
                                                                                                                            // _effStressFuncDerivFunc
     PylithScalar y = *func;
