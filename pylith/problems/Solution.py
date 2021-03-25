@@ -43,7 +43,7 @@ class Solution(PetscComponent):
     from .SolnDisp import SolnDisp
     from .SolutionSubfield import subfieldFactory
     subfields = pythia.pyre.inventory.facilityArray("subfields", family="soln_subfields",
-                                             itemFactory=subfieldFactory, factory=SolnDisp)
+                                                    itemFactory=subfieldFactory, factory=SolnDisp)
     subfields.meta['tip'] = "Subfields in solution."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -71,11 +71,14 @@ class Solution(PetscComponent):
         spaceDim = mesh.getCoordSys().getSpaceDim()
         for subfield in self.subfields.components():
             subfield.initialize(problem.normalizer, spaceDim)
-            ncomponents = len(subfield.componentNames)
             if 0 == comm.rank:
                 self._debug.log("Adding subfield '%s' as '%s' with components %s to solution." %
                                 (subfield.fieldName, subfield.userAlias, subfield.componentNames))
-            quadOrder = problem.defaults.quadOrder if subfield.quadOrder < 0 else subfield.quadOrder
+            descriptor = subfield.getTraitDescriptor("quadrature_order")
+            if hasattr(descriptor.locator, "source") and descriptor.locator.source == "default":
+                quadOrder = problem.defaults.quadOrder
+            else:
+                quadOrder = subfield.quadOrder
             self.field.subfieldAdd(subfield.fieldName, subfield.userAlias, subfield.vectorFieldType, subfield.componentNames,
                                    subfield.scale.value, subfield.basisOrder, quadOrder, subfield.dimension,
                                    subfield.cellBasis, subfield.isBasisContinuous, subfield.feSpace)
