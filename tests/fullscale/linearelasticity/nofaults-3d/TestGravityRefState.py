@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ----------------------------------------------------------------------
 #
@@ -35,7 +35,8 @@ class TestCase(FullTestCase):
     """
     Test suite for testing PyLith with gravitational body forces with initial stress and no displacement.
     """
-    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos", "bc_zneg"]
+    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos",
+                            "bc_yneg", "bc_ypos", "bc_zneg"]
 
     def setUp(self):
         """
@@ -56,11 +57,13 @@ class TestCase(FullTestCase):
         return
 
     def test_material_info(self):
-        cellFields = ["density", "bulk_modulus", "shear_modulus", "gravitational_acceleration", "reference_strain"]
+        cellFields = ["density", "bulk_modulus", "shear_modulus",
+                      "gravitational_acceleration", "reference_strain"]
         vertexFields = ["reference_stress"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], cellFields=cellFields)
+            check_data(filename, self,
+                       self.MATERIALS[material], cellFields=cellFields)
         return
 
     def test_material_solution(self):
@@ -68,21 +71,24 @@ class TestCase(FullTestCase):
         cellFields = ["cauchy_strain", "cauchy_stress"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields, cellFields=cellFields)
+            check_data(
+                filename, self, self.MATERIALS[material], vertexFields=vertexFields, cellFields=cellFields)
         return
 
     def test_bcdirichlet_info(self):
         cellFields = ["initial_amplitude"]
         for bc in self.DIRICHLET_BOUNDARIES:
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], cellFields=cellFields)
+            check_data(filename, self,
+                       self.BOUNDARIES[bc], cellFields=cellFields)
         return
 
     def test_bcdirichlet_solution(self):
         vertexFields = ["displacement"]
         for bc in self.DIRICHLET_BOUNDARIES:
             filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
+            check_data(filename, self,
+                       self.BOUNDARIES[bc], vertexFields=vertexFields)
         return
 
 
@@ -92,7 +98,8 @@ class TestHex(TestCase, meshes.Hex):
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["gravity_refstate.cfg", "gravity_refstate_hex.cfg"])
+        TestCase.run_pylith(
+            self, self.NAME, ["gravity_refstate.cfg", "gravity_refstate_hex.cfg"])
         return
 
 
@@ -102,7 +109,8 @@ class TestTet(TestCase, meshes.Tet):
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["gravity_refstate.cfg", "gravity_refstate_tet.cfg"])
+        TestCase.run_pylith(
+            self, self.NAME, ["gravity_refstate.cfg", "gravity_refstate_tet.cfg"])
         return
 
 

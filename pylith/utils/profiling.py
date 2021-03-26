@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -16,37 +14,37 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/utils/profiling.py
+# @file pylith/utils/profiling.py
 
 # ----------------------------------------------------------------------
 def resourceUsage():
-  """
-  Get CPU time (hh:mm:ss) and memory use (MB).
-  """
+    """
+    Get CPU time (hh:mm:ss) and memory use (MB).
+    """
 
-  try:
-    import os
-    import commands
-    cmd = "ps -p %d -o cputime,rss" % os.getpid()
-    info = commands.getoutput(cmd).split()
-    cputime = info[2]
-    memory = float(info[3])/1024.0
-  except:
-    cputime = "n/a"
-    memory = 0
-  return (cputime, memory)
+    try:
+        import os
+        import commands
+        cmd = "ps -p %d -o cputime,rss" % os.getpid()
+        info = commands.getoutput(cmd).split()
+        cputime = info[2]
+        memory = float(info[3])/1024.0
+    except:
+        cputime = "n/a"
+        memory = 0
+    return (cputime, memory)
 
 
 # ----------------------------------------------------------------------
 def resourceUsageString():
-  """
-  Get CPU time and memory usage as a string.
-  """
-  from pylith.mpi.Communicator import mpi_comm_world
-  comm = mpi_comm_world()
-  (cputime, memory) = resourceUsage()
-  return "[%d] CPU time: %s, Memory usage: %.2f MB" % \
-      (comm.rank, cputime, memory)
+    """
+    Get CPU time and memory usage as a string.
+    """
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+    (cputime, memory) = resourceUsage()
+    return "[%d] CPU time: %s, Memory usage: %.2f MB" % \
+        (comm.rank, cputime, memory)
 
 
 # End of file

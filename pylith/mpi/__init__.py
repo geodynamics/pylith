@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -16,9 +14,9 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/mpi/__init__.py
+# @file pylith/mpi/__init__.py
 ##
-## @brief Python PyLith mpi module initialization
+# @brief Python PyLith mpi module initialization
 
 __all__ = ['Communicator',
            ]

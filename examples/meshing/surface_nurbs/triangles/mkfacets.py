@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 # Python script to create a triangulated surface in Facets format from a
 # set of points. The Facets file can be read by Cubit.
 # This script uses the GMT triangulate command, which invokes the triangle
@@ -7,8 +7,6 @@
 # Import necessary packages.
 import os
 import os
-# import pdb
-# pdb.set_trace()
 
 # Define filenames.
 vertexFile = "../dem/ruapehu-nzmg-1km.txt"
@@ -36,12 +34,12 @@ f.write(header)
 # Write numbered vertices to facets file.
 vertFormat = "%d  %s"
 for vertex in range(numVertices):
-  outLine = vertFormat % (vertex, vertices[vertex])
-  f.write(outLine)
-  
+    outLine = vertFormat % (vertex, vertices[vertex])
+    f.write(outLine)
+
 # Write numbered connectivities to facets file.
 connectFormat = "%d  %s"
 for triangle in range(numTriangles):
-  outLine = connectFormat % (triangle, connect[triangle])
-  f.write(outLine)
+    outLine = connectFormat % (triangle, connect[triangle])
+    f.write(outLine)
 f.close()

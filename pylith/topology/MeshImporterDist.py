@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -54,13 +52,13 @@ class MeshImporterDist(MeshGenerator):
 
         from pylith.meshio.MeshIOAscii import MeshIOAscii
         reader = pythia.pyre.inventory.facility("reader", family="mesh_io",
-                                         factory=MeshIOAscii)
+                                                factory=MeshIOAscii)
         reader.meta['tip'] = "Mesh reader."
 
         from .MeshRefiner import MeshRefiner
         refiner = pythia.pyre.inventory.facility("refiner",
-                                          family="mesh_refiner",
-                                          factory=MeshRefiner)
+                                                 family="mesh_refiner",
+                                                 factory=MeshRefiner)
         refiner.meta['tip'] = "Mesh refiner."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

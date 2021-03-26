@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -47,21 +45,26 @@ class TestEqInfo(unittest.TestCase):
         statsE.avgslip = statsE.potency / (statsE.ruparea + 1.0e-30)
         mask = statsE.moment > 0.0
         statsE.mommag = -1.0e+30 * numpy.ones(statsE.moment.shape)
-        statsE.mommag[mask] = 2.0 / 3.0 * (numpy.log10(statsE.moment[mask]) - 9.05)
+        statsE.mommag[mask] = 2.0 / 3.0 * \
+            (numpy.log10(statsE.moment[mask]) - 9.05)
 
         for attr in attrs:
             valuesE = statsE.__getattribute__(attr)
             values = stats.__getattribute__(attr)
-            msg = "Mismatch in number of snapshots for attribute '%s', %d != %d." % (attr, len(valuesE), len(values))
+            msg = "Mismatch in number of snapshots for attribute '%s', %d != %d." % (
+                attr, len(valuesE), len(values))
             self.assertEqual(len(valuesE), len(values), msg=msg)
 
             for (valueE, value) in zip(valuesE, values):
-                msg = "Mismatch in value for attribute '%s', %g != %g." % (attr, valueE, value)
+                msg = "Mismatch in value for attribute '%s', %g != %g." % (
+                    attr, valueE, value)
                 if valueE != 0.0:
                     if math.isinf(math.fabs(valueE)):
-                        self.assertAlmostEqual(1.0, math.fabs(value) / 1.0e+30, places=6, msg=msg)
+                        self.assertAlmostEqual(1.0, math.fabs(
+                            value) / 1.0e+30, places=6, msg=msg)
                     else:
-                        self.assertAlmostEqual(1.0, value / valueE, places=6, msg=msg)
+                        self.assertAlmostEqual(
+                            1.0, value / valueE, places=6, msg=msg)
                 else:
                     self.assertAlmostEqual(valueE, value, places=6, msg=msg)
 

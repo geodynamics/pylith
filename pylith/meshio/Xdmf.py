@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -70,7 +68,8 @@ class Xdmf(object):
         import h5py
         import os
         if not os.path.isfile(filenameH5):
-            raise IOError("Cannot create Xdmf file for HDF5 file '%s'. File not found." % filenameH5)
+            raise IOError(
+                "Cannot create Xdmf file for HDF5 file '%s'. File not found." % filenameH5)
         self.h5 = h5py.File(filenameH5, "r")
 
         if self._getSpaceDim() == 1:
@@ -103,7 +102,8 @@ class Xdmf(object):
                     if field.vectorFieldType in ["Tensor6", "Matrix"]:
                         numComponents = field.data.shape[-1]
                         for iComponent in range(numComponents):
-                            self._writeGridFieldComponent(field, iTime, iComponent)
+                            self._writeGridFieldComponent(
+                                field, iTime, iComponent)
                     else:
                         self._writeGridField(field, iTime)
                 self._closeTimeGrid()
@@ -166,7 +166,8 @@ class Xdmf(object):
             cellType = "Hexahedron"
         else:
             cellType = "Unknown"
-            print("WARNING: Unknown cell type with %d vertices and dimension %d." % (numCorners, cellDim))
+            print("WARNING: Unknown cell type with %d vertices and dimension %d." % (
+                numCorners, cellDim))
         return cellType
 
     def _getXdmfVectorFieldType(self, vectorFieldString):
@@ -200,7 +201,8 @@ class Xdmf(object):
                     field.data = dataset[:]
                     field.domain = Field.groupToDomain[group]
                     if "vector_field_type" in dataset.attrs:
-                        field.vectorFieldType = self._getXdmfVectorFieldType(dataset.attrs["vector_field_type"])
+                        field.vectorFieldType = self._getXdmfVectorFieldType(
+                            dataset.attrs["vector_field_type"])
                     else:
                         print(
                             "WARNING: Field '%s/%s' dataset missing 'vector_field_type' attribute. Guessing vector field type." % (group, name,))
@@ -305,7 +307,8 @@ class Xdmf(object):
             self.file.write("    </DataItem>\n")
         else:
             self._close()
-            raise ValueError("Unexpected spatial dimension %d when writing domain vertices." % spaceDim)
+            raise ValueError(
+                "Unexpected spatial dimension %d when writing domain vertices." % spaceDim)
         return
 
     def _closeDomain(self):
@@ -409,13 +412,15 @@ class Xdmf(object):
                 components = ["_xx", "_yy", "_zz", "_xy", "_yz", "_xz"]
             else:
                 self._close()
-                raise ValueError("Unexpected spatial dimension %d for field component names." % spaceDim)
+                raise ValueError(
+                    "Unexpected spatial dimension %d for field component names." % spaceDim)
             componentName = field.name + components[iComponent]
         elif field.vectorFieldType == "Matrix":
             componentName = field.name + "_%d" % iComponent
         else:
             self._close()
-            raise ValueError("Unexpected vector field type '%s' for field component names." % field.vectorFieldType)
+            raise ValueError(
+                "Unexpected vector field type '%s' for field component names." % field.vectorFieldType)
         h5Name = "/" + Field.domainToGroup[field.domain] + "/" + field.name
         if iTime is None:
             assert(2 == len(field.data.shape))
@@ -466,7 +471,8 @@ class Xdmf(object):
             elif 3 == len(field.data.shape):
                 numTimeSteps, numPoints, numComponents = field.data.shape
             else:
-                raise ValueError("Unexpected shape for dataset '%s'." % field.name)
+                raise ValueError(
+                    "Unexpected shape for dataset '%s'." % field.name)
         else:
             assert(3 == len(field.data.shape))
             numTimeSteps, numPoints, numComponents = field.data.shape

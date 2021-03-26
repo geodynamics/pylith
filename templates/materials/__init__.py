@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -16,9 +14,9 @@
 # ----------------------------------------------------------------------
 #
 
-## @file __init__.py
+# @file __init__.py
 ##
-## @brief Python module initialization
+# @brief Python module initialization
 
 __all__ = ['PlaneStrainState',
            ]

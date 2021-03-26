@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -18,8 +18,7 @@
 # PREREQUISITES:  sympy
 # ----------------------------------------------------------------------
 #
-# import pdb
-# pdb.set_trace()
+from sympy.abc import x, y
 import sympy
 import sympy.tensor
 import sympy.tensor.array
@@ -37,7 +36,6 @@ two = sympy.sympify(2)
 three = sympy.sympify(3)
 
 # Define basis and displacement vector.
-from sympy.abc import x, y
 u1, u2 = sympy.symbols('u1 u2', type="Function")
 X = [x, y]
 U = [u1(x, y), u2(x, y)]
@@ -67,105 +65,107 @@ aa, ab, ba, bb = sympy.symbols('aa ab ba bb')
 dummyTensor = sympy.tensor.array.Array([[aa, ab], [ba, bb]])
 
 # ----------------------------------------------------------------------
+
+
 def writeJacobianUniqueVals(f, jacobian):
-  """
-  Function to write unique values and assign them to variables.
-  """
+    """
+    Function to write unique values and assign them to variables.
+    """
 
-  # Unique entries in Jacobian, excluding 0.
-  uniqueVals = list(set(jacobian))
-  uniqueVals.remove(0)
-  numUniqueVals = len(uniqueVals)
-  uniqueValNames = numUniqueVals * [None]
-  usedVals = numUniqueVals * [None]
-  
-  f.write("/* Unique components of Jacobian. */\n")
-  outFmt = "const PylithReal %s = %s;\n"
+    # Unique entries in Jacobian, excluding 0.
+    uniqueVals = list(set(jacobian))
+    uniqueVals.remove(0)
+    numUniqueVals = len(uniqueVals)
+    uniqueValNames = numUniqueVals * [None]
+    usedVals = numUniqueVals * [None]
 
-  # Loop over Jacobian components in original PyLith order.
-  ui = 0
-  for i, j, k, l in product(numCompsRange, ndimRange, numCompsRange, ndimRange):
-    ii = i + 1
-    jj = j + 1
-    kk = k + 1
-    ll = l + 1
-    if (jacobian[i, j, k, l] in uniqueVals and jacobian[i, j, k, l] not in usedVals):
-      testInd = uniqueVals.index(jacobian[i, j, k, l])
-      comp = "C" + repr(ii) + repr(jj) + repr(kk) + repr(ll)
-      f.write(outFmt % (comp, jacobian[i, j, k, l]))
-      uniqueValNames[testInd] = comp
-      usedVals[ui] = jacobian[i, j, k, l]
-      ui += 1
-    if (ui == numUniqueVals):
-      break
+    f.write("/* Unique components of Jacobian. */\n")
+    outFmt = "const PylithReal %s = %s;\n"
 
-  return (uniqueVals, uniqueValNames)
+    # Loop over Jacobian components in original PyLith order.
+    ui = 0
+    for i, j, k, l in product(numCompsRange, ndimRange, numCompsRange, ndimRange):
+        ii = i + 1
+        jj = j + 1
+        kk = k + 1
+        ll = l + 1
+        if (jacobian[i, j, k, l] in uniqueVals and jacobian[i, j, k, l] not in usedVals):
+            testInd = uniqueVals.index(jacobian[i, j, k, l])
+            comp = "C" + repr(ii) + repr(jj) + repr(kk) + repr(ll)
+            f.write(outFmt % (comp, jacobian[i, j, k, l]))
+            uniqueValNames[testInd] = comp
+            usedVals[ui] = jacobian[i, j, k, l]
+            ui += 1
+        if (ui == numUniqueVals):
+            break
+
+    return (uniqueVals, uniqueValNames)
 
 
 def writeJacobianComments(f, jacobian):
-  """
-  Function to write correspondence between PETSc and PyLith Jacobian values.
-  """
+    """
+    Function to write correspondence between PETSc and PyLith Jacobian values.
+    """
 
-  f.write("/* j(f,g,df,dg) = C(f,df,g,dg)\n\n")
-  outFmt = "%d:  %s = %s = %s\n"
-  
-  # Loop over Jacobian components in new order.
-  ui = 0
-  for i, k, j, l in product(numCompsRange, numCompsRange, ndimRange, ndimRange):
-    ii = i + 1
-    jj = j + 1
-    kk = k + 1
-    ll = l + 1
-    pyComp = "C" + repr(ii) + repr(jj) + repr(kk) + repr(ll)
-    peComp = "j" + repr(i) + repr(k) + repr(j) + repr(l)
-    f.write(outFmt % (ui, peComp, pyComp, jacobian[i, j, k, l]))
-    ui += 1
-            
-  f.write("*/\n\n")
+    f.write("/* j(f,g,df,dg) = C(f,df,g,dg)\n\n")
+    outFmt = "%d:  %s = %s = %s\n"
 
-  return
+    # Loop over Jacobian components in new order.
+    ui = 0
+    for i, k, j, l in product(numCompsRange, numCompsRange, ndimRange, ndimRange):
+        ii = i + 1
+        jj = j + 1
+        kk = k + 1
+        ll = l + 1
+        pyComp = "C" + repr(ii) + repr(jj) + repr(kk) + repr(ll)
+        peComp = "j" + repr(i) + repr(k) + repr(j) + repr(l)
+        f.write(outFmt % (ui, peComp, pyComp, jacobian[i, j, k, l]))
+        ui += 1
+
+    f.write("*/\n\n")
+
+    return
 
 
 def writeJacobianNonzero(f, jacobian, uniqueVals, uniqueValNames):
-  """
-  Function to write nonzero Jacobian entries using predefined value names.
-  """
+    """
+    Function to write nonzero Jacobian entries using predefined value names.
+    """
 
-  f.write("/* Nonzero Jacobian entries. */\n")
-  
-  outFmt = "Jg3[%d] -=  %s; /* %s */\n"
-  
-  # Loop over Jacobian components in new order.
-  ui = 0
-  for i, k, j, l in product(numCompsRange, numCompsRange, ndimRange, ndimRange):
-    ii = i + 1
-    jj = j + 1
-    kk = k + 1
-    ll = l + 1
-    peComp = "j" + repr(i) + repr(k) + repr(j) + repr(l)
-    if (jacobian[i, j, k, l] != 0):
-      ind = uniqueVals.index(jacobian[i, j, k, l])
-      f.write(outFmt % (ui, uniqueValNames[ind], peComp))
+    f.write("/* Nonzero Jacobian entries. */\n")
 
-    ui += 1
+    outFmt = "Jg3[%d] -=  %s; /* %s */\n"
 
-  return
+    # Loop over Jacobian components in new order.
+    ui = 0
+    for i, k, j, l in product(numCompsRange, numCompsRange, ndimRange, ndimRange):
+        ii = i + 1
+        jj = j + 1
+        kk = k + 1
+        ll = l + 1
+        peComp = "j" + repr(i) + repr(k) + repr(j) + repr(l)
+        if (jacobian[i, j, k, l] != 0):
+            ind = uniqueVals.index(jacobian[i, j, k, l])
+            f.write(outFmt % (ui, uniqueValNames[ind], peComp))
+
+        ui += 1
+
+    return
 
 
 def writeJacobianInfo(fileName, jacobian):
-  """
-  Function to write info about Jacobian.
-  """
-  f = open(fileName, 'w')
+    """
+    Function to write info about Jacobian.
+    """
+    f = open(fileName, 'w')
 
-  (uniqueVals, uniqueValNames) = writeJacobianUniqueVals(f, jacobian)
-  writeJacobianComments(f, jacobian)
-  writeJacobianNonzero(f, jacobian, uniqueVals, uniqueValNames)
-  f.close()
+    (uniqueVals, uniqueValNames) = writeJacobianUniqueVals(f, jacobian)
+    writeJacobianComments(f, jacobian)
+    writeJacobianNonzero(f, jacobian, uniqueVals, uniqueValNames)
+    f.close()
 
-  return
-                  
+    return
+
 
 # ----------------------------------------------------------------------
 # Elastic isotropic stress.
@@ -204,7 +204,7 @@ fileName = 'elasticity-genmax_iso2d.txt'
 (shearModulus, deltaT, tauM1, tauM2, tauM3,
  shearModulusRatio_1, shearModulusRatio_2,
  shearModulusRatio_3) = sympy.symbols(
-  'shearModulus deltaT tauM1 tauM2 tauM3 shearModulusRatio_1 shearModulusRatio_2 shearModulusRatio_3')
+    'shearModulus deltaT tauM1 tauM2 tauM3 shearModulusRatio_1 shearModulusRatio_2 shearModulusRatio_3')
 shearModulusRatio_0 = sympy.symbols('shearModulusRatio_0')
 expFac1 = sympy.exp(-deltaT/tauM1)
 expFac2 = sympy.exp(-deltaT/tauM2)
@@ -218,9 +218,9 @@ hMArr1 = expFac1 * dummyTensor + delHArr1
 hMArr2 = expFac2 * dummyTensor + delHArr2
 hMArr3 = expFac3 * dummyTensor + delHArr3
 meanStress = bulkModulus * volStrainArr
-devStress = two * shearModulus * (shearModulusRatio_0 * devStrain + \
-                                  shearModulusRatio_1 * hMArr1 + \
-                                  shearModulusRatio_2 * hMArr2 + \
+devStress = two * shearModulus * (shearModulusRatio_0 * devStrain +
+                                  shearModulusRatio_1 * hMArr1 +
+                                  shearModulusRatio_2 * hMArr2 +
                                   shearModulusRatio_3 * hMArr3)
 stress = meanStress + devStress
 jacobian1 = sympy.tensor.array.derive_by_array(stress, defGrad)

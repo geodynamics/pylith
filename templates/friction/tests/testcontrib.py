@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -18,21 +18,24 @@
 
 import unittest
 
+
 def suite():
 
-  suite = unittest.TestSuite()
+    suite = unittest.TestSuite()
 
-  from TestViscousFriction import TestViscousFriction
-  suite.addTest(unittest.makeSuite(TestViscousFriction))
+    from TestViscousFriction import TestViscousFriction
+    suite.addTest(unittest.makeSuite(TestViscousFriction))
 
-  return suite
+    return suite
+
 
 def main():
-  unittest.TextTestRunner(verbosity=2).run(suite())
-  return
+    unittest.TextTestRunner(verbosity=2).run(suite())
+    return
+
 
 if __name__ == '__main__':
-  main()
-  
+    main()
 
-# End of file 
+
+# End of file

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ----------------------------------------------------------------------
 #
@@ -123,7 +123,8 @@ class TestQuad(TestCase, meshes.Quad):
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["terzaghi.cfg", "terzaghi_quad.cfg"])
+        TestCase.run_pylith(
+            self, self.NAME, ["terzaghi.cfg", "terzaghi_quad.cfg"])
         return
 
 
@@ -133,7 +134,8 @@ class TestTri(TestCase, meshes.Tri):
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["terzaghi.cfg", "terzaghi_tri.cfg"])
+        TestCase.run_pylith(
+            self, self.NAME, ["terzaghi.cfg", "terzaghi_tri.cfg"])
         return
 
 

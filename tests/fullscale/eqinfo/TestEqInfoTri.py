@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ----------------------------------------------------------------------
 #
@@ -50,7 +50,8 @@ class TestEqInfoTri(TestEqInfo):
         oneE.ruparea = numpy.array([1.5 + 2.0, 1.5 + 2.0], dtype=numpy.float64)
         slip0 = (0.2**2 + 0.5**2)**0.5
         slip1 = (0.5**2 + 0.4**2)**0.5
-        oneE.potency = numpy.array([slip0 * 1.5 + slip1 * 2.0, 0.1 * 1.5 + 0.2 * 2.0], dtype=numpy.float64)
+        oneE.potency = numpy.array(
+            [slip0 * 1.5 + slip1 * 2.0, 0.1 * 1.5 + 0.2 * 2.0], dtype=numpy.float64)
         oneE.moment = numpy.array([slip0 * 1.5 * 1.0e+10 + slip1 * 2.0 * 2.0e+10,
                                    0.1 * 1.5 * 1.0e+10 + 0.2 * 2.0 * 2.0e+10], dtype=numpy.float64)
         self._check(oneE, stats_tri.one)
@@ -59,7 +60,8 @@ class TestEqInfoTri(TestEqInfo):
         twoE.timestamp = timestamp
         twoE.ruparea = numpy.array([1.5, 0.0], dtype=numpy.float64)
         twoE.potency = numpy.array([0.1 * 1.5, 0.0], dtype=numpy.float64)
-        twoE.moment = numpy.array([0.1 * 1.5 * 1.0e+10, 0.0], dtype=numpy.float64)
+        twoE.moment = numpy.array(
+            [0.1 * 1.5 * 1.0e+10, 0.0], dtype=numpy.float64)
         self._check(twoE, stats_tri.two)
 
         allE = stats_tri.RuptureStats()

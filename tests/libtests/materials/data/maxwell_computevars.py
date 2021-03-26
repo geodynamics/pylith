@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -17,8 +17,6 @@
 # Code to compute solution and state variables for Maxwell test.
 # ----------------------------------------------------------------------
 #
-# import pdb
-# pdb.set_trace()
 import math
 import numpy
 # ----------------------------------------------------------------------
@@ -69,23 +67,28 @@ dispY = (a * y * y + 2.0 * b * x * y + c * x * x) * math.exp(-t / maxwellTime)
 dispOut = numpy.column_stack((dispX, dispY, numpy.zeros_like(dispX)))
 dispPertX = dispX + d * x
 dispPertY = dispY + d * x
-dispPertOut = numpy.column_stack((dispPertX, dispPertY, numpy.zeros_like(dispPertX)))
+dispPertOut = numpy.column_stack(
+    (dispPertX, dispPertY, numpy.zeros_like(dispPertX)))
 
 # Total strain and total perturbed strain.
 totalStrainXX = (2.0 * a * x + 2.0 * b * y) * math.exp(-t / maxwellTime)
 totalStrainYY = (2.0 * b * x + 2.0 * a * y) * math.exp(-t / maxwellTime)
 totalStrainXY = (b * (x + y) + c * (x + y)) * math.exp(-t / maxwellTime)
 totalStrainZZ = numpy.zeros(numPoints, dtype=numpy.float64)
-totalStrainPertXX = (2.0 * a * x + 2.0 * b * y) * math.exp(-t / maxwellTime) + d
+totalStrainPertXX = (2.0 * a * x + 2.0 * b * y) * \
+    math.exp(-t / maxwellTime) + d
 totalStrainPertYY = (2.0 * b * x + 2.0 * a * y) * math.exp(-t / maxwellTime)
-totalStrainPertXY = (b * (x + y) + c * (x + y)) * math.exp(-t / maxwellTime) + d / 2.0
+totalStrainPertXY = (b * (x + y) + c * (x + y)) * \
+    math.exp(-t / maxwellTime) + d / 2.0
 totalStrainPertZZ = numpy.zeros(numPoints, dtype=numpy.float64)
 
 # Viscous strain.
 viscousStrainTXX = 2.0 * maxwellTime * (math.exp(t / maxwellTime) - 1.0) * \
-    (a * (2.0 * x - y) - b * (x - 2.0 * y)) * math.exp(-2.0 * t / maxwellTime) / (3.0 * t)
+    (a * (2.0 * x - y) - b * (x - 2.0 * y)) * \
+    math.exp(-2.0 * t / maxwellTime) / (3.0 * t)
 viscousStrainTYY = -2.0 * maxwellTime * (math.exp(t / maxwellTime) - 1.0) * \
-    (a * (x - 2.0 * y) - b * (2.0 * x - y)) * math.exp(-2.0 * t / maxwellTime) / (3.0 * t)
+    (a * (x - 2.0 * y) - b * (2.0 * x - y)) * \
+    math.exp(-2.0 * t / maxwellTime) / (3.0 * t)
 viscousStrainTZZ = -2.0 * maxwellTime * (math.exp(t / maxwellTime) - 1.0) * \
     (a * (x + y) + b * (x + y)) * math.exp(-2.0 * t / maxwellTime) / (3.0 * t)
 viscousStrainTXY = maxwellTime * (math.exp(t / maxwellTime) - 1.0) * \

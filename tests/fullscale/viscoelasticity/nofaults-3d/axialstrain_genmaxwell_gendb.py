@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ----------------------------------------------------------------------
 #
@@ -21,6 +21,7 @@
 # boundary conditions for the axial strain test.
 
 import numpy
+
 
 class GenerateDB(object):
     """
@@ -70,13 +71,13 @@ class GenerateDB(object):
             'data_dim': 3,
             'values': [{'name': "initial_amplitude_x",
                         'units': "m",
-                        'data': disp[0,:, 0].ravel()},
+                        'data': disp[0, :, 0].ravel()},
                        {'name': "initial_amplitude_y",
                         'units': "m",
-                        'data': disp[0,:, 1].ravel()},
+                        'data': disp[0, :, 1].ravel()},
                        {'name': "initial_amplitude_z",
                         'units': "m",
-                        'data': disp[0,:, 2].ravel()}]}
+                        'data': disp[0, :, 2].ravel()}]}
 
         from spatialdata.spatialdb.SimpleGridAscii import SimpleGridAscii
         io = SimpleGridAscii()

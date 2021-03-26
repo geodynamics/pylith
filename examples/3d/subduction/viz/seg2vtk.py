@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-# import pdb
-# pdb.set_trace()
+#!/usr/bin/env python3
 
 # Get command-line arguments.
 from optparse import OptionParser
