@@ -53,7 +53,8 @@ class RheologyIncompressibleElasticity(PetscComponent, ModuleRheology):
         """
         Constructor.
         """
-        PetscComponent.__init__(self, name, facility="rheologyincompressibleelasticity")
+        PetscComponent.__init__(
+            self, name, facility="rheologyincompressibleelasticity")
         return
 
     def preinitialize(self, problem):
@@ -69,7 +70,11 @@ class RheologyIncompressibleElasticity(PetscComponent, ModuleRheology):
     def addAuxiliarySubfields(self, material, problem):
         for subfield in self.auxiliarySubfields.components():
             fieldName = subfield.aliases[-1]
-            quadOrder = problem.defaults.quadOrder if subfield.quadOrder < 0 else subfield.quadOrder
+            descriptor = subfield.getTraitDescriptor("quadrature_order")
+            if hasattr(descriptor.locator, "source") and descriptor.locator.source == "default":
+                quadOrder = problem.defaults.quadOrder
+            else:
+                quadOrder = subfield.quadOrder
             material.setAuxiliarySubfieldDiscretization(fieldName, subfield.basisOrder, quadOrder, subfield.dimension,
                                                         subfield.cellBasis, subfield.isBasisContinuous, subfield.feSpace)
         return

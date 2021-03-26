@@ -65,11 +65,13 @@ class Physics(PetscComponent, ModulePhysics):
     derivedSubfields.meta['tip'] = "Discretization of derived subfields."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
-    auxiliaryFieldDB = pythia.pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
+    auxiliaryFieldDB = pythia.pyre.inventory.facility(
+        "db_auxiliary_field", family="spatial_database", factory=SimpleDB)
     auxiliaryFieldDB.meta['tip'] = "Database for physical property parameters."
 
     from pylith.problems.SingleObserver import SinglePhysicsObserver
-    observers = pythia.pyre.inventory.facilityArray("observers", itemFactory=observerFactory, factory=SinglePhysicsObserver)
+    observers = pythia.pyre.inventory.facilityArray(
+        "observers", itemFactory=observerFactory, factory=SinglePhysicsObserver)
     observers.meta['tip'] = "Observers (e.g., output)."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -94,14 +96,22 @@ class Physics(PetscComponent, ModulePhysics):
 
         for subfield in self.auxiliarySubfields.components():
             fieldName = subfield.aliases[-1]
-            quadOrder = problem.defaults.quadOrder if subfield.quadOrder < 0 else subfield.quadOrder
+            descriptor = subfield.getTraitDescriptor("quadrature_order")
+            if hasattr(descriptor.locator, "source") and descriptor.locator.source == "default":
+                quadOrder = problem.defaults.quadOrder
+            else:
+                quadOrder = subfield.quadOrder
             ModulePhysics.setAuxiliarySubfieldDiscretization(self, fieldName, subfield.basisOrder, quadOrder,
                                                              subfield.dimension, subfield.cellBasis,
                                                              subfield.isBasisContinuous, subfield.feSpace)
 
         for subfield in self.derivedSubfields.components():
             fieldName = subfield.aliases[-1]
-            quadOrder = problem.defaults.quadOrder if subfield.quadOrder < 0 else subfield.quadOrder
+            descriptor = subfield.getTraitDescriptor("quadrature_order")
+            if hasattr(descriptor.locator, "source") and descriptor.locator.source == "default":
+                quadOrder = problem.defaults.quadOrder
+            else:
+                quadOrder = subfield.quadOrder
             ModulePhysics.setDerivedSubfieldDiscretization(self, fieldName, subfield.basisOrder, quadOrder,
                                                            subfield.dimension, subfield.cellBasis,
                                                            subfield.isBasisContinuous, subfield.feSpace)
@@ -117,7 +127,8 @@ class Physics(PetscComponent, ModulePhysics):
         """
         Call constructor for module object for access to C++ object.
         """
-        raise NotImplementedError("Please implement _createModuleOb() in derived class.")
+        raise NotImplementedError(
+            "Please implement _createModuleOb() in derived class.")
 
 
 # End of file

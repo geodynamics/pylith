@@ -45,14 +45,17 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
     import pythia.pyre.inventory
 
     from .OutputTriggerStep import OutputTriggerStep
-    trigger = pythia.pyre.inventory.facility("trigger", family="output_trigger", factory=OutputTriggerStep)
+    trigger = pythia.pyre.inventory.facility(
+        "trigger", family="output_trigger", factory=OutputTriggerStep)
     trigger.meta['tip'] = "Trigger defining how often output is written."
 
     from .DataWriterHDF5 import DataWriterHDF5
-    writer = pythia.pyre.inventory.facility("writer", factory=DataWriterHDF5, family="data_writer")
+    writer = pythia.pyre.inventory.facility(
+        "writer", factory=DataWriterHDF5, family="data_writer")
     writer.meta['tip'] = "Writer for data."
 
-    fieldFilter = pythia.pyre.inventory.facility("field_filter", family="output_field_filter", factory=FieldFilterNone)
+    fieldFilter = pythia.pyre.inventory.facility(
+        "field_filter", family="output_field_filter", factory=FieldFilterNone)
     fieldFilter.meta['tip'] = "Filter for output fields."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -74,8 +77,8 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
         self.trigger.preinitialize()
         ModuleOutputObserver.setTrigger(self, self.trigger)
 
-        if isinstance(self.fieldFilter, FieldFilterNone) and \
-                not isinstance(problem.defaults.outputFieldFilter, FieldFilterNone):
+        descriptor = self.getTraitDescriptor("field_filter")
+        if hasattr(descriptor.locator, "source") and descriptor.locator.source == "default":
             import copy
             fieldFilter = copy.copy(problem.defaults.outputFieldFilter)
         else:
