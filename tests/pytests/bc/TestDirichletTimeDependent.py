@@ -15,25 +15,30 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/bc/TestAbsorbingDampers.py
+# @file tests/pytests/bc/TestDirichletTimeDependent.py
 #
-# @brief Unit testing of Python AbsorbingDampers object.
+# @brief Unit testing of Python DirichletTimeDependent object.
 
 import unittest
 
 from pylith.testing.UnitTestApp import TestComponent
-from pylith.bc.AbsorbingDampers import (AbsorbingDampers, boundary_condition)
+from pylith.bc.DirichletTimeDependent import (DirichletTimeDependent, boundary_condition)
 
 
-class TestAbsorbingDampers(TestComponent):
-    """Unit testing of AbsorbingDampers object.
+class TestDirichletTimeDependent(TestComponent):
+    """Unit testing of DirichletTimeDependent object.
     """
-    _class = AbsorbingDampers
+    _class = DirichletTimeDependent
     _factory = boundary_condition
+
+    @staticmethod
+    def customizeInventory(obj):
+        obj.inventory.constrainedDOF = ["0", "2"]
+
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestAbsorbingDampers))
+    suite.addTest(unittest.makeSuite(TestDirichletTimeDependent))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

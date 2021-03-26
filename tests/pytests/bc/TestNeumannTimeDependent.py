@@ -15,25 +15,26 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/bc/TestAbsorbingDampers.py
+# @file tests/pytests/bc/TestNeumannTimeDependent.py
 #
-# @brief Unit testing of Python AbsorbingDampers object.
+# @brief Unit testing of Python NeumannTimeDependent object.
 
 import unittest
 
 from pylith.testing.UnitTestApp import TestComponent
-from pylith.bc.AbsorbingDampers import (AbsorbingDampers, boundary_condition)
+from pylith.bc.NeumannTimeDependent import (NeumannTimeDependent, boundary_condition)
 
 
-class TestAbsorbingDampers(TestComponent):
-    """Unit testing of AbsorbingDampers object.
+class TestNeumannTimeDependent(TestComponent):
+    """Unit testing of NeumannTimeDependent object.
     """
-    _class = AbsorbingDampers
+    _class = NeumannTimeDependent
     _factory = boundary_condition
+
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestAbsorbingDampers))
+    suite.addTest(unittest.makeSuite(TestNeumannTimeDependent))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

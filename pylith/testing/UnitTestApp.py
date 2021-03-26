@@ -13,13 +13,51 @@
 #
 # ======================================================================
 #
-# @file pylith/tests/UnitTestApp.py
+# @file pylith/testing/UnitTestApp.py
 #
 # @brief Python application for Python unit tests.
 
 from pythia.pyre.applications.Script import Script
 
 import unittest
+
+
+def configureComponent(component):
+    """Configure component and its subcomponents."""
+    for subcomponent in component.components():
+        configureComponent(subcomponent)
+    component._configure()
+    return
+
+class TestAbstractComponent(unittest.TestCase):
+    """Unit testing of abstract Pyre component.
+    """
+    _class = None
+
+    def test_constructor(self):
+        obj = self._class()
+        self.assertTrue(obj)
+
+    def test_configure(self):
+        obj = self._class()
+        self.customizeInventory(obj)
+        configureComponent(obj)
+
+    @staticmethod
+    def customizeInventory(obj):
+        """Customize inventory before running configure.
+        """
+        return
+
+
+class TestComponent(TestAbstractComponent):
+
+    _factory = None
+
+    def test_factory(self):
+        factory = self.__class__.__dict__["_factory"]
+        obj = factory()
+        self.assertTrue(isinstance(obj, self._class))
 
 
 class UnitTestApp(Script):
@@ -29,7 +67,7 @@ class UnitTestApp(Script):
     cov = None
     try:
         import coverage
-        cov = coverage.Coverage(source=["spatialdata"])
+        cov = coverage.Coverage(source=["pylith"])
     except ImportError:
         pass
 
@@ -55,7 +93,8 @@ class UnitTestApp(Script):
         petsc.options = self.petscOptions
         petsc.initialize()
 
-        success = unittest.TextTestRunner(verbosity=2).run(self._suite()).wasSuccessful()
+        success = unittest.TextTestRunner(
+            verbosity=2).run(self._suite()).wasSuccessful()
 
         petsc.finalize()
 
@@ -67,14 +106,6 @@ class UnitTestApp(Script):
             import sys
             sys.exit(1)
         return
-
-
-def configureSubcomponents(facility):
-    """Configure subcomponents."""
-    for component in facility.components():
-        configureSubcomponents(component)
-        component._configure()
-    return
 
 
 # End of file

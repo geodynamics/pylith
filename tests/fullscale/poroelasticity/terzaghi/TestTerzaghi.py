@@ -21,8 +21,8 @@
 
 import unittest
 
-from pylith.tests.FullTestApp import check_data
-from pylith.tests.FullTestApp import TestCase as FullTestCase
+from pylith.testing.FullTestApp import check_data
+from pylith.testing.FullTestApp import TestCase as FullTestCase
 
 import meshes
 from terzaghi_soln import AnalyticalSoln

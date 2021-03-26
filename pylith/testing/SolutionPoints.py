@@ -14,7 +14,7 @@
 # ----------------------------------------------------------------------
 #
 
-# @file pylith/tests/SolutionPoints.py
+# @file pylith/testing/SolutionPoints.py
 ##
 # @brief Check displacement solution point output from PyLith.
 

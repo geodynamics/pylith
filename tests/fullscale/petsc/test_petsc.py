@@ -16,7 +16,7 @@
 # ======================================================================
 #
 
-from pylith.tests.FullTestApp import TestDriver
+from pylith.testing.FullTestApp import TestDriver
 
 import unittest
 

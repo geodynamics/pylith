@@ -18,7 +18,7 @@
 
 import unittest
 
-from pylith.tests.FullTestApp import TestDriver
+from pylith.testing.FullTestApp import TestDriver
 
 
 class TestApp(TestDriver):

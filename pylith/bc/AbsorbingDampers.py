@@ -27,14 +27,6 @@ class AbsorbingDampers(BoundaryCondition, ModuleAbsorbingDampers):
     """
     Python object for managing absorbing dampers condition.
 
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *auxiliary_subfields* Discretization of absorbing dampers parameters.
-
     FACTORY: boundary_condition
     """
 
@@ -49,7 +41,8 @@ class AbsorbingDampers(BoundaryCondition, ModuleAbsorbingDampers):
 
     def _defaults(self):
         from .AuxSubfieldsAbsorbingDampers import AuxSubfieldsAbsorbingDampers
-        self.auxiliarySubfields = AuxSubfieldsAbsorbingDampers("auxiliary_subfields")
+        self.auxiliarySubfields = AuxSubfieldsAbsorbingDampers(
+            "auxiliary_subfields")
 
     def preinitialize(self, problem):
         """

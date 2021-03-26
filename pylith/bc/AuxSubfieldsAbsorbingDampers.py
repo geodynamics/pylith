@@ -24,15 +24,7 @@ class AuxSubfieldsAbsorbingDampers(PetscComponent):
     """
     Python container for isotropic, linear elasticity subfields.
 
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *density* Mass density subfield.
-      - *vs* Shear (S) wave speed subfield.
-      - *vp* Dilatational (P) wave speed subfield.
+    FACTORY: auxiliary_subfields
     """
 
     import pythia.pyre.inventory

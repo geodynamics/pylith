@@ -1,5 +1,3 @@
-# -*- Makefile -*-
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -16,17 +14,19 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	bc \
-	faults \
-	feassemble \
-	friction \
-	materials \
-	meshio \
-	mpi \
-	problems \
-	topology \
-	utils
+include $(top_srcdir)/check.am
+
+TESTS = test_pylith.py
+
+dist_check_SCRIPTS = test_pylith.py
+
+dist_noinst_PYTHON = \
+	bc/__init__.py \
+	bc/TestDirichletTimeDependent.py \
+	bc/TestNeumannTimeDependent.py \
+	bc/TestAbsorbingDampers.py \
+	bc/TestAuxiliarySubfields.py \
+	bc/TestZeroDB.py
 
 
 # End of file 

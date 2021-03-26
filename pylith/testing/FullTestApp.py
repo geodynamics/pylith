@@ -16,14 +16,14 @@
 # ======================================================================
 #
 
-# @file pylith/tests/FullTestApp.py
+# @file pylith/testing/FullTestApp.py
 
 # @brief Python application for Python full-scale tests.
 
 import unittest
 import numpy
 
-from pylith.tests import has_h5py
+from pylith.testing import has_h5py
 from pylith.apps.PyLithApp import PyLithApp
 
 

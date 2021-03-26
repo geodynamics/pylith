@@ -15,7 +15,7 @@
 #
 # ======================================================================
 
-from pylith.tests.FullTestApp import TestDriver, TestCase
+from pylith.testing.FullTestApp import TestDriver, TestCase
 
 import unittest
 
