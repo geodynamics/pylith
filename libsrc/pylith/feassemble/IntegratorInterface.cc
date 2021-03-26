@@ -417,7 +417,7 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     const InterfacePatches* patches = integrator->_integrationPatches;assert(patches);
     const keysmap_t& keysmap = patches->getKeys();
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
-        PetscHashFormKey weakFormKeys[3]; // :TODO: @matt What is the order?
+        PetscHashFormKey weakFormKeys[3];
         weakFormKeys[0] = iter->second.negative.petscKey(solution);
         weakFormKeys[1] = iter->second.positive.petscKey(solution);
         weakFormKeys[2] = iter->second.cohesive.petscKey(solution);
@@ -635,14 +635,18 @@ pylith::feassemble::_IntegratorInterface::transferWeakFormKernels(const pylith::
         const PetscWeakForm weakFormCohesive = iter->second.cohesive.getWeakForm();
 
         const PetscWeakForm weakFormNegative = iter->second.negative.getWeakForm();
-        PetscHashFormKey keyNegative = iter->second.negative.petscKey(solution);
-        err = PetscWeakFormGetBdResidual(weakFormNegative, keyNegative.label, keyNegative.value, keyNegative.field, &f0Count, &f0, &f1Count, &f1);PYLITH_CHECK_ERROR(err);
-        err = PetscWeakFormSetBdResidual(weakFormCohesive, keyNegative.label, keyNegative.value, keyNegative.field, f0Count, f0, f1Count, f1);PYLITH_CHECK_ERROR(err);
+        if (weakFormNegative) {
+            PetscHashFormKey keyNegative = iter->second.negative.petscKey(solution);
+            err = PetscWeakFormGetBdResidual(weakFormNegative, keyNegative.label, keyNegative.value, keyNegative.field, &f0Count, &f0, &f1Count, &f1);PYLITH_CHECK_ERROR(err);
+            err = PetscWeakFormSetBdResidual(weakFormCohesive, keyNegative.label, keyNegative.value, keyNegative.field, f0Count, f0, f1Count, f1);PYLITH_CHECK_ERROR(err);
+        } // if
 
         const PetscWeakForm weakFormPositive = iter->second.positive.getWeakForm();
-        PetscHashFormKey keyPositive = iter->second.positive.petscKey(solution);
-        err = PetscWeakFormGetBdResidual(weakFormPositive, keyPositive.label, keyPositive.value, keyPositive.field, &f0Count, &f0, &f1Count, &f1);PYLITH_CHECK_ERROR(err);
-        err = PetscWeakFormSetBdResidual(weakFormCohesive, keyPositive.label, keyPositive.value, keyPositive.field, f0Count, f0, f1Count, f1);PYLITH_CHECK_ERROR(err);
+        if (weakFormPositive) {
+            PetscHashFormKey keyPositive = iter->second.positive.petscKey(solution);
+            err = PetscWeakFormGetBdResidual(weakFormPositive, keyPositive.label, keyPositive.value, keyPositive.field, &f0Count, &f0, &f1Count, &f1);PYLITH_CHECK_ERROR(err);
+            err = PetscWeakFormSetBdResidual(weakFormCohesive, keyPositive.label, keyPositive.value, keyPositive.field, f0Count, f0, f1Count, f1);PYLITH_CHECK_ERROR(err);
+        } // if
     } // for
 } // transferWeakForms
 

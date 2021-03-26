@@ -110,8 +110,8 @@ pylith::feassemble::InterfacePatches::createSingle(const pylith::faults::FaultCo
     err = ISDestroy(&cohesiveCellsIS);PYLITH_CHECK_ERROR(err);
 
     weakFormKeys.cohesive = *pylith::feassemble::FEKernelKey::create(weakForm, cellsLabelName, interfaceId, lagrangeMultiplierName);
-    weakFormKeys.negative = *pylith::feassemble::FEKernelKey::create(weakForm, NULL, -1, lagrangeMultiplierName);
-    weakFormKeys.positive = *pylith::feassemble::FEKernelKey::create(weakForm, NULL, -1, lagrangeMultiplierName);
+    weakFormKeys.negative = *pylith::feassemble::FEKernelKey::create(NULL, NULL, 0, lagrangeMultiplierName);
+    weakFormKeys.positive = *pylith::feassemble::FEKernelKey::create(NULL, NULL, 0, lagrangeMultiplierName);
 
     InterfacePatches* patch = new InterfacePatches();assert(patch);
     patch->_labelName = cellsLabelName;
