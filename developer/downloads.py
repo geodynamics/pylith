@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 
 import json
+import ssl
 import urllib.request
+
 
 packages = ["pylith", "pylith_installer", "spatialdata"]
 baseurl = "https://api.github.com/repos/geodynamics/%s/releases"
 
+ssl._create_default_https_context = ssl._create_unverified_context
 
 for package in packages:
     raw = urllib.request.urlopen(baseurl % package).read()
