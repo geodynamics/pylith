@@ -25,20 +25,25 @@ class Tet(object):
     Mesh information for tet mesh.
     """
     DOMAIN = {
-        "ncells": 1,
+        "ncells": 5,
         "ncorners": 4,
-        "nvertices": 4,
+        "nvertices": 8,
     }
     MATERIALS = {
         "elastic": {
-            "ncells": 1,
+            "ncells": 5,
             "ncorners": 4,
-            "nvertices": 4,
+            "nvertices": 8,
         },
     }
     BOUNDARIES = {
-        "bc_domain": {
-            "ncells": 4,
+        "bc_xneg": {
+            "ncells": 2,
+            "ncorners": 3,
+            "nvertices": 4,
+        },
+        "bc_xpos": {
+            "ncells": 2,
             "ncorners": 3,
             "nvertices": 4,
         },

@@ -22,32 +22,37 @@
 
 class Tri(object):
     """
-    Mesh information for one cell tri mesh.
+    Mesh information for tri mesh.
     """
     DOMAIN = {
-        "ncells": 1,
+        "ncells": 2,
         "ncorners": 3,
-        "nvertices": 3,
+        "nvertices": 4,
     }
     MATERIALS = {
         "elastic": {
-            "ncells": 1,
+            "ncells": 2,
             "ncorners": 3,
-            "nvertices": 3,
+            "nvertices": 4,
         },
     }
     BOUNDARIES = {
-        "bc_domain": {
-            "ncells": 3,
+        "bc_xneg": {
+            "ncells": 1,
             "ncorners": 2,
-            "nvertices": 3,
+            "nvertices": 2,
+        },
+        "bc_xpos": {
+            "ncells": 1,
+            "ncorners": 2,
+            "nvertices": 2,
         },
     }
 
 
 class Quad(object):
     """
-    Mesh information for one cell quad mesh.
+    Mesh information for quad mesh.
     """
     DOMAIN = {
         "ncells": 1,

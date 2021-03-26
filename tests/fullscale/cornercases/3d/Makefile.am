@@ -27,7 +27,7 @@ dist_noinst_PYTHON = \
 	axialdisp_gendb.py
 
 dist_noinst_DATA = \
-	onecell_tet.mesh \
+	fivecells_tet.mesh \
 	onecell_hex.mesh \
 	pylithapp.cfg \
 	axialdisp.cfg \

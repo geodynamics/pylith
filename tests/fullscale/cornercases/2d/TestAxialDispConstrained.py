@@ -34,7 +34,7 @@ class TestCase(FullTestCase):
     """
     Test suite for testing PyLith with axial extension in the x-direction for a one cell mesh.
     """
-    DIRICHLET_BOUNDARIES = ["bc_domain"]
+    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos"]
 
     def setUp(self):
         """
