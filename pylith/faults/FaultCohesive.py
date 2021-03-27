@@ -55,18 +55,6 @@ class FaultCohesive(Physics, ModuleFaultCohesive):
     Python abstract base class for a fault surface implemeted with
     cohesive elements.
 
-    INVENTORY
-
-    Properties
-      - *id* Fault identifier
-      - *label* Label identifier for fault.
-      - *edge* Label identifier for buried fault edges.
-      - *ref_dir_1* First choice for reference direction to discriminate among tangential directions in 3-D.
-      - *ref_dir_2* Second choice for reference direction to discriminate among tangential directions in 3-D.
-
-    Facilities
-      - None
-
     FACTORY: fault
     """
 

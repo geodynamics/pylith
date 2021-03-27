@@ -16,24 +16,24 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file modulesrc/faults/KinSrcBrune.i
+/** @file modulesrc/faults/KinSrcTimeHistory.i
  *
- * @brief Python interface to C++ KinSrcBrune object.
+ * @brief Python interface to C++ KinSrcTimeHistory object.
  */
 
 namespace pylith {
     namespace faults {
 
-	class KinSrcBrune : public pylith::faults::KinSrc {
+	class KinSrcTimeHistory : public pylith::faults::KinSrc {
 
 	    // PUBLIC METHODS /////////////////////////////////////////////////
 	public :
 
 	    /// Default constructor.
-	    KinSrcBrune(void);
+	    KinSrcTimeHistory(void);
       
 	    /// Destructor.
-	    ~KinSrcBrune(void);
+	    ~KinSrcTimeHistory(void);
 	  
 	  /** Set time history database.
 	   *
@@ -70,7 +70,7 @@ namespace pylith {
 	    void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
 				const spatialdata::geocoords::CoordSys* cs);
 	    
-	}; // class KinSrcBrune
+	}; // class KinSrcTimeHistory
 
     } // faults
 } // pylith

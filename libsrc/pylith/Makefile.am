@@ -49,7 +49,7 @@ libpylith_la_SOURCES = \
 	faults/KinSrcConstRate.cc \
 	faults/KinSrcBrune.cc \
 	faults/KinSrcLiuCos.cc \
-	faults/KinSrcTimeHistory.hh \
+	faults/KinSrcTimeHistory.cc \
 	faults/KinSrcAuxiliaryFactory.cc \
 	faults/TopologyOps.cc \
 	feassemble/PhysicsImplementation.cc \

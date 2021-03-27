@@ -21,17 +21,7 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class SingleRupture(PetscComponent):
-    """
-    Python kinematic rupture container with one rupture.
-
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *rupture* Kinematic earthquake rupture in problem.
-
+    """Python kinematic rupture container with one rupture.
     """
 
     # INVENTORY //////////////////////////////////////////////////////////

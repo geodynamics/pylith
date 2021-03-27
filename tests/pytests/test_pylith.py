@@ -28,7 +28,7 @@ import importlib
 DIRS = [
     "apps",
     "bc",
-    # "faults",
+    "faults",
     # "friction",
     # "materials",
     # "meshio",

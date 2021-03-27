@@ -31,14 +31,6 @@ class KinSrc(PetscComponent, ModuleKinSrc):
     """
     Python object for managing parameters for a kinematic earthquake sources.
 
-    INVENTORY
-
-    Properties
-      - *origin_time* Origin time for earthquake rupture.
-
-    Facilities
-      - *db_auxiliary_field* Database for slip time function parameters.
-
     Factory: eq_kinematic_src
     """
 

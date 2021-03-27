@@ -15,25 +15,25 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/faults/TestSingleRupture.py
+# @file tests/pytests/faults/TestFaultCohesive.py
 #
-# @brief Unit testing of Python SingleRupture object.
+# @brief Unit testing of Python FaultCohesive object.
 
 import unittest
 
 from pylith.testing.UnitTestApp import TestAbstractComponent
-from pylith.faults.SingleRupture import SingleRupture
+from pylith.faults.FaultCohesive import FaultCohesive
 
 
-class TestSingleRupture(TestAbstractComponent):
-    """Unit testing of SingleRupture object.
+class TestFaultCohesive(TestAbstractComponent):
+    """Unit testing of FaultCohesive object.
     """
-    _class = SingleRupture
+    _class = FaultCohesive
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestSingleRupture))
+    suite.addTest(unittest.makeSuite(TestFaultCohesive))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

@@ -40,15 +40,6 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
     Python object for a fault surface with kinematic (prescribed) slip
     implemented with cohesive elements.
 
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *eq_srcs* Kinematic earthquake sources information.
-      - *observers* Observers of the fault (e.g., output).
-
     FACTORY: fault
     """
 

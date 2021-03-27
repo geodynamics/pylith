@@ -15,25 +15,36 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/faults/TestSingleRupture.py
+# @file tests/pytests/faults/TestKinSrcStep.py
 #
-# @brief Unit testing of Python SingleRupture object.
+# @brief Unit testing of Python KinSrcStep object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestAbstractComponent
-from pylith.faults.SingleRupture import SingleRupture
+from pylith.faults.KinSrcStep import KinSrcStep
+from pylith.tests.UnitTestApp import configureComponent
 
 
-class TestSingleRupture(TestAbstractComponent):
-    """Unit testing of SingleRupture object.
+class TestKinSrcStep(unittest.TestCase):
+    """Unit testing of KinSrcStep object.
     """
-    _class = SingleRupture
+
+    def test_constructor(self):
+        src = KinSrcStep()
+
+    def test_configure(self):
+        src = KinSrcStep()
+        configureComponent(src)
+
+    def test_factory(self):
+        from pylith.faults.KinSrcStep import eq_kinematic_src
+        src = eq_kinematic_src()
+        self.assertTrue(isinstance(src, KinSrcStep))
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestSingleRupture))
+    suite.addTest(unittest.makeSuite(TestKinSrcStep))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

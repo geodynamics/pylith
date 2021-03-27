@@ -30,7 +30,18 @@ dist_noinst_PYTHON = \
 	bc/TestNeumannTimeDependent.py \
 	bc/TestAbsorbingDampers.py \
 	bc/TestAuxiliarySubfields.py \
-	bc/TestZeroDB.py 
+	bc/TestZeroDB.py \
+	faults/TestFaultCohesive.py \
+	faults/TestFaultCohesiveKin.py \
+	faults/TestKinSrc.py \
+	faults/TestKinSrcConstRate.py \
+	faults/TestKinSrcStep.py \
+	faults/TestKinSrcRamp.py \
+	faults/TestKinSrcBrune.py \
+	faults/TestKinSrcLiuCos.py \
+	faults/TestKinSrcTimeHistory.py \
+	faults/SingleRupture.py
+
 
 
 # End of file 
