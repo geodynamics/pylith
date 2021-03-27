@@ -9,5 +9,9 @@
         "*.icc": "cpp",
         "vector": "cpp",
         "stdexcept": "cpp"
-    }
+    },
+    "python.formatting.autopep8Args": [
+        "-max-line-length",
+        "120"
+    ]
 }
