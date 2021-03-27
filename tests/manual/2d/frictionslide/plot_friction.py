@@ -1,5 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 
+from math import exp
+import numpy
+import pylab
+import h5py
 import sys
 
 if len(sys.argv) != 2:
@@ -11,10 +15,6 @@ if not sim in ['weak', 'stable']:
     raise ValueError("Unknown sim '%s'." % sim)
 
 # ======================================================================
-import h5py
-import pylab
-import numpy
-from math import exp
 
 # ----------------------------------------------------------------------
 dt = 0.01
@@ -31,13 +31,13 @@ else:
 L = 2.0e-6
 V0 = 1.0e-6
 
+
 def integrateStateVar(theta, v, t0):
     pts = numpy.where(t > t0)[0]
     for i in pts:
         theta[i] = theta[i-1]*exp(-v/L*dt) + \
-            dt - 0.5*(v/L)*dt**2 + 1.0/6.0*(v/L)*dt**3;
+            dt - 0.5*(v/L)*dt**2 + 1.0/6.0*(v/L)*dt**3
     return
-
 
 
 mask1 = t < 2.0

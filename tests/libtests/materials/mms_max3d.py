@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -19,8 +19,6 @@
 # PREREQUISITES:  sympy
 # ----------------------------------------------------------------------
 #
-# import pdb
-# pdb.set_trace()
 from sympy.abc import x, y, z, t
 import sympy
 import sympy.tensor
@@ -56,7 +54,8 @@ def printTensor(tensor, tensorName):
     for i in range(ndim):
         if (rank == 2):
             for j in range(ndim):
-                line = tensorName + '_%d%d = %s\n' % (i + 1, j + 1, simpTensor[i, j])
+                line = tensorName + \
+                    '_%d%d = %s\n' % (i + 1, j + 1, simpTensor[i, j])
                 out.write(line)
         else:
             line = tensorName + '_%d = %s\n' % (i + 1, simpTensor[i])
@@ -106,7 +105,8 @@ strainRate = strain.diff(t)
 # Deformation gradient, etc., for perturbed solution.
 print("Computing strain tensor for perturbed solution:")
 defGradPert = sympy.tensor.array.derive_by_array(UPert, X)
-defGradTransposePert = sympy.tensor.array.Array(defGradPert.tomatrix().transpose())
+defGradTransposePert = sympy.tensor.array.Array(
+    defGradPert.tomatrix().transpose())
 strainPert = (defGradPert + defGradTransposePert) / two
 strainRatePert = strainPert.diff(t)
 
@@ -120,7 +120,8 @@ devStrainRate = devStrain.diff(t)
 # Define volumetric strain and deviatoric strain for perturbed solution.
 print("Computing deviatoric strain tensor for perturbed solution:")
 volStrainPert = sympy.tensor.array.tensorcontraction(strainPert, (0, 1))
-volStrainArrPert = sympy.tensor.array.tensorproduct(volStrainPert, sympy.eye(ndim))
+volStrainArrPert = sympy.tensor.array.tensorproduct(
+    volStrainPert, sympy.eye(ndim))
 devStrainPert = strainPert - volStrainArrPert / three
 devStrainRatePert = devStrainPert.diff(t)
 

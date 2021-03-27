@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ----------------------------------------------------------------------
 #
@@ -54,17 +54,21 @@ class TestCase(FullTestCase):
         return
 
     def test_material_info(self):
-        cellFields = ["density", "bulk_modulus", "shear_modulus", "gravitational_acceleration"]
+        cellFields = ["density", "bulk_modulus",
+                      "shear_modulus", "gravitational_acceleration"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], cellFields=cellFields)
+            check_data(filename, self,
+                       self.MATERIALS[material], cellFields=cellFields)
         return
 
     def test_material_solution(self):
-        vertexFields = ["displacement", "pressure", "cauchy_strain", "cauchy_stress"]
+        vertexFields = ["displacement", "pressure",
+                        "cauchy_strain", "cauchy_stress"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields)
+            check_data(filename, self,
+                       self.MATERIALS[material], vertexFields=vertexFields)
         return
 
     def test_bcdirichlet_info(self):
@@ -72,14 +76,16 @@ class TestCase(FullTestCase):
         for bc in self.DIRICHLET_BOUNDARIES:
             self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], cellFields=cellFields)
+            check_data(filename, self,
+                       self.BOUNDARIES[bc], cellFields=cellFields)
         return
 
     def test_bcdirichlet_solution(self):
         vertexFields = ["displacement", "pressure"]
         for bc in self.DIRICHLET_BOUNDARIES:
             filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
+            check_data(filename, self,
+                       self.BOUNDARIES[bc], vertexFields=vertexFields)
         return
 
 
@@ -89,7 +95,8 @@ class TestQuad(TestCase, meshes.Quad):
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["gravity_incompressible.cfg", "gravity_incompressible_quad.cfg"])
+        TestCase.run_pylith(self, self.NAME, [
+                            "gravity_incompressible.cfg", "gravity_incompressible_quad.cfg"])
         return
 
 
@@ -99,7 +106,8 @@ class TestTri(TestCase, meshes.Tri):
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["gravity_incompressible.cfg", "gravity_incompressible_tri.cfg"])
+        TestCase.run_pylith(self, self.NAME, [
+                            "gravity_incompressible.cfg", "gravity_incompressible_tri.cfg"])
         return
 
 

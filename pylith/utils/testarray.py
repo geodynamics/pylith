@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ======================================================================
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -17,6 +15,7 @@
 #
 
 import numpy
+
 
 def test_scalararray(obj, valuesE, values, places=6):
     """

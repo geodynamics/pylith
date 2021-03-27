@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- Python -*- (syntax highlighting)
 # ----------------------------------------------------------------------
 #
@@ -18,6 +18,7 @@
 # This script creates a log-log plot of weighted data misfit vs. penalty misfit.
 # The code requires the numpy and matplotlib packages.
 
+from optparse import OptionParser
 import numpy
 import matplotlib.pyplot as pyplot
 import math
@@ -26,28 +27,29 @@ import math
 lineColor = "blue"
 
 # ----------------------------------------------------------------------
+
+
 def readInversionSummary():
-  """
-  Function to read inversion results from text file.
-  """
+    """
+    Function to read inversion results from text file.
+    """
 
-  # Open inversion summary file and get misfits.
-  data = numpy.loadtxt(summaryFile, dtype=numpy.float64)
-  dataWeightResid = data[:, 2]
-  penaltyResid = data[:, 3]
+    # Open inversion summary file and get misfits.
+    data = numpy.loadtxt(summaryFile, dtype=numpy.float64)
+    dataWeightResid = data[:, 2]
+    penaltyResid = data[:, 3]
 
-  # Sort by penalty residual.
-  inds = numpy.argsort(penaltyResid)
-  dataWeightResidSort = dataWeightResid[inds]
-  penaltyResidSort = penaltyResid[inds]
+    # Sort by penalty residual.
+    inds = numpy.argsort(penaltyResid)
+    dataWeightResidSort = dataWeightResid[inds]
+    penaltyResidSort = penaltyResid[inds]
 
-  return (dataWeightResidSort, penaltyResidSort)
+    return (dataWeightResidSort, penaltyResidSort)
 
 
 # ======================================================================
 # The main part of the code is below.
 # Get command-line arguments.
-from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("-s", "--summary", action="store", type="string",
                   dest="summary_file",
@@ -56,7 +58,7 @@ parser.add_option("-s", "--summary", action="store", type="string",
 (options, args) = parser.parse_args()
 
 if not options.summary_file:
-  parser.error("Summary input file must be specified.")
+    parser.error("Summary input file must be specified.")
 
 summaryFile = options.summary_file
 

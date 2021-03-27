@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -43,7 +41,8 @@ class SubfieldTraceStrain(SolutionSubfield):
     import pythia.pyre.inventory
 
     from .SolutionSubfield import validateAlias
-    userAlias = pythia.pyre.inventory.str("alias", default="trace_strain", validator=validateAlias)
+    userAlias = pythia.pyre.inventory.str(
+        "alias", default="trace_strain", validator=validateAlias)
     userAlias.meta['tip'] = "Name for subfield."
 
     fieldName = "trace_strain"

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ----------------------------------------------------------------------
 #
@@ -23,8 +23,6 @@
 # Manufactured Solutions for linearly varying total strain.
 
 # ----------------------------------------------------------------------
-# import pdb
-# pdb.set_trace()
 
 # Domain
 from spatialdata.geocoords.CSCart import CSCart
@@ -79,7 +77,8 @@ cs.setSpaceDim(2)
 
 def generateAuxSubfields():
     totalStrain_11 = (2.0 * A * PX + B * PY) * math.exp(-TIME / maxwellTime)
-    totalStrain_12 = (B * PX / 2.0 + B * PY / 2.0 + C * PX + C * PY) * math.exp(-TIME / maxwellTime)
+    totalStrain_12 = (B * PX / 2.0 + B * PY / 2.0 + C * PX +
+                      C * PY) * math.exp(-TIME / maxwellTime)
     totalStrain_22 = (2.0 * A * PY + B * PX) * math.exp(-TIME / maxwellTime)
     totalStrain_33 = numpy.zeros_like(totalStrain_22)
 
@@ -92,10 +91,15 @@ def generateAuxSubfields():
     visStrain_33 = -(math.exp(TIME / maxwellTime) - 1.0) * (A * PX + A * PY + B * PX + B * PY) * \
         math.exp(-2.0 * TIME / maxwellTime)
 
-    equil_1 = 4.0 * bulkModulus * (A + B) * math.exp(-TIME / maxwellTime) * numpy.ones(npts, dtype=numpy.float64)
-    equil_2 = 4.0 * bulkModulus * (A + B) * math.exp(-TIME / maxwellTime) * numpy.ones(npts, dtype=numpy.float64)
+    equil_1 = 4.0 * bulkModulus * \
+        (A + B) * math.exp(-TIME / maxwellTime) * \
+        numpy.ones(npts, dtype=numpy.float64)
+    equil_2 = 4.0 * bulkModulus * \
+        (A + B) * math.exp(-TIME / maxwellTime) * \
+        numpy.ones(npts, dtype=numpy.float64)
 
-    writer = createWriter("IsotropicLinearMaxwellPlaneStrain_VarStrain_aux.spatialdb")
+    writer = createWriter(
+        "IsotropicLinearMaxwellPlaneStrain_VarStrain_aux.spatialdb")
     writer.write({'points': points,
                   'x': x,
                   'y': y,
@@ -104,15 +108,24 @@ def generateAuxSubfields():
                   'values': [{'name': "vs", 'units': "m/s", 'data': vs},
                              {'name': "vp", 'units': "m/s", 'data': vp},
                              {'name': "density", 'units': "kg/m**3", 'data': density},
-                             {'name': "viscosity", 'units': "Pa*s", 'data': viscosity},
-                             {'name': "total_strain_xx", 'units': "None", 'data': totalStrain_11},
-                             {'name': "total_strain_yy", 'units': "None", 'data': totalStrain_22},
-                             {'name': "total_strain_zz", 'units': "None", 'data': totalStrain_33},
-                             {'name': "total_strain_xy", 'units': "None", 'data': totalStrain_12},
-                             {'name': "vis_strain_xx", 'units': "None", 'data': visStrain_11},
-                             {'name': "vis_strain_yy", 'units': "None", 'data': visStrain_22},
-                             {'name': "vis_strain_zz", 'units': "None", 'data': visStrain_33},
-                             {'name': "vis_strain_xy", 'units': "None", 'data': visStrain_12},
+                             {'name': "viscosity", 'units': "Pa*s",
+                                 'data': viscosity},
+                             {'name': "total_strain_xx", 'units': "None",
+                                 'data': totalStrain_11},
+                             {'name': "total_strain_yy", 'units': "None",
+                                 'data': totalStrain_22},
+                             {'name': "total_strain_zz", 'units': "None",
+                                 'data': totalStrain_33},
+                             {'name': "total_strain_xy", 'units': "None",
+                                 'data': totalStrain_12},
+                             {'name': "vis_strain_xx", 'units': "None",
+                                 'data': visStrain_11},
+                             {'name': "vis_strain_yy", 'units': "None",
+                                 'data': visStrain_22},
+                             {'name': "vis_strain_zz", 'units': "None",
+                                 'data': visStrain_33},
+                             {'name': "vis_strain_xy", 'units': "None",
+                                 'data': visStrain_12},
                              {'name': "body_force_x", 'units': "N", 'data': equil_1},
                              {'name': "body_force_y", 'units': "N", 'data': equil_2},
                              ]})
@@ -123,24 +136,32 @@ def generateAuxSubfields():
 def generateSolution():
 
     disp = numpy.zeros((npts, 2))
-    disp[:, 0] = (A * PX**2 + 2.0 * B * PX * PY + C * PY**2) * math.exp(-TIME / maxwellTime)
-    disp[:, 1] = (A * PY**2 + 2.0 * B * PX * PY + C * PX**2) * math.exp(-TIME / maxwellTime)
+    disp[:, 0] = (A * PX**2 + 2.0 * B * PX * PY + C * PY**2) * \
+        math.exp(-TIME / maxwellTime)
+    disp[:, 1] = (A * PY**2 + 2.0 * B * PX * PY + C * PX**2) * \
+        math.exp(-TIME / maxwellTime)
 
     disp_dot = numpy.zeros((npts, 2))
-    disp_dot[:, 0] = -(A * PX**2 + 2.0 * B * PX * PY + C * PY**2) * math.exp(-TIME / maxwellTime) / maxwellTime
-    disp_dot[:, 1] = -(A * PY**2 + 2.0 * B * PX * PY + C * PX**2) * math.exp(-TIME / maxwellTime) / maxwellTime
+    disp_dot[:, 0] = -(A * PX**2 + 2.0 * B * PX * PY + C *
+                       PY**2) * math.exp(-TIME / maxwellTime) / maxwellTime
+    disp_dot[:, 1] = -(A * PY**2 + 2.0 * B * PX * PY + C *
+                       PX**2) * math.exp(-TIME / maxwellTime) / maxwellTime
 
     # Create writer for spatial database file
-    writer = createWriter("IsotropicLinearMaxwellPlaneStrain_VarStrain_soln.spatialdb")
+    writer = createWriter(
+        "IsotropicLinearMaxwellPlaneStrain_VarStrain_soln.spatialdb")
     writer.write({'points': points,
                   'x': x,
                   'y': y,
                   'coordsys': cs,
                   'data_dim': 2,
                   'values': [{'name': "displacement_x", 'units': "m", 'data': disp[:, 0]},
-                             {'name': "displacement_y", 'units': "m", 'data': disp[:, 1]},
-                             {'name': "displacement_dot_x", 'units': "m/s", 'data': disp_dot[:, 0]},
-                             {'name': "displacement_dot_y", 'units': "m/s", 'data': disp_dot[:, 1]},
+                             {'name': "displacement_y",
+                                 'units': "m", 'data': disp[:, 1]},
+                             {'name': "displacement_dot_x",
+                                 'units': "m/s", 'data': disp_dot[:, 0]},
+                             {'name': "displacement_dot_y",
+                                 'units': "m/s", 'data': disp_dot[:, 1]},
                              ]})
 
     return
@@ -151,8 +172,10 @@ def generatePerturbation():
     PERT_DX = 500.0
     PERT_AMPLITUDE = 1.0e-2
 
-    x = numpy.arange(XLIM[0], XLIM[1] + 0.1 * PERT_DX, PERT_DX, dtype=numpy.float64)
-    y = numpy.arange(YLIM[0], YLIM[1] + 0.1 * PERT_DX, PERT_DX, dtype=numpy.float64)
+    x = numpy.arange(XLIM[0], XLIM[1] + 0.1 * PERT_DX,
+                     PERT_DX, dtype=numpy.float64)
+    y = numpy.arange(YLIM[0], YLIM[1] + 0.1 * PERT_DX,
+                     PERT_DX, dtype=numpy.float64)
     xgrid, ygrid = numpy.meshgrid(x, y)
     points = numpy.vstack((xgrid.ravel(), ygrid.ravel())).transpose()
     npts = points.shape[0]
@@ -161,16 +184,20 @@ def generatePerturbation():
     disp_dot = 0 * disp
 
     # Create writer for spatial database file
-    writer = createWriter("IsotropicLinearMaxwellPlaneStrain_VarStrain_pert.spatialdb")
+    writer = createWriter(
+        "IsotropicLinearMaxwellPlaneStrain_VarStrain_pert.spatialdb")
     writer.write({'points': points,
                   'x': x,
                   'y': y,
                   'coordsys': cs,
                   'data_dim': 2,
                   'values': [{'name': "displacement_x", 'units': "m", 'data': disp[:, 0]},
-                             {'name': "displacement_y", 'units': "m", 'data': disp[:, 1]},
-                             {'name': "displacement_dot_x", 'units': "m/s", 'data': disp_dot[:, 0]},
-                             {'name': "displacement_dot_y", 'units': "m/s", 'data': disp_dot[:, 1]},
+                             {'name': "displacement_y",
+                                 'units': "m", 'data': disp[:, 1]},
+                             {'name': "displacement_dot_x",
+                                 'units': "m/s", 'data': disp_dot[:, 0]},
+                             {'name': "displacement_dot_y",
+                                 'units': "m/s", 'data': disp_dot[:, 1]},
                              ]})
 
     return

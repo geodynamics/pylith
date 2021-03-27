@@ -1,4 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
+import numpy
+import pylab
+import tables
 import sys
 
 if len(sys.argv) != 3:
@@ -12,11 +15,9 @@ if not sim in ['swave', 'pwave']:
 
 
 # ======================================================================
-import tables
-import pylab
-import numpy
 
 # ----------------------------------------------------------------------
+
 def swave_soln():
 
     dt = 5.0e-6
@@ -47,8 +48,10 @@ def pwave_soln():
     t = numpy.arange(0.0, tend+0.5*dt, dt)
 
     mask = t < 1.7246213245e-3
-    sxx = mask*-8.8216171200e+10*t + ~mask*(-8.5665432299e+10*t-4.3990587021e+6)
-    syy = mask*-2.9410171200e+10*t + ~mask*(-3.0685540651e+10*t+2.1995293511e+6)
+    sxx = mask*-8.8216171200e+10*t + ~mask * \
+        (-8.5665432299e+10*t-4.3990587021e+6)
+    syy = mask*-2.9410171200e+10*t + ~mask * \
+        (-3.0685540651e+10*t+2.1995293511e+6)
     szz = 1.0*syy
     sxy = 0*t
     syz = 0*t

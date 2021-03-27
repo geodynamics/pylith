@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -90,7 +90,8 @@ class Formatter(object):
         """Verify project configuration file exists."""
         path_filename = os.path.join(self.config_dir, self._config_filename())
         if not os.path.isfile(path_filename):
-            raise IOError("Could not find configuration file '{}'.".format(path_filename))
+            raise IOError(
+                "Could not find configuration file '{}'.".format(path_filename))
         self.config_filename = path_filename
         return
 
@@ -119,7 +120,8 @@ class FormatterCPlusCplus(Formatter):
     def _prog_format(self, filename):
         suffix = "." + filename.split(".")[-1]
         language = self.LANGUAGE[suffix]
-        options = ["-l", language, "-c", self.config_filename, "--no-backup", filename]
+        options = ["-l", language, "-c",
+                   self.config_filename, "--no-backup", filename]
         return ["uncrustify"] + options
 
 
@@ -133,7 +135,8 @@ class FormatterPython(Formatter):
         return ["autopep8", "--version"]
 
     def _prog_format(self, filename):
-        options = ["--global-config={}".format(self.config_filename), "--in-place", filename]
+        options = [
+            "--global-config={}".format(self.config_filename), "--in-place", filename]
         return ["autopep8"] + options
 
 
@@ -204,9 +207,10 @@ class App(object):
         :returns: Files matching pattern.
         """
         files = []
-        root, dirs, names = os.walk(os.getcwd())
+        root, _, names = os.walk(os.getcwd())
         for pattern in patterns:
-            files += [os.path.join(root, filename) for filename in fnmatch.filter(names, pattern)]
+            files += [os.path.join(root, filename)
+                      for filename in fnmatch.filter(names, pattern)]
         return files
 
     def _parse_command_line(self):
@@ -215,11 +219,16 @@ class App(object):
         import argparse
 
         parser = argparse.ArgumentParser()
-        parser.add_argument("--cplusplus", action="store", dest="cplusplus", default=None, help="[None, 'all', FILE, PATTERN]")
-        parser.add_argument("--python", action="store", dest="python", default=None, help="[None, 'all', FILE, PATTERN]")
-        parser.add_argument("--config-dir", action="store", dest="config_dir", default="doc/developer", help="Directory containing config files for formatters.")
-        parser.add_argument("--quiet", action="store_false", dest="show_progress", default=True)
-        parser.add_argument("--debug", action="store_true", dest="debug", default=True)
+        parser.add_argument("--cplusplus", action="store", dest="cplusplus",
+                            default=None, help="[None, 'all', FILE, PATTERN]")
+        parser.add_argument("--python", action="store", dest="python",
+                            default=None, help="[None, 'all', FILE, PATTERN]")
+        parser.add_argument("--config-dir", action="store", dest="config_dir",
+                            default="doc/developer", help="Directory containing config files for formatters.")
+        parser.add_argument("--quiet", action="store_false",
+                            dest="show_progress", default=True)
+        parser.add_argument("--debug", action="store_true",
+                            dest="debug", default=True)
         return parser.parse_args()
 
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ----------------------------------------------------------------------
 #
@@ -56,17 +56,21 @@ class TestCase(FullTestCase):
         return
 
     def test_material_info(self):
-        vertexFields = ["density", "bulk_modulus", "shear_modulus", "maxwell_time"]
+        vertexFields = ["density", "bulk_modulus",
+                        "shear_modulus", "maxwell_time"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields)
+            check_data(filename, self,
+                       self.MATERIALS[material], vertexFields=vertexFields)
         return
 
     def test_material_solution(self):
-        vertexFields = ["displacement", "cauchy_strain", "cauchy_stress", "viscous_strain"]
+        vertexFields = ["displacement", "cauchy_strain",
+                        "cauchy_stress", "viscous_strain"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields)
+            check_data(filename, self,
+                       self.MATERIALS[material], vertexFields=vertexFields)
         return
 
     def test_bcdirichlet_info(self):
@@ -74,14 +78,16 @@ class TestCase(FullTestCase):
         for bc in self.DIRICHLET_BOUNDARIES:
             self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
+            check_data(filename, self,
+                       self.BOUNDARIES[bc], vertexFields=vertexFields)
         return
 
     def test_bcdirichlet_solution(self):
         vertexFields = ["displacement"]
         for bc in self.DIRICHLET_BOUNDARIES:
             filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
+            check_data(filename, self,
+                       self.BOUNDARIES[bc], vertexFields=vertexFields)
         return
 
     def test_bcneumann_info(self):
@@ -89,14 +95,16 @@ class TestCase(FullTestCase):
         for bc in self.NEUMANN_BOUNDARIES:
             self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
+            check_data(filename, self,
+                       self.BOUNDARIES[bc], vertexFields=vertexFields)
         return
 
     def test_bcneumann_solution(self):
         vertexFields = ["displacement"]
         for bc in self.NEUMANN_BOUNDARIES:
             filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
+            check_data(filename, self,
+                       self.BOUNDARIES[bc], vertexFields=vertexFields)
         return
 
 
@@ -106,7 +114,8 @@ class TestQuad(TestCase, meshes.Quad):
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["axialtraction_maxwell.cfg", "axialtraction_maxwell_quad.cfg"])
+        TestCase.run_pylith(self, self.NAME, [
+                            "axialtraction_maxwell.cfg", "axialtraction_maxwell_quad.cfg"])
         return
 
 
@@ -116,7 +125,8 @@ class TestTri(TestCase, meshes.Tri):
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["axialtraction_maxwell.cfg", "axialtraction_maxwell_tri.cfg"])
+        TestCase.run_pylith(self, self.NAME, [
+                            "axialtraction_maxwell.cfg", "axialtraction_maxwell_tri.cfg"])
         return
 
 

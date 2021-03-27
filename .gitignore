@@ -24,8 +24,7 @@ autom4te.cache
 .dirstamp
 /build
 /dist
-examples/*/*/output
-examples/*/*/*/output/
+output/
 examples/3d/subduction/mesh/geometry_surfs.jou
 examples/3d/subduction/mesh/*.exo
 examples/3d/subduction/mesh/*.sat

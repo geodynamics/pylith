@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -39,10 +37,12 @@ class PetscApplication(Application):
 
     # Dummy facility for passing options to PETSc
     from pylith.utils.PetscManager import PetscManager
-    petsc = pythia.pyre.inventory.facility("petsc", family="petsc_manager", factory=PetscManager)
+    petsc = pythia.pyre.inventory.facility(
+        "petsc", family="petsc_manager", factory=PetscManager)
     petsc.meta['tip'] = "Manager for PETSc options."
 
-    includeCitations = pythia.pyre.inventory.bool("include-citations", default=False)
+    includeCitations = pythia.pyre.inventory.bool(
+        "include-citations", default=False)
     includeCitations.meta['tip'] = "At end of simulation, display information on how to cite PyLith and components used."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

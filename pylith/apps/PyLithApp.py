@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -48,22 +46,26 @@ class PyLithApp(PetscApplication):
     pdbOn.meta['tip'] = "Start python debugger at beginning of main()."
 
     typos = pythia.pyre.inventory.str("typos", default="pedantic",
-                               validator=pythia.pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
+                                      validator=pythia.pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
     typos.meta['tip'] = "Specifies the handling of unknown properties and facilities"
 
-    initializeOnly = pythia.pyre.inventory.bool("initialize_only", default=False)
+    initializeOnly = pythia.pyre.inventory.bool(
+        "initialize_only", default=False)
     initializeOnly.meta['tip'] = "Stop simulation after initializing problem."
 
     from pylith.utils.DumpParametersJson import DumpParametersJson
-    parameters = pythia.pyre.inventory.facility("dump_parameters", family="dump_parameters", factory=DumpParametersJson)
+    parameters = pythia.pyre.inventory.facility(
+        "dump_parameters", family="dump_parameters", factory=DumpParametersJson)
     parameters.meta['tip'] = "Dump parameters used and version information to file."
 
     from pylith.topology.MeshImporter import MeshImporter
-    mesher = pythia.pyre.inventory.facility("mesh_generator", family="mesh_generator", factory=MeshImporter)
+    mesher = pythia.pyre.inventory.facility(
+        "mesh_generator", family="mesh_generator", factory=MeshImporter)
     mesher.meta['tip'] = "Generates or imports the computational mesh."
 
     from pylith.problems.TimeDependent import TimeDependent
-    problem = pythia.pyre.inventory.facility("problem", family="problem", factory=TimeDependent)
+    problem = pythia.pyre.inventory.facility(
+        "problem", family="problem", factory=TimeDependent)
     problem.meta['tip'] = "Computational problem to solve."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

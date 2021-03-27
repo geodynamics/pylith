@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -53,24 +51,29 @@ def check_displacements(testcase, filename, npoints, spaceDim):
         for icomp in range(ncomps):
             okay = numpy.zeros((nvertices,), dtype=numpy.bool)
 
-            maskR = numpy.abs(dispE[istep,:, icomp]) > toleranceAbsMask
-            ratio = numpy.abs(1.0 - disp[istep, maskR, icomp] / dispE[istep, maskR, icomp])
+            maskR = numpy.abs(dispE[istep, :, icomp]) > toleranceAbsMask
+            ratio = numpy.abs(
+                1.0 - disp[istep, maskR, icomp] / dispE[istep, maskR, icomp])
             if len(ratio) > 0:
                 okay[maskR] = ratio < tolerance
 
             maskD = ~maskR
-            diff = numpy.abs(disp[istep, maskD, icomp] - dispE[istep, maskD, icomp])
+            diff = numpy.abs(disp[istep, maskD, icomp] -
+                             dispE[istep, maskD, icomp])
             if len(diff) > 0:
                 okay[maskD] = diff < tolerance
 
             if numpy.sum(okay) != nvertices:
-                print("Error in component %d of displacement field at time step %d." % (icomp, istep))
-                print("Expected values: ", dispE[istep,:,:])
-                print("Output values: ", disp[istep,:,:])
-                print("Expected values (not okay): ", dispE[istep, ~okay, icomp])
-                print("Computed values (not okay): ", disp[istep, ~okay, icomp])
+                print("Error in component %d of displacement field at time step %d." % (
+                    icomp, istep))
+                print("Expected values: ", dispE[istep, :, :])
+                print("Output values: ", disp[istep, :, :])
+                print("Expected values (not okay): ",
+                      dispE[istep, ~okay, icomp])
+                print("Computed values (not okay): ",
+                      disp[istep, ~okay, icomp])
                 print("Relative diff (not okay): ", diff[~okay])
-                print("Coordinates (not okay): ", vertices[~okay,:])
+                print("Coordinates (not okay): ", vertices[~okay, :])
                 h5.close()
             testcase.assertEqual(nvertices, numpy.sum(okay))
 

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -113,29 +111,34 @@ class EqInfoApp(Application):
     faults = pythia.pyre.inventory.list("faults", default=[])
     faults.meta['tip'] = "Array of fault names."
 
-    filenamePattern = pythia.pyre.inventory.str("filename_pattern", default="output/fault_%s.h5")
+    filenamePattern = pythia.pyre.inventory.str(
+        "filename_pattern", default="output/fault_%s.h5")
     filenamePattern.meta['tip'] = "Pattern for fault files."
 
     snapshots = pythia.pyre.inventory.list("snapshots", default=[-1])
     snapshots.meta['tip'] = "Array of timestamps for slip snapshots (-1 == last time step)."
 
     from pythia.pyre.units.time import second
-    snapshotUnits = pythia.pyre.inventory.dimensional("snapshot_units", default=1 * second)
+    snapshotUnits = pythia.pyre.inventory.dimensional(
+        "snapshot_units", default=1 * second)
     snapshotUnits.meta['tip'] = "Units for timestamps in array of snapshots."
 
-    filenameOut = pythia.pyre.inventory.str("output_filename", default="eqstats.py")
+    filenameOut = pythia.pyre.inventory.str(
+        "output_filename", default="eqstats.py")
     filenameOut.meta['tip'] = "Filename for output."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
-    dbProps = pythia.pyre.inventory.facility("db_properties", family="spatial_database", factory=SimpleDB)
+    dbProps = pythia.pyre.inventory.facility(
+        "db_properties", family="spatial_database", factory=SimpleDB)
     dbProps.meta['tip'] = "Spatial database for elastic properties."
 
     from spatialdata.geocoords.CSCart import CSCart
-    cs = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
+    cs = pythia.pyre.inventory.facility(
+        "coordsys", family="coordsys", factory=CSCart)
     cs.meta['tip'] = "Coordinate system associated with mesh."
 
     typos = pythia.pyre.inventory.str("typos", default="pedantic",
-                               validator=pythia.pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
+                                      validator=pythia.pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
     typos.meta['tip'] = "Specifies the handling of unknown properties and " \
         "facilities"
 
@@ -164,7 +167,8 @@ class EqInfoApp(Application):
         for fault in self.faults:
             filenameIn = self.filenamePattern % fault
             if not os.path.isfile(filenameIn):
-                raise IOError("Could not open PyLith fault output file '%s'." % filenameIn)
+                raise IOError(
+                    "Could not open PyLith fault output file '%s'." % filenameIn)
 
             h5 = h5py.File(filenameIn, "r", driver='sec2')
             vertices = h5['geometry/vertices'][:]
@@ -181,7 +185,7 @@ class EqInfoApp(Application):
             for snapshot in self.snapshots:
                 # Get slip at snapshot
                 istep = self._findTimeStep(snapshot, timestamps)
-                slip = h5['vertex_fields/slip'][istep,:,:]
+                slip = h5['vertex_fields/slip'][istep, :, :]
                 if len(slip.shape) > 2:
                     slip = slip.squeeze(axis=0)
 
@@ -193,7 +197,8 @@ class EqInfoApp(Application):
                 potency = numpy.sum(cellsSlipMag * cellsArea)
                 moment = numpy.sum(cellsSlipMag * cellsArea * cellsShearMod)
 
-                stats.update(isnapshot, timestamp=timestamps[istep], ruparea=ruparea, potency=potency, moment=moment)
+                stats.update(
+                    isnapshot, timestamp=timestamps[istep], ruparea=ruparea, potency=potency, moment=moment)
 
                 isnapshot += 1
             h5.close()
@@ -241,7 +246,8 @@ class EqInfoApp(Application):
         if ncorners == 1:  # point
             area = numpy.ones((ncells,), dtype=numpy.float64)
         elif ncorners == 2:  # line2
-            area = self._vectorMag(vertices[cells[:, 1]] - vertices[cells[:, 0]])
+            area = self._vectorMag(
+                vertices[cells[:, 1]] - vertices[cells[:, 0]])
         elif ncorners == 3:  # tri3
             v01 = vertices[cells[:, 1]] - vertices[cells[:, 0]]
             v02 = vertices[cells[:, 2]] - vertices[cells[:, 0]]
@@ -253,7 +259,8 @@ class EqInfoApp(Application):
             area = 0.5 * self._vectorMag(numpy.cross(v01, v02)) + \
                 0.5 * self._vectorMag(numpy.cross(v02, v03))
         else:
-            raise ValueError("Unknown case for number of cell corners (%d)." % ncorners)
+            raise ValueError(
+                "Unknown case for number of cell corners (%d)." % ncorners)
         return area
 
     def _getShearModulus(self, cells, vertices):
@@ -277,7 +284,8 @@ class EqInfoApp(Application):
             mindiff = numpy.min(tdiff)
             i = numpy.where(tdiff < mindiff + 1.0e-10)[0]
             if len(i) > 1:
-                raise ValueError("Could not find snapshot %12.4e s in time stamps." % value)
+                raise ValueError(
+                    "Could not find snapshot %12.4e s in time stamps." % value)
         return i
 
     def _vectorMag(self, v):
@@ -294,7 +302,7 @@ class EqInfoApp(Application):
             (nvertices, nvals) = valueP.shape
             valueC = numpy.zeros((ncells, nvals), dtype=numpy.float64)
             for i in range(ncorners):
-                valueC[:,:] += valueP[cells[:, i],:]
+                valueC[:, :] += valueP[cells[:, i], :]
         else:
             nvertices = valueP.shape
             valueC = numpy.zeros((ncells,), dtype=numpy.float64)

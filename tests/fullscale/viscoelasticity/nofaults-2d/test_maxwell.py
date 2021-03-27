@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 
 # ----------------------------------------------------------------------
 #
@@ -38,6 +38,7 @@
 # Neumann boundary conditions
 # Tx(+4000,y) = T0
 
+import matplotlib.pyplot as plt
 import numpy
 import h5py
 import pylab
@@ -102,7 +103,6 @@ eDevzz = ezz - meanStrain
 eDevxy = exy
 
 # Plot results.
-import matplotlib.pyplot as plt
 # fig, ax1 = plt.subplots()
 # color = 'tab:black'
 # ax1.set_xlabel('time (years)')

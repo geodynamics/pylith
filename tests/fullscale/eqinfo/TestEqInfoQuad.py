@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ----------------------------------------------------------------------
 #
@@ -51,8 +51,10 @@ class TestEqInfoQuad(TestEqInfo):
         oneE = stats_quad.RuptureStats()
         oneE.timestamp = timestamp
         oneE.ruparea = numpy.array([area0 + area1], dtype=numpy.float64)
-        oneE.potency = numpy.array([slip0 * area0 + slip1 * area1], dtype=numpy.float64)
-        oneE.moment = numpy.array([slip0 * area0 * 1.0e+10 + area1 * slip1 * 2.0e+10], dtype=numpy.float64)
+        oneE.potency = numpy.array(
+            [slip0 * area0 + slip1 * area1], dtype=numpy.float64)
+        oneE.moment = numpy.array(
+            [slip0 * area0 * 1.0e+10 + area1 * slip1 * 2.0e+10], dtype=numpy.float64)
         self._check(oneE, stats_quad.one)
 
         area0 = 1.5 * 1.75
@@ -62,8 +64,10 @@ class TestEqInfoQuad(TestEqInfo):
         twoE = stats_quad.RuptureStats()
         twoE.timestamp = timestamp
         twoE.ruparea = numpy.array([area0 + area1], dtype=numpy.float64)
-        twoE.potency = numpy.array([slip0 * area0 + slip1 * area1], dtype=numpy.float64)
-        twoE.moment = numpy.array([slip0 * area0 * 1.0e+10 + area1 * slip1 * 2.0e+10], dtype=numpy.float64)
+        twoE.potency = numpy.array(
+            [slip0 * area0 + slip1 * area1], dtype=numpy.float64)
+        twoE.moment = numpy.array(
+            [slip0 * area0 * 1.0e+10 + area1 * slip1 * 2.0e+10], dtype=numpy.float64)
         self._check(twoE, stats_quad.two)
 
         allE = stats_quad.RuptureStats()
