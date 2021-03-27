@@ -21,12 +21,16 @@ TESTS = test_pylith.py
 dist_check_SCRIPTS = test_pylith.py
 
 dist_noinst_PYTHON = \
+	apps/__init__.py \
+	apps/TestPetscApplication.py \
+	apps/TestPyLithApp.py \
+	apps/TestEqInfoAPp.py \
 	bc/__init__.py \
 	bc/TestDirichletTimeDependent.py \
 	bc/TestNeumannTimeDependent.py \
 	bc/TestAbsorbingDampers.py \
 	bc/TestAuxiliarySubfields.py \
-	bc/TestZeroDB.py
+	bc/TestZeroDB.py 
 
 
 # End of file 

@@ -13,9 +13,8 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/apps/PetscApplication.py
-##
+#
 # @brief Python PETSc application for creating an MPI application
 # that uses PETSc.
 
@@ -24,11 +23,7 @@ from pythia.mpi import Application
 
 class PetscApplication(Application):
     """
-    Python PETSc application for creating an MPI application that uses
-    PETSc.
-
-    Inventory:
-      petsc Manager for PETSc options
+    Python PETSc application for creating an MPI application that uses PETSc.
     """
 
     # INVENTORY //////////////////////////////////////////////////////////

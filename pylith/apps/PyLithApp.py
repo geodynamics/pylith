@@ -24,20 +24,7 @@ from .PetscApplication import PetscApplication
 
 
 class PyLithApp(PetscApplication):
-    """
-    Python PyLithApp application.
-
-    INVENTORY
-
-    Properties
-      - *start_python_debugger* Start Python debugger at beginning of main().
-      - *typos* Flag for behavior of handling unknown properties and facilities ["relaxed", "strict", "pedantic"]
-      - *initialize_only* Stop simulation after initializing problem.
-
-    Facilities
-      - *dump_parameters* Dump parameters used and version information to file.
-      - *mesh_generator* Generator or importer for finite-element mesh.
-      - *problem* Computational problem to solve.
+    """Python PyLithApp application.
     """
 
     import pythia.pyre.inventory

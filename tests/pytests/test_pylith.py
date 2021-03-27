@@ -26,7 +26,7 @@ import sys
 import importlib
 
 DIRS = [
-    # "apps",
+    "apps",
     "bc",
     # "faults",
     # "friction",
