@@ -40,7 +40,16 @@ dist_noinst_PYTHON = \
 	faults/TestKinSrcBrune.py \
 	faults/TestKinSrcLiuCos.py \
 	faults/TestKinSrcTimeHistory.py \
-	faults/SingleRupture.py
+	faults/SingleRupture.py \
+	materials/__init__.py \
+	materials/TestElasticity.py \
+	materials/TestHomogeneous.py \
+	materials/TestIncompressibleElasticity.py \
+	materials/TestMaterial.py \
+	materials/TestPoroelasticity.py \
+	materials/TestRheologyLinearElasticity.py \
+	materials/TestRheologyPoroelasticity.py \
+	materials/TestRheologyViscoelasticity.py
 
 
 

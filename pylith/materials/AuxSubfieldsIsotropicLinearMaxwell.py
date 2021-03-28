@@ -22,22 +22,9 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class AuxSubfieldsIsotropicLinearMaxwell(PetscComponent):
-    """
-    Python container for isotropic, linear Maxwell viscoelastic subfields.
+    """Python container for isotropic, linear Maxwell viscoelastic subfields.
 
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *shear_modulus* Shear modulus subfield.
-      - *bulk_modulus* Bulk modulus subfield.
-      - *maxwell_time* Maxwell time subfield.
-      - *total_strain* Total strain subfield.
-      - *viscous_strain* Viscous strain subfield.
-      - *reference_stress* Reference stress subfield.
-      - *references_strain* Reference strain.
+    FACTORY: auxiliary_subfields
     """
 
     import pythia.pyre.inventory

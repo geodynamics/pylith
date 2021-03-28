@@ -26,16 +26,7 @@ from .IsotropicLinearElasticity import IsotropicLinearElasticity
 
 
 class Elasticity(Material, ModuleElasticity):
-    """
-    Python material property manager.
-
-    INVENTORY
-
-    Properties
-      - *use_body_force* Include body force term in elasticity equation.
-
-    Facilities
-      - *bulk_rheology* Bulk rheology for elastic material.
+    """Python material property manager.
 
     FACTORY: material
     """

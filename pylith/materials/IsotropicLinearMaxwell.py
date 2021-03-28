@@ -24,16 +24,7 @@ from .materials import IsotropicLinearMaxwell as ModuleLinearElasticity
 
 
 class IsotropicLinearMaxwell(RheologyElasticity, ModuleLinearElasticity):
-    """
-    Python material for isotropic, linear Maxwell viscoelastic.
-
-    INVENTORY
-
-    Properties
-      - *use_reference_state* Use reference stress/strain state.
-
-    Facilities
-      - None
+    """Python material for isotropic, linear Maxwell viscoelastic.
 
     FACTORY: elasticity_rheology
     """

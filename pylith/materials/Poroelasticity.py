@@ -26,17 +26,7 @@ from .IsotropicLinearPoroelasticity import IsotropicLinearPoroelasticity
 
 
 class Poroelasticity(Material, ModulePoroelasticity):
-    """
-    Python material property manager.
-
-    INVENTORY
-
-    Properties
-      - *use_inertia* Include inertial term in Poroelasticity equation.
-      - *use_body_force* Include body force term in Poroelasticity equation.
-
-    Facilities
-      - *bulk_rheology* Bulk rheology for poroelastic material.
+    """Python material property manager.
 
     FACTORY: material
     """

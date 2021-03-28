@@ -28,14 +28,6 @@ class RheologyElasticity(PetscComponent, ModuleRheology):
     """
     Python object for bulk rheology of an elastic material.
 
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *auxiliary_subfields* Discretization of physical properties and state variables.
-
     FACTORY: elasticity_rheology
     """
     import pythia.pyre.inventory
@@ -85,15 +77,6 @@ class RheologyElasticity(PetscComponent, ModuleRheology):
         Call constructor for module object for access to C++ object.
         """
         raise NotImplementedError("Implement in derived class.")
-
-
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def elasticity_rheology():
-    """
-    Factory associated with RheologyElasticity.
-    """
-    return RheologyElasticity()
 
 
 # End of file

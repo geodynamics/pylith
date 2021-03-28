@@ -25,16 +25,7 @@ from .materials import IsotropicLinearElasticity as ModuleLinearElasticity
 
 
 class IsotropicLinearElasticity(RheologyElasticity, ModuleLinearElasticity):
-    """
-    Python material for isotropic, linearly elastic plane strain.
-
-    INVENTORY
-
-    Properties
-      - *use_reference_state* Use reference stress/strain state.
-
-    Facilities
-      - None
+    """Python material for isotropic, linearly elastic plane strain.
 
     FACTORY: elasticity_rheology
     """

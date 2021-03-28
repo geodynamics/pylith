@@ -21,17 +21,9 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class DerivedSubfieldsElasticity(PetscComponent):
-    """
-    Python container for derived subfields for elasticity.
+    """Python container for derived subfields for elasticity.
 
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *cauchy_stress* Cauchy stress subfield.
-      - *cauchy_strain* Cauchy strain subfield.
+    FACTORY: derived_subfields
     """
 
     import pythia.pyre.inventory

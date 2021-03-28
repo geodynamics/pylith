@@ -21,16 +21,7 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class Homogeneous(PetscComponent):
-    """
-    Python materials container with one material.
-
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *material* Material in problem.
+    """Python materials container with one material.
     """
 
     import pythia.pyre.inventory

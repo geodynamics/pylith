@@ -15,25 +15,26 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/materials/TestHomogeneous.py
+# @file tests/pytests/materials/TestElasticity.py
 #
-# @brief Unit testing of Python Homogeneous object.
+# @brief Unit testing of Python TestElasticity object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestAbstractComponent
-from pylith.materials.Homogeneous import Homogeneous
+from pylith.testing.UnitTestApp import TestComponent
+from pylith.materials.Elasticity import (Elasticity, material)
 
 
-class TestHomogeneous(TestAbstractComponent):
-    """Unit testing of Homogeneous object.
+class TestElasticity(TestComponent):
+    """Unit testing of Elasticity object.
     """
-    _class = Homogeneous
+    _class = Elasticity
+    _factory = material
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestHomogeneous))
+    suite.addTest(unittest.makeSuite(TestElasticity))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

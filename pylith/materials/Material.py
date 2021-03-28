@@ -37,15 +37,6 @@ class Material(Physics, ModuleMaterial):
     """
     Python material property manager.
 
-    INVENTORY
-
-    Properties
-      - *id* Material identifier (from mesh generator)
-      - *label* Descriptive label for material.
-
-    Facilities
-      - None
-
     FACTORY: material
     """
 

@@ -25,18 +25,9 @@ from .materials import IsotropicLinearIncompElasticity as ModuleLinearElasticity
 
 
 class IsotropicLinearIncompElasticity(RheologyIncompressibleElasticity, ModuleLinearElasticity):
-    """
-    Python material for isotropic, linearly elastic incompressible.
+    """Python material for isotropic, linearly elastic incompressible.
 
-    INVENTORY
-
-    Properties
-      - *use_reference_state* Use reference stress/strain state.
-
-    Facilities
-      - *auxiliary_subfields* Discretization of physical properties and state variables.
-
-    FACTORY: material
+    FACTORY: incompressible_elasticity_rheology
     """
 
     import pythia.pyre.inventory

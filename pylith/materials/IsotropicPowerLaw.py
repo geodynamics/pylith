@@ -26,16 +26,7 @@ from .materials import IsotropicPowerLaw as ModuleLinearElasticity
 
 
 class IsotropicPowerLaw(RheologyElasticity, ModuleLinearElasticity):
-    """
-    Python material for isotropic power-law viscoelastic material.
-
-    INVENTORY
-
-    Properties
-      - *use_reference_state* Use reference stress/strain state.
-
-    Facilities
-      - None
+    """Python material for isotropic power-law viscoelastic material.
 
     FACTORY: elasticity_rheology
     """

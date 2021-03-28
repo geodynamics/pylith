@@ -15,25 +15,25 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/materials/TestHomogeneous.py
+# @file tests/pytests/materials/TestMaterial.py
 #
-# @brief Unit testing of Python Homogeneous object.
+# @brief Unit testing of Python TestMaterial object.
 
 import unittest
 
 from pylith.testing.UnitTestApp import TestAbstractComponent
-from pylith.materials.Homogeneous import Homogeneous
+from pylith.materials.Material import Material
 
 
-class TestHomogeneous(TestAbstractComponent):
-    """Unit testing of Homogeneous object.
+class TestMaterial(TestAbstractComponent):
+    """Unit testing of Material object.
     """
-    _class = Homogeneous
+    _class = Material
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestHomogeneous))
+    suite.addTest(unittest.makeSuite(TestMaterial))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

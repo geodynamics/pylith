@@ -15,25 +15,26 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/materials/TestHomogeneous.py
+# @file tests/pytests/materials/TestPoroelasticity.py
 #
-# @brief Unit testing of Python Homogeneous object.
+# @brief Unit testing of Python TestPoroelasticity object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestAbstractComponent
-from pylith.materials.Homogeneous import Homogeneous
+from pylith.testing.UnitTestApp import TestComponent
+from pylith.materials.Poroelasticity import (Poroelasticity, material)
 
 
-class TestHomogeneous(TestAbstractComponent):
-    """Unit testing of Homogeneous object.
+class TestPoroelasticity(TestComponent):
+    """Unit testing of Poroelasticity object.
     """
-    _class = Homogeneous
+    _class = Poroelasticity
+    _factory = material
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestHomogeneous))
+    suite.addTest(unittest.makeSuite(TestPoroelasticity))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

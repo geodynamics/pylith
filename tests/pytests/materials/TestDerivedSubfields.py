@@ -15,25 +15,29 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/materials/TestHomogeneous.py
+# @file tests/pytests/materials/TestDerivedSubfields.py
 #
-# @brief Unit testing of Python Homogeneous object.
+# @brief Unit testing of Python derived subfields object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestAbstractComponent
-from pylith.materials.Homogeneous import Homogeneous
+from pylith.testing.UnitTestApp import TestComponent
+import pylith.materials.DerivedSubfieldsElasticity
 
 
-class TestHomogeneous(TestAbstractComponent):
-    """Unit testing of Homogeneous object.
+class TestDerivedSubfieldsElasticity(TestComponent):
+    """Unit testing of DerivedSubfieldsElasticity object.
     """
-    _class = Homogeneous
+    _class = pylith.materials.DerivedSubfieldsElasticity.DerivedSubfieldsElasticity
+    _factory = pylith.materials.DerivedSubfieldsElasticity.derived_subfields
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestHomogeneous))
+    for cls in [
+        TestDerivedSubfieldsElasticity,
+        ]:
+        suite.addTest(unittest.makeSuite(cls))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

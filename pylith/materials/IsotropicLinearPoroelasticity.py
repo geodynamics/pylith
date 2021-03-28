@@ -25,16 +25,7 @@ from .materials import IsotropicLinearPoroelasticity as ModuleLinearPoroelastici
 
 
 class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelasticity):
-    """
-    Python material for isotropic, linearly poroelastic plane strain.
-
-    INVENTORY
-
-    Properties
-      - *use_reference_state* Use reference stress/strain state.
-
-    Facilities
-      - None
+    """Python material for isotropic, linearly poroelastic plane strain.
 
     FACTORY: poroelasticity_rheology
     """

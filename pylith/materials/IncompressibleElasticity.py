@@ -29,14 +29,6 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
     """
     Python material property manager.
 
-    INVENTORY
-
-    Properties
-      - *use_body_force* Include body force term in elasticity equation.
-
-    Facilities
-      - *bulk_rheology* Bulk rheology for incompessible elastic material.
-
     FACTORY: material
     """
 

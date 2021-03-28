@@ -28,14 +28,6 @@ class RheologyPoroelasticity(PetscComponent, ModuleRheology):
     """
     Python object for bulk rheology of a poroelastic material.
 
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *auxiliary_subfields* Discretization of physical properties and state variables.
-
     FACTORY: poroelasticity_rheology
     """
 
@@ -86,15 +78,6 @@ class RheologyPoroelasticity(PetscComponent, ModuleRheology):
         Call constructor for module object for access to C++ object.
         """
         raise NotImplementedError("Implement in derived class.")
-
-
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def poroelasticity_rheology():
-    """
-    Factory associated with RheologyPoroelasticity.
-    """
-    return RheologyPoroelasticity()
 
 
 # End of file
