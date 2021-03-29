@@ -15,26 +15,26 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/meshio/TestOutputSolnPoints.py
+# @file tests/pytests/meshio/TestOutputSolnBoundary.py
 #
-# @brief Unit testing of Python OutputSolnPoints object.
+# @brief Unit testing of Python OutputSolnBoundary object.
 
 import unittest
 
 from pylith.testing.UnitTestApp import TestComponent
-from pylith.meshio.OutputSolnPoints import (OutputSolnPoints, observer)
+from pylith.meshio.OutputSolnBoundary import (OutputSolnBoundary, observer)
 
 
-class TestOutputSolnPoints(TestComponent):
-    """Unit testing of OutputSolnPoints object.
+class TestOutputSolnBoundary(TestComponent):
+    """Unit testing of OutputSolnBoundary object.
     """
-    _class = OutputSolnPoints
+    _class = OutputSolnBoundary
     _factory = observer
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestOutputSolnPoints))
+    suite.addTest(unittest.makeSuite(TestOutputSolnBoundary))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

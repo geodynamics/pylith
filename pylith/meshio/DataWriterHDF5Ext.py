@@ -27,13 +27,7 @@ class DataWriterHDF5Ext(DataWriter, ModuleDataWriterHDF5Ext):
     @brief Python object for writing finite-element data to HDF5 file
     with datasets stored in external binary files.
 
-    INVENTORY
-
-    Properties
-      - *filename* Name of HDF5 file.
-
-    Facilities
-      - None
+    FACTORY: data_writer
     """
 
     import pythia.pyre.inventory

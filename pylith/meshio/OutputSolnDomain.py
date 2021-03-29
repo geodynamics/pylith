@@ -79,9 +79,9 @@ class OutputSolnDomain(OutputSoln, ModuleOutputSolnDomain):
 
 def observer():
     """
-    Factory associated with OutputSoln.
+    Factory associated with OutputSolnDomain.
     """
-    return OutputSoln()
+    return OutputSolnDomain()
 
 
 # End of file

@@ -25,16 +25,6 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
     """
     Python object for writing finite-element data to VTK file.
 
-    INVENTORY
-
-    Properties
-      - *filename* Name of VTK file.
-      - *time_format* C style format string for time stamp in filename.
-      - *time_constant* Value used to normalize time stamp in filename.
-
-    Facilities
-      - None
-
     FACTORY: data_writer
     """
 

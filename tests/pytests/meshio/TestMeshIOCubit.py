@@ -15,26 +15,26 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/meshio/TestOutputSolnPoints.py
+# @file tests/pytests/meshio/TestMeshIOCubit.py
 #
-# @brief Unit testing of Python OutputSolnPoints object.
+# @brief Unit testing of Python MeshIOCubit object.
 
 import unittest
 
 from pylith.testing.UnitTestApp import TestComponent
-from pylith.meshio.OutputSolnPoints import (OutputSolnPoints, observer)
+from pylith.meshio.MeshIOCubit import (MeshIOCubit, mesh_io)
 
 
-class TestOutputSolnPoints(TestComponent):
-    """Unit testing of OutputSolnPoints object.
+class TestMeshIOCubit(TestComponent):
+    """Unit testing of MeshIOCubit object.
     """
-    _class = OutputSolnPoints
-    _factory = observer
+    _class = MeshIOCubit
+    _factory = mesh_io
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestOutputSolnPoints))
+    suite.addTest(unittest.makeSuite(TestMeshIOCubit))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

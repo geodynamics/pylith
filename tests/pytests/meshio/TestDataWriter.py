@@ -15,26 +15,30 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/meshio/TestOutputSolnPoints.py
+# @file tests/pytests/meshio/TestDataWriter.py
 #
-# @brief Unit testing of Python OutputSolnPoints object.
+# @brief Unit testing of Python DataWriter object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestComponent
-from pylith.meshio.OutputSolnPoints import (OutputSolnPoints, observer)
+from pylith.testing.UnitTestApp import TestAbstractComponent
+from pylith.meshio.DataWriter import DataWriter
 
 
-class TestOutputSolnPoints(TestComponent):
-    """Unit testing of OutputSolnPoints object.
+class TestDataWriter(TestAbstractComponent):
+    """Unit testing of DataWriter object.
     """
-    _class = OutputSolnPoints
-    _factory = observer
+    _class = DataWriter
+
+    def test_mkfilename(self):
+        writer = DataWriter()
+        filename = writer.mkfilename(outputDir="abc", simName="defg", label="hijkl", suffix="hx3")
+        self.assertEqual("abc/defg-hijkl.hx3", filename)
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestOutputSolnPoints))
+    suite.addTest(unittest.makeSuite(TestDataWriter))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

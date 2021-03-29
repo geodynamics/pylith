@@ -25,13 +25,7 @@ class DataWriterHDF5(DataWriter, ModuleDataWriterHDF5):
     """
     Python object for writing finite-element data to HDF5 file.
 
-    INVENTORY
-
-    Properties
-      - *filename* Name of HDF5 file.
-
-    Facilities
-      - None
+    FACTORY: data_writer
     """
 
     # INVENTORY //////////////////////////////////////////////////////////

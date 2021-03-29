@@ -15,26 +15,26 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/meshio/TestOutputSolnPoints.py
+# @file tests/pytests/meshio/TestOutputTriggerStep.py
 #
-# @brief Unit testing of Python OutputSolnPoints object.
+# @brief Unit testing of Python OutputTriggerStep object.
 
 import unittest
 
 from pylith.testing.UnitTestApp import TestComponent
-from pylith.meshio.OutputSolnPoints import (OutputSolnPoints, observer)
+from pylith.meshio.OutputTriggerStep import (OutputTriggerStep, output_trigger)
 
 
-class TestOutputSolnPoints(TestComponent):
-    """Unit testing of OutputSolnPoints object.
+class TestOutputTriggerStep(TestComponent):
+    """Unit testing of OutputTriggerStep object.
     """
-    _class = OutputSolnPoints
-    _factory = observer
+    _class = OutputTriggerStep
+    _factory = output_trigger
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestOutputSolnPoints))
+    suite.addTest(unittest.makeSuite(TestOutputTriggerStep))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

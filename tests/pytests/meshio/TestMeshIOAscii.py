@@ -15,26 +15,26 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/meshio/TestOutputSolnPoints.py
+# @file tests/pytests/meshio/TestMeshIOAscii.py
 #
-# @brief Unit testing of Python OutputSolnPoints object.
+# @brief Unit testing of Python MeshIOAscii object.
 
 import unittest
 
 from pylith.testing.UnitTestApp import TestComponent
-from pylith.meshio.OutputSolnPoints import (OutputSolnPoints, observer)
+from pylith.meshio.MeshIOAscii import (MeshIOAscii, mesh_io)
 
 
-class TestOutputSolnPoints(TestComponent):
-    """Unit testing of OutputSolnPoints object.
+class TestMeshIOAscii(TestComponent):
+    """Unit testing of MeshIOAscii object.
     """
-    _class = OutputSolnPoints
-    _factory = observer
+    _class = MeshIOAscii
+    _factory = mesh_io
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestOutputSolnPoints))
+    suite.addTest(unittest.makeSuite(TestMeshIOAscii))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

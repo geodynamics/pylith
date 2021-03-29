@@ -31,7 +31,7 @@ DIRS = [
     "faults",
     "friction",
     "materials",
-    # "meshio",
+    "meshio",
     # "mpi",
     # "problems",
     # "tests",
@@ -55,7 +55,7 @@ class TestApp(object):
             "pylith.meshio",
             "pylith.mpi",
             "pylith.problems",
-            "pylith.tests",
+            "pylith.testing",
             "pylith.topology",
             "pylith.utils",
         ]

@@ -15,26 +15,26 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/meshio/TestOutputSolnPoints.py
+# @file tests/pytests/meshio/TestFieldFilterNone.py
 #
-# @brief Unit testing of Python OutputSolnPoints object.
+# @brief Unit testing of Python FieldFilterNone object.
 
 import unittest
 
 from pylith.testing.UnitTestApp import TestComponent
-from pylith.meshio.OutputSolnPoints import (OutputSolnPoints, observer)
+from pylith.meshio.FieldFilterNone import (FieldFilterNone, output_field_filter)
 
 
-class TestOutputSolnPoints(TestComponent):
-    """Unit testing of OutputSolnPoints object.
+class TestFieldFilterNone(TestComponent):
+    """Unit testing of FieldFilterNone object.
     """
-    _class = OutputSolnPoints
-    _factory = observer
+    _class = FieldFilterNone
+    _factory = output_field_filter
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestOutputSolnPoints))
+    suite.addTest(unittest.makeSuite(TestFieldFilterNone))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 
