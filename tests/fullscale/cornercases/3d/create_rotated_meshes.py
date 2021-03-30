@@ -43,6 +43,7 @@ meshCoords = numpy.array([[-4.0e+3, -4.0e+3,  0.0e+3,],
 # Rotation angles.
 alpha = numpy.radians(30.0) # Rotation about x axis.
 beta = numpy.radians(30.0) # Rotation about y axis.
+# meshOrigin = numpy.array([0.0, 0.0, -4000.0], dtype=numpy.float64)
 
 # Rotation matrix.
 ca = math.cos(alpha)
@@ -71,6 +72,7 @@ for meshNum in range(len(inputMeshes)):
 
     mesh = io.read(debug=False)
 """
+# meshCoords -= meshOrigin
 coordsRot = numpy.dot(rotMat, meshCoords.transpose()).transpose()
 numVerts = coordsRot.shape[0]
 f = open(outFile, 'w')
