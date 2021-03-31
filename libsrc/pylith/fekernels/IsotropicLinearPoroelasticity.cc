@@ -2863,7 +2863,7 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::f1p_gravity(const PylithInt 
                                                               const PylithScalar constants[],
                                                               PylithScalar f1p[]) {
 
-    const PylithInt _dim = 2;
+    const PylithInt _dim = 3;
 
     // Incoming solution field.
     const PylithInt i_pressure = 1;
@@ -2917,7 +2917,7 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::f1p_gravity_tensor_permeabil
                                                                                   const PylithScalar constants[],
                                                                                   PylithScalar f1p[]) {
 
-    const PylithInt _dim = 2;
+    const PylithInt _dim = 3;
 
     // Incoming solution field.
     const PylithInt i_pressure = 1;
@@ -2980,7 +2980,7 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::f1p(const PylithInt dim,
                                                       const PylithScalar constants[],
                                                       PylithScalar f1p[]) {
 
-    const PylithInt _dim = 2;
+    const PylithInt _dim = 3;
 
     // Incoming solution field.
     const PylithInt i_pressure = 1;
@@ -3030,7 +3030,7 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::f1p_tensor_permeability(cons
                                                      const PylithScalar constants[],
                                                      PylithScalar f1p[]) {
 
-    const PylithInt _dim = 2;
+    const PylithInt _dim = 3;
 
     // Incoming solution field.
     const PylithInt i_pressure = 1;
