@@ -336,11 +336,10 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
 
         // Pressure
         const PetscPointFunc g0p = _rheology->getKernelg0p(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
-        const PetscPointFunc g1p = _rheology->getKernelg1p_explicit(coordsys, _gravityField);    // darcy velocity
+        const PetscPointFunc g1p = _rheology->getKernelg1p(coordsys, _gravityField);    // darcy velocity
 
         // Velocity
         PetscPointFunc g0v = NULL;
-        const PetscPointFunc g1v = _rheology->getKernelResidualStress(coordsys, _useInertia);
 
         const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
         const int bitGravity = _gravityField ? 0x2 : 0x0;
@@ -373,6 +372,8 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
         default:
             PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
         } // switch
+        
+        const PetscPointFunc g1v = _rheology->getKernelg1v(coordsys);
 
         kernels.resize(3);
         kernels[0] = ResidualKernels("displacement", g0u, g1u);
@@ -436,7 +437,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
         default:
             PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
         } // switch
-        const PetscPointFunc f1u = _rheology->getKernelResidualStress(coordsys, _useInertia);
+        const PetscPointFunc f1u = _rheology->getKernelf1u_implicit(coordsys);
 
         // Pressure
         PetscPointFunc f0p = _rheology->getKernelf0p_implicit(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
