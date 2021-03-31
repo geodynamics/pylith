@@ -23,21 +23,30 @@ dist_noinst_PYTHON = \
 	meshes.py \
 	TestAxialDispOneCell.py \
 	TestAxialDispConstrained.py \
+	TestAxialDispRotated.py \
 	axialdisp_soln.py \
-	axialdisp_gendb.py
+	axialdisp_gendb.py \
+	axialdisp_rotated_soln.py \
+	axialdisp_rotated_gendb.py
 
 dist_noinst_DATA = \
 	fivecells_tet.mesh \
 	onecell_hex.mesh \
+	fivecells_rotated_tet.mesh \
+	onecell_rotated_hex.mesh \
 	pylithapp.cfg \
 	axialdisp.cfg \
 	axialdisp_hex.cfg \
+	axialdisp_rotated.cfg \
+	axialdisp_rotated_hex.cfg \
+	axialdisp_rotated_tet.cfg \
 	dofconstrained.cfg \
 	dofconstrained_tet.cfg \
 	dofconstrained_hex.cfg
 
 noinst_TMP = \
-	axialdisp_bc.spatialdb
+	axialdisp_bc.spatialdb \
+	axialdisp_rotated_bc.spatialdb
 
 
 
