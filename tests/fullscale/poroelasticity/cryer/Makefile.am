@@ -27,10 +27,10 @@ dist_noinst_PYTHON = \
 dist_noinst_DATA = \
 	geometry.jou \
 	bc.jou \
-	mesh_tri.jou \
-	mesh_tri.exo \
-	mesh_quad.jou \
-	mesh_quad.exo \
+	mesh_tet.jou \
+	mesh_tet.exo \
+	mesh_hex.jou \
+	mesh_hex.exo \
 	cryer.cfg \
 	cryer_tet.cfg \
 	cryer_hex.cfg 
