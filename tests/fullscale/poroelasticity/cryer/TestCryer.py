@@ -25,8 +25,8 @@ from pylith.tests.FullTestApp import check_data
 from pylith.tests.FullTestApp import TestCase as FullTestCase
 
 import meshes
-from mandel_soln import AnalyticalSoln
-from mandel_gendb import GenerateDB
+from cryer_soln import AnalyticalSoln
+from cryer_gendb import GenerateDB
 
 # We do not include trace_strain in the solution fields, because of the
 # poor convergence of the series solution.
