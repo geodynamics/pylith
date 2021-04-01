@@ -17,7 +17,8 @@
 
 SUBDIRS = \
 	terzaghi \
-	mandel
+	mandel \
+	cryer
 
 
-# End of file 
+# End of file
