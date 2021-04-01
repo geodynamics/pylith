@@ -38,7 +38,7 @@ class TestApp(TestDriver):
         """
         suite = unittest.TestSuite()
 
-        import TestMandel
+        import TestCryer
         for test in TestCryer.test_cases():
             suite.addTest(unittest.makeSuite(test))
 
