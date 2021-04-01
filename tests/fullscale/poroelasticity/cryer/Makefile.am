@@ -35,7 +35,6 @@ dist_noinst_DATA = \
 	cryer_tet.cfg \
 	cryer_hex.cfg 
 
-
 # 'export' the input files by performing a mock install
 export_datadir = $(abs_top_builddir)/tests/fullscale/poroelasticity/cryer
 export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
