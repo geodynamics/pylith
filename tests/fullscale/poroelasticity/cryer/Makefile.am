@@ -22,7 +22,8 @@ dist_check_SCRIPTS = test_pylith.py
 dist_noinst_PYTHON = \
 	meshes.py \
 	TestCryer.py \
-	cryer_soln.py 	
+	cryer_soln.py \
+	cryer_gendb.py
 
 dist_noinst_DATA = \
 	geometry.jou \
@@ -33,7 +34,11 @@ dist_noinst_DATA = \
 	mesh_hex.exo \
 	cryer.cfg \
 	cryer_tet.cfg \
-	cryer_hex.cfg 
+	cryer_hex.cfg
+
+	noinst_TMP = \
+		cryer_bc.spatialdb \
+		cryer_ic.spatialdb
 
 # 'export' the input files by performing a mock install
 export_datadir = $(abs_top_builddir)/tests/fullscale/poroelasticity/cryer
@@ -41,7 +46,7 @@ export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 
 clean-data:
-	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
+	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
 
 
 BUILT_SOURCES = export-data

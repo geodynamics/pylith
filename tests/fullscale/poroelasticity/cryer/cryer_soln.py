@@ -87,7 +87,7 @@ class AnalyticalSoln(object):
         self.fields = {
             "displacement": self.displacement,
             "pressure": self.pressure,
-            "trace_strain": self.trace_strain,
+            #"trace_strain": self.trace_strain,
             "porosity": self.porosity,
             "solid_density": self.solid_density,
             "fluid_density": self.fluid_density,
@@ -227,17 +227,17 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
         displacement = numpy.zeros((ntpts, npts, dim), dtype=numpy.float64)
-    
+
         x_n = self.mandelZeros()
         center = numpy.where(~locs.any(axis=1))[0]
         R = numpy.sqrt(locs[:,0]*locs[:,0] + locs[:,1]*locs[:,1] + locs[:,2]*locs[:,2])
         R_star = R.reshape([R.size,1]) / R_0
         x_n.reshape([1,x_n.size])
-        
+
         E = numpy.square(1-nu)*numpy.square(1+nu_u)*x_n - 18*(1+nu)*(nu_u-nu)*(1-nu_u)
-        
+
         t_track = 0
-        
+
         for t in tsteps:
             t_star = (c*t)/(R_0**2)
             displacement[t_track, :] = R_star.ravel() - numpy.nan_to_num(numpy.sum(((12*(1 + nu)*(nu_u - nu)) / \
@@ -245,7 +245,7 @@ class AnalyticalSoln(object):
                                         (3*(nu_u - nu) * (numpy.sin(R_star*numpy.sqrt(x_n)) - R_star*numpy.sqrt(x_n)*numpy.cos(R_star*numpy.sqrt(x_n))) + \
                                         (1 - nu)*(1 - 2*nu)*R_star*R_star*R_star*x_n*numpy.sin(numpy.sqrt(x_n))) * \
                                         numpy.exp(-x_n*t_star),axis=1))
-                                            
+
             t_track += 1
 
         return displacement
@@ -257,7 +257,7 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
         pressure = numpy.zeros((ntpts, npts, 1), dtype=numpy.float64)
-        
+
         center = numpy.where(~locs.any(axis=1))[0]
 
         x_n = self.mandelZeros()
@@ -269,19 +269,19 @@ class AnalyticalSoln(object):
         E = (1-nu)**2 * (1+nu_u)**2 * x_n - 18*(1+nu)*(nu_u-nu)*(1-nu_u)
 
         t_track = 0
-        
+
         for t in tsteps:
 
-       
+
             pressure[t_track,:] = numpy.sum( ( (18*numpy.square(nu_u-nu) ) / (eta*E) ) * \
                                         ( (numpy.sin(R_star*numpy.sqrt(x_n))) / (R_star*numpy.sin(numpy.sqrt(x_n)) ) - 1 ) * \
-                                        numpy.exp(-x_n*t_star) , axis=1) 
+                                        numpy.exp(-x_n*t_star) , axis=1)
 
             # Account for center value
             #pressure[t_track,center] = numpy.sum( (8*eta*(numpy.sqrt(x_n) - numpy.sin(numpy.sqrt(x_n)))) / ( (x_n - 12*eta + 16*eta*eta)*numpy.sin(numpy.sqrt(x_n)) ) * numpy.exp(-x_n * t_star) )
             pressure[t_track,center] = numpy.sum( ( (18*numpy.square(nu_u-nu) ) / (eta*E) ) * \
                                         ( (numpy.sqrt(x_n)) / (numpy.sin(numpy.sqrt(x_n)) ) - 1 ) * \
-                                        numpy.exp(-x_n*t_star)) 
+                                        numpy.exp(-x_n*t_star))
             t_track += 1
 
         return pressure
@@ -290,26 +290,32 @@ class AnalyticalSoln(object):
     def cryer_zeros(self):
         """
         This is somehow tricky, we have to solve the equation numerically in order to
-        find all the positive solutions to the equation. Later we will use them to 
+        find all the positive solutions to the equation. Later we will use them to
         compute the infinite sums. Experience has shown that 200 roots are more than enough to
         achieve accurate results. Note that we find the roots using the bisection method.
         """
-        f      = lambda x: numpy.tan(numpy.sqrt(x)) - (6*(nu_u - nu)*numpy.sqrt(x))/(6*(nu_u - nu) - (1 - nu)*(1 + nu_u)*x) # Compressible Constituents 
+        f      = lambda x: numpy.tan(numpy.sqrt(x)) - (6*(nu_u - nu)*numpy.sqrt(x))/(6*(nu_u - nu) - (1 - nu)*(1 + nu_u)*x) # Compressible Constituents
     #    f      = lambda x: numpy.tan(numpy.sqrt(x)) - (2*(1-2*nu)*numpy.sqrt(x))/(2*(1-2*nu) - (1-nu)*x) # Incompressible Constituents
 
         a_n = numpy.zeros(self.ITERATIONS) # initializing roots array
         x0 = 0                 # initial point
         for i in range(1,len(a_n)+1):
             a1 = numpy.square(i*numpy.pi) - (i+1)*numpy.pi
-            a2 = numpy.square(i*numpy.pi) + (i+1)*numpy.pi        
+            a2 = numpy.square(i*numpy.pi) + (i+1)*numpy.pi
             a_n[i-1] = opt.bisect( f,                           # function
-                                   a1,                          # left point 
+                                   a1,                          # left point
                                    a2,                          # right point (a tiny bit less than pi/2)
                                    xtol=1e-30,                  # absolute tolerance
                                    rtol=1e-15                   # relative tolerance
-                               )  
+                               )
             x0 += numpy.pi # apply a phase change of pi to get the next root
-        
+
         return a_n
 
+    def surface_traction(self, locs):
+        (npts, dim) = locs.shape
+        traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
+        traction[:,:,-1] = -1.0
+
+        return traction
 # End of file
