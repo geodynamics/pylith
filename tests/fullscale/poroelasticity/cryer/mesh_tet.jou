@@ -16,7 +16,7 @@ volume all size 0.1
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
-volume all scheme tetmesh 
+volume all scheme tetmesh
 mesh volume all
 
 # ----------------------------------------------------------------------
@@ -35,6 +35,4 @@ playback 'bc.jou'
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "mesh_tet.exo" dimension 3 overwrite
-
-
 

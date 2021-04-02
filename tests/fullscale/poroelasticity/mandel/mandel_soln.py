@@ -299,30 +299,55 @@ class AnalyticalSoln(object):
 
     # Series functions
 
-    def mandelZeros(self):
-        """Compute roots for analytical mandel problem solutions
-        """
-        zeroArray = numpy.zeros(self.ITERATIONS)
-        x0 = 0
+def mandelZeros(self):
 
-        for i in numpy.arange(1, self.ITERATIONS + 1, 1):
-            a1 = x0 + numpy.pi/4
-            a2 = x0 + numpy.pi/2 - 10000*2.2204e-16
-            am = a1
-            for j in numpy.arange(0, self.ITERATIONS, 1):
-                y1 = numpy.tan(a1) - ((1.0 - nu) / (nu_u - nu)) * a1
-                y2 = numpy.tan(a2) - ((1.0 - nu) / (nu_u - nu)) * a2
-                am = (a1 + a2) / 2.0
-                ym = numpy.tan(am) - (1 - nu) / (nu_u - nu) * am
-                if ((ym * y1) > 0):
-                    a1 = am
-                else:
-                    a2 = am
-                if (numpy.abs(y2) < self.EPS):
-                    am = a2
-            zeroArray[i - 1] = am
-            x0 += numpy.pi
-        return zeroArray
+    f      = lambda x: numpy.tan(x) - ((1-nu)/(nu_u-nu))*x # define the algebraic eq. as a lambda function
+    n_series = self.ITERATIONS
+    a_n = numpy.zeros(n_series) # initializing roots array
+    xtol = 1e-30
+    rtol = 1e-15
+    for i in range(1,n_series+1):
+        a = (i-1)*numpy.pi + numpy.pi/4
+        b = (i-1)*numpy.pi + numpy.pi/2 - 10000*2.2204e-16
+        # print('a: ',a)
+        # print('b: ',b)
+        f_c = 10
+        f_c_old = 0
+        rtol_flag = False
+        c = 0
+        it = 0
+        while numpy.abs(f_c) > xtol and rtol_flag == False:
+            c = (a + b) / 2
+            f_c = f(c)
+
+            # print('c: ',c)
+            # print('f(c):',f_c)
+
+            if f(a)*f_c < 0:
+                a = a
+                b = c
+            elif f(b)*f_c < 0:
+                a = c
+                b = b
+            else:
+                print('Bisection method failed')
+                # print('a: ',a)
+                # print('b: ',b)
+                break
+            if numpy.abs(numpy.abs(f_c_old) - numpy.abs(f_c)) < rtol:
+                rtol_flag = True
+            it += 1
+            # print('f(c): ',f_c)
+            # print('rtol: ',numpy.abs(numpy.abs(f_c_old) - numpy.abs(f_c)))
+            # print('rtol flag: ',rtol_flag)
+            f_c_old = f_c
+        # print('n: ',i)
+        # print('c: ',c)
+        # print('f(c):',f_c)
+        # print('iter: ',it)
+        a_n[i-1] = c
+
+    return(a_n)
 
     def strain(self, locs):
         """Compute strain field at locations.
