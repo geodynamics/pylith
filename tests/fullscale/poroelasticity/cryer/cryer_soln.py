@@ -78,9 +78,9 @@ class AnalyticalSoln(object):
     """
     Analytical solution to Mandel's problem
     """
-    SPACE_DIM = 2
+    SPACE_DIM = 3
     TENSOR_SIZE = 4
-    ITERATIONS = 300
+    ITERATIONS = 50
     EPS = 1e-25
 
     def __init__(self):
@@ -228,9 +228,11 @@ class AnalyticalSoln(object):
         ntpts = tsteps.shape[0]
         displacement = numpy.zeros((ntpts, npts, dim), dtype=numpy.float64)
 
-        x_n = self.mandelZeros()
+        x_n = self.cryerZeros()
         center = numpy.where(~locs.any(axis=1))[0]
         R = numpy.sqrt(locs[:,0]*locs[:,0] + locs[:,1]*locs[:,1] + locs[:,2]*locs[:,2])
+        theta = numpy.nan_to_num( numpy.arctan( numpy.nan_to_num( numpy.sqrt(locs[:,0]**2 + locs[:,1]**2) / locs[:,2] ) ) )
+        phi = numpy.nan_to_num( numpy.arctan( numpy.nan_to_num( locs[:,1] / locs[:,0] ) ) )
         R_star = R.reshape([R.size,1]) / R_0
         x_n.reshape([1,x_n.size])
 
@@ -240,12 +242,15 @@ class AnalyticalSoln(object):
 
         for t in tsteps:
             t_star = (c*t)/(R_0**2)
-            displacement[t_track, :] = R_star.ravel() - numpy.nan_to_num(numpy.sum(((12*(1 + nu)*(nu_u - nu)) / \
+            r_exact_N =  R_star.ravel() - numpy.nan_to_num(numpy.sum(((12*(1 + nu)*(nu_u - nu)) / \
                                                ((1 - 2*nu)*E*R_star*R_star*x_n*numpy.sin(numpy.sqrt(x_n))) ) * \
                                         (3*(nu_u - nu) * (numpy.sin(R_star*numpy.sqrt(x_n)) - R_star*numpy.sqrt(x_n)*numpy.cos(R_star*numpy.sqrt(x_n))) + \
                                         (1 - nu)*(1 - 2*nu)*R_star*R_star*R_star*x_n*numpy.sin(numpy.sqrt(x_n))) * \
                                         numpy.exp(-x_n*t_star),axis=1))
 
+            displacement[t_track, :, 0] = -r_exact_N*numpy.cos(phi)*numpy.sin(theta)
+            displacement[t_track, :, 1] = r_exact_N*numpy.sin(phi)*numpy.sin(theta)
+            displacement[t_track, :, 2] = r_exact_N*numpy.cos(theta)
             t_track += 1
 
         return displacement
@@ -260,7 +265,7 @@ class AnalyticalSoln(object):
 
         center = numpy.where(~locs.any(axis=1))[0]
 
-        x_n = self.mandelZeros()
+        x_n = self.cryerZeros()
 
         R = numpy.sqrt(locs[:,0]*locs[:,0] + locs[:,1]*locs[:,1] + locs[:,2]*locs[:,2])
         R_star = R.reshape([R.size,1]) / R_0
@@ -272,14 +277,14 @@ class AnalyticalSoln(object):
 
         for t in tsteps:
 
-
-            pressure[t_track,:] = numpy.sum( ( (18*numpy.square(nu_u-nu) ) / (eta*E) ) * \
+            t_star = (c*t)/(R_0**2)
+            pressure[t_track,:,0] = numpy.sum( ( (18*numpy.square(nu_u-nu) ) / (eta*E) ) * \
                                         ( (numpy.sin(R_star*numpy.sqrt(x_n))) / (R_star*numpy.sin(numpy.sqrt(x_n)) ) - 1 ) * \
                                         numpy.exp(-x_n*t_star) , axis=1)
 
             # Account for center value
             #pressure[t_track,center] = numpy.sum( (8*eta*(numpy.sqrt(x_n) - numpy.sin(numpy.sqrt(x_n)))) / ( (x_n - 12*eta + 16*eta*eta)*numpy.sin(numpy.sqrt(x_n)) ) * numpy.exp(-x_n * t_star) )
-            pressure[t_track,center] = numpy.sum( ( (18*numpy.square(nu_u-nu) ) / (eta*E) ) * \
+            pressure[t_track,center,0] = numpy.sum( ( (18*numpy.square(nu_u-nu) ) / (eta*E) ) * \
                                         ( (numpy.sqrt(x_n)) / (numpy.sin(numpy.sqrt(x_n)) ) - 1 ) * \
                                         numpy.exp(-x_n*t_star))
             t_track += 1
@@ -287,30 +292,58 @@ class AnalyticalSoln(object):
         return pressure
 
     # Series functions
-    def cryer_zeros(self):
-        """
-        This is somehow tricky, we have to solve the equation numerically in order to
-        find all the positive solutions to the equation. Later we will use them to
-        compute the infinite sums. Experience has shown that 200 roots are more than enough to
-        achieve accurate results. Note that we find the roots using the bisection method.
-        """
+
+
+    def cryerZeros(self):
+
         f      = lambda x: numpy.tan(numpy.sqrt(x)) - (6*(nu_u - nu)*numpy.sqrt(x))/(6*(nu_u - nu) - (1 - nu)*(1 + nu_u)*x) # Compressible Constituents
-    #    f      = lambda x: numpy.tan(numpy.sqrt(x)) - (2*(1-2*nu)*numpy.sqrt(x))/(2*(1-2*nu) - (1-nu)*x) # Incompressible Constituents
 
-        a_n = numpy.zeros(self.ITERATIONS) # initializing roots array
-        x0 = 0                 # initial point
-        for i in range(1,len(a_n)+1):
-            a1 = numpy.square(i*numpy.pi) - (i+1)*numpy.pi
-            a2 = numpy.square(i*numpy.pi) + (i+1)*numpy.pi
-            a_n[i-1] = opt.bisect( f,                           # function
-                                   a1,                          # left point
-                                   a2,                          # right point (a tiny bit less than pi/2)
-                                   xtol=1e-30,                  # absolute tolerance
-                                   rtol=1e-15                   # relative tolerance
-                               )
-            x0 += numpy.pi # apply a phase change of pi to get the next root
+        n_series = self.ITERATIONS
+        a_n = numpy.zeros(n_series) # initializing roots array
+        xtol = 1e-30
+        rtol = 1e-15
+        for i in range(1,n_series+1):
+            a = numpy.square(i*numpy.pi) - (i+1)*numpy.pi
+            b = numpy.square(i*numpy.pi) + (i+1)*numpy.pi
+            # print('a: ',a)
+            # print('b: ',b)
+            f_c = 10
+            f_c_old = 0
+            rtol_flag = False
+            c = 0
+            it = 0
+            while numpy.abs(f_c) > xtol and rtol_flag == False:
+                c = (a + b) / 2
+                f_c = f(c)
 
-        return a_n
+                # print('c: ',c)
+                # print('f(c):',f_c)
+
+                if f(a)*f_c < 0:
+                    a = a
+                    b = c
+                elif f(b)*f_c < 0:
+                    a = c
+                    b = b
+                else:
+                    print('Bisection method failed')
+                    # print('a: ',a)
+                    # print('b: ',b)
+                    break
+                if numpy.abs(numpy.abs(f_c_old) - numpy.abs(f_c)) < rtol:
+                    rtol_flag = True
+                it += 1
+                # print('f(c): ',f_c)
+                # print('rtol: ',numpy.abs(numpy.abs(f_c_old) - numpy.abs(f_c)))
+                # print('rtol flag: ',rtol_flag)
+                f_c_old = f_c
+            # print('n: ',i)
+            # print('c: ',c)
+            # print('f(c):',f_c)
+            # print('iter: ',it)
+            a_n[i-1] = c
+
+        return(a_n)
 
     def surface_traction(self, locs):
         (npts, dim) = locs.shape
