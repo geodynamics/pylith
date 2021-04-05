@@ -65,10 +65,9 @@ class TestCase(FullTestCase):
         return
 
     def test_material_info(self):
-        vertexFields = ["solid_density", "fluid_density", "fluid_viscosity",
-                        "porosity", "shear_modulus", "drained_bulk_modulus",
-                        "biot_coefficient", "fluid_bulk_modulus", "solid_bulk_modulus",
-                        "isotropic_permeability"]
+        vertexFields = ['biot_coefficient', 'biot_modulus', 'drained_bulk_modulus',
+                        'fluid_density', 'fluid_viscosity', 'isotropic_permeability',
+                        'porosity', 'shear_modulus', 'solid_density']
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
             check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields,
