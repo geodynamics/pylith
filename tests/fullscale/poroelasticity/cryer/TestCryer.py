@@ -33,7 +33,7 @@ from cryer_gendb import GenerateDB
 SOLUTION_FIELDS = ["displacement", "pressure"]
 
 ratio_tolerance = {'displacement': 1.0, 'pressure': 1.0}
-diff_tolerance = {'displacement': 0.1, 'pressure': 0.1}
+diff_tolerance = {'displacement': 0.5, 'pressure': 0.5}
 # ----------------------------------------------------------------------------------------------------------------------
 
 
@@ -64,8 +64,10 @@ class TestCase(FullTestCase):
         return
 
     def test_material_info(self):
-        vertexFields = ["solid_density", "fluid_density", "fluid_viscosity", "biot_modulus",
-                        "shear_modulus", "drained_bulk_modulus", "biot_coefficient", "isotropic_permeability"]
+        vertexFields = ["solid_density", "fluid_density", "fluid_viscosity",
+                        "porosity", "shear_modulus", "drained_bulk_modulus",
+                        "biot_coefficient", "fluid_bulk_modulus", "solid_bulk_modulus",
+                        "isotropic_permeability"]
         for material in self.MATERIALS.keys():
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
             check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields,
@@ -125,7 +127,6 @@ def test_cases():
         TestHex,
         TestTet,
     ]
-
 
 # ----------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
