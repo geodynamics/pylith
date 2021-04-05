@@ -44,7 +44,7 @@ class Tet(object):
             "ncells": 374,
             "ncorners": 3,
             "nvertices": 212,
-        },        
+        },
         "x_neg": {
             "ncells": 184,
             "ncorners": 3,
@@ -68,42 +68,42 @@ class Hex(object):
     Mesh information for hex mesh.
     """
     DOMAIN = {
-        "ncells": 1900,
+        "ncells": 896,
         "ncorners": 8,
-        "nvertices": 2324,
+        "nvertices": 1163,
     }
     MATERIALS = {
         "poroelastic": {
-            "ncells": 1900,
+            "ncells": 896,
             "ncorners": 8,
-            "nvertices": 2324,
+            "nvertices": 1163,
         }
     }
     BOUNDARIES = {
         "surface_traction": {
-            "ncells": 300,
+            "ncells": 192,
             "ncorners": 4,
-            "nvertices": 331,
+            "nvertices": 217,
         },
         "surface_pressure": {
-            "ncells": 300,
+            "ncells": 192,
             "ncorners": 4,
-            "nvertices": 331,
-        },        
+            "nvertices": 217,
+        },
         "x_neg": {
-            "ncells": 160,
+            "ncells": 96,
             "ncorners": 4,
-            "nvertices": 184,
+            "nvertices": 115,
         },
         "y_neg": {
-            "ncells": 160,
+            "ncells": 96,
             "ncorners": 4,
-            "nvertices": 184,
+            "nvertices": 115,
         },
         "z_neg": {
-            "ncells": 160,
+            "ncells": 96,
             "ncorners": 4,
-            "nvertices": 184,
+            "nvertices": 115,
         },
     }
 

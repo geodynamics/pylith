@@ -234,6 +234,7 @@ class AnalyticalSoln(object):
         theta = numpy.nan_to_num( numpy.arctan( numpy.nan_to_num( numpy.sqrt(locs[:,0]**2 + locs[:,1]**2) / locs[:,2] ) ) )
         phi = numpy.nan_to_num( numpy.arctan( numpy.nan_to_num( locs[:,1] / locs[:,0] ) ) )
         R_star = R.reshape([R.size,1]) / R_0
+
         x_n.reshape([1,x_n.size])
 
         E = numpy.square(1-nu)*numpy.square(1+nu_u)*x_n - 18*(1+nu)*(nu_u-nu)*(1-nu_u)
@@ -243,14 +244,14 @@ class AnalyticalSoln(object):
         for t in tsteps:
             t_star = (c*t)/(R_0**2)
             r_exact_N =  R_star.ravel() - numpy.nan_to_num(numpy.sum(((12*(1 + nu)*(nu_u - nu)) / \
-                                               ((1 - 2*nu)*E*R_star*R_star*x_n*numpy.sin(numpy.sqrt(x_n))) ) * \
+                                        ((1 - 2*nu)*E*R_star*R_star*x_n*numpy.sin(numpy.sqrt(x_n))) ) * \
                                         (3*(nu_u - nu) * (numpy.sin(R_star*numpy.sqrt(x_n)) - R_star*numpy.sqrt(x_n)*numpy.cos(R_star*numpy.sqrt(x_n))) + \
                                         (1 - nu)*(1 - 2*nu)*R_star*R_star*R_star*x_n*numpy.sin(numpy.sqrt(x_n))) * \
                                         numpy.exp(-x_n*t_star),axis=1))
 
-            displacement[t_track, :, 0] = -r_exact_N*numpy.cos(phi)*numpy.sin(theta)
-            displacement[t_track, :, 1] = r_exact_N*numpy.sin(phi)*numpy.sin(theta)
-            displacement[t_track, :, 2] = r_exact_N*numpy.cos(theta)
+            displacement[t_track, :, 0] = (r_exact_N*U_R_inf)*numpy.cos(phi)*numpy.sin(theta)
+            displacement[t_track, :, 1] = (r_exact_N*U_R_inf)*numpy.sin(phi)*numpy.sin(theta)
+            displacement[t_track, :, 2] = (r_exact_N*U_R_inf)*numpy.cos(theta)
             t_track += 1
 
         return displacement
