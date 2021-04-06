@@ -103,10 +103,10 @@ pylith::feassemble::TestInterfacePatches::testCreateSingle(void) {
         CPPUNIT_ASSERT_EQUAL(fieldName, keys->second.cohesive._field);
 
         CPPUNIT_ASSERT_EQUAL(std::string(""), keys->second.negative._name);
-        CPPUNIT_ASSERT_EQUAL(-1, keys->second.negative._value);
+        CPPUNIT_ASSERT_EQUAL(0, keys->second.negative._value);
 
         CPPUNIT_ASSERT_EQUAL(std::string(""), keys->second.positive._name);
-        CPPUNIT_ASSERT_EQUAL(-1, keys->second.positive._value);
+        CPPUNIT_ASSERT_EQUAL(0, keys->second.positive._value);
     } // for
 
     PYLITH_METHOD_END;
