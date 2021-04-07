@@ -8,6 +8,7 @@ We are in the process of migrating the documentation from LaTeX producing a PDF 
 We are starting with the developer documentation and some other random pieces that are not in the LaTeX manual.
 ```
 
+[MyST Quick Reference](quickref.md)
 
 ```{toctree}
 ---
