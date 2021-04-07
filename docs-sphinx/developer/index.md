@@ -3,5 +3,12 @@
 :::{admonition} Under construction.
 :class: warning
 
-The developer guide is actively being written.
+We are in the process of adding content.
 :::
+
+```{toctree}
+---
+maxdepth: 2
+---
+debugging/index.md
+```

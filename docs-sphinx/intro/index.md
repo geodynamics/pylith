@@ -12,5 +12,5 @@ maxdepth: 2
 ---
 quickstart.md
 release-notes.md
-%architecture.md
 ```
+%architecture.md
