@@ -164,10 +164,10 @@ pylith::faults::KinSrc::updateSlip(PetscVec slipLocalVec,
     // Create local vector for slip for this source.
     PetscErrorCode err = 0;
     PetscDM faultAuxiliaryDM = faultAuxiliaryField->dmMesh();
-    err = PetscObjectCompose((PetscObject) faultAuxiliaryDM, "dmAux",
-                             (PetscObject) _auxiliaryField->dmMesh());PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) faultAuxiliaryDM, "A",
-                             (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    PetscDMLabel dmLabel = NULL;
+    PetscInt labelValue = 0;
+    err = DMSetAuxiliaryVec(faultAuxiliaryDM, dmLabel, labelValue,
+                            _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
     err = DMProjectFieldLocal(faultAuxiliaryDM, t, slipLocalVec, subfieldKernels, INSERT_VALUES,
                               slipLocalVec);PYLITH_CHECK_ERROR(err);
 
@@ -201,10 +201,10 @@ pylith::faults::KinSrc::updateSlipRate(PetscVec slipRateLocalVec,
     // Create local vector for slip for this source.
     PetscErrorCode err = 0;
     PetscDM faultAuxiliaryDM = faultAuxiliaryField->dmMesh();
-    err = PetscObjectCompose((PetscObject) faultAuxiliaryDM, "dmAux",
-                             (PetscObject) _auxiliaryField->dmMesh());PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) faultAuxiliaryDM, "A",
-                             (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    PetscDMLabel dmLabel = NULL;
+    PetscInt labelValue = 0;
+    err = DMSetAuxiliaryVec(faultAuxiliaryDM, dmLabel, labelValue,
+                            _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
     err = DMProjectFieldLocal(faultAuxiliaryDM, t, slipRateLocalVec, subfieldKernels, INSERT_VALUES,
                               slipRateLocalVec);PYLITH_CHECK_ERROR(err);
 

@@ -307,17 +307,13 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
     PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
     err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
 
-    // Get auxiliary data
-    PetscDM dmAux = auxiliaryField->dmMesh();assert(dmAux);
-    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
-
     // Compute the local residual
     assert(solution.localVector());
     assert(residual->localVector());
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmSoln, integrator->getMarkerLabel(), &dmLabel);PYLITH_CHECK_ERROR(err);
-    const int labelValue = integrator->getLabelValue();
+    const PetscInt labelValue = integrator->getLabelValue();
+    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
     // solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
 

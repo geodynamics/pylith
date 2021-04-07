@@ -130,13 +130,13 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::topology::Field* so
     PetscDM dmSoln = solution->dmMesh();
     PetscDM dmAux = _auxiliaryField->dmMesh();
 
-    // Get label for constraint.
-    PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(dmSoln, _constraintLabel.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
-
     // Set auxiliary data
-    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    PetscDMLabel dmLabel = NULL;
+    PetscInt labelValue = 0;
+    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+
+    // Get label for constraint.
+    err = DMGetLabel(dmSoln, _constraintLabel.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
 
     void* context = NULL;
     const int labelId = 1;
