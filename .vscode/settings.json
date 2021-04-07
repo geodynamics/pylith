@@ -17,6 +17,31 @@
     "python.formatting.autopep8Args": [
         "-max-line-length",
         "120"
+    ],
+    "cSpell.words": [
+        "aprepro",
+        "automake",
+        "autotools",
+        "cuda",
+        "deviatoric",
+        "discretization",
+        "dm",
+        "drucker",
+        "elastoplastic",
+        "neumann",
+        "nodeset",
+        "partitioner",
+        "plex",
+        "prager",
+        "preconditioner",
+        "prestep",
+        "pset",
+        "raphson",
+        "scec",
+        "snes",
+        "spatialdata",
+        "trelis",
+        "viscoelastic",
+        "xdmf"
     ]
 }
-
