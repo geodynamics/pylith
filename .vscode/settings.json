@@ -4,6 +4,10 @@
     "telemetry.enableCrashReporter": false,
     "uncrustify.configPath.linux": "developer/uncrustify.cfg",
     "uncrustify.configPath.osx": "developer/uncrustify.cfg",
+    "[markdown]": {
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 100,
+    },
     "files.associations": {
         "string": "cpp",
         "*.icc": "cpp",
@@ -15,3 +19,4 @@
         "120"
     ]
 }
+
