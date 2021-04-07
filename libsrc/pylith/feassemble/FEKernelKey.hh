@@ -55,7 +55,7 @@ public:
     FEKernelKey* create(PetscWeakForm weakForm,
                         const char* name,
                         const int value,
-                        const char* field="");
+                        const char* field=NULL);
 
     /** Get PETSc weak form.
      *
@@ -66,10 +66,12 @@ public:
     /** Get PETSc weak form key.
      *
      * @param[in] solution Solution field.
+     * @param[in] field Name of solution subfield associated with integration kernel.
      *
      * @returns PETSc weak form key.
      */
-    PetscHashFormKey petscKey(const pylith::topology::Field& solution) const;
+    PetscHashFormKey petscKey(const pylith::topology::Field& solution,
+                              const char* field=NULL) const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:

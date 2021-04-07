@@ -70,17 +70,23 @@ pylith::feassemble::FEKernelKey::create(PetscWeakForm weakForm,
 // Get PETSc weak form key.
 inline
 PetscHashFormKey
-pylith::feassemble::FEKernelKey::petscKey(const pylith::topology::Field& solution) const {
+pylith::feassemble::FEKernelKey::petscKey(const pylith::topology::Field& solution,
+                                          const char* field) const {
     PetscDM dmSoln = solution.dmMesh();
     PetscDMLabel label = NULL;
     PetscErrorCode err = DMGetLabel(dmSoln, _name.c_str(), &label);PYLITH_CHECK_ERROR(err);
-
-    const PetscInt index = (!_field.empty()) ? solution.subfieldInfo(_field.c_str()).index : -1;
+    PetscInt i_field = -1;
+    if (field) {
+        i_field = solution.subfieldInfo(field).index;
+    } else {
+        i_field = (!_field.empty()) ? solution.subfieldInfo(_field.c_str()).index : -1;
+    } // if/else
+    assert(i_field >= 0);
 
     PetscHashFormKey hashKey;
     hashKey.label = label;
     hashKey.value = _value;
-    hashKey.field = index;
+    hashKey.field = i_field;
 
     return hashKey;
 } // petscKey
