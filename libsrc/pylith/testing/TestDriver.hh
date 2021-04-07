@@ -72,6 +72,14 @@ private:
     /// Print help information.
     void _printHelp(void);
 
+    /** Initialize PETSc.
+     *
+     * @param argc[in] Number of arguments passed.
+     * @param argv[in] Array of input arguments.
+     */
+    int _initializePetsc(int argc,
+                         char* argv[]);
+
     /** List test hierarchy.
      *
      * @param[in] test Test to list.
@@ -91,6 +99,7 @@ private:
 private:
 
     std::vector<std::string> _tests;
+    std::vector<std::string> _petscArgs;
     bool _showHelp;
     bool _listTests;
     bool _mallocDump;

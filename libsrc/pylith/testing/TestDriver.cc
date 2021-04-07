@@ -66,10 +66,7 @@ pylith::testing::TestDriver::run(int argc,
     CppUnit::TestResultCollector result;
     try {
         // Initialize PETSc
-        PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);CHKERRQ(err);
-        if (_mallocDump) {
-            err = PetscOptionsSetValue(NULL, "-malloc_dump", "");CHKERRQ(err);
-        } // if
+        int err = _initializePetsc(argc, argv);CHKERRQ(err);
 
         // Initialize Python (to eliminate need to initialize when
         // parsing units in spatial databases).
@@ -105,7 +102,7 @@ pylith::testing::TestDriver::run(int argc,
         Py_Finalize();
 
         // Finalize PETSc
-	pylith::topology::FieldOps::deallocate();
+        pylith::topology::FieldOps::deallocate();
         err = PetscFinalize();CHKERRQ(err);
     } catch (...) {
         abort();
@@ -124,17 +121,19 @@ pylith::testing::TestDriver::run(int argc,
 void
 pylith::testing::TestDriver::_parseArgs(int argc,
                                         char* argv[]) {
-    static struct option options[5] = {
+    static struct option options[6] = {
         {"help", no_argument, NULL, 'h'},
         {"list", no_argument, NULL, 'l'},
         {"quiet", no_argument, NULL, 'q'},
         {"tests", required_argument, NULL, 't'},
+        {"petsc", required_argument, NULL, 'p'},
         {0, 0, 0, 0}
     };
 
+    _petscArgs.reserve(4);
     while (true) {
         // extern char* optarg;
-        const char c = getopt_long(argc, argv, "hlm:", options, NULL);
+        const char c = getopt_long(argc, argv, "hlqt:p:", options, NULL);
         if (-1 == c) { break; }
         switch (c) {
         case 'h':
@@ -155,10 +154,17 @@ pylith::testing::TestDriver::_parseArgs(int argc,
             } // while
             break;
         } // 't'
+        case 'p': {
+            if (_petscArgs.size()+1 > _petscArgs.capacity()) {
+                _petscArgs.reserve(_petscArgs.capacity()+4);
+                std::cout << "Increasing size of _petscArgs to " << _petscArgs.capacity() << std::endl;
+            } // if
+            _petscArgs.push_back(optarg);
+            break;
+        } // 'p'
         case '?':
             break;
         default:
-            // May have PETSc command line arguments.
             break;
         } // switch
     } // while
@@ -171,12 +177,43 @@ void
 pylith::testing::TestDriver::_printHelp(void) {
     std::cout << "Command line arguments:\n"
               << "[--help] [--list] [--quiet] [--tests=TEST_0,...,TEST_N\n\n"
-              << "    --help           Print help information to stdout and exit.\n"
-              << "    --list           Print names of tests.\n"
-              << "    --quiet          Turn off dump of leaked memory.\n"
-              << "    --tests          Comma separated list of tests to run (default is all tests).\n"
+              << "    --help            Print help information to stdout and exit.\n"
+              << "    --list            Print names of tests.\n"
+              << "    --quiet           Turn off dump of leaked memory.\n"
+              << "    --tests           Comma separated list of tests to run (default is all tests).\n"
+              << "    --petsc ARG=VALUE Arguments to pass to PETSc. May be repeated for multiple arguments.\n"
               << std::endl;
 } // _printHelp
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Initialize PETSc.
+int
+pylith::testing::TestDriver::_initializePetsc(int argc,
+                                              char* argv[]) {
+    int argcP = 1;
+    char** argvP = new char*[1];
+    argvP[0] = argv[0];
+    PetscErrorCode err = PetscInitialize(&argcP, &argvP, NULL, NULL);CHKERRQ(err);
+    delete[] argvP;argvP = NULL;
+
+    if (_mallocDump) {
+        err = PetscOptionsSetValue(NULL, "-malloc_dump", "");CHKERRQ(err);
+    } // if
+    for (size_t i = 0; i < _petscArgs.size(); ++i) {
+        const size_t pos = _petscArgs[i].find_first_of('=');
+        if (pos < _petscArgs[i].length()) {
+            const std::string& arg = std::string("-") + _petscArgs[i].substr(0, pos);
+            const std::string& value = _petscArgs[i].substr(pos+1);
+            err = PetscOptionsSetValue(NULL, arg.c_str(), value.c_str());CHKERRQ(err);
+        } else {
+            const std::string& arg = std::string("-") + _petscArgs[i];
+            err = PetscOptionsSetValue(NULL, arg.c_str(), "");CHKERRQ(err);
+        } // if/else
+    } // for
+
+    return 0;
+} // _initializePetsc
 
 
 // ---------------------------------------------------------------------------------------------------------------------
