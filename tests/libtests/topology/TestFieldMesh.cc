@@ -614,11 +614,15 @@ pylith::topology::TestFieldMesh::_initialize(void) {
     _field->subfieldAdd(_data->descriptionB, _data->discretizationB);
     _field->subfieldsSetup();
 
-    err = DMAddBoundary(_field->dmMesh(), DM_BC_ESSENTIAL, "bcA", _data->bcALabel, 0, _data->bcANumConstrainedDOF,
-                        _data->bcAConstrainedDOF, NULL, NULL, 1, &_data->bcALabelId, NULL);CPPUNIT_ASSERT(!err);
-    err = DMAddBoundary(_field->dmMesh(), DM_BC_ESSENTIAL, "bcB", _data->bcBLabel, 0, _data->bcBNumConstrainedDOF,
-                        _data->bcBConstrainedDOF, NULL, NULL, 1, &_data->bcBLabelId, NULL);CPPUNIT_ASSERT(!err);
-
+    PetscDMLabel labelA = NULL, labelB = NULL;
+    err = DMGetLabel(_field->dmMesh(), _data->bcALabel, &labelA);CPPUNIT_ASSERT(!err);
+    err = DMGetLabel(_field->dmMesh(), _data->bcBLabel, &labelB);CPPUNIT_ASSERT(!err);
+    const PetscInt numLabelValues = 1;
+    const PetscInt i_field = 1;
+    err = DMAddBoundary(_field->dmMesh(), DM_BC_ESSENTIAL, "bcA", labelA, numLabelValues, &_data->bcALabelId, i_field,
+                        _data->bcANumConstrainedDOF, _data->bcAConstrainedDOF, NULL, NULL, NULL, NULL);CPPUNIT_ASSERT(!err);
+    err = DMAddBoundary(_field->dmMesh(), DM_BC_ESSENTIAL, "bcB", labelB, numLabelValues, &_data->bcBLabelId, i_field,
+                        _data->bcBNumConstrainedDOF, _data->bcBConstrainedDOF, NULL, NULL, NULL, NULL);CPPUNIT_ASSERT(!err);
     // Allocate field.
     _field->allocate();
 

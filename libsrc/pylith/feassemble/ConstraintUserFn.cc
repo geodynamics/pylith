@@ -72,12 +72,14 @@ pylith::feassemble::ConstraintUserFn::initialize(const pylith::topology::Field& 
     // the correct one.
     PetscErrorCode err = 0;
     PetscDS prob = NULL;
+    DMLabel label = NULL;
     void* context = NULL;
     const PylithInt labelId = 1;
     err = DMGetDS(solution.dmMesh(), &prob);PYLITH_CHECK_ERROR(err);
     const PetscInt i_field = solution.subfieldInfo(_subfieldName.c_str()).index;
-    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL, _constraintLabel.c_str(), _constraintLabel.c_str(), i_field,
-                             _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void))_fn, NULL, 1, &labelId, context);
+    err = DMGetLabel(solution.dmMesh(), _constraintLabel.c_str(), &label);PYLITH_CHECK_ERROR(err);
+    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL, _constraintLabel.c_str(), label, 1, &labelId, i_field,
+                             _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void))_fn, NULL, context, NULL);
     PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;

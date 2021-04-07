@@ -469,7 +469,6 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
         const PetscInt i_fieldBasis = solution.subfieldInfo(kernels[i].subfieldBasis.c_str()).index;
         err = PetscDSSetBdJacobian(prob, i_fieldTrial, i_fieldBasis, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
     } // for
-    PetscDSView(prob, PETSC_VIEWER_STDOUT_WORLD);
 
     assert(solution.localVector());
     err = DMPlexComputeJacobian_Hybrid_Internal(dmSoln, cohesiveCells, t, s_tshift, solution.localVector(),

@@ -78,14 +78,16 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
     // the correct one.
     PetscDS prob = NULL;
     PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
+    DMLabel label;
     PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
 
     void* context = NULL;
     const int labelId = 1;
     const PylithInt numConstrained = _constrainedDOF.size();
     const PetscInt i_field = solution.subfieldInfo(_subfieldName.c_str()).index;
-    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_BD_FIELD, _constraintLabel.c_str(), _constraintLabel.c_str(), i_field,
-                             numConstrained, &_constrainedDOF[0], (void (*)())_kernelConstraint, NULL, 1, &labelId, context);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmSoln, _constraintLabel.c_str(), &label);PYLITH_CHECK_ERROR(err);
+    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_BD_FIELD, _constraintLabel.c_str(), label, 1, &labelId, i_field,
+                             numConstrained, &_constrainedDOF[0], (void (*)())_kernelConstraint, NULL, context, NULL);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // initialize
