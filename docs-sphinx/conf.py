@@ -22,7 +22,7 @@ copyright = '2021, University of California, Davis'
 author = 'Brad T. Aagaard, Matthew Knepley, Charles A. Williams'
 
 # The full version, including alpha/beta/rc tags
-release = '3.0.0rc2'
+release = '3.0.0dev'
 
 
 # -- General configuration ---------------------------------------------------
@@ -36,7 +36,7 @@ extensions = [
 myst_enable_extensions = [
     "colon_fence",
 ]
-    
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -56,7 +56,7 @@ exclude_patterns = [
 html_theme = 'pydata_sphinx_theme'
 html_theme_options = {
     "show_toc_level": 1,
-    }
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
