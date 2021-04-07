@@ -65,7 +65,7 @@ See <https://github.com/geodynamics/pylith/commits/master> for the complete log 
 
 ## Version 2.1.3
 
-* Add generate_statedb.py and postseismic.pvsm files missing from `examples/2d/gravity`.
+* Add `generate_statedb.py` and `postseismic.pvsm` files missing from `examples/2d/gravity`.
 
 * Update handling of fault intersection when creating boundary
 condition nodesets in `examples/meshing/surface_nurbs/subduction`.
@@ -127,7 +127,7 @@ condition nodesets in `examples/meshing/surface_nurbs/subduction`.
 
 ### Migrating from v2.0.x to v2.1.x
 
-The points file for OutputSolnPoints must now contain station names as the first column.
+The points file for `OutputSolnPoints` must now contain station names as the first column.
 
 
 ## Version 2.0.3
@@ -187,7 +187,7 @@ The points file for OutputSolnPoints must now contain station names as the first
 
 * Improved CUBIT example for mesh sizing functions.
 
-  Based on experimentation with CUBIT 14.0, 14.1, and Trelis 15.0, we have improved the CUBIT mesh sizing examples (examples/meshing/cubit_cellsize). We were able to simplify the journal files and use fewer CUBIT commands. The new procedure also eliminates some CUBIT warnings.
+  Based on experimentation with CUBIT 14.0, 14.1, and Trelis 15.0, we have improved the CUBIT mesh sizing examples (`examples/meshing/cubit_cellsize`). We were able to simplify the journal files and use fewer CUBIT commands. The new procedure also eliminates some CUBIT warnings.
 
 * Several small improvements to various sections of the manual based
   on feedback and questions from users.
@@ -202,19 +202,19 @@ The points file for OutputSolnPoints must now contain station names as the first
 
 ### Bug fixes
 
-  * Fixed two MPI related bugs in computing Green's functions in parallel. The number of impulses corresponded to only those on process 0.
+* Fixed two MPI related bugs in computing Green's functions in parallel. The number of impulses corresponded to only those on process 0.
 
-  * Corrected computation of fault tractions (Lagrange multipliers) on process boundaries for prescribed slip with explicit time stepping.
+* Corrected computation of fault tractions (Lagrange multipliers) on process boundaries for prescribed slip with explicit time stepping.
 
-  * Fixed bug when reading in list of output points with just one point.
+* Fixed bug when reading in list of output points with just one point.
 
-  * Adjusted autoconf Python setup macro to remove temporary sysconfig.pyc file.
+* Adjusted autoconf Python setup macro to remove temporary sysconfig.pyc file.
 
-  * Added check to make sure degree of freedom specified in Dirichlet BC is consistent with spatial dimension of problem.
+* Added check to make sure degree of freedom specified in Dirichlet BC is consistent with spatial dimension of problem.
 
-  * Corrected two typos in the manual related to fault opening and tractions in examples/3d/hex8/step20 and updating to the use of cell.dimension for the quadrature scheme with tets.
+* Corrected two typos in the manual related to fault opening and tractions in `examples/3d/hex8/step20` and updating to the use of cell.dimension for the quadrature scheme with tets.
 
-  * Fixed stable time step computed for power-law viscoelastic rheology to match manual.
+* Fixed stable time step computed for power-law viscoelastic rheology to match manual.
 
 
 ### Migrating from v1.9.x to 2.0.x
@@ -295,7 +295,7 @@ No changes are needed in .cfg files to switch from v1.8.0 to v1.9.0. Version 1.9
 
   The default line search type for the PETSc nonlinear (SNES) solver is a customized backtrace method included in PyLith. The user may now select alternative line search types (basic, bt, l2, cp) available in PETSc.
 
-* Post-processing utility pylith_eqinfo to compute slip information.
+* Post-processing utility `pylith_eqinfo` to compute slip information.
 
   This post-processing utility computes the moment magnitude, seismic moment, seismic potency, and average slip at user-specified snapshots in time from PyLith HDF5 output.  Information is given for each fault and across all faults. See the Post-processing section in the Running PyLith chapter of the manual for more information.
 
@@ -313,17 +313,17 @@ No changes are needed in .cfg files to switch from v1.8.0 to v1.9.0. Version 1.9
 
 * Fixed omission of synchronization of stable time step computation among processors. Minimum time step among all processors rather than local value should be used.
 
-* Fixed density scale not being set in NondimElasticQuasistatic.  Density scale should be set based on shear modulus, length scale, and relaxation time.
+* Fixed density scale not being set in `NondimElasticQuasistatic`.  Density scale should be set based on shear modulus, length scale, and relaxation time.
 
 * Added warning when initial state for a fault constitutive model is not set. If an initial state value is not given, for rate-state friction using a default value of L / reference slip rate. Other fault constitutive models use a default value of 0.0 for initial state variables.
 
 * Separated tensor components in Xdmf files to avoid confusion. The corresponding HDF5 files remain unchanged.
 
-* Removed explicit time-stepping formulation with non-lumped Jacobian. This formulation was not setup properly for spontaneous rupture models and is too computationally expensive for practical problems. The ExplicitLumped* formulations are now simply Explicit*.
+* Removed explicit time-stepping formulation with non-lumped Jacobian. This formulation was not setup properly for spontaneous rupture models and is too computationally expensive for practical problems. The `ExplicitLumped` formulations are now simply `Explicit`.
 
 * Fixed parallel bug that resulting in inconsistent orientation of fault slip directions. Flipping the fault orientation was not synchronized across processors. This bug would only appear when running in parallel with faults that change from dipping in one direction to dipping in the opposite direction.
 
-* Fixed bug in setting name of field in OutputSolnPoints when output multiple fields. This bug caused the name of the first output field to be used and output data to overwrite each other.
+* Fixed bug in setting name of field in `OutputSolnPoints` when output multiple fields. This bug caused the name of the first output field to be used and output data to overwrite each other.
 
 ### Migrating from v1.7.x to v1.8.x
 
@@ -393,7 +393,7 @@ formulation = pylith.problems.ExplicitTet4
 
 Two changes are required when migrating from version 1.6 to 1.7.
 
-1. The FIATSimplex object now has the same parameters as the FIAGLagrange object.
+1. The FIATSimplex object now has the same parameters as the `FIATLagrange` object.
 
 ```
 Old setting                   New setting
@@ -464,7 +464,7 @@ db_initial.label = Initial fault tractions
 
 * Added dimensioning of time dataset in HDF5 files. The units are now seconds rather than nondimensional time.
 
-* Fixed memory allocation error (std::bad_alloc) when a processor did not contain cells for a boundary condition or output. This bug did not show up on all architectures.
+* Fixed memory allocation error (`std::bad_alloc`) when a processor did not contain cells for a boundary condition or output. This bug did not show up on all architectures.
 
 * Increased robustness of spontaneous rupture (fault friction) implementation to broaden the range of conditions it can handle. The implementation now properly handles cases with fault opening and cases with zero shear or normal tractions.
     
@@ -473,7 +473,7 @@ db_initial.label = Initial fault tractions
 
 * Fault implementation
 
-  Several changes have been made to the fault implementation, but none of these affect the user interface. The runtime performance is nearly identical with improved accuracy for spontaneous rupture (fault friction) simulations. These changes involved switching to using tractions (non-integrated quantities) for the Lagrange multipliers in the global coordinate system rather than integrated quantities in the fault coordinate system. Additionally, initialx fault tractions are associated with the fault vertices and their interpolation uses the finite-element basis functions.
+  Several changes have been made to the fault implementation, but none of these affect the user interface. The runtime performance is nearly identical with improved accuracy for spontaneous rupture (fault friction) simulations. These changes involved switching to using tractions (non-integrated quantities) for the Lagrange multipliers in the global coordinate system rather than integrated quantities in the fault coordinate system. Additionally, initial fault tractions are associated with the fault vertices and their interpolation uses the finite-element basis functions.
 
 * Distribution of mesh among processors
 
@@ -482,14 +482,7 @@ db_initial.label = Initial fault tractions
 
 ### Known Issues
 
-The custom line search used with the PETSc nonlinear solver (SNES)
-has difficulty handling some loading cases. In cases where the
-direction of the line search tends to be nearly orthogonal to the
-residual, the rate of convergence in the SNES iterations is
-extremely slow. In other cases the nonlinear solver gets stuck in a
-local minimum. We plan to improve the line search algorithm in a
-future release in order to resolve this issue and improve the rate
-of convergence in spontaneous rupture simulations.
+The custom line search used with the PETSc nonlinear solver (SNES)has difficulty handling some loading cases. In cases where the direction of the line search tends to be nearly orthogonal to the residual, the rate of convergence in the SNES iterations is extremely slow. In other cases the nonlinear solver gets stuck in a local minimum. We plan to improve the line search algorithm in a future release in order to resolve this issue and improve the rate of convergence in spontaneous rupture simulations.
 
 
 ## Version 1.6.1
@@ -642,7 +635,7 @@ No changes in parameters are required. Version 1.6.1 does require users to speci
 
 Three changes to the code require updating old parameters settings for use with version 1.5.
 
-1. Recent releases of CUBIT include nodeset names in the Exodus file and PyLith now uses them to associate vertices with boundary conditions and faults. Use the NetCDF utility ncdump to examine the contents of the Exodus (.exo) file to see it it includes the variable ns_names. If it does, then use nodeset names rather than nodeset ids for boundary condition label properties. If your Exodus file does not contain nodeset names, then set the MeshIOCubit property use_nodeset_names to False to continue to use nodeset id values for boundary condition labels.
+1. Recent releases of CUBIT include nodeset names in the Exodus file and PyLith now uses them to associate vertices with boundary conditions and faults. Use the NetCDF utility `ncdump` to examine the contents of the Exodus (.exo) file to see it it includes the variable ns_names. If it does, then use nodeset names rather than nodeset ids for boundary condition label properties. If your Exodus file does not contain nodeset names, then set the MeshIOCubit property use_nodeset_names to False to continue to use nodeset id values for boundary condition labels.
 
 2. The power-law constitutive parameters have been changed so that the parameter units are no longer dependent on the power-law exponent. This is a more logical implementation and allows (among other things) users to vary power-law parameters using a spatial database. Previously, it was not possible to vary power-law parameters unless everything used the same power-law exponent. The new implementation uses reference-strain-rate, reference-stress, and power-law-exponent to describe the material. This is described in the 'Material Models' section of the manual.
 
@@ -668,12 +661,12 @@ A number of changes to the code require updating old parameter settings for use 
 
 8. The Dirichlet and Neumann boundary conditions now follow a more general time dependence. The names of the facilities and the names of the values in the spatial databases are, in most cases, different.
 
-9. The FixedDOFDB has been renamed to ZeroDispDB in order to better reflect the type of spatial database.
+9. The `FixedDOFDB` has been renamed to `ZeroDispDB` in order to better reflect the type of spatial database.
 
 
 ## Version 1.3.1
 
-* Added stages to PETSc logging (--petsc.log_summary=1) to collect event logging into groups.
+* Added stages to PETSc logging (`--petsc.log_summary`) to collect event logging into groups.
 
 ### Bug fixes
 
@@ -765,7 +758,7 @@ There are two new features in PyLith version 1.2 that require users to adjust in
 
 * New spatial database implementations
 
-  Spatialdata includes two new spatial database implementations. The SCECCVMHDB provides a seamless interface to the SCEC CVM-H seismic velocity model for elastic material properties. The UniformDB permits creating a spatial database for uniform values using only .cfg files or the command line; this eliminates the need to create a SimpleDB database file with one location.
+  Spatialdata includes two new spatial database implementations. The `SCECCVMHDB` provides a seamless interface to the SCEC CVM-H seismic velocity model for elastic material properties. The UniformDB permits creating a spatial database for uniform values using only .cfg files or the command line; this eliminates the need to create a SimpleDB database file with one location.
 
 * Dynamic arrays of components in Pyre
 
