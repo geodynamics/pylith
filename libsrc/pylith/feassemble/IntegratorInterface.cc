@@ -648,6 +648,8 @@ pylith::feassemble::_IntegratorInterface::transferWeakFormKernels(const pylith::
             err = PetscWeakFormSetBdResidual(weakFormCohesive, keyPositive.label, keyPositive.value, keyPositive.field, f0Count, f0, f1Count, f1);PYLITH_CHECK_ERROR(err);
         } // if
     } // for
+
+    PYLITH_METHOD_END;
 } // transferWeakForms
 
 
