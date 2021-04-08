@@ -611,6 +611,20 @@ pylith::feassemble::_IntegratorInterface::setWeakFormKernels(const pylith::feass
         } // for
     } // for
 
+    { // DEBUGGING
+        PetscIS cohesiveCells = NULL;
+        PetscInt numCohesiveCells = 0;
+        const PetscInt* cellIndices = NULL;
+        err = DMGetStratumIS(solution.dmMesh(), integrator->getLabelName(), integrator->getLabelValue(), &cohesiveCells);PYLITH_CHECK_ERROR(err);
+        err = ISGetSize(cohesiveCells, &numCohesiveCells);PYLITH_CHECK_ERROR(err);assert(numCohesiveCells > 0);
+        err = ISGetIndices(cohesiveCells, &cellIndices);PYLITH_CHECK_ERROR(err);assert(cellIndices);
+
+        assert(pylith::topology::MeshOps::isCohesiveCell(solution.dmMesh(), cellIndices[0]));
+        PetscDS prob = NULL;
+        err = DMGetCellDS(solution.dmMesh(), cellIndices[0], &prob);PYLITH_CHECK_ERROR(err);
+        err = PetscDSView(prob, PETSC_VIEWER_STDOUT_WORLD);
+    } // DEBUGGING
+
     PYLITH_METHOD_END;
 } // TMP_setWeakFormKernels
 
