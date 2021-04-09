@@ -607,7 +607,7 @@ pylith::feassemble::_IntegratorInterface::setWeakFormKernels(const pylith::feass
 
         for (size_t i = 0; i < kernels.size(); ++i) {
             err = PetscWeakFormSetIndexBdResidual(weakForm, key.label, key.value, key.field,
-                                                  i, kernels[i].r0, i, kernels[i].r1);PYLITH_CHECK_ERROR(err);
+                                                  0, kernels[i].r0, 0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
         } // for
     } // for
 
@@ -623,6 +623,8 @@ pylith::feassemble::_IntegratorInterface::setWeakFormKernels(const pylith::feass
         PetscDS prob = NULL;
         err = DMGetCellDS(solution.dmMesh(), cellIndices[0], &prob);PYLITH_CHECK_ERROR(err);
         err = PetscDSView(prob, PETSC_VIEWER_STDOUT_WORLD);
+        err = ISRestoreIndices(cohesiveCells, &cellIndices);PYLITH_CHECK_ERROR(err);
+        err = ISDestroy(&cohesiveCells);PYLITH_CHECK_ERROR(err);
     } // DEBUGGING
 
     PYLITH_METHOD_END;
