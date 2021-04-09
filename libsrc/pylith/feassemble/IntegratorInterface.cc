@@ -605,10 +605,14 @@ pylith::feassemble::_IntegratorInterface::setWeakFormKernels(const pylith::feass
         PetscHashFormKey key = iter->second.cohesive.petscKey(solution);
         const PetscWeakForm weakForm = iter->second.cohesive.getWeakForm();
 
+        // :KLUDGE: Assumes only 1 set of kernels per key (with subfield from kernel).
         for (size_t i = 0; i < kernels.size(); ++i) {
+            PetscHashFormKey key = iter->second.cohesive.petscKey(solution, kernels[i].subfield.c_str());
+            const PetscInt index = 0;
             err = PetscWeakFormSetIndexBdResidual(weakForm, key.label, key.value, key.field,
-                                                  0, kernels[i].r0, 0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
+                                                  index, kernels[i].r0, index, kernels[i].r1);PYLITH_CHECK_ERROR(err);
         } // for
+
     } // for
 
     { // DEBUGGING
