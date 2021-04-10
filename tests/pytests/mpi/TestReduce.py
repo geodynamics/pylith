@@ -16,7 +16,7 @@
 # ======================================================================
 #
 
-## @file tests/pytests/utils/TestReduce.py
+## @file tests/pytests/mpi/TestReduce.py
 
 ## @brief Unit testing of MPI reduce functions.
 
@@ -32,9 +32,6 @@ class TestReduce(unittest.TestCase):
   
 
   def test_allreduce_scalar_double(self):
-    """
-    Test allreduce_double().
-    """
     value = 2.0
     result = mpi.allreduce_scalar_double(value, mpi.mpi_sum(), mpi.petsc_comm_world())
     self.assertEqual(value, result)
@@ -48,9 +45,6 @@ class TestReduce(unittest.TestCase):
 
 
   def test_allreduce_scalar_int(self):
-    """
-    Test allreduce_int().
-    """
     value = 3
     result = mpi.allreduce_scalar_int(value, mpi.mpi_sum(), mpi.petsc_comm_world())
     self.assertEqual(value, result)
@@ -61,6 +55,19 @@ class TestReduce(unittest.TestCase):
     result = mpi.allreduce_scalar_int(value, mpi.mpi_max(), mpi.petsc_comm_world())
     self.assertEqual(value, result)
     return
+
+
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestReduce))
+
+    from pylith.utils.PetscManager import PetscManager
+    petsc = PetscManager()
+    petsc.initialize()
+
+    success = unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+
+    petsc.finalize()
 
 
 # End of file 

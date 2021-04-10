@@ -16,7 +16,7 @@
 # ======================================================================
 #
 
-## @file tests/pytests/utils/TestCommunicator.py
+## @file tests/pytests/mpi/TestCommunicator.py
 
 ## @brief Unit testing of Communicator object.
 
@@ -32,62 +32,54 @@ class TestCommunicator(unittest.TestCase):
   
 
   def test_petsc_comm_world(self):
-    """
-    Test petsc_comm_world().
-    """
     comm = mpicomm.petsc_comm_world()
     return
 
 
   def test_petsc_comm_self(self):
-    """
-    Test petsc_comm_self().
-    """
     comm = mpicomm.petsc_comm_self()
     return
 
 
   def test_mpi_comm_world(self):
-    """
-    Test mpi_comm_world().
-    """
     comm = mpicomm.mpi_comm_world()
     return
 
 
   def test_mpi_comm_self(self):
-    """
-    Test mpi_comm_self().
-    """
     comm = mpicomm.mpi_comm_self()
     return
 
 
   def test_rank(self):
-    """
-    Test Communicator.rank().
-    """
     comm = mpicomm.petsc_comm_world()
     self.assertEqual(0, comm.rank)
     return
 
 
   def test_size(self):
-    """
-    Test Communicator.size().
-    """
     comm = mpicomm.petsc_comm_world()
     self.assertEqual(1, comm.size)
     return
 
 
   def test_barrier(self):
-    """
-    Test Communicator.barrier().
-    """
     comm = mpicomm.petsc_comm_world()
     comm.barrier()
     return
+
+
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestCommunicator))
+
+    from pylith.utils.PetscManager import PetscManager
+    petsc = PetscManager()
+    petsc.initialize()
+
+    success = unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+
+    petsc.finalize()
 
 
 # End of file 
