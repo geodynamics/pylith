@@ -25,6 +25,8 @@ import unittest
 import sys
 import importlib
 
+from pythia.pyre.applications.Script import Script
+
 DIRS = [
     "apps",
     "bc",
@@ -32,7 +34,7 @@ DIRS = [
     "friction",
     "materials",
     "meshio",
-    # "mpi",
+    "mpi",
     # "problems",
     # "tests",
     # "topology",
@@ -40,7 +42,7 @@ DIRS = [
 ]
 
 
-class TestApp(object):
+class TestApp(Script):
     """Application to run tests.
     """
     cov = None
@@ -70,8 +72,14 @@ class TestApp(object):
         if self.cov:
             self.cov.start()
 
-        success = unittest.TextTestRunner(
-            verbosity=2).run(self._suite()).wasSuccessful()
+        from pylith.utils.PetscManager import PetscManager
+        petsc = PetscManager()
+        petsc.initialize()
+
+        success = unittest.TextTestRunner(verbosity=2).run(self._suite()).wasSuccessful()
+
+        petsc.finalize()
+
         if not success:
             sys.exit(1)
 
@@ -101,7 +109,7 @@ class TestApp(object):
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
-    TestApp().main()
+    TestApp().run()
 
 
 # End of file
