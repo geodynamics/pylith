@@ -15,25 +15,36 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/problems/TestProgressMonitor.py
+# @file tests/pytests/problems/TestSingleObserver.py
 #
-# @brief Unit testing of Python ProgressMonitor object.
+# @brief Unit testing of Python SingleObserver object.
 
 import unittest
 
 from pylith.testing.UnitTestApp import TestAbstractComponent
-from pylith.problems.ProgressMonitor import ProgressMonitor
+from pylith.problems.SingleObserver import (SingleSolnObserver, SinglePhysicsObserver)
 
 
-class TestProgressMonitor(TestAbstractComponent):
-    """Unit testing of ProgressMonitor object.
+class TestSingleSolnObserver(TestAbstractComponent):
+    """Unit testing of SingleSolnObserver object.
     """
-    _class = ProgressMonitor
+    _class = SingleSolnObserver
+
+
+class TestSinglePhysicsObserver(TestAbstractComponent):
+    """Unit testing of SinglePhysicsObserver object.
+    """
+    _class = SinglePhysicsObserver
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestProgressMonitor))
+    classes = [
+        TestSingleSolnObserver,
+        TestSinglePhysicsObserver,
+        ]
+    for cls in classes:
+        suite.addTest(unittest.makeSuite(cls))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

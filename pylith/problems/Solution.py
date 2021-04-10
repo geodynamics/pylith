@@ -23,17 +23,7 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class Solution(PetscComponent):
-    """
-    Python solution field for problem.
-
-    INVENTORY
-
-    Facilities
-      - None
-
-    Properties
-      - subfelds Subfields in solution.
-
+    """Python abstract base class for solution field for problem.
 
     FACTORY: solution.
     """

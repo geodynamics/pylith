@@ -37,19 +37,6 @@ class TimeDependent(Problem, ModuleTimeDependent):
     """
     Python class for time dependent crustal dynamics problems.
 
-    INVENTORY
-
-    Properties
-      - *initial_dt* Initial time step.
-      - *start_time* Start time for problem.
-      - *end_time* End time for problem.
-      - *max_timesteps* Maximum number of time steps.
-
-    Facilities
-      - *initial_conditions* Initial conditions for problem.
-      - *progress_monitor* Simple progress monitor via text file.
-
-
     FACTORY: problem.
     """
 

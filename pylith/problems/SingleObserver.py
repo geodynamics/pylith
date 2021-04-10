@@ -21,16 +21,7 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class SingleSolnObserver(PetscComponent):
-    """
-    Python container with one observer.
-
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *observer* Observer.
+    """Python container with one observer.
 
     FACTORY: N/A
     """
@@ -52,16 +43,7 @@ class SingleSolnObserver(PetscComponent):
 
 
 class SinglePhysicsObserver(PetscComponent):
-    """
-    Python container with one observer.
-
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *observer* Observer.
+    """Python container with one observer.
 
     FACTORY: N/A
     """

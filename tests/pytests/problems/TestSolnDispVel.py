@@ -15,26 +15,37 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/problems/TestProgressMonitorTime.py
+# @file tests/pytests/problems/TestSolnDispVel.py
 #
-# @brief Unit testing of Python ProgressMonitorTime object.
+# @brief Unit testing of Python SolnDispVel object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestComponent
-from pylith.problems.ProgressMonitorTime import (ProgressMonitorTime, progress_monitor)
+from pylith.testing.UnitTestApp import (TestAbstractComponent, TestComponent)
+from pylith.problems.SolnDispVel import (SolnDispVel, Solution, solution)
 
 
-class TestProgressMonitorTime(TestComponent):
-    """Unit testing of ProgressMonitorTime object.
+class TestSolnDispVel(TestAbstractComponent):
+    """Unit testing of SolnDispVel object.
     """
-    _class = ProgressMonitorTime
-    _factory = progress_monitor
+    _class = SolnDispVel
+
+
+class TestSolutionDispVel(TestAbstractComponent):
+    """Unit testing of Solution object.
+    """
+    _class = Solution
+    _factory = solution
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestProgressMonitorTime))
+    classes = [
+        TestSolnDispVel,
+        TestSolutionDispVel,
+    ]
+    for cls in classes:
+        suite.addTest(unittest.makeSuite(cls))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

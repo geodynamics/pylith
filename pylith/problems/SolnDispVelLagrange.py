@@ -23,22 +23,11 @@ from .Solution import Solution as SolutionBase
 
 
 class SolnDispVelLagrange(PetscComponent):
-    """
-    Python subfields container with displacement, velocity, and fault
+    """Python subfields container with displacement, velocity, and fault
     Lagrange multiplier subfields.
 
     IMPORTANT: Use the Solution class (below) to set this object as the default facilities array for the solution
     subfields.
-
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *displacement* Displacement subfield.
-      - *velocity* Velocity subfield.
-      - *lagrange_fault* Fault Lagrange multiplier subfield.
     """
 
     import pythia.pyre.inventory
@@ -58,8 +47,7 @@ class SolnDispVelLagrange(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="solndispvel"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="soln_subfields")
         return
@@ -69,8 +57,7 @@ class SolnDispVelLagrange(PetscComponent):
         return
 
     def components(self):
-        """
-        Order of facilities in Inventory is ambiguous, so overwrite
+        """Order of facilities in Inventory is ambiguous, so overwrite
         components() to insure order is [displacement, velocity, lagrange_fault].
 
         """

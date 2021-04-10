@@ -24,8 +24,7 @@ from pylith.topology.Subfield import Subfield
 
 
 def validateAlias(value):
-    """
-    Validate user alias for subfield.
+    """Validate user alias for subfield.
     """
     if 0 == len(value):
         raise ValueError("User-specified alias for subfield not specified.")
@@ -36,16 +35,7 @@ def validateAlias(value):
 
 
 class SolutionSubfield(Subfield):
-    """
-    Python object for defining attributes of a subfield within a field.
-
-    INVENTORY
-
-    Properties
-      - *name* Name for subfield.
-
-    Facilities
-      - None
+    """Python object for defining attributes of a subfield within a field.
 
     FACTORY: soln_subfield
     """
@@ -59,8 +49,7 @@ class SolutionSubfield(Subfield):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="solution_subfield"):
-        """
-        Constructor.
+        """Constructor.
         """
         Subfield.__init__(self, name)
 
@@ -71,17 +60,14 @@ class SolutionSubfield(Subfield):
         return
 
     def initialize(self, normalizer, spaceDim):
-        """
-        Initialize subfield metadata.
+        """Initialize subfield metadata.
         """
         raise NotImplementedError("Implement in derived class.")
-        return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         from pylith.topology.topology import FieldBase
 

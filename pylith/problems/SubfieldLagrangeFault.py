@@ -23,18 +23,9 @@ from .SolutionSubfield import SolutionSubfield
 
 
 class SubfieldLagrangeFault(SolutionSubfield):
-    """
-    Python object for fault Lagrange multipliers subfield.
+    """Python object for fault Lagrange multipliers subfield.
 
-    INVENTORY
-
-    Properties
-      - *alias* User-specified name for subfield.
-
-    Facilities
-      - None
-
-    FACTORY: subfield
+    FACTORY: soln_subfield
     """
 
     import pythia.pyre.inventory
@@ -48,15 +39,13 @@ class SubfieldLagrangeFault(SolutionSubfield):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="subfieldlagrangefault"):
-        """
-        Constructor.
+        """Constructor.
         """
         SolutionSubfield.__init__(self, name)
         return
 
     def initialize(self, normalizer, spaceDim):
-        """
-        Initialize subfield metadata.
+        """Initialize subfield metadata.
         """
         from pylith.topology.Field import Field
         self.dimension = spaceDim - 1
@@ -68,8 +57,7 @@ class SubfieldLagrangeFault(SolutionSubfield):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         SolutionSubfield._configure(self)
         return
@@ -78,8 +66,7 @@ class SubfieldLagrangeFault(SolutionSubfield):
 
 
 def soln_subfield():
-    """
-    Factory associated with SubfieldLagrangeFault.
+    """Factory associated with SubfieldLagrangeFault.
     """
     return SubfieldLagrangeFault()
 

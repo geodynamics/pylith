@@ -22,20 +22,10 @@ from .Solution import Solution as SolutionBase
 
 
 class SolnDispVel(PetscComponent):
-    """
-    Python subfields container with displacement and velocity subfields.
+    """Python subfields container with displacement and velocity subfields.
 
     IMPORTANT: Use the Solution class (below) to set this object as the default facilities array for the solution
     subfields.
-
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *displacement* Displacement subfield.
-      - *velocity* Velocity subfield.
     """
 
     import pythia.pyre.inventory
@@ -62,8 +52,7 @@ class SolnDispVel(PetscComponent):
         return
 
     def components(self):
-        """
-        Order of facilities in Inventory is ambiguous, so overwrite
+        """Order of facilities in Inventory is ambiguous, so overwrite
         components() to insure order is [displacement, velocity].
 
         """

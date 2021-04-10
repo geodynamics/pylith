@@ -68,22 +68,7 @@ class Problem(PetscComponent, ModuleProblem):
     """
     Python abstract base class for crustal dynamics problems.
 
-    INVENTORY
-
-    Properties
-      - *dimension* Spatial dimension of problem space.
-      - *formulation* Formulation for equations ('quasistatic' or 'dynamic').
-      - *solver* Type of solver to use.
-
-    Facilities
-      - *solution* Solution field.
-      - *normalizer* Nondimensionalizer for problem.
-      - *materials* Array of materials (governing equations) in the problem.
-      - *bc* Array of boundary conditions.
-      - *interfaces* Array of interior surfaces with relative displacement constraints or constitutive models.
-      - *solution_observers* Array of observers for solution.
-      - *gravity_field* Gravity field for problem (SpatialDB).
-      - *defaults* Default options for problem.
+    FACTORY: problem
     """
 
     import pythia.pyre.inventory
@@ -276,15 +261,6 @@ class Problem(PetscComponent, ModuleProblem):
 
         self._eventLogger = logger
         return
-
-
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def problem():
-    """
-    Factory associated with Problem.
-    """
-    return Problem()
 
 
 # End of file

@@ -21,16 +21,7 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class SolnDisp(PetscComponent):
-    """
-    Python solution container with displacement subfield.
-
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *displacement* Displacement subfield.
+    """Python solution container with displacement subfield.
     """
 
     import pythia.pyre.inventory
@@ -55,10 +46,12 @@ class SolnDisp(PetscComponent):
     def components(self):
         """
         Order of facilities in Inventory is ambiguous, so overwrite
-        components() to insure order is [displacement, lagrange_fault].
-
+        components() to insure order is [displacement].
         """
         return [self.displacement]
 
+
+# Solution uses SolnDisp as the factory, so we do not need override the default
+# factory here like we do in the other solution field containers.
 
 # End of file

@@ -15,17 +15,23 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/problems/TestSolution.py
+# @file tests/pytests/problems/TestSolnDispVelLagrange.py
 #
-# @brief Unit testing of Python Solution object.
+# @brief Unit testing of Python SolnDispVelLagrange object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestComponent
-from pylith.problems.Solution import (Solution, solution)
+from pylith.testing.UnitTestApp import (TestAbstractComponent, TestComponent)
+from pylith.problems.SolnDispVelLagrange import (SolnDispVelLagrange, Solution, solution)
 
 
-class TestSolution(TestComponent):
+class TestSolnDispVelLagrange(TestAbstractComponent):
+    """Unit testing of SolnDispVelLagrange object.
+    """
+    _class = SolnDispVelLagrange
+
+
+class TestSolutionDispVelLagrange(TestAbstractComponent):
     """Unit testing of Solution object.
     """
     _class = Solution
@@ -34,7 +40,12 @@ class TestSolution(TestComponent):
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestSolution))
+    classes = [
+        TestSolnDispVelLagrange,
+        TestSolutionDispVelLagrange,
+    ]
+    for cls in classes:
+        suite.addTest(unittest.makeSuite(cls))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

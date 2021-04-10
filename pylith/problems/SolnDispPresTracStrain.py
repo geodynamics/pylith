@@ -15,7 +15,7 @@
 #
 
 # @file pylith/problems/SolnDispPresTracStrain.py
-##
+#
 # @brief Python subfields container with displacement, pore pressure, and trace strain subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
@@ -23,38 +23,24 @@ from .Solution import Solution as SolutionBase
 
 
 class SolnDispPresTracStrain(PetscComponent):
-    """
-    Python subfields container with displacement, pore pressure, and trace strain subfields.
+    """Python subfields container with displacement, pore pressure, and trace strain subfields.
 
     IMPORTANT: Use the Solution class (below) to set this object as the default facilities array for the solution
     subfields.
-
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *displacement* Displacement subfield.
-      - *pressure* Pressure subfield.
-      - *trace_strain* TraceStrain subfield.
     """
 
     import pythia.pyre.inventory
 
     from .SubfieldDisplacement import SubfieldDisplacement
-    displacement = pythia.pyre.inventory.facility(
-        "displacement", family="soln_subfield", factory=SubfieldDisplacement)
+    displacement = pythia.pyre.inventory.facility("displacement", family="soln_subfield", factory=SubfieldDisplacement)
     displacement.meta['tip'] = "Displacement subfield."
 
     from .SubfieldPressure import SubfieldPressure
-    pressure = pythia.pyre.inventory.facility(
-        "pressure", family="soln_subfield", factory=SubfieldPressure)
+    pressure = pythia.pyre.inventory.facility("pressure", family="soln_subfield", factory=SubfieldPressure)
     pressure.meta['tip'] = "Pressure subfield."
 
     from .SubfieldTraceStrain import SubfieldTraceStrain
-    traceStrain = pythia.pyre.inventory.facility(
-        "trace_strain", family="soln_subfield", factory=SubfieldTraceStrain)
+    traceStrain = pythia.pyre.inventory.facility("trace_strain", family="soln_subfield", factory=SubfieldTraceStrain)
     traceStrain.meta['tip'] = "Trace strain subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -71,8 +57,7 @@ class SolnDispPresTracStrain(PetscComponent):
         return
 
     def components(self):
-        """
-        Order of facilities in Inventory is ambiguous, so overwrite
+        """Order of facilities in Inventory is ambiguous, so overwrite
         components() to insure order is [displacement, pressure, trace_strain].
 
         """

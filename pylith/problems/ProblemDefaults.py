@@ -29,18 +29,9 @@ def validateName(value):
 
 
 class ProblemDefaults(Component):
-    """
-    Python class for default options for a problem.
+    """Python class for default options for a problem.
 
-    INVENTORY
-
-    Properties
-      - *name* Name of problem.
-      - *output_directory* Directory for output.
-      - *quadrature_order* Finite-element quadrature order.
-
-    Facilities
-      - *output_field_filter* Filter applied to output fields (e.g., FieldFilterProject).
+    FACTORY: problem_defaults
     """
 
     import pythia.pyre.inventory

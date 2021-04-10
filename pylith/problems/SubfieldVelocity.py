@@ -26,15 +26,7 @@ class SubfieldVelocity(SolutionSubfield):
     """
     Python object for velocity subfield.
 
-    INVENTORY
-
-    Properties
-      - *alias* User-specified name for subfield.
-
-    Facilities
-      - None
-
-    FACTORY: subfield
+    FACTORY: soln_subfield
     """
 
     import pythia.pyre.inventory

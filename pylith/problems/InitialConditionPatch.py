@@ -24,16 +24,9 @@ from .problems import InitialConditionPatch as ModuleInitialCondition
 
 
 class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
-    """
-    Python object for specifying initial conditions over a portion of the domain (patch).
+    """Python object for specifying initial conditions over a portion of the domain (patch).
 
-    INVENTORY
-
-    Properties
-      - *id* Material id associated with patch.
-
-    Facilities
-      - *db* Spatial database with values for initial conditions.
+    FACTORY: initial_conditions
     """
 
     import pythia.pyre.inventory

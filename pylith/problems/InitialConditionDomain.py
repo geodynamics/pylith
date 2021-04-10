@@ -24,16 +24,9 @@ from .problems import InitialConditionDomain as ModuleInitialCondition
 
 
 class InitialConditionDomain(InitialCondition, ModuleInitialCondition):
-    """
-    Python object for specifying initial conditions over the entire domain.
+    """Python object for specifying initial conditions over the entire domain.
 
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *db* Spatial database with values for initial conditions.
+    FACTORY: initial_conditions
     """
 
     import pythia.pyre.inventory

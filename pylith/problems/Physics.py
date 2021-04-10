@@ -37,18 +37,7 @@ def observerFactory(name):
 
 
 class Physics(PetscComponent, ModulePhysics):
-    """
-    Python abstract base class for objects defining physics.
-
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *auxiliary_subfields* Discretization information for auxiliary subfields.
-      - *db_auxiliary_field* Database for physical property parameters.
-      - *observers* Observers of integrator (e.g., output).
+    """Python abstract base class for objects defining physics.
     """
 
     import pythia.pyre.inventory
@@ -76,7 +65,7 @@ class Physics(PetscComponent, ModulePhysics):
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name, facility="physics"):
+    def __init__(self, name="physics", facility="physics"):
         """
         Constructor.
         """

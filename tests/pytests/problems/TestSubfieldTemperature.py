@@ -15,26 +15,26 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/problems/TestProgressMonitorTime.py
+# @file tests/pytests/problems/TestSubfieldTemperature.py
 #
-# @brief Unit testing of Python ProgressMonitorTime object.
+# @brief Unit testing of Python SubfieldTemperature object.
 
 import unittest
 
 from pylith.testing.UnitTestApp import TestComponent
-from pylith.problems.ProgressMonitorTime import (ProgressMonitorTime, progress_monitor)
+from pylith.problems.SubfieldTemperature import (SubfieldTemperature, soln_subfield)
 
 
-class TestProgressMonitorTime(TestComponent):
-    """Unit testing of ProgressMonitorTime object.
+class TestSubfieldTemperature(TestComponent):
+    """Unit testing of SubfieldTemperature object.
     """
-    _class = ProgressMonitorTime
-    _factory = progress_monitor
+    _class = SubfieldTemperature
+    _factory = soln_subfield
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestProgressMonitorTime))
+    suite.addTest(unittest.makeSuite(TestSubfieldTemperature))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

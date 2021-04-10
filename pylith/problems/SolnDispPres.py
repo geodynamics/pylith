@@ -22,20 +22,10 @@ from .Solution import Solution as SolutionBase
 
 
 class SolnDispPres(PetscComponent):
-    """
-    Python subfields container with displacement and pressure subfields.
+    """Python subfields container with displacement and pressure subfields.
 
     IMPORTANT: Use the Solution class (below) to set this object as the default facilities array for the solution
     subfields.
-
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *displacement* Displacement subfield.
-      - *pressure* Pressure subfield.
     """
 
     import pythia.pyre.inventory

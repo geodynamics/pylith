@@ -15,26 +15,26 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/problems/TestProgressMonitorTime.py
+# @file tests/pytests/problems/TestTimeDependent.py
 #
-# @brief Unit testing of Python ProgressMonitorTime object.
+# @brief Unit testing of Python TimeDependent object.
 
 import unittest
 
 from pylith.testing.UnitTestApp import TestComponent
-from pylith.problems.ProgressMonitorTime import (ProgressMonitorTime, progress_monitor)
+from pylith.problems.TimeDependent import (TimeDependent, problem)
 
 
-class TestProgressMonitorTime(TestComponent):
-    """Unit testing of ProgressMonitorTime object.
+class TestTimeDependent(TestComponent):
+    """Unit testing of TimeDependent object.
     """
-    _class = ProgressMonitorTime
-    _factory = progress_monitor
+    _class = TimeDependent
+    _factory = problem
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestProgressMonitorTime))
+    suite.addTest(unittest.makeSuite(TestTimeDependent))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

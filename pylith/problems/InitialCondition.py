@@ -24,16 +24,7 @@ from .problems import InitialCondition as ModuleInitialCondition
 
 
 class InitialCondition(PetscComponent, ModuleInitialCondition):
-    """
-    Python abstract base class for specifying initial conditions.
-
-    INVENTORY
-
-    Properties
-      - subfields Names of solution subfields for initial condition.
-
-    Facilities
-      - None
+    """Python abstract base class for specifying initial conditions.
     """
 
     import pythia.pyre.inventory

@@ -35,7 +35,7 @@ DIRS = [
     "materials",
     "meshio",
     "mpi",
-    # "problems",
+    "problems",
     # "tests",
     # "topology",
     # "utils",
