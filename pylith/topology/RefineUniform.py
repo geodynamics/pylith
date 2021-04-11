@@ -28,14 +28,6 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
     """
     Python manager for uniform global refinement of mesh in parallel.
 
-    INVENTORY
-
-    Properties
-      - *levels* Number of refinement levels.
-
-    Facilities
-      - None
-
     Factory: mesh_refiner
     """
 

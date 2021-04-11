@@ -26,16 +26,6 @@ class MeshImporter(MeshGenerator):
     """
     Python implementation of importing a mesh.
 
-    INVENTORY
-
-    Properties
-      - *reorder_mesh* Reorder mesh using reverse Cuthill-McKee if true.
-
-    Facilities
-      - *reader* Mesh reader.
-      - *distributor* Mesh distributor.
-      - *refiner* Mesh refiner.
-
     FACTORY: mesh_generator.
     """
 

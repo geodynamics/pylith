@@ -15,27 +15,27 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/topology/TestMesh.py
+# @file tests/pytests/topology/TestReverseCuthillMcKee.py
 #
-# @brief Unit testing of Python Mesh object.
+# @brief Unit testing of Python ReverseCuthillMcKee object.
 
 import unittest
 
-from pylith.topology.Mesh import Mesh
+from pylith.topology.ReverseCuthillMcKee import ReverseCuthillMcKee
 
 
-class TestMesh(unittest.TestCase):
-    """Unit testing of Mesh object.
+class TestReverseCuthillMcKee(unittest.TestCase):
+    """Unit testing of ReverseCuthillMcKee object.
     """
 
     def test_constructor(self):
-        mesh = Mesh()
-        self.assertTrue(not mesh is None)
+        field = ReverseCuthillMcKee()
+        self.assertTrue(not field is None)
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestMesh))
+    suite.addTest(unittest.makeSuite(TestReverseCuthillMcKee))
 
     from pylith.utils.PetscManager import PetscManager
     petsc = PetscManager()

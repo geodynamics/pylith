@@ -27,19 +27,6 @@ class Subfield(Component):
     """
     Python object for defining discretization of a subfield.
 
-    INVENTORY
-
-    Properties
-      - *basis_order* Order of basis functions.
-      - *quadrature_order* Order of numerical quadrature.
-      - *dimension* Topological dimension associated with subfield.
-      - *cell_basis* Type of basis functions to use [simplex, tensor, default (for cell type)].
-      - *basis_continuous* Is basis continuous?
-      - *finite_element_space* Finite-element space [polynomial, point].
-
-    Facilities
-      - None
-
     FACTORY: subfield
     """
 

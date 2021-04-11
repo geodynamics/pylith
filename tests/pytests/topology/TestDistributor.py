@@ -15,35 +15,27 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/topology/TestMesh.py
+# @file tests/pytests/topology/TestDistributor.py
 #
-# @brief Unit testing of Python Mesh object.
+# @brief Unit testing of Python Distributor object.
 
 import unittest
 
-from pylith.topology.Mesh import Mesh
+from pylith.testing.UnitTestApp import TestComponent
+from pylith.topology.Distributor import (Distributor, mesh_distributor)
 
 
-class TestMesh(unittest.TestCase):
-    """Unit testing of Mesh object.
+class TestDistributor(TestComponent):
+    """Unit testing of Distributor object.
     """
-
-    def test_constructor(self):
-        mesh = Mesh()
-        self.assertTrue(not mesh is None)
+    _class = Distributor
+    _factory = mesh_distributor
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestMesh))
-
-    from pylith.utils.PetscManager import PetscManager
-    petsc = PetscManager()
-    petsc.initialize()
-
-    success = unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
-
-    petsc.finalize()
+    suite.addTest(unittest.makeSuite(TestDistributor))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
 # End of file

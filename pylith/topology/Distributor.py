@@ -27,15 +27,6 @@ class Distributor(PetscComponent, ModuleDistributor):
     """
     Python manager for distributing mesh among processors.
 
-    INVENTORY
-
-    Properties
-      - *partitioner* Name of mesh partitioner ["metis", "chaco"].
-      - *write_partition* Write partition information to file.
-
-    Facilities
-      - *data_writer* Data writer for for partition information.
-
     FACTORY: mesh_distributor
     """
 

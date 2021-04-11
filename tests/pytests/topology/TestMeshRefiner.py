@@ -15,35 +15,26 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/topology/TestMesh.py
+# @file tests/pytests/topology/TestMeshRefiner.py
 #
-# @brief Unit testing of Python Mesh object.
+# @brief Unit testing of Python MeshRefiner object.
 
 import unittest
 
-from pylith.topology.Mesh import Mesh
+from pylith.testing.UnitTestApp import TestAbstractComponent
+from pylith.topology.MeshRefiner import MeshRefiner
 
 
-class TestMesh(unittest.TestCase):
-    """Unit testing of Mesh object.
+class TestMeshRefiner(TestAbstractComponent):
+    """Unit testing of MeshRefiner object.
     """
-
-    def test_constructor(self):
-        mesh = Mesh()
-        self.assertTrue(not mesh is None)
+    _class = MeshRefiner
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestMesh))
-
-    from pylith.utils.PetscManager import PetscManager
-    petsc = PetscManager()
-    petsc.initialize()
-
-    success = unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
-
-    petsc.finalize()
+    suite.addTest(unittest.makeSuite(TestMeshRefiner))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
 # End of file

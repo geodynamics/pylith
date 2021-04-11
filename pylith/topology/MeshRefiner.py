@@ -24,7 +24,7 @@ from pylith.utils.PetscComponent import PetscComponent
 
 class MeshRefiner(PetscComponent):
     """
-    Python manager for refining mesh in parallel.
+    Python abstract base class for refining mesh in parallel.
 
     Factory: mesh_refiner
     """
@@ -72,15 +72,6 @@ class MeshRefiner(PetscComponent):
 
         self._eventLogger = logger
         return
-
-
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def mesh_refiner():
-    """
-    Factory associated with MeshRefiner.
-    """
-    return MeshRefiner()
 
 
 # End of file

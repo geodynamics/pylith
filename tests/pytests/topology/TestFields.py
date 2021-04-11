@@ -15,27 +15,29 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/topology/TestMesh.py
+# @file tests/pytests/topology/TestFields.py
 #
-# @brief Unit testing of Python Mesh object.
+# @brief Unit testing of Python Fields object.
 
 import unittest
 
+from pylith.topology.Fields import Fields
 from pylith.topology.Mesh import Mesh
 
 
-class TestMesh(unittest.TestCase):
-    """Unit testing of Mesh object.
+class TestFields(unittest.TestCase):
+    """Unit testing of Fields object.
     """
 
     def test_constructor(self):
         mesh = Mesh()
-        self.assertTrue(not mesh is None)
+        field = Fields(mesh)
+        self.assertTrue(not field is None)
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestMesh))
+    suite.addTest(unittest.makeSuite(TestFields))
 
     from pylith.utils.PetscManager import PetscManager
     petsc = PetscManager()

@@ -26,15 +26,6 @@ class MeshGenerator(PetscComponent):
     """
     Python abstract base class for mesh generator.
 
-    INVENTORY
-
-    Properties
-      - *debug* Debugging flag for mesh.
-      - *interpolate* Build intermediate mesh topology elements (if true)
-
-    Facilities
-      - None
-
     FACTORY: mesh_generator
     """
 
