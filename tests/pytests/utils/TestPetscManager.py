@@ -1,8 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
 # Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
 #
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
@@ -13,29 +15,26 @@
 #
 # ======================================================================
 #
+# @file tests/pytests/utils/TestPetscManager.py
+#
+# @brief Unit testing of Python PetscManager object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestAbstractComponent
-from pylith.utils.CollectVersionInfo import CollectVersionInfo
+from pylith.testing.UnitTestApp import TestComponent
+from pylith.utils.PetscManager import (PetscManager, petsc_manager)
 
 
-class TestCollectVersionInfo(TestAbstractComponent):
-    _class = CollectVersionInfo
+class TestPetscManager(TestComponent):
+    """Unit testing of PetscManager object.
+    """
+    _class = PetscManager
+    _factory = petsc_manager
 
-    def test_asDict(self):
-        info = CollectVersionInfo.asDict()
-        self.assertTrue(info)
-        return
-
-    def test_asString(self):
-        s = CollectVersionInfo.asString()
-        self.assertTrue(s)
-        return
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestCollectVersionInfo))
+    suite.addTest(unittest.makeSuite(TestPetscManager))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

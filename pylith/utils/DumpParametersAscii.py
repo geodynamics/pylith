@@ -31,15 +31,7 @@ class DumpParametersAscii(DumpParameters):
         """
         Python object for managing DumpParametersAscii facilities and properties.
 
-        INVENTORY
-
-        Properties
-          - *filename* Name of file written with parameters.
-          - *indent* Number of spaces to indent.
-          - *verbose* Include description, location, and aliases.
-
-        Facilities
-          - None
+        FACTORY: dump_parameters
         """
 
         import pythia.pyre.inventory

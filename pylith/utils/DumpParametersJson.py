@@ -24,15 +24,7 @@ class DumpParametersJson(DumpParameters):
     """
     Python DumpParameters object for dumping PyLith parameter information to a JSON file.
 
-    INVENTORY
-
-    Properties
-      - *filename* Name of file written with parameters.
-      - *style* Style of JSON file [compact, normal].
-      - *indent* Number of spaces to indent, use negative number for no newlines.
-
-    Facilities
-      - None
+    FACTORY: dump_parameters
     """
 
     class Inventory(DumpParameters.Inventory):

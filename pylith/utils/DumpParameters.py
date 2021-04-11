@@ -150,12 +150,4 @@ class DumpParameters(Component):
         return
 
 
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def dump_parameters():
-    """
-    Factory associated with DumpParameters.
-    """
-    return DumpParameters()
-
 # End of file

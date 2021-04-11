@@ -27,13 +27,13 @@ class TestDependenciesVersion(unittest.TestCase):
     match = re.search("[0-9]+\.[0-9]+\.[0-9]+", version)
     if match is None:
       match = re.search("[0-9]+\.[0-9]+", version)
-    self.failIf(match is None)
+    self.assertFalse(match is None)
     return
 
 
   def test_mpiImplementation(self):
     imp = DependenciesVersion.mpiImplementation()
-    self.failIf(len(imp) == 0)
+    self.assertFalse(len(imp) == 0)
     return
 
 
@@ -42,7 +42,7 @@ class TestDependenciesVersion(unittest.TestCase):
     # Check that version is of the form X.X
     import re
     match = re.search("[0-9]+\.[0-9]+", version)
-    self.failIf(match is None)
+    self.assertFalse(match is None)
     return
 
 
@@ -51,7 +51,7 @@ class TestDependenciesVersion(unittest.TestCase):
     # Check that version is of the form X.X.X
     import re
     match = re.search("[0-9]+\.[0-9]+\.[0-9]+", version)
-    self.failIf(match is None)
+    self.assertFalse(match is None)
     return
 
 
@@ -60,8 +60,14 @@ class TestDependenciesVersion(unittest.TestCase):
     # Check that version is of the form X.X.X
     import re
     match = re.search("[0-9]+\.[0-9]+\.[0-9]+", version)
-    self.failIf(match is None)
+    self.assertFalse(match is None)
     return
+
+
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestDependenciesVersion))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
 # End of file 

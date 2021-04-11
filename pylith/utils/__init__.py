@@ -14,13 +14,10 @@
 # ----------------------------------------------------------------------
 #
 
-__all__ = ['CheckpointTimer',
-           'CppData',
-           'NullComponent',
+__all__ = ['NullComponent',
            'PetscComponent',
            'PetscManager',
-           'testarray',
-           'importing']
+           ]
 
 
 # End of file

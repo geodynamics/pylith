@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -15,36 +15,32 @@
 #
 # ======================================================================
 #
-
-## @file tests/pytests/utils/TestEventLogger.py
-
-## @brief Unit testing of EventLogger object.
+# @file tests/pytests/utils/TestProfiling.py
+#
+# @brief Unit testing of Python EmptyBin object.
 
 import unittest
 
-
-# ----------------------------------------------------------------------
-class TestConstants(unittest.TestCase):
-  """
-  Unit testing of constants.
-  """
-  
-
-  def test_maxdouble(self):
-    from pylith.utils.utils import maxdouble
-    self.assertAlmostEqual(1.0, maxdouble()/1.0e+99, 7)
-    return
+from pylith.utils.profiling import (resourceUsage, resourceUsageString)
 
 
-  def test_maxfloat(self):
-    from pylith.utils.utils import maxfloat
-    self.assertAlmostEqual(1.0, maxfloat()/1.0e+30, 7)
-    return
+class TestProfiling(unittest.TestCase):
+    """Unit testing of profiling module.
+    """
+
+    def test_resourceUsage(self):
+        cputime, memory = resourceUsage()
+        self.assertFalse(cputime is None)
+        self.assertFalse(memory is None)
+
+    def test_resourceUsageString(self):
+        usage = resourceUsageString()
+        self.assertFalse(usage is None)
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestConstants))
+    suite.addTest(unittest.makeSuite(TestProfiling))
 
     from pylith.utils.PetscManager import PetscManager
     petsc = PetscManager()
@@ -55,4 +51,4 @@ if __name__ == "__main__":
     petsc.finalize()
 
 
-# End of file 
+# End of file

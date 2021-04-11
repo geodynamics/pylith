@@ -30,7 +30,7 @@ class PetscManager(Component):
     """
     Python PetscManager object for managing PETSc options.
 
-    Factory: petsc_manager
+    FACTORY: petsc_manager
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
