@@ -41,8 +41,7 @@ class RheologyIncompressibleElasticity(PetscComponent, ModuleRheology):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(
             self, name, facility="rheologyincompressibleelasticity")
@@ -73,8 +72,7 @@ class RheologyIncompressibleElasticity(PetscComponent, ModuleRheology):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         raise NotImplementedError("Implement in derived class.")
 

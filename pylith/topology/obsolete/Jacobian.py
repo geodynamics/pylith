@@ -25,15 +25,13 @@ from topology import Jacobian as ModuleJacobian
 # ----------------------------------------------------------------------
 # Jacobian class
 class Jacobian(ModuleJacobian):
-  """
-  Python object for system Jacobian.
+  """Python object for system Jacobian.
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, field, matrixType="unknown", blockOkay=False):
-    """
-    Constructor.
+    """Constructor.
 
     @param fields Solution fields.
     """
@@ -47,16 +45,14 @@ class Jacobian(ModuleJacobian):
     
 
   def write(self, filename, comm):
-    """
-    Write Jacobian to binary file.
+    """Write Jacobian to binary file.
     """
     ModuleJacobian.write(self, filename, comm.handle)
     return
 
 
   def cleanup(self):
-    """
-    Dellocate PETSC and local data structures.
+    """Dellocate PETSC and local data structures.
     """
     self.deallocate()
     return

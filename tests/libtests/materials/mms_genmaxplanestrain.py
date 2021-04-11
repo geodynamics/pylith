@@ -41,8 +41,7 @@ out = open(outFile, 'w')
 
 
 def printTensor(tensor, tensorName):
-    """
-    Function to print components of a tensor.
+    """Function to print components of a tensor.
     For now, assume a rank 1 or 2 tensor.
     """
 

@@ -41,8 +41,7 @@ class FooBar(PetscComponent):
 
 
 class TestApp(PetscApplication):
-    """
-    PetscApplication with one facility, 'foo'.
+    """PetscApplication with one facility, 'foo'.
     """
     foo = pythia.pyre.inventory.facility("foo", factory=FooBar)
 
@@ -66,13 +65,11 @@ class TestApp(PetscApplication):
 
 
 class TestPetscApp(unittest.TestCase):
-    """
-    Test of PetscApplication.
+    """Test of PetscApplication.
     """
 
     def test_run(self):
-        """
-        Test running application.
+        """Test running application.
         """
         TestApp().run()
         return

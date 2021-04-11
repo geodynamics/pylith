@@ -25,8 +25,7 @@ from .meshio import OutputSolnPoints as ModuleOutputSolnPoints
 
 
 class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
-    """
-    Python object for managing output of finite-element solution
+    """Python object for managing output of finite-element solution
     information over a subdomain.
 
     INVENTORY
@@ -54,15 +53,13 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="outputsolnpoints"):
-        """
-        Constructor.
+        """Constructor.
         """
         OutputSoln.__init__(self, name)
         return
 
     def preinitialize(self, problem):
-        """
-        Do mimimal initialization.
+        """Do mimimal initialization.
         """
         OutputSoln.preinitialize(self, problem)
 
@@ -84,15 +81,13 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         OutputSoln._configure(self)
         return
 
     def _createModuleObj(self):
-        """
-        Create handle to C++ object.
+        """Create handle to C++ object.
         """
         ModuleOutputSolnPoints.__init__(self)
         return
@@ -101,8 +96,7 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
 
 
 def observer():
-    """
-    Factory associated with OutputSoln.
+    """Factory associated with OutputSoln.
     """
     return OutputSolnPoints()
 

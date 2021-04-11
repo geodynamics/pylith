@@ -31,15 +31,13 @@ from axialdisp_gendb import GenerateDB
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """
-    Test suite for testing PyLith with 3-D axial compression/extension.
+    """Test suite for testing PyLith with 3-D axial compression/extension.
     """
     DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos",
                             "bc_yneg", "bc_ypos", "bc_zneg"]
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()

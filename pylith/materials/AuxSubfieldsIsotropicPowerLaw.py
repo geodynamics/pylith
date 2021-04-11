@@ -66,8 +66,7 @@ class AuxSubfieldsIsotropicPowerLaw(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="auxfieldsisotropicpowerlaw"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="auxiliary_subfields")
         return
@@ -82,8 +81,7 @@ class AuxSubfieldsIsotropicPowerLaw(PetscComponent):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def auxiliary_subfields():
-    """
-    Factory associated with AuxSubfieldsIsotropicPowerLaw.
+    """Factory associated with AuxSubfieldsIsotropicPowerLaw.
     """
     return AuxSubfieldsIsotropicPowerLaw()
 

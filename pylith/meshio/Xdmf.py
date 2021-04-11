@@ -22,8 +22,7 @@
 
 
 class Field(object):
-    """
-    Python object for data associated with vertex or cell field in HDF5 file.
+    """Python object for data associated with vertex or cell field in HDF5 file.
     """
     DOMAIN_VERTICES = "Node"
     DOMAIN_CELLS = "Cell"
@@ -44,15 +43,13 @@ class Field(object):
 
 # Xdmf class
 class Xdmf(object):
-    """
-    Python class for Xdmf metadata file associated with an HDF5 file.
+    """Python class for Xdmf metadata file associated with an HDF5 file.
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         self.file = None
         return
@@ -140,8 +137,7 @@ class Xdmf(object):
         return vertices.shape[1]
 
     def _getXdmfCellType(self, cells):
-        """
-        Get type of cell.
+        """Get type of cell.
         """
         assert(2 == len(cells.shape))
         numCells, numCorners = cells.shape

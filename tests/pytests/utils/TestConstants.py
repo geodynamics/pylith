@@ -25,8 +25,7 @@ import unittest
 
 # ----------------------------------------------------------------------
 class TestConstants(unittest.TestCase):
-  """
-  Unit testing of constants.
+  """Unit testing of constants.
   """
   
 

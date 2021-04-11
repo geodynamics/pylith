@@ -30,15 +30,13 @@ from twoblocks_soln import AnalyticalSoln
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """
-    Test suite for testing PyLith with fault shear displacement.
+    """Test suite for testing PyLith with fault shear displacement.
     """
     FAULTS = ["fault"]
     DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos"]
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()

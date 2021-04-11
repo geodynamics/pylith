@@ -115,8 +115,7 @@ eVisxy_3 = eDevxy
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
-    """
-    Analytical solution to axial extension problem.
+    """Analytical solution to axial extension problem.
     """
     SPACE_DIM = 2
     TENSOR_SIZE = 4
@@ -150,8 +149,7 @@ class AnalyticalSoln(object):
         return field
 
     def displacement(self, locs):
-        """
-        Compute displacement field at locations.
+        """Compute displacement field at locations.
         """
         (npts, dim) = locs.shape
         disp = numpy.zeros((numSteps, npts, self.SPACE_DIM), dtype=numpy.float64)
@@ -159,8 +157,7 @@ class AnalyticalSoln(object):
         return disp
 
     def initial_displacement(self, locs):
-        """
-        Compute initial displacement field at locations.
+        """Compute initial displacement field at locations.
         """
         (npts, dim) = locs.shape
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
@@ -168,32 +165,28 @@ class AnalyticalSoln(object):
         return disp
 
     def density(self, locs):
-        """
-        Compute density field at locations.
+        """Compute density field at locations.
         """
         (npts, dim) = locs.shape
         density = p_density * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return density
 
     def shear_modulus(self, locs):
-        """
-        Compute shear modulus field at locations.
+        """Compute shear modulus field at locations.
         """
         (npts, dim) = locs.shape
         shear_modulus = p_mu * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return shear_modulus
 
     def bulk_modulus(self, locs):
-        """
-        Compute bulk modulus field at locations.
+        """Compute bulk modulus field at locations.
         """
         (npts, dim) = locs.shape
         bulk_modulus = (p_lambda + 2.0 / 3.0 * p_mu) * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return bulk_modulus
 
     def maxwell_time(self, locs):
-        """
-        Compute Maxwell time field at locations.
+        """Compute Maxwell time field at locations.
         """
         (npts, dim) = locs.shape
         maxwell_time = numpy.zeros((1, npts, 3), dtype=numpy.float64)
@@ -203,8 +196,7 @@ class AnalyticalSoln(object):
         return maxwell_time
 
     def shear_modulus_ratio(self, locs):
-        """
-        Compute shear modulus ratio field at locations.
+        """Compute shear modulus ratio field at locations.
         """
         (npts, dim) = locs.shape
         shear_modulus_ratio = numpy.zeros((1, npts, 3), dtype=numpy.float64)
@@ -214,8 +206,7 @@ class AnalyticalSoln(object):
         return shear_modulus_ratio
 
     def strain(self, locs):
-        """
-        Compute strain field at locations.
+        """Compute strain field at locations.
         """
         (npts, dim) = locs.shape
         strain = numpy.zeros((numSteps, npts, self.TENSOR_SIZE), dtype=numpy.float64)
@@ -226,8 +217,7 @@ class AnalyticalSoln(object):
         return strain
 
     def stress(self, locs):
-        """
-        Compute stress field at locations.
+        """Compute stress field at locations.
         """
         (npts, dim) = locs.shape
         stress = numpy.zeros((numSteps, npts, self.TENSOR_SIZE), dtype=numpy.float64)
@@ -238,8 +228,7 @@ class AnalyticalSoln(object):
         return stress
 
     def viscous_strain(self, locs):
-        """
-        Compute viscous strain field at locations.
+        """Compute viscous strain field at locations.
         """
         (npts, dim) = locs.shape
         viscous_strain = numpy.zeros((numSteps, npts, 3*self.TENSOR_SIZE), dtype=numpy.float64)

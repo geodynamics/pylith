@@ -24,8 +24,7 @@ from .meshio import OutputTrigger as ModuleOutputTrigger
 
 
 class OutputTrigger(PetscComponent, ModuleOutputTrigger):
-    """
-    Python abstract base class for managing how often output is written.
+    """Python abstract base class for managing how often output is written.
 
     FACTORY: output_trigger
     """
@@ -33,8 +32,7 @@ class OutputTrigger(PetscComponent, ModuleOutputTrigger):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="outputtrigger"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="outputtrigger")
         return
@@ -42,8 +40,7 @@ class OutputTrigger(PetscComponent, ModuleOutputTrigger):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         PetscComponent._configure(self)
         return

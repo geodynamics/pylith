@@ -31,15 +31,13 @@ from axialtraction_maxwell_gendb import GenerateDB
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """
-    Test suite for testing Maxwell material with 2-D axial extension (Neumann BC).
+    """Test suite for testing Maxwell material with 2-D axial extension (Neumann BC).
     """
     DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_ypos", "bc_yneg"]
     NEUMANN_BOUNDARIES = ["bc_xpos"]
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()

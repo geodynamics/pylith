@@ -25,8 +25,7 @@ from .FieldFilterNone import FieldFilterNone
 
 
 class OutputObserver(PetscComponent, ModuleOutputObserver):
-    """
-    Python abstract base class for managing output of finite-element
+    """Python abstract base class for managing output of finite-element
     information.
 
     INVENTORY
@@ -61,15 +60,13 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="outputobserver"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="outputobserver")
         return
 
     def preinitialize(self, problem):
-        """
-        Setup output manager.
+        """Setup output manager.
         """
         self._createModuleObj()
         ModuleOutputObserver.setIdentifier(self, self.aliases[-1])
@@ -95,15 +92,13 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         PetscComponent._configure(self)
         return
 
     def _createModuleObj(self):
-        """
-        Create handle to C++ object.
+        """Create handle to C++ object.
         """
         raise NotImplementedError("Implement in subclass.")
         return

@@ -24,8 +24,7 @@ from .meshio import OutputPhysics as ModuleOutputPhysics
 
 
 class OutputPhysics(OutputObserver, ModuleOutputPhysics):
-    """
-    Python object for managing output over points with constrained degrees of freedom.
+    """Python object for managing output over points with constrained degrees of freedom.
 
     INVENTORY
 
@@ -50,15 +49,13 @@ class OutputPhysics(OutputObserver, ModuleOutputPhysics):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="outputphysics"):
-        """
-        Constructor.
+        """Constructor.
         """
         OutputObserver.__init__(self, name)
         return
 
     def preinitialize(self, problem, identifier):
-        """
-        Do mimimal initialization.
+        """Do mimimal initialization.
         """
         OutputObserver.preinitialize(self, problem)
         ModuleOutputPhysics.setInfoFields(self, self.infoFields)
@@ -70,8 +67,7 @@ class OutputPhysics(OutputObserver, ModuleOutputPhysics):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Create handle to C++ object.
+        """Create handle to C++ object.
         """
         ModuleOutputPhysics.__init__(self)
         return
@@ -80,8 +76,7 @@ class OutputPhysics(OutputObserver, ModuleOutputPhysics):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def observer():
-    """
-    Factory associated with OutputObserver.
+    """Factory associated with OutputObserver.
     """
     return OutputPhysics()
 

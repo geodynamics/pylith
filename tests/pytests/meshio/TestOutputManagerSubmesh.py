@@ -28,8 +28,7 @@ from pylith.meshio.OutputManager import OutputManager
 class TestProvider(object):
 
   def __init__(self):
-    """
-    Constructor.
+    """Constructor.
     """
     self.availableFields = \
         {'vertex': \
@@ -67,15 +66,13 @@ class TestProvider(object):
 
 
   def getDataMesh(self):
-    """
-    Get mesh.
+    """Get mesh.
     """
     return (self.submesh, None, None)
 
 
   def getVertexField(self, name, fields=None):
-    """
-    Get vertex field.
+    """Get vertex field.
     """
     from pylith.field.field.FieldBase import SCALAR, VECTOR, OTHER
     if name == "vertex info":
@@ -102,8 +99,7 @@ class TestProvider(object):
 
 
   def getCellField(self, name, fields=None):
-    """
-    Get cell field.
+    """Get cell field.
     """
     if name == "cell info":
       fieldType = FieldBase.SCALAR
@@ -124,8 +120,7 @@ class TestProvider(object):
 
 # ----------------------------------------------------------------------
 class TestOutputManagerSubmesh(unittest.TestCase):
-  """
-  Unit testing of Python MeshOutputManager object.
+  """Unit testing of Python MeshOutputManager object.
   """
 
   def setUp(self):
@@ -136,8 +131,7 @@ class TestOutputManagerSubmesh(unittest.TestCase):
   
 
   def test_constructor(self):
-    """
-    Test constructor.
+    """Test constructor.
     """
     output = OutputManager()
     output.inventory.writer._configure()
@@ -146,8 +140,7 @@ class TestOutputManagerSubmesh(unittest.TestCase):
 
 
   def test_preinitialize(self):
-    """
-    Test preinitialize().
+    """Test preinitialize().
     """
     dataProvider = TestProvider()
     output = OutputManager()
@@ -158,8 +151,7 @@ class TestOutputManagerSubmesh(unittest.TestCase):
 
 
   def test_verifyConfiguration(self):
-    """
-    Test verifyConfiguration().
+    """Test verifyConfiguration().
     """
     dataProvider = TestProvider()
     output = OutputManager()
@@ -174,8 +166,7 @@ class TestOutputManagerSubmesh(unittest.TestCase):
   
   
   def test_initialize(self):
-    """
-    Test initialize().
+    """Test initialize().
     """
     # No quadrature
     output = OutputManager()
@@ -210,8 +201,7 @@ class TestOutputManagerSubmesh(unittest.TestCase):
 
 
   def test_openclose(self):
-    """
-    Test open() and close().
+    """Test open() and close().
     """
     output = OutputManager()
     output.inventory.writer.inventory.filename = "output.vtk"
@@ -227,8 +217,7 @@ class TestOutputManagerSubmesh(unittest.TestCase):
 
 
   def test_writeInfo(self):
-    """
-    Test writeInfo().
+    """Test writeInfo().
     """
     output = OutputManager()
     output.inventory.writer.inventory.filename = "output.vtk"
@@ -248,8 +237,7 @@ class TestOutputManagerSubmesh(unittest.TestCase):
 
 
   def test_writeData(self):
-    """
-    Test writeData().
+    """Test writeData().
     """
     output = OutputManager()
     output.inventory.writer.inventory.filename = "output.vtk"
@@ -271,8 +259,7 @@ class TestOutputManagerSubmesh(unittest.TestCase):
 
 
   def test_checkWrite(self):
-    """
-    Test _checkWrite().
+    """Test _checkWrite().
     """
     dataProvider = TestProvider()
 
@@ -330,8 +317,7 @@ class TestOutputManagerSubmesh(unittest.TestCase):
 
 
   def test_factory(self):
-    """
-    Test factory method.
+    """Test factory method.
     """
     from pylith.meshio.OutputManager import output_manager
     o = output_manager()

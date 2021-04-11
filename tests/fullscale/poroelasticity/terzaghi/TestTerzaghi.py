@@ -38,16 +38,14 @@ diff_tolerance = {'displacement': 0.1, 'pressure': 1.0}
 
 
 class TestCase(FullTestCase):
-    """
-    Test suite for testing PyLith with one dimensional poroelasticity
+    """Test suite for testing PyLith with one dimensional poroelasticity
     by means of Terzaghi's problem.
     """
     DIRICHLET_BOUNDARIES = ["x_neg", "x_pos", "y_pos_dir", "y_neg"]
     NEUMANN_BOUNDARIES = ["y_pos_neu"]
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()

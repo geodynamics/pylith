@@ -23,8 +23,7 @@ from .MeshGenerator import MeshGenerator
 
 
 class MeshImporter(MeshGenerator):
-    """
-    Python implementation of importing a mesh.
+    """Python implementation of importing a mesh.
 
     FACTORY: mesh_generator.
     """
@@ -49,16 +48,14 @@ class MeshImporter(MeshGenerator):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="meshimporter"):
-        """
-        Constructor.
+        """Constructor.
         """
         MeshGenerator.__init__(self, name)
         self._loggingPrefix = "MeIm "
         return
 
     def preinitialize(self, problem):
-        """
-        Do minimal initialization.
+        """Do minimal initialization.
         """
         MeshGenerator.preinitialize(self, problem)
 
@@ -68,8 +65,7 @@ class MeshImporter(MeshGenerator):
         return
 
     def create(self, problem, faults=None):
-        """
-        Hook for creating mesh.
+        """Hook for creating mesh.
         """
         from pylith.utils.profiling import resourceUsageString
         from pylith.mpi.Communicator import petsc_comm_world
@@ -131,15 +127,13 @@ class MeshImporter(MeshGenerator):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based on inventory.
+        """Set members based on inventory.
         """
         MeshGenerator._configure(self)
         return
 
     def _setupLogging(self):
-        """
-        Setup event logging.
+        """Setup event logging.
         """
         MeshGenerator._setupLogging(self)
         self._eventLogger.registerEvent("%sreorder" % self._loggingPrefix)
@@ -149,8 +143,7 @@ class MeshImporter(MeshGenerator):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def mesh_generator():
-    """
-    Factory associated with MeshImporter.
+    """Factory associated with MeshImporter.
     """
     return MeshImporter()
 

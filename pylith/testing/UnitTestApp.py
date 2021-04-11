@@ -61,8 +61,7 @@ class TestComponent(TestAbstractComponent):
 
 
 class UnitTestApp(Script):
-    """
-    Test application.
+    """Test application.
     """
     cov = None
     try:
@@ -74,16 +73,14 @@ class UnitTestApp(Script):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="unittestapp", petsc_options=[("malloc_dump", "true")]):
-        """
-        Constructor.
+        """Constructor.
         """
         Script.__init__(self, name)
         self.petscOptions = petsc_options
         return
 
     def main(self):
-        """
-        Run the application.
+        """Run the application.
         """
         if self.cov:
             self.cov.start()

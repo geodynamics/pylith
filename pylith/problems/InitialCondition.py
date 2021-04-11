@@ -25,9 +25,7 @@ from .problems import InitialCondition as ModuleInitialCondition
 
 class InitialCondition(PetscComponent, ModuleInitialCondition):
     """Python abstract base class for specifying initial conditions.
-    """
-
-    import pythia.pyre.inventory
+    """import pythia.pyre.inventory
 
     subfields = pythia.pyre.inventory.list("subfields", default=["displacement"])
     subfields.meta["tip"] = "Names of solution subfields for initial condition."
@@ -35,15 +33,13 @@ class InitialCondition(PetscComponent, ModuleInitialCondition):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="initialconditions"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="initial_conditions")
         return
 
     def preinitialize(self, problem):
-        """
-        Setup initial conditions.
+        """Setup initial conditions.
         """
         self._createModuleObj()
         ModuleInitialCondition.setIdentifier(self, self.aliases[-1])
@@ -53,8 +49,7 @@ class InitialCondition(PetscComponent, ModuleInitialCondition):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         raise NotImplementedError("Please implement _createModuleOb() in derived class.")
 

@@ -12,8 +12,7 @@ lengthScale = 1.0e+3
 
 # ----------------------------------------------------------------------
 def printdata(data):
-    """
-    Print data as C array.
+    """Print data as C array.
     """
     (nrows, ncols) = data.shape
     style = " %16.12f,"*ncols
@@ -24,8 +23,7 @@ def printdata(data):
 
 # ----------------------------------------------------------------------
 def globalToFault(v, R):
-    """
-    Convert vector from global coordinate system to fault coordinate system.
+    """Convert vector from global coordinate system to fault coordinate system.
     """
     (m, ndof) = v.shape
 
@@ -35,8 +33,7 @@ def globalToFault(v, R):
 
 # ----------------------------------------------------------------------
 def faultToGlobal(v, R):
-    """
-    Convert vector from fault coordinate system to global coordinate system.
+    """Convert vector from fault coordinate system to global coordinate system.
     """
     (m, ndof) = v.shape
 

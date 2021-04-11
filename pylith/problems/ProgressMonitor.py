@@ -25,8 +25,7 @@ from .problems import ProgressMonitor as ModuleProgressMonitor
 
 
 class ProgressMonitor(PetscComponent, ModuleProgressMonitor):
-    """
-    Python abstract base class for progress monitor.
+    """Python abstract base class for progress monitor.
 
     FACTORY: progress_monitor.
     """
@@ -43,8 +42,7 @@ class ProgressMonitor(PetscComponent, ModuleProgressMonitor):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="progressmonitor"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="progress_monitor")
         return

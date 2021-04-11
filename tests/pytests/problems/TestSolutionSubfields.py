@@ -25,13 +25,11 @@ import unittest
 
 # ----------------------------------------------------------------------
 class TestSolutionSubfields(unittest.TestCase):
-  """
-  Unit testing of containers with solution subfields.
+  """Unit testing of containers with solution subfields.
   """
 
   def test_SolnDisp(self):
-    """
-    Test SolnDisp.
+    """Test SolnDisp.
     """
     from pylith.problems.SolnDisp import SolnDisp
     subfields = SolnDisp()
@@ -43,8 +41,7 @@ class TestSolutionSubfields(unittest.TestCase):
     
   
   def test_SolnDispLagrange(self):
-    """
-    Test SolnDispLagrange.
+    """Test SolnDispLagrange.
     """
     from pylith.problems.SolnDispLagrange import SolnDispLagrange
     subfields = SolnDispLagrange()
@@ -57,8 +54,7 @@ class TestSolutionSubfields(unittest.TestCase):
     
   
   def test_SolnDispVel(self):
-    """
-    Test SolnDispVel.
+    """Test SolnDispVel.
     """
     from pylith.problems.SolnDispVel import SolnDispVel
     subfields = SolnDispVel()
@@ -71,8 +67,7 @@ class TestSolutionSubfields(unittest.TestCase):
     
   
   def test_SolnDispVelLagrange(self):
-    """
-    Test SolnDispVel.
+    """Test SolnDispVel.
     """
     from pylith.problems.SolnDispVelLagrange import SolnDispVelLagrange
     subfields = SolnDispVelLagrange()
@@ -86,8 +81,7 @@ class TestSolutionSubfields(unittest.TestCase):
     
   
   def test_SolnDispPres(self):
-    """
-    Test SolnDispPres.
+    """Test SolnDispPres.
     """
     from pylith.problems.SolnDispPres import SolnDispPres
     subfields = SolnDispPres()
@@ -100,8 +94,7 @@ class TestSolutionSubfields(unittest.TestCase):
     
   
   def test_SolnDispPresLagrange(self):
-    """
-    Test SolnDispPres.
+    """Test SolnDispPres.
     """
     from pylith.problems.SolnDispPresLagrange import SolnDispPresLagrange
     subfields = SolnDispPresLagrange()

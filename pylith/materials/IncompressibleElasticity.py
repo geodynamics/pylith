@@ -26,8 +26,7 @@ from .IsotropicLinearIncompElasticity import IsotropicLinearIncompElasticity
 
 
 class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
-    """
-    Python material property manager.
+    """Python material property manager.
 
     FACTORY: material
     """
@@ -44,8 +43,7 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="incompressibleelasticity"):
-        """
-        Constructor.
+        """Constructor.
         """
         Material.__init__(self, name)
         return
@@ -58,8 +56,7 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
         self.derivedSubfields = DerivedSubfieldsElasticity("derived_subfields")
 
     def preinitialize(self, problem):
-        """
-        Setup material.
+        """Setup material.
         """
         self.rheology.preinitialize(problem)
         Material.preinitialize(self, problem)
@@ -70,8 +67,7 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
         return
 
     def _createModuleObj(self):
-        """
-        Create handle to C++ IncompressibleElasticity.
+        """Create handle to C++ IncompressibleElasticity.
         """
         ModuleIncompressibleElasticity.__init__(self)
         ModuleIncompressibleElasticity.setBulkRheology(self, self.rheology)  # Material sets auxiliary db in rheology.
@@ -81,8 +77,7 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
 # Factories
 
 def material():
-    """
-    Factory associated with IncompressibleElasticity.
+    """Factory associated with IncompressibleElasticity.
     """
     return IncompressibleElasticity()
 

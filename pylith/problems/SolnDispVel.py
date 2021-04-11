@@ -41,8 +41,7 @@ class SolnDispVel(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="solndispvel"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="soln_subfields")
         return
@@ -72,8 +71,7 @@ class Solution(SolutionBase):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 def solution():
-    """
-    Factory associated with Solution.
+    """Factory associated with Solution.
     """
     return Solution()
 

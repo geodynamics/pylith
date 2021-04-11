@@ -55,8 +55,7 @@ class AuxSubfieldsIsotropicLinearMaxwell(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="auxfieldsisotropiclinearmaxwell"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="auxiliary_fields")
         return
@@ -71,8 +70,7 @@ class AuxSubfieldsIsotropicLinearMaxwell(PetscComponent):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def auxiliary_subfields():
-    """
-    Factory associated with AuxSubfieldsIsotropicLinearMaxwell.
+    """Factory associated with AuxSubfieldsIsotropicLinearMaxwell.
     """
     return AuxSubfieldsIsotropicLinearMaxwell()
 

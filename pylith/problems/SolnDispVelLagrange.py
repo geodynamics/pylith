@@ -77,8 +77,7 @@ class Solution(SolutionBase):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 def solution():
-    """
-    Factory associated with Solution.
+    """Factory associated with Solution.
     """
     return Solution()
 

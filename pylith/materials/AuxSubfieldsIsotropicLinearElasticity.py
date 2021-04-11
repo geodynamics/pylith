@@ -45,8 +45,7 @@ class AuxSubfieldsIsotropicLinearElasticity(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="auxsubfieldsisotropiclinearelasticity"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="auxiliary_subfields")
         return
@@ -61,8 +60,7 @@ class AuxSubfieldsIsotropicLinearElasticity(PetscComponent):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def auxiliary_subfields():
-    """
-    Factory associated with AuxSubfieldsIsotropicLinearElasticity.
+    """Factory associated with AuxSubfieldsIsotropicLinearElasticity.
     """
     return AuxSubfieldsIsotropicLinearElasticity()
 

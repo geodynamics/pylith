@@ -34,16 +34,14 @@ from pythia.pyre.applications.Script import Script as Application
 
 
 class VtkCff(Application):
-    """
-    Python application to compute the Coulomb Failure Function (CFF) difference
+    """Python application to compute the Coulomb Failure Function (CFF) difference
     for either a specified plane orientation or for optimally oriented planes.
     Differences are computed from a zero initial stress state, a specified state
     in a time series, or from the previous step in a time series.
     """
 
     class Inventory(Application.Inventory):
-        """
-        Python object for managing VtkCff facilities and properties.
+        """Python object for managing VtkCff facilities and properties.
         """
 
         # @class Inventory
@@ -113,8 +111,7 @@ class VtkCff(Application):
         isotropicPoroelastic.meta['tip'] = "Use isotropic poroelastic model instead of constant apparent friction model."
 
     class TooFewFilesError(IOError):
-        """
-        Exception raised when not enough VTK input files are found.
+        """Exception raised when not enough VTK input files are found.
         """
 
         def __init__(self, value):
@@ -155,8 +152,7 @@ class VtkCff(Application):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         Application._configure(self)
         import pdb
@@ -218,8 +214,7 @@ class VtkCff(Application):
         return
 
     def _getFileInfo(self):
-        """
-        Find input files and set up filenames for input and output.
+        """Find input files and set up filenames for input and output.
         """
 
         # Create list of input files and associated times
@@ -258,8 +253,7 @@ class VtkCff(Application):
         return
 
     def _cffLoop(self):
-        """
-        Function to loop over input files, compute Cff relative to reference state,
+        """Function to loop over input files, compute Cff relative to reference state,
         and write the results to output files.
         """
 
@@ -301,8 +295,7 @@ class VtkCff(Application):
         return
 
     def _readStress(self, vtkFile):
-        """
-        Function to read stresses from a file and store the info in a numpy array.
+        """Function to read stresses from a file and store the info in a numpy array.
         """
         from enthought.mayavi.sources.vtk_file_reader import VTKFileReader
         from enthought.tvtk.api import tvtk
@@ -341,8 +334,7 @@ class VtkCff(Application):
         return stressOrdered
 
     def _princStress(self, stress):
-        """
-        Function to compute 3D principal stresses and sort them.
+        """Function to compute 3D principal stresses and sort them.
         """
         stressMat = numpy.array([(stress[0], stress[3], stress[5]),
                                  (stress[3], stress[1], stress[4]),
@@ -355,8 +347,7 @@ class VtkCff(Application):
         return princStressOrdered, princAxesOrdered
 
     def _CffOop(self, refStress, newStress, vtkOutputFile):
-        """
-        Function to compute CFF for optimally-oriented planes and output results to
+        """Function to compute CFF for optimally-oriented planes and output results to
         a file.
         """
         from enthought.tvtk.api import tvtk
@@ -435,8 +426,7 @@ class VtkCff(Application):
         return
 
     def _CffPredefined(self, refStress, newStress, vtkOutputFile):
-        """
-        Function to compute CFF for predefined planes and output results to a file.
+        """Function to compute CFF for predefined planes and output results to a file.
         """
         from enthought.tvtk.api import tvtk
 

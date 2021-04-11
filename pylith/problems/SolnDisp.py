@@ -33,8 +33,7 @@ class SolnDisp(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="solndisp"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="soln_subfields")
         return
@@ -44,8 +43,7 @@ class SolnDisp(PetscComponent):
         return
 
     def components(self):
-        """
-        Order of facilities in Inventory is ambiguous, so overwrite
+        """Order of facilities in Inventory is ambiguous, so overwrite
         components() to insure order is [displacement].
         """
         return [self.displacement]

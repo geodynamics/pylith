@@ -26,8 +26,7 @@ import pylith.mpi.Communicator as mpicomm
 
 # ----------------------------------------------------------------------
 class TestCommunicator(unittest.TestCase):
-  """
-  Unit testing of Communicator object.
+  """Unit testing of Communicator object.
   """
   
 

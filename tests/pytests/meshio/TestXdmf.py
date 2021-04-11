@@ -26,13 +26,11 @@ from pylith.meshio.Xdmf import Xdmf
 
 # ----------------------------------------------------------------------
 class TestXdmf(unittest.TestCase):
-    """
-    Unit testing of Python Xdmf object.
+    """Unit testing of Python Xdmf object.
     """
 
     def test_constructor(self):
-        """
-       Test constructor.
+        """Test constructor.
         """
         xdmf = Xdmf()
         return

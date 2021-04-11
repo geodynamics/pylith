@@ -30,8 +30,7 @@ lineColor = "blue"
 
 
 def readInversionSummary():
-    """
-    Function to read inversion results from text file.
+    """Function to read inversion results from text file.
     """
 
     # Open inversion summary file and get misfits.

@@ -31,14 +31,12 @@ from axialdisp_gendb import GenerateDB
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """
-    Test suite for testing PyLith with axial extension in the x-direction for a one cell mesh.
+    """Test suite for testing PyLith with axial extension in the x-direction for a one cell mesh.
     """
     DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos"]
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()

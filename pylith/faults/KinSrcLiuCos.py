@@ -24,8 +24,7 @@ from .faults import KinSrcLiuCos as ModuleKinSrc
 
 
 class KinSrcLiuCos(KinSrc, ModuleKinSrc):
-    """
-    Python object for Liu (1970) cosine-sine slip time function.
+    """Python object for Liu (1970) cosine-sine slip time function.
 
     Factory: eq_kinematic_src
     """
@@ -33,8 +32,7 @@ class KinSrcLiuCos(KinSrc, ModuleKinSrc):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="kinsrcliucos"):
-        """
-        Constructor.
+        """Constructor.
         """
         KinSrc.__init__(self, name)
         return
@@ -42,8 +40,7 @@ class KinSrcLiuCos(KinSrc, ModuleKinSrc):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         ModuleKinSrc.__init__(self)
 
@@ -51,8 +48,7 @@ class KinSrcLiuCos(KinSrc, ModuleKinSrc):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def eq_kinematic_src():
-    """
-    Factory associated with KinSrcLiuCos.
+    """Factory associated with KinSrcLiuCos.
     """
     return KinSrcLiuCos()
 

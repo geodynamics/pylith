@@ -38,8 +38,7 @@ class IsotropicLinearIncompElasticity(RheologyIncompressibleElasticity, ModuleLi
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="isotropiclinearincompelasticity"):
-        """
-        Constructor.
+        """Constructor.
         """
         RheologyIncompressibleElasticity.__init__(self, name)
         return
@@ -58,8 +57,7 @@ class IsotropicLinearIncompElasticity(RheologyIncompressibleElasticity, ModuleLi
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         ModuleLinearElasticity.__init__(self)
 
@@ -67,8 +65,7 @@ class IsotropicLinearIncompElasticity(RheologyIncompressibleElasticity, ModuleLi
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def incompressible_elasticity_rheology():
-    """
-    Factory associated with IsotropicLinearIncompElasticity.
+    """Factory associated with IsotropicLinearIncompElasticity.
     """
     return IsotropicLinearIncompElasticity()
 

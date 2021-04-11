@@ -39,8 +39,7 @@ class DerivedSubfieldsElasticity(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="derivedsubfieldselasticity"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="derived_subfields")
         return
@@ -49,8 +48,7 @@ class DerivedSubfieldsElasticity(PetscComponent):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def derived_subfields():
-    """
-    Factory associated with DerivedSubfieldsElasticity.
+    """Factory associated with DerivedSubfieldsElasticity.
     """
     return DerivedSubfieldsElasticity()
 

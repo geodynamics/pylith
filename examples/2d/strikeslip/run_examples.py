@@ -20,44 +20,38 @@ from pylith.testing.FullTestApp import TestDriver, Example
 import unittest
 
 class Step01_Slip(Example):
-    """
-    Run 'pylith step01_slip.cfg'
+    """Run 'pylith step01_slip.cfg'
     """
     NAME = "step01_slip"
     PYLITH_ARGS =  ["step01_slip.cfg"]
 
         
 class Step02_VelBC(Example):
-    """
-    Run 'pylith step02_slip_velbc.cfg'.
+    """Run 'pylith step02_slip_velbc.cfg'.
     """
     NAME = "step02_slip_velbc"
     PYLITH_ARGS = ["step02_slip_velbc.cfg"]
 
 
 class Step03_MultiSlip_VelBC(Example):
-    """
-    Run 'pylith step03_multislip_velbc'.
+    """Run 'pylith step03_multislip_velbc'.
     """
     NAME = "step03_multislip_velbc"
     PYLITH_ARGS = ["step03_multislip_velbc.cfg"]
 
         
 class ExamplesApp(TestDriver):
-    """
-    Driver application for running examples.
+    """Driver application for running examples.
     """
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         TestDriver.__init__(self)
         return
 
     def _suite(self):
-        """
-        Create test suite.
+        """Create test suite.
         """
         EXAMPLES = [
             Step01_Slip,

@@ -25,8 +25,7 @@ from .MeshGenerator import MeshGenerator
 
 
 class MeshImporterDist(MeshGenerator):
-    """
-    Python implementation of importing a mesh.
+    """Python implementation of importing a mesh.
 
     Factory: mesh_generator.
     """
@@ -34,8 +33,7 @@ class MeshImporterDist(MeshGenerator):
     # INVENTORY //////////////////////////////////////////////////////////
 
     class Inventory(MeshGenerator.Inventory):
-        """
-        Python object for managing MeshImporterDist facilities and properties.
+        """Python object for managing MeshImporterDist facilities and properties.
         """
 
         # @class Inventory
@@ -64,16 +62,14 @@ class MeshImporterDist(MeshGenerator):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="meshimporter"):
-        """
-        Constructor.
+        """Constructor.
         """
         MeshGenerator.__init__(self, name)
         self._loggingPrefix = "MeIm "
         return
 
     def create(self, normalizer, faults=None):
-        """
-        Hook for creating mesh.
+        """Hook for creating mesh.
         """
         from pylith.utils.profiling import resourceUsageString
 
@@ -99,8 +95,7 @@ class MeshImporterDist(MeshGenerator):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based on inventory.
+        """Set members based on inventory.
         """
         MeshGenerator._configure(self)
         self.reader = self.inventory.reader
@@ -111,8 +106,7 @@ class MeshImporterDist(MeshGenerator):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def mesh_generator():
-    """
-    Factory associated with MeshImporterDist.
+    """Factory associated with MeshImporterDist.
     """
     return MeshImporterDist()
 

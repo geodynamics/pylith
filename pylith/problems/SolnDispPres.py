@@ -41,8 +41,7 @@ class SolnDispPres(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="solndisppres"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="soln_subfields")
         return
@@ -52,8 +51,7 @@ class SolnDispPres(PetscComponent):
         return
 
     def components(self):
-        """
-        Order of facilities in Inventory is ambiguous, so overwrite
+        """Order of facilities in Inventory is ambiguous, so overwrite
         components() to insure order is [displacement, pressure].
 
         """
@@ -73,8 +71,7 @@ class Solution(SolutionBase):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 def solution():
-    """
-    Factory associated with Solution.
+    """Factory associated with Solution.
     """
     return Solution()
 

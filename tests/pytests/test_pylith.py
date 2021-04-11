@@ -65,8 +65,7 @@ class TestApp(Script):
         pass
 
     def main(self):
-        """
-        Run the application.
+        """Run the application.
         """
         if self.cov:
             self.cov.start()

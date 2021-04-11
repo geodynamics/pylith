@@ -85,8 +85,7 @@ class AuxSubfieldsIsotropicLinearPoroelasticity(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="auxfieldsisotropiclinearporoelasticity"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="auxiliary_fields")
         return
@@ -101,8 +100,7 @@ class AuxSubfieldsIsotropicLinearPoroelasticity(PetscComponent):
 
 
 def auxiliary_subfields():
-    """
-    Factory associated with AuxSubfieldsIsotropicLinearPoroelasticity.
+    """Factory associated with AuxSubfieldsIsotropicLinearPoroelasticity.
     """
     return AuxSubfieldsIsotropicLinearPoroelasticity()
 

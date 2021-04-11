@@ -25,8 +25,7 @@ styleElastic = ['k--', 'r--', 'b--', 'g--']
 
 
 def computeStressInvar(fileName):
-    """
-    Function to compute second deviatoric stress invariant.
+    """Function to compute second deviatoric stress invariant.
     Exclude this for now because we need stress_zz to do it correctly.
     """
 
@@ -64,8 +63,7 @@ def computeStressInvar(fileName):
 
 
 def computeStrainInvar(fileName):
-    """
-    Function to compute second plastic strain invariant.
+    """Function to compute second plastic strain invariant.
     """
 
     h5 = h5py.File(fileName, "r", driver="sec2")

@@ -65,8 +65,7 @@ class SubfieldDisplacement(SolutionSubfield):
 
 
 def soln_subfield():
-    """
-    Factory associated with SubfieldDisplacement.
+    """Factory associated with SubfieldDisplacement.
     """
     return SubfieldDisplacement()
 

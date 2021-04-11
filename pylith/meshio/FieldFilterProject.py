@@ -24,8 +24,7 @@ from .meshio import FieldFilterProject as ModuleFieldFilterProject
 
 
 class FieldFilterProject(FieldFilter, ModuleFieldFilterProject):
-    """
-    Python class for projecting field to another basis.
+    """Python class for projecting field to another basis.
 
     INVENTORY
 
@@ -47,8 +46,7 @@ class FieldFilterProject(FieldFilter, ModuleFieldFilterProject):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="fieldfilterproject"):
-        """
-        Constructor.
+        """Constructor.
         """
         FieldFilter.__init__(self, name)
         return
@@ -70,8 +68,7 @@ class FieldFilterProject(FieldFilter, ModuleFieldFilterProject):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def output_field_filter():
-    """
-    Factory associated with FieldFilter.
+    """Factory associated with FieldFilter.
     """
     return FieldFilterProject()
 

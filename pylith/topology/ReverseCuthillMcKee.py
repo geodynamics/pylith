@@ -22,22 +22,19 @@ from .topology import ReverseCuthillMcKee as ModuleReverseCuthillMcKee
 
 
 class ReverseCuthillMcKee(ModuleReverseCuthillMcKee):
-    """
-    Python interface to PETSc reverse Cuthill-McKee reordering of mesh
+    """Python interface to PETSc reverse Cuthill-McKee reordering of mesh
     cells and vertices.
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         return
 
     def reorder(self, mesh):
-        """
-        Set communicator.
+        """Set communicator.
         """
         ModuleReverseCuthillMcKee.reorder(mesh)
         return

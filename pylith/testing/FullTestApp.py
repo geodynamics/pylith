@@ -29,16 +29,14 @@ from pylith.apps.PyLithApp import PyLithApp
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(unittest.TestCase):
-    """
-    Generic test case for full-scale test.
+    """Generic test case for full-scale test.
     """
     NAME = None  # Set in child class.
     VERBOSITY = 0
     RUN_PYLITH = True
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         return
 
@@ -63,8 +61,7 @@ class TestCase(unittest.TestCase):
 
 # ----------------------------------------------------------------------------------------------------------------------
 class Example(TestCase):
-    """
-    Base class for running an example.
+    """Base class for running an example.
 
     Need one test_* method to instantiate object and run PyLith via setUp().
     """
@@ -81,21 +78,18 @@ class Example(TestCase):
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestDriver(object):
-    """
-    Driver application for running full-scale tests.
+    """Driver application for running full-scale tests.
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         return
 
     def main(self):
-        """
-        Run the test suite.
+        """Run the test suite.
         """
         success = unittest.TextTestRunner(verbosity=2).run(self._suite()).wasSuccessful()
 
@@ -277,8 +271,7 @@ def check_data(filename, testcase, mesh, vertexFields=[], cellFields=[], ratio_t
 
 # ----------------------------------------------------------------------------------------------------------------------
 def run_pylith(appName, cfgfiles=[], dbClass=None, nprocs=1):
-    """
-    Helper function to generate spatial databases and run PyLith.
+    """Helper function to generate spatial databases and run PyLith.
     """
     # Skip running if already run.
     if str(appName) in dir(run_pylith):

@@ -24,8 +24,7 @@ from pythia.pyre.components.Component import Component
 
 
 class Subfield(Component):
-    """
-    Python object for defining discretization of a subfield.
+    """Python object for defining discretization of a subfield.
 
     FACTORY: subfield
     """
@@ -55,8 +54,7 @@ class Subfield(Component):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="subfield"):
-        """
-        Constructor.
+        """Constructor.
         """
         Component.__init__(self, name, facility="subfield")
 
@@ -65,8 +63,7 @@ class Subfield(Component):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         from .topology import FieldBase
 
@@ -90,8 +87,7 @@ class Subfield(Component):
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
 def subfieldFactory(name):
-    """
-    Factory for subfield items.
+    """Factory for subfield items.
     """
     from pythia.pyre.inventory import facility
     return facility(name, family="subfield", factory=Subfield)
@@ -100,8 +96,7 @@ def subfieldFactory(name):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def subfield():
-    """
-    Factory associated with Subfield.
+    """Factory associated with Subfield.
     """
     return Subfield()
 

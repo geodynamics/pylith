@@ -26,8 +26,7 @@ from pylith.utils.NullComponent import NullComponent
 
 
 class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
-    """
-    Python object for managing a time-dependent Dirichlet (prescribed values)
+    """Python object for managing a time-dependent Dirichlet (prescribed values)
     boundary condition.
 
     Factory: boundary_condition
@@ -55,8 +54,7 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
     dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
 
     def __init__(self, name="dirichlettimedependent"):
-        """
-        Constructor.
+        """Constructor.
         """
         BoundaryCondition.__init__(self, name)
         return
@@ -67,8 +65,7 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
             "auxiliary_subfields")
 
     def preinitialize(self, problem):
-        """
-        Do pre-initialization setup.
+        """Do pre-initialization setup.
         """
         import numpy
 
@@ -91,8 +88,7 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
         return
 
     def verifyConfiguration(self):
-        """
-        Verify compatibility of configuration.
+        """Verify compatibility of configuration.
         """
         BoundaryCondition.verifyConfiguration(self, self.mesh())
         spaceDim = self.mesh().coordsys().getSpaceDim()
@@ -103,8 +99,7 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
         return
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         if 0 == len(self.constrainedDOF):
             raise ValueError("'constrained_dof' must be a zero based integer array of indices corresponding to the "
@@ -120,8 +115,7 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
         return
 
     def _createModuleObj(self):
-        """
-        Create handle to corresponding C++ object.
+        """Create handle to corresponding C++ object.
         """
         ModuleDirichletTimeDependent.__init__(self)
         return
@@ -130,8 +124,7 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
 # Factories
 
 def boundary_condition():
-    """
-    Factory associated with DirichletTimeDependent.
+    """Factory associated with DirichletTimeDependent.
     """
     return DirichletTimeDependent()
 

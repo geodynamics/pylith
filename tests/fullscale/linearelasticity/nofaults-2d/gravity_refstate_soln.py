@@ -45,8 +45,7 @@ ymax = +4000.0  # m
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
-    """
-    Analytical solution to gravitational body forces with initial stress and no displacement.
+    """Analytical solution to gravitational body forces with initial stress and no displacement.
     """
     SPACE_DIM = 2
     TENSOR_SIZE = 4
@@ -74,40 +73,35 @@ class AnalyticalSoln(object):
         return numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
 
     def density(self, locs):
-        """
-        Compute density field at locations.
+        """Compute density field at locations.
         """
         (npts, dim) = locs.shape
         density = p_density * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return density
 
     def shear_modulus(self, locs):
-        """
-        Compute shear modulus field at locations.
+        """Compute shear modulus field at locations.
         """
         (npts, dim) = locs.shape
         shear_modulus = p_mu * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return shear_modulus
 
     def bulk_modulus(self, locs):
-        """
-        Compute bulk modulus field at locations.
+        """Compute bulk modulus field at locations.
         """
         (npts, dim) = locs.shape
         bulk_modulus = (p_lambda + 2.0 / 3.0 * p_mu) * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return bulk_modulus
 
     def strain(self, locs):
-        """
-        Compute strain field at locations.
+        """Compute strain field at locations.
         """
         (npts, dim) = locs.shape
         strain = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
         return strain
 
     def stress(self, locs):
-        """
-        Compute stress field at locations.
+        """Compute stress field at locations.
         """
         syy = p_density * gacc * (locs[:, 1] - ymax)
         sxx = syy

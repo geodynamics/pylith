@@ -23,8 +23,7 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class MeshRefiner(PetscComponent):
-    """
-    Python abstract base class for refining mesh in parallel.
+    """Python abstract base class for refining mesh in parallel.
 
     Factory: mesh_refiner
     """
@@ -32,8 +31,7 @@ class MeshRefiner(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="refiner"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="refiner")
         return
@@ -43,23 +41,20 @@ class MeshRefiner(PetscComponent):
         return
 
     def refine(self, mesh):
-        """
-        Refine mesh.
+        """Refine mesh.
         """
         return mesh
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         PetscComponent._configure(self)
         return
 
     def _setupLogging(self):
-        """
-        Setup event logging.
+        """Setup event logging.
         """
         self._loggingPrefix = "Refin "
         from pylith.utils.EventLogger import EventLogger

@@ -25,8 +25,7 @@ from .materials import RheologyElasticity as ModuleRheology
 
 
 class RheologyElasticity(PetscComponent, ModuleRheology):
-    """
-    Python object for bulk rheology of an elastic material.
+    """Python object for bulk rheology of an elastic material.
 
     FACTORY: elasticity_rheology
     """
@@ -42,8 +41,7 @@ class RheologyElasticity(PetscComponent, ModuleRheology):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="rheologyelasticity")
         return
@@ -73,8 +71,7 @@ class RheologyElasticity(PetscComponent, ModuleRheology):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         raise NotImplementedError("Implement in derived class.")
 

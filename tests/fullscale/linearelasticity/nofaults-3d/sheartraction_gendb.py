@@ -25,20 +25,17 @@ import numpy
 
 
 class GenerateDB(object):
-    """
-    Python object to generate spatial database with displacement
+    """Python object to generate spatial database with displacement
     boundary conditions for the shear test.
     """
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         return
 
     def run(self):
-        """
-        Generate the database.
+        """Generate the database.
         """
         # Domain
         x = numpy.arange(-1.0e+4, 1.01e+4, 5.0e+3)

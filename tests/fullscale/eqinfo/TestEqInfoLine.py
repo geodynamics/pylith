@@ -25,20 +25,17 @@ from TestEqInfo import TestEqInfo, run_eqinfo
 
 
 class TestEqInfoLine(TestEqInfo):
-    """
-    Test suite for testing pylith_eqinfo with 1-D fault meshes.
+    """Test suite for testing pylith_eqinfo with 1-D fault meshes.
     """
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         run_eqinfo("line", ["line.cfg"])
         return
 
     def test_stats(self):
-        """
-        Check fault stats.
+        """Check fault stats.
         """
         import stats_line
 

@@ -24,8 +24,7 @@ from spatialdata.spatialdb.UniformDB import UniformDB
 
 
 class ZeroDB(UniformDB):
-    """
-    Python object for spatial database with uniform zero initial amplitude values
+    """Python object for spatial database with uniform zero initial amplitude values
     for degrees of freedom.
 
     Factory: spatial_database
@@ -45,8 +44,7 @@ class ZeroDB(UniformDB):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="zerodb"):
-        """
-        Constructor.
+        """Constructor.
         """
         UniformDB.__init__(self, name)
         return
@@ -54,8 +52,7 @@ class ZeroDB(UniformDB):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based on inventory.
+        """Set members based on inventory.
         """
         self.inventory.values = self.values
         self.inventory.data = self.data
@@ -66,8 +63,7 @@ class ZeroDB(UniformDB):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def spatial_database():
-    """
-    Factory associated with ZeroDB.
+    """Factory associated with ZeroDB.
     """
     return ZeroDB()
 

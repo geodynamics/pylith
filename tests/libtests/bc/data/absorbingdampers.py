@@ -27,8 +27,7 @@ import math
 
 
 def calcTri3():
-    """
-    Calculate damping constants, residual, and Jacobian values for
+    """Calculate damping constants, residual, and Jacobian values for
     absorbing dampers on mesh with tri3 cells.
     """
 
@@ -75,8 +74,7 @@ def calcTri3():
 
 # ----------------------------------------------------------------------
 def calcQuad4():
-    """
-    Calculate damping constants, residual, and Jacobian values for
+    """Calculate damping constants, residual, and Jacobian values for
     absorbing dampers on mesh with quad4 cells.
     """
 
@@ -140,8 +138,7 @@ def calcQuad4():
 
 # ----------------------------------------------------------------------
 def calcTet4():
-    """
-    Calculate damping constants, residual, and Jacobian values for
+    """Calculate damping constants, residual, and Jacobian values for
     absorbing dampers on mesh with tet4 cells.
     """
 
@@ -219,8 +216,7 @@ def calcTet4():
 
 # ----------------------------------------------------------------------
 def calcHex8():
-    """
-    Calculate damping constants, residual, and Jacobian values for
+    """Calculate damping constants, residual, and Jacobian values for
     absorbing dampers on mesh with hex8 cells.
     """
 

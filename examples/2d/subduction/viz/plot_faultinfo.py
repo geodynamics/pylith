@@ -21,8 +21,7 @@ if not plot in ['step01_slip',
 
 # ----------------------------------------------------------------------
 def getStep01():
-  """
-  Function to get slip, tractions, and fault coordinates from step01.
+  """Function to get slip, tractions, and fault coordinates from step01.
   """
 
   # Open solution file and get slip and coordinates.

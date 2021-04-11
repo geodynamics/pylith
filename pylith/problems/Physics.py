@@ -28,8 +28,7 @@ from pylith.utils.NullComponent import NullComponent
 # Factories for items in facility arrays
 
 def observerFactory(name):
-    """
-    Factory for output items.
+    """Factory for output items.
     """
     from pythia.pyre.inventory import facility
     from pylith.meshio.OutputPhysics import OutputPhysics
@@ -38,9 +37,7 @@ def observerFactory(name):
 
 class Physics(PetscComponent, ModulePhysics):
     """Python abstract base class for objects defining physics.
-    """
-
-    import pythia.pyre.inventory
+    """import pythia.pyre.inventory
 
     from pylith.topology.Subfield import subfieldFactory
     from pylith.utils.EmptyBin import EmptyBin
@@ -66,15 +63,13 @@ class Physics(PetscComponent, ModulePhysics):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="physics", facility="physics"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility)
         return
 
     def preinitialize(self, problem):
-        """
-        Do pre-initialization setup.
+        """Do pre-initialization setup.
         """
         self._createModuleObj()
         identifier = self.aliases[-1]
@@ -113,8 +108,7 @@ class Physics(PetscComponent, ModulePhysics):
 # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         raise NotImplementedError(
             "Please implement _createModuleOb() in derived class.")

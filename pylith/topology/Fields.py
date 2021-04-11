@@ -22,23 +22,20 @@ from .topology import Fields as ModuleFields
 
 
 class Fields(ModuleFields):
-    """
-    Python object for managing vector fields over vertices or cells of a
+    """Python object for managing vector fields over vertices or cells of a
     finite-element mesh.
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, mesh):
-        """
-        Constructor.
+        """Constructor.
         """
         ModuleFields.__init__(self, mesh)
         return
 
     def cleanup(self):
-        """
-        Deallocate PETSc and local data structures.
+        """Deallocate PETSc and local data structures.
         """
         self.deallocate()
         return

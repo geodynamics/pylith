@@ -22,8 +22,7 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class AuxSubfieldsTimeDependent(PetscComponent):
-    """
-    Python subfields container for time dependent boundary conditions.
+    """Python subfields container for time dependent boundary conditions.
 
     f(x,t) = f_0(x) + \dot{f}_1(x)(t-t_1(x)) + f_2(x)a(t-t_2(x))
 
@@ -59,8 +58,7 @@ class AuxSubfieldsTimeDependent(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="auxfieldstimedependent"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="auxiliary_fields")
         return
@@ -75,8 +73,7 @@ class AuxSubfieldsTimeDependent(PetscComponent):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def auxiliary_subfields():
-    """
-    Factory associated with AuxSubfieldsAbsorbingDampers.
+    """Factory associated with AuxSubfieldsAbsorbingDampers.
     """
     return AuxSubfieldsTimeDependent()
 

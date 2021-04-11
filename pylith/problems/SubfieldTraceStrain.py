@@ -41,15 +41,13 @@ class SubfieldTraceStrain(SolutionSubfield):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="subfieldtracestrain"):
-        """
-        Constructor.
+        """Constructor.
         """
         SolutionSubfield.__init__(self, name)
         return
 
     def initialize(self, normalizer, spaceDim):
-        """
-        Initialize subfield metadata.
+        """Initialize subfield metadata.
         """
         from pylith.topology.Field import Field
         from pythia.pyre.units.unit import one
@@ -61,8 +59,7 @@ class SubfieldTraceStrain(SolutionSubfield):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         SolutionSubfield._configure(self)
         return
@@ -71,8 +68,7 @@ class SubfieldTraceStrain(SolutionSubfield):
 
 
 def soln_subfield():
-    """
-    Factory associated with SubfieldTraceStrain.
+    """Factory associated with SubfieldTraceStrain.
     """
     return SubfieldTraceStrain()
 

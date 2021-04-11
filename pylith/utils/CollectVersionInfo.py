@@ -27,16 +27,14 @@ import sys
 
 
 class CollectVersionInfo(Component):
-    """
-    Python CollectVersionInfo object to collect version information for PyLith
+    """Python CollectVersionInfo object to collect version information for PyLith
     and its dependencies.
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         Component.__init__(self, name="collectversioninfo", facility="collectversioninfo")
         return
@@ -104,8 +102,7 @@ class CollectVersionInfo(Component):
 
     @classmethod
     def _collect(cls):
-        """
-        Collect version infoformation.
+        """Collect version infoformation.
         """
         info = {
             "platform": cls._collectPlatform(),

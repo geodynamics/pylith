@@ -90,8 +90,7 @@ class SolutionSubfield(Subfield):
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
 def subfieldFactory(name):
-    """
-    Factory for subfield items.
+    """Factory for subfield items.
     """
     from pythia.pyre.inventory import facility
     return facility(name, family="soln_subfield", factory=SolutionSubfield)
@@ -100,8 +99,7 @@ def subfieldFactory(name):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def soln_subfield():
-    """
-    Factory associated with SolutionSubfield.
+    """Factory associated with SolutionSubfield.
     """
     return SolutionSubfield()
 

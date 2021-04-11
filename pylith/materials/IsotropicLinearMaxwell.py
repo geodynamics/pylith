@@ -37,8 +37,7 @@ class IsotropicLinearMaxwell(RheologyElasticity, ModuleLinearElasticity):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="isotropiclinearmaxwell"):
-        """
-        Constructor.
+        """Constructor.
         """
         RheologyElasticity.__init__(self, name)
         return
@@ -57,8 +56,7 @@ class IsotropicLinearMaxwell(RheologyElasticity, ModuleLinearElasticity):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         ModuleLinearElasticity.__init__(self)
 
@@ -66,8 +64,7 @@ class IsotropicLinearMaxwell(RheologyElasticity, ModuleLinearElasticity):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def elasticity_rheology():
-    """
-    Factory associated with IsotropicLinearMaxwell.
+    """Factory associated with IsotropicLinearMaxwell.
     """
     return IsotropicLinearMaxwell()
 

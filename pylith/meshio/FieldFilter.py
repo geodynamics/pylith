@@ -24,8 +24,7 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class FieldFilter(PetscComponent):
-    """
-    Python abstract base class for filtering fields when writing
+    """Python abstract base class for filtering fields when writing
     finite-element data.
 
     FACTORY: output_field_filter
@@ -34,8 +33,7 @@ class FieldFilter(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="fieldfilter"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="fieldfilter")
         return

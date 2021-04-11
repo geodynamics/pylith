@@ -24,8 +24,7 @@ from .faults import KinSrcStep as ModuleKinSrc
 
 
 class KinSrcStep(KinSrc, ModuleKinSrc):
-    """
-    Python object for a step slip time function.
+    """Python object for a step slip time function.
 
     Factory: eq_kinematic_src
     """
@@ -33,8 +32,7 @@ class KinSrcStep(KinSrc, ModuleKinSrc):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="kinsrcstep"):
-        """
-        Constructor.
+        """Constructor.
         """
         KinSrc.__init__(self, name)
         return
@@ -42,8 +40,7 @@ class KinSrcStep(KinSrc, ModuleKinSrc):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         ModuleKinSrc.__init__(self)
         return
@@ -52,8 +49,7 @@ class KinSrcStep(KinSrc, ModuleKinSrc):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def eq_kinematic_src():
-    """
-    Factory associated with KinSrcStep.
+    """Factory associated with KinSrcStep.
     """
     return KinSrcStep()
 

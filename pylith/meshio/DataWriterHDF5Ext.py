@@ -38,22 +38,19 @@ class DataWriterHDF5Ext(DataWriter, ModuleDataWriterHDF5Ext):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="datawriterhdf5"):
-        """
-        Constructor.
+        """Constructor.
         """
         DataWriter.__init__(self, name)
         return
 
     def preinitialize(self):
-        """
-        Initialize writer.
+        """Initialize writer.
         """
         DataWriter.preinitialize(self)
         return
 
     def setFilename(self, outputDir, simName, label):
-        """
-        Set filename from default options and inventory. If filename is given in inventory, use it,
+        """Set filename from default options and inventory. If filename is given in inventory, use it,
         otherwise create filename from default options.
         """
         filename = self.filename or DataWriter.mkfilename(outputDir, simName, label, "h5")
@@ -62,8 +59,7 @@ class DataWriterHDF5Ext(DataWriter, ModuleDataWriterHDF5Ext):
         return
 
     def close(self):
-        """
-        Close writer.
+        """Close writer.
         """
         ModuleDataWriterHDF5Ext.close(self)
 
@@ -88,8 +84,7 @@ class DataWriterHDF5Ext(DataWriter, ModuleDataWriterHDF5Ext):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def data_writer():
-    """
-    Factory associated with DataWriter.
+    """Factory associated with DataWriter.
     """
     return DataWriterHDF5Ext()
 

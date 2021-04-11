@@ -31,15 +31,13 @@ from sheartraction_rate_gendb import GenerateDB
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """
-    Test suite for testing PyLith with 2-D time-dependent simple shear.
+    """Test suite for testing PyLith with 2-D time-dependent simple shear.
     """
     DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_yneg", "bc_zneg"]
     NEUMANN_BOUNDARIES = ["bc_xpos", "bc_ypos"]
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()

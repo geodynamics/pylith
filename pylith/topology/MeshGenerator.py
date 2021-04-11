@@ -23,8 +23,7 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class MeshGenerator(PetscComponent):
-    """
-    Python abstract base class for mesh generator.
+    """Python abstract base class for mesh generator.
 
     FACTORY: mesh_generator
     """
@@ -40,8 +39,7 @@ class MeshGenerator(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="meshgenerator"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="meshgenerator")
         self.debug = False
@@ -49,14 +47,12 @@ class MeshGenerator(PetscComponent):
         return
 
     def preinitialize(self, problem):
-        """
-        Do minimal initialization.
+        """Do minimal initialization.
         """
         return
 
     def create(self, normalizer, faults=None):
-        """
-        Generate a Mesh.
+        """Generate a Mesh.
         """
 
         # Need to nondimensionalize coordinates.
@@ -67,15 +63,13 @@ class MeshGenerator(PetscComponent):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         PetscComponent._configure(self)
         return
 
     def _adjustTopology(self, mesh, interfaces, problem):
-        """
-        Adjust topology for interface implementation.
+        """Adjust topology for interface implementation.
         """
         logEvent = "%sadjTopo" % self._loggingPrefix
         self._eventLogger.eventBegin(logEvent)
@@ -94,8 +88,7 @@ class MeshGenerator(PetscComponent):
         return
 
     def _setupLogging(self):
-        """
-        Setup event logging.
+        """Setup event logging.
         """
         if not "_loggingPrefix" in dir(self):
             self._loggingPrefix = ""

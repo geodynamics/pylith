@@ -30,14 +30,12 @@ from pythia.pyre.applications.Script import Script as Application
 
 
 class Transform(Application):
-    """
-    Python application to create a slip distribution for a specified set of
+    """Python application to create a slip distribution for a specified set of
     points.
     """
 
     class Inventory(Application.Inventory):
-        """
-        Python object for managing Transform facilities and properties.
+        """Python object for managing Transform facilities and properties.
         """
 
         # @class Inventory
@@ -148,8 +146,7 @@ class Transform(Application):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         Application._configure(self)
         self.dataDim = self.inventory.dataDim
@@ -182,8 +179,7 @@ class Transform(Application):
         return
 
     def _writeSpatialDBHead(self, f):
-        """
-        Writes header portion of spatial database.
+        """Writes header portion of spatial database.
         """
         f.write('#SPATIAL.ascii 1\n')
         f.write('SimpleDB {\n')
@@ -208,8 +204,7 @@ class Transform(Application):
         return
 
     def _genSpatialDB(self, f):
-        """
-        Computes dislocations/displacements from Euler pole and writes to
+        """Computes dislocations/displacements from Euler pole and writes to
         spatial DB.
         """
 
@@ -241,8 +236,7 @@ class Transform(Application):
         return
 
     def _testRange(self, point):
-        """
-        Checks to see if point is in range.
+        """Checks to see if point is in range.
         """
         inRange = point[0] >= self.xMinVal and point[0] <= self.xMaxVal and \
             point[1] >= self.yMinVal and point[1] <= self.yMaxVal and \
@@ -250,8 +244,7 @@ class Transform(Application):
         return inRange
 
     def _findSeg(self, point):
-        """
-        Finds segment to use with a given point.
+        """Finds segment to use with a given point.
         """
         px = point[0]
         py = point[1]
@@ -302,8 +295,7 @@ class Transform(Application):
         return iSeg
 
     def _local2Global(self, points, normalsArr):
-        """
-        Converts initial local coordinate system to global.
+        """Converts initial local coordinate system to global.
         """
         iSeg = self._findSeg(points)
         sx1 = self.segInfo[iSeg, 0]
@@ -342,8 +334,7 @@ class Transform(Application):
         return velocity
 
     def _localTrans(self, velocity, normalsArr):
-        """
-        Performs a transformation on velocity vector to local coords.
+        """Performs a transformation on velocity vector to local coords.
         """
         # This function will need to partially duplicate the functionaliry of the
         # CellGeometry _orient2D function.
@@ -397,8 +388,7 @@ class Transform(Application):
         return vlocal
 
     def _readPoints(self):
-        """
-        Reads point coordinates and normals from a file.
+        """Reads point coordinates and normals from a file.
         """
         f = file(self.pointsFile)
         for line in f.readlines():
@@ -414,8 +404,7 @@ class Transform(Application):
         return
 
     def _readSegs(self):
-        """
-        Reads fault segment info from a file.
+        """Reads fault segment info from a file.
         """
         segtmp = []
         f = file(self.segsFile)

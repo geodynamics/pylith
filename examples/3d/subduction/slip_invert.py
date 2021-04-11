@@ -41,8 +41,7 @@ from pythia.pyre.applications.Script import Script as Application
 
 
 class SlipInvert(Application):
-    """
-    Python application to perform a linear inversion for slip using
+    """Python application to perform a linear inversion for slip using
     PyLith-generated Green's functions.
     """
 
@@ -141,8 +140,7 @@ class SlipInvert(Application):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         Application._configure(self)
         self.penaltyWeights = numpy.array(self.penaltyWeightVals, dtype=numpy.float64)
@@ -155,8 +153,7 @@ class SlipInvert(Application):
         return
 
     def runInversions(self):
-        """
-        Function to run inversions using a range of penalty parameters.
+        """Function to run inversions using a range of penalty parameters.
         """
         print("Running inversions:")
         sys.stdout.flush()
@@ -274,8 +271,7 @@ class SlipInvert(Application):
         return
 
     def readGreens(self):
-        """
-        Function to read impulse and response info from PyLith output files.
+        """Function to read impulse and response info from PyLith output files.
         """
         print("Reading Green's functions:")
         sys.stdout.flush()
@@ -361,8 +357,7 @@ class SlipInvert(Application):
         return
 
     def matchCoords(self, coordsRef, coords):
-        """
-        Function to provide indices that match the given set of coordinates to a
+        """Function to provide indices that match the given set of coordinates to a
         reference set.
         """
 
@@ -381,8 +376,7 @@ class SlipInvert(Application):
         return (distances, inds)
 
     def readData(self):
-        """
-        Function to read data, coordinates, and standard deviations.
+        """Function to read data, coordinates, and standard deviations.
         """
         print("Reading data values:")
         sys.stdout.flush()

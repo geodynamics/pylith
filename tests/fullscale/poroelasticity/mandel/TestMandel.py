@@ -38,15 +38,13 @@ diff_tolerance = {'displacement': 0.1, 'pressure': 0.1}
 
 
 class TestCase(FullTestCase):
-    """
-    Test suite for testing PyLith with one dimensional poroelasticity
+    """Test suite for testing PyLith with one dimensional poroelasticity
     by means of Mandel's problem.
     """
     DIRICHLET_BOUNDARIES = ["x_neg", "x_pos", "y_neg", "y_pos"]
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()

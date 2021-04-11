@@ -23,8 +23,7 @@ from pythia.pyre.components.Component import Component
 
 
 def validateFilename(value):
-    """
-    Validate filename with list of points.
+    """Validate filename with list of points.
     """
     if 0 == len(value):
         raise ValueError("Filename for list of points not specified.")
@@ -32,8 +31,7 @@ def validateFilename(value):
 
 
 class PointsList(Component):
-    """
-    Python object for reading a list of points from a file.
+    """Python object for reading a list of points from a file.
 
     INVENTORY
 
@@ -68,15 +66,13 @@ class PointsList(Component):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="pointslist"):
-        """
-        Constructor.
+        """Constructor.
         """
         Component.__init__(self, name)
         return
 
     def read(self):
-        """
-        Read points from file.
+        """Read points from file.
         """
         import numpy
 
@@ -122,8 +118,7 @@ class PointsList(Component):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         Component._configure(self)
         return
@@ -132,8 +127,7 @@ class PointsList(Component):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def points_list():
-    """
-    Factory associated with PointsList.
+    """Factory associated with PointsList.
     """
     return PointsList()
 

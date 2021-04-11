@@ -24,13 +24,11 @@ import unittest
 
 # ----------------------------------------------------------------------
 class TestSingleOutput(unittest.TestCase):
-  """
-  Unit testing of SingleOutput object.
+  """Unit testing of SingleOutput object.
   """
 
   def test_constructor(self):
-    """
-    Test constructor.
+    """Test constructor.
     """
     from pylith.meshio.SingleOutput import SingleOutput
     outputs = SingleOutput()
@@ -38,8 +36,7 @@ class TestSingleOutput(unittest.TestCase):
 
 
   def test_configure(self):
-    """
-    Test _configure().
+    """Test _configure().
     """
     from pylith.meshio.SingleOutput import SingleOutput
     outputs = SingleOutput()

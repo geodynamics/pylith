@@ -18,8 +18,7 @@
 
 # ----------------------------------------------------------------------
 def resourceUsage():
-    """
-    Get CPU time (hh:mm:ss) and memory use (MB).
+    """Get CPU time (hh:mm:ss) and memory use (MB).
     """
 
     try:
@@ -37,8 +36,7 @@ def resourceUsage():
 
 # ----------------------------------------------------------------------
 def resourceUsageString():
-    """
-    Get CPU time and memory usage as a string.
+    """Get CPU time and memory usage as a string.
     """
     from pylith.mpi.Communicator import mpi_comm_world
     comm = mpi_comm_world()

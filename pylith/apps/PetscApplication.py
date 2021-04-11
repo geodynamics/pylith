@@ -22,8 +22,7 @@ from pythia.mpi import Application
 
 
 class PetscApplication(Application):
-    """
-    Python PETSc application for creating an MPI application that uses PETSc.
+    """Python PETSc application for creating an MPI application that uses PETSc.
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
@@ -43,15 +42,13 @@ class PetscApplication(Application):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="petscapp"):
-        """
-        Constructor.
+        """Constructor.
         """
         Application.__init__(self, name)
         return
 
     def onComputeNodes(self, *args, **kwds):
-        """
-        Run the application in parallel on the compute nodes.
+        """Run the application in parallel on the compute nodes.
         """
         self.petsc.initialize()
 
@@ -81,8 +78,7 @@ class PetscApplication(Application):
         return
 
     def cleanup(self):
-        """
-        Deallocate data structures.
+        """Deallocate data structures.
         """
         from pylith.utils.PetscComponent import PetscComponent
         for component in self.components():
@@ -92,23 +88,20 @@ class PetscApplication(Application):
         return
 
     def citations(self):
-        """
-        Register BibTeX entries for citing software.
+        """Register BibTeX entries for citing software.
         """
         return []
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         Application._configure(self)
         return
 
     def _cleanup(self):
-        """
-        Deallocate locally managed data structures.
+        """Deallocate locally managed data structures.
         """
         return
 

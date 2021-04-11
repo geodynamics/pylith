@@ -30,14 +30,12 @@ class GenerateDB(object):
     """
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         return
 
     def run(self):
-        """
-        Generate the database.
+        """Generate the database.
         """
         # Domain
         z = numpy.arange(-9000.0, 0.1, 9000.0)

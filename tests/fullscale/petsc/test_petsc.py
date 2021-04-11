@@ -22,20 +22,17 @@ import unittest
 
 
 class TestApp(TestDriver):
-    """
-    Driver application for full-scale tests.
+    """Driver application for full-scale tests.
     """
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         TestDriver.__init__(self)
         return
 
     def _suite(self):
-        """
-        Create test suite.
+        """Create test suite.
         """
         suite = unittest.TestSuite()
 

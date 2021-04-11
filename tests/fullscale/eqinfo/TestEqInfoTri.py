@@ -26,20 +26,17 @@ from TestEqInfo import TestEqInfo, run_eqinfo
 
 
 class TestEqInfoTri(TestEqInfo):
-    """
-    Test suite for testing pylith_eqinfo with tri3 meshes.
+    """Test suite for testing pylith_eqinfo with tri3 meshes.
     """
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         run_eqinfo("tri", ["tri.cfg"])
         return
 
     def test_stats(self):
-        """
-        Check fault stats.
+        """Check fault stats.
         """
         import stats_tri
 

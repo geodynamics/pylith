@@ -53,15 +53,13 @@ class ProblemDefaults(Component):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="problem_defaults"):
-        """
-        Constructor.
+        """Constructor.
         """
         Component.__init__(self, name, facility="problem_defaults")
         return
 
     def preinitialize(self):
-        """
-        Do minimal initialization.
+        """Do minimal initialization.
         """
         return
 
@@ -70,8 +68,7 @@ class ProblemDefaults(Component):
 
 
 def problem_defaults():
-    """
-    Factory associated with ProblemDefaults.
+    """Factory associated with ProblemDefaults.
     """
     return ProblemDefaults()
 

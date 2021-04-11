@@ -25,20 +25,17 @@ from pythia.pyre.units.time import year
 
 
 class GenerateDB(object):
-    """
-    Python object to generate spatial database with velocity
+    """Python object to generate spatial database with velocity
     boundary conditions for the axial strain test.
     """
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         return
 
     def run(self):
-        """
-        Generate the database.
+        """Generate the database.
         """
         # Domain
         x = numpy.arange(-6000.0, 6000.1, 2000.0)

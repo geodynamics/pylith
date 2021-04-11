@@ -24,8 +24,7 @@ from .faults import KinSrcBrune as ModuleKinSrc
 
 
 class KinSrcBrune(KinSrc, ModuleKinSrc):
-    """
-    Python object for Brune's (1970) far-field slip time function.
+    """Python object for Brune's (1970) far-field slip time function.
 
     Factory: eq_kinematic_src
     """
@@ -33,8 +32,7 @@ class KinSrcBrune(KinSrc, ModuleKinSrc):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="kinsrcbrune"):
-        """
-        Constructor.
+        """Constructor.
         """
         KinSrc.__init__(self, name)
         return
@@ -42,8 +40,7 @@ class KinSrcBrune(KinSrc, ModuleKinSrc):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         ModuleKinSrc.__init__(self)
 
@@ -51,8 +48,7 @@ class KinSrcBrune(KinSrc, ModuleKinSrc):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def eq_kinematic_src():
-    """
-    Factory associated with KinSrcBrune.
+    """Factory associated with KinSrcBrune.
     """
     return KinSrcBrune()
 

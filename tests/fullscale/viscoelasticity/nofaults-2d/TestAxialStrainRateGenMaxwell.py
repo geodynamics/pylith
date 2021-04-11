@@ -31,14 +31,12 @@ from axialstrainrate_genmaxwell_gendb import GenerateDB
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """
-    Test suite for testing generalized Maxwell material with 2-D axial extension (Dirichlet velocity BC).
+    """Test suite for testing generalized Maxwell material with 2-D axial extension (Dirichlet velocity BC).
     """
     DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_ypos", "bc_yneg"]
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()

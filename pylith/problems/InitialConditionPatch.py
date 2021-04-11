@@ -41,15 +41,13 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="initialconditionspatch"):
-        """
-        Constructor.
+        """Constructor.
         """
         InitialCondition.__init__(self, name)
         return
 
     def preinitialize(self, problem):
-        """
-        Setup initial conditions.
+        """Setup initial conditions.
         """
         InitialCondition.preinitialize(self, problem)
 
@@ -58,8 +56,7 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
         return
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         InitialCondition._configure(self)
         return
@@ -67,8 +64,7 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         ModuleInitialCondition.__init__(self)
 
@@ -76,8 +72,7 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def initial_conditions():
-    """
-    Factory associated with InitialConditionPatch.
+    """Factory associated with InitialConditionPatch.
     """
     return InitialConditionPatch()
 

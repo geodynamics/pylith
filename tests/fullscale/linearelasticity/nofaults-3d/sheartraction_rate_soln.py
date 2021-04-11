@@ -82,8 +82,7 @@ sRxz = 0.0
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
-    """
-    Analytical solution to shear problem.
+    """Analytical solution to shear problem.
     """
     SPACE_DIM = 3
     TENSOR_SIZE = 6
@@ -129,8 +128,7 @@ class AnalyticalSoln(object):
         return field
 
     def displacement(self, locs):
-        """
-        Compute displacement field at locations.
+        """Compute displacement field at locations.
         """
         strain = self.strain(locs)
         (ntpts, npts, tensorSize) = strain.shape
@@ -143,32 +141,28 @@ class AnalyticalSoln(object):
         return disp
 
     def density(self, locs):
-        """
-        Compute density field at locations.
+        """Compute density field at locations.
         """
         (npts, dim) = locs.shape
         density = p_density * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return density
 
     def shear_modulus(self, locs):
-        """
-        Compute shear modulus field at locations.
+        """Compute shear modulus field at locations.
         """
         (npts, dim) = locs.shape
         shear_modulus = p_mu * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return shear_modulus
 
     def bulk_modulus(self, locs):
-        """
-        Compute bulk modulus field at locations.
+        """Compute bulk modulus field at locations.
         """
         (npts, dim) = locs.shape
         bulk_modulus = (p_lambda + 2.0 / 3.0 * p_mu) * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return bulk_modulus
 
     def strain(self, locs):
-        """
-        Compute strain field at locations.
+        """Compute strain field at locations.
         """
         stress = self.stress(locs)
         sxx = stress[:,:, 0]
@@ -187,8 +181,7 @@ class AnalyticalSoln(object):
         return strain
 
     def stress(self, locs):
-        """
-        Compute stress field at locations.
+        """Compute stress field at locations.
         """
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]

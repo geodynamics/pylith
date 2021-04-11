@@ -24,20 +24,17 @@ import numpy
 
 
 class GenerateDB(object):
-    """
-    Python object to generate spatial database with displacement
+    """Python object to generate spatial database with displacement
     boundary conditions for the axial strain test.
     """
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         return
 
     def run(self):
-        """
-        Generate the database.
+        """Generate the database.
         """
         # Domain
         # Extend beyond mesh boundaries to avoid problems with linear interpolations.

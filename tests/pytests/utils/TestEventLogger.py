@@ -25,8 +25,7 @@ import unittest
 
 # ----------------------------------------------------------------------
 class TestEventLogger(unittest.TestCase):
-    """
-    Unit testing of EventLogger object.
+    """Unit testing of EventLogger object.
     """
 
     def test_constructor(self):

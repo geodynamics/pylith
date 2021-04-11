@@ -27,8 +27,7 @@ from .bc import BoundaryCondition as ModuleBoundaryCondition
 
 
 def validateLabel(value):
-    """
-    Validate label for group/nodeset/pset.
+    """Validate label for group/nodeset/pset.
     """
     if 0 == len(value):
         raise ValueError("Label for boundary condition group/nodeset/pset in mesh not specified.")
@@ -64,15 +63,13 @@ class BoundaryCondition(Physics,
     label.meta['tip'] = "Label identifier for boundary."
 
     def __init__(self, name="boundarycondition"):
-        """
-        Constructor.
+        """Constructor.
         """
         Physics.__init__(self, name, facility="boundary_condition")
         return
 
     def preinitialize(self, problem):
-        """
-        Setup boundary condition.
+        """Setup boundary condition.
         """
         Physics.preinitialize(self, problem)
 
@@ -81,8 +78,7 @@ class BoundaryCondition(Physics,
         return
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         Physics._configure(self)
         return

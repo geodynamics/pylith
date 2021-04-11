@@ -58,16 +58,14 @@ class PyLithApp(PetscApplication):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="pylithapp"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscApplication.__init__(self, name)
         self._loggingPrefix = "PyLith "
         return
 
     def main(self, *args, **kwds):
-        """
-        Run the application.
+        """Run the application.
         """
         if self.pdbOn:
             import pdb
@@ -235,15 +233,13 @@ class PyLithApp(PetscApplication):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         PetscApplication._configure(self)
         return
 
     def _setupLogging(self):
-        """
-        Setup event logging.
+        """Setup event logging.
         """
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
@@ -263,22 +259,19 @@ class PyLithApp(PetscApplication):
 class InfoApp(PyLithApp):
 
     def __init__(self, args, name="pylithapp"):
-        """
-        Constructor.
+        """Constructor.
         """
         PyLithApp.__init__(self, name)
         self.pylithargs = args
         return
 
     def onLoginNode(self, *args, **kwds):
-        """
-        Instead of scheduling job, do nothing.
+        """Instead of scheduling job, do nothing.
         """
         return
 
     def getArgv(self, *args, **kwds):
-        """
-        Prevent PyLith from getting all of the command line arguments. Use
+        """Prevent PyLith from getting all of the command line arguments. Use
         only the ones relevant to PyLith which are specified in the arg to
         the constructor.
         """

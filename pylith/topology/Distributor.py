@@ -24,8 +24,7 @@ from .topology import Distributor as ModuleDistributor
 
 
 class Distributor(PetscComponent, ModuleDistributor):
-    """
-    Python manager for distributing mesh among processors.
+    """Python manager for distributing mesh among processors.
 
     FACTORY: mesh_distributor
     """
@@ -48,8 +47,7 @@ class Distributor(PetscComponent, ModuleDistributor):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="mesh_distributor"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="mesh_distributor")
         return
@@ -60,8 +58,7 @@ class Distributor(PetscComponent, ModuleDistributor):
         return
 
     def distribute(self, mesh, normalizer):
-        """
-        Distribute a Mesh
+        """Distribute a Mesh
         """
         self._setupLogging()
         logEvent = "%sdistribute" % self._loggingPrefix
@@ -87,15 +84,13 @@ class Distributor(PetscComponent, ModuleDistributor):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         PetscComponent._configure(self)
         return
 
     def _setupLogging(self):
-        """
-        Setup event logging.
+        """Setup event logging.
         """
         self._loggingPrefix = "Dist "
         from pylith.utils.EventLogger import EventLogger
@@ -113,8 +108,7 @@ class Distributor(PetscComponent, ModuleDistributor):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def mesh_distributor():
-    """
-    Factory associated with Distributor.
+    """Factory associated with Distributor.
     """
     return Distributor()
 

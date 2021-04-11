@@ -26,8 +26,7 @@ import pylith.mpi.mpi as mpi
 
 # ----------------------------------------------------------------------
 class TestReduce(unittest.TestCase):
-  """
-  Unit testing of MPI reduce functions.
+  """Unit testing of MPI reduce functions.
   """
   
 

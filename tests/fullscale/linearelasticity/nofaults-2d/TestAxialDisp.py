@@ -31,14 +31,12 @@ from axialdisp_gendb import GenerateDB
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """
-    Test suite for testing PyLith with 2-D axial extension.
+    """Test suite for testing PyLith with 2-D axial extension.
     """
     DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg"]
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()

@@ -23,8 +23,7 @@ import h5py
 
 
 def check_displacements(testcase, filename, npoints, spaceDim):
-    """
-    Check displacements.
+    """Check displacements.
     """
     h5 = h5py.File(filename, "r", driver="sec2")
 
@@ -82,8 +81,7 @@ def check_displacements(testcase, filename, npoints, spaceDim):
 
 
 def check_stations(testcase, filename, stationsE):
-    """
-    Check station names.
+    """Check station names.
     """
     h5 = h5py.File(filename, "r", driver="sec2")
     stations = h5['stations'][:]

@@ -24,8 +24,7 @@ from .bc import AbsorbingDampers as ModuleAbsorbingDampers
 
 
 class AbsorbingDampers(BoundaryCondition, ModuleAbsorbingDampers):
-    """
-    Python object for managing absorbing dampers condition.
+    """Python object for managing absorbing dampers condition.
 
     FACTORY: boundary_condition
     """
@@ -33,8 +32,7 @@ class AbsorbingDampers(BoundaryCondition, ModuleAbsorbingDampers):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="absorbingdampers"):
-        """
-        Constructor.
+        """Constructor.
         """
         BoundaryCondition.__init__(self, name)
         return
@@ -45,8 +43,7 @@ class AbsorbingDampers(BoundaryCondition, ModuleAbsorbingDampers):
             "auxiliary_subfields")
 
     def preinitialize(self, problem):
-        """
-        Do pre-initialization setup.
+        """Do pre-initialization setup.
         """
         BoundaryCondition.preinitialize(self, problem)
         return
@@ -54,15 +51,13 @@ class AbsorbingDampers(BoundaryCondition, ModuleAbsorbingDampers):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         BoundaryCondition._configure(self)
         return
 
     def _createModuleObj(self):
-        """
-        Create handle to corresponding C++ object.
+        """Create handle to corresponding C++ object.
         """
         ModuleAbsorbingDampers.__init__(self)
         return
@@ -71,8 +66,7 @@ class AbsorbingDampers(BoundaryCondition, ModuleAbsorbingDampers):
 # Factories
 
 def boundary_condition():
-    """
-    Factory associated with AbsorbingDampers.
+    """Factory associated with AbsorbingDampers.
     """
     return AbsorbingDampers()
 

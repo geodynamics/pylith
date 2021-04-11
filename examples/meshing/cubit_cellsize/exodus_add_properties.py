@@ -67,8 +67,7 @@ def getCellSizeDB(points):
 # ----------------------------------------------------------------------
 # Cell size based on analytical function of vertex coordinates.
 def getCellSizeFn(points):
-    """
-    Cell size is based on distance from a target and grows at a
+    """Cell size is based on distance from a target and grows at a
     geometric rate.
     """
     # Coordinates of target

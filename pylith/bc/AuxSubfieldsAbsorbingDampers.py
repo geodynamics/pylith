@@ -21,8 +21,7 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class AuxSubfieldsAbsorbingDampers(PetscComponent):
-    """
-    Python container for isotropic, linear elasticity subfields.
+    """Python container for isotropic, linear elasticity subfields.
 
     FACTORY: auxiliary_subfields
     """
@@ -43,8 +42,7 @@ class AuxSubfieldsAbsorbingDampers(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="auxsubfieldsabsorbingdampers"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="auxiliary_subfields")
         return
@@ -59,8 +57,7 @@ class AuxSubfieldsAbsorbingDampers(PetscComponent):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def auxiliary_subfields():
-    """
-    Factory associated with AuxSubfieldsAbsorbingDampers.
+    """Factory associated with AuxSubfieldsAbsorbingDampers.
     """
     return AuxSubfieldsAbsorbingDampers()
 
