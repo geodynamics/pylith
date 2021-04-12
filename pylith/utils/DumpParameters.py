@@ -19,7 +19,7 @@
 
 from pythia.pyre.components.Component import Component
 
-from .PetscManager import PetscManager
+from .PropertyList import PropertyList
 
 
 class DumpParameters(Component):
@@ -31,7 +31,8 @@ class DumpParameters(Component):
     def __init__(self, name="dumpparameters"):
         """Constructor.
         """
-        Component.__init__(self, name="dumpparamters", facility="dumpparameters")
+        Component.__init__(self, name="dumpparamters",
+                           facility="dumpparameters")
         self.info = None
         return
 
@@ -109,7 +110,8 @@ class DumpParameters(Component):
             except KeyError:
                 description = "No description available."
 
-            facilityProperties, facilityComponents = self._getPropertiesComponents(descriptor.value)
+            facilityProperties, facilityComponents = self._getPropertiesComponents(
+                descriptor.value)
             facilities[name] = {
                 "name": descriptor.value.name,
                 "class": str(descriptor.value),
@@ -120,8 +122,8 @@ class DumpParameters(Component):
                 "components": facilityComponents,
             }
 
-        if isinstance(obj, PetscManager):
-            for iname, descriptor in obj.options:
+        if isinstance(obj, PropertyList):
+            for iname, descriptor in obj.items:
                 properties[iname] = {
                     "value": str(descriptor.value),
                     "type": "str",

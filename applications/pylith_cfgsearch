@@ -1,0 +1,11 @@
+#!/usr/bin/env nemesis
+"""Application for searching PyLith .cfg files.
+"""
+
+
+if __name__ == "__main__":
+    from pylith.apps.ConfigSearchApp import ConfigSearchApp
+    ConfigSearchApp().main()
+
+
+# End of file
