@@ -3,15 +3,15 @@
 import pathlib
 import re
 
-PATTERN_DEF = r"(def \w+.*\n\s+\"\"\")\s?\n\s+(\w+)"
-PATTERN_CLASS = r"(class \w+.*\n\s+\"\"\")\s?\n\s+(\w+)"
+PATTERN_DEF = r"(def \w+.*:\n\s+\"\"\")\s?\n\s+(\w+)"
+PATTERN_CLASS = r"(class \w+.*:\n\s+\"\"\")\s?\n\s+(\w+)"
 
 
 def replacement(match):
     return "".join(match.groups())
 
 
-files = pathlib.Path(".").glob("**/*.py")
+files = pathlib.Path(".").rglob("*.py")
 for filename in files:
     with open(filename, 'r') as fin:
         lines = fin.read()

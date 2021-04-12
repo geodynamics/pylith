@@ -37,7 +37,8 @@ def observerFactory(name):
 
 class Physics(PetscComponent, ModulePhysics):
     """Python abstract base class for objects defining physics.
-    """import pythia.pyre.inventory
+    """
+    import pythia.pyre.inventory
 
     from pylith.topology.Subfield import subfieldFactory
     from pylith.utils.EmptyBin import EmptyBin

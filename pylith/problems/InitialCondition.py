@@ -25,7 +25,8 @@ from .problems import InitialCondition as ModuleInitialCondition
 
 class InitialCondition(PetscComponent, ModuleInitialCondition):
     """Python abstract base class for specifying initial conditions.
-    """import pythia.pyre.inventory
+    """
+    import pythia.pyre.inventory
 
     subfields = pythia.pyre.inventory.list("subfields", default=["displacement"])
     subfields.meta["tip"] = "Names of solution subfields for initial condition."
