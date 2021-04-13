@@ -313,7 +313,7 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmSoln, integrator->getMarkerLabel(), &dmLabel);PYLITH_CHECK_ERROR(err);
     const PetscInt labelValue = integrator->getLabelValue();
-    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMSetAuxiliaryVec(dmSoln, NULL, 0, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
     // solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
 
