@@ -320,8 +320,8 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
     for (size_t i = 0; i < kernels.size(); ++i) {
         PetscWeakForm wf;
         const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
-        err = PetscDSSetBdResidual(prob, i_field, kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
         err = PetscDSGetWeakForm(prob, &wf);PYLITH_CHECK_ERROR(err);
+        err = PetscWeakFormSetIndexBdResidual(wf, dmLabel, labelValue, i_field, 0, kernels[i].r0, 0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
         err = DMPlexComputeBdResidualSingle(dmSoln, t, wf, dmLabel, 1, &labelValue, i_field, solution.localVector(), solutionDot.localVector(), residual->localVector());PYLITH_CHECK_ERROR(err);
     } // for
 
