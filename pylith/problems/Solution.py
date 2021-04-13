@@ -23,17 +23,7 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class Solution(PetscComponent):
-    """
-    Python solution field for problem.
-
-    INVENTORY
-
-    Facilities
-      - None
-
-    Properties
-      - subfelds Subfields in solution.
-
+    """Python abstract base class for solution field for problem.
 
     FACTORY: solution.
     """
@@ -49,16 +39,14 @@ class Solution(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="solution"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="solution")
         self.field = None
         return
 
     def preinitialize(self, problem, mesh):
-        """
-        Do minimal initialization of solution.
+        """Do minimal initialization of solution.
         """
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
@@ -87,8 +75,7 @@ class Solution(PetscComponent):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         PetscComponent._configure(self)
         return
@@ -102,8 +89,7 @@ class Solution(PetscComponent):
 
 
 def solution():
-    """
-    Factory associated with Solution.
+    """Factory associated with Solution.
     """
     return Solution()
 

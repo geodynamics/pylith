@@ -25,18 +25,9 @@ from .materials import IsotropicLinearIncompElasticity as ModuleLinearElasticity
 
 
 class IsotropicLinearIncompElasticity(RheologyIncompressibleElasticity, ModuleLinearElasticity):
-    """
-    Python material for isotropic, linearly elastic incompressible.
+    """Python material for isotropic, linearly elastic incompressible.
 
-    INVENTORY
-
-    Properties
-      - *use_reference_state* Use reference stress/strain state.
-
-    Facilities
-      - *auxiliary_subfields* Discretization of physical properties and state variables.
-
-    FACTORY: material
+    FACTORY: incompressible_elasticity_rheology
     """
 
     import pythia.pyre.inventory
@@ -47,8 +38,7 @@ class IsotropicLinearIncompElasticity(RheologyIncompressibleElasticity, ModuleLi
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="isotropiclinearincompelasticity"):
-        """
-        Constructor.
+        """Constructor.
         """
         RheologyIncompressibleElasticity.__init__(self, name)
         return
@@ -67,8 +57,7 @@ class IsotropicLinearIncompElasticity(RheologyIncompressibleElasticity, ModuleLi
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         ModuleLinearElasticity.__init__(self)
 
@@ -76,8 +65,7 @@ class IsotropicLinearIncompElasticity(RheologyIncompressibleElasticity, ModuleLi
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def incompressible_elasticity_rheology():
-    """
-    Factory associated with IsotropicLinearIncompElasticity.
+    """Factory associated with IsotropicLinearIncompElasticity.
     """
     return IsotropicLinearIncompElasticity()
 

@@ -25,8 +25,7 @@ from .meshio import OutputSolnBoundary as ModuleOutputSolnBoundary
 
 
 def validateLabel(value):
-    """
-    Validate label for group/nodeset/pset.
+    """Validate label for group/nodeset/pset.
     """
     if not value.strip():
         raise ValueError("Label for group/nodeset/pset in mesh not specified.")
@@ -34,8 +33,7 @@ def validateLabel(value):
 
 
 class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
-    """
-    Python object for managing output of finite-element solution
+    """Python object for managing output of finite-element solution
     information over a boundary.
 
     INVENTORY
@@ -57,15 +55,13 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="outputsolnsubset"):
-        """
-        Constructor.
+        """Constructor.
         """
         OutputSoln.__init__(self, name)
         return
 
     def preinitialize(self, problem):
-        """
-        Do mimimal initialization.
+        """Do mimimal initialization.
         """
         OutputSoln.preinitialize(self, problem)
         ModuleOutputSolnBoundary.setLabel(self, self.label)
@@ -77,15 +73,13 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         OutputSoln._configure(self)
         return
 
     def _createModuleObj(self):
-        """
-        Create handle to C++ object.
+        """Create handle to C++ object.
         """
         ModuleOutputSolnBoundary.__init__(self)
         return
@@ -94,8 +88,7 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def observer():
-    """
-    Factory associated with OutputSoln.
+    """Factory associated with OutputSoln.
     """
     return OutputSolnBoundary()
 

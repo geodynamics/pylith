@@ -22,23 +22,20 @@ from pythia.pyre.components.Component import Component
 
 
 class PetscComponent(Component):
-    """
-    Python PetscComponent object for aid in deallocating data structures
+    """Python PetscComponent object for aid in deallocating data structures
     before calling PetscFinalize().
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name, facility):
-        """
-        Constructor.
+        """Constructor.
         """
         Component.__init__(self, name, facility)
         return
 
     def cleanup(self):
-        """
-        Deallocate data structures.
+        """Deallocate data structures.
         """
         for component in self.components():
             if isinstance(component, PetscComponent):
@@ -56,8 +53,7 @@ class PetscComponent(Component):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _cleanup(self):
-        """
-        Deallocate locally managed data structures.
+        """Deallocate locally managed data structures.
         """
         # If module object not yet created, return
         if getattr(self, "this", None) is None:

@@ -31,15 +31,13 @@ import glob
 from pythia.pyre.applications.Script import Script as Application
 
 class StressInfo(Application):
-  """
-  Python application to compute several stress-related quantities
+  """Python application to compute several stress-related quantities
   from the stress tensor provided by PyLith. Information is read from a VTK
   file and a VTK file with the same dimensions is output.
   """
   
   class Inventory(Application.Inventory):
-    """
-    Python object for managing StressInfo facilities and properties.
+    """Python object for managing StressInfo facilities and properties.
     """
 
     ## @class Inventory
@@ -116,8 +114,7 @@ class StressInfo(Application):
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
-    """
-    Setup members using inventory.
+    """Setup members using inventory.
     """
     Application._configure(self)
     # import pdb
@@ -144,8 +141,7 @@ class StressInfo(Application):
       
 
   def _readVtkFile(self):
-    """
-    Function to read tensor from a file and store the info in a numpy array.
+    """Function to read tensor from a file and store the info in a numpy array.
     """
     from enthought.mayavi.sources.vtk_file_reader import VTKFileReader
     from enthought.tvtk.api import tvtk
@@ -183,8 +179,7 @@ class StressInfo(Application):
 
 
   def _getStressInfo(self):
-    """
-    Function to loop over integration points and compute stress information for
+    """Function to loop over integration points and compute stress information for
     each point.
     """
     # Create empty arrays for each stress quantity
@@ -211,8 +206,7 @@ class StressInfo(Application):
   
 
   def _compStressInfo(self, tensor):
-    """
-    Function to compute the pressure and the second deviatoric invariant.
+    """Function to compute the pressure and the second deviatoric invariant.
     """
     pressure = (tensor[0] + tensor[1] + tensor[2])/3.0
     dev = tensor
@@ -226,8 +220,7 @@ class StressInfo(Application):
   
 
   def _writeVtkFile(self):
-    """
-    Function to write out vertex and cell info along with stress-related
+    """Function to write out vertex and cell info along with stress-related
     quantities.
     """
     from enthought.tvtk.api import tvtk

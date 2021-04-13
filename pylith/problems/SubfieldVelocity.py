@@ -23,18 +23,9 @@ from .SolutionSubfield import SolutionSubfield
 
 
 class SubfieldVelocity(SolutionSubfield):
-    """
-    Python object for velocity subfield.
+    """Python object for velocity subfield.
 
-    INVENTORY
-
-    Properties
-      - *alias* User-specified name for subfield.
-
-    Facilities
-      - None
-
-    FACTORY: subfield
+    FACTORY: soln_subfield
     """
 
     import pythia.pyre.inventory
@@ -48,15 +39,13 @@ class SubfieldVelocity(SolutionSubfield):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="subfieldvelocity"):
-        """
-        Constructor.
+        """Constructor.
         """
         SolutionSubfield.__init__(self, name)
         return
 
     def initialize(self, normalizer, spaceDim):
-        """
-        Initialize subfield metadata.
+        """Initialize subfield metadata.
         """
         from pylith.topology.Field import Field
         self.vectorFieldType = Field.VECTOR
@@ -67,8 +56,7 @@ class SubfieldVelocity(SolutionSubfield):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         SolutionSubfield._configure(self)
         return
@@ -77,8 +65,7 @@ class SubfieldVelocity(SolutionSubfield):
 
 
 def soln_subfield():
-    """
-    Factory associated with SubfieldVelocity.
+    """Factory associated with SubfieldVelocity.
     """
     return SubfieldVelocity()
 

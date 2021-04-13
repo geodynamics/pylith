@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -15,90 +15,27 @@
 #
 # ======================================================================
 #
-
-## @file tests/pytests/meshio/TestMeshIOCubit.py
-
-## @brief Unit testing of Python MeshIOCubit object.
+# @file tests/pytests/meshio/TestMeshIOCubit.py
+#
+# @brief Unit testing of Python MeshIOCubit object.
 
 import unittest
 
-from pylith.meshio.MeshIOCubit import MeshIOCubit
-from pylith.meshio.MeshIOAscii import MeshIOAscii
+from pylith.testing.UnitTestApp import TestComponent
+from pylith.meshio.MeshIOCubit import (MeshIOCubit, mesh_io)
 
-# ----------------------------------------------------------------------
-class TestMeshIOCubit(unittest.TestCase):
-  """
-  Unit testing of Python MeshIOCubit object.
-  """
 
-  def test_constructor(self):
+class TestMeshIOCubit(TestComponent):
+    """Unit testing of MeshIOCubit object.
     """
-    Test constructor.
-    """
-    io = MeshIOCubit()
-    return
+    _class = MeshIOCubit
+    _factory = mesh_io
 
 
-  def test_filename(self):
-    """
-    Test filename().
-    """
-    value = "hi.txt"
-
-    io = MeshIOCubit()
-    io.filename(value)
-    self.assertEqual(value, io.filename())
-    return
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestMeshIOCubit))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
-  def test_readwrite(self):
-    """
-    Test read().
-    """
-    filenameIn = "data/twohex8.exo"
-    filenameOut = "data/twohex8_test.txt"
-    filenameE = "data/twohex8.txt"
-
-    from spatialdata.geocoords.CSCart import CSCart
-    cs = CSCart()
-    cs._configure()
-
-    # For now, we only test reading the file.
-    io = MeshIOCubit()
-    io.inventory.filename = filenameIn
-    io.inventory.useNames = False
-    io._configure()
-    
-    from spatialdata.units.Nondimensional import Nondimensional
-    normalizer = Nondimensional()
-
-    mesh = io.read(debug=False, interpolate=True)
-
-    testhandler = MeshIOAscii()
-    testhandler.filename(filenameOut)
-    testhandler.coordsys = cs
-    testhandler.write(mesh)
-
-    fileE = open(filenameE, "r")
-    linesE = fileE.readlines()
-    fileE.close()
-    fileT = open(filenameOut, "r")
-    linesT = fileT.readlines()
-    fileT.close()
-
-    self.assertEqual(len(linesE), len(linesT))
-    for (lineE, lineT) in zip(linesE, linesT):
-      self.assertEqual(lineE, lineT)
-    return
-
-
-  def test_factory(self):
-    """
-    Test factory method.
-    """
-    from pylith.meshio.MeshIOCubit import mesh_io
-    io = mesh_io()
-    return
-
-
-# End of file 
+# End of file

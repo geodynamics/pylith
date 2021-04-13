@@ -29,14 +29,12 @@ from pythia.pyre.applications.Script import Script as Application
 
 
 class GrabFaces(Application):
-    """
-    Python application to grab a set of point coordinates and normals from a UCD
+    """Python application to grab a set of point coordinates and normals from a UCD
     face description file.
     """
 
     class Inventory(Application.Inventory):
-        """
-        Python object for managing GrabFaces facilities and properties.
+        """Python object for managing GrabFaces facilities and properties.
         """
 
         # @class Inventory
@@ -88,8 +86,7 @@ class GrabFaces(Application):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         Application._configure(self)
         self.ucdFaceFile = self.inventory.ucdFaceFile
@@ -100,8 +97,7 @@ class GrabFaces(Application):
         return
 
     def _grabFaces(self):
-        """
-        Reads vertex coordinates, connectivities, and vertex attributes from a
+        """Reads vertex coordinates, connectivities, and vertex attributes from a
         UCD file.
         """
         f = file(self.ucdFaceFile)

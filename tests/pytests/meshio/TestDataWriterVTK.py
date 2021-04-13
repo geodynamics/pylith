@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -15,50 +15,27 @@
 #
 # ======================================================================
 #
-
-## @file tests/pytests/meshio/TestDataWriterVTK.py
-
-## @brief Unit testing of Python DataWriterVTK object.
+# @file tests/pytests/meshio/TestDataWriterVTK.py
+#
+# @brief Unit testing of Python DataWriterVTK object.
 
 import unittest
 
-from pylith.meshio.DataWriterVTK import DataWriterVTK
+from pylith.testing.UnitTestApp import TestComponent
+from pylith.meshio.DataWriterVTK import (DataWriterVTK, data_writer)
 
-# ----------------------------------------------------------------------
-class TestDataWriterVTK(unittest.TestCase):
-  """
-  Unit testing of Python DataWriterVTK object.
-  """
 
-  def test_constructor(self):
+class TestDataWriterVTK(TestComponent):
+    """Unit testing of DataWriterVTK object.
     """
-    Test constructor.
-    """
-    filter = DataWriterVTK()
-    filter._configure()
-    return
+    _class = DataWriterVTK
+    _factory = data_writer
 
 
-  def test_initialize(self):
-    """
-    Test constructor.
-    """
-    filter = DataWriterVTK()
-    filter._configure()
-
-    from spatialdata.units.Nondimensional import Nondimensional
-    normalizer = Nondimensional()
-    filter.initialize(normalizer)
-    return
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestDataWriterVTK))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
-  def test_factory(self):
-    """
-    Test factory method.
-    """
-    from pylith.meshio.DataWriterVTK import data_writer
-    filter = data_writer()
-    return
-
-
-# End of file 
+# End of file

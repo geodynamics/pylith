@@ -25,8 +25,7 @@ from .faults import FaultCohesive as ModuleFaultCohesive
 
 
 def validateLabel(value):
-    """
-    Validate label for group/nodeset/pset.
+    """Validate label for group/nodeset/pset.
     """
     if 0 == len(value):
         raise ValueError(
@@ -35,8 +34,7 @@ def validateLabel(value):
 
 
 def validateDir(value):
-    """
-    Validate direction.
+    """Validate direction.
     """
     msg = "Direction must be a 3 component vector (list)."
     if not isinstance(value, list):
@@ -51,21 +49,8 @@ def validateDir(value):
 
 
 class FaultCohesive(Physics, ModuleFaultCohesive):
-    """
-    Python abstract base class for a fault surface implemeted with
+    """Python abstract base class for a fault surface implemeted with
     cohesive elements.
-
-    INVENTORY
-
-    Properties
-      - *id* Fault identifier
-      - *label* Label identifier for fault.
-      - *edge* Label identifier for buried fault edges.
-      - *ref_dir_1* First choice for reference direction to discriminate among tangential directions in 3-D.
-      - *ref_dir_2* Second choice for reference direction to discriminate among tangential directions in 3-D.
-
-    Facilities
-      - None
 
     FACTORY: fault
     """
@@ -91,15 +76,13 @@ class FaultCohesive(Physics, ModuleFaultCohesive):
     refDir2.meta['tip'] = "Second choice for reference direction to discriminate among tangential directions in 3-D."
 
     def __init__(self, name="fault"):
-        """
-        Constructor.
+        """Constructor.
         """
         Physics.__init__(self, name)
         return
 
     def preinitialize(self, problem):
-        """
-        Setup fault.
+        """Setup fault.
         """
         Physics.preinitialize(self, problem)
 
@@ -111,21 +94,18 @@ class FaultCohesive(Physics, ModuleFaultCohesive):
         return
 
     def verifyConfiguration(self):
-        """
-        Verify compatibility of configuration.
+        """Verify compatibility of configuration.
         """
         return
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         Physics._configure(self)
         return
 
     def _createModuleObj(self):
-        """
-        Create handle to corresponding C++ object.
+        """Create handle to corresponding C++ object.
         """
         raise NotImplementedError(
             "Please implement _createModuleObj() in derived class.")

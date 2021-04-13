@@ -15,65 +15,57 @@
 #
 # ======================================================================
 
-from pylith.tests.FullTestApp import TestDriver, Example
+from pylith.testing.FullTestApp import TestDriver, Example
 
 import unittest
 
 class Step01_AxialDisp(Example):
-    """
-    Run 'pylith step01_axialdisp.cfg'
+    """Run 'pylith step01_axialdisp.cfg'
     """
     NAME = "step01_axialdisp"
     PYLITH_ARGS = ["step01_axialdisp.cfg"]
 
         
 class Step02_ShearDisp(Example):
-    """
-    Run 'pylith step02_sheardisp.cfg'
+    """Run 'pylith step02_sheardisp.cfg'
     """
     NAME = "step02_sheardisp"
     PYLITH_ARGS = ["step02_sheardisp.cfg"]
 
         
 class Step03_ShearDispTract(Example):
-    """
-    Run 'pylith step03_sheardisptract.cfg'
+    """Run 'pylith step03_sheardisptract.cfg'
     """
     NAME = "step03_sheardisptract"
     PYLITH_ARGS = ["step03_sheardisptract.cfg"]
 
         
 class Step04_ShearDispIC(Example):
-    """
-    Run 'pylith step04_sheardispic.cfg'.
+    """Run 'pylith step04_sheardispic.cfg'.
     """
     NAME = "step04_sheardispic"
     PYLITH_ARGS = ["step04_sheardispic.cfg"]
 
         
 class Step05_ShearDispTractRate(Example):
-    """
-    Run 'pylith step05_sheardisptractrate.cfg'
+    """Run 'pylith step05_sheardisptractrate.cfg'
     """
     NAME = "step05_sheardisptractrate"
     PYLITH_ARGS = ["step05_sheardisptractrate.cfg"]
 
         
 class ExamplesApp(TestDriver):
-    """
-    Driver application for running examples.
+    """Driver application for running examples.
     """
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         TestDriver.__init__(self)
         return
 
     def _suite(self):
-        """
-        Create test suite.
+        """Create test suite.
         """
         EXAMPLES = [
             Step01_AxialDisp,

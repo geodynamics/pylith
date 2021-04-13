@@ -26,13 +26,11 @@ from pylith.apps.EqInfoApp import EqInfoApp
 
 
 class TestEqInfo(unittest.TestCase):
-    """
-    Generic tests for pylith_eqinfo.
+    """Generic tests for pylith_eqinfo.
     """
 
     def _check(self, statsE, stats):
-        """
-        Check earthquake stats.
+        """Check earthquake stats.
         """
         attrs = ["timestamp",
                  "ruparea",
@@ -73,8 +71,7 @@ class TestEqInfo(unittest.TestCase):
 
 # ----------------------------------------------------------------------
 def run_eqinfo(appName, cfgfiles):
-    """
-    Helper function to run pylith_eqinfo.
+    """Helper function to run pylith_eqinfo.
     """
     if str(appName) in dir(run_eqinfo):
         return

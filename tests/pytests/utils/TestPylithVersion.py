@@ -30,7 +30,7 @@ class TestPylithVersion(unittest.TestCase):
     # Check that version is of the form X.X.X
     import re
     match = re.search("[0-9]+\.[0-9]+\.[0-9]+", version)
-    self.failIf(match is None)
+    self.assertFalse(match is None)
     return
 
 
@@ -44,7 +44,7 @@ class TestPylithVersion(unittest.TestCase):
       match = re.search("v[0-9]+\.[0-9]+\.[0-9]+", revision)
       if match is None:
         match = re.search("v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+-g[0-9,a-z]+", revision)
-      self.failIf(match is None)
+      self.assertFalse(match is None)
     return
 
 
@@ -56,7 +56,7 @@ class TestPylithVersion(unittest.TestCase):
       # Check form of hash
       import re
       match = re.search("[0-9,a-z]+", tag)
-      self.failIf(match is None)
+      self.assertFalse(match is None)
     return
 
 
@@ -78,8 +78,14 @@ class TestPylithVersion(unittest.TestCase):
     if PylithVersion.isRelease():
       self.assertEqual("unknown", branch)
     else:
-      self.failIf(len(branch) == 0)
+      self.assertFalse(len(branch) == 0)
     return
+
+
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestPylithVersion))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
 # End of file 

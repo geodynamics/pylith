@@ -21,8 +21,8 @@
 
 import unittest
 
-from pylith.tests.FullTestApp import check_data
-from pylith.tests.FullTestApp import TestCase as FullTestCase
+from pylith.testing.FullTestApp import check_data
+from pylith.testing.FullTestApp import TestCase as FullTestCase
 
 import meshes
 from axialstrainrate_genmaxwell_soln import AnalyticalSoln
@@ -31,15 +31,13 @@ from axialstrainrate_genmaxwell_gendb import GenerateDB
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """
-    Test suite for testing generalized Maxwell material with 3-D axial extension (Dirichlet velocity BC).
+    """Test suite for testing generalized Maxwell material with 3-D axial extension (Dirichlet velocity BC).
     """
     DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos",
                             "bc_ypos", "bc_yneg", "bc_zneg", "bc_zpos"]
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()

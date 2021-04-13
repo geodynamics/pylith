@@ -34,8 +34,7 @@ import pdb
 from pythia.pyre.applications.Script import Script as Application
 
 class MakeSyntheticGpsdisp(Application):
-  """
-  Python application to create synthetic data from PyLith points output.
+  """Python application to create synthetic data from PyLith points output.
   """
   
   import pythia.pyre.inventory
@@ -102,8 +101,7 @@ class MakeSyntheticGpsdisp(Application):
 
 
   def _configure(self):
-    """
-    Setup members using inventory.
+    """Setup members using inventory.
     """
     Application._configure(self)
 
@@ -111,8 +109,7 @@ class MakeSyntheticGpsdisp(Application):
 
 
   def _readHDF5(self):
-    """
-    Function to read HDF5 file from PyLith.
+    """Function to read HDF5 file from PyLith.
     """
 
     h5 = h5py.File(self.pointInputFile, 'r')
@@ -127,8 +124,7 @@ class MakeSyntheticGpsdisp(Application):
 
 
   def _addNoise(self):
-    """
-    Function to add noise to computed displacements.
+    """Function to add noise to computed displacements.
     """
     self.dispNoise = self.dispRaw.copy()
     self.dispNoise[:, 0] += self.sigmaEast * numpy.random.randn(self.numStations)
@@ -138,8 +134,7 @@ class MakeSyntheticGpsdisp(Application):
     
 
   def _writeOutput(self):
-    """
-    Function to write output file with noisy data and uncertainties.
+    """Function to write output file with noisy data and uncertainties.
     """
     head = "Station\tX\tY\tZ\tUEast\tUNorth\tUUp\tSigEast\tSigNorth\tSigUp\n"
     outFmt = "%s" + 9 * "\t%g" + "\n"
@@ -163,8 +158,7 @@ class MakeSyntheticGpsdisp(Application):
     
 
   def _writeVTKOutput(self):
-    """
-    Function to write VTK output file with noisy data and uncertainties.
+    """Function to write VTK output file with noisy data and uncertainties.
     """
 
     sigma = numpy.ones((self.numStations, 3), dtype=numpy.float64)

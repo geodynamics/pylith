@@ -21,15 +21,13 @@ from .topology import Mesh as ModuleMesh
 
 
 class Mesh(ModuleMesh):
-    """
-    Python Mesh for finite-element topology information.
+    """Python Mesh for finite-element topology information.
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, dim=None, comm=None, mesh=None, label=None, isSubmesh=False):
-        """
-        Constructor.
+        """Constructor.
         """
         if comm is None and dim is None and label is None:
             ModuleMesh.__init__(self, isSubmesh)
@@ -47,8 +45,7 @@ class Mesh(ModuleMesh):
         return
 
     def comm(self):
-        """
-        Get communicator.
+        """Get communicator.
         """
         # Use Communicator object to wrap C++ MPI_Comm* returned by
         # module.
@@ -56,16 +53,14 @@ class Mesh(ModuleMesh):
         return Communicator(ModuleMesh.comm(self))
 
     def checkMaterialIds(self, materialIds):
-        """
-        Check material ids for consistency with mesh.
+        """Check material ids for consistency with mesh.
         """
         from .topology import MeshOps_checkMaterialIds
         MeshOps_checkMaterialIds(self, materialIds)
         return
 
     def groupSizes(self):
-        """
-        Return the name and number of vertices for each group
+        """Return the name and number of vertices for each group
         """
         groups = []
         names = ModuleMesh.groups(self)
@@ -74,8 +69,7 @@ class Mesh(ModuleMesh):
         return groups
 
     def cleanup(self):
-        """
-        Deallocate locally managed data structures.
+        """Deallocate locally managed data structures.
         """
         self.deallocate()
         return

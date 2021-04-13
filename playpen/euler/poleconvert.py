@@ -28,13 +28,11 @@ from pythia.pyre.applications.Script import Script as Application
 
 
 class PoleConvert(Application):
-    """
-    Python application to convert Euler poles from geographic to Cartesian.
+    """Python application to convert Euler poles from geographic to Cartesian.
     """
 
     class Inventory(Application.Inventory):
-        """
-        Python object for managing PoleConvert facilities and properties.
+        """Python object for managing PoleConvert facilities and properties.
         """
 
         # @class Inventory
@@ -82,8 +80,7 @@ class PoleConvert(Application):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         Application._configure(self)
         self.polesInputFile = self.inventory.polesInputFile
@@ -93,8 +90,7 @@ class PoleConvert(Application):
         return
 
     def _writeCartPoles(self, f):
-        """
-        Computes Cartesian poles and writes to output file.
+        """Computes Cartesian poles and writes to output file.
         """
 
         iCount = 0
@@ -113,8 +109,7 @@ class PoleConvert(Application):
         return
 
     def _writeGeogPoles(self, f):
-        """
-        Computes geographic poles and writes to output file.
+        """Computes geographic poles and writes to output file.
         """
 
         iCount = 0
@@ -134,8 +129,7 @@ class PoleConvert(Application):
         return
 
     def _readPoles(self):
-        """
-        Reads poles from a file.
+        """Reads poles from a file.
         """
         f = file(self.polesInputFile)
         for line in f.readlines():

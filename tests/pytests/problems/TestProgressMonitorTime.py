@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -15,90 +15,27 @@
 #
 # ======================================================================
 #
-
-## @file tests/pytests/problems/TestProgressMonitorTime.py
-
-## @brief Unit testing of ProgressMonitorTime object.
+# @file tests/pytests/problems/TestProgressMonitorTime.py
+#
+# @brief Unit testing of Python ProgressMonitorTime object.
 
 import unittest
-from pylith.problems.ProgressMonitorTime import ProgressMonitorTime
 
-from pythia.pyre.units.time import year
+from pylith.testing.UnitTestApp import TestComponent
+from pylith.problems.ProgressMonitorTime import (ProgressMonitorTime, progress_monitor)
 
-# ----------------------------------------------------------------------
-class TestProgressMonitorTime(unittest.TestCase):
-  """
-  Unit testing of ProgressMonitorTime object.
-  """
 
-  def setUp(self):
-    self.monitor = ProgressMonitorTime()
-    self.monitor._configure()
-    self.monitor.filename = "data/progress_time.txt"
-    return
-  
-
-  def test_constructor(self):
+class TestProgressMonitorTime(TestComponent):
+    """Unit testing of ProgressMonitorTime object.
     """
-    Test constructor.
-    """
-    monitor = ProgressMonitorTime()
-    monitor._configure()
-    return
+    _class = ProgressMonitorTime
+    _factory = progress_monitor
 
 
-  def test_openclose(self):
-    """
-    Test open() and close().
-    """
-    import os
-    if os.path.exists(self.monitor.filename):
-        os.remove(self.monitor.filename)
-    self.monitor.open()
-    self.monitor.close()
-
-    self.assertTrue(os.path.isfile(self.monitor.filename))
-
-    return
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestProgressMonitorTime))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
-  def test_update(self):
-    """
-    Test update().
-    """
-    import os
-    self.monitor.open()
-
-    nlines = 1 # header
-    self.monitor.update(0.0*year, 0.0*year, 10.0*year); nlines += 1
-    self.monitor.update(0.5*year, 0.0*year, 10.0*year); nlines += 1
-    self.monitor.update(1.0*year, 0.0*year, 10.0*year); nlines += 1
-    self.monitor.update(1.1*year, 0.0*year, 10.0*year); nlines += 0
-    self.monitor.update(2.0*year, 0.0*year, 10.0*year); nlines += 1
-    self.monitor.update(4.0*year, 0.0*year, 10.0*year); nlines += 1
-    self.monitor.update(5.0*year, 0.0*year, 10.0*year); nlines += 1
-    self.monitor.update(6.0*year, 0.0*year, 10.0*year); nlines += 1
-    self.monitor.update(8.0*year, 0.0*year, 10.0*year); nlines += 1
-    self.monitor.update(9.0*year, 0.0*year, 10.0*year); nlines += 1
-
-    self.monitor.close()
-
-    self.assertTrue(os.path.isfile(self.monitor.filename))
-    fin = open(self.monitor.filename, "r")
-    lines = fin.readlines()
-    fin.close()
-    self.assertEqual(nlines, len(lines))
-    
-    return
-
-
-  def test_factory(self):
-    """
-    Test factory method.
-    """
-    from pylith.problems.ProgressMonitorTime import progress_monitor
-    m = progress_monitor()
-    return
-
-
-# End of file 
+# End of file

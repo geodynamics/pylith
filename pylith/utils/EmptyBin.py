@@ -23,15 +23,13 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class EmptyBin(PetscComponent):
-  """
-  Python container for a collection of objects.
+  """Python container for a collection of objects.
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="emptybin"):
-    """
-    Constructor.
+    """Constructor.
     """
     PetscComponent.__init__(self, name, facility="empty_bin")
     return

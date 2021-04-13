@@ -28,16 +28,7 @@ from .faults import KinSrc as ModuleKinSrc
 
 
 class KinSrc(PetscComponent, ModuleKinSrc):
-    """
-    Python object for managing parameters for a kinematic earthquake sources.
-
-    INVENTORY
-
-    Properties
-      - *origin_time* Origin time for earthquake rupture.
-
-    Facilities
-      - *db_auxiliary_field* Database for slip time function parameters.
+    """Python object for managing parameters for a kinematic earthquake sources.
 
     Factory: eq_kinematic_src
     """
@@ -55,15 +46,13 @@ class KinSrc(PetscComponent, ModuleKinSrc):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="kinsrc"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="eq_kinematic_src")
         return
 
     def preinitialize(self):
-        """
-        Do pre-initialization setup.
+        """Do pre-initialization setup.
         """
         self._createModuleObj()
 
@@ -73,23 +62,20 @@ class KinSrc(PetscComponent, ModuleKinSrc):
         return
 
     def verifyConfiguration(self):
-        """
-        Verify compatibility of configuration.
+        """Verify compatibility of configuration.
         """
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         PetscComponent._configure(self)
         return
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         raise NotImplementedError("Please implement _createModuleOb() in derived class.")
         return

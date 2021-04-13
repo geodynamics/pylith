@@ -28,8 +28,7 @@ import numpy
 
 # ======================================================================
 class RuptureStats(object):
-    """
-    Python object to hold rupture stats.
+    """Python object to hold rupture stats.
     """
 
     def __init__(self, nsnapshots):
@@ -89,8 +88,7 @@ class RuptureStats(object):
 # ======================================================================
 # EqInfoApp class
 class EqInfoApp(Application):
-    """
-    Python EqInfoApp application.
+    """Python EqInfoApp application.
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
@@ -145,15 +143,13 @@ class EqInfoApp(Application):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="eqinfoapp"):
-        """
-        Constructor.
+        """Constructor.
         """
         Application.__init__(self, name)
         return
 
     def main(self, *args, **kwds):
-        """
-        Run the application.
+        """Run the application.
         """
         nfaults = len(self.faults)
 
@@ -233,8 +229,7 @@ class EqInfoApp(Application):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         Application._configure(self)
         self.snapshots = list(map(float, self.snapshots))

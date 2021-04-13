@@ -29,8 +29,7 @@ from .ProblemDefaults import ProblemDefaults
 # Factories for items in facility arrays
 
 def materialFactory(name):
-    """
-    Factory for material items.
+    """Factory for material items.
     """
     from pythia.pyre.inventory import facility
     from pylith.materials.Elasticity import Elasticity
@@ -38,8 +37,7 @@ def materialFactory(name):
 
 
 def bcFactory(name):
-    """
-    Factory for boundary condition items.
+    """Factory for boundary condition items.
     """
     from pythia.pyre.inventory import facility
     from pylith.bc.DirichletTimeDependent import DirichletTimeDependent
@@ -47,8 +45,7 @@ def bcFactory(name):
 
 
 def faultFactory(name):
-    """
-    Factory for fault items.
+    """Factory for fault items.
     """
     from pythia.pyre.inventory import facility
     from pylith.faults.FaultCohesiveKin import FaultCohesiveKin
@@ -56,8 +53,7 @@ def faultFactory(name):
 
 
 def observerFactory(name):
-    """
-    Factory for output items.
+    """Factory for output items.
     """
     from pythia.pyre.inventory import facility
     from pylith.meshio.OutputSolnDomain import OutputSolnDomain
@@ -65,25 +61,9 @@ def observerFactory(name):
 
 
 class Problem(PetscComponent, ModuleProblem):
-    """
-    Python abstract base class for crustal dynamics problems.
+    """Python abstract base class for crustal dynamics problems.
 
-    INVENTORY
-
-    Properties
-      - *dimension* Spatial dimension of problem space.
-      - *formulation* Formulation for equations ('quasistatic' or 'dynamic').
-      - *solver* Type of solver to use.
-
-    Facilities
-      - *solution* Solution field.
-      - *normalizer* Nondimensionalizer for problem.
-      - *materials* Array of materials (governing equations) in the problem.
-      - *bc* Array of boundary conditions.
-      - *interfaces* Array of interior surfaces with relative displacement constraints or constitutive models.
-      - *solution_observers* Array of observers for solution.
-      - *gravity_field* Gravity field for problem (SpatialDB).
-      - *defaults* Default options for problem.
+    FACTORY: problem
     """
 
     import pythia.pyre.inventory
@@ -129,16 +109,14 @@ class Problem(PetscComponent, ModuleProblem):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="problem"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="problem")
         self.mesh = None
         return
 
     def preinitialize(self, mesh):
-        """
-        Do minimal initialization.
+        """Do minimal initialization.
         """
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
@@ -197,8 +175,7 @@ class Problem(PetscComponent, ModuleProblem):
         return
 
     def verifyConfiguration(self):
-        """
-        Verify compatibility of configuration.
+        """Verify compatibility of configuration.
         """
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
@@ -211,8 +188,7 @@ class Problem(PetscComponent, ModuleProblem):
         return
 
     def initialize(self):
-        """
-        Initialize integrators and constraints.
+        """Initialize integrators and constraints.
         """
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
@@ -223,15 +199,13 @@ class Problem(PetscComponent, ModuleProblem):
         return
 
     def run(self, app):
-        """
-        Solve the problem.
+        """Solve the problem.
         """
         raise NotImplementedError("run() not implemented.")
         return
 
     def finalize(self):
-        """
-        Cleanup after running problem.
+        """Cleanup after running problem.
         """
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
@@ -240,8 +214,7 @@ class Problem(PetscComponent, ModuleProblem):
         return
 
     def checkpoint(self):
-        """
-        Save problem state for restart.
+        """Save problem state for restart.
         """
         raise NotImplementedError("checkpoint() not implemented.")
         return
@@ -263,8 +236,7 @@ class Problem(PetscComponent, ModuleProblem):
         return
 
     def _setupLogging(self):
-        """
-        Setup event logging.
+        """Setup event logging.
         """
         if not "_loggingPrefix" in dir(self):
             self._loggingPrefix = ""
@@ -276,15 +248,6 @@ class Problem(PetscComponent, ModuleProblem):
 
         self._eventLogger = logger
         return
-
-
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def problem():
-    """
-    Factory associated with Problem.
-    """
-    return Problem()
 
 
 # End of file

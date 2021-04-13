@@ -25,27 +25,33 @@ import unittest
 
 # ----------------------------------------------------------------------
 class TestConstants(unittest.TestCase):
-  """
-  Unit testing of constants.
+  """Unit testing of constants.
   """
   
 
   def test_maxdouble(self):
-    """
-    Test maxdouble()
-    """
     from pylith.utils.utils import maxdouble
     self.assertAlmostEqual(1.0, maxdouble()/1.0e+99, 7)
     return
 
 
-  def test_maxflat(self):
-    """
-    Test maxflat()
-    """
+  def test_maxfloat(self):
     from pylith.utils.utils import maxfloat
     self.assertAlmostEqual(1.0, maxfloat()/1.0e+30, 7)
     return
+
+
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestConstants))
+
+    from pylith.utils.PetscManager import PetscManager
+    petsc = PetscManager()
+    petsc.initialize()
+
+    success = unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+
+    petsc.finalize()
 
 
 # End of file 

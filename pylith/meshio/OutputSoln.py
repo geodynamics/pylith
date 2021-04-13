@@ -25,8 +25,7 @@ from .meshio import OutputSoln as ModuleOutputSoln
 
 
 class OutputSoln(OutputObserver, ModuleOutputSoln):
-    """
-    Python object for managing output of finite-element solution
+    """Python object for managing output of finite-element solution
     information.
 
     INVENTORY
@@ -48,15 +47,13 @@ class OutputSoln(OutputObserver, ModuleOutputSoln):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="outputsoln"):
-        """
-        Constructor.
+        """Constructor.
         """
         OutputObserver.__init__(self, name)
         return
 
     def preinitialize(self, problem):
-        """
-        Do mimimal initialization.
+        """Do mimimal initialization.
         """
         OutputObserver.preinitialize(self, problem)
         ModuleOutputSoln.setOutputSubfields(self, self.dataFields)
@@ -65,8 +62,7 @@ class OutputSoln(OutputObserver, ModuleOutputSoln):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         OutputObserver._configure(self)
         return

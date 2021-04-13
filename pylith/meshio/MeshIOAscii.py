@@ -25,8 +25,7 @@ from .meshio import MeshIOAscii as ModuleMeshIOAscii
 
 
 def validateFilename(value):
-    """
-    Validate filename.
+    """Validate filename.
     """
     if 0 == len(value):
         msg = "Filename for ASCII input mesh not specified.  " + \
@@ -40,8 +39,7 @@ def validateFilename(value):
 
 
 class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
-    """
-    Python object for reading/writing finite-element mesh from simple
+    """Python object for reading/writing finite-element mesh from simple
     ASCII file.
 
     INVENTORY
@@ -69,8 +67,7 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="meshioascii"):
-        """
-        Constructor.
+        """Constructor.
         """
         MeshIOObj.__init__(self, name)
         return
@@ -85,15 +82,13 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         MeshIOObj._configure(self)
         return
 
     def _createModuleObj(self):
-        """
-        Create C++ MeshIOAscii object.
+        """Create C++ MeshIOAscii object.
         """
         ModuleMeshIOAscii.__init__(self)
         return
@@ -102,8 +97,7 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def mesh_io():
-    """
-    Factory associated with MeshIOAscii.
+    """Factory associated with MeshIOAscii.
     """
     return MeshIOAscii()
 

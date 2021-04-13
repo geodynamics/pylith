@@ -21,8 +21,8 @@
 
 import unittest
 
-from pylith.tests.FullTestApp import check_data
-from pylith.tests.FullTestApp import TestCase as FullTestCase
+from pylith.testing.FullTestApp import check_data
+from pylith.testing.FullTestApp import TestCase as FullTestCase
 
 import meshes
 from sheartraction_soln import AnalyticalSoln
@@ -31,15 +31,13 @@ from sheartraction_gendb import GenerateDB
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """
-    Test suite for testing PyLith with 2-D simple shear.
+    """Test suite for testing PyLith with 2-D simple shear.
     """
     DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_yneg", "bc_zneg"]
     NEUMANN_BOUNDARIES = ["bc_xpos", "bc_ypos"]
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()

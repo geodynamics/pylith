@@ -232,24 +232,6 @@ AC_CONFIG_FILES([Makefile
 		tests/libtests/testing/Makefile
 		tests/libtests/utils/Makefile
 		tests/pytests/Makefile
-		tests/pytests/bc/Makefile
-		tests/pytests/bc/data/Makefile
-		tests/pytests/faults/Makefile
-		tests/pytests/faults/data/Makefile
-		tests/pytests/feassemble/Makefile
-		tests/pytests/feassemble/data/Makefile
-		tests/pytests/friction/Makefile
-		tests/pytests/friction/data/Makefile
-		tests/pytests/materials/Makefile
-		tests/pytests/materials/data/Makefile
-		tests/pytests/meshio/Makefile
-		tests/pytests/meshio/data/Makefile
-		tests/pytests/mpi/Makefile
-		tests/pytests/problems/Makefile
-		tests/pytests/problems/data/Makefile
-		tests/pytests/topology/Makefile
-		tests/pytests/topology/data/Makefile
-		tests/pytests/utils/Makefile
 		tests/mmstests/Makefile
 		tests/mmstests/elasticity/Makefile
 		tests/mmstests/incompressibleelasticity/Makefile

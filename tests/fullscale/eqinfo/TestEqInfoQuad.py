@@ -25,20 +25,17 @@ from TestEqInfo import TestEqInfo, run_eqinfo
 
 
 class TestEqInfoQuad(TestEqInfo):
-    """
-    Test suite for testing pylith_eqinfo with quad4 meshes.
+    """Test suite for testing pylith_eqinfo with quad4 meshes.
     """
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         run_eqinfo("quad", ["quad.cfg"])
         return
 
     def test_stats(self):
-        """
-        Check fault stats.
+        """Check fault stats.
         """
         import stats_quad
 

@@ -21,15 +21,13 @@ from .PetscComponent import PetscComponent
 
 
 class NullComponent(PetscComponent):
-    """
-    Python NullComponent object that is an empty component.
+    """Python NullComponent object that is an empty component.
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name="nullcomponent", facility="nullcomponent")
         return
@@ -37,8 +35,7 @@ class NullComponent(PetscComponent):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _cleanup(self):
-        """
-        Deallocate locally managed data structures.
+        """Deallocate locally managed data structures.
         """
         return
 

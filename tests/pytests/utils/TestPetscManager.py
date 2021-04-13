@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -15,30 +15,27 @@
 #
 # ======================================================================
 #
-
-## @file tests/pytests/utils/TestPetscManager.py
-
-## @brief Unit testing of PetscManager object.
+# @file tests/pytests/utils/TestPetscManager.py
+#
+# @brief Unit testing of Python PetscManager object.
 
 import unittest
 
-# ----------------------------------------------------------------------
-class TestPetscManager(unittest.TestCase):
-  """
-  Unit testing of PetscManager object.
-  """
+from pylith.testing.UnitTestApp import TestComponent
+from pylith.utils.PetscManager import (PetscManager, petsc_manager)
 
-  def test_initfinal(self):
+
+class TestPetscManager(TestComponent):
+    """Unit testing of PetscManager object.
     """
-    Test initialize/finalize.
-    """
-    from pylith.utils.PetscManager import PetscManager
-    from pylith.utils.petsc import optionsSetValue
-    manager = PetscManager()
-    manager.options = [("vec_type", "seq")]
-    manager.initialize()
-    manager.finalize()
-    return
+    _class = PetscManager
+    _factory = petsc_manager
 
 
-# End of file 
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestPetscManager))
+    unittest.TextTestRunner(verbosity=2).run(suite)
+
+
+# End of file

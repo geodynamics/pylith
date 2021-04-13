@@ -28,14 +28,12 @@ from pythia.pyre.applications.Script import Script as Application
 
 
 class Euler(Application):
-    """
-    Python application to create dislocation/displacement BC for a
+    """Python application to create dislocation/displacement BC for a
     specified Euler pole.
     """
 
     class Inventory(Application.Inventory):
-        """
-        Python object for managing Euler facilities and properties.
+        """Python object for managing Euler facilities and properties.
         """
 
         # @class Inventory
@@ -174,8 +172,7 @@ class Euler(Application):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         Application._configure(self)
         self.srcCoordSys = self.inventory.srcCoordSys
@@ -225,8 +222,7 @@ class Euler(Application):
         return
 
     def _writeSpatialDBHead(self, f):
-        """
-        Writes header portion of spatial database.
+        """Writes header portion of spatial database.
         """
         f.write('#SPATIAL.ascii 1\n')
         f.write('SimpleDB {\n')
@@ -248,8 +244,7 @@ class Euler(Application):
         return
 
     def _genSpatialDB(self, f):
-        """
-        Computes dislocations/displacements from Euler pole and writes to
+        """Computes dislocations/displacements from Euler pole and writes to
         spatial DB.
         """
 
@@ -289,8 +284,7 @@ class Euler(Application):
         return
 
     def _testRange(self, point):
-        """
-        Checks to see if point is in range.
+        """Checks to see if point is in range.
         """
         inRange = point[0] >= self.xMinVal and point[0] <= self.xMaxVal and \
             point[1] >= self.yMinVal and point[1] <= self.yMaxVal and \
@@ -298,8 +292,7 @@ class Euler(Application):
         return inRange
 
     def _localTrans(self, velocity, normalsArr):
-        """
-        Performs a transformation on velocity vector to local coords.
+        """Performs a transformation on velocity vector to local coords.
         """
         # This function will need to partially duplicate the functionaliry of the
         # CellGeometry _orient2D function.
@@ -353,8 +346,7 @@ class Euler(Application):
         return vlocal
 
     def _euler2Velocity(self, pointsLL):
-        """
-        Computes velocities in local Cartesian system from rotation about an
+        """Computes velocities in local Cartesian system from rotation about an
         Euler pole.
         """
         from pythia.pyre.units.angle import deg
@@ -380,8 +372,7 @@ class Euler(Application):
         return velENU
 
     def _makeRot(self, latPoint, lonPoint):
-        """
-        Compute rotation matrix for a given geographic coordinates.
+        """Compute rotation matrix for a given geographic coordinates.
         """
         slat = math.sin(latPoint)
         clat = math.cos(latPoint)
@@ -394,8 +385,7 @@ class Euler(Application):
         return rotMatrix
 
     def _readPoints(self):
-        """
-        Reads point coordinates and normals from a file.
+        """Reads point coordinates and normals from a file.
         """
         f = file(self.pointsFile)
         for line in f.readlines():

@@ -19,8 +19,7 @@
 
 
 class Tet(object):
-    """
-    Mesh information for tri mesh.
+    """Mesh information for tri mesh.
     """
     DOMAIN = {
         "ncells": 530,
@@ -69,8 +68,7 @@ class Tet(object):
 
 
 class Hex(object):
-    """
-    Mesh information for hex mesh.
+    """Mesh information for hex mesh.
     """
     DOMAIN = {
         "ncells": 64,

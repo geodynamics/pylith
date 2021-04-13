@@ -29,14 +29,12 @@ from pythia.pyre.applications.Script import Script as Application
 
 
 class GrabPoints(Application):
-    """
-    Python application to grab a specified set of point coordinates and
+    """Python application to grab a specified set of point coordinates and
     normals from a UCD file.
     """
 
     class Inventory(Application.Inventory):
-        """
-        Python object for managing GrabPoints facilities and properties.
+        """Python object for managing GrabPoints facilities and properties.
         """
 
         # @class Inventory
@@ -95,8 +93,7 @@ class GrabPoints(Application):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         Application._configure(self)
         self.psetFile = self.inventory.psetFile
@@ -108,8 +105,7 @@ class GrabPoints(Application):
         return
 
     def _readPset(self):
-        """
-        Reads vertex indices from a pset file.
+        """Reads vertex indices from a pset file.
         """
         f = file(self.psetFile)
         lines = f.readlines()
@@ -125,8 +121,7 @@ class GrabPoints(Application):
         return
 
     def _grabPoints(self):
-        """
-        Reads vertex coordinates and vertex attributes from a UCD file.
+        """Reads vertex coordinates and vertex attributes from a UCD file.
         """
         f = file(self.ucdFile)
         lines = f.readlines()

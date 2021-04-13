@@ -24,14 +24,12 @@ import numpy
 
 
 class GenerateDB(object):
-    """
-    Python object to generate spatial database with initial conditions
+    """Python object to generate spatial database with initial conditions
     for the terzaghi poroelastic test.
     """
 
     def run(self):
-        """
-        Generate the database.
+        """Generate the database.
         """
         # Domain
         x1 = numpy.arange(-1.0, 11.01, 1.0)

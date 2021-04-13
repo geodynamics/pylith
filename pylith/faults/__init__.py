@@ -21,8 +21,12 @@ __all__ = [
     "FaultCohesive",
     "FaultCohesiveKin",
     "KinSrc",
-    "KinSrcStep",
     "KinSrcConstRate",
+    "KinSrcStep",
+    "KinSrcRamp",
+    "KinSrcBrune",
+    "KinSrcLiuCos",
+    "KinSrcTimeHistory",
     "SingleRupture",
     ]
 

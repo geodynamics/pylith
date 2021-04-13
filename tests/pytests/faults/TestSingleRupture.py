@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -15,39 +15,26 @@
 #
 # ======================================================================
 #
-
-## @file tests/pytests/faults/TestSingleRupture.py
-
-## @brief Unit testing of SingleRupture object.
+# @file tests/pytests/faults/TestSingleRupture.py
+#
+# @brief Unit testing of Python SingleRupture object.
 
 import unittest
 
-# ----------------------------------------------------------------------
-class TestSingleRupture(unittest.TestCase):
-  """
-  Unit testing of SingleRupture object.
-  """
+from pylith.testing.UnitTestApp import TestAbstractComponent
+from pylith.faults.SingleRupture import SingleRupture
 
-  def test_constructor(self):
+
+class TestSingleRupture(TestAbstractComponent):
+    """Unit testing of SingleRupture object.
     """
-    Test constructor.
-    """
-    from pylith.faults.SingleRupture import SingleRupture
-    faults = SingleRupture()
-    return
+    _class = SingleRupture
 
 
-  def test_configure(self):
-    """
-    Test _configure().
-    """
-    from pylith.faults.SingleRupture import SingleRupture
-    faults = SingleRupture()
-    from pylith.faults.EqKinSrc import EqKinSrc
-    faults.inventory.rupture = EqKinSrc()
-    faults._configure()
-    self.assertEqual(1, len(faults.components()))
-    return
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestSingleRupture))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
-# End of file 
+# End of file

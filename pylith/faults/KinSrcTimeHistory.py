@@ -24,8 +24,7 @@ from .faults import KinSrcTimeHistory as ModuleKinSrc
 
 
 class KinSrcTimeHistory(KinSrc, ModuleKinSrc):
-    """
-    Python object for time history data file slip time function.
+    """Python object for time history data file slip time function.
 
     INVENTORY
 
@@ -46,15 +45,13 @@ class KinSrcTimeHistory(KinSrc, ModuleKinSrc):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="kinsrctimehistory"):
-        """
-        Constructor.
+        """Constructor.
         """
         KinSrc.__init__(self, name)
         return
 
     def preinitialize(self):
-        """
-        Do pre-initialization setup.
+        """Do pre-initialization setup.
         """
         KinSrc.preinitialize(self)
 
@@ -64,8 +61,7 @@ class KinSrcTimeHistory(KinSrc, ModuleKinSrc):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         ModuleKinSrc.__init__(self)
 
@@ -73,8 +69,7 @@ class KinSrcTimeHistory(KinSrc, ModuleKinSrc):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def eq_kinematic_src():
-    """
-    Factory associated with KinSrcTimeHistory.
+    """Factory associated with KinSrcTimeHistory.
     """
     return KinSrcTimeHistory()
 

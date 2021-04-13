@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -15,50 +15,27 @@
 #
 # ======================================================================
 #
-
-## @file tests/pytests/meshio/TestDataWriterHDF5Ext.py
-
-## @brief Unit testing of Python DataWriterHDF5Ext object.
+# @file tests/pytests/meshio/TestDataWriterHDF5Ext.py
+#
+# @brief Unit testing of Python DataWriterHDF5Ext object.
 
 import unittest
 
-from pylith.meshio.DataWriterHDF5Ext import DataWriterHDF5Ext
+from pylith.testing.UnitTestApp import TestComponent
+from pylith.meshio.DataWriterHDF5Ext import (DataWriterHDF5Ext, data_writer)
 
-# ----------------------------------------------------------------------
-class TestDataWriterHDF5Ext(unittest.TestCase):
-  """
-  Unit testing of Python DataWriterHDF5Ext object.
-  """
 
-  def test_constructor(self):
+class TestDataWriterHDF5Ext(TestComponent):
+    """Unit testing of DataWriterHDF5Ext object.
     """
-    Test constructor.
-    """
-    filter = DataWriterHDF5Ext()
-    filter._configure()
-    return
+    _class = DataWriterHDF5Ext
+    _factory = data_writer
 
 
-  def test_initialize(self):
-    """
-    Test constructor.
-    """
-    filter = DataWriterHDF5Ext()
-    filter._configure()
-
-    from spatialdata.units.Nondimensional import Nondimensional
-    normalizer = Nondimensional()
-    filter.initialize(normalizer)
-    return
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestDataWriterHDF5Ext))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
-  def test_factory(self):
-    """
-    Test factory method.
-    """
-    from pylith.meshio.DataWriterHDF5Ext import data_writer
-    filter = data_writer()
-    return
-
-
-# End of file 
+# End of file

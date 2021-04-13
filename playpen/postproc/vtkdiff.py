@@ -29,14 +29,12 @@ from pythia.pyre.applications.Script import Script as Application
 
 
 class VtkDiff(Application):
-    """
-    Python application to compute the difference between fields in a set of VTK
+    """Python application to compute the difference between fields in a set of VTK
     files.
     """
 
     class Inventory(Application.Inventory):
-        """
-        Python object for managing VtkDiff facilities and properties.
+        """Python object for managing VtkDiff facilities and properties.
         """
 
         # @class Inventory
@@ -59,8 +57,7 @@ class VtkDiff(Application):
         scaleFactor.meta['tip'] = "Scaling factor to apply to results."
 
     class TooFewFilesError(IOError):
-        """
-        Exception raised when not enough VTK input files are found.
+        """Exception raised when not enough VTK input files are found.
         """
 
         def __init__(self, value):
@@ -96,8 +93,7 @@ class VtkDiff(Application):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         Application._configure(self)
         import os
@@ -142,8 +138,7 @@ class VtkDiff(Application):
         return
 
     def _getFileInfo(self):
-        """
-        Find input files and set up filenames for input and output.
+        """Find input files and set up filenames for input and output.
         """
         import os
         import glob
@@ -174,8 +169,7 @@ class VtkDiff(Application):
         return
 
     def _computeDiffs(self):
-        """
-        Function to loop over input files, compute differences in the fields, and
+        """Function to loop over input files, compute differences in the fields, and
         write the results to output files.
         """
         import os
@@ -199,8 +193,7 @@ class VtkDiff(Application):
         return
 
     def _diffFiles(self, vtkFile1, vtkFile2, vtkFileOut, dt):
-        """
-        Function to compute field differences between two VTK files, divide the
+        """Function to compute field differences between two VTK files, divide the
         differences by dt, and output the results to a new VTK file.
         """
         from enthought.mayavi.sources.vtk_file_reader import VTKFileReader

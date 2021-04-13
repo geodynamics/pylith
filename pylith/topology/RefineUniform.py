@@ -25,16 +25,7 @@ from .topology import RefineUniform as ModuleRefineUniform
 
 
 class RefineUniform(MeshRefiner, ModuleRefineUniform):
-    """
-    Python manager for uniform global refinement of mesh in parallel.
-
-    INVENTORY
-
-    Properties
-      - *levels* Number of refinement levels.
-
-    Facilities
-      - None
+    """Python manager for uniform global refinement of mesh in parallel.
 
     Factory: mesh_refiner
     """
@@ -47,8 +38,7 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="refineuniform"):
-        """
-        Constructor.
+        """Constructor.
         """
         MeshRefiner.__init__(self, name)
         return
@@ -61,8 +51,7 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
         return
 
     def refine(self, mesh):
-        """
-        Refine mesh.
+        """Refine mesh.
         """
         self._setupLogging()
         logEvent = "%srefine" % self._loggingPrefix
@@ -86,15 +75,13 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         MeshRefiner._configure(self)
         return
 
     def _createModuleObj(self):
-        """
-        Create handle to C++ object.
+        """Create handle to C++ object.
         """
         ModuleRefineUniform.__init__(self)
         return
@@ -103,8 +90,7 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def mesh_refiner():
-    """
-    Factory associated with RefineUniform.
+    """Factory associated with RefineUniform.
     """
     return RefineUniform()
 

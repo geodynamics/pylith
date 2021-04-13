@@ -21,25 +21,15 @@ from .DumpParameters import DumpParameters
 
 
 class DumpParametersAscii(DumpParameters):
-    """
-    Python DumpParameters object for dumping PyLith parameter information to an ASCII file.
+    """Python DumpParameters object for dumping PyLith parameter information to an ASCII file.
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
 
     class Inventory(DumpParameters.Inventory):
-        """
-        Python object for managing DumpParametersAscii facilities and properties.
+        """Python object for managing DumpParametersAscii facilities and properties.
 
-        INVENTORY
-
-        Properties
-          - *filename* Name of file written with parameters.
-          - *indent* Number of spaces to indent.
-          - *verbose* Include description, location, and aliases.
-
-        Facilities
-          - None
+        FACTORY: dump_parameters
         """
 
         import pythia.pyre.inventory
@@ -56,15 +46,13 @@ class DumpParametersAscii(DumpParameters):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="dumpparametersascii"):
-        """
-        Constructor.
+        """Constructor.
         """
         DumpParameters.__init__(self, name)
         return
 
     def write(self, app):
-        """
-        Write parameters to ASCII file.
+        """Write parameters to ASCII file.
         """
         if self.info is None:
             self.collect(app)
@@ -85,8 +73,7 @@ class DumpParametersAscii(DumpParameters):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Configure object.
+        """Configure object.
         """
         DumpParameters._configure(self)
         self.filename = self.inventory.filename
@@ -96,8 +83,7 @@ class DumpParametersAscii(DumpParameters):
         return
 
     def _writeComponent(self, fout, obj, depth):
-        """
-        Write component parameters to file.
+        """Write component parameters to file.
         """
         indent = self.tab * depth
         for (key, item) in obj["properties"].items():
@@ -124,8 +110,7 @@ class DumpParametersAscii(DumpParameters):
 
 
 def dump_parameters():
-    """
-    Factory associated with DumpParametersAscii.
+    """Factory associated with DumpParametersAscii.
     """
     return DumpParametersAscii()
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -15,73 +15,26 @@
 #
 # ======================================================================
 #
-
-## @file tests/pytests/problems/TestProgressMonitor.py
-
-## @brief Unit testing of ProgressMonitor object.
+# @file tests/pytests/problems/TestProgressMonitor.py
+#
+# @brief Unit testing of Python ProgressMonitor object.
 
 import unittest
+
+from pylith.testing.UnitTestApp import TestAbstractComponent
 from pylith.problems.ProgressMonitor import ProgressMonitor
 
-from pythia.pyre.units.time import year
 
-# ----------------------------------------------------------------------
-class TestProgressMonitor(unittest.TestCase):
-  """
-  Unit testing of ProgressMonitor object.
-  """
-
-  def setUp(self):
-    self.monitor = ProgressMonitor()
-    self.monitor._configure()
-    return
-  
-
-  def test_constructor(self):
+class TestProgressMonitor(TestAbstractComponent):
+    """Unit testing of ProgressMonitor object.
     """
-    Test constructor.
-    """
-    monitor = ProgressMonitor()
-    monitor._configure()
-    return
+    _class = ProgressMonitor
 
 
-  def test_openclose(self):
-    """
-    Test open() and close().
-    """
-    self.monitor.open()
-    self.monitor.close()
-    return
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestProgressMonitor))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
-  def test_update(self):
-    """
-    Test update().
-    """
-    self.monitor.open()
-
-    self.monitor.update(1.0*year, 0.0*year, 10.0*year)
-    self.monitor.update(1.5*year, 0.0*year, 10.0*year)
-    self.monitor.update(2.0*year, 0.0*year, 10.0*year)
-    self.monitor.update(4.0*year, 0.0*year, 10.0*year)
-    self.monitor.update(5.0*year, 0.0*year, 10.0*year)
-    self.monitor.update(6.0*year, 0.0*year, 10.0*year)
-    self.monitor.update(8.0*year, 0.0*year, 10.0*year)
-    self.monitor.update(9.0*year, 0.0*year, 10.0*year)
-
-    self.monitor.close()
-
-    return
-
-
-  def test_factory(self):
-    """
-    Test factory method.
-    """
-    from pylith.problems.ProgressMonitor import progress_monitor
-    m = progress_monitor()
-    return
-
-
-# End of file 
+# End of file

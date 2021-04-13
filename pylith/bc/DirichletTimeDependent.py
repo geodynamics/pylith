@@ -26,28 +26,18 @@ from pylith.utils.NullComponent import NullComponent
 
 
 class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
-    """
-    Python object for managing a time-dependent Dirichlet (prescribed values)
+    """Python object for managing a time-dependent Dirichlet (prescribed values)
     boundary condition.
-
-    INVENTORY
-
-    Properties
-      - *constrained_dof* Constrained degrees of freedom (0=1st DOF, 1=2nd DOF, etc).
-      - *use_initial* Use initial term in time-dependent expression.
-      - *use_rate* Use rate term in time-dependent expression.
-      - *use_time_history* Use time history term in time-dependent expression.
-
-    Facilities
-      - *auxiliary_subfields* Discretization of constraint parameters.
 
     Factory: boundary_condition
     """
 
     import pythia.pyre.inventory
 
-    constrainedDOF = pythia.pyre.inventory.array("constrained_dof", converter=int, default=[])
-    constrainedDOF.meta['tip'] = "Array of constrained degrees of freedom (0=1st DOF, 1=2nd DOF, etc)."
+    constrainedDOF = pythia.pyre.inventory.array(
+        "constrained_dof", converter=int, default=[])
+    constrainedDOF.meta[
+        'tip'] = "Array of constrained degrees of freedom (0=1st DOF, 1=2nd DOF, etc)."
 
     useInitial = pythia.pyre.inventory.bool("use_initial", default=True)
     useInitial.meta['tip'] = "Use initial term in time-dependent expression."
@@ -55,26 +45,27 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
     useRate = pythia.pyre.inventory.bool("use_rate", default=False)
     useRate.meta['tip'] = "Use rate term in time-dependent expression."
 
-    useTimeHistory = pythia.pyre.inventory.bool("use_time_history", default=False)
+    useTimeHistory = pythia.pyre.inventory.bool(
+        "use_time_history", default=False)
     useTimeHistory.meta['tip'] = "Use time history term in time-dependent expression."
 
-    dbTimeHistory = pythia.pyre.inventory.facility("time_history", factory=NullComponent, family="temporal_database")
+    dbTimeHistory = pythia.pyre.inventory.facility(
+        "time_history", factory=NullComponent, family="temporal_database")
     dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
 
     def __init__(self, name="dirichlettimedependent"):
-        """
-        Constructor.
+        """Constructor.
         """
         BoundaryCondition.__init__(self, name)
         return
 
     def _defaults(self):
         from .AuxSubfieldsTimeDependent import AuxSubfieldsTimeDependent
-        self.auxiliarySubfields = AuxSubfieldsTimeDependent("auxiliary_subfields")
+        self.auxiliarySubfields = AuxSubfieldsTimeDependent(
+            "auxiliary_subfields")
 
     def preinitialize(self, problem):
-        """
-        Do pre-initialization setup.
+        """Do pre-initialization setup.
         """
         import numpy
 
@@ -86,17 +77,18 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
 
         BoundaryCondition.preinitialize(self, problem)
 
-        ModuleDirichletTimeDependent.setConstrainedDOF(self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
+        ModuleDirichletTimeDependent.setConstrainedDOF(
+            self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
         ModuleDirichletTimeDependent.useInitial(self, self.useInitial)
         ModuleDirichletTimeDependent.useRate(self, self.useRate)
         ModuleDirichletTimeDependent.useTimeHistory(self, self.useTimeHistory)
         if not isinstance(self.dbTimeHistory, NullComponent):
-            ModuleDirichletTimeDependent.setTimeHistoryDB(self, self.dbTimeHistory)
+            ModuleDirichletTimeDependent.setTimeHistoryDB(
+                self, self.dbTimeHistory)
         return
 
     def verifyConfiguration(self):
-        """
-        Verify compatibility of configuration.
+        """Verify compatibility of configuration.
         """
         BoundaryCondition.verifyConfiguration(self, self.mesh())
         spaceDim = self.mesh().coordsys().getSpaceDim()
@@ -107,8 +99,7 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
         return
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         if 0 == len(self.constrainedDOF):
             raise ValueError("'constrained_dof' must be a zero based integer array of indices corresponding to the "
@@ -124,8 +115,7 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
         return
 
     def _createModuleObj(self):
-        """
-        Create handle to corresponding C++ object.
+        """Create handle to corresponding C++ object.
         """
         ModuleDirichletTimeDependent.__init__(self)
         return
@@ -134,8 +124,7 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
 # Factories
 
 def boundary_condition():
-    """
-    Factory associated with DirichletTimeDependent.
+    """Factory associated with DirichletTimeDependent.
     """
     return DirichletTimeDependent()
 

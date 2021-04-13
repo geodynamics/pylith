@@ -30,7 +30,7 @@ class TestPetscVersion(unittest.TestCase):
     # Check that version is of the form X.X.X
     import re
     match = re.search("[0-9]+\.[0-9]+\.[0-9]+", version)
-    self.failIf(match is None)
+    self.assertFalse(match is None)
     return
 
 
@@ -42,7 +42,7 @@ class TestPetscVersion(unittest.TestCase):
       # Check that revision is of the form v2.1.3-16-g9323114 or v3.10-88-g06a760874e
       import re
       match = re.search("v[0-9]+\.[0-9]+(\.[0-9]+)*-[0-9]+-g[0-9,a-z]+", revision)
-      self.failIf(match is None)
+      self.assertFalse(match is None)
     return
 
 
@@ -64,13 +64,13 @@ class TestPetscVersion(unittest.TestCase):
     if PetscVersion.isRelease():
       pass
     else:
-      self.failIf(len(branch) == 0)
+      self.assertFalse(len(branch) == 0)
     return
 
 
   def test_petscDir(self):
     dir = PetscVersion.petscDir()
-    self.failIf(len(dir) == 0)
+    self.assertFalse(len(dir) == 0)
     return
 
 
@@ -78,6 +78,19 @@ class TestPetscVersion(unittest.TestCase):
     arch = PetscVersion.petscArch()
     # Prefix builds set PETSC_ARCH to empty string, so no verification of string length.
     return
+
+
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestPetscVersion))
+
+    from pylith.utils.PetscManager import PetscManager
+    petsc = PetscManager()
+    petsc.initialize()
+
+    success = unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+
+    petsc.finalize()
 
 
 # End of file 

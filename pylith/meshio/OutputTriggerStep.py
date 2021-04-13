@@ -24,8 +24,7 @@ from .meshio import OutputTriggerStep as ModuleOutputTriggerStep
 
 
 class OutputTriggerStep(OutputTrigger, ModuleOutputTriggerStep):
-    """
-    Python class defining how often output is writtern in terms of solution steps.
+    """Python class defining how often output is writtern in terms of solution steps.
 
     inventory
 
@@ -46,15 +45,13 @@ class OutputTriggerStep(OutputTrigger, ModuleOutputTriggerStep):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="outputtriggerstep"):
-        """
-        Constructor.
+        """Constructor.
         """
         OutputTrigger.__init__(self, name)
         return
 
     def preinitialize(self):
-        """
-        Setup output trigger.
+        """Setup output trigger.
         """
         ModuleOutputTriggerStep.__init__(self)
         ModuleOutputTriggerStep.setIdentifier(self, self.aliases[-1])
@@ -64,8 +61,7 @@ class OutputTriggerStep(OutputTrigger, ModuleOutputTriggerStep):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         OutputTrigger._configure(self)
         return
@@ -74,8 +70,7 @@ class OutputTriggerStep(OutputTrigger, ModuleOutputTriggerStep):
 
 
 def output_trigger():
-    """
-    Factory associated with OutputTriggerStep.
+    """Factory associated with OutputTriggerStep.
     """
     return OutputTriggerStep()
 

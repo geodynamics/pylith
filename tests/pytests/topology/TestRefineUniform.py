@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -15,98 +15,27 @@
 #
 # ======================================================================
 #
-
-## @file tests/pytests/topology/TestRefineUniform.py
-
-## @brief Unit testing of Python RefineUniform object.
+# @file tests/pytests/topology/TestRefineUniform.py
+#
+# @brief Unit testing of Python RefineUniform object.
 
 import unittest
 
-from pylith.topology.RefineUniform import RefineUniform
+from pylith.testing.UnitTestApp import TestComponent
+from pylith.topology.RefineUniform import (RefineUniform, mesh_refiner)
 
-# ----------------------------------------------------------------------
-class TestRefineUniform(unittest.TestCase):
-  """
-  Unit testing of Python RefineUniform object.
-  """
 
-  def test_constructor(self):
+class TestRefineUniform(TestComponent):
+    """Unit testing of RefineUniform object.
     """
-    Test constructor.
-    """
-    io = RefineUniform()
-    return
+    _class = RefineUniform
+    _factory = mesh_refiner
 
 
-  def test_refineTet4NoFault(self):
-    """
-    Test refine().
-    """
-    filenameIn = "data/twotet4.mesh"
-    filenameOut = "data/twotet4_test.mesh"
-    filenameOutE = "data/twotet4_nofault_refined2.mesh"
-
-    self._runTest(filenameIn, filenameOut, filenameOutE)
-    return
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestRefineUniform))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
-  def test_refineTet4Fault(self):
-    """
-    Test refine().
-    """
-    filenameIn = "data/twotet4.mesh"
-    filenameOut = "data/twotet4_test.mesh"
-    filenameOutE = "data/twotet4_fault_refined2.mesh"
-
-    self._runTest(filenameIn, filenameOut, filenameOutE, "fault")
-    return
-
-
-  def test_factory(self):
-    """
-    Test factory method.
-    """
-    from pylith.topology.RefineUniform import mesh_refiner
-    refiner = mesh_refiner()
-    return
-
-
-  def _runTest(self, filenameIn, filenameOut, filenameOutE, faultGroup=None):
-
-    from spatialdata.geocoords.CSCart import CSCart
-    cs = CSCart()
-    cs._configure()
-
-    from pylith.meshio.MeshIOAscii import MeshIOAscii
-    io = MeshIOAscii()
-    io.inventory.filename = filenameIn
-    io.inventory.coordsys = cs
-    io._configure()
-    
-    mesh = io.read(debug=False, interpolate=True)
-
-    if not faultGroup is None:
-      from pylith.faults.FaultCohesiveKin import FaultCohesiveKin
-      fault = FaultCohesiveKin()
-      fault.inventory.matId = 10
-      fault.inventory.faultLabel = faultGroup
-      fault._configure()
-
-      nvertices = fault.numVerticesNoMesh(mesh)
-      firstFaultVertex = 0
-      firstLagrangeVertex = nvertices
-      firstFaultCell      = 2*nvertices
-      fault.adjustTopology(mesh, 
-                           firstFaultVertex, 
-                           firstLagrangeVertex,
-                           firstFaultCell)
-
-    from pylith.topology.RefineUniform import RefineUniform
-    refiner = RefineUniform()
-    meshRefined = refiner.refine(mesh)
-
-    return
-
-
-
-# End of file 
+# End of file

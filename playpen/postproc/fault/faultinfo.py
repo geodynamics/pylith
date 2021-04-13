@@ -30,8 +30,7 @@ import numpy
 from pythia.pyre.applications.Script import Script as Application
 
 class FaultInfo(Application):
-  """
-  Python application to compute a number of quantities on the fault mesh using
+  """Python application to compute a number of quantities on the fault mesh using
   both the fault info file and the computed fault output from PyLith.
   Information includes slip and stress vectors in global coordinates and the CFF
   change using a specified value for the effective coefficient of friction.
@@ -40,8 +39,7 @@ class FaultInfo(Application):
   """
   
   class Inventory(Application.Inventory):
-    """
-    Python object for managing FaultInfo facilities and properties.
+    """Python object for managing FaultInfo facilities and properties.
     """
 
     ## @class Inventory
@@ -117,8 +115,7 @@ class FaultInfo(Application):
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
-    """
-    Setup members using inventory.
+    """Setup members using inventory.
     """
     Application._configure(self)
 
@@ -137,8 +134,7 @@ class FaultInfo(Application):
 
 
   def _readVectors(self):
-    """
-    Get orientation vectors and stress vector.
+    """Get orientation vectors and stress vector.
     """
     self.normalVec = self._getVec(self.faultInfoFile, "normal_dir")
     self.strikeVec = self._getVec(self.faultInfoFile, "strike_dir")
@@ -149,8 +145,7 @@ class FaultInfo(Application):
 
 
   def _getVec(self, vtkFile, vecName):
-    """
-    Function to read a vector from a file and store it in a numpy array.
+    """Function to read a vector from a file and store it in a numpy array.
     """
     from enthought.mayavi.sources.vtk_file_reader import VTKFileReader
     from enthought.tvtk.api import tvtk
@@ -191,8 +186,7 @@ class FaultInfo(Application):
   
 
   def _computeVectorInfo(self):
-    """
-    Function to compute vectors in global coordinates and CFF.
+    """Function to compute vectors in global coordinates and CFF.
     """
     from enthought.tvtk.api import tvtk
 

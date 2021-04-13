@@ -25,16 +25,7 @@ from .materials import RheologyElasticity as ModuleRheology
 
 
 class RheologyElasticity(PetscComponent, ModuleRheology):
-    """
-    Python object for bulk rheology of an elastic material.
-
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *auxiliary_subfields* Discretization of physical properties and state variables.
+    """Python object for bulk rheology of an elastic material.
 
     FACTORY: elasticity_rheology
     """
@@ -50,8 +41,7 @@ class RheologyElasticity(PetscComponent, ModuleRheology):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="rheologyelasticity")
         return
@@ -81,19 +71,9 @@ class RheologyElasticity(PetscComponent, ModuleRheology):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         raise NotImplementedError("Implement in derived class.")
-
-
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def elasticity_rheology():
-    """
-    Factory associated with RheologyElasticity.
-    """
-    return RheologyElasticity()
 
 
 # End of file

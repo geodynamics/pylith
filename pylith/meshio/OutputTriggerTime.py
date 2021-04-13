@@ -24,8 +24,7 @@ from .meshio import OutputTriggerTime as ModuleOutputTriggerTime
 
 
 class OutputTriggerTime(OutputTrigger, ModuleOutputTriggerTime):
-    """
-    Python class for defining how often output is writtern in terms of elaspsed time.
+    """Python class for defining how often output is writtern in terms of elaspsed time.
 
     INVENTORY
 
@@ -45,15 +44,13 @@ class OutputTriggerTime(OutputTrigger, ModuleOutputTriggerTime):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="outputtriggertime"):
-        """
-        Constructor.
+        """Constructor.
         """
         OutputTrigger.__init__(self, name)
         return
 
     def preinitialize(self):
-        """
-        Setup output trigger.
+        """Setup output trigger.
         """
         ModuleOutputTriggerTime.__init__(self)
         ModuleOutputTriggerTime.setIdentifier(self, self.aliases[-1])
@@ -63,8 +60,7 @@ class OutputTriggerTime(OutputTrigger, ModuleOutputTriggerTime):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         OutputTrigger._configure(self)
         return
@@ -73,8 +69,7 @@ class OutputTriggerTime(OutputTrigger, ModuleOutputTriggerTime):
 
 
 def output_trigger():
-    """
-    Factory associated with OutputTriggerTime.
+    """Factory associated with OutputTriggerTime.
     """
     return OutputTriggerTime()
 

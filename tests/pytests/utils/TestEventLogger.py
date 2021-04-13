@@ -25,22 +25,15 @@ import unittest
 
 # ----------------------------------------------------------------------
 class TestEventLogger(unittest.TestCase):
-    """
-    Unit testing of EventLogger object.
+    """Unit testing of EventLogger object.
     """
 
     def test_constructor(self):
-        """
-        Test constructor.
-        """
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
         return
 
     def test_className(self):
-        """
-        Test className().
-        """
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
         name = "my class"
@@ -49,9 +42,6 @@ class TestEventLogger(unittest.TestCase):
         return
 
     def test_initialize(self):
-        """
-        Test initialize().
-        """
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
         logger.setClassName("logging A")
@@ -59,9 +49,6 @@ class TestEventLogger(unittest.TestCase):
         return
 
     def test_registerEvent(self):
-        """
-        Test registerEvent().
-        """
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
         logger.setClassName("logging A")
@@ -76,9 +63,6 @@ class TestEventLogger(unittest.TestCase):
         return
 
     def test_eventLogging(self):
-        """
-        Test eventBegin() and eventEnd().
-        """
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
         logger.setClassName("logging A")
@@ -100,9 +84,6 @@ class TestEventLogger(unittest.TestCase):
         return
 
     def test_registerStage(self):
-        """
-        Test registerStage().
-        """
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
         logger.setClassName("logging A")
@@ -117,9 +98,6 @@ class TestEventLogger(unittest.TestCase):
         return
 
     def test_stageLogging(self):
-        """
-        Test stagePush() and stagePop().
-        """
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
         logger.setClassName("logging A")
@@ -139,6 +117,19 @@ class TestEventLogger(unittest.TestCase):
         logger.stagePop()
         logger.stagePop()
         return
+
+
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestEventLogger))
+
+    from pylith.utils.PetscManager import PetscManager
+    petsc = PetscManager()
+    petsc.initialize()
+
+    success = unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+
+    petsc.finalize()
 
 
 # End of file

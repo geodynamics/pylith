@@ -25,8 +25,7 @@ from .problems import ProgressMonitorTime as ModuleProgressMonitorTime
 
 
 class ProgressMonitorTime(ProgressMonitor, ModuleProgressMonitorTime):
-    """
-    Python PyLith object for monitoring progress of time dependent problem.
+    """Python PyLith object for monitoring progress of time dependent problem.
 
     INVENTORY
 
@@ -47,8 +46,7 @@ class ProgressMonitorTime(ProgressMonitor, ModuleProgressMonitorTime):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="progressmonitortime"):
-        """
-        Constructor.
+        """Constructor.
         """
         ProgressMonitor.__init__(self, name)
         return
@@ -71,8 +69,7 @@ class ProgressMonitorTime(ProgressMonitor, ModuleProgressMonitorTime):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def progress_monitor():
-    """
-    Factory associated with ProgressMonitorTime.
+    """Factory associated with ProgressMonitorTime.
     """
     return ProgressMonitorTime()
 

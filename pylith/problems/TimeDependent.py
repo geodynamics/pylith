@@ -25,8 +25,7 @@ from .problems import TimeDependent as ModuleTimeDependent
 
 
 def icFactory(name):
-    """
-    Factory for initial conditions items.
+    """Factory for initial conditions items.
     """
     from pythia.pyre.inventory import facility
     from pylith.problems.InitialConditionDomain import InitialConditionDomain
@@ -34,21 +33,7 @@ def icFactory(name):
 
 
 class TimeDependent(Problem, ModuleTimeDependent):
-    """
-    Python class for time dependent crustal dynamics problems.
-
-    INVENTORY
-
-    Properties
-      - *initial_dt* Initial time step.
-      - *start_time* Start time for problem.
-      - *end_time* End time for problem.
-      - *max_timesteps* Maximum number of time steps.
-
-    Facilities
-      - *initial_conditions* Initial conditions for problem.
-      - *progress_monitor* Simple progress monitor via text file.
-
+    """Python class for time dependent crustal dynamics problems.
 
     FACTORY: problem.
     """
@@ -85,15 +70,13 @@ class TimeDependent(Problem, ModuleTimeDependent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="timedependent"):
-        """
-        Constructor.
+        """Constructor.
         """
         Problem.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
-        """
-        Setup integrators for each element family (material/quadrature,
+        """Setup integrators for each element family (material/quadrature,
         bc/quadrature, etc.).
         """
         self._setupLogging()
@@ -119,8 +102,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
         return
 
     def run(self, app):
-        """
-        Solve time dependent problem.
+        """Solve time dependent problem.
         """
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
@@ -134,8 +116,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         Problem._configure(self)
         if self.startTime > self.endTime:
@@ -143,8 +124,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
         return
 
     def _createModuleObj(self):
-        """
-        Create handle to C++ object.
+        """Create handle to C++ object.
         """
         ModuleTimeDependent.__init__(self)
         return
@@ -153,8 +133,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def problem():
-    """
-    Factory associated with TimeDependent.
+    """Factory associated with TimeDependent.
     """
     return TimeDependent()
 

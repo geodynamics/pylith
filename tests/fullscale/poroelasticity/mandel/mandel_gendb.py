@@ -24,14 +24,12 @@ import numpy
 
 
 class GenerateDB(object):
-    """
-    Python object to generate spatial database with displacement
+    """Python object to generate spatial database with displacement
     boundary conditions for the axial displacement test.
     """
 
     def run(self):
-        """
-        Generate the database.
+        """Generate the database.
         """
         # Domain
         x1 = numpy.arange(-0.1, 10.1, 0.1)

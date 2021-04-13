@@ -21,19 +21,9 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class AuxSubfieldsIsotropicLinearElasticity(PetscComponent):
-    """
-    Python container for isotropic, linear elasticity subfields.
+    """Python container for isotropic, linear elasticity subfields.
 
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *shear_modulus* Shear modulus subfield.
-      - *bulk_modulus* Bulk modulus subfield.
-      - *reference_stress* Reference stress subfield.
-      - *references_strain* Reference strain.
+    FACTORY: auxiliary_subfields
     """
 
     import pythia.pyre.inventory
@@ -55,8 +45,7 @@ class AuxSubfieldsIsotropicLinearElasticity(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="auxsubfieldsisotropiclinearelasticity"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="auxiliary_subfields")
         return
@@ -71,8 +60,7 @@ class AuxSubfieldsIsotropicLinearElasticity(PetscComponent):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def auxiliary_subfields():
-    """
-    Factory associated with AuxSubfieldsIsotropicLinearElasticity.
+    """Factory associated with AuxSubfieldsIsotropicLinearElasticity.
     """
     return AuxSubfieldsIsotropicLinearElasticity()
 

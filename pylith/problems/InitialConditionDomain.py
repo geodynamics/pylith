@@ -24,16 +24,9 @@ from .problems import InitialConditionDomain as ModuleInitialCondition
 
 
 class InitialConditionDomain(InitialCondition, ModuleInitialCondition):
-    """
-    Python object for specifying initial conditions over the entire domain.
+    """Python object for specifying initial conditions over the entire domain.
 
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *db* Spatial database with values for initial conditions.
+    FACTORY: initial_conditions
     """
 
     import pythia.pyre.inventory
@@ -45,15 +38,13 @@ class InitialConditionDomain(InitialCondition, ModuleInitialCondition):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="initialconditionsdomain"):
-        """
-        Constructor.
+        """Constructor.
         """
         InitialCondition.__init__(self, name)
         return
 
     def preinitialize(self, problem):
-        """
-        Setup initial conditions.
+        """Setup initial conditions.
         """
         InitialCondition.preinitialize(self, problem)
 
@@ -61,8 +52,7 @@ class InitialConditionDomain(InitialCondition, ModuleInitialCondition):
         return
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         InitialCondition._configure(self)
         return
@@ -70,8 +60,7 @@ class InitialConditionDomain(InitialCondition, ModuleInitialCondition):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         ModuleInitialCondition.__init__(self)
 
@@ -79,8 +68,7 @@ class InitialConditionDomain(InitialCondition, ModuleInitialCondition):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def initial_conditions():
-    """
-    Factory associated with InitialConditionDomain.
+    """Factory associated with InitialConditionDomain.
     """
     return InitialConditionDomain()
 

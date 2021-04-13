@@ -25,8 +25,7 @@ from .meshio import MeshIOCubit as ModuleMeshIOCubit
 
 
 def validateFilename(value):
-    """
-    Validate filename.
+    """Validate filename.
     """
     if 0 == len(value):
         raise ValueError("Filename for CUBIT/Trlis input mesh not specified.")
@@ -38,8 +37,7 @@ def validateFilename(value):
 
 
 class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
-    """
-    Python object for reading/writing finite-element mesh from Cubit.
+    """Python object for reading/writing finite-element mesh from Cubit.
 
     INVENTORY
 
@@ -69,8 +67,7 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="meshiocubit"):
-        """
-        Constructor.
+        """Constructor.
         """
         MeshIOObj.__init__(self, name)
         return
@@ -86,15 +83,13 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         MeshIOObj._configure(self)
         return
 
     def _createModuleObj(self):
-        """
-        Create C++ MeshIOCubit object.
+        """Create C++ MeshIOCubit object.
         """
         ModuleMeshIOCubit.__init__(self)
         return
@@ -103,8 +98,7 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def mesh_io():
-    """
-    Factory associated with MeshIOCubit.
+    """Factory associated with MeshIOCubit.
     """
     return MeshIOCubit()
 

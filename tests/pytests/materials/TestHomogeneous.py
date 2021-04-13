@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -15,40 +15,26 @@
 #
 # ======================================================================
 #
-
 # @file tests/pytests/materials/TestHomogeneous.py
-
-# @brief Unit testing of Homogenous object.
+#
+# @brief Unit testing of Python Homogeneous object.
 
 import unittest
 
-# ----------------------------------------------------------------------
+from pylith.testing.UnitTestApp import TestAbstractComponent
+from pylith.materials.Homogeneous import Homogeneous
 
 
-class TestHomogeneous(unittest.TestCase):
+class TestHomogeneous(TestAbstractComponent):
+    """Unit testing of Homogeneous object.
     """
-    Unit testing of Homogeneous object.
-    """
+    _class = Homogeneous
 
-    def test_constructor(self):
-        """
-        Test constructor.
-        """
-        from pylith.materials.Homogeneous import Homogeneous
-        materials = Homogeneous()
-        return
 
-    def test_configure(self):
-        """
-        Test _configure().
-        """
-        from pylith.materials.Homogeneous import Homogeneous
-        materials = Homogeneous()
-        from pylith.materials.IsotropicLinearElasticityPlaneStrain import IsotropicLinearElasticityPlaneStrain
-        materials.material = IsotropicLinearElasticityPlaneStrain()
-        materials._configure()
-        self.assertEqual(1, len(materials.components()))
-        return
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestHomogeneous))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
 # End of file

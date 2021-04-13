@@ -25,22 +25,19 @@ import os
 
 
 class DataWriter(PetscComponent):
-    """
-    Python abstract base class for writing finite-element data.
+    """Python abstract base class for writing finite-element data.
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="datawriter"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="datawriter")
         return
 
     def preinitialize(self):
-        """
-        Setup data writer.
+        """Setup data writer.
         """
         self._createModuleObj()
         return
@@ -67,8 +64,7 @@ class DataWriter(PetscComponent):
         return
 
     def verifyConfiguration(self):
-        """
-        Verify compatibility of configuration.
+        """Verify compatibility of configuration.
         """
         return
 

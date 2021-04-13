@@ -21,23 +21,13 @@ from .DumpParameters import DumpParameters
 
 
 class DumpParametersJson(DumpParameters):
-    """
-    Python DumpParameters object for dumping PyLith parameter information to a JSON file.
+    """Python DumpParameters object for dumping PyLith parameter information to a JSON file.
 
-    INVENTORY
-
-    Properties
-      - *filename* Name of file written with parameters.
-      - *style* Style of JSON file [compact, normal].
-      - *indent* Number of spaces to indent, use negative number for no newlines.
-
-    Facilities
-      - None
+    FACTORY: dump_parameters
     """
 
     class Inventory(DumpParameters.Inventory):
-        """
-        Python object for managing DumpParametersJson facilities and properties.
+        """Python object for managing DumpParametersJson facilities and properties.
         """
 
         import pythia.pyre.inventory
@@ -54,15 +44,13 @@ class DumpParametersJson(DumpParameters):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="dumpparametersjson"):
-        """
-        Constructor.
+        """Constructor.
         """
         DumpParameters.__init__(self, name)
         return
 
     def write(self, app):
-        """
-        Write parameters to JSON file.
+        """Write parameters to JSON file.
         """
         if self.info is None:
             self.collect(app)
@@ -85,8 +73,7 @@ class DumpParametersJson(DumpParameters):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Configure object.
+        """Configure object.
         """
         DumpParameters._configure(self)
         self.filename = self.inventory.filename
@@ -98,8 +85,7 @@ class DumpParametersJson(DumpParameters):
 
 
 def dump_parameters():
-    """
-    Factory associated with DumpParametersJson.
+    """Factory associated with DumpParametersJson.
     """
     return DumpParametersJson()
 

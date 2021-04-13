@@ -16,10 +16,12 @@
 
 import unittest
 
+from pylith.testing.UnitTestApp import TestAbstractComponent
 from pylith.utils.CollectVersionInfo import CollectVersionInfo
 
 
-class TestCollectVersionInfo(unittest.TestCase):
+class TestCollectVersionInfo(TestAbstractComponent):
+    _class = CollectVersionInfo
 
     def test_asDict(self):
         info = CollectVersionInfo.asDict()
@@ -30,5 +32,11 @@ class TestCollectVersionInfo(unittest.TestCase):
         s = CollectVersionInfo.asString()
         self.assertTrue(s)
         return
+
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestCollectVersionInfo))
+    unittest.TextTestRunner(verbosity=2).run(suite)
+
 
 # End of file

@@ -28,8 +28,7 @@ sys.path.append('../mesh')
 
 
 def getCellCenters(vertices, cells):
-    """
-    Function to compute cell centers.
+    """Function to compute cell centers.
     """
     cellCoords = vertices[cells,:]
     cellCenters = numpy.mean(cellCoords, axis=1)

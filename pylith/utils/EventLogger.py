@@ -23,8 +23,7 @@ from .utils import EventLogger as ModuleEventLogger
 
 
 class EventLogger(ModuleEventLogger):
-    """
-    Python object for managing event logging using PETSc.
+    """Python object for managing event logging using PETSc.
 
     Each logger object manages the events for a single 'logging class'.
     """
@@ -32,23 +31,20 @@ class EventLogger(ModuleEventLogger):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         ModuleEventLogger.__init__(self)
         self.events = {}  # dict of events with counts for current logging.
         return
 
     def registerEvent(self, name):
-        """
-        Register event.
+        """Register event.
         """
         self.events[name] = 0  # Set log count to 0
         return ModuleEventLogger.registerEvent(self, name)
 
     def eventBegin(self, name):
-        """
-        Log event begin.
+        """Log event begin.
         """
         if self.events[name] == 0:  # prevent double counting
             ModuleEventLogger.eventBegin(self, self.getEventId(name))
@@ -56,8 +52,7 @@ class EventLogger(ModuleEventLogger):
         return
 
     def eventEnd(self, name):
-        """
-        Log event end.
+        """Log event end.
         """
         if self.events[name] > 0:
             self.events[name] -= 1
@@ -66,8 +61,7 @@ class EventLogger(ModuleEventLogger):
         return
 
     def stagePush(self, name):
-        """
-        Log stage begin.
+        """Log stage begin.
         """
         ModuleEventLogger.stagePush(self, self.getStageId(name))
         return

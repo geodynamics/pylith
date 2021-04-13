@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -15,57 +15,26 @@
 #
 # ======================================================================
 #
-
-## @file tests/pytests/topology/TestMeshGenerator.py
-##
-## @brief Unit testing of MeshGenerator object.
+# @file tests/pytests/topology/TestMeshGenerator.py
+#
+# @brief Unit testing of Python MeshGenerator object.
 
 import unittest
 
+from pylith.testing.UnitTestApp import TestAbstractComponent
 from pylith.topology.MeshGenerator import MeshGenerator
 
-# ----------------------------------------------------------------------
-class TestMeshGenerator(unittest.TestCase):
-  """
-  Unit testing of MeshGenerator object.
-  """
 
-  def test_constructor(self):
+class TestMeshGenerator(TestAbstractComponent):
+    """Unit testing of MeshGenerator object.
     """
-    Test constructor.
-    """
-    generator = MeshGenerator()
-    return
-  
-
-  def test_debug(self):
-    """
-    Test debug().
-    """
-    generator = MeshGenerator()
-
-    value = False # default should be False
-    self.failUnless(value == generator.debug)
-
-    value = True
-    generator.debug = value
-    self.failUnless(value == generator.debug)
-    return
+    _class = MeshGenerator
 
 
-  def test_interpolate(self):
-    """
-    Test interpolate access.
-    """
-    generator = MeshGenerator()
-
-    value = False # default should be False
-    self.assertEqual(value, generator.interpolate)
-
-    value = True
-    generator.interpolate = value
-    self.assertEqual(value, generator.interpolate)
-    return
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestMeshGenerator))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
-# End of file 
+# End of file

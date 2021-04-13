@@ -24,15 +24,13 @@ from .meshio import MeshIO as ModuleMeshIO
 
 
 class MeshIOObj(PetscComponent, ModuleMeshIO):
-    """
-    Python abstract base class for finite-element mesh I/O.
+    """Python abstract base class for finite-element mesh I/O.
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="meshio"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="mesh_io")
         self.coordsys = None
@@ -45,8 +43,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
         return
 
     def read(self, debug):
-        """
-        Read finite-element mesh and store in Sieve mesh object.
+        """Read finite-element mesh and store in Sieve mesh object.
 
         @returns PETSc DMPlex mesh object containing finite-element mesh
         """
@@ -72,8 +69,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
         return mesh
 
     def write(self, mesh):
-        """
-        Write finite-element mesh.stored in Sieve mesh object.
+        """Write finite-element mesh.stored in Sieve mesh object.
 
         @param mesh PETSc mesh object containing finite-element mesh
         """
@@ -87,15 +83,13 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         PetscComponent._configure(self)
         return
 
     def _createModuleObj(self):
-        """
-        Create C++ MeshIO object.
+        """Create C++ MeshIO object.
         """
         raise NotImplementedError("MeshIO is an abstract base class.")
         return

@@ -25,16 +25,7 @@ from .materials import IsotropicLinearPoroelasticity as ModuleLinearPoroelastici
 
 
 class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelasticity):
-    """
-    Python material for isotropic, linearly poroelastic plane strain.
-
-    INVENTORY
-
-    Properties
-      - *use_reference_state* Use reference stress/strain state.
-
-    Facilities
-      - None
+    """Python material for isotropic, linearly poroelastic plane strain.
 
     FACTORY: poroelasticity_rheology
     """
@@ -47,8 +38,7 @@ class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelas
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="isotropiclinearporoelasticity"):
-        """
-        Constructor.
+        """Constructor.
         """
         RheologyPoroelasticity.__init__(self, name)
         return
@@ -66,8 +56,7 @@ class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelas
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         ModuleLinearPoroelasticity.__init__(self)
 
@@ -75,8 +64,7 @@ class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelas
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def poroelasticity_rheology():
-    """
-    Factory associated with IsotropicLinearPoroelasticity.
+    """Factory associated with IsotropicLinearPoroelasticity.
     """
     return IsotropicLinearPoroelasticity()
 

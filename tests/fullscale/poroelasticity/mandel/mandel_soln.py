@@ -82,8 +82,7 @@ tsteps = numpy.arange(0.0, ts * nts, ts) + ts  # sec
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
-    """
-    Analytical solution to Mandel's problem
+    """Analytical solution to Mandel's problem
     """
     SPACE_DIM = 2
     TENSOR_SIZE = 4
@@ -131,80 +130,70 @@ class AnalyticalSoln(object):
         return numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
 
     def solid_density(self, locs):
-        """
-        Compute solid_density field at locations.
+        """Compute solid_density field at locations.
         """
         (npts, dim) = locs.shape
         solid_density = rho_s * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return solid_density
 
     def fluid_density(self, locs):
-        """
-        Compute fluid density field at locations.
+        """Compute fluid density field at locations.
         """
         (npts, dim) = locs.shape
         fluid_density = rho_f * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return fluid_density
 
     def porosity(self, locs):
-        """
-        Compute solid_density field at locations.
+        """Compute solid_density field at locations.
         """
         (npts, dim) = locs.shape
         porosity = phi * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return porosity
 
     def shear_modulus(self, locs):
-        """
-        Compute shear modulus field at locations.
+        """Compute shear modulus field at locations.
         """
         (npts, dim) = locs.shape
         shear_modulus = G * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return shear_modulus
 
     def fluid_viscosity(self, locs):
-        """
-        Compute fluid_viscosity field at locations.
+        """Compute fluid_viscosity field at locations.
         """
         (npts, dim) = locs.shape
         fluid_viscosity = mu_f * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return fluid_viscosity
 
     def undrained_bulk_modulus(self, locs):
-        """
-        Compute undrained bulk modulus field at locations.
+        """Compute undrained bulk modulus field at locations.
         """
         (npts, dim) = locs.shape
         undrained_bulk_modulus = K_u * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return undrained_bulk_modulus
 
     def drained_bulk_modulus(self, locs):
-        """
-        Compute undrained bulk modulus field at locations.
+        """Compute undrained bulk modulus field at locations.
         """
         (npts, dim) = locs.shape
         drained_bulk_modulus = K_d * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return drained_bulk_modulus
 
     def biot_coefficient(self, locs):
-        """
-        Compute biot coefficient field at locations.
+        """Compute biot coefficient field at locations.
         """
         (npts, dim) = locs.shape
         biot_coefficient = alpha * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return biot_coefficient
 
     def biot_modulus(self, locs):
-        """
-        Compute biot modulus field at locations.
+        """Compute biot modulus field at locations.
         """
         (npts, dim) = locs.shape
         biot_modulus = M * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return biot_modulus
 
     def isotropic_permeability(self, locs):
-        """
-        Compute isotropic permeability field at locations.
+        """Compute isotropic permeability field at locations.
         """
         (npts, dim) = locs.shape
         isotropic_permeability = k * numpy.ones((1, npts, 1), dtype=numpy.float64)
@@ -227,8 +216,7 @@ class AnalyticalSoln(object):
         return traction
 
     def displacement(self, locs):
-        """
-        Compute displacement field at locations.
+        """Compute displacement field at locations.
         """
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
@@ -256,8 +244,7 @@ class AnalyticalSoln(object):
         return displacement
 
     def pressure(self, locs):
-        """
-        Compute pressure field at locations.
+        """Compute pressure field at locations.
         """
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
@@ -283,8 +270,7 @@ class AnalyticalSoln(object):
         return pressure
 
     def trace_strain(self, locs):
-        """
-        Compute trace strain field at locations.
+        """Compute trace strain field at locations.
         """
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
@@ -314,8 +300,7 @@ class AnalyticalSoln(object):
     # Series functions
 
     def mandelZeros(self):
-        """
-        Compute roots for analytical mandel problem solutions
+        """Compute roots for analytical mandel problem solutions
         """
         zeroArray = numpy.zeros(self.ITERATIONS)
         x0 = 0
@@ -340,8 +325,7 @@ class AnalyticalSoln(object):
         return zeroArray
 
     def strain(self, locs):
-        """
-        Compute strain field at locations.
+        """Compute strain field at locations.
         """
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
@@ -358,8 +342,7 @@ class AnalyticalSoln(object):
         return strain
 
     def stress(self, locs):
-        """
-        Compute stress field at locations.
+        """Compute stress field at locations.
         """
         (npts, dim) = locs.shape
         ntpts = tsteps.shape[0]
@@ -412,8 +395,7 @@ class AnalyticalSoln(object):
         return traction
 
     def initial_displacement(self, locs):
-        """
-        Compute initial displacement at locations
+        """Compute initial displacement at locations
         """
         (npts, dim) = locs.shape
         displacement = numpy.zeros((1, npts, dim), dtype=numpy.float64)
@@ -426,8 +408,7 @@ class AnalyticalSoln(object):
         return displacement
 
     def initial_pressure(self, locs):
-        """
-        Compute initial pressure at locations
+        """Compute initial pressure at locations
         """
         (npts, dim) = locs.shape
         pressure = numpy.zeros((1, npts), dtype=numpy.float64)
@@ -440,8 +421,7 @@ class AnalyticalSoln(object):
         return pressure
 
     def initial_trace_strain(self, locs):
-        """
-        Compute initial trace strain field at locations.
+        """Compute initial trace strain field at locations.
         """
         (npts, dim) = locs.shape
         zeroArray = self.mandelZeros()

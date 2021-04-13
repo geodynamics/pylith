@@ -25,19 +25,9 @@ from .problems import ProgressMonitor as ModuleProgressMonitor
 
 
 class ProgressMonitor(PetscComponent, ModuleProgressMonitor):
-    """
-    Python abstract base class for progress monitor.
+    """Python abstract base class for progress monitor.
 
-    Inventory
-
-    Properties
-      - *filename* Name of output file.
-      - *update_percent* Frequency of progress updates (percent).
-
-    Facilities
-      None
-
-    Factory: progress_monitor.
+    FACTORY: progress_monitor.
     """
 
     import pythia.pyre.inventory
@@ -52,8 +42,7 @@ class ProgressMonitor(PetscComponent, ModuleProgressMonitor):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="progressmonitor"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="progress_monitor")
         return
@@ -87,15 +76,6 @@ class ProgressMonitor(PetscComponent, ModuleProgressMonitor):
         """Create handle to corresponding C++ object.
         """
         raise NotImplementedError("Implement in child class.")
-
-
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def progress_monitor():
-    """
-    Factory associated with ProgressMonitor.
-    """
-    return ProgressMonitor()
 
 
 # End of file

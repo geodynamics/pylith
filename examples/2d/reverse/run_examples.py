@@ -15,89 +15,78 @@
 #
 # ======================================================================
 
-from pylith.tests.FullTestApp import TestDriver, Example
+from pylith.testing.FullTestApp import TestDriver, Example
 
 import unittest
 
 class Step01_Gravity(Example):
-    """
-    Run 'pylith step01_gravity.cfg'.
+    """Run 'pylith step01_gravity.cfg'.
     """
     NAME = "step01_gravity"
     PYLITH_ARGS = ["step01_gravity.cfg"]
 
         
 class Step02_Gravity_RefState(Example):
-    """
-    Run 'pylith step02_gravity_refstate.cfg'.
+    """Run 'pylith step02_gravity_refstate.cfg'.
     """
     NAME = "step02_gravity_refstate"
     PYLITH_ARGS = ["step02_gravity_refstate.cfg"]
 
         
 class Step03_Gravity_Incompressible(Example):
-    """
-    Run 'pylith step03_gravity_incompressible.cfg'.
+    """Run 'pylith step03_gravity_incompressible.cfg'.
     """
     NAME = "step03_gravity_incompressible"
     PYLITH_ARGS = ["step03_gravity_incompressible.cfg"]
 
         
 class Step04_SurfLoad(Example):
-    """
-    Run 'pylith step04_surfload.cfg'.
+    """Run 'pylith step04_surfload.cfg'.
     """
     NAME = "step04_surfload"
     PYLITH_ARGS = ["step04_surfload.cfg"]
 
 
 class Step05_OneFault(Example):
-    """
-    Run 'pylith step05_onefault.cfg solver_onefault.cfg'.
+    """Run 'pylith step05_onefault.cfg solver_onefault.cfg'.
     """
     NAME = "step05_onefault"
     PYLITH_ARGS = ["step05_onefault.cfg", "solver_onefault.cfg"]
 
 
 class Step06_TwoFaults_Elastic(Example):
-    """
-    Run 'pylith step06_twofaults.cfg solver_twofaults.cfg'.
+    """Run 'pylith step06_twofaults.cfg solver_twofaults.cfg'.
     """
     NAME = "step06_twofaults_elastic"
     PYLITH_ARGS = ["step06_twofaults_elastic.cfg", "solver_twofaults.cfg"]
 
 
 class Step07_TwoFaults_Maxwell(Example):
-    """
-    Run 'pylith step07_twofaults_maxwell.cfg solver_twofaults.cfg'.
+    """Run 'pylith step07_twofaults_maxwell.cfg solver_twofaults.cfg'.
     """
     NAME = "step07_twofaults_maxwell"
     PYLITH_ARGS = ["step07_twofaults_maxwell.cfg", "solver_twofaults.cfg"]
 
 
 class Step08_TwoFaults_Powerlaw(Example):
-    """
-    Run 'pylith step08_twofaults_powerlaw.cfg solver_twofaults.cfg'.
+    """Run 'pylith step08_twofaults_powerlaw.cfg solver_twofaults.cfg'.
     """
     NAME = "step08_twofaults_powerlaw"
     PYLITH_ARGS = ["step08_twofaults_powerlaw.cfg", "solver_twofaults.cfg"]
 
 
 class ExamplesApp(TestDriver):
-    """
-    Driver application for running examples.
+    """Driver application for running examples.
     """
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         TestDriver.__init__(self)
         return
 
     def _suite(self):
-        """
-        Create test suite.
+        """Create test suite.
         """
         EXAMPLES = [
             Step01_Gravity,

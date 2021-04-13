@@ -26,15 +26,13 @@ from pythia.pyre.units.time import s
 from pythia.pyre.applications.Script import Script as Application
 
 class PrincAxes(Application):
-  """
-  Python application to compute principal axes for a tensor respresented
+  """Python application to compute principal axes for a tensor respresented
   as a vector. Information is read from a VTK file and a VTK file with the
   same dimensions is output.
   """
   
   class Inventory(Application.Inventory):
-    """
-    Python object for managing PrincAxes facilities and properties.
+    """Python object for managing PrincAxes facilities and properties.
     """
 
     ## @class Inventory
@@ -120,8 +118,7 @@ class PrincAxes(Application):
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
-    """
-    Setup members using inventory.
+    """Setup members using inventory.
     """
     Application._configure(self)
     # import pdb
@@ -151,8 +148,7 @@ class PrincAxes(Application):
 
 
   def _getRegionalField(self):
-    """
-    Function to transform regional field from principal axes to mesh
+    """Function to transform regional field from principal axes to mesh
     coordinates.
     """
     t1 = numpy.dot(self.regionalAxes, self.regionalSigma)
@@ -161,8 +157,7 @@ class PrincAxes(Application):
       
 
   def _readVtkFile(self):
-    """
-    Function to read tensor from a file and store the info in a numpy array.
+    """Function to read tensor from a file and store the info in a numpy array.
     """
     from enthought.mayavi.sources.vtk_file_reader import VTKFileReader
     from enthought.tvtk.api import tvtk
@@ -199,8 +194,7 @@ class PrincAxes(Application):
 
 
   def _getPrincAxes(self):
-    """
-    Function to loop over integration points and compute principal axes for
+    """Function to loop over integration points and compute principal axes for
     each point.
     """
     # Create empty arrays for each principal axis and eigenvalue.
@@ -228,8 +222,7 @@ class PrincAxes(Application):
   
 
   def _compPrincAxes(self, tensor):
-    """
-    Function to compute 3D principal axes and sort them.
+    """Function to compute 3D principal axes and sort them.
     """
     tensorMat = numpy.array([(tensor[0], tensor[3], tensor[5]),
                              (tensor[3], tensor[1], tensor[4]),
@@ -248,8 +241,7 @@ class PrincAxes(Application):
   
 
   def _writeVtkFile(self):
-    """
-    Function to write out vertex and cell info along with principal axes
+    """Function to write out vertex and cell info along with principal axes
     computed as vectors.
     """
     from enthought.tvtk.api import tvtk

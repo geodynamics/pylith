@@ -25,20 +25,17 @@ import numpy
 
 
 class GenerateDB(object):
-    """
-    Python object to generate spatial database with displacement
+    """Python object to generate spatial database with displacement
     boundary conditions for the axial traction test.
     """
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         return
 
     def run(self):
-        """
-        Generate the database.
+        """Generate the database.
         """
         # Domain
         x = numpy.arange(-4000.0, 4000.1, 2000.0)

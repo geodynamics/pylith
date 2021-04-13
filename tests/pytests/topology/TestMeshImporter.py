@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -15,36 +15,27 @@
 #
 # ======================================================================
 #
-
-## @file tests/pytests/topology/TestMeshImporter.py
-
-## @brief Unit testing of MeshImporter object.
+# @file tests/pytests/topology/TestMeshImporter.py
+#
+# @brief Unit testing of Python MeshImporter object.
 
 import unittest
 
-from pylith.topology.MeshImporter import MeshImporter
+from pylith.testing.UnitTestApp import TestComponent
+from pylith.topology.MeshImporter import (MeshImporter, mesh_generator)
 
-# ----------------------------------------------------------------------
-class TestMeshImporter(unittest.TestCase):
-  """
-  Unit testing of MeshIO object.
-  """
 
-  def test_constructor(self):
+class TestMeshImporter(TestComponent):
+    """Unit testing of MeshImporter object.
     """
-    Test constructor.
-    """
-    importer = MeshImporter()
-    return
+    _class = MeshImporter
+    _factory = mesh_generator
 
 
-  def test_factory(self):
-    """
-    Test factory method.
-    """
-    from pylith.topology.MeshImporter import mesh_generator
-    g = mesh_generator()
-    return
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestMeshImporter))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
-# End of file 
+# End of file

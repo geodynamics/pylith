@@ -21,8 +21,8 @@
 
 import unittest
 
-from pylith.tests.FullTestApp import check_data
-from pylith.tests.FullTestApp import TestCase as FullTestCase
+from pylith.testing.FullTestApp import check_data
+from pylith.testing.FullTestApp import TestCase as FullTestCase
 
 import meshes
 from axialdisp_soln import AnalyticalSoln
@@ -31,14 +31,12 @@ from axialdisp_gendb import GenerateDB
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """
-    Test suite for testing PyLith with axial extension in the x-direction for a one cell mesh.
+    """Test suite for testing PyLith with axial extension in the x-direction for a one cell mesh.
     """
     DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos"]
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()

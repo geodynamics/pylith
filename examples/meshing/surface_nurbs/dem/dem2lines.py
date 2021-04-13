@@ -14,16 +14,14 @@ from pythia.pyre.applications.Script import Script as Application
 
 
 class Dem2Lines(Application):
-    """
-    Python application to read an ASCII (x,y,z) representation and
+    """Python application to read an ASCII (x,y,z) representation and
     create a set of lines suitable for use in Cubit. The original DEM is
     resampled to a coarser resolution outside a specified region.
     The DEM is assumed to be ordered by rows (left to right).
     """
 
     class Inventory(Application.Inventory):
-        """
-        Python object for managing Dem2Lines facilities and properties.
+        """Python object for managing Dem2Lines facilities and properties.
         """
 
         # @class Inventory
@@ -117,8 +115,7 @@ class Dem2Lines(Application):
     # PRIVATE METHODS /////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         Application._configure(self)
 
@@ -142,8 +139,7 @@ class Dem2Lines(Application):
         return
 
     def _readDem(self):
-        """
-        Read coordinates defining DEM and create vectors of x, y, and z values.
+        """Read coordinates defining DEM and create vectors of x, y, and z values.
         """
 
         # Load each coordinate as a numpy array.
@@ -175,8 +171,7 @@ class Dem2Lines(Application):
         return
 
     def _resampleDem(self):
-        """
-        Resample DEM in regions outside specified region.
+        """Resample DEM in regions outside specified region.
         """
 
         # Find indices corresponding to min and max values.
@@ -286,8 +281,7 @@ class Dem2Lines(Application):
         return
 
     def _zavg(self, xDiff, yDiff, xIndexIn, yIndexIn):
-        """
-        Spatially average elevation values.
+        """Spatially average elevation values.
         """
         maxDiff = max(xDiff, yDiff)
         windowSize = maxDiff // 2
@@ -307,8 +301,7 @@ class Dem2Lines(Application):
         return zAvg
 
     def _writeCubitJournals(self):
-        """
-        Writes lines of the DEM as sets of Cubit journal files and write master
+        """Writes lines of the DEM as sets of Cubit journal files and write master
         journal file.
         """
 
@@ -400,8 +393,7 @@ class Dem2Lines(Application):
         return
 
     def _writeDemVtk(self):
-        """
-        Write DEM as a rectilinear grid VTK file with z-values as point data.
+        """Write DEM as a rectilinear grid VTK file with z-values as point data.
         """
         zDim = 1
         v = open(self.vtkOutputFile, 'w')

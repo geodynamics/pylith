@@ -24,8 +24,7 @@ from .faults import KinSrcConstRate as ModuleKinSrc
 
 
 class KinSrcConstRate(KinSrc, ModuleKinSrc):
-    """
-    Python object for a constant slip rate slip time function.
+    """Python object for a constant slip rate slip time function.
 
     Factory: eq_kinematic_src
     """
@@ -33,8 +32,7 @@ class KinSrcConstRate(KinSrc, ModuleKinSrc):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="kinsrcconstrate"):
-        """
-        Constructor.
+        """Constructor.
         """
         KinSrc.__init__(self, name)
         return
@@ -42,8 +40,7 @@ class KinSrcConstRate(KinSrc, ModuleKinSrc):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         ModuleKinSrc.__init__(self)
 
@@ -51,8 +48,7 @@ class KinSrcConstRate(KinSrc, ModuleKinSrc):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def eq_kinematic_src():
-    """
-    Factory associated with KinSrcConstRate.
+    """Factory associated with KinSrcConstRate.
     """
     return KinSrcConstRate()
 

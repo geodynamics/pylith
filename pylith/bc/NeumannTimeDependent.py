@@ -25,8 +25,7 @@ from pylith.utils.NullComponent import NullComponent
 
 
 def validateDir(value):
-    """
-    Validate direction.
+    """Validate direction.
     """
     msg = "Direction must be a 3 component vector (list)."
     if not isinstance(value, list):
@@ -41,8 +40,7 @@ def validateDir(value):
 
 
 class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
-    """
-    Python object for managing a time-dependent Neumann (natural) boundary condition.
+    """Python object for managing a time-dependent Neumann (natural) boundary condition.
 
     INVENTORY
 
@@ -86,8 +84,7 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
     refDir2.meta['tip'] = "Second choice for reference direction to discriminate among tangential directions in 3-D."
 
     def __init__(self, name="neumanntimedependent"):
-        """
-        Constructor.
+        """Constructor.
         """
         BoundaryCondition.__init__(self, name)
         return
@@ -97,8 +94,7 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
         self.auxiliarySubfields = AuxSubfieldsTimeDependent("auxiliary_subfields")
 
     def preinitialize(self, problem):
-        """
-        Do pre-initialization setup.
+        """Do pre-initialization setup.
         """
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
@@ -119,8 +115,7 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
         return
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         if self.inventory.useTimeHistory and isinstance(self.inventory.dbTimeHistory, NullComponent):
             raise ValueError(
@@ -133,8 +128,7 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
         return
 
     def _createModuleObj(self):
-        """
-        Create handle to corresponding C++ object.
+        """Create handle to corresponding C++ object.
         """
         ModuleNeumannTimeDependent.__init__(self)
         return
@@ -143,8 +137,7 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
 # Factories
 
 def boundary_condition():
-    """
-    Factory associated with NeumannTimeDependent.
+    """Factory associated with NeumannTimeDependent.
     """
     return NeumannTimeDependent()
 

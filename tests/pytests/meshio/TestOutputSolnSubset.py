@@ -26,8 +26,7 @@ from pylith.meshio.OutputSolnSubset import OutputSolnSubset
 
 # ----------------------------------------------------------------------
 class TestOutputSolnSubset(unittest.TestCase):
-  """
-  Unit testing of Python OutputSolnSubset object.
+  """Unit testing of Python OutputSolnSubset object.
   """
 
   def setUp(self):
@@ -64,8 +63,7 @@ class TestOutputSolnSubset(unittest.TestCase):
 
 
   def test_constructor(self):
-    """
-    Test constructor.
+    """Test constructor.
     """
     output = OutputSolnSubset()
     output.inventory.writer._configure()
@@ -75,8 +73,7 @@ class TestOutputSolnSubset(unittest.TestCase):
 
 
   def test_preinitialize(self):
-    """
-    Test preinitialize().
+    """Test preinitialize().
     """
     output = OutputSolnSubset()
     output.inventory.label = "label"
@@ -88,8 +85,7 @@ class TestOutputSolnSubset(unittest.TestCase):
 
 
   def test_verifyConfiguration(self):
-    """
-    Test verifyConfiguration().
+    """Test verifyConfiguration().
     """
     output = OutputSolnSubset()
     output.inventory.label = "2"
@@ -102,8 +98,7 @@ class TestOutputSolnSubset(unittest.TestCase):
   
   
   def test_initialize(self):
-    """
-    Test initialize().
+    """Test initialize().
     """
     output = OutputSolnSubset()
     output.inventory.label = "2"
@@ -117,8 +112,7 @@ class TestOutputSolnSubset(unittest.TestCase):
 
 
   def test_openclose(self):
-    """
-    Test open() and close().
+    """Test open() and close().
     """
     output = OutputSolnSubset()
     output.inventory.label = "2"
@@ -136,8 +130,7 @@ class TestOutputSolnSubset(unittest.TestCase):
 
 
   def test_writeInfo(self):
-    """
-    Test writeInfo().
+    """Test writeInfo().
     """
     output = OutputSolnSubset()
     output.inventory.label = "2"
@@ -155,8 +148,7 @@ class TestOutputSolnSubset(unittest.TestCase):
 
 
   def test_writeData(self):
-    """
-    Test writeData().
+    """Test writeData().
     """
     output = OutputSolnSubset()
     output.inventory.label = "2"
@@ -176,8 +168,7 @@ class TestOutputSolnSubset(unittest.TestCase):
 
 
   def test_factory(self):
-    """
-    Test factory method.
+    """Test factory method.
     """
     from pylith.meshio.OutputSolnSubset import output_manager
     o = output_manager()

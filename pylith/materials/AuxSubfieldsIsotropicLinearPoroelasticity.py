@@ -25,42 +25,10 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class AuxSubfieldsIsotropicLinearPoroelasticity(PetscComponent):
+    """Python subfields container for isotropic, linear poroelasticity subfields.
+
+    FACTORY: auxiliary_subfields
     """
-    Python subfields container for isotropic, linear poroelasticity subfields.
-
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *reference_stress* Reference stress subfield.
-      - *references_strain* Reference strain.
-      - *shear_modulus* Shear modulus subfield.
-      - *solid_bulk_modulus* Solid Bulk modulus subfield.
-      - *biot_coefficient* Biot Coefficient subfield.
-      - *isotropic_permeability* Isotropic Permeability subfield.
-      - *fluid_bulk_modulus* Fluid Bulk Modulus subfield.
-    """
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li None
-    #
-    # \b Facilities
-    # @li \b density Density subfield.
-    # @li \b shear_modulus Shear modulus subfield.
-    # @li \b solid_bulk_modulus Bulk modulus subfield.
-    # @li \b body_force Body force.
-    # @li \b reference_stress Reference stress subfield.
-    # @li \b references_strain Reference strain.
-    # @li \b gravitational_acceleration Gravitational acceleration subfield.
-    # @li \b isotropic_permeability isotropic permeability subfield.
-    # @li \b porosity porosity subfield.
-    # @li \b fluid_density fluid density subfield.
-    # @li \b fluid_viscosity fluid viscosity subfield.
-    # @li \b fluid_bulk_modulus fluid bulk modulus subfield.
-    # @li \b biot_coefficient biot coefficient subfield.
 
     import pythia.pyre.inventory
 
@@ -117,8 +85,7 @@ class AuxSubfieldsIsotropicLinearPoroelasticity(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="auxfieldsisotropiclinearporoelasticity"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="auxiliary_fields")
         return
@@ -133,8 +100,7 @@ class AuxSubfieldsIsotropicLinearPoroelasticity(PetscComponent):
 
 
 def auxiliary_subfields():
-    """
-    Factory associated with AuxSubfieldsIsotropicLinearPoroelasticity.
+    """Factory associated with AuxSubfieldsIsotropicLinearPoroelasticity.
     """
     return AuxSubfieldsIsotropicLinearPoroelasticity()
 

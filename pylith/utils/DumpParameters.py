@@ -23,15 +23,13 @@ from .PetscManager import PetscManager
 
 
 class DumpParameters(Component):
-    """
-    Python DumpParameters object for dumping PyLith parameter information to a file.
+    """Python DumpParameters object for dumping PyLith parameter information to a file.
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="dumpparameters"):
-        """
-        Constructor.
+        """Constructor.
         """
         Component.__init__(self, name="dumpparamters", facility="dumpparameters")
         self.info = None
@@ -42,15 +40,13 @@ class DumpParameters(Component):
         return
 
     def write(self, app):
-        """
-        Write parameters to ASCII file.
+        """Write parameters to ASCII file.
         """
         # Do nothing
         return
 
     def collect(self, app):
-        """
-        Collect version information and parameters.
+        """Collect version information and parameters.
         """
         from .CollectVersionInfo import CollectVersionInfo
         import datetime
@@ -68,8 +64,7 @@ class DumpParameters(Component):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _getPropertiesComponents(self, obj):
-        """
-        Get objects properties and components.
+        """Get objects properties and components.
         """
         propertyNames = sorted(obj.inventory.propertyNames())
 
@@ -149,13 +144,5 @@ class DumpParameters(Component):
                 os.makedirs(relpath)
         return
 
-
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def dump_parameters():
-    """
-    Factory associated with DumpParameters.
-    """
-    return DumpParameters()
 
 # End of file

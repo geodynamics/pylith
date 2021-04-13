@@ -26,16 +26,7 @@ from .IsotropicLinearElasticity import IsotropicLinearElasticity
 
 
 class Elasticity(Material, ModuleElasticity):
-    """
-    Python material property manager.
-
-    INVENTORY
-
-    Properties
-      - *use_body_force* Include body force term in elasticity equation.
-
-    Facilities
-      - *bulk_rheology* Bulk rheology for elastic material.
+    """Python material property manager.
 
     FACTORY: material
     """
@@ -51,8 +42,7 @@ class Elasticity(Material, ModuleElasticity):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="elasticity"):
-        """
-        Constructor.
+        """Constructor.
         """
         Material.__init__(self, name)
         return
@@ -65,8 +55,7 @@ class Elasticity(Material, ModuleElasticity):
         self.derivedSubfields = DerivedSubfieldsElasticity("derived_subfields")
 
     def preinitialize(self, problem):
-        """
-        Setup material.
+        """Setup material.
         """
         self.rheology.preinitialize(problem)
         Material.preinitialize(self, problem)
@@ -77,8 +66,7 @@ class Elasticity(Material, ModuleElasticity):
         return
 
     def _createModuleObj(self):
-        """
-        Create handle to C++ Elasticity.
+        """Create handle to C++ Elasticity.
         """
         ModuleElasticity.__init__(self)
         ModuleElasticity.setBulkRheology(self, self.rheology)  # Material sets auxiliary db in rheology.
@@ -88,8 +76,7 @@ class Elasticity(Material, ModuleElasticity):
 # Factories
 
 def material():
-    """
-    Factory associated with Elasticity.
+    """Factory associated with Elasticity.
     """
     return Elasticity()
 

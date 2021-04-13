@@ -27,8 +27,7 @@ from pylith.utils.PetscComponent import PetscComponent
 
 # JacobianViewer class
 class JacobianViewer(PetscComponent):
-  """
-  Python abstract base class for formulations of solving equations.
+  """Python abstract base class for formulations of solving equations.
 
   In general, we use some explicit or implicit formulation of the PDEs
   to create a linear form, [A]{u}={b} that we can solve.
@@ -39,8 +38,7 @@ class JacobianViewer(PetscComponent):
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(PetscComponent.Inventory):
-    """
-    Python object for managing JacobianViewer facilities and properties.
+    """Python object for managing JacobianViewer facilities and properties.
     """
 
     ## @class Inventory
@@ -73,16 +71,14 @@ class JacobianViewer(PetscComponent):
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="formulation"):
-    """
-    Constructor.
+    """Constructor.
     """
     PetscComponent.__init__(self, name, facility="jacobian_viewer")
     return
 
 
   def view(self, jacobian, t, comm):
-    """
-    Write Jacobian to binary file.
+    """Write Jacobian to binary file.
     """
     jacobian.write(self._filenameStamp(t), comm)
     return
@@ -91,8 +87,7 @@ class JacobianViewer(PetscComponent):
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
-    """
-    Set members based using inventory.
+    """Set members based using inventory.
     """
     PetscComponent._configure(self)
     self.filename = self.inventory.filename
@@ -102,8 +97,7 @@ class JacobianViewer(PetscComponent):
 
 
   def _filenameStamp(self, t):
-    """
-    Create filename by extracting basename and adding a time stamp.
+    """Create filename by extracting basename and adding a time stamp.
     """
     timeStamp = self.timeFormat % (t/self.timeConstant.value)
     basename = self.filename
@@ -116,8 +110,7 @@ class JacobianViewer(PetscComponent):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def jacobian_viewer():
-  """
-  Factory associated with JacobianViewer.
+  """Factory associated with JacobianViewer.
   """
   return JacobianViewer()
 

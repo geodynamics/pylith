@@ -25,8 +25,7 @@ from .materials import Material as ModuleMaterial
 
 
 def validateLabel(value):
-    """
-    Validate descriptive label.
+    """Validate descriptive label.
     """
     if 0 == len(value):
         raise ValueError("Descriptive label for material not specified.")
@@ -34,17 +33,7 @@ def validateLabel(value):
 
 
 class Material(Physics, ModuleMaterial):
-    """
-    Python material property manager.
-
-    INVENTORY
-
-    Properties
-      - *id* Material identifier (from mesh generator)
-      - *label* Descriptive label for material.
-
-    Facilities
-      - None
+    """Python material property manager.
 
     FACTORY: material
     """
@@ -58,15 +47,13 @@ class Material(Physics, ModuleMaterial):
     label.meta['tip'] = "Descriptive label for material."
 
     def __init__(self, name="material"):
-        """
-        Constructor.
+        """Constructor.
         """
         Physics.__init__(self, name)
         return
 
     def preinitialize(self, problem):
-        """
-        Setup material.
+        """Setup material.
         """
         Physics.preinitialize(self, problem)
 

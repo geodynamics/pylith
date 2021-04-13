@@ -25,8 +25,7 @@ from .meshio import MeshIOLagrit as ModuleMeshIOLagrit
 
 
 def validateFilenameGmv(value):
-    """
-    Validate filename.
+    """Validate filename.
     """
     if 0 == len(value):
         raise ValueError("Filename for LaGriT input mesh not specified.")
@@ -38,8 +37,7 @@ def validateFilenameGmv(value):
 
 
 def validateFilenamePset(value):
-    """
-    Validate filename.
+    """Validate filename.
     """
     if 0 == len(value):
         raise ValueError("Filename for LaGriT pset file not specified.")
@@ -51,8 +49,7 @@ def validateFilenamePset(value):
 
 
 class MeshIOLagrit(MeshIOObj, ModuleMeshIOLagrit):
-    """
-    Python object for reading/writing finite-element mesh from LaGriT.
+    """Python object for reading/writing finite-element mesh from LaGriT.
 
     INVENTORY
 
@@ -98,8 +95,7 @@ class MeshIOLagrit(MeshIOObj, ModuleMeshIOLagrit):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="meshiolagrit"):
-        """
-        Constructor.
+        """Constructor.
         """
         MeshIOObj.__init__(self, name)
         return
@@ -118,15 +114,13 @@ class MeshIOLagrit(MeshIOObj, ModuleMeshIOLagrit):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Set members based using inventory.
+        """Set members based using inventory.
         """
         MeshIOObj._configure(self)
         return
 
     def _createModuleObj(self):
-        """
-        Create C++ MeshIOLagrit object.
+        """Create C++ MeshIOLagrit object.
         """
         ModuleMeshIOLagrit.__init__(self)
         return
@@ -135,8 +129,7 @@ class MeshIOLagrit(MeshIOObj, ModuleMeshIOLagrit):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def mesh_io():
-    """
-    Factory associated with MeshIOLagrit.
+    """Factory associated with MeshIOLagrit.
     """
     return MeshIOLagrit()
 

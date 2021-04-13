@@ -40,8 +40,7 @@ zmin = -9000.0  # m
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
-    """
-    Analytical solution to gravitational body forces (no initial stress).
+    """Analytical solution to gravitational body forces (no initial stress).
     """
     SPACE_DIM = 3
     TENSOR_SIZE = 6
@@ -63,8 +62,7 @@ class AnalyticalSoln(object):
         return self.fields[name](pts)
 
     def displacement(self, locs):
-        """
-        Compute displacement field at locations.
+        """Compute displacement field at locations.
         """
         strain = self.strain(locs)
 
@@ -79,32 +77,28 @@ class AnalyticalSoln(object):
         return numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
 
     def density(self, locs):
-        """
-        Compute density field at locations.
+        """Compute density field at locations.
         """
         (npts, dim) = locs.shape
         density = p_density * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return density
 
     def shear_modulus(self, locs):
-        """
-        Compute shear modulus field at locations.
+        """Compute shear modulus field at locations.
         """
         (npts, dim) = locs.shape
         shear_modulus = p_mu * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return shear_modulus
 
     def bulk_modulus(self, locs):
-        """
-        Compute bulk modulus field at locations.
+        """Compute bulk modulus field at locations.
         """
         (npts, dim) = locs.shape
         bulk_modulus = (p_lambda + 2.0 / 3.0 * p_mu) * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return bulk_modulus
 
     def strain(self, locs):
-        """
-        Compute strain field at locations.
+        """Compute strain field at locations.
         """
         exx = 0.0
         eyy = 0.0
@@ -124,8 +118,7 @@ class AnalyticalSoln(object):
         return strain
 
     def stress(self, locs):
-        """
-        Compute stress field at locations.
+        """Compute stress field at locations.
         """
         szz = p_density * gacc * (locs[:, 2] - zmax)
         sxx = p_lambda / (p_lambda + 2 * p_mu) * szz

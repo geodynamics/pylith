@@ -26,16 +26,7 @@ from .materials import IsotropicPowerLaw as ModuleLinearElasticity
 
 
 class IsotropicPowerLaw(RheologyElasticity, ModuleLinearElasticity):
-    """
-    Python material for isotropic power-law viscoelastic material.
-
-    INVENTORY
-
-    Properties
-      - *use_reference_state* Use reference stress/strain state.
-
-    Facilities
-      - None
+    """Python material for isotropic power-law viscoelastic material.
 
     FACTORY: elasticity_rheology
     """
@@ -48,8 +39,7 @@ class IsotropicPowerLaw(RheologyElasticity, ModuleLinearElasticity):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="isotropicpowerlaw"):
-        """
-        Constructor.
+        """Constructor.
         """
         RheologyElasticity.__init__(self, name)
         return
@@ -68,8 +58,7 @@ class IsotropicPowerLaw(RheologyElasticity, ModuleLinearElasticity):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         ModuleLinearElasticity.__init__(self)
 
@@ -77,8 +66,7 @@ class IsotropicPowerLaw(RheologyElasticity, ModuleLinearElasticity):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def elasticity_rheology():
-    """
-    Factory associated with IsotropicPowerLaw.
+    """Factory associated with IsotropicPowerLaw.
     """
     return IsotropicPowerLaw()
 

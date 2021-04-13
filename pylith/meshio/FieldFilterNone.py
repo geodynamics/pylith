@@ -24,8 +24,7 @@ from .meshio import FieldFilterNone as ModuleFieldFilterNone
 
 
 class FieldFilterNone(FieldFilter, ModuleFieldFilterNone):
-    """
-    Python class for null field filter.
+    """Python class for null field filter.
 
     FACTORY: output_field_filter
     """
@@ -33,8 +32,7 @@ class FieldFilterNone(FieldFilter, ModuleFieldFilterNone):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="fieldfilternone"):
-        """
-        Constructor.
+        """Constructor.
         """
         FieldFilter.__init__(self, name)
         return
@@ -50,8 +48,7 @@ class FieldFilterNone(FieldFilter, ModuleFieldFilterNone):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def output_field_filter():
-    """
-    Factory associated with FieldFilter.
+    """Factory associated with FieldFilter.
     """
     return FieldFilterNone()
 

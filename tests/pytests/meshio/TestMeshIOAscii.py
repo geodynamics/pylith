@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -15,85 +15,27 @@
 #
 # ======================================================================
 #
-
-## @file tests/pytests/meshio/TestMeshIOAscii.py
-
-## @brief Unit testing of Python MeshIOAscii object.
+# @file tests/pytests/meshio/TestMeshIOAscii.py
+#
+# @brief Unit testing of Python MeshIOAscii object.
 
 import unittest
 
-from pylith.meshio.MeshIOAscii import MeshIOAscii
+from pylith.testing.UnitTestApp import TestComponent
+from pylith.meshio.MeshIOAscii import (MeshIOAscii, mesh_io)
 
-# ----------------------------------------------------------------------
-class TestMeshIOAscii(unittest.TestCase):
-  """
-  Unit testing of Python MeshIOAscii object.
-  """
 
-  def test_constructor(self):
+class TestMeshIOAscii(TestComponent):
+    """Unit testing of MeshIOAscii object.
     """
-    Test constructor.
-    """
-    io = MeshIOAscii()
-    return
+    _class = MeshIOAscii
+    _factory = mesh_io
 
 
-  def test_filename(self):
-    """
-    Test filename().
-    """
-    value = "hi.txt"
-
-    io = MeshIOAscii()
-    io.filename(value)
-    self.assertEqual(value, io.filename())
-    return
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestMeshIOAscii))
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
-  def test_readwrite(self):
-    """
-    Test write() and read().
-    """
-    filenameIn = "data/mesh2Din3D.txt"
-    filenameOut = "data/mesh2Din3D_test.txt"
-
-    from spatialdata.geocoords.CSCart import CSCart
-    cs = CSCart()
-    cs._configure()
-
-    io = MeshIOAscii()
-    io.inventory.filename = filenameIn
-    io.inventory.coordsys = cs
-    io._configure()
-    
-    from spatialdata.units.Nondimensional import Nondimensional
-    normalizer = Nondimensional()
-
-    mesh = io.read(debug=False, interpolate=True)
-
-    io.filename(filenameOut)
-    io.write(mesh)
-
-    fileE = open(filenameIn, "r")
-    linesE = fileE.readlines()
-    fileE.close()
-    fileT = open(filenameOut, "r")
-    linesT = fileT.readlines()
-    fileT.close()
-
-    self.assertEqual(len(linesE), len(linesT))
-    for (lineE, lineT) in zip(linesE, linesT):
-      self.assertEqual(lineE, lineT)
-    return
-
-
-  def test_factory(self):
-    """
-    Test factory method.
-    """
-    from pylith.meshio.MeshIOAscii import mesh_io
-    io = mesh_io()
-    return
-
-
-# End of file 
+# End of file

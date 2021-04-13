@@ -13,8 +13,7 @@ from pythia.pyre.applications.Script import Script as Application
 
 
 class GenerateSlowslip(Application):
-    """
-    Python application to create spatial databases for a synthetic
+    """Python application to create spatial databases for a synthetic
     SSE with time-varying Gaussian slip.
     """
 
@@ -109,14 +108,12 @@ class GenerateSlowslip(Application):
     # PRIVATE METHODS /////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         Application._configure(self)
 
     def _makeGrid(self):
-        """
-        Function to create a mesh grid for computations.
+        """Function to create a mesh grid for computations.
         """
 
         lonMin = float(self.gridLonRange[0])
@@ -142,8 +139,7 @@ class GenerateSlowslip(Application):
         ))
 
     def _computeGauss(self):
-        """
-        Function to compute 2D Gaussian slip distribution.
+        """Function to compute 2D Gaussian slip distribution.
         """
 
         lonShift = self.grid[:, 0] - float(self.slipCenter[0])
@@ -169,8 +165,7 @@ class GenerateSlowslip(Application):
         self.faultSlip = numpy.column_stack((llSlip, udSlip, opSlip))
 
     def _writeSpatialdb(self):
-        """
-        Write spatial database with fault slip.
+        """Write spatial database with fault slip.
         """
         llSlipInfo = {'name': "left-lateral-slip",
                       'units': "m",
@@ -199,8 +194,7 @@ class GenerateSlowslip(Application):
         writer.write(data)
 
     def _writeTemporaldb(self):
-        """
-        Write temporal database with time variation of fault slip.
+        """Write temporal database with time variation of fault slip.
         """
 
         if (len(self.slipTimes) == 1):

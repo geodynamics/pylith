@@ -19,8 +19,7 @@
 
 
 class Tri(object):
-    """
-    Mesh information for tri mesh.
+    """Mesh information for tri mesh.
     """
     DOMAIN = {
         "ncells": 150,
@@ -59,8 +58,7 @@ class Tri(object):
 
 
 class Quad(object):
-    """
-    Mesh information for tri mesh.
+    """Mesh information for tri mesh.
     """
     DOMAIN = {
         "ncells": 64,

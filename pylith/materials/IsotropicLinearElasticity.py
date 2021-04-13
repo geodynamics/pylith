@@ -25,16 +25,7 @@ from .materials import IsotropicLinearElasticity as ModuleLinearElasticity
 
 
 class IsotropicLinearElasticity(RheologyElasticity, ModuleLinearElasticity):
-    """
-    Python material for isotropic, linearly elastic plane strain.
-
-    INVENTORY
-
-    Properties
-      - *use_reference_state* Use reference stress/strain state.
-
-    Facilities
-      - None
+    """Python material for isotropic, linearly elastic plane strain.
 
     FACTORY: elasticity_rheology
     """
@@ -47,8 +38,7 @@ class IsotropicLinearElasticity(RheologyElasticity, ModuleLinearElasticity):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="isotropiclinearelasticity"):
-        """
-        Constructor.
+        """Constructor.
         """
         RheologyElasticity.__init__(self, name)
         return
@@ -66,8 +56,7 @@ class IsotropicLinearElasticity(RheologyElasticity, ModuleLinearElasticity):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
-        """
-        Call constructor for module object for access to C++ object.
+        """Call constructor for module object for access to C++ object.
         """
         ModuleLinearElasticity.__init__(self)
 
@@ -75,8 +64,7 @@ class IsotropicLinearElasticity(RheologyElasticity, ModuleLinearElasticity):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def elasticity_rheology():
-    """
-    Factory associated with IsotropicLinearElasticity.
+    """Factory associated with IsotropicLinearElasticity.
     """
     return IsotropicLinearElasticity()
 

@@ -24,11 +24,8 @@ import numpy
 
 
 class TestData(object):
-    """
-    Abstract base class for test data.
-    """
-
-    def __init__(self):
+    """Abstract base class for test data.
+    """def __init__(self):
         self.vertices = None
         self.cells = None
         self.slip = None
@@ -49,8 +46,7 @@ class TestData(object):
 
 # ----------------------------------------------------------------------
 class DataLinea(TestData):
-    """
-    Test data for fault one with line cells.
+    """Test data for fault one with line cells.
     """
 
     def __init__(self):
@@ -78,8 +74,7 @@ class DataLinea(TestData):
 
 # ----------------------------------------------------------------------
 class DataLineb(TestData):
-    """
-    Test data for fault two with line cells.
+    """Test data for fault two with line cells.
     """
 
     def __init__(self):
@@ -107,8 +102,7 @@ class DataLineb(TestData):
 
 # ----------------------------------------------------------------------
 class DataTri3a(TestData):
-    """
-    Test data for fault one with tri cells.
+    """Test data for fault one with tri cells.
     """
 
     def __init__(self):
@@ -139,8 +133,7 @@ class DataTri3a(TestData):
 
 # ----------------------------------------------------------------------
 class DataTri3b(TestData):
-    """
-    Test data for fault two with line cells.
+    """Test data for fault two with line cells.
     """
 
     def __init__(self):
@@ -171,8 +164,7 @@ class DataTri3b(TestData):
 
 # ----------------------------------------------------------------------
 class DataQuad4a(TestData):
-    """
-    Test data for fault one with quad cells.
+    """Test data for fault one with quad cells.
     """
 
     def __init__(self):
@@ -209,8 +201,7 @@ class DataQuad4a(TestData):
 
 # ----------------------------------------------------------------------
 class DataQuad4b(TestData):
-    """
-    Test data for fault two with quad cells.
+    """Test data for fault two with quad cells.
     """
 
     def __init__(self):

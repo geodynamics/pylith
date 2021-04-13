@@ -22,8 +22,7 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class AuxSubfieldsTimeDependent(PetscComponent):
-    """
-    Python subfields container for time dependent boundary conditions.
+    """Python subfields container for time dependent boundary conditions.
 
     f(x,t) = f_0(x) + \dot{f}_1(x)(t-t_1(x)) + f_2(x)a(t-t_2(x))
 
@@ -33,19 +32,7 @@ class AuxSubfieldsTimeDependent(PetscComponent):
     f_2(x): time_history_amplitude
     t_2(x): time_history_start
 
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *initial_amplitude* Initial amplitude, f_0(x), subfield.
-      - *rate_amplitude* Rate amplitude, \dot{f}_1(x), subfield.
-      - *rate_start* Rate start time, t_1(x), subfield.
-      - *time_history_amplitude* Time history amplitude, f_2(x), subfield.
-      - *time_history_start* Time history start time, t_2(s), subfield.
-
-    FACTORY: N/A
+    FACTORY: auxiliary_subfields
     """
 
     import pythia.pyre.inventory
@@ -71,8 +58,7 @@ class AuxSubfieldsTimeDependent(PetscComponent):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="auxfieldstimedependent"):
-        """
-        Constructor.
+        """Constructor.
         """
         PetscComponent.__init__(self, name, facility="auxiliary_fields")
         return
@@ -82,6 +68,14 @@ class AuxSubfieldsTimeDependent(PetscComponent):
     def _configure(self):
         PetscComponent._configure(self)
         return
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def auxiliary_subfields():
+    """Factory associated with AuxSubfieldsAbsorbingDampers.
+    """
+    return AuxSubfieldsTimeDependent()
 
 
 # End of file

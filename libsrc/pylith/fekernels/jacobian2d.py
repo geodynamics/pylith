@@ -68,8 +68,7 @@ dummyTensor = sympy.tensor.array.Array([[aa, ab], [ba, bb]])
 
 
 def writeJacobianUniqueVals(f, jacobian):
-    """
-    Function to write unique values and assign them to variables.
+    """Function to write unique values and assign them to variables.
     """
 
     # Unique entries in Jacobian, excluding 0.
@@ -103,8 +102,7 @@ def writeJacobianUniqueVals(f, jacobian):
 
 
 def writeJacobianComments(f, jacobian):
-    """
-    Function to write correspondence between PETSc and PyLith Jacobian values.
+    """Function to write correspondence between PETSc and PyLith Jacobian values.
     """
 
     f.write("/* j(f,g,df,dg) = C(f,df,g,dg)\n\n")
@@ -128,8 +126,7 @@ def writeJacobianComments(f, jacobian):
 
 
 def writeJacobianNonzero(f, jacobian, uniqueVals, uniqueValNames):
-    """
-    Function to write nonzero Jacobian entries using predefined value names.
+    """Function to write nonzero Jacobian entries using predefined value names.
     """
 
     f.write("/* Nonzero Jacobian entries. */\n")
@@ -154,8 +151,7 @@ def writeJacobianNonzero(f, jacobian, uniqueVals, uniqueValNames):
 
 
 def writeJacobianInfo(fileName, jacobian):
-    """
-    Function to write info about Jacobian.
+    """Function to write info about Jacobian.
     """
     f = open(fileName, 'w')
 

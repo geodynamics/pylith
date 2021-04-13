@@ -27,8 +27,7 @@ from .faults import FaultCohesiveKin as ModuleFaultCohesiveKin
 
 
 def eqsrcFactory(name):
-    """
-    Factory for earthquake source items.
+    """Factory for earthquake source items.
     """
     from pythia.pyre.inventory import facility
     from .KinSrcStep import KinSrcStep
@@ -36,18 +35,8 @@ def eqsrcFactory(name):
 
 
 class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
-    """
-    Python object for a fault surface with kinematic (prescribed) slip
+    """Python object for a fault surface with kinematic (prescribed) slip
     implemented with cohesive elements.
-
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *eq_srcs* Kinematic earthquake sources information.
-      - *observers* Observers of the fault (e.g., output).
 
     FACTORY: fault
     """
@@ -66,15 +55,13 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
     #output.meta['tip'] = "Output manager associated with fault information."
 
     def __init__(self, name="faultcohesivekin"):
-        """
-        Initialize configuration.
+        """Initialize configuration.
         """
         FaultCohesive.__init__(self, name)
         return
 
     def preinitialize(self, problem):
-        """
-        Do pre-initialization setup.
+        """Do pre-initialization setup.
         """
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
@@ -91,8 +78,7 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
         return
 
     def verifyConfiguration(self):
-        """
-        Verify compatibility of configuration.
+        """Verify compatibility of configuration.
         """
         FaultCohesive.verifyConfiguration(self)
         ModuleFaultCohesiveKin.verifyConfiguration(self, self.mesh())
@@ -103,8 +89,7 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
         return
 
     def finalize(self):
-        """
-        Cleanup.
+        """Cleanup.
         """
         for eqsrc in self.eqRuptures.components():
             eqsrc.finalize()
@@ -114,15 +99,13 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
         return
 
     def _configure(self):
-        """
-        Setup members using inventory.
+        """Setup members using inventory.
         """
         FaultCohesive._configure(self)
         return
 
     def _createModuleObj(self):
-        """
-        Create handle to C++ FaultCohesiveKin.
+        """Create handle to C++ FaultCohesiveKin.
         """
         ModuleFaultCohesiveKin.__init__(self)
         return
@@ -131,8 +114,7 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
 # Factories
 
 def fault():
-    """
-    Factory associated with FaultCohesiveKin.
+    """Factory associated with FaultCohesiveKin.
     """
     return FaultCohesiveKin()
 

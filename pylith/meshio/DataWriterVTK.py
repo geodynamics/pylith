@@ -22,18 +22,7 @@ from .meshio import DataWriterVTK as ModuleDataWriterVTK
 
 
 class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
-    """
-    Python object for writing finite-element data to VTK file.
-
-    INVENTORY
-
-    Properties
-      - *filename* Name of VTK file.
-      - *time_format* C style format string for time stamp in filename.
-      - *time_constant* Value used to normalize time stamp in filename.
-
-    Facilities
-      - None
+    """Python object for writing finite-element data to VTK file.
 
     FACTORY: data_writer
     """
@@ -58,16 +47,14 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="datawritervtk"):
-        """
-        Constructor.
+        """Constructor.
         """
         DataWriter.__init__(self, name)
         ModuleDataWriterVTK.__init__(self)
         return
 
     def preinitialize(self):
-        """
-        Initialize writer.
+        """Initialize writer.
         """
         DataWriter.preinitialize(self)
 
@@ -77,8 +64,7 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
         return
 
     def setFilename(self, outputDir, simName, label):
-        """
-        Set filename from default options and inventory. If filename is given in inventory, use it,
+        """Set filename from default options and inventory. If filename is given in inventory, use it,
         otherwise create filename from default options.
         """
         filename = self.filename or DataWriter.mkfilename(outputDir, simName, label, "vtk")
@@ -89,8 +75,7 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """
-        Configure object.
+        """Configure object.
         """
         DataWriter._configure(self)
         return
@@ -106,8 +91,7 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
 
 
 def data_writer():
-    """
-    Factory associated with DataWriter.
+    """Factory associated with DataWriter.
     """
     return DataWriterVTK()
 

@@ -21,8 +21,8 @@
 
 import unittest
 
-from pylith.tests.FullTestApp import check_data
-from pylith.tests.FullTestApp import TestCase as FullTestCase
+from pylith.testing.FullTestApp import check_data
+from pylith.testing.FullTestApp import TestCase as FullTestCase
 
 import meshes
 from gravity_refstate_soln import AnalyticalSoln
@@ -32,15 +32,13 @@ from gravity_refstate_gendb import GenerateDB
 
 
 class TestCase(FullTestCase):
-    """
-    Test suite for testing PyLith with gravitational body forces with initial stress and no displacement.
+    """Test suite for testing PyLith with gravitational body forces with initial stress and no displacement.
     """
     DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos",
                             "bc_yneg", "bc_ypos", "bc_zneg"]
 
     def setUp(self):
-        """
-        Setup for test.
+        """Setup for test.
         """
         FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()

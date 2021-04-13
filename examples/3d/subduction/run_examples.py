@@ -15,61 +15,54 @@
 #
 # ======================================================================
 
-from pylith.tests.FullTestApp import TestDriver, Example
+from pylith.testing.FullTestApp import TestDriver, Example
 
 import unittest
 
 class Step01_AxialDisp(Example):
-    """
-    Run 'pylith step01_axialdisp.cfg mat_elastic.cfg'
+    """Run 'pylith step01_axialdisp.cfg mat_elastic.cfg'
     """
     NAME = "step01_axialdisp"
     PYLITH_ARGS = ["step01_axialdisp.cfg", "mat_elastic.cfg"]
 
         
 class Step02_Coseismic(Example):
-    """
-    Run 'pylith step02_coseismic.cfg'
+    """Run 'pylith step02_coseismic.cfg'
     """
     NAME = "step02_coseismic"
     PYLITH_ARGS = ["step02_coseismic.cfg", "mat_viscoelastic.cfg", "solver_fieldsplit.cfg"]
 
         
 class Step03_Interseismic(Example):
-    """
-    Run 'pylith step03_interseismic.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg'
+    """Run 'pylith step03_interseismic.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg'
     """
     NAME = "step03_interseismic"
     PYLITH_ARGS = ["step03_interseismic.cfg", "mat_viscoelastic.cfg", "solver_fieldsplit.cfg"]
 
         
 class Step04_EqCycle(Example):
-    """
-    Run 'pylith step04_eqcycle.cfg'.
+    """Run 'pylith step04_eqcycle.cfg'.
     """
     NAME = "step04_eqcycle"
     PYLITH_ARGS = ["step04_eqcycle.cfg", "mat_viscoelastic.cfg", "solver_fieldsplit.cfg"]
 
         
 class Step05_EqCycle_SlipWeakening(Example):
-    """
-    Run 'pylith step05_eqcycle_slipweakening.cfg mat_elastic.cfg solver_fieldsplit.cfg'
+    """Run 'pylith step05_eqcycle_slipweakening.cfg mat_elastic.cfg solver_fieldsplit.cfg'
     """
     NAME = "step05_eqcycle_slipweakening"
     PYLITH_ARGS = ["step05_eqcycle_slipweakening.cfg", "mat_elastic.cfg", "solver_fieldsplit.cfg"]
 
         
 class Step06_SlowSlip(Example):
-    """
-    Run 'pylith step06_slowslip.cfg mat_elastic.cfg solver_fieldsplit.cfg'
+    """Run 'pylith step06_slowslip.cfg mat_elastic.cfg solver_fieldsplit.cfg'
     """
     NAME = "step06_slowslip"
     PYLITH_ARGS = ["step06_slowslip.cfg", "mat_elastic.cfg", "solver_fieldsplit.cfg"]
 
         
 class Step07a_GreensFns_LeftLateral(Example):
-    """
-    Run 'pylith step07a_leftlateral.cfg mat_elastic.cfg solver_fieldsplit.cfg'
+    """Run 'pylith step07a_leftlateral.cfg mat_elastic.cfg solver_fieldsplit.cfg'
     """
     NAME = "step07a_greensfns_leftlateral"
     PYLITH_ARGS = [
@@ -81,8 +74,7 @@ class Step07a_GreensFns_LeftLateral(Example):
 
         
 class Step07b_GreensFns_Reverse(Example):
-    """
-    Run 'pylith step07b_reverse.cfg mat_elastic.cfg solver_fieldsplit.cfg'
+    """Run 'pylith step07b_reverse.cfg mat_elastic.cfg solver_fieldsplit.cfg'
     """
     NAME = "step07b_greensfns_reverse"
     PYLITH_ARGS = [
@@ -94,44 +86,38 @@ class Step07b_GreensFns_Reverse(Example):
 
         
 class Step08a_Gravity_RefState(Example):
-    """
-    Run 'pylith step08a_gravity_refstate.cfg mat_elastic.cfg solver_algebraicmultigrid.cfg'
+    """Run 'pylith step08a_gravity_refstate.cfg mat_elastic.cfg solver_algebraicmultigrid.cfg'
     """
     NAME = "step08a_gravity_refstate"
     PYLITH_ARGS = ["step08a_gravity_refstate.cfg", "mat_elastic.cfg", "solver_algebraicmultigrid.cfg"]
 
         
 class Step08b_Gravity_Incompressible(Example):
-    """
-    Run 'pylith step08b_gravity_incompressible.cfg mat_incompressible.cfg solver_algebraicmultigrid.cfg'
+    """Run 'pylith step08b_gravity_incompressible.cfg mat_incompressible.cfg solver_algebraicmultigrid.cfg'
     """
     NAME = "step08b_gravity_incompressible"
     PYLITH_ARGS = ["step08b_gravity_incompressible.cfg", "mat_incompressible.cfg", "solver_algebraicmultigrid.cfg"]
 
         
 class Step08c_Gravity_Viscoelastic(Example):
-    """
-    Run 'pylith step08c_gravity_viscoelastic.cfg mat_viscoelastic.cfg solver_algebraicmultigrid.cfg'
+    """Run 'pylith step08c_gravity_viscoelastic.cfg mat_viscoelastic.cfg solver_algebraicmultigrid.cfg'
     """
     NAME = "step08c_gravity_viscoelastic"
     PYLITH_ARGS = ["step08c_gravity_viscoelastic.cfg", "mat_viscoelastic.cfg", "solver_algebraicmultigrid.cfg"]
 
 
 class ExamplesApp(TestDriver):
-    """
-    Driver application for running examples.
+    """Driver application for running examples.
     """
 
     def __init__(self):
-        """
-        Constructor.
+        """Constructor.
         """
         TestDriver.__init__(self)
         return
 
     def _suite(self):
-        """
-        Create test suite.
+        """Create test suite.
         """
         EXAMPLES = [
             Step01_AxialDisp,
