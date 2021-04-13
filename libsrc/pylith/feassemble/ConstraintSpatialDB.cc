@@ -77,8 +77,8 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.
     PetscDS prob = NULL;
+    PetscDMLabel label = NULL;
     PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
-    DMLabel label;
     PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
 
     void* context = NULL;
@@ -130,7 +130,6 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::topology::Field* so
 
     PetscErrorCode err = 0;
     PetscDM dmSoln = solution->dmMesh();
-    PetscDM dmAux = _auxiliaryField->dmMesh();
 
     // Set auxiliary data
     PetscDMLabel dmLabel = NULL;
