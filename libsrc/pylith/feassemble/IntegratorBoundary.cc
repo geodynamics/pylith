@@ -307,24 +307,22 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
     PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
     err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
 
-    // Get auxiliary data
-    PetscDM dmAux = auxiliaryField->dmMesh();assert(dmAux);
-    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
-
     // Compute the local residual
     assert(solution.localVector());
     assert(residual->localVector());
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmSoln, integrator->getMarkerLabel(), &dmLabel);PYLITH_CHECK_ERROR(err);
-    const int labelValue = integrator->getLabelValue();
+    const PetscInt labelValue = integrator->getLabelValue();
+    err = DMSetAuxiliaryVec(dmSoln, NULL, 0, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
     // solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
 
     for (size_t i = 0; i < kernels.size(); ++i) {
+        PetscWeakForm wf;
         const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
-        err = PetscDSSetBdResidual(prob, i_field, kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
-        err = DMPlexComputeBdResidualSingle(dmSoln, t, dmLabel, 1, &labelValue, i_field, solution.localVector(), solutionDot.localVector(), residual->localVector());PYLITH_CHECK_ERROR(err);
+        err = PetscDSGetWeakForm(prob, &wf);PYLITH_CHECK_ERROR(err);
+        err = PetscWeakFormSetIndexBdResidual(wf, dmLabel, labelValue, i_field, 0, kernels[i].r0, 0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
+        err = DMPlexComputeBdResidualSingle(dmSoln, t, wf, dmLabel, 1, &labelValue, i_field, solution.localVector(), solutionDot.localVector(), residual->localVector());PYLITH_CHECK_ERROR(err);
     } // for
 
     PYLITH_METHOD_END;

@@ -304,7 +304,6 @@ pylith::problems::TimeDependent::initialize(void) {
     err = TSCreate(mesh.comm(), &_ts);PYLITH_CHECK_ERROR(err);assert(_ts);
     err = TSSetType(_ts, TSBEULER);PYLITH_CHECK_ERROR(err); // Backward Euler is default time stepping method.
     err = TSSetExactFinalTime(_ts, TS_EXACTFINALTIME_STEPOVER);PYLITH_CHECK_ERROR(err); // Ok to step over final time.
-    err = TSSetFromOptions(_ts);PYLITH_CHECK_ERROR(err);
     err = TSSetApplicationContext(_ts, (void*)this);PYLITH_CHECK_ERROR(err);
 
     // Set time stepping paramters.
@@ -379,6 +378,9 @@ pylith::problems::TimeDependent::initialize(void) {
         PYLITH_COMPONENT_FIREWALL("Unknown time stepping formulation '" << _formulation << "'.");
     } // default
     } // switch
+
+    err = TSSetFromOptions(_ts);PYLITH_CHECK_ERROR(err);
+    err = TSSetUp(_ts);PYLITH_CHECK_ERROR(err);
 
 #if 0
     // Set solve type for solution fields defined over the domain (not Lagrange multipliers).

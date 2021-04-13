@@ -284,9 +284,9 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
     } // for
 
     // Get auxiliary data
-    PetscDM dmAux = _auxiliaryField->dmMesh();assert(dmAux);
-    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    PetscDMLabel dmLabel = NULL;
+    PetscInt labelValue = 0;
+    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
     PetscVec vecRowSum = NULL;
     err = DMGetLocalVector(dmSoln, &vecRowSum);PYLITH_CHECK_ERROR(err);
@@ -336,8 +336,10 @@ pylith::feassemble::IntegratorDomain::_updateStateVars(const PylithReal t,
 
     PetscErrorCode err = 0;
     PetscDM stateVarsDM = _updateState->stateVarsDM();
-    err = PetscObjectCompose((PetscObject) stateVarsDM, "dmAux", (PetscObject) _auxiliaryField->dmMesh());PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) stateVarsDM, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    PetscDMLabel dmLabel = NULL;
+    PetscInt labelValue = 0;
+    err = DMSetAuxiliaryVec(stateVarsDM, dmLabel, labelValue,
+                            _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
     err = DMProjectFieldLocal(stateVarsDM, t, solution.localVector(), kernelsStateVars, INSERT_VALUES,
                               _updateState->stateVarsLocalVector());PYLITH_CHECK_ERROR(err);
     _updateState->restore(_auxiliaryField);
@@ -375,9 +377,9 @@ pylith::feassemble::IntegratorDomain::_computeDerivedField(const PylithReal t,
 
     PetscDM derivedDM = _derivedField->dmMesh();
     assert(_auxiliaryField);
-    err = PetscObjectCompose((PetscObject) derivedDM, "dmAux", (PetscObject) _auxiliaryField->dmMesh());PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) derivedDM, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
-
+    PetscDMLabel dmLabel = NULL;
+    PetscInt labelValue = 0;
+    err = DMSetAuxiliaryVec(derivedDM, dmLabel, labelValue, _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
     err = DMProjectFieldLocal(derivedDM, t, solution.localVector(), kernelsArray, INSERT_VALUES, _derivedField->localVector());PYLITH_CHECK_ERROR(err);
     delete[] kernelsArray;kernelsArray = NULL;
 
@@ -412,7 +414,6 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     PetscErrorCode err;
 
     PetscDM dmSoln = solution.dmMesh();
-    PetscDM dmAux = _auxiliaryField->dmMesh();
 
     PetscHashFormKey key;
     key.label = NULL;
@@ -430,8 +431,9 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     } // for
 
     // Get auxiliary data
-    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    PetscDMLabel dmLabel = NULL;
+    PetscInt labelValue = 0;
+    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
     // Compute the local residual
     assert(solution.localVector());
@@ -468,7 +470,6 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
     PetscIS cellsIS = NULL;
     PetscErrorCode err;
     PetscDM dmSoln = solution.dmMesh();
-    PetscDM dmAux = _auxiliaryField->dmMesh();
 
     PetscHashFormKey key;
     key.label = NULL;
@@ -487,8 +488,9 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
     } // for
 
     // Get auxiliary data
-    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    PetscDMLabel dmLabel = NULL;
+    PetscInt labelValue = 0;
+    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
     // Compute the local Jacobian
     assert(solution.localVector());

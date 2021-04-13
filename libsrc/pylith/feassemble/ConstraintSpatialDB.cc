@@ -77,6 +77,7 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.
     PetscDS prob = NULL;
+    PetscDMLabel label = NULL;
     PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
     PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
 
@@ -84,8 +85,9 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
     const int labelId = 1;
     const PylithInt numConstrained = _constrainedDOF.size();
     const PetscInt i_field = solution.subfieldInfo(_subfieldName.c_str()).index;
-    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_BD_FIELD, _constraintLabel.c_str(), _constraintLabel.c_str(), i_field,
-                             numConstrained, &_constrainedDOF[0], (void (*)())_kernelConstraint, NULL, 1, &labelId, context);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmSoln, _constraintLabel.c_str(), &label);PYLITH_CHECK_ERROR(err);
+    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_BD_FIELD, _constraintLabel.c_str(), label, 1, &labelId, i_field,
+                             numConstrained, &_constrainedDOF[0], (void (*)())_kernelConstraint, NULL, context, NULL);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // initialize
@@ -128,15 +130,14 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::topology::Field* so
 
     PetscErrorCode err = 0;
     PetscDM dmSoln = solution->dmMesh();
-    PetscDM dmAux = _auxiliaryField->dmMesh();
-
-    // Get label for constraint.
-    PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(dmSoln, _constraintLabel.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
 
     // Set auxiliary data
-    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    PetscDMLabel dmLabel = NULL;
+    PetscInt labelValue = 0;
+    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+
+    // Get label for constraint.
+    err = DMGetLabel(dmSoln, _constraintLabel.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
 
     void* context = NULL;
     const int labelId = 1;

@@ -110,8 +110,9 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
         throw std::logic_error(msg.str());
     }
     err = DMPlexRestoreTransitiveClosure(solution.dmMesh(), point, PETSC_FALSE, &clSize, &closure);PYLITH_CHECK_ERROR(err);
-    err = PetscDSAddBoundary(ds, DM_BC_ESSENTIAL, _constraintLabel.c_str(), _constraintLabel.c_str(), i_field,
-                             _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void))_fn, NULL, 1, &labelId, context);
+    err = DMGetLabel(solution.dmMesh(), _constraintLabel.c_str(), &label);PYLITH_CHECK_ERROR(err);
+    err = PetscDSAddBoundary(ds, DM_BC_ESSENTIAL, _constraintLabel.c_str(), label, 1, &labelId, i_field,
+                             _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void))_fn, NULL, context, NULL);
     PYLITH_CHECK_ERROR(err);
     err = DMViewFromOptions(dm, NULL, "-constraint_simple_dm_view");PYLITH_CHECK_ERROR(err);
     {

@@ -187,7 +187,7 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", "::ascii_info_detail");CPPUNIT_ASSERT(!err);
+        err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", "");CPPUNIT_ASSERT(!err);
     } // if
     err = PetscOptionsSetValue(NULL, "-snes_test_jacobian", "1.0e-6");CPPUNIT_ASSERT(!err);
     err = PetscOptionsSetValue(NULL, "-snes_error_if_not_converged", "false");CPPUNIT_ASSERT(!err);
