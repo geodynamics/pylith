@@ -22,14 +22,14 @@
 import unittest
 
 from pylith.testing.UnitTestApp import TestComponent
-from pylith.utils.PetscManager import (PetscManager, petsc_manager)
+from pylith.utils.PetscManager import (PetscManager, property_list)
 
 
 class TestPetscManager(TestComponent):
     """Unit testing of PetscManager object.
     """
     _class = PetscManager
-    _factory = petsc_manager
+    _factory = property_list
 
 
 if __name__ == "__main__":
