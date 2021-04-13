@@ -48,6 +48,51 @@ class Tri(object):
     }
 
 
+class TriPgram8Cells(object):
+    """
+    Mesh information for tri parallelogram mesh.
+    """
+    DOMAIN = {
+        "ncells": 8,
+        "ncorners": 3,
+        "nvertices": 9,
+    }
+    MATERIALS = {
+        "elastic": {
+            "ncells": 8,
+            "ncorners": 3,
+            "nvertices": 9,
+        },
+    }
+    BOUNDARIES = {
+        "bc_xneg": {
+            "ncells": 2,
+            "ncorners": 2,
+            "nvertices": 3,
+        },
+        "bc_xpos": {
+            "ncells": 2,
+            "ncorners": 2,
+            "nvertices": 3,
+        },
+        "bc_yneg": {
+            "ncells": 2,
+            "ncorners": 2,
+            "nvertices": 3,
+        },
+        "bc_ypos": {
+            "ncells": 2,
+            "ncorners": 2,
+            "nvertices": 3,
+        },
+        "bc_outer": {
+            "ncells": 8,
+            "ncorners": 2,
+            "nvertices": 8,
+        },
+    }
+
+
 class Quad(object):
     """
     Mesh information for quad mesh.
@@ -89,6 +134,51 @@ class Quad(object):
             "ncells": 4,
             "ncorners": 2,
             "nvertices": 4,
+        },
+    }
+
+
+class QuadPgram4Cells(object):
+    """
+    Mesh information for quad parallelogram mesh with 4 cells.
+    """
+    DOMAIN = {
+        "ncells": 4,
+        "ncorners": 4,
+        "nvertices": 9,
+    }
+    MATERIALS = {
+        "elastic": {
+            "ncells": 4,
+            "ncorners": 4,
+            "nvertices": 9,
+        },
+    }
+    BOUNDARIES = {
+        "bc_xneg": {
+            "ncells": 2,
+            "ncorners": 2,
+            "nvertices": 3,
+        },
+        "bc_xpos": {
+            "ncells": 2,
+            "ncorners": 2,
+            "nvertices": 3,
+        },
+        "bc_yneg": {
+            "ncells": 2,
+            "ncorners": 2,
+            "nvertices": 3,
+        },
+        "bc_ypos": {
+            "ncells": 2,
+            "ncorners": 2,
+            "nvertices": 3,
+        },
+        "bc_outer": {
+            "ncells": 8,
+            "ncorners": 2,
+            "nvertices": 8,
         },
     }
 
