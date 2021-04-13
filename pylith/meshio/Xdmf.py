@@ -174,11 +174,11 @@ class Xdmf(object):
         """Get Xdmf vector field type.
         """
         vtype = "Matrix"
-        if vectorFieldString.lower() == "scalar":
+        if vectorFieldString.decode().lower() == "scalar":
             vtype = "Scalar"
-        elif vectorFieldString.lower() == "vector":
+        elif vectorFieldString.decode().lower() == "vector":
             vtype = "Vector"
-        elif vectorFieldString.lower() == "tensor":
+        elif vectorFieldString.decode().lower() == "tensor":
             vtype = "Tensor6"
         return vtype
 
