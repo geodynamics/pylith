@@ -70,8 +70,8 @@ public:
      *
      * @returns PETSc weak form key.
      */
-    PetscHashFormKey petscKey(const pylith::topology::Field& solution,
-                              const char* field=NULL) const;
+    PetscFormKey petscKey(const pylith::topology::Field& solution,
+                          const char* field=NULL) const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
