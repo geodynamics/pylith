@@ -602,7 +602,6 @@ pylith::feassemble::_IntegratorInterface::setWeakFormKernels(const pylith::feass
     PetscErrorCode err = 0;
     const keysmap_t& keysmap = patches->getKeys();
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
-        PetscHashFormKey key = iter->second.cohesive.petscKey(solution);
         const PetscWeakForm weakForm = iter->second.cohesive.getWeakForm();
 
         // :KLUDGE: Assumes only 1 set of kernels per key (with subfield from kernel).
