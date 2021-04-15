@@ -41,6 +41,9 @@ class SimulationMetadata(Component):
     arguments = pythia.pyre.inventory.list("arguments")
     arguments.meta["tip"] = "Command line arguments for running simulation."
 
+    base = pythia.pyre.inventory.list("base")
+    base.meta["tip"] = "Parameter files with metadata that complement this metadata."
+
     version = pythia.pyre.inventory.str("version")
     version.meta["tip"] = "Version number for simulation."
 
@@ -62,42 +65,82 @@ def simulation_metadata():
     return SimulationMetadata()
 
 
-def fromFile(filename, codec="cfg"):
+def fromFile(filename):
     """Set simulation metadata from file.
 
     Args:
         filename (str)
             Name of file
-        codec (str)
-            Codec for file
     """
-    CONVERTERS = {
-        "description": str,
-        "keywords": string_to_list,
-        "features": string_to_list,
-        "authors": string_to_list,
-        "arguments": string_to_list,
-        "version": str,
-        "pylith_version": string_to_list,
-    }
+    def _get_properties(filename):
+        """Get metadata from file.
+        """
+        CONVERTERS = {
+            "description": str,
+            "keywords": string_to_list,
+           "features": string_to_list,
+            "authors": string_to_list,
+            "arguments": string_to_list,
+            "base": string_to_list,
+            "version": str,
+            "pylith_version": string_to_list,
+        }   
+        base, ext = os.path.splitext(str(filename))
+        if ext == ".cfg":
+            from pythia.pyre.inventory.cfg.CodecConfig import CodecConfig
+            reader = CodecConfig()
+        else:
+            raise NotImplementedError(f"Reading '{ext}' file not implemented.")
+        registry = reader.open(base)
+        properties = None
+        if registry and \
+            "inventory" in registry.keys() and \
+                "pylithapp" in registry["inventory"].facilities.keys():
+            facilities = registry["inventory"].facilities["pylithapp"].facilities
+            properties = facilities["metadata"].properties if "metadata" in facilities else None
+            if properties:
+                for key, descriptor in properties.items():
+                    descriptor.value = CONVERTERS[key](descriptor.value)
+        return properties
 
-    base,_ = os.path.splitext(str(filename))
-    if codec == "cfg":
-        from pythia.pyre.inventory.cfg.CodecConfig import CodecConfig
-        reader = CodecConfig()
-    else:
-        raise NotImplementedError(f"Importing '{codec}' file not implemented.")
-    registry = reader.open(base)
+    def _merge(target, source):
+        """Merge properties.
+
+        Args:
+            target (dict)
+                Object to update.
+            source (dict)
+                Object with data to use for update.
+        """
+        if not source:
+            return
+        APPEND = ["features", "keywords"]
+        for key, descriptor in source.items():
+            if descriptor.value:
+                if key in APPEND:
+                    assert isinstance(descriptor.value, list)
+                    target[key].value += descriptor.value
+                else:
+                    target[key] = source[key]
+
     metadata = None
-    if registry and \
-        "inventory" in registry.keys() and \
-            "pylithapp" in registry["inventory"].facilities.keys():
-        facilities = registry["inventory"].facilities["pylithapp"].facilities
-        properties = facilities["metadata"].properties if "metadata" in facilities else None
-        if properties:
-            metadata = SimulationMetadata()
-            for key, descriptor in properties.items():
-                setattr(metadata, key, CONVERTERS[key](descriptor.value))
+    properties = _get_properties(filename)
+    if properties:
+        metadata = SimulationMetadata()
+        if "base" in properties:
+            base = properties["base"].value
+            baseProperties = None
+            for baseFilename in base:
+                basePath = os.path.join(filename.parent.name, baseFilename)
+                if not baseProperties:
+                    baseProperties = _get_properties(basePath)
+                else:
+                    _merge(baseProperties, _get_properties(basePath))
+            _merge(baseProperties, properties)
+            properties = baseProperties
+
+        for key, descriptor in properties.items():
+            setattr(metadata, key, descriptor.value)
     return metadata
 
 

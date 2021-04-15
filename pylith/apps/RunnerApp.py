@@ -39,7 +39,7 @@ class RunnerApp():
             **kwargs) if kwargs else self._parse_command_line()
 
         for filename in sorted(pathlib.Path(args.searchpath).glob("**/*.cfg")):
-            metadata = fromFile(filename, codec="cfg")
+            metadata = fromFile(filename)
             if metadata:
                 if metadata.arguments:
                     self._run_pylith(filename, metadata.arguments)
@@ -70,7 +70,6 @@ class RunnerApp():
         app = PyLithApp()
         app.run(argv=["pylith"] + arguments)
         os.chdir(cwd)
-
 
     def _parse_command_line(self):
         """Parse command line arguments.

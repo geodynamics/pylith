@@ -55,8 +55,12 @@ class ConfigSearchApp():
         self._set_filters(args)
 
         for filename in sorted(pathlib.Path(args.searchpath).glob("**/*.cfg")):
-            metadata = fromFile(filename, codec="cfg")
+            metadata = fromFile(filename)
             if metadata:
+                if not len(metadata.arguments):
+                    if args.verbose:
+                        print(f"INFO: Skipping file {filename} with only base metadata.")
+                    continue
                 filter_fn = self._apply_filters_incompatible if args.incompatible else self._apply_filters
                 if filter_fn(metadata):
                     self._display_metadata(filename, metadata, args.display)
