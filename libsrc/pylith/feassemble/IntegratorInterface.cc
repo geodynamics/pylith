@@ -548,9 +548,26 @@ pylith::feassemble::_IntegratorInterface::setWeakFormKernels(const pylith::feass
         const PetscWeakForm weakForm = iter->second.cohesive.getWeakForm();
 
         // :KLUDGE: Assumes only 1 set of kernels per key (with subfield from kernel).
+        PetscHashFormKey key;
+
         for (size_t i = 0; i < kernels.size(); ++i) {
-            PetscFormKey key = iter->second.cohesive.petscKey(solution, kernels[i].subfield.c_str());
-            const PetscInt index = 0;
+            PetscInt index = 0;
+            switch (kernels[i].face) {
+            case IntegratorInterface::NEGATIVE_FACE:
+                key = iter->second.negative.petscKey(solution, kernels[i].subfield.c_str());
+                index = 0;
+                break;
+            case IntegratorInterface::POSITIVE_FACE:
+                key = iter->second.positive.petscKey(solution, kernels[i].subfield.c_str());
+                index = 1;
+                break;
+            case IntegratorInterface::FAULT_FACE:
+                key = iter->second.cohesive.petscKey(solution, kernels[i].subfield.c_str());
+                index = 0;
+                break;
+            default:
+                PYLITH_JOURNAL_LOGICERROR("Unknown integration face.");
+            }
             err = PetscWeakFormSetIndexBdResidual(weakForm, key.label, key.value, key.field,
                                                   index, kernels[i].r0, index, kernels[i].r1);PYLITH_CHECK_ERROR(err);
         } // for

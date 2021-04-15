@@ -35,25 +35,37 @@ class pylith::feassemble::IntegratorInterface : public pylith::feassemble::Integ
     friend class _IntegratorInterface; // private utility class
     friend class TestIntegratorInterface; // unit testing
 
+public:
+
+    enum FaceEnum {
+        NEGATIVE_FACE=0,
+        POSITIVE_FACE=1,
+        FAULT_FACE=2,
+    }; // FaceEnum
+
     // PUBLIC STRUCTS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Kernels (point-wise functions) for residual.
+    /// Kernels (pointwise functions) for residual.
     struct ResidualKernels {
         std::string subfield; ///< Name of subfield
+        FaceEnum face; ///< Face domain.
         PetscBdPointFunc r0; ///< f0 (RHS) or g0 (LHS) function.
         PetscBdPointFunc r1; ///< f1 (RHS) or g1 (LHS) function.
 
         ResidualKernels(void) :
             subfield(""),
+            face(FAULT_FACE),
             r0(NULL),
             r1(NULL) {}
 
 
         ResidualKernels(const char* subfieldValue,
+                        FaceEnum faceValue,
                         PetscBdPointFunc r0Value,
                         PetscBdPointFunc r1Value) :
             subfield(subfieldValue),
+            face(faceValue),
             r0(r0Value),
             r1(r1Value) {}
 
@@ -64,6 +76,7 @@ public:
     struct JacobianKernels {
         std::string subfieldTrial; ///< Name of subfield associated with trial function (row in Jacobian).
         std::string subfieldBasis; ///< Name of subfield associated with basis function (column in Jacobian).
+        FaceEnum face; ///< Integration domain.
         PetscBdPointJac j0; ///< J0 function.
         PetscBdPointJac j1; ///< J1 function.
         PetscBdPointJac j2; ///< J2 function.
@@ -72,6 +85,7 @@ public:
         JacobianKernels(void) :
             subfieldTrial(""),
             subfieldBasis(""),
+            face(FAULT_FACE),
             j0(NULL),
             j1(NULL),
             j2(NULL),
@@ -80,12 +94,14 @@ public:
 
         JacobianKernels(const char* subfieldTrialValue,
                         const char* subfieldBasisValue,
+                        FaceEnum faceValue,
                         PetscBdPointJac j0Value,
                         PetscBdPointJac j1Value,
                         PetscBdPointJac j2Value,
                         PetscBdPointJac j3Value) :
             subfieldTrial(subfieldTrialValue),
             subfieldBasis(subfieldBasisValue),
+            face(faceValue),
             j0(j0Value),
             j1(j1Value),
             j2(j2Value),
@@ -229,7 +245,7 @@ private:
     pylith::topology::Mesh* _interfaceMesh; ///< Boundary mesh.
     std::string _interfaceSurfaceLabel; ///< Name of label identifying interface surface.
 
-    pylith::feassemble::InterfacePatches* _integrationPatches; ///< Integration patches.
+    pylith::feassemble::InterfacePatches* _integrationPatches; ///< Face patches.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

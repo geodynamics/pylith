@@ -370,7 +370,7 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
         _auxiliaryFactory->addSlip(); // 0
         break;
     case DYNAMIC_IMEX:
-        _auxiliaryFactory->addSlipRate(); // 0
+        _auxiliaryFactory->addSlipAcceleration(); // 0
         break;
     case DYNAMIC:
         PYLITH_COMPONENT_LOGICERROR("Fault implementation is incompatible with 'dynamic' time-stepping formulation. Use 'dynamic_imex'.");
@@ -431,7 +431,7 @@ pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* 
         this->_updateSlip(auxiliaryField, t);
         break;
     case DYNAMIC_IMEX:
-        this->_updateSlipRate(auxiliaryField, t);
+        this->_updateSlipAcceleration(auxiliaryField, t);
         break;
     case DYNAMIC:
         PYLITH_COMPONENT_LOGICERROR("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
@@ -572,6 +572,56 @@ pylith::faults::FaultCohesiveKin::_updateSlipRate(pylith::topology::Field* auxil
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Update slip acceleration subfield in auxiliary field at beginning of time step.
+void
+pylith::faults::FaultCohesiveKin::_updateSlipAcceleration(pylith::topology::Field* auxiliaryField,
+                                                          const double t) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_updateSlipAcceleration(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
+
+    assert(auxiliaryField);
+    assert(_normalizer);
+
+    // Update slip acceleration subfield at current time step
+    PetscErrorCode err = VecSet(_slipVecTotal, 0.0);PYLITH_CHECK_ERROR(err);
+    const srcs_type::const_iterator rupturesEnd = _ruptures.end();
+    for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
+        err = VecSet(_slipVecRupture, 0.0);PYLITH_CHECK_ERROR(err);
+
+        KinSrc* src = r_iter->second;assert(src);
+        src->updateSlipAcc(_slipVecRupture, auxiliaryField, t, _normalizer->getTimeScale());
+        err = VecAYPX(_slipVecTotal, 1.0, _slipVecRupture);
+    } // for
+
+    // Transfer slip values from local PETSc slip vector to fault auxiliary field.
+    PetscInt pStart = 0, pEnd = 0;
+    err = PetscSectionGetChart(auxiliaryField->localSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+
+    pylith::topology::VecVisitorMesh auxiliaryVisitor(*auxiliaryField, "slip_acceleration");
+    PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();
+
+    const PylithScalar* slipAccArray = NULL;
+    err = VecGetArrayRead(_slipVecTotal, &slipAccArray);PYLITH_CHECK_ERROR(err);
+
+    for (PetscInt p = pStart, iSlipAcc = 0; p < pEnd; ++p) {
+        const PetscInt slipAccDof = auxiliaryVisitor.sectionDof(p);
+        const PetscInt slipAccOff = auxiliaryVisitor.sectionOffset(p);
+        for (PetscInt iDof = 0; iDof < slipAccDof; ++iDof, ++iSlipAcc) {
+            auxiliaryArray[slipAccOff+iDof] = slipAccArray[iSlipAcc];
+        } // for
+    } // for
+    err = VecRestoreArrayRead(_slipVecTotal, &slipAccArray);PYLITH_CHECK_ERROR(err);
+
+    pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
+    if (debug.state()) {
+        auxiliaryField->view("Fault auxiliary field after setting slip acceleration.");
+    } // if
+
+    PYLITH_METHOD_END;
+} // _updateSlipAcceleration
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for quasistatic formulation of LHS residual.
 void
 pylith::faults::_FaultCohesiveKin::setKernelsLHSResidualQuasistatic(pylith::feassemble::IntegratorInterface* integrator,
@@ -584,18 +634,25 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSResidualQuasistatic(pylith::feas
           <<", solution="<<solution.getLabel()<<")"
           << pythia::journal::endl;
 
-    std::vector<ResidualKernels> kernels(2);
+    typedef pylith::feassemble::IntegratorInterface integrator_t;
 
-    // Elasticity equation (displacement).
-    const PetscBdPointFunc f0u = pylith::fekernels::FaultCohesiveKin::f0u;
-    const PetscBdPointFunc f1u = NULL;
+    std::vector<ResidualKernels> kernels(3);
+
+    // Elasticity equation (displacement) for negative side of the fault.
+    const PetscBdPointFunc f0u_neg = pylith::fekernels::FaultCohesiveKin::f0u_neg;
+    const PetscBdPointFunc f1u_neg = NULL;
+
+    // Elasticity equation (displacement) for positive side of the fault.
+    const PetscBdPointFunc f0u_pos = pylith::fekernels::FaultCohesiveKin::f0u_pos;
+    const PetscBdPointFunc f1u_pos = NULL;
 
     // Fault slip constraint equation.
     const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_u;
     const PetscBdPointFunc f1l = NULL;
 
-    kernels[0] = ResidualKernels("displacement", f0u, f1u);
-    kernels[1] = ResidualKernels("lagrange_multiplier_fault", f0l, f1l);
+    kernels[0] = ResidualKernels("displacement", integrator_t::NEGATIVE_FACE, f0u_neg, f1u_neg);
+    kernels[1] = ResidualKernels("displacement", integrator_t::POSITIVE_FACE, f0u_pos, f1u_pos);
+    kernels[2] = ResidualKernels("lagrange_multiplier_fault", integrator_t::FAULT_FACE, f0l, f1l);
 
     assert(integrator);
     integrator->setKernelsLHSResidual(kernels);
@@ -616,8 +673,9 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSJacobianQuasistatic(pylith::feas
           << "setKernelsLHSJacobianQuasistatic(integrator="<<integrator<<", fault="<<typeid(fault).name()
           << ", solution="<<solution.getLabel()<<")" << pythia::journal::endl;
 
+    typedef pylith::feassemble::IntegratorInterface integrator_t;
+#if 1
     std::vector<JacobianKernels> kernels(2);
-
     const PetscBdPointJac Jf0ul = pylith::fekernels::FaultCohesiveKin::Jf0ul;
     const PetscBdPointJac Jf1ul = NULL;
     const PetscBdPointJac Jf2ul = NULL;
@@ -630,8 +688,31 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSJacobianQuasistatic(pylith::feas
 
     const char* nameDisplacement = "displacement";
     const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
-    kernels[0] = JacobianKernels(nameDisplacement, nameLagrangeMultiplier, Jf0ul, Jf1ul, Jf2ul, Jf3ul);
-    kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameDisplacement, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
+    kernels[0] = JacobianKernels(nameDisplacement, nameLagrangeMultiplier, integrator_t::NEGATIVE_FACE, Jf0ul, Jf1ul, Jf2ul, Jf3ul);
+    kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameDisplacement, integrator_t::FAULT_FACE, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
+#else
+    std::vector<JacobianKernels> kernels(3);
+    const PetscBdPointJac Jf0ul_neg = pylith::fekernels::FaultCohesiveKin::Jf0ul_neg;
+    const PetscBdPointJac Jf1ul_neg = NULL;
+    const PetscBdPointJac Jf2ul_neg = NULL;
+    const PetscBdPointJac Jf3ul_neg = NULL;
+
+    const PetscBdPointJac Jf0ul_pos = pylith::fekernels::FaultCohesiveKin::Jf0ul_pos;
+    const PetscBdPointJac Jf1ul_pos = NULL;
+    const PetscBdPointJac Jf2ul_pos = NULL;
+    const PetscBdPointJac Jf3ul_pos = NULL;
+
+    const PetscBdPointJac Jf0lu = pylith::fekernels::FaultCohesiveKin::Jf0lu;
+    const PetscBdPointJac Jf1lu = NULL;
+    const PetscBdPointJac Jf2lu = NULL;
+    const PetscBdPointJac Jf3lu = NULL;
+
+    const char* nameDisplacement = "displacement";
+    const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
+    kernels[0] = JacobianKernels(nameDisplacement, nameLagrangeMultiplier, integrator_t::NEGATIVE_FACE, Jf0ul_neg, Jf1ul_neg, Jf2ul_neg, Jf3ul_neg);
+    kernels[1] = JacobianKernels(nameDisplacement, nameLagrangeMultiplier, integrator_t::POSITIVE_FACE, Jf0ul_pos, Jf1ul_pos, Jf2ul_pos, Jf3ul_pos);
+    kernels[2] = JacobianKernels(nameLagrangeMultiplier, nameDisplacement, integrator_t::FAULT_FACE, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
+#endif
 
     assert(integrator);
     integrator->setKernelsLHSJacobian(kernels);
@@ -653,18 +734,22 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSResidualDynamicIMEX(pylith::feas
           <<", solution="<<solution.getLabel()<<")"
           << pythia::journal::endl;
 
+    // typedef pylith::feassemble::IntegratorInterface integrator_t;
     std::vector<ResidualKernels> kernels(2);
 
     // Elasticity equation (velocity).
-    const PetscBdPointFunc f0v = pylith::fekernels::FaultCohesiveKin::f0u;
-    const PetscBdPointFunc f1v = NULL;
+    // const PetscBdPointFunc f0v = pylith::fekernels::FaultCohesiveKin::f0u;
+    // const PetscBdPointFunc f1v = NULL;
 
     // Fault slip acceleration constraint equation.
-    const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_a;
-    const PetscBdPointFunc f1l = NULL;
+    // const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_a;
+    // const PetscBdPointFunc f1l = NULL;
 
-    kernels[0] = ResidualKernels("velocity", f0v, f1v);
-    kernels[1] = ResidualKernels("lagrange_multiplier_fault", f0l, f1l);
+    // :TODO: @brad Fix this. Need separate kernels for negative and positive sides of the fault.
+    // kernels[0] = ResidualKernels("velocity", pylith::feassemble::IntegratorInterface::POSITIVE_FACE, f0v, f1v);
+    // kernels[1] = ResidualKernels("velocity", pylith::feassemble::IntegratorInterface::NEGATIVE_FACE, f0v, f1v);
+    // kernels[2] = ResidualKernels("lagrange_multiplier_fault", pylith::feassemble::IntegratorInterface::FAULT_FACE,
+    // f0l, f1l);
 
     assert(integrator);
     integrator->setKernelsLHSResidual(kernels);
@@ -687,6 +772,7 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSJacobianDynamicIMEX(pylith::feas
 
     std::vector<JacobianKernels> kernels(1);
 
+#if 0
     const PetscBdPointJac Jf0lu = pylith::fekernels::FaultCohesiveKin::Jf0lu;
     const PetscBdPointJac Jf1lu = NULL;
     const PetscBdPointJac Jf2lu = NULL;
@@ -694,7 +780,9 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSJacobianDynamicIMEX(pylith::feas
 
     const char* nameDisplacement = "displacement";
     const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
+    // :TODO: @brad Fix this.
     kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameDisplacement, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
+#endif
 
     assert(integrator);
     integrator->setKernelsLHSJacobian(kernels);
@@ -716,13 +804,18 @@ pylith::faults::_FaultCohesiveKin::setKernelsRHSResidualDynamicIMEX(pylith::feas
           <<", solution="<<solution.getLabel()<<")"
           << pythia::journal::endl;
 
-    std::vector<ResidualKernels> kernels(1);
+    typedef pylith::feassemble::IntegratorInterface integrator_t;
+    std::vector<ResidualKernels> kernels(2);
 
     // Elasticity equation (velocity).
-    const PetscBdPointFunc f0v = pylith::fekernels::FaultCohesiveKin::f0u;
-    const PetscBdPointFunc f1v = NULL;
+    const PetscBdPointFunc f0v_neg = pylith::fekernels::FaultCohesiveKin::f0u_neg;
+    const PetscBdPointFunc f1v_neg = NULL;
 
-    kernels[0] = ResidualKernels("velocity", f0v, f1v);
+    const PetscBdPointFunc f0v_pos = pylith::fekernels::FaultCohesiveKin::f0u_pos;
+    const PetscBdPointFunc f1v_pos = NULL;
+
+    kernels[0] = ResidualKernels("velocity", integrator_t::NEGATIVE_FACE, f0v_neg, f1v_neg);
+    kernels[0] = ResidualKernels("velocity", integrator_t::POSITIVE_FACE, f0v_pos, f1v_pos);
 
     assert(integrator);
     integrator->setKernelsRHSResidual(kernels);

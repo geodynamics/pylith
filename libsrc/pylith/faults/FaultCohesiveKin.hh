@@ -136,6 +136,14 @@ protected:
     void _updateSlipRate(pylith::topology::Field* auxiliaryField,
                          const double t);
 
+    /** Update slip acceleration subfield in auxiliary field at beginning of time step.
+     *
+     * @param[out] auxiliaryField Auxiliary field.
+     * @param[in] t Current time.
+     */
+    void _updateSlipAcceleration(pylith::topology::Field* auxiliaryField,
+                                 const double t);
+
     // PRIVATE TYPEDEFS ////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
