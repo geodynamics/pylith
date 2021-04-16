@@ -235,7 +235,7 @@ pylith::faults::TopologyOps::createFaultParallel(pylith::topology::Mesh* faultMe
     err = DMPlexCreateCohesiveSubmesh(dmMesh, hasLagrangeConstraints, labelName, labelValue, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
     err = DMViewFromOptions(dmFaultMesh, NULL, "-pylith_fault_dm_view");PYLITH_CHECK_ERROR(err);
     err = DMPlexOrient(dmFaultMesh);PYLITH_CHECK_ERROR(err);
-    std::string meshLabel = "fault_" + std::string(surfaceLabel);
+    std::string meshLabel = std::string("fault_") + std::string(surfaceLabel);
 
     PetscReal lengthScale = 1.0;
     err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);

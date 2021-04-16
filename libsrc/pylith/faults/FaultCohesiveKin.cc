@@ -232,16 +232,7 @@ pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
     pylith::feassemble::IntegratorInterface* integrator = new pylith::feassemble::IntegratorInterface(this);assert(integrator);
-#if 0
     integrator->setLabelValue(getInterfaceId());
-    integrator->setSurfaceMarkerLabel(getSurfaceMarkerLabel());
-
-    _FaultCohesiveKin::setKernelsLHSResidual(integrator, *this, solution, _formulation);
-    _FaultCohesiveKin::setKernelsLHSJacobian(integrator, *this, solution, _formulation);
-    _FaultCohesiveKin::setKernelsRHSResidual(integrator, *this, solution, _formulation);
-    // No state variables.
-    // _FaultCohesiveKin::setKernelsDerivedFields(integrator, *this, solution);
-#else
     integrator->setSurfaceMarkerLabel(getSurfaceMarkerLabel());
 
     pylith::feassemble::InterfacePatches* patches = NULL;
@@ -266,7 +257,6 @@ pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field
     } // switch
 
     integrator->setIntegrationPatches(patches);
-#endif
 
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
