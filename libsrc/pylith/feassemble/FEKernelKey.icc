@@ -67,7 +67,7 @@ pylith::feassemble::FEKernelKey::create(PetscWeakForm weakForm,
 
 
 // ------------------------------------------------------------------------------------------------
-// Get PETSc weak form key.
+// Get PETSc weak form key for residual.
 inline
 PetscFormKey
 pylith::feassemble::FEKernelKey::petscKey(const pylith::topology::Field& solution,
@@ -87,6 +87,32 @@ pylith::feassemble::FEKernelKey::petscKey(const pylith::topology::Field& solutio
     hashKey.label = label;
     hashKey.value = _value;
     hashKey.field = i_field;
+
+    return hashKey;
+} // petscKey
+
+
+// ------------------------------------------------------------------------------------------------
+// Get PETSc weak form key for Jacobian.
+inline
+PetscHashFormKey
+pylith::feassemble::FEKernelKey::petscKey(const pylith::topology::Field& solution,
+                                          const char* fieldTrial,
+                                          const char* fieldBasis) const {
+    PetscDM dmSoln = solution.dmMesh();
+    PetscDMLabel label = NULL;
+    PetscErrorCode err = DMGetLabel(dmSoln, _name.c_str(), &label);PYLITH_CHECK_ERROR(err);
+    PetscInt i_field = -1, j_field = -1, Nf;
+    err = DMGetNumFields(dmSoln, &Nf);PYLITH_CHECK_ERROR(err);
+    i_field = solution.subfieldInfo(fieldTrial).index;
+    assert(i_field >= 0);
+    j_field = solution.subfieldInfo(fieldBasis).index;
+    assert(j_field >= 0);
+
+    PetscHashFormKey hashKey;
+    hashKey.label = label;
+    hashKey.value = _value;
+    hashKey.field = i_field*Nf + j_field;
 
     return hashKey;
 } // petscKey

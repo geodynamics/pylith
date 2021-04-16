@@ -63,7 +63,7 @@ public:
      */
     const PetscWeakForm getWeakForm(void) const;
 
-    /** Get PETSc weak form key.
+    /** Get PETSc weak form key for residual.
      *
      * @param[in] solution Solution field.
      * @param[in] field Name of solution subfield associated with integration kernel.
@@ -72,6 +72,17 @@ public:
      */
     PetscFormKey petscKey(const pylith::topology::Field& solution,
                           const char* field=NULL) const;
+
+    /** Get PETSc weak form key for Jacobian.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] field Name of solution subfield associated with integration kernel.
+     *
+     * @returns PETSc weak form key.
+     */
+    PetscHashFormKey petscKey(const pylith::topology::Field& solution,
+                              const char* fieldTrial,
+                              const char* fieldBasis) const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
