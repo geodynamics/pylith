@@ -144,7 +144,7 @@ protected:
     void setUp(void) {
         TestIsotropicLinearElasticity::setUp();
 
-        // Overwrite component names for control of debugging info at test level.
+        // Overwrite component names for control of journals at test level.
         GenericComponent::setName("TestIsotropicLinearElasticity2D_BodyForce");
         pythia::journal::debug_t debug(GenericComponent::getName());
         // ebug.activate(); // DEBUGGING

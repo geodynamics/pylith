@@ -47,8 +47,6 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::setUp(void) {
 
     _mymaterial->PyreComponent::identifier("TestIsotropicLinearGenMaxwellPlaneStrain");
     const char* journal = _mymaterial->PyreComponent::getName();
-    pythia::journal::debug_t debug(journal);
-    // debug.activate(); // DEBUGGING
 } // setUp
 
 

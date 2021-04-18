@@ -46,9 +46,6 @@ pylith::materials::TestIsotropicLinearElasticity3D::setUp(void) {
     GenericComponent::setName("TestIsotropicLinearElasticity3D");
 
     _mymaterial->PyreComponent::identifier("TestIsotropicLinearElasticity3D");
-    const char* journal = _mymaterial->PyreComponent::getName();
-    pythia::journal::debug_t debug(journal);
-    // debug.activate(); // DEBUGGING
 } // setUp
 
 

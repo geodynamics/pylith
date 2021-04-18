@@ -166,10 +166,8 @@ protected:
     void setUp(void) {
         TestIsotropicLinearIncompElasticity::setUp();
 
-        // Overwrite component names for control of debugging info at test level.
+        // Overwrite component names for control of journals at test level.
         GenericComponent::setName("TestIsotropicLinearIncompElasticity2D_BodyForce");
-        pythia::journal::debug_t debug(GenericComponent::getName());
-        // debug.activate(); // DEBUGGING
 
         CPPUNIT_ASSERT(!_data);
         _data = new TestIncompressibleElasticity_Data();CPPUNIT_ASSERT(_data);

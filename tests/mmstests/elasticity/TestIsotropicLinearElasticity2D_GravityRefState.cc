@@ -159,10 +159,8 @@ protected:
     void setUp(void) {
         TestIsotropicLinearElasticity::setUp();
 
-        // Overwrite component names for control of debugging info at test level.
+        // Overwrite component names for control of journals at test level.
         GenericComponent::setName("TestIsotropicLinearElasticity2D_GravityRefState");
-        pythia::journal::debug_t debug(GenericComponent::getName());
-        // debug.activate(); // DEBUGGING
         _disableFiniteDifferenceCheck = true;
 
         CPPUNIT_ASSERT(!_data);

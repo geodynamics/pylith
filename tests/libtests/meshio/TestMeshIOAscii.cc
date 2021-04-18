@@ -38,9 +38,6 @@ pylith::meshio::TestMeshIOAscii::setUp(void) {
     _data = NULL;
 
     _io->PyreComponent::setIdentifier("TestMeshIOAscii");
-    const char* journalName = _io->PyreComponent::getName();
-    pythia::journal::debug_t debug(journalName);
-    // debug.activate(); // DEBUGGING
 } // setUp
 
 

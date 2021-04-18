@@ -47,8 +47,6 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::setUp(void) {
 
     _mymaterial->PyreComponent::identifier("TestIsotropicLinearGenMaxwell3D");
     const char* journal = _mymaterial->PyreComponent::getName();
-    pythia::journal::debug_t debug(journal);
-    // debug.activate(); // DEBUGGING
 } // setUp
 
 

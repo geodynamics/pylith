@@ -47,8 +47,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void) {
 
     _mymaterial->PyreComponent::identifier("TestIsotropicLinearElasticityPlaneStrain");
     const char* journal = _mymaterial->PyreComponent::getName();
-    pythia::journal::debug_t debug(journal);
-    // debug.activate(); // DEBUGGING
 } // setUp
 
 
