@@ -206,10 +206,8 @@ protected:
     void setUp(void) {
         TestFaultKin::setUp();
 
-        // Overwrite component names for control of debugging info at test level.
+        // Overwrite component name for control of journals at test level.
         GenericComponent::setName("TestFaultKin2D_RigidBlocksStatic");
-        pythia::journal::debug_t debug(GenericComponent::getName());
-        // debug.activate(); // DEBUGGING
 
         CPPUNIT_ASSERT(!_data);
         _data = new TestFaultKin_Data();CPPUNIT_ASSERT(_data);

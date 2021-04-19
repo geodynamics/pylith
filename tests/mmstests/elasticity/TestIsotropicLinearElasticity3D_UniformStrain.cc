@@ -158,10 +158,8 @@ protected:
     void setUp(void) {
         TestIsotropicLinearElasticity::setUp();
 
-        // Overwrite component names for control of debugging info at test level.
+        // Overwrite component names for control of journals at test level.
         GenericComponent::setName("TestIsotropicLinearElasticity3D_UniformStrain");
-        pythia::journal::debug_t debug(GenericComponent::getName());
-        // debug.activate(); // DEBUGGING
 
         CPPUNIT_ASSERT(!_data);
         _data = new TestElasticity_Data();CPPUNIT_ASSERT(_data);

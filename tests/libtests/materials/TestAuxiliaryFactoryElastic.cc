@@ -42,7 +42,6 @@ pylith::materials::TestAuxiliaryFactoryElastic::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
     pythia::journal::debug_t debug("auxiliaryfactoryelastic");
-    // debug.activate(); // DEBUGGING
 
     _data = new TestAuxiliaryFactoryElastic_Data();CPPUNIT_ASSERT(_data);
 

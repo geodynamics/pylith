@@ -30,9 +30,20 @@
 #include <cppunit/Test.h> /// USES CppUnit::Test
 
 #include <vector> // USES std::vector
+#include <utility> // USES std::pair
 #include <string> // USES std::string
 
 class pylith::testing::TestDriver {
+public:
+
+    enum JournalEnum {
+        JOURNAL_INFO=0,
+        JOURNAL_DEBUG=1,
+        JOURNAL_WARNING=2,
+    };
+
+    typedef std::vector< std::pair<JournalEnum,std::string> > journals_t;
+
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -49,6 +60,10 @@ public:
      *   --list
      *   --quiet
      *   --tests=TEST_0,...,TEST_N
+     *   --petsc OPTION=VALUE
+     *   --journal.info=NAME
+     *   --journal.debug=NAME
+     *   --journal.warning=NAME
      *
      * @param argc[in] Number of arguments passed.
      * @param argv[in] Array of input arguments.
@@ -59,47 +74,20 @@ public:
             char* argv[]);
 
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
     /** Parse command line arguments.
      *
-     * @param argc[in] Number of arguments passed.
-     * @param argv[in] Array of input arguments.
+     * @param[in] argc Number of arguments passed.
+     * @param[in] argv Array of input arguments.
      */
     void _parseArgs(int argc,
                     char* argv[]);
-
-    /// Print help information.
-    void _printHelp(void);
-
-    /** Initialize PETSc.
-     *
-     * @param argc[in] Number of arguments passed.
-     * @param argv[in] Array of input arguments.
-     */
-    int _initializePetsc(int argc,
-                         char* argv[]);
-
-    /** List test hierarchy.
-     *
-     * @param[in] test Test to list.
-     */
-    void _printTests(const CppUnit::Test* const test);
-
-    /** Find test matching name in test hierarchy.
-     *
-     * @param[in] test Test hierarchy.
-     * @param[in] name Name of test to find.
-     * @returns Test matching name or NULL if not found.
-     */
-    const CppUnit::Test* _findTest(const CppUnit::Test* const test,
-                                   const std::string& name);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     std::vector<std::string> _tests;
-    std::vector<std::string> _petscArgs;
+    std::vector<std::string> _petscOptions;
+    journals_t _journals;
     bool _showHelp;
     bool _listTests;
     bool _mallocDump;
