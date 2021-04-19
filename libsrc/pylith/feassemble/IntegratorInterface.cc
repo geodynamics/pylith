@@ -429,20 +429,14 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     const keysmap_t& keysmap = patches->getKeys();
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
         PetscFormKey weakFormKeys[3];
+        weakFormKeys[0] = iter->second.negative.petscKey(solution);
+        weakFormKeys[1] = iter->second.positive.petscKey(solution);
         weakFormKeys[2] = iter->second.cohesive.petscKey(solution);
 
-        // :KLUDGE: Weak form kernels for displacement subfield are associated with weakFormKeys 0 and 1,
-        // which need label/value from cohesive cell to match setting of kernels in setWeakFormKernels().
-        weakFormKeys[0].label = weakFormKeys[2].label;
-        weakFormKeys[0].value = weakFormKeys[2].value;
-        weakFormKeys[1].label = weakFormKeys[2].label;
-        weakFormKeys[1].value = weakFormKeys[2].value;
-
-        const PetscInt labelValue = weakFormKeys[2].value;
         PetscIS cohesiveCellIS = NULL;
         PetscInt numCohesiveCells = 0;
         const PetscInt* cohesiveCells = NULL;
-        err = DMGetStratumIS(dmSoln, integrator->getLabelName(), labelValue, &cohesiveCellIS);PYLITH_CHECK_ERROR(err);
+        err = DMGetStratumIS(dmSoln, integrator->getLabelName(), integrator->getLabelValue(), &cohesiveCellIS);PYLITH_CHECK_ERROR(err);
         err = ISGetSize(cohesiveCellIS, &numCohesiveCells);PYLITH_CHECK_ERROR(err);assert(numCohesiveCells > 0);
         err = ISGetIndices(cohesiveCellIS, &cohesiveCells);PYLITH_CHECK_ERROR(err);assert(cohesiveCells);
         assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, cohesiveCells[0]));
@@ -450,7 +444,7 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
         // Get auxiliary data
         // :TODO: FIX THIS. This needs to be updated. We need to provide the auxiliary field(s) for the cohesive cells
         // and the adjacent cells on the negative and positive sides of the fault.
-        PetscErrorCode err = DMSetAuxiliaryVec(dmSoln, NULL, 0, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+        PetscErrorCode err = DMSetAuxiliaryVec(dmSoln, weakFormKeys[2].label, weakFormKeys[2].value, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
         assert(solution.localVector());
         assert(residual->localVector());
@@ -500,16 +494,10 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     const keysmap_t& keysmap = patches->getKeys();
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
         PetscFormKey weakFormKeys[3];
+        weakFormKeys[0] = iter->second.negative.petscKey(solution);
+        weakFormKeys[1] = iter->second.positive.petscKey(solution);
         weakFormKeys[2] = iter->second.cohesive.petscKey(solution);
 
-        // :KLUDGE: Weak form kernels for displacement subfield are associated with weakFormKeys 0 and 1,
-        // which need label/value from cohesive cell to match setting of kernels in setWeakFormKernels().
-        weakFormKeys[0].label = weakFormKeys[2].label;
-        weakFormKeys[0].value = weakFormKeys[2].value;
-        weakFormKeys[1].label = weakFormKeys[2].label;
-        weakFormKeys[1].value = weakFormKeys[2].value;
-
-        const PetscInt labelValue = weakFormKeys[2].value;
         PetscIS cohesiveCellIS = NULL;
         PetscInt numCohesiveCells = 0;
         const PetscInt* cohesiveCells = NULL;
@@ -521,7 +509,8 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
         // Get auxiliary data
         // :TODO: FIX THIS. This needs to be updated. We need to provide the auxiliary field(s) for the cohesive cells
         // and the adjacent cells on the negative and positive sides of the fault.
-        PetscErrorCode err = DMSetAuxiliaryVec(dmSoln, NULL, 0, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+        err = DMSetAuxiliaryVec(dmSoln, weakFormKeys[2].label, weakFormKeys[2].value,
+                                auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
         assert(solution.localVector());
         err = DMPlexComputeJacobian_Hybrid_Internal(dmSoln, weakFormKeys, cohesiveCellIS, t, s_tshift, solution.localVector(),

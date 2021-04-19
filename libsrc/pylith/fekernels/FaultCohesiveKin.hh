@@ -201,32 +201,6 @@ public:
                const PylithScalar constants[],
                PylithScalar f0[]);
 
-#if 1
-    /** Jf0 function for displacement equation.
-     */
-    static
-    void Jf0ul(const PylithInt dim,
-               const PylithInt numS,
-               const PylithInt numA,
-               const PylithInt sOff[],
-               const PylithInt sOff_x[],
-               const PylithScalar s[],
-               const PylithScalar s_t[],
-               const PylithScalar s_x[],
-               const PylithInt aOff[],
-               const PylithInt aOff_x[],
-               const PylithScalar a[],
-               const PylithScalar a_t[],
-               const PylithScalar a_x[],
-               const PylithReal t,
-               const PylithReal s_tshift,
-               const PylithScalar x[],
-               const PylithReal n[],
-               const PylithInt numConstants,
-               const PylithScalar constants[],
-               PylithScalar Jf0[]);
-
-#else
     /** Jf0 function for displacement equation: -\lambda (neg side).
      */
     static
@@ -274,8 +248,6 @@ public:
                    const PylithInt numConstants,
                    const PylithScalar constants[],
                    PylithScalar Jf0[]);
-
-#endif
 
     /** Jf0 function for slip constraint equation: +\lambda (pos side), -\lambda (neg side).
      *

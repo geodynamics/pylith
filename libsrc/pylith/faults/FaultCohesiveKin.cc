@@ -635,7 +635,6 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSResidualQuasistatic(pylith::feas
           << pythia::journal::endl;
 
     typedef pylith::feassemble::IntegratorInterface integrator_t;
-
     std::vector<ResidualKernels> kernels(3);
 
     // Elasticity equation (displacement) for negative side of the fault.
@@ -674,24 +673,8 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSJacobianQuasistatic(pylith::feas
           << ", solution="<<solution.getLabel()<<")" << pythia::journal::endl;
 
     typedef pylith::feassemble::IntegratorInterface integrator_t;
-#if 1
-    std::vector<JacobianKernels> kernels(2);
-    const PetscBdPointJac Jf0ul = pylith::fekernels::FaultCohesiveKin::Jf0ul;
-    const PetscBdPointJac Jf1ul = NULL;
-    const PetscBdPointJac Jf2ul = NULL;
-    const PetscBdPointJac Jf3ul = NULL;
-
-    const PetscBdPointJac Jf0lu = pylith::fekernels::FaultCohesiveKin::Jf0lu;
-    const PetscBdPointJac Jf1lu = NULL;
-    const PetscBdPointJac Jf2lu = NULL;
-    const PetscBdPointJac Jf3lu = NULL;
-
-    const char* nameDisplacement = "displacement";
-    const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
-    kernels[0] = JacobianKernels(nameDisplacement, nameLagrangeMultiplier, integrator_t::NEGATIVE_FACE, Jf0ul, Jf1ul, Jf2ul, Jf3ul);
-    kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameDisplacement, integrator_t::FAULT_FACE, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
-#else
     std::vector<JacobianKernels> kernels(3);
+
     const PetscBdPointJac Jf0ul_neg = pylith::fekernels::FaultCohesiveKin::Jf0ul_neg;
     const PetscBdPointJac Jf1ul_neg = NULL;
     const PetscBdPointJac Jf2ul_neg = NULL;
@@ -712,7 +695,6 @@ pylith::faults::_FaultCohesiveKin::setKernelsLHSJacobianQuasistatic(pylith::feas
     kernels[0] = JacobianKernels(nameDisplacement, nameLagrangeMultiplier, integrator_t::NEGATIVE_FACE, Jf0ul_neg, Jf1ul_neg, Jf2ul_neg, Jf3ul_neg);
     kernels[1] = JacobianKernels(nameDisplacement, nameLagrangeMultiplier, integrator_t::POSITIVE_FACE, Jf0ul_pos, Jf1ul_pos, Jf2ul_pos, Jf3ul_pos);
     kernels[2] = JacobianKernels(nameLagrangeMultiplier, nameDisplacement, integrator_t::FAULT_FACE, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
-#endif
 
     assert(integrator);
     integrator->setKernelsLHSJacobian(kernels);

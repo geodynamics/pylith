@@ -447,53 +447,6 @@ pylith::fekernels::FaultCohesiveKin::f0l_a(const PylithInt dim,
 } // f0l_a
 
 
-#if 1
-// ----------------------------------------------------------------------
-/* Jf0 function for integration of the displacement equation.
- *
- * Solution fields = [disp(dim), ..., lagrange(dim)]
- * Auxiliary fields = None
- */
-void
-pylith::fekernels::FaultCohesiveKin::Jf0ul(const PylithInt dim,
-                                           const PylithInt numS,
-                                           const PylithInt numA,
-                                           const PylithInt sOff[],
-                                           const PylithInt sOff_x[],
-                                           const PylithScalar s[],
-                                           const PylithScalar s_t[],
-                                           const PylithScalar s_x[],
-                                           const PylithInt aOff[],
-                                           const PylithInt aOff_x[],
-                                           const PylithScalar a[],
-                                           const PylithScalar a_t[],
-                                           const PylithScalar a_x[],
-                                           const PylithReal t,
-                                           const PylithReal s_tshift,
-                                           const PylithScalar x[],
-                                           const PylithReal n[],
-                                           const PylithInt numConstants,
-                                           const PylithScalar constants[],
-                                           PylithScalar Jf0[]) {
-    assert(numS >= 2);
-    assert(Jf0);
-    assert(sOff);
-    assert(n);
-
-    const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
-
-    const PylithInt gOffN = 0;
-    const PylithInt gOffP = gOffN+spaceDim;
-    const PylithInt ncols = spaceDim;
-
-    for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jf0[(gOffN+i)*ncols+i] += -1.0;
-        Jf0[(gOffP+i)*ncols+i] += +1.0;
-    } // for
-} // Jg0ul
-
-
-#else
 // ----------------------------------------------------------------------
 /* Jf0 function for integration of the displacement equation (neg side).
  *
@@ -529,7 +482,6 @@ pylith::fekernels::FaultCohesiveKin::Jf0ul_neg(const PylithInt dim,
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
     const PylithInt gOffN = 0;
-    const PylithInt gOffP = gOffN+spaceDim;
     const PylithInt ncols = spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
@@ -581,8 +533,6 @@ pylith::fekernels::FaultCohesiveKin::Jf0ul_pos(const PylithInt dim,
     } // for
 } // Jg0ul_pos
 
-
-#endif
 
 // ----------------------------------------------------------------------
 /* Jg0 function for integration of the slip constraint equation.
