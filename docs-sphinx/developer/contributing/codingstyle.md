@@ -33,7 +33,7 @@ We use 4 spaces for indentation. Configure your editor to use spaces instead of 
   * All governing equations should be covered by Method of Manufactured solution tests.
   * All functionality should be covered by full-scale tests.
 
-## Formatting C/C++ and Python source files
+## Formatting source files
 
 We use `autopep8` and `uncrustify` to format Python and C//C++ source files, respectively. The corresponding configuration files are `autopep8.cfg` and `uncrustify.cfg` in the `developer` directory. The Python script `developer/format_source.py` is a handy utility for calling `autopep8` and `uncrustify` with the appropriate arguments and formatting multiple files.
 
@@ -115,7 +115,7 @@ default:
 } // switch
 ```
 
-## C/C++ Coding Style
+## C/C++ style
 
 ### Object Declaration Files
 
@@ -645,7 +645,7 @@ pylith::problems::Problem::computeRHSResidual(PetscVec residualVec,
 // End of file
 ```
 
-## Python
+## Python style
 
 ```{code-block} python
 ---
