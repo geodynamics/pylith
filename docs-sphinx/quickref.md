@@ -64,7 +64,7 @@ Term 2
 ```{code-block} c++
 ---
 caption: C++ code block.
-emphasize-lines: 3-3
+emphasize-lines: 3-4
 ---
 int
 main(int argc, char* argv[]) {
@@ -90,3 +90,20 @@ for i in "a b c"; do
   print $i
 done
 ```
+
+## Tables
+
+|             Header 1 |   Header 2    | Header 3       |
+| -------------------: | :-----------: | :------------- |
+|        right aligned |   centered    | left aligned   |
+| more data, more data | yet more data | even more data |
+
+## Figures
+
+:::{figure-md} my-fig-target
+:class: myclass
+
+<img src="_static/images/cig_short_nolabel.png" alt="Screenshot"  width="100px"/>
+
+This is the figure caption.
+:::

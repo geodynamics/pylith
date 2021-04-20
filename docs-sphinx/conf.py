@@ -54,9 +54,23 @@ exclude_patterns = [
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
+html_logo = "_static/images/cig_short_pylith.png"
 html_theme = 'pydata_sphinx_theme'
 html_theme_options = {
-    "show_toc_level": 1,
+    "collapse_navigation": True,
+    "navigation_depth": 2,
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/geodynamics/pylith",
+            "icon": "fab fa-github-square",
+        },
+        {
+            "name": "CIG",
+            "url": "https://geodynamics.org",
+            "icon": "_static/images/cig_logo_dots.png",
+        },
+    ]
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
