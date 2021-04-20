@@ -10,5 +10,7 @@ We are in the process of adding content.
 ---
 maxdepth: 2
 ---
+contributing/index.md
+testing/index.md
 debugging/index.md
 ```
