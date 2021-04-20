@@ -1,10 +1,8 @@
 # Introduction
 
-```{admonition} TODO
-:class: todo
-
-Add brief overview of PyLith.
-```
+:::{todo}
+TODO Add brief overview of PyLith.
+:::
 
 ```{toctree}
 ---
