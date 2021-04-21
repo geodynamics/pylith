@@ -566,7 +566,8 @@ pylith::feassemble::_IntegratorInterface::setWeakFormKernels(const pylith::feass
 
     } // for
 
-    { // DEBUGGING
+    pythia::journal::debug_t debug(genericComponent);
+    if (debug.state()) {
         PetscIS cohesiveCells = NULL;
         PetscInt numCohesiveCells = 0;
         const PetscInt* cellIndices = NULL;
@@ -580,7 +581,7 @@ pylith::feassemble::_IntegratorInterface::setWeakFormKernels(const pylith::feass
         err = PetscDSView(prob, PETSC_VIEWER_STDOUT_WORLD);
         err = ISRestoreIndices(cohesiveCells, &cellIndices);PYLITH_CHECK_ERROR(err);
         err = ISDestroy(&cohesiveCells);PYLITH_CHECK_ERROR(err);
-    } // DEBUGGING
+    } // if
 
     PYLITH_METHOD_END;
 } // setWeakFormKernels
@@ -630,7 +631,8 @@ pylith::feassemble::_IntegratorInterface::setWeakFormKernels(const pylith::feass
 
     } // for
 
-    { // DEBUGGING
+    pythia::journal::debug_t debug(genericComponent);
+    if (debug.state()) {
         PetscIS cohesiveCells = NULL;
         PetscInt numCohesiveCells = 0;
         const PetscInt* cellIndices = NULL;
@@ -644,7 +646,7 @@ pylith::feassemble::_IntegratorInterface::setWeakFormKernels(const pylith::feass
         err = PetscDSView(prob, PETSC_VIEWER_STDOUT_WORLD);
         err = ISRestoreIndices(cohesiveCells, &cellIndices);PYLITH_CHECK_ERROR(err);
         err = ISDestroy(&cohesiveCells);PYLITH_CHECK_ERROR(err);
-    } // DEBUGGING
+    } // if
 
     PYLITH_METHOD_END;
 } // setWeakFormKernels
