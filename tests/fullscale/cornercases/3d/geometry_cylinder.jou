@@ -11,11 +11,11 @@ reset
 # ----------------------------------------------------------------------
 # Create outer cylinder
 # ----------------------------------------------------------------------
-# Outer cylinder is 5km (radius) x 2km (height)
-# Inner cylinder is 2km (radius) x 2km (height)
+# Outer cylinder is 5km (radius) x 3km (height)
+# Inner cylinder is 2km (radius) x 3km (height)
 ${outerRadius=5.0*km}
 ${innerRadius=2.0*km}
-${height=2.0*km}
+${height=3.0*km}
 create Cylinder height {height} radius {outerRadius}
 create Cylinder height {height} radius {innerRadius}
 

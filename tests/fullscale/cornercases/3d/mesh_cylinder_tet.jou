@@ -6,7 +6,7 @@ playback 'geometry_cylinder.jou'
 # ----------------------------------------------------------------------
 # Set discretization size
 # ----------------------------------------------------------------------
-${dx=2.0*km}
+${dx=6.0*km}
 
 volume all size {dx}
 
@@ -22,5 +22,6 @@ playback 'bc_cylinder.jou'
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "mesh_cylinder_tet.exo" dimension 3 overwrite
+
 
 

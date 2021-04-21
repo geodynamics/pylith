@@ -18,32 +18,87 @@
 # @brief Mesh information for test cases.
 
 
-class CylinderTet(object):
+class TetPgram(object):
     """
     Mesh information for cylindrical tet mesh.
     """
     DOMAIN = {
-        "ncells": 84,
+        "ncells": 96,
         "ncorners": 4,
-        "nvertices": 38,
+        "nvertices": 35,
     }
     MATERIALS = {
         "elastic": {
-            "ncells": 84,
+            "ncells": 96,
             "ncorners": 4,
-            "nvertices": 38,
+            "nvertices": 35,
         },
     }
     BOUNDARIES = {
         "bc_xneg": {
-            "ncells": 7,
+            "ncells": 8,
             "ncorners": 3,
-            "nvertices": 8,
+            "nvertices": 9,
+        },
+        "bc_xpos": {
+            "ncells": 8,
+            "ncorners": 3,
+            "nvertices": 9,
         },
         "bc_yneg": {
-            "ncells": 7,
+            "ncells": 8,
             "ncorners": 3,
-            "nvertices": 8,
+            "nvertices": 9,
+        },
+        "bc_ypos": {
+            "ncells": 8,
+            "ncorners": 3,
+            "nvertices": 9,
+        },
+        "bc_zneg": {
+            "ncells": 8,
+            "ncorners": 3,
+            "nvertices": 9,
+        },
+        "bc_zpos": {
+            "ncells": 8,
+            "ncorners": 3,
+            "nvertices": 9,
+        },
+        "bc_outer": {
+            "ncells": 48,
+            "ncorners": 3,
+            "nvertices": 26,
+        },
+    }
+
+
+class TetCylinder(object):
+    """
+    Mesh information for cylindrical tet mesh.
+    """
+    DOMAIN = {
+        "ncells": 139,
+        "ncorners": 4,
+        "nvertices": 53,
+    }
+    MATERIALS = {
+        "elastic": {
+            "ncells": 139,
+            "ncorners": 4,
+            "nvertices": 53,
+        },
+    }
+    BOUNDARIES = {
+        "bc_xneg": {
+            "ncells": 9,
+            "ncorners": 3,
+            "nvertices": 10,
+        },
+        "bc_yneg": {
+            "ncells": 9,
+            "ncorners": 3,
+            "nvertices": 10,
         },
         "bc_zneg": {
             "ncells": 17,
@@ -56,14 +111,14 @@ class CylinderTet(object):
             "nvertices": 14,
         },
         "bc_outer": {
-            "ncells": 8,
+            "ncells": 14,
             "ncorners": 3,
-            "nvertices": 10,
+            "nvertices": 14,
         },
         "bc_inner": {
-            "ncells": 10,
+            "ncells": 18,
             "ncorners": 3,
-            "nvertices": 11,
+            "nvertices": 16,
         },
     }
 
@@ -94,6 +149,61 @@ class Tet(object):
             "ncells": 2,
             "ncorners": 3,
             "nvertices": 4,
+        },
+    }
+
+
+class HexPgram(object):
+    """
+    Mesh information for parallelogram hex mesh.
+    """
+    DOMAIN = {
+        "ncells": 8,
+        "ncorners": 8,
+        "nvertices": 27,
+    }
+    MATERIALS = {
+        "elastic": {
+            "ncells": 8,
+            "ncorners": 8,
+            "nvertices": 27,
+        },
+    }
+    BOUNDARIES = {
+        "bc_xneg": {
+            "ncells": 4,
+            "ncorners": 4,
+            "nvertices": 9,
+        },
+        "bc_xpos": {
+            "ncells": 4,
+            "ncorners": 4,
+            "nvertices": 9,
+        },
+        "bc_yneg": {
+            "ncells": 4,
+            "ncorners": 4,
+            "nvertices": 9,
+        },
+        "bc_ypos": {
+            "ncells": 4,
+            "ncorners": 4,
+            "nvertices": 9,
+        },
+        "bc_zneg": {
+            "ncells": 4,
+            "ncorners": 4,
+            "nvertices": 9,
+        },
+        "bc_zpos": {
+            "ncells": 4,
+            "ncorners": 4,
+            "nvertices": 9,
+        },
+        "bc_outer": {
+            "ncells": 24,
+            "ncorners": 4,
+            "nvertices": 26,
         },
     }
 
@@ -153,32 +263,32 @@ class Hex(object):
     }
 
 
-class CylinderHex(object):
+class HexCylinder(object):
     """
     Mesh information for cylindrical hex mesh.
     """
     DOMAIN = {
-        "ncells": 6,
+        "ncells": 12,
         "ncorners": 8,
-        "nvertices": 24,
+        "nvertices": 36,
     }
     MATERIALS = {
         "elastic": {
-            "ncells": 6,
+            "ncells": 12,
             "ncorners": 8,
-            "nvertices": 24,
+            "nvertices": 36,
         },
     }
     BOUNDARIES = {
         "bc_xneg": {
-            "ncells": 2,
+            "ncells": 4,
             "ncorners": 4,
-            "nvertices": 6,
+            "nvertices": 9,
         },
         "bc_yneg": {
-            "ncells": 2,
+            "ncells": 4,
             "ncorners": 4,
-            "nvertices": 6,
+            "nvertices": 9,
         },
         "bc_zneg": {
             "ncells": 6,
@@ -191,14 +301,14 @@ class CylinderHex(object):
             "nvertices": 12,
         },
         "bc_outer": {
-            "ncells": 3,
+            "ncells": 6,
             "ncorners": 4,
-            "nvertices": 8,
+            "nvertices": 12,
         },
         "bc_inner": {
-            "ncells": 3,
+            "ncells": 6,
             "ncorners": 4,
-            "nvertices": 8,
+            "nvertices": 12,
         },
     }
 

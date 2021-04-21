@@ -1,0 +1,54 @@
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 volume all
+block 1 name "elastic"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +x boundary
+# ----------------------------------------------------------------------
+group "boundary_xpos" add node in surface 3
+nodeset 21 group boundary_xpos
+nodeset 21 name "boundary_xpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x boundary
+# ----------------------------------------------------------------------
+group "boundary_xneg" add node in surface 5
+nodeset 22 group boundary_xneg
+nodeset 22 name "boundary_xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +y boundary
+# ----------------------------------------------------------------------
+group "boundary_ypos" add node in surface 1
+nodeset 23 group boundary_ypos
+nodeset 23 name "boundary_ypos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y boundary
+# ----------------------------------------------------------------------
+group "boundary_yneg" add node in surface 6
+nodeset 24 group boundary_yneg
+nodeset 24 name "boundary_yneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +z boundary
+# ----------------------------------------------------------------------
+group "boundary_zpos" add node in surface 4
+nodeset 25 group boundary_zpos
+nodeset 25 name "boundary_zpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -z boundary
+# ----------------------------------------------------------------------
+group "boundary_zneg" add node in surface 2
+nodeset 26 group boundary_zneg
+nodeset 26 name "boundary_zneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for outer surface
+# ----------------------------------------------------------------------
+group "boundary_outer" add node in surface 1 2 3 4 5 6
+nodeset 27 group boundary_outer
+nodeset 27 name "boundary_outer
