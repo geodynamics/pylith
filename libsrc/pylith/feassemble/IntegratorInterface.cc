@@ -46,6 +46,7 @@ extern "C" PetscErrorCode DMPlexComputeResidual_Hybrid_Internal(PetscDM dm,
                                                                 void *user);
 
 extern "C" PetscErrorCode DMPlexComputeJacobian_Hybrid_Internal(PetscDM dm,
+                                                                PetscHashFormKey key[],
                                                                 PetscIS cellIS,
                                                                 PetscReal t,
                                                                 PetscReal X_tShift,
@@ -372,7 +373,6 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     PetscErrorCode err;
 
     PetscDM dmSoln = solution.dmMesh();
-    PetscDM dmAux = auxiliaryField->dmMesh();
     PetscIS cohesiveCellsIS = NULL;
     PetscInt numCohesiveCells = 0;
     const PetscInt* cellIndices = NULL;
@@ -445,7 +445,6 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     PetscErrorCode err;
 
     PetscDM dmSoln = solution.dmMesh();
-    PetscDM dmAux = auxiliaryField->dmMesh();
 
     PetscIS cohesiveCells = NULL;
     PetscInt numCohesiveCells = 0;
@@ -463,6 +462,17 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     PetscInt labelValue = 0;
     err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
+    PetscHashFormKey keys[3];
+    keys[0].label = NULL;
+    keys[0].value = 0;
+    keys[0].field = 0;
+    keys[1].label = NULL;
+    keys[1].value = 0;
+    keys[1].field = 0;
+    keys[2].label = NULL;
+    keys[2].value = 0;
+    keys[2].field = 0;
+
     // Compute the local Jacobian
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_fieldTrial = solution.subfieldInfo(kernels[i].subfieldTrial.c_str()).index;
@@ -471,7 +481,7 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     } // for
 
     assert(solution.localVector());
-    err = DMPlexComputeJacobian_Hybrid_Internal(dmSoln, cohesiveCells, t, s_tshift, solution.localVector(),
+    err = DMPlexComputeJacobian_Hybrid_Internal(dmSoln, keys, cohesiveCells, t, s_tshift, solution.localVector(),
                                                 solutionDot.localVector(), jacobianMat, precondMat,
                                                 NULL);PYLITH_CHECK_ERROR(err);
     err = ISRestoreIndices(cohesiveCells, &cellIndices);PYLITH_CHECK_ERROR(err);
