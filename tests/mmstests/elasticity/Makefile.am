@@ -84,6 +84,7 @@ endif
 dist_noinst_DATA = \
 	data/tri.mesh \
 	data/quad.mesh \
+        data/quad_distorted.mesh \
 	data/tet.mesh \
 	data/hex.mesh \
 	data/tri_twocells.mesh \
