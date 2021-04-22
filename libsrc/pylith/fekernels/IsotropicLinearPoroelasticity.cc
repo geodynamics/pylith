@@ -79,6 +79,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_ql_u(const P
     f0u[d] -= 2.0*shearModulus - biotCoefficient*t;
   }
   f0u[_dim-1] -= 2.0*lambda + 4.0*shearModulus - biotCoefficient*t;
+  printf("HELP");
 } // f0_quadratic_linear_u
 
 // ----------------------------------------------------------------------
