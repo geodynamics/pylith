@@ -234,6 +234,7 @@ AC_CONFIG_FILES([Makefile
 		tests/pytests/Makefile
 		tests/mmstests/Makefile
 		tests/mmstests/elasticity/Makefile
+		tests/mmstests/poroelasticity/Makefile
 		tests/mmstests/incompressibleelasticity/Makefile
 		tests/mmstests/faults/Makefile
 		tests/fullscale/Makefile
