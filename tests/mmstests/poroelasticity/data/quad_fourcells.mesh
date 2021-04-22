@@ -1,0 +1,44 @@
+mesh = {
+  dimension = 2
+  use-index-zero = true
+  vertices = {
+    dimension = 2
+    count = 9
+    coordinates = {
+             0     -4.0e+3  -4.0e+3
+             1      0.0e+3  -4.0e+3
+             2     +4.0e+3  -4.0e+3
+             3     -4.0e+3   0.0e+3
+             4      0.0e+3   0.0e+3
+             5     +4.0e+3   0.0e+3
+             6     -4.0e+3  +4.0e+3
+             7      0.0e+3  +4.0e+3
+             8     +4.0e+3  +4.0e+3
+    }
+  }
+  cells = {
+    count = 4
+    num-corners = 4
+    simplices = {
+             0       0  1  4  3
+             1       1  2  5  4
+             2       3  4  7  6
+             3       4  5  8  7
+    }
+    material-ids = {
+             0   24
+             1   24
+             2   24
+             3   24
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary
+    count = 8
+    indices = {
+      0  1  2  3  5  6  7  8
+    }
+  }
+  
+}
