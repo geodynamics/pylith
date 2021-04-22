@@ -35,4 +35,3 @@ playback 'bc.jou'
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "mesh_tet.exo" dimension 3 overwrite
-
