@@ -303,11 +303,10 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.
-    PetscDS prob = NULL;
+    PetscDS dsSoln = NULL;
     PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
-    err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
+    err = DMGetDS(dmSoln, &dsSoln);PYLITH_CHECK_ERROR(err);assert(dsSoln);
 
-    // Compute the local residual
     assert(solution.localVector());
     assert(residual->localVector());
     PetscDMLabel dmLabel = NULL;
@@ -315,14 +314,28 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
     const PetscInt labelValue = integrator->getLabelValue();
     err = DMSetAuxiliaryVec(dmSoln, NULL, 0, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
+    for (size_t i = 0; i < kernels.size(); ++i) {
+        PetscWeakForm wf;
+        const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
+        err = PetscDSGetWeakForm(dsSoln, &wf);PYLITH_CHECK_ERROR(err);
+        err = PetscWeakFormSetIndexBdResidual(wf, dmLabel, labelValue, i_field, 0, kernels[i].r0, 0,
+                                              kernels[i].r1);PYLITH_CHECK_ERROR(err);
+    } // for
+    if (debug.state()) {
+        err = PetscDSView(dsSoln, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+    } // if
+
+    // Compute the local residual
     // solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
 
     for (size_t i = 0; i < kernels.size(); ++i) {
         PetscWeakForm wf;
         const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
-        err = PetscDSGetWeakForm(prob, &wf);PYLITH_CHECK_ERROR(err);
-        err = PetscWeakFormSetIndexBdResidual(wf, dmLabel, labelValue, i_field, 0, kernels[i].r0, 0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
-        err = DMPlexComputeBdResidualSingle(dmSoln, t, wf, dmLabel, 1, &labelValue, i_field, solution.localVector(), solutionDot.localVector(), residual->localVector());PYLITH_CHECK_ERROR(err);
+        err = PetscDSGetWeakForm(dsSoln, &wf);PYLITH_CHECK_ERROR(err);
+        const PetscInt numLabelValues = 1;
+        err = DMPlexComputeBdResidualSingle(dmSoln, t, wf, dmLabel, numLabelValues, &labelValue, i_field,
+                                            solution.localVector(), solutionDot.localVector(),
+                                            residual->localVector());PYLITH_CHECK_ERROR(err);
     } // for
 
     PYLITH_METHOD_END;

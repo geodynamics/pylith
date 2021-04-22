@@ -271,17 +271,21 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.
-    PetscDS prob = NULL;
+    PetscDS dsSoln = NULL;
     PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
-    err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
+    err = DMGetDS(dmSoln, &dsSoln);PYLITH_CHECK_ERROR(err);assert(dsSoln);
 
     // Set pointwise function (kernels) in DS
     const std::vector<JacobianKernels>& kernels = _kernelsLHSJacobian;
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_fieldTrial = solution.subfieldInfo(kernels[i].subfieldTrial.c_str()).index;
         const PetscInt i_fieldBasis = solution.subfieldInfo(kernels[i].subfieldBasis.c_str()).index;
-        err = PetscDSSetJacobian(prob, i_fieldTrial, i_fieldBasis, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
+        err = PetscDSSetJacobian(dsSoln, i_fieldTrial, i_fieldBasis, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
     } // for
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        err = PetscDSView(dsSoln, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+    } // if
 
     // Get auxiliary data
     PetscDMLabel dmLabel = NULL;
@@ -408,7 +412,7 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     assert(residual);
     assert(_auxiliaryField);
 
-    PetscDS prob = NULL;
+    PetscDS dsSoln = NULL;
     PetscIS cellsIS = NULL;
     PetscInt numCells = 0;
     PetscErrorCode err;
@@ -424,11 +428,15 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     // the correct one.
     //
     // Set pointwise function (kernels) in DS
-    err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(dmSoln, &dsSoln);PYLITH_CHECK_ERROR(err);
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
-        err = PetscDSSetResidual(prob, i_field, kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
+        err = PetscDSSetResidual(dsSoln, i_field, kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
     } // for
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        err = PetscDSView(dsSoln, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+    } // if
 
     // Get auxiliary data
     PetscDMLabel dmLabel = NULL;
@@ -466,7 +474,7 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
     assert(precondMat);
     assert(_auxiliaryField);
 
-    PetscDS prob = NULL;
+    PetscDS dsSoln = NULL;
     PetscIS cellsIS = NULL;
     PetscErrorCode err;
     PetscDM dmSoln = solution.dmMesh();
@@ -480,12 +488,16 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
     // the correct one.
     //
     // Set pointwise function (kernels) in DS
-    err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(dmSoln, &dsSoln);PYLITH_CHECK_ERROR(err);
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_fieldTrial = solution.subfieldInfo(kernels[i].subfieldTrial.c_str()).index;
         const PetscInt i_fieldBasis = solution.subfieldInfo(kernels[i].subfieldBasis.c_str()).index;
-        err = PetscDSSetJacobian(prob, i_fieldTrial, i_fieldBasis, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
+        err = PetscDSSetJacobian(dsSoln, i_fieldTrial, i_fieldBasis, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
     } // for
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        err = PetscDSView(dsSoln, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+    } // if
 
     // Get auxiliary data
     PetscDMLabel dmLabel = NULL;
