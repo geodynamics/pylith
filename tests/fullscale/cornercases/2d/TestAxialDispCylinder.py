@@ -15,9 +15,9 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests/fullscale/cornercases/2d/TestAxialDispPgram.py
+# @file tests/fullscale/cornercases/2d/TestAxialDispCylinder.py
 #
-# @brief Test suite for testing pylith with 3-D axial extension for a parallelogram.
+# @brief Test suite for testing pylith with axial extension in the x-direction on a cylinder.
 
 import unittest
 
@@ -26,15 +26,15 @@ from pylith.tests.FullTestApp import TestCase as FullTestCase
 
 import meshes
 from axialdisp_soln import AnalyticalSoln
-from axialdisp_pgram_gendb import GenerateDB
+from axialdisp_cylinder_gendb import GenerateDB
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
     """
-    Test suite for testing PyLith with axial extension in the x-direction for a parallelogram.
+    Test suite for testing PyLith with axial extension in the x-direction for a cylinder.
     """
-    DIRICHLET_BOUNDARIES = ["bc_outer"]
+    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_yneg", "bc_inner", "bc_outer"]
 
     def setUp(self):
         """
@@ -84,24 +84,22 @@ class TestCase(FullTestCase):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-class TestTri(TestCase, meshes.TriPgram8Cells):
-    NAME = "axialdisp_pgram_8cells_tri"
+class TestTri(TestCase, meshes.TriCylinder):
+    NAME = "axialdisp_cylinder_tri"
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(
-            self, self.NAME, ["axialdisp_pgram.cfg", "axialdisp_pgram_8cells_tri.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["axialdisp_cylinder.cfg", "axialdisp_cylinder_tri.cfg"])
         return
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-class TestQuad(TestCase, meshes.QuadPgram4Cells):
-    NAME = "axialdisp_pgram_4cells_quad"
+class TestQuad(TestCase, meshes.QuadCylinder):
+    NAME = "axialdisp_cylinder_quad"
 
     def setUp(self):
         TestCase.setUp(self)
-        TestCase.run_pylith(
-            self, self.NAME, ["axialdisp_pgram.cfg", "axialdisp_pgram_4cells_quad.cfg"])
+        TestCase.run_pylith(self, self.NAME, ["axialdisp_cylinder.cfg", "axialdisp_cylinder_quad.cfg"])
         return
 
 

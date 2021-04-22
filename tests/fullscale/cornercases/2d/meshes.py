@@ -48,6 +48,46 @@ class Tri(object):
     }
 
 
+class TriCylinder(object):
+    """
+    Mesh information for tri mesh of a thick-walled cylinder.
+    """
+    DOMAIN = {
+        "ncells": 12,
+        "ncorners": 3,
+        "nvertices": 12,
+    }
+    MATERIALS = {
+        "elastic": {
+            "ncells": 12,
+            "ncorners": 3,
+            "nvertices": 12,
+        },
+    }
+    BOUNDARIES = {
+        "bc_xneg": {
+            "ncells": 2,
+            "ncorners": 2,
+            "nvertices": 3,
+        },
+        "bc_yneg": {
+            "ncells": 2,
+            "ncorners": 2,
+            "nvertices": 3,
+        },
+        "bc_inner": {
+            "ncells": 2,
+            "ncorners": 2,
+            "nvertices": 3,
+        },
+        "bc_outer": {
+            "ncells": 4,
+            "ncorners": 2,
+            "nvertices": 5,
+        },
+    }
+
+
 class TriPgram8Cells(object):
     """
     Mesh information for tri parallelogram mesh.
@@ -132,6 +172,46 @@ class Quad(object):
         },
         "bc_domain": {
             "ncells": 4,
+            "ncorners": 2,
+            "nvertices": 4,
+        },
+    }
+
+
+class QuadCylinder(object):
+    """
+    Mesh information for quad mesh of a thick-walled cylinder.
+    """
+    DOMAIN = {
+        "ncells": 6,
+        "ncorners": 4,
+        "nvertices": 12,
+    }
+    MATERIALS = {
+        "elastic": {
+            "ncells": 6,
+            "ncorners": 4,
+            "nvertices": 12,
+        },
+    }
+    BOUNDARIES = {
+        "bc_xneg": {
+            "ncells": 2,
+            "ncorners": 2,
+            "nvertices": 3,
+        },
+        "bc_yneg": {
+            "ncells": 2,
+            "ncorners": 2,
+            "nvertices": 3,
+        },
+        "bc_inner": {
+            "ncells": 3,
+            "ncorners": 2,
+            "nvertices": 4,
+        },
+        "bc_outer": {
+            "ncells": 3,
             "ncorners": 2,
             "nvertices": 4,
         },

@@ -1,0 +1,35 @@
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 surface all
+block 1 name "elastic"
+
+# ----------------------------------------------------------------------
+# Create nodeset for inner_surface
+# ----------------------------------------------------------------------
+group "edge_inner" add node in curve 76
+nodeset 20 group edge_inner
+nodeset 20 name "edge_inner"
+
+# ----------------------------------------------------------------------
+# Create nodeset for outer surface
+# ----------------------------------------------------------------------
+group "edge_outer" add node in curve 74
+nodeset 21 group edge_outer
+nodeset 21 name "edge_outer
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x edge
+# ----------------------------------------------------------------------
+group "edge_xneg" add node in curve 73
+nodeset 22 group edge_xneg
+nodeset 22 name "edge_xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y edge
+# ----------------------------------------------------------------------
+group "edge_yneg" add node in curve 75
+nodeset 23 group edge_yneg
+nodeset 23 name "edge_yneg"
+
+
