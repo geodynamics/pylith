@@ -31,6 +31,7 @@
 #include "pylith/utils/array.hh" // USES real_array, string_vector
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include <cassert> // USES assert()
+#include <iostream> // USES std::out
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.
@@ -197,6 +198,8 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     CPPUNIT_ASSERT(_solution);
 
     _problem->solve();
+    std::cout << "IMPORTANT: You must check the Jacobian values printed here manually!\n"
+              << "           They should be O(1.0e-6) or smaller." << std::endl;
     err = PetscOptionsClearValue(NULL, "-snes_test_jacobian");CPPUNIT_ASSERT(!err);
     err = PetscOptionsClearValue(NULL, "-snes_test_jacobian_view");CPPUNIT_ASSERT(!err);
 
