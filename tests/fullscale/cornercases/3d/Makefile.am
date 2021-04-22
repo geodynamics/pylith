@@ -23,9 +23,12 @@ dist_noinst_PYTHON = \
 	meshes.py \
 	TestAxialDispOneCell.py \
 	TestAxialDispConstrained.py \
+	TestAxialDispCylinder.py \
+	TestAxialDispPgram.py \
 	TestAxialDispRotated.py \
 	axialdisp_soln.py \
-	axialdisp_gendb.py \
+	axialdisp_cylinder_gendb.py \
+	axialdisp_pgram_gendb.py \
 	axialdisp_rotated_soln.py \
 	axialdisp_rotated_gendb.py
 
@@ -34,9 +37,27 @@ dist_noinst_DATA = \
 	onecell_hex.mesh \
 	fivecells_rotated_tet.mesh \
 	onecell_rotated_hex.mesh \
+	createbc_cylinder.jou \
+	createbc_pgram.jou \
+	geometry_cylinder.jou \
+	geometry_pgram.jou \
+	mesh_cylinder_hex.jou \
+	mesh_cylinder_hex.exo \
+	mesh_cylinder_tet.jou \
+	mesh_cylinder_tet.exo \
+	mesh_pgram_hex.jou \
+	mesh_pgram_hex.exo \
+	mesh_pgram_tet.jou \
+	mesh_pgram_tet.exo \
 	pylithapp.cfg \
 	axialdisp.cfg \
 	axialdisp_hex.cfg \
+	axialdisp_cylinder.cfg \
+	axialdisp_cylinder_hex.cfg \
+	axialdisp_cylinder_tet.cfg \
+	axialdisp_pgram.cfg \
+	axialdisp_pgram_hex.cfg \
+	axialdisp_pgram_tet.cfg \
 	axialdisp_rotated.cfg \
 	axialdisp_rotated_hex.cfg \
 	axialdisp_rotated_tet.cfg \
@@ -46,6 +67,8 @@ dist_noinst_DATA = \
 
 noinst_TMP = \
 	axialdisp_bc.spatialdb \
+	axialdisp_cylinder_bc.spatialdb \
+	axialdisp_pgram_bc.spatialdb \
 	axialdisp_rotated_bc.spatialdb
 
 

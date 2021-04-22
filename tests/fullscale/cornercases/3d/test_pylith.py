@@ -50,6 +50,14 @@ class TestApp(TestDriver):
         for test in TestAxialDispRotated.test_cases():
             suite.addTest(unittest.makeSuite(test))
 
+        import TestAxialDispPgram
+        for test in TestAxialDispPgram.test_cases():
+            suite.addTest(unittest.makeSuite(test))
+
+        import TestAxialDispCylinder
+        for test in TestAxialDispCylinder.test_cases():
+            suite.addTest(unittest.makeSuite(test))
+
         return suite
 
 
