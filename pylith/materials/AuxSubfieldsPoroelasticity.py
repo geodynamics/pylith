@@ -21,9 +21,21 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class AuxSubfieldsPoroelasticity(PetscComponent):
-    """Python container for poroelasticity equation subfields.
+    """
+    Python container for poroelasticity equation subfields.
 
-    FACTORY: auxiliary_subfields
+    INVENTORY
+
+    Properties
+      - None
+
+    Facilities
+      - *porosity* Porosity subfield.
+      - *solid_density* Rock Density subfield.
+      - *fluid_density* Fluid Density subfield.
+      - *fluid_viscosity* Fluid viscosity subfield.
+      - *body_force* Body force.
+      - *gravitational_acceleration* Gravitational acceleration subfield.
     """
 
     import pythia.pyre.inventory
@@ -44,6 +56,9 @@ class AuxSubfieldsPoroelasticity(PetscComponent):
 
     bodyForce = pythia.pyre.inventory.facility("body_force", family="auxiliary_subfield", factory=Subfield)
     bodyForce.meta['tip'] = "Body force subfield."
+
+    sourceDensity = pythia.pyre.inventory.facility("source_density", family="auxiliary_subfield", factory=Subfield)
+    sourceDensity.meta['tip'] = "Source density subfield."    
 
     gravitationalAcceleration = pythia.pyre.inventory.facility(
         "gravitational_acceleration", family="auxiliary_subfield", factory=Subfield)

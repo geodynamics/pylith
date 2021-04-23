@@ -25,9 +25,23 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class AuxSubfieldsIsotropicLinearPoroelasticity(PetscComponent):
-    """Python subfields container for isotropic, linear poroelasticity subfields.
+    """
+    Python subfields container for isotropic, linear poroelasticity subfields.
 
-    FACTORY: auxiliary_subfields
+    INVENTORY
+
+    Properties
+      - None
+
+    Facilities
+      - *reference_stress* Reference stress subfield.
+      - *references_strain* Reference strain.
+      - *shear_modulus* Shear modulus subfield.
+      - *solid_bulk_modulus* Solid Bulk modulus subfield.
+      - *biot_coefficient* Biot Coefficient subfield.
+      - *isotropic_permeability* Isotropic Permeability subfield.
+      - *tensor_permeability* Tensor Permeability subfield.      
+      - *fluid_bulk_modulus* Fluid Bulk Modulus subfield.
     """
 
     import pythia.pyre.inventory
@@ -53,6 +67,10 @@ class AuxSubfieldsIsotropicLinearPoroelasticity(PetscComponent):
     isotropicPermeability = pythia.pyre.inventory.facility(
         "isotropic_permeability", family="auxiliary_subfield", factory=Subfield)
     isotropicPermeability.meta['tip'] = "Isotropic permeability subfield."
+
+    tensorPermeability = pythia.pyre.inventory.facility(
+        "tensor_permeability", family="auxiliary_subfield", factory=Subfield)
+    tensorPermeability.meta['tip'] = "Tensor permeability subfield."
 
     solidBulkModulus = pythia.pyre.inventory.facility(
         "solid_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
