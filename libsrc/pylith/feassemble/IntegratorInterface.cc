@@ -457,7 +457,7 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     PetscDS prob = NULL;
     err = DMGetCellDS(dmSoln, cellIndices[0], &prob);PYLITH_CHECK_ERROR(err);
 
-    // Get auxiliary data
+    // Set auxiliary data
     PetscDMLabel dmLabel = NULL;
     PetscInt labelValue = 0;
     err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);

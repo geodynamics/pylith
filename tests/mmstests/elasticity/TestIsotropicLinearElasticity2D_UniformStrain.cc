@@ -42,6 +42,7 @@ namespace pylith {
         class TestIsotropicLinearElasticity2D_UniformStrain_TriP4;
 
         class TestIsotropicLinearElasticity2D_UniformStrain_QuadQ1;
+        class TestIsotropicLinearElasticity2D_UniformStrain_QuadQ1Distorted;
         class TestIsotropicLinearElasticity2D_UniformStrain_QuadQ2;
         class TestIsotropicLinearElasticity2D_UniformStrain_QuadQ3;
         class TestIsotropicLinearElasticity2D_UniformStrain_QuadQ4;
@@ -346,6 +347,32 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_QuadQ1 :
 
 }; // TestIsotropicLinearElasticity2D_UniformStrain_QuadQ1
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_QuadQ1);
+
+// ---------------------------------------------------------------------------------------------------------------------
+class pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_QuadQ1Distorted :
+    public pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_UniformStrain_QuadQ1Distorted,
+                           TestIsotropicLinearElasticity);
+    CPPUNIT_TEST_SUITE_END();
+
+    void setUp(void) {
+        TestIsotropicLinearElasticity2D_UniformStrain::setUp();
+        CPPUNIT_ASSERT(_data);
+
+        _data->meshFilename = "data/quad_distorted.mesh";
+
+        _data->numSolnSubfields = 1;
+        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+            pylith::topology::Field::Discretization(1, 1), // disp
+        };
+        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+
+    } // setUp
+
+}; // TestIsotropicLinearElasticity2D_UniformStrain_QuadQ1Distorted
+// :TODO: This test exposes a known bug in PETSc with distorted quad cells.
+// Once @knepley fixes the error, we will enable test.
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_QuadQ1Distorted);
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_QuadQ2 :

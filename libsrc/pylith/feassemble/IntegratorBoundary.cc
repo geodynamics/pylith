@@ -296,33 +296,45 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
 
     assert(integrator);
     assert(residual);
-
-    const pylith::topology::Field* auxiliaryField = integrator->getAuxiliaryField();assert(auxiliaryField);
-
     PetscErrorCode err;
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.
-    PetscDS prob = NULL;
     PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
-    err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
+    PetscDS dsSoln = NULL;
+    err = DMGetDS(dmSoln, &dsSoln);PYLITH_CHECK_ERROR(err);assert(dsSoln);
+    PetscWeakForm weakForm = NULL;
+    err = PetscDSGetWeakForm(dsSoln, &weakForm);PYLITH_CHECK_ERROR(err);
 
-    // Compute the local residual
-    assert(solution.localVector());
-    assert(residual->localVector());
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmSoln, integrator->getMarkerLabel(), &dmLabel);PYLITH_CHECK_ERROR(err);
     const PetscInt labelValue = integrator->getLabelValue();
-    err = DMSetAuxiliaryVec(dmSoln, NULL, 0, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
+    { // :TODO: Move to initialization phase
+      // Must use PetscWeakFormAddBdResidual() when moved to initialization.
+        for (size_t i = 0; i < kernels.size(); ++i) {
+            const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
+            err = PetscWeakFormSetIndexBdResidual(weakForm, dmLabel, labelValue, i_field, 0, kernels[i].r0, 0,
+                                                  kernels[i].r1);PYLITH_CHECK_ERROR(err);
+        } // for
+        if (debug.state()) {
+            err = PetscDSView(dsSoln, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+        } // if
+
+        const pylith::topology::Field* auxiliaryField = integrator->getAuxiliaryField();assert(auxiliaryField);
+        err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    } // Move to initialization phase
+
+    // Compute the local residual
     // solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
-
+    assert(solution.localVector());
+    assert(residual->localVector());
     for (size_t i = 0; i < kernels.size(); ++i) {
-        PetscWeakForm wf;
+        const PetscInt numLabelValues = 1;
         const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
-        err = PetscDSGetWeakForm(prob, &wf);PYLITH_CHECK_ERROR(err);
-        err = PetscWeakFormSetIndexBdResidual(wf, dmLabel, labelValue, i_field, 0, kernels[i].r0, 0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
-        err = DMPlexComputeBdResidualSingle(dmSoln, t, wf, dmLabel, 1, &labelValue, i_field, solution.localVector(), solutionDot.localVector(), residual->localVector());PYLITH_CHECK_ERROR(err);
+        err = DMPlexComputeBdResidualSingle(dmSoln, t, weakForm, dmLabel, numLabelValues, &labelValue, i_field,
+                                            solution.localVector(), solutionDot.localVector(),
+                                            residual->localVector());PYLITH_CHECK_ERROR(err);
     } // for
 
     PYLITH_METHOD_END;
