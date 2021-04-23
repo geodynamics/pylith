@@ -430,6 +430,7 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
         err = PetscDSSetResidual(prob, i_field, kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
     } // for
 
+    err = PetscDSView(prob, NULL);
     // Get auxiliary data
     PetscDMLabel dmLabel = NULL;
     PetscInt labelValue = 0;

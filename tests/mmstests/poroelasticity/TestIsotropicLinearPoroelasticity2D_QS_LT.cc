@@ -429,17 +429,18 @@ protected:
         err = PetscDSSetExactSolution(prob, 2, solnkernel_trace_strain, NULL);CPPUNIT_ASSERT(!err);
 
         err = PetscDSGetWeakForm(prob, &wf);CPPUNIT_ASSERT(!err);
+        //err = PetscWeakFormSetIndexResidual(wf, NULL, 0, 0, 0, NULL, 0, NULL);CPPUNIT_ASSERT(!err);
         err = PetscWeakFormSetIndexResidual(wf, NULL, 0, 0, 0, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_ql_u, 0, NULL);CPPUNIT_ASSERT(!err);
         err = PetscWeakFormSetIndexResidual(wf, NULL, 0, 1, 1, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_ql_p, 0, NULL);CPPUNIT_ASSERT(!err);
         err = PetscDSView(prob, NULL);
-        
+
     } // _setExactSolution
 
 }; // TestIsotropicLinearPoroelasticity2D_QS_LT
 const double pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT::LENGTHSCALE = 1.0e+3;
 const double pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT::TIMESCALE = 1.0;
 const double pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT::PRESSURESCALE = 1.0;
-const double pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT::BODYFORCE = 5.0e+3;
+const double pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT::BODYFORCE = 1.0;
 const double pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT::XMAX = 4.0e+3;
 
 // ---------------------------------------------------------------------------------------------------------------------

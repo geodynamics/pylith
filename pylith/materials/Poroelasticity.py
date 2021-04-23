@@ -26,15 +26,31 @@ from .IsotropicLinearPoroelasticity import IsotropicLinearPoroelasticity
 
 
 class Poroelasticity(Material, ModulePoroelasticity):
-    """Python material property manager.
+    """
+    Python material property manager.
+
+    INVENTORY
+
+    Properties
+      - *use_inertia* Include inertial term in Poroelasticity equation.
+      - *use_body_force* Include body force term in Poroelasticity equation.
+
+    Facilities
+      - *bulk_rheology* Bulk rheology for poroelastic material.
 
     FACTORY: material
     """
 
     import pythia.pyre.inventory
 
+    useInertia = pythia.pyre.inventory.bool("use_inertia", default=False)
+    useInertia.meta['tip'] = "Include inertia term in Poroelasticity equation."
+
     useBodyForce = pythia.pyre.inventory.bool("use_body_force", default=False)
     useBodyForce.meta['tip'] = "Include body force term in Poroelasticity equation."
+
+    useSourceDensity = pythia.pyre.inventory.bool("use_source_density", default=False)
+    useSourceDensity.meta['tip'] = "Include source density term in Poroelasticity equation."
 
     rheology = pythia.pyre.inventory.facility(
         "bulk_rheology", family="poroelasticity_rheology", factory=IsotropicLinearPoroelasticity)
@@ -63,7 +79,9 @@ class Poroelasticity(Material, ModulePoroelasticity):
 
         self.rheology.addAuxiliarySubfields(self, problem)
 
+        ModulePoroelasticity.useInertia(self, self.useInertia)
         ModulePoroelasticity.useBodyForce(self, self.useBodyForce)
+        ModulePoroelasticity.useSourceDensity(self, self.useSourceDensity)
         return
 
     def _createModuleObj(self):

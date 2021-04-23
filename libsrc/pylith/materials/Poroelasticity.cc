@@ -75,6 +75,22 @@ pylith::materials::Poroelasticity::deallocate(void) {
     _rheology = NULL; // :TODO: Use shared pointer.
 } // deallocate
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Include inertia?
+void
+pylith::materials::Poroelasticity::useInertia(const bool value) {
+    PYLITH_COMPONENT_DEBUG("_useInertia(value="<<value<<")");
+
+    _useInertia = value;
+} // _useInertia
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Include inertia?
+bool
+pylith::materials::Poroelasticity::useInertia(void) const {
+    return _useInertia;
+} // _useInertia
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Include body force?
@@ -372,7 +388,7 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
         default:
             PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
         } // switch
-        
+
         const PetscPointFunc g1v = _rheology->getKernelg1v(coordsys);
 
         kernels.resize(3);

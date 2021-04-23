@@ -51,12 +51,10 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_ql_u(const P
                                                               const PylithScalar x[],
                                                               const PylithInt numConstants,
                                                               const PylithScalar constants[],
-                                                              PylithScalar f0u[]) {
+                                                              PylithScalar f0[]) {
  const PylithInt _dim = 2;
 
  // Incoming re-packed solution field.
- const PylithInt i_pressure = 1;
- const PylithInt i_trace_strain = 2;
 
  // Incoming re-packed auxiliary field.
 
@@ -66,20 +64,45 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_ql_u(const P
  const PylithInt i_shearModulus = numA - 5;
  const PylithInt i_drainedBulkModulus = numA - 4;
  const PylithInt i_biotCoefficient = numA - 3;
- const PylithInt i_biotModulus = numA - 2;
+
+ // Perform Checks
+ assert(_dim == dim);
+ assert(numS >= 3);
+ assert(numA >= 9);
+ assert(sOff);
+ assert(aOff);
+ assert(aOff[i_shearModulus] >= 0);
+ assert(aOff[i_drainedBulkModulus] >= 0);
+ assert(aOff[i_biotCoefficient] >= 0);
+ assert(f0);
 
  const PylithScalar shearModulus = a[aOff[i_shearModulus]];
  const PylithScalar drainedBulkModulus = a[aOff[i_drainedBulkModulus]];
  const PylithScalar biotCoefficient = a[aOff[i_biotCoefficient]];
- const PylithScalar biotModulus = a[aOff[i_biotModulus]];
 
- const PylithScalar lambda = drainedBulkModulus - 2.0/3.0*shearModulus;
+ PylithScalar testf0_0=0.0, testf0_1=0.0;
+
+ const PylithScalar lambda = drainedBulkModulus - (2.0*shearModulus)/3.0;
+  printf("f0[0] %f\n", f0[0]);
+  printf("f0[1] %f\n", f0[1]);
 
   for (PylithInt d = 0; d < _dim-1; ++d) {
-    f0u[d] -= 2.0*shearModulus - biotCoefficient*t;
+    f0[d] -= 2.0*shearModulus - biotCoefficient*t;
   }
-  f0u[_dim-1] -= 2.0*lambda + 4.0*shearModulus - biotCoefficient*t;
-  printf("HELP");
+  f0[_dim-1] -= 2.0*lambda + 4.0*shearModulus - biotCoefficient*t;
+
+  testf0_0 -= 2.0*shearModulus - biotCoefficient*t;
+  testf0_1 -= 2.0*shearModulus - biotCoefficient*t;
+  testf0_1 -= 2.0*lambda + 4.0*shearModulus - biotCoefficient*t;
+  printf("drainedBulkModulus %f\n", drainedBulkModulus);
+  printf("biotCoefficient %f\n", biotCoefficient);
+  printf("shearModulus %f\n", shearModulus);
+  printf("lambda %f\n", lambda);
+  printf("t %f\n", t);
+  printf("f0[0] %f\n", f0[0]);
+  printf("f0[1] %f\n", f0[1]);
+  printf("testf0_0 %f\n", testf0_0);
+  printf("testf0_1 %f\n", testf0_1);
 } // f0_quadratic_linear_u
 
 // ----------------------------------------------------------------------
@@ -102,7 +125,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_ql_p(const P
                                                               const PylithScalar x[],
                                                               const PylithInt numConstants,
                                                               const PylithScalar constants[],
-                                                              PylithScalar f0p[]) {
+                                                              PylithScalar f0[]) {
 
  const PylithInt _dim = 2;
 
@@ -113,6 +136,18 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_ql_p(const P
  const PylithInt i_biotCoefficient = numA - 3;
  const PylithInt i_biotModulus = numA - 2;
 
+ // Perform Checks
+ assert(_dim == dim);
+ assert(numS >= 3);
+ assert(numA >= 9);
+ assert(sOff);
+ assert(sOff[i_pressure] >= 0);
+ assert(sOff[i_trace_strain] >= 0);
+ assert(aOff);
+ assert(aOff[i_biotCoefficient] >= 0);
+ assert(aOff[i_biotModulus] >= 0);
+ assert(f0);
+
  const PylithScalar biotCoefficient = a[aOff[i_biotCoefficient]];
  const PylithScalar biotModulus = a[aOff[i_biotModulus]];
 
@@ -121,9 +156,9 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_ql_p(const P
  for (PylithInt d = 0; d < _dim; ++d) {
    sum += x[d];
  }
- f0p[0] += s_t ? biotCoefficient*s_t[sOff[i_trace_strain]] : 0.0;
- f0p[0] += s_t ? s_t[sOff[i_pressure]]/biotModulus     : 0.0;
- f0p[0] -= sum/biotModulus;
+ f0[0] += s_t ? biotCoefficient*s_t[sOff[i_trace_strain]] : 0.0;
+ f0[0] += s_t ? s_t[sOff[i_pressure]]/biotModulus     : 0.0;
+ f0[0] -= sum/biotModulus;
 } // f0_quadratic_linear_p
 
 // ----------------------------------------------------------------------
@@ -146,13 +181,11 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_qt_u(const P
                                                               const PylithScalar x[],
                                                               const PylithInt numConstants,
                                                               const PylithScalar constants[],
-                                                              PylithScalar f0u[]) {
+                                                              PylithScalar f0[]) {
 
  const PylithInt _dim = 2;
 
  // Incoming re-packed solution field.
- const PylithInt i_pressure = 1;
- const PylithInt i_trace_strain = 2;
 
  // Incoming re-packed auxiliary field.
 
@@ -164,6 +197,18 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_qt_u(const P
  const PylithInt i_biotCoefficient = numA - 3;
  const PylithInt i_biotModulus = numA - 2;
 
+ // Perform Checks
+ assert(_dim == dim);
+ assert(numS >= 3);
+ assert(numA >= 9);
+ assert(sOff);
+ assert(aOff);
+ assert(aOff[i_shearModulus] >= 0);
+ assert(aOff[i_drainedBulkModulus] >= 0);
+ assert(aOff[i_biotCoefficient] >= 0);
+ assert(aOff[i_biotModulus] >= 0);
+ assert(f0);
+
  const PylithScalar shearModulus = a[aOff[i_shearModulus]];
  const PylithScalar drainedBulkModulus = a[aOff[i_drainedBulkModulus]];
  const PylithScalar biotCoefficient = a[aOff[i_biotCoefficient]];
@@ -172,9 +217,9 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_qt_u(const P
  const PylithScalar lambda = drainedBulkModulus - 2.0/3.0*shearModulus;
 
   for (PylithInt d = 0; d < _dim-1; ++d) {
-    f0u[d] -= 2.0*shearModulus - biotCoefficient*PetscCosReal(t);
+    f0[d] -= 2.0*shearModulus - biotCoefficient*PetscCosReal(t);
   }
-  f0u[_dim-1] -= 2.0*lambda + 4.0*shearModulus - biotCoefficient*PetscCosReal(t);
+  f0[_dim-1] -= 2.0*lambda + 4.0*shearModulus - biotCoefficient*PetscCosReal(t);
 } // f0_quadratic_trig_u
 
 // ----------------------------------------------------------------------
@@ -197,7 +242,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_qt_p(const P
                                                               const PylithScalar x[],
                                                               const PylithInt numConstants,
                                                               const PylithScalar constants[],
-                                                              PylithScalar f0p[]) {
+                                                              PylithScalar f0[]) {
 
  const PylithInt _dim = 2;
 
@@ -216,9 +261,9 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_qt_p(const P
  for (PylithInt d = 0; d < _dim; ++d) {
    sum += x[d];
  }
- f0p[0] += s_t ? biotCoefficient*s_t[sOff[i_trace_strain]] : 0.0;
- f0p[0] += s_t ? s_t[sOff[i_pressure]]/biotModulus     : 0.0;
- f0p[0] += PetscSinReal(t)*sum/biotModulus;
+ f0[0] += s_t ? biotCoefficient*s_t[sOff[i_trace_strain]] : 0.0;
+ f0[0] += s_t ? s_t[sOff[i_pressure]]/biotModulus     : 0.0;
+ f0[0] += PetscSinReal(t)*sum/biotModulus;
 } // f0_quadratic_trig_p
 
 // ----------------------------------------------------------------------
@@ -241,7 +286,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_tl_u(const P
                                                               const PylithScalar x[],
                                                               const PylithInt numConstants,
                                                               const PylithScalar constants[],
-                                                              PylithScalar f0u[]) {
+                                                              PylithScalar f0[]) {
 
  const PylithInt _dim = 2;
 
@@ -267,9 +312,9 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_tl_u(const P
  const PylithScalar lambda = drainedBulkModulus - 2.0/3.0*shearModulus;
 
  for (PylithInt d = 0; d < _dim-1; ++d) {
-   f0u[d] += PetscSqr(2.*PETSC_PI)*PetscSinReal(2.*PETSC_PI*x[d])*(2.*shearModulus + lambda) + 2.0*(shearModulus + lambda) - 2.*PETSC_PI*biotCoefficient*PetscSinReal(2.*PETSC_PI*x[d])*t;
+   f0[d] += PetscSqr(2.*PETSC_PI)*PetscSinReal(2.*PETSC_PI*x[d])*(2.*shearModulus + lambda) + 2.0*(shearModulus + lambda) - 2.*PETSC_PI*biotCoefficient*PetscSinReal(2.*PETSC_PI*x[d])*t;
  }
- f0u[_dim-1] += PetscSqr(2.*PETSC_PI)*PetscSinReal(2.*PETSC_PI*x[_dim-1])*(2.*shearModulus + lambda) - 2.*PETSC_PI*biotCoefficient*PetscSinReal(2.*PETSC_PI*x[_dim-1])*t;
+ f0[_dim-1] += PetscSqr(2.*PETSC_PI)*PetscSinReal(2.*PETSC_PI*x[_dim-1])*(2.*shearModulus + lambda) - 2.*PETSC_PI*biotCoefficient*PetscSinReal(2.*PETSC_PI*x[_dim-1])*t;
 } // f0_trig_linear_u
 
 // ----------------------------------------------------------------------
@@ -292,7 +337,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_tl_p(const P
                                                               const PylithScalar x[],
                                                               const PylithInt numConstants,
                                                               const PylithScalar constants[],
-                                                              PylithScalar f0p[]) {
+                                                              PylithScalar f0[]) {
 
  const PylithInt _dim = 2;
 
@@ -316,9 +361,9 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_tl_p(const P
  for (PylithInt d = 0; d < _dim; ++d) {
    sum += PetscCosReal(2.*PETSC_PI*x[d]);
  }
- f0p[0] += s_t ? biotCoefficient*s_t[i_trace_strain] : 0.0;
- f0p[0] += s_t ? s_t[sOff[i_pressure]]/biotModulus     : 0.0;
- f0p[0] -= sum/biotModulus - 4*PetscSqr(PETSC_PI)*kappa*sum*t;
+ f0[0] += s_t ? biotCoefficient*s_t[i_trace_strain] : 0.0;
+ f0[0] += s_t ? s_t[sOff[i_pressure]]/biotModulus     : 0.0;
+ f0[0] -= sum/biotModulus - 4*PetscSqr(PETSC_PI)*kappa*sum*t;
 } // f0_quadratic_trig_p
 
 // ================================= STD =======================================
@@ -346,7 +391,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_explicit(const 
                                                                   const PylithScalar x[],
                                                                   const PylithInt numConstants,
                                                                   const PylithScalar constants[],
-                                                                  PylithScalar f0p[]) {
+                                                                  PylithScalar f0[]) {
     const PylithInt _dim = 2;
 
     // Incoming re-packed solution field.
@@ -362,7 +407,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_explicit(const 
     const PylithScalar pressure_t = s_t[sOff[i_pressure]];
     const PylithScalar biotModulus = a[aOff[i_biotModulus]];
 
-    f0p[0] += pressure_t/biotModulus;
+    f0[0] += pressure_t/biotModulus;
 } // f0p_explicit
 
 // ----------------------------------------------------------------------
