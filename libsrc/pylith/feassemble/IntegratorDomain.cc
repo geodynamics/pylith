@@ -40,6 +40,7 @@ extern "C" PetscErrorCode DMPlexComputeResidual_Internal(PetscDM dm,
                                                          PetscReal time,
                                                          PetscVec locX,
                                                          PetscVec locX_t,
+                                                         PetscReal t,
                                                          PetscVec locF,
                                                          void *user);
 
@@ -473,7 +474,7 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     PetscInt numCells = 0;
     err = DMGetStratumIS(dmSoln, _labelName.c_str(), _labelValue, &cellsIS);PYLITH_CHECK_ERROR(err);
     err = ISGetSize(cellsIS, &numCells);PYLITH_CHECK_ERROR(err);assert(numCells > 0);
-    err = DMPlexComputeResidual_Internal(dmSoln, key, cellsIS, PETSC_MIN_REAL, solution.localVector(), solutionDot.localVector(), residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeResidual_Internal(dmSoln, key, cellsIS, PETSC_MIN_REAL, solution.localVector(), solutionDot.localVector(), t, residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&cellsIS);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
