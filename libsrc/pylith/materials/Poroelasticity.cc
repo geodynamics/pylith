@@ -75,6 +75,22 @@ pylith::materials::Poroelasticity::deallocate(void) {
     _rheology = NULL; // :TODO: Use shared pointer.
 } // deallocate
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Include inertia?
+void
+pylith::materials::Poroelasticity::useInertia(const bool value) {
+    PYLITH_COMPONENT_DEBUG("_useInertia(value="<<value<<")");
+
+    _useInertia = value;
+} // _useInertia
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Include inertia?
+bool
+pylith::materials::Poroelasticity::useInertia(void) const {
+    return _useInertia;
+} // _useInertia
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Include body force?

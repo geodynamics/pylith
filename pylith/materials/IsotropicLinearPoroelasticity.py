@@ -25,7 +25,17 @@ from .materials import IsotropicLinearPoroelasticity as ModuleLinearPoroelastici
 
 
 class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelasticity):
-    """Python material for isotropic, linearly poroelastic plane strain.
+    """
+    Python material for isotropic, linearly poroelastic plane strain.
+
+    INVENTORY
+
+    Properties
+      - *use_reference_state* Use reference stress/strain state.
+      - *use_tensor_permeability* Use full tensor permeability.
+
+    Facilities
+      - None
 
     FACTORY: poroelasticity_rheology
     """
@@ -34,6 +44,9 @@ class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelas
 
     useReferenceState = pythia.pyre.inventory.bool("use_reference_state", default=False)
     useReferenceState.meta['tip'] = "Use reference stress/strain state."
+
+    useTensorPermeability = pythia.pyre.inventory.bool("use_tensor_permeability", default=False)
+    useTensorPermeability.meta['tip'] = "Use full tensor permeability."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -51,6 +64,7 @@ class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelas
         RheologyPoroelasticity.preinitialize(self, mesh)
 
         ModuleLinearPoroelasticity.useReferenceState(self, self.useReferenceState)
+        ModuleLinearPoroelasticity.useTensorPermeability(self, self.useTensorPermeability)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
