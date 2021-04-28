@@ -43,6 +43,18 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
+    /** Include inertia?
+     *
+     * @param[in] value Flag indicating to include inertia term.
+     */
+    void useInertia(const bool value);
+
+    /** Include inertia?
+     *
+     * @returns True if including inertia term, false otherwise.
+     */
+    bool useInertia(void) const;
+
     /** Include body force?
      *
      * @param[in] value Flag indicating to include body force term.
