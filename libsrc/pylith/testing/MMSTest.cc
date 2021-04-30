@@ -121,8 +121,10 @@ pylith::testing::MMSTest::testResidual(void) {
         _solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
-    const PylithReal tolerance = -1.0;
+    const PylithReal tolerance = -1.0, t = 0.0;
     PylithReal norm = 0.0;
+    //err = DMTSCheckResidual(_problem->getPetscTS(), _problem->getPetscDM(), t, _solution->scatterVector("mmstest"),
+    //                        _solution->scatterVector("mmstest_t"), tolerance, &norm);
     err = DMSNESCheckResidual(_problem->getPetscSNES(), _problem->getPetscDM(), _solution->scatterVector("mmstest"),
                               tolerance, &norm);CPPUNIT_ASSERT(!err);
     if (debug.state()) {
@@ -151,7 +153,7 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
     PetscErrorCode err = 0;
-    const PylithReal tolerance = -1.0;
+    const PylithReal tolerance = -1.0, t = 0.0;
     PetscBool isLinear = PETSC_FALSE;
     PylithReal convergenceRate = 0.0;
     err = DMSNESCheckJacobian(_problem->getPetscSNES(), _problem->getPetscDM(), _solution->scatterVector("mmstest"),
@@ -224,6 +226,10 @@ pylith::testing::MMSTest::_initialize(void) {
 
     // Global vector to use for analytical solution in MMS tests.
     _solution->createScatter(_solution->mesh(), "mmstest");
+
+    // Global time derivative vector to use for analytical solution in MMS tests.
+    //_solution->createScatter(_solution->mesh(), "mmstest_t");
+
 
     PYLITH_METHOD_END;
 } // _initialize
