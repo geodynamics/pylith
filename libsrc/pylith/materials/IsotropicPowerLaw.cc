@@ -38,7 +38,7 @@ typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 pylith::materials::IsotropicPowerLaw::IsotropicPowerLaw(void) :
     _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryViscoelastic),
     _useReferenceState(false) {
-    _rhsJacobianTriggers = pylith::feassemble::Integrator::NEW_JACOBIAN_ALWAYS;
+    _lhsJacobianTriggers = pylith::feassemble::Integrator::NEW_JACOBIAN_ALWAYS;
     pylith::utils::PyreComponent::setName("isotropicpowerlaw");
 } // constructor
 

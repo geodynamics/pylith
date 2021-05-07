@@ -38,7 +38,7 @@ typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 pylith::materials::IsotropicLinearGenMaxwell::IsotropicLinearGenMaxwell(void) :
     _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryViscoelastic),
     _useReferenceState(false) {
-    _rhsJacobianTriggers = pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE;
+    _lhsJacobianTriggers = pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE;
     pylith::utils::PyreComponent::setName("isotropiclineargenmaxwell");
 } // constructor
 
