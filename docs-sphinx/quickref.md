@@ -3,6 +3,14 @@ orphan: true
 ---
 # MyST Quick reference
 
+(sec-quickref)=
+# Heading 1
+## Heading 2
+### Heading 3
+#### Heading 4
+
+Refer to Section {ref}`sec-quickref`.
+
 ## Admonitions
 
 :::{admonition} General admonition as warning
@@ -81,6 +89,14 @@ def square(x):
     return x**2
 ```
 
+```{code-block} console
+---
+caption: Interactive shell.
+---
+$ ls
+a b c
+```
+
 ```{code-block} bash
 ---
 caption: Bash code block.
@@ -100,10 +116,11 @@ done
 
 ## Figures
 
-:::{figure-md} my-fig-target
-:class: myclass
+Please see [fig-quickref](fig-quickref).
 
-<img src="_static/images/cig_short_nolabel.png" alt="Screenshot"  width="100px"/>
+
+:::{figure-md} fig-quickref
+<img src="_static/images/cig_short_nolabel.*" alt="Screenshot"  width="100px"/>
 
 This is the figure caption.
 :::
