@@ -5,8 +5,8 @@
 maxdepth: 2
 ---
 codingstyle.md
+workflow.md
+codelayout.md
 :::
-%codelayout.md
-%workflow.md
-%building.md
+%rebuilding.md (in progress)
 %adding-materials.md
