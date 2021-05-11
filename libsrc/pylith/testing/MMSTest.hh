@@ -25,7 +25,7 @@
 #if !defined(pylith_testing_mmstest_hh)
 #define pylith_testing_mmstest_hh
 
-#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
+#include "pylith/utils/GenericComponent.hh"  // ISA GenericComponent
 #include <cppunit/extensions/HelperMacros.h> /// ISA Cppunit::TestFixture
 
 #include "pylith/testing/testingfwd.hh" // forward declaration
@@ -33,9 +33,9 @@
 #include "pylith/problems/problemsfwd.hh" // HOLDSA TimeDependent
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh
 
-class pylith::testing::MMSTest :
-    public pylith::utils::GenericComponent,
-    public CppUnit::TestFixture {
+class pylith::testing::MMSTest : public pylith::utils::GenericComponent,
+                                 public CppUnit::TestFixture
+{
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(MMSTest);
 
@@ -48,14 +48,11 @@ class pylith::testing::MMSTest :
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
-
     /// Setup testing data.
-    virtual
-    void setUp(void);
+    virtual void setUp(void);
 
     /// Tear down testing data.
-    virtual
-    void tearDown(void);
+    virtual void tearDown(void);
 
     /// Verify discretization can represent solution field.
     void testDiscretization(void);
@@ -77,25 +74,22 @@ public:
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
-
     /// Initialize objects for test.
-    virtual
-    void _initialize(void);
+    virtual void _initialize(void);
 
     /// Set exact solution in domain.
-    virtual
-    void _setExactSolution(void) = 0;
+    virtual void _setExactSolution(void) = 0;
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
-
-    pylith::problems::TimeDependent* _problem; ///< Time-dependent problem.
-    pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
-    pylith::topology::Field* _solution; ///< Solution field.
-    PylithReal _jacobianConvergenceRate; ///< Expected convergence rate for Jacobiab (when not linear).
-    bool _isJacobianLinear; ///< Jacobian is should be linear.
-    bool _disableFiniteDifferenceCheck; ///< Flag to indicate not to perform finite-difference check of Jacobian.
-    bool _allowZeroResidual; ///< Allow residual to be exactly zero.
+    pylith::problems::TimeDependent *_problem; ///< Time-dependent problem.
+    pylith::topology::Mesh *_mesh;             ///< Finite-element mesh.
+    pylith::topology::Field *_solution;        ///< Solution field.
+    pylith::topology::Field *_solutionDot;     ///< Solution time derivative field.
+    PylithReal _jacobianConvergenceRate;       ///< Expected convergence rate for Jacobiab (when not linear).
+    bool _isJacobianLinear;                    ///< Jacobian is should be linear.
+    bool _disableFiniteDifferenceCheck;        ///< Flag to indicate not to perform finite-difference check of Jacobian.
+    bool _allowZeroResidual;                   ///< Allow residual to be exactly zero.
 
 }; // MMSTest
 
