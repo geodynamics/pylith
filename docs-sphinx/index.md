@@ -23,8 +23,8 @@ developer/index.md
 ## Other sources of documentation
 
 * PyLith v3.0.0rc1 manual (PDF)
-* PyLith tutorials
-* [PyLith installer documentation](https://pylith_installer.readthedocs.io) (under construction) 
+* [PyLith tutorials](https://wiki.geodynamics.org/software:pylith:start)
+* [PyLith installer documentation](https://pylith_installer.readthedocs.io)
 * Spatialdata documentation (under construction)
 * Pythia documentation (under construction)
 
