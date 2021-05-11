@@ -43,6 +43,7 @@ void pylith::testing::MMSTest::setUp(void)
     _mesh = new pylith::topology::Mesh();
     CPPUNIT_ASSERT(_mesh);
     _solution = NULL;
+    _solutionDot = NULL;
     _jacobianConvergenceRate = 0.0;
     _isJacobianLinear = false;
     _disableFiniteDifferenceCheck = false;
@@ -64,6 +65,8 @@ void pylith::testing::MMSTest::tearDown(void)
     _mesh = NULL;
     delete _solution;
     _solution = NULL;
+    delete _solutionDot;
+    _solutionDot = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -127,6 +130,7 @@ void pylith::testing::MMSTest::testResidual(void)
 
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
+    CPPUNIT_ASSERT(_solutionDot);
     if (debug.state())
     {
         _solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
@@ -163,6 +167,7 @@ void pylith::testing::MMSTest::testJacobianTaylorSeries(void)
 
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
+    CPPUNIT_ASSERT(_solutionDot);
     PetscErrorCode err = 0;
     const PylithReal tolerance = -1.0;
     PetscBool isLinear = PETSC_FALSE;
