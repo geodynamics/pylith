@@ -175,6 +175,7 @@ pylith::feassemble::IntegratorInterface::deallocate(void) {
     pylith::feassemble::Integrator::deallocate();
 
     delete _interfaceMesh;_interfaceMesh = NULL;
+    delete _integrationPatches;_integrationPatches = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -424,7 +425,6 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     // Loop over integration patches.
     PetscErrorCode err = 0;
     PetscDM dmSoln = solution.dmMesh();
-    const pylith::topology::Field* auxiliaryField = integrator->getAuxiliaryField();assert(auxiliaryField);
     const InterfacePatches* patches = integrator->_integrationPatches;assert(patches);
     const keysmap_t& keysmap = patches->getKeys();
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
@@ -440,11 +440,6 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
         err = ISGetSize(cohesiveCellIS, &numCohesiveCells);PYLITH_CHECK_ERROR(err);assert(numCohesiveCells > 0);
         err = ISGetIndices(cohesiveCellIS, &cohesiveCells);PYLITH_CHECK_ERROR(err);assert(cohesiveCells);
         assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, cohesiveCells[0]));
-
-        // Get auxiliary data
-        // :TODO: FIX THIS. This needs to be updated. We need to provide the auxiliary field(s) for the cohesive cells
-        // and the adjacent cells on the negative and positive sides of the fault.
-        PetscErrorCode err = DMSetAuxiliaryVec(dmSoln, weakFormKeys[2].label, weakFormKeys[2].value, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
         assert(solution.localVector());
         assert(residual->localVector());
@@ -489,7 +484,6 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
 
     PetscErrorCode err;
     PetscDM dmSoln = solution.dmMesh();
-    const pylith::topology::Field* auxiliaryField = integrator->getAuxiliaryField();assert(auxiliaryField);
     const InterfacePatches* patches = integrator->_integrationPatches;assert(patches);
     const keysmap_t& keysmap = patches->getKeys();
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
@@ -505,12 +499,6 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
         err = ISGetSize(cohesiveCellIS, &numCohesiveCells);PYLITH_CHECK_ERROR(err);assert(numCohesiveCells > 0);
         err = ISGetIndices(cohesiveCellIS, &cohesiveCells);PYLITH_CHECK_ERROR(err);assert(cohesiveCells);
         assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, cohesiveCells[0]));
-
-        // Get auxiliary data
-        // :TODO: FIX THIS. This needs to be updated. We need to provide the auxiliary field(s) for the cohesive cells
-        // and the adjacent cells on the negative and positive sides of the fault.
-        err = DMSetAuxiliaryVec(dmSoln, weakFormKeys[2].label, weakFormKeys[2].value,
-                                auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
         assert(solution.localVector());
         err = DMPlexComputeJacobian_Hybrid_Internal(dmSoln, weakFormKeys, cohesiveCellIS, t, s_tshift, solution.localVector(),
@@ -559,11 +547,16 @@ pylith::feassemble::_IntegratorInterface::setWeakFormKernels(const pylith::feass
                 break;
             default:
                 PYLITH_JOURNAL_LOGICERROR("Unknown integration face.");
-            }
+            } // switch
             err = PetscWeakFormSetIndexBdResidual(weakForm, key.label, key.value, key.field,
                                                   index, kernels[i].r0, index, kernels[i].r1);PYLITH_CHECK_ERROR(err);
         } // for
 
+        // Set auxiliary data
+        PetscDM dmSoln = solution.dmMesh();
+        const pylith::topology::Field* auxiliaryField = integrator->getAuxiliaryField();assert(auxiliaryField);
+        key = iter->second.cohesive.petscKey(solution);
+        err = DMSetAuxiliaryVec(dmSoln, key.label, key.value, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
     } // for
 
     pythia::journal::debug_t debug(genericComponent);
