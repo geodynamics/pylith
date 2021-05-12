@@ -59,12 +59,13 @@
               << msg << pythia::journal::endl; \
     } while (0)
 
-#define PYLITH_COMPONENT_FIREWALL(msg) \
+#define PYLITH_COMPONENT_LOGICERROR(msg) \
     do { \
-        pythia::journal::firewall_t firewall(PyreComponent::getName()); \
+        std::ostringstream firewall; \
         firewall << pythia::journal::at(__HERE__) \
                  << "Component '"<<PyreComponent::getIdentifier()<<"': " \
-                 << msg << pythia::journal::endl; \
+                 << msg; \
+        throw std::logic_error(firewall.str().c_str()); \
     } while (0)
 
 #define PYLITH_JOURNAL_DEBUG(msg) \
@@ -93,6 +94,14 @@
         pythia::journal::error_t error(GenericComponent::getName()); \
         error << pythia::journal::at(__HERE__) \
               << msg << pythia::journal::endl; \
+    } while (0)
+
+#define PYLITH_JOURNAL_LOGICERROR(msg) \
+    do { \
+        std::ostringstream firewall; \
+        firewall << pythia::journal::at(__HERE__) \
+                 << msg; \
+        throw std::logic_error(firewall.str().c_str()); \
     } while (0)
 
 #endif // pylith_utils_journals_hh

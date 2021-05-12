@@ -130,7 +130,7 @@ pylith::materials::Elasticity::verifyConfiguration(const pylith::topology::Field
         } // if
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     PYLITH_METHOD_END;
@@ -160,7 +160,7 @@ pylith::materials::Elasticity::createIntegrator(const pylith::topology::Field& s
         integrator->setLHSJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE);
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     _setKernelsRHSResidual(integrator, solution);
@@ -315,7 +315,7 @@ pylith::materials::Elasticity::_setKernelsRHSResidual(pylith::feassemble::Integr
         case 0x0:
             break;
         default:
-            PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Elasticity RHS residual kernels.");
+            PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for Elasticity RHS residual kernels.");
         } // switch
 
         const PetscPointFunc g1v = _rheology->getKernelResidualStress(coordsys);
@@ -326,7 +326,7 @@ pylith::materials::Elasticity::_setKernelsRHSResidual(pylith::feassemble::Integr
         break;
     } // DYNAMIC
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     assert(integrator);
@@ -368,7 +368,7 @@ pylith::materials::Elasticity::_setKernelsLHSResidual(pylith::feassemble::Integr
         case 0x0:
             break;
         default:
-            PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Elasticity LHS residual kernels.");
+            PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for Elasticity LHS residual kernels.");
         } // switch
 
         const PetscPointFunc f1u = _rheology->getKernelResidualStress(coordsys);
@@ -408,7 +408,7 @@ pylith::materials::Elasticity::_setKernelsLHSResidual(pylith::feassemble::Integr
         break;
     } // DYNAMIC
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     assert(integrator);
@@ -473,7 +473,7 @@ pylith::materials::Elasticity::_setKernelsLHSJacobian(pylith::feassemble::Integr
         break;
     } // DYNAMIC_IMEX
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     assert(integrator);
