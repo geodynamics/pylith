@@ -251,9 +251,9 @@ pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field
         break;
     } // DYNAMIC_IMEX
     case pylith::problems::Physics::DYNAMIC:
-        PYLITH_COMPONENT_FIREWALL("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_LOGICERROR("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown formulation '"<<_formulation<<"'.");
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation '"<<_formulation<<"'.");
     } // switch
 
     integrator->setIntegrationPatches(patches);
