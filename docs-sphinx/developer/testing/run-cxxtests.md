@@ -33,3 +33,17 @@ $ ./test_problems --journal.info=timedependent
 # Turn on timedependent debug journal.
 $ ./test_problems --journal.debug=timedependent
 ```
+
+## Using the debugger
+
+The executables in the build directory are shell script wrappers created by `libtool`.
+The underlying binary executables are in the `.libs` directory.
+When using the debugger, pass the binary executable to the debugger.
+For example, `gdb .libs/test_problems`.
+## Using valgrind
+
+```{code-block} console
+# Run valgrind on the test_problems executable
+$ valgrind --log-file=valgrind_problems.log \
+  --suppressions=$PYLITH_DIR/share/valgrind-python.supp .libs/test_problems
+```

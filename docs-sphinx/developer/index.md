@@ -12,5 +12,4 @@ maxdepth: 2
 ---
 contributing/index.md
 testing/index.md
-debugging/index.md
 ```
