@@ -43,7 +43,6 @@ class pylith::feassemble::TestInterfacePatches : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE(TestInterfacePatches);
 
     CPPUNIT_TEST(testAccessors);
-    CPPUNIT_TEST(testCreateSingle);
     CPPUNIT_TEST(testCreateMaterialPairs);
 
     CPPUNIT_TEST_SUITE_END();
@@ -59,9 +58,6 @@ public:
 
     /// Test getLabelName().
     void testAccessors(void);
-
-    // Test createSingle().
-    void testCreateSingle(void);
 
     // Test createMaterialPairs().
     void testCreateMaterialPairs(void);

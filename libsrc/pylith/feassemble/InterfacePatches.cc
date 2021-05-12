@@ -81,47 +81,6 @@ pylith::feassemble::InterfacePatches::getKeys(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
-// Create single integration patch.
-pylith::feassemble::InterfacePatches*
-pylith::feassemble::InterfacePatches::createSingle(const pylith::faults::FaultCohesive* fault,
-                                                   const PetscDM dmSoln) {
-    PYLITH_METHOD_BEGIN;
-    assert(fault);
-
-    const char* const cellsLabelName = pylith::topology::Mesh::getCellsLabelName();
-    const PylithInt interfaceId = fault->getInterfaceId();
-
-    WeakFormKeys weakFormKeys;
-    const char* lagrangeMultiplierName = "lagrange_multiplier_fault";
-
-    // Get PETSc weak form.
-    PetscErrorCode err = 0;
-    PetscIS cohesiveCellsIS = NULL;
-    PetscInt numCohesiveCells = 0;
-    const PetscInt* cohesiveCells = NULL;
-    err = DMGetStratumIS(dmSoln, cellsLabelName, interfaceId, &cohesiveCellsIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetSize(cohesiveCellsIS, &numCohesiveCells);PYLITH_CHECK_ERROR(err);assert(numCohesiveCells > 0);
-    err = ISGetIndices(cohesiveCellsIS, &cohesiveCells);PYLITH_CHECK_ERROR(err);assert(cohesiveCells);
-
-    assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, cohesiveCells[0]));
-    PetscWeakForm weakForm = _InterfacePatches::getCellWeakForm(dmSoln, cohesiveCells[0]);
-
-    err = ISRestoreIndices(cohesiveCellsIS, &cohesiveCells);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&cohesiveCellsIS);PYLITH_CHECK_ERROR(err);
-
-    weakFormKeys.cohesive = *pylith::feassemble::FEKernelKey::create(weakForm, cellsLabelName, interfaceId, lagrangeMultiplierName);
-    weakFormKeys.negative = *pylith::feassemble::FEKernelKey::create(weakForm, cellsLabelName, interfaceId, lagrangeMultiplierName);
-    weakFormKeys.positive = *pylith::feassemble::FEKernelKey::create(weakForm, cellsLabelName, interfaceId, lagrangeMultiplierName);
-
-    InterfacePatches* patch = new InterfacePatches();assert(patch);
-    patch->_labelName = cellsLabelName;
-    patch->_keys[interfaceId] = weakFormKeys;
-
-    PYLITH_METHOD_RETURN(patch);
-} // createSingle
-
-
-// ------------------------------------------------------------------------------------------------
 // Create integration patches corresponding to pairs of materials on negative and positive
 pylith::feassemble::InterfacePatches*
 pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::FaultCohesive* fault,

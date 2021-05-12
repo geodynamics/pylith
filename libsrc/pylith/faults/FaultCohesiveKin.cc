@@ -235,16 +235,13 @@ pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field
     integrator->setLabelValue(getInterfaceId());
     integrator->setSurfaceMarkerLabel(getSurfaceMarkerLabel());
 
-    pylith::feassemble::InterfacePatches* patches = NULL;
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC: {
-        patches = pylith::feassemble::InterfacePatches::createSingle(this, solution.dmMesh());
         _FaultCohesiveKin::setKernelsLHSResidualQuasistatic(integrator, *this, solution);
         _FaultCohesiveKin::setKernelsLHSJacobianQuasistatic(integrator, *this, solution);
         break;
     } // QUASISTATIC
     case pylith::problems::Physics::DYNAMIC_IMEX: {
-        patches = pylith::feassemble::InterfacePatches::createMaterialPairs(this, solution.dmMesh());
         _FaultCohesiveKin::setKernelsLHSResidualDynamicIMEX(integrator, *this, solution);
         _FaultCohesiveKin::setKernelsLHSJacobianDynamicIMEX(integrator, *this, solution);
         _FaultCohesiveKin::setKernelsRHSResidualDynamicIMEX(integrator, *this, solution);
@@ -256,6 +253,8 @@ pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field
         PYLITH_COMPONENT_LOGICERROR("Unknown formulation '"<<_formulation<<"'.");
     } // switch
 
+    pylith::feassemble::InterfacePatches* patches =
+        pylith::feassemble::InterfacePatches::createMaterialPairs(this, solution.dmMesh());
     integrator->setIntegrationPatches(patches);
 
     PYLITH_METHOD_RETURN(integrator);

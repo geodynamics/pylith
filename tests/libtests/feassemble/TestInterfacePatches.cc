@@ -75,45 +75,6 @@ pylith::feassemble::TestInterfacePatches::testAccessors(void) {
 
 
 // ------------------------------------------------------------------------------------------------
-// Test createSingle().
-void
-pylith::feassemble::TestInterfacePatches::testCreateSingle(void) {
-    PYLITH_METHOD_BEGIN;
-
-    _initialize();
-    CPPUNIT_ASSERT(_fault);
-
-    InterfacePatches* patches = InterfacePatches::createSingle(_fault, _mesh->dmMesh());CPPUNIT_ASSERT(patches);
-
-    const size_t numPatches = 1;
-    const int interfaceId = _fault->getInterfaceId();
-    const std::string& labelName = pylith::topology::Mesh::getCellsLabelName();
-    const std::string& fieldName = "lagrange_multiplier_fault";
-
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in label name.", labelName, std::string(patches->getLabelName()));
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of integration patches",
-                                 numPatches, patches->_keys.size());
-    for (size_t iPatch = 0; iPatch < 1; ++iPatch) {
-        InterfacePatches::keysmap_t::iterator keys = patches->_keys.find(interfaceId);
-        CPPUNIT_ASSERT(keys != patches->_keys.end());
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in patch value.", interfaceId, keys->first);
-
-        CPPUNIT_ASSERT_EQUAL(labelName, keys->second.cohesive._name);
-        CPPUNIT_ASSERT_EQUAL(interfaceId, keys->second.cohesive._value);
-        CPPUNIT_ASSERT_EQUAL(fieldName, keys->second.cohesive._field);
-
-        CPPUNIT_ASSERT_EQUAL(labelName, keys->second.negative._name);
-        CPPUNIT_ASSERT_EQUAL(interfaceId, keys->second.negative._value);
-
-        CPPUNIT_ASSERT_EQUAL(labelName, keys->second.positive._name);
-        CPPUNIT_ASSERT_EQUAL(interfaceId, keys->second.positive._value);
-    } // for
-
-    PYLITH_METHOD_END;
-} // testCreateSingle
-
-
-// ------------------------------------------------------------------------------------------------
 // Test createMaterialPairs().
 void
 pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
@@ -186,8 +147,8 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
         } // for
         err = ISRestoreIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);
         err = ISDestroy(&pointsIS);PYLITH_CHECK_ERROR(err);
-
     } // for
+    delete patches;patches = NULL;
 
     PYLITH_METHOD_END;
 } // testCreateSinglees

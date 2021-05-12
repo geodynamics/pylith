@@ -73,15 +73,6 @@ public:
      */
     const keysmap_t& getKeys(void) const;
 
-    /** Create single integration patch.
-     *
-     * @param[in] fault Fault associated with interface.
-     * @param[in] dmSoln PETSc DM associated with solution.
-     */
-    static
-    InterfacePatches* createSingle(const pylith::faults::FaultCohesive* fault,
-                                   const PetscDM dmSoln);
-
     /** Create integration patches corresponding to pairs of materials on negative and positive
      * sides of the fault.
      *
