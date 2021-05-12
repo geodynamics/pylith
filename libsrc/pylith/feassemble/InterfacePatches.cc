@@ -136,9 +136,13 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
             // Create keys
             WeakFormKeys weakFormKeys;
             const char* lagrangeMultiplierName = "lagrange_multiplier_fault";
-            weakFormKeys.cohesive = *pylith::feassemble::FEKernelKey::create(weakFormCohesive, patchLabelName.c_str(), patchLabelValue, lagrangeMultiplierName);
-            weakFormKeys.negative = *pylith::feassemble::FEKernelKey::create(weakFormNegative, cellsLabelName, matPair.first, lagrangeMultiplierName);
-            weakFormKeys.positive = *pylith::feassemble::FEKernelKey::create(weakFormPositive, cellsLabelName, matPair.second, lagrangeMultiplierName);
+            pylith::feassemble::FEKernelKey* key = NULL;
+            key = pylith::feassemble::FEKernelKey::create(weakFormCohesive, patchLabelName.c_str(), patchLabelValue, lagrangeMultiplierName);
+            weakFormKeys.cohesive = *key;delete key;key = NULL;
+            key = pylith::feassemble::FEKernelKey::create(weakFormNegative, cellsLabelName, matPair.first, lagrangeMultiplierName);
+            weakFormKeys.negative = *key;delete key;key = NULL;
+            key = pylith::feassemble::FEKernelKey::create(weakFormPositive, cellsLabelName, matPair.second, lagrangeMultiplierName);
+            weakFormKeys.positive = *key;delete key;key = NULL;
             patches->_keys[patchLabelValue] = weakFormKeys;
         } // if
         err = DMSetLabelValue(dmSoln, patchLabelName.c_str(), cohesiveCell, integrationPatches[matPair]);
