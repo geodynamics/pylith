@@ -135,7 +135,7 @@ pylith::materials::IsotropicLinearPoroelasticity::addAuxiliarySubfields(void) {
 // Get stress kernel for RHS residual, G(t,s).
 PetscPointFunc
 pylith::materials::IsotropicLinearPoroelasticity::getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys,
-                                                                            const bool _useInertia) const {
+                                                                          const bool _useInertia) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelg1u(coordsys="<<typeid(coordsys).name()<<")");
 
@@ -175,11 +175,13 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelResidualStress(const 
     PYLITH_METHOD_RETURN(g1u);
 } // getKernelResidualStress
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get darcy velocity kernel
 PetscPointFunc
 pylith::materials::IsotropicLinearPoroelasticity::getKernelDarcy(const spatialdata::geocoords::CoordSys* coordsys,
-                                                               const bool _gravityField, const bool _useInertia) const {
+                                                                 const bool _gravityField,
+                                                                 const bool _useInertia) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelDarcy="<<typeid(coordsys).name()<<")");
 
@@ -239,6 +241,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelDarcy(const spatialda
 
     PYLITH_METHOD_RETURN(g1p);
 } // getKernelg1p
+
 
 // ================================ RHS ========================================
 
@@ -302,17 +305,18 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelg0p(const spatialdata
               NULL; // aOff for sourceDensity is 5
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
+        PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
     } // switch
 
     PYLITH_METHOD_RETURN(g0p);
 } // getKernelg0p
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get darcy velocity kernel
 PetscPointFunc
 pylith::materials::IsotropicLinearPoroelasticity::getKernelg1p_explicit(const spatialdata::geocoords::CoordSys* coordsys,
-                                                               const bool _gravityField) const {
+                                                                        const bool _gravityField) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelg1p_implicit="<<typeid(coordsys).name()<<")");
 
@@ -353,7 +357,6 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelg1p_explicit(const sp
 } // getKernelg1p_implicit
 
 
-
 // =============================== LHS =========================================
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -365,7 +368,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelf0p_explicit(const sp
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFunc f0p =
-        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_explicit:
+        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_explicit :
         (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_explicit :
         NULL;
 
@@ -377,9 +380,9 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelf0p_explicit(const sp
 // Select implicit f0p function.
 PetscPointFunc
 pylith::materials::IsotropicLinearPoroelasticity::getKernelf0p_implicit(const spatialdata::geocoords::CoordSys* coordsys,
-                                                               const bool _useBodyForce,
-                                                               const bool _gravityField,
-                                                               const bool _useSourceDensity) const {
+                                                                        const bool _useBodyForce,
+                                                                        const bool _gravityField,
+                                                                        const bool _useSourceDensity) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelf0p="<<typeid(coordsys).name()<<")");
 
@@ -433,17 +436,18 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelf0p_implicit(const sp
               NULL; // aOff for sourceDensity is 5
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Poroelasticity LHS residual kernels.");
+        PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for Poroelasticity LHS residual kernels.");
     } // switch
 
     PYLITH_METHOD_RETURN(f0p);
 } // getKernelf0p_implicit
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get darcy velocity kernel
 PetscPointFunc
 pylith::materials::IsotropicLinearPoroelasticity::getKernelf1p_implicit(const spatialdata::geocoords::CoordSys* coordsys,
-                                                               const bool _gravityField) const {
+                                                                        const bool _gravityField) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelf1p_implicit="<<typeid(coordsys).name()<<")");
 
@@ -483,6 +487,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelf1p_implicit(const sp
     PYLITH_METHOD_RETURN(f1p);
 } // getKernelf1p_implicit
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get poroelastic constants kernel for LHS Jacobian
 PetscPointJac
@@ -516,6 +521,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelJf2up(const spatialda
     PYLITH_METHOD_RETURN(Jf2up);
 } // getKernelJf2up
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get lambda kernel for LHS Jacobian
 PetscPointJac
@@ -532,6 +538,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelJf2ue(const spatialda
     PYLITH_METHOD_RETURN(Jf2ue);
 } // getKernelJf2ue
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get Specific storage kernel for LHS Jacobian F(t,s, \dot{s}).
 PetscPointJac
@@ -547,6 +554,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelJf0pp(const spatialda
 
     PYLITH_METHOD_RETURN(Jf0pp);
 } // getKernelJf0pp
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get Darcy Conductivity kernel for LHS Jacobian
@@ -566,6 +574,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelJf3pp(const spatialda
     PYLITH_METHOD_RETURN(Jf3pp);
 } // getKerneJf3pp
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get biot coefficient kernel for LHS Jacobian F(t,s, \dot{s}).
 PetscPointJac
@@ -581,6 +590,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelJf0pe(const spatialda
 
     PYLITH_METHOD_RETURN(Jf0pe);
 } // getKernelJf0pe
+
 
 // =========================== DERIVED FIELDS ==================================
 

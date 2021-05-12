@@ -183,7 +183,7 @@ pylith::materials::Poroelasticity::createIntegrator(const pylith::topology::Fiel
         integrator->setLHSJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE);
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     _setKernelsLHSResidual(integrator, solution);
@@ -336,7 +336,7 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
 
         // Pressure
         const PetscPointFunc g0p = _rheology->getKernelg0p(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
-        const PetscPointFunc g1p = _rheology->getKernelg1p_explicit(coordsys, _gravityField);    // darcy velocity
+        const PetscPointFunc g1p = _rheology->getKernelg1p_explicit(coordsys, _gravityField); // darcy velocity
 
         // Velocity
         PetscPointFunc g0v = NULL;
@@ -371,7 +371,7 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
             g0v = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
             break;
         default:
-            PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
+            PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
         } // switch
 
         kernels.resize(3);
@@ -380,7 +380,7 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
         kernels[2] = ResidualKernels("velocity", g0v, g1v);
     } // DYNAMIC
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     assert(integrator);
@@ -388,6 +388,7 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
 
     PYLITH_METHOD_END;
 } // _setKernelsRHSResidual
+
 
 // ----------------------------------------------------------------------
 // Set kernels for LHS residual F(t,s,\dot{s}).
@@ -402,7 +403,6 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
     std::vector<ResidualKernels> kernels;
     switch (_formulation) {
     case QUASISTATIC: {
-
         // Displacement
         PetscPointFunc f0u = NULL;
         const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
@@ -434,13 +434,13 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
             f0u = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
             break;
         default:
-            PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
+            PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
         } // switch
         const PetscPointFunc f1u = _rheology->getKernelResidualStress(coordsys, _useInertia);
 
         // Pressure
         PetscPointFunc f0p = _rheology->getKernelf0p_implicit(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
-        PetscPointFunc f1p = _rheology->getKernelf1p_implicit(coordsys, _gravityField);     // darcy velocity
+        PetscPointFunc f1p = _rheology->getKernelf1p_implicit(coordsys, _gravityField); // darcy velocity
 
         // Volumetric Strain
         const PetscPointFunc f0e = pylith::fekernels::Poroelasticity::f0e;
@@ -494,7 +494,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
         break;
     } // DYNAMIC
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     assert(integrator);
@@ -614,7 +614,6 @@ pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::In
         const PetscPointJac Jf2vp = NULL;
         const PetscPointJac Jf3vp = NULL;
 
-
         const PetscPointJac Jf0vv = pylith::fekernels::Poroelasticity::Jf0vv;
         const PetscPointJac Jf1vv = NULL;
         const PetscPointJac Jf2vv = NULL;
@@ -632,7 +631,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::In
         break;
     } // DYNAMIC
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     assert(integrator);

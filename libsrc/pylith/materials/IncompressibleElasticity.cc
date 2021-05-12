@@ -281,7 +281,7 @@ pylith::materials::IncompressibleElasticity::_setKernelsLHSResidual(pylith::feas
     case 0x0:
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown case (bitUse=" << bitUse << ") for IncompressibleElasticity RHS residual kernels.");
+        PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for IncompressibleElasticity RHS residual kernels.");
     } // switch
 
     // Displacement

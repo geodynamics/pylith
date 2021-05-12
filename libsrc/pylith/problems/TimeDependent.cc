@@ -375,7 +375,7 @@ pylith::problems::TimeDependent::initialize(void) {
         _jacobianLHSLumpedInv->cloneSection(*_solution);
         break;
     default: {
-        PYLITH_COMPONENT_FIREWALL("Unknown time stepping formulation '" << _formulation << "'.");
+        PYLITH_COMPONENT_LOGICERROR("Unknown time stepping formulation '" << _formulation << "'.");
     } // default
     } // switch
 

@@ -184,10 +184,10 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Fi
         } // if
         break;
     case DYNAMIC:
-        PYLITH_COMPONENT_FIREWALL("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_LOGICERROR("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     PYLITH_METHOD_END;
@@ -323,10 +323,10 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
         _auxiliaryFactory->addSlipRate(); // 0
         break;
     case DYNAMIC:
-        PYLITH_COMPONENT_FIREWALL("Fault implementation is incompatible with 'dynamic' time-stepping formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_LOGICERROR("Fault implementation is incompatible with 'dynamic' time-stepping formulation. Use 'dynamic_imex'.");
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     auxiliaryField->subfieldsSetup();
@@ -384,10 +384,10 @@ pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* 
         this->_updateSlipRate(auxiliaryField, t);
         break;
     case DYNAMIC:
-        PYLITH_COMPONENT_FIREWALL("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_LOGICERROR("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     PYLITH_METHOD_END;
