@@ -400,6 +400,7 @@ pylith::topology::_FieldQuery::findQueryIndices(FieldQuery::DBQueryContext* cont
         if (!foundName) {
             std::ostringstream msg;
             if (0 == numDBValues) {
+                delete dbValues;dbValues = NULL;
                 msg << "No values found in spatial database '"
                     << context->db->getLabel() << "'. Did you forget to open the database?";
                 throw std::logic_error(msg.str());
@@ -410,9 +411,11 @@ pylith::topology::_FieldQuery::findQueryIndices(FieldQuery::DBQueryContext* cont
                 msg << "\n  " << dbValues[iValueDB];
             } // for
             msg << "\n";
+            delete dbValues;dbValues = NULL;
             throw std::out_of_range(msg.str());
         } // if
     } // for
+    delete[] dbValues;dbValues = NULL;
 
     context->queryValues.resize(numDBValues);
 } // findQueryIndices
