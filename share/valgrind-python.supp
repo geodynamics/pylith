@@ -20,98 +20,45 @@
    ADDRESS_IN_RANGE/Invalid read of size 4
    Memcheck:Addr4
    fun:PyObject_Free
-   ...
 }
-
-{
-   ADDRESS_IN_RANGE/Invalid read of size 4
-   Memcheck:Value4
-   fun:PyObject_Free
-   ...
-}
-
 {
    ADDRESS_IN_RANGE/Use of uninitialised value of size 8
    Memcheck:Value8
    fun:PyObject_Free
-   ...
 }
-
 {
    ADDRESS_IN_RANGE/Conditional jump or move depends on uninitialised value(s)
    Memcheck:Cond
    fun:PyObject_Free
-   ...
 }
-
 {
    ADDRESS_IN_RANGE/Invalid read of size 4
    Memcheck:Addr4
    fun:PyObject_Realloc
-   ...
 }
-
 {
    ADDRESS_IN_RANGE/Invalid read of size 4
    Memcheck:Value4
    fun:PyObject_Realloc
-   ...
 }
-
 {
    ADDRESS_IN_RANGE/Use of uninitialised value of size 8
    Memcheck:Value8
    fun:PyObject_Realloc
    ...
 }
-
 {
    ADDRESS_IN_RANGE/Conditional jump or move depends on uninitialised value(s)
    Memcheck:Cond
    fun:PyObject_Realloc
    ...
 }
-
 {
    ADDRESS_IN_RANGE/Conditional jump or move depends on uninitialised value(s)
    Memcheck:Cond
    fun:__strcpy_chk
    ...
 }
-
-{
-   ADDRESS_IN_RANGE/blocks are still reachable in loss
-   Memcheck:Leak
-   ...
-   fun:Py_InitializeEx
-   fun:_ZN11spatialdata5units6ParserC1Ev
-   ...
-}
-
-## Manually added suppressions
-
-{
-   Python garbage collection/PyEval_EvalCodeEx
-   Memcheck:Leak
-   match-leak-kinds: possible
-   fun:malloc
-   fun:_PyObject_GC_Malloc
-   fun:_PyObject_GC_NewVar
-   fun:PyFrame_New
-   fun:PyEval_EvalCodeEx
-}
-
-{
-   Python garbage collection/PyEval_EvalFrameEx
-   Memcheck:Leak
-   match-leak-kinds: possible
-   fun:malloc
-   fun:_PyObject_GC_Malloc
-   fun:_PyObject_GC_NewVar
-   fun:PyFrame_New
-   fun:PyEval_EvalFrameEx
-}
-
 {
    LEAK/ompi_mpi_finalize
    Memcheck:Leak
@@ -232,4 +179,48 @@
    fun:mca_io_base_file_select
    fun:ompi_file_open
    fun:PMPI_File_open
+}
+
+
+
+
+{
+   Invalid-read-size-4/Python
+   Memcheck:Addr4
+   obj:*libpython*
+}
+{
+   Invalid-read-size-8/Python
+   Memcheck:Addr8
+   obj:*libpython*
+}
+{
+   Conditional-jump/Python
+   Memcheck:Cond
+   obj:*libpython*
+}
+{
+   Uninitialized-size-8/Python
+   Memcheck:Value8
+   obj:*libpython*
+}
+{
+   Leak/Python
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:*libpython*
+}
+{
+   Leak/Python
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:_PyMem_RawWcsdup
+}
+{
+   Leak/CppUnit
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:_Znwm
 }
