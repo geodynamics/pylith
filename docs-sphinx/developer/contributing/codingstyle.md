@@ -24,10 +24,10 @@ We use 4 spaces for indentation. Configure your editor to use spaces instead of 
   * Document nontrivial algorithms and any assumptions.
 * Error checking
   * PyLith should never crash without an error message.
-  * All user errors should be trapped as early as possible and reported with an informative error message. If possible, suggest ways to correct the error.
+  * All user errors should be trapped as early as possible and reported with an informative error message by throwing an appropriate exception. If possible, suggest ways to correct the error. 
   * Messages for internal errors should indicate the location in the code where the error was trapped.
-  * All pointers should be checked for null values before use.
-  * Check the return values for all calls to functions in external libraries.
+  * All pointers should be checked for `NULL` values before use. Usually we use `assert()` to do this.
+  * Check the return values for all calls to functions in external libraries. For PETSc functions, we use `PYLITH_CHECK_ERROR(returnValue)`.
 * Testing
   * All C++ methods should be covered by unit tests.
   * All governing equations should be covered by Method of Manufactured solution tests.
