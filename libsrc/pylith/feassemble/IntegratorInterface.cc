@@ -650,6 +650,7 @@ void
 pylith::feassemble::_IntegratorInterface::transferWeakFormKernels(const pylith::feassemble::IntegratorInterface* integrator,
                                                                   const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
+#if 0
     typedef InterfacePatches::keysmap_t keysmap_t;
 
     assert(integrator);
@@ -688,6 +689,7 @@ pylith::feassemble::_IntegratorInterface::transferWeakFormKernels(const pylith::
             err = PetscWeakFormSetBdJacobian(weakFormCohesive, keyPositive.label, keyPositive.value, keyPositive.field/Nf, keyPositive.field%Nf, g0Count, g0, g1Count, g1, g2Count, g2, g3Count, g3);PYLITH_CHECK_ERROR(err);
         } // if
     } // for
+#endif
 
     PYLITH_METHOD_END;
 } // transferWeakForms
