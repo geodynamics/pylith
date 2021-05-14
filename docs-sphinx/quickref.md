@@ -51,6 +51,12 @@ This is a `warning` admonition.
 This is a `seealso` admonition.
 :::
 
+:::{admonition} TODO
+This is a custom `TODO` admonition.
+:::
+
+
+
 ## Lists
 
 ### Itemized lists
