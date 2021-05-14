@@ -51,6 +51,12 @@ This is a `warning` admonition.
 This is a `seealso` admonition.
 :::
 
+:::{admonition} TODO
+This is a custom `TODO` admonition.
+:::
+
+
+
 ## Lists
 
 ### Itemized lists
@@ -109,14 +115,19 @@ done
 
 ## Tables
 
+Please see {numref}`tab-quickref`.
+
+```{table} Table caption
+:name: tab-quickref
 |             Header 1 |   Header 2    | Header 3       |
 | -------------------: | :-----------: | :------------- |
 |        right aligned |   centered    | left aligned   |
 | more data, more data | yet more data | even more data |
+```
 
 ## Figures
 
-Please see [fig-quickref](fig-quickref).
+Please see {numref}`fig-quickref`.
 
 
 :::{figure-md} fig-quickref
