@@ -27,6 +27,26 @@ In setting up a MMS test, remember that the solution should be able to be repres
 If you use a polynomial of order 2 for a subfield of the solution, then you should use a basis order of at least 2 for that subfield of the solution.
 :::
 
+## Debugging residual errors
+
+When the residual test fails, we generally use the following procedure to diagnose the problem.
+
+1. Verify that the discretization check passes indicating accurate representation of the solution in the finite-element space.
+2. Run just the residual test for a single discretization and turn on the debug journal corresponding to the name of the MMS test as set by `GenericComponent::setName(JOURNAL_NAME)` in `setUp()`; this is done via the `--journal.debug=JOURNAL_NAME` command line argument to the MMS test driver.
+3. Verify that the residual kernels show up correctly in the view of the PETSc discretization.
+4. Analyze the residual vector to see which degrees of freedom have nonzero terms. Look at the solution section to see what solution subfield and point are associated with those degrees for freedom.
+5. Check the pointwise functions for the residual and solution associated with the subfield with nonzero terms.
+
+## Debugging Jacobian errors
+
+When one of the Jacobian tests fails, we focus on the finite-difference Jacobian test.
+
+1. Verify that the residual check passes.
+2. Run just the Jacobian finite-difference test for a single discretization and turn on the debug journal corresponding to the name of the MMS test as set by `GenericComponent::setName(JOURNAL_NAME)` in `setUp()`; this is done via the `--journal.debug=JOURNAL_NAME` command line argument to the MMS test driver.
+3. Examine any differences between the hand-coded Jacobian and the finite-difference Jacobian.
+4. Check the differences against pointwise functions listed in the view of the PETSc discretization. Are any expected functions missing from the list?
+5. Isolate the error by dropping corresponding terms from the residual, Jacobian, and solution by editing the pointwise functions until the hand-coded and finite-difference Jacobians agree; that is, drop terms from the governing equation until the MMS tests pass. Then, add the terms back into the governing equation (residual, Jacobian, and solution pointwise functions) one by one, fixing errors as they are detected.
+
 ## Example
 
 In `tests/mmstests/elasticity` we create a suite of MMS tests that all use a single material (`Elasticity`), a single Dirichlet boundary condition, and a data object to hold test-specific parameters.
@@ -36,4 +56,8 @@ Child classes specify different cell shapes and orders for the basis functions a
 
 :::{warning}
 The quadrature order must be the same across all solution subfields and auxiliary subfields.
+:::
+
+:::{admonition} TODO
+Add a simple test case that introduces known errors into the discretization, residual, and Jacobian to illustrate these steps.
 :::
