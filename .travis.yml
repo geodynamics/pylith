@@ -1,6 +1,6 @@
 # Travis-CI configuration
 
-dist: bionic
+dist: focal
 
 services:
   - docker
@@ -24,24 +24,19 @@ jobs:
       env: BASE_IMAGE=testenv-ubuntu-20.04
     - name: ubuntu-20.10
       os: linux
-      env: BASE_IMAGE=testenv-ubuntu-20.10
-    - name: fedora-32
-      os: linux
-      env: BASE_IMAGE=testenv-fedora-32
+      env: BASE_IMAGE=testenv-ubuntu-21.04
     - name: fedora-33
       os: linux
       env: BASE_IMAGE=testenv-fedora-33
+    - name: fedora-34
+      os: linux
+      env: BASE_IMAGE=testenv-fedora-34
     - name: centos-7
       os: linux
       env: BASE_IMAGE=testenv-centos-7
     - name: centos-8
       os: linux
       env: BASE_IMAGE=testenv-centos-8
-
-addons:
-  apt:
-    packages:
-      - docker-ce
 
 # Limit number of commits in cloning (but keep enough so that 'git describe' works)
 git:
