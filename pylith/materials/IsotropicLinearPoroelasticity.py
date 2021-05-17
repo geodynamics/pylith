@@ -35,6 +35,9 @@ class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelas
     useReferenceState = pythia.pyre.inventory.bool("use_reference_state", default=False)
     useReferenceState.meta['tip'] = "Use reference stress/strain state."
 
+    useTensorPermeability = pythia.pyre.inventory.bool("use_tensor_permeability", default=False)
+    useTensorPermeability.meta['tip'] = "Use tensor permeability."
+
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="isotropiclinearporoelasticity"):
@@ -51,6 +54,7 @@ class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelas
         RheologyPoroelasticity.preinitialize(self, mesh)
 
         ModuleLinearPoroelasticity.useReferenceState(self, self.useReferenceState)
+        ModuleLinearPoroelasticity.useTensorPermeability(self, self.useTensorPermeability)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
