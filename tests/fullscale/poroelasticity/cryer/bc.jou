@@ -1,0 +1,35 @@
+# ----------------------------------------------------------------------
+# Create nodeset for curved edge Neumann
+# ----------------------------------------------------------------------
+group "surface_traction" add node in surface 37
+nodeset 1 group surface_traction
+nodeset 1 name "surface_traction"
+
+# ----------------------------------------------------------------------
+# Create nodeset for curved edge Dirichlet
+# ----------------------------------------------------------------------
+group "surface_pressure" add node in surface 37
+nodeset 2 group surface_pressure
+nodeset 2 name "surface_pressure"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x edge Dirichlet
+# ----------------------------------------------------------------------
+group "x_neg" add node in surface 35
+nodeset 3 group x_neg
+nodeset 3 name "x_neg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y edge Dirichlet
+# ----------------------------------------------------------------------
+group "y_neg" add node in surface 36
+nodeset 4 group y_neg
+nodeset 4 name "y_neg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -z edge Dirichlet
+# ----------------------------------------------------------------------
+group "z_neg" add node in surface 34
+nodeset 5 group z_neg
+nodeset 5 name "z_neg"
+
