@@ -45,6 +45,9 @@ class AuxSubfieldsPoroelasticity(PetscComponent):
     bodyForce = pythia.pyre.inventory.facility("body_force", family="auxiliary_subfield", factory=Subfield)
     bodyForce.meta['tip'] = "Body force subfield."
 
+    sourceDensity = pythia.pyre.inventory.facility("source_density", family="auxiliary_subfield", factory=Subfield)
+    sourceDensity.meta['tip'] = "Source density subfield."    
+
     gravitationalAcceleration = pythia.pyre.inventory.facility(
         "gravitational_acceleration", family="auxiliary_subfield", factory=Subfield)
     gravitationalAcceleration.meta['tip'] = "Gravitational acceleration subfield."
