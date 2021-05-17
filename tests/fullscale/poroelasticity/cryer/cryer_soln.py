@@ -204,22 +204,6 @@ class AnalyticalSoln(object):
         isotropic_permeability = k * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return isotropic_permeability
 
-    def y_pos(self, locs):
-        """Compute initial traction at locations.
-
-        :TODO: If this is the initial traction, then it should be a single time point (0).
-        """
-        (npts, dim) = locs.shape
-        ntpts = tsteps.shape[0]
-        t_track = 0
-
-        displacement = numpy.zeros((ntpts, npts, self.SPACE_DIM), dtype=numpy.float64)
-        displacement[:, :, 0] = 0.0
-        for t in tsteps:
-            displacement[t_track, :, 1] = F
-            t_track += 1
-        return traction
-
     def displacement(self, locs):
         """
         Compute displacement field at locations.
