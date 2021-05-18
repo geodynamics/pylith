@@ -196,7 +196,7 @@ class ConfigSearchApp():
                 lines += ["missing 'features'"]
         if "arguments" in options or show_all:
             if metadata.arguments:
-                lines += ["pylith " + ", ".join(metadata.arguments)]
+                lines += ["pylith " + " ".join(metadata.arguments)]
             else:
                 lines += ["missing 'arguments'"]
         print(line0)
