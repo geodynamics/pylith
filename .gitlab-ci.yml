@@ -50,7 +50,6 @@ debian-stable-job:
   extends: .builder-first
   variables:
     BASE_IMAGE: "testenv-debian-stable"
-    TEST_COVERAGE: "yes"
     PYTHON_COVERAGE: "python3-coverage"
 
 debian-testing-job:
@@ -71,22 +70,22 @@ ubuntu-20.04-job:
     BASE_IMAGE: "testenv-ubuntu-20.04"
     PYTHON_COVERAGE: "python3-coverage"
 
-ubuntu-20.10-job:
+ubuntu-21.04-job:
   extends: .builder
   variables:
-    BASE_IMAGE: "testenv-ubuntu-20.10"
+    BASE_IMAGE: "testenv-ubuntu-21.04"
     PYTHON_COVERAGE: "python3-coverage"
-
-fedora-32-job:
-  extends: .builder
-  variables:
-    BASE_IMAGE: "testenv-fedora-32"
-    PYTHON_COVERAGE: "coverage3"
 
 fedora-33-job:
   extends: .builder
   variables:
     BASE_IMAGE: "testenv-fedora-33"
+    PYTHON_COVERAGE: "coverage3"
+
+fedora-34-job:
+  extends: .builder
+  variables:
+    BASE_IMAGE: "testenv-fedora-34"
     PYTHON_COVERAGE: "coverage3"
 
 centos-7-job:
