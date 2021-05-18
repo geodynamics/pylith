@@ -84,7 +84,9 @@ def fromFile(filename):
             "base": string_to_list,
             "version": str,
             "pylith_version": string_to_list,
-        }   
+        }
+        if not os.path.isfile(filename):
+            raise IOError(f"Could not open file '{filename}' to read metadata.")
         base, ext = os.path.splitext(str(filename))
         if ext == ".cfg":
             from pythia.pyre.inventory.cfg.CodecConfig import CodecConfig
