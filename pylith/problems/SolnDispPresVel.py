@@ -14,16 +14,16 @@
 # ----------------------------------------------------------------------
 #
 
-# @file pylith/problems/SolnDispPresTracStrain.py
+# @file pylith/problems/SolnDispPresVel.py
 #
-# @brief Python subfields container with displacement, pore pressure, and trace strain subfields.
+# @brief Python subfields container with displacement, pore pressure, and velocity subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
 from .Solution import Solution as SolutionBase
 
 
-class SolnDispPresTracStrain(PetscComponent):
-    """Python subfields container with displacement, pore pressure, and trace strain subfields.
+class SolnDispPresVel(PetscComponent):
+    """Python subfields container with displacement, pore pressure, and velocity subfields.
 
     IMPORTANT: Use the Solution class (below) to set this object as the default facilities array for the solution
     subfields.
@@ -39,13 +39,13 @@ class SolnDispPresTracStrain(PetscComponent):
     pressure = pythia.pyre.inventory.facility("pressure", family="soln_subfield", factory=SubfieldPressure)
     pressure.meta['tip'] = "Pressure subfield."
 
-    from .SubfieldTraceStrain import SubfieldTraceStrain
-    traceStrain = pythia.pyre.inventory.facility("trace_strain", family="soln_subfield", factory=SubfieldTraceStrain)
-    traceStrain.meta['tip'] = "Trace strain subfield."
+    from .SubfieldVelocity import SubfieldVelocity
+    velocity = pythia.pyre.inventory.facility("velocity", family="soln_subfield", factory=SubfieldVelocity)
+    velocity.meta['tip'] = "Velocity subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="solndispprestracstrain"):
+    def __init__(self, name="solndisppresvel"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="soln_subfields")
@@ -60,7 +60,7 @@ class SolnDispPresTracStrain(PetscComponent):
         components() to insure order is [displacement, pressure, trace_strain].
 
         """
-        return [self.displacement, self.pressure, self.traceStrain]
+        return [self.displacement, self.pressure, self.velocity]
 
 
 class Solution(SolutionBase):
@@ -71,7 +71,7 @@ class Solution(SolutionBase):
 
     from .SolutionSubfield import subfieldFactory
     subfields = pythia.pyre.inventory.facilityArray(
-        "subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispPresTracStrain)
+        "subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispPresVel)
     subfields.meta['tip'] = "Subfields in solution."
 
 
