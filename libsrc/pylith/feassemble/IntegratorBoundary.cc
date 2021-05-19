@@ -314,7 +314,7 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
       // Must use PetscWeakFormAddBdResidual() when moved to initialization.
         for (size_t i = 0; i < kernels.size(); ++i) {
             const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
-            err = PetscWeakFormSetIndexBdResidual(weakForm, dmLabel, labelValue, i_field, 0, kernels[i].r0, 0,
+            err = PetscWeakFormSetIndexBdResidual(weakForm, dmLabel, labelValue, i_field, 0, 0, kernels[i].r0, 0,
                                                   kernels[i].r1);PYLITH_CHECK_ERROR(err);
         } // for
         if (debug.state()) {
