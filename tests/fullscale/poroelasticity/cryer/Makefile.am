@@ -36,9 +36,9 @@ dist_noinst_DATA = \
 	cryer_tet.cfg \
 	cryer_hex.cfg
 
-	noinst_TMP = \
-		cryer_bc.spatialdb \
-		cryer_ic.spatialdb
+noinst_TMP = \
+	cryer_bc.spatialdb \
+	cryer_ic.spatialdb
 
 # 'export' the input files by performing a mock install
 export_datadir = $(abs_top_builddir)/tests/fullscale/poroelasticity/cryer
