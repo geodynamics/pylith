@@ -309,7 +309,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_tl_p(const P
 
     const PylithScalar biotCoefficient = a[aOff[i_biotCoefficient]];
     const PylithScalar biotModulus = a[aOff[i_biotModulus]];
-    const PylithScalar kappa = a[aOff[i_isotropicPerm]] / a[aOff[i_fluidViscosity]];
+    const PylithScalar kappa = a[aOff[i_isotropicPermeability]] / a[aOff[i_fluidViscosity]];
     PylithScalar sum = 0.0;
 
     for (PylithInt d = 0; d < _dim; ++d) {
@@ -905,7 +905,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1p(const PylithInt
 
     const PylithScalar* pressure_x = &s_x[sOff_x[i_pressure]];
 
-    const PylithScalar isotropicPermeability = a[aOff[i_isotropicPerm]];
+    const PylithScalar isotropicPermeability = a[aOff[i_isotropicPermeability]];
     const PylithScalar fluidViscosity = a[aOff[i_fluidViscosity]];
 
     for (PylithInt d = 0; d < _dim; ++d) {
@@ -1000,6 +1000,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf3uu(const PylithI
     const PylithInt _dim = 2;
 
     // Incoming solution field.
+    const PylithInt i_trace_strain = 2;
 
     // Incoming auxiliary fields.
 
@@ -1518,7 +1519,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g0p_source_grav_bod
                                                                                   const PylithScalar x[],
                                                                                   const PylithInt numConstants,
                                                                                   const PylithScalar constants[],
-                                                                                  PylithScalar g0p[]) {
+                                                                                  PylithScalar g0[]) {
     const PylithInt _dim = 2;
 
     // Incoming re-packed solution field.
@@ -1591,7 +1592,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1p_gravity(const P
 
     const PylithScalar* pressure_x = &s_x[sOff_x[i_pressure]];
     const PylithScalar fluidDensity = a[aOff[i_fluidDensity]];
-    const PylithScalar isotropicPermeability = a[aOff[i_isotropicPerm]];
+    const PylithScalar isotropicPermeability = a[aOff[i_isotropicPermeability]];
     const PylithScalar fluidViscosity = a[aOff[i_fluidViscosity]];
     const PylithScalar* gravityField = &a[aOff[i_gravityField]];
 
@@ -1705,7 +1706,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1p(const PylithInt
 
     const PylithScalar* pressure_x = &s_x[sOff_x[i_pressure]];
 
-    const PylithScalar isotropicPermeability = a[aOff[i_isotropicPerm]];
+    const PylithScalar isotropicPermeability = a[aOff[i_isotropicPermeability]];
     const PylithScalar fluidViscosity = a[aOff[i_fluidViscosity]];
 
     for (PylithInt d = 0; d < _dim; ++d) {
@@ -2370,7 +2371,7 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::f0_mms_tl_p(const PylithInt 
 
     const PylithScalar biotCoefficient = a[aOff[i_biotCoefficient]];
     const PylithScalar biotModulus = a[aOff[i_biotModulus]];
-    const PylithScalar kappa = a[aOff[i_isotropicPerm]] / a[aOff[i_fluidViscosity]];
+    const PylithScalar kappa = a[aOff[i_isotropicPermeability]] / a[aOff[i_fluidViscosity]];
     PylithScalar sum = 0.0;
 
     for (PylithInt d = 0; d < _dim; ++d) {
@@ -3681,7 +3682,7 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::g0p_source_grav_body(const P
                                                                          const PylithScalar x[],
                                                                          const PylithInt numConstants,
                                                                          const PylithScalar constants[],
-                                                                         PylithScalar g0[]]) {
+                                                                         PylithScalar g0[]) {
     const PylithInt _dim = 3;
 
     // Incoming re-packed solution field.
@@ -3754,7 +3755,7 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::g1p_gravity(const PylithInt 
 
     const PylithScalar* pressure_x = &s_x[sOff_x[i_pressure]];
     const PylithScalar fluidDensity = a[aOff[i_fluidDensity]];
-    const PylithScalar isotropicPermeability = a[aOff[i_isotropicPerm]];
+    const PylithScalar isotropicPermeability = a[aOff[i_isotropicPermeability]];
     const PylithScalar fluidViscosity = a[aOff[i_fluidViscosity]];
     const PylithScalar* gravityField = &a[aOff[i_gravityField]];
 
