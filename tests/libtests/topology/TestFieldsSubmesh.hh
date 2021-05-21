@@ -41,7 +41,6 @@ namespace pylith {
 // TestField -------------------------------------------------------------
 /// C++ unit testing for Field.
 class pylith::topology::TestFieldsSubmesh : public CppUnit::TestFixture { // class TestField
-
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestFieldsSubmesh);
 
@@ -51,7 +50,6 @@ class pylith::topology::TestFieldsSubmesh : public CppUnit::TestFixture { // cla
     CPPUNIT_TEST(testGet);
     CPPUNIT_TEST(testGetConst);
     CPPUNIT_TEST(testHasField);
-    CPPUNIT_TEST(testCopyLayout);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -82,9 +80,6 @@ public:
     /// Test hasField().
     void testHasField(void);
 
-    /// Test copyLayout(domain).
-    void testCopyLayout(void);
-
     // PRIVATE MEMBERS /////////////////////////////////////////////////////
 private:
 
@@ -94,6 +89,5 @@ private:
 }; // class TestFieldsSubmesh
 
 #endif // pylith_topology_testfieldssubmesh_hh
-
 
 // End of file

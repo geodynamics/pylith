@@ -60,25 +60,13 @@ public:
 
     PylithInt vertexNumPoints; ///< Number of points in vertex field.
     pylith::topology::FieldBase::Discretization vertexDiscretization; ///< Discretization for vertex fields.
-    PylithScalar* vertexScalarValues; ///< Values for scalar vertex field (vertexNumPoints, vertexScalarNumComponents).
-    PylithScalar* vertexVectorValues; ///< Values for vector vertex field (vertexNumPoints, vertexVectorNumComponents).
-    PylithScalar* vertexTensorValues; ///< Values for tensor vertex field (vertexNumPoints, vertexTensorNumComponents).
-    PylithScalar* vertexOtherValues; ///< Values for other vertex field (vertexNumPoints, vertexOtherNumComponents).
-    PylithInt vertexScalarNumComponents; ///< Number of components for scalar vertex field.
-    PylithInt vertexVectorNumComponents; ///< Number of components for vector vertex field.
-    PylithInt vertexTensorNumComponents; ///< Number of components for tensor vertex field.
-    PylithInt vertexOtherNumComponents; ///< Number of components for other vertex field.
+    PylithScalar* vertexValues; ///< Values for vertex field (vertexNumPoints, vertexNumDOF).
+    PylithInt vertexNumDOF; ///< Number of values per vertex.
 
     PylithInt cellNumPoints; ///< Number of points in cell field.
     pylith::topology::FieldBase::Discretization cellDiscretization; ///< Discretization for cell fields.
-    PylithScalar* cellScalarValues; ///< Values for scalar cell field (cellNumPoints, cellScalarNumComponents).
-    PylithScalar* cellVectorValues; ///< Values for vector cell field (cellNumPoints, cellVectorNumComponents).
-    PylithScalar* cellTensorValues; ///< Values for tensor cell field (cellNumPoints, cellTensorNumComponents).
-    PylithScalar* cellOtherValues; ///< Values for other cell field (cellNumPoints, cellOtherNumComponents).
-    PylithInt cellScalarNumComponents; ///< Number of components for scalar cell field.
-    PylithInt cellVectorNumComponents; ///< Number of components for vector cell field.
-    PylithInt cellTensorNumComponents; ///< Number of components for tensor cell field.
-    PylithInt cellOtherNumComponents; ///< Number of components for other cell field.
+    PylithScalar* cellValues; ///< Values for cell field (cellNumPoints, cellNumDOF).
+    PylithInt cellNumDOF; ///< Number of values per cell.
 
 }; // class TestDataWriter_Data
 

@@ -45,10 +45,8 @@ class ProblemDefaults(Component):
     quadOrder = pythia.pyre.inventory.int("quadrature_order", default=1, validator=pythia.pyre.inventory.greater(0))
     quadOrder.meta['tip'] = "Finite-element quadrature order."
 
-    from pylith.meshio.FieldFilterNone import FieldFilterNone
-    outputFieldFilter = pythia.pyre.inventory.facility(
-        "output_field_filter", family="output_field_filter", factory=FieldFilterNone)
-    outputFieldFilter.meta['tip'] = "Filter applied to output fields (e.g., FieldFilterProject)."
+    outputBasisOrder = pythia.pyre.inventory.int("output_basis_order", default=1, validator=pythia.pyre.inventory.choice((0,1)))
+    outputBasisOrder.meta['tip'] = "Basis order for output."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

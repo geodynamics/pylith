@@ -56,11 +56,11 @@ public:
              */
             void setWriter(pylith::meshio::DataWriter* const writer);
 
-            /** Set filter for vertex data.
+            /** Set basis order for output.
              *
-             * @param[in] filter Filter to apply to vertex data before writing.
+             * @param[in] value Basis order for output.
              */
-            void setFieldFilter(pylith::meshio::FieldFilter* const filter);
+            void setOutputBasisOrder(const int value);
 
             /** Set time scale.
              *

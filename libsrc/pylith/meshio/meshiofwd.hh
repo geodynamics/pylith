@@ -29,7 +29,6 @@
 
 namespace pylith {
     namespace meshio {
-
         class BinaryIO;
 
         class MeshIO;
@@ -46,17 +45,18 @@ namespace pylith {
         class PsetFileBinary;
         class ExodusII;
 
-	class OutputObserver;
+        class OutputObserver;
+        class OutputSubfield;
         class OutputSoln;
-	class OutputSolnDomain;
+        class OutputSolnDomain;
         class OutputSolnBoundary;
         class OutputSolnPoints;
 
-	class OutputPhysics;
+        class OutputPhysics;
         class OutputIntegrator;
         class OutputConstraint;
 
-	class ObserverOutput;
+        class ObserverOutput;
         class OutputTrigger;
         class OutputTriggerStep;
         class OutputTriggerTime;
@@ -65,9 +65,6 @@ namespace pylith {
         class DataWriterVTK;
         class DataWriterHDF5;
         class DataWriterHDF5Ext;
-        class FieldFilter;
-        class FieldFilterNone;
-        class FieldFilterProject;
 
         class HDF5;
         class Xdmf;
@@ -75,8 +72,6 @@ namespace pylith {
     } // meshio
 } // pylith
 
-
 #endif // pylith_meshio_meshiofwd_hh
-
 
 // End of file

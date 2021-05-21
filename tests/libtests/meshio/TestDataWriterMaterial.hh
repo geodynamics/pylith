@@ -38,9 +38,9 @@ namespace pylith {
     } // meshio
 } // pylith
 
-// =====================================================================================================================
+// ================================================================================================
 class pylith::meshio::TestDataWriterMaterial {
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Setup testing data.
@@ -56,13 +56,13 @@ protected:
      *
      * @param fields Vertex fields.
      */
-    void _createVertexFields(pylith::topology::Fields* fields);
+    void _createVertexField(pylith::topology::Field* field);
 
     /** Create cell fields.
      *
      * @param fields Cell fields.
      */
-    void _createCellFields(pylith::topology::Fields* fields);
+    void _createCellField(pylith::topology::Field* field);
 
     /// Set data for tri test case.
     void _setDataTri(void);
@@ -83,7 +83,7 @@ protected:
     virtual
     TestDataWriterMaterial_Data* _getData(void) = 0;
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     pylith::topology::Mesh* _domainMesh; ///< Finite-element mesh.
@@ -91,9 +91,9 @@ protected:
 
 }; // class TestDataWriterMaterial
 
-// =====================================================================================================================
+// ================================================================================================
 class pylith::meshio::TestDataWriterMaterial_Data : public TestDataWriter_Data {
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -102,7 +102,7 @@ public:
     /// Destructor
     ~TestDataWriterMaterial_Data(void);
 
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
     int materialId; ///< Id of material.

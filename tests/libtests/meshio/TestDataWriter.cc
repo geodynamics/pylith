@@ -31,30 +31,16 @@ pylith::meshio::TestDataWriter_Data::TestDataWriter_Data(void) :
     time(0.0),
     timeFormat(NULL),
     vertexNumPoints(0),
-    vertexScalarValues(NULL),
-    vertexVectorValues(NULL),
-    vertexTensorValues(NULL),
-    vertexOtherValues(NULL),
-    vertexScalarNumComponents(0),
-    vertexVectorNumComponents(0),
-    vertexTensorNumComponents(0),
-    vertexOtherNumComponents(0),
+    vertexValues(NULL),
+    vertexNumDOF(0),
     cellNumPoints(0),
-    cellScalarValues(NULL),
-    cellVectorValues(NULL),
-    cellTensorValues(NULL),
-    cellOtherValues(NULL),
-    cellScalarNumComponents(0),
-    cellVectorNumComponents(0),
-    cellTensorNumComponents(0),
-    cellOtherNumComponents(0) { // constructor
-} // constructor
+    cellValues(NULL),
+    cellNumDOF(0) {}
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestDataWriter_Data::~TestDataWriter_Data(void) { // destructor
-} // destructor
+pylith::meshio::TestDataWriter_Data::~TestDataWriter_Data(void) {}
 
 
 // End of file

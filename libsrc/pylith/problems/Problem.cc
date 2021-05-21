@@ -354,7 +354,8 @@ pylith::problems::Problem::initialize(void) {
     } // for
 
     _solution->allocate();
-    _solution->createScatter(_solution->mesh(), "global");
+    _solution->createGlobalVector();
+    _solution->createOutputVector();
 
     pythia::journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
@@ -541,7 +542,7 @@ pylith::problems::Problem::_setupLagrangeMultiplier(void) {
         err = DMPlexGetHeightStratum(dmSoln, iDim, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
         err = DMPlexGetSimplexOrBoxCells(dmSoln, iDim, NULL, &pMax);PYLITH_CHECK_ERROR(err);
         for (PylithInt p = pMax; p < pEnd; ++p) {
-          err = DMLabelSetValue(cohesiveLabel, p, 1);PYLITH_CHECK_ERROR(err);
+            err = DMLabelSetValue(cohesiveLabel, p, 1);PYLITH_CHECK_ERROR(err);
         } // for
     } // for
 

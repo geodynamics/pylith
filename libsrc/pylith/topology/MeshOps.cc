@@ -24,6 +24,7 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/utils/array.hh" // USES int_array
 
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <stdexcept> // USES std::runtime_error
@@ -170,6 +171,47 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Create 0-dimension mesh from points.
+pylith::topology::Mesh*
+pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
+                                            const size_t numPoints,
+                                            const spatialdata::geocoords::CoordSys* cs,
+                                            const PylithReal lengthScale,
+                                            MPI_Comm comm) {
+    PYLITH_METHOD_BEGIN;
+    assert(cs);
+
+    PetscErrorCode err;
+
+    const int meshDim = 0;
+    pylith::topology::Mesh* mesh = new pylith::topology::Mesh(meshDim, comm);assert(mesh);
+
+    PetscDM dmPoints = NULL;
+    const PetscInt depth = 0;
+    PetscInt dmNumPoints[1];
+    dmNumPoints[0] = numPoints;
+    pylith::int_array dmConeSizes(0, numPoints);
+    pylith::int_array dmCones(0, numPoints);
+    pylith::int_array dmConeOrientations(0, numPoints);
+
+    const size_t spaceDim = cs->getSpaceDim();
+
+    err = DMPlexCreate(comm, &dmPoints);PYLITH_CHECK_ERROR(err);
+    err = DMSetDimension(dmPoints, 0);PYLITH_CHECK_ERROR(err);
+    err = DMSetCoordinateDim(dmPoints, spaceDim);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateFromDAG(dmPoints, depth, dmNumPoints, &dmConeSizes[0], &dmCones[0],
+                              &dmConeOrientations[0], points);PYLITH_CHECK_ERROR(err);
+    mesh->dmMesh(dmPoints, "points");
+
+    mesh->setCoordSys(cs);
+
+    err = DMPlexSetScale(mesh->dmMesh(), PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_RETURN(mesh);
+} // createFromPoints
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Nondimensionalize the finite-element mesh.
 void
 pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
@@ -188,10 +230,13 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
     err = DMPlexSetScale(dmMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMViewFromOptions(dmMesh, NULL, "-pylith_nondim_dm_view");PYLITH_CHECK_ERROR(err);
 
+    const PetscInt dim = mesh->dimension();
+    if (dim < 1) {
+        PYLITH_METHOD_END;
+    } // if
     PylithReal coordMin[3];
     PylithReal coordMax[3];
     err = DMGetBoundingBox(dmMesh, coordMin, coordMax);
-    const PetscInt dim = mesh->dimension();
     PylithReal volume = 1.0;
     for (int i = 0; i < dim; ++i) {
         volume *= coordMax[i] - coordMin[i];

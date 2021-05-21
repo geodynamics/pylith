@@ -36,7 +36,7 @@
 class pylith::problems::ObserverPhysics {
     friend class TestObserverPhysics; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor.
@@ -74,7 +74,8 @@ public:
      * @param[in] t Current time.
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
-     * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after initialization).
+     * @param[in] infoOnly Flag is true if this update is before solution is available
+     *  (e.g., after initialization).
      */
     virtual
     void update(const PylithReal t,
@@ -82,12 +83,12 @@ public:
                 const pylith::topology::Field& solution,
                 const bool infoOnly) = 0;
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     const pylith::feassemble::PhysicsImplementation* _physics; ///< Physics implementation to observe.
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     ObserverPhysics(const ObserverPhysics&); ///< Not implemented.

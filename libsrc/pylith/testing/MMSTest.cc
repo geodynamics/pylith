@@ -44,6 +44,8 @@ pylith::testing::MMSTest::setUp(void) {
     CPPUNIT_ASSERT(_mesh);
     _solution = NULL;
     _solutionDot = NULL;
+    _solutionExactVec = NULL;
+    _solutionDotExactVec = NULL;
     _jacobianConvergenceRate = 0.0;
     _isJacobianLinear = false;
     _disableFiniteDifferenceCheck = false;
@@ -60,14 +62,14 @@ pylith::testing::MMSTest::tearDown(void) {
     pythia::journal::debug_t debug(GenericComponent::getName());
     debug.deactivate(); // DEBUGGING
 
-    delete _problem;
-    _problem = NULL;
-    delete _mesh;
-    _mesh = NULL;
-    delete _solution;
-    _solution = NULL;
-    delete _solutionDot;
-    _solutionDot = NULL;
+    delete _problem;_problem = NULL;
+    delete _mesh;_mesh = NULL;
+    delete _solution;_solution = NULL;
+    delete _solutionDot;_solutionDot = NULL;
+
+    PetscErrorCode err;
+    err = VecDestroy(&_solutionExactVec);PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&_solutionDotExactVec);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -88,7 +90,7 @@ pylith::testing::MMSTest::testDiscretization(void) {
     const pylith::string_vector subfieldNames = _solution->subfieldNames();
     const size_t numSubfields = subfieldNames.size();
     pylith::real_array error(numSubfields);
-    err = DMSNESCheckDiscretization(_problem->getPetscSNES(), _problem->getPetscDM(), t, _solution->scatterVector("mmstest"),
+    err = DMSNESCheckDiscretization(_problem->getPetscSNES(), _problem->getPetscDM(), t, _solutionExactVec,
                                     tolerance, &error[0]);
     CPPUNIT_ASSERT(!err);
 
@@ -136,8 +138,8 @@ pylith::testing::MMSTest::testResidual(void) {
 
     const PylithReal tolerance = -1.0;
     PylithReal norm = 0.0;
-    err = DMTSCheckResidual(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solution->scatterVector("mmstest"),
-                            _solutionDot->scatterVector("mmstest"), tolerance, &norm);
+    err = DMTSCheckResidual(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solutionExactVec,
+                            _solutionDotExactVec, tolerance, &norm);
     if (debug.state()) {
         _solution->view("Solution field");
     } // if
@@ -169,8 +171,8 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
     const PylithReal tolerance = -1.0;
     PetscBool isLinear = PETSC_FALSE;
     PylithReal convergenceRate = 0.0;
-    err = DMTSCheckJacobian(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solution->scatterVector("mmstest"),
-                            _solutionDot->scatterVector("mmstest"), tolerance, &isLinear, &convergenceRate);
+    err = DMTSCheckJacobian(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solutionExactVec,
+                            _solutionDotExactVec, tolerance, &isLinear, &convergenceRate);
     CPPUNIT_ASSERT(!err);
 
     if (_isJacobianLinear) {
@@ -249,13 +251,13 @@ pylith::testing::MMSTest::_initialize(void) {
     _setExactSolution();
 
     // Global vector to use for analytical solution in MMS tests.
-    _solution->createScatter(_solution->mesh(), "mmstest");
+    PetscErrorCode err = VecDuplicate(_solution->globalVector(), &_solutionExactVec);CPPUNIT_ASSERT(!err);
 
     // Create solution time derivative
     CPPUNIT_ASSERT(!_solutionDot);
-    _solutionDot = new pylith::topology::Field(*_mesh);
-    _solutionDot->cloneSection(*_solution);
-    _solutionDot->createScatter(_solutionDot->mesh(), "mmstest");
+    _solutionDot = new pylith::topology::Field(*_solution);CPPUNIT_ASSERT(_solutionDot);
+    _solutionDot->createGlobalVector();
+    err = VecDuplicate(_solutionDot->globalVector(), &_solutionDotExactVec);CPPUNIT_ASSERT(!err);
 
     PYLITH_METHOD_END;
 } // _initialize

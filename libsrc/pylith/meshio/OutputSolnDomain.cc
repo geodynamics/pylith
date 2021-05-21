@@ -23,6 +23,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
+#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
@@ -48,18 +49,18 @@ pylith::meshio::OutputSolnDomain::_writeSolnStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     const pylith::string_vector& subfieldNames = pylith::topology::FieldOps::getSubfieldNamesDomain(solution);
+    PetscVec solutionVector = solution.outputVector();assert(solutionVector);
 
     _openSolnStep(t, solution.mesh());
     const size_t numSubfieldNames = subfieldNames.size();
     for (size_t iField = 0; iField < numSubfieldNames; iField++) {
-        if (!solution.hasSubfield(subfieldNames[iField].c_str())) {
-            std::ostringstream msg;
-            msg << "Internal Error: Could not find subfield '" << subfieldNames[iField] << "' in solution for output.";
-            throw std::runtime_error(msg.str());
-        } // if
+        assert(solution.hasSubfield(subfieldNames[iField].c_str()));
 
-        pylith::topology::Field* fieldBuffer = _getBuffer(solution, subfieldNames[iField].c_str());assert(fieldBuffer);
-        _appendField(t, fieldBuffer, fieldBuffer->mesh());
+        OutputSubfield* subfield = NULL;
+        subfield = OutputObserver::_getSubfield(solution, solution.mesh(), subfieldNames[iField].c_str());assert(subfield);
+        subfield->project(solutionVector);
+
+        OutputObserver::_appendField(0.0, *subfield);
     } // for
     _closeSolnStep();
 

@@ -38,7 +38,7 @@ namespace pylith {
 // FieldFactory-----------------------------------------------
 /// @brief C++ helper class for setting up auxiliary fields for materials.
 class pylith::meshio::FieldFactory {
-    friend class TestFieldFactory;   // unit testing
+    friend class TestFieldFactory; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
@@ -47,7 +47,7 @@ public:
      *
      * @param[inout] fields Container with fields.
      */
-    FieldFactory(pylith::topology::Fields& fields);
+    FieldFactory(pylith::topology::Field& field);
 
     /// Destructor.
     ~FieldFactory(void);
@@ -55,78 +55,50 @@ public:
     /** Add scalar field and set field values.
      *
      * @param[in] discretization Discretization for scalar field.
-     * @param[in] values Array of values for field (numPoints, numComponents).
-     * @param[in] numPoints Number of points associated with field.
-     * @param[in] numComponents Number of values per point.
      */
-    void scalar(const pylith::topology::FieldBase::Discretization& discretization,
-                const PylithScalar* values,
-                const PylithInt numPoints,
-                const PylithInt numComponents);
+    void addScalar(const pylith::topology::FieldBase::Discretization& discretization);
 
     /** Add vector field.
      *
      * @param[in] discretization Discretization for vector field.
-     * @param[in] values Array of values for field (numPoints, numComponents).
-     * @param[in] numPoints Number of points associated with field.
-     * @param[in] numComponents Number of values per point.
      */
-    void vector(const pylith::topology::FieldBase::Discretization& discretization,
-                const PylithScalar* values,
-                const PylithInt numPoints,
-                const PylithInt numComponents);
+    void addVector(const pylith::topology::FieldBase::Discretization& discretization);
 
     /** Add tensor field.
      *
      * @param[in] discretization Discretization for tensor field.
-     * @param[in] values Array of values for field (numPoints, numComponents).
-     * @param[in] numPoints Number of points associated with field.
-     * @param[in] numComponents Number of values per point.
      */
-    void tensor(const pylith::topology::FieldBase::Discretization& discretization,
-                const PylithScalar* values,
-                const PylithInt numPoints,
-                const PylithInt numComponents);
+    void addTensor(const pylith::topology::FieldBase::Discretization& discretization);
 
     /** Add other field.
      *
      * @param[in] discretization Discretization for other field.
-     * @param[in] values Array of values for field (numPoints, numComponents).
-     * @param[in] numPoints Number of points associated with field.
-     * @param[in] numComponents Number of values per point.
      */
-    void other(const pylith::topology::FieldBase::Discretization& discretization,
-               const PylithScalar* values,
-               const PylithInt numPoints,
-               const PylithInt numComponents);
+    void addOther(const pylith::topology::FieldBase::Discretization& discretization);
 
     /** Set values in field.
      *
-     * @param field Field to populate.
-     * @param values Array of values.
-     * @param numPoints Number of points associated with values.
-     * @param numComponents Number of values per point.
+     * @param[in] values Array of values for all subfields.
+     * @param[in] numPoints Number of points associated with values.
+     * @param[in] numDOF Total number of values per point.
      */
-    void setField(pylith::topology::Field* field,
-                  const PylithScalar* values,
-                  const PylithInt numPoints,
-                  const PylithInt numComponents);
-
+    void setValues(const PylithScalar* values,
+                   const PylithInt numPoints,
+                   const PylithInt numDOF);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
 
-    pylith::topology::Fields& _fields; ///< Contrainer with fields.
+    pylith::topology::Field& _field; ///< Field witn subfields.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
 
-    FieldFactory(const FieldFactory &);   ///< Not implemented.
-    const FieldFactory& operator=(const FieldFactory&);   ///< Not implemented
+    FieldFactory(const FieldFactory &); ///< Not implemented.
+    const FieldFactory& operator=(const FieldFactory&); ///< Not implemented
 
 }; // class FieldFactory
 
 #endif // pylith_problems_fieldfactory_hh
-
 
 // End of file

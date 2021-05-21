@@ -29,6 +29,7 @@ subpkginclude_HEADERS = \
 	IsotropicPowerLaw.hh \
 	IncompressibleElasticity.hh \
 	IsotropicLinearIncompElasticity.hh \
+	Solution.hh \
 	DispVel.hh \
 	TimeDependentFn.hh \
 	NeumannTimeDependent.hh \

@@ -141,16 +141,6 @@ protected:
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
 
-    /** Append field to file.
-     *
-     * @param[in] t Time associated with field.
-     * @param[in] field Field to output.
-     * @param[in] mesh Mesh for output.
-     */
-    void _appendField(const PylithReal t,
-                      pylith::topology::Field* field,
-                      const pylith::topology::Mesh& mesh);
-
     /** Names of information fields for output.
      *
      * Expand "all" into list of actual fields.
@@ -175,8 +165,8 @@ protected:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::string_vector _infoFieldNames;
-    pylith::string_vector _dataFieldNames;
+    pylith::string_vector _infoFieldNames; ///< Names of subfields to output in info file.
+    pylith::string_vector _dataFieldNames; ///< Names of subfields to output at time steps.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

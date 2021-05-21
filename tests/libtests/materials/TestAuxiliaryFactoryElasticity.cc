@@ -47,7 +47,6 @@ pylith::materials::TestAuxiliaryFactoryElasticity::setUp(void) {
     _data->normalizer->setPressureScale(2.25e+10);
 
     pylith::topology::Field::SubfieldInfo info;
-    info.dm = NULL;
     pylith::string_vector componentNames;
 
     // density

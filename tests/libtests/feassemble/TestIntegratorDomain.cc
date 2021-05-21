@@ -210,14 +210,12 @@ pylith::feassemble::TestIntegratorDomain::testComputeResidual(void) {
     pylith::topology::Field& solution = _solutionFields->get("solution");
     pylith::topology::Field& solutionDot = _solutionFields->get("solution_dot");
 
-    pylith::topology::Field residualRHS(*_mesh);
-    residualRHS.cloneSection(solution);
+    pylith::topology::Field residualRHS(solution);
     residualRHS.setLabel("residual RHS");
     residualRHS.createDiscretization();
     residualRHS.allocate();
 
-    pylith::topology::Field residualLHS(*_mesh);
-    residualLHS.cloneSection(solution);
+    pylith::topology::Field residualLHS(solution);
     residualLHS.setLabel("residual LHS");
     residualLHS.createDiscretization();
     residualLHS.allocate();
@@ -285,14 +283,12 @@ pylith::feassemble::TestIntegratorDomain::testComputeJacobian(void) {
     pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
     pylith::topology::Field& perturbationDot = _solutionFields->get("perturbation_dot");
 
-    pylith::topology::Field residual1(*_mesh);
-    residual1.cloneSection(solution);
+    pylith::topology::Field residual1(solution);
     residual1.setLabel("residual1");
     residual1.createDiscretization();
     residual1.allocate();
 
-    pylith::topology::Field residual2(*_mesh);
-    residual2.cloneSection(perturbation);
+    pylith::topology::Field residual2(perturbation);
     residual2.setLabel("residual2");
     residual2.createDiscretization();
     residual2.allocate();

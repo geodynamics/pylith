@@ -44,6 +44,14 @@ public:
              */
             Field(const pylith::topology::Mesh& mesh);
 
+            /** Constructor with field to use for layout.
+             *
+             * @param[in] src Field to copy layout from.
+             *
+             * @note Don't forget to call setLabel(), especially if reusing a field.
+             */
+            Field(const Field& src);
+
             /// Destructor.
             ~Field(void);
 
@@ -68,18 +76,6 @@ public:
              */
             const char* getLabel(void) const;
 
-            /** Set flag indicating whether it is okay to dimensionalize field.
-             *
-             * @param value True if it is okay to dimensionalize field.
-             */
-            void dimensionalizeOkay(const bool value);
-
-            /** Set flag indicating whether it is okay to dimensionalize field.
-             *
-             * @param value True if it is okay to dimensionalize field.
-             */
-            bool dimensionalizeOkay(void) const;
-
             /** Get spatial dimension of domain.
              *
              * @returns Spatial dimension of domain.
@@ -90,22 +86,13 @@ public:
              *
              * @returns the chart size.
              */
-            int chartSize(void) const;
+            PetscInt chartSize(void) const;
 
             /** Get the number of degrees of freedom.
              *
              * @returns the number of degrees of freedom.
              */
-            int sectionSize(void) const;
-
-            /** Create section with same layout (fiber dimension and
-             * constraints) as another section. This allows the layout data
-             * structures to be reused across multiple fields, reducing memory
-             * usage.
-             *
-             * @param sec Section defining layout.
-             */
-            void cloneSection(const Field& src);
+            PetscInt getStorageSize(void) const;
 
             /** Add subfield to current field.
              *
@@ -148,33 +135,11 @@ public:
              */
             void subfieldsSetup(void);
 
-            /// Clear variables associated with section.
-            void clear(void);
-
             /// Allocate field.
             void allocate(void);
 
             /// Zero section values (including constrained DOF).
             void zeroLocal(void);
-
-            /** Copy field values and metadata.
-             *
-             * @param field Field to copy.
-             */
-            void copy(const Field& field);
-
-            /** Copy subfield values and its metadata to field;
-             *
-             * @param field Field to copy from.
-             * @param name Name of subfield to copy.
-             */
-            void copySubfield(const Field& field,
-                              const char* name);
-
-            /** Dimensionalize field. Throws runtime_error if field is not
-             * allowed to be dimensionalized.
-             */
-            void dimensionalize(void);
 
             /** Print field to standard out.
              *
@@ -182,38 +147,6 @@ public:
              */
             void view(const char* label,
                       const ViewOptions options=VIEW_ALL);
-
-            /** Create PETSc vector scatter for field. This is used to transfer
-             * information from the "global" PETSc vector view to the "local"
-             * PETSc section view.
-             *
-             * @param mesh Mesh associated with scatter.
-             * @param context Label for context associated with vector.
-             */
-            void createScatter(const pylith::topology::Mesh& mesh,
-                               const char* context);
-
-            /** Get PETSc vector associated with field.
-             *
-             * @param context Label for context associated with vector.
-             * @returns PETSc vector.
-             */
-            PetscVec scatterVector(const char* context);
-
-            /** Get PETSc vector associated with field.
-             *
-             * @param context Label for context associated with vector.
-             * @returns PETSc vector.
-             */
-            const PetscVec scatterVector(const char* context) const;
-
-            /** Scatter section information across processors to update the
-             * global view of the field.
-             *
-             * @param context Label for context associated with vector.
-             */
-            void scatterLocalToContext(const char* context,
-                                       InsertMode mode=INSERT_VALUES) const;
 
             /** Scatter section information across processors to update the
              * global view of the field.
@@ -227,19 +160,24 @@ public:
             /** Scatter global information across processors to update the local
              * view of the field.
              *
-             * @param context Label for context associated with vector.
-             */
-            void scatterContextToLocal(const char* context,
-                                       InsertMode mode=INSERT_VALUES) const;
-
-            /** Scatter global information across processors to update the local
-             * view of the field.
-             *
              * @param vector PETSc vector used in update.
              * @param context Label for context associated with vector.
              */
             void scatterVectorToLocal(const PetscVec vector,
                                       InsertMode mode=INSERT_VALUES) const;
+
+            /** Scatter section information across processors to update the
+             * output view of the field.
+             *
+             * @param[in] mode Mode for scatter (INSERT_VALUES, ADD_VALUES).
+             */
+            void scatterLocalToOutput(InsertMode mode=INSERT_VALUES) const;
+
+            /// Create global vector.
+            void createGlobalVector(void);
+
+            /// Create global vector with no constrained degrees of freedom for output.
+            void createOutputVector(void);
 
         }; // Field
 

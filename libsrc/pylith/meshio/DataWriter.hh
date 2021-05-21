@@ -30,7 +30,8 @@
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
-#include "pylith/topology/topologyfwd.hh" // USES Field
+#include "pylith/meshio/meshiofwd.hh" // USES OutputSubfield
+#include "pylith/topology/topologyfwd.hh" // USES Mesh
 
 #include "pylith/utils/petscfwd.h" // USES PetscVec
 #include "pylith/utils/arrayfwd.hh"
@@ -101,22 +102,20 @@ public:
     /** Write field over vertices to file.
      *
      * @param[in] t Time associated with field.
-     * @param[in] field Field over vertices.
-     * @param[in] mesh Mesh associated with output.
+     * @param[in] subfield Subfield with basis order 1.
      */
     virtual
     void writeVertexField(const PylithScalar t,
-                          pylith::topology::Field& field,
-                          const pylith::topology::Mesh& mesh) = 0;
+                          const pylith::meshio::OutputSubfield& field) = 0;
 
     /** Write field over cells to file.
      *
      * @param[in] t Time associated with field.
-     * @param[in] field Field over cells.
+     * @param[in] subfield Subfield with basis order 0.
      */
     virtual
     void writeCellField(const PylithScalar t,
-                        pylith::topology::Field& field) = 0;
+                        const pylith::meshio::OutputSubfield& subfield) = 0;
 
     /** Write dataset with names of points to file.
      *

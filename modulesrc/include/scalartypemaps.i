@@ -85,7 +85,7 @@ convert_scalararray(PyObject* input,
     array = obj_to_array_contiguous_allow_conversion($input, NPY_DOUBLE, &is_new_object);
   } else {
     PyErr_Format(PyExc_TypeError, 
-		 "Unknown size for PyLithscalar.  '%ld' given.", 
+		 "Unknown size for PylithReal.  '%ld' given.", 
 		 sizeof(PylithReal));
   } // if/else
   npy_intp size[1] = { -1 };
@@ -102,7 +102,7 @@ convert_scalararray(PyObject* input,
 }
 
 
-/* Typemap suite for (DATA_TYPE* IN_ARRAY2, int DIM1, int DIM2)
+/* Typemap suite for (PylithReal* IN_ARRAY2, int DIM1, int DIM2)
  */
 %typecheck(SWIG_TYPECHECK_DOUBLE_ARRAY)
   (PylithReal* IN_ARRAY2, int DIM1, int DIM2)

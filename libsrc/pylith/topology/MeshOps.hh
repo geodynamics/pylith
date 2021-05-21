@@ -30,7 +30,8 @@
 #include "pylith/utils/petscfwd.h" // USES PetscDM
 #include "pylith/utils/array.hh" // USES int_array
 
-#include "spatialdata/units/unitsfwd.hh" // forward declarations
+#include "spatialdata/geocoords/geocoordsfwd.hh"
+#include "spatialdata/units/unitsfwd.hh"
 
 class pylith::topology::MeshOps {
     friend class TestMeshOps; // unit testing
@@ -63,6 +64,21 @@ public:
     static
     pylith::topology::Mesh* createLowerDimMesh(const pylith::topology::Mesh& mesh,
                                                const char* label);
+
+    /** Create 0-dimension mesh from points.
+     *
+     * @param[in] pointCoords Array of coordinates of points [numPoints*spaceDim].
+     * @param[in] numPoints Number of points.
+     * @param[in] cs Coordinate system for points.
+     * @param[in] lengthScale Length scale for nondimensionalization.
+     * @param[in] comm MPI communicator.
+     */
+    static
+    pylith::topology::Mesh* createFromPoints(const PylithReal* points,
+                                             const size_t numPoints,
+                                             const spatialdata::geocoords::CoordSys* cs,
+                                             const PylithReal lengthScale,
+                                             MPI_Comm comm);
 
     /** Nondimensionalize the finite-element mesh.
      *

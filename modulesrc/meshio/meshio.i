@@ -28,9 +28,6 @@
 #include "pylith/meshio/MeshIOCubit.hh"
 #endif
 
-#include "pylith/meshio/FieldFilter.hh"
-#include "pylith/meshio/FieldFilterNone.hh"
-#include "pylith/meshio/FieldFilterProject.hh"
 #include "pylith/meshio/OutputTrigger.hh"
 #include "pylith/meshio/OutputTriggerStep.hh"
 #include "pylith/meshio/OutputTriggerTime.hh"
@@ -84,9 +81,6 @@ import_array();
 %include "MeshIOCubit.i"
 #endif
 
-%include "FieldFilter.i"
-%include "FieldFilterNone.i"
-%include "FieldFilterProject.i"
 %include "OutputTrigger.i"
 %include "OutputTriggerStep.i"
 %include "OutputTriggerTime.i"

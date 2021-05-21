@@ -42,11 +42,21 @@ public:
              * @param[in] pointNames Array with point names.
              * @param[in] numPointNames Number of point banes.
              */
+            %apply(double* IN_ARRAY2, int DIM1, int DIM2) {
+	            (const PylithReal* pointCoords,
+	            const int numPoints,
+	            const int spaceDim)
+	        };
+            %apply(const char* const* string_list, const int list_len){
+	            (const char* const* pointNames, const int numPointNames)
+	        };
             void setPoints(const PylithReal* pointCoords,
-                           const PylithInt numPoints,
-                           const PylithInt spaceDim,
+                           const int numPoints,
+                           const int spaceDim,
                            const char* const* pointNames,
-                           const PylithInt numPointNames);
+                           const int numPointNames);
+            %clear(const PylithReal* pointCoords, const int numPoints, const int spaceDim);
+            %clear(const char* const* pointNames, const int numPointNames);
 
             // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////
 protected:

@@ -20,131 +20,112 @@
 
 #include "TestDataWriterHDF5Points.hh" // Implementation of class methods
 
-#include "data/DataWriterDataPoints.hh" // USES DataWriterDataPoints
-
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
-#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/meshio/OutputSolnPoints.hh" // USES OutputSolnPoints
 #include "pylith/meshio/DataWriterHDF5.hh" // USES DataWriterHDF5
+#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-// ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::meshio::TestDataWriterHDF5Points);
-
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestDataWriterHDF5Points::setUp(void)
-{ // setUp
+pylith::meshio::TestDataWriterHDF5Points::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
     TestDataWriterPoints::setUp();
+    _data = NULL;
 
     PYLITH_METHOD_END;
 } // setUp
 
-// ----------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::meshio::TestDataWriterHDF5Points::tearDown(void)
-{ // tearDown
+pylith::meshio::TestDataWriterHDF5Points::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
     TestDataWriterPoints::tearDown();
+    delete _data;_data = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
 
-// ----------------------------------------------------------------------
-// Test constructor
-void
-pylith::meshio::TestDataWriterHDF5Points::testConstructor(void)
-{ // testConstructor
-    PYLITH_METHOD_BEGIN;
 
-    DataWriterHDF5 writer;
-
-    CPPUNIT_ASSERT(!writer._viewer);
-
-    PYLITH_METHOD_END;
-} // testConstructor
-
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test openTimeStep() and closeTimeStep()
 void
-pylith::meshio::TestDataWriterHDF5Points::testTimeStep(void)
-{ // testTimeStep
+pylith::meshio::TestDataWriterHDF5Points::testTimeStep(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_pointMesh);
     CPPUNIT_ASSERT(_data);
 
-    OutputSolnPoints output;
     DataWriterHDF5 writer;
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.setLengthScale(10.0);
-
-    writer.filename(_data->timestepFilename);
-    output.writer(&writer);
-    output.setupInterpolator(_mesh, _data->points, _data->numPoints, _data->spaceDim, _data->names, _data->numPoints, normalizer);
+    writer.filename(_data->opencloseFilename);
 
     const PylithScalar t = _data->time;
     const bool isInfo = false;
-    output.open(*_mesh, isInfo);
-    output.writePointNames();
-    output.openTimeStep(t, *_mesh);
+    writer.open(*_pointMesh, isInfo);
+    writer.writePointNames(_data->names, *_pointMesh);
+    writer.openTimeStep(t, *_pointMesh);
+    writer.closeTimeStep();
+    writer.close();
 
-    output.closeTimeStep();
-    output.close();
-
-    checkFile(_data->timestepFilename);
+    checkFile(_data->opencloseFilename);
 
     PYLITH_METHOD_END;
 } // testTimeStep
 
-// ----------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
 // Test writeVertexField.
 void
-pylith::meshio::TestDataWriterHDF5Points::testWriteVertexField(void)
-{ // testWriteVertexField
+pylith::meshio::TestDataWriterHDF5Points::testWriteVertexField(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_pointMesh);
     CPPUNIT_ASSERT(_data);
 
-    OutputSolnPoints output;
+    pylith::topology::Field vertexField(*_pointMesh);
+    _createVertexField(&vertexField);
+
     DataWriterHDF5 writer;
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.setLengthScale(10.0);
-
-    topology::Fields vertexFields(*_mesh);
-    _createVertexFields(&vertexFields);
-
     writer.filename(_data->vertexFilename);
-    output.writer(&writer);
-    output.setupInterpolator(_mesh, _data->points, _data->numPoints, _data->spaceDim, _data->names, _data->numPoints, normalizer);
-
-    const int nfields = _data->numVertexFields;
 
     const PylithScalar t = _data->time;
     const bool isInfo = false;
-    output.open(*_mesh, isInfo);
-    output.writePointNames();
-    output.openTimeStep(t, *_mesh);
-    for (int i = 0; i < nfields; ++i) {
-        topology::Field& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
-        output.appendVertexField(t, field, *_mesh);
+    writer.open(*_pointMesh, isInfo);
+    writer.writePointNames(_data->names, *_pointMesh);
+    writer.openTimeStep(t, *_pointMesh);
+
+    const pylith::string_vector& subfieldNames = vertexField.subfieldNames();
+    const size_t numFields = subfieldNames.size();
+    for (size_t i = 0; i < numFields; ++i) {
+        OutputSubfield* subfield = OutputSubfield::create(vertexField, *_pointMesh, subfieldNames[i].c_str());
+        CPPUNIT_ASSERT(subfield);
+
+        const pylith::topology::Field::SubfieldInfo& info = vertexField.subfieldInfo(subfieldNames[i].c_str());
+        subfield->extractSubfield(vertexField, info.index);
+
+        writer.writeVertexField(t, *subfield);
+        delete subfield;subfield = NULL;
     } // for
-    output.closeTimeStep();
-    output.close();
+    writer.closeTimeStep();
+    writer.close();
 
     checkFile(_data->vertexFilename);
 
     PYLITH_METHOD_END;
 } // testWriteVertexField
+
+
+// ------------------------------------------------------------------------------------------------
+// Get test data.
+pylith::meshio::TestDataWriterPoints_Data*
+pylith::meshio::TestDataWriterHDF5Points::_getData(void) {
+    return _data;
+} // _getData
 
 
 // End of file

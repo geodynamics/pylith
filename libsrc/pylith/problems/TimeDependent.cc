@@ -342,14 +342,14 @@ pylith::problems::TimeDependent::initialize(void) {
         assert(_ic[i]);
         _ic[i]->setValues(_solution, *_normalizer);
     } // for
-    _solution->scatterLocalToContext("global");
-    err = TSSetSolution(_ts, _solution->scatterVector("global"));PYLITH_CHECK_ERROR(err);
+    PetscVec solutionVector = _solution->globalVector();
+    _solution->scatterLocalToVector(solutionVector);
+    err = TSSetSolution(_ts, solutionVector);PYLITH_CHECK_ERROR(err);
     assert(_observers);
     _observers->setTimeScale(timeScale);
 
     // Initialize residual.
-    delete _residual;_residual = new pylith::topology::Field(_solution->mesh());assert(_residual);
-    _residual->cloneSection(*_solution);
+    delete _residual;_residual = new pylith::topology::Field(*_solution);assert(_residual);
     _residual->setLabel("residual");
 
     // Set callbacks.
@@ -371,8 +371,9 @@ pylith::problems::TimeDependent::initialize(void) {
         PYLITH_COMPONENT_DEBUG("Setting PetscTS callback for computeRHSFunction().");
         err = TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
         PYLITH_COMPONENT_DEBUG("Setting up field for inverse of lumped LHS Jacobian.");
-        delete _jacobianLHSLumpedInv;_jacobianLHSLumpedInv = new pylith::topology::Field(_solution->mesh());assert(_jacobianLHSLumpedInv);
-        _jacobianLHSLumpedInv->cloneSection(*_solution);
+        delete _jacobianLHSLumpedInv;_jacobianLHSLumpedInv = new pylith::topology::Field(*_solution);assert(_jacobianLHSLumpedInv);
+        _jacobianLHSLumpedInv->setLabel("Jacobian_lumped_inverse");
+        _jacobianLHSLumpedInv->createGlobalVector();
         break;
     default: {
         PYLITH_COMPONENT_LOGICERROR("Unknown time stepping formulation '" << _formulation << "'.");
@@ -446,6 +447,7 @@ pylith::problems::TimeDependent::poststep(void) {
     // Update PyLith view of the solution.
     assert(_solution);
     _solution->scatterVectorToLocal(solutionVec);
+    _solution->scatterLocalToOutput();
 
     // Update integrators.
     const size_t numIntegrators = _integrators.size();
@@ -488,8 +490,7 @@ pylith::problems::TimeDependent::setSolutionLocal(const PylithReal t,
 
     if (solutionDotVec) {
         if (!_solutionDot) {
-            _solutionDot = new pylith::topology::Field(_solution->mesh());
-            _solutionDot->cloneSection(*_solution);
+            _solutionDot = new pylith::topology::Field(*_solution);
             _solutionDot->setLabel("solutionDot");
         } // if
         _solutionDot->scatterVectorToLocal(solutionDotVec);
@@ -681,7 +682,7 @@ pylith::problems::TimeDependent::computeLHSJacobianLumpedInv(const PylithReal t,
     } // for
 
     // Insert values into global vector.
-    _jacobianLHSLumpedInv->scatterLocalToContext("global");
+    _jacobianLHSLumpedInv->scatterLocalToVector(_jacobianLHSLumpedInv->globalVector());
 
     _dtLHSJacobianLumped = dt;
 
@@ -715,7 +716,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
         problem->computeLHSJacobianLumpedInv(t, dt, s_tshift, solutionVec);
 
         assert(problem->_jacobianLHSLumpedInv);
-        err = VecPointwiseMult(residualVec, problem->_jacobianLHSLumpedInv->scatterVector("global"), residualVec);PYLITH_CHECK_ERROR(err);
+        err = VecPointwiseMult(residualVec, problem->_jacobianLHSLumpedInv->globalVector(), residualVec);PYLITH_CHECK_ERROR(err);
     } // if
 
     PYLITH_METHOD_RETURN(0);

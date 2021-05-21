@@ -45,25 +45,19 @@ namespace pylith {
 // TestFieldMesh -------------------------------------------------------------
 /// C++ unit testing for Field.
 class pylith::topology::TestFieldMesh : public CppUnit::TestFixture {
-
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestFieldMesh);
 
     CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testCopyConstructor);
     CPPUNIT_TEST(testMesh);
     CPPUNIT_TEST(testGeneralAccessors);
     CPPUNIT_TEST(testSectionAccessors);
     CPPUNIT_TEST(testVectorAccessors);
-    CPPUNIT_TEST(testCloneSection);
     CPPUNIT_TEST(testSubfieldAccessors);
-    CPPUNIT_TEST(testClear);
     CPPUNIT_TEST(testAllocate);
     CPPUNIT_TEST(testZeroLocal);
-    CPPUNIT_TEST(testCopy);
-    CPPUNIT_TEST(testCopySubfield);
-    CPPUNIT_TEST(testDimensionalize);
     CPPUNIT_TEST(testView);
-    CPPUNIT_TEST(testScatter);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -79,26 +73,23 @@ public:
     /// Test constructor.
     void testConstructor(void);
 
+    /// Test copy constructor.
+    void testCopyConstructor(void);
+
     /// Test mesh().
     void testMesh(void);
 
     /// Test getLabel(), vectorFieldType(), scale(), addDimensionOkay(), getSpaceDim().
     void testGeneralAccessors(void);
 
-    /// Test chartSize(), sectionSize(), localSection(), globalSection().
+    /// Test chartSize(), getStorageSize(), localSection(), globalSection().
     void testSectionAccessors(void);
 
     /// Test localVector(), globalVector().
     void testVectorAccessors(void);
 
-    /// Test cloneSection().
-    void testCloneSection(void);
-
     /// Test subfieldAdd(), subfieldsSetup(), hasSubfield(), subfieldNames(), subfieldInfo().
     void testSubfieldAccessors(void);
-
-    /// Test clear().
-    void testClear(void);
 
     /// Test allocate().
     void testAllocate(void);
@@ -106,20 +97,8 @@ public:
     /// Test zeroLocal().
     void testZeroLocal(void);
 
-    /// Test copy().
-    void testCopy(void);
-
-    /// Test copySubfield().
-    void testCopySubfield(void);
-
-    /// Test dimensionalize().
-    void testDimensionalize(void);
-
     /// Test view().
     void testView(void);
-
-    /// Test createScatter(), createScatterWithBC(), scatterLocalToGlobal(), scatterGlobalToLocal(), scatterVector().
-    void testScatter(void);
 
     // PRIVATE METHODS /////////////////////////////////////////////////////////
 private:
@@ -154,7 +133,6 @@ protected:
 
 // TestFieldMesh_Data-----------------------------------------------------------
 class pylith::topology::TestFieldMesh_Data {
-
     // PUBLIC METHODS //////////////////////////////////////////////////////////
 public:
 
@@ -171,10 +149,10 @@ public:
     /// @{
     int cellDim; ///< Cell dimension (matches space dimension).
     int numVertices; ///< Number of vertices.
-    int numCells;   ///< Number of cells.
+    int numCells; ///< Number of cells.
     int numCorners; ///< Number of vertices per cell.
     int* cells; ///< Array of vertices in cells [numCells*numCorners].
-    PylithScalar* coordinates;  ///< Coordinates of vertices [numVertices*cellDim].
+    PylithScalar* coordinates; ///< Coordinates of vertices [numVertices*cellDim].
     /// @}
 
     /// @defgroup Subfield A information.
@@ -201,14 +179,12 @@ public:
     int bcBLabelId; ///< Label id for boundary condition.
     int bcBNumConstrainedDOF; ///< Number of constrained DOF for boundary condition.
     int* bcBConstrainedDOF; ///< Array of constrained DOF.
-    int bcBNumVertices; ///< Number of vertices assocaited with boundary condition.
+    int bcBNumVertices; ///< Number of vertices associated with boundary condition.
     int* bcBVertices; ///< Array of vertex indices.
     /// @}
 
-};  // TestFieldMesh_Data
-
+}; // TestFieldMesh_Data
 
 #endif // pylith_topology_testfieldmesh_hh
-
 
 // End of file

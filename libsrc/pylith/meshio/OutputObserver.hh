@@ -31,11 +31,12 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/array.hh" // HASA string_vector
+#include <map> // HASA std::map
 
 class pylith::meshio::OutputObserver : public pylith::utils::PyreComponent {
     friend class TestOutputObserver; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -66,11 +67,11 @@ public:
      */
     void setWriter(pylith::meshio::DataWriter* const writer);
 
-    /** Set filter for vertex data.
+    /** Set basis order for output.
      *
-     * @param[in] filter Filter to apply to vertex data before writing.
+     * @param[in] value Basis order for output.
      */
-    void setFieldFilter(pylith::meshio::FieldFilter* const filter);
+    void setOutputBasisOrder(const int value);
 
     /** Set time scale.
      *
@@ -79,44 +80,44 @@ public:
     virtual
     void setTimeScale(const PylithReal value);
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
-    /** Get buffer for field.
+    /** Set context.
      *
-     * Find the most appropriate buffer that matches field, reusing and reallocating as necessary.
-     *
-     * @param[in] fieldIn Input field.
-     * @param[in] name Name of subfield (optional).
-     * @returns Field to use as buffer for outputting field.
+     * @param[in] mesh Mesh associated with output.
      */
-    pylith::topology::Field* _getBuffer(const pylith::topology::Field& fieldIn,
-                                        const char* name=NULL);
+    void _setContext(const pylith::topology::Mesh & mesh);
 
-    /** Dimension field.
+    /** Get output subfield, creating if necessary.
      *
-     * @param[in] fieldIn Field to dimensionalize.
+     * @param[in] field Field containing subfields.
+     * @param[in] submesh Submesh associated with output.
+     * @param[in] name Name of subfield.
      */
-    pylith::topology::Field* _dimensionField(pylith::topology::Field* fieldIn);
+    virtual
+    OutputSubfield* _getSubfield(const pylith::topology::Field& field,
+                                 const pylith::topology::Mesh& submesh,
+                                 const char* name);
 
-    /** Get basis order of field.
+    /** Append subfield at current time to output.
      *
-     * @param[in] field Field with one subfield for output.
-     *
-     * @returns Basis order if field contains single subfield, otherwise -1;
+     * @param[in] t Current time.
+     * @param[in] subfield Subfield to write.
      */
-    int _getBasisOrder(const pylith::topology::Field& field);
+    void _appendField(const PylithReal t,
+                      const pylith::meshio::OutputSubfield& subfield);
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     PylithReal _timeScale; ///< Time scale for dimentionalizing time.
-    pylith::topology::Fields* _fields; ///< Container with field buffers used for output.
+    std::map<std::string, OutputSubfield*> _subfields; ///< Subfields extracted for output.
     DataWriter* _writer; ///< Writer for data.
-    FieldFilter* _fieldFilter; ///< Filter applied to fields.
     OutputTrigger* _trigger; ///< Trigger for deciding how often to write output.
+    int _outputBasisOrder; ///< Basis order for output.
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     OutputObserver(const OutputObserver&); ///< Not implemented.

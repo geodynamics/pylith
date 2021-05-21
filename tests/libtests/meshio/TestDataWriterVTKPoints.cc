@@ -22,11 +22,13 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/meshio/OutputSolnPoints.hh" // USES OutputSolnPoints
 #include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
+#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 
-// ----------------------------------------------------------------------
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
+// ------------------------------------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKPoints::setUp(void) { // setUp
@@ -39,7 +41,7 @@ pylith::meshio::TestDataWriterVTKPoints::setUp(void) { // setUp
 } // setUp
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Tear down testing data.
 void
 pylith::meshio::TestDataWriterVTKPoints::tearDown(void) { // tearDown
@@ -52,40 +54,34 @@ pylith::meshio::TestDataWriterVTKPoints::tearDown(void) { // tearDown
 } // tearDown
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test openTimeStep() and closeTimeStep()
 void
-pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void) { // testTimeStep
+pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_pointMesh);
     CPPUNIT_ASSERT(_data);
 
-    OutputSolnPoints output;
     DataWriterVTK writer;
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.setLengthScale(10.0);
-
     writer.filename(_data->timestepFilename);
     writer.timeFormat(_data->timeFormat);
-    output.writer(&writer);
-    output.setupInterpolator(_mesh, _data->points, _data->numPoints, _data->spaceDim, _data->names, _data->numPoints, normalizer);
+
+    CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
+    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
 
     const PylithScalar t = _data->time;
     const bool isInfo = false;
-    if (!_data->cellsLabel) {
-        output.open(*_mesh, isInfo);
-        output.writePointNames(); // Should do nothing
-        output.openTimeStep(t, *_mesh);
-    } else {
-        const char* label = _data->cellsLabel;
-        const int id = _data->labelId;
-        output.open(*_mesh, isInfo, label, id);
-        output.openTimeStep(t, *_mesh, label, id);
-    } // else
+    writer.open(*_pointMesh, isInfo);
+    writer.openTimeStep(t, *_pointMesh);
 
-    output.closeTimeStep();
-    output.close();
+    CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
+    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+
+    writer.closeTimeStep();
+    writer.close();
+
+    CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
+    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
 
     // Nothing to check. We do not create VTK files without fields anymore.
 
@@ -93,51 +89,43 @@ pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void) { // testTimeStep
 } // testTimeStep
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test writeVertexField.
 void
-pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void) { // testWriteVertexField
+pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_pointMesh);
     CPPUNIT_ASSERT(_data);
 
-    OutputSolnPoints output;
+    pylith::topology::Field vertexField(*_pointMesh);
+    _createVertexField(&vertexField);
+
     DataWriterVTK writer;
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.setLengthScale(10.0);
-
-    topology::Fields vertexFields(*_mesh);
-    _createVertexFields(&vertexFields);
-
     writer.filename(_data->vertexFilename);
     writer.timeFormat(_data->timeFormat);
-    output.writer(&writer);
-    output.setupInterpolator(_mesh, _data->points, _data->numPoints, _data->spaceDim, _data->names, _data->numPoints, normalizer);
-
-    const int nfields = _data->numVertexFields;
 
     const PylithScalar t = _data->time;
     const bool isInfo = false;
-    if (!_data->cellsLabel) {
-        output.open(*_mesh, isInfo);
-        output.writePointNames(); // Should do nothing
-        output.openTimeStep(t, *_mesh);
-    } else {
-        const char* label = _data->cellsLabel;
-        const int id = _data->labelId;
-        output.open(*_mesh, isInfo, label, id);
-        output.openTimeStep(t, *_mesh, label, id);
-    } // else
-    for (int i = 0; i < nfields; ++i) {
-        topology::Field& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
-        // field.view("FIELD"); // DEBUGGING
-        output.appendVertexField(t, field, *_mesh);
+    writer.open(*_pointMesh, isInfo);
+    writer.openTimeStep(t, *_pointMesh);
+
+    const pylith::string_vector& subfieldNames = vertexField.subfieldNames();
+    const size_t numFields = subfieldNames.size();
+    for (size_t i = 0; i < numFields; ++i) {
+        OutputSubfield* subfield = OutputSubfield::create(vertexField, *_pointMesh, subfieldNames[i].c_str());
+        CPPUNIT_ASSERT(subfield);
+
+        const pylith::topology::Field::SubfieldInfo& info = vertexField.subfieldInfo(subfieldNames[i].c_str());
+        subfield->extractSubfield(vertexField, info.index);
+
+        writer.writeVertexField(t, *subfield);
         CPPUNIT_ASSERT(writer._wroteVertexHeader);
         CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+        delete subfield;subfield = NULL;
     } // for
-    output.closeTimeStep();
-    output.close();
+    writer.closeTimeStep();
+    writer.close();
+
     CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
     CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
 
@@ -147,7 +135,7 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void) { // testWri
 } // testWriteVertexField
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get test data.
 pylith::meshio::TestDataWriterPoints_Data*
 pylith::meshio::TestDataWriterVTKPoints::_getData(void) {

@@ -28,14 +28,6 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
     """Python object for managing output of finite-element solution
     information over a subdomain.
 
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *reader* Reader for list of points.
-
     FACTORY: observer
     """
 
@@ -67,24 +59,18 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
 
         # Convert to mesh coordinate system
         from spatialdata.geocoords.Converter import convert
-        convert(points, problem.mesh.coordsys(), reader.coordsys)
+        convert(stationCoords, problem.mesh().getCoordSys(), self.reader.coordsys)
 
         # Nondimensionalize
-        stationsCoords /= problem.normalizer.lengthScale.value
+        stationCoords /= problem.normalizer.lengthScale.value
 
-        ModuleOutputSolnPoints.stations(stationCoords, stationNames)
+        ModuleOutputSolnPoints.setPoints(self, stationCoords, stationNames)
 
         identifier = self.aliases[-1]
         self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
-
-    def _configure(self):
-        """Set members based using inventory.
-        """
-        OutputSoln._configure(self)
-        return
 
     def _createModuleObj(self):
         """Create handle to C++ object.

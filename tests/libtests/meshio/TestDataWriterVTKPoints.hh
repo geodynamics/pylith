@@ -43,7 +43,6 @@ namespace pylith {
     } // meshio
 } // pylith
 
-/// C++ unit testing for DataWriterVTK
 class pylith::meshio::TestDataWriterVTKPoints :
     public TestDataWriterVTK,
     public TestDataWriterPoints,
@@ -78,12 +77,12 @@ protected:
      *
      * @returns Test data.
      */
-    TestDataWriterSubmesh_Data* _getData(void);
+    TestDataWriterPoints_Data* _getData(void);
 
     // PROTECTED MEMBDERS /////////////////////////////////////////////////
 protected:
 
-    TestDataWriterVTKSubmesh_Data* _data; ///< Data for testing.
+    TestDataWriterVTKPoints_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterVTKPoints
 

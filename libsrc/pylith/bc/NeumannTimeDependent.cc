@@ -279,6 +279,7 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
     pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
     auxiliaryField->allocate();
     auxiliaryField->zeroLocal();
+    auxiliaryField->createOutputVector();
 
     assert(_auxiliaryFactory);
     _auxiliaryFactory->setValuesFromDB();

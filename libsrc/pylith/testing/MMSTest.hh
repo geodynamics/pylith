@@ -25,7 +25,7 @@
 #if !defined(pylith_testing_mmstest_hh)
 #define pylith_testing_mmstest_hh
 
-#include "pylith/utils/GenericComponent.hh"  // ISA GenericComponent
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 #include <cppunit/extensions/HelperMacros.h> /// ISA Cppunit::TestFixture
 
 #include "pylith/testing/testingfwd.hh" // forward declaration
@@ -33,9 +33,10 @@
 #include "pylith/problems/problemsfwd.hh" // HOLDSA TimeDependent
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh
 
+#include "pylith/utils/petscfwd.h" // HASA PetscVec
+
 class pylith::testing::MMSTest : public pylith::utils::GenericComponent,
-                                 public CppUnit::TestFixture
-{
+    public CppUnit::TestFixture {
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(MMSTest);
 
@@ -48,6 +49,7 @@ class pylith::testing::MMSTest : public pylith::utils::GenericComponent,
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
+
     /// Setup testing data.
     virtual void setUp(void);
 
@@ -74,6 +76,7 @@ public:
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
+
     /// Initialize objects for test.
     virtual void _initialize(void);
 
@@ -82,14 +85,17 @@ protected:
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
+
     pylith::problems::TimeDependent *_problem; ///< Time-dependent problem.
-    pylith::topology::Mesh *_mesh;             ///< Finite-element mesh.
-    pylith::topology::Field *_solution;        ///< Solution field.
-    pylith::topology::Field *_solutionDot;     ///< Solution time derivative field.
-    PylithReal _jacobianConvergenceRate;       ///< Expected convergence rate for Jacobiab (when not linear).
-    bool _isJacobianLinear;                    ///< Jacobian is should be linear.
-    bool _disableFiniteDifferenceCheck;        ///< Flag to indicate not to perform finite-difference check of Jacobian.
-    bool _allowZeroResidual;                   ///< Allow residual to be exactly zero.
+    pylith::topology::Mesh *_mesh; ///< Finite-element mesh.
+    pylith::topology::Field *_solution; ///< Solution field.
+    pylith::topology::Field *_solutionDot; ///< Solution time derivative field.
+    PetscVec _solutionExactVec; ///< Global vector to use for exact solution.
+    PetscVec _solutionDotExactVec; ///< Global vector to use for time derivative of exact solution.
+    PylithReal _jacobianConvergenceRate; ///< Expected convergence rate for Jacobiab (when not linear).
+    bool _isJacobianLinear; ///< Jacobian is should be linear.
+    bool _disableFiniteDifferenceCheck; ///< Flag to indicate not to perform finite-difference check of Jacobian.
+    bool _allowZeroResidual; ///< Allow residual to be exactly zero.
 
 }; // MMSTest
 

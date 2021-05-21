@@ -22,20 +22,20 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::problems::ObserverPhysics::ObserverPhysics(void) :
     _physics(NULL) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::problems::ObserverPhysics::~ObserverPhysics(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::problems::ObserverPhysics::deallocate(void) {
@@ -43,7 +43,7 @@ pylith::problems::ObserverPhysics::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set physics implementation to observe.
 void
 pylith::problems::ObserverPhysics::setPhysicsImplementation(const pylith::feassemble::PhysicsImplementation* const physics) {

@@ -21,22 +21,11 @@
 
 from pylith.utils.PetscComponent import PetscComponent
 from .meshio import OutputObserver as ModuleOutputObserver
-from .FieldFilterNone import FieldFilterNone
 
 
 class OutputObserver(PetscComponent, ModuleOutputObserver):
     """Python abstract base class for managing output of finite-element
     information.
-
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *trigger* Trigger for defining how often output is written.
-      - *writer* Writer for output.
-      - *field_filter* Filter for output fields.
 
     FACTORY: observer
     """
@@ -53,9 +42,8 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
         "writer", factory=DataWriterHDF5, family="data_writer")
     writer.meta['tip'] = "Writer for data."
 
-    fieldFilter = pythia.pyre.inventory.facility(
-        "field_filter", family="output_field_filter", factory=FieldFilterNone)
-    fieldFilter.meta['tip'] = "Filter for output fields."
+    outputBasisOrder = pythia.pyre.inventory.int("output_basis_order", default=1, validator=pythia.pyre.inventory.choice((0,1)))
+    outputBasisOrder.meta['tip'] = "Basis order for output."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -74,15 +62,12 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
         self.trigger.preinitialize()
         ModuleOutputObserver.setTrigger(self, self.trigger)
 
-        descriptor = self.getTraitDescriptor("field_filter")
+        descriptor = self.getTraitDescriptor("output_basis_order")
         if hasattr(descriptor.locator, "source") and descriptor.locator.source == "default":
-            import copy
-            fieldFilter = copy.copy(problem.defaults.outputFieldFilter)
+            outputBasisOrder = problem.defaults.outputBasisOrder
         else:
-            fieldFilter = self.fieldFilter
-        fieldFilter.preinitialize()
-        ModuleOutputObserver.setFieldFilter(self, fieldFilter)
-        self.fieldFilterOverride = fieldFilter
+            outputBasisOrder = self.outputBasisOrder
+        ModuleOutputObserver.setOutputBasisOrder(self, outputBasisOrder)
 
         self.writer.preinitialize()
         ModuleOutputObserver.setWriter(self, self.writer)

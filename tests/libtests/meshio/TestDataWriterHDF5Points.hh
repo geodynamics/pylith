@@ -36,45 +36,59 @@
 
 /// Namespace for pylith package
 namespace pylith {
-  namespace meshio {
-    class TestDataWriterHDF5Points;
-  } // meshio
+    namespace meshio {
+        class TestDataWriterHDF5Points;
+
+        class TestDataWriterHDF5Points_Data;
+    } // meshio
 } // pylith
 
-/// C++ unit testing for DataWriterHDF5
-class pylith::meshio::TestDataWriterHDF5Points : public TestDataWriterHDF5,
-						public TestDataWriterPoints,
-						public CppUnit::TestFixture
-{ // class TestDataWriterHDF5Points
+class pylith::meshio::TestDataWriterHDF5Points :
+    public TestDataWriterHDF5,
+    public TestDataWriterPoints,
+    public CppUnit::TestFixture {
+    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    CPPUNIT_TEST_SUITE(TestDataWriterHDF5Points);
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDataWriterHDF5Points );
+    CPPUNIT_TEST(testTimeStep);
+    CPPUNIT_TEST(testWriteVertexField);
 
-  CPPUNIT_TEST( testConstructor );
+    CPPUNIT_TEST_SUITE_END();
 
-  CPPUNIT_TEST_SUITE_END();
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    /// Setup testing data.
+    void setUp(void);
 
-  /// Setup testing data.
-  void setUp(void);
+    /// Tear down testing data.
+    void tearDown(void);
 
-  /// Tear down testing data.
-  void tearDown(void);
+    /// Test openTimeStep() and closeTimeStep()
+    void testTimeStep(void);
 
-  /// Test constructor
-  void testConstructor(void);
+    /// Test writeVertexField.
+    void testWriteVertexField(void);
 
-  /// Test openTimeStep() and closeTimeStep()
-  void testTimeStep(void);
+    // PROTECTED METHODS //////////////////////////////////////////////////
+protected:
 
-  /// Test writeVertexField.
-  void testWriteVertexField(void);
+    /** Get test data.
+     *
+     * @returns Test data.
+     */
+    TestDataWriterPoints_Data* _getData(void);
+
+    // PROTECTED MEMBDERS /////////////////////////////////////////////////
+protected:
+
+    TestDataWriterHDF5Points_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterHDF5Points
 
+// ======================================================================
+class pylith::meshio::TestDataWriterHDF5Points_Data : public TestDataWriterHDF5_Data, public TestDataWriterPoints_Data {};
+
 #endif // pylith_meshio_testdatawriterhdf5points_hh
 
-
-// End of file 
+// End of file

@@ -71,8 +71,9 @@ libpylith_la_SOURCES = \
 	fekernels/IsotropicPowerLaw.cc \
 	fekernels/IncompressibleElasticity.cc \
 	fekernels/IsotropicLinearIncompElasticity.cc \
-  fekernels/Poroelasticity.cc \
-  fekernels/IsotropicLinearPoroelasticity.cc \
+	fekernels/Poroelasticity.cc \
+	fekernels/IsotropicLinearPoroelasticity.cc \
+	fekernels/Solution.cc \
 	fekernels/DispVel.cc \
 	fekernels/TimeDependentFn.cc \
 	fekernels/NeumannTimeDependent.cc \
@@ -94,9 +95,9 @@ libpylith_la_SOURCES = \
 	materials/IncompressibleElasticity.cc \
 	materials/RheologyIncompressibleElasticity.cc \
 	materials/IsotropicLinearIncompElasticity.cc \
-  materials/Poroelasticity.cc \
-  materials/RheologyPoroelasticity.cc \
-  materials/IsotropicLinearPoroelasticity.cc \
+	materials/Poroelasticity.cc \
+	materials/RheologyPoroelasticity.cc \
+	materials/IsotropicLinearPoroelasticity.cc \
 	materials/Query.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \
@@ -109,9 +110,6 @@ libpylith_la_SOURCES = \
 	meshio/PsetFile.cc \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
-	meshio/FieldFilter.cc \
-	meshio/FieldFilterNone.cc \
-	meshio/FieldFilterProject.cc \
 	meshio/DataWriter.cc \
 	meshio/HDF5.cc \
 	meshio/Xdmf.cc \
@@ -119,6 +117,7 @@ libpylith_la_SOURCES = \
 	meshio/DataWriterHDF5Ext.cc \
 	meshio/DataWriterVTK.cc \
 	meshio/OutputObserver.cc \
+	meshio/OutputSubfield.cc \
 	meshio/OutputSoln.cc \
 	meshio/OutputSolnDomain.cc \
 	meshio/OutputSolnBoundary.cc \

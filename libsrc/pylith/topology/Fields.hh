@@ -89,12 +89,6 @@ public:
      */
     Field& get(const char* name);
 
-    /** Copy layout to other fields.
-     *
-     * @param name Name of field to use as template for layout.
-     */
-    void copyLayout(const char* name);
-
     /** Get mesh associated with fields.
      *
      * @returns Finite-element mesh.
@@ -121,6 +115,5 @@ private:
 }; // Fields
 
 #endif // pylith_topology_fields_hh
-
 
 // End of file

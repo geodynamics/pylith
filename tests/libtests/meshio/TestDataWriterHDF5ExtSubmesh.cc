@@ -22,11 +22,11 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/meshio/DataWriterHDF5Ext.hh" // USES DataWriterHDF5Ext
+#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterHDF5ExtSubmesh::setUp(void) {
@@ -39,7 +39,7 @@ pylith::meshio::TestDataWriterHDF5ExtSubmesh::setUp(void) {
 } // setUp
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Tear down testing data.
 void
 pylith::meshio::TestDataWriterHDF5ExtSubmesh::tearDown(void) {
@@ -52,7 +52,7 @@ pylith::meshio::TestDataWriterHDF5ExtSubmesh::tearDown(void) {
 } // tearDown
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test openTimeStep() and closeTimeStep()
 void
 pylith::meshio::TestDataWriterHDF5ExtSubmesh::testOpenClose(void) {
@@ -75,7 +75,7 @@ pylith::meshio::TestDataWriterHDF5ExtSubmesh::testOpenClose(void) {
 } // testOpenClose
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test writeVertexField.
 void
 pylith::meshio::TestDataWriterHDF5ExtSubmesh::testWriteVertexField(void) {
@@ -87,8 +87,8 @@ pylith::meshio::TestDataWriterHDF5ExtSubmesh::testWriteVertexField(void) {
 
     DataWriterHDF5Ext writer;
 
-    topology::Fields vertexFields(*_mesh);
-    _createVertexFields(&vertexFields);
+    pylith::topology::Field vertexField(*_mesh);
+    _createVertexField(&vertexField);
 
     writer.filename(_data->vertexFilename);
 
@@ -100,11 +100,14 @@ pylith::meshio::TestDataWriterHDF5ExtSubmesh::testWriteVertexField(void) {
     writer.open(*_submesh, isInfo);
     writer.openTimeStep(t, *_submesh);
 
-    const int numFields = 4;
-    const char* fieldNames[4] = {"scalar", "vector", "tensor", "other"};
-    for (int i = 0; i < numFields; ++i) {
-        topology::Field& field = vertexFields.get(fieldNames[i]);
-        writer.writeVertexField(t, field, *_submesh);
+    const pylith::string_vector& subfieldNames = vertexField.subfieldNames();
+    const size_t numFields = subfieldNames.size();
+    for (size_t i = 0; i < numFields; ++i) {
+        OutputSubfield* subfield = OutputSubfield::create(vertexField, *_submesh, subfieldNames[i].c_str(), 1);
+        CPPUNIT_ASSERT(subfield);
+        subfield->project(vertexField.outputVector());
+        writer.writeVertexField(t, *subfield);
+        delete subfield;subfield = NULL;
     } // for
     writer.closeTimeStep();
     writer.close();
@@ -115,7 +118,7 @@ pylith::meshio::TestDataWriterHDF5ExtSubmesh::testWriteVertexField(void) {
 } // testWriteVertexField
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test writeCellField.
 void
 pylith::meshio::TestDataWriterHDF5ExtSubmesh::testWriteCellField(void) {
@@ -126,8 +129,8 @@ pylith::meshio::TestDataWriterHDF5ExtSubmesh::testWriteCellField(void) {
 
     DataWriterHDF5Ext writer;
 
-    topology::Fields cellFields(*_submesh);
-    _createCellFields(&cellFields);
+    pylith::topology::Field cellField(*_submesh);
+    _createCellField(&cellField);
 
     writer.filename(_data->cellFilename);
 
@@ -139,11 +142,14 @@ pylith::meshio::TestDataWriterHDF5ExtSubmesh::testWriteCellField(void) {
     writer.open(*_submesh, isInfo);
     writer.openTimeStep(t, *_submesh);
 
-    const int numFields = 4;
-    const char* fieldNames[4] = {"scalar", "vector", "tensor", "other"};
-    for (int i = 0; i < numFields; ++i) {
-        topology::Field& field = cellFields.get(fieldNames[i]);
-        writer.writeCellField(t, field);
+    const pylith::string_vector& subfieldNames = cellField.subfieldNames();
+    const size_t numFields = subfieldNames.size();
+    for (size_t i = 0; i < numFields; ++i) {
+        OutputSubfield* subfield = OutputSubfield::create(cellField, *_submesh, subfieldNames[i].c_str(), 0);
+        CPPUNIT_ASSERT(subfield);
+        subfield->project(cellField.outputVector());
+        writer.writeCellField(t, *subfield);
+        delete subfield;subfield = NULL;
     } // for
     writer.closeTimeStep();
     writer.close();
@@ -154,7 +160,7 @@ pylith::meshio::TestDataWriterHDF5ExtSubmesh::testWriteCellField(void) {
 } // testWriteCellField
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get test data.
 pylith::meshio::TestDataWriterSubmesh_Data*
 pylith::meshio::TestDataWriterHDF5ExtSubmesh::_getData(void) {
