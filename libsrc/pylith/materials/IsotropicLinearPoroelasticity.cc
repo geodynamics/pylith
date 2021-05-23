@@ -357,6 +357,39 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelg1p_explicit(const sp
 } // getKernelg1p_implicit
 
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Get stress kernel for RHS residual, G(t,s).
+PetscPointFunc
+pylith::materials::IsotropicLinearPoroelasticity::getKernelg1v_explicit(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getKernelg1v_explicit(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    const int bitReferenceState = _useReferenceState ? 0x1 : 0x0;
+    const int bitUse = bitReferenceState;
+
+    PetscPointFunc g1v = NULL;
+
+    switch (bitUse) {
+    case 0x0:
+        g1v = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1v :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1v :
+              NULL;
+        break;
+    case 0x1:
+        g1v = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g1v_refstate :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g1v_refstate :
+              NULL;
+        break;
+    default:
+        PYLITH_COMPONENT_ERROR("Unknown combination of flags for getKernelg1v_explicit.");
+        throw std::logic_error("Unknown combination of flags.");
+    } // switch
+
+    PYLITH_METHOD_RETURN(g1v);
+} // getKernelResidualStress
+
+
 // =============================== LHS =========================================
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -441,6 +474,39 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelf0p_implicit(const sp
 
     PYLITH_METHOD_RETURN(f0p);
 } // getKernelf0p_implicit
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get stress kernel for LHS residual, F(t,s,\dot{s}).
+PetscPointFunc
+pylith::materials::IsotropicLinearPoroelasticity::getKernelf1u_implicit(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getKernelf1u(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    const int bitReferenceState = _useReferenceState ? 0x1 : 0x0;
+    const int bitUse = bitReferenceState;
+
+    PetscPointFunc f1u = NULL;
+
+    switch (bitUse) {
+    case 0x0:
+        f1u = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f1u :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1u :
+              NULL;
+        break;
+    case 0x1:
+        f1u = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f1u_refstate :
+              (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1u_refstate :
+              NULL;
+        break;
+    default:
+        PYLITH_COMPONENT_ERROR("Unknown combination of flags for getKernelf1u_implicit.");
+        throw std::logic_error("Unknown combination of flags.");
+    } // switch
+
+    PYLITH_METHOD_RETURN(f1u);
+} // getKernelf1u_implicit
 
 
 // ---------------------------------------------------------------------------------------------------------------------
