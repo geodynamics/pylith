@@ -298,8 +298,10 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
         for (size_t i = 0; i < kernels.size(); ++i) {
             const PetscInt i_fieldTrial = solution.subfieldInfo(kernels[i].subfieldTrial.c_str()).index;
             const PetscInt i_fieldBasis = solution.subfieldInfo(kernels[i].subfieldBasis.c_str()).index;
-            err = PetscWeakFormSetIndexJacobian(weakForm, dmLabel, labelValue, i_fieldTrial, i_fieldBasis, 0,
-                                                0, kernels[i].j0, 0, kernels[i].j1, 0, kernels[i].j2, 0, kernels[i].j3);
+            const PetscInt i_part = pylith::feassemble::Integrator::JACOBIAN_LHS_LUMPED_INV;
+            const PetscInt index = 0;
+            err = PetscWeakFormSetIndexJacobian(weakForm, dmLabel, labelValue, i_fieldTrial, i_fieldBasis, i_part,
+                                                index, kernels[i].j0, index, kernels[i].j1, index, kernels[i].j2, index, kernels[i].j3);
             PYLITH_CHECK_ERROR(err);
         } // for
         pythia::journal::debug_t debug(GenericComponent::getName());
@@ -318,7 +320,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
     PetscFormKey key;
     key.label = dmLabel;
     key.value = _labelValue;
-    key.part  = 0;
+    key.part = pylith::feassemble::Integrator::JACOBIAN_LHS_LUMPED_INV;
 
     PetscIS cellsIS = NULL;
     assert(jacobianInv->localVector());
@@ -452,8 +454,11 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
         // Must use PetscWeakFormAddBdResidual() when moved to initialization.
         for (size_t i = 0; i < kernels.size(); ++i) {
             const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
-            err = PetscWeakFormSetIndexResidual(weakForm, dmLabel, _labelValue, i_field, 0, 0, kernels[i].r0, 0,
-                                                kernels[i].r1);PYLITH_CHECK_ERROR(err);
+            const PetscInt i_part = pylith::feassemble::Integrator::RESIDUAL_LHS; // :TODO: Update when moved to
+                                                                                  // initialization.
+            const PetscInt index = 0;
+            err = PetscWeakFormSetIndexResidual(weakForm, dmLabel, _labelValue, i_field, i_part,
+                                                index, kernels[i].r0, index, kernels[i].r1);PYLITH_CHECK_ERROR(err);
         } // for
         pythia::journal::debug_t debug(GenericComponent::getName());
         if (debug.state()) {
@@ -467,7 +472,7 @@ pylith::feassemble::IntegratorDomain::_computeResidual(pylith::topology::Field* 
     PetscFormKey key;
     key.label = dmLabel;
     key.value = _labelValue;
-    key.part  = 0;
+    key.part = pylith::feassemble::Integrator::RESIDUAL_LHS; // Update when initialization moves.
 
     PYLITH_JOURNAL_DEBUG("DMPlexComputeResidual_Internal() with label name '"<<_labelName<<"' and value '"<<_labelValue<<").");
     assert(solution.localVector());
@@ -518,8 +523,10 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
         for (size_t i = 0; i < kernels.size(); ++i) {
             const PetscInt i_fieldTrial = solution.subfieldInfo(kernels[i].subfieldTrial.c_str()).index;
             const PetscInt i_fieldBasis = solution.subfieldInfo(kernels[i].subfieldBasis.c_str()).index;
-            err = PetscWeakFormSetIndexJacobian(weakForm, dmLabel, _labelValue, i_fieldTrial, i_fieldBasis, 0,
-                                                0, kernels[i].j0, 0, kernels[i].j1, 0, kernels[i].j2, 0, kernels[i].j3);
+            const PetscInt i_part = pylith::feassemble::Integrator::JACOBIAN_LHS;
+            const PetscInt index = 0;
+            err = PetscWeakFormSetIndexJacobian(weakForm, dmLabel, _labelValue, i_fieldTrial, i_fieldBasis, i_part,
+                                                index, kernels[i].j0, index, kernels[i].j1, index, kernels[i].j2, index, kernels[i].j3);
             PYLITH_CHECK_ERROR(err);
         } // for
         pythia::journal::debug_t debug(GenericComponent::getName());
@@ -534,7 +541,7 @@ pylith::feassemble::IntegratorDomain::_computeJacobian(PetscMat jacobianMat,
     PetscFormKey key;
     key.label = dmLabel;
     key.value = _labelValue;
-    key.part  = 0;
+    key.part = pylith::feassemble::Integrator::JACOBIAN_LHS;
 
     PYLITH_JOURNAL_DEBUG("DMPlexComputeJacobian_Internal() with label name '"<<_labelName<<"' and value '"<<_labelValue<<".");
     assert(solution.localVector());
