@@ -75,6 +75,15 @@ public:
     void setSolution(pylith::topology::Field* solution,
                      const double t);
 
+    /** Set constrained values time derivative in solution field.
+     *
+     * @param[out] solutionDot Solution field.
+     * @param[in] t Current time.
+     */
+    virtual
+    void setSolutionDot(pylith::topology::Field* solutionDot,
+                        const double t);
+
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
