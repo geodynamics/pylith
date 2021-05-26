@@ -427,11 +427,12 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     PetscDM dmSoln = solution.dmMesh();
     const InterfacePatches* patches = integrator->_integrationPatches;assert(patches);
     const keysmap_t& keysmap = patches->getKeys();
+    const pylith::feassemble::Integrator::ResidualPart residualPart = pylith::feassemble::Integrator::RESIDUAL_LHS; // :KLUDGE:
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
         PetscFormKey weakFormKeys[3];
-        weakFormKeys[0] = iter->second.negative.petscKey(solution);
-        weakFormKeys[1] = iter->second.positive.petscKey(solution);
-        weakFormKeys[2] = iter->second.cohesive.petscKey(solution);
+        weakFormKeys[0] = iter->second.negative.getPetscKey(solution, residualPart, "displacement");
+        weakFormKeys[1] = iter->second.positive.getPetscKey(solution, residualPart, "displacement");
+        weakFormKeys[2] = iter->second.cohesive.getPetscKey(solution, residualPart, "lagrange_multiplier_fault");
 
         PetscIS cohesiveCellIS = NULL;
         PetscInt numCohesiveCells = 0;
@@ -486,11 +487,12 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     PetscDM dmSoln = solution.dmMesh();
     const InterfacePatches* patches = integrator->_integrationPatches;assert(patches);
     const keysmap_t& keysmap = patches->getKeys();
+    const pylith::feassemble::Integrator::JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS; // :KLUDGE:
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
         PetscFormKey weakFormKeys[3];
-        weakFormKeys[0] = iter->second.negative.petscKey(solution);
-        weakFormKeys[1] = iter->second.positive.petscKey(solution);
-        weakFormKeys[2] = iter->second.cohesive.petscKey(solution);
+        weakFormKeys[0] = iter->second.negative.getPetscKey(solution, jacobianPart, "displacement", "lagrange_multiplier_fault");
+        weakFormKeys[1] = iter->second.positive.getPetscKey(solution, jacobianPart, "displacement", "lagrange_multiplier_fault");
+        weakFormKeys[2] = iter->second.cohesive.getPetscKey(solution, jacobianPart, "lagrange_multiplier_fault", "displacement");
 
         PetscIS cohesiveCellIS = NULL;
         PetscInt numCohesiveCells = 0;
@@ -524,38 +526,39 @@ pylith::feassemble::_IntegratorInterface::setWeakFormKernels(const pylith::feass
 
     PetscErrorCode err = 0;
     const keysmap_t& keysmap = patches->getKeys();
+    const pylith::feassemble::Integrator::ResidualPart residualPart = pylith::feassemble::Integrator::RESIDUAL_LHS;
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
         const PetscWeakForm weakForm = iter->second.cohesive.getWeakForm();
 
         // :KLUDGE: Assumes only 1 set of kernels per key (with subfield from kernel).
-        PetscHashFormKey key;
+        PetscFormKey key;
 
         for (size_t i = 0; i < kernels.size(); ++i) {
             PetscInt index = 0;
             switch (kernels[i].face) {
             case IntegratorInterface::NEGATIVE_FACE:
-                key = iter->second.negative.petscKey(solution, kernels[i].subfield.c_str());
+                key = iter->second.negative.getPetscKey(solution, residualPart, kernels[i].subfield.c_str());
                 index = 0;
                 break;
             case IntegratorInterface::POSITIVE_FACE:
-                key = iter->second.positive.petscKey(solution, kernels[i].subfield.c_str());
+                key = iter->second.positive.getPetscKey(solution, residualPart, kernels[i].subfield.c_str());
                 index = 1;
                 break;
             case IntegratorInterface::FAULT_FACE:
-                key = iter->second.cohesive.petscKey(solution, kernels[i].subfield.c_str());
+                key = iter->second.cohesive.getPetscKey(solution, residualPart, kernels[i].subfield.c_str());
                 index = 0;
                 break;
             default:
                 PYLITH_JOURNAL_LOGICERROR("Unknown integration face.");
             } // switch
-            err = PetscWeakFormSetIndexBdResidual(weakForm, key.label, key.value, key.field,
+            err = PetscWeakFormSetIndexBdResidual(weakForm, key.label, key.value, key.field, key.part,
                                                   index, kernels[i].r0, index, kernels[i].r1);PYLITH_CHECK_ERROR(err);
         } // for
 
         // Set auxiliary data
         PetscDM dmSoln = solution.dmMesh();
         const pylith::topology::Field* auxiliaryField = integrator->getAuxiliaryField();assert(auxiliaryField);
-        key = iter->second.cohesive.petscKey(solution);
+        key = iter->second.cohesive.getPetscKey(solution, residualPart);
         err = DMSetAuxiliaryVec(dmSoln, key.label, key.value, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
     } // for
 
@@ -592,33 +595,36 @@ pylith::feassemble::_IntegratorInterface::setWeakFormKernels(const pylith::feass
 
     PetscErrorCode err = 0;
     const keysmap_t& keysmap = patches->getKeys();
+    const pylith::feassemble::Integrator::JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS;
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
         const PetscWeakForm weakForm = iter->second.cohesive.getWeakForm();
-        PetscInt Nf;
 
         // :KLUDGE: Assumes only 1 set of kernels per key (with subfield from kernel).
-        PetscHashFormKey key;
+        PetscFormKey key;
 
-        err = PetscWeakFormGetNumFields(weakForm, &Nf);PYLITH_CHECK_ERROR(err);
+        PetscInt numFields = 0;
+        err = PetscWeakFormGetNumFields(weakForm, &numFields);PYLITH_CHECK_ERROR(err);
         for (size_t i = 0; i < kernels.size(); ++i) {
             PetscInt index = 0;
             switch (kernels[i].face) {
             case IntegratorInterface::NEGATIVE_FACE:
-                key = iter->second.negative.petscKey(solution, kernels[i].subfieldTrial.c_str(), kernels[i].subfieldBasis.c_str());
+                key = iter->second.negative.getPetscKey(solution, jacobianPart, kernels[i].subfieldTrial.c_str(), kernels[i].subfieldBasis.c_str());
                 index = 0;
                 break;
             case IntegratorInterface::POSITIVE_FACE:
-                key = iter->second.positive.petscKey(solution, kernels[i].subfieldTrial.c_str(), kernels[i].subfieldBasis.c_str());
+                key = iter->second.positive.getPetscKey(solution, jacobianPart, kernels[i].subfieldTrial.c_str(), kernels[i].subfieldBasis.c_str());
                 index = 1;
                 break;
             case IntegratorInterface::FAULT_FACE:
-                key = iter->second.cohesive.petscKey(solution, kernels[i].subfieldTrial.c_str(), kernels[i].subfieldBasis.c_str());
+                key = iter->second.cohesive.getPetscKey(solution, jacobianPart, kernels[i].subfieldTrial.c_str(), kernels[i].subfieldBasis.c_str());
                 index = 0;
                 break;
             default:
                 PYLITH_JOURNAL_LOGICERROR("Unknown integration face.");
             }
-            err = PetscWeakFormSetIndexBdJacobian(weakForm, key.label, key.value, key.field/Nf, key.field%Nf,
+            const PetscInt i_trial = key.field / numFields;
+            const PetscInt i_basis = key.field % numFields;
+            err = PetscWeakFormSetIndexBdJacobian(weakForm, key.label, key.value, i_trial, i_basis, key.part,
                                                   index, kernels[i].j0, index, kernels[i].j1, index, kernels[i].j2, index, kernels[i].j3);PYLITH_CHECK_ERROR(err);
         } // for
 
@@ -673,7 +679,7 @@ pylith::feassemble::_IntegratorInterface::transferWeakFormKernels(const pylith::
 
         const PetscWeakForm weakFormNegative = iter->second.negative.getWeakForm();
         if (weakFormNegative) {
-            PetscFormKey keyNegative = iter->second.negative.petscKey(solution);
+            PetscFormKey keyNegative = iter->second.negative.getPetscKey(solution);
             err = PetscWeakFormGetBdResidual(weakFormNegative, keyNegative.label, keyNegative.value, keyNegative.field, &f0Count, &f0, &f1Count, &f1);PYLITH_CHECK_ERROR(err);
             err = PetscWeakFormSetBdResidual(weakFormCohesive, keyNegative.label, keyNegative.value, keyNegative.field, f0Count, f0, f1Count, f1);PYLITH_CHECK_ERROR(err);
             err = PetscWeakFormGetBdJacobian(weakFormNegative, keyNegative.label, keyNegative.value, keyNegative.field/Nf, keyNegative.field%Nf, &f0Count, &g0, &f1Count, &g1, &g2Count, &g2, &g3Count, &g3);PYLITH_CHECK_ERROR(err);
@@ -682,7 +688,7 @@ pylith::feassemble::_IntegratorInterface::transferWeakFormKernels(const pylith::
 
         const PetscWeakForm weakFormPositive = iter->second.positive.getWeakForm();
         if (weakFormPositive) {
-            PetscFormKey keyPositive = iter->second.positive.petscKey(solution);
+            PetscFormKey keyPositive = iter->second.positive.getPetscKey(solution);
             err = PetscWeakFormGetBdResidual(weakFormPositive, keyPositive.label, keyPositive.value, keyPositive.field, &f0Count, &f0, &f1Count, &f1);PYLITH_CHECK_ERROR(err);
             err = PetscWeakFormSetBdResidual(weakFormCohesive, keyPositive.label, keyPositive.value, keyPositive.field, f0Count, f0, f1Count, f1);PYLITH_CHECK_ERROR(err);
             err = PetscWeakFormGetBdJacobian(weakFormPositive, keyPositive.label, keyPositive.value, keyPositive.field/Nf, keyPositive.field%Nf, &f0Count, &g0, &f1Count, &g1, &g2Count, &g2, &g3Count, &g3);PYLITH_CHECK_ERROR(err);

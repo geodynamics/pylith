@@ -70,8 +70,9 @@ pylith::feassemble::FEKernelKey::create(PetscWeakForm weakForm,
 // Get PETSc weak form key for residual.
 inline
 PetscFormKey
-pylith::feassemble::FEKernelKey::petscKey(const pylith::topology::Field& solution,
-                                          const char* field) const {
+pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solution,
+                                             pylith::feassemble::Integrator::ResidualPart residualPart,
+                                             const char* field) const {
     PetscDM dmSoln = solution.dmMesh();
     PetscDMLabel label = NULL;
     PetscErrorCode err = DMGetLabel(dmSoln, _name.c_str(), &label);PYLITH_CHECK_ERROR(err);
@@ -83,22 +84,24 @@ pylith::feassemble::FEKernelKey::petscKey(const pylith::topology::Field& solutio
     } // if/else
     assert(i_field >= 0);
 
-    PetscFormKey hashKey;
-    hashKey.label = label;
-    hashKey.value = _value;
-    hashKey.field = i_field;
+    PetscFormKey weakFormKey;
+    weakFormKey.label = label;
+    weakFormKey.value = _value;
+    weakFormKey.part = residualPart;
+    weakFormKey.field = i_field;
 
-    return hashKey;
+    return weakFormKey;
 } // petscKey
 
 
 // ------------------------------------------------------------------------------------------------
 // Get PETSc weak form key for Jacobian.
 inline
-PetscHashFormKey
-pylith::feassemble::FEKernelKey::petscKey(const pylith::topology::Field& solution,
-                                          const char* fieldTrial,
-                                          const char* fieldBasis) const {
+PetscFormKey
+pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solution,
+                                             pylith::feassemble::Integrator::JacobianPart jacobianPart,
+                                             const char* fieldTrial,
+                                             const char* fieldBasis) const {
     PetscDM dmSoln = solution.dmMesh();
     PetscDMLabel label = NULL;
     PetscErrorCode err = DMGetLabel(dmSoln, _name.c_str(), &label);PYLITH_CHECK_ERROR(err);
@@ -109,12 +112,13 @@ pylith::feassemble::FEKernelKey::petscKey(const pylith::topology::Field& solutio
     j_field = solution.subfieldInfo(fieldBasis).index;
     assert(j_field >= 0);
 
-    PetscHashFormKey hashKey;
-    hashKey.label = label;
-    hashKey.value = _value;
-    hashKey.field = i_field*Nf + j_field;
+    PetscFormKey weakFormKey;
+    weakFormKey.label = label;
+    weakFormKey.value = _value;
+    weakFormKey.part = jacobianPart;
+    weakFormKey.field = i_field*Nf + j_field;
 
-    return hashKey;
+    return weakFormKey;
 } // petscKey
 
 

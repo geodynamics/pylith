@@ -26,8 +26,9 @@
 
 #include "feassemblefwd.hh" // forward declarations
 
-#include "pylith/utils/petscfwd.h" // HASA PetscDM
 #include "pylith/topology/topologyfwd.hh" // USES Field
+#include "pylith/feassemble/Integrator.hh" // USES ResidualPart, JacobianPart
+#include "pylith/utils/petscfwd.h" // HASA PetscDM
 
 class pylith::feassemble::FEKernelKey {
     friend class TestFEKernelKey; // unit testing
@@ -66,23 +67,27 @@ public:
     /** Get PETSc weak form key for residual.
      *
      * @param[in] solution Solution field.
+     * @param[in] residualPart Residual part for weak form key.
      * @param[in] field Name of solution subfield associated with integration kernel.
      *
      * @returns PETSc weak form key.
      */
-    PetscFormKey petscKey(const pylith::topology::Field& solution,
-                          const char* field=NULL) const;
+    PetscFormKey getPetscKey(const pylith::topology::Field& solution,
+                             pylith::feassemble::Integrator::ResidualPart residualPart,
+                             const char* field=NULL) const;
 
     /** Get PETSc weak form key for Jacobian.
      *
      * @param[in] solution Solution field.
+     * @param[in] jacobianPart Jacobian part for weak form key.
      * @param[in] field Name of solution subfield associated with integration kernel.
      *
      * @returns PETSc weak form key.
      */
-    PetscHashFormKey petscKey(const pylith::topology::Field& solution,
-                              const char* fieldTrial,
-                              const char* fieldBasis) const;
+    PetscFormKey getPetscKey(const pylith::topology::Field& solution,
+                             pylith::feassemble::Integrator::JacobianPart jacobianPart,
+                             const char* fieldTrial,
+                             const char* fieldBasis) const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
