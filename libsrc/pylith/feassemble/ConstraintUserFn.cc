@@ -36,7 +36,8 @@
 // Default constructor.
 pylith::feassemble::ConstraintUserFn::ConstraintUserFn(pylith::problems::Physics* const physics) :
     Constraint(physics),
-    _fn(NULL) {
+    _fn(NULL),
+    _fnDot(NULL) {
     GenericComponent::setName("constraintuserfn");
 } // constructor
 
@@ -138,6 +139,7 @@ pylith::feassemble::ConstraintUserFn::setSolutionDot(pylith::topology::Field* so
                                                      const double t) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("setSolutionDot(solution="<<solutionDot->getLabel()<<", t="<<t<<")");
+    if (!_fnDot) { PYLITH_METHOD_END; }
 
     assert(solutionDot);
 
