@@ -41,8 +41,7 @@ pylith::feassemble::Constraint::Constraint(pylith::problems::Physics* const phys
     PhysicsImplementation(physics),
     _constraintLabel(""),
     _subfieldName(""),
-    _boundaryMesh(NULL)
-{}
+    _boundaryMesh(NULL) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -198,6 +197,18 @@ pylith::feassemble::Constraint::updateState(const PylithReal t) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("updateState(t="<<t<<") empty method");
 
+    // Default is to do nothing.
+
+    PYLITH_METHOD_END;
+} // updateState
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set solution time derivative
+void
+pylith::feassemble::Constraint::setSolutionDot(pylith::topology::Field* solutionDot,
+                                               const PylithReal t) {
+    PYLITH_METHOD_BEGIN;
     // Default is to do nothing.
 
     PYLITH_METHOD_END;

@@ -53,6 +53,12 @@ public:
      */
     void setUserFn(const PetscUserFieldFunc fn);
 
+    /** Set user function time derivative specifying constrained values.
+     *
+     * @param[in] fnDot Function specifying contrained values time derivative.
+     */
+    void setUserFnDot(const PetscUserFieldFunc fnDot);
+
     /** Initialize constraint.
      *
      * @param[in] solution Solution field (layout).
@@ -73,6 +79,7 @@ public:
 private:
 
     PetscUserFieldFunc _fn; ///< Function for computing constrained values.
+    PetscUserFieldFunc _fnDot; ///< Function for computing constrained values.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
