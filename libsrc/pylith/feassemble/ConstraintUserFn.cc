@@ -36,7 +36,8 @@
 // Default constructor.
 pylith::feassemble::ConstraintUserFn::ConstraintUserFn(pylith::problems::Physics* const physics) :
     Constraint(physics),
-    _fn(NULL) {
+    _fn(NULL),
+    _fnDot(NULL) {
     GenericComponent::setName("constraintuserfn");
 } // constructor
 
@@ -54,6 +55,14 @@ void
 pylith::feassemble::ConstraintUserFn::setUserFn(const PetscUserFieldFunc fn) {
     _fn = fn;
 } // setUserFn
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set constraint kernel time derivative.
+void
+pylith::feassemble::ConstraintUserFn::setUserFnDot(const PetscUserFieldFunc fnDot) {
+    _fnDot = fnDot;
+} // setUserFnDot
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -79,7 +88,7 @@ pylith::feassemble::ConstraintUserFn::initialize(const pylith::topology::Field& 
     const PetscInt i_field = solution.subfieldInfo(_subfieldName.c_str()).index;
     err = DMGetLabel(solution.dmMesh(), _constraintLabel.c_str(), &label);PYLITH_CHECK_ERROR(err);
     err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL, _constraintLabel.c_str(), label, 1, &labelId, i_field,
-                             _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void))_fn, NULL, context, NULL);
+                             _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void))_fn, (void (*)(void))_fnDot, context, NULL);
     PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
@@ -117,6 +126,44 @@ pylith::feassemble::ConstraintUserFn::setSolution(pylith::topology::Field* solut
     if (debug.state()) {
         PYLITH_JOURNAL_DEBUG("Displaying solution field");
         solution->view("solution field");
+    } // if
+
+    PYLITH_METHOD_END;
+} // setSolution
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set constrained values time derivative in solution field.
+void
+pylith::feassemble::ConstraintUserFn::setSolutionDot(pylith::topology::Field* solutionDot,
+                                                     const double t) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("setSolutionDot(solution="<<solutionDot->getLabel()<<", t="<<t<<")");
+    if (!_fnDot) { PYLITH_METHOD_END; }
+
+    assert(solutionDot);
+
+    PetscErrorCode err = 0;
+    PetscDM dmSolnDot = solutionDot->dmMesh();
+
+    // Get label for constraint.
+    PetscDMLabel dmLabel = NULL;
+    err = DMGetLabel(dmSolnDot, _constraintLabel.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
+
+    void* context = NULL;
+    const int labelId = 1;
+    const int fieldIndex = solutionDot->subfieldInfo(_subfieldName.c_str()).index;
+    const PylithInt numConstrained = _constrainedDOF.size();
+    assert(solutionDot->localVector());
+    err = DMPlexLabelAddCells(dmSolnDot, dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMPlexInsertBoundaryValuesEssential(dmSolnDot, t, fieldIndex, numConstrained, &_constrainedDOF[0], dmLabel, 1,
+                                              &labelId, _fnDot, context, solutionDot->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMPlexLabelClearCells(dmSolnDot, dmLabel);PYLITH_CHECK_ERROR(err);
+
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        PYLITH_JOURNAL_DEBUG("Displaying solutionDot field");
+        solutionDot->view("solutionDot field");
     } // if
 
     PYLITH_METHOD_END;

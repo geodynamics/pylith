@@ -135,6 +135,10 @@ public:
     void setSolution(pylith::topology::Field* solution,
                      const double t) = 0;
 
+    virtual
+    void setSolutionDot(pylith::topology::Field* solutionDot,
+                        const double t);
+
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 

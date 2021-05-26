@@ -53,6 +53,12 @@ public:
      */
     void setUserFn(const PetscUserFieldFunc fn);
 
+    /** Set user function time derivative specifying constrained values.
+     *
+     * @param[in] fnDot Function specifying contrained values time derivative.
+     */
+    void setUserFnDot(const PetscUserFieldFunc fnDot);
+
     /** Initialize constraint.
      *
      * @param[in] solution Solution field (layout).
@@ -69,10 +75,20 @@ public:
     void setSolution(pylith::topology::Field* solution,
                      const double t);
 
+    /** Set constrained values time derivative in solution field.
+     *
+     * @param[out] solutionDot Solution field.
+     * @param[in] t Current time.
+     */
+    virtual
+    void setSolutionDot(pylith::topology::Field* solutionDot,
+                        const double t);
+
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     PetscUserFieldFunc _fn; ///< Function for computing constrained values.
+    PetscUserFieldFunc _fnDot; ///< Function for computing constrained values.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
