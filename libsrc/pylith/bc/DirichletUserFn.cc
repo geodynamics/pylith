@@ -104,6 +104,24 @@ pylith::bc::DirichletUserFn::getUserFn(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Set time derivative history database.
+void
+pylith::bc::DirichletUserFn::setUserFnDot(PetscUserFieldFunc fnDot) {
+    PYLITH_COMPONENT_DEBUG("setUserFnDot(fnDot="<<fnDot<<")");
+
+    _fnDot = fnDot;
+} // setUserFn
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get time derivative history database.
+PetscUserFieldFunc
+pylith::bc::DirichletUserFn::getUserFnDot(void) const {
+    return _fnDot;
+} // getUserFn
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::bc::DirichletUserFn::verifyConfiguration(const pylith::topology::Field& solution) const {

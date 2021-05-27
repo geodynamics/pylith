@@ -75,6 +75,18 @@ public:
      */
     PetscUserFieldFunc getUserFn(void) const;
 
+    /** Set user function specifying field time derivative on boundary.
+     *
+     * @param[in] fnDot Function specifying field time derivative on boundary.
+     */
+    void setUserFnDot(PetscUserFieldFunc fnDot);
+
+    /** Get user function specifying field time derivative on boundary
+     *
+     * @preturns Function specifying field time derivative on boundary.
+     */
+    PetscUserFieldFunc getUserFnDot(void) const;
+
     /** Verify configuration is acceptable.
      *
      * @param[in] solution Solution field.
@@ -129,6 +141,7 @@ private:
 
     int_array _constrainedDOF; ///< List of constrained degrees of freedom at each location.
     PetscUserFieldFunc _fn; ///< Function specifying field on boundary.
+    PetscUserFieldFunc _fnDot; ///< Function specifying field time derivative on boundary.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
