@@ -54,7 +54,7 @@ class TestCase(FullTestCase):
     def test_material_info(self):
         cellFields = ["density", "bulk_modulus",
                       "shear_modulus", "gravitational_acceleration"]
-        for material in self.MATERIALS.keys():
+        for material in self.MATERIALS:
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
             check_data(filename, self,
                        self.MATERIALS[material], cellFields=cellFields)
@@ -63,7 +63,7 @@ class TestCase(FullTestCase):
     def test_material_solution(self):
         vertexFields = ["displacement", "pressure",
                         "cauchy_strain", "cauchy_stress"]
-        for material in self.MATERIALS.keys():
+        for material in self.MATERIALS:
             filename = "output/{}-{}.h5".format(self.NAME, material)
             check_data(filename, self,
                        self.MATERIALS[material], vertexFields=vertexFields)

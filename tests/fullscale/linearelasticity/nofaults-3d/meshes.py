@@ -59,12 +59,12 @@ class Tet(object):
             "ncorners": 3,
             "nvertices": 19,
         },
-        "bc_zpos": {
+        "bc_zneg": {
             "ncells": 32,
             "ncorners": 3,
             "nvertices": 25,
         },
-        "bc_zneg": {
+        "groundsurf": {
             "ncells": 32,
             "ncorners": 3,
             "nvertices": 25,
@@ -118,7 +118,7 @@ class Hex(object):
             "ncorners": 4,
             "nvertices": 25,
         },
-        "bc_zpos": {
+        "groundsurf": {
             "ncells": 16,
             "ncorners": 4,
             "nvertices": 25,

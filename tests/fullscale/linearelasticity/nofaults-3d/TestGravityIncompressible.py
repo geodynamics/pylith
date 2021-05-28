@@ -32,38 +32,33 @@ from gravity_incompressible_soln import AnalyticalSoln
 class TestCase(FullTestCase):
     """Test suite for testing PyLith with gravitational body forces (no initial stress).
     """
-    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos", "bc_zneg", "bc_zpos"]
+    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos", "bc_zneg", "groundsurf"]
 
     def setUp(self):
         """Setup for test.
         """
         FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()
-        return
 
     def run_pylith(self, testName, args):
         FullTestCase.run_pylith(self, testName, args)
-        return
 
     def test_domain_solution(self):
         filename = "output/{}-domain.h5".format(self.NAME)
         vertexFields = ["displacement", "pressure"]
         check_data(filename, self, self.DOMAIN, vertexFields=vertexFields)
-        return
 
     def test_material_info(self):
         cellFields = ["density", "bulk_modulus", "shear_modulus", "gravitational_acceleration"]
-        for material in self.MATERIALS.keys():
+        for material in self.MATERIALS:
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
             check_data(filename, self, self.MATERIALS[material], cellFields=cellFields)
-        return
 
     def test_material_solution(self):
         vertexFields = ["displacement", "pressure", "cauchy_strain", "cauchy_stress"]
-        for material in self.MATERIALS.keys():
+        for material in self.MATERIALS:
             filename = "output/{}-{}.h5".format(self.NAME, material)
             check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields)
-        return
 
     def test_bcdirichlet_info(self):
         cellFields = ["initial_amplitude"]
@@ -71,14 +66,12 @@ class TestCase(FullTestCase):
             self.exactsoln.key = bc
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
             check_data(filename, self, self.BOUNDARIES[bc], cellFields=cellFields)
-        return
 
     def test_bcdirichlet_solution(self):
         vertexFields = ["displacement", "pressure"]
         for bc in self.DIRICHLET_BOUNDARIES:
             filename = "output/{}-{}.h5".format(self.NAME, bc)
             check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
-        return
 
 
 # ----------------------------------------------------------------------------------------------------------------------

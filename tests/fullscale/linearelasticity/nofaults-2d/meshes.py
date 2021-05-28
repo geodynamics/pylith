@@ -60,6 +60,11 @@ class Tri(object):
             "nvertices": 9,
         },
     }
+    POINTS = {
+        "ncells": 3,
+        "ncorners": 1,
+        "nvertices": 3,
+    }
 
 
 class Quad(object):
@@ -103,6 +108,11 @@ class Quad(object):
             "ncorners": 2,
             "nvertices": 9,
         },
+    }
+    POINTS = {
+        "ncells": 3,
+        "ncorners": 1,
+        "nvertices": 3,
     }
 
 
