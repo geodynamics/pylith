@@ -16,7 +16,9 @@
 import os
 
 from .converters import string_to_list
+from pylith.utils.validators import notEmptyString
 from pythia.pyre.components.Component import Component
+
 
 class SimulationMetadata(Component):
     """Python object for holding simulation metadata.
@@ -26,7 +28,7 @@ class SimulationMetadata(Component):
 
     import pythia.pyre.inventory
 
-    description = pythia.pyre.inventory.str("description")
+    description = pythia.pyre.inventory.str("description", validator=notEmptyString)
     description.meta["tip"] = "Description of simulation."
 
     authors = pythia.pyre.inventory.list("authors")
@@ -55,6 +57,21 @@ class SimulationMetadata(Component):
         """
         Component.__init__(self, name, facility)
         return
+
+    def _validate(self, context):
+        if not self.arguments:
+            trait = self.inventory.getTrait("arguments")
+            self._validationError(context, trait, "List of command line arguments required.")
+
+        if not self.pylith_version:
+            trait = self.inventory.getTrait("pylith_version")
+            self._validationError(context, trait, "List of PyLith version constraints required.")
+
+    def _validationError(self, context, trait, msg):
+        from pythia.pyre.inventory.Item import Item
+        error = ValueError(msg)
+        descriptor = self.getTraitDescriptor(trait.name)
+        context.error(error, items=[Item(trait, descriptor)])
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
@@ -133,7 +150,7 @@ def fromFile(filename):
             base = properties["base"].value
             baseProperties = None
             for baseFilename in base:
-                basePath = os.path.join(filename.parent.name, baseFilename)
+                basePath = os.path.join(filename.parent, baseFilename)
                 if not baseProperties:
                     baseProperties = _get_properties(basePath)
                 else:
