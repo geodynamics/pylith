@@ -1,0 +1,11 @@
+#!/usr/bin/env nemesis
+"""Application for searching for and running simulations with PyLith .cfg files.
+"""
+
+
+if __name__ == "__main__":
+    from pylith.apps.RunnerApp import RunnerApp
+    RunnerApp().main()
+
+
+# End of file

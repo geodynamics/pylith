@@ -22,14 +22,14 @@
 #
 # Factory: petsc_manager
 
-from pythia.pyre.components.Component import Component
+from .PropertyList import PropertyList
 import pylith.utils.petsc as petsc
 
 
-class PetscManager(Component):
+class PetscManager(PropertyList):
     """Python PetscManager object for managing PETSc options.
 
-    FACTORY: petsc_manager
+    Factory: property_list
     """
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -37,8 +37,7 @@ class PetscManager(Component):
     def __init__(self, name="petsc"):
         """Constructor.
         """
-        Component.__init__(self, name, facility="petsc_manager")
-        self.options = []
+        PropertyList.__init__(self, name)
         return
 
     def initialize(self):
@@ -73,21 +72,13 @@ class PetscManager(Component):
         petsc.optionsSetValue(name, value)
         return
 
-    def updateConfiguration(self, registry):
-        """Update Pyre configuration.
-        """
-        self.options = [
-            (name, descriptor) for name, descriptor in registry.properties.items()
-        ]
-        return []
-
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _getOptions(self):
         """Cleanup options for PETSc.
         """
         args = []
-        for iname, descriptor in self.options:
+        for iname, descriptor in self.items:
             args.append('-' + iname)
             if descriptor.value != 'true':
                 args.append(descriptor.value)
@@ -96,8 +87,9 @@ class PetscManager(Component):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def petsc_manager():
-    """Factory associated with PetscManager.
+def property_list():
+    """
+    Factory associated with PetscManager.
     """
     return PetscManager()
 

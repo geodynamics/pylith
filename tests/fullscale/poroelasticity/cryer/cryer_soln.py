@@ -13,9 +13,9 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests/fullscale/poroelasticity/mandel/mandel_soln.py
+# @file tests/fullscale/poroelasticity/cryer/cryer_soln.py
 #
-# @brief Analytical solution to Mandel's problem.
+# @brief Analytical solution to Cryer's problem.
 # Owing to the symmetry of the problem, we only need consider the quarter
 # domain case.
 #
@@ -76,7 +76,7 @@ tsteps = numpy.arange(0.0, ts * nts, ts) + ts  # sec
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
     """
-    Analytical solution to Mandel's problem
+    Analytical solution to Cryer's problem
     """
     SPACE_DIM = 3
     TENSOR_SIZE = 4

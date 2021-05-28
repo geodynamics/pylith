@@ -15,12 +15,6 @@
 #
 # ----------------------------------------------------------------------
 
-include $(top_srcdir)/check.am
-
-TESTS = run_examples.py
-
-dist_check_SCRIPTS = run_examples.py
-
 dist_noinst_DATA = \
 	README.md \
 	quad.mesh \
