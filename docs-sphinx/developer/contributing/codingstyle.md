@@ -1,6 +1,6 @@
 # Coding Style
 
-There are a number of standard coding styles for programming languages, notably PEP8 for Python. For PyLith we try to be consistent in naming conventions across Python and C++ while following a subset of the used in PETSc and PEP8 with documentation styles consistent with Doxygen.
+There are a number of standard coding styles for programming languages, notably PEP8 for Python. For PyLith we try to be consistent in naming conventions across Python and C++ while following a subset of that used in PETSc and PEP8 with documentation styles consistent with Doxygen.
 
 :::{important}
 We use 4 spaces for indentation. Configure your editor to use spaces instead of tabs.
@@ -43,7 +43,7 @@ We highly recommend using an integrated development environment with `uncrustify
 
 ```{code-block} bash
 ---
-caption: Formatting Python and C++ source code using `format\_source.py`. `autopep8` and `uncrustify` must be in the current path.
+caption: Formatting Python and C++ source code using `format_source.py`. `autopep8` and `uncrustify` must be in the current path.
 ---
 # Format a C++ file.
 developer/format_source.py --cplusplus=libsrc/pylith/materials/Material.cc
@@ -119,7 +119,7 @@ default:
 
 ### Object Declaration Files
 
-Object declaration (header) files for use the `.hh` suffix. C header files use the `.h` suffix. The following code excerpt demonstrates the conventions we use in formatting header files and including comments.
+Object declaration (header) files for C++ use the `.hh` suffix. C header files use the `.h` suffix. The following code excerpt demonstrates the conventions we use in formatting header files and including comments.
 
 :::{important}
 *All* declarations of class methods should include a description of what the method does and a description of each argument and the return value if it is not void.

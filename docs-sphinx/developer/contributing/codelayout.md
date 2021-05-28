@@ -71,7 +71,7 @@ We implement several kinds of constraints, corresponding to how the values of th
 ## PyLith Application Flow
 
 The PyLith application driver performs two main functions.
-First, it collects all user parameters from input files (e.g., `.cfg` files) and the command line, and then it performs from simple checks on the parameters.
+First, it collects all user parameters from input files (e.g., `.cfg` files) and the command line, and then it performs some simple checks on the parameters.
 Second, it launches the MPI job.
 
 Once the MPI job launches, the application flow is:
@@ -103,7 +103,7 @@ Starting with the complete initialization of the problem, the flow is controlled
 ### Time-Dependent Problem
 
 In a time-dependent problem the PETSc `TS` object (relabeled `PetscTS` within PyLith) controls the time stepping.
-Within each time step, the `PetscTS` object calls the PETSc linear and nonlinear solvers as needed, which call the following methods of the C++ `pylith::problems::TimeDependent` object as needed `computeRHSResidual()`, `computeRHSJacobian()`, `computeLHSResidual()`, and `computeLHSJacobian()`.
+Within each time step, the `PetscTS` object calls the PETSc linear and nonlinear solvers as needed, which call the following methods of the C++ `pylith::problems::TimeDependent` object as needed: `computeRHSResidual()`, `computeRHSJacobian()`, `computeLHSResidual()`, and `computeLHSJacobian()`.
 The `pylith::problems::TimeDependent` object calls the corresponding methods in the boundary conditions, constraints, and materials objects.
 At the end of each time step, it calls `problems::TimeDependent::poststep()`.  
 
@@ -117,7 +117,7 @@ The source code that follows shows the essential ingredients for Python and C++ 
 :::{warning}
 The examples below show skeleton Python and C++ objects to illustrate the essential ingredients.
 We have omitted documentation and comments that we would normally include and simplified the object hierarchy.
-See [Coding Style]{coding-style.md} for details about the coding style we use in PyLith.
+See [Coding Style](codingstyle.md) for details about the coding style we use in PyLith.
 :::
 
 :::{important}

@@ -37,5 +37,5 @@ $ ./build.sh epub
 
 ### Style guide
 
-1. Use Markedly Structure Text (MyST), not reStructure Text (rST).
+1. Use Markedly Structured Text (MyST), not reStructured Text (rST).
 2. Place each sentence on its own single line.

@@ -51,7 +51,7 @@ The PyLith `configure` script uses automake to convert each `Makefile.am` file i
 The organization and content of the `Makefile.am` file depends on whether it is related to the C++ library, SWIG interface files, Python modules, C++ unit tests, Python unit tests, MMS tests, full-scale tests, or examples.
 
 For the C++ library files within the `libsrc` directory, the `libsrc/Makefile.am` contains the implementation files while the header files are listed in the `Makefile.am` file within the underlying directories.
-For the SWIG interface files within the `modulesrc` directory, `Makefile.am` file contains information on how to build the SWIG Python module.
+For the SWIG interface files within the `modulesrc` directory, `Makefile.am` contains information on how to build the SWIG Python module.
 The Python modules use a single `Makefile.am` file in the `pylith` directory.
 Each test suite (C++ unit tests for each subpackage, Python unit tests, and each suite of full-scale tests) use a single `Makefile.am`.
 These files define how the tests are built, additional input files that should be included in the source distribution, and temporary files that should be deleted.
@@ -74,7 +74,7 @@ Each target can be run using `make TARGET` where `TARGET` is one of the followin
 : Run the entire test suite.
 
 :::{tip}
-On a machine with multiple cores, faster builds of the C++ code (library and C++ unit tests) are available using the `-jNTHREADS` command line argument, where `NTHREADS` is the number of threads to yse.
+On a machine with multiple cores, faster builds of the C++ code (library and C++ unit tests) are available using the `-jNTHREADS` command line argument, where `NTHREADS` is the number of threads to use.
 We usually set the number of threads equal to twice the number of physical cores.
 :::
 

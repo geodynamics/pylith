@@ -118,7 +118,7 @@ If you need to test integration of multiple feature branches, then create a new 
 (sec-developer-feature-branch)=
 ## Creating a New Feature Branch
 
-Before creating a new feature branch, you should merge updates from the upstream repository as described in {ref}`sec-developer-sync-fork.
+Before creating a new feature branch, you should merge updates from the upstream repository as described in {ref}`sec-developer-workflow-sync-fork`.
 
 ```{code-block} console
 ---
@@ -178,7 +178,7 @@ The recommended way to incorporate these changes is to rebase your feature branc
 Rebasing essentially replays your commits on top of the commits in the other branch. With interactive rebasing, you can also rewrite the commit history of a feature branch by reordering, dropping, and/pr combining (squashing) commits. See [Git: Rewriting History](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History) for more information.
 
 :::{danger}
-Rebasing and force pushing can irreversible damage to your repository.
+Rebasing and force pushing can cause irreversible damage to your repository.
 We recommend practicing rebasing using a toy repository before attempting to rebase with real code.
 :::
 
