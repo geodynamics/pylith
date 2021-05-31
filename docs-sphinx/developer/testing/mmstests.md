@@ -34,7 +34,7 @@ When the residual test fails, we generally use the following procedure to diagno
 1. Verify that the discretization check passes indicating accurate representation of the solution in the finite-element space.
 2. Run just the residual test for a single discretization and turn on the debug journal corresponding to the name of the MMS test as set by `GenericComponent::setName(JOURNAL_NAME)` in `setUp()`; this is done via the `--journal.debug=JOURNAL_NAME` command line argument to the MMS test driver.
 3. Verify that the residual kernels show up correctly in the view of the PETSc discretization.
-4. Analyze the residual vector to see which degrees of freedom have nonzero terms. Look at the solution section to see what solution subfield and point are associated with those degrees for freedom.
+4. Analyze the residual vector to see which degrees of freedom have nonzero terms. Look at the solution section to see what solution subfield and point are associated with those degrees of freedom.
 5. Check the pointwise functions for the residual and solution associated with the subfield with nonzero terms.
 
 ## Debugging Jacobian errors

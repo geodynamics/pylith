@@ -5,7 +5,7 @@ This isolates bugs very close to their origin, so they are highly effective at c
 We use the [CppUnit](https://www.freedesktop.org/wiki/Software/cppunit/) testing framework for constructing and running tests.
 
 For a given C++ class in `libsrc/pylith`, we create a separate test class in `tests/libtests`.
-For example, we create `pylith::problems::TestPhysics` in `tests/libtsts/problems/TestPhysics.*` to test the `pylith::problems::Physics` class in `libsrc/pylith/problems/Physics.*`.
+For example, we create `pylith::problems::TestPhysics` in `tests/libtests/problems/TestPhysics.*` to test the `pylith::problems::Physics` class in `libsrc/pylith/problems/Physics.*`.
 For simple classes that can be fully tested with a single test case, we put the class declaration and implementation in a single `.cc` file.
 For classes that require testing with multiple alternative test cases, we usually define both the test class and a data class in a header file (for example `TestSolutionFactory.hh`).
 The classes are implemented in a corresponding `.cc` file (for example, `TestSolutionFactory.cc`) with the test cases defined and implemented in a `_Cases.cc` file (for example, `TestSolutionFactory_Cases.cc`.
@@ -21,9 +21,9 @@ If a class requires significant initialization, we usually put that in protected
   * **`CPPUNIT_TEST(classMethod);`** Add `classMethod` as a test in the test suite.
   * **`CPPUNIT_TEST_SUITE_END();`** Mark end of test suite.
 * Implementing tests
-  * **`CPPUNIT_ASSERT(condition)`** Test that `condition==true`.
+  * **`CPPUNIT_ASSERT(condition);`** Test that `condition==true`.
   * **`CPPUNIT_ASSERT_EQUAL(valueExpected, valueTest);`** Test that `valueExpected == valueTest`.
-  * **`CPPUNIT_ASSERT_DOUBLES_EQUAL(valueExpected, valueTest, tolerance);`** Test that `valueExpected == valueTest within tolerance`.
+  * **`CPPUNIT_ASSERT_DOUBLES_EQUAL(valueExpected, valueTest, tolerance);`** Test that `valueExpected == valueTest` within tolerance.
   * **`CPPUNIT_FAIL(msg);`** Force test failure and include msg string in test failure message.
   * **`CPPUNIT_ASSERT_MESSAGE(msg, condition);`** Include msg string in test failure message.
   * **`CPPUNIT_ASSERT_EQUAL_MESSAGE(msg, valueExpected, valueTest);`**
