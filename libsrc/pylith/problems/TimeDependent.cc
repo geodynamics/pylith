@@ -492,6 +492,8 @@ pylith::problems::TimeDependent::setSolutionLocal(const PylithReal t,
         if (!_solutionDot) {
             _solutionDot = new pylith::topology::Field(*_solution);
             _solutionDot->setLabel("solutionDot");
+            _solutionDot->createDiscretization();
+            _solutionDot->allocate();
         } // if
         _solutionDot->scatterVectorToLocal(solutionDotVec);
     } // if

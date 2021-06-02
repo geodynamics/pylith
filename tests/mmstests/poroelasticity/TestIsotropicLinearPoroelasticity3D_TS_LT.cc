@@ -35,21 +35,21 @@
 
 namespace pylith {
     namespace mmstests {
-        class TestIsotropicLinearPoroelasticity2D_QS_LT;
+        class TestIsotropicLinearPoroelasticity3D_TS_LT;
 
-        class TestIsotropicLinearPoroelasticity2D_QS_LT_TriP2;
-        class TestIsotropicLinearPoroelasticity2D_QS_LT_TriP3;
-        class TestIsotropicLinearPoroelasticity2D_QS_LT_TriP4;
+        class TestIsotropicLinearPoroelasticity3D_TS_LT_TetP2;
+        class TestIsotropicLinearPoroelasticity3D_TS_LT_TetP3;
+        class TestIsotropicLinearPoroelasticity3D_TS_LT_TetP4;
 
-        class TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ2;
-        class TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ3;
-        class TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ4;
+        class TestIsotropicLinearPoroelasticity3D_TS_LT_HexQ2;
+        class TestIsotropicLinearPoroelasticity3D_TS_LT_HexQ3;
+        class TestIsotropicLinearPoroelasticity3D_TS_LT_HexQ4;
 
     } // materials
 } // pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylith::mmstests::TestIsotropicLinearPoroelasticity {
+class pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT : public pylith::mmstests::TestIsotropicLinearPoroelasticity {
     static const double LENGTHSCALE;
     static const double TIMESCALE;
     static const double PRESSURESCALE;
@@ -62,7 +62,8 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
     // Porosity
 
     static double porosity(const double x,
-                           const double y) {
+                           const double y,
+                           const double z) {
         return 0.10;
     } // porosity
 
@@ -72,7 +73,8 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
 
     // Solid Density
     static double solid_density(const double x,
-                                const double y) {
+                                const double y,
+                                const double z) {
         return 2500.0;
     } // solid_density
 
@@ -82,7 +84,8 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
 
     // Fluid Density
     static double fluid_density(const double x,
-                                const double y) {
+                                const double y,
+                                const double z) {
         return 1000.0;
     } // fluid_density
 
@@ -92,7 +95,8 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
 
     // Fluid viscosity
     static double fluid_viscosity(const double x,
-                                  const double y) {
+                                  const double y,
+                                  const double z) {
         return 1.0;
     } // fluid_viscosity
 
@@ -102,7 +106,8 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
 
     // Shear modulus
     static double shear_modulus(const double x,
-                                const double y) {
+                                const double y,
+                                const double z) {
         return 3.0;
     } // shear_modulus
 
@@ -112,7 +117,8 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
 
     // Drained Bulk Modulus
     static double drained_bulk_modulus(const double x,
-                                       const double y) {
+                                       const double y,
+                                       const double z) {
         return 4.0;
     } // drained_bulk_modulus
 
@@ -122,7 +128,8 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
 
     // Biot coefficient
     static double biot_coefficient(const double x,
-                                   const double y) {
+                                   const double y,
+                                   const double z) {
         return 0.6;
     } // biot_coefficient
 
@@ -132,7 +139,8 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
 
     // Fluid Bulk Modulus
     static double fluid_bulk_modulus(const double x,
-                                     const double y) {
+                                     const double y,
+                                     const double z) {
         return 8.0;
     } // fluid_bulk_modulus
 
@@ -141,7 +149,8 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
     } // fluid_bulk_modulus_units
 
     static double solid_bulk_modulus(const double x,
-                                     const double y) {
+                                     const double y,
+                                     const double z) {
         return 10.0;
     } // solid_bulk_modulus
 
@@ -151,7 +160,8 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
 
     // Isotropic permeability
     static double isotropic_permeability(const double x,
-                                         const double y) {
+                                         const double y,
+                                         const double z) {
         return 1.5;
     } // isotropic_permeability
 
@@ -162,9 +172,10 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
     // Derived Fields
 
     static double biot_modulus(const double x,
-                               const double y) {
-        return 1.0 / (porosity(x, y) / fluid_bulk_modulus(x, y) +
-                      (biot_coefficient(x, y) - porosity(x, y)) / solid_bulk_modulus(x, y));
+                               const double y,
+                               const double z) {
+        return 1.0 / (porosity(x, y, z) / fluid_bulk_modulus(x, y, z) +
+                      (biot_coefficient(x, y, z) - porosity(x, y, z)) / solid_bulk_modulus(x, y, z));
     }
 
     static const char *biot_modulus_units(void) {
@@ -175,48 +186,70 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
 
     static double displacement_x(const double x,
                                  const double y,
+                                 const double z,
                                  const double t) {
-        return (x * x);
+        return PetscSinReal(2.0 * PETSC_PI * x);
     } // displacement_x
 
     static double displacement_y(const double x,
                                  const double y,
+                                 const double z,
                                  const double t) {
-        return (y * y - 2.0 * x * y);
+        return PetscSinReal(2.0 * PETSC_PI * y) - 2.0 * x * y;
     } // displacement_y
+
+    static double displacement_z(const double x,
+                                 const double y,
+                                 const double z,
+                                 const double t) {
+        return PetscSinReal(2.0 * PETSC_PI * z) - 2.0 * y * z;
+    } // displacement_z
 
     static double pressure(const double x,
                            const double y,
+                           const double z,
                            const double t) {
-        return (x + y) * t;
+        return (x + y + z) * t;
     } // pressure
 
     static double trace_strain(const double x,
                                const double y,
+                               const double z,
                                const double t) {
-        return (2.0 * y);
+        return 2.0 * z;
     } // trace_strain
 
-    static double displacement_t_x(const double x,
+    static double displacement_x_t(const double x,
                                    const double y,
+                                   const double z,
                                    const double t) {
         return 0.0;
-    } // displacement_t_x
+    } // displacement_x_t
 
-    static double displacement_t_y(const double x,
+    static double displacement_y_t(const double x,
                                    const double y,
+                                   const double z,
                                    const double t) {
         return 0.0;
-    } // displacement_t_y
+    } // displacement_y_t
+
+    static double displacement_z_t(const double x,
+                                   const double y,
+                                   const double z,
+                                   const double t) {
+        return 0.0;
+    } // displacement_z_t
 
     static double pressure_t(const double x,
                              const double y,
+                             const double z,
                              const double t) {
-        return (x + y);
+        return (x + y + z);
     } // pressure_t
 
     static double trace_strain_t(const double x,
                                  const double y,
+                                 const double z,
                                  const double t) {
         return 0.0;
     } // trace_strain_t
@@ -227,13 +260,14 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
                                                   PetscInt numComponents,
                                                   PetscScalar *s,
                                                   void *context) {
-        CPPUNIT_ASSERT(2 == spaceDim);
+        CPPUNIT_ASSERT(3 == spaceDim);
         CPPUNIT_ASSERT(x);
-        CPPUNIT_ASSERT(2 == numComponents);
+        CPPUNIT_ASSERT(3 == numComponents);
         CPPUNIT_ASSERT(s);
 
-        s[0] = displacement_x(x[0], x[1], t);
-        s[1] = displacement_y(x[0], x[1], t);
+        s[0] = displacement_x(x[0], x[1], x[2], t);
+        s[1] = displacement_y(x[0], x[1], x[2], t);
+        s[2] = displacement_z(x[0], x[1], x[2], t);
 
         return 0;
     } // solnkernel_displacement
@@ -244,12 +278,12 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
                                               PetscInt numComponents,
                                               PetscScalar *s,
                                               void *context) {
-        CPPUNIT_ASSERT(2 == spaceDim);
+        CPPUNIT_ASSERT(3 == spaceDim);
         CPPUNIT_ASSERT(x);
         CPPUNIT_ASSERT(1 == numComponents);
         CPPUNIT_ASSERT(s);
 
-        s[0] = pressure(x[0], x[1], t);
+        s[0] = pressure(x[0], x[1], x[2], t);
 
         return 0;
     } // solnkernel_pressure
@@ -260,11 +294,11 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
                                                   PetscInt numComponents,
                                                   PetscScalar *s,
                                                   void *context) {
-        CPPUNIT_ASSERT(2 == spaceDim);
+        CPPUNIT_ASSERT(3 == spaceDim);
         CPPUNIT_ASSERT(1 == numComponents);
         CPPUNIT_ASSERT(s);
 
-        s[0] = trace_strain(x[0], x[1], t);
+        s[0] = trace_strain(x[0], x[1], x[2], t);
 
         return 0;
     } // solnkernel_trace_strain
@@ -275,13 +309,14 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
                                                     PetscInt numComponents,
                                                     PetscScalar *s,
                                                     void *context) {
-        CPPUNIT_ASSERT(2 == spaceDim);
+        CPPUNIT_ASSERT(3 == spaceDim);
         CPPUNIT_ASSERT(x);
-        CPPUNIT_ASSERT(2 == numComponents);
+        CPPUNIT_ASSERT(3 == numComponents);
         CPPUNIT_ASSERT(s);
 
-        s[0] = displacement_t_x(x[0], x[1], t);
-        s[1] = displacement_t_y(x[0], x[1], t);
+        s[0] = displacement_x_t(x[0], x[1], x[2], t);
+        s[1] = displacement_y_t(x[0], x[1], x[2], t);
+        s[2] = displacement_z_t(x[0], x[1], x[2], t);
 
         return 0;
     } // solnkernel_displacement_t
@@ -292,12 +327,12 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
                                                 PetscInt numComponents,
                                                 PetscScalar *s,
                                                 void *context) {
-        CPPUNIT_ASSERT(2 == spaceDim);
+        CPPUNIT_ASSERT(3 == spaceDim);
         CPPUNIT_ASSERT(x);
         CPPUNIT_ASSERT(1 == numComponents);
         CPPUNIT_ASSERT(s);
 
-        s[0] = pressure_t(x[0], x[1], t);
+        s[0] = pressure_t(x[0], x[1], x[2], t);
 
         return 0;
     } // solnkernel_pressure_t
@@ -308,11 +343,11 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT : public pylit
                                                     PetscInt numComponents,
                                                     PetscScalar *s,
                                                     void *context) {
-        CPPUNIT_ASSERT(2 == spaceDim);
+        CPPUNIT_ASSERT(3 == spaceDim);
         CPPUNIT_ASSERT(1 == numComponents);
         CPPUNIT_ASSERT(s);
 
-        s[0] = trace_strain_t(x[0], x[1], t);
+        s[0] = trace_strain_t(x[0], x[1], x[2], t);
 
         return 0;
     } // solnkernel_trace_strain_t
@@ -323,7 +358,7 @@ protected:
         TestIsotropicLinearPoroelasticity::setUp();
 
         // Overwrite component names for control of debugging info at test level.
-        GenericComponent::setName("TestIsotropicLinearPoroelasticity2D_QS_LT");
+        GenericComponent::setName("TestIsotropicLinearPoroelasticity3D_TS_LT");
         pythia::journal::debug_t debug(GenericComponent::getName());
         // debug.activate(); // DEBUGGING
 
@@ -332,7 +367,7 @@ protected:
         CPPUNIT_ASSERT(_data);
         _isJacobianLinear = true;
 
-        _data->spaceDim = 2;
+        _data->spaceDim = 3;
         _data->meshFilename = ":UNKNOWN:"; // Set in child class.
         _data->boundaryLabel = "boundary";
 
@@ -405,13 +440,12 @@ protected:
         _material->setMaterialId(24);
 
         // Displacement BC
-        static const PylithInt constrainedDisplacementDOF[2] = {0, 1};
-        static const PylithInt numConstrainedDisplacement = 2;
+        static const PylithInt constrainedDisplacementDOF[3] = {0, 1, 2};
+        static const PylithInt numConstrainedDisplacement = 3;
         _bcDisplacement->setConstrainedDOF(constrainedDisplacementDOF, numConstrainedDisplacement);
         _bcDisplacement->setMarkerLabel("boundary");
         _bcDisplacement->setSubfieldName("displacement");
         _bcDisplacement->setUserFn(solnkernel_displacement);
-        _bcDisplacement->setUserFnDot(solnkernel_displacement_t);
 
         // Pressure BC
         static const PylithInt constrainedPressureDOF[1] = {0};
@@ -420,7 +454,6 @@ protected:
         _bcPressure->setMarkerLabel("boundary");
         _bcPressure->setSubfieldName("pressure");
         _bcPressure->setUserFn(solnkernel_pressure);
-        _bcPressure->setUserFnDot(solnkernel_pressure_t);
 
     } // setUp
 
@@ -431,50 +464,42 @@ protected:
         PetscErrorCode err = 0;
         PetscDS prob = NULL;
         PetscWeakForm wf = NULL;
-        DMLabel label = NULL;
         err = DMGetDS(_solution->dmMesh(), &prob);
-        CPPUNIT_ASSERT(!err);
-        err = DMGetLabel(_solution->dmMesh(), "material-id", &label);
         CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(prob, 0, solnkernel_displacement, NULL);
         CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolutionTimeDerivative(prob, 0, solnkernel_displacement_t, NULL);
-        CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(prob, 1, solnkernel_pressure, NULL);
         CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolutionTimeDerivative(prob, 1, solnkernel_pressure_t, NULL);
-        CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(prob, 2, solnkernel_trace_strain, NULL);
-        CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolutionTimeDerivative(prob, 2, solnkernel_trace_strain_t, NULL);
         CPPUNIT_ASSERT(!err);
 
         err = PetscDSGetWeakForm(prob, &wf);
         CPPUNIT_ASSERT(!err);
-        err = PetscWeakFormSetIndexResidual(wf, label, 24, 0, 1, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_ql_u, 1, NULL);
+        err = PetscWeakFormSetIndexResidual(wf, NULL, 0, 0, 0, pylith::fekernels::IsotropicLinearPoroelasticity3D::f0_mms_tl_u, 0, NULL);
         CPPUNIT_ASSERT(!err);
-        err = PetscWeakFormSetIndexResidual(wf, label, 24, 1, 1, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_ql_p, 1, NULL);
+        err = PetscWeakFormSetIndexResidual(wf, NULL, 0, 1, 1, pylith::fekernels::IsotropicLinearPoroelasticity3D::f0_mms_tl_p, 1, NULL);
         CPPUNIT_ASSERT(!err);
+        // err = PetscDSView(prob, NULL);
     } // _setExactSolution
 
-}; // TestIsotropicLinearPoroelasticity2D_QS_LT
-const double pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT::LENGTHSCALE = 1.0;
-const double pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT::TIMESCALE = 1.0;
-const double pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT::PRESSURESCALE = 1.0;
-const double pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT::BODYFORCE = 1.0;
-const double pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT::XMIN = -4.0;
-const double pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT::XMAX = 4.0;
+}; // TestIsotropicLinearPoroelasticity3D_TS_LT
+const double pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT::LENGTHSCALE = 1.0;
+const double pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT::TIMESCALE = 1.0;
+const double pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT::PRESSURESCALE = 1.0;
+const double pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT::BODYFORCE = 1.0;
+const double pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT::XMIN = -4.0;
+const double pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT::XMAX = 4.0;
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_TriP2 : public pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearPoroelasticity2D_QS_LT_TriP2, TestIsotropicLinearPoroelasticity);
+class pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT_TetP2 : public pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearPoroelasticity3D_TS_LT_TetP2, TestIsotropicLinearPoroelasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearPoroelasticity2D_QS_LT::setUp();
+        TestIsotropicLinearPoroelasticity3D_TS_LT::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/tri.mesh";
+        _data->meshFilename = "data/tet.mesh";
 
         _data->numSolnSubfields = 3;
         static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
@@ -499,20 +524,20 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_TriP2 : public
 
     } // setUp
 
-}; // TestIsotropicLinearPoroelasticity2D_QS_LT_TriP2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_TriP2);
+}; // TestIsotropicLinearPoroelasticity3D_TS_LT_TetP2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT_TetP2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_TriP3 : public pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearPoroelasticity2D_QS_LT_TriP3,
+class pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT_TetP3 : public pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearPoroelasticity3D_TS_LT_TetP3,
                            TestIsotropicLinearPoroelasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearPoroelasticity2D_QS_LT::setUp();
+        TestIsotropicLinearPoroelasticity3D_TS_LT::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/tri.mesh";
+        _data->meshFilename = "data/tet.mesh";
 
         _data->numSolnSubfields = 3;
         static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
@@ -537,19 +562,19 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_TriP3 : public
 
     } // setUp
 
-}; // TestIsotropicLinearPoroelasticity2D_QS_LT_TriP3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_TriP3);
+}; // TestIsotropicLinearPoroelasticity3D_TS_LT_TetP3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT_TetP3);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_TriP4 : public pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearPoroelasticity2D_QS_LT_TriP4, TestIsotropicLinearPoroelasticity);
+class pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT_TetP4 : public pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearPoroelasticity3D_TS_LT_TetP4, TestIsotropicLinearPoroelasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearPoroelasticity2D_QS_LT::setUp();
+        TestIsotropicLinearPoroelasticity3D_TS_LT::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/tri.mesh";
+        _data->meshFilename = "data/tet.mesh";
 
         _data->numSolnSubfields = 3;
         static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
@@ -574,19 +599,19 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_TriP4 : public
 
     } // setUp
 
-}; // TestIsotropicLinearPoroelasticity2D_QS_LT_TriP4
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_TriP4);
+}; // TestIsotropicLinearPoroelasticity3D_TS_LT_TetP4
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT_TetP4);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ2 : public pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ2, TestIsotropicLinearPoroelasticity);
+class pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT_HexQ2 : public pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearPoroelasticity3D_TS_LT_HexQ2, TestIsotropicLinearPoroelasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearPoroelasticity2D_QS_LT::setUp();
+        TestIsotropicLinearPoroelasticity3D_TS_LT::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/quad.mesh";
+        _data->meshFilename = "data/hex.mesh";
 
         _data->numSolnSubfields = 3;
         static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
@@ -611,19 +636,19 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ2 : publi
 
     } // setUp
 
-}; // TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ2);
+}; // TestIsotropicLinearPoroelasticity3D_TS_LT_HexQ2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT_HexQ2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ3 : public pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ3, TestIsotropicLinearPoroelasticity);
+class pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT_HexQ3 : public pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearPoroelasticity3D_TS_LT_HexQ3, TestIsotropicLinearPoroelasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearPoroelasticity2D_QS_LT::setUp();
+        TestIsotropicLinearPoroelasticity3D_TS_LT::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/quad.mesh";
+        _data->meshFilename = "data/hex.mesh";
 
         _data->numSolnSubfields = 3;
         static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
@@ -648,19 +673,19 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ3 : publi
 
     } // setUp
 
-}; // TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ3);
+}; // TestIsotropicLinearPoroelasticity3D_TS_LT_HexQ3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT_HexQ3);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ4 : public pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ4, TestIsotropicLinearPoroelasticity);
+class pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT_HexQ4 : public pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT {
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearPoroelasticity3D_TS_LT_HexQ4, TestIsotropicLinearPoroelasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearPoroelasticity2D_QS_LT::setUp();
+        TestIsotropicLinearPoroelasticity3D_TS_LT::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/quad.mesh";
+        _data->meshFilename = "data/hex.mesh";
 
         _data->numSolnSubfields = 3;
         static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
@@ -685,7 +710,7 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ4 : publi
 
     } // setUp
 
-}; // TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ4
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearPoroelasticity2D_QS_LT_QuadQ4);
+}; // TestIsotropicLinearPoroelasticity3D_TS_LT_HexQ4
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearPoroelasticity3D_TS_LT_HexQ4);
 
 // End of file

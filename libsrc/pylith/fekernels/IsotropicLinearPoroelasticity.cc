@@ -250,8 +250,17 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_tl_u(const P
 
     const PylithScalar lambda = drainedBulkModulus - 2.0/3.0*shearModulus;
 
-    f0[0] += PetscSqr(2. * PETSC_PI) * PetscSinReal(2. * PETSC_PI * x[0]) * (2. * shearModulus + lambda) + 2.0 * (shearModulus + lambda) - 2. * PETSC_PI * biotCoefficient * PetscSinReal(2. * PETSC_PI * x[0]) * t;
-    f0[1] += PetscSqr(2. * PETSC_PI) * PetscSinReal(2. * PETSC_PI * x[1]) * (2. * shearModulus + lambda) - 2. * PETSC_PI * biotCoefficient * PetscSinReal(2. * PETSC_PI * x[1]) * t;
+    f0[0] += PetscSqr(2. * PETSC_PI) * PetscSinReal(2. * PETSC_PI * x[0]) * (2. * shearModulus + lambda) + 2.0 *
+             (shearModulus + lambda) - 2. * PETSC_PI * biotCoefficient * PetscSinReal(2. * PETSC_PI * x[0]) * t;
+    f0[1] += PetscSqr(2. * PETSC_PI) * PetscSinReal(2. * PETSC_PI * x[1]) * (2. * shearModulus + lambda) - 2. *
+             PETSC_PI * biotCoefficient * PetscSinReal(2. * PETSC_PI * x[1]) * t;
+
+    // for (PylithInt d = 0; d < _dim-1; ++d) {
+    //     f0[d] += PetscSqr(2.*PETSC_PI)*PetscSinReal(2.*PETSC_PI*x[d])*(2.*shearModulus + lambda) + 2.0*(shearModulus
+    // + lambda) - 2.*PETSC_PI*biotCoefficient*PetscSinReal(2.*PETSC_PI*x[d])*t;
+    // }
+    // f0[_dim-1] += PetscSqr(2.*PETSC_PI)*PetscSinReal(2.*PETSC_PI*x[dim-1])*(2.*shearModulus + lambda) -
+    // 2.*PETSC_PI*biotCoefficient*PetscSinReal(2.*PETSC_PI*x[_dim-1])*t;
 } // f0_trig_linear_u
 
 
@@ -295,7 +304,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_tl_p(const P
     sum += PetscCosReal(2. * PETSC_PI * x[0]);
     sum += PetscCosReal(2. * PETSC_PI * x[1]);
 
-    f0[0] -= sum / biotModulus - 4 * PetscSqr(PETSC_PI) * kappa * sum * t;
+    f0[0] -= sum / biotModulus - 4.0 * PetscSqr(PETSC_PI) * kappa * sum * t;
 } // f0_quadratic_trig_p
 
 
@@ -1120,71 +1129,28 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf3uu(const PylithI
     const PylithInt _dim = 2;
 
     // Incoming solution field.
-    const PylithInt i_trace_strain = 2;
 
     // Incoming auxiliary fields.
 
     // Isotropic Linear Poroelasticity
     const PylithInt i_shearModulus = numA - 5;
-    const PylithInt i_drainedBulkModulus = numA - 4;
 
     // Run Checks
     assert(_dim == dim);
     assert(numS >= 1);
     assert(numA >= 5);
-    assert(sOff);
-    assert(sOff[i_trace_strain] >= 0);
-    assert(sOff_x);
     assert(aOff);
     assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_drainedBulkModulus] >= 0);
     assert(Jf3);
 
-    const PylithScalar trace_strain = s[sOff[i_trace_strain]];
-
     const PylithScalar shearModulus = a[aOff[i_shearModulus]];
-    const PylithScalar drainedBulkModulus = a[aOff[i_drainedBulkModulus]];
 
-    const PylithScalar meanStress = drainedBulkModulus * trace_strain;
-    const PylithScalar lambda = drainedBulkModulus - 2.0/3.0*shearModulus;
-    const PylithScalar lambda2mu = lambda + 2.0*shearModulus;
-
-    const PylithReal C1111 = lambda2mu; // Get auxiliary factory associated with physics.
-    const PylithReal C2222 = lambda2mu;
-    const PylithReal C1122 = lambda;
-    const PylithReal C1212 = shearModulus;
-
-    /* j(f,g,df,dg) = C(f,df,g,dg)
-     *
-     * 0: j0000 = C1111
-     * 1: j0001 = C1112 = 0
-     * 4: j0100 = C1121, symmetry C1112 = 0
-     * 5: j0101 = C1122
-     *
-     * 2: j0010 = C1211 = 0
-     * 3: j0011 = C1212
-     * 6: j0110 = C1221, symmetry C1212
-     * 7: j0111 = C1222 = 0
-     *
-     * 8: j1000 = C2111 = 0
-     * 9: j1001 = C2112, symmetry C1212
-     * 12: j1100 = C2121, symmetry C1212
-     * 13: j1101 = C2122, symmetry C1222 = 0
-     *
-     * 10: j1010 = C2211, symmetry C1122
-     * 11: j1011 = C2212, symmetry C1222 = 0
-     * 14: j1110 = C2221, symmetry C1222 = 0
-     * 15: j1111 = C2222
-     */
-
-    Jf3[ 0] -= C1111; // j0000
-    Jf3[ 3] -= C1212; // j0011
-    Jf3[ 5] -= C1122; // j0101
-    Jf3[ 6] -= C1212; // j0110, C1221
-    Jf3[ 9] -= C1212; // j1001, C2112
-    Jf3[10] -= C1122; // j1010, C2211
-    Jf3[12] -= C1212; // j1100, C2121
-    Jf3[15] -= C2222; // j1111
+    for (PylithInt i = 0; i < _dim; ++i) {
+        for (PylithInt j = 0; j < _dim; ++j) {
+            Jf3[((i*_dim + i)*_dim + j)*_dim + j] -= shearModulus;
+            Jf3[((i*_dim + j)*_dim + j)*_dim + i] -= shearModulus;
+        }
+    }
 
 } // Jf3uu
 
@@ -1273,9 +1239,10 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf2ue(const PylithI
 
     const PylithScalar shearModulus = a[aOff[i_shearModulus]];
     const PylithScalar drainedBulkModulus = a[aOff[i_drainedBulkModulus]];
+    const PylithScalar lambda = drainedBulkModulus - 2.0/3.0*shearModulus;
 
     for (PylithInt d = 0; d < _dim; ++d) {
-        Jf2[d*_dim+d] -= drainedBulkModulus - (2.0*shearModulus) / 3.0;
+        Jf2[d*_dim+d] -= lambda;
     } // for
 } // Jf2ue
 
@@ -1324,7 +1291,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf3pp(const PylithI
     const PylithScalar fluidViscosity = a[aOff[i_fluidViscosity]];
 
     for (PylithInt d = 0; d < _dim; ++d) {
-        Jf3[d*_dim+d] += isotropicPermeablity/fluidViscosity;
+        Jf3[d*_dim+d] += isotropicPermeablity / fluidViscosity;
     }
 } // Jf3pp
 
@@ -1424,7 +1391,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf0pp(const PylithI
 
     const PylithScalar biotModulus = a[aOff[i_biotModulus]];
 
-    Jf0[0] = utshift / biotModulus;
+    Jf0[0] += utshift / biotModulus;
 } // Jf0pp
 
 
@@ -1466,7 +1433,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf0pe(const PylithI
 
     const PylithScalar biotCoefficient = a[aOff[i_biotCoefficient]];
 
-    Jf0[0] = utshift * biotCoefficient;
+    Jf0[0] += utshift * biotCoefficient;
 } // Jf0pe
 
 
@@ -3277,126 +3244,15 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf3uu(const PylithInt dim,
 
     // Isotropic Linear Poroelasticity
     const PylithInt i_shearModulus = numA - 5;
-    const PylithInt i_drainedBulkModulus = numA - 4;
 
     const PylithScalar shearModulus = a[aOff[i_shearModulus]];
-    const PylithScalar drainedBulkModulus = a[aOff[i_drainedBulkModulus]];
 
-    const PylithScalar lambda = drainedBulkModulus - 2.0/3.0*shearModulus;
-    const PylithScalar lambda2mu = lambda + 2.0*shearModulus;
-
-    const PylithReal C1111 = lambda2mu; // Get auxiliary factory associated with physics.
-    const PylithReal C2222 = lambda2mu;
-    const PylithReal C1122 = lambda;
-    const PylithReal C1212 = shearModulus;
-
-    /* j(f,g,df,dg) = C(f,df,g,dg)
-     *
-     *  0:  j0000 = C1111 = lambda + 2.0*shearModulus
-     *  1:  j0001 = C1112 = 0
-     *  2:  j0002 = C1113 = 0
-     *  3:  j0010 = C1211 = 0
-     *  4:  j0011 = C1212 = shearModulus
-     *  5:  j0012 = C1213 = 0
-     *  6:  j0020 = C1311 = 0
-     *  7:  j0021 = C1312 = 0
-     *  8:  j0022 = C1313 = shearModulus
-     *  9:  j0100 = C1121 = 0
-     * 10:  j0101 = C1122 = lambda
-     * 11:  j0102 = C1123 = 0
-     * 12:  j0110 = C1221 = shearModulus
-     * 13:  j0111 = C1222 = 0
-     * 14:  j0112 = C1223 = 0
-     * 15:  j0120 = C1321 = 0
-     * 16:  j0121 = C1322 = 0
-     * 17:  j0122 = C1323 = 0
-     * 18:  j0200 = C1131 = 0
-     * 19:  j0201 = C1132 = 0
-     * 20:  j0202 = C1133 = lambda
-     * 21:  j0210 = C1231 = 0
-     * 22:  j0211 = C1232 = 0
-     * 23:  j0212 = C1233 = 0
-     * 24:  j0220 = C1331 = shearModulus
-     * 25:  j0221 = C1332 = 0
-     * 26:  j0222 = C1333 = 0
-     * 27:  j1000 = C2111 = 0
-     * 28:  j1001 = C2112 = shearModulus
-     * 29:  j1002 = C2113 = 0
-     * 30:  j1010 = C2211 = lambda
-     * 31:  j1011 = C2212 = 0
-     * 32:  j1012 = C2213 = 0
-     * 33:  j1020 = C2311 = 0
-     * 34:  j1021 = C2312 = 0
-     * 35:  j1022 = C2313 = 0
-     * 36:  j1100 = C2121 = shearModulus
-     * 37:  j1101 = C2122 = 0
-     * 38:  j1102 = C2123 = 0
-     * 39:  j1110 = C2221 = 0
-     * 40:  j1111 = C2222 = lambda + 2.0*shearModulus
-     * 41:  j1112 = C2223 = 0
-     * 42:  j1120 = C2321 = 0
-     * 43:  j1121 = C2322 = 0
-     * 44:  j1122 = C2323 = shearModulus
-     * 45:  j1200 = C2131 = 0
-     * 46:  j1201 = C2132 = 0
-     * 47:  j1202 = C2133 = 0
-     * 48:  j1210 = C2231 = 0
-     * 49:  j1211 = C2232 = 0
-     * 50:  j1212 = C2233 = lambda
-     * 51:  j1220 = C2331 = 0
-     * 52:  j1221 = C2332 = shearModulus
-     * 53:  j1222 = C2333 = 0
-     * 54:  j2000 = C3111 = 0
-     * 55:  j2001 = C3112 = 0
-     * 56:  j2002 = C3113 = shearModulus
-     * 57:  j2010 = C3211 = 0
-     * 58:  j2011 = C3212 = 0
-     * 59:  j2012 = C3213 = 0
-     * 60:  j2020 = C3311 = lambda
-     * 61:  j2021 = C3312 = 0
-     * 62:  j2022 = C3313 = 0
-     * 63:  j2100 = C3121 = 0
-     * 64:  j2101 = C3122 = 0
-     * 65:  j2102 = C3123 = 0
-     * 66:  j2110 = C3221 = 0
-     * 67:  j2111 = C3222 = 0
-     * 68:  j2112 = C3223 = shearModulus
-     * 69:  j2120 = C3321 = 0
-     * 70:  j2121 = C3322 = lambda
-     * 71:  j2122 = C3323 = 0
-     * 72:  j2200 = C3131 = shearModulus
-     * 73:  j2201 = C3132 = 0
-     * 74:  j2202 = C3133 = 0
-     * 75:  j2210 = C3231 = 0
-     * 76:  j2211 = C3232 = shearModulus
-     * 77:  j2212 = C3233 = 0
-     * 78:  j2220 = C3331 = 0
-     * 79:  j2221 = C3332 = 0
-     * 80:  j2222 = C3333 = lambda + 2.0*shearModulus
-     */
-
-    // Nonzero Jacobian entries.
-    Jf3[ 0] -= C1111; // j0000
-    Jf3[ 4] -= C1212; // j0011
-    Jf3[ 8] -= C1212; // j0022
-    Jf3[10] -= C1122; // j0101
-    Jf3[12] -= C1212; // j0110
-    Jf3[20] -= C1122; // j0202
-    Jf3[24] -= C1212; // j0220
-    Jf3[28] -= C1212; // j1001
-    Jf3[30] -= C1122; // j1010
-    Jf3[36] -= C1212; // j1100
-    Jf3[40] -= C1111; // j1111
-    Jf3[44] -= C1212; // j1122
-    Jf3[50] -= C1122; // j1212
-    Jf3[52] -= C1212; // j1221
-    Jf3[56] -= C1212; // j2002
-    Jf3[60] -= C1122; // j2020
-    Jf3[68] -= C1212; // j2112
-    Jf3[70] -= C1122; // j2121
-    Jf3[72] -= C1212; // j2200
-    Jf3[76] -= C1212; // j2211
-    Jf3[80] -= C1111; // j2222
+    for (PylithInt i = 0; i < _dim; ++i) {
+        for (PylithInt j = 0; j < _dim; ++j) {
+            Jf3[((i*_dim + i)*_dim + j)*_dim + j] -= shearModulus;
+            Jf3[((i*_dim + j)*_dim + j)*_dim + i] -= shearModulus;
+        }
+    }
 
 } // Jf3uu
 

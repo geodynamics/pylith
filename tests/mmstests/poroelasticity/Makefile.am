@@ -19,8 +19,13 @@ include $(top_srcdir)/check.am
 
 TESTS = \
 	test_isotropiclinearporoelasticity2d \
+	test_isotropiclinearporoelasticity3d \
 	test_isotropiclinearporoelasticity2d_QS_LT \
-	test_isotropiclinearporoelasticity2d_TS_LT
+	test_isotropiclinearporoelasticity2d_QS_TT \
+	test_isotropiclinearporoelasticity2d_TS_LT \
+	test_isotropiclinearporoelasticity3d_QS_LT \
+	test_isotropiclinearporoelasticity3d_QS_TT \
+	test_isotropiclinearporoelasticity3d_TS_LT 
 
 check_PROGRAMS = $(TESTS)
 
@@ -29,7 +34,16 @@ test_isotropiclinearporoelasticity2d_SOURCES = \
 		TestPoroelasticity.cc \
 		TestIsotropicLinearPoroelasticity.cc \
 		TestIsotropicLinearPoroelasticity2D_QS_LT.cc \
+		TestIsotropicLinearPoroelasticity2D_QS_TT.cc \
 		TestIsotropicLinearPoroelasticity2D_TS_LT.cc \
+		test_driver.cc
+
+test_isotropiclinearporoelasticity3d_SOURCES = \
+		TestPoroelasticity.cc \
+		TestIsotropicLinearPoroelasticity.cc \
+		TestIsotropicLinearPoroelasticity3D_QS_LT.cc \
+		TestIsotropicLinearPoroelasticity3D_QS_TT.cc \
+		TestIsotropicLinearPoroelasticity3D_TS_LT.cc \
 		test_driver.cc
 
 test_isotropiclinearporoelasticity2d_QS_LT_SOURCES = \
@@ -38,10 +52,34 @@ test_isotropiclinearporoelasticity2d_QS_LT_SOURCES = \
 		TestIsotropicLinearPoroelasticity2D_QS_LT.cc \
 		test_driver.cc
 
+test_isotropiclinearporoelasticity2d_QS_TT_SOURCES = \
+		TestPoroelasticity.cc \
+		TestIsotropicLinearPoroelasticity.cc \
+		TestIsotropicLinearPoroelasticity2D_QS_TT.cc \
+		test_driver.cc
+
 test_isotropiclinearporoelasticity2d_TS_LT_SOURCES = \
 		TestPoroelasticity.cc \
 		TestIsotropicLinearPoroelasticity.cc \
 		TestIsotropicLinearPoroelasticity2D_TS_LT.cc \
+		test_driver.cc
+
+test_isotropiclinearporoelasticity3d_QS_LT_SOURCES = \
+		TestPoroelasticity.cc \
+		TestIsotropicLinearPoroelasticity.cc \
+		TestIsotropicLinearPoroelasticity3D_QS_LT.cc \
+		test_driver.cc
+
+test_isotropiclinearporoelasticity3d_QS_TT_SOURCES = \
+		TestPoroelasticity.cc \
+		TestIsotropicLinearPoroelasticity.cc \
+		TestIsotropicLinearPoroelasticity3D_QS_TT.cc \
+		test_driver.cc
+
+test_isotropiclinearporoelasticity3d_TS_LT_SOURCES = \
+		TestPoroelasticity.cc \
+		TestIsotropicLinearPoroelasticity.cc \
+		TestIsotropicLinearPoroelasticity3D_TS_LT.cc \
 		test_driver.cc
 
 noinst_HEADERS =

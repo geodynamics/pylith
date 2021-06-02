@@ -38,7 +38,8 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::bc::DirichletUserFn::DirichletUserFn(void) :
-    _fn(NULL) {
+    _fn(NULL),
+    _fnDot(NULL) {
     PyreComponent::setName("dirichletuserfn");
 } // constructor
 
@@ -175,6 +176,7 @@ pylith::bc::DirichletUserFn::createConstraint(const pylith::topology::Field& sol
     constraint->setConstrainedDOF(&_constrainedDOF[0], _constrainedDOF.size());
     constraint->setSubfieldName(_subfieldName.c_str());
     constraint->setUserFn(_fn);
+    constraint->setUserFnDot(_fnDot);
 
     PYLITH_METHOD_RETURN(constraint);
 } // createConstraint

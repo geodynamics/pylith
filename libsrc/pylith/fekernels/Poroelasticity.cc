@@ -537,7 +537,7 @@ pylith::fekernels::Poroelasticity::Jf0ee(const PylithInt dim,
     assert(aOff);
     assert(a);
 
-    Jf0[0] = -1.0;
+    Jf0[0] -= 1.0;
 } // Jg0ee
 
 
@@ -564,7 +564,7 @@ pylith::fekernels::Poroelasticity::Jf1eu(const PylithInt dim,
                                          const PylithScalar constants[],
                                          PylithScalar Jf1[]) {
     for (PylithInt d = 0; d < dim; ++d) {
-        Jf1[d*dim+d] = 1.0;
+        Jf1[d*dim+d] += 1.0;
     } // for
 } // Jf1eu
 
