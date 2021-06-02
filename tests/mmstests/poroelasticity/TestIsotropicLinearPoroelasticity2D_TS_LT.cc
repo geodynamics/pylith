@@ -182,7 +182,7 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_TS_LT : public pylit
     static double displacement_y(const double x,
                                  const double y,
                                  const double t) {
-        return PetscSinReal(2.0 * PETSC_PI * x) - 2.0 * x * y;
+        return PetscSinReal(2.0 * PETSC_PI * y) - 2.0 * x * y;
     } // displacement_y
 
     static double pressure(const double x,
@@ -325,7 +325,7 @@ protected:
         // Overwrite component names for control of debugging info at test level.
         GenericComponent::setName("TestIsotropicLinearPoroelasticity2D_TS_LT");
         pythia::journal::debug_t debug(GenericComponent::getName());
-        // debug.activate(); // DEBUGGING
+        debug.activate(); // DEBUGGING
 
         CPPUNIT_ASSERT(!_data);
         _data = new TestPoroelasticity_Data();
