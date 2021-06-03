@@ -26,6 +26,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
+#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT*
 
@@ -92,11 +93,9 @@ pylith::meshio::DataWriterHDF5::DataWriterHDF5(const DataWriterHDF5& w) :
     _filename(w._filename),
     _viewer(0),
     _tstamp(0),
-    _tstampIndex(0) { // copy constructor
-} // copy constructor
+    _tstampIndex(0) {}
 
 
-#include <iostream>
 // ---------------------------------------------------------------------------------------------------------------------
 // Prepare file for data at a new time step.
 void
@@ -128,9 +127,6 @@ pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
         err = PetscViewerHDF5PushGroup(_viewer, "/geometry");PYLITH_CHECK_ERROR(err);
         PetscVec coordsGlobalVec = NULL;
         DataWriter::getCoordsGlobalVec(&coordsGlobalVec, mesh);
-#if 0
-        err = VecView(coordsGlobalVec, _viewer);PYLITH_CHECK_ERROR(err);
-#else
         PetscBool isseq;
         err = PetscObjectTypeCompare((PetscObject) coordsGlobalVec, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
         if (isseq) {
@@ -138,7 +134,6 @@ pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
         } else {
             err = VecView_MPI(coordsGlobalVec, _viewer);PYLITH_CHECK_ERROR(err);
         } // if/else
-#endif
         err = VecDestroy(&coordsGlobalVec);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
 
@@ -267,40 +262,34 @@ pylith::meshio::DataWriterHDF5::close(void) {
 // Write field over vertices to file.
 void
 pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
-                                                 pylith::topology::Field& field,
-                                                 const pylith::topology::Mesh& mesh) {
+                                                 const pylith::meshio::OutputSubfield& subfield) {
     PYLITH_METHOD_BEGIN;
-
     assert(_viewer);
 
+    const char* name = subfield.getDescription().label.c_str();
     try {
         PetscErrorCode err;
 
-        const char* context = DataWriter::_context.c_str();
-
-        field.createScatterWithBC(mesh, context);
-        field.scatterLocalToContext(context);
-        PetscVec vector = field.scatterVector(context);assert(vector);
-
-        if (_timesteps.find(field.getLabel()) == _timesteps.end()) {
-            _timesteps[field.getLabel()] = 0;
+        if (_timesteps.find(name) == _timesteps.end()) {
+            _timesteps[name] = 0;
         } else {
-            _timesteps[field.getLabel()] += 1;
+            _timesteps[name] += 1;
         }
-        const int istep = _timesteps[field.getLabel()];
+        const int istep = _timesteps[name];
         // Add time stamp to "/time" if necessary.
+        MPI_Comm comm;
+        err = PetscObjectGetComm((PetscObject)subfield.getDM(), &comm);PYLITH_CHECK_ERROR(err);
         PetscMPIInt commRank;
-        err = MPI_Comm_rank(mesh.comm(), &commRank);PYLITH_CHECK_ERROR(err);
+        err = MPI_Comm_rank(comm, &commRank);PYLITH_CHECK_ERROR(err);
         if (_tstampIndex == istep) {
             _writeTimeStamp(t, commRank);
-        }
+        } // if
 
         err = PetscViewerHDF5PushGroup(_viewer, "/vertex_fields");PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PushTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5SetTimestep(_viewer, istep);PYLITH_CHECK_ERROR(err);
-#if 0
-        err = VecView(vector, _viewer);PYLITH_CHECK_ERROR(err);
-#else
+
+        PetscVec vector = subfield.getVector();assert(vector);
         PetscBool isseq;
         err = PetscObjectTypeCompare((PetscObject) vector, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
         if (isseq) {
@@ -308,7 +297,6 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
         } else {
             err = VecView_MPI(vector, _viewer);PYLITH_CHECK_ERROR(err);
         }
-#endif
         err = PetscViewerHDF5PopTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
 
@@ -316,20 +304,20 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
             hid_t h5 = -1;
             err = PetscViewerHDF5GetFileId(_viewer, &h5);PYLITH_CHECK_ERROR(err);
             assert(h5 >= 0);
-            std::string fullName = std::string("/vertex_fields/") + field.getLabel();
-            const char* sattr = pylith::topology::FieldBase::vectorFieldString(field.vectorFieldType());
+            std::string fullName = std::string("/vertex_fields/") + std::string(name);
+            const char* sattr = pylith::topology::FieldBase::vectorFieldString(subfield.getDescription().vectorFieldType);
             HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type", sattr);
         } // if
 
     } catch (const std::exception& err) {
         std::ostringstream msg;
-        msg << "Error while writing field '" << field.getLabel() << "' at time "
+        msg << "Error while writing field '" << name << "' at time "
             << t << " to HDF5 file '" << hdf5Filename() << "'.\n" << err.what();
         throw std::runtime_error(msg.str());
 
     } catch (...) {
         std::ostringstream msg;
-        msg << "Error while writing field '" << field.getLabel() << "' at time "
+        msg << "Error while writing field '" << name << "' at time "
             << t << " to HDF5 file '" << hdf5Filename() << "'.";
         throw std::runtime_error(msg.str());
     } // try/catch
@@ -342,42 +330,42 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
 // Write field over cells to file.
 void
 pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
-                                               pylith::topology::Field& field) {
+                                               const pylith::meshio::OutputSubfield& subfield) {
     PYLITH_METHOD_BEGIN;
 
     assert(_viewer);
 
+    const char* name = subfield.getDescription().label.c_str();
     try {
-        const char* context = DataWriter::_context.c_str();
-        PetscErrorCode err = 0;
+        PetscErrorCode err;
 
-        field.createScatterWithBC(field.mesh(), context);
-        field.scatterLocalToContext(context);
-        PetscVec vector = field.scatterVector(context);assert(vector);
-
-        if (_timesteps.find(field.getLabel()) == _timesteps.end()) {
-            _timesteps[field.getLabel()] = 0;
+        if (_timesteps.find(name) == _timesteps.end()) {
+            _timesteps[name] = 0;
         } else {
-            _timesteps[field.getLabel()] += 1;
+            _timesteps[name] += 1;
         }
-        const int istep = _timesteps[field.getLabel()];
+        const int istep = _timesteps[name];
         // Add time stamp to "/time" if necessary.
+        MPI_Comm comm;
+        err = PetscObjectGetComm((PetscObject)subfield.getDM(), &comm);PYLITH_CHECK_ERROR(err);
         PetscMPIInt commRank;
-        err = MPI_Comm_rank(field.mesh().comm(), &commRank);PYLITH_CHECK_ERROR(err);
+        err = MPI_Comm_rank(comm, &commRank);PYLITH_CHECK_ERROR(err);
         if (_tstampIndex == istep) {
             _writeTimeStamp(t, commRank);
-        }
+        } // if
 
         err = PetscViewerHDF5PushGroup(_viewer, "/cell_fields");PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PushTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5SetTimestep(_viewer, istep);PYLITH_CHECK_ERROR(err);
-#if 0
-        err = VecView(vector, _viewer);PYLITH_CHECK_ERROR(err);
-#else
+
+        PetscVec vector = subfield.getVector();assert(vector);
         PetscBool isseq;
         err = PetscObjectTypeCompare((PetscObject) vector, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
-        if (isseq) {err = VecView_Seq(vector, _viewer);PYLITH_CHECK_ERROR(err);} else       {err = VecView_MPI(vector, _viewer);PYLITH_CHECK_ERROR(err);}
-#endif
+        if (isseq) {
+            err = VecView_Seq(vector, _viewer);PYLITH_CHECK_ERROR(err);
+        } else {
+            err = VecView_MPI(vector, _viewer);PYLITH_CHECK_ERROR(err);
+        } // if/else
         err = PetscViewerHDF5PopTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
 
@@ -385,18 +373,18 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
             hid_t h5 = -1;
             err = PetscViewerHDF5GetFileId(_viewer, &h5);PYLITH_CHECK_ERROR(err);
             assert(h5 >= 0);
-            std::string fullName = std::string("/cell_fields/") + field.getLabel();
-            const char* sattr = pylith::topology::FieldBase::vectorFieldString(field.vectorFieldType());
+            std::string fullName = std::string("/cell_fields/") + std::string(name);
+            const char* sattr = pylith::topology::FieldBase::vectorFieldString(subfield.getDescription().vectorFieldType);
             HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type", sattr);
         } // if
     } catch (const std::exception& err) {
         std::ostringstream msg;
-        msg << "Error while writing field '" << field.getLabel() << "' at time "
+        msg << "Error while writing field '" << name << "' at time "
             << t << " to HDF5 file '" << hdf5Filename() << "'.\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
         std::ostringstream msg;
-        msg << "Error while writing field '" << field.getLabel() << "' at time "
+        msg << "Error while writing field '" << name << "' at time "
             << t << " to HDF5 file '" << hdf5Filename() << "'.";
         throw std::runtime_error(msg.str());
     } // try/catch

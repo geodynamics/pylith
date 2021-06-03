@@ -114,7 +114,7 @@ pylith::topology::VecVisitorMesh::localVec(void) const {
 // Get the local coordinates array associated with the local PETSc Vec.
 inline
 PetscScalar*
-pylith::topology::VecVisitorMesh::localArray(void) const { // localArray
+pylith::topology::VecVisitorMesh::localArray(void) const {
     return _localArray;
 } // localArray
 

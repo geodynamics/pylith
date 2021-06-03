@@ -27,6 +27,8 @@
 #if !defined(pylith_meshio_testdatawriterpoints_hh)
 #define pylith_meshio_testdatawriterpoints_hh
 
+#include "TestDataWriter.hh" // USES TestDataWriter_Data
+
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
 namespace pylith {
@@ -54,7 +56,7 @@ protected:
      *
      * @param fields Vertex fields.
      */
-    void _createVertexFields(topology::Fields* fields) const;
+    void _createVertexField(pylith::topology::Field* field);
 
     /// Set data for tri test case.
     void _setDataTri(void);
@@ -78,7 +80,6 @@ protected:
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
 
-    pylith::topology::Mesh* _domainMesh; ///< Mesh for domain
     pylith::topology::Mesh* _pointMesh; ///< Mesh associated with point data.
 
 }; // class TestDataWriterPoints
@@ -97,7 +98,9 @@ public:
     // PUBLIC MEMBERS ///////////////////////////////////////////////////
 public:
 
-    const char* pointsLabel; ///< Label marking points.
+    int numPoints; ///< Number of points for interpolation.
+    PylithReal* points; /// Points for interpolation.
+    pylith::string_vector names; ///< Station names for points.
 
 }; // class TestDataWriterPoints_Data
 

@@ -43,255 +43,267 @@
 /** @brief Helper class for accessing field values at points in a
  *  finite-element mesh.
  */
-class pylith::topology::VecVisitorSubmesh
-{ // VecVisitorSubmesh
-  friend class TestVecVisitorSubmesh; // unit testing
+class pylith::topology::VecVisitorSubmesh { // VecVisitorSubmesh
+    friend class TestVecVisitorSubmesh; // unit testing
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
-public :
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
 
-  /** Default constructor.
-   *
-   * @param field Field associated with visitor.
-   * @param submeshIS Submesh index set associated with visitor.
-   */
-  VecVisitorSubmesh(const Field& field,
-		    const SubmeshIS& submeshIS);
+    /** Default constructor.
+     *
+     * @param[in] field Field associated with visitor.
+     * @param[in] submeshIS Submesh index set associated with visitor.
+     */
+    VecVisitorSubmesh(const Field& field,
+                      const SubmeshIS& submeshIS);
 
-  /// Default destructor
-  ~VecVisitorSubmesh(void);
+    /// Default destructor
+    ~VecVisitorSubmesh(void);
 
-  /* Initialize cached data.
-   *
-   * @param submeshIS Submesh index set associated with visitor.
-   */
-  void initialize(const SubmeshIS& submeshIS);
+    /* Initialize cached data.
+     *
+     * @param[in] submeshIS Submesh index set associated with visitor.
+     */
+    void initialize(const SubmeshIS& submeshIS);
 
-  /// Clear cached data.
-  void clear(void);
-  
-  /** Get the PETSc section.
-   * 
-   * @returns PETSc section.
-   */
-  PetscSection petscSection(void) const;
+    /// Clear cached data.
+    void clear(void);
 
-  /** Get the local PETSc Vec.
-   * 
-   * @returns PETSc Vec.
-   */
-  PetscVec localVec(void) const;
+    /** Get the PETSc section.
+     *
+     * @returns PETSc section.
+     */
+    PetscSection petscSection(void) const;
 
-  /** Get fiber dimension of coordinates for point.
-   *
-   * @param point Point in mesh.
-   * @returns Fiber dimension.
-   */
-  PetscInt sectionDof(const PetscInt point) const;
+    /** Get the local PETSc Vec.
+     *
+     * @returns PETSc Vec.
+     */
+    PetscVec localVec(void) const;
 
-  /** Get offset into coordinates array for point.
-   *
-   * @param point Point in mesh.
-   * @returns Offset.
-   */
-  PetscInt sectionOffset(const PetscInt point) const;
+    /** Get number of degrees of freedom for field at point.
+     *
+     * @param[in] point Point in mesh.
+     * @returns Number of degrees of freedom.
+     */
+    PetscInt sectionDof(const PetscInt point) const;
 
-  /** Get array of values associated with closure.
-   *
-   * @param valuesCell Array of values for cell.
-   * @param valuesSize Size of values array.
-   * @param cell Finite-element cell.
-   */
-  void getClosure(PetscScalar** valuesCell,
-		  PetscInt* valuesSize,
-		  const PetscInt cell) const;
+    /** Get offset into array for point.
+     *
+     * @param[in] point Point in mesh.
+     * @returns Offset.
+     */
+    PetscInt sectionOffset(const PetscInt point) const;
 
-  /** Get array of values associated with closure.
-   *
-   * @param values Array of values for cell.
-   * @param cell Finite-element cell.
-   */
-  void getClosure(scalar_array* values,
-		  const PetscInt cell) const;
+    /** Get number of degrees of freedom for subfield at point.
+     *
+     * @param[in] point Point in mesh.
+     * @param[in] subfieldIndex Index of subfield in field.
+     * @returns Number of degrees of freedom.
+     */
+    PetscInt sectionSubfieldDof(const PetscInt point,
+                                const PetscInt subfieldIndex) const;
 
-  /** Restore array of values associated with closure.
-   *
-   * @param valuesCell Array of values for cell.
-   * @param valuesSize Size of values array.
-   * @param cell Finite-element cell.
-   */
-  void restoreClosure(PetscScalar** valuesCell,
-		      PetscInt* valuesSize,
-		      const PetscInt cell) const;
+    /** Get offset into array for point.
+     *
+     * @param[in] point Point in mesh.
+     * @param[in] subfieldIndex Index of subfield in field.
+     * @returns Offset.
+     */
+    PetscInt sectionSubfieldOffset(const PetscInt point,
+                                   const PetscInt subfieldIndex) const;
 
-  /** Set values associated with closure.
-   *
-   * @param valuesCell Array of values for cell.
-   * @param valuesSize Size of values array.
-   * @param cell Finite-element cell.
-   * @param mode Mode for inserting values.
-   */
-  void setClosure(const PetscScalar* valuesCell,
-		  const PetscInt valuesSize,
-		  const PetscInt cell,
-		  const InsertMode mode) const;
+    /** Get array of values associated with closure.
+     *
+     * @param[in] valuesCell Array of values for cell.
+     * @param[in] valuesSize Size of values array.
+     * @param[in] cell Finite-element cell.
+     */
+    void getClosure(PetscScalar** valuesCell,
+                    PetscInt* valuesSize,
+                    const PetscInt cell) const;
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
+    /** Get array of values associated with closure.
+     *
+     * @param[in] values Array of values for cell.
+     * @param[in] cell Finite-element cell.
+     */
+    void getClosure(scalar_array* values,
+                    const PetscInt cell) const;
 
-  const Field& _field;
+    /** Restore array of values associated with closure.
+     *
+     * @param[in] valuesCell Array of values for cell.
+     * @param[in] valuesSize Size of values array.
+     * @param[in] cell Finite-element cell.
+     */
+    void restoreClosure(PetscScalar** valuesCell,
+                        PetscInt* valuesSize,
+                        const PetscInt cell) const;
 
-  PetscDM _dm; ///< Cached PETSc dm for submesh.
-  PetscSection _section; ///< Cached PETSc subsection.
-  PetscVec _localVec; ///< Cached local PETSc Vec.
+    /** Set values associated with closure.
+     *
+     * @param[in] valuesCell Array of values for cell.
+     * @param[in] valuesSize Size of values array.
+     * @param[in] cell Finite-element cell.
+     * @param[in] mode Mode for inserting values.
+     */
+    void setClosure(const PetscScalar* valuesCell,
+                    const PetscInt valuesSize,
+                    const PetscInt cell,
+                    const InsertMode mode) const;
 
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
-private :
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+private:
 
-  VecVisitorSubmesh(const VecVisitorSubmesh&); ///< Not implemented
-  const VecVisitorSubmesh& operator=(const VecVisitorSubmesh&); ///< Not implemented
+    const Field& _field;
+
+    PetscDM _dm; ///< Cached PETSc dm for submesh.
+    PetscSection _section; ///< Cached PETSc subsection.
+    PetscVec _localVec; ///< Cached local PETSc Vec.
+
+    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+private:
+
+    VecVisitorSubmesh(const VecVisitorSubmesh&); ///< Not implemented
+    const VecVisitorSubmesh& operator=(const VecVisitorSubmesh&); ///< Not implemented
 
 }; // VecVisitorSubmesh
-
 
 // MatVisitorSubmesh -------------------------------------------------------
 /** @brief Helper class for accessing field values at points in a
  *  finite-element mesh.
  */
-class pylith::topology::MatVisitorSubmesh
-{ // MatVisitorSubmesh
-  friend class TestMatVisitorSubmesh; // unit testing
+class pylith::topology::MatVisitorSubmesh { // MatVisitorSubmesh
+    friend class TestMatVisitorSubmesh; // unit testing
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
-public :
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
 
-  /** Default constructor.
-   *
-   * @param mat PETSc matrix.
-   * @param field Field associated with visitor.
-   * @param submeshIS Submesh index set associated with visitor.
-   */
-  MatVisitorSubmesh(const PetscMat mat,
-		    const Field& field,
-		    const SubmeshIS& submeshIS);
+    /** Default constructor.
+     *
+     * @param[in] mat PETSc matrix.
+     * @param[in] field Field associated with visitor.
+     * @param[in] submeshIS Submesh index set associated with visitor.
+     */
+    MatVisitorSubmesh(const PetscMat mat,
+                      const Field& field,
+                      const SubmeshIS& submeshIS);
 
-  /// Default destructor
-  ~MatVisitorSubmesh(void);
+    /// Default destructor
+    ~MatVisitorSubmesh(void);
 
-  // Initialize.
-  void initialize(void);
+    // Initialize.
+    void initialize(void);
 
-  /// Clear cached data.
-  void clear(void);
-  
-  /** Get array of values associated with closure.
-   *
-   * @param valuesCell Array of values for cell.
-   * @param valuesSize Size of values array.
-   * @param cell Finite-element cell.
-   */
-  void getClosure(PetscScalar** valuesCell,
-		  PetscInt* valuesSize,
-		  const PetscInt cell) const;
+    /// Clear cached data.
+    void clear(void);
 
-  /** Restore array of values associated with closure.
-   *
-   * @param valuesCell Array of values for cell.
-   * @param valuesSize Size of values array.
-   * @param cell Finite-element cell.
-   */
-  void restoreClosure(PetscScalar** valuesCell,
-		      PetscInt* valuesSize,
-		      const PetscInt cell) const;
+    /** Get array of values associated with closure.
+     *
+     * @param[in] valuesCell Array of values for cell.
+     * @param[in] valuesSize Size of values array.
+     * @param[in] cell Finite-element cell.
+     */
+    void getClosure(PetscScalar** valuesCell,
+                    PetscInt* valuesSize,
+                    const PetscInt cell) const;
 
-  /** Set values associated with closure.
-   *
-   * @param valuesCell Array of values for cell.
-   * @param valuesSize Size of values array.
-   * @param cell Finite-element cell.
-   * @param mode Mode for inserting values.
-   */
-  void setClosure(const PetscScalar* valuesCell,
-		  const PetscInt valuesSize,
-		  const PetscInt cell,
-		  const InsertMode mode) const;
+    /** Restore array of values associated with closure.
+     *
+     * @param[in] valuesCell Array of values for cell.
+     * @param[in] valuesSize Size of values array.
+     * @param[in] cell Finite-element cell.
+     */
+    void restoreClosure(PetscScalar** valuesCell,
+                        PetscInt* valuesSize,
+                        const PetscInt cell) const;
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
+    /** Set values associated with closure.
+     *
+     * @param[in] valuesCell Array of values for cell.
+     * @param[in] valuesSize Size of values array.
+     * @param[in] cell Finite-element cell.
+     * @param[in] mode Mode for inserting values.
+     */
+    void setClosure(const PetscScalar* valuesCell,
+                    const PetscInt valuesSize,
+                    const PetscInt cell,
+                    const InsertMode mode) const;
 
-  const PetscMat _mat; ///< Cached PETSc matrix.
-  PetscDM _dm; ///< Cached PETSc dm for mesh.
-  PetscSection _subsection; ///< Cached PETSc section for submesh.
-  PetscSection _globalSection; ///< Cached PETSc global section.
-  PetscSection _globalSubsection; ///< Cached PETSc subsection.
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+private:
 
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
-private :
+    const PetscMat _mat; ///< Cached PETSc matrix.
+    PetscDM _dm; ///< Cached PETSc dm for mesh.
+    PetscSection _subsection; ///< Cached PETSc section for submesh.
+    PetscSection _globalSection; ///< Cached PETSc global section.
+    PetscSection _globalSubsection; ///< Cached PETSc subsection.
 
-  MatVisitorSubmesh(const MatVisitorSubmesh&); ///< Not implemented
-  const MatVisitorSubmesh& operator=(const MatVisitorSubmesh&); ///< Not implemented
+    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+private:
+
+    MatVisitorSubmesh(const MatVisitorSubmesh&); ///< Not implemented
+    const MatVisitorSubmesh& operator=(const MatVisitorSubmesh&); ///< Not implemented
 
 }; // MatVisitorSubmesh
 
 // SubmeshIS ------------------------------------------------------------
 /// Index set associated with submesh.
-class pylith::topology::SubmeshIS
-{ // SubmeshIS
-  friend class TestSubmeshIS; // unit testing
+class pylith::topology::SubmeshIS { // SubmeshIS
+    friend class TestSubmeshIS; // unit testing
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
-public :
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
 
-  /** Default constructor.
-   * 
-   * @param submesh Submesh associated with index set.
-   */
-  SubmeshIS(const Mesh& submesh);
+    /** Default constructor.
+     *
+     * @param[in] submesh Submesh associated with index set.
+     */
+    SubmeshIS(const Mesh& submesh);
 
-  /// Default destructor.
-  ~SubmeshIS(void);
+    /// Default destructor.
+    ~SubmeshIS(void);
 
-  /// Deallocate.
-  void deallocate(void);
+    /// Deallocate.
+    void deallocate(void);
 
-  /** Get the submesh.
-   *
-   * @returns Submesh.
-   */
-  const Mesh& submesh(void) const;
+    /** Get the submesh.
+     *
+     * @returns Submesh.
+     */
+    const Mesh& submesh(void) const;
 
-  /** Get PETSc index set.
-   *
-   * @returns PETSc index set.
-   */
-  PetscIS indexSet(void) const;
+    /** Get PETSc index set.
+     *
+     * @returns PETSc index set.
+     */
+    PetscIS indexSet(void) const;
 
-  /** Get array of points in index set.
-   *
-   * @return Array of points.
-   */
-  const PetscInt* points(void) const;
+    /** Get array of points in index set.
+     *
+     * @return Array of points.
+     */
+    const PetscInt* indices(void) const;
 
-  /** Get number of points in index set.
-   *
-   * @return Number of points.
-   */
-  PetscInt size(void) const;
+    /** Get number of points in index set.
+     *
+     * @return Number of points.
+     */
+    PetscInt size(void) const;
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+private:
 
-  const Mesh& _submesh;
-  PetscIS _indexSet; ///< PETSc index set.
-  PetscInt _size; ///< Size of index set.
-  const PetscInt* _points; ///< Array of points in index set.
+    const Mesh& _submesh;
+    PetscIS _indexSet; ///< PETSc index set.
+    PetscInt _size; ///< Size of index set.
+    const PetscInt* _indices; ///< Array of indices of points in index set.
 
 }; // SubmeshIS
-
 
 #include "VisitorSubmesh.icc"
 
 #endif // pylith_topology_visitorsubmesh_hh
-
 
 // End of file

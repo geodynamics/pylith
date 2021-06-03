@@ -73,21 +73,19 @@ public:
 
             /** Write field over vertices to file.
              *
-             * @param t Time associated with field.
-             * @param field Field over vertices.
-             * @param mesh Mesh for output.
+             * @param[in] t Time associated with field.
+             * @param[in] subfield Subfield with basis order 1.
              */
             void writeVertexField(const PylithScalar t,
-                                  pylith::topology::Field& field,
-                                  const pylith::topology::Mesh& mesh);
+                                  const pylith::meshio::OutputSubfield& field);
 
             /** Write field over cells to file.
              *
-             * @param t Time associated with field.
-             * @param field Field over cells.
+             * @param[in] t Time associated with field.
+             * @param[in] subfield Subfield with basis order 0.
              */
             void writeCellField(const PylithScalar t,
-                                pylith::topology::Field& field);
+                                const pylith::meshio::OutputSubfield& subfield);
 
             /** Write dataset with names of points to file.
              *

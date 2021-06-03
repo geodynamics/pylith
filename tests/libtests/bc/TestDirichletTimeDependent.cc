@@ -344,7 +344,7 @@ pylith::bc::TestDirichletTimeDependent::testPrestep(void) {
 
     pylith::topology::Field valueField(*_mesh);
     valueField.copySubfield(*auxField, "time_history_value");
-    CPPUNIT_ASSERT(valueField.sectionSize() > 0);
+    CPPUNIT_ASSERT(valueField.getStorageSize() > 0);
     CPPUNIT_ASSERT_EQUAL(std::string("time_history_value"), std::string(valueField.getLabel()));
 
     PylithReal norm = 0.0;

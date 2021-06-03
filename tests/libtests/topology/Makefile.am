@@ -37,8 +37,6 @@ test_topology_SOURCES = \
 	TestFieldMesh_Cases.cc \
 	TestFieldQuery.cc \
 	TestFieldQuery_Cases.cc \
-	TestFieldsMesh.cc \
-	TestFieldsSubmesh.cc \
 	TestRefineUniform.cc \
 	TestRefineUniform_Cases.cc \
 	TestReverseCuthillMcKee.cc \
@@ -57,13 +55,8 @@ noinst_HEADERS = \
 	TestFieldMesh.hh \
 	TestFieldSubmesh.hh \
 	TestFieldQuery.hh \
-	TestFieldsMesh.hh \
-	TestFieldsSubmesh.hh \
-	TestSolutionFields.hh \
 	TestRefineUniform.hh \
-	TestReverseCuthillMcKee.hh \
-	TestJacobian.hh
-
+	TestReverseCuthillMcKee.hh
 
 
 AM_CPPFLAGS += \

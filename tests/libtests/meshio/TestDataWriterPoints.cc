@@ -25,101 +25,94 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
-#include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
-#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
-#include "pylith/faults/FaultCohesiveStub.hh" // USES FaultCohesiveStub
+#include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
+#include "pylith/testing/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <cppunit/extensions/HelperMacros.h>
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterPoints::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
-    _domainMesh = NULL;
     _pointMesh = NULL;
 
     PYLITH_METHOD_END;
 } // setUp
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Tear down testing data.
 void
 pylith::meshio::TestDataWriterPoints::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _domainMesh;_domainMesh = NULL;
     delete _pointMesh;_pointMesh = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Initialize mesh.
 void
 pylith::meshio::TestDataWriterPoints::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
-    const TestDataWriterSubmesh_Data* data = _getData();CPPUNIT_ASSERT(data);
-
-    delete _mesh;_mesh = new pylith::topology::Mesh;CPPUNIT_ASSERT(_mesh);
-    MeshIOAscii iohandler;
-    iohandler.filename(_data->meshFilename);
-    iohandler.read(_mesh);
+    const TestDataWriterPoints_Data* data = _getData();CPPUNIT_ASSERT(data);
 
     spatialdata::geocoords::CSCart cs;
-    cs.setSpaceDim(_mesh->dimension());
-    _mesh->setCoordSys(&cs);
+    cs.setSpaceDim(data->spaceDim);
 
+    delete _pointMesh;_pointMesh = pylith::topology::MeshOps::createFromPoints(
+        data->points, data->numPoints, &cs, data->lengthScale, PETSC_COMM_WORLD);
+
+    PylithReal lengthScale = data->lengthScale;
     spatialdata::units::Nondimensional normalizer;
     normalizer.setLengthScale(data->lengthScale);
-    topology::MeshOps::nondimensionalize(_mesh, normalizer);
-
-    if (_data->faultLabel) {
-        pylith::faults::FaultCohesiveStub fault;
-        fault.setSurfaceMarkerLabel(data->faultLabel);
-        fault.setInterfaceId(data->faultId);
-        fault.adjustTopology(_mesh);
-    } // if
+    pylith::topology::MeshOps::nondimensionalize(_pointMesh, normalizer);
 
     PYLITH_METHOD_END;
 } // _initialize
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create vertex fields.
 void
-pylith::meshio::TestDataWriterPoints::_createVertexFields(topology::Fields* fields) const {
+pylith::meshio::TestDataWriterPoints::_createVertexField(pylith::topology::Field* field) {
     PYLITH_METHOD_BEGIN;
+    CPPUNIT_ASSERT(field);
 
-    CPPUNIT_ASSERT(fields);
-    CPPUNIT_ASSERT(_mesh);
+    const TestDataWriterPoints_Data* data = _getData();CPPUNIT_ASSERT(data);
 
-    const TestDataWriterSubmesh_Data* data = _getData();CPPUNIT_ASSERT(data);
+    FieldFactory factory(*field);
+    factory.addScalar(data->vertexDiscretization);
+    factory.addVector(data->vertexDiscretization);
+    factory.addTensor(data->vertexDiscretization);
+    factory.addOther(data->vertexDiscretization);
 
-    FieldFactory factory(*fields);
-    factory.scalar(data->vertexDiscretization, data->vertexScalarValues, data->vertexNumPoints, data->vertexScalarNumComponents);
-    factory.vector(data->vertexDiscretization, data->vertexVectorValues, data->vertexNumPoints, data->vertexVectorNumComponents);
-    factory.tensor(data->vertexDiscretization, data->vertexTensorValues, data->vertexNumPoints, data->vertexTensorNumComponents);
-    factory.other(data->vertexDiscretization, data->vertexOtherValues, data->vertexNumPoints, data->vertexOtherNumComponents);
+    field->subfieldsSetup();
+    field->createDiscretization();
+    field->allocate();
+
+    factory.setValues(data->vertexValues, data->vertexNumPoints, data->vertexNumDOF);
+
+    field->createOutputVector();
+    field->scatterLocalToOutput();
 
     PYLITH_METHOD_END;
-} // _createVertexFields
+} // _createVertexField
 
 
-// ----------------------------------------------------------------------
+// ================================================================================================
 void
 pylith::meshio::TestDataWriterPoints::_setDataTri(void) {
-    TestDataWriterSubmesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+    TestDataWriterPoints_Data* data = this->_getData();CPPUNIT_ASSERT(data);
 
     data->meshFilename = "data/tri3.mesh";
     data->faultLabel = "fault";
@@ -130,404 +123,166 @@ pylith::meshio::TestDataWriterPoints::_setDataTri(void) {
     data->time = 1.0;
     data->timeFormat = "%3.1f";
 
-    // Vertex fields ------------------------------
-    data->vertexNumPoints = 6;
-    data->vertexDiscretization = pylith::topology::FieldBase::Discretization(1, 1);
-
-    // Scalar
-    data->vertexScalarNumComponents = 1;
-    static const PylithScalar vertexScalarValues[6*1] = {
-        2.1, 3.2, 4.3, 5.4, 6.5, 7.6,
+    static const size_t numPoints = 3;
+    data->numPoints = numPoints;
+    static const PylithReal points[numPoints*2] = {
+        -0.3333333, 0.0,
+        0.0000001, 0.0,
+        0.9999999, 0.0,
     };
-    data->vertexScalarValues = const_cast<PylithScalar*>(vertexScalarValues);
+    data->points = const_cast<PylithReal*>(points);
+    data->names = pylith::string_vector({"ZZ.A", "ZZ.B", "ZZ.C"});
 
-    // Vector
-    data->vertexVectorNumComponents = 2;
-    static const PylithScalar vertexVectorValues[6*2] = {
-        1.1, 2.2,
-        3.3, 4.4,
-        5.5, 6.6,
-        7.7, 8.8,
-        9.9, 10.0,
-        11.1, 12.2,
+    // Vertex fields ------------------------------------------------------------------------------
+    static const size_t vertexNumPoints = 3;
+    static const size_t vertexNumDOF = 1 + 2 + 3 + 2;
+    data->vertexDiscretization = pylith::topology::FieldBase::Discretization(1, 1, 2);
+
+    data->vertexNumPoints = vertexNumPoints;
+    data->vertexNumDOF = vertexNumDOF;
+    static const PylithScalar vertexValues[vertexNumPoints*vertexNumDOF] = {
+        3.2,    3.3,  4.4,   2.1, 2.2, 2.3,    3.4,  4.5,
+        7.05,  10.5, 11.1,   5.6, 5.7, 5.8,   10.1, 11.2,
+        5.4,    7.7,  8.8,   4.1, 4.2, 4.3,    7.8,  8.9,
     };
-    data->vertexVectorValues = const_cast<PylithScalar*>(vertexVectorValues);
-
-    // Tensor
-    data->vertexTensorNumComponents = 3;
-    static const PylithScalar vertexTensorValues[6*3] = {
-        1.1, 1.2, 1.3,
-        2.1, 2.2, 2.3,
-        3.1, 3.2, 3.3,
-        4.1, 4.2, 4.3,
-        5.1, 5.2, 5.3,
-        6.1, 6.2, 6.3,
-    };
-    data->vertexTensorValues = const_cast<PylithScalar*>(vertexTensorValues);
-
-    // Other
-    data->vertexOtherNumComponents = 2;
-    static const PylithScalar vertexOtherValues[6*2] = {
-        1.2, 2.3,
-        3.4, 4.5,
-        5.6, 6.7,
-        7.8, 8.9,
-        9.0, 10.1,
-        11.2, 12.3,
-    };
-    data->vertexOtherValues = const_cast<PylithScalar*>(vertexOtherValues);
-
-    // Cell fields ------------------------------
-    data->cellNumPoints = 1;
-    data->cellDiscretization = pylith::topology::FieldBase::Discretization(0, 0);
-
-    // Scalar
-    data->cellScalarNumComponents = 1;
-    static const PylithScalar cellScalarValues[1*1] = {
-        2.1,
-    };
-    data->cellScalarValues = const_cast<PylithScalar*>(cellScalarValues);
-
-    // Vector
-    data->cellVectorNumComponents = 2;
-    static const PylithScalar cellVectorValues[1*2] = {
-        1.1, 2.2,
-    };
-    data->cellVectorValues = const_cast<PylithScalar*>(cellVectorValues);
-
-    // Tensor
-    data->cellTensorNumComponents = 3;
-    static const PylithScalar cellTensorValues[1*3] = {
-        1.2, 2.3, 3.4,
-    };
-    data->cellTensorValues = const_cast<PylithScalar*>(cellTensorValues);
-
-    // Other
-    data->cellOtherNumComponents = 2;
-    static const PylithScalar cellOtherValues[1*2] = {
-        1.2, 2.3,
-    };
-    data->cellOtherValues = const_cast<PylithScalar*>(cellOtherValues);
+    data->vertexValues = const_cast<PylithScalar*>(vertexValues);
 
 } // setDataTri
 
 
-// ----------------------------------------------------------------------
+// ================================================================================================
 void
 pylith::meshio::TestDataWriterPoints::_setDataQuad(void) {
-    TestDataWriterSubmesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+    TestDataWriterPoints_Data* data = this->_getData();CPPUNIT_ASSERT(data);
 
-    // We do not use a fault in this test case.
     data->meshFilename = "data/quad4.mesh";
+    data->faultId = 100;
     data->spaceDim = 2;
     data->lengthScale = 10.0;
 
     data->time = 1.0;
     data->timeFormat = "%3.1f";
 
-    // Vertex fields ------------------------------
-    data->vertexNumPoints = 6;
-    data->vertexDiscretization = pylith::topology::FieldBase::Discretization(1, 1);
-
-    // Scalar
-    data->vertexScalarNumComponents = 1;
-    static const PylithScalar vertexScalarValues[6*1] = {
-        2.1, 3.2, 4.3, 5.4, 6.5, 7.6
+    static const size_t numPoints = 3;
+    data->numPoints = numPoints;
+    static const PylithReal points[numPoints*2] = {
+        -0.5, 0.0,
+        0.00000001, 0.0,
+        0.99999999, -0.99999999,
     };
-    data->vertexScalarValues = const_cast<PylithScalar*>(vertexScalarValues);
+    data->points = const_cast<PylithReal*>(points);
+    data->names = pylith::string_vector({"ZZ.A", "ZZ.B", "ZZ.C"});
 
-    // Vector
-    data->vertexVectorNumComponents = 2;
-    static const PylithScalar vertexVectorValues[6*2] = {
-        1.1, 2.2,
-        3.3, 4.4,
-        5.5, 6.6,
-        7.7, 8.8,
-        9.9, 10.1,
-        11.2, 12.3,
+    // Vertex fields ------------------------------------------------------------------------------
+    static const size_t vertexNumPoints = 3;
+    static const size_t vertexNumDOF = 1 + 2 + 3 + 2;
+    data->vertexDiscretization = pylith::topology::FieldBase::Discretization(1, 1, 2);
+
+    data->vertexNumPoints = vertexNumPoints;
+    data->vertexNumDOF = vertexNumDOF;
+    static const PylithScalar vertexValues[vertexNumPoints*vertexNumDOF] = {
+        3.75,   4.4,  5.5,   2.6, 2.7, 2.8,   4.5,  5.6,
+        4.85,   6.6,  7.7,   3.6, 3.7, 3.8,   6.7,  7.8,
+        6.50,   9.9, 10.1,   5.1, 5.2, 5.3,   9.8,  7.6,
     };
-    data->vertexVectorValues = const_cast<PylithScalar*>(vertexVectorValues);
-
-    // Tensor
-    data->vertexTensorNumComponents = 3;
-    static const PylithScalar vertexTensorValues[6*3] = {
-        1.1, 1.2, 1.3,
-        2.1, 2.2, 3.3,
-        3.1, 3.2, 3.3,
-        4.1, 4.2, 4.3,
-        5.1, 5.2, 5.3,
-        6.1, 6.2, 6.3,
-    };
-    data->vertexTensorValues = const_cast<PylithScalar*>(vertexTensorValues);
-
-    // Other
-    data->vertexOtherNumComponents = 2;
-    static const PylithScalar vertexOtherValues[6*2] = {
-        1.2, 2.3,
-        3.4, 4.5,
-        5.6, 6.7,
-        7.8, 8.9,
-        9.1, 10.2,
-        6.5, 5.4
-    };
-    data->vertexOtherValues = const_cast<PylithScalar*>(vertexOtherValues);
-
-    // Cell fields ------------------------------
-    data->cellNumPoints = 2;
-    data->cellDiscretization = pylith::topology::FieldBase::Discretization(0, 0);
-
-    // Scalar
-    data->cellScalarNumComponents = 1;
-    static const PylithScalar cellScalarValues[2*1] = {
-        2.1, 3.2,
-    };
-    data->cellScalarValues = const_cast<PylithScalar*>(cellScalarValues);
-
-    // Vector
-    data->cellVectorNumComponents = 2;
-    static const PylithScalar cellVectorValues[2*2] = {
-        1.1, 2.2,
-        3.3, 4.4,
-    };
-    data->cellVectorValues = const_cast<PylithScalar*>(cellVectorValues);
-
-    // Tensor
-    data->cellTensorNumComponents = 3;
-    static const PylithScalar cellTensorValues[2*3] = {
-        1.2, 2.3, 3.4,
-        4.5, 5.6, 6.7,
-    };
-    data->cellTensorValues = const_cast<PylithScalar*>(cellTensorValues);
-
-    // Other
-    data->cellOtherNumComponents = 2;
-    static const PylithScalar cellOtherValues[2*2] = {
-        1.2, 2.3,
-        4.5, 5.6,
-    };
-    data->cellOtherValues = const_cast<PylithScalar*>(cellOtherValues);
-
+    data->vertexValues = const_cast<PylithScalar*>(vertexValues);
 } // setDataQuad
 
 
-// ----------------------------------------------------------------------
+// ================================================================================================
 void
 pylith::meshio::TestDataWriterPoints::_setDataTet(void) {
-    TestDataWriterSubmesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+    TestDataWriterPoints_Data* data = this->_getData();CPPUNIT_ASSERT(data);
 
     data->meshFilename = "data/tet4.mesh";
-    data->spaceDim = 2;
+    data->faultId = 100;
+    data->spaceDim = 3;
     data->lengthScale = 10.0;
 
     data->time = 1.0;
     data->timeFormat = "%3.1f";
 
-    // Vertex fields ------------------------------
-    data->vertexNumPoints = 5;
-    data->vertexDiscretization = pylith::topology::FieldBase::Discretization(1, 1);
-
-    // Scalar
-    data->vertexScalarNumComponents = 1;
-    static const PylithScalar vertexScalarValues[5*1] = {
-        2.1, 3.2, 4.3, 5.4, 6.5,
+    static const size_t numPoints = 4;
+    data->numPoints = numPoints;
+    static const PylithReal points[numPoints*3] = {
+        -0.33333333, 0.0, 0.33333333,
+        +0.00000001, 0.0, 0.33333333,
+        +0.00000001, 0.0, 0.00000001,
+        0.0, -0.99999999, 0.00000001,
     };
-    data->vertexScalarValues = const_cast<PylithScalar*>(vertexScalarValues);
+    data->points = const_cast<PylithReal*>(points);
+    data->names = pylith::string_vector({"ZZ.A", "ZZ.B", "ZZ.C", "ZZ.DD"});
 
-    // Vector
-    data->vertexVectorNumComponents = 3;
-    static const PylithScalar vertexVectorValues[5*3] = {
-        1.1, 2.2, 3.3,
-        4.4, 5.5, 6.6,
-        7.7, 8.8, 9.9,
-        10.0, 11.1, 12.2,
-        13.3, 14.4, 15.5,
+    // Vertex fields ------------------------------------------------------------------------------
+    static const size_t vertexNumPoints = 4;
+    static const size_t vertexNumDOF = 1 + 3 + 6 + 2;
+    data->vertexDiscretization = pylith::topology::FieldBase::Discretization(1, 1, 3);
+
+    data->vertexNumPoints = vertexNumPoints;
+    data->vertexNumDOF = vertexNumDOF;
+    static const PylithScalar vertexValues[vertexNumPoints*vertexNumDOF] = {
+        3.566667,    5.333333,  6.433333,  7.533333,     2.433333, 2.533333, 2.633333, 2.733333, 2.833333, 2.933333,    4.133333,  5.233333,
+        8.7,        19.566667, 20.333333, 21.433333,     7.1,      7.2,      7.3,      7.4,      7.5,      7.6,        13.4,      14.5,
+        8.7,        19.4,      20.5,      21.6,          7.1,      7.2,      7.3,      7.4,      7.5,      7.6,        13.4,      14.5,
+        3.2,         4.4,       5.5,       6.6,          2.1,      2.2,      2.3,      2.4,      2.5,      2.6,         3.4,       4.5,
     };
-    data->vertexVectorValues = const_cast<PylithScalar*>(vertexVectorValues);
-
-    // Tensor
-    data->vertexTensorNumComponents = 6;
-    static const PylithScalar vertexTensorValues[5*6] = {
-        1.1, 1.2, 1.3, 1.4, 1.5, 1.6,
-        2.1, 2.2, 2.3, 2.4, 2.5, 2.6,
-        3.1, 3.2, 3.3, 3.4, 3.5, 3.6,
-        4.1, 4.2, 4.3, 4.4, 4.5, 4.6,
-        5.1, 5.2, 5.3, 5.4, 5.5, 5.6,
-    };
-    data->vertexTensorValues = const_cast<PylithScalar*>(vertexTensorValues);
-
-    // Other
-    data->vertexOtherNumComponents = 2;
-    static const PylithScalar vertexOtherValues[5*2] = {
-        1.2, 2.3,
-        3.4, 4.5,
-        5.6, 6.7,
-        7.8, 8.9,
-        9.0, 10.1,
-    };
-    data->vertexOtherValues = const_cast<PylithScalar*>(vertexOtherValues);
-
-    // Cell fields ------------------------------
-    data->cellNumPoints = 2;
-    data->cellDiscretization = pylith::topology::FieldBase::Discretization(0, 0, 2);
-
-    // Scalar
-    data->cellScalarNumComponents = 1;
-    static const PylithScalar cellScalarValues[2*1] = {
-        2.1, 3.2,
-    };
-    data->cellScalarValues = const_cast<PylithScalar*>(cellScalarValues);
-
-    // Vector
-    data->cellVectorNumComponents = 3;
-    static const PylithScalar cellVectorValues[2*3] = {
-        1.1, 2.2, 3.3,
-        4.4, 5.5, 6.6,
-    };
-    data->cellVectorValues = const_cast<PylithScalar*>(cellVectorValues);
-
-    // Tensor
-    data->cellTensorNumComponents = 6;
-    static const PylithScalar cellTensorValues[2*6] = {
-        1.2, 2.3, 3.4, 4.5, 5.6, 6.7,
-        7.8, 8.9, 9.0, 10.1, 11.2, 12.3,
-    };
-    data->cellTensorValues = const_cast<PylithScalar*>(cellTensorValues);
-
-    // Other
-    data->cellOtherNumComponents = 2;
-    static const PylithScalar cellOtherValues[2*2] = {
-        1.2, 2.3,
-        7.8, 8.9,
-    };
-    data->cellOtherValues = const_cast<PylithScalar*>(cellOtherValues);
-
+    data->vertexValues = const_cast<PylithScalar*>(vertexValues);
 } // setDataTet
 
 
-// ----------------------------------------------------------------------
+// ================================================================================================
 void
 pylith::meshio::TestDataWriterPoints::_setDataHex(void) {
-    TestDataWriterSubmesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+    TestDataWriterPoints_Data* data = this->_getData();CPPUNIT_ASSERT(data);
 
     data->meshFilename = "data/hex8.mesh";
-    data->spaceDim = 2;
+    data->faultId = 100;
+    data->spaceDim = 3;
     data->lengthScale = 10.0;
 
     data->time = 1.0;
     data->timeFormat = "%3.1f";
 
-    // Vertex fields ------------------------------
-    data->vertexNumPoints = 12;
-    data->vertexDiscretization = pylith::topology::FieldBase::Discretization(1, 1);
-
-    // Scalar
-    data->vertexScalarNumComponents = 1;
-    static const PylithScalar vertexScalarValues[12*1] = {
-        2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8,
-        10.9, 11.8, 12.7, 13.6,
+    static const size_t numPoints = 4;
+    data->numPoints = numPoints;
+    static const PylithReal points[numPoints*3] = {
+        -0.5, 0.0, 0.5,
+        -0.00000001, 0.0, 0.0,
+        -0.00000001, 0.0, 0.99999999,
+        0.99999999, 0.99999999, -0.99999999,
     };
-    data->vertexScalarValues = const_cast<PylithScalar*>(vertexScalarValues);
+    data->points = const_cast<PylithReal*>(points);
+    data->names = pylith::string_vector({"ZZ.A", "ZZ.B", "ZZ.C", "ZZ.DD"});
 
-    // Vector
-    data->vertexVectorNumComponents = 3;
-    static const PylithScalar vertexVectorValues[12*3] = {
-        1.1, 2.2, 3.3,
-        4.4, 5.5, 6.6,
-        7.7, 8.8, 9.9,
-        10.1, 11.2, 12.3,
-        1.2, 2.3, 3.4,
-        4.5, 5.6, 6.7,
-        7.8, 8.9, 9.0,
-        10.2, 11.3, 12.4,
-        1.3, 2.4, 3.5,
-        4.6, 5.7, 6.8,
-        7.9, 8.1, 9.2,
-        10.3, 11.4, 12.5,
+    // Vertex fields ------------------------------------------------------------------------------
+    static const size_t vertexNumPoints = 4;
+    static const size_t vertexNumDOF = 1 + 3 + 6 + 2;
+    data->vertexDiscretization = pylith::topology::FieldBase::Discretization(1, 1, 3);
+
+    data->vertexNumPoints = vertexNumPoints;
+    data->vertexNumDOF = vertexNumDOF;
+    static const PylithScalar vertexValues[vertexNumPoints*vertexNumDOF] = {
+        8.55,    5.9375, 7.0375, 7.950,    7.1, 7.2, 7.3, 7.4,  7.5,  7.6,    4.575, 5.4875,
+        7.95,    5.9250, 7.0250, 8.125,    6.6, 6.7, 6.8, 6.9,  7.0,  7.1,    4.550, 5.6500,
+        11.05,   2.9500, 4.0500, 5.150,    9.6, 9.7, 9.8, 9.9, 10.0, 10.1,    2.400, 3.5000,
+        7.60,    4.5000, 5.6000, 6.700,    6.1, 6.2, 6.3, 6.4,  6.5,  6.6,    3.500, 4.6000,
+
     };
-    data->vertexVectorValues = const_cast<PylithScalar*>(vertexVectorValues);
-
-    // Tensor
-    data->vertexTensorNumComponents = 6;
-    static const PylithScalar vertexTensorValues[12*6] = {
-        1.1, 1.2, 1.3, 1.4, 1.5, 1.6,
-        2.1, 2.2, 2.3, 2.4, 2.5, 2.6,
-        3.1, 3.2, 3.3, 3.4, 3.5, 3.6,
-        4.1, 4.2, 4.3, 4.4, 4.5, 4.6,
-        5.1, 5.2, 5.3, 5.4, 5.5, 5.6,
-        6.1, 6.2, 6.3, 6.4, 6.5, 6.6,
-        7.1, 7.2, 7.3, 7.4, 7.5, 7.6,
-        8.1, 8.2, 8.3, 8.4, 8.5, 8.6,
-        9.1, 9.2, 9.3, 9.4, 9.5, 9.6,
-        10.1, 10.2, 10.3, 10.4, 10.5, 10.6,
-        11.1, 11.2, 11.3, 11.4, 11.5, 11.6,
-        12.1, 12.2, 12.3, 12.4, 12.5, 12.6,
-    };
-    data->vertexTensorValues = const_cast<PylithScalar*>(vertexTensorValues);
-
-    // Other
-    data->vertexOtherNumComponents = 2;
-    static const PylithScalar vertexOtherValues[12*2] = {
-        1.2, 2.3,
-        3.4, 4.5,
-        5.6, 6.7,
-        7.8, 8.9,
-        1.3, 2.4,
-        3.5, 4.6,
-        5.7, 6.8,
-        7.9, 8.0,
-        8.1, 8.2,
-        9.2, 9.3,
-        10.4, 10.5,
-        11.5, 11.6,
-    };
-    data->vertexOtherValues = const_cast<PylithScalar*>(vertexOtherValues);
-
-    // Cell fields ------------------------------
-    data->cellNumPoints = 2;
-    data->cellDiscretization = pylith::topology::FieldBase::Discretization(0, 0, 2);
-
-    // Scalar
-    data->cellScalarNumComponents = 1;
-    static const PylithScalar cellScalarValues[2*1] = {
-        2.1, 3.2,
-    };
-    data->cellScalarValues = const_cast<PylithScalar*>(cellScalarValues);
-
-    // Vector
-    data->cellVectorNumComponents = 3;
-    static const PylithScalar cellVectorValues[2*3] = {
-        1.1, 2.2, 3.3,
-        4.4, 5.5, 6.6,
-    };
-    data->cellVectorValues = const_cast<PylithScalar*>(cellVectorValues);
-
-    // Tensor
-    data->cellTensorNumComponents = 6;
-    static const PylithScalar cellTensorValues[2*6] = {
-        1.2, 2.3, 3.4, 4.5, 5.6, 6.7,
-        7.8, 8.9, 9.0, 10.1, 11.2, 12.3,
-    };
-    data->cellTensorValues = const_cast<PylithScalar*>(cellTensorValues);
-
-    // Other
-    data->cellOtherNumComponents = 2;
-    static const PylithScalar cellOtherValues[2*2] = {
-        1.2, 2.3,
-        7.8, 8.9,
-    };
-    data->cellOtherValues = const_cast<PylithScalar*>(cellOtherValues);
-
+    data->vertexValues = const_cast<PylithScalar*>(vertexValues);
 } // setDataHex
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor
-pylith::meshio::TestDataWriterSubmesh_Data::TestDataWriterSubmesh_Data(void) {}
+pylith::meshio::TestDataWriterPoints_Data::TestDataWriterPoints_Data(void) :
+    numPoints(0),
+    points(NULL)
+{}
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestDataWriterSubmesh_Data::~TestDataWriterSubmesh_Data(void) {}
+pylith::meshio::TestDataWriterPoints_Data::~TestDataWriterPoints_Data(void) {}
 
 
 // End of file

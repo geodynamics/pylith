@@ -37,14 +37,12 @@ subpkginclude_HEADERS = \
 	MeshIOLagrit.hh \
 	MeshIOLagrit.icc \
 	OutputObserver.hh \
+	OutputSubfield.hh \
 	OutputSoln.hh \
 	OutputSolnDomain.hh \
 	OutputSolnBoundary.hh \
 	OutputSolnPoints.hh \
 	OutputPhysics.hh \
-	FieldFilter.hh \
-	FieldFilterNone.hh \
-	FieldFilterProject.hh \
 	OutputTrigger.hh \
 	OutputTriggerStep.hh \
 	OutputTriggerTime.hh \

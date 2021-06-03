@@ -21,10 +21,10 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
+#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKMaterial::setUp(void) {
@@ -37,7 +37,7 @@ pylith::meshio::TestDataWriterVTKMaterial::setUp(void) {
 } // setUp
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Tear down testing data.
 void
 pylith::meshio::TestDataWriterVTKMaterial::tearDown(void) {
@@ -50,7 +50,7 @@ pylith::meshio::TestDataWriterVTKMaterial::tearDown(void) {
 } // tearDown
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test openTimeStep() and closeTimeStep()
 void
 pylith::meshio::TestDataWriterVTKMaterial::testTimeStep(void) {
@@ -87,7 +87,7 @@ pylith::meshio::TestDataWriterVTKMaterial::testTimeStep(void) {
 } // testTimeStep
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test writeVertexField.
 void
 pylith::meshio::TestDataWriterVTKMaterial::testWriteVertexField(void) {
@@ -97,11 +97,10 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteVertexField(void) {
     CPPUNIT_ASSERT(_materialMesh);
     CPPUNIT_ASSERT(_data);
 
+    pylith::topology::Field vertexField(*_domainMesh);
+    _createVertexField(&vertexField);
+
     DataWriterVTK writer;
-
-    pylith::topology::Fields vertexFields(*_domainMesh);
-    _createVertexFields(&vertexFields);
-
     writer.filename(_data->vertexFilename);
     writer.timeFormat(_data->timeFormat);
 
@@ -110,15 +109,17 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteVertexField(void) {
     writer.open(*_materialMesh, isInfo);
     writer.openTimeStep(t, *_materialMesh);
 
-    const int numFields = 4;
-    const char* fieldNames[4] = {"scalar", "vector", "tensor", "other"};
-    for (int i = 0; i < numFields; ++i) {
-        pylith::topology::Field& field = vertexFields.get(fieldNames[i]);
-        writer.writeVertexField(t, field, *_materialMesh);
+    const pylith::string_vector& subfieldNames = vertexField.subfieldNames();
+    const size_t numFields = subfieldNames.size();
+    for (size_t i = 0; i < numFields; ++i) {
+        OutputSubfield* subfield = OutputSubfield::create(vertexField, *_materialMesh, subfieldNames[i].c_str(), 1);
+        CPPUNIT_ASSERT(subfield);
+        subfield->project(vertexField.outputVector());
+        writer.writeVertexField(t, *subfield);
         CPPUNIT_ASSERT(writer._wroteVertexHeader);
         CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+        delete subfield;subfield = NULL;
     } // for
-
     writer.closeTimeStep();
     writer.close();
 
@@ -131,7 +132,7 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteVertexField(void) {
 } // testWriteVertexField
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test writeCellField.
 void
 pylith::meshio::TestDataWriterVTKMaterial::testWriteCellField(void) {
@@ -140,11 +141,10 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteCellField(void) {
     CPPUNIT_ASSERT(_materialMesh);
     CPPUNIT_ASSERT(_data);
 
+    pylith::topology::Field cellField(*_materialMesh);
+    _createCellField(&cellField);
+
     DataWriterVTK writer;
-
-    pylith::topology::Fields cellFields(*_materialMesh);
-    _createCellFields(&cellFields);
-
     writer.filename(_data->cellFilename);
     writer.timeFormat(_data->timeFormat);
 
@@ -153,17 +153,20 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteCellField(void) {
     writer.open(*_materialMesh, isInfo);
     writer.openTimeStep(t, *_materialMesh);
 
-    const int numFields = 4;
-    const char* fieldNames[4] = {"scalar", "vector", "tensor", "other"};
-    for (int i = 0; i < numFields; ++i) {
-        pylith::topology::Field& field = cellFields.get(fieldNames[i]);
-        writer.writeCellField(t, field);
+    const pylith::string_vector& subfieldNames = cellField.subfieldNames();
+    const size_t numFields = subfieldNames.size();
+    for (size_t i = 0; i < numFields; ++i) {
+        OutputSubfield* subfield = OutputSubfield::create(cellField, *_materialMesh, subfieldNames[i].c_str(), 0);
+        CPPUNIT_ASSERT(subfield);
+        subfield->project(cellField.outputVector());
+        writer.writeCellField(t, *subfield);
         CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
         CPPUNIT_ASSERT(writer._wroteCellHeader);
+        delete subfield;subfield = NULL;
     } // for
     writer.closeTimeStep();
     writer.close();
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+    CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
     CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
 
     checkFile(_data->cellFilename, t, _data->timeFormat);
@@ -172,7 +175,7 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteCellField(void) {
 } // testWriteCellField
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get test data.
 pylith::meshio::TestDataWriterMaterial_Data*
 pylith::meshio::TestDataWriterVTKMaterial::_getData(void) {

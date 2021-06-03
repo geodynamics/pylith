@@ -63,7 +63,8 @@ dist_noinst_DATA = \
 	gravity_refstate_quad.cfg \
 	gravity_incompressible.cfg \
 	gravity_incompressible_quad.cfg \
-	gravity_incompressible_tri.cfg
+	gravity_incompressible_tri.cfg \
+	output_points.txt
 
 noinst_TMP = \
 	axialdisp_bc.spatialdb \

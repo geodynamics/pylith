@@ -22,15 +22,14 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include <cppunit/extensions/HelperMacros.h>
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::meshio::FieldFactory::FieldFactory(pylith::topology::Fields& fields) :
-    _fields(fields) {}
+pylith::meshio::FieldFactory::FieldFactory(pylith::topology::Field& field) :
+    _field(field) {}
 
 
 // ----------------------------------------------------------------------
@@ -41,16 +40,10 @@ pylith::meshio::FieldFactory::~FieldFactory(void) {}
 // ----------------------------------------------------------------------
 // Add scalar field.
 void
-pylith::meshio::FieldFactory::scalar(const pylith::topology::FieldBase::Discretization& discretization,
-                                     const PylithScalar* values,
-                                     const PylithInt numPoints,
-                                     const PylithInt numComponents) {
+pylith::meshio::FieldFactory::addScalar(const pylith::topology::FieldBase::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
 
     const char* fieldName = "scalar";
-
-    _fields.add(fieldName, fieldName);
-    pylith::topology::Field& field = _fields.get(fieldName);
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -61,32 +54,22 @@ pylith::meshio::FieldFactory::scalar(const pylith::topology::FieldBase::Discreti
     description.scale = 1.0;
     description.validator = NULL;
 
-    field.subfieldAdd(description, discretization);
-    field.subfieldsSetup();
-    field.createDiscretization();
-    field.allocate();
-
-    this->setField(&field, values, numPoints, numComponents);
+    _field.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // scalar
+} // addScalar
 
 
 // ----------------------------------------------------------------------
 // Add vector field.
 void
-pylith::meshio::FieldFactory::vector(const pylith::topology::FieldBase::Discretization& discretization,
-                                     const PylithScalar* values,
-                                     const PylithInt numPoints,
-                                     const PylithInt numComponents) {
+pylith::meshio::FieldFactory::addVector(const pylith::topology::FieldBase::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
 
     const char* fieldName = "vector";
     const char* components[3] = { "vector_x", "vector_y", "vector_z" };
 
-    _fields.add(fieldName, fieldName);
-    pylith::topology::Field& field = _fields.get(fieldName);
-    const int spaceDim = field.getSpaceDim();
+    const int spaceDim = _field.getSpaceDim();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -99,29 +82,19 @@ pylith::meshio::FieldFactory::vector(const pylith::topology::FieldBase::Discreti
     description.scale = 1.0;
     description.validator = NULL;
 
-    field.subfieldAdd(description, discretization);
-    field.subfieldsSetup();
-    field.createDiscretization();
-    field.allocate();
-
-    this->setField(&field, values, numPoints, numComponents);
+    _field.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // vector
+} // addVector
 
 
 // ----------------------------------------------------------------------
 // Add tensor field.
 void
-pylith::meshio::FieldFactory::tensor(const pylith::topology::FieldBase::Discretization& discretization,
-                                     const PylithScalar* values,
-                                     const PylithInt numPoints,
-                                     const PylithInt numComponents) {
+pylith::meshio::FieldFactory::addTensor(const pylith::topology::FieldBase::Discretization& discretization) {
     const char* fieldName = "tensor";
 
-    _fields.add(fieldName, fieldName);
-    pylith::topology::Field& field = _fields.get(fieldName);
-    const int spaceDim = field.getSpaceDim();
+    const int spaceDim = _field.getSpaceDim();
     CPPUNIT_ASSERT(2 == spaceDim || 3 == spaceDim);
 
     pylith::topology::Field::Description description;
@@ -149,30 +122,19 @@ pylith::meshio::FieldFactory::tensor(const pylith::topology::FieldBase::Discreti
     description.scale = 1.0;
     description.validator = NULL;
 
-    field.subfieldAdd(description, discretization);
-    field.subfieldsSetup();
-    field.createDiscretization();
-    field.allocate();
-
-    this->setField(&field, values, numPoints, numComponents);
+    _field.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // tensor
+} // addTensor
 
 
 // ----------------------------------------------------------------------
 // Add other field.
 void
-pylith::meshio::FieldFactory::other(const pylith::topology::FieldBase::Discretization& discretization,
-                                    const PylithScalar* values,
-                                    const PylithInt numPoints,
-                                    const PylithInt numComponents) {
+pylith::meshio::FieldFactory::addOther(const pylith::topology::FieldBase::Discretization& discretization) {
     const char* fieldName = "other";
     const int otherSize = 2;
     const char* componentNames[otherSize] = { "other_1", "other_2" };
-
-    _fields.add(fieldName, fieldName);
-    pylith::topology::Field& field = _fields.get(fieldName);
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -185,36 +147,26 @@ pylith::meshio::FieldFactory::other(const pylith::topology::FieldBase::Discretiz
     description.scale = 1.0;
     description.validator = NULL;
 
-    field.subfieldAdd(description, discretization);
-    field.subfieldsSetup();
-    field.createDiscretization();
-    field.allocate();
-
-    this->setField(&field, values, numPoints, numComponents);
+    _field.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // other
+} // addOther
 
 
 // ----------------------------------------------------------------------
 void
-pylith::meshio::FieldFactory::setField(pylith::topology::Field* field,
-                                       const PylithScalar* values,
-                                       const PylithInt numPoints,
-                                       const PylithInt numComponents) {
+pylith::meshio::FieldFactory::setValues(const PylithScalar* values,
+                                        const PylithInt numPoints,
+                                        const PylithInt numDOF) {
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT(field);
-
-    pylith::topology::VecVisitorMesh fieldVisitor(*field);
+    pylith::topology::VecVisitorMesh fieldVisitor(_field);
     PylithScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
-    const PylithInt fieldSize = numPoints * numComponents;
-    CPPUNIT_ASSERT_EQUAL(fieldSize, field->sectionSize());
+    const PylithInt fieldSize = numPoints * numDOF;
+    CPPUNIT_ASSERT_EQUAL(fieldSize, _field.getStorageSize());
     for (PylithInt i = 0; i < fieldSize; ++i) {
         fieldArray[i] = values[i];
     } // for
-
-    // field->view("values set"); // DEBUGGING
 
     PYLITH_METHOD_END;
 } // setField

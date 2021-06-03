@@ -87,7 +87,7 @@ protected:
 
     TestDataWriterHDF5ExtSubmesh_Data* _data; ///< Data for testing.
 
-}; // class TestDataWriterVTKSubmesh
+}; // class TestDataWriterHDF5ExtSubmesh
 
 // ======================================================================
 class pylith::meshio::TestDataWriterHDF5ExtSubmesh_Data :

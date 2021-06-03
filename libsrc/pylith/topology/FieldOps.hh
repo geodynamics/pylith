@@ -57,8 +57,7 @@ public:
 };
 
 // FieldOps -------------------------------------------------------------
-/// @brief C++ class for simple operations for a Field object.
-class pylith::topology::FieldOps { // FieldOps
+class pylith::topology::FieldOps {
     friend class TestFieldOps; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////

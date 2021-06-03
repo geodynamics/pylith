@@ -22,6 +22,9 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/topology/VisitorSubmesh.hh" // USES VecVisitorSubmesh
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
@@ -36,7 +39,7 @@ pylith::topology::FieldOps::deallocate(void) {
 }
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create PetscFE object for discretization.
 PetscFE
 pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
@@ -132,7 +135,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
 } // createFE
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Check compatibility of discretization of subfields in the auxiliary field and target field.
 void
 pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& target,
@@ -192,7 +195,7 @@ pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& t
 } // checkDiscretization
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get names of subfields extending over entire domain.
 pylith::string_vector
 pylith::topology::FieldOps::getSubfieldNamesDomain(const pylith::topology::Field& field) {
@@ -211,7 +214,7 @@ pylith::topology::FieldOps::getSubfieldNamesDomain(const pylith::topology::Field
         err = PetscDSGetDiscretization(fieldDS, iField, &discretization);PYLITH_CHECK_ERROR(err);
         PylithInt fieldIndex = -1;
         err = PetscDSGetFieldIndex(fieldDS, discretization, &fieldIndex);PYLITH_CHECK_ERROR(err);
-        assert(fieldIndex >= 0 && fieldIndex < subfieldNames.size());
+        assert(fieldIndex >= 0 && size_t(fieldIndex) < subfieldNames.size());
         subfieldNamesDomain[iField] = subfieldNames[fieldIndex];
     } // for
 
@@ -219,7 +222,7 @@ pylith::topology::FieldOps::getSubfieldNamesDomain(const pylith::topology::Field
 } // getSubfieldNamesDomain
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Check to see if fields have the same subfields and match in size.
 bool
 pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
@@ -231,7 +234,7 @@ pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
 
     // Check to see if fields have same chart and section sizes.
     if (fieldA.chartSize() != fieldB.chartSize()) { isMatch = false; }
-    if (fieldA.sectionSize() != fieldB.sectionSize()) { isMatch = false; }
+    if (fieldA.getStorageSize() != fieldB.getStorageSize()) { isMatch = false; }
 
     // Check to see if number of subfields match.
     const pylith::string_vector& subfieldNamesA = fieldA.subfieldNames();

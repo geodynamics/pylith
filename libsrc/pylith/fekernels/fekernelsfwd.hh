@@ -29,6 +29,7 @@
 
 namespace pylith {
     namespace fekernels {
+        class Solution;
         class DispVel;
 
         class Elasticity;

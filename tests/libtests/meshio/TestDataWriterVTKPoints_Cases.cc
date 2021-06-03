@@ -37,7 +37,6 @@ namespace pylith {
 
                 _data->timestepFilename = "tri3_points.vtk";
                 _data->vertexFilename = "tri3_points_vertex.vtk";
-                _data->cellFilename = "tri3_points_cell.vtk";
 
                 TestDataWriterPoints::_setDataTri();
                 TestDataWriterPoints::_initialize();
@@ -61,7 +60,6 @@ namespace pylith {
 
                 _data->timestepFilename = "quad4_points.vtk";
                 _data->vertexFilename = "quad4_points_vertex.vtk";
-                _data->cellFilename = "quad4_points_cell.vtk";
 
                 TestDataWriterPoints::_setDataQuad();
                 TestDataWriterPoints::_initialize();
@@ -85,7 +83,6 @@ namespace pylith {
 
                 _data->timestepFilename = "tet4_points.vtk";
                 _data->vertexFilename = "tet4_points_vertex.vtk";
-                _data->cellFilename = "tet4_points_cell.vtk";
 
                 TestDataWriterPoints::_setDataTet();
                 TestDataWriterPoints::_initialize();
@@ -109,7 +106,6 @@ namespace pylith {
 
                 _data->timestepFilename = "hex8_points.vtk";
                 _data->vertexFilename = "hex8_points_vertex.vtk";
-                _data->cellFilename = "hex8_points_cell.vtk";
 
                 TestDataWriterPoints::_setDataHex();
                 TestDataWriterPoints::_initialize();

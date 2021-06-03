@@ -24,8 +24,8 @@
 
 namespace pylith {
     namespace meshio {
-        class pylith::meshio::DataWriter { // DataWriter
-                                           // PUBLIC METHODS /////////////////////////////////////////////////
+        class pylith::meshio::DataWriter {
+            // PUBLIC METHODS /////////////////////////////////////////////////
 public:
 
             /// Constructor
@@ -85,23 +85,21 @@ public:
 
             /** Write field over vertices to file.
              *
-             * @param t Time associated with field.
-             * @param field Field over vertices.
-             * @param mesh Mesh for output.
+             * @param[in] t Time associated with field.
+             * @param[in] subfield Subfield with basis order 1.
              */
             virtual
             void writeVertexField(const PylithScalar t,
-                                  pylith::topology::Field& field,
-                                  const pylith::topology::Mesh& mesh) = 0;
+                                  const pylith::meshio::OutputSubfield& field) = 0;
 
             /** Write field over cells to file.
              *
-             * @param t Time associated with field.
-             * @param field Field over cells.
+             * @param[in] t Time associated with field.
+             * @param[in] subfield Subfield with basis order 0.
              */
             virtual
             void writeCellField(const PylithScalar t,
-                                pylith::topology::Field& field) = 0;
+                                const pylith::meshio::OutputSubfield& subfield) = 0;
 
             /** Write dataset with names of points to file.
              *

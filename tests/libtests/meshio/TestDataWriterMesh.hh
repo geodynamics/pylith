@@ -40,7 +40,6 @@ namespace pylith {
 
 // ======================================================================
 class pylith::meshio::TestDataWriterMesh {
-
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
@@ -57,13 +56,13 @@ protected:
      *
      * @param fields Vertex fields.
      */
-    void _createVertexFields(topology::Fields* fields);
+    void _createVertexField(pylith::topology::Field* field);
 
     /** Create cell fields.
      *
      * @param fields Cell fields.
      */
-    void _createCellFields(topology::Fields* fields);
+    void _createCellField(pylith::topology::Field* field);
 
     /// Set data for tri test case.
     void _setDataTri(void);
@@ -91,8 +90,6 @@ protected:
 
 }; // class TestDataWriterMesh
 
-
 #endif // pylith_meshio_testdatawritermesh_hh
-
 
 // End of file

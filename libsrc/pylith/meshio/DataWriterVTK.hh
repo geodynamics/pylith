@@ -34,7 +34,7 @@
 // Include directives ---------------------------------------------------
 #include "DataWriter.hh" // ISA DataWriter
 
-#include "pylith/topology/topologyfwd.hh" // HOLDSA Fields
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 #include "pylith/utils/petscfwd.h" // HASA PetscDM
 
 // DataWriterVTK --------------------------------------------------------
@@ -117,20 +117,18 @@ public:
     /** Write field over vertices to file.
      *
      * @param[in] t Time associated with field.
-     * @param[in] field Field over vertices.
-     * @param[in] mesh Mesh associated with output.
+     * @param[in] subfield Subfield with basis order 1.
      */
     void writeVertexField(const PylithScalar t,
-                          topology::Field& field,
-                          const topology::Mesh& mesh);
+                          const pylith::meshio::OutputSubfield& field);
 
     /** Write field over cells to file.
      *
      * @param[in] t Time associated with field.
-     * @param[in] field Field over cells.
+     * @param[in] subfield Subfield with basis order 0.
      */
     void writeCellField(const PylithScalar t,
-                        topology::Field& field);
+                        const pylith::meshio::OutputSubfield& subfield);
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
 private:
@@ -157,17 +155,13 @@ private:
 
     /// Time value (in seconds) used to normalize time stamp.
     PylithScalar _timeConstant;
+    int _precision; ///< Precision of floating point values in output.
 
     std::string _filename; ///< Name of VTK file.
     std::string _timeFormat; ///< C style time format for time stamp.
 
     PetscViewer _viewer; ///< Output file
     PetscDM _dm; ///< Handle to PETSc DM for mesh
-
-    topology::Fields* _vertexFieldCache; ///< Cache for vertex fields.
-    topology::Fields* _cellFieldCache; ///< Cache for cell fields.
-
-    int _precision; ///< Precision of floating point values in output.
 
     bool _isOpenTimeStep; ///< true if called openTimeStep().
     bool _wroteVertexHeader; ///< True if wrote header for vertex data.

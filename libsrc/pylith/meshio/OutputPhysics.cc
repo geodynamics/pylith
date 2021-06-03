@@ -21,35 +21,32 @@
 #include "OutputPhysics.hh" // Implementation of class methods
 
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
-#include "pylith/meshio/FieldFilter.hh" // USES FieldFilter
 #include "pylith/meshio/OutputTrigger.hh" // USES OutputTrigger
+#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 #include "pylith/feassemble/PhysicsImplementation.hh" // USES PhysicsImplementation
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
-#include "pylith/topology/Fields.hh" // USES Fields
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <iostream> // USES std::cout
 #include <typeinfo> // USES typeid()
 
-#include "pylith/materials/Material.hh" // TEMPORARY
-
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputPhysics::OutputPhysics(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::meshio::OutputPhysics::~OutputPhysics(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::meshio::OutputPhysics::deallocate(void) {
@@ -58,7 +55,7 @@ pylith::meshio::OutputPhysics::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set names of vertex information fields to output.
 void
 pylith::meshio::OutputPhysics::setInfoFields(const char* names[],
@@ -78,7 +75,7 @@ pylith::meshio::OutputPhysics::setInfoFields(const char* names[],
 } // setInfoFields
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get names of vertex information fields to output.
 const pylith::string_vector&
 pylith::meshio::OutputPhysics::getInfoFields(void) const {
@@ -89,7 +86,7 @@ pylith::meshio::OutputPhysics::getInfoFields(void) const {
 } // getInfoFields
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set names of vertex data fields to output.
 void
 pylith::meshio::OutputPhysics::setDataFields(const char* names[],
@@ -109,7 +106,7 @@ pylith::meshio::OutputPhysics::setDataFields(const char* names[],
 } // setDataFields
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get names of vertex data fields to output.
 const pylith::string_vector&
 pylith::meshio::OutputPhysics::getDataFields(void) const {
@@ -120,7 +117,7 @@ pylith::meshio::OutputPhysics::getDataFields(void) const {
 } // getDataFields
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set time scale.
 void
 pylith::meshio::OutputPhysics::setTimeScale(const PylithReal value) {
@@ -128,7 +125,7 @@ pylith::meshio::OutputPhysics::setTimeScale(const PylithReal value) {
 } // setTimeScale
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::meshio::OutputPhysics::verifyConfiguration(const pylith::topology::Field& solution) const {
@@ -136,7 +133,6 @@ pylith::meshio::OutputPhysics::verifyConfiguration(const pylith::topology::Field
     PYLITH_COMPONENT_DEBUG("OutputPhysics::verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     assert(_physics);
-
     const pylith::topology::Field* auxiliaryField = _physics->getAuxiliaryField();
     const pylith::topology::Field* derivedField = _physics->getDerivedField();
 
@@ -183,7 +179,7 @@ pylith::meshio::OutputPhysics::verifyConfiguration(const pylith::topology::Field
 } // verifyConfiguration
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get update from integrator (subject of observer).
 void
 pylith::meshio::OutputPhysics::update(const PylithReal t,
@@ -201,7 +197,7 @@ pylith::meshio::OutputPhysics::update(const PylithReal t,
 } // update
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Write output for step in solution.
 void
 pylith::meshio::OutputPhysics::_writeInfo(void) {
@@ -211,7 +207,6 @@ pylith::meshio::OutputPhysics::_writeInfo(void) {
     if (!_physics) { PYLITH_METHOD_END;}
 
     assert(_physics);
-
     const pylith::topology::Field* auxiliaryField = _physics->getAuxiliaryField();
     if (!auxiliaryField) { PYLITH_METHOD_END;}
 
@@ -222,11 +217,15 @@ pylith::meshio::OutputPhysics::_writeInfo(void) {
     _open(domainMesh, isInfo);
     _openDataStep(0.0, domainMesh);
 
+    PetscVec auxiliaryVector = auxiliaryField->outputVector();
+    auxiliaryField->scatterLocalToOutput();
+
     const size_t numInfoFields = infoNames.size();
     for (size_t i = 0; i < numInfoFields; i++) {
         if (auxiliaryField->hasSubfield(infoNames[i].c_str())) {
-            pylith::topology::Field* fieldBuffer = _getBuffer(*auxiliaryField, infoNames[i].c_str());assert(fieldBuffer);
-            _appendField(0.0, fieldBuffer, domainMesh);
+            OutputSubfield* subfield = _getSubfield(*auxiliaryField, domainMesh, infoNames[i].c_str());
+            subfield->project(auxiliaryVector);
+            _appendField(0.0, *subfield);
         } else {
             std::ostringstream msg;
             msg << "Internal Error: Could not find subfield '" << infoNames[i] << "' in auxiliary field for info output.";
@@ -242,7 +241,7 @@ pylith::meshio::OutputPhysics::_writeInfo(void) {
 } // _writeInfo
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Prepare for output.
 void
 pylith::meshio::OutputPhysics::_open(const pylith::topology::Mesh& mesh,
@@ -265,7 +264,7 @@ pylith::meshio::OutputPhysics::_open(const pylith::topology::Mesh& mesh,
 } // _open
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 /// Close output files.
 void
 pylith::meshio::OutputPhysics::_close(void) {
@@ -279,7 +278,7 @@ pylith::meshio::OutputPhysics::_close(void) {
 } // _close
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Prepare for output at this solution step.
 void
 pylith::meshio::OutputPhysics::_openDataStep(const PylithReal t,
@@ -298,7 +297,7 @@ pylith::meshio::OutputPhysics::_openDataStep(const PylithReal t,
 } // _openDataStep
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Finalize output at this solution step.
 void
 pylith::meshio::OutputPhysics::_closeDataStep(void) {
@@ -308,7 +307,7 @@ pylith::meshio::OutputPhysics::_closeDataStep(void) {
 } // _closeDataStep
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Write output for step in solution.
 void
 pylith::meshio::OutputPhysics::_writeDataStep(const PylithReal t,
@@ -326,68 +325,42 @@ pylith::meshio::OutputPhysics::_writeDataStep(const PylithReal t,
 
     _openDataStep(t, domainMesh);
 
+    if (auxiliaryField) { auxiliaryField->scatterLocalToOutput(); }
+    PetscVec auxiliaryVector = (auxiliaryField) ? auxiliaryField->outputVector() : NULL;
+
+    if (derivedField) { derivedField->scatterLocalToOutput(); }
+    PetscVec derivedVector = (derivedField) ? derivedField->outputVector() : NULL;
+
+    PetscVec solutionVector = solution.outputVector();assert(solutionVector);
+
     const size_t numDataFields = dataNames.size();
     for (size_t i = 0; i < numDataFields; i++) {
+        OutputSubfield* subfield = NULL;
         if (solution.hasSubfield(dataNames[i].c_str())) {
-            pylith::topology::Field* fieldBuffer = _getBuffer(solution, dataNames[i].c_str());assert(fieldBuffer);
-            _appendField(t, fieldBuffer, domainMesh);
+            subfield = OutputObserver::_getSubfield(solution, domainMesh, dataNames[i].c_str());assert(subfield);
+            subfield->project(solutionVector);
         } else if (auxiliaryField && auxiliaryField->hasSubfield(dataNames[i].c_str())) {
-            pylith::topology::Field* fieldBuffer = _getBuffer(*auxiliaryField, dataNames[i].c_str());assert(fieldBuffer);
-            _appendField(t, fieldBuffer, domainMesh);
+            subfield = OutputObserver::_getSubfield(*auxiliaryField, domainMesh, dataNames[i].c_str());assert(subfield);
+            subfield->project(auxiliaryVector);
         } else if (derivedField && derivedField->hasSubfield(dataNames[i].c_str())) {
-            pylith::topology::Field* fieldBuffer = _getBuffer(*derivedField, dataNames[i].c_str());assert(fieldBuffer);
-            _appendField(t, fieldBuffer, domainMesh);
+            subfield = OutputObserver::_getSubfield(*derivedField, domainMesh, dataNames[i].c_str());assert(subfield);
+            subfield->project(derivedVector);
         } else {
             std::ostringstream msg;
             msg << "Internal Error: Could not find subfield '" << dataNames[i] << "' for data output.";
             PYLITH_COMPONENT_ERROR(msg.str());
             throw std::runtime_error(msg.str());
         } // if/else
-    } // for
 
+        OutputObserver::_appendField(0.0, *subfield);
+    } // for
     _closeDataStep();
 
     PYLITH_METHOD_END;
 } // _writeDataStep
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Append finite-element vertex field to file.
-void
-pylith::meshio::OutputPhysics::_appendField(const PylithReal t,
-                                            pylith::topology::Field* field,
-                                            const pylith::topology::Mesh& mesh) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputPhysics::appendField(t="<<t<<", field="<<typeid(field).name()<<", mesh="<<typeid(mesh).name()<<")");
-
-    assert(field);
-
-    pylith::topology::Field* fieldFiltered = _fieldFilter->filter(field);
-    pylith::topology::Field* fieldDimensioned = _dimensionField(fieldFiltered);assert(fieldDimensioned);
-
-    const int basisOrder = _getBasisOrder(*fieldDimensioned);
-    switch (basisOrder) {
-    case 0:
-        _writer->writeCellField(t, *fieldDimensioned);
-        break;
-
-    case 1:
-        _writer->writeVertexField(t, *fieldDimensioned, mesh);
-        break;
-
-    default:
-        PYLITH_COMPONENT_ERROR(
-            "Unsupported basis order ("
-                << basisOrder <<") for output. Use FieldFilterProject with basis order of 0 or 1. Skipping output of '"
-                << field->getLabel() << "' field."
-            );
-    } // switch
-
-    PYLITH_METHOD_END;
-} // _appendField
-
-
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Names of information fields for output.
 pylith::string_vector
 pylith::meshio::OutputPhysics::_expandInfoFieldNames(const pylith::topology::Field* auxField) const {
@@ -401,7 +374,7 @@ pylith::meshio::OutputPhysics::_expandInfoFieldNames(const pylith::topology::Fie
 } // _expandInfoFieldNames
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Names of data fields for output.
 pylith::string_vector
 pylith::meshio::OutputPhysics::_expandDataFieldNames(const pylith::topology::Field& solution,

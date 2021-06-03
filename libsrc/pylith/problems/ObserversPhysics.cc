@@ -29,21 +29,21 @@
 
 #include <typeinfo> // USES typeid()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::problems::ObserversPhysics::ObserversPhysics(void) {
     // GenericComponent::setName("observersphysics");
 } // constructor
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::problems::ObserversPhysics::~ObserversPhysics(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::problems::ObserversPhysics::deallocate(void) {
@@ -51,7 +51,7 @@ pylith::problems::ObserversPhysics::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Register observer to receive notifications.
 void
 pylith::problems::ObserversPhysics::registerObserver(pylith::problems::ObserverPhysics* observer) {
@@ -66,7 +66,7 @@ pylith::problems::ObserversPhysics::registerObserver(pylith::problems::ObserverP
 } // registerObserver
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Remove observer from receiving notifications.
 void
 pylith::problems::ObserversPhysics::removeObserver(pylith::problems::ObserverPhysics* observer) {
@@ -81,7 +81,7 @@ pylith::problems::ObserversPhysics::removeObserver(pylith::problems::ObserverPhy
 } // removeObserver
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get number of observers.
 size_t
 pylith::problems::ObserversPhysics::size(void) const {
@@ -89,7 +89,7 @@ pylith::problems::ObserversPhysics::size(void) const {
 } // count`
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set physics implementation in observers (for callbacks)
 void
 pylith::problems::ObserversPhysics::setPhysicsImplementation(const pylith::feassemble::PhysicsImplementation* const physics) {
@@ -105,7 +105,7 @@ pylith::problems::ObserversPhysics::setPhysicsImplementation(const pylith::feass
 } // setPhysicsImplemetation
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set time scale in observers.
 void
 pylith::problems::ObserversPhysics::setTimeScale(const PylithReal value) {
@@ -121,7 +121,7 @@ pylith::problems::ObserversPhysics::setTimeScale(const PylithReal value) {
 } // setTimeScale
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Verify observers.
 void
 pylith::problems::ObserversPhysics::verifyObservers(const pylith::topology::Field& solution) const {
@@ -137,7 +137,7 @@ pylith::problems::ObserversPhysics::verifyObservers(const pylith::topology::Fiel
 } // verifyObservers
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Notify observers.
 void
 pylith::problems::ObserversPhysics::notifyObservers(const PylithReal t,

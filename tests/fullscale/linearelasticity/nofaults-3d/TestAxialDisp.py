@@ -33,41 +33,36 @@ from axialdisp_gendb import GenerateDB
 class TestCase(FullTestCase):
     """Test suite for testing PyLith with 3-D axial compression/extension.
     """
-    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos",
-                            "bc_yneg", "bc_ypos", "bc_zneg"]
+    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos", "bc_zneg"]
+    OUTPUT_BOUNDARIES = ["groundsurf"]
 
     def setUp(self):
         """Setup for test.
         """
         FullTestCase.setUp(self)
         self.exactsoln = AnalyticalSoln()
-        return
 
     def run_pylith(self, testName, args):
         FullTestCase.run_pylith(self, testName, args, GenerateDB)
-        return
 
     def test_domain_solution(self):
         filename = "output/{}-domain.h5".format(self.NAME)
         vertexFields = ["displacement"]
         check_data(filename, self, self.DOMAIN, vertexFields=vertexFields)
-        return
 
     def test_material_info(self):
         cellFields = ["density", "bulk_modulus", "shear_modulus"]
-        for material in self.MATERIALS.keys():
+        for material in self.MATERIALS:
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
             check_data(filename, self,
                        self.MATERIALS[material], cellFields=cellFields)
-        return
 
     def test_material_solution(self):
         vertexFields = ["displacement", "cauchy_strain", "cauchy_stress"]
-        for material in self.MATERIALS.keys():
+        for material in self.MATERIALS:
             filename = "output/{}-{}.h5".format(self.NAME, material)
             check_data(filename, self,
                        self.MATERIALS[material], vertexFields=vertexFields)
-        return
 
     def test_bcdirichlet_info(self):
         vertexFields = ["initial_amplitude"]
@@ -75,7 +70,6 @@ class TestCase(FullTestCase):
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
             check_data(filename, self,
                        self.BOUNDARIES[bc], vertexFields=vertexFields)
-        return
 
     def test_bcdirichlet_solution(self):
         vertexFields = ["displacement"]
@@ -83,7 +77,13 @@ class TestCase(FullTestCase):
             filename = "output/{}-{}.h5".format(self.NAME, bc)
             check_data(filename, self,
                        self.BOUNDARIES[bc], vertexFields=vertexFields)
-        return
+
+    def test_boundary_solution(self):
+        vertexFields = ["displacement"]
+        for bc in self.OUTPUT_BOUNDARIES:
+            filename = "output/{}-{}.h5".format(self.NAME, bc)
+            check_data(filename, self,
+                       self.BOUNDARIES[bc], vertexFields=vertexFields)
 
 
 # ----------------------------------------------------------------------------------------------------------------------

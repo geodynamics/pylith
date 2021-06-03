@@ -30,9 +30,6 @@ swig_sources = \
 	MeshIOAscii.i \
 	MeshIOLagrit.i \
 	MeshIOCubit.i \
-	FieldFilter.i \
-	FieldFilterNone.i \
-	FieldFilterProject.i \
 	OutputTrigger.i \
 	OutputTriggerStep.i \
 	OutputTriggerTime.i \

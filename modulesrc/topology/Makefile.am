@@ -30,7 +30,6 @@ swig_sources = \
 	MeshOps.i \
 	FieldBase.i \
 	Field.i \
-	Fields.i \
 	Distributor.i \
 	RefineUniform.i \
 	ReverseCuthillMcKee.i

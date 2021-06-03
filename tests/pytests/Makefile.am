@@ -55,7 +55,6 @@ dist_noinst_PYTHON = \
 	meshio/TestDataWriterHDF5.py \
 	meshio/TestDataWriterHDF5Ext.py \
 	meshio/TestDataWRiterVTK.py \
-	meshio/TestFieldFilter.py \
 	meshio/TestXdmf.py
 
 

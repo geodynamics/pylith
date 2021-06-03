@@ -94,24 +94,7 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
              << "Writing partition." << pythia::journal::endl;
     } // if
 
-    // Setup and allocate field
-    pylith::topology::Field partition(mesh);
-    const char* components[1] = {"partition"};
-    const int numComponents = 1;
-    const int basisOrder = 0;
-    const int quadOrder = 0;
-    const int dim = -1;
-    const double scale = 1.0;
-    pylith::topology::FieldBase::CellBasis cellBasis = mesh.isSimplex() ?
-                                                       pylith::topology::FieldBase::SIMPLEX_BASIS : pylith::topology::FieldBase::TENSOR_BASIS;
-    const bool isBasisContinuous = true;
-    partition.subfieldAdd("partition", "partition", pylith::topology::Field::SCALAR, components, numComponents, scale,
-                          basisOrder, quadOrder, dim, cellBasis, isBasisContinuous, pylith::topology::Field::POLYNOMIAL_SPACE);
-    partition.subfieldsSetup();
-    partition.createDiscretization();
-    partition.allocate();
-    partition.setLabel("partition");
-
+    // Setup and allocate PETSc vector
     PylithScalar rankReal = PylithReal(commRank);
 
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
@@ -119,21 +102,23 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();
 
-    topology::VecVisitorMesh partitionVisitor(partition);
-    PetscScalar* partitionArray = partitionVisitor.localArray();
-
+    PetscVec partitionVec = NULL;
+    PylithScalar* partitionArray = NULL;
+    PetscErrorCode err;
+    err = VecCreate(mesh.comm(), &partitionVec);PYLITH_CHECK_ERROR(err);
+    err = VecSetSizes(partitionVec, cEnd-cStart, PETSC_DECIDE);PYLITH_CHECK_ERROR(err);
+    err = VecGetArray(partitionVec, &partitionArray);PYLITH_CHECK_ERROR(err);
     for (PetscInt c = cStart; c < cEnd; ++c) {
-        const PetscInt off = partitionVisitor.sectionOffset(c);
-        assert(numComponents == partitionVisitor.sectionDof(c));
-        partitionArray[off] = rankReal;
+        partitionArray[c] = rankReal;
     } // for
+    err = VecRestoreArray(partitionVec, &partitionArray);PYLITH_CHECK_ERROR(err);
 
-    // partition->view("PARTITION");
     const PylithScalar t = 0.0;
     const int numTimeSteps = 0;
     writer->open(mesh, numTimeSteps);
     writer->openTimeStep(t, mesh);
-    writer->writeCellField(t, partition);
+    assert(0); // :TODO: Fix this
+    // writer->writeCellField(t, partitionVec);
     writer->closeTimeStep();
     writer->close();
 

@@ -21,12 +21,10 @@
 #include "OutputSoln.hh" // Implementation of class methods
 
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
-#include "pylith/meshio/FieldFilter.hh" // USES FieldFilter
 #include "pylith/meshio/OutputTrigger.hh" // USES OutputTrigger
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
@@ -141,7 +139,7 @@ pylith::meshio::OutputSoln::_open(const pylith::topology::Mesh& mesh) {
     PYLITH_COMPONENT_DEBUG("OutputSoln::open(mesh="<<typeid(mesh).name()<<")");
 
     if (!_writer) {
-        PYLITH_COMPONENT_ERROR("Writer for solution output observer '"<<getIdentifier()<<"'.");
+        PYLITH_COMPONENT_LOGICERROR("Writer for solution output observer '"<<getIdentifier()<<"'.");
     } // if
 
     assert(_trigger);
@@ -211,42 +209,6 @@ pylith::meshio::OutputSoln::_writeSolnStep(const PylithReal t,
 
     PYLITH_METHOD_END;
 } // _writeSolnStep
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Append finite-element vertex field to file.
-void
-pylith::meshio::OutputSoln::_appendField(const PylithReal t,
-                                         pylith::topology::Field* field,
-                                         const pylith::topology::Mesh& mesh) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputSoln::appendField(t="<<t<<", field="<<typeid(field).name()<<", mesh="<<typeid(mesh).name()<<")");
-
-    assert(field);
-
-    pylith::topology::Field* fieldFiltered = _fieldFilter->filter(field);
-    pylith::topology::Field* fieldDimensioned = _dimensionField(fieldFiltered);assert(fieldDimensioned);
-
-    const int basisOrder = _getBasisOrder(*fieldDimensioned);
-    switch (basisOrder) {
-    case 0:
-        _writer->writeCellField(t, *fieldDimensioned);
-        break;
-
-    case 1:
-        _writer->writeVertexField(t, *fieldDimensioned, mesh);
-        break;
-
-    default:
-        PYLITH_COMPONENT_ERROR(
-            "Unsupported basis order ("
-                << basisOrder <<") for output. Use FieldFilterProject with basis order of 0 or 1. Skipping output of '"
-                << field->getLabel() << "' field."
-            );
-    } // switch
-
-    PYLITH_METHOD_END;
-} // _appendField
 
 
 // ---------------------------------------------------------------------------------------------------------------------

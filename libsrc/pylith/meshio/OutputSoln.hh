@@ -126,16 +126,6 @@ protected:
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
 
-    /** Append finite-element vertex field to file.
-     *
-     * @param[in] t Time associated with field.
-     * @param[in] field Field to output.
-     * @param[in] mesh Mesh for output.
-     */
-    void _appendField(const PylithReal t,
-                      pylith::topology::Field* field,
-                      const pylith::topology::Mesh& mesh);
-
     /** Get names of subfields for output.
      *
      * Expand "all" into list of actual fields in the solution field.

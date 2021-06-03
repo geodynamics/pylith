@@ -65,7 +65,7 @@ class Tri(object):
         "bc_ypos": {
             "ncells": 8,
             "ncorners": 2,
-            "nvertices": 9,
+            "nvertices": 10,
         },
     }
 
@@ -116,7 +116,7 @@ class Quad(object):
         "bc_ypos": {
             "ncells": 8,
             "ncorners": 2,
-            "nvertices": 9,
+            "nvertices": 10,
         },
     }
 

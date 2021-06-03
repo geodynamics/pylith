@@ -54,6 +54,22 @@ pylith::topology::Field::localVector(void) const {
 }
 
 
+// Get global vector.
+inline
+PetscVec
+pylith::topology::Field::globalVector(void) const {
+    return _globalVec;
+}
+
+
+// Get global vector without constrained degrees of freedom for output.
+inline
+PetscVec
+pylith::topology::Field::outputVector(void) const {
+    return _outputVec;
+}
+
+
 // Get mesh associated with field.
 inline
 const
@@ -75,22 +91,6 @@ inline
 const char*
 pylith::topology::Field::getLabel(void) const {
     return _label.c_str();
-}
-
-
-// Set flag indicating whether it is okay to dimensionalize field.
-inline
-void
-pylith::topology::Field::dimensionalizeOkay(const bool value) {
-    _dimsOkay = value;
-}
-
-
-// Set flag indicating whether it is okay to dimensionalize field.
-inline
-bool
-pylith::topology::Field::dimensionalizeOkay(void) const {
-    return _dimsOkay;
 }
 
 

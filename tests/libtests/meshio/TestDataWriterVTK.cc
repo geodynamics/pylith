@@ -29,7 +29,7 @@
 #include <sstream> // USES std::ostringstream
 #include <fstream> // USES std::ifstream
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Check VTK file against archived file.
 void
 pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
@@ -91,7 +91,7 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
 } // checkFile
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::TestDataWriterVTK_Data::TestDataWriterVTK_Data(void) :
     timestepFilename(NULL),
@@ -100,7 +100,7 @@ pylith::meshio::TestDataWriterVTK_Data::TestDataWriterVTK_Data(void) :
 } // constructor
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::meshio::TestDataWriterVTK_Data::~TestDataWriterVTK_Data(void) { // destructor
 } // destructor

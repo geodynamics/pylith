@@ -1,8 +1,5 @@
 from .TestDataWriter import TestDataWriter
 from .TestDataWriterVTK import TestDataWriterVTK
-from .TestFieldFilter import TestFieldFilter
-from .TestFieldFilterNone import TestFieldFilterNone
-from .TestFieldFilterProject import TestFieldFilterProject
 from .TestMeshIOAscii import TestMeshIOAscii
 from .TestMeshIOLagrit import TestMeshIOLagrit
 from .TestOutputObserver import TestOutputObserver
@@ -39,9 +36,6 @@ def test_classes():
     classes = [
         TestDataWriter,
         TestDataWriterVTK,
-        TestFieldFilter,
-        TestFieldFilterNone,
-        TestFieldFilterProject,
         TestOutputObserver,
         TestOutputPhysics,
         TestOutputSoln,
