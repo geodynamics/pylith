@@ -19,7 +19,7 @@
 /**
  * @file libsrc/testing/FieldTester.hh
  *
- * @brief General routines for C++ unit tests related to Fields.
+ * @brief General routines for C++ unit tests related to Field.
  */
 
 #if !defined(pylith_testing_fieldtester_hh)

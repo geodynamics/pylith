@@ -22,7 +22,6 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // HOLDSA Fields
 #include "pylith/topology/Stratum.hh" // USES StratumIS
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfieldIS
 
@@ -40,13 +39,11 @@ PetscErrorCode DMPlexVTKWriteAll(PetscObject odm,
 // Constructor
 pylith::meshio::DataWriterVTK::DataWriterVTK(void) :
     _timeConstant(1.0),
+    _precision(6),
     _filename("output.vtk"),
     _timeFormat("%f"),
     _viewer(NULL),
     _dm(NULL),
-    _vertexFieldCache(0),
-    _cellFieldCache(0),
-    _precision(6),
     _isOpenTimeStep(false),
     _wroteVertexHeader(false),
     _wroteCellHeader(false) {}
@@ -65,9 +62,6 @@ void
 pylith::meshio::DataWriterVTK::deallocate(void) { // deallocate
     PYLITH_METHOD_BEGIN;
 
-    delete _vertexFieldCache;_vertexFieldCache = 0;
-    delete _cellFieldCache;_cellFieldCache = 0;
-
     closeTimeStep(); // Insure time step is closed.
     close(); // Insure clean up.
     DataWriter::deallocate();
@@ -85,8 +79,6 @@ pylith::meshio::DataWriterVTK::DataWriterVTK(const DataWriterVTK& w) :
     _timeFormat(w._timeFormat),
     _viewer(NULL),
     _dm(NULL),
-    _vertexFieldCache(0),
-    _cellFieldCache(0),
     _precision(w._precision),
     _isOpenTimeStep(w._isOpenTimeStep),
     _wroteVertexHeader(w._wroteVertexHeader),
@@ -158,14 +150,6 @@ pylith::meshio::DataWriterVTK::close(void) {
     if (_isOpen) {
         assert(_dm);
         PetscErrorCode err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
-    } // if
-
-    // Clear field caches.
-    if (_vertexFieldCache) {
-        _vertexFieldCache->deallocate();
-    } // if
-    if (_cellFieldCache) {
-        _cellFieldCache->deallocate();
     } // if
 
     DataWriter::close();

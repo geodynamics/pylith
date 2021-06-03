@@ -28,7 +28,7 @@
 
 #include "TestDataWriter.hh" // USES TestDataWriter_Data
 
-#include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh, USES Fields
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh, USES Field
 
 namespace pylith {
     namespace meshio {

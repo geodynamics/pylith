@@ -32,7 +32,7 @@ namespace pylith {
 } // pylith
 
 // Include directives ---------------------------------------------------
-#include "pylith/topology/topologyfwd.hh" // HOLDSA Fields
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Descretization
 
 // FieldFactory-----------------------------------------------

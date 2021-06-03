@@ -25,7 +25,6 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 

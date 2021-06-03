@@ -34,7 +34,7 @@
 // Include directives ---------------------------------------------------
 #include "DataWriter.hh" // ISA DataWriter
 
-#include "pylith/topology/topologyfwd.hh" // HOLDSA Fields
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 #include "pylith/utils/petscfwd.h" // HASA PetscDM
 
 // DataWriterVTK --------------------------------------------------------
@@ -155,17 +155,13 @@ private:
 
     /// Time value (in seconds) used to normalize time stamp.
     PylithScalar _timeConstant;
+    int _precision; ///< Precision of floating point values in output.
 
     std::string _filename; ///< Name of VTK file.
     std::string _timeFormat; ///< C style time format for time stamp.
 
     PetscViewer _viewer; ///< Output file
     PetscDM _dm; ///< Handle to PETSc DM for mesh
-
-    topology::Fields* _vertexFieldCache; ///< Cache for vertex fields.
-    topology::Fields* _cellFieldCache; ///< Cache for cell fields.
-
-    int _precision; ///< Precision of floating point values in output.
 
     bool _isOpenTimeStep; ///< true if called openTimeStep().
     bool _wroteVertexHeader; ///< True if wrote header for vertex data.

@@ -29,13 +29,11 @@ check_PROGRAMS = test_feassemble
 # Primary source files
 test_feassemble_SOURCES = \
 	TestAuxiliaryFactory.cc \
-	TestIntegratorDomain.cc \
 	test_driver.cc
 
 
 noinst_HEADERS =
-	TestAuxiliaryFactory.hh \
-	TestIntegratorDomain.hh
+	TestAuxiliaryFactory.hh
 
 AM_CPPFLAGS += \
 	$(PETSC_CC_INCLUDES) \

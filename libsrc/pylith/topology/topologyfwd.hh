@@ -40,7 +40,6 @@ namespace pylith {
 
         class FieldBase;
         class Field;
-        class Fields;
         class VecVisitorMesh;
         class VecVisitorSubmesh;
 
@@ -49,16 +48,11 @@ namespace pylith {
         class FieldOps;
         class FieldQuery;
 
-        class SolutionFields;
-
-        class Jacobian;
         class MatVisitorMesh;
         class MatVisitorSubmesh;
 
         class Distributor;
-
         class RefineUniform;
-
         class ReverseCuthillMcKee;
 
     } // topology

@@ -143,7 +143,6 @@ libpylith_la_SOURCES = \
 	topology/MeshOps.cc \
 	topology/FieldBase.cc \
 	topology/Field.cc \
-	topology/Fields.cc \
 	topology/FieldFactory.cc \
 	topology/FieldOps.cc \
 	topology/FieldQuery.cc \
