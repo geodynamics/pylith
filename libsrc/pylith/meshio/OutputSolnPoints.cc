@@ -112,8 +112,6 @@ pylith::meshio::OutputSolnPoints::_writeSolnStep(const PylithReal t,
                                                  const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
-    assert(_pointMesh);
-    assert(_pointSoln);
 
     if (!_interpolator) {
         _setupInterpolator(solution);
@@ -131,9 +129,6 @@ pylith::meshio::OutputSolnPoints::_writeSolnStep(const PylithReal t,
     for (size_t iField = 0; iField < numSubfieldNames; iField++) {
         OutputSubfield* subfield = NULL;
         subfield = this->_getSubfield(*_pointSoln, *_pointMesh, subfieldNames[iField].c_str());assert(subfield);
-
-        OutputSubfield* subfield = NULL;
-        subfield = OutputObserver::_getSubfield(*_pointSoln, *_pointMesh, subfieldNames[iField].c_str());assert(subfield);
 
         const pylith::topology::Field::SubfieldInfo& info = solution.subfieldInfo(subfieldNames[iField].c_str());
         subfield->extractSubfield(*_pointSoln, info.index);

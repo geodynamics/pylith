@@ -206,7 +206,11 @@ pylith::meshio::OutputSubfield::extractSubfield(const pylith::topology::Field& f
     PetscScalar* solnArray = fieldVisitor.localArray();
     PetscScalar* subfieldArray = NULL;
     err = VecGetArray(subfieldVector, &subfieldArray);PYLITH_CHECK_ERROR(err);
+
     for (PetscInt point = pStart, indexVec = 0; point < pEnd; ++point) {
+        const PetscInt solnOffset = fieldVisitor.sectionSubfieldOffset(subfieldIndex, point);
+        const PetscInt solnDof = fieldVisitor.sectionSubfieldDof(subfieldIndex, point);
+
         for (PetscInt iDof = 0; iDof < solnDof; ++iDof) {
             // Dimensionalize values while extracting subfield.
             subfieldArray[indexVec++] = solnArray[solnOffset+iDof] * _description.scale;
@@ -216,7 +220,7 @@ pylith::meshio::OutputSubfield::extractSubfield(const pylith::topology::Field& f
     err = VecRestoreArray(subfieldVector, &subfieldArray);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
-}
+} // extractSubfield
 
 
 // End of file
