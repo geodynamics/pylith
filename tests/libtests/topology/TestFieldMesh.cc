@@ -613,14 +613,16 @@ pylith::topology::TestFieldMesh::_initialize(void) {
     _field->subfieldAdd(_data->descriptionA, _data->discretizationA);
     _field->subfieldAdd(_data->descriptionB, _data->discretizationB);
     _field->subfieldsSetup();
+    _field->createDiscretization();
 
     PetscDMLabel labelA = NULL, labelB = NULL;
     err = DMGetLabel(_field->dmMesh(), _data->bcALabel, &labelA);CPPUNIT_ASSERT(!err);
     err = DMGetLabel(_field->dmMesh(), _data->bcBLabel, &labelB);CPPUNIT_ASSERT(!err);
     const PetscInt numLabelValues = 1;
-    const PetscInt i_field = 1;
+    PetscInt i_field = 0;
     err = DMAddBoundary(_field->dmMesh(), DM_BC_ESSENTIAL, "bcA", labelA, numLabelValues, &_data->bcALabelId, i_field,
                         _data->bcANumConstrainedDOF, _data->bcAConstrainedDOF, NULL, NULL, NULL, NULL);CPPUNIT_ASSERT(!err);
+    i_field = 1;
     err = DMAddBoundary(_field->dmMesh(), DM_BC_ESSENTIAL, "bcB", labelB, numLabelValues, &_data->bcBLabelId, i_field,
                         _data->bcBNumConstrainedDOF, _data->bcBConstrainedDOF, NULL, NULL, NULL, NULL);CPPUNIT_ASSERT(!err);
     // Allocate field.

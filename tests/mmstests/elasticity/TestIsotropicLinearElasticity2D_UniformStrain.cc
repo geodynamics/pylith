@@ -370,9 +370,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_QuadQ1Dist
     } // setUp
 
 }; // TestIsotropicLinearElasticity2D_UniformStrain_QuadQ1Distorted
-// :TODO: This test exposes a known bug in PETSc with distorted quad cells.
-// Once @knepley fixes the error, we will enable test.
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_QuadQ1Distorted);
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_QuadQ1Distorted);
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_QuadQ2 :

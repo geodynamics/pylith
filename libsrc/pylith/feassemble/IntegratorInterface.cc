@@ -36,7 +36,7 @@
 #include <stdexcept> // USES std::runtime_error
 
 extern "C" PetscErrorCode DMPlexComputeResidual_Hybrid_Internal(PetscDM dm,
-                                                                PetscHashFormKey key[],
+                                                                PetscFormKey key[],
                                                                 PetscIS cellIS,
                                                                 PetscReal time,
                                                                 PetscVec locX,
@@ -46,7 +46,7 @@ extern "C" PetscErrorCode DMPlexComputeResidual_Hybrid_Internal(PetscDM dm,
                                                                 void *user);
 
 extern "C" PetscErrorCode DMPlexComputeJacobian_Hybrid_Internal(PetscDM dm,
-                                                                PetscHashFormKey key[],
+                                                                PetscFormKey key[],
                                                                 PetscIS cellIS,
                                                                 PetscReal t,
                                                                 PetscReal X_tShift,
@@ -389,16 +389,19 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     PetscInt labelValue = 0;
     err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
-    PetscHashFormKey keys[3];
+    PetscFormKey keys[3];
     keys[0].label = NULL;
     keys[0].value = 0;
     keys[0].field = 0;
+    keys[0].part  = 0;
     keys[1].label = NULL;
     keys[1].value = 0;
     keys[1].field = 0;
+    keys[1].part  = 0;
     keys[2].label = NULL;
     keys[2].value = 0;
     keys[2].field = 0;
+    keys[2].part  = 0;
 
     // Compute the local residual
     assert(solution.localVector());
@@ -462,16 +465,19 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     PetscInt labelValue = 0;
     err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
 
-    PetscHashFormKey keys[3];
+    PetscFormKey keys[3];
     keys[0].label = NULL;
     keys[0].value = 0;
     keys[0].field = 0;
+    keys[0].part  = 0;
     keys[1].label = NULL;
     keys[1].value = 0;
     keys[1].field = 0;
+    keys[1].part  = 0;
     keys[2].label = NULL;
     keys[2].value = 0;
     keys[2].field = 0;
+    keys[2].part  = 0;
 
     // Compute the local Jacobian
     for (size_t i = 0; i < kernels.size(); ++i) {

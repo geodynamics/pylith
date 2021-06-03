@@ -119,7 +119,7 @@ pylith::meshio::TestMeshIO::_createMesh(void) { // _createMesh
     for (PylithInt coff = 0; coff < bound; coff += data->numCorners) {
         err = DMPlexInvertCell_Private(data->cellDim, data->numCorners, &cells[coff]);PYLITH_CHECK_ERROR(err);
     } // for
-    err = DMPlexCreateFromCellList(_mesh->comm(), data->cellDim, data->numCells, data->numVertices, data->numCorners, interpolateMesh, cells, data->spaceDim, data->vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateFromCellListPetsc(_mesh->comm(), data->cellDim, data->numCells, data->numVertices, data->numCorners, interpolateMesh, cells, data->spaceDim, data->vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
     delete [] cells;
     _mesh->dmMesh(dmMesh);
 
