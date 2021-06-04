@@ -29,8 +29,6 @@ class Distributor(PetscComponent, ModuleDistributor):
     FACTORY: mesh_distributor
     """
 
-    # INVENTORY //////////////////////////////////////////////////////////
-
     import pythia.pyre.inventory
 
     partitioner = pythia.pyre.inventory.str("partitioner", default="chaco",

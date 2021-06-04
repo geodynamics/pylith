@@ -39,15 +39,6 @@ def validateFilename(value):
 class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
     """Python object for reading/writing finite-element mesh from Cubit.
 
-    INVENTORY
-
-    Properties
-      - *filename* Name of Cubit Exodus file.
-      - *use_nodeset_name*s Use nodeset names instead of ids.
-
-    Facilities
-       - *coordsys* Coordinate system associated with mesh.
-
     FACTORY: mesh_io
     """
 

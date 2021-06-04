@@ -40,16 +40,7 @@ class BoundaryCondition(Physics,
     Python abstract base class for managing a boundary condition.
 
     This implementation of a boundary condition applies to a single
-    face of an domain.
-
-    INVENTORY
-
-    Properties
-      - *label* Label identifying boundary.
-      - *field* Solution subfield associated with boundary condition.
-
-    Facilities
-      - None
+    boundary of an domain.
 
     FACTORY: boundary_condition
     """

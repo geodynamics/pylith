@@ -45,14 +45,13 @@ coverage-%.info:
 	lcov --list $@
 
 coverage-pytests.xml:
-	$(PYTHON_COVERAGE) combine tests/pytests/*/.coverage
-	$(PYTHON_COVERAGE) xml -o coverage-pytests.xml
+	$(PYTHON_COVERAGE) xml -o coverage-pytests.xml tests/pytests/coverage.xml
 
 coverage-%: coverage-%.info
 	genhtml -o $@ $^
 
-coverage-pytests: coverage-pytests.xml 
-	$(PYTHON_COVERAGE) html -d coverage-pytests
+coverage-pytests: 
+	$(PYTHON_COVERAGE) html -d coverage-pytests tests/pytests/coverage.xml
 
 clean-coverage:
 	$(RM) `find . -name "*.gcda"`

@@ -25,17 +25,7 @@ from .meshio import OutputTriggerStep as ModuleOutputTriggerStep
 
 class OutputTriggerStep(OutputTrigger, ModuleOutputTriggerStep):
     """Python class defining how often output is writtern in terms of solution steps.
-
-    inventory
-
-    Properties
-      - *num_skip* Number of steps between writes.
-
-    Facilities
-      - None
     """
-
-    # INVENTORY //////////////////////////////////////////////////////////
 
     import pythia.pyre.inventory
 

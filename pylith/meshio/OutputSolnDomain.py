@@ -27,14 +27,6 @@ class OutputSolnDomain(OutputSoln, ModuleOutputSolnDomain):
     """Python object for managing output of finite-element solution
     information.
 
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - None
-
     FACTORY: observer
     """
 

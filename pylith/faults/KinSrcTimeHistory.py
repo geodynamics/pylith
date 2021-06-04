@@ -26,14 +26,6 @@ from .faults import KinSrcTimeHistory as ModuleKinSrc
 class KinSrcTimeHistory(KinSrc, ModuleKinSrc):
     """Python object for time history data file slip time function.
 
-    INVENTORY
-
-    Properties
-      - None
-
-    Facilities
-      - *time_history* Time history with normalized amplitude as a function of time.
-
     Factory: eq_kinematic_src
     """
     import pythia.pyre.inventory
