@@ -1,6 +1,5 @@
 from .TestDistributor import TestDistributor
 from .TestField import TestField
-from .TestFields import TestFields
 from .TestMesh import TestMesh
 from .TestMeshGenerator import TestMeshGenerator
 from .TestMeshImporter import TestMeshImporter
@@ -14,7 +13,6 @@ def test_classes():
     classes = [
         TestDistributor,
         TestField,
-        TestFields,
         TestMesh,
         TestMeshGenerator,
         TestMeshImporter,
