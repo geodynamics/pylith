@@ -25,8 +25,6 @@ class PetscApplication(Application):
     """Python PETSc application for creating an MPI application that uses PETSc.
     """
 
-    # INVENTORY //////////////////////////////////////////////////////////
-
     import pythia.pyre.inventory
 
     # Dummy facility for passing options to PETSc

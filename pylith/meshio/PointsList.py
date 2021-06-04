@@ -33,20 +33,8 @@ def validateFilename(value):
 class PointsList(Component):
     """Python object for reading a list of points from a file.
 
-    INVENTORY
-
-    Properties
-      - *filename* Filename for list of points.
-      - *comment_delimiter* Delimiter for comments.
-      - *value_delimiter* Delimiter used to separate values.
-
-    Facilities
-      - *coordsys* Coordinate system associated with points.
-
     FACTORY: points_list
     """
-
-    # INVENTORY //////////////////////////////////////////////////////////
 
     import pythia.pyre.inventory
 

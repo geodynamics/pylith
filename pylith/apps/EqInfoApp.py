@@ -91,19 +91,6 @@ class EqInfoApp(Application):
     """Python EqInfoApp application.
     """
 
-    # INVENTORY //////////////////////////////////////////////////////////
-    #
-    # \b Properties
-    # @li \b faults Array of fault names.
-    # @li \b filename_pattern Pattern for fault files.
-    # @li \b snapshots Array of timestamps for slip snapshots.
-    # @li \b snapshotUnits Units for timestamps in array of snapshots.
-    # @li \b output_filename Filename for output.
-    #
-    # \b Facilities
-    # @li \b db_properties Spatial database for elastic properties.
-    # @li \b coordsys Coordinate system associated with mesh.
-
     import pythia.pyre.inventory
 
     faults = pythia.pyre.inventory.list("faults", default=[])

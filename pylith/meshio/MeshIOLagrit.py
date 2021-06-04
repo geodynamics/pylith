@@ -51,18 +51,6 @@ def validateFilenamePset(value):
 class MeshIOLagrit(MeshIOObj, ModuleMeshIOLagrit):
     """Python object for reading/writing finite-element mesh from LaGriT.
 
-    INVENTORY
-
-    Properties
-      - *filename_gmv* Name of mesh GMV file.
-      - *filename_pset* Name of mesh PSET file.
-      - *flip_endian* Flip endian type when reading/writing binary files.
-      - *io_int32* PSET files use 64-bit integers.
-      - *record_header_32bit* Fortran record header is 32-bit.
-
-    Facilities
-      - *coordsys* Coordinate system associated with mesh.
-
     FACTORY: mesh_io
     """
 

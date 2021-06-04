@@ -36,14 +36,6 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
     """Python object for managing output of finite-element solution
     information over a boundary.
 
-    INVENTORY
-
-    Properties
-      - *label* Name identifier for subdomain.
-
-    Facilities
-      - None
-
     Factory: observer
     """
 

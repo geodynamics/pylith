@@ -24,8 +24,6 @@ class SingleRupture(PetscComponent):
     """Python kinematic rupture container with one rupture.
     """
 
-    # INVENTORY //////////////////////////////////////////////////////////
-
     import pythia.pyre.inventory
 
     from .KinSrcStep import KinSrcStep

@@ -26,20 +26,16 @@ class DumpParametersJson(DumpParameters):
     FACTORY: dump_parameters
     """
 
-    class Inventory(DumpParameters.Inventory):
-        """Python object for managing DumpParametersJson facilities and properties.
-        """
+    import pythia.pyre.inventory
 
-        import pythia.pyre.inventory
+    filename = pythia.pyre.inventory.str("filename", default="pylith_parameters.json")
+    filename.meta["tip"] = "Name of file written with parameters."
 
-        filename = pythia.pyre.inventory.str("filename", default="pylith_parameters.json")
-        filename.meta["tip"] = "Name of file written with parameters."
+    style = pythia.pyre.inventory.str("style", default="normal", validator=pythia.pyre.inventory.choice(["normal", "compact"]))
+    style.meta['tip'] = "Style of JSON file [compact, normal]."
 
-        style = pythia.pyre.inventory.str("style", default="normal", validator=pythia.pyre.inventory.choice(["normal", "compact"]))
-        style.meta['tip'] = "Style of JSON file [compact, normal]."
-
-        indent = pythia.pyre.inventory.int("indent", default=4)
-        indent.meta['tip'] = "Nmber of spaces to indent, use a negative number for no newlines."
+    indent = pythia.pyre.inventory.int("indent", default=4)
+    indent.meta['tip'] = "Nmber of spaces to indent, use a negative number for no newlines."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -70,19 +66,7 @@ class DumpParametersJson(DumpParameters):
             json.dump(self.info, fout, indent=indent, separators=separators)
         return
 
-    # PRIVATE METHODS ////////////////////////////////////////////////////
-
-    def _configure(self):
-        """Configure object.
-        """
-        DumpParameters._configure(self)
-        self.filename = self.inventory.filename
-        self.indent = self.inventory.indent
-        self.style = self.inventory.style
-        return
-
 # FACTORIES ////////////////////////////////////////////////////////////
-
 
 def dump_parameters():
     """Factory associated with DumpParametersJson.

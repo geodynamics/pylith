@@ -25,14 +25,6 @@ from .meshio import OutputTriggerTime as ModuleOutputTriggerTime
 
 class OutputTriggerTime(OutputTrigger, ModuleOutputTriggerTime):
     """Python class for defining how often output is writtern in terms of elaspsed time.
-
-    INVENTORY
-
-    Properties
-      - *elapsed_time* Elapsed time between writes.
-
-    Facilities
-      - None
     """
 
     import pythia.pyre.inventory

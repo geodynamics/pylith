@@ -42,14 +42,6 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
     """Python object for reading/writing finite-element mesh from simple
     ASCII file.
 
-    INVENTORY
-
-    Properties
-      - *filename* Name of mesh file
-
-    Facilities
-      - *coordsys* Coordinate system associated with mesh.
-
     Factory: mesh_io
     """
 

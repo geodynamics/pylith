@@ -22,26 +22,20 @@ from .DumpParameters import DumpParameters
 
 class DumpParametersAscii(DumpParameters):
     """Python DumpParameters object for dumping PyLith parameter information to an ASCII file.
-    """
-
-    # INVENTORY //////////////////////////////////////////////////////////
-
-    class Inventory(DumpParameters.Inventory):
-        """Python object for managing DumpParametersAscii facilities and properties.
 
         FACTORY: dump_parameters
-        """
+    """
 
-        import pythia.pyre.inventory
+    import pythia.pyre.inventory
 
-        filename = pythia.pyre.inventory.str("filename", default="pylith_paramters.txt")
-        filename.meta["tip"] = "Name of file written with parameters."
+    filename = pythia.pyre.inventory.str("filename", default="pylith_paramters.txt")
+    filename.meta["tip"] = "Name of file written with parameters."
 
-        indent = pythia.pyre.inventory.int("indent", default=4)
-        indent.meta["tip"] = "Nmber of spaces to indent."
+    indent = pythia.pyre.inventory.int("indent", default=4)
+    indent.meta["tip"] = "Nmber of spaces to indent."
 
-        verbose = pythia.pyre.inventory.bool("verbose", default=True)
-        verbose.meta["tip"] = "Include description, location, and aliases."
+    verbose = pythia.pyre.inventory.bool("verbose", default=True)
+    verbose.meta["tip"] = "Include description, location, and aliases."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

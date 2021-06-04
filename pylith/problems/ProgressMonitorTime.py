@@ -27,14 +27,6 @@ from .problems import ProgressMonitorTime as ModuleProgressMonitorTime
 class ProgressMonitorTime(ProgressMonitor, ModuleProgressMonitorTime):
     """Python PyLith object for monitoring progress of time dependent problem.
 
-    INVENTORY
-
-    Properties
-      - *t_unit* Unit for simulation time in output.
-
-    Facilities
-      None
-
     Factory: progress_monitor.
     """
 

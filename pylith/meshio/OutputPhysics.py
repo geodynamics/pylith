@@ -26,15 +26,6 @@ from .meshio import OutputPhysics as ModuleOutputPhysics
 class OutputPhysics(OutputObserver, ModuleOutputPhysics):
     """Python object for managing output over points with constrained degrees of freedom.
 
-    INVENTORY
-
-    Properties
-      - *info_fields* Names of info fields to output.
-      - *data_fields* Names of data fields to output.
-
-    Facilities
-      - None
-
     Factory: observer
     """
 

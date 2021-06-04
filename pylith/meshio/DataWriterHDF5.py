@@ -27,8 +27,6 @@ class DataWriterHDF5(DataWriter, ModuleDataWriterHDF5):
     FACTORY: data_writer
     """
 
-    # INVENTORY //////////////////////////////////////////////////////////
-
     import pythia.pyre.inventory
 
     filename = pythia.pyre.inventory.str("filename", default="")

@@ -30,34 +30,15 @@ class MeshImporterDist(MeshGenerator):
     Factory: mesh_generator.
     """
 
-    # INVENTORY //////////////////////////////////////////////////////////
+    import pythia.pyre.inventory
 
-    class Inventory(MeshGenerator.Inventory):
-        """Python object for managing MeshImporterDist facilities and properties.
-        """
+    from pylith.meshio.MeshIOAscii import MeshIOAscii
+    reader = pythia.pyre.inventory.facility("reader", family="mesh_io", factory=MeshIOAscii)
+    reader.meta['tip'] = "Mesh reader."
 
-        # @class Inventory
-        # Python object for managing MeshImporterDist facilities and properties.
-        ##
-        # \b Properties
-        # @li None
-        ##
-        # \b Facilities
-        # @li \b reader Mesh reader.
-        # @li \b refiner Mesh refiner.
-
-        import pythia.pyre.inventory
-
-        from pylith.meshio.MeshIOAscii import MeshIOAscii
-        reader = pythia.pyre.inventory.facility("reader", family="mesh_io",
-                                                factory=MeshIOAscii)
-        reader.meta['tip'] = "Mesh reader."
-
-        from .MeshRefiner import MeshRefiner
-        refiner = pythia.pyre.inventory.facility("refiner",
-                                                 family="mesh_refiner",
-                                                 factory=MeshRefiner)
-        refiner.meta['tip'] = "Mesh refiner."
+    from .MeshRefiner import MeshRefiner
+    refiner = pythia.pyre.inventory.facility("refiner", family="mesh_refiner", factory=MeshRefiner)
+    refiner.meta['tip'] = "Mesh refiner."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -91,17 +72,6 @@ class MeshImporterDist(MeshGenerator):
 
         self._eventLogger.eventEnd(logEvent)
         return mesh
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
-
-    def _configure(self):
-        """Set members based on inventory.
-        """
-        MeshGenerator._configure(self)
-        self.reader = self.inventory.reader
-        self.refiner = self.inventory.refiner
-        return
-
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

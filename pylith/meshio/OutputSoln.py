@@ -28,14 +28,6 @@ class OutputSoln(OutputObserver, ModuleOutputSoln):
     """Python object for managing output of finite-element solution
     information.
 
-    INVENTORY
-
-    Properties
-      - *data_fields* Names of data fields to output.
-
-    Facilities
-      - None
-
     FACTORY: observer
     """
 

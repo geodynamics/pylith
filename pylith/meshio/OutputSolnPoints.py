@@ -31,8 +31,6 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
     FACTORY: observer
     """
 
-    # INVENTORY //////////////////////////////////////////////////////////
-
     import pythia.pyre.inventory
 
     label = pythia.pyre.inventory.str("label", default="points")

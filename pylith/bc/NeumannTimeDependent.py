@@ -42,20 +42,6 @@ def validateDir(value):
 class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
     """Python object for managing a time-dependent Neumann (natural) boundary condition.
 
-    INVENTORY
-
-    Properties
-      - *scale_name* Type of scale for nondimenaionlizing Neumann boundary condition (e.g., "pressure" for elasticity").
-      - *use_initial* Use initial term in time-dependent expression.
-      - *use_rate* Use rate term in time-dependent expression.
-      - *use_time_history* Use time history term in time-dependent expression.
-      - *ref_dir_1* First choice for reference direction to discriminate among tangential directions in 3-D.
-      - *ref_dir_2* Second choice for reference direction to discriminate among tangential directions in 3-D.
-
-    Facilities
-      - *time_history* Time history with normalized amplitude as a function of time.
-      - *auxiliary_subfields* Discretization of time-dependent Neumann parameters.
-
     FACTORY: boundary_condition
     """
 
