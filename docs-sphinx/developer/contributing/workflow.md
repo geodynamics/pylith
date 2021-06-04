@@ -85,6 +85,7 @@ upstream https://github.com/geodynamics/pylith.git (fetch)
 upstream https://github.com/geodynamics/pylith.git (push)
 ```
 
+(sec-developer-merge-upstream)=
 ### Merging Updates from the Upstream Repository
 
 Make sure all of your local changes have been committed or [stashed](https://git-scm.com/docs/git-stash).

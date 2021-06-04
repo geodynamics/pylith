@@ -45,6 +45,11 @@ Pylith uses the GNU Build System (often called autotools, which consists of auto
 The configure options and checks are defined in `configure.ac` with additional macros in the `m4` directory.
 Note that the `m4` directory is a Git submodule corresponding to the `geodynamics/autoconf_cig` Git repository.
 
+### Updating your fork
+
+It is a good idea to keep your `main` branch and any other branches you use from the `geodynamics/pylith` repository up to date.
+See {ref}`sec-developer-merge-upstream` for how to merge updates from the upstream (`geodynamics/pylith`) repository.
+
 ### Makefiles
 
 The PyLith `configure` script uses automake to convert each `Makefile.am` file into a `Makefile`.
