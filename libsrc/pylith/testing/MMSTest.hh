@@ -32,7 +32,6 @@
 
 #include "pylith/problems/problemsfwd.hh" // HOLDSA TimeDependent
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh
-#include "pylith/utils/petscfwd.h" // HASA PetscVec
 
 #include "pylith/utils/petscfwd.h" // HASA PetscVec
 

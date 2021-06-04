@@ -493,6 +493,10 @@ pylith::problems::TimeDependent::setSolutionLocal(const PylithReal t,
             _solutionDot = new pylith::topology::Field(*_solution);
             _solutionDot->setLabel("solutionDot");
             _solutionDot->createDiscretization();
+            // Debug
+            PetscErrorCode err;
+            PetscDS prob = NULL;
+            err = DMGetDS(_solution->dmMesh(), &prob);PYLITH_CHECK_ERROR(err);
             _solutionDot->allocate();
         } // if
         _solutionDot->scatterVectorToLocal(solutionDotVec);

@@ -451,10 +451,10 @@ protected:
 
         err = PetscDSGetWeakForm(prob, &wf);
         CPPUNIT_ASSERT(!err);
-        err = PetscWeakFormSetIndexResidual(wf, label, 24, 0, 1, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_ql_u, 1, NULL);
-        CPPUNIT_ASSERT(!err);
-        err = PetscWeakFormSetIndexResidual(wf, label, 24, 1, 1, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_ql_p, 1, NULL);
-        CPPUNIT_ASSERT(!err);
+        err = PetscWeakFormSetIndexResidual(wf, label, 24, 0, 0, 1, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_ql_u, 1, NULL);
+        PYLITH_CHECK_ERROR(err);
+        err = PetscWeakFormSetIndexResidual(wf, label, 24, 1, 0, 1, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_ql_p, 1, NULL);
+        PYLITH_CHECK_ERROR(err);
     } // _setExactSolution
 
 }; // TestIsotropicLinearPoroelasticity2D_QS_LT

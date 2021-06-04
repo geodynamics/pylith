@@ -46,7 +46,6 @@ pylith::testing::MMSTest::setUp(void) {
     _solutionDot = NULL;
     _solutionExactVec = NULL;
     _solutionDotExactVec = NULL;
-    _solutionDotVec = NULL;
     _jacobianConvergenceRate = 0.0;
     _isJacobianLinear = false;
     _disableFiniteDifferenceCheck = false;
@@ -71,7 +70,6 @@ pylith::testing::MMSTest::tearDown(void) {
     PetscErrorCode err;
     err = VecDestroy(&_solutionExactVec);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&_solutionDotExactVec);PYLITH_CHECK_ERROR(err);
-    VecDestroy(&_solutionDotVec);_solutionDotVec = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -133,15 +131,15 @@ pylith::testing::MMSTest::testResidual(void) {
 
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
-    // CPPUNIT_ASSERT(_solutionDot);
+    CPPUNIT_ASSERT(_solutionDot);
     if (debug.state()) {
         _solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
     const PylithReal tolerance = -1.0;
     PylithReal norm = 0.0;
-    err = DMTSCheckResidual(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solution->scatterVector("mmstest"),
-                            _solutionDotVec, tolerance, &norm);
+    err = DMTSCheckResidual(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solutionExactVec,
+                            _solutionDotExactVec, tolerance, &norm);
     if (debug.state()) {
         _solution->view("Solution field");
     } // if
@@ -168,13 +166,13 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
 
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
-    // CPPUNIT_ASSERT(_solutionDot);
+    CPPUNIT_ASSERT(_solutionDot);
     PetscErrorCode err = 0;
     const PylithReal tolerance = -1.0;
     PetscBool isLinear = PETSC_FALSE;
     PylithReal convergenceRate = 0.0;
-    err = DMTSCheckJacobian(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solution->scatterVector("mmstest"),
-                            _solutionDotVec, tolerance, &isLinear, &convergenceRate);
+    err = DMTSCheckJacobian(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solutionExactVec,
+                            _solutionDotExactVec, tolerance, &isLinear, &convergenceRate);
     CPPUNIT_ASSERT(!err);
 
     if (_isJacobianLinear) {
