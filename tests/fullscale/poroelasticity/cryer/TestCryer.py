@@ -26,7 +26,6 @@ from pylith.testing.FullTestApp import TestCase as FullTestCase
 
 import meshes
 from cryer_soln import AnalyticalSoln
-from cryer_gendb import GenerateDB
 
 # We do not include trace_strain in the solution fields, because of the
 # poor convergence of the series solution.
@@ -53,7 +52,7 @@ class TestCase(FullTestCase):
         return
 
     def run_pylith(self, testName, args):
-        FullTestCase.run_pylith(self, testName, args, GenerateDB)
+        FullTestCase.run_pylith(self, testName, args)
         return
 
     def test_domain_solution(self):
