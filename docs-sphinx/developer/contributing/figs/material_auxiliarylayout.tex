@@ -1,0 +1,73 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\renewcommand{\familydefault}{phv}
+
+\usepackage{tikz}
+
+\begin{document}
+\usetikzlibrary{positioning,arrows,shapes,calc,decorations.pathreplacing,decorations.pathmorphing}
+\input{../../../palettes/figcolors}
+
+\tikzstyle{subfield} = [
+  rectangle,
+  text width=9em,
+  outer sep=0pt,
+  inner sep=6pt,
+  text centered,
+  text depth=3pt,
+  anchor=base,
+]
+\tikzstyle{material} = [
+  subfield,
+  draw=blue!80!black,
+  top color=ltblue!20!white,
+  bottom color=ltblue,
+]
+\tikzstyle{rheology} = [
+  subfield,
+  draw=orange!80!black,
+  top color=ltorange!20!white,
+  bottom color=ltorange,
+]
+\tikzstyle{required} = [
+  fill opacity=1.0,
+  text opacity=1.0,
+]
+\tikzstyle{optional} = [
+  fill opacity=0.3,
+  text opacity=1.0,
+]
+
+\tikzstyle{upbrace} = [
+  decorate,
+  decoration={brace,amplitude=12pt}]
+\tikzstyle{downbrace} = [
+  decorate,
+  decoration={brace,amplitude=12pt,mirror}]
+
+\begin{tikzpicture}[node distance=0em, line width=1.0pt]
+
+  % Material subfields
+  \node (density) [material,required] {0: density};
+  \node (body-force) [material,optional, right=of density] {1: body\_force};
+  \node (gravity-field) [material,optional, right=of body-force] {2: gravity\_field};
+
+  % Rheology subfields
+  \node (reference-stress) [rheology,optional, right=of gravity-field] {3: reference\_stress};
+  \node (reference-strain) [rheology,optional, right=of reference-stress] {4: reference\_strain};
+  \node (shear-modulus) [rheology,required, right=of reference-strain] {5: shear\_modulus};
+  \node (bulk-modulus) [rheology,required, right=of shear-modulus] {6: bulk\_modulus};
+
+  \draw [upbrace] (density.north west)--(gravity-field.north east) node[midway,yshift=+12pt, anchor=south]{subfields associated with governing equation};
+  \draw [upbrace] (reference-stress.north west)--(bulk-modulus.north east) node[midway,yshift=+12pt, anchor=south]{subfields associated with bulk rheology};
+
+  \draw [downbrace] (density.south west)--(density.south east) node[midway,yshift=-12pt, anchor=north]{required};
+  \draw [downbrace] (body-force.south west)--(gravity-field.south east) node[midway,yshift=-12pt, anchor=north]{optional};
+
+  \draw [downbrace] (reference-stress.south west)--(reference-strain.south east) node[midway,yshift=-12pt, anchor=north]{optional};
+  \draw [downbrace] (shear-modulus.south west)--(bulk-modulus.south east) node[midway,yshift=-12pt, anchor=north]{required};
+
+\end{tikzpicture}
+
+\end{document}
