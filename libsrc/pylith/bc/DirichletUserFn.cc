@@ -38,7 +38,8 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::bc::DirichletUserFn::DirichletUserFn(void) :
-    _fn(NULL) {
+    _fn(NULL),
+    _fnDot(NULL) {
     PyreComponent::setName("dirichletuserfn");
 } // constructor
 
@@ -104,6 +105,24 @@ pylith::bc::DirichletUserFn::getUserFn(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Set time derivative history database.
+void
+pylith::bc::DirichletUserFn::setUserFnDot(PetscUserFieldFunc fnDot) {
+    PYLITH_COMPONENT_DEBUG("setUserFnDot(fnDot="<<fnDot<<")");
+
+    _fnDot = fnDot;
+} // setUserFn
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get time derivative history database.
+PetscUserFieldFunc
+pylith::bc::DirichletUserFn::getUserFnDot(void) const {
+    return _fnDot;
+} // getUserFn
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::bc::DirichletUserFn::verifyConfiguration(const pylith::topology::Field& solution) const {
@@ -157,6 +176,7 @@ pylith::bc::DirichletUserFn::createConstraint(const pylith::topology::Field& sol
     constraint->setConstrainedDOF(&_constrainedDOF[0], _constrainedDOF.size());
     constraint->setSubfieldName(_subfieldName.c_str());
     constraint->setUserFn(_fn);
+    constraint->setUserFnDot(_fnDot);
 
     PYLITH_METHOD_RETURN(constraint);
 } // createConstraint

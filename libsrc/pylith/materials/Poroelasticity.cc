@@ -414,6 +414,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
 
         switch (bitUse) {
         case 0x0:
+            f0u = pylith::fekernels::Poroelasticity::f0u;
             break;
         case 0x1:
             f0u = pylith::fekernels::Poroelasticity::g0v_bodyforce;

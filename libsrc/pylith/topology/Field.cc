@@ -109,6 +109,7 @@ pylith::topology::Field::Field(const Field& src) :
             err = PetscSectionDestroy(&newCoordSection);PYLITH_CHECK_ERROR(err);
             err = DMSetCoordinatesLocal(_dm, coordVec);PYLITH_CHECK_ERROR(err);
         } // if
+        err = DMCopyDisc(dm, _dm);PYLITH_CHECK_ERROR(err);
     } // if
 
     assert(_dm);

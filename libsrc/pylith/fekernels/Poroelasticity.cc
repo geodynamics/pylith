@@ -32,6 +32,38 @@
 /* -------------------------------------------------------------------------- */
 
 // ---------------------------------------------------------------------------------------------------------------------
+// f0u placeholder function for poroelasticity equation
+void
+pylith::fekernels::Poroelasticity::f0u(const PylithInt dim,
+                                       const PylithInt numS,
+                                       const PylithInt numA,
+                                       const PylithInt sOff[],
+                                       const PylithInt sOff_x[],
+                                       const PylithScalar s[],
+                                       const PylithScalar s_t[],
+                                       const PylithScalar s_x[],
+                                       const PylithInt aOff[],
+                                       const PylithInt aOff_x[],
+                                       const PylithScalar a[],
+                                       const PylithScalar a_t[],
+                                       const PylithScalar a_x[],
+                                       const PylithReal t,
+                                       const PylithScalar x[],
+                                       const PylithInt numConstants,
+                                       const PylithScalar constants[],
+                                       PylithScalar f0[]) {
+    // Incoming solution fields.
+
+    // Incoming auxiliary fields.
+
+    for (PylithInt i = 0; i < dim; ++i) {
+        f0[i] += 0.0;
+        // PetscPrintf(PETSC_COMM_WORLD, "f0u[%i]: %f\n",i, f0[i]);
+    } // for
+} // f0u
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // f0v function for poroelasticity equation, explicit time stepping, dynamic.
 void
 pylith::fekernels::Poroelasticity::f0v(const PylithInt dim,
@@ -505,7 +537,7 @@ pylith::fekernels::Poroelasticity::Jf0ee(const PylithInt dim,
     assert(aOff);
     assert(a);
 
-    Jf0[0] = -1.0;
+    Jf0[0] -= 1.0;
 } // Jg0ee
 
 
@@ -532,7 +564,7 @@ pylith::fekernels::Poroelasticity::Jf1eu(const PylithInt dim,
                                          const PylithScalar constants[],
                                          PylithScalar Jf1[]) {
     for (PylithInt d = 0; d < dim; ++d) {
-        Jf1[d*dim+d] = 1.0;
+        Jf1[d*dim+d] += 1.0;
     } // for
 } // Jf1eu
 
