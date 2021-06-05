@@ -48,12 +48,9 @@ void
 pylith::mmstests::TestPoroelasticity::setUp(void) {
     MMSTest::setUp();
 
-    _material = new pylith::materials::Poroelasticity;
-    CPPUNIT_ASSERT(_material);
-    _bcDisplacement = new pylith::bc::DirichletUserFn;
-    CPPUNIT_ASSERT(_bcDisplacement);
-    _bcPressure = new pylith::bc::DirichletUserFn;
-    CPPUNIT_ASSERT(_bcPressure);
+    _material = new pylith::materials::Poroelasticity;CPPUNIT_ASSERT(_material);
+    _bcDisplacement = new pylith::bc::DirichletUserFn;CPPUNIT_ASSERT(_bcDisplacement);
+    _bcPressure = new pylith::bc::DirichletUserFn;CPPUNIT_ASSERT(_bcPressure);
     _data = NULL;
 } // setUp
 
@@ -62,14 +59,10 @@ pylith::mmstests::TestPoroelasticity::setUp(void) {
 // Deallocate testing data.
 void
 pylith::mmstests::TestPoroelasticity::tearDown(void) {
-    delete _material;
-    _material = NULL;
-    delete _bcDisplacement;
-    _bcDisplacement = NULL;
-    delete _bcPressure;
-    _bcPressure = NULL;
-    delete _data;
-    _data = NULL;
+    delete _material;_material = NULL;
+    delete _bcDisplacement;_bcDisplacement = NULL;
+    delete _bcPressure;_bcPressure = NULL;
+    delete _data;_data = NULL;
 
     MMSTest::tearDown();
 } // tearDown
@@ -135,7 +128,7 @@ pylith::mmstests::TestPoroelasticity::_initialize(void) {
         factory.addDisplacement(_data->solnDiscretizations[0]);
         factory.addPressure(_data->solnDiscretizations[1]);
         factory.addVelocity(_data->solnDiscretizations[2]);
-    } else   {
+    } else {
         factory.addDisplacement(_data->solnDiscretizations[0]);
         factory.addPressure(_data->solnDiscretizations[1]);
         factory.addTraceStrain(_data->solnDiscretizations[2]);
