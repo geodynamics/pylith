@@ -22,8 +22,7 @@ dist_check_SCRIPTS = test_pylith.py
 dist_noinst_PYTHON = \
 	meshes.py \
 	TestCryer.py \
-	cryer_soln.py \
-	cryer_gendb.py
+	cryer_soln.py 
 
 dist_noinst_DATA = \
 	geometry.jou \
