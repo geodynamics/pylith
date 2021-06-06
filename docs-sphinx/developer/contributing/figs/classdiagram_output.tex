@@ -1,0 +1,64 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\usepackage{calc}
+\renewcommand{\familydefault}{phv}
+
+\usepackage{tikz}
+
+\begin{document}
+\usetikzlibrary{positioning,arrows,shapes,calc}
+\input{../../../palettes/figcolors}
+\input{umlstyle}
+
+\begin{tikzpicture}[node distance=10em, line width=1.5pt]
+
+  \node (observer-physics) [abstract-class] {\umlemptyclass{ObserverPhysics}};
+  \node (observer-solution) [abstract-class, anchor=west] at ($(observer-physics.east)+(4em,0)$) {\umlemptyclass{ObserverSolution}};
+  \node (pyre-component) [abstract-class, anchor=west] at ($(observer-solution.east)+(4em,0)$) {\umlemptyclass{PyreComponent}};
+
+  \node (output-observer) [abstract-class] at ($(pyre-component.south)-(0,4em)$) {\umlclass{OutputObserver}{writer\\trigger\\subfields}};
+
+  \node (output-solution) [abstract-class] at ($(output-observer.south)-(0,4em)$) {\umlemptyclass{OutputSoln}};
+  \node (output-physics) [concrete-class, anchor=east] at ($(output-solution.west)-(6em,0)$) {\umlemptyclass{OutputPhysics}};
+
+  \node (output-solution-domain) [concrete-class] at ($(output-solution.south)-(0,4em)$) {\umlemptyclass{OutputSolnDomain}};
+  \node (output-solution-boundary) [concrete-class] at ($(output-solution-domain.south)-(0,1ex)$) {\umlemptyclass{OutputSolnBoundary}};
+  \node (output-solution-points) [concrete-class] at ($(output-solution-boundary.south)-(0,1ex)$) {\umlemptyclass{OutputSolnPoints}};
+
+  \node (data-writer) [abstract-class, anchor=west] at ($(output-observer.east)+(8em,5em)$) {\umlemptyclass{DataWriter}};
+  \node (data-writer-vtk) [concrete-class] at ($(data-writer.south)-(0,4em)$) {\umlemptyclass{DataWriterVTK}};
+  \node (data-writer-hdf5) [concrete-class] at ($(data-writer-vtk.south)-(0,1ex)$) {\umlemptyclass{DataWriterHDF5}};
+  \node (data-writer-hdf5ext) [concrete-class] at ($(data-writer-hdf5.south)-(0,1ex)$) {\umlemptyclass{DataWriterHDF5Ext}};
+
+  \node (output-trigger) [abstract-class] at ($(data-writer.south)-(0,13em)$) {\umlemptyclass{OutputTrigger}};
+  \node (output-trigger-time) [concrete-class] at ($(output-trigger.south)-(0,4em)$) {\umlemptyclass{OutputTriggerTime}};
+  \node (output-trigger-step) [concrete-class] at ($(output-trigger-time.south)-(0,1ex)$) {\umlemptyclass{OutputTriggerStep}};
+
+  \node (output-subfield) [concrete-class] at ($(output-trigger.south)-(0,11em)$) {\umlemptyclass{OutputSubfield}};
+  
+  
+  % Relationships
+  \draw[inherit] (output-observer) -- (pyre-component);
+  \draw[inherit] (output-solution.north) -- (output-observer.south);
+  \draw[inherit] (output-solution.north) -- (observer-solution.south);
+  \draw[inherit] (output-solution-domain) -- (output-solution);
+  
+  \draw[inherit] (output-physics.north) -- (output-observer.south);
+  \draw[inherit] (output-physics.north) -- (observer-physics.south);
+
+  \draw[inherit] (data-writer) -- (pyre-component);
+  \draw[inherit] (data-writer-vtk) -- (data-writer);
+
+  \draw[inherit] (output-trigger) -- (pyre-component);
+  \draw[inherit] (output-trigger-time) -- (output-trigger);
+  
+  \draw[aggregate] ($(output-observer.east)+(0,1ex)$) -- (data-writer.west);
+  \draw[aggregate] ($(output-observer.east)-(0,1ex)$) -- (output-trigger.west);
+  \draw[aggregate] ($(output-observer.east)-(0,4ex)$) -- (output-subfield.west);
+
+
+  
+\end{tikzpicture}
+
+\end{document}

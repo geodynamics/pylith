@@ -19,7 +19,7 @@ The `Elasticity` object describes the physics for the elasticity equation, inclu
 
 
 :::{figure-md} fig-developer-material-classes
-<img src="figs/material_classdiagram.*" alt="Hierarchy for Material related classes." width="450px"/>
+<img src="figs/classdiagram_material.*" alt="Hierarchy for Material related classes." width="450px"/>
 
 Class diagram for the implementation of governing equations and bulk rheologies.
 Each governing equation implementation inherits from the abstract `Material` class and bulk rheologies inherit from the abstract rheology class specific to that governing equation.
@@ -54,7 +54,7 @@ Each governing equation implementation inherits from the abstract `Material` cla
   For the elasticity equation, we sometimes do not include body forces or inertial terms in our simulations. Rather than implement these cases as separate materials, we simply include flags in the material to turn these terms on/off. The flags are implemented as Pyre properties in our material component.
 
 :::{figure-md} fig-developer-solution-classes
-<img src="figs/solution_classdiagram.*" alt="Hierarchy for solution related classes." width="90%"/>
+<img src="figs/classdiagram_solution.*" alt="Hierarchy for solution related classes." width="90%"/>
 
 Class diagram for the solution field, solution subfields, and pre-defined containers of solution subfields.
 :::

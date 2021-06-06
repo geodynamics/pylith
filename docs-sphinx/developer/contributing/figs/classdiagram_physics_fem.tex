@@ -13,21 +13,21 @@
 \begin{tikzpicture}[node distance=10em, line width=1.5pt]
 
   % Physics
-  \node (petsc-component) [abstract-class] {\umlemptyclass{PetscComponent}};
+  \node (pyre-component) [abstract-class] {\umlemptyclass{PyreComponent}};
 
-  \node (physics) [abstract-class] at ($(petsc-component.south)-(0,4em)$) {\umlemptyclass{Physics}};
+  \node (physics) [abstract-class] at ($(pyre-component.south)-(0,4em)$) {\umlemptyclass{Physics}};
 
   \node (material) [abstract-class] at ($(physics.south)-(0,4em)$) {\umlemptyclass{Material}};
 
   \node (fault) [abstract-class] at ($(material.south)-(0,1ex)$) {\umlemptyclass{FaultCohesive}};
   \node (bc) [abstract-class] at ($(fault.south)-(0,1ex)$) {\umlemptyclass{BoundaryCondition}};
 
-  \draw[inherit] (physics) -- (petsc-component);
+  \draw[inherit] (physics) -- (pyre-component);
   \draw[inherit] (material) -- (physics);
 
   
   % Physics implementation
-  \node (generic-component) [abstract-class, anchor=west] at ($(petsc-component.east)+(12em,0)$) {\umlemptyclass{GenericComponent}};
+  \node (generic-component) [abstract-class, anchor=west] at ($(pyre-component.east)+(12em,0)$) {\umlemptyclass{GenericComponent}};
 
   \node (physics-implementation) [abstract-class] at ($(generic-component.south)-(0,4em)$) {\umlemptyclass{PhysicsImplementation}};
 
