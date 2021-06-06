@@ -59,7 +59,8 @@ html_logo = "_static/images/cig_short_pylith.png"
 html_theme = 'pydata_sphinx_theme'
 html_theme_options = {
     "collapse_navigation": True,
-    "navigation_depth": 2,
+    "navigation_depth": 3,
+    "show_toc_level": 3,
     "icon_links": [
         {
             "name": "GitHub",
