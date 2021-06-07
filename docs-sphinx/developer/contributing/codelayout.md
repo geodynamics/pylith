@@ -50,11 +50,29 @@ The C++ library, SWIG interface files, and Python modules are organized into sev
 
 ## Code Structure
 
-### Application and Problem
+### Legend for class diagrams
 
-:::{admonition} TODO
-Add class diagram and discussion for PyLithApp, Problem, etc.
+* **Abstract classes** are shown in the yellow boxes.
+* **Concrete classes** are shown in the green boxes.
+* **Inheritance** is denoted by an arrow.
+* **Aggregation** is denoted by the a diamond and arrow.
+
+### Application
+
+:::{figure-md} fig-developer-classes-pylithapp
+<img src="figs/classdiagram_pylithapp.*" alt="PyLithApp and its data member objects." width="80%" />
+
+Diagram showing the relationships among objects associated with PyLithApp.
 :::
+
+### Problem
+
+:::{figure-md} fig-developer-classes-problem
+<img src="figs/classdiagram_problem.*" alt="Python and C++ Problem objects and their data members." width="100%" />
+
+Diagram showing the relationships among the Python and C++ `Problem` objects and their data members.
+:::
+
 
 ### Physics and Finite-Element Objects
 
@@ -64,7 +82,6 @@ That is, we have one set of objects that specify the physics through materials, 
 The user specifies the parameters for the `Physics` objects, which each create the appropriate integrator and/or constraint via factory methods.
 
 :::{figure-md} fig-developer-physics-fem
-
 <img src="figs/classdiagram_physics_fem.*" alt="Hierarchy of physics and corresponding finite-element objects." width="80%" />
 
 Diagram showing the relationships among objects specifying the physics and the finite-element implementations.
@@ -75,10 +92,13 @@ The `Integrator` is further separated into concrete classes for performing the f
 We implement several kinds of constraints, corresponding to how the values of the constrained degrees of freedom and their values are specified.
 `ConstraintSpatialDB` gets values for the constrained degrees of freedom from a spatial database; `ConstraintUserFn` gets the values for the constrained degrees of freedom from a function (this object is widely used in tests); `ConstraintSimple` is a special case of `ConstraintUserFn` with the constrained degrees of freedom set programmatically using a label (this object is used for constraining the edges of the fault).
 
+`Problem` holds the `Physics` objects as materials, boundary conditions, and interfaces.
+During initialization of `Problem`, each `Physics` object creates any necessary `Integrator` and `Constraint` objects to implement the physics.
+For example, a material will create an `IntegratorDomain` object that performs integration over that material's cells.
+
 ### Materials
 
 :::{figure-md} fig-developer-classes-material
-
 <img src="figs/classdiagram_material.*" alt="Hierarchy of materials related objects." width="80%" />
 
 Diagram showing the relationships among objects associated with materials.
@@ -88,7 +108,6 @@ Diagram showing the relationships among objects associated with materials.
 ### Boundary Conditions
 
 :::{figure-md} fig-developer-classes-bc
-
 <img src="figs/classdiagram_bc.*" alt="Hierarchy of boundary condition related objects." width="80%" />
 
 Diagram showing the relationships among objects associated with boundary conditions.
@@ -160,6 +179,11 @@ At the end of each time step, it calls `problems::TimeDependent::poststep()`.
 The Python code is limited to collecting user input and launching the MPI job.
 Everything else is done in C++.
 This facilitates debugging (it is easier to track symbols in the C/C++ debugger) and unit testing, and reduces the amount of information that needs to be passed from Python to C++.
+The PyLith application and a few other utility functions, like writing the parameter file, are limited to Python.
+All other objects have a C++ implementation.
+Objects that have user input have collect the user input in Python using Pyre and pass it to a corresponding C++ object.
+Objects that do not have user input, such as the integrators and constraints, are limited to C++.
+
 The source code that follows shows the essential ingredients for Python and C++ objects, using the concrete example of the `Material` objects.
 
 :::{warning}

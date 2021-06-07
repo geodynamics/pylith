@@ -1,0 +1,49 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\usepackage{calc}
+\renewcommand{\familydefault}{phv}
+
+\usepackage{tikz}
+
+\begin{document}
+\usetikzlibrary{positioning,arrows,shapes,calc}
+\input{../../../palettes/figcolors}
+\input{umlstyle}
+
+\begin{tikzpicture}[node distance=10em, line width=1.5pt]
+
+  \node (mpi-application) [abstract-class] {\umlemptyclass{pythia.mpi.Application}};
+  \node (petsc-application) [abstract-class] at ($(mpi-application.south)-(0,4em)$) {\umlemptyclass{PetscApplication}};
+  \node (pylithapp) [concrete-class] at ($(petsc-application.south)-(0,4em)$) {\umlclass{PyLithApp}{metadata\\parameters\\mesher\\problem}};
+
+  \node (pyre-component) [abstract-class, anchor=west] at ($(mpi-application.east)+(12em,0)$) {\umlemptyclass{pythia.pyre.components.Component}};
+  \node (petsc-component) [abstract-class] at ($(pyre-component.south)-(0,4em)$) {\umlemptyclass{pythia.pyre.components.Component}};
+
+  
+  \node (metadata) [concrete-class] at ($(petsc-component.south)-(0,4em)$) {\umlemptyclass{SimulationMetadata}};
+
+  \node (parameters) [concrete-class] at ($(metadata.south)-(0,1ex)$) {\umlemptyclass{DumpParameters}};
+
+  \node (mesh-generator) [abstract-class] at ($(parameters.south)-(0,1ex)$) {\umlemptyclass{MeshGenerator}};
+
+  \node (problem) [abstract-class] at ($(mesh-generator.south)-(0,1ex)$) {\umlemptyclass{Problem}};
+ 
+  
+  % Relationships
+  \draw[inherit] (petsc-application) -- (mpi-application);
+  \draw[inherit] (pylithapp) -- (petsc-application);
+
+  \draw[inherit] (petsc-component) -- (pyre-component);
+  \draw[inherit] (metadata) -- (petsc-component);
+
+
+  \draw[aggregate] ($(pylithapp.east)+(0,2ex)$) -- (metadata.west);
+  \draw[aggregate] ($(pylithapp.east)-(0,0)$) -- (parameters.west);
+  \draw[aggregate] ($(pylithapp.east)-(0,2.5ex)$) -- (mesh-generator.west);
+  \draw[aggregate] ($(pylithapp.east)-(0,5.0ex)$) -- (problem.west);
+
+
+\end{tikzpicture}
+
+\end{document}
