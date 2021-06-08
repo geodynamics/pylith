@@ -26,15 +26,15 @@
 #  -----|   |
 #       -----
 #
-# Ux(x,y) = +1.0 if x < 0
+# Uy(x,y) = +1.0 if x < 0
 #           -1.0 if x > 0
 #
 # Dirichlet boundary conditions
-#   Ux(-4000,y) = +1.0
-#   Uy(-4000,y) =  0.0
+#   Ux(-4000,y) =  0.0
+#   Uy(-4000,y) = +1.0
 #
-#   Ux(+4000,y) = -1.0
-#   Uy(+4000,y) = 0.0
+#   Ux(+4000,y) = 0.0
+#   Uy(+4000,y) = -1.0
 
 import numpy
 
