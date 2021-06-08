@@ -290,7 +290,6 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
 
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
-    const PetscInt labelValue = _labelValue;
 
     { // Move to initialization phase.
       // Must use PetscWeakFormAddJacobian() when moved to initialization.
@@ -300,7 +299,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
             const PetscInt i_fieldBasis = solution.subfieldInfo(kernels[i].subfieldBasis.c_str()).index;
             const PetscInt i_part = pylith::feassemble::Integrator::JACOBIAN_LHS_LUMPED_INV;
             const PetscInt index = 0;
-            err = PetscWeakFormSetIndexJacobian(weakForm, dmLabel, labelValue, i_fieldTrial, i_fieldBasis, i_part,
+            err = PetscWeakFormSetIndexJacobian(weakForm, dmLabel, _labelValue, i_fieldTrial, i_fieldBasis, i_part,
                                                 index, kernels[i].j0, index, kernels[i].j1, index, kernels[i].j2, index, kernels[i].j3);
             PYLITH_CHECK_ERROR(err);
         } // for
@@ -309,7 +308,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
             err = PetscDSView(dsSoln, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
         } // if
 
-        err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+        err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
     } // Move to initialization phase
 
     PetscVec vecRowSum = NULL;
