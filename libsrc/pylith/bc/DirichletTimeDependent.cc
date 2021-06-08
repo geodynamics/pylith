@@ -292,7 +292,6 @@ pylith::bc::DirichletTimeDependent::createAuxiliaryField(const pylith::topology:
     auxiliaryField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
     auxiliaryField->allocate();
-    auxiliaryField->zeroLocal();
     auxiliaryField->createOutputVector();
 
     assert(_auxiliaryFactory);

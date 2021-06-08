@@ -211,7 +211,6 @@ pylith::materials::Elasticity::createAuxiliaryField(const pylith::topology::Fiel
     auxiliaryField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
     auxiliaryField->allocate();
-    auxiliaryField->zeroLocal();
     auxiliaryField->createOutputVector();
 
     assert(auxiliaryFactory);
@@ -245,7 +244,6 @@ pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field&
     derivedField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(solution, *derivedField);
     derivedField->allocate();
-    derivedField->zeroLocal();
     derivedField->createOutputVector();
 
     PYLITH_METHOD_RETURN(derivedField);

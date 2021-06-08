@@ -333,7 +333,6 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
     auxiliaryField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
     auxiliaryField->allocate();
-    auxiliaryField->zeroLocal();
     auxiliaryField->createOutputVector();
 
     // We don't populate the auxiliary field via a spatial database, because they will be set from the earthquake

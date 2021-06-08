@@ -186,7 +186,6 @@ pylith::materials::IncompressibleElasticity::createAuxiliaryField(const pylith::
     auxiliaryField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
     auxiliaryField->allocate();
-    auxiliaryField->zeroLocal();
     auxiliaryField->createOutputVector();
 
     assert(auxiliaryFactory);
@@ -220,7 +219,6 @@ pylith::materials::IncompressibleElasticity::createDerivedField(const pylith::to
     derivedField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(solution, *derivedField);
     derivedField->allocate();
-    derivedField->zeroLocal();
     derivedField->createOutputVector();
 
     PYLITH_METHOD_RETURN(derivedField);
