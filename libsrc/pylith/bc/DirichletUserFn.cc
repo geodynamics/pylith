@@ -38,7 +38,8 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::bc::DirichletUserFn::DirichletUserFn(void) :
-    _fn(NULL) {
+    _fn(NULL),
+    _fnDot(NULL) {
     PyreComponent::setName("dirichletuserfn");
 } // constructor
 
@@ -86,7 +87,7 @@ pylith::bc::DirichletUserFn::getConstrainedDOF(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set time history database.
+// Set user function specifying field on boundary.
 void
 pylith::bc::DirichletUserFn::setUserFn(PetscUserFieldFunc fn) {
     PYLITH_COMPONENT_DEBUG("setUserFn(fn="<<fn<<")");
@@ -96,11 +97,29 @@ pylith::bc::DirichletUserFn::setUserFn(PetscUserFieldFunc fn) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get time history database.
+// Get user function specifying field on boundary.
 PetscUserFieldFunc
 pylith::bc::DirichletUserFn::getUserFn(void) const {
     return _fn;
 } // getUserFn
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set user function specifying time derivative of field on boundary.
+void
+pylith::bc::DirichletUserFn::setUserFnDot(PetscUserFieldFunc fn) {
+    PYLITH_COMPONENT_DEBUG("setUserFnDot(fn="<<fn<<")");
+
+    _fnDot = fn;
+} // setUserFnDot
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get user function specifying time derivative of field on boundary.
+PetscUserFieldFunc
+pylith::bc::DirichletUserFn::getUserFnDot(void) const {
+    return _fnDot;
+} // getUserFnDot
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -157,6 +176,7 @@ pylith::bc::DirichletUserFn::createConstraint(const pylith::topology::Field& sol
     constraint->setConstrainedDOF(&_constrainedDOF[0], _constrainedDOF.size());
     constraint->setSubfieldName(_subfieldName.c_str());
     constraint->setUserFn(_fn);
+    constraint->setUserFnDot(_fnDot);
 
     PYLITH_METHOD_RETURN(constraint);
 } // createConstraint

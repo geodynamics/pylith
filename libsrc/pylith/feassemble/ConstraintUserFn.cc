@@ -138,7 +138,7 @@ void
 pylith::feassemble::ConstraintUserFn::setSolutionDot(pylith::topology::Field* solutionDot,
                                                      const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setSolutionDot(solution="<<solutionDot->getLabel()<<", t="<<t<<")");
+    PYLITH_JOURNAL_DEBUG("setSolutionDot(solutionDot="<<solutionDot->getLabel()<<", t="<<t<<")");
     if (!_fnDot) { PYLITH_METHOD_END; }
 
     assert(solutionDot);
