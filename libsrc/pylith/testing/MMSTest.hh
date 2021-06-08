@@ -89,7 +89,6 @@ protected:
     pylith::problems::TimeDependent *_problem; ///< Time-dependent problem.
     pylith::topology::Mesh *_mesh; ///< Finite-element mesh.
     pylith::topology::Field *_solution; ///< Solution field.
-    pylith::topology::Field *_solutionDot; ///< Solution time derivative field.
     PetscVec _solutionExactVec; ///< Global vector to use for exact solution.
     PetscVec _solutionDotExactVec; ///< Global vector to use for time derivative of exact solution.
     PylithReal _jacobianConvergenceRate; ///< Expected convergence rate for Jacobiab (when not linear).

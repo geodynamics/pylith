@@ -43,7 +43,6 @@ pylith::testing::MMSTest::setUp(void) {
     _mesh = new pylith::topology::Mesh();
     CPPUNIT_ASSERT(_mesh);
     _solution = NULL;
-    _solutionDot = NULL;
     _solutionExactVec = NULL;
     _solutionDotExactVec = NULL;
     _jacobianConvergenceRate = 0.0;
@@ -65,7 +64,6 @@ pylith::testing::MMSTest::tearDown(void) {
     delete _problem;_problem = NULL;
     delete _mesh;_mesh = NULL;
     delete _solution;_solution = NULL;
-    delete _solutionDot;_solutionDot = NULL;
 
     PetscErrorCode err;
     err = VecDestroy(&_solutionExactVec);PYLITH_CHECK_ERROR(err);
@@ -129,13 +127,14 @@ pylith::testing::MMSTest::testResidual(void) {
 
     _initialize();
 
-    CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
-    CPPUNIT_ASSERT(_solutionDot);
     if (debug.state()) {
         _solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
+    CPPUNIT_ASSERT(_problem);
+    CPPUNIT_ASSERT(_solutionExactVec);
+    CPPUNIT_ASSERT(_solutionDotExactVec);
     const PylithReal tolerance = -1.0;
     PylithReal norm = 0.0;
     err = DMTSCheckResidual(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solutionExactVec,
@@ -166,7 +165,8 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
 
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
-    CPPUNIT_ASSERT(_solutionDot);
+    CPPUNIT_ASSERT(_solutionExactVec);
+    CPPUNIT_ASSERT(_solutionDotExactVec);
     PetscErrorCode err = 0;
     const PylithReal tolerance = -1.0;
     PetscBool isLinear = PETSC_FALSE;
@@ -199,23 +199,17 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     } // if
 
     PetscErrorCode err = 0;
-    err = PetscOptionsSetValue(NULL, "-ts_max_snes_failures", "1");
-    CPPUNIT_ASSERT(!err);
-    err = PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false");
-    CPPUNIT_ASSERT(!err);
+    err = PetscOptionsSetValue(NULL, "-ts_max_snes_failures", "1");CPPUNIT_ASSERT(!err);
+    err = PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false");CPPUNIT_ASSERT(!err);
     _initialize();
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", "");
-        CPPUNIT_ASSERT(!err);
+        err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", "");CPPUNIT_ASSERT(!err);
     } // if
-    err = PetscOptionsSetValue(NULL, "-snes_test_jacobian", "1.0e-6");
-    CPPUNIT_ASSERT(!err);
-    err = PetscOptionsSetValue(NULL, "-snes_error_if_not_converged", "false");
-    CPPUNIT_ASSERT(!err);
-    err = SNESSetFromOptions(_problem->getPetscSNES());
-    CPPUNIT_ASSERT(!err);
+    err = PetscOptionsSetValue(NULL, "-snes_test_jacobian", "1.0e-6");CPPUNIT_ASSERT(!err);
+    err = PetscOptionsSetValue(NULL, "-snes_error_if_not_converged", "false");CPPUNIT_ASSERT(!err);
+    err = SNESSetFromOptions(_problem->getPetscSNES());CPPUNIT_ASSERT(!err);
 
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solution);
@@ -223,10 +217,8 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     _problem->solve();
     std::cout << "IMPORTANT: You must check the Jacobian values printed here manually!\n"
               << "           They should be O(1.0e-6) or smaller." << std::endl;
-    err = PetscOptionsClearValue(NULL, "-snes_test_jacobian");
-    CPPUNIT_ASSERT(!err);
-    err = PetscOptionsClearValue(NULL, "-snes_test_jacobian_view");
-    CPPUNIT_ASSERT(!err);
+    err = PetscOptionsClearValue(NULL, "-snes_test_jacobian");CPPUNIT_ASSERT(!err);
+    err = PetscOptionsClearValue(NULL, "-snes_test_jacobian_view");CPPUNIT_ASSERT(!err);
 
     PYLITH_METHOD_END;
 } // testJacobianFiniteDiff
@@ -250,14 +242,9 @@ pylith::testing::MMSTest::_initialize(void) {
     TSSetUp(_problem->getPetscTS());
     _setExactSolution();
 
-    // Global vector to use for analytical solution in MMS tests.
+    // Global vectors to use for analytical solution in MMS tests.
     PetscErrorCode err = VecDuplicate(_solution->globalVector(), &_solutionExactVec);CPPUNIT_ASSERT(!err);
-
-    // Create solution time derivative
-    CPPUNIT_ASSERT(!_solutionDot);
-    _solutionDot = new pylith::topology::Field(*_solution);CPPUNIT_ASSERT(_solutionDot);
-    _solutionDot->createGlobalVector();
-    err = VecDuplicate(_solutionDot->globalVector(), &_solutionDotExactVec);CPPUNIT_ASSERT(!err);
+    err = VecDuplicate(_solutionExactVec, &_solutionDotExactVec);CPPUNIT_ASSERT(!err);
 
     PYLITH_METHOD_END;
 } // _initialize
