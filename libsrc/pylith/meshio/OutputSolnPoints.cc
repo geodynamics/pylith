@@ -238,7 +238,6 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
     _pointSoln->createDiscretization();
     _pointSoln->setLabel(solution.getLabel());
     _pointSoln->allocate();
-    _pointSoln->zeroLocal();
 
     PYLITH_METHOD_END;
 } // setupInterpolator

@@ -260,7 +260,6 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     auxiliaryField.subfieldsSetup();
     auxiliaryField.createDiscretization();
     auxiliaryField.allocate();
-    auxiliaryField.zeroLocal();
 
     _factory->setValuesFromDB();
 

@@ -77,53 +77,22 @@ pylith::topology::Field::Field(const Mesh& mesh) :
 // ------------------------------------------------------------------------------------------------
 // Constructor with field to use for layout.
 pylith::topology::Field::Field(const Field& src) :
-    _mesh(src._mesh),
-    _dm(NULL),
-    _localVec(NULL),
-    _globalVec(NULL),
-    _outputVec(NULL) {
+    Field(src._mesh) {
     PYLITH_METHOD_BEGIN;
 
-    GenericComponent::setName("field");
-    _label = "unknown";
-
-    PetscErrorCode err;
-    const char* name = NULL;
-
-    if (src.dmMesh()) {
-        PetscDM dm = src.dmMesh();assert(dm);
-        PetscVec coordVec = NULL;
-        PetscErrorCode err;
-
-        err = DMClone(dm, &_dm);PYLITH_CHECK_ERROR(err);
-        err = DMGetCoordinatesLocal(dm, &coordVec);PYLITH_CHECK_ERROR(err);
-        if (coordVec) {
-            PetscDM coordDM = NULL, newCoordDM = NULL;
-            PetscSection coordSection = NULL, newCoordSection = NULL;
-
-            err = DMGetCoordinateDM(dm, &coordDM);PYLITH_CHECK_ERROR(err);
-            err = DMGetCoordinateDM(_dm, &newCoordDM);PYLITH_CHECK_ERROR(err);
-            err = DMGetSection(coordDM, &coordSection);PYLITH_CHECK_ERROR(err);
-            err = PetscSectionClone(coordSection, &newCoordSection);PYLITH_CHECK_ERROR(err);
-            err = DMSetSection(newCoordDM, newCoordSection);PYLITH_CHECK_ERROR(err);
-            err = PetscSectionDestroy(&newCoordSection);PYLITH_CHECK_ERROR(err);
-            err = DMSetCoordinatesLocal(_dm, coordVec);PYLITH_CHECK_ERROR(err);
-        } // if
-    } // if
+    _subfields = src._subfields;
 
     assert(_dm);
-    PetscSection srcSection = src.localSection();
-    PetscSection newSection = NULL;
-    err = PetscSectionClone(srcSection, &newSection);PYLITH_CHECK_ERROR(err);
-    err = DMSetSection(_dm, newSection);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionDestroy(&newSection);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err;
+
+    const char* name = NULL;
+    err = PetscObjectGetName((PetscObject)src._dm, &name);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject)_dm,  name);PYLITH_CHECK_ERROR(err);
+    err = DMCopyDisc(src._dm, _dm);PYLITH_CHECK_ERROR(err);
 
     assert(!_localVec);
     err = DMCreateLocalVector(_dm, &_localVec);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectGetName((PetscObject)src._dm, &name);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject)_dm,  name);PYLITH_CHECK_ERROR(err);
-
-    _subfields = src._subfields;
+    err = VecSet(_localVec, 0.0);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // constructor

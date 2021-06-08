@@ -248,7 +248,7 @@ public:
      */
     void createDiscretization(void);
 
-    /// Allocate field and zero local vector.
+    /// Allocate field and zero the local vector.
     void allocate(void);
 
     /// Zero local values (including constrained values).

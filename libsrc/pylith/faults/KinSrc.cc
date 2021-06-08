@@ -124,7 +124,6 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
     _auxiliaryField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(faultAuxField, *_auxiliaryField);
     _auxiliaryField->allocate();
-    _auxiliaryField->zeroLocal();
 
     _auxiliaryFactory->setValuesFromDB();
 

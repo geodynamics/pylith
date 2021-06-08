@@ -275,7 +275,6 @@ pylith::bc::TestAbsorbingDampers::testComputeRHSResidual(void) {
 
     // Initialize solution field.
     _solution->allocate();
-    _solution->zeroLocal();
     _solution->createScatter(_solution->mesh(), "global");
 
     // Set solution field.

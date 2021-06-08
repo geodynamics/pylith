@@ -501,7 +501,7 @@ pylith::problems::TimeDependent::setSolutionLocal(const PylithReal t,
         _constraints[i]->setSolution(_solution, t);
         if (_solutionDot) {
             _constraints[i]->setSolutionDot(_solutionDot, t);
-        }
+        } // if
     } // for
 
     // _solution->view("SOLUTION AFTER SETTING VALUES");
