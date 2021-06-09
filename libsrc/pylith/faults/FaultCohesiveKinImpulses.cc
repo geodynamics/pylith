@@ -60,19 +60,22 @@ pylith::faults::FaultCohesiveKin::_updateSlip(pylith::topology::Field* auxiliary
     assert(_normalizer);
 
     // Update slip subfield at current time step
-    if {step==0}{
-    PetscErrorCode err = VecSet(_slipVecTotal, 0.0);PYLITH_CHECK_ERROR(err);
-    const srcs_type::const_iterator rupturesEnd = _ruptures.end();
-    for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
+    const PetscInt step = (PetscInt) t;
+    PetscErrorCode err;
 
-        err = VecSet(_slipVecRupture, 0.0);PYLITH_CHECK_ERROR(err);
+    if (step == 0) {
+        // Create the amplitude field before the first impulse
+        err = VecSet(_slipVecTotal, 0.0);PYLITH_CHECK_ERROR(err);
+        const srcs_type::const_iterator rupturesEnd = _ruptures.end();
+        for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
+            err = VecSet(_slipVecRupture, 0.0);PYLITH_CHECK_ERROR(err);
 
-        KinSrc* src = r_iter->second;assert(src);
-        src->updateSlip(_slipVecRupture, auxiliaryField, t, _normalizer->getTimeScale());
-        err = VecAYPX(_slipVecTotal, 1.0, _slipVecRupture);
-    } // for
+            KinSrc* src = r_iter->second;assert(src);
+            src->updateSlip(_slipVecRupture, auxiliaryField, t, _normalizer->getTimeScale());
+            err = VecAYPX(_slipVecTotal, 1.0, _slipVecRupture);
+        } // for
     }
-    
+
     // Transfer slip values from local PETSc slip vector to fault auxiliary field.
     PetscInt pStart = 0, pEnd = 0;
     err = PetscSectionGetChart(auxiliaryField->localSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
@@ -82,76 +85,23 @@ pylith::faults::FaultCohesiveKin::_updateSlip(pylith::topology::Field* auxiliary
 
     const PylithScalar* slipArray = NULL;
     err = VecGetArrayRead(_slipVecTotal, &slipArray);PYLITH_CHECK_ERROR(err);
-
     for (PetscInt p = pStart, iSlip = 0; p < pEnd; ++p) {
         const PetscInt slipDof = auxiliaryVisitor.sectionDof(p);
         const PetscInt slipOff = auxiliaryVisitor.sectionOffset(p);
         for (PetscInt iDof = 0; iDof < slipDof; ++iDof, ++iSlip) {
-            auxiliaryArray[slipOff+iDof] = slipArray[iSlip];
+            auxiliaryArray[slipOff+iDof] = iSlip == step ? slipArray[iSlip] : 0.0;
         } // for
     } // for
     err = VecRestoreArrayRead(_slipVecTotal, &slipArray);PYLITH_CHECK_ERROR(err);
 
     pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
     if (debug.state()) {
-        auxiliaryField->view("Fault auxiliary field after setting slip.");
+        auxiliaryField->view("Fault auxiliary field after setting impulse.");
     } // if
 
     PYLITH_METHOD_END;
 } // _updateSlip
 
-
 // ---------------------------------------------------------------------------------------------------------------------
-// Update slip rate subfield in auxiliary field at beginning of time step.
-void
-pylith::faults::FaultCohesiveKin::_updateSlipRate(pylith::topology::Field* auxiliaryField,
-                                                  const double t) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_updateSlipRate(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
-
-    assert(auxiliaryField);
-    assert(_normalizer);
-
-    // Update slip rate subfield at current time step
-    PetscErrorCode err = VecSet(_slipVecTotal, 0.0);PYLITH_CHECK_ERROR(err);
-    const srcs_type::const_iterator rupturesEnd = _ruptures.end();
-    for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
-        err = VecSet(_slipVecRupture, 0.0);PYLITH_CHECK_ERROR(err);
-
-        KinSrc* src = r_iter->second;assert(src);
-        src->updateSlipRate(_slipVecRupture, auxiliaryField, t, _normalizer->getTimeScale());
-        err = VecAYPX(_slipVecTotal, 1.0, _slipVecRupture);
-    } // for
-
-    // Transfer slip values from local PETSc slip vector to fault auxiliary field.
-    PetscInt pStart = 0, pEnd = 0;
-    err = PetscSectionGetChart(auxiliaryField->localSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-
-    pylith::topology::VecVisitorMesh auxiliaryVisitor(*auxiliaryField, "slip_rate");
-    PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();
-
-    const PylithScalar* slipRateArray = NULL;
-    err = VecGetArrayRead(_slipVecTotal, &slipRateArray);PYLITH_CHECK_ERROR(err);
-
-    for (PetscInt p = pStart, iSlipRate = 0; p < pEnd; ++p) {
-        const PetscInt slipRateDof = auxiliaryVisitor.sectionDof(p);
-        const PetscInt slipRateOff = auxiliaryVisitor.sectionOffset(p);
-        for (PetscInt iDof = 0; iDof < slipRateDof; ++iDof, ++iSlipRate) {
-            auxiliaryArray[slipRateOff+iDof] = slipRateArray[iSlipRate];
-        } // for
-    } // for
-    err = VecRestoreArrayRead(_slipVecTotal, &slipRateArray);PYLITH_CHECK_ERROR(err);
-
-    pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
-    if (debug.state()) {
-        auxiliaryField->view("Fault auxiliary field after setting slip rate.");
-    } // if
-
-    PYLITH_METHOD_END;
-} // _updateSlipRate
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-
 
 // End of file
