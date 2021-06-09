@@ -17,7 +17,9 @@
 
 SUBDIRS = \
 	nofaults-2d \
-	faults-2d
+	nofaults-3d \
+	faults-2d \
+	eqcycle-2d
 
 
 # End of file 

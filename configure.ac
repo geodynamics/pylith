@@ -248,6 +248,7 @@ AC_CONFIG_FILES([Makefile
 		tests/fullscale/incompressibleelasticity/Makefile
 		tests/fullscale/incompressibleelasticity/nofaults-2d/Makefile
 		tests/fullscale/incompressibleelasticity/nofaults-3d/Makefile
+		tests/fullscale/linearelasticity/eqcycle-2d/Makefile
 		tests/fullscale/viscoelasticity/Makefile
 		tests/fullscale/viscoelasticity/nofaults-2d/Makefile
 		tests/fullscale/viscoelasticity/nofaults-3d/Makefile
@@ -259,7 +260,7 @@ AC_CONFIG_FILES([Makefile
 		tests/fullscale/eqinfo/Makefile
 		tests/manual/2d/powerlaw/Makefile
 		tests/manual/3d/powerlaw/Makefile
-        developer/Makefile
+		developer/Makefile
 		doc-latex/Makefile
 		doc-latex/userguide/Makefile
 		docs/Makefile
