@@ -132,6 +132,7 @@ libpylith_la_SOURCES = \
 	meshio/OutputTriggerTime.cc \
 	problems/Problem.cc \
 	problems/TimeDependent.cc \
+	problems/GreensFns.cc \
 	problems/SolutionFactory.cc \
 	problems/ObserverSoln.cc \
 	problems/ObserversSoln.cc \
@@ -144,6 +145,7 @@ libpylith_la_SOURCES = \
 	problems/InitialConditionPatch.cc \
 	problems/ProgressMonitor.cc \
 	problems/ProgressMonitorTime.cc \
+	problems/ProgressMonitorStep.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
 	topology/FieldBase.cc \

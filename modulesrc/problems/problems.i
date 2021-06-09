@@ -23,6 +23,7 @@
 %{
 #include "pylith/problems/Problem.hh"
 #include "pylith/problems/TimeDependent.hh"
+#include "pylith/problems/GreensFns.hh"
 #include "pylith/problems/Physics.hh"
 #include "pylith/problems/ObserverSoln.hh"
 #include "pylith/problems/ObserverPhysics.hh"
@@ -62,6 +63,7 @@
 %include "../topology/FieldBase.i"
 %include "Problem.i"
 %include "TimeDependent.i"
+%include "GreensFns.i"
 %include "Physics.i"
 %include "ObserverSoln.i"
 %include "ObserverPhysics.i"
