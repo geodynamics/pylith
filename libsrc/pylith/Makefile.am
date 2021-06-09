@@ -43,6 +43,7 @@ libpylith_la_SOURCES = \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveKin.cc \
+	faults/FaultCohesiveImpulses.cc \
 	faults/AuxiliaryFactoryKinematic.cc \
 	faults/KinSrc.cc \
 	faults/KinSrcStep.cc \
