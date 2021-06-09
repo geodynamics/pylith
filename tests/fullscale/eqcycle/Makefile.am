@@ -16,13 +16,7 @@
 # ----------------------------------------------------------------------
 
 SUBDIRS = \
-	cornercases \
-	linearelasticity \
-	viscoelasticity \
-	poroelasticity \
-	petsc \
-	eqinfo \
-	eqcycle
+	rigid-sliding
 
 
-# End of file
+# End of file 
