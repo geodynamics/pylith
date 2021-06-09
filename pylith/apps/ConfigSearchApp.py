@@ -101,12 +101,12 @@ class ConfigSearchApp():
             if not all(keyword in metadata.keywords for keyword in self.filters["keywords"]):
                 return False
         if "features" in self.filters:
-            if not "features" in metadata:
+            if not metadata.features:
                 return False
             if not all(feature in metadata.features for feature in self.filters["features"]):
                 return False
         if "authors" in self.filters:
-            if not "authors" in metadata:
+            if not metadata.authors:
                 return False
             if not all(author in metadata.authors for author in self.filters["authors"]):
                 return False
