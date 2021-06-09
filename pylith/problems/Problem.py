@@ -92,7 +92,6 @@ class Problem(PetscComponent, ModuleProblem):
     materials = pythia.pyre.inventory.facilityArray("materials", itemFactory=materialFactory, factory=Homogeneous)
     materials.meta['tip'] = "Materials in problem."
     
-    # moved from PyLithApp.py
     from pylith.topology.MeshImporter import MeshImporter
     mesher = pythia.pyre.inventory.facility(
         "mesh_generator", family="mesh_generator", factory=MeshImporter)
