@@ -49,10 +49,18 @@
 #include <typeinfo> // USES typeid()
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Return the number of impusles
+void
+pylith::faults::FaultCohesiveKinImpulses::getNumImpulses() {
+  PetscErrorCode err = VecGetSize(_slipVecTotal, &N);PYLITH_CHECK_ERROR(err);
+  return N;
+} // getNumImpulses
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Update slip subfield in auxiliary field at beginning of time step.
 void
-pylith::faults::FaultCohesiveKin::_updateSlip(pylith::topology::Field* auxiliaryField,
-                                              const double t) {
+pylith::faults::FaultCohesiveKinImpulses::_updateSlip(pylith::topology::Field* auxiliaryField,
+                                                      const double t) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateSlip(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
