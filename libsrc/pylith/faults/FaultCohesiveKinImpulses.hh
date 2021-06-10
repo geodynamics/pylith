@@ -39,6 +39,12 @@ public:
     /// Destructor.
     ~FaultCohesiveKinImpulses(void);
 
+    /** Return the number of impulses
+     *
+     * @param[out] the number of impulses
+     */
+    PylithInt getNumImpulses();
+
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
     /** Update slip subfield in auxiliary field at beginning of time step.
