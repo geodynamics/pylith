@@ -15,13 +15,18 @@
 //
 // ======================================================================
 //
-
 #include <portinfo>
 
 #include "GreensFns.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+
+#if defined(TEMPORARY)
+#else
+#include "pylith/faults/FaultCohesiveImpulses.hh" // USES FaultCohesiveImpulses
+#endif
+
 
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/feassemble/Constraint.hh" // USES Constraint
@@ -56,7 +61,8 @@ pylith::problems::GreensFns::GreensFns(void) :
     _faultImpulses(NULL),
     _snes(NULL),
     _monitor(NULL),
-    _residual(NULL)
+    _residual(NULL),
+    _solutionDot(NULL) {
     PyreComponent::setName(_GreensFns::pyreComponent);
 } // constructor
 
@@ -76,8 +82,11 @@ pylith::problems::GreensFns::deallocate(void) {
 
     Problem::deallocate();
 
+    _faultImpulses = NULL; // Memory handle in Python. :TODO: Use shared pointer.
+
     _monitor = NULL; // Memory handle in Python. :TODO: Use shared pointer.
     delete _residual;_residual = NULL;
+    delete _solutionDot;_solutionDot = NULL;
 
     PetscErrorCode err = SNESDestroy(&_snes);PYLITH_CHECK_ERROR(err);
 
@@ -112,30 +121,6 @@ pylith::problems::GreensFns::setProgressMonitor(pylith::problems::ProgressMonito
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get Petsc DM associated with problem.
-PetscDM
-pylith::problems::GreensFns::getPetscDM(void) {
-    PYLITH_METHOD_BEGIN;
-
-    PetscDM dm = NULL;
-    PetscErrorCode err = SNESGetDM(_snes, &dm);PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_RETURN(dm);
-} // getPetscDM
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-/** Get nonlinear solver for problem.
- *
- * @returns PETSc SNES for problem.
- */
-PetscSNES
-pylith::problems::GreensFns::getPetscSNES(void) {
-    return _snes;
-} // getPetscSNES
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration.
 void
 pylith::problems::GreensFns::verifyConfiguration(void) const {
@@ -149,7 +134,13 @@ pylith::problems::GreensFns::verifyConfiguration(void) const {
     const size_t numInterfaces = _interfaces.size();
     for (size_t i = 0; i < numInterfaces; ++i) {
         if (_faultImpulsesId = _interfaces[i]->getInterfaceId()) {
-            _faultImpulses = _interfaces[i];
+            _faultImpulses = dynamic_cast<FaultCohesiveImpulses*>(_interfaces[i]);
+    if (!_faultImpulses) {
+        std::ostringstream msg;
+        msg << "Found fault with id (" << _faultImpulsesId << ") in interfaces for "
+            << "imposing impulses, but type is not FaultCohesiveImpulses.";
+        throw std::runtime_error(msg.str());
+    } // if
         } // if
     } // for
     if (!_faultImpulses) {
@@ -182,14 +173,12 @@ pylith::problems::GreensFns::initialize(void) {
     PetscVec solutionVector = _solution->globalVector();
     _solution->scatterLocalToVector(solutionVector);
     err = SNESSetSolution(_snes, solutionVector);PYLITH_CHECK_ERROR(err);
+    delete _solutionDot; _solutionDot = new pylith::topology::Field(*_solution);assert(_solutionDot);
+    _solutionDot->setLabel("solution_dot");
 
     // Initialize residual.
     delete _residual;_residual = new pylith::topology::Field(*_solution);assert(_residual);
     _residual->setLabel("residual");
-
-    // Set callbacks.
-    PYLITH_COMPONENT_DEBUG("Setting PetscSNES callback for poststep().");
-    err = SNESSetPostStep(_snes, poststep);PYLITH_CHECK_ERROR(err);
 
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC:
@@ -213,11 +202,11 @@ pylith::problems::GreensFns::initialize(void) {
 
     pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
     if (debug.state()) {
-        PetscDS prob = NULL;
-        err = DMGetDS(_solution->dmMesh(), &prob);PYLITH_CHECK_ERROR(err);
+        PetscDS dsSoln = NULL;
+        err = DMGetDS(_solution->dmMesh(), &dsSoln);PYLITH_CHECK_ERROR(err);
         debug << pythia::journal::at(__HERE__)
               << "Solution Discretization" << pythia::journal::endl;
-        PetscDSView(prob, PETSC_VIEWER_STDOUT_SELF);
+        PetscDSView(dsSoln, PETSC_VIEWER_STDOUT_SELF);
     } // if
 
     if (_monitor) {
@@ -238,20 +227,49 @@ pylith::problems::GreensFns::solve(void) {
     PetscErrorCode err;
 
     // Compute Jacobian
-    err = SNESFormJacobian(_snes);PYLITH_CHECK_ERROR(err);
+    { // Move to createJacobian
+    PetscErrorCode err;
+    PetscDS dsSoln = NULL;
+    PetscBool hasJacobian, hasPreconditioner;
+    PetscDM dmSNES = this->getPetscDM();PYLITH_CHECK_ERROR(err);
+    err = DMCreateMatrix(dmSNES, &jacobian);PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(_solution->dmMesh(), &dsSoln);PYLITH_CHECK_ERROR(err);
+    err = PetscDSHasJacobian(ds, &hasJacobian);PYLITH_CHECK_ERROR(err);
+    if (!hasJacobian) {
+        throw std::runtime_error("PETSc DS indicates there is no Jacobian to form. Jacobian expected for Green's function problem.");
+    } // if
+    err = PetscDSHasJacobianPreconditioner(ds, &hasPreconditioner);PYLITH_CHECK_ERROR(err);
+    if (hasPreconditioner) {
+        err = DMCreateMatrix(dmSNES, &jacobianPrecond);PYLITH_CHECK_ERROR(err);
+        err = PetscObjectSetName((PetscObject) jacobianPrecond, "Preconditioning Matrix");PYLITH_CHECK_ERROR(err);
+        err = PetscObjectSetOptionsPrefix((PetscObject) jacobianPrecond, "jacpre_");PYLITH_CHECK_ERROR(err);
+    } // if
+    } // Move to createJacobian()
+    PetscMat jacobian = NULL;
+    PetscMat jacobianPrecond = NULL;
+    // createJacobian(&jacobian, &jacobianPrecond);
+    err = SNESComputeJacobian(_snes, _solution->globalVector(), jacobian, jacobianPrecond);PYLITH_CHECK_ERROR(err);
 
     PetscKSP ksp = NULL;
     err = SNESGetKSP(_snes, &ksp);PYLITH_CHECK_ERROR(err);assert(ksp);
 
     // Get number of impulses
+#if defined(TEMPORARY)
+    const size_t numImpulses = 0;
+#else
     const size_t numImpulses = _faultImpulses->getNumImpulses();
+#endif
+
+    // Loop over impulses
+    const PylithReal tolerance = 1.0e-4;
     for (size_t i=0; i < numImpulses; ++i) {
         // Update impulse on fault
-        _faultImpulses->update(i); // FIX THIS based on FaultCohesiveImpulses implementation
+        const PetscReal impulseReal = i + tolerance;
+        _faultImpulses->updateState(impulseReal);
 
         err = KSPSolve(ksp, _residual->globalVector(), _solution->globalVector());PYLITH_CHECK_ERROR(err);
-    _solution->scatterVectorToLocal(solution->globalVector());
-    _solution->scatterLocalToOutput();
+        _solution->scatterVectorToLocal(solution->globalVector());
+        _solution->scatterLocalToOutput();
         poststep(i); 
     } // for
 
@@ -268,27 +286,34 @@ pylith::problems::GreensFns::poststep(const int impulse) {
 
     // Get current solution
     PetscErrorCode err;
-    PylithInt tindex = impulse;
+    const PetscReal t = 0;
+    const PetscReal dt = 1.0;
 
     // Update integrators.
     const size_t numIntegrators = _integrators.size();
     for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->poststep(tindex, *_solution);
+        _integrators[i]->poststep(t, impulse, dt, *_solution);
     } // for
 
     // Update constraints.
     const size_t numConstraints = _constraints.size();
     for (size_t i = 0; i < numConstraints; ++i) {
-        _constraints[i]->poststep(tindex, *_solution);
+        _constraints[i]->poststep(t, impulse, dt, *_solution);
     } // for
 
     // Notify problem observers of updated solution.
     assert(_observers);
-    _observers->notifyObservers(tindex, *_solution);
+    _observers->notifyObservers(t, impulse, dt, *_solution);
 
+    // Get number of impulses for monitor
+#if defined(TEMPORARY) // Wait for merge with FaultCohesiveImpulses
+    const size_t numImpulses = 0;
+#else
+    const size_t numImpulses = _faultImpulses->getNumImpulses();
+#endif
     if (_monitor) {
         assert(_normalizer);
-        _monitor->update(tindex); // fix this
+        _monitor->update(impulse*1.0, 0.0, numImpulses*1.0);
     } // if
 
     PYLITH_METHOD_END;
@@ -307,8 +332,9 @@ pylith::problems::GreensFns::setSolutionLocal(PetscVec solutionVec) {
     _solution->scatterVectorToLocal(solutionVec);
 
     const size_t numConstraints = _constraints.size();
+    const PetscReal t = 0.0;
     for (size_t i = 0; i < numConstraints; ++i) {
-        _constraints[i]->setSolution(_solution);
+        _constraints[i]->setSolution(t, _solution);
     } // for
 
     // _solution->view("SOLUTION AFTER SETTING VALUES");
@@ -333,11 +359,13 @@ pylith::problems::GreensFns::computeResidual(PetscVec residualVec,
     setSolutionLocal(solutionVec);
 
     // Sum residual across integrators.
+    const PetscReal t = 0.0;
+    const PetscReal dt = 1.0;
     _residual->zeroLocal();
     const int numIntegrators = _integrators.size();
     assert(numIntegrators > 0); // must have at least 1 integrator
     for (int i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->computeResidual(_residual, *_solution);
+        _integrators[i]->computeLHSResidual(_residual, t, dt, *_solution, *_solutionDot);
     } // for
 
     // Assemble residual values across processes.
@@ -374,9 +402,13 @@ pylith::problems::GreensFns::computeJacobian(PetscMat jacobianMat,
     setSolutionLocal(solutionVec);
 
     // Sum Jacobian contributions across integrators.
+    const PetscReal t = 0.0;
+    const PetscReal dt = 1.0;
+    const PetscReal s_tshift = 0.0;
+
     const size_t numIntegrators = _integrators.size();
     for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->computeJacobian(jacobianMat, precondMat, *_solution);
+        _integrators[i]->computeLHSJacobian(jacobianMat, precondMat, t, dt, s_tshift, *_solution, *_solutionDot);
     } // for
 
     // Solver handles assembly.
@@ -424,21 +456,5 @@ pylith::problems::GreensFns::computeJacobian(PetscSNES snes,
     PYLITH_METHOD_RETURN(0);
 } // computeJacobian
 
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Callback static method for operations after advancing solution of one impulse.
-PetscErrorCode
-pylith::problems::GreensFns::poststep(PetscSNES snes) {
-    PYLITH_METHOD_BEGIN;
-    pythia::journal::debug_t debug(_GreensFns::pyreComponent);
-    debug << pythia::journal::at(__HERE__)
-          << "poststep(snes="<<snes<<")" << pythia::journal::endl;
-
-    GreensFns* problem = NULL;
-    PetscErrorCode err = SNESGetApplicationContext(snes, (void*)&problem);PYLITH_CHECK_ERROR(err);assert(problem);
-    problem->poststep();
-
-    PYLITH_METHOD_RETURN(0);
-} // poststep
 
 // End of file

@@ -22,6 +22,7 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	Problem.hh \
 	TimeDependent.hh \
+	GreensFns.hh \
 	SolutionFactory.hh \
 	ObserverSoln.hh \
 	ObserversSoln.hh \
