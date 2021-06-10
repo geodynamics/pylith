@@ -44,18 +44,6 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Set unit for simulation time in output.
-     *
-     * @param[in] Unit of time.
-     */
-    void setTimeUnit(const char* value);
-
-    /** Set unit for simulation time in output.
-     *
-     * @param[in] Unit of time.
-     */
-    const char* getTimeUnit(void) const;
-
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
@@ -67,12 +55,12 @@ protected:
 
     /** Update progress.
      *
-     * @param[in current Current step.
+     * @param[in] current step.
      * @param[in] now Current time.
      * @param[in] percentComplete Percent completed
      * @param[in] finished Time stamp of estimated finish.
      */
-    void _update(const double current,
+    void _update(const int current,
                  const time_t& now,
                  const double percentComplete,
                  const char* finished);
@@ -80,8 +68,6 @@ protected:
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-    double _baseTime; ///< Units of time as seconds.
-    std::string _baseUnit; ///< Unit of time.
     std::ofstream _sout; ///< Output stream.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
