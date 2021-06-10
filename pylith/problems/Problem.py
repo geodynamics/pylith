@@ -82,6 +82,11 @@ class Problem(PetscComponent, ModuleProblem):
     from pylith.materials.Homogeneous import Homogeneous
     materials = pythia.pyre.inventory.facilityArray("materials", itemFactory=materialFactory, factory=Homogeneous)
     materials.meta['tip'] = "Materials in problem."
+    
+    from pylith.topology.MeshImporter import MeshImporter
+    mesher = pythia.pyre.inventory.facility(
+        "mesh_generator", family="mesh_generator", factory=MeshImporter)
+    mesher.meta['tip'] = "Generates or imports the computational mesh."
 
     bc = pythia.pyre.inventory.facilityArray("bc", itemFactory=bcFactory, factory=EmptyBin)
     bc.meta['tip'] = "Boundary conditions."
@@ -103,7 +108,7 @@ class Problem(PetscComponent, ModuleProblem):
         PetscComponent.__init__(self, name, facility="problem")
         self.mesh = None
 
-    def preinitialize(self, mesh):
+    def preinitialize(self):
         """Do minimal initialization.
         """
         from pylith.mpi.Communicator import mpi_comm_world
@@ -136,7 +141,7 @@ class Problem(PetscComponent, ModuleProblem):
             ModuleProblem.setGravityField(self, self.gravityField)
 
         # Do minimal setup of solution.
-        self.solution.preinitialize(self, mesh)
+        self.solution.preinitialize(self, self.mesh)
         ModuleProblem.setSolution(self, self.solution.field)
 
         # Preinitialize materials
@@ -159,7 +164,20 @@ class Problem(PetscComponent, ModuleProblem):
             observer.preinitialize(self)
             ModuleProblem.registerObserver(self, observer)
 
-        ModuleProblem.preinitialize(self, mesh)
+        ModuleProblem.preinitialize(self, self.mesh)
+        return
+
+
+    def mesh(self):
+        """Create mesh (adjust to account for interfaces (faults) if necessary).
+        """
+        interfaces = None
+        if "interfaces" in dir(self):
+            interfaces = self.interfaces.components()
+        self.mesher.preinitialize(self)
+        self.mesh = self.mesher.create(self, interfaces)
+        del interfaces
+        self.mesher = None
 
     def verifyConfiguration(self):
         """Verify compatibility of configuration.
@@ -199,8 +217,6 @@ class Problem(PetscComponent, ModuleProblem):
         """Save problem state for restart.
         """
         raise NotImplementedError("checkpoint() not implemented.")
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _printInfo(self):
         """Write overview of problem to info journal.
