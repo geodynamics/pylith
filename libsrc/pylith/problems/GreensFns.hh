@@ -22,11 +22,16 @@
  * @brief Object for Green's functions problem.
  */
 
-#if !defined(pylith_problems_GreensFns_hh)
-#define pylith_problems_GreensFns_hh
+#if !defined(pylith_problems_greensfns_hh)
+#define pylith_problems_greensfns_hh
+
+#define TEMPORARY
 
 #include "Problem.hh" // ISA Problem
 #include "pylith/testing/testingfwd.hh" // USES MMSTest
+#include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesiveImpulses
+
+#include "pylith/testing/FaultCohesiveStub.hh" // TEMPORARY
 
 class pylith::problems::GreensFns : public pylith::problems::Problem {
     friend class TestGreensFns; // unit testing
@@ -61,18 +66,6 @@ public:
      * @param[in] monitor Progress monitor for Green's functions simulation.
      */
     void setProgressMonitor(pylith::problems::ProgressMonitorStep* monitor);
-
-    /** Get Petsc DM for problem.
-     *
-     * @returns PETSc DM for problem.
-     */
-    PetscDM getPetscDM(void);
-
-    /** Get nonlinear solver for problem.
-     *
-     * @returns PETSc SNES for problem.
-     */
-    PetscSNES getPetscSNES(void);
 
     /// Verify configuration.
     void verifyConfiguration(void) const;
@@ -127,16 +120,34 @@ public:
                                       PetscVec residualVec,
                                       void* context);
 
+    /** Callback static method for computing Jacobian.
+     *
+     * @param[out] jacobianMat PETSc Mat for Jacobian.
+     * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
+     * @param[in] solutionVec PETSc Vec with current trial solution.
+     */
+    static
+    void computeJacobian(PetscSNES snes,
+                         PetscVec solutionVec,
+                         PetscMat jacobianMat,
+                         PetscMat precondMat,
+                         void* context);
+
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     PylithInt _faultImpulsesId;
-    pylith::topology::FaultCohesiveImpulses* _faultImpulses; ///< Fault interface with Green's functions impulses.
+#if defined(TEMPORARY)
+    pylith::fa::FaultCohesiveStub _faultImpulses;
+#else
+    pylith::faults::FaultCohesiveImpulses* _faultImpulses; ///< Fault interface with Green's functions impulses.
+#endif
 
     PetscSNES _snes; ///< PETSc SNES solver.
     pylith::problems::ProgressMonitorStep* _monitor; ///< Monitor for simulation progress.
 
     pylith::topology::Field* _residual; ///< Handle to residual field.
+    pylith::topology::Field* _solutionDot; ///< Handle to time derivative of solution.
 
 }; // GreensFns
 
