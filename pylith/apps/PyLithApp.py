@@ -23,6 +23,16 @@ def problemFactory(name):
     from pylith.problems.TimeDependent import TimeDependent
     return facility(name, family="problem", factory=TimeDependent)
 
+# !!! Is this the approriate location for this code?
+# Based on Problem.py lines 31 - 36
+def problemFactory(name):
+    """Factory for problem items.
+    """
+    from pythia.pyre.inventory import facility
+    from pylith.problems.TimeDependent import TimeDependent
+    return facility(name, family="problem", factory=TimeDependent)
+
+
 
 class PyLithApp(PetscApplication):
     """Python PyLithApp application.
@@ -91,6 +101,18 @@ class PyLithApp(PetscApplication):
         self._debug.log(resourceUsageString())
         self._eventLogger.stagePop()
 
+        # Create mesh (adjust to account for interfaces (faults) if necessary)
+        # self._eventLogger.stagePush("Meshing")
+        # interfaces = None
+        # if "interfaces" in dir(self.problem):
+        #     interfaces = self.problem.interfaces.components()
+        # self.mesher.preinitialize(self.problem)
+        # mesh = self.mesher.create(self.problem, interfaces)
+        # del interfaces
+        # self.mesher = None
+        # self._debug.log(resourceUsageString())
+        # self._eventLogger.stagePop()
+
         # Setup problem, verify configuration, and then initialize
         self._eventLogger.stagePush("Setup")
         for problem in self.problems.components():
@@ -111,12 +133,11 @@ class PyLithApp(PetscApplication):
         # TODO: load numIterations from input file
         # TODO: add control over integration time (start and end times)
         numIterations = 1 # number of earthquake cycles !!! later import this from an input file
-        count = 0
-        while count < numIterations:
+        while count <= numIterations:
             for problem in self.problems.components():
-                problem.run()
+                problem.run(self)
                 self._debug.log(resourceUsageString())
-            count += 1
+            count = count + 1
 
         # Cleanup
         self._eventLogger.stagePush("Finalize")
