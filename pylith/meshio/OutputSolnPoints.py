@@ -57,7 +57,7 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
 
         # Convert to mesh coordinate system
         from spatialdata.geocoords.Converter import convert
-        convert(stationCoords, problem.mesh().getCoordSys(), self.reader.coordsys)
+        convert(stationCoords, problem.mesh.getCoordSys(), self.reader.coordsys)
 
         # Nondimensionalize
         stationCoords /= problem.normalizer.lengthScale.value

@@ -75,16 +75,13 @@ class TimeDependent(Problem, ModuleTimeDependent):
         Problem.__init__(self, name)
         return
 
-    def preinitialize(self, mesh):
+    def preinitialize(self):
         """Setup integrators for each element family (material/quadrature,
         bc/quadrature, etc.).
         """
         self._setupLogging()
 
-        import weakref
-        self.mesh = weakref.ref(mesh)
-
-        Problem.preinitialize(self, mesh)
+        Problem.preinitialize(self)
 
         ModuleTimeDependent.setStartTime(self, self.startTime.value)
         ModuleTimeDependent.setEndTime(self, self.endTime.value)
@@ -94,14 +91,14 @@ class TimeDependent(Problem, ModuleTimeDependent):
 
         # Preinitialize initial conditions.
         for ic in self.ic.components():
-            ic.preinitialize(mesh)
+            ic.preinitialize(self.mesh)
         ModuleTimeDependent.setInitialCondition(self, self.ic.components())
 
         self.progressMonitor.preinitialize()
         ModuleTimeDependent.setProgressMonitor(self, self.progressMonitor)
         return
 
-    def run(self, app):
+    def run(self):
         """Solve time dependent problem.
         """
         from pylith.mpi.Communicator import mpi_comm_world
