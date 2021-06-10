@@ -31,6 +31,7 @@ namespace pylith {
     namespace problems {
         class Problem;
         class TimeDependent;
+        class GreensFns;
 
         class SolutionFactory;
         class ObserversSoln;
