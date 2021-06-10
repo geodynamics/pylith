@@ -121,7 +121,7 @@ class Problem(PetscComponent, ModuleProblem):
         self.mesh = None
         return
 
-    def preinitialize(self, mesh):
+    def preinitialize(self):
         """Do minimal initialization.
         """
         from pylith.mpi.Communicator import mpi_comm_world
@@ -154,7 +154,7 @@ class Problem(PetscComponent, ModuleProblem):
             ModuleProblem.setGravityField(self, self.gravityField)
 
         # Do minimal setup of solution.
-        self.solution.preinitialize(self, mesh)
+        self.solution.preinitialize(self, self.mesh)
         ModuleProblem.setSolution(self, self.solution.field)
 
         # Preinitialize materials
@@ -177,7 +177,7 @@ class Problem(PetscComponent, ModuleProblem):
             observer.preinitialize(self)
             ModuleProblem.registerObserver(self, observer)
 
-        ModuleProblem.preinitialize(self, mesh)
+        ModuleProblem.preinitialize(self, self.mesh)
         return
 
 
