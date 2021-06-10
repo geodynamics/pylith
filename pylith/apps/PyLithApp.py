@@ -22,6 +22,16 @@ from .PetscApplication import PetscApplication
 
 # PyLithApp class
 
+# !!! Is this the approriate location for this code?
+# Based on Problem.py lines 31 - 36
+def problemFactory(name):
+    """Factory for problem items.
+    """
+    from pythia.pyre.inventory import facility
+    from pylith.problems.TimeDependent import TimeDependent
+    return facility(name, family="problem", factory=TimeDependent)
+
+
 
 class PyLithApp(PetscApplication):
     """Python PyLithApp application.
@@ -50,15 +60,21 @@ class PyLithApp(PetscApplication):
         "dump_parameters", family="dump_parameters", factory=DumpParametersJson)
     parameters.meta['tip'] = "Dump parameters used and version information to file."
 
-    from pylith.topology.MeshImporter import MeshImporter
-    mesher = pythia.pyre.inventory.facility(
-        "mesh_generator", family="mesh_generator", factory=MeshImporter)
-    mesher.meta['tip'] = "Generates or imports the computational mesh."
+    # from pylith.topology.MeshImporter import MeshImporter
+    # mesher = pythia.pyre.inventory.facility(
+    #     "mesh_generator", family="mesh_generator", factory=MeshImporter)
+    # mesher.meta['tip'] = "Generates or imports the computational mesh."
 
-    from pylith.problems.TimeDependent import TimeDependent
-    problem = pythia.pyre.inventory.facility(
-        "problem", family="problem", factory=TimeDependent)
-    problem.meta['tip'] = "Computational problem to solve."
+    from pylith.problems.SingleProblem import SingleProblem
+    # initialize facilityArray of problems, default 1 problem
+    problems = pythia.pyre.inventory.facilityArray(
+        "problems", itemFactory=problemFactory, factory=SingleProblem)
+    problems.meta['tip'] = "Computational problem(s) to solve."
+    
+    # initialize 1 problem (original text)
+    # problem = pythia.pyre.inventory.facility(
+    #     "problem", family="problem", factory=TimeDependent)
+    #problem.meta['tip'] = "Computational problem to solve."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -90,37 +106,51 @@ class PyLithApp(PetscApplication):
 
         self._setupLogging()
 
-        # Create mesh (adjust to account for interfaces (faults) if necessary)
+
+        # # !!! New lines creating mesh for each problem
         self._eventLogger.stagePush("Meshing")
-        interfaces = None
-        if "interfaces" in dir(self.problem):
-            interfaces = self.problem.interfaces.components()
-        self.mesher.preinitialize(self.problem)
-        mesh = self.mesher.create(self.problem, interfaces)
-        del interfaces
-        self.mesher = None
+        for problem in self.problems.components():
+            problem.mesh()
         self._debug.log(resourceUsageString())
         self._eventLogger.stagePop()
 
+        # Create mesh (adjust to account for interfaces (faults) if necessary)
+        # self._eventLogger.stagePush("Meshing")
+        # interfaces = None
+        # if "interfaces" in dir(self.problem):
+        #     interfaces = self.problem.interfaces.components()
+        # self.mesher.preinitialize(self.problem)
+        # mesh = self.mesher.create(self.problem, interfaces)
+        # del interfaces
+        # self.mesher = None
+        # self._debug.log(resourceUsageString())
+        # self._eventLogger.stagePop()
+
         # Setup problem, verify configuration, and then initialize
         self._eventLogger.stagePush("Setup")
-        self.problem.preinitialize(mesh)
-        self._debug.log(resourceUsageString())
+        for problem in self.problems.components():
+            problem.preinitialize()
+            self._debug.log(resourceUsageString())
 
-        self.problem.verifyConfiguration()
+            problem.verifyConfiguration()
 
-        self.problem.initialize()
-        self._debug.log(resourceUsageString())
-
+            problem.initialize()
+            self._debug.log(resourceUsageString())
         self._eventLogger.stagePop()
 
         # If initializing only, stop before running problem
         if self.initializeOnly:
             return
 
-        # Run problem
-        self.problem.run(self)
-        self._debug.log(resourceUsageString())
+        # Cycle over all problems
+        # TODO: load numIterations from input file
+        # TODO: add control over integration time (start and end times)
+        numIterations = 1 # number of earthquake cycles !!! later import this from an input file
+        while count <= numIterations:
+            for problem in self.problems.components():
+                problem.run(self)
+                self._debug.log(resourceUsageString())
+            count = count + 1
 
         # Cleanup
         self._eventLogger.stagePush("Finalize")
