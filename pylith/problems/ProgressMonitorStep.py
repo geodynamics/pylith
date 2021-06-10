@@ -30,11 +30,6 @@ class ProgressMonitorStep(ProgressMonitor, ModuleProgressMonitorStep):
     Factory: progress_monitor.
     """
 
-    import pythia.pyre.inventory
-
-    tUnits = pythia.pyre.inventory.str("t_units", default="year")
-    tUnits.meta['tip'] = "Units for simulation time in output."
-
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="ProgressMonitorStep"):
@@ -47,7 +42,6 @@ class ProgressMonitorStep(ProgressMonitor, ModuleProgressMonitorStep):
         """Do minimal initialization.
         """
         ProgressMonitor.preinitialize(self)
-        ModuleProgressMonitorStep.setTimeUnit(self, self.tUnits)
         return
 
     # PRIVATE METHODS /////////////////////////////////////////////////////
