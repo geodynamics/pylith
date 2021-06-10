@@ -91,6 +91,12 @@ class Problem(PetscComponent, ModuleProblem):
     from pylith.materials.Homogeneous import Homogeneous
     materials = pythia.pyre.inventory.facilityArray("materials", itemFactory=materialFactory, factory=Homogeneous)
     materials.meta['tip'] = "Materials in problem."
+    
+    # moved from PyLithApp.py
+    from pylith.topology.MeshImporter import MeshImporter
+    mesher = pythia.pyre.inventory.facility(
+        "mesh_generator", family="mesh_generator", factory=MeshImporter)
+    mesher.meta['tip'] = "Generates or imports the computational mesh."
 
     bc = pythia.pyre.inventory.facilityArray("bc", itemFactory=bcFactory, factory=EmptyBin)
     bc.meta['tip'] = "Boundary conditions."
@@ -173,6 +179,19 @@ class Problem(PetscComponent, ModuleProblem):
 
         ModuleProblem.preinitialize(self, mesh)
         return
+
+
+    # !!! New lines based on PylithApp.py mesh creation lines in main()
+    def mesh(self):
+        """Create mesh (adjust to account for interfaces (faults) if necessary).
+        """
+        interfaces = None
+        if "interfaces" in dir(self):
+            interfaces = self.interfaces.components()
+        self.mesher.preinitialize(self)
+        self.mesh = self.mesher.create(self, interfaces)
+        del interfaces
+        self.mesher = None
 
     def verifyConfiguration(self):
         """Verify compatibility of configuration.
