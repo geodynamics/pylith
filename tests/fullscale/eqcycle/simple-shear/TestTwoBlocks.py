@@ -34,7 +34,7 @@ class TestCase(FullTestCase):
     """
     FAULTS = ["fault"]
     DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos"]
-    OUTPUT_BOUNDARIES = ["bc_ypos"]
+    NEUMANN_BOUNDARIES = ["bc_yneg", "bc_ypos"]
 
     def setUp(self):
         """Setup for test.
@@ -78,13 +78,21 @@ class TestCase(FullTestCase):
             check_data(filename, self,
                        self.BOUNDARIES[bc], vertexFields=vertexFields)
 
-    def test_boundary_solution(self):
+    def test_bcneumann_info(self):
+        vertexFields = ["initial_amplitude"]
+        for bc in self.NEUMANN_BOUNDARIES:
+            filename = "output/{}-{}_info.h5".format(self.NAME, bc)
+            check_data(filename, self,
+                       self.BOUNDARIES[bc], vertexFields=vertexFields)
+        return
+
+    def test_bcneumann_solution(self):
         vertexFields = ["displacement"]
-        for bc in self.OUTPUT_BOUNDARIES:
+        for bc in self.NEUMANN_BOUNDARIES:
             filename = "output/{}-{}.h5".format(self.NAME, bc)
             check_data(filename, self,
                        self.BOUNDARIES[bc], vertexFields=vertexFields)
-
+        return
 
 # ----------------------------------------------------------------------------------------------------------------------
 class TestQuad(TestCase, meshes.Quad):
