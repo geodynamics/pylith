@@ -129,7 +129,7 @@ class PyLithApp(PetscApplication):
         # Setup problem, verify configuration, and then initialize
         self._eventLogger.stagePush("Setup")
         for problem in self.problems.components():
-            problem.preinitialize(mesh)
+            problem.preinitialize()
             self._debug.log(resourceUsageString())
 
             problem.verifyConfiguration()
