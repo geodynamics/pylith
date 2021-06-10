@@ -23,14 +23,6 @@ from .Problem import Problem
 from .problems import GreensFns as ModuleGreensFns
 
 
-def icFactory(name):
-    """Factory for initial conditions items.
-    """
-    from pythia.pyre.inventory import facility
-    from pylith.problems.InitialConditionDomain import InitialConditionDomain
-    return facility(name, family="initial_conditions", factory=InitialConditionDomain)
-
-
 class GreensFns(Problem, ModuleGreensFns):
     """Python class for Green's functions problem.
 
@@ -38,24 +30,13 @@ class GreensFns(Problem, ModuleGreensFns):
     """
 
     import pythia.pyre.inventory
-    from pythia.pyre.units.time import year
-    from pylith.utils.EmptyBin import EmptyBin
 
-    faultId = pythia.pyre.inventory.dimensional("fault_id", default=100)
+    faultId = pythia.pyre.inventory.int("fault_id", default=100)
     faultId.meta['tip'] = "Id of fault on which to impose impulses."
 
-    numImpulses = pythia.pyre.inventory.dimensional("num_impulses", default=1, validator=pythia.pyre.inventory.greater(0))
-    numImpulses.meta['tip'] = "Number of impulses."
-
-    ic = pythia.pyre.inventory.facilityArray("ic", itemFactory=icFactory, factory=EmptyBin)
-    ic.meta['tip'] = "Initial conditions."
-
-    shouldNotifyIC = pythia.pyre.inventory.bool("notify_observers_ic", default=False)
-    shouldNotifyIC.meta["tip"] = "Notify observers of solution with initial conditions."
-
-    from .ProgressMonitorTime import ProgressMonitorTime
+    from .ProgressMonitorStep import ProgressMonitorStep
     progressMonitor = pythia.pyre.inventory.facility(
-        "progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
+        "progress_monitor", family="progress_monitor", factory=ProgressMonitorStep)
     progressMonitor.meta['tip'] = "Simple progress monitor via text file."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -77,25 +58,7 @@ class GreensFns(Problem, ModuleGreensFns):
 
         Problem.preinitialize(self, mesh)
 
-        ModuleGreensFns.setfaultId(self, self.faultId.value)
-        ModuleGreensFns.setnumImpulses(self, self.numImpulses.value)
-        ModuleGreensFns.setShouldNotifyIC(self, self.shouldNotifyIC)
-
-        # Preinitialize initial conditions.
-        for ic in self.ic.components():
-            ic.preinitialize(mesh)
-        ModuleGreensFns.setInitialCondition(self, self.ic.components())
-
-        # Find fault for impulses
-        found = False
-        for fault in self.interfaces.components():
-            if self.faultId == fault.id():
-                self.source = fault
-                found = True
-                break
-        if not found:
-            raise ValueError("Could not find fault interface with id '%d' for "
-                            "Green's function impulses." % self.faultId)
+        ModuleGreensFns.setFaultId(self, self.faultId)
 
         self.progressMonitor.preinitialize()
         ModuleGreensFns.setProgressMonitor(self, self.progressMonitor)

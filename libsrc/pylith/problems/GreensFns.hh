@@ -17,102 +17,50 @@
 //
 
 /**
- * @file libsrc/problems/TimeDependent.hh
+ * @file libsrc/problems/GreensFns.hh
  *
- * @brief Object for time dependent problem.
+ * @brief Object for Green's functions problem.
  */
 
-#if !defined(pylith_problems_timedependent_hh)
-#define pylith_problems_timedependent_hh
+#if !defined(pylith_problems_GreensFns_hh)
+#define pylith_problems_GreensFns_hh
 
 #include "Problem.hh" // ISA Problem
 #include "pylith/testing/testingfwd.hh" // USES MMSTest
 
-class pylith::problems::TimeDependent : public pylith::problems::Problem {
-    friend class TestTimeDependent; // unit testing
+class pylith::problems::GreensFns : public pylith::problems::Problem {
+    friend class TestGreensFns; // unit testing
     friend class pylith::testing::MMSTest; // Testing with Method of Manufactured Solutions
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    TimeDependent(void);
+    GreensFns(void);
 
     /// Destructor
-    ~TimeDependent(void);
+    ~GreensFns(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Set start time for problem.
+    /** Set id for fault with impulses.
      *
-     * @param[in] value Start time (seconds).
+     * @param[in] value Id for fault with impulses.
      */
-    void setStartTime(const double value);
+    void setFaultId(const int value);
 
-    /** Get start time for problem.
+    /** Get id for fault with impulses.
      *
-     * @returns Start time (seconds).
+     * @returns Id for fault with impulses.
      */
-    double getStartTime(void) const;
-
-    /** Set end time for problem.
-     *
-     * @param[in] value End time (seconds).
-     */
-    void setEndTime(const double value);
-
-    /** Get end time for problem.
-     *
-     * @returns End time (seconds).
-     */
-    double getEndTime(void) const;
-
-    /** Set maximum number of time steps.
-     *
-     * @param[in] value Maximum number of time steps.
-     */
-    void setMaxTimeSteps(const size_t value);
-
-    /** Get maximum number of time steps.
-     *
-     * @returns Maximum number of time steps.
-     */
-    size_t getMaxTimeSteps(void) const;
-
-    /** Set initial time step for problem.
-     *
-     * @param[in] value Initial time step (seconds).
-     */
-    void setInitialTimeStep(const double value);
-
-    /** Get initial time step for problem.
-     *
-     * @returns Initial time step (seconds).
-     */
-    double getInitialTimeStep(void) const;
-
-    /** Set initial conditions.
-     *
-     * @param[in] ic Array of initial conditions.
-     * @param[in] numIC Number of initial conditions.
-     */
-    void setInitialCondition(pylith::problems::InitialCondition* ic[],
-                             const int numIC);
-
-    /** Should notify observers of solution with initial conditions.
-     *
-     * This will result in output being written at the starting time.
-     *
-     * @param[in] value True if observers should be notified of solution with initial conditions.
-     */
-    void setShouldNotifyIC(const bool value);
+    int setFaultId(void) const;
 
     /** Set progress monitor.
      *
-     * @param[in] monitor Progress monitor for time-dependent simulation.
+     * @param[in] monitor Progress monitor for Green's functions simulation.
      */
-    void setProgressMonitor(pylith::problems::ProgressMonitorTime* monitor);
+    void setProgressMonitor(pylith::problems::ProgressMonitorStep* monitor);
 
     /** Get Petsc DM for problem.
      *
@@ -126,23 +74,17 @@ public:
      */
     PetscSNES getPetscSNES(void);
 
-    /** Get PETSc time stepper.
-     *
-     * @returns PETSc TS for problem.
-     */
-    PetscTS getPetscTS(void);
-
     /// Verify configuration.
     void verifyConfiguration(void) const;
 
     /// Initialize.
     void initialize(void);
 
-    /** Solve time dependent problem.
+    /** Solve Green's function problem.
      */
     void solve(void);
 
-    /** Perform Perform operations after advancing solution one time step.
+    /** Perform operations after advancing solution of one impulse
      *
      * Update state variables, output.
      */
@@ -150,175 +92,54 @@ public:
 
     /** Set solution values according to constraints (Dirichlet BC).
      *
-     * @param[in] t Current time.
      * @param[in] solutionVec PETSc Vec with current global view of solution.
-     * @param[in] solutionDotVec PETSc Vec with current global view of time derivative of solution.
      */
-    void setSolutionLocal(const PylithReal t,
-                          PetscVec solutionVec,
-                          PetscVec solutionDotVec);
+    void setSolutionLocal(PetscVec solutionVec);
 
-    /** Compute RHS residual, G(t,s) and assemble into global vector.
+    /** Compute residual and assemble into global vector.
      *
      * @param[out] residualVec PETSc Vec for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
      * @param[in] solutionVec PETSc Vec with current trial solution.
      */
-    void computeRHSResidual(PetscVec residualVec,
-                            const PetscReal t,
-                            const PetscReal dt,
-                            PetscVec solutionVec);
+    void computeResidual(PetscVec residualVec,
+                         PetscVec solutionVec);
 
-    /** Compute LHS residual, F(t,s,\dot{s}) and assemble into global vector.
-     *
-     * @param[out] residualVec PETSc Vec for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solutionVec PETSc Vec with current trial solution.
-     * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
-     */
-    void computeLHSResidual(PetscVec residualVec,
-                            const PetscReal t,
-                            const PetscReal dt,
-                            PetscVec solutionVec,
-                            PetscVec solutionDotVec);
-
-    /* Compute LHS Jacobian for F(t,s,\dot{s}) for implicit time stepping.
+    /** Compute Jacobian for F(s,\dot{s})
      *
      * @param[out] jacobianMat PETSc Mat for Jacobian.
      * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] s_tshift Scale for time derivative.
-     * @param[in] solutionVec PETSc Vec with current trial solution.
-     * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
-     */
-    void computeLHSJacobian(PetscMat jacobianMat,
-                            PetscMat precondMat,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const PylithReal s_tshift,
-                            PetscVec solutionVec,
-                            PetscVec solutionDotVec);
-
-    /* Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) for explicit time stepping.
-     *
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] s_tshift Scale for time derivative.
      * @param[in] solutionVec PETSc Vec with current trial solution.
      */
-    void computeLHSJacobianLumpedInv(const PylithReal t,
-                                     const PylithReal dt,
-                                     const PylithReal s_tshift,
-                                     PetscVec solutionVec);
+    void computeJacobian(PetscMat jacobianMat,
+                         PetscMat precondMat,
+                         PetscVec solutionVec);
 
-    /** Callback static method for computing residual for RHS, G(t,s).
+    /** Callback static method for computing residual.
      *
-     * @param[in] ts PETSc time stepper.
-     * @param[in] t Current time.
-     * @param[in] solutionVec PETSc Vec for solution.
-     * @param[out] residualvec PETSc Vec for residual.
-     * @param[in] context User context (TimeDependent).
-     */
-    static
-    PetscErrorCode computeRHSResidual(PetscTS ts,
-                                      PetscReal t,
-                                      PetscVec solutionVec,
-                                      PetscVec residualVec,
-                                      void* context);
-
-    /** Callback static method for computing residual for LHS, F(t,s,\dot{s}).
-     *
-     * @param[in] ts PETSc time stepper.
-     * @param[in] t Current time.
+     * @param[in] snes PETSc solver
      * @param[in] solutionVec PetscVec for solution.
-     * @param[in] solutionDotVec PetscVec for time derivative of solution.
      * @param[out] residualvec PetscVec for residual.
-     * @param[in] context User context (TimeDependent).
+     * @param[in] context User context (GreensFns).
      */
     static
-    PetscErrorCode computeLHSResidual(PetscTS ts,
-                                      PetscReal t,
+    PetscErrorCode computeResidual(PetscSNES snes,
                                       PetscVec solutionVec,
-                                      PetscVec solutionDotVec,
                                       PetscVec residualVec,
                                       void* context);
 
-    /* Callback static method for computing Jacobian for LHS, Jacobian of F(t,s,\dot{s}).
-     *
-     * @param[in] ts PETSc time stepper.
-     * @param[in] t Current time.
-     * @param[in] solution PetscVec for solution.
-     * @param[out] jacobianMat Jacobian matrix.
-     * @param[out] precondMat Preconditioner matrix.
-     * @param[in] context User context (TimeDependent).
-     */
-    static
-    PetscErrorCode computeLHSJacobian(PetscTS ts,
-                                      PetscReal t,
-                                      PetscVec solutionVec,
-                                      PetscVec solutionDotVec,
-                                      PetscReal s_tshift,
-                                      PetscMat jacobianMat,
-                                      PetscMat precondMat,
-                                      void* context);
-
-    /** Callback static method for operations after advancing solution one time step.
-     */
-    static
-    PetscErrorCode poststep(PetscTS ts);
-
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    /** Check whether we need to reform the Jacobian.
-     *
-     * @param[in] dt Current time step.
-     * @returns True if we need to reform the Jacobian, false otherwise.
-     */
-    bool _needNewJacobian(const PylithReal dt);
+    PylithInt _faultImpulsesId;
+    pylith::topology::FaultCohesiveImpulses* _faultImpulses; ///< Fault interface with Green's functions impulses.
 
-    /** Set state (auxiliary field values) of system for time t.
-     *
-     * * @param[in] t Current time.
-     */
-    void _updateStateTime(const PylithReal t);
+    PetscSNES _snes; ///< PETSc SNES solver.
+    pylith::problems::ProgressMonitorStep* _monitor; ///< Monitor for simulation progress.
 
-    /// Notify observers with solution corresponding to initial conditions.
-    void _notifyObserversInitialSoln(void);
-
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    double _startTime; ///< Starting time of problem (seconds).
-    double _endTime; ///< Ending time of problem (seconds).
-    double _dtInitial; ///< Initial time step (seconds).
-    size_t _maxTimeSteps; ///< Maximum number of time steps for problem.
-    PetscTS _ts; ///< PETSc time stepper.
-    std::vector<pylith::problems::InitialCondition*> _ic; ///< Array of initial conditions.
-    pylith::problems::ProgressMonitorTime* _monitor; ///< Monitor for simulation progress.
-
-    pylith::topology::Field* _solutionDot; ///< Time derivative of solution field.
     pylith::topology::Field* _residual; ///< Handle to residual field.
-    pylith::topology::Field* _jacobianLHSLumpedInv; ///< Handle to inverse lumped Jacobian.
 
-    PylithReal _dtJacobian; ///< Time step used to compute LHS Jacobian.
-    PylithReal _dtLHSJacobianLumped; ///< Time step used to compute LHS lumped Jacobian.
-    PylithReal _tResidual; ///< Time for current residual.
-    bool _needNewLHSJacobian; ///< True if need to recompute LHS Jacobian.
-    bool _haveNewLHSJacobian; ///< True if LHS Jacobian was reformed.
-    bool _shouldNotifyIC;
+}; // GreensFns
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    TimeDependent(const TimeDependent&); ///< Not implemented
-    const TimeDependent& operator=(const TimeDependent&); ///< Not implemented
-
-}; // TimeDependent
-
-#endif // pylith_problems_timedependent_hh
+#endif // pylith_problems_greensfns_hh
 
 // End of file
