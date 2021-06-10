@@ -84,10 +84,10 @@ class PyLithApp(PetscApplication):
         self._setupLogging()
 
 
-        # # !!! New lines creating mesh for each problem
+        # Create mesh for each problem
         self._eventLogger.stagePush("Meshing")
         for problem in self.problems.components():
-            problem.mesh()
+            problem.createMesh()
         self._debug.log(resourceUsageString())
         self._eventLogger.stagePop()
 
@@ -111,15 +111,17 @@ class PyLithApp(PetscApplication):
         # TODO: load numIterations from input file
         # TODO: add control over integration time (start and end times)
         numIterations = 1 # number of earthquake cycles !!! later import this from an input file
-        while count <= numIterations:
+        count = 0
+        while count < numIterations:
             for problem in self.problems.components():
-                problem.run(self)
+                problem.run()
                 self._debug.log(resourceUsageString())
-            count = count + 1
+            count += 1
 
         # Cleanup
         self._eventLogger.stagePush("Finalize")
-        self.problem.finalize()
+        for problem in self.problems.components():
+            problem.finalize()
         self._eventLogger.stagePop()
 
         return

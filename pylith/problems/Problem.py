@@ -167,8 +167,7 @@ class Problem(PetscComponent, ModuleProblem):
         ModuleProblem.preinitialize(self, self.mesh)
         return
 
-
-    def mesh(self):
+    def createMesh(self):
         """Create mesh (adjust to account for interfaces (faults) if necessary).
         """
         interfaces = None
@@ -178,6 +177,8 @@ class Problem(PetscComponent, ModuleProblem):
         self.mesh = self.mesher.create(self, interfaces)
         del interfaces
         self.mesher = None
+        
+        return
 
     def verifyConfiguration(self):
         """Verify compatibility of configuration.
@@ -200,7 +201,7 @@ class Problem(PetscComponent, ModuleProblem):
 
         ModuleProblem.initialize(self)
 
-    def run(self, app):
+    def run(self):
         """Solve the problem.
         """
         raise NotImplementedError("run() not implemented.")
@@ -212,6 +213,11 @@ class Problem(PetscComponent, ModuleProblem):
         comm = mpi_comm_world()
         if 0 == comm.rank:
             self._info.log("Finalizing problem.")
+<<<<<<< HEAD
+=======
+        del self.mesh
+        return
+>>>>>>> e37954541... Update tests/fullscale/linearelasticity/nofaults-2d/axialdisp for problems facility array.
 
     def checkpoint(self):
         """Save problem state for restart.
