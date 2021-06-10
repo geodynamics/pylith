@@ -32,9 +32,7 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
-pylith::problems::ProgressMonitorStep::ProgressMonitorStep(void) :
-    _baseTime(1.0),
-    _baseUnit("second")
+pylith::problems::ProgressMonitorStep::ProgressMonitorStep(void)
 {}
 
 
@@ -55,25 +53,6 @@ pylith::problems::ProgressMonitorStep::deallocate(void) {
         _sout.close();
     } // if
 } // deallocate
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set units for simulation time in output.
-void
-pylith::problems::ProgressMonitorStep::setTimeUnit(const char* value) {
-    _baseUnit = value;
-
-    spatialdata::units::Parser parser;
-    _baseTime = parser.parse(_baseUnit.c_str());
-} // setTimeUnit
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set units for simulation time in output.
-const char*
-pylith::problems::ProgressMonitorStep::getTimeUnit(void) const {
-    return _baseUnit.c_str();
-} // getTimeUnit
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -99,18 +78,17 @@ pylith::problems::ProgressMonitorStep::_close(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Update progress.
 void
-pylith::problems::ProgressMonitorStep::_update(const double current,
+pylith::problems::ProgressMonitorStep::_update(const int current,
                                                const time_t& now,
                                                const double percentComplete,
                                                const char* finished) {
     assert(_sout.is_open());
-    const double tSimNorm = current / _baseTime;
     std::tm* now_tm = localtime(&now);
     std::string now_str = asctime(now_tm);
     now_str = now_str.erase(now_str.find_last_not_of('\n')+1);
     _sout << now_str << "   "
-          << std::setprecision(2) << std::setw(8) << tSimNorm
-          << "*" << std::left << std::setw(6) << _baseUnit << std::right
+          << "Step " 
+          << std::setprecision(0) << std::setw(6) << current << std::right
           << std::setprecision(0) << std::setw(13) << percentComplete
           << "   " << finished
           << std::endl;
