@@ -65,10 +65,10 @@ class PyLithApp(PetscApplication):
     #     "mesh_generator", family="mesh_generator", factory=MeshImporter)
     # mesher.meta['tip'] = "Generates or imports the computational mesh."
 
-    from pylith.problems.TimeDependent import TimeDependent
+    from pylith.problems.SingleProblem import SingleProblem
     # initialize facilityArray of problems, default 1 problem
     problems = pythia.pyre.inventory.facilityArray(
-        "problems", itemFactory=problemFactory, factory=TimeDependent)
+        "problems", itemFactory=problemFactory, factory=SingleProblem)
     problems.meta['tip'] = "Computational problem(s) to solve."
     
     # initialize 1 problem (original text)
