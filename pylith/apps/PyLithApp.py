@@ -102,6 +102,18 @@ class PyLithApp(PetscApplication):
         self._debug.log(resourceUsageString())
         self._eventLogger.stagePop()
 
+        # Create mesh (adjust to account for interfaces (faults) if necessary)
+        # self._eventLogger.stagePush("Meshing")
+        # interfaces = None
+        # if "interfaces" in dir(self.problem):
+        #     interfaces = self.problem.interfaces.components()
+        # self.mesher.preinitialize(self.problem)
+        # mesh = self.mesher.create(self.problem, interfaces)
+        # del interfaces
+        # self.mesher = None
+        # self._debug.log(resourceUsageString())
+        # self._eventLogger.stagePop()
+
         # Setup problem, verify configuration, and then initialize
         self._eventLogger.stagePush("Setup")
         for problem in self.problems.components():

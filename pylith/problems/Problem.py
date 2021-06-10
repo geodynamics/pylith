@@ -192,6 +192,19 @@ class Problem(PetscComponent, ModuleProblem):
         
         return
 
+
+    # !!! New lines based on PylithApp.py mesh creation lines in main()
+    def mesh(self):
+        """Create mesh (adjust to account for interfaces (faults) if necessary).
+        """
+        interfaces = None
+        if "interfaces" in dir(self):
+            interfaces = self.interfaces.components()
+        self.mesher.preinitialize(self)
+        self.mesh = self.mesher.create(self, interfaces)
+        del interfaces
+        self.mesher = None
+
     def verifyConfiguration(self):
         """Verify compatibility of configuration.
         """
