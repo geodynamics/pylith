@@ -22,8 +22,6 @@ from .PetscApplication import PetscApplication
 
 # PyLithApp class
 
-# !!! Is this the approriate location for this code?
-# Based on Problem.py lines 31 - 36
 def problemFactory(name):
     """Factory for problem items.
     """
@@ -60,13 +58,7 @@ class PyLithApp(PetscApplication):
         "dump_parameters", family="dump_parameters", factory=DumpParametersJson)
     parameters.meta['tip'] = "Dump parameters used and version information to file."
 
-    # from pylith.topology.MeshImporter import MeshImporter
-    # mesher = pythia.pyre.inventory.facility(
-    #     "mesh_generator", family="mesh_generator", factory=MeshImporter)
-    # mesher.meta['tip'] = "Generates or imports the computational mesh."
-
     from pylith.problems.SingleProblem import SingleProblem
-    # initialize facilityArray of problems, default 1 problem
     problems = pythia.pyre.inventory.facilityArray(
         "problems", itemFactory=problemFactory, factory=SingleProblem)
     problems.meta['tip'] = "Computational problem(s) to solve."
@@ -107,24 +99,12 @@ class PyLithApp(PetscApplication):
         self._setupLogging()
 
 
-        # # !!! New lines creating mesh for each problem
+        # Create mesh for each problem
         self._eventLogger.stagePush("Meshing")
         for problem in self.problems.components():
-            problem.mesh()
+            problem.createMesh()
         self._debug.log(resourceUsageString())
         self._eventLogger.stagePop()
-
-        # Create mesh (adjust to account for interfaces (faults) if necessary)
-        # self._eventLogger.stagePush("Meshing")
-        # interfaces = None
-        # if "interfaces" in dir(self.problem):
-        #     interfaces = self.problem.interfaces.components()
-        # self.mesher.preinitialize(self.problem)
-        # mesh = self.mesher.create(self.problem, interfaces)
-        # del interfaces
-        # self.mesher = None
-        # self._debug.log(resourceUsageString())
-        # self._eventLogger.stagePop()
 
         # Setup problem, verify configuration, and then initialize
         self._eventLogger.stagePush("Setup")
@@ -146,15 +126,17 @@ class PyLithApp(PetscApplication):
         # TODO: load numIterations from input file
         # TODO: add control over integration time (start and end times)
         numIterations = 1 # number of earthquake cycles !!! later import this from an input file
-        while count <= numIterations:
+        count = 0
+        while count < numIterations:
             for problem in self.problems.components():
-                problem.run(self)
+                problem.run()
                 self._debug.log(resourceUsageString())
-            count = count + 1
+            count += 1
 
         # Cleanup
         self._eventLogger.stagePush("Finalize")
-        self.problem.finalize()
+        for problem in self.problems.components():
+            problem.finalize()
         self._eventLogger.stagePop()
 
         return
