@@ -413,15 +413,18 @@ All of the solution observers have the following properties:
   \propertyitem{data\_fields}{List of solution subfields to observer/output (default=all which will output all of the subfields);}
   \facilityitem{writer}{Writer for data (default=\object{DataWriterHDF5});}
   \facilityitem{trigger}{Trigger defining how often output is written (default=\object{OutputTriggerStep}); and}
-  \facilityitem{field\_filter}{Filter for output fields (default=\object{FieldFilterNone}).}
+  \facilityitem{output\_basis\_order}{Basis order for output of
+    fields. Valid values are 0 and 1 (default=1).}
 \end{inventory}
+Fields with a basis order of 0 are kept at a basis order of 0 when output.
+Fields with a basis order of 1 are written as vertex fields, whereas fields with a basis order of 0 are written as cell fields.
+
 \object{OutputSolnBoundary} adds a property:
 \begin{inventory}
   \propertyitem{label}{Label (name of nodeset/pset) identifier of boundary (required);}
 \end{inventory}
 See Section \vref{sec:output} for detailed information about the
-available components for the \facility{writer}, \facility{trigger},
-and \facility{field\_filter} facilities.
+available components for the \facility{writer} and \facility{trigger} facilities.
 
 \begin{cfg}[Setting \object{OutputSolnBoundary} parameters in a \filename{cfg} file]
 <h>[pylithapp.problem.solution_observers.boundary]</h>
