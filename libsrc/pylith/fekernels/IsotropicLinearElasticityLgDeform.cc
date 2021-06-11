@@ -25,30 +25,30 @@
 #include <cassert> // USES assert()
 
 // =====================================================================================================================
-// Kernels for isotropic, linear elasticity plane strain.
+// Kernels for isotropic, linear elasticity plane strain, with small strain formulation.
 // =====================================================================================================================
 
 // ---------------------------------------------------------------------------------------------------------------------
 // f1 function for isotropic linear elasticity plane strain WITHOUT reference stress and strain.
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::f1v(const PylithInt dim,
-                                                             const PylithInt numS,
-                                                             const PylithInt numA,
-                                                             const PylithInt sOff[],
-                                                             const PylithInt sOff_x[],
-                                                             const PylithScalar s[],
-                                                             const PylithScalar s_t[],
-                                                             const PylithScalar s_x[],
-                                                             const PylithInt aOff[],
-                                                             const PylithInt aOff_x[],
-                                                             const PylithScalar a[],
-                                                             const PylithScalar a_t[],
-                                                             const PylithScalar a_x[],
-                                                             const PylithReal t,
-                                                             const PylithScalar x[],
-                                                             const PylithInt numConstants,
-                                                             const PylithScalar constants[],
-                                                             PylithScalar f1[]) {
+                                                                     const PylithInt numS,
+                                                                     const PylithInt numA,
+                                                                     const PylithInt sOff[],
+                                                                     const PylithInt sOff_x[],
+                                                                     const PylithScalar s[],
+                                                                     const PylithScalar s_t[],
+                                                                     const PylithScalar s_x[],
+                                                                     const PylithInt aOff[],
+                                                                     const PylithInt aOff_x[],
+                                                                     const PylithScalar a[],
+                                                                     const PylithScalar a_t[],
+                                                                     const PylithScalar a_x[],
+                                                                     const PylithReal t,
+                                                                     const PylithScalar x[],
+                                                                     const PylithInt numConstants,
+                                                                     const PylithScalar constants[],
+                                                                     PylithScalar f1[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -81,10 +81,8 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::f1v(const Pylit
     const PylithInt aOffDev[1] = { aOff[i_shearModulus] };
 
     PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
-    meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
-               t, x, numConstants, constants, stressTensor);
-    deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                     t, x, numConstants, constants, stressTensor);
+    firstPiolaKirchhoffStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
+                              t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
         f1[i] -= stressTensor[i];
     } // for
@@ -95,23 +93,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::f1v(const Pylit
 // g1 function for isotropic linear elasticity plane strain with reference stress and strain.
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::f1v_refstate(const PylithInt dim,
-                                                                      const PylithInt numS,
-                                                                      const PylithInt numA,
-                                                                      const PylithInt sOff[],
-                                                                      const PylithInt sOff_x[],
-                                                                      const PylithScalar s[],
-                                                                      const PylithScalar s_t[],
-                                                                      const PylithScalar s_x[],
-                                                                      const PylithInt aOff[],
-                                                                      const PylithInt aOff_x[],
-                                                                      const PylithScalar a[],
-                                                                      const PylithScalar a_t[],
-                                                                      const PylithScalar a_x[],
-                                                                      const PylithReal t,
-                                                                      const PylithScalar x[],
-                                                                      const PylithInt numConstants,
-                                                                      const PylithScalar constants[],
-                                                                      PylithScalar f1[]) {
+                                                                              const PylithInt numS,
+                                                                              const PylithInt numA,
+                                                                              const PylithInt sOff[],
+                                                                              const PylithInt sOff_x[],
+                                                                              const PylithScalar s[],
+                                                                              const PylithScalar s_t[],
+                                                                              const PylithScalar s_x[],
+                                                                              const PylithInt aOff[],
+                                                                              const PylithInt aOff_x[],
+                                                                              const PylithScalar a[],
+                                                                              const PylithScalar a_t[],
+                                                                              const PylithScalar a_x[],
+                                                                              const PylithReal t,
+                                                                              const PylithScalar x[],
+                                                                              const PylithInt numConstants,
+                                                                              const PylithScalar constants[],
+                                                                              PylithScalar f1[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -148,10 +146,8 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::f1v_refstate(co
     const PylithInt aOffDev[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus] };
 
     PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
-    meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
-                        t, x, numConstants, constants, stressTensor);
-    deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                              t, x, numConstants, constants, stressTensor);
+    firstPiolaKirchhoffStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL,
+                                       a, a_t, NULL, t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
         f1[i] -= stressTensor[i];
     } // for
@@ -175,24 +171,24 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::f1v_refstate(co
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::Jf3vu(const PylithInt dim,
-                                                               const PylithInt numS,
-                                                               const PylithInt numA,
-                                                               const PylithInt sOff[],
-                                                               const PylithInt sOff_x[],
-                                                               const PylithScalar s[],
-                                                               const PylithScalar s_t[],
-                                                               const PylithScalar s_x[],
-                                                               const PylithInt aOff[],
-                                                               const PylithInt aOff_x[],
-                                                               const PylithScalar a[],
-                                                               const PylithScalar a_t[],
-                                                               const PylithScalar a_x[],
-                                                               const PylithReal t,
-                                                               const PylithReal s_tshift,
-                                                               const PylithScalar x[],
-                                                               const PylithInt numConstants,
-                                                               const PylithScalar constants[],
-                                                               PylithScalar Jf3[]) {
+                                                                       const PylithInt numS,
+                                                                       const PylithInt numA,
+                                                                       const PylithInt sOff[],
+                                                                       const PylithInt sOff_x[],
+                                                                       const PylithScalar s[],
+                                                                       const PylithScalar s_t[],
+                                                                       const PylithScalar s_x[],
+                                                                       const PylithInt aOff[],
+                                                                       const PylithInt aOff_x[],
+                                                                       const PylithScalar a[],
+                                                                       const PylithScalar a_t[],
+                                                                       const PylithScalar a_x[],
+                                                                       const PylithReal t,
+                                                                       const PylithReal s_tshift,
+                                                                       const PylithScalar x[],
+                                                                       const PylithInt numConstants,
+                                                                       const PylithScalar constants[],
+                                                                    PylithScalar Jf3[]) {
     const PylithInt _dim = 2;
 
     // Incoming auxiliary fields.
@@ -264,23 +260,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::Jf3vu(const Pyl
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::firstPiolaKirchhoffStress(const PylithInt dim,
-                                                                      const PylithInt numS,
-                                                                      const PylithInt numA,
-                                                                      const PylithInt sOff[],
-                                                                      const PylithInt sOff_x[],
-                                                                      const PylithScalar s[],
-                                                                      const PylithScalar s_t[],
-                                                                      const PylithScalar s_x[],
-                                                                      const PylithInt aOff[],
-                                                                      const PylithInt aOff_x[],
-                                                                      const PylithScalar a[],
-                                                                      const PylithScalar a_t[],
-                                                                      const PylithScalar a_x[],
-                                                                      const PylithReal t,
-                                                                      const PylithScalar x[],
-                                                                      const PylithInt numConstants,
-                                                                      const PylithScalar constants[],
-                                                                      PylithScalar firstStress[]) {
+                                                                                           const PylithInt numS,
+                                                                                           const PylithInt numA,
+                                                                                           const PylithInt sOff[],
+                                                                                           const PylithInt sOff_x[],
+                                                                                           const PylithScalar s[],
+                                                                                           const PylithScalar s_t[],
+                                                                                           const PylithScalar s_x[],
+                                                                                           const PylithInt aOff[],
+                                                                                           const PylithInt aOff_x[],
+                                                                                           const PylithScalar a[],
+                                                                                           const PylithScalar a_t[],
+                                                                                           const PylithScalar a_x[],
+                                                                                           const PylithReal t,
+                                                                                           const PylithScalar x[],
+                                                                                           const PylithInt numConstants,
+                                                                                           const PylithScalar constants[],
+                                                                                           PylithScalar firstStress[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -331,7 +327,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::firstPiolaKirch
     for (PylithInt i = 0; i < _dim; ++i) {
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt k = 0; k < _dim; ++k) {
-                firstStress[i*_dim+j] += secondStress[i*_dim+k]*deformGradient[j*_dim+k];
+                firstStress[i*_dim+j] += deformGradient[i*_dim+k]*secondStress[k*_dim+j];
             }
         }
     }
@@ -349,23 +345,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::firstPiolaKirch
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::firstPiolaKirchhoffStress_refstate(const PylithInt dim,
-                                                                               const PylithInt numS,
-                                                                               const PylithInt numA,
-                                                                               const PylithInt sOff[],
-                                                                               const PylithInt sOff_x[],
-                                                                               const PylithScalar s[],
-                                                                               const PylithScalar s_t[],
-                                                                               const PylithScalar s_x[],
-                                                                               const PylithInt aOff[],
-                                                                               const PylithInt aOff_x[],
-                                                                               const PylithScalar a[],
-                                                                               const PylithScalar a_t[],
-                                                                               const PylithScalar a_x[],
-                                                                               const PylithReal t,
-                                                                               const PylithScalar x[],
-                                                                               const PylithInt numConstants,
-                                                                               const PylithScalar constants[],
-                                                                               PylithScalar firstStress[]) {
+                                                                                            const PylithInt numS,
+                                                                                            const PylithInt numA,
+                                                                                            const PylithInt sOff[],
+                                                                                            const PylithInt sOff_x[],
+                                                                                            const PylithScalar s[],
+                                                                                            const PylithScalar s_t[],
+                                                                                            const PylithScalar s_x[],
+                                                                                            const PylithInt aOff[],
+                                                                                            const PylithInt aOff_x[],
+                                                                                            const PylithScalar a[],
+                                                                                            const PylithScalar a_t[],
+                                                                                            const PylithScalar a_x[],
+                                                                                            const PylithReal t,
+                                                                                            const PylithScalar x[],
+                                                                                            const PylithInt numConstants,
+                                                                                            const PylithScalar constants[],
+                                                                                            PylithScalar firstStress[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -420,7 +416,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::firstPiolaKirch
     for (PylithInt i = 0; i < _dim; ++i) {
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt k = 0; k < _dim; ++k) {
-                firstStress[i*_dim+j] += secondStress[i*_dim+k]*deformGradient[j*_dim+k];
+                firstStress[i*_dim+j] += deformGradient[i*_dim+k]*secondStress[k*_dim+j];
             }
         }
     }
@@ -438,23 +434,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::firstPiolaKirch
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::cauchyStress(const PylithInt dim,
-                                                                      const PylithInt numS,
-                                                                      const PylithInt numA,
-                                                                      const PylithInt sOff[],
-                                                                      const PylithInt sOff_x[],
-                                                                      const PylithScalar s[],
-                                                                      const PylithScalar s_t[],
-                                                                      const PylithScalar s_x[],
-                                                                      const PylithInt aOff[],
-                                                                      const PylithInt aOff_x[],
-                                                                      const PylithScalar a[],
-                                                                      const PylithScalar a_t[],
-                                                                      const PylithScalar a_x[],
-                                                                      const PylithReal t,
-                                                                      const PylithScalar x[],
-                                                                      const PylithInt numConstants,
-                                                                      const PylithScalar constants[],
-                                                                      PylithScalar stressVector[]) {
+                                                                              const PylithInt numS,
+                                                                              const PylithInt numA,
+                                                                              const PylithInt sOff[],
+                                                                              const PylithInt sOff_x[],
+                                                                              const PylithScalar s[],
+                                                                              const PylithScalar s_t[],
+                                                                              const PylithScalar s_x[],
+                                                                              const PylithInt aOff[],
+                                                                              const PylithInt aOff_x[],
+                                                                              const PylithScalar a[],
+                                                                              const PylithScalar a_t[],
+                                                                              const PylithScalar a_x[],
+                                                                              const PylithReal t,
+                                                                              const PylithScalar x[],
+                                                                              const PylithInt numConstants,
+                                                                              const PylithScalar constants[],
+                                                                              PylithScalar stressVector[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -507,7 +503,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::cauchyStress(co
     for (PylithInt i = 0; i < _dim; ++i) {
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt k = 0; k < _dim; ++k) {
-                firstStress[i*_dim+j] += secondStress[i*_dim+k]*deformGradient[j*_dim+k];
+                firstStress[i*_dim+j] += deformGradient[i*_dim+k]*secondStress[k*_dim+j];
             }
         }
     }
@@ -516,7 +512,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::cauchyStress(co
     for (PylithInt i = 0; i < _dim; ++i) {
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt k = 0; k < _dim; ++k) {
-                stressTensor[i*_dim+j] += deformGradient[i*_dim+k]*firstStress[k*_dim+j]/jDeform;
+                stressTensor[i*_dim+j] += firstStress[i*_dim+k]*deformGradient[j*_dim+k]/jDeform;
             }
         }
     }
@@ -544,23 +540,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::cauchyStress(co
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::cauchyStress_refstate(const PylithInt dim,
-                                                                               const PylithInt numS,
-                                                                               const PylithInt numA,
-                                                                               const PylithInt sOff[],
-                                                                               const PylithInt sOff_x[],
-                                                                               const PylithScalar s[],
-                                                                               const PylithScalar s_t[],
-                                                                               const PylithScalar s_x[],
-                                                                               const PylithInt aOff[],
-                                                                               const PylithInt aOff_x[],
-                                                                               const PylithScalar a[],
-                                                                               const PylithScalar a_t[],
-                                                                               const PylithScalar a_x[],
-                                                                               const PylithReal t,
-                                                                               const PylithScalar x[],
-                                                                               const PylithInt numConstants,
-                                                                               const PylithScalar constants[],
-                                                                               PylithScalar stressVector[]) {
+                                                                                       const PylithInt numS,
+                                                                                       const PylithInt numA,
+                                                                                       const PylithInt sOff[],
+                                                                                       const PylithInt sOff_x[],
+                                                                                       const PylithScalar s[],
+                                                                                       const PylithScalar s_t[],
+                                                                                       const PylithScalar s_x[],
+                                                                                       const PylithInt aOff[],
+                                                                                       const PylithInt aOff_x[],
+                                                                                       const PylithScalar a[],
+                                                                                       const PylithScalar a_t[],
+                                                                                       const PylithScalar a_x[],
+                                                                                       const PylithReal t,
+                                                                                       const PylithScalar x[],
+                                                                                       const PylithInt numConstants,
+                                                                                       const PylithScalar constants[],
+                                                                                       PylithScalar stressVector[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -617,7 +613,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::cauchyStress_re
     for (PylithInt i = 0; i < _dim; ++i) {
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt k = 0; k < _dim; ++k) {
-                firstStress[i*_dim+j] += secondStress[i*_dim+k]*deformGradient[j*_dim+k];
+                firstStress[i*_dim+j] += deformGradient[i*_dim+k]*secondStress[k*_dim+j];
             }
         }
     }
@@ -626,7 +622,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::cauchyStress_re
     for (PylithInt i = 0; i < _dim; ++i) {
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt k = 0; k < _dim; ++k) {
-                stressTensor[i*_dim+j] += deformGradient[i*_dim+k]*firstStress[k*_dim+j]/jDeform;
+                stressTensor[i*_dim+j] += firstStress[i*_dim+k]*deformGradient[j*_dim+k]/jDeform;
             }
         }
     }
@@ -656,23 +652,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::cauchyStress_re
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::meanStress(const PylithInt dim,
-                                                                    const PylithInt numS,
-                                                                    const PylithInt numA,
-                                                                    const PylithInt sOff[],
-                                                                    const PylithInt sOff_x[],
-                                                                    const PylithScalar s[],
-                                                                    const PylithScalar s_t[],
-                                                                    const PylithScalar s_x[],
-                                                                    const PylithInt aOff[],
-                                                                    const PylithInt aOff_x[],
-                                                                    const PylithScalar a[],
-                                                                    const PylithScalar a_t[],
-                                                                    const PylithScalar a_x[],
-                                                                    const PylithReal t,
-                                                                    const PylithScalar x[],
-                                                                    const PylithInt numConstants,
-                                                                    const PylithScalar constants[],
-                                                                    PylithScalar stress[]) {
+                                                                            const PylithInt numS,
+                                                                            const PylithInt numA,
+                                                                            const PylithInt sOff[],
+                                                                            const PylithInt sOff_x[],
+                                                                            const PylithScalar s[],
+                                                                            const PylithScalar s_t[],
+                                                                            const PylithScalar s_x[],
+                                                                            const PylithInt aOff[],
+                                                                            const PylithInt aOff_x[],
+                                                                            const PylithScalar a[],
+                                                                            const PylithScalar a_t[],
+                                                                            const PylithScalar a_x[],
+                                                                            const PylithReal t,
+                                                                            const PylithScalar x[],
+                                                                            const PylithInt numConstants,
+                                                                            const PylithScalar constants[],
+                                                                            PylithScalar stress[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -718,23 +714,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::meanStress(cons
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::meanStress_refstate(const PylithInt dim,
-                                                                             const PylithInt numS,
-                                                                             const PylithInt numA,
-                                                                             const PylithInt sOff[],
-                                                                             const PylithInt sOff_x[],
-                                                                             const PylithScalar s[],
-                                                                             const PylithScalar s_t[],
-                                                                             const PylithScalar s_x[],
-                                                                             const PylithInt aOff[],
-                                                                             const PylithInt aOff_x[],
-                                                                             const PylithScalar a[],
-                                                                             const PylithScalar a_t[],
-                                                                             const PylithScalar a_x[],
-                                                                             const PylithReal t,
-                                                                             const PylithScalar x[],
-                                                                             const PylithInt numConstants,
-                                                                             const PylithScalar constants[],
-                                                                             PylithScalar stress[]) {
+                                                                                     const PylithInt numS,
+                                                                                     const PylithInt numA,
+                                                                                     const PylithInt sOff[],
+                                                                                     const PylithInt sOff_x[],
+                                                                                     const PylithScalar s[],
+                                                                                     const PylithScalar s_t[],
+                                                                                     const PylithScalar s_x[],
+                                                                                     const PylithInt aOff[],
+                                                                                     const PylithInt aOff_x[],
+                                                                                     const PylithScalar a[],
+                                                                                     const PylithScalar a_t[],
+                                                                                     const PylithScalar a_x[],
+                                                                                     const PylithReal t,
+                                                                                     const PylithScalar x[],
+                                                                                     const PylithInt numConstants,
+                                                                                     const PylithScalar constants[],
+                                                                                     PylithScalar stress[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -792,23 +788,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::meanStress_refs
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::deviatoricStress(const PylithInt dim,
-                                                                          const PylithInt numS,
-                                                                          const PylithInt numA,
-                                                                          const PylithInt sOff[],
-                                                                          const PylithInt sOff_x[],
-                                                                          const PylithScalar s[],
-                                                                          const PylithScalar s_t[],
-                                                                          const PylithScalar s_x[],
-                                                                          const PylithInt aOff[],
-                                                                          const PylithInt aOff_x[],
-                                                                          const PylithScalar a[],
-                                                                          const PylithScalar a_t[],
-                                                                          const PylithScalar a_x[],
-                                                                          const PylithReal t,
-                                                                          const PylithScalar x[],
-                                                                          const PylithInt numConstants,
-                                                                          const PylithScalar constants[],
-                                                                          PylithScalar stress[]) {
+                                                                                  const PylithInt numS,
+                                                                                  const PylithInt numA,
+                                                                                  const PylithInt sOff[],
+                                                                                  const PylithInt sOff_x[],
+                                                                                  const PylithScalar s[],
+                                                                                  const PylithScalar s_t[],
+                                                                                  const PylithScalar s_x[],
+                                                                                  const PylithInt aOff[],
+                                                                                  const PylithInt aOff_x[],
+                                                                                  const PylithScalar a[],
+                                                                                  const PylithScalar a_t[],
+                                                                                  const PylithScalar a_x[],
+                                                                                  const PylithReal t,
+                                                                                  const PylithScalar x[],
+                                                                                  const PylithInt numConstants,
+                                                                                  const PylithScalar constants[],
+                                                                                  PylithScalar stress[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -868,23 +864,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::deviatoricStres
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::deviatoricStress_refstate(const PylithInt dim,
-                                                                                   const PylithInt numS,
-                                                                                   const PylithInt numA,
-                                                                                   const PylithInt sOff[],
-                                                                                   const PylithInt sOff_x[],
-                                                                                   const PylithScalar s[],
-                                                                                   const PylithScalar s_t[],
-                                                                                   const PylithScalar s_x[],
-                                                                                   const PylithInt aOff[],
-                                                                                   const PylithInt aOff_x[],
-                                                                                   const PylithScalar a[],
-                                                                                   const PylithScalar a_t[],
-                                                                                   const PylithScalar a_x[],
-                                                                                   const PylithReal t,
-                                                                                   const PylithScalar x[],
-                                                                                   const PylithInt numConstants,
-                                                                                   const PylithScalar constants[],
-                                                                                   PylithScalar stress[]) {
+                                                                                           const PylithInt numS,
+                                                                                           const PylithInt numA,
+                                                                                           const PylithInt sOff[],
+                                                                                           const PylithInt sOff_x[],
+                                                                                           const PylithScalar s[],
+                                                                                           const PylithScalar s_t[],
+                                                                                           const PylithScalar s_x[],
+                                                                                           const PylithInt aOff[],
+                                                                                           const PylithInt aOff_x[],
+                                                                                           const PylithScalar a[],
+                                                                                           const PylithScalar a_t[],
+                                                                                           const PylithScalar a_x[],
+                                                                                           const PylithReal t,
+                                                                                           const PylithScalar x[],
+                                                                                           const PylithInt numConstants,
+                                                                                           const PylithScalar constants[],
+                                                                                           PylithScalar stress[]) {
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
@@ -942,30 +938,30 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::deviatoricStres
 
 
 // =====================================================================================================================
-// Kernels for isotropic, linear elatsicity in 3D.
+// Kernels for isotropic, linear elatsicity in 3D, with small strain formulation.
 // =====================================================================================================================
 
 // ---------------------------------------------------------------------------------------------------------------------
 // f1 function for isotropic linear elasticity 3D WITHOUT reference stress and strain.
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeform3D::f1v(const PylithInt dim,
-                                                    const PylithInt numS,
-                                                    const PylithInt numA,
-                                                    const PylithInt sOff[],
-                                                    const PylithInt sOff_x[],
-                                                    const PylithScalar s[],
-                                                    const PylithScalar s_t[],
-                                                    const PylithScalar s_x[],
-                                                    const PylithInt aOff[],
-                                                    const PylithInt aOff_x[],
-                                                    const PylithScalar a[],
-                                                    const PylithScalar a_t[],
-                                                    const PylithScalar a_x[],
-                                                    const PylithReal t,
-                                                    const PylithScalar x[],
-                                                    const PylithInt numConstants,
-                                                    const PylithScalar constants[],
-                                                    PylithScalar f1[]) {
+                                                            const PylithInt numS,
+                                                            const PylithInt numA,
+                                                            const PylithInt sOff[],
+                                                            const PylithInt sOff_x[],
+                                                            const PylithScalar s[],
+                                                            const PylithScalar s_t[],
+                                                            const PylithScalar s_x[],
+                                                            const PylithInt aOff[],
+                                                            const PylithInt aOff_x[],
+                                                            const PylithScalar a[],
+                                                            const PylithScalar a_t[],
+                                                            const PylithScalar a_x[],
+                                                            const PylithReal t,
+                                                            const PylithScalar x[],
+                                                            const PylithInt numConstants,
+                                                            const PylithScalar constants[],
+                                                            PylithScalar f1[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
@@ -1012,23 +1008,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::f1v(const PylithInt dim,
 // g1 function for isotropic linear elasticity 3D with reference stress and strain.
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeform3D::f1v_refstate(const PylithInt dim,
-                                                             const PylithInt numS,
-                                                             const PylithInt numA,
-                                                             const PylithInt sOff[],
-                                                             const PylithInt sOff_x[],
-                                                             const PylithScalar s[],
-                                                             const PylithScalar s_t[],
-                                                             const PylithScalar s_x[],
-                                                             const PylithInt aOff[],
-                                                             const PylithInt aOff_x[],
-                                                             const PylithScalar a[],
-                                                             const PylithScalar a_t[],
-                                                             const PylithScalar a_x[],
-                                                             const PylithReal t,
-                                                             const PylithScalar x[],
-                                                             const PylithInt numConstants,
-                                                             const PylithScalar constants[],
-                                                             PylithScalar f1[]) {
+                                                                     const PylithInt numS,
+                                                                     const PylithInt numA,
+                                                                     const PylithInt sOff[],
+                                                                     const PylithInt sOff_x[],
+                                                                     const PylithScalar s[],
+                                                                     const PylithScalar s_t[],
+                                                                     const PylithScalar s_x[],
+                                                                     const PylithInt aOff[],
+                                                                     const PylithInt aOff_x[],
+                                                                     const PylithScalar a[],
+                                                                     const PylithScalar a_t[],
+                                                                     const PylithScalar a_x[],
+                                                                     const PylithReal t,
+                                                                     const PylithScalar x[],
+                                                                     const PylithInt numConstants,
+                                                                     const PylithScalar constants[],
+                                                                     PylithScalar f1[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
@@ -1092,24 +1088,24 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::f1v_refstate(const Pylit
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeform3D::Jf3vu(const PylithInt dim,
-                                                      const PylithInt numS,
-                                                      const PylithInt numA,
-                                                      const PylithInt sOff[],
-                                                      const PylithInt sOff_x[],
-                                                      const PylithScalar s[],
-                                                      const PylithScalar s_t[],
-                                                      const PylithScalar s_x[],
-                                                      const PylithInt aOff[],
-                                                      const PylithInt aOff_x[],
-                                                      const PylithScalar a[],
-                                                      const PylithScalar a_t[],
-                                                      const PylithScalar a_x[],
-                                                      const PylithReal t,
-                                                      const PylithReal s_tshift,
-                                                      const PylithScalar x[],
-                                                      const PylithInt numConstants,
-                                                      const PylithScalar constants[],
-                                                      PylithScalar Jf3[]) {
+                                                              const PylithInt numS,
+                                                              const PylithInt numA,
+                                                              const PylithInt sOff[],
+                                                              const PylithInt sOff_x[],
+                                                              const PylithScalar s[],
+                                                              const PylithScalar s_t[],
+                                                              const PylithScalar s_x[],
+                                                              const PylithInt aOff[],
+                                                              const PylithInt aOff_x[],
+                                                              const PylithScalar a[],
+                                                              const PylithScalar a_t[],
+                                                              const PylithScalar a_x[],
+                                                              const PylithReal t,
+                                                              const PylithReal s_tshift,
+                                                              const PylithScalar x[],
+                                                              const PylithInt numConstants,
+                                                              const PylithScalar constants[],
+                                                              PylithScalar Jf3[]) {
     const PylithInt _dim = 3;
 
     // Incoming auxiliary fields.
@@ -1254,23 +1250,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::Jf3vu(const PylithInt di
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeform3D::meanStress(const PylithInt dim,
-                                                           const PylithInt numS,
-                                                           const PylithInt numA,
-                                                           const PylithInt sOff[],
-                                                           const PylithInt sOff_x[],
-                                                           const PylithScalar s[],
-                                                           const PylithScalar s_t[],
-                                                           const PylithScalar s_x[],
-                                                           const PylithInt aOff[],
-                                                           const PylithInt aOff_x[],
-                                                           const PylithScalar a[],
-                                                           const PylithScalar a_t[],
-                                                           const PylithScalar a_x[],
-                                                           const PylithReal t,
-                                                           const PylithScalar x[],
-                                                           const PylithInt numConstants,
-                                                           const PylithScalar constants[],
-                                                           PylithScalar stress[]) {
+                                                                   const PylithInt numS,
+                                                                   const PylithInt numA,
+                                                                   const PylithInt sOff[],
+                                                                   const PylithInt sOff_x[],
+                                                                   const PylithScalar s[],
+                                                                   const PylithScalar s_t[],
+                                                                   const PylithScalar s_x[],
+                                                                   const PylithInt aOff[],
+                                                                   const PylithInt aOff_x[],
+                                                                   const PylithScalar a[],
+                                                                   const PylithScalar a_t[],
+                                                                   const PylithScalar a_x[],
+                                                                   const PylithReal t,
+                                                                   const PylithScalar x[],
+                                                                   const PylithInt numConstants,
+                                                                   const PylithScalar constants[],
+                                                                   PylithScalar stress[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution field.
@@ -1321,23 +1317,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::meanStress(const PylithI
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeform3D::meanStress_refstate(const PylithInt dim,
-                                                                    const PylithInt numS,
-                                                                    const PylithInt numA,
-                                                                    const PylithInt sOff[],
-                                                                    const PylithInt sOff_x[],
-                                                                    const PylithScalar s[],
-                                                                    const PylithScalar s_t[],
-                                                                    const PylithScalar s_x[],
-                                                                    const PylithInt aOff[],
-                                                                    const PylithInt aOff_x[],
-                                                                    const PylithScalar a[],
-                                                                    const PylithScalar a_t[],
-                                                                    const PylithScalar a_x[],
-                                                                    const PylithReal t,
-                                                                    const PylithScalar x[],
-                                                                    const PylithInt numConstants,
-                                                                    const PylithScalar constants[],
-                                                                    PylithScalar stress[]) {
+                                                                            const PylithInt numS,
+                                                                            const PylithInt numA,
+                                                                            const PylithInt sOff[],
+                                                                            const PylithInt sOff_x[],
+                                                                            const PylithScalar s[],
+                                                                            const PylithScalar s_t[],
+                                                                            const PylithScalar s_x[],
+                                                                            const PylithInt aOff[],
+                                                                            const PylithInt aOff_x[],
+                                                                            const PylithScalar a[],
+                                                                            const PylithScalar a_t[],
+                                                                            const PylithScalar a_x[],
+                                                                            const PylithReal t,
+                                                                            const PylithScalar x[],
+                                                                            const PylithInt numConstants,
+                                                                            const PylithScalar constants[],
+                                                                            PylithScalar stress[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution field.
@@ -1400,23 +1396,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::meanStress_refstate(cons
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeform3D::deviatoricStress(const PylithInt dim,
-                                                                 const PylithInt numS,
-                                                                 const PylithInt numA,
-                                                                 const PylithInt sOff[],
-                                                                 const PylithInt sOff_x[],
-                                                                 const PylithScalar s[],
-                                                                 const PylithScalar s_t[],
-                                                                 const PylithScalar s_x[],
-                                                                 const PylithInt aOff[],
-                                                                 const PylithInt aOff_x[],
-                                                                 const PylithScalar a[],
-                                                                 const PylithScalar a_t[],
-                                                                 const PylithScalar a_x[],
-                                                                 const PylithReal t,
-                                                                 const PylithScalar x[],
-                                                                 const PylithInt numConstants,
-                                                                 const PylithScalar constants[],
-                                                                 PylithScalar stress[]) {
+                                                                         const PylithInt numS,
+                                                                         const PylithInt numA,
+                                                                         const PylithInt sOff[],
+                                                                         const PylithInt sOff_x[],
+                                                                         const PylithScalar s[],
+                                                                         const PylithScalar s_t[],
+                                                                         const PylithScalar s_x[],
+                                                                         const PylithInt aOff[],
+                                                                         const PylithInt aOff_x[],
+                                                                         const PylithScalar a[],
+                                                                         const PylithScalar a_t[],
+                                                                         const PylithScalar a_x[],
+                                                                         const PylithReal t,
+                                                                         const PylithScalar x[],
+                                                                         const PylithInt numConstants,
+                                                                         const PylithScalar constants[],
+                                                                         PylithScalar stress[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution field.
@@ -1501,23 +1497,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::deviatoricStress(const P
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeform3D::deviatoricStress_refstate(const PylithInt dim,
-                                                                          const PylithInt numS,
-                                                                          const PylithInt numA,
-                                                                          const PylithInt sOff[],
-                                                                          const PylithInt sOff_x[],
-                                                                          const PylithScalar s[],
-                                                                          const PylithScalar s_t[],
-                                                                          const PylithScalar s_x[],
-                                                                          const PylithInt aOff[],
-                                                                          const PylithInt aOff_x[],
-                                                                          const PylithScalar a[],
-                                                                          const PylithScalar a_t[],
-                                                                          const PylithScalar a_x[],
-                                                                          const PylithReal t,
-                                                                          const PylithScalar x[],
-                                                                          const PylithInt numConstants,
-                                                                          const PylithScalar constants[],
-                                                                          PylithScalar stress[]) {
+                                                                                  const PylithInt numS,
+                                                                                  const PylithInt numA,
+                                                                                  const PylithInt sOff[],
+                                                                                  const PylithInt sOff_x[],
+                                                                                  const PylithScalar s[],
+                                                                                  const PylithScalar s_t[],
+                                                                                  const PylithScalar s_x[],
+                                                                                  const PylithInt aOff[],
+                                                                                  const PylithInt aOff_x[],
+                                                                                  const PylithScalar a[],
+                                                                                  const PylithScalar a_t[],
+                                                                                  const PylithScalar a_x[],
+                                                                                  const PylithReal t,
+                                                                                  const PylithScalar x[],
+                                                                                  const PylithInt numConstants,
+                                                                                  const PylithScalar constants[],
+                                                                                  PylithScalar stress[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution field.
@@ -1614,23 +1610,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::deviatoricStress_refstat
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeform3D::firstPiolaKirchhoffStress(const PylithInt dim,
-                                                             const PylithInt numS,
-                                                             const PylithInt numA,
-                                                             const PylithInt sOff[],
-                                                             const PylithInt sOff_x[],
-                                                             const PylithScalar s[],
-                                                             const PylithScalar s_t[],
-                                                             const PylithScalar s_x[],
-                                                             const PylithInt aOff[],
-                                                             const PylithInt aOff_x[],
-                                                             const PylithScalar a[],
-                                                             const PylithScalar a_t[],
-                                                             const PylithScalar a_x[],
-                                                             const PylithReal t,
-                                                             const PylithScalar x[],
-                                                             const PylithInt numConstants,
-                                                             const PylithScalar constants[],
-                                                             PylithScalar firstStress[]) {
+                                                                                 const PylithInt numS,
+                                                                                 const PylithInt numA,
+                                                                                 const PylithInt sOff[],
+                                                                                 const PylithInt sOff_x[],
+                                                                                 const PylithScalar s[],
+                                                                                 const PylithScalar s_t[],
+                                                                                 const PylithScalar s_x[],
+                                                                                 const PylithInt aOff[],
+                                                                                 const PylithInt aOff_x[],
+                                                                                 const PylithScalar a[],
+                                                                                 const PylithScalar a_t[],
+                                                                                 const PylithScalar a_x[],
+                                                                                 const PylithReal t,
+                                                                                 const PylithScalar x[],
+                                                                                 const PylithInt numConstants,
+                                                                                 const PylithScalar constants[],
+                                                                                 PylithScalar firstStress[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
@@ -1681,7 +1677,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::firstPiolaKirchhoffStres
     for (PylithInt i = 0; i < _dim; ++i) {
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt k = 0; k < _dim; ++k) {
-                firstStress[i*_dim+j] += secondStress[i*_dim+k]*deformGradient[j*_dim+k];
+                firstStress[i*_dim+j] += deformGradient[i*_dim+k]*secondStress[k*_dim+j];
             }
         }
     }
@@ -1699,23 +1695,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::firstPiolaKirchhoffStres
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeform3D::firstPiolaKirchhoffStress_refstate(const PylithInt dim,
-                                                                      const PylithInt numS,
-                                                                      const PylithInt numA,
-                                                                      const PylithInt sOff[],
-                                                                      const PylithInt sOff_x[],
-                                                                      const PylithScalar s[],
-                                                                      const PylithScalar s_t[],
-                                                                      const PylithScalar s_x[],
-                                                                      const PylithInt aOff[],
-                                                                      const PylithInt aOff_x[],
-                                                                      const PylithScalar a[],
-                                                                      const PylithScalar a_t[],
-                                                                      const PylithScalar a_x[],
-                                                                      const PylithReal t,
-                                                                      const PylithScalar x[],
-                                                                      const PylithInt numConstants,
-                                                                      const PylithScalar constants[],
-                                                                      PylithScalar firstStress[]) {
+                                                                                           const PylithInt numS,
+                                                                                           const PylithInt numA,
+                                                                                           const PylithInt sOff[],
+                                                                                           const PylithInt sOff_x[],
+                                                                                           const PylithScalar s[],
+                                                                                           const PylithScalar s_t[],
+                                                                                           const PylithScalar s_x[],
+                                                                                           const PylithInt aOff[],
+                                                                                           const PylithInt aOff_x[],
+                                                                                           const PylithScalar a[],
+                                                                                           const PylithScalar a_t[],
+                                                                                           const PylithScalar a_x[],
+                                                                                           const PylithReal t,
+                                                                                           const PylithScalar x[],
+                                                                                           const PylithInt numConstants,
+                                                                                           const PylithScalar constants[],
+                                                                                           PylithScalar firstStress[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
@@ -1770,7 +1766,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::firstPiolaKirchhoffStres
     for (PylithInt i = 0; i < _dim; ++i) {
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt k = 0; k < _dim; ++k) {
-                firstStress[i*_dim+j] += secondStress[i*_dim+k]*deformGradient[j*_dim+k];
+                firstStress[i*_dim+j] += deformGradient[i*_dim+k]*secondStress[k*_dim+j];
             }
         }
     }
@@ -1788,23 +1784,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::firstPiolaKirchhoffStres
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeform3D::cauchyStress(const PylithInt dim,
-                                                             const PylithInt numS,
-                                                             const PylithInt numA,
-                                                             const PylithInt sOff[],
-                                                             const PylithInt sOff_x[],
-                                                             const PylithScalar s[],
-                                                             const PylithScalar s_t[],
-                                                             const PylithScalar s_x[],
-                                                             const PylithInt aOff[],
-                                                             const PylithInt aOff_x[],
-                                                             const PylithScalar a[],
-                                                             const PylithScalar a_t[],
-                                                             const PylithScalar a_x[],
-                                                             const PylithReal t,
-                                                             const PylithScalar x[],
-                                                             const PylithInt numConstants,
-                                                             const PylithScalar constants[],
-                                                             PylithScalar stressVector[]) {
+                                                                     const PylithInt numS,
+                                                                     const PylithInt numA,
+                                                                     const PylithInt sOff[],
+                                                                     const PylithInt sOff_x[],
+                                                                     const PylithScalar s[],
+                                                                     const PylithScalar s_t[],
+                                                                     const PylithScalar s_x[],
+                                                                     const PylithInt aOff[],
+                                                                     const PylithInt aOff_x[],
+                                                                     const PylithScalar a[],
+                                                                     const PylithScalar a_t[],
+                                                                     const PylithScalar a_x[],
+                                                                     const PylithReal t,
+                                                                     const PylithScalar x[],
+                                                                     const PylithInt numConstants,
+                                                                     const PylithScalar constants[],
+                                                                     PylithScalar stressVector[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
@@ -1862,7 +1858,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::cauchyStress(const Pylit
     for (PylithInt i = 0; i < _dim; ++i) {
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt k = 0; k < _dim; ++k) {
-                firstStress[i*_dim+j] += secondStress[i*_dim+k]*deformGradient[j*_dim+k];
+                firstStress[i*_dim+j] += deformGradient[i*_dim+k]*secondStress[k*_dim+j];
             }
         }
     }
@@ -1871,7 +1867,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::cauchyStress(const Pylit
     for (PylithInt i = 0; i < _dim; ++i) {
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt k = 0; k < _dim; ++k) {
-                stressTensor[i*_dim+j] += deformGradient[i*_dim+k]*firstStress[k*_dim+j]/jDeform;
+                stressTensor[i*_dim+j] += firstStress[i*_dim+k]*deformGradient[j*_dim+k]/jDeform;
             }
         }
     }
@@ -1896,23 +1892,23 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::cauchyStress(const Pylit
  */
 void
 pylith::fekernels::IsotropicLinearElasticityLgDeform3D::cauchyStress_refstate(const PylithInt dim,
-                                                                      const PylithInt numS,
-                                                                      const PylithInt numA,
-                                                                      const PylithInt sOff[],
-                                                                      const PylithInt sOff_x[],
-                                                                      const PylithScalar s[],
-                                                                      const PylithScalar s_t[],
-                                                                      const PylithScalar s_x[],
-                                                                      const PylithInt aOff[],
-                                                                      const PylithInt aOff_x[],
-                                                                      const PylithScalar a[],
-                                                                      const PylithScalar a_t[],
-                                                                      const PylithScalar a_x[],
-                                                                      const PylithReal t,
-                                                                      const PylithScalar x[],
-                                                                      const PylithInt numConstants,
-                                                                      const PylithScalar constants[],
-                                                                      PylithScalar stressVector[]) {
+                                                                              const PylithInt numS,
+                                                                              const PylithInt numA,
+                                                                              const PylithInt sOff[],
+                                                                              const PylithInt sOff_x[],
+                                                                              const PylithScalar s[],
+                                                                              const PylithScalar s_t[],
+                                                                              const PylithScalar s_x[],
+                                                                              const PylithInt aOff[],
+                                                                              const PylithInt aOff_x[],
+                                                                              const PylithScalar a[],
+                                                                              const PylithScalar a_t[],
+                                                                              const PylithScalar a_x[],
+                                                                              const PylithReal t,
+                                                                              const PylithScalar x[],
+                                                                              const PylithInt numConstants,
+                                                                              const PylithScalar constants[],
+                                                                              PylithScalar stressVector[]) {
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
@@ -1974,7 +1970,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::cauchyStress_refstate(co
     for (PylithInt i = 0; i < _dim; ++i) {
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt k = 0; k < _dim; ++k) {
-                firstStress[i*_dim+j] += secondStress[i*_dim+k]*deformGradient[j*_dim+k];
+                firstStress[i*_dim+j] += deformGradient[i*_dim+k]*secondStress[k*_dim+j];
             }
         }
     }
@@ -1983,7 +1979,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::cauchyStress_refstate(co
     for (PylithInt i = 0; i < _dim; ++i) {
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt k = 0; k < _dim; ++k) {
-                stressTensor[i*_dim+j] += deformGradient[i*_dim+k]*firstStress[k*_dim+j]/jDeform;
+                stressTensor[i*_dim+j] += firstStress[i*_dim+k]*deformGradient[j*_dim+k]/jDeform;
             }
         }
     }
