@@ -82,7 +82,7 @@ That is, we have one set of objects that specify the physics through materials, 
 The user specifies the parameters for the `Physics` objects, which each create the appropriate integrator and/or constraint via factory methods.
 
 :::{figure-md} fig-developer-physics-fem
-<img src="figs/classdiagram_physics_fem.*" alt="Hierarchy of physics and corresponding finite-element objects." width="80%" />
+<img src="figs/classdiagram_physics_fem.*" alt="Hierarchy of physics and corresponding finite-element objects." width="70%" />
 
 Diagram showing the relationships among objects specifying the physics and the finite-element implementations.
 :::
@@ -99,7 +99,7 @@ For example, a material will create an `IntegratorDomain` object that performs i
 ### Materials
 
 :::{figure-md} fig-developer-classes-material
-<img src="figs/classdiagram_material.*" alt="Hierarchy of materials related objects." width="80%" />
+<img src="figs/classdiagram_material.*" alt="Hierarchy of materials related objects." width="60%" />
 
 Diagram showing the relationships among objects associated with materials.
 :::
@@ -108,7 +108,7 @@ Diagram showing the relationships among objects associated with materials.
 ### Boundary Conditions
 
 :::{figure-md} fig-developer-classes-bc
-<img src="figs/classdiagram_bc.*" alt="Hierarchy of boundary condition related objects." width="80%" />
+<img src="figs/classdiagram_bc.*" alt="Hierarchy of boundary condition related objects." width="60%" />
 
 Diagram showing the relationships among objects associated with boundary conditions.
 :::
@@ -121,14 +121,15 @@ Add class diagram and discussion for FaultCohesiveKin, KinSrc.
 
 ### Mesh Importing
 
-:::{admonition} TODO
-Add class diagram and discussion for MeshImporter, MeshIO, etc.
+:::{figure-md} fig-developer-classes-mesher
+<img src="figs/classdiagram_mesher.*" alt="Hierarchy of mesh generation and importing related objects." width="60%" />
+
+Diagram showing the relationships among objects associated with mesh generation and importing.
 :::
 
 ### Output
 
 :::{figure-md} fig-developer-classes-output
-
 <img src="figs/classdiagram_output.*" alt="Hierarchy of output related objects." width="100%" />
 
 Diagram showing the relationships among objects associated with output.

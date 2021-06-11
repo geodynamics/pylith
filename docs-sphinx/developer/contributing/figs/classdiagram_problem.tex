@@ -16,7 +16,7 @@
   \node (pythia-component) [abstract-class] {\umlemptyclass{pythia.pyre.components.Component}};
   \node (petsc-component) [abstract-class] at ($(pythia-component.south)-(0,4em)$) {\umlemptyclass{PetscComponent}};
 
-  \node (pyre-component) [abstract-class, anchor=west] at ($(pythia-component.east)+(2em,0)$) {\umlemptyclass{pythia.pyre.components.Component}};
+  \node (pyre-component) [abstract-class, anchor=west] at ($(pythia-component.east)+(2em,0)$) {\umlemptyclass{PyreComponent}};
   
   \node (python-problem) [abstract-class] at ($(petsc-component.south)-(0,4em)$) {\umlclass{Python Problem}{%
       normalizer\\
