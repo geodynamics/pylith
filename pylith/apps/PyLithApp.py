@@ -63,10 +63,6 @@ class PyLithApp(PetscApplication):
         "problems", itemFactory=problemFactory, factory=SingleProblem)
     problems.meta['tip'] = "Computational problem(s) to solve."
     
-    # initialize 1 problem (original text)
-    # problem = pythia.pyre.inventory.facility(
-    #     "problem", family="problem", factory=TimeDependent)
-    #problem.meta['tip'] = "Computational problem to solve."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
