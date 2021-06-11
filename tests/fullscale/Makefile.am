@@ -21,8 +21,7 @@ SUBDIRS = \
 	viscoelasticity \
 	poroelasticity \
 	petsc \
-	eqinfo \
-	eqcycle
+	eqinfo
 
 
 # End of file

@@ -16,7 +16,10 @@
 # ----------------------------------------------------------------------
 
 SUBDIRS = \
-	rigid-sliding
+	rigid-sliding \
+	simple-shear \
+	individual \
+	combined
 
 
 # End of file 
