@@ -23,8 +23,10 @@ dist_check_SCRIPTS = test_pylith.py
 
 dist_noinst_PYTHON = \
 	meshes.py \
-	TestTwoBlocks.py \
-	twoblocks_soln.py
+	TestRigidSliding.py \
+	TestSimpleShear.py \
+	rigidSliding_soln.py \
+	simpleShear_soln.py
 
 dist_noinst_DATA = \
 	geometry.jou \
@@ -34,9 +36,12 @@ dist_noinst_DATA = \
 	mesh_quad.jou \
 	mesh_quad.exo \
 	pylithapp.cfg \
-	twoblocks.cfg \
-	twoblocks_quad.cfg \
-	twoblocks_tri.cfg
+	rigidSliding.cfg \
+	rigidSliding_quad.cfg \
+	rigidSliding_tri.cfg
+	simpleShear.cfg \
+	simpleShear_quad.cfg \
+	simpleShear_tri.cfg
 
 
 noinst_TMP =
