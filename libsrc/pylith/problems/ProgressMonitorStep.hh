@@ -19,11 +19,11 @@
 /*** @file libsrc/problems/ProgressMonitorStep.hh
  *
  * @brief Abstract base class for objects defining physics, such as behavior
- * of a bulk makterial, boundary condition, interface, or constraint.
+ * of a bulk material, boundary condition, interface, or constraint.
  */
 
-#if !defined(pylith_problems_ProgressMonitorStep_hh)
-#define pylith_problems_ProgressMonitorStep_hh
+#if !defined(pylith_problems_progressmonitorstep_hh)
+#define pylith_problems_progressmonitorstep_hh
 
 #include "ProgressMonitor.hh" // ISA ProgressMonitor
 
@@ -78,6 +78,6 @@ private:
 
 }; // ProgressMonitorStep
 
-#endif // pylith_problems_ProgressMonitorStep_hh
+#endif // pylith_problems_progressMonitorstep_hh
 
 // End of file

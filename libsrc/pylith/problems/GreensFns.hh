@@ -59,13 +59,19 @@ public:
      *
      * @returns Id for fault with impulses.
      */
-    int setFaultId(void) const;
+    int getFaultId(void) const;
 
     /** Set progress monitor.
      *
      * @param[in] monitor Progress monitor for Green's functions simulation.
      */
     void setProgressMonitor(pylith::problems::ProgressMonitorStep* monitor);
+
+    /** Get Petsc DM for problem.
+     *
+     * @returns PETSc DM for problem.
+     */
+    PetscDM getPetscDM(void);
 
     /// Verify configuration.
     void verifyConfiguration(void) const;
@@ -79,9 +85,9 @@ public:
 
     /** Perform operations after advancing solution of one impulse
      *
-     * Update state variables, output.
+     * @param[in] impulseReal 
      */
-    void poststep(void);
+    void poststep(const double impulseReal);
 
     /** Set solution values according to constraints (Dirichlet BC).
      *
@@ -107,6 +113,14 @@ public:
                          PetscMat precondMat,
                          PetscVec solutionVec);
 
+     /** Create Jacobian
+     *
+     * @param[out] jacobianMat PETSc Mat for Jacobian.
+     * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
+     */
+    void createJacobian(PetscMat jacobianMat,
+                         PetscMat precondMat);
+
     /** Callback static method for computing residual.
      *
      * @param[in] snes PETSc solver
@@ -120,25 +134,27 @@ public:
                                       PetscVec residualVec,
                                       void* context);
 
-    /** Callback static method for computing Jacobian.
+    /* Callback static method for computing Jacobian.
      *
+     * @param[in] SNES PETSc solver
      * @param[out] jacobianMat PETSc Mat for Jacobian.
      * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
      * @param[in] solutionVec PETSc Vec with current trial solution.
+     * @param[in] context User context (GreensFns).
      */
     static
-    void computeJacobian(PetscSNES snes,
-                         PetscVec solutionVec,
-                         PetscMat jacobianMat,
-                         PetscMat precondMat,
-                         void* context);
+    PetscErrorCode computeJacobian(PetscSNES snes,
+                                    PetscVec solutionVec,
+                                    PetscMat jacobianMat,
+                                    PetscMat precondMat,
+                                    void* context);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    PylithInt _faultImpulsesId;
+    PylithInt _faultId;
 #if defined(TEMPORARY)
-    pylith::fa::FaultCohesiveStub _faultImpulses;
+    pylith::faults::FaultCohesiveStub* _faultImpulses;
 #else
     pylith::faults::FaultCohesiveImpulses* _faultImpulses; ///< Fault interface with Green's functions impulses.
 #endif
