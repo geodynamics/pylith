@@ -32,6 +32,8 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
+#include <cmath> // USES cos() sin()
+
 namespace pylith {
     namespace mmstests {
         class TestIsotropicLinearElasticityLgDeform2D_UniformStrain;
@@ -86,27 +88,19 @@ class pylith::mmstests::TestIsotropicLinearElasticityLgDeform2D_UniformStrain :
 
     // Solution subfields.
 
-    static double strain_xx(void) {
-        return 0.1;
-    } // strain_xx
-
-    static double strain_yy(void) {
-        return 0.25;
-    } // strain_yy
-
-    static double strain_xy(void) {
-        return 0.3;
-    } // strain_xy
+    static double angle(void) {
+        return 3.14159265/4.0;
+    } // rotation angle
 
     // Displacement
     static double disp_x(const double x,
                          const double y) {
-        return strain_xx()*x + strain_xy()*y;
+        return (cos(angle())-1)*x - sin(angle())*y;
     } // disp_x
 
     static double disp_y(const double x,
                          const double y) {
-        return strain_xy()*x + strain_yy()*y;
+        return sin(angle())*x + (cos(angle()-1))*y;
     } // disp_y
 
     static const char* disp_units(void) {
