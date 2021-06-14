@@ -25,6 +25,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Stratum.hh" // USES Stratum
@@ -124,7 +125,8 @@ pylith::meshio::OutputSolnPoints::_writeSolnStep(const PylithReal t,
     _openSolnStep(t, *_pointMesh);
     if (writePointNames) { _writePointNames(); }
 
-    const pylith::string_vector& subfieldNames = _expandSubfieldNames(solution);
+    const pylith::string_vector& subfieldNames = pylith::topology::FieldOps::getSubfieldNamesDomain(solution);
+
     const size_t numSubfieldNames = subfieldNames.size();
     for (size_t iField = 0; iField < numSubfieldNames; iField++) {
         OutputSubfield* subfield = NULL;
