@@ -47,7 +47,7 @@ namespace pylith {
 
         class ProgressMonitor;
         class ProgressMonitorTime;
-        class PrograssMonitorStep;
+        class ProgressMonitorStep;
       
     } // problems
 } // pylith

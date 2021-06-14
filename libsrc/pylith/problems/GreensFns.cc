@@ -57,7 +57,7 @@ public:
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::problems::GreensFns::GreensFns(void) :
-    _faultImpulsesId(100),
+    _faultId(100),
     _faultImpulses(NULL),
     _snes(NULL),
     _monitor(NULL),
@@ -98,7 +98,7 @@ pylith::problems::GreensFns::deallocate(void) {
 // Set fault Id for problem.
 void
 pylith::problems::GreensFns::setFaultId(const int value) {
-    PYLITH_COMPONENT_DEBUG("setFaultId(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("faultId(value="<<value<<")");
 
     _faultId = value;
 } // setFaultId
@@ -119,6 +119,18 @@ pylith::problems::GreensFns::setProgressMonitor(pylith::problems::ProgressMonito
     _monitor = monitor; // :KLUDGE: :TODO: Use shared pointer.
 } // setProgressMonitor
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Get Petsc DM associated with problem.
+PetscDM
+pylith::problems::GreensFns::getPetscDM(void) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscDM dm = NULL;
+    PetscErrorCode err = SNESGetDM(_snes, &dm);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_RETURN(dm);
+} // getPetscDM
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration.
@@ -133,19 +145,20 @@ pylith::problems::GreensFns::verifyConfiguration(void) const {
     assert(!_faultImpulses);
     const size_t numInterfaces = _interfaces.size();
     for (size_t i = 0; i < numInterfaces; ++i) {
-        if (_faultImpulsesId = _interfaces[i]->getInterfaceId()) {
+        if (_faultId == _interfaces[i]->getInterfaceId()) {
             _faultImpulses = dynamic_cast<FaultCohesiveImpulses*>(_interfaces[i]);
+        } // if
     if (!_faultImpulses) {
         std::ostringstream msg;
-        msg << "Found fault with id (" << _faultImpulsesId << ") in interfaces for "
+        msg << "Found fault with id (" << _faultId << ") in interfaces for "
             << "imposing impulses, but type is not FaultCohesiveImpulses.";
         throw std::runtime_error(msg.str());
     } // if
-        } // if
+        
     } // for
     if (!_faultImpulses) {
         std::ostringstream msg;
-        msg << "Could not find fault with id (" << _faultImpulsesId << ") in interfaces for imposing impulses.";
+        msg << "Could not find fault with id (" << _faultId << ") in interfaces for imposing impulses.";
         throw std::runtime_error(msg.str());
     } // if
 
@@ -182,7 +195,7 @@ pylith::problems::GreensFns::initialize(void) {
 
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC:
-        PYLITH_COMPONENT_DEBUG("Setting PetscSNES callbacks computeIFunction() and computeIJacobian().");
+        PYLITH_COMPONENT_DEBUG("Setting PetscSNES callbacks SNESSetFunction() and SNESSetJacobian().");
         err = SNESSetFunction(_snes, NULL, computeResidual, (void*)this);PYLITH_CHECK_ERROR(err);
         err = SNESSetJacobian(_snes, NULL, NULL, computeJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
         break;
@@ -227,27 +240,9 @@ pylith::problems::GreensFns::solve(void) {
     PetscErrorCode err;
 
     // Compute Jacobian
-    { // Move to createJacobian
-    PetscErrorCode err;
-    PetscDS dsSoln = NULL;
-    PetscBool hasJacobian, hasPreconditioner;
-    PetscDM dmSNES = this->getPetscDM();PYLITH_CHECK_ERROR(err);
-    err = DMCreateMatrix(dmSNES, &jacobian);PYLITH_CHECK_ERROR(err);
-    err = DMGetDS(_solution->dmMesh(), &dsSoln);PYLITH_CHECK_ERROR(err);
-    err = PetscDSHasJacobian(ds, &hasJacobian);PYLITH_CHECK_ERROR(err);
-    if (!hasJacobian) {
-        throw std::runtime_error("PETSc DS indicates there is no Jacobian to form. Jacobian expected for Green's function problem.");
-    } // if
-    err = PetscDSHasJacobianPreconditioner(ds, &hasPreconditioner);PYLITH_CHECK_ERROR(err);
-    if (hasPreconditioner) {
-        err = DMCreateMatrix(dmSNES, &jacobianPrecond);PYLITH_CHECK_ERROR(err);
-        err = PetscObjectSetName((PetscObject) jacobianPrecond, "Preconditioning Matrix");PYLITH_CHECK_ERROR(err);
-        err = PetscObjectSetOptionsPrefix((PetscObject) jacobianPrecond, "jacpre_");PYLITH_CHECK_ERROR(err);
-    } // if
-    } // Move to createJacobian()
     PetscMat jacobian = NULL;
     PetscMat jacobianPrecond = NULL;
-    // createJacobian(&jacobian, &jacobianPrecond);
+    createJacobian(jacobian, jacobianPrecond);
     err = SNESComputeJacobian(_snes, _solution->globalVector(), jacobian, jacobianPrecond);PYLITH_CHECK_ERROR(err);
 
     PetscKSP ksp = NULL;
@@ -268,9 +263,9 @@ pylith::problems::GreensFns::solve(void) {
         _faultImpulses->updateState(impulseReal);
 
         err = KSPSolve(ksp, _residual->globalVector(), _solution->globalVector());PYLITH_CHECK_ERROR(err);
-        _solution->scatterVectorToLocal(solution->globalVector());
+        _solution->scatterVectorToLocal(_solution->globalVector());
         _solution->scatterLocalToOutput();
-        poststep(i); 
+        poststep(impulseReal); 
     } // for
 
     PYLITH_METHOD_END;
@@ -280,30 +275,29 @@ pylith::problems::GreensFns::solve(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Perform operations after advancing solution of one impulse.
 void
-pylith::problems::GreensFns::poststep(const int impulse) {
+pylith::problems::GreensFns::poststep(const double impulseReal) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("poststep()");
 
     // Get current solution
-    PetscErrorCode err;
     const PetscReal t = 0;
     const PetscReal dt = 1.0;
 
     // Update integrators.
     const size_t numIntegrators = _integrators.size();
     for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->poststep(t, impulse, dt, *_solution);
+        _integrators[i]->poststep(t, impulseReal, dt, *_solution);
     } // for
 
     // Update constraints.
     const size_t numConstraints = _constraints.size();
     for (size_t i = 0; i < numConstraints; ++i) {
-        _constraints[i]->poststep(t, impulse, dt, *_solution);
+        _constraints[i]->poststep(t, impulseReal, dt, *_solution);
     } // for
 
     // Notify problem observers of updated solution.
     assert(_observers);
-    _observers->notifyObservers(t, impulse, dt, *_solution);
+    _observers->notifyObservers(t, (int)impulseReal, *_solution);
 
     // Get number of impulses for monitor
 #if defined(TEMPORARY) // Wait for merge with FaultCohesiveImpulses
@@ -313,7 +307,7 @@ pylith::problems::GreensFns::poststep(const int impulse) {
 #endif
     if (_monitor) {
         assert(_normalizer);
-        _monitor->update(impulse*1.0, 0.0, numImpulses*1.0);
+        _monitor->update(impulseReal, 0.0, numImpulses*1.0);
     } // if
 
     PYLITH_METHOD_END;
@@ -334,7 +328,7 @@ pylith::problems::GreensFns::setSolutionLocal(PetscVec solutionVec) {
     const size_t numConstraints = _constraints.size();
     const PetscReal t = 0.0;
     for (size_t i = 0; i < numConstraints; ++i) {
-        _constraints[i]->setSolution(t, _solution);
+        _constraints[i]->setSolution(_solution, t);
     } // for
 
     // _solution->view("SOLUTION AFTER SETTING VALUES");
@@ -380,10 +374,10 @@ pylith::problems::GreensFns::computeResidual(PetscVec residualVec,
 // Compute Jacobian.
 void
 pylith::problems::GreensFns::computeJacobian(PetscMat jacobianMat,
-                                                    PetscMat precondMat,
-                                                    PetscVec solutionVec) {
+                                            PetscMat precondMat,
+                                            PetscVec solutionVec) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("computeJacobian(solutionVec="<<solutionVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
+    PYLITH_COMPONENT_DEBUG("GreensFns::computeJacobian(solutionVec="<<solutionVec<<",jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
 
     assert(jacobianMat);
     assert(precondMat);
@@ -417,8 +411,40 @@ pylith::problems::GreensFns::computeJacobian(PetscMat jacobianMat,
 } // computeJacobian
 
 
+// ----------------------------------------------------------------------
+// Create Jacobian. &jacobian, &jacobianPrecond
+void
+pylith::problems::GreensFns::createJacobian(PetscMat jacobianMat,
+                                            PetscMat precondMat) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("createJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
+
+    assert(jacobianMat);
+    assert(precondMat);
+
+    PetscErrorCode err;
+    PetscDS dsSoln = NULL;
+    PetscBool hasJacobian, hasPreconditioner;
+    PetscDM dmSNES = this->getPetscDM();PYLITH_CHECK_ERROR(err);
+    err = DMCreateMatrix(dmSNES, &jacobianMat);PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(_solution->dmMesh(), &dsSoln);PYLITH_CHECK_ERROR(err);
+    err = PetscDSHasJacobian(dsSoln, &hasJacobian);PYLITH_CHECK_ERROR(err);
+    if (!hasJacobian) {
+        throw std::runtime_error("PETSc DS indicates there is no Jacobian to form. Jacobian expected for Green's function problem.");
+    } // if
+    err = PetscDSHasJacobianPreconditioner(dsSoln, &hasPreconditioner);PYLITH_CHECK_ERROR(err);
+    if (hasPreconditioner) {
+        err = DMCreateMatrix(dmSNES, &precondMat);PYLITH_CHECK_ERROR(err);
+        err = PetscObjectSetName((PetscObject) precondMat, "Preconditioning Matrix");PYLITH_CHECK_ERROR(err);
+        err = PetscObjectSetOptionsPrefix((PetscObject) precondMat, "jacpre_");PYLITH_CHECK_ERROR(err);
+    } //if
+
+    PYLITH_METHOD_END;
+} // createJacobian
+
+
 // ---------------------------------------------------------------------------------------------------------------------
-// Callback static method for computing residual for LHS, F(t,s,\dot{s}).
+// Callback static method for computing residual.
 PetscErrorCode
 pylith::problems::GreensFns::computeResidual(PetscSNES snes,
                                                     PetscVec solutionVec,
@@ -440,10 +466,10 @@ pylith::problems::GreensFns::computeResidual(PetscSNES snes,
 // Callback static method for computing Jacobian.
 PetscErrorCode
 pylith::problems::GreensFns::computeJacobian(PetscSNES snes,
-                                                    PetscVec solutionVec,
-                                                    PetscMat jacobianMat,
-                                                    PetscMat precondMat,
-                                                    void* context) {
+                                            PetscVec solutionVec,
+                                            PetscMat jacobianMat,
+                                            PetscMat precondMat,
+                                            void* context) {
     PYLITH_METHOD_BEGIN;
     pythia::journal::debug_t debug(_GreensFns::pyreComponent);
     debug << pythia::journal::at(__HERE__)
