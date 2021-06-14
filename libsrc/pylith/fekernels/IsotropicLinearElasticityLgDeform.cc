@@ -74,14 +74,8 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::f1v(const Pylit
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
 
-    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 1; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[1] = { aOff[i_shearModulus] };
-
     PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
-    firstPiolaKirchhoffStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
+    firstPiolaKirchhoffStress(_dim, _numS, numA, sOffDisp, sOffDisp_x, s, s_t, s_x, aOff, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
         f1[i] -= stressTensor[i];
@@ -139,14 +133,8 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::f1v_refstate(co
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
 
-    const PylithInt numAMean = 3; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 3; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus] };
-
     PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
-    firstPiolaKirchhoffStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL,
+    firstPiolaKirchhoffStress_refstate(_dim, _numS, numA, sOffDisp, sOffDisp_x, s, s_t, s_x, aOff, NULL,
                                        a, a_t, NULL, t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
         f1[i] -= stressTensor[i];
@@ -987,17 +975,9 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::f1v(const PylithInt dim,
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
 
-    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 1; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[1] = { aOff[i_shearModulus] };
-
     PylithScalar stressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
-               t, x, numConstants, constants, stressTensor);
-    deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                     t, x, numConstants, constants, stressTensor);
+    firstPiolaKirchhoffStress(_dim, _numS, numA, sOffDisp, sOffDisp_x, s, s_t, s_x, aOff, NULL, a, a_t, NULL,
+                              t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
         f1[i] -= stressTensor[i];
     } // for
@@ -1054,16 +1034,8 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::f1v_refstate(const Pylit
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
 
-    const PylithInt numAMean = 3; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 3; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus] };
-
     PylithScalar stressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
-                        t, x, numConstants, constants, stressTensor);
-    deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+    firstPiolaKirchhoffStress_refstate(_dim, _numS, numA, sOffDisp, sOffDisp_x, s, s_t, s_x, aOff, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
         f1[i] -= stressTensor[i];
