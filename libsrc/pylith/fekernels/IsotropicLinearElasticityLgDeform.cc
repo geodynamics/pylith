@@ -296,7 +296,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::firstPiolaKirch
     assert(aOff);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
-    assert(stressVector);
+    assert(firstStress);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -385,7 +385,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::firstPiolaKirch
     assert(aOff[i_bulkModulus] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
-    assert(stressVector);
+    assert(firstStress);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -693,7 +693,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::meanStress(cons
                                    0.5*disp_x[0*_dim+0]*disp_x[0*_dim+0] +
                                    0.5*disp_x[0*_dim+1]*disp_x[0*_dim+1] +
                                    0.5*disp_x[1*_dim+0]*disp_x[1*_dim+0] +
-                                   0.5*disp_x[1*_dim+1]*disp_x[1*_dim+1]；
+                                   0.5*disp_x[1*_dim+1]*disp_x[1*_dim+1];
     const PylithReal meanStress = bulkModulus * strainTrace;
 
     for (PylithInt i = 0; i < _dim; ++i) {
@@ -762,7 +762,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::meanStress_refs
                                    0.5*disp_x[0*_dim+0]*disp_x[0*_dim+0] +
                                    0.5*disp_x[0*_dim+1]*disp_x[0*_dim+1] +
                                    0.5*disp_x[1*_dim+0]*disp_x[1*_dim+0] +
-                                   0.5*disp_x[1*_dim+1]*disp_x[1*_dim+1]；
+                                   0.5*disp_x[1*_dim+1]*disp_x[1*_dim+1];
     const PylithReal refstrainTrace = refstrain[0] + refstrain[1] + refstrain[2];
 
     const PylithReal meanrstress = (refstress[0] + refstress[1] + refstress[2]) / 3.0;
@@ -829,7 +829,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::deviatoricStres
                                    0.5*disp_x[0*_dim+0]*disp_x[0*_dim+0] +
                                    0.5*disp_x[0*_dim+1]*disp_x[0*_dim+1] +
                                    0.5*disp_x[1*_dim+0]*disp_x[1*_dim+0] +
-                                   0.5*disp_x[1*_dim+1]*disp_x[1*_dim+1]；
+                                   0.5*disp_x[1*_dim+1]*disp_x[1*_dim+1];
     const PylithReal traceTerm = -2.0/3.0*shearModulus * strainTrace;
 
     const PylithScalar stress_xx = shearModulus * (2.0*disp_x[0*_dim+0] + 
@@ -912,7 +912,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeformPlaneStrain::deviatoricStres
                                    0.5*disp_x[0*_dim+0]*disp_x[0*_dim+0] +
                                    0.5*disp_x[0*_dim+1]*disp_x[0*_dim+1] +
                                    0.5*disp_x[1*_dim+0]*disp_x[1*_dim+0] +
-                                   0.5*disp_x[1*_dim+1]*disp_x[1*_dim+1]；
+                                   0.5*disp_x[1*_dim+1]*disp_x[1*_dim+1];
     const PylithReal refstrainTrace = refstrain[0] + refstrain[1] + refstrain[2];
     const PylithReal meanrstress = (refstress[0] + refstress[1] + refstress[2]) / 3.0;
     const PylithReal traceTerm = -2.0/3.0*shearModulus * (strainTrace - refstrainTrace);
@@ -1296,7 +1296,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::meanStress(const PylithI
                                    0.5*disp_x[1*_dim+2]*disp_x[1*_dim+2] +
                                    0.5*disp_x[2*_dim+0]*disp_x[2*_dim+0] +
                                    0.5*disp_x[2*_dim+1]*disp_x[2*_dim+1] +
-                                   0.5*disp_x[2*_dim+2]*disp_x[2*_dim+2]；
+                                   0.5*disp_x[2*_dim+2]*disp_x[2*_dim+2];
     const PylithReal meanStress = bulkModulus * strainTrace;
 
     for (PylithInt i = 0; i < _dim; ++i) {
@@ -1370,8 +1370,8 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::meanStress_refstate(cons
                                    0.5*disp_x[1*_dim+2]*disp_x[1*_dim+2] +
                                    0.5*disp_x[2*_dim+0]*disp_x[2*_dim+0] +
                                    0.5*disp_x[2*_dim+1]*disp_x[2*_dim+1] +
-                                   0.5*disp_x[2*_dim+2]*disp_x[2*_dim+2]；
-    const PylithReal refstrainTrace = re1*_dim+2f*disp_x[1*_dim+2]strain[0] + refstrain[1] + refstrain[2];
+                                   0.5*disp_x[2*_dim+2]*disp_x[2*_dim+2];
+    const PylithReal refstrainTrace = refstrain[0] + refstrain[1] + refstrain[2];
 
     const PylithReal meanrstress = (refstress[0] + refstress[1] + refstress[2]) / 3.0;
     const PylithReal meanStress = meanrstress + bulkModulus * (strainTrace - refstrainTrace);
@@ -1442,7 +1442,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::deviatoricStress(const P
                                    0.5*disp_x[1*_dim+2]*disp_x[1*_dim+2] +
                                    0.5*disp_x[2*_dim+0]*disp_x[2*_dim+0] +
                                    0.5*disp_x[2*_dim+1]*disp_x[2*_dim+1] +
-                                   0.5*disp_x[2*_dim+2]*disp_x[2*_dim+2]；
+                                   0.5*disp_x[2*_dim+2]*disp_x[2*_dim+2];
     const PylithReal traceTerm = -2.0/3.0*shearModulus * strainTrace;
 
     const PylithScalar stress_xx = shearModulus * (2.0*disp_x[0*_dim+0] + 
@@ -1551,7 +1551,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::deviatoricStress_refstat
                                    0.5*disp_x[1*_dim+2]*disp_x[1*_dim+2] +
                                    0.5*disp_x[2*_dim+0]*disp_x[2*_dim+0] +
                                    0.5*disp_x[2*_dim+1]*disp_x[2*_dim+1] +
-                                   0.5*disp_x[2*_dim+2]*disp_x[2*_dim+2]；
+                                   0.5*disp_x[2*_dim+2]*disp_x[2*_dim+2];
     const PylithReal refstrainTrace = refstrain[0] + refstrain[1] + refstrain[2];
     const PylithReal meanrstress = (refstress[0] + refstress[1] + refstress[2]) / 3.0;
     const PylithReal traceTerm = -2.0/3.0*shearModulus * (strainTrace - refstrainTrace);
@@ -1646,7 +1646,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::firstPiolaKirchhoffStres
     assert(aOff);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
-    assert(stressVector);
+    assert(firstStress);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -1735,7 +1735,7 @@ pylith::fekernels::IsotropicLinearElasticityLgDeform3D::firstPiolaKirchhoffStres
     assert(aOff[i_bulkModulus] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
-    assert(stressVector);
+    assert(firstStress);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
