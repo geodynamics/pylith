@@ -59,6 +59,7 @@ public:
 pylith::problems::GreensFns::GreensFns(void) :
     _faultId(100),
     _faultImpulses(NULL),
+    _integratorImpulses(NULL),
     _snes(NULL),
     _monitor(NULL),
     _residual(NULL),
@@ -83,6 +84,7 @@ pylith::problems::GreensFns::deallocate(void) {
     Problem::deallocate();
 
     _faultImpulses = NULL; // Memory handle in Python. :TODO: Use shared pointer.
+    _integratorImpulses = NULL; // Memory handle in Problem. :TODO: Use shared pointer.
 
     _monitor = NULL; // Memory handle in Python. :TODO: Use shared pointer.
     delete _residual;_residual = NULL;
@@ -146,7 +148,9 @@ pylith::problems::GreensFns::verifyConfiguration(void) const {
     const size_t numInterfaces = _interfaces.size();
     for (size_t i = 0; i < numInterfaces; ++i) {
         if (_faultId == _interfaces[i]->getInterfaceId()) {
+#if !defined(TEMPORARY)
             _faultImpulses = dynamic_cast<FaultCohesiveImpulses*>(_interfaces[i]);
+#endif
         } // if
     if (!_faultImpulses) {
         std::ostringstream msg;
@@ -213,6 +217,21 @@ pylith::problems::GreensFns::initialize(void) {
     err = SNESSetFromOptions(_snes);PYLITH_CHECK_ERROR(err);
     err = SNESSetUp(_snes);PYLITH_CHECK_ERROR(err);
 
+    // Get integrator for fault with impulses.
+    assert(!_integratorImpulses);
+    const size_t numIntegrators = _integrators.size();
+    for (size_t i = 0; i < numIntegrators; ++i) {
+        if (pylith::topology::Mesh::getCellsLabelName() == _integrators[i]->getLabelName() &&
+        _faultId == _integrators[i]->getLabelValue()) {
+            _integratorImpulses = _integrators[i];
+        } // if
+    } // for
+    if (!_integratorImpulses) {
+        std::ostringstream msg;
+        msg << "Could not find integrator for fault fault with id (" << _faultId << ") in integrators for problem.";
+        throw std::runtime_error(msg.str());
+    } // if
+
     pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
     if (debug.state()) {
         PetscDS dsSoln = NULL;
@@ -260,7 +279,7 @@ pylith::problems::GreensFns::solve(void) {
     for (size_t i=0; i < numImpulses; ++i) {
         // Update impulse on fault
         const PetscReal impulseReal = i + tolerance;
-        _faultImpulses->updateState(impulseReal);
+        _integratorImpulses->updateState(impulseReal);
 
         err = KSPSolve(ksp, _residual->globalVector(), _solution->globalVector());PYLITH_CHECK_ERROR(err);
         _solution->scatterVectorToLocal(_solution->globalVector());
@@ -425,7 +444,7 @@ pylith::problems::GreensFns::createJacobian(PetscMat jacobianMat,
     PetscErrorCode err;
     PetscDS dsSoln = NULL;
     PetscBool hasJacobian, hasPreconditioner;
-    PetscDM dmSNES = this->getPetscDM();PYLITH_CHECK_ERROR(err);
+    PetscDM dmSNES = this->getPetscDM();
     err = DMCreateMatrix(dmSNES, &jacobianMat);PYLITH_CHECK_ERROR(err);
     err = DMGetDS(_solution->dmMesh(), &dsSoln);PYLITH_CHECK_ERROR(err);
     err = PetscDSHasJacobian(dsSoln, &hasJacobian);PYLITH_CHECK_ERROR(err);
