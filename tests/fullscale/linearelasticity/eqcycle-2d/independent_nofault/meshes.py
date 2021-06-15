@@ -1,4 +1,3 @@
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -25,7 +24,7 @@ class Tri(object):
     DOMAIN = {
         "ncells": 124,
         "ncorners": 3,
-        "nvertices": 88,
+        "nvertices": 79,
     }
     MATERIALS = {
         "elastic_xpos": {
@@ -39,13 +38,6 @@ class Tri(object):
             "nvertices": 43,
         }
     }
-    FAULTS = {
-        "fault": {
-            "ncells": 8,
-            "ncorners": 2,
-            "nvertices": 9,
-        }
-    }
     BOUNDARIES = {
         "bc_xneg": {
             "ncells": 8,
@@ -60,13 +52,18 @@ class Tri(object):
         "bc_yneg": {
             "ncells": 8,
             "ncorners": 2,
-            "nvertices": 10
+            "nvertices": 9,
         },
         "bc_ypos": {
             "ncells": 8,
             "ncorners": 2,
-            "nvertices": 10,
+            "nvertices": 9,
         },
+    }
+    POINTS = {
+        "ncells": 3,
+        "ncorners": 1,
+        "nvertices": 3,
     }
 
 
@@ -76,7 +73,7 @@ class Quad(object):
     DOMAIN = {
         "ncells": 64,
         "ncorners": 4,
-        "nvertices": 90,
+        "nvertices": 81,
     }
     MATERIALS = {
         "elastic_xpos": {
@@ -90,13 +87,6 @@ class Quad(object):
             "nvertices": 45,
         }
     }
-    FAULTS = {
-        "fault": {
-            "ncells": 8,
-            "ncorners": 2,
-            "nvertices": 9,
-        }
-    }
     BOUNDARIES = {
         "bc_xneg": {
             "ncells": 8,
@@ -111,13 +101,18 @@ class Quad(object):
         "bc_yneg": {
             "ncells": 8,
             "ncorners": 2,
-            "nvertices": 10,
+            "nvertices": 9,
         },
         "bc_ypos": {
             "ncells": 8,
             "ncorners": 2,
-            "nvertices": 10,
+            "nvertices": 9,
         },
+    }
+    POINTS = {
+        "ncells": 3,
+        "ncorners": 1,
+        "nvertices": 3,
     }
 
 
