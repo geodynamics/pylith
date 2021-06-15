@@ -126,14 +126,6 @@ protected:
                         const PylithInt tindex,
                         const pylith::topology::Field& solution);
 
-    /** Get names of subfields for output.
-     *
-     * Expand "all" into list of actual fields in the solution field.
-     *
-     * @param[in] solution Solution field.
-     */
-    pylith::string_vector _expandSubfieldNames(const pylith::topology::Field& solution) const;
-
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 

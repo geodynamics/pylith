@@ -211,18 +211,4 @@ pylith::meshio::OutputSoln::_writeSolnStep(const PylithReal t,
 } // _writeSolnStep
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Get names of subfields for output.
-pylith::string_vector
-pylith::meshio::OutputSoln::_expandSubfieldNames(const pylith::topology::Field& solution) const {
-    PYLITH_METHOD_BEGIN;
-
-    if ((1 == _subfieldNames.size()) && (std::string("all") == _subfieldNames[0])) {
-        PYLITH_METHOD_RETURN(solution.subfieldNames());
-    } // if
-
-    PYLITH_METHOD_RETURN(_subfieldNames);
-} // _expandSubfieldNames
-
-
 // End of file
