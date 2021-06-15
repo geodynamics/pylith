@@ -22,21 +22,11 @@
  * @brief Object for Green's functions problem.
  */
 
-#if !defined(pylith_problems_greensfns_hh)
-#define pylith_problems_greensfns_hh
 
-#define TEMPORARY
-
-#include "Problem.hh" // ISA Problem
-#include "pylith/testing/testingfwd.hh" // USES MMSTest
-#include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesiveImpulses
-#include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Integrator
-
-#include "pylith/testing/FaultCohesiveStub.hh" // TEMPORARY
+namespace pylith {
+    namespace problems {
 
 class pylith::problems::GreensFns : public pylith::problems::Problem {
-    friend class TestGreensFns; // unit testing
-    friend class pylith::testing::MMSTest; // Testing with Method of Manufactured Solutions
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -150,25 +140,8 @@ public:
                                     PetscMat precondMat,
                                     void* context);
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
-    PylithInt _faultId;
-#if defined(TEMPORARY)
-    pylith::faults::FaultCohesiveStub* _faultImpulses;
-#else
-    pylith::faults::FaultCohesiveImpulses* _faultImpulses; ///< Fault interface with Green's functions impulses.
-#endif
-    pylith::feassemble::Integrator* _integratorImpulses; ///< Integrator for Green's functions impulses.
-
-    PetscSNES _snes; ///< PETSc SNES solver.
-    pylith::problems::ProgressMonitorStep* _monitor; ///< Monitor for simulation progress.
-
-    pylith::topology::Field* _residual; ///< Handle to residual field.
-    pylith::topology::Field* _solutionDot; ///< Handle to time derivative of solution.
-
 }; // GreensFns
-
-#endif // pylith_problems_greensfns_hh
+    }
+}
 
 // End of file
