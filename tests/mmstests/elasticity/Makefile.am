@@ -41,8 +41,8 @@ test_isotropiclinearelasticity2d_SOURCES = \
 test_isotropiclinearelasticitylgdeform2d_SOURCES = \
 		TestElasticity.cc \
 		TestIsotropicLinearElasticityLgDeform.cc \
-		TestIsotropicLinearElasticityLgDeform2D_UniformStrain.cc \
 		TestIsotropicLinearElasticityLgDeform2D_Rotation.cc \
+		TestIsotropicLinearElasticityLgDeform2D_UniformStrain.cc \
 		test_driver.cc
 
 test_isotropiclinearelasticity3d_uniformstrain_SOURCES = \

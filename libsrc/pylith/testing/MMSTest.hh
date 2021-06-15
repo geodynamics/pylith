@@ -91,7 +91,7 @@ protected:
     pylith::topology::Field *_solution; ///< Solution field.
     PetscVec _solutionExactVec; ///< Global vector to use for exact solution.
     PetscVec _solutionDotExactVec; ///< Global vector to use for time derivative of exact solution.
-    PylithReal _jacobianConvergenceRate; ///< Expected convergence rate for Jacobiab (when not linear).
+    PylithReal _jacobianConvergenceRate; ///< Expected convergence rate for Jacobian (when not linear).
     bool _isJacobianLinear; ///< Jacobian is should be linear.
     bool _disableFiniteDifferenceCheck; ///< Flag to indicate not to perform finite-difference check of Jacobian.
     bool _allowZeroResidual; ///< Allow residual to be exactly zero.

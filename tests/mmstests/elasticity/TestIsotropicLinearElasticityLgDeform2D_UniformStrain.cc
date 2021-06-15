@@ -141,6 +141,7 @@ protected:
         CPPUNIT_ASSERT(!_data);
         _data = new TestElasticity_Data();CPPUNIT_ASSERT(_data);
         _isJacobianLinear = false;
+        _jacobianConvergenceRate = 2.0;
 
         _data->spaceDim = 2;
         _data->meshFilename = ":UNKNOWN:"; // Set in child class.
