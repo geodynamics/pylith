@@ -33,6 +33,7 @@ namespace pylith {
 
         class PhysicsImplementation; ///< Abstract base class for constraints and integrators.
 
+        class DSLabelAccess; ///< Utility class for accessing PetscDMLabel, PetscDS, and PetscWeakForm.
         class FEKernelKey; ///< Utility class for managing keys for pointwise functions in finite-element integrations.
         class Integrator; ///< Abstract base class for finite-element integration.
         class IntegratorDomain; ///< Abstract base class for finite-element integration over portions on the domain.

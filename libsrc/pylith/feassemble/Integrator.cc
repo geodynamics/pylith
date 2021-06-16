@@ -43,6 +43,10 @@ pylith::feassemble::Integrator::Integrator(pylith::problems::Physics* const phys
     _labelValue(1),
     _lhsJacobianTriggers(NEW_JACOBIAN_NEVER),
     _lhsJacobianLumpedTriggers(NEW_JACOBIAN_NEVER),
+    _hasRHSResidual(false),
+    _hasLHSResidual(false),
+    _hasLHSJacobian(false),
+    _hasLHSJacobianLumped(false),
     _needNewLHSJacobian(true),
     _needNewLHSJacobianLumped(true)
 {}
