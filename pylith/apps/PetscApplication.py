@@ -82,6 +82,13 @@ class PetscApplication(Application):
         for component in self.components():
             if isinstance(component, PetscComponent):
                 component.cleanup()
+
+            # Facility arrays are not PetscComponents but have components().
+            elif hasattr(component, "components"):
+                for subcomponent in component.components():
+                    if isinstance(subcomponent, PetscComponent):
+                        subcomponent.cleanup()
+
         self._cleanup()
         return
 
