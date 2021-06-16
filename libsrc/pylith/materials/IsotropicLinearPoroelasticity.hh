@@ -80,22 +80,6 @@ public:
      */
     void addAuxiliarySubfields(void);
 
-    // ============================ Either Side ====================================
-    // ---------------------------------------------------------------------------------------------------------------------
-    // Get stress kernel for RHS residual, G(t,s).
-    PetscPointFunc getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys,
-                                           const bool _useInertia) const;
-
-    /** Get pressure kernel for RHS residual, G(t,s).
-     *
-     * @param[in] coordsys Coordinate system.
-     *
-     * @return RHS residual kernel for Darcy velocity.
-     */
-    PetscPointFunc getKernelDarcy(const spatialdata::geocoords::CoordSys* coordsys,
-                                  const bool _gravityField,
-                                  const bool _useInertia) const;
-
     // ============================= RHS ==================================== //
 
     // ---------------------------------------------------------------------------------------------------------------------
