@@ -501,7 +501,6 @@ void pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::
             kernels[4] = ResidualKernels("pressure_t", f0pdot, f1pdot);
             kernels[5] = ResidualKernels("trace_strain_t", f0edot, f1edot);
         }
-
         break;
     } // QUASISTATIC
     case DYNAMIC_IMEX:
