@@ -132,10 +132,12 @@ public:
   *
   * @param[in] coordsys Coordinate system.
   *
-  * @return RHS residual kernel for Darcy velocity.
+  * @return LHS residual kernel for Darcy velocity.
   */
   PetscPointFunc getKernelf1p_implicit(const spatialdata::geocoords::CoordSys* coordsys,
-                                         const bool _gravityField) const;
+                                            const bool _useBodyForce,
+                                            const bool _gravityField,
+                                            const bool _useConstantPressureSource) const;
 
   // ---------------------------------------------------------------------------------------------------------------------
   // Get poroelastic constants kernel for LHS Jacobian

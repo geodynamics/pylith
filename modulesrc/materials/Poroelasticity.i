@@ -60,6 +60,18 @@ public:
              */
             bool useSourceDensity(void) const;
 
+            /** Include constant pressure source?
+             *
+             * @param[in] value Flag indicating to include constant pressure source term.
+             */
+            void useConstantPressureSource(const bool value);
+
+            /** Include source density?
+             *
+             * @returns True if including constant pressure source term, false otherwise.
+             */
+            bool useConstantPressureSource(void) const;
+
             /** Set bulk rheology.
              *
              * @param[in] rheology Bulk rheology for poroelasticity.

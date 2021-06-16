@@ -39,6 +39,9 @@ class Poroelasticity(Material, ModulePoroelasticity):
     useSourceDensity = pythia.pyre.inventory.bool("use_source_density", default=False)
     useSourceDensity.meta['tip'] = "Include source_density term in Poroelasticity equation."
 
+    useConstantPressureSource = pythia.pyre.inventory.bool("use_constant_pressure_source", default=False)
+    useConstantPressureSource.meta['tip'] = "Include constant_pressure_source term in Poroelasticity equation."
+
     rheology = pythia.pyre.inventory.facility(
         "bulk_rheology", family="poroelasticity_rheology", factory=IsotropicLinearPoroelasticity)
     rheology.meta['tip'] = "Bulk rheology for poroelastic material."
@@ -68,6 +71,7 @@ class Poroelasticity(Material, ModulePoroelasticity):
 
         ModulePoroelasticity.useBodyForce(self, self.useBodyForce)
         ModulePoroelasticity.useSourceDensity(self, self.useSourceDensity)
+        ModulePoroelasticity.useConstantPressureSource(self, self.useConstantPressureSource)
         return
 
     def _createModuleObj(self):

@@ -107,7 +107,9 @@ public:
     */
     virtual
     PetscPointFunc getKernelf1p_implicit(const spatialdata::geocoords::CoordSys* coordsys,
-                                           const bool _gravityField) const = 0;
+                                         const bool _useBodyForce,
+                                         const bool _gravityField,
+                                         const bool _useConstantPressureSource) const = 0;
 
     // ---------------------------------------------------------------------------------------------------------------------
     // Get poroelastic constants kernel for LHS Jacobian

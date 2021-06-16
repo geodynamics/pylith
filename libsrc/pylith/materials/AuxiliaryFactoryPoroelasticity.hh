@@ -48,7 +48,7 @@ public:
      *
      * @param[in] gf Gravity field.
      */
-    void addGravityField(spatialdata::spatialdb::GravityField* gf);
+    void addGravityField(spatialdata::spatialdb::GravityField *gf);
 
     /// Add porosity subfield to auxiliary subfields.
     void addPorosity(void);
@@ -65,11 +65,14 @@ public:
     /// Add reference sourceDensity subfield to auxiliary fields.
     void addSourceDensity(void);
 
+    /// Add constant pressure sourcesubfield to auxiliary fields.
+    void addConstantPressureSource(void);
+
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     AuxiliaryFactoryPoroelasticity(const AuxiliaryFactoryPoroelasticity &); ///< Not implemented.
-    const AuxiliaryFactoryPoroelasticity& operator=(const AuxiliaryFactoryPoroelasticity&); ///< Not implemented
+    const AuxiliaryFactoryPoroelasticity &operator=(const AuxiliaryFactoryPoroelasticity &); ///< Not implemented
 
 }; // class AuxiliaryFactoryPoroelasticity
 
