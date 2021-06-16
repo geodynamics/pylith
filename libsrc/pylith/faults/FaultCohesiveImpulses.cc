@@ -18,49 +18,45 @@
 
 #include <portinfo>
 
-#include "FaultCohesiveKin.hh" // implementation of object methods
+#include "FaultCohesiveImpulses.hh" // implementation of object methods
 
 #include "pylith/faults/KinSrc.hh" // USES KinSrc
-#include "pylith/faults/AuxiliaryFactoryKinematic.hh" // USES AuxiliaryFactoryKinematic
-#include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
-#include "pylith/feassemble/ConstraintSimple.hh" // USES ConstraintSimple
-
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldOps.hh" // USES FieldOps::checkDiscretization()
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
-#include "pylith/fekernels/FaultCohesiveKin.hh" // USES FaultCohesiveKin
-
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
-#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensionalizer
-#include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
+#include "spatialdata/units/Nondimensional.hh" // USES Nonondimensional
 
 #include <cmath> // USES pow(), sqrt()
-#include <strings.h> // USES strcasecmp()
-#include <cstring> // USES strlen()
-#include <cstdlib> // USES atoi()
 #include <cassert> // USES assert()
-#include <sstream> // USES std::ostringstream
-#include <stdexcept> // USES std::runtime_error
-#include <typeinfo> // USES typeid()
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Return the number of impusles
-void
-pylith::faults::FaultCohesiveKinImpulses::getNumImpulses() {
-  PetscErrorCode err = VecGetSize(_slipVecTotal, &N);PYLITH_CHECK_ERROR(err);
-  return N;
+// Default constructor.
+pylith::faults::FaultCohesiveImpulses::FaultCohesiveImpulses(void) {}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Destructor.
+pylith::faults::FaultCohesiveImpulses::~FaultCohesiveImpulses(void) {}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Return the number of impulses.
+PylithInt
+pylith::faults::FaultCohesiveImpulses::getNumImpulses(void) {
+    PetscInt numImpulses;
+    PetscErrorCode err = VecGetSize(_slipVecTotal, &numImpulses);PYLITH_CHECK_ERROR(err);
+    return numImpulses;
 } // getNumImpulses
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Update slip subfield in auxiliary field at beginning of time step.
 void
-pylith::faults::FaultCohesiveKinImpulses::_updateSlip(pylith::topology::Field* auxiliaryField,
-                                                      const double t) {
+pylith::faults::FaultCohesiveImpulses::_updateSlip(pylith::topology::Field* auxiliaryField,
+                                                   const double t) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateSlip(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
@@ -68,7 +64,7 @@ pylith::faults::FaultCohesiveKinImpulses::_updateSlip(pylith::topology::Field* a
     assert(_normalizer);
 
     // Update slip subfield at current time step
-    const PetscInt step = (PetscInt) t;
+    const PetscInt step = PetscInt(t);
     PetscErrorCode err;
 
     if (step == 0) {
@@ -109,6 +105,7 @@ pylith::faults::FaultCohesiveKinImpulses::_updateSlip(pylith::topology::Field* a
 
     PYLITH_METHOD_END;
 } // _updateSlip
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 

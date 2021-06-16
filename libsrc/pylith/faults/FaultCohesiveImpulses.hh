@@ -16,37 +16,38 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/faults/FaultCohesiveKinImpulses.hh
+/** @file libsrc/faults/FaultCohesiveImpulses.hh
  *
  * @brief C++ implementation for a fault surface with kinematic
  * (prescribed) slip implemented with cohesive elements which we decompose into impulses for a Green function.
  */
 
-#if !defined(pylith_faults_faultcohesivekinimpusles_hh)
-#define pylith_faults_faultcohesivekinimpulses_hh
+#if !defined(pylith_faults_faultcohesiveimpulses_hh)
+#define pylith_faults_faultcohesiveimpulses_hh
 
 #include "FaultCohesiveKin.hh" // ISA FaultCohesiveKin
 
-class pylith::faults::FaultCohesiveKinImpulses : public pylith::faults::FaultCohesiveKin {
-    friend class TestFaultCohesiveKinImpulses; // unit testing
+class pylith::faults::FaultCohesiveImpulses : public pylith::faults::FaultCohesiveKin {
+    friend class TestFaultCohesiveImpulses; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    FaultCohesiveKinImpulses(void);
+    FaultCohesiveImpulses(void);
 
     /// Destructor.
-    ~FaultCohesiveKinImpulses(void);
+    ~FaultCohesiveImpulses(void);
 
     /** Return the number of impulses
      *
      * @param[out] the number of impulses
      */
-    PylithInt getNumImpulses();
+    PylithInt getNumImpulses(void);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
+
     /** Update slip subfield in auxiliary field at beginning of time step.
      *
      * @param[out] auxiliaryField Auxiliary field.
@@ -58,11 +59,11 @@ protected:
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    FaultCohesiveKinImpulses(const FaultCohesiveKinImpulses&); ///< Not implemented
-    const FaultCohesiveKinImpulses& operator=(const FaultCohesiveKinImpulses&); ///< Not implemented.
+    FaultCohesiveImpulses(const FaultCohesiveImpulses&); ///< Not implemented
+    const FaultCohesiveImpulses& operator=(const FaultCohesiveImpulses&); ///< Not implemented.
 
-}; // class FaultCohesiveKinImpulses
+}; // class FaultCohesiveImpulses
 
-#endif // pylith_faults_faultcohesivekinimpulses_hh
+#endif // pylith_faults_faultcohesiveimpulses_hh
 
 // End of file
