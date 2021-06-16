@@ -430,7 +430,11 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsLHSResidual(integrator=" << integrator << ",solution=" << solution.getLabel() << ")");
 
-    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
+        << << <<< HEAD
+        const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
+    == == == =
+        const spatialdata::geocoords::CoordSys *coordsys = solution.mesh().getCoordSys();
+    >> >> >>> 8754784e8 ... Added weird source term and fixed fluid forcing
 
     std::vector<ResidualKernels> kernels;
     switch (_formulation) {
@@ -474,13 +478,17 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
         // Pressure
         PetscPointFunc f0p = _rheology->getKernelf0p_implicit(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
         PetscPointFunc f1p = _rheology->getKernelf1p_implicit(coordsys, _useBodyForce, _gravityField, _useConstantPressureSource); //
-                                                                                                                                   //
-                                                                                                                                   // darcy
-                                                                                                                                   //
-                                                                                                                                   // velocity
+            << << <<< HEAD
+            //
+            // darcy
+            //
+            == == == =
+                // darcy
+                >> >> >>> 8754784e8 ... Added weird source term and fixed fluid forcing
+                // velocity
 
-        // Volumetric Strain
-        const PetscPointFunc f0e = pylith::fekernels::Poroelasticity::f0e;
+                // Volumetric Strain
+                const PetscPointFunc f0e = pylith::fekernels::Poroelasticity::f0e;
         const PetscPointFunc f1e = NULL;
 
         kernels.resize(3);
@@ -549,8 +557,13 @@ void
 pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain *integrator,
                                                           const topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsLHSJacobian(integrator="<<integrator<<",solution="<<solution.getLabel()<<")");
+        << << <<< HEAD
+        PYLITH_COMPONENT_DEBUG("_setKernelsLHSJacobian(integrator="<<integrator<<",solution="<<solution.getLabel()<<")");
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
+    == == == =
+        PYLITH_COMPONENT_DEBUG("_setKernelsLHSJacobian(integrator=" << integrator << ",solution=" << solution.getLabel() << ")");
+    const spatialdata::geocoords::CoordSys *coordsys = solution.mesh().getCoordSys();
+    >> >> >>> 8754784e8 ... Added weird source term and fixed fluid forcing
     std::vector<JacobianKernels> kernels(9);
 
     switch (_formulation) {
@@ -690,8 +703,12 @@ pylith::materials::Poroelasticity::_setKernelsUpdateStateVars(pylith::feassemble
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsUpdateStateVars(integrator=" << integrator << ", solution=" << solution.getLabel() << ")");
 
-    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
-    assert(coordsys);
+        << << <<< HEAD
+        const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
+    == == == =
+        const spatialdata::geocoords::CoordSys *coordsys = solution.mesh().getCoordSys();
+    >> >> >>> 8754784e8 ... Added weird source term and fixed fluid forcing
+        assert(coordsys);
 
     std::vector<ProjectKernels> kernels;
     _rheology->addKernelsUpdateStateVars(&kernels, coordsys);
@@ -710,8 +727,12 @@ pylith::materials::Poroelasticity::_setKernelsDerivedField(pylith::feassemble::I
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsDerivedField(integrator=" << integrator << ", solution=" << solution.getLabel() << ")");
 
-    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
-    assert(coordsys);
+        << << <<< HEAD
+        const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
+    == == == =
+        const spatialdata::geocoords::CoordSys *coordsys = solution.mesh().getCoordSys();
+    >> >> >>> 8754784e8 ... Added weird source term and fixed fluid forcing
+        assert(coordsys);
 
     std::vector<ProjectKernels> kernels(2);
     kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelDerivedCauchyStress(coordsys));
