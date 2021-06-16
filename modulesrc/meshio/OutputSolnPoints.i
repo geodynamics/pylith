@@ -40,7 +40,7 @@ public:
              * @param[in] numPoints Number of points.
              * @param[in] spaceDim Spatial dimension for coordinates.
              * @param[in] pointNames Array with point names.
-             * @param[in] numPointNames Number of point banes.
+             * @param[in] numPointNames Number of point names.
              */
             %apply(double* IN_ARRAY2, int DIM1, int DIM2) {
 	            (const PylithReal* pointCoords,
