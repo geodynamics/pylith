@@ -52,8 +52,8 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addBodyForce(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addBodyForce(void)");
 
-    const char* subfieldName = "body_force";
-    const char* componentNames[3] = {
+    const char *subfieldName = "body_force";
+    const char *componentNames[3] = {
         "body_force_x",
         "body_force_y",
         "body_force_z"
@@ -83,12 +83,12 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addBodyForce(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Add gravity subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelasticity::addGravityField(spatialdata::spatialdb::GravityField* gf) {
+pylith::materials::AuxiliaryFactoryPoroelasticity::addGravityField(spatialdata::spatialdb::GravityField *gf) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addGravityField(void)");
 
-    const char* subfieldName = "gravitational_acceleration";
-    const char* componentNames[3] = {
+    const char *subfieldName = "gravitational_acceleration";
+    const char *componentNames[3] = {
         "gravitational_acceleration_x",
         "gravitational_acceleration_y",
         "gravitational_acceleration_z"
@@ -123,7 +123,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addPorosity(void) { // porosi
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addPorosity(void)");
 
-    const char* subfieldName = "porosity";
+    const char *subfieldName = "porosity";
     const PylithReal noScale = 1;
 
     pylith::topology::Field::Description description;
@@ -150,7 +150,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addSolidDensity(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addSolidDensity(void)");
 
-    const char* subfieldName = "solid_density";
+    const char *subfieldName = "solid_density";
     const PylithReal densityScale = _normalizer->getDensityScale();
 
     pylith::topology::Field::Description description;
@@ -177,7 +177,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addFluidDensity(void) { // fl
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addFluidDensity(void)");
 
-    const char* subfieldName = "fluid_density";
+    const char *subfieldName = "fluid_density";
     const PylithReal densityScale = _normalizer->getDensityScale();
 
     pylith::topology::Field::Description description;
@@ -204,10 +204,10 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addFluidViscosity(void) { // 
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addFluidViscosity(void)");
 
-    const char* subfieldName = "fluid_viscosity";
+    const char *subfieldName = "fluid_viscosity";
     const PylithReal pressureScale = _normalizer->getPressureScale();
     const PylithReal timeScale = _normalizer->getTimeScale();
-    const PylithReal viscosityScale = pressureScale*timeScale;
+    const PylithReal viscosityScale = pressureScale * timeScale;
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -234,10 +234,10 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addSourceDensity(void) { // s
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addSourceDensity(void)");
 
-    const char* subfieldName = "source_density";
+    const char *subfieldName = "source_density";
     const PylithReal lengthScale = _normalizer->getLengthScale();
     const PylithReal timeScale = _normalizer->getTimeScale();
-    const PylithReal sourceDensityScale = lengthScale/timeScale;
+    const PylithReal sourceDensityScale = lengthScale / timeScale;
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -255,6 +255,35 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addSourceDensity(void) { // s
     PYLITH_METHOD_END;
 
 } // addSourceDensity
+
+
+// ----------------------------------------------------------------------
+// Add constant pressure source subfield to auxiliary fields.
+void
+pylith::materials::AuxiliaryFactoryPoroelasticity::addConstantPressureSource(void) { // constantPressureSource
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("addConstantPressureSource(void)");
+
+    const char *subfieldName = "constant_pressure_source";
+    const PylithReal pressureScale = _normalizer->getPressureScale();
+    const PylithReal constantPressureSourceScale = pressureScale;
+
+    pylith::topology::Field::Description description;
+    description.label = subfieldName;
+    description.alias = subfieldName;
+    description.vectorFieldType = pylith::topology::Field::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = subfieldName;
+    description.scale = constantPressureSourceScale;
+    description.validator = pylith::topology::FieldQuery::validatorNonnegative;
+
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
+
+    PYLITH_METHOD_END;
+
+} // addConstantPressureSource
 
 
 // End of file

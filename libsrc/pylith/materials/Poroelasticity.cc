@@ -53,6 +53,7 @@ pylith::materials::Poroelasticity::Poroelasticity(void) :
     _useBodyForce(false),
     _useReferenceState(false),
     _useSourceDensity(false),
+    _useConstantPressureSource(false),
     _rheology(NULL),
     _derivedFactory(new pylith::materials::DerivedFactoryElasticity) {
     pylith::utils::PyreComponent::setName("poroelasticity");
@@ -72,7 +73,8 @@ void
 pylith::materials::Poroelasticity::deallocate(void) {
     Material::deallocate();
 
-    delete _derivedFactory;_derivedFactory = NULL;
+    delete _derivedFactory;
+    _derivedFactory = NULL;
     _rheology = NULL; // :TODO: Use shared pointer.
 } // deallocate
 
@@ -81,7 +83,7 @@ pylith::materials::Poroelasticity::deallocate(void) {
 // Include body force?
 void
 pylith::materials::Poroelasticity::useBodyForce(const bool value) {
-    PYLITH_COMPONENT_DEBUG("useBodyForce(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("useBodyForce(value=" << value << ")");
 
     _useBodyForce = value;
 } // useBodyForce
@@ -99,7 +101,7 @@ pylith::materials::Poroelasticity::useBodyForce(void) const {
 // Include source density?
 void
 pylith::materials::Poroelasticity::useSourceDensity(const bool value) {
-    PYLITH_COMPONENT_DEBUG("useSourceDensity(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("useSourceDensity(value=" << value << ")");
 
     _useSourceDensity = value;
 } // useSourceDensity
@@ -113,11 +115,29 @@ pylith::materials::Poroelasticity::useSourceDensity(void) const {
 } // useSourceDensity
 
 
+// ----------------------------------------------------------------------
+// Include constant pressure source?
+void
+pylith::materials::Poroelasticity::useConstantPressureSource(const bool value) {
+    PYLITH_COMPONENT_DEBUG("useConstantPressureSource(value=" << value << ")");
+
+    _useConstantPressureSource = value;
+} // useConstantPressureSource
+
+
+// ----------------------------------------------------------------------
+// Include constant pressure source?
+bool
+pylith::materials::Poroelasticity::useConstantPressureSource(void) const {
+    return _useConstantPressureSource;
+} // useConstantPressureSource
+
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Set bulk rheology.
 void
-pylith::materials::Poroelasticity::setBulkRheology(pylith::materials::RheologyPoroelasticity* const rheology) {
-    PYLITH_COMPONENT_DEBUG("setBulkRheology(rheology="<<rheology<<")");
+pylith::materials::Poroelasticity::setBulkRheology(pylith::materials::RheologyPoroelasticity *const rheology) {
+    PYLITH_COMPONENT_DEBUG("setBulkRheology(rheology=" << rheology << ")");
 
     _rheology = rheology;
 } // setBulkRheology
@@ -125,7 +145,7 @@ pylith::materials::Poroelasticity::setBulkRheology(pylith::materials::RheologyPo
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get bulk rheology.
-pylith::materials::RheologyPoroelasticity*
+pylith::materials::RheologyPoroelasticity *
 pylith::materials::Poroelasticity::getBulkRheology(void) const {
     return _rheology;
 } // getBulkRheology
@@ -134,9 +154,9 @@ pylith::materials::Poroelasticity::getBulkRheology(void) const {
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::materials::Poroelasticity::verifyConfiguration(const pylith::topology::Field& solution) const {
+pylith::materials::Poroelasticity::verifyConfiguration(const pylith::topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution=" << solution.getLabel() << ")");
 
     // Verify solution contains expected fields.
     if (!solution.hasSubfield("displacement")) {
@@ -163,12 +183,13 @@ pylith::materials::Poroelasticity::verifyConfiguration(const pylith::topology::F
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create integrator and set kernels.
-pylith::feassemble::Integrator*
-pylith::materials::Poroelasticity::createIntegrator(const pylith::topology::Field& solution) {
+pylith::feassemble::Integrator *
+pylith::materials::Poroelasticity::createIntegrator(const pylith::topology::Field &solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("createIntegrator(solution=" << solution.getLabel() << ")");
 
-    pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
+    pylith::feassemble::IntegratorDomain *integrator = new pylith::feassemble::IntegratorDomain(this);
+    assert(integrator);
     integrator->setLabelName("material-id");
     integrator->setLabelValue(getMaterialId());
 
@@ -199,17 +220,19 @@ pylith::materials::Poroelasticity::createIntegrator(const pylith::topology::Fiel
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create auxiliary field.
-pylith::topology::Field*
-pylith::materials::Poroelasticity::createAuxiliaryField(const pylith::topology::Field& solution,
-                                                        const pylith::topology::Mesh& domainMesh) {
+pylith::topology::Field *
+pylith::materials::Poroelasticity::createAuxiliaryField(const pylith::topology::Field &solution,
+                                                        const pylith::topology::Mesh &domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution=" << solution.getLabel() << ", domainMesh=)" << typeid(domainMesh).name() << ")");
 
-    pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
+    pylith::topology::Field *auxiliaryField = new pylith::topology::Field(domainMesh);
+    assert(auxiliaryField);
     auxiliaryField->setLabel("Poroelasticity auxiliary field");
 
     assert(_rheology);
-    pylith::materials::AuxiliaryFactoryPoroelasticity* auxiliaryFactory = _rheology->getAuxiliaryFactory();assert(auxiliaryFactory);
+    pylith::materials::AuxiliaryFactoryPoroelasticity *auxiliaryFactory = _rheology->getAuxiliaryFactory();
+    assert(auxiliaryFactory);
 
     assert(_normalizer);
     auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.getDimension());
@@ -240,12 +263,16 @@ pylith::materials::Poroelasticity::createAuxiliaryField(const pylith::topology::
     if (_useSourceDensity) {
         auxiliaryFactory->addSourceDensity(); // +1
     } // if
+    if (_useConstantPressureSource) {
+        auxiliaryFactory->addConstantPressureSource(); // +1
+    }
     _rheology->addAuxiliarySubfields();
 
     auxiliaryField->subfieldsSetup();
     auxiliaryField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
     auxiliaryField->allocate();
+    auxiliaryField->zeroLocal();
     auxiliaryField->createOutputVector();
 
     assert(auxiliaryFactory);
@@ -257,18 +284,19 @@ pylith::materials::Poroelasticity::createAuxiliaryField(const pylith::topology::
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create derived field.
-pylith::topology::Field*
-pylith::materials::Poroelasticity::createDerivedField(const pylith::topology::Field& solution,
-                                                      const pylith::topology::Mesh& domainMesh) {
+pylith::topology::Field *
+pylith::materials::Poroelasticity::createDerivedField(const pylith::topology::Field &solution,
+                                                      const pylith::topology::Mesh &domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG("createDerivedField(solution=" << solution.getLabel() << ", domainMesh=)" << typeid(domainMesh).name() << ")");
 
     assert(_derivedFactory);
     if (_derivedFactory->getNumSubfields() == 1) {
         PYLITH_METHOD_RETURN(NULL);
     } // if
 
-    pylith::topology::Field* derivedField = new pylith::topology::Field(domainMesh);assert(derivedField);
+    pylith::topology::Field *derivedField = new pylith::topology::Field(domainMesh);
+    assert(derivedField);
     derivedField->setLabel("Poroelasticity derived field");
 
     assert(_normalizer);
@@ -279,6 +307,7 @@ pylith::materials::Poroelasticity::createDerivedField(const pylith::topology::Fi
     derivedField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(solution, *derivedField);
     derivedField->allocate();
+    derivedField->zeroLocal();
     derivedField->createOutputVector();
 
     PYLITH_METHOD_RETURN(derivedField);
@@ -287,7 +316,7 @@ pylith::materials::Poroelasticity::createDerivedField(const pylith::topology::Fi
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
-pylith::feassemble::AuxiliaryFactory*
+pylith::feassemble::AuxiliaryFactory *
 pylith::materials::Poroelasticity::_getAuxiliaryFactory(void) {
     assert(_rheology);
     return _rheology->getAuxiliaryFactory();
@@ -305,7 +334,7 @@ pylith::materials::Poroelasticity::_updateKernelConstants(const PylithReal dt) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get derived factory associated with physics.
-pylith::topology::FieldFactory*
+pylith::topology::FieldFactory *
 pylith::materials::Poroelasticity::_getDerivedFactory(void) {
     return _derivedFactory;
 } // _getDerivedFactory
@@ -315,22 +344,24 @@ pylith::materials::Poroelasticity::_getDerivedFactory(void) {
 // Set kernels for RHS residual G(t,s).
 // RHS residual is for explicit time stepping (dynamic).
 void
-pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                                          const topology::Field& solution) const {
+pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::IntegratorDomain *integrator,
+                                                          const topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsRHSResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsRHSResidual(integrator=" << integrator << ", solution=" << solution.getLabel() << ")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
     std::vector<ResidualKernels> kernels;
 
     switch (_formulation) {
-    case QUASISTATIC: {
+    case QUASISTATIC:
+    {
         break;
     } // QUASISTATIC
 
     case DYNAMIC_IMEX:
-    case DYNAMIC: {
+    case DYNAMIC:
+    {
         // Displacement
         const PetscPointFunc g0u = pylith::fekernels::Poroelasticity::g0u;
         const PetscPointFunc g1u = NULL;
@@ -394,16 +425,17 @@ pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::In
 // ----------------------------------------------------------------------
 // Set kernels for LHS residual F(t,s,\dot{s}).
 void
-pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                                          const topology::Field& solution) const {
+pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::IntegratorDomain *integrator,
+                                                          const topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsLHSResidual(integrator="<<integrator<<",solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsLHSResidual(integrator=" << integrator << ",solution=" << solution.getLabel() << ")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
     std::vector<ResidualKernels> kernels;
     switch (_formulation) {
-    case QUASISTATIC: {
+    case QUASISTATIC:
+    {
         // Displacement
         PetscPointFunc f0u = NULL;
         const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
@@ -441,7 +473,11 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
 
         // Pressure
         PetscPointFunc f0p = _rheology->getKernelf0p_implicit(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
-        PetscPointFunc f1p = _rheology->getKernelf1p_implicit(coordsys, _gravityField); // darcy velocity
+        PetscPointFunc f1p = _rheology->getKernelf1p_implicit(coordsys, _useBodyForce, _gravityField, _useConstantPressureSource); //
+                                                                                                                                   //
+                                                                                                                                   // darcy
+                                                                                                                                   //
+                                                                                                                                   // velocity
 
         // Volumetric Strain
         const PetscPointFunc f0e = pylith::fekernels::Poroelasticity::f0e;
@@ -449,12 +485,13 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
 
         kernels.resize(3);
         kernels[0] = ResidualKernels("displacement", f0u, f1u);
-        kernels[1] = ResidualKernels("pressure",     f0p, f1p);
+        kernels[1] = ResidualKernels("pressure", f0p, f1p);
         kernels[2] = ResidualKernels("trace_strain", f0e, f1e);
         break;
     } // QUASISTATIC
 
-    case DYNAMIC_IMEX: {
+    case DYNAMIC_IMEX:
+    {
         // Displacement
         const PetscPointFunc f0u = pylith::fekernels::DispVel::f0u;
         const PetscPointFunc f1u = NULL;
@@ -470,11 +507,12 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
 
         kernels.resize(3);
         kernels[0] = ResidualKernels("displacement", f0u, f1u);
-        kernels[1] = ResidualKernels("pressure",     f0p, f1p);
-        kernels[2] = ResidualKernels("velocity",     f0v, f1v);
+        kernels[1] = ResidualKernels("pressure", f0p, f1p);
+        kernels[2] = ResidualKernels("velocity", f0v, f1v);
         break;
     } // DYNAMIC_IMEX
-    case DYNAMIC: {
+    case DYNAMIC:
+    {
         // Displacement
         const PetscPointFunc f0u = pylith::fekernels::DispVel::f0u;
         const PetscPointFunc f1u = NULL;
@@ -490,8 +528,8 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
 
         kernels.resize(3);
         kernels[0] = ResidualKernels("displacement", f0u, f1u);
-        kernels[1] = ResidualKernels("pressure",     f0p, f1p);
-        kernels[2] = ResidualKernels("velocity",     f0v, f1v);
+        kernels[1] = ResidualKernels("pressure", f0p, f1p);
+        kernels[2] = ResidualKernels("velocity", f0v, f1v);
         break;
     } // DYNAMIC
     default:
@@ -508,15 +546,16 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
 // ----------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
-pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                                                          const topology::Field& solution) const {
+pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain *integrator,
+                                                          const topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsLHSJacobian(integrator="<<integrator<<",solution="<<solution.getLabel()<<")");
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     std::vector<JacobianKernels> kernels(9);
 
     switch (_formulation) {
-    case QUASISTATIC: {
+    case QUASISTATIC:
+    {
         const PetscPointJac Jf0uu = NULL;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
@@ -562,19 +601,20 @@ pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::In
         const PetscPointJac Jf2ee = NULL;
         const PetscPointJac Jf3ee = NULL;
 
-        kernels[0] = JacobianKernels("displacement",  "displacement",  Jf0uu, Jf1uu, Jf2uu, Jf3uu);
-        kernels[1] = JacobianKernels("displacement",  "pressure",      Jf0up, Jf1up, Jf2up, Jf3up);
-        kernels[2] = JacobianKernels("displacement",  "trace_strain",  Jf0ue, Jf1ue, Jf2ue, Jf3ue);
-        kernels[3] = JacobianKernels("pressure",      "displacement",  Jf0pu, Jf1pu, Jf2pu, Jf3pu);
-        kernels[4] = JacobianKernels("pressure",      "pressure",      Jf0pp, Jf1pp, Jf2pp, Jf3pp);
-        kernels[5] = JacobianKernels("pressure",      "trace_strain",  Jf0pe, Jf1pe, Jf2pe, Jf3pe);
-        kernels[6] = JacobianKernels("trace_strain",  "displacement",  Jf0eu, Jf1eu, Jf2eu, Jf3eu);
-        kernels[7] = JacobianKernels("trace_strain",  "pressure",      Jf0ep, Jf1ep, Jf2ep, Jf3ep);
-        kernels[8] = JacobianKernels("trace_strain",  "trace_strain",  Jf0ee, Jf1ee, Jf2ee, Jf3ee);
+        kernels[0] = JacobianKernels("displacement", "displacement", Jf0uu, Jf1uu, Jf2uu, Jf3uu);
+        kernels[1] = JacobianKernels("displacement", "pressure", Jf0up, Jf1up, Jf2up, Jf3up);
+        kernels[2] = JacobianKernels("displacement", "trace_strain", Jf0ue, Jf1ue, Jf2ue, Jf3ue);
+        kernels[3] = JacobianKernels("pressure", "displacement", Jf0pu, Jf1pu, Jf2pu, Jf3pu);
+        kernels[4] = JacobianKernels("pressure", "pressure", Jf0pp, Jf1pp, Jf2pp, Jf3pp);
+        kernels[5] = JacobianKernels("pressure", "trace_strain", Jf0pe, Jf1pe, Jf2pe, Jf3pe);
+        kernels[6] = JacobianKernels("trace_strain", "displacement", Jf0eu, Jf1eu, Jf2eu, Jf3eu);
+        kernels[7] = JacobianKernels("trace_strain", "pressure", Jf0ep, Jf1ep, Jf2ep, Jf3ep);
+        kernels[8] = JacobianKernels("trace_strain", "trace_strain", Jf0ee, Jf1ee, Jf2ee, Jf3ee);
         break;
     } // QUASISTATIC
     case DYNAMIC_IMEX:
-    case DYNAMIC: {
+    case DYNAMIC:
+    {
         const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_stshift;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
@@ -620,15 +660,15 @@ pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::In
         const PetscPointJac Jf2vv = NULL;
         const PetscPointJac Jf3vv = NULL;
 
-        kernels[0] = JacobianKernels("displacement",  "displacement",  Jf0uu, Jf1uu, Jf2uu, Jf3uu);
-        kernels[1] = JacobianKernels("displacement",  "pressure",      Jf0up, Jf1up, Jf2up, Jf3up);
-        kernels[2] = JacobianKernels("displacement",  "velocity",      Jf0uv, Jf1uv, Jf2uv, Jf3uv);
-        kernels[3] = JacobianKernels("pressure",      "displacement",  Jf0pu, Jf1pu, Jf2pu, Jf3pu);
-        kernels[4] = JacobianKernels("pressure",      "pressure",      Jf0pp, Jf1pp, Jf2pp, Jf3pp);
-        kernels[5] = JacobianKernels("pressure",      "velocity",      Jf0pv, Jf1pv, Jf2pv, Jf3pv);
-        kernels[6] = JacobianKernels("velocity",      "displacement",  Jf0vu, Jf1vu, Jf2vu, Jf3vu);
-        kernels[7] = JacobianKernels("velocity",      "pressure",      Jf0vp, Jf1vp, Jf2vp, Jf3vp);
-        kernels[8] = JacobianKernels("velocity",      "velocity",      Jf0vv, Jf1vv, Jf2vv, Jf3vv);
+        kernels[0] = JacobianKernels("displacement", "displacement", Jf0uu, Jf1uu, Jf2uu, Jf3uu);
+        kernels[1] = JacobianKernels("displacement", "pressure", Jf0up, Jf1up, Jf2up, Jf3up);
+        kernels[2] = JacobianKernels("displacement", "velocity", Jf0uv, Jf1uv, Jf2uv, Jf3uv);
+        kernels[3] = JacobianKernels("pressure", "displacement", Jf0pu, Jf1pu, Jf2pu, Jf3pu);
+        kernels[4] = JacobianKernels("pressure", "pressure", Jf0pp, Jf1pp, Jf2pp, Jf3pp);
+        kernels[5] = JacobianKernels("pressure", "velocity", Jf0pv, Jf1pv, Jf2pv, Jf3pv);
+        kernels[6] = JacobianKernels("velocity", "displacement", Jf0vu, Jf1vu, Jf2vu, Jf3vu);
+        kernels[7] = JacobianKernels("velocity", "pressure", Jf0vp, Jf1vp, Jf2vp, Jf3vp);
+        kernels[8] = JacobianKernels("velocity", "velocity", Jf0vv, Jf1vv, Jf2vv, Jf3vv);
         break;
     } // DYNAMIC
     default:
@@ -645,10 +685,10 @@ pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::In
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for computing updated state variables in auxiliary field.
 void
-pylith::materials::Poroelasticity::_setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
-                                                              const topology::Field& solution) const {
+pylith::materials::Poroelasticity::_setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain *integrator,
+                                                              const topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsUpdateStateVars(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsUpdateStateVars(integrator=" << integrator << ", solution=" << solution.getLabel() << ")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     assert(coordsys);
@@ -665,10 +705,10 @@ pylith::materials::Poroelasticity::_setKernelsUpdateStateVars(pylith::feassemble
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for computing derived field.
 void
-pylith::materials::Poroelasticity::_setKernelsDerivedField(pylith::feassemble::IntegratorDomain* integrator,
-                                                           const topology::Field& solution) const {
+pylith::materials::Poroelasticity::_setKernelsDerivedField(pylith::feassemble::IntegratorDomain *integrator,
+                                                           const topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsDerivedField(integrator=" << integrator << ", solution=" << solution.getLabel() << ")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     assert(coordsys);
@@ -678,9 +718,8 @@ pylith::materials::Poroelasticity::_setKernelsDerivedField(pylith::feassemble::I
 
     const int spaceDim = coordsys->getSpaceDim();
     const PetscPointFunc strainKernel =
-        (3 == spaceDim) ? pylith::fekernels::Poroelasticity3D::cauchyStrain :
-        (2 == spaceDim) ? pylith::fekernels::PoroelasticityPlaneStrain::cauchyStrain :
-        NULL;
+        (3 == spaceDim) ? pylith::fekernels::Poroelasticity3D::cauchyStrain : (2 == spaceDim) ? pylith::fekernels::PoroelasticityPlaneStrain::cauchyStrain
+        : NULL;
     kernels[1] = ProjectKernels("cauchy_strain", strainKernel);
 
     assert(integrator);
