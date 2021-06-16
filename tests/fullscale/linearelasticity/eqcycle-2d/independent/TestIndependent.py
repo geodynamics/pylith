@@ -25,7 +25,8 @@ from pylith.testing.FullTestApp import check_data
 from pylith.testing.FullTestApp import TestCase as FullTestCase
 
 import meshes
-from rigid_sliding_soln import AnalyticalSoln
+from rigid_sliding_soln import AnalyticalSoln as AnalyticalSolnRigidSliding
+from simple_shear_soln import AnalyticalSoln as AnalyticalSolnSimpleShear
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -34,13 +35,14 @@ class TestCase(FullTestCase):
     """
     FAULTS = ["fault"]
     DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos"]
+    NEUMANN_BOUNDARIES = ["bc_yneg", "bc_ypos"]
     OUTPUT_BOUNDARIES = ["bc_ypos"]
 
     def setUp(self):
         """Setup for test.
         """
         FullTestCase.setUp(self)
-        self.exactsoln = AnalyticalSoln()
+        # self.exactsoln = AnalyticalSolnRigidSliding()
 
     def run_pylith(self, testName, args):
         FullTestCase.run_pylith(self, testName, args)
@@ -80,39 +82,83 @@ class TestCase(FullTestCase):
 
     def test_boundary_solution(self):
         vertexFields = ["displacement"]
-        for bc in self.OUTPUT_BOUNDARIES:
-            filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self,
-                       self.BOUNDARIES[bc], vertexFields=vertexFields)
+        if "simple_shear" in self.NAME:
+            return
+        else:
+            for bc in self.OUTPUT_BOUNDARIES:
+                filename = "output/{}-{}.h5".format(self.NAME, bc)
+                check_data(filename, self,
+                           self.BOUNDARIES[bc], vertexFields=vertexFields)
 
+    def test_bcneumann_info(self):
+        vertexFields = ["initial_amplitude"]
+        if "rigid_sliding" in self.NAME:
+            return 
+        else:
+            for bc in self.NEUMANN_BOUNDARIES:
+                filename = "output/{}-{}_info.h5".format(self.NAME, bc)
+                check_data(filename, self,
+                           self.BOUNDARIES[bc], vertexFields=vertexFields)
+
+    def test_bcneumann_solution(self):
+        vertexFields = ["displacement"]
+        if "rigid_sliding" in self.NAME:
+            return
+        else:
+            for bc in self.NEUMANN_BOUNDARIES:
+                filename = "output/{}-{}.h5".format(self.NAME, bc)
+                check_data(filename, self,
+                           self.BOUNDARIES[bc], vertexFields=vertexFields)
 
 # ----------------------------------------------------------------------------------------------------------------------
-class Rigid_slidingQuad(TestCase, meshes.Quad):
+class RigidSliding_Quad(TestCase, meshes.Quad):
     NAME = "rigid_sliding_quad"
 
     def setUp(self):
         TestCase.setUp(self)
+        self.exactsoln = AnalyticalSolnRigidSliding()
         TestCase.run_pylith(
             self, self.NAME, ["independent.cfg", "independent_quad.cfg"])
         return
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-class Rigid_slidingTri(TestCase, meshes.Tri):
+class RigidSliding_Tri(TestCase, meshes.Tri):
     NAME = "rigid_sliding_tri"
 
     def setUp(self):
         TestCase.setUp(self)
+        self.exactsoln = AnalyticalSolnRigidSliding()
         TestCase.run_pylith(
             self, self.NAME, ["independent.cfg", "independent_tri.cfg"])
         return
 
+# ----------------------------------------------------------------------------------------------------------------------
+class SimpleShear_Quad(TestCase, meshes.Quad):
+    NAME = "simple_shear_quad"
+
+    def setUp(self):
+        TestCase.setUp(self)
+        self.exactsoln = AnalyticalSolnSimpleShear()
+        return
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+class SimpleShear_Tri(TestCase, meshes.Tri):
+    NAME = "simple_shear_tri"
+
+    def setUp(self):
+        TestCase.setUp(self)
+        self.exactsoln = AnalyticalSolnSimpleShear()
+        return
 
 # ----------------------------------------------------------------------------------------------------------------------
 def test_cases():
     return [
-        Rigid_slidingQuad,
-        Rigid_slidingTri,
+        RigidSliding_Quad,
+        SimpleShear_Quad,
+        RigidSliding_Tri,
+        SimpleShear_Tri
     ]
 
 

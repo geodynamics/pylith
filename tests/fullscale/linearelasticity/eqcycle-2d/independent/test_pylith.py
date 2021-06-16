@@ -35,12 +35,8 @@ class TestApp(TestDriver):
         """
         suite = unittest.TestSuite()
 
-        import TestRigidSliding
-        for test in TestRigidSliding.test_cases():
-            suite.addTest(unittest.makeSuite(test))
-
-        import TestSimpleShear
-        for test in TestSimpleShear.test_cases():
+        import TestIndependent
+        for test in TestIndependent.test_cases():
             suite.addTest(unittest.makeSuite(test))
 
         return suite
