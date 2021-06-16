@@ -62,7 +62,7 @@ noinst_TMP =
 # 'export' the input files by performing a mock install
 export_datadir = $(abs_top_builddir)/tests/mmstests/faults/data
 export-data: $(dist_noinst_DATA)
-	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then mkdir $(export_datadir);  for f in $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done; fi
+	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then $(MKDIR_P) $(export_datadir);  for f in $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done; fi
 
 clean-data:
 	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then for f in $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
