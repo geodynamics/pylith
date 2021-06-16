@@ -1,5 +1,6 @@
 from .TestFaultCohesive import TestFaultCohesive
 from .TestFaultCohesiveKin import TestFaultCohesiveKin
+from .TestFaultCohesiveImpulses import TestFaultCohesiveImpulses
 from .TestKinSrc import (
     TestKinSrc, 
     TestKinSrcConstRate,
@@ -15,6 +16,7 @@ def test_classes():
     return [
         TestFaultCohesive,
         TestFaultCohesiveKin,
+        TestFaultCohesiveImpulses,
         TestKinSrc,
         TestKinSrcConstRate,
         TestKinSrcStep,
