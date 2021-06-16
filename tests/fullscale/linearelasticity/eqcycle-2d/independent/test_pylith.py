@@ -35,8 +35,12 @@ class TestApp(TestDriver):
         """
         suite = unittest.TestSuite()
 
-        import TestTwoBlocks
-        for test in TestTwoBlocks.test_cases():
+        import TestRigidSliding
+        for test in TestRigidSliding.test_cases():
+            suite.addTest(unittest.makeSuite(test))
+
+        import TestSimpleShear
+        for test in TestSimpleShear.test_cases():
             suite.addTest(unittest.makeSuite(test))
 
         return suite
