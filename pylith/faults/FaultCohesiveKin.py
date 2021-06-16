@@ -50,10 +50,6 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
     from pylith.utils.NullComponent import NullComponent
     auxiliaryFieldDB = pythia.pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=NullComponent)
 
-    #from pylith.meshio.OutputFaultKin import OutputFaultKin
-    #outputManager = pythia.pyre.inventory.facility("output", family="output_manager", factory=OutputFaultKin)
-    #output.meta['tip'] = "Output manager associated with fault information."
-
     def __init__(self, name="faultcohesivekin"):
         """Initialize configuration.
         """
