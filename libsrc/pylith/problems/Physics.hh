@@ -186,7 +186,7 @@ public:
     /** Create derived field.
      *
      * @param[in] solution Solution field.
-     * @param[in\ physicsMesh Finite-element mesh associated with physics.
+     * @param[in] physicsMesh Finite-element mesh associated with physics.
      *
      * @returns Derived field if applicable, otherwise NULL.
      */

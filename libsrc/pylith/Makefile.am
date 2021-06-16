@@ -27,6 +27,7 @@ SUBDIRS = \
 	faults \
 	friction \
 	fekernels \
+	sources \
 	testing
 
 
@@ -80,6 +81,7 @@ libpylith_la_SOURCES = \
 	fekernels/NeumannTimeDependent.cc \
 	fekernels/AbsorbingDampers.cc \
 	fekernels/FaultCohesiveKin.cc \
+	fekernels/WellboreSource.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \
 	materials/RheologyElasticity.cc \
@@ -140,6 +142,9 @@ libpylith_la_SOURCES = \
 	problems/InitialConditionPatch.cc \
 	problems/ProgressMonitor.cc \
 	problems/ProgressMonitorTime.cc \
+	sources/Source.cc \
+	sources/WellboreSource.cc \
+	sources/AuxiliaryFactoryWellboreSource.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
 	topology/FieldBase.cc \

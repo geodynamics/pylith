@@ -109,6 +109,14 @@ public:
             void setMaterials(pylith::materials::Material* materials[],
                               const int numMaterials);
 
+            /** Set sources.
+             *
+             * @param[in] sources Array of sources.
+             * @param[in] numSource Number of sources.
+             */
+            void setSources(pylith::sources::Source* sources[],
+                            const int numSources);
+
             /** Set boundary conditions.
              *
              * @param[in] bc Array of boundary conditions.

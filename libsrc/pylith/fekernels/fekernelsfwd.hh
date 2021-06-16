@@ -73,6 +73,8 @@ namespace pylith {
 
         class FaultCohesiveKin;
 
+        class WellboreSource;
+
     } // fekernels
 } // pylith
 
