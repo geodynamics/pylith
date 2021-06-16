@@ -22,7 +22,7 @@ developer/index.md
 
 ## Other sources of documentation
 
-* PyLith v3.0.0rc1 manual (PDF)
+* PyLith v3.0.0rc1 manual [PDF](https://github.com/geodynamics/pylith/releases/download/v3.0.0beta1/pylith-3.0.0b1_manual.pdf)
 * [PyLith tutorials](https://wiki.geodynamics.org/software:pylith:start)
 * [PyLith installer documentation](https://pylith_installer.readthedocs.io)
 * Spatialdata documentation (under construction)
