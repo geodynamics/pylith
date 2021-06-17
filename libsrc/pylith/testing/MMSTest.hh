@@ -44,6 +44,7 @@ class pylith::testing::MMSTest : public pylith::utils::GenericComponent,
     CPPUNIT_TEST(testResidual);
     CPPUNIT_TEST(testJacobianTaylorSeries);
     CPPUNIT_TEST(testJacobianFiniteDiff);
+    CPPUNIT_TEST(testSolve);
 
     CPPUNIT_TEST_SUITE_END_ABSTRACT();
 
@@ -73,6 +74,8 @@ public:
      * Compare computed Jacobian against one computed via finite-differences.
      */
     void testJacobianFiniteDiff(void);
+
+    void testSolve(void);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

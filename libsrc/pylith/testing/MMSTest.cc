@@ -152,6 +152,55 @@ pylith::testing::MMSTest::testResidual(void) {
     PYLITH_METHOD_END;
 } // testResidual
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Verify residual evaluated for solution is below specified tolerance.
+void
+pylith::testing::MMSTest::testSolve(void) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscErrorCode err = 0;
+
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        err = PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");
+        CPPUNIT_ASSERT(!err);
+        err = PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2");
+        CPPUNIT_ASSERT(!err);
+    } // if
+
+    _initialize();
+
+    CPPUNIT_ASSERT(_solution);
+    if (debug.state()) {
+        _solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
+    } // if
+
+    CPPUNIT_ASSERT(_problem);
+    CPPUNIT_ASSERT(_solutionExactVec);
+    CPPUNIT_ASSERT(_solutionDotExactVec);
+    const PylithReal tolerance = -1.0;
+    PylithReal norm = 0.0;
+    SNES snes;
+    DM dm = _problem->getPetscDM();
+    Vec u;
+    const char *prefix;
+    err = TSGetSNES(_problem->getPetscTS(), &snes);
+    err = PetscObjectGetOptionsPrefix((PetscObject) snes, &prefix);
+    err = PetscObjectSetOptionsPrefix((PetscObject) snes, "solve_");
+    err = DMGetGlobalVector(dm, &u);
+    err = VecSet(u, 0.0);
+    err = SNESSetFromOptions(snes);
+    err = SNESSolve(snes, NULL, u);
+    err = SNESView(snes, NULL);
+    err = DMRestoreGlobalVector(dm, &u);
+    err = PetscObjectSetOptionsPrefix((PetscObject) snes, prefix);
+    if (debug.state()) {
+        _solution->view("Solution field");
+    } // if
+
+    PYLITH_METHOD_END;
+} // testSolve
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Verify Jacobian via Taylor series.
