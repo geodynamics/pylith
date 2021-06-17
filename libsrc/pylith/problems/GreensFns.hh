@@ -25,8 +25,6 @@
 #if !defined(pylith_problems_greensfns_hh)
 #define pylith_problems_greensfns_hh
 
-#define TEMPORARY
-
 #include "Problem.hh" // ISA Problem
 #include "pylith/testing/testingfwd.hh" // USES MMSTest
 #include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesiveImpulses
@@ -86,7 +84,7 @@ public:
 
     /** Perform operations after advancing solution of one impulse
      *
-     * @param[in] impulseReal 
+     * @param[in] impulseReal
      */
     void poststep(const double impulseReal);
 
@@ -114,13 +112,13 @@ public:
                          PetscMat precondMat,
                          PetscVec solutionVec);
 
-     /** Create Jacobian
+    /** Create Jacobian
      *
      * @param[out] jacobianMat PETSc Mat for Jacobian.
      * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
      */
     void createJacobian(PetscMat jacobianMat,
-                         PetscMat precondMat);
+                        PetscMat precondMat);
 
     /** Callback static method for computing residual.
      *
@@ -131,9 +129,9 @@ public:
      */
     static
     PetscErrorCode computeResidual(PetscSNES snes,
-                                      PetscVec solutionVec,
-                                      PetscVec residualVec,
-                                      void* context);
+                                   PetscVec solutionVec,
+                                   PetscVec residualVec,
+                                   void* context);
 
     /* Callback static method for computing Jacobian.
      *
@@ -145,20 +143,16 @@ public:
      */
     static
     PetscErrorCode computeJacobian(PetscSNES snes,
-                                    PetscVec solutionVec,
-                                    PetscMat jacobianMat,
-                                    PetscMat precondMat,
-                                    void* context);
+                                   PetscVec solutionVec,
+                                   PetscMat jacobianMat,
+                                   PetscMat precondMat,
+                                   void* context);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     PylithInt _faultId;
-#if defined(TEMPORARY)
-    pylith::faults::FaultCohesiveStub* _faultImpulses;
-#else
     pylith::faults::FaultCohesiveImpulses* _faultImpulses; ///< Fault interface with Green's functions impulses.
-#endif
     pylith::feassemble::Integrator* _integratorImpulses; ///< Integrator for Green's functions impulses.
 
     PetscSNES _snes; ///< PETSc SNES solver.
