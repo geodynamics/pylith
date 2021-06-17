@@ -40,6 +40,7 @@ public:
     /// Kernels (point-wise functions) for residual.
     struct ResidualKernels {
         std::string subfield; ///< Name of subfield
+        ResidualPart part; ///< Residual part (LHS or RHS).
         PetscBdPointFunc r0; ///< f0 (RHS) or g0 (LHS) function.
         PetscBdPointFunc r1; ///< f1 (RHS) or g1 (LHS) function.
 
@@ -50,9 +51,11 @@ public:
 
 
         ResidualKernels(const char* subfieldValue,
+                        const ResidualPart partValue,
                         PetscBdPointFunc r0Value,
                         PetscBdPointFunc r1Value) :
             subfield(subfieldValue),
+            part(partValue),
             r0(r0Value),
             r1(r1Value) {}
 
@@ -92,15 +95,11 @@ public:
 
     /** Set kernels for RHS residual.
      *
-     * @param kernels Array of kernerls for computing the RHS residual.
+     * @param[in] kernels Array of kernerls for computing the RHS residual.
+     * @param[in] solution Solution field.
      */
-    void setKernelsRHSResidual(const std::vector<ResidualKernels>& kernels);
-
-    /** Set kernels for LHS residual.
-     *
-     * @param kernels Array of kernerls for computing the LHS residual.
-     */
-    void setKernelsLHSResidual(const std::vector<ResidualKernels>& kernels);
+    void setKernelsResidual(const std::vector<ResidualKernels>& kernels,
+                            const pylith::topology::Field& solution);
 
     /** Initialize integration domain, auxiliary field, and derived field. Update observers.
      *
@@ -174,9 +173,6 @@ public:
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
-
-    std::vector<ResidualKernels> _kernelsRHSResidual; ///< kernels for RHS residual.
-    std::vector<ResidualKernels> _kernelsLHSResidual; ///< kernels for LHS residual.
 
     pylith::topology::Mesh* _boundaryMesh; ///< Boundary mesh.
     std::string _boundarySurfaceLabel; ///< Name of label identifying boundary surface.

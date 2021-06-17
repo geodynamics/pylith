@@ -364,43 +364,43 @@ pylith::bc::_NeumannTimeDependent::setKernelsResidual(pylith::feassemble::Integr
           << solution.getLabel()<<")"
           << pythia::journal::endl;
 
-    PetscBdPointFunc g0 = NULL;
-    PetscBdPointFunc g1 = NULL;
-
-    const pylith::topology::Field::VectorFieldEnum fieldType = solution.getSubfieldInfo(bc.getSubfieldName()).description.vectorFieldType;
+    const pylith::topology::Field::VectorFieldEnum fieldType = solution.subfieldInfo(bc.getSubfieldName()).description.vectorFieldType;
     const bool isScalarField = fieldType == pylith::topology::Field::SCALAR;
 
     const int bitInitial = bc.useInitial() ? 0x1 : 0x0;
     const int bitRate = bc.useRate() ? 0x2 : 0x0;
     const int bitTimeHistory = bc.useTimeHistory() ? 0x4 : 0x0;
     const int bitUse = bitInitial | bitRate | bitTimeHistory;
+
+    PetscBdPointFunc r0 = NULL;
+    PetscBdPointFunc r1 = NULL;
     switch (bitUse) {
     case 0x1:
-        g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initial_scalar :
+        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initial_scalar :
              pylith::fekernels::NeumannTimeDependent::g0_initial_vector;
         break;
     case 0x2:
-        g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_rate_scalar :
+        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_rate_scalar :
              pylith::fekernels::NeumannTimeDependent::g0_rate_vector;
         break;
     case 0x4:
-        g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_timeHistory_scalar :
+        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_timeHistory_scalar :
              pylith::fekernels::NeumannTimeDependent::g0_timeHistory_vector;
         break;
     case 0x3:
-        g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initialRate_scalar :
+        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initialRate_scalar :
              pylith::fekernels::NeumannTimeDependent::g0_initialRate_vector;
         break;
     case 0x5:
-        g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_scalar :
+        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_scalar :
              pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_vector;
         break;
     case 0x6:
-        g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_scalar :
+        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_scalar :
              pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_vector;
         break;
     case 0x7:
-        g0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_scalar :
+        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_scalar :
              pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_vector;
         break;
     case 0x0: {
@@ -411,33 +411,28 @@ pylith::bc::_NeumannTimeDependent::setKernelsResidual(pylith::feassemble::Integr
         break;
     } // case 0x0
     default: {
-        pythia::journal::firewall_t firewall(_NeumannTimeDependent::pyreComponent);
-        firewall << pythia::journal::at(__HERE__)
-                 << "Unknown combination of flags for Neumann BC terms (useInitial="<<bc.useInitial()
-                 << ", useRate="<<bc.useRate()<<", useTimeHistory="<<bc.useTimeHistory()<<")."
-                 << pythia::journal::endl;
+        PYLITH_JOURNAL_LOGICERROR("Unknown combination of flags for Neumann BC terms (useInitial="
+                                  <<bc.useInitial()
+                                  << ", useRate="<<bc.useRate()<<", useTimeHistory="<<bc.useTimeHistory()<<").");
     } // default
     } // switch
 
     std::vector<ResidualKernels> kernels(1);
-    kernels[0] = ResidualKernels(bc.getSubfieldName(), g0, g1);
-
-    assert(integrator);
     switch (formulation) {
     case pylith::problems::Physics::QUASISTATIC:
-        integrator->setKernelsLHSResidual(kernels);
+        kernels[0] = ResidualKernels(bc.getSubfieldName(), pylith::feassemble::Integrator::RESIDUAL_LHS, r0, r1);
         break;
     case pylith::problems::Physics::DYNAMIC_IMEX:
     case pylith::problems::Physics::DYNAMIC:
-        integrator->setKernelsRHSResidual(kernels);
+        kernels[0] = ResidualKernels(bc.getSubfieldName(), pylith::feassemble::Integrator::RESIDUAL_RHS, r0, r1);
         break;
     default: {
-        pythia::journal::firewall_t firewall(_NeumannTimeDependent::pyreComponent);
-        firewall << pythia::journal::at(__HERE__)
-                 << "Unknown formulation for equations ("<<formulation<<")."
-                 << pythia::journal::endl;
+        PYLITH_JOURNAL_LOGICERROR("Unknown formulation for equations ("<<formulation<<").");
     } // default
     } // switch
+
+    assert(integrator);
+    integrator->setKernelsResidual(kernels, solution);
 
     PYLITH_METHOD_END;
 } // setKernelsResidual
