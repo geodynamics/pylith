@@ -24,6 +24,7 @@
 
 // ------------------------------------------------------------------------------------------------
 // Constructor with PetscDM, label name, and label value.
+inline
 pylith::feassemble::DSLabelAccess
 ::DSLabelAccess(const PetscDM dm,
                 const char* labelName,
@@ -64,10 +65,7 @@ pylith::feassemble::DSLabelAccess::~DSLabelAccess(void) {
 
 
 // ------------------------------------------------------------------------------------------------
-/** Get PETSc DM.
- *
- * @returns PETSc DM.
- */
+// Get PETSc DM.
 inline
 PetscDM
 pylith::feassemble::DSLabelAccess::dm(void) const {
@@ -113,6 +111,7 @@ pylith::feassemble::DSLabelAccess::weakForm(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Get PETSc IS associated with label and value.
+inline
 PetscIS
 pylith::feassemble::DSLabelAccess::cellsIS(void) const {
     return _cellsIS;
@@ -121,6 +120,7 @@ pylith::feassemble::DSLabelAccess::cellsIS(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Get number of cells in PETSc IS associated with label and value.
+inline
 PetscInt
 pylith::feassemble::DSLabelAccess::numCells(void) const {
     return _numCells;
