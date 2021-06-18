@@ -352,7 +352,7 @@ pylith::meshio::OutputPhysics::_writeDataStep(const PylithReal t,
             throw std::runtime_error(msg.str());
         } // if/else
 
-        OutputObserver::_appendField(0.0, *subfield);
+        OutputObserver::_appendField(t, *subfield);
     } // for
     _closeDataStep();
 
