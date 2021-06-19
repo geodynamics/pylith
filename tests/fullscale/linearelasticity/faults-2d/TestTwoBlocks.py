@@ -21,94 +21,80 @@
 
 import unittest
 
-from pylith.testing.FullTestApp import check_data
-from pylith.testing.FullTestApp import TestCase as FullTestCase
+from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
 
 import meshes
-from twoblocks_soln import AnalyticalSoln
+import twoblocks_soln
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """Test suite for testing PyLith with fault shear displacement.
-    """
-    FAULTS = ["fault"]
-    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos"]
-    OUTPUT_BOUNDARIES = ["bc_ypos"]
 
     def setUp(self):
-        """Setup for test.
-        """
-        FullTestCase.setUp(self)
-        self.exactsoln = AnalyticalSoln()
+        defaults = {
+            "filename": "output/{name}-{mesh_entity}.h5",
+            "exact_soln": twoblocks_soln.AnalyticalSoln(),
+            "mesh": self.mesh,
+        }
+        self.checks = [
+            Check(
+                mesh_entities=["domain", "bc_ypos"],
+                vertex_fields=["displacement"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["elastic_xpos", "elastic_xneg"],
+                filename="output/{name}-{mesh_entity}_info.h5",
+                cell_fields = ["density", "bulk_modulus", "shear_modulus"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["elastic_xpos", "elastic_xneg"],
+                vertex_fields = ["displacement", "cauchy_strain", "cauchy_stress"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["bc_xneg", "bc_xpos"],
+                filename="output/{name}-{mesh_entity}_info.h5",
+                vertex_fields=["initial_amplitude"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["bc_xneg", "bc_xpos"],
+                vertex_fields=["displacement"],
+                defaults=defaults,
+            ),
+        ]
 
     def run_pylith(self, testName, args):
         FullTestCase.run_pylith(self, testName, args)
 
-    def test_domain_solution(self):
-        filename = "output/{}-domain.h5".format(self.NAME)
-        vertexFields = ["displacement"]
-        check_data(filename, self, self.DOMAIN, vertexFields=vertexFields)
 
-    def test_material_info(self):
-        cellFields = ["density", "bulk_modulus", "shear_modulus"]
-        for material in self.MATERIALS:
-            filename = "output/{}-{}_info.h5".format(self.NAME, material)
-            check_data(filename, self,
-                       self.MATERIALS[material], cellFields=cellFields)
-
-    def test_material_solution(self):
-        vertexFields = ["displacement"]
-        for material in self.MATERIALS:
-            filename = "output/{}-{}.h5".format(self.NAME, material)
-            check_data(filename, self,
-                       self.MATERIALS[material], vertexFields=vertexFields)
-
-    def test_bcdirichlet_info(self):
-        vertexFields = ["initial_amplitude"]
-        for bc in self.DIRICHLET_BOUNDARIES:
-            filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self,
-                       self.BOUNDARIES[bc], vertexFields=vertexFields)
-
-    def test_bcdirichlet_solution(self):
-        vertexFields = ["displacement"]
-        for bc in self.DIRICHLET_BOUNDARIES:
-            filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self,
-                       self.BOUNDARIES[bc], vertexFields=vertexFields)
-
-    def test_boundary_solution(self):
-        vertexFields = ["displacement"]
-        for bc in self.OUTPUT_BOUNDARIES:
-            filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self,
-                       self.BOUNDARIES[bc], vertexFields=vertexFields)
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-class TestQuad(TestCase, meshes.Quad):
-    NAME = "twoblocks_quad"
+# -------------------------------------------------------------------------------------------------
+class TestQuad(TestCase):
 
     def setUp(self):
-        TestCase.setUp(self)
-        TestCase.run_pylith(
-            self, self.NAME, ["twoblocks.cfg", "twoblocks_quad.cfg"])
+        self.name = "twoblocks_quad"
+        self.mesh = meshes.Quad()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_quad.cfg"])
         return
 
 
-# ----------------------------------------------------------------------------------------------------------------------
-class TestTri(TestCase, meshes.Tri):
-    NAME = "twoblocks_tri"
+# -------------------------------------------------------------------------------------------------
+class TestTri(TestCase):
 
     def setUp(self):
-        TestCase.setUp(self)
-        TestCase.run_pylith(
-            self, self.NAME, ["twoblocks.cfg", "twoblocks_tri.cfg"])
+        self.name = "twoblocks_tri"
+        self.mesh = meshes.Tri()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_tri.cfg"])
         return
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 def test_cases():
     return [
         TestQuad,
@@ -116,7 +102,7 @@ def test_cases():
     ]
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     FullTestCase.parse_args()
 
