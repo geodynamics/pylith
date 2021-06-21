@@ -167,39 +167,14 @@ class AnalyticalSoln(object):
             "cauchy_strain": self.strain,
             "cauchy_stress": self.stress,
             "viscous_strain": self.viscous_strain,
-            "initial_amplitude": {
-                "bc_xneg": self.initial_displacement,
-                "bc_yneg": self.initial_displacement,
-                "bc_zneg": self.initial_displacement,
-                "bc_xpos": self.initial_displacement,
-                "bc_ypos": self.initial_displacement,
-                "bc_zpos": self.initial_displacement
-                },
-            "rate_start_time": {
-                "bc_xneg": self.bc_rate_time,
-                "bc_yneg": self.bc_rate_time,
-                "bc_zneg": self.bc_rate_time,
-                "bc_xpos": self.bc_rate_time,
-                "bc_ypos": self.bc_rate_time,
-                "bc_zpos": self.bc_rate_time
-                },
-            "rate_amplitude": {
-                "bc_xneg": self.bc_velocity,
-                "bc_yneg": self.bc_velocity,
-                "bc_zneg": self.bc_velocity,
-                "bc_xpos": self.bc_velocity,
-                "bc_ypos": self.bc_velocity,
-                "bc_zpos": self.bc_velocity
-                }
+            "initial_amplitude": self.initial_displacement,
+            "rate_start_time": self.bc_rate_time,
+            "rate_amplitude": self.bc_velocity,
         }
-        self.key = None
         return
 
-    def getField(self, name, pts):
-        if self.key is None:
-            field = self.fields[name](pts)
-        else:
-            field = self.fields[name][self.key](pts)
+    def getField(self, name, mesh_entity, pts):
+        field = self.fields[name](pts)
         return field
 
     def displacement(self, locs):
