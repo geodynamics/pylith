@@ -3,6 +3,7 @@
 # BUILD CIG DEPENDENCIES ----------
 ARG BASE_IMAGE
 from ${BASE_IMAGE} as base
+ARG REPO_DIR=.
 ARG TEST_COVERAGE=no
 ARG PYTHON_COVERAGE=coverage3
 ENV TEST_COVERAGE=${TEST_COVERAGE} PYTHON_COVERAGE=${PYTHON_COVERAGE} 
@@ -62,7 +63,7 @@ from base as src
 
 ENV  src_dir=${TOPSRC_DIR}/pylith  build_dir=${TOPBUILD_DIR}/pylith
 
-COPY --chown=pylith-tester:pylith-tester . ${src_dir}
+COPY --chown=pylith-tester:pylith-tester ${REPO_DIR} ${src_dir}
 WORKDIR ${src_dir}
 RUN autoreconf --install --verbose --force
 
