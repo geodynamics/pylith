@@ -179,6 +179,7 @@ class Problem(PetscComponent, ModuleProblem):
         ModuleProblem.preinitialize(self, self.mesh)
         return
 
+
     def createMesh(self):
         """Create mesh (adjust to account for interfaces (faults) if necessary).
         """
@@ -189,8 +190,8 @@ class Problem(PetscComponent, ModuleProblem):
         self.mesh = self.mesher.create(self, interfaces)
         del interfaces
         self.mesher = None
-        
         return
+
 
     def verifyConfiguration(self):
         """Verify compatibility of configuration.
