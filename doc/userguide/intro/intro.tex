@@ -15,13 +15,24 @@ modeling of earthquake faulting.
   higher order discretizations and flexible specification of the
   governing equations.
   \begin{itemize}
-  \item Use of point-wise functions to implement governing equations;
+  \item Use of pointwise functions to implement governing equations;
   \item Higher order discretizations;
   \item Problem specification independent of cell shape (quadrilateral
     vs triangle, hexahedron vs tetrahedron);
   \item Incompressible elasticity;
+  \item Poroelasticity;
+  \item Use of PETSc time-stepping algorithms;
   \end{itemize}
-\item Use of PETSc time-stepping algorithms;
+\item Simulations now require metadata, such as description, command
+  line arguments, and PyLith version compatibility.
+\item New utilities
+  \begin{description}
+  \item[\filename{pyre\_doc.py}] Display facilities and components
+    available for a Pyre component.
+   \item[\filename{pylith\_cfgsearch}] Find \filename{.cfg} files matching
+     criteria for metadata.
+   \item[\filename{pylith\_runner}] Run all simulations in a specified path.
+  \end{description}
 \item New examples
   \begin{itemize}
   \item Simple 2-D and 3-D examples of Dirichlet and Neumann boundary
@@ -33,8 +44,15 @@ modeling of earthquake faulting.
     and
   \item Prescribed slip on a reverse fault with a splay fault;
   \end{itemize}
+\item Developer guide has moved to \url{https://pylith.readthedocs.io}.
+\item Updated to Python 3
+  \begin{itemize}
+  \item Pythia/Pyre, spatialdata. and PyLith have all been migrated to
+    Python 3.
+  \item The nemesis package has been merged into Pyre/Pyre.
+  \end{itemize}
 \end{itemize}
-The \filename{CHANGES} file in the top-level source directory contains
+The \filename{CHANGES.md} file in the top-level source directory contains
 a summary of features and bugfixes for each release.
 
 

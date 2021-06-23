@@ -1,0 +1,35 @@
+\newcommand{\umlclass}[2]{\begin{minipage}{\maxof{\widthof{#1}+1em}{10em}}\parbox{\textwidth}{\centering #1}
+\vspace*{-8pt} \hrule \vspace*{4pt} \parbox{\textwidth}{#2} \end{minipage}}
+\newcommand{\umltype}[1]{$\ll$type$\gg$\\ #1}
+\newcommand{\umlemptyclass}[1]{#1}
+
+\tikzstyle{class} = [
+  rectangle,
+  thick,
+  minimum width=10em,
+  align=center,
+  anchor=north,
+]
+\tikzstyle{concrete-class} = [
+  class,
+  draw=green!80!black,
+  top color=ltgreen!20!white,
+  bottom color=ltgreen,
+]
+\tikzstyle{abstract-class} = [
+  class,
+  draw=dkyellow!80!black,
+  top color=yellow!20!white,
+  bottom color=yellow,
+]
+\tikzstyle{not-implemented} = [
+  class,
+  draw=darkgray!80!black,
+  top color=gray!20!white,
+  bottom color=gray,
+]
+
+\tikzstyle{aggregate} = [diamond-angle 60, very thick]
+\tikzstyle{inherit} = [->, very thick, >=angle 60]
+
+

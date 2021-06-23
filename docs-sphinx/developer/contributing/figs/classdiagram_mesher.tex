@@ -1,0 +1,59 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\usepackage{calc}
+\renewcommand{\familydefault}{phv}
+
+\usepackage{tikz}
+
+\begin{document}
+\usetikzlibrary{positioning,arrows,shapes,calc}
+\input{../../../palettes/figcolors}
+\input{umlstyle}
+
+\begin{tikzpicture}[node distance=10em, line width=1.5pt]
+
+  \node (pythia-component) [abstract-class] {\umlemptyclass{pythia.pyre.components.Component}};
+  \node (petsc-component) [abstract-class] at ($(pythia-component.south)-(0,4em)$) {\umlemptyclass{PetscComponent}};
+
+
+  \node (mesh-generator) [abstract-class] at ($(petsc-component.south)-(0,4em)$) {\umlemptyclass{MeshGenerator}};
+
+  \node (mesh-importer) [abstract-class] at ($(mesh-generator.south)-(0,4em)$) {\umlclass{MeshImporter}{%
+      reader\\
+      distributor\\
+      refiner}};
+
+  
+  \node (meshio-object) [abstract-class, anchor=west] at ($(mesh-importer.east)+(8em,10em)$) {\umlemptyclass{MeshIOObj}};
+  \node (meshio-ascii) [concrete-class] at ($(meshio-object.south)-(0,1ex)$) {\umlemptyclass{MeshIOAscii}};
+  \node (meshio-cubit) [concrete-class] at ($(meshio-ascii.south)-(0,1ex)$) {\umlemptyclass{MeshIOCubit}};
+  \node (meshio-lagrit) [concrete-class] at ($(meshio-cubit.south)-(0,1ex)$) {\umlemptyclass{MeshIOLagrit}};
+
+
+  \node (distributor) [concrete-class] at ($(meshio-lagrit.south)-(0,3em)$) {\umlemptyclass{Distributor}};
+  
+  \node (mesh-refiner) [abstract-class] at ($(distributor.south)-(0,3em)$) {\umlemptyclass{MeshRefiner}};
+  \node (refine-uniform) [concrete-class] at ($(mesh-refiner.south)-(0,1ex)$) {\umlemptyclass{RefineUniform}};
+
+
+  
+  % Relationships
+  \draw[inherit] (petsc-component) -- (pythia-component);
+  \draw[inherit] (mesh-generator) -- (petsc-component);
+  \draw[inherit] (mesh-importer) -- (mesh-generator);
+
+  \draw[inherit] (meshio-object) -- (petsc-component);
+  \draw[inherit] (distributor) -- (petsc-component);
+  \draw[inherit] (mesh-refiner) -- (petsc-component);
+
+  
+  \draw[aggregate] ($(mesh-importer.east)+(0,1.0ex)$) -- (meshio-object.west);
+  \draw[aggregate] ($(mesh-importer.east)-(0,1.5ex)$) -- (distributor.west);
+  \draw[aggregate] ($(mesh-importer.east)-(0,4.0ex)$) -- (mesh-refiner.west);
+
+
+
+\end{tikzpicture}
+
+\end{document}

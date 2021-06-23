@@ -30,9 +30,7 @@
 pylith::materials::Material::Material(void) :
     _gravityField(NULL),
     _materialId(0),
-    _descriptiveLabel("") {
-    //
-} // constructor
+    _descriptiveLabel("") {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

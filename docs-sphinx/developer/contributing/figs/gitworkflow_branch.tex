@@ -1,0 +1,113 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\renewcommand{\familydefault}{phv}
+
+\usepackage{tikz}
+
+\begin{document}
+\usetikzlibrary{arrows,shapes,calc}
+\input{../../../palettes/figcolors}
+
+\tikzstyle{repository} = [rectangle,
+                      text width=12em,
+                      text centered,
+                      rounded corners=0.75em,
+                      minimum height=4.5em]
+\tikzstyle{github} = [repository,
+                      draw=green!80!black,
+                      top color=ltgreen!20!white,
+                      bottom color=ltgreen]
+\tikzstyle{local} = [repository,
+                    draw=orange!80!black,
+                      top color=ltorange!50!white,
+                      bottom color=orange]
+\tikzstyle{branch} = [black]
+
+\tikzstyle{arrow} = [->, very thick, >=latex]
+\tikzstyle{arrow-up} = [arrow, color=purple]
+\tikzstyle{arrow-down} = [arrow, color=green]
+
+\begin{tikzpicture}[node distance=18.0em, line width=1.5pt]
+
+  % repositories
+  \node (geodynamics-github) [github] {GitHub\\[4pt] {\tt geodynamics/pylith}\\[4pt] upstream};
+  \node (developer-github) [github, right of=geodynamics-github] {GitHub\\[4pt] {\tt saradeveloper/pylith}\\[4pt] origin};
+  \node (developer-computer) [local, right of=developer-github] {Local Computer\\[4pt] {\tt saradeveloper/pylith}\\[4pt] \ };
+
+  % branches
+  \node (upstream-main) [branch] at ($(geodynamics-github.south)+(0,-4mm)$) {main};
+  \draw (upstream-main.south) -- ++(0,-20em);
+  \path let \p1=(upstream-main.south) in coordinate (x-upstream-main) at (\x1,0);
+
+  \node (origin-main) [branch] at ($(developer-github.south)+(-4em,-4mm)$) {main};
+  \draw (origin-main.south) -- ++(0,-20em);
+  \path let \p1=(origin-main.south) in coordinate (x-origin-main) at (\x1,0);
+
+  \node (origin-branch) [branch] at ($(developer-github.south)+(+4em,-4mm)$) {feature-powerlaw};
+  \draw (origin-branch.south) -- ++(0,-20em);
+  \path let \p1=(origin-branch.south) in coordinate (x-origin-branch) at (\x1,0);
+  
+  \node (local-main) [branch] at ($(developer-computer.south)+(-4em,-4mm)$) {main};
+  \draw (local-main.south) -- ++(0,-20em);
+  \path let \p1=(local-main.south) in coordinate (x-local-main) at (\x1,0);
+
+  \node (local-branch) [branch] at ($(developer-computer.south)+(+4em,-4mm)$) {feature-powerlaw};
+  \draw (local-branch.south) -- ++(0,-20em);
+  \path let \p1=(local-branch.south) in coordinate (x-local-branch) at (\x1,0);
+
+  % operations
+  \path let \p1=(upstream-main.south) in coordinate (currenty) at (0,\y1);
+
+  % fork
+  \coordinate (currenty) at ($(currenty)-(0,5mm)$);
+  \path[arrow-down] ($(x-upstream-main)+(currenty)$) edge node[above, pos=0.8] {fork}  ($(x-origin-main)+(currenty)$);
+
+  % clone
+  \coordinate (currenty) at ($(currenty)-(0,3mm)$);
+  \path[arrow-down] ($(x-origin-main)+(currenty)$) edge node[above, pos=0.8] {clone} ($(x-local-main)+(currenty)$);
+
+  % branch
+  \coordinate (currenty) at ($(currenty)-(0,3mm)$);
+  \path[arrow-down] ($(x-local-main)+(currenty)$) edge node[above, pos=0.8] {branch} ($(x-local-branch)+(currenty)$);
+
+  % commits
+  \coordinate (currenty) at ($(currenty)-(0,3mm)$);
+  \draw[arrow-up] ($(x-local-branch)+(currenty)$) to [looseness=4, in=0, out=0] node[right] {commit} ++(0,-3mm);
+
+  \coordinate (currenty) at ($(currenty)-(0,6mm)$);
+  \draw[arrow-up] ($(x-local-branch)+(currenty)$) to [looseness=4, in=0, out=0] node[right] {commit} ++(0,-3mm);
+
+  % push
+  \coordinate (currenty) at ($(currenty)-(0,6mm)$);
+  \path[arrow-up] ($(x-local-branch)+(currenty)$) edge node[above, pos=0.9] {push} ($(x-origin-branch)+(currenty)$);
+
+
+  % commits
+  \coordinate (currenty) at ($(currenty)-(0,3mm)$);
+  \draw[arrow-up] ($(x-local-branch)+(currenty)$) to [looseness=4, in=0, out=0] node[right] {commit} ++(0,-3mm);
+
+  \coordinate (currenty) at ($(currenty)-(0,6mm)$);
+  \draw[arrow-up] ($(x-local-branch)+(currenty)$) to [looseness=4, in=0, out=0] node[right] {commit} ++(0,-3mm);
+
+  % push
+  \coordinate (currenty) at ($(currenty)-(0,6mm)$);
+  \path[arrow-up] ($(x-local-branch)+(currenty)$) edge node[above, pos=0.9] {push} ($(x-origin-branch)+(currenty)$);
+
+  % pull request
+  \coordinate (currenty) at ($(currenty)-(0,3mm)$);
+  \path[arrow-up] ($(x-origin-branch)+(currenty)$) edge node[above, pos=0.8] {pull request} ($(x-upstream-main)+(currenty)$);
+
+  % fetch + merge
+  \coordinate (currenty) at ($(currenty)-(0,12mm)$);
+  \path[arrow-down] ($(x-upstream-main)+(currenty)$) edge node[above, pos=0.9] {fetch+merge} ($(x-local-main)+(currenty)$);
+
+  % push
+  \coordinate (currenty) at ($(currenty)-(0,6mm)$);
+  \path[arrow-up] ($(x-local-main)+(currenty)$) edge node[above, pos=0.9] {push} ($(x-origin-main)+(currenty)$);
+
+
+
+\end{tikzpicture}
+
+\end{document}

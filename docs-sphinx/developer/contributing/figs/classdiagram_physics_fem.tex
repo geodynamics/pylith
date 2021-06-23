@@ -1,0 +1,59 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\renewcommand{\familydefault}{phv}
+
+\usepackage{tikz}
+
+\begin{document}
+\usetikzlibrary{positioning,arrows,shapes,calc}
+\input{../../../palettes/figcolors}
+\input{umlstyle}
+
+\begin{tikzpicture}[node distance=10em, line width=1.5pt]
+
+  % Physics
+  \node (pyre-component) [abstract-class] {\umlemptyclass{PyreComponent}};
+
+  \node (physics) [abstract-class] at ($(pyre-component.south)-(0,4em)$) {\umlemptyclass{Physics}};
+
+  \node (material) [abstract-class] at ($(physics.south)-(0,4em)$) {\umlemptyclass{Material}};
+
+  \node (fault) [abstract-class] at ($(material.south)-(0,1ex)$) {\umlemptyclass{FaultCohesive}};
+  \node (bc) [abstract-class] at ($(fault.south)-(0,1ex)$) {\umlemptyclass{BoundaryCondition}};
+
+  \draw[inherit] (physics) -- (pyre-component);
+  \draw[inherit] (material) -- (physics);
+
+  
+  % Physics implementation
+  \node (generic-component) [abstract-class, anchor=west] at ($(pyre-component.east)+(12em,0)$) {\umlemptyclass{GenericComponent}};
+
+  \node (physics-implementation) [abstract-class] at ($(generic-component.south)-(0,4em)$) {\umlemptyclass{PhysicsImplementation}};
+
+  \node (integrator) [abstract-class] at ($(physics-implementation.south)-(6em,4em)$) {\umlemptyclass{Integrator}};
+
+  \node (integrator-domain) [concrete-class] at ($(integrator.south)-(0,4em)$) {\umlemptyclass{IntegratorDomain}};
+  \node (integrator-interface) [concrete-class] at ($(integrator-domain.south)-(0,1ex)$) {\umlemptyclass{IntegratorInterface}};
+  \node (integrator-boundary) [concrete-class] at ($(integrator-interface.south)-(0,1ex)$) {\umlemptyclass{IntegratorBoundary}};
+
+
+  \node (constraint) [abstract-class, anchor=west] at ($(integrator.east)+(4em,0)$) {\umlemptyclass{Constraint}};
+  
+  \node (constraint-spatialdb) [concrete-class] at ($(constraint.south)-(0,4em)$) {\umlemptyclass{ConstraintSpatialDB}};
+  \node (constraint-userfn) [concrete-class] at ($(constraint-spatialdb.south)-(0,1ex)$) {\umlemptyclass{ConstraintUserFn}};
+  \node (constraint-simple) [concrete-class] at ($(constraint-userfn.south)-(0,1ex)$) {\umlemptyclass{ConstraintSimple}};
+  
+  \draw[inherit] (physics-implementation) -- (generic-component);
+  \draw[inherit] (integrator.north) -- (physics-implementation.south);
+  \draw[inherit] (integrator-domain) -- (integrator.south);
+
+  \draw[aggregate] (physics-implementation.west) -- (physics.east);
+  
+  \draw[inherit] (constraint.north) -- (physics-implementation.south);
+  \draw[inherit] (constraint-spatialdb) -- (constraint.south);
+
+  
+\end{tikzpicture}
+
+\end{document}
