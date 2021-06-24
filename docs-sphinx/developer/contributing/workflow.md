@@ -23,7 +23,7 @@ Overview of repositories for the Git forking workflow used in PyLith development
 The main repository is `geodynamics/pylith` at GitHub.
 Developers create a fork of that repository under their own GitHub account (e.g., `saradeveloper`), which is cloned to their local computer.
 Changes and additions to the code are committed to the repository on the local computer, which are pushed to the developer's GitHub account.
-Once a development task is completed, a developer is encouraged to contribute the changes and additions to the main repository.
+Once a development task is completed, a developer is encouraged to contribute the changes and additions to the main repository via pull requests.
 :::
 
 :::{figure-md} fig-developer-git-branch
@@ -32,7 +32,7 @@ Once a development task is completed, a developer is encouraged to contribute th
 Overview of repositories and branches for the Git forking workflow used in PyLith development.
 From the `main` branch on your local machine, you create a feature branch, e.g., `feature-powerlaw`, to complete a single task such as adding a feature, fixing a bug, or making an improvement to the documentation.
 You should break up the changes into several steps, which are saved locally as commits.
-The commits may be pushed to the your repository on GitHub for backup or syncing across multiple computers.
+The commits may be pushed to your repository on GitHub for backup or syncing across multiple computers.
 Once the task is completed, you submit a pull request to have the changes merged to the `main` branch on the community repository.
 Once the pull request is merged, you update your own `main` branch on your local computer from the community repository and then push the changes to your repository on GitHub.
 :::
@@ -62,7 +62,7 @@ See [git-branch](fig-developer-git-branch) for the diagram of the workflow assoc
 
 ### Set the upstream repository
 
-For each clone of your fork, you need to create a link to the "upstream" `geodynamics/pylith` repository.
+For each clone of your fork (computer with a local copy of your fork), you need to create a link to the "upstream" `geodynamics/pylith` repository.
 This allows you to keep your repository in sync with the community repository.
 
 ```{code-block} console
@@ -86,13 +86,19 @@ upstream https://github.com/geodynamics/pylith.git (push)
 ```
 
 (sec-developer-merge-upstream)=
-### Merging Updates from the Upstream Repository
+### Updating Your Local Branch To Match The Upstream Repository
 
 Make sure all of your local changes have been committed or [stashed](https://git-scm.com/docs/git-stash).
+If you are updating the `main` branch or another branch that you know has not been rebased, then you can merge the updates from the upstream (`geodynamics/pylith`) repository using the following procedure.
+
+:::{danger}
+If you do not know whether or not the branch you are updating has been rebased, then do not follow this procedure.
+Instead, follow the procedure for updating a rebased branch.
+:::
 
 ```{code-block} console
 ---
-caption: Syncing your fork
+caption: Updating your `main` branch or another branch that has not been rebased (forced push).
 ---
 # Update your local version of the upstream repository
 $ get fetch upstream
@@ -111,15 +117,41 @@ $ git push
 :::{important}
 The `main` branch should only be changed using this procedure.
 You should never merge your local branches to your `main` branch or commit local changes to your `main` branch.
-If you need to test integration of multiple feature branches, then create a new branch for that purpose.
+This ensures that your `main` branch stays in sync with the `geodynamics/pylith` `main` branch.
+If you need to test integration of multiple feature branches, it is best to create a new branch for that purpose.
 :::
 
+
+```{code-block} console
+---
+caption: Updating a branch that has been rebased or otherwise had its history changed in the upstream repository.
+---
+# Switch to the `main` branch and delete your local copy of the upstream "project" branch.
+$ git checkout main
+Switched to branch 'main'
+$ git branch -D hackathon/project
+
+# Update your local version of the upstream repository
+$ get fetch upstream
+
+# Checkout the branch again, tracking the upstream repository.
+$ git checkout --track upstream/hackathon/project
+
+# Push the changes to your GitHub repository and have the branch track that repository.
+$ git push --force -u origin hackathon/project
+```
+
+:::{tip}
+If you are creating feature branches off of a branch in the `geodynamics/pylith` repository, then we recommend not pushing that branch to your local repository.
+Just have your local branch track the upstream branch using `git branch --track upstream/hackathon/project`.
+You still need to delete this local branch and then check it out again if it is rebased in the upstream repository, but it eliminates the need to push to your GitHub repository.
+:::
 
 
 (sec-developer-feature-branch)=
 ## Creating a New Feature Branch
 
-Before creating a new feature branch, you should merge updates from the upstream repository as described in {ref}`sec-developer-sync-fork.
+Before creating a new feature branch, you should merge updates from the upstream repository as described in {ref}`sec-developer-merge-upstream.
 
 ```{code-block} console
 ---
@@ -134,16 +166,20 @@ $ git pull
 # Create a new branch from 'main', substituting appropriate names for
 # USERNAME and BRANCH.
 $ git checkout -b USERNAME/BRANCH
+
+# Examples
+$ git checkout -b saradeveloper/feature-powerlaw-rheology
+$ git checkout -b saradeveloper/fix-fault-output
 ```
 
 :::{tip}
 If you are implementing a feature that requires a significant amount of code development, we strongly recommend that you break the implementation into pieces that can each be tested, documented, and integrated into the PyLith `main` branch.
-Another appropriate alternative is to create a feature branch with additional branches for each of the small phases of the implementation that get merged into the feature branch.
+Another approach (equally valid) is to create a series of feature branches implementing the different phases that all get merged into the main feature branch; the main feature branch would then be merged into the `main` branch via a pull request.
 :::
 
 :::{tip}
 Feature branches are a great way to experiment with an implementation.
-You can create a feature branch and if you decide the implementation is headed in the wrong direction, you can simply create a new feature branch from your original starting point and delete the original feature branch.
+You can create a feature branch and if you decide the implementation is headed in the wrong direction, you can simply create a new feature branch from your original starting point and delete the bad feature branch.
 :::
 
 
