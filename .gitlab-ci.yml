@@ -4,7 +4,6 @@ stages:
   - manual-trigger
   - basic-platform
   - other-platforms
-  - auto-documentation
 
 .pull-request:
   only:
@@ -28,15 +27,16 @@ stages:
   stage: basic-platform
 
 .doc:
-  when: manual
   tags:
     - docker
+  when: manual
   variables:
-    BASE_IMAGE: "testenv-debian-stable"
+    IMAGE_REGISTRY: "registry.gitlab.com/cig-pylith/pylith_installer"
+    BASE_IMAGE: "testenv-ubuntu-20.04"
   script:
-    - echo "-TODO- Generate documentation."
+    - docker build -t pylithdoc-$BASE_IMAGE --build-arg BASE_IMAGE=$IMAGE_REGISTRY/$BASE_IMAGE -f docker/pylith-docenv .
 
-trigger-job:
+trigger-builds:
   stage: manual-trigger
   tags:
     - docker
@@ -46,66 +46,60 @@ trigger-job:
   script:
     - echo "Pipeline triggered manually"
 
-debian-stable-job:
+debian-stable:
   extends: .builder-first
   variables:
     BASE_IMAGE: "testenv-debian-stable"
     PYTHON_COVERAGE: "python3-coverage"
 
-debian-testing-job:
+debian-testing:
   extends: .builder
   variables:
     BASE_IMAGE: "testenv-debian-testing"
     PYTHON_COVERAGE: "python3-coverage"
 
-ubuntu-18.04-job:
+ubuntu-18.04:
   extends: .builder
   variables:
     BASE_IMAGE: "testenv-ubuntu-18.04"
     PYTHON_COVERAGE: "python3-coverage"
 
-ubuntu-20.04-job:
+ubuntu-20.04:
   extends: .builder
   variables:
     BASE_IMAGE: "testenv-ubuntu-20.04"
     PYTHON_COVERAGE: "python3-coverage"
 
-ubuntu-21.04-job:
+ubuntu-21.04:
   extends: .builder
   variables:
     BASE_IMAGE: "testenv-ubuntu-21.04"
     PYTHON_COVERAGE: "python3-coverage"
 
-fedora-33-job:
+fedora-33:
   extends: .builder
   variables:
     BASE_IMAGE: "testenv-fedora-33"
     PYTHON_COVERAGE: "coverage3"
 
-fedora-34-job:
+fedora-34:
   extends: .builder
   variables:
     BASE_IMAGE: "testenv-fedora-34"
     PYTHON_COVERAGE: "coverage3"
 
-centos-7-job:
+centos-7:
   extends: .builder
   variables:
     BASE_IMAGE: "testenv-centos-7"
 
-centos-8-job:
+centos-8:
   extends: .builder
   variables:
     BASE_IMAGE: "testenv-centos-8"
 
-auto-doc-job:
-  stage: auto-documentation
+build-docs:
+  stage: manual-trigger
   extends:
     - .pull-request
     - .doc
-
-manual-doc-job:
-  stage: basic-platform
-  extends: .doc
-  only:
-    - main
