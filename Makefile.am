@@ -35,7 +35,9 @@ DIST_SUBDIRS = $(SUBDIRS) \
 
 EXTRA_DIST = \
 	CHANGES \
-	DEPENDENCIES
+	DEPENDENCIES \
+	docker/pylith-testenv \
+	docker/pylith-docenv
 
 
 if ENABLE_TEST_COVERAGE
