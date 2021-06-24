@@ -65,20 +65,22 @@ See [git-branch](fig-developer-git-branch) for the diagram of the workflow assoc
 For each clone of your fork (computer with a local copy of your fork), you need to create a link to the "upstream" `geodynamics/pylith` repository.
 This allows you to keep your repository in sync with the community repository.
 
-```{code-block} console
+```{code-block} bash
 ---
 caption: Setting upstream repository
 ---
 # List the current remotes for your fork.
-$ git remote -v
+git remote -v
+# Output
 origin git@github.com/YOUR_GITHUB_USERNAME/pylith.git (fetch)
 origin git@github.com/YOUR_GITHUB_USERNAME/pylith.git (push)
 
 # Set the link to the remote upstream repository
-$ git remote add upstream https://github.com/geodynamics/pylith.git
+git remote add upstream https://github.com/geodynamics/pylith.git
 
 # Verify the upstream repository has been added.
-$ git remote -v
+git remote -v
+# Output:
 origin git@github.com/YOUR_GITHUB_USERNAME/pylith.git (fetch)
 origin git@github.com/YOUR_GITHUB_USERNAME/pylith.git (push)
 upstream https://github.com/geodynamics/pylith.git (fetch)
@@ -96,22 +98,21 @@ If you do not know whether or not the branch you are updating has been rebased, 
 Instead, follow the procedure for updating a rebased branch.
 :::
 
-```{code-block} console
+```{code-block} bash
 ---
 caption: Updating your `main` branch or another branch that has not been rebased (forced push).
 ---
 # Update your local version of the upstream repository
-$ get fetch upstream
+get fetch upstream
 
 # Check out the 'main' branch
-$ git checkout main
-Switched to branch 'main'
+git checkout main
 
 # Merge 'main' from upstream to your local clone.
-$ git merge upstream/main
+git merge upstream/main
 
 # If there are no conflicts, push the changes to your fork on GitHub.
-$ git push
+git push
 ```
 
 :::{important}
@@ -122,23 +123,22 @@ If you need to test integration of multiple feature branches, it is best to crea
 :::
 
 
-```{code-block} console
+```{code-block} bash
 ---
 caption: Updating a branch that has been rebased or otherwise had its history changed in the upstream repository.
 ---
 # Switch to the `main` branch and delete your local copy of the upstream "project" branch.
-$ git checkout main
-Switched to branch 'main'
-$ git branch -D hackathon/project
+git checkout main
+git branch -D hackathon/project
 
 # Update your local version of the upstream repository
-$ get fetch upstream
+get fetch upstream
 
 # Checkout the branch again, tracking the upstream repository.
-$ git checkout --track upstream/hackathon/project
+git checkout --track upstream/hackathon/project
 
 # Push the changes to your GitHub repository and have the branch track that repository.
-$ git push --force -u origin hackathon/project
+git push --force -u origin hackathon/project
 ```
 
 :::{tip}
@@ -153,23 +153,23 @@ You still need to delete this local branch and then check it out again if it is 
 
 Before creating a new feature branch, you should merge updates from the upstream repository as described in {ref}`sec-developer-merge-upstream.
 
-```{code-block} console
+```{code-block} bash
 ---
 caption: Creating a feature branch
 ---
 # Start from the current development branch (usually "main")
-$ git checkout main
+git checkout main
 
 # Make sure it is up to date.
-$ git pull
+git pull
 
 # Create a new branch from 'main', substituting appropriate names for
 # USERNAME and BRANCH.
-$ git checkout -b USERNAME/BRANCH
+git checkout -b USERNAME/BRANCH
 
 # Examples
-$ git checkout -b saradeveloper/feature-powerlaw-rheology
-$ git checkout -b saradeveloper/fix-fault-output
+git checkout -b saradeveloper/feature-powerlaw-rheology
+git checkout -b saradeveloper/fix-fault-output
 ```
 
 :::{tip}
@@ -262,3 +262,35 @@ To become familiar with making pull requests, we recommend starting with a small
 This may be as little as fixing a typo in the documentation or a comment.
 Create a feature branch for the change, push it to your repository, and then make a pull request.
 :::
+
+## Adding Remotes For Accessing Other PyLith Forks
+
+When collaborating with other people working on PyLith, it is helpful to be able to checkout branches from their forks.
+You can add their fork as an additional "remote" repository.
+
+
+```{code-block} bash
+---
+caption: Adding an additional remote repository to track branches in other forked repositories.
+---
+# Add remote
+git remote add NAME https://github.com/GITHUB_USERNAME/pylith.git
+# Example:
+git remote add saradeveloper https://github.com/saradeveloper/pylith.git
+
+# Show remotes
+git remote -v
+
+# Fetch the information for the remote
+git fetch NAME
+# Example:
+git fetch saradeveloper
+
+# Checkout remote branch
+git checkout -b saradeveloper/feature-powerlaw-rheology
+
+# Push to remote branch (requires write access)
+git push NAME BRANCH
+# Example:
+git push saradeveloper feature-powerlaw-rheology
+```
