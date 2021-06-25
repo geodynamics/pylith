@@ -55,7 +55,8 @@ public:
 pylith::feassemble::IntegratorBoundary::IntegratorBoundary(pylith::problems::Physics* const physics) :
     Integrator(physics),
     _boundaryMesh(NULL),
-    _boundarySurfaceLabel("") {
+    _boundarySurfaceLabel(""),
+    _subfieldName("") {
     GenericComponent::setName(_IntegratorBoundary::genericComponent);
 } // constructor
 
@@ -101,6 +102,30 @@ const char*
 pylith::feassemble::IntegratorBoundary::getMarkerLabel(void) const {
     return _boundarySurfaceLabel.c_str();
 } // getMarkerLabel
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set name of solution subfield associated with boundary condition.
+void
+pylith::feassemble::IntegratorBoundary::setSubfieldName(const char* value) {
+    PYLITH_JOURNAL_DEBUG("setSubfieldName(value="<<value<<")");
+
+    if (!value || (0 == strlen(value))) {
+        std::ostringstream msg;
+        msg << "Empty string given for name of solution subfield for boundary condition '" << _boundarySurfaceLabel
+            <<"'.";
+        throw std::runtime_error(msg.str());
+    } // if
+    _subfieldName = value;
+} // setSubfieldName
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get name of solution subfield associated with boundary condition.
+const char*
+pylith::feassemble::IntegratorBoundary::getSubfieldName(void) const {
+    return _subfieldName.c_str();
+} // getSubfieldName
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -222,23 +247,15 @@ pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Fie
     PetscFormKey key;
     key.label = dsLabel.label();
     key.value = dsLabel.value();
+    key.field = solution.subfieldInfo(_subfieldName.c_str()).index;
     key.part = pylith::feassemble::Integrator::RESIDUAL_RHS;
 
     PetscErrorCode err;
     assert(solution.localVector());
     assert(residual->localVector());
     PetscVec solutionDotVec = NULL;
-#if 0
-    // I think this is the interface we want.
-    err = DMPlexComputeResidual_XXX(dsLabel.dm(), key, solution.localVector(), solutionDotVec, t,
-                                    residual->localVector());PYLITH_CHECK_ERROR(err);
-
-    // This doesn't work because we need the key to be able to pass the key as an argument to
-    // distinguish between RHS and LHS residuals.
-    err = DMPlexComputeBdResidualSingle(dsLabel.dm(), t, dsLabel.weakForm(), dsLabel.label(),
-                                        numLabelValues, &labelValue, _fieldIndex, solution.localVector(), solutionDotVec,
+    err = DMPlexComputeBdResidualSingle(dsLabel.dm(), t, dsLabel.weakForm(), key, solution.localVector(), solutionDotVec,
                                         residual->localVector());PYLITH_CHECK_ERROR(err);
-#endif
 
     PYLITH_METHOD_END;
 } // computeRHSResidual
@@ -263,16 +280,14 @@ pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Fie
     PetscFormKey key;
     key.label = dsLabel.label();
     key.value = dsLabel.value();
+    key.field = solution.subfieldInfo(_subfieldName.c_str()).index;
     key.part = pylith::feassemble::Integrator::RESIDUAL_LHS;
 
     PetscErrorCode err;
     assert(solution.localVector());
     assert(residual->localVector());
-#if 0
-    // I think this is the interface we want.
-    err = DMPlexComputeResidual_XXX(dsLabel.dm(), key, solution.localVector(), solutionDotVec, t,
-                                    residual->localVector());PYLITH_CHECK_ERROR(err);
-#endif
+    err = DMPlexComputeBdResidualSingle(dsLabel.dm(), t, dsLabel.weakForm(), key, solution.localVector(), solutionDot.localVector(),
+                                        residual->localVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeLHSResidual

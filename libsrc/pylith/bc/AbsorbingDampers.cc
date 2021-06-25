@@ -128,6 +128,8 @@ pylith::bc::AbsorbingDampers::createIntegrator(const pylith::topology::Field& so
 
     pylith::feassemble::IntegratorBoundary* integrator = new pylith::feassemble::IntegratorBoundary(this);assert(integrator);
     integrator->setMarkerLabel(getMarkerLabel());
+    integrator->setSubfieldName(getSubfieldName());
+    integrator->setLabelName(getMarkerLabel());
 
     _AbsorbingDampers::setKernelsResidual(integrator, *this, solution);
 

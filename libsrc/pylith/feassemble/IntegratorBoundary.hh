@@ -87,6 +87,18 @@ public:
      */
     const char* getMarkerLabel(void) const;
 
+    /** Set name of solution subfield associated with boundary condition.
+     *
+     * @param[in] value Name of solution subfield.
+     */
+    void setSubfieldName(const char* value);
+
+    /** Get name of solution subfield associated with boundary condition.
+     *
+     * @preturn Name of solution subfield.
+     */
+    const char* getSubfieldName(void) const;
+
     /** Get mesh associated with integrator domain.
      *
      * @returns Mesh associated with integrator domain.
@@ -176,6 +188,7 @@ private:
 
     pylith::topology::Mesh* _boundaryMesh; ///< Boundary mesh.
     std::string _boundarySurfaceLabel; ///< Name of label identifying boundary surface.
+    std::string _subfieldName; ///< Name of solution subfield for boundary condition.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

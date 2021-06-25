@@ -207,6 +207,8 @@ pylith::bc::NeumannTimeDependent::createIntegrator(const pylith::topology::Field
 
     pylith::feassemble::IntegratorBoundary* integrator = new pylith::feassemble::IntegratorBoundary(this);assert(integrator);
     integrator->setMarkerLabel(getMarkerLabel());
+    integrator->setSubfieldName(getSubfieldName());
+    integrator->setLabelName(getMarkerLabel());
 
     _NeumannTimeDependent::setKernelsResidual(integrator, *this, solution, _formulation);
 

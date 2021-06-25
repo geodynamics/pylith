@@ -25,10 +25,9 @@
 // ------------------------------------------------------------------------------------------------
 // Constructor with PetscDM, label name, and label value.
 inline
-pylith::feassemble::DSLabelAccess
-::DSLabelAccess(const PetscDM dm,
-                const char* labelName,
-                const int labelValue) :
+pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
+                                                 const char* labelName,
+                                                 const int labelValue) :
     _dm(dm),
     _label(NULL),
     _ds(NULL),
@@ -41,6 +40,15 @@ pylith::feassemble::DSLabelAccess
 
     assert(dm);
     PetscErrorCode err;
+    PetscBool hasLabel = PETSC_FALSE;
+    err = DMHasLabel(_dm, labelName, &hasLabel);PYLITH_CHECK_ERROR(err);
+    if (!hasLabel) {
+        std::ostringstream msg;
+        const char* dmName = NULL;
+        err = PetscObjectGetName((PetscObject)_dm, &dmName);PYLITH_CHECK_ERROR(err);
+        msg << "PETSc DM '" << dmName << "' missing label '" << labelName << "'.";
+        throw std::runtime_error(msg.str());
+    } // if
     err = DMGetLabel(_dm, labelName, &_label);PYLITH_CHECK_ERROR(err);assert(_label);
 
     const PetscInt* cellIndices = NULL;
