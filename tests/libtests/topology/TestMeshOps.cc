@@ -64,7 +64,7 @@ pylith::topology::TestMeshOps::testNondimensionalize(void) {
     MeshOps::nondimensionalize(&mesh, normalizer);
 
     // Get vertices
-    PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = mesh.getDM();CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PetscInt vStart = depthStratum.begin();
     const PetscInt vEnd = depthStratum.end();

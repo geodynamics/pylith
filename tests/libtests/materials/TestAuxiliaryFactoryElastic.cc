@@ -28,12 +28,13 @@
 #include "pylith/testing/FieldTester.hh" // USES FieldTester
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD*
+#include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
+
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
-
-#include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.
@@ -244,8 +245,10 @@ pylith::materials::TestAuxiliaryFactoryElastic::_initialize(void) {
     _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
     iohandler.read(_mesh);
 
-    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.", _mesh->numCells() > 0);
-    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.", _mesh->numVertices() > 0);
+    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.",
+                           pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.",
+                           pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     // Setup coordinates.
     _mesh->setCoordSys(_data->cs);

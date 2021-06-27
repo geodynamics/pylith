@@ -223,7 +223,7 @@ protected:
 
         PetscErrorCode err = 0;
         PetscDS prob = NULL;
-        err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
+        err = DMGetDS(_solution->getDM(), &prob);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
 

@@ -28,6 +28,7 @@
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 #include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
 #include "pylith/testing/FaultCohesiveStub.hh" // USES FaultCohesiveStub
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -72,7 +73,6 @@ pylith::meshio::TestDataWriterPoints::_initialize(void) {
     delete _pointMesh;_pointMesh = pylith::topology::MeshOps::createFromPoints(
         data->points, data->numPoints, &cs, data->lengthScale, PETSC_COMM_WORLD);
 
-    PylithReal lengthScale = data->lengthScale;
     spatialdata::units::Nondimensional normalizer;
     normalizer.setLengthScale(data->lengthScale);
     pylith::topology::MeshOps::nondimensionalize(_pointMesh, normalizer);

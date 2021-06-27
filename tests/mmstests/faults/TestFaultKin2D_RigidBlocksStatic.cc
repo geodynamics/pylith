@@ -291,7 +291,7 @@ protected:
     void _setExactSolution(void) {
         CPPUNIT_ASSERT(_solution);
 
-        PetscDM dm = _solution->dmMesh();
+        PetscDM dm = _solution->getDM();
         PetscDMLabel label;
         PetscIS is;
         PetscInt cohesiveCell;

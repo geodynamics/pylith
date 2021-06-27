@@ -237,7 +237,7 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
 
     assert(_auxiliaryFactory);
     assert(_normalizer);
-    pylith::topology::Field::Description description = solution.subfieldInfo(_subfieldName.c_str()).description;
+    pylith::topology::Field::Description description = solution.getSubfieldInfo(_subfieldName.c_str()).description;
     if (_scaleName == std::string("pressure")) {
         description.scale = _normalizer->getPressureScale();
     } else if (_scaleName == std::string("velocity")) {
@@ -367,7 +367,7 @@ pylith::bc::_NeumannTimeDependent::setKernelsResidual(pylith::feassemble::Integr
     PetscBdPointFunc g0 = NULL;
     PetscBdPointFunc g1 = NULL;
 
-    const pylith::topology::Field::VectorFieldEnum fieldType = solution.subfieldInfo(bc.getSubfieldName()).description.vectorFieldType;
+    const pylith::topology::Field::VectorFieldEnum fieldType = solution.getSubfieldInfo(bc.getSubfieldName()).description.vectorFieldType;
     const bool isScalarField = fieldType == pylith::topology::Field::SCALAR;
 
     const int bitInitial = bc.useInitial() ? 0x1 : 0x0;

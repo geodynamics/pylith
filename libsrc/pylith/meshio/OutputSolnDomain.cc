@@ -25,6 +25,7 @@
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -49,15 +50,15 @@ pylith::meshio::OutputSolnDomain::_writeSolnStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     const pylith::string_vector& subfieldNames = pylith::topology::FieldOps::getSubfieldNamesDomain(solution);
-    PetscVec solutionVector = solution.outputVector();assert(solutionVector);
+    PetscVec solutionVector = solution.getOutputVector();assert(solutionVector);
 
-    _openSolnStep(t, solution.mesh());
+    _openSolnStep(t, solution.getMesh());
     const size_t numSubfieldNames = subfieldNames.size();
     for (size_t iField = 0; iField < numSubfieldNames; iField++) {
         assert(solution.hasSubfield(subfieldNames[iField].c_str()));
 
         OutputSubfield* subfield = NULL;
-        subfield = OutputObserver::_getSubfield(solution, solution.mesh(), subfieldNames[iField].c_str());assert(subfield);
+        subfield = OutputObserver::_getSubfield(solution, solution.getMesh(), subfieldNames[iField].c_str());assert(subfield);
         subfield->project(solutionVector);
 
         OutputObserver::_appendField(t, *subfield);

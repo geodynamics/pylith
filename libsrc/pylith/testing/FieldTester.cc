@@ -40,12 +40,12 @@ pylith::testing::FieldTester::checkFieldWithDB(const pylith::topology::Field& fi
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
 
-    const PetscDM dmField = field.dmMesh();assert(dmField);
+    const PetscDM dmField = field.getDM();assert(dmField);
     pylith::topology::FieldQuery fieldQuery(field);
     fieldQuery.initializeWithDefaultQueries();
     fieldQuery.openDB(fieldDB, lengthScale);
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dmField, t, fieldQuery._functions, (void**)fieldQuery._contextPtrs,
-                                                  field.localVector(), &norm);CPPUNIT_ASSERT(!err);
+                                                  field.getLocalVector(), &norm);CPPUNIT_ASSERT(!err);
     fieldQuery.closeDB(fieldDB);
 
     PYLITH_METHOD_RETURN(norm);
@@ -59,7 +59,7 @@ pylith::testing::FieldTester::checkSubfieldInfo(const pylith::topology::Field& f
                                                 const pylith::topology::Field::SubfieldInfo& infoE) {
     PYLITH_METHOD_BEGIN;
 
-    const pylith::topology::Field::SubfieldInfo& info = field.subfieldInfo(infoE.description.label.c_str());
+    const pylith::topology::Field::SubfieldInfo& info = field.getSubfieldInfo(infoE.description.label.c_str());
 
     CPPUNIT_ASSERT_EQUAL(infoE.index, info.index);
 

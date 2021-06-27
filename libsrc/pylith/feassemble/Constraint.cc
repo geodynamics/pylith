@@ -159,8 +159,8 @@ pylith::feassemble::Constraint::initialize(const pylith::topology::Field& soluti
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("initialize(solution="<<solution.getLabel()<<")");
 
-    delete _boundaryMesh;_boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.mesh(), _constraintLabel.c_str());assert(_boundaryMesh);
-    PetscDM dmBoundary = _boundaryMesh->dmMesh();assert(dmBoundary);
+    delete _boundaryMesh;_boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _constraintLabel.c_str());assert(_boundaryMesh);
+    PetscDM dmBoundary = _boundaryMesh->getDM();assert(dmBoundary);
     pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 
     assert(_physics);

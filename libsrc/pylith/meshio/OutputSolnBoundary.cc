@@ -80,9 +80,9 @@ pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::
 
     OutputSoln::verifyConfiguration(solution);
 
-    PetscDM dmMesh = solution.dmMesh();assert(dmMesh);
+    PetscDM dmSoln = solution.getDM();assert(dmSoln);
     PetscBool hasLabel = PETSC_FALSE;
-    PetscErrorCode err = DMHasLabel(dmMesh, _label.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMHasLabel(dmSoln, _label.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel) {
         std::ostringstream msg;
         msg << "Mesh missing group of vertices '" << _label << " for output using solution boundary observer '"
@@ -104,12 +104,12 @@ pylith::meshio::OutputSolnBoundary::_writeSolnStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     if (!_boundaryMesh) {
-        _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.mesh(), _label.c_str());
+        _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _label.c_str());
         assert(_boundaryMesh);
     } // if
 
     const pylith::string_vector& subfieldNames = pylith::topology::FieldOps::getSubfieldNamesDomain(solution);
-    PetscVec solutionVector = solution.outputVector();assert(solutionVector);
+    PetscVec solutionVector = solution.getOutputVector();assert(solutionVector);
 
     _openSolnStep(t, *_boundaryMesh);
     const size_t numSubfieldNames = subfieldNames.size();

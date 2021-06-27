@@ -37,7 +37,7 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
     PetscErrorCode err;
 
     faultMesh->setCoordSys(mesh.getCoordSys());
-    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+    PetscDM dmMesh = mesh.getDM();assert(dmMesh);
 
     // Convert fault to a DM
     PetscDM subdm = NULL;
@@ -83,7 +83,7 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
     err = DMPlexOrient(subdm);PYLITH_CHECK_ERROR(err);
 
     std::string submeshLabel = "fault_" + std::string(groupName);
-    faultMesh->dmMesh(subdm, submeshLabel.c_str());
+    faultMesh->setDM(subdm, submeshLabel.c_str());
 
     PYLITH_METHOD_END;
 } // createFault
@@ -97,7 +97,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
                                     const int materialId) {
     assert(mesh);
     PetscDM sdm = NULL;
-    PetscDM dm = mesh->dmMesh();assert(dm);
+    PetscDM dm = mesh->getDM();assert(dm);
     PetscDMLabel subpointMap = NULL, label = NULL, mlabel = NULL;
     PetscInt dim, cMax, cStart, cEnd, numCohesiveCellsOld;
     PetscErrorCode err;
@@ -110,9 +110,9 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
     } // for
     numCohesiveCellsOld = cEnd - cMax;
     // Create cohesive cells
-    err = DMPlexGetSubpointMap(faultMesh.dmMesh(), &subpointMap);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetSubpointMap(faultMesh.getDM(), &subpointMap);PYLITH_CHECK_ERROR(err);
     err = DMLabelDuplicate(subpointMap, &label);PYLITH_CHECK_ERROR(err);
-    err = DMLabelClearStratum(label, mesh->dimension());PYLITH_CHECK_ERROR(err);
+    err = DMLabelClearStratum(label, mesh->getDimension());PYLITH_CHECK_ERROR(err);
     // Fix over-aggressive completion of boundary label
     err = DMGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
     if (faultBdLabel && (dim > 2)) {
@@ -181,7 +181,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
         err = ISDestroy(&bdIS);PYLITH_CHECK_ERROR(err);
     }
     // Completes the set of cells scheduled to be replaced
-    err = DMPlexLabelCohesiveComplete(dm, label, faultBdLabel, PETSC_FALSE, faultMesh.dmMesh());PYLITH_CHECK_ERROR(err);
+    err = DMPlexLabelCohesiveComplete(dm, label, faultBdLabel, PETSC_FALSE, faultMesh.getDM());PYLITH_CHECK_ERROR(err);
     err = DMPlexConstructCohesiveCells(dm, label, NULL, &sdm);PYLITH_CHECK_ERROR(err);
 
     const char* interfaceLabelName = pylith::topology::Mesh::getCellsLabelName();
@@ -208,7 +208,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
     PetscReal lengthScale = 1.0;
     err = DMPlexGetScale(dm, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMPlexSetScale(sdm, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
-    mesh->dmMesh(sdm);
+    mesh->setDM(sdm);
 } // create
 
 
@@ -227,7 +227,7 @@ pylith::faults::TopologyOps::createFaultParallel(pylith::topology::Mesh* faultMe
 
     faultMesh->setCoordSys(mesh.getCoordSys());
 
-    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+    PetscDM dmMesh = mesh.getDM();assert(dmMesh);
     PetscDM dmFaultMesh = NULL;
 
     const PetscBool hasLagrangeConstraints = PETSC_TRUE;
@@ -240,7 +240,7 @@ pylith::faults::TopologyOps::createFaultParallel(pylith::topology::Mesh* faultMe
     err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMPlexSetScale(dmFaultMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
 
-    faultMesh->dmMesh(dmFaultMesh, meshLabel.c_str());
+    faultMesh->setDM(dmFaultMesh, meshLabel.c_str());
 
     PYLITH_METHOD_END;
 } // createFaultParallel

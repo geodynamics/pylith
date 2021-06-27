@@ -30,6 +30,7 @@
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <strings.h> // USES strcasecmp()
@@ -107,7 +108,7 @@ pylith::bc::AbsorbingDampers::verifyConfiguration(const pylith::topology::Field&
 
     BoundaryCondition::verifyConfiguration(solution);
 
-    const pylith::topology::Field::SubfieldInfo& info = solution.subfieldInfo(_subfieldName.c_str());
+    const pylith::topology::Field::SubfieldInfo& info = solution.getSubfieldInfo(_subfieldName.c_str());
     if (pylith::topology::Field::VECTOR != info.description.vectorFieldType) {
         std::ostringstream msg;
         msg << "Absorbing boundary condition cannot be applied to non-vector field '"<< _subfieldName << "' in solution.";
@@ -155,7 +156,7 @@ pylith::bc::AbsorbingDampers::createAuxiliaryField(const pylith::topology::Field
 
     assert(_auxiliaryFactory);
     assert(_normalizer);
-    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.dimension());
+    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.getDimension());
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 

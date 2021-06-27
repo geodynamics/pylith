@@ -209,7 +209,7 @@ pylith::bc::DirichletTimeDependent::verifyConfiguration(const pylith::topology::
         throw std::runtime_error(msg.str());
     } // if
 
-    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_subfieldName.c_str());
+    const topology::Field::SubfieldInfo& info = solution.getSubfieldInfo(_subfieldName.c_str());
     const int numComponents = info.description.numComponents;
     const int numConstrained = _constrainedDOF.size();
     for (int iConstrained = 0; iConstrained < numConstrained; ++iConstrained) {
@@ -268,7 +268,7 @@ pylith::bc::DirichletTimeDependent::createAuxiliaryField(const pylith::topology:
     assert(_auxiliaryFactory);
     assert(_normalizer);
     _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, solution.getSpaceDim(),
-                                  &solution.subfieldInfo(_subfieldName.c_str()).description);
+                                  &solution.getSubfieldInfo(_subfieldName.c_str()).description);
 
     // :ATTENTION: The order of the factory methods must match the order of the auxiliary subfields in the FE kernels.
 
@@ -359,7 +359,7 @@ pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::Con
 
     PetscBdPointFunc bcKernel = NULL;
 
-    const pylith::topology::Field::VectorFieldEnum fieldType = solution.subfieldInfo(bc.getSubfieldName()).description.vectorFieldType;
+    const pylith::topology::Field::VectorFieldEnum fieldType = solution.getSubfieldInfo(bc.getSubfieldName()).description.vectorFieldType;
     const bool isScalarField = fieldType == pylith::topology::Field::SCALAR;
 
     const int bitInitial = bc.useInitial() ? 0x1 : 0x0;

@@ -62,7 +62,19 @@ public:
              *
              * @returns Finite-element mesh.
              */
-            const pylith::topology::Mesh& mesh(void) const;
+            const pylith::topology::Mesh& getMesh(void) const;
+
+            /** Get PETSc DM associated with field.
+             *
+             * @returns PETSc DM
+             */
+            PetscDM getDM(void) const;
+
+            /** Get label for field.
+             *
+             * @returns Label for field.
+             */
+            const char* getLabel(void) const;
 
             /** Set label for field.
              *
@@ -70,11 +82,35 @@ public:
              */
             void setLabel(const char* value);
 
-            /** Get label for field.
+            /** Get local PetscSection.
              *
-             * @returns Label for field.
+             * @returns PETSc section.
              */
-            const char* getLabel(void) const;
+            PetscSection getLocalSection(void) const;
+
+            /** Get global PetscSection.
+             *
+             * @returns PETSc section.
+             */
+            PetscSection getGlobalSection(void) const;
+
+            /** Get the local PETSc Vec.
+             *
+             * @returns PETSc Vec object.
+             */
+            PetscVec getLocalVector(void) const;
+
+            /** Get the global PETSc Vec.
+             *
+             * @returns PETSc Vec object.
+             */
+            PetscVec getGlobalVector(void) const;
+
+            /** Get the global PETSc Vec without constrained degrees of freedom for output.
+             *
+             * @returns PETSc Vec object.
+             */
+            PetscVec getOutputVector(void) const;
 
             /** Get spatial dimension of domain.
              *
@@ -86,13 +122,27 @@ public:
              *
              * @returns the chart size.
              */
-            PetscInt chartSize(void) const;
+            PetscInt getChartSize(void) const;
 
             /** Get the number of degrees of freedom.
              *
              * @returns the number of degrees of freedom.
              */
             PetscInt getStorageSize(void) const;
+
+            /** Create discretization for field.
+             *
+             * @important Should be called for all fields after
+             * Field::subfieldsSetup() and before PetscDSAddBoundary() and
+             * Field::allocate().
+             */
+            void createDiscretization(void);
+
+            /// Allocate field and zero the local vector.
+            void allocate(void);
+
+            /// Zero local values (including constrained values).
+            void zeroLocal(void);
 
             /** Add subfield to current field.
              *
@@ -135,11 +185,12 @@ public:
              */
             void subfieldsSetup(void);
 
-            /// Allocate field.
-            void allocate(void);
-
-            /// Zero section values (including constrained DOF).
-            void zeroLocal(void);
+            /** Does field have given subfield?
+             *
+             * @param name Name of subfield.
+             * @returns True if field has given subfield.
+             */
+            bool hasSubfield(const char* name) const;
 
             /** Print field to standard out.
              *

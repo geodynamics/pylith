@@ -137,7 +137,7 @@ pylith::bc::DirichletUserFn::verifyConfiguration(const pylith::topology::Field& 
         throw std::runtime_error(msg.str());
     } // if
 
-    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_subfieldName.c_str());
+    const topology::Field::SubfieldInfo& info = solution.getSubfieldInfo(_subfieldName.c_str());
     const int numComponents = info.description.numComponents;
     const int numConstrained = _constrainedDOF.size();
     for (int iConstrained = 0; iConstrained < numConstrained; ++iConstrained) {
