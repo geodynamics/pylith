@@ -31,7 +31,7 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh) {
     PetscErrorCode err = 0;
 
     PetscDMLabel dmLabel = NULL;
-    PetscDM dmOrig = mesh->dmMesh();
+    PetscDM dmOrig = mesh->getDM();
     const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
     err = DMGetLabel(dmOrig, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
 
@@ -40,7 +40,7 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh) {
     err = DMPlexGetOrdering(dmOrig, MATORDERINGRCM, dmLabel, &permutation);PYLITH_CHECK_ERROR(err);
     err = DMPlexPermute(dmOrig, permutation, &dmNew);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&permutation);PYLITH_CHECK_ERROR(err);
-    mesh->dmMesh(dmNew);
+    mesh->setDM(dmNew);
 
     // Verify that all material points (cells) are consecutive.
     PetscIS valuesIS = NULL;

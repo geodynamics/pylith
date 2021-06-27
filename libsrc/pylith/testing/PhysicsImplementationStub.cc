@@ -23,6 +23,8 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
 
+#include <cassert>
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::feassemble::PhysicsImplementationStub::PhysicsImplementationStub(void) :

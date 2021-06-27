@@ -331,11 +331,11 @@ pylith::problems::Problem::initialize(void) {
     assert(_solution);
 
     // Initialize solution field.
-    PetscErrorCode err = DMSetFromOptions(_solution->dmMesh());PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMSetFromOptions(_solution->getDM());PYLITH_CHECK_ERROR(err);
     _setupSolution();
 
-    const pylith::topology::Mesh& mesh = _solution->mesh();
-    pylith::topology::CoordsVisitor::optimizeClosure(mesh.dmMesh());
+    const pylith::topology::Mesh& mesh = _solution->getMesh();
+    pylith::topology::CoordsVisitor::optimizeClosure(mesh.getDM());
 
     // Initialize integrators.
     _createIntegrators();
@@ -388,7 +388,7 @@ pylith::problems::Problem::_checkMaterialIds(void) const {
         materialIds[count++] = _interfaces[i]->getInterfaceId();
     } // for
 
-    pylith::topology::MeshOps::checkMaterialIds(_solution->mesh(), materialIds);
+    pylith::topology::MeshOps::checkMaterialIds(_solution->getMesh(), materialIds);
 
     PYLITH_METHOD_END;
 } // _checkMaterialIds
@@ -501,7 +501,7 @@ pylith::problems::Problem::_setupSolution(void) {
         PetscErrorCode err = 0;
         PetscDS prob = NULL;
         PetscInt cStart = 0, cEnd = 0;
-        PetscDM dmSoln = _solution->dmMesh();assert(dmSoln);
+        PetscDM dmSoln = _solution->getDM();assert(dmSoln);
         err = DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
         PetscInt cell = cStart;
         for (; cell < cEnd; ++cell) {
@@ -510,7 +510,7 @@ pylith::problems::Problem::_setupSolution(void) {
         err = DMGetCellDS(dmSoln, cell, &prob);PYLITH_CHECK_ERROR(err);
         assert(prob);
 
-        const pylith::topology::Field::SubfieldInfo& lagrangeMultiplierInfo = _solution->subfieldInfo("lagrange_multiplier_fault");
+        const pylith::topology::Field::SubfieldInfo& lagrangeMultiplierInfo = _solution->getSubfieldInfo("lagrange_multiplier_fault");
         err = PetscDSSetImplicit(prob, lagrangeMultiplierInfo.index, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
     } // if
 
@@ -534,7 +534,7 @@ pylith::problems::Problem::_setupLagrangeMultiplier(void) {
     PylithInt pMax = 0;
     PetscErrorCode err;
 
-    PetscDM dmSoln = _solution->dmMesh();assert(dmSoln);
+    PetscDM dmSoln = _solution->getDM();assert(dmSoln);
     err = DMGetDimension(dmSoln, &dim);PYLITH_CHECK_ERROR(err);
     err = DMCreateLabel(dmSoln, "cohesive interface");PYLITH_CHECK_ERROR(err);
     err = DMGetLabel(dmSoln, "cohesive interface", &cohesiveLabel);PYLITH_CHECK_ERROR(err);
@@ -547,7 +547,7 @@ pylith::problems::Problem::_setupLagrangeMultiplier(void) {
     } // for
 
     // Reset discretization (FE), now using label.
-    const pylith::topology::Field::SubfieldInfo& lagrangeMultiplierInfo = _solution->subfieldInfo("lagrange_multiplier_fault");
+    const pylith::topology::Field::SubfieldInfo& lagrangeMultiplierInfo = _solution->getSubfieldInfo("lagrange_multiplier_fault");
     PetscFE fe = NULL;
     err = DMGetField(dmSoln, lagrangeMultiplierInfo.index, NULL, (PetscObject*)&fe);PYLITH_CHECK_ERROR(err);assert(fe);
     err = PetscObjectReference((PetscObject)fe);PYLITH_CHECK_ERROR(err);

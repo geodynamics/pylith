@@ -25,12 +25,10 @@ subpkginclude_HEADERS = \
 	Distributor.hh \
 	FieldBase.hh \
 	Field.hh \
-	Field.icc \
 	FieldFactory.hh \
 	FieldOps.hh \
 	FieldQuery.hh \
 	Mesh.hh \
-	Mesh.icc \
 	MeshOps.hh \
 	ReverseCuthillMcKee.hh \
 	Stratum.hh \

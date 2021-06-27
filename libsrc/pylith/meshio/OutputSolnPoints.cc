@@ -132,7 +132,7 @@ pylith::meshio::OutputSolnPoints::_writeSolnStep(const PylithReal t,
         OutputSubfield* subfield = NULL;
         subfield = this->_getSubfield(*_pointSoln, *_pointMesh, subfieldNames[iField].c_str());assert(subfield);
 
-        const pylith::topology::Field::SubfieldInfo& info = solution.subfieldInfo(subfieldNames[iField].c_str());
+        const pylith::topology::Field::SubfieldInfo& info = solution.getSubfieldInfo(subfieldNames[iField].c_str());
         subfield->extractSubfield(*_pointSoln, info.index);
 
         OutputObserver::_appendField(t, *subfield);
@@ -172,13 +172,13 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
     } // if
     assert(!_interpolator);
 
-    const spatialdata::geocoords::CoordSys* csMesh = solution.mesh().getCoordSys();assert(csMesh);
+    const spatialdata::geocoords::CoordSys* csMesh = solution.getMesh().getCoordSys();assert(csMesh);
     const int spaceDim = csMesh->getSpaceDim();
 
-    MPI_Comm comm = solution.mesh().comm();
+    MPI_Comm comm = solution.getMesh().getComm();
 
     // Setup interpolator object
-    PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
+    PetscDM dmSoln = solution.getDM();assert(dmSoln);
 
     err = DMInterpolationCreate(comm, &_interpolator);PYLITH_CHECK_ERROR(err);
     err = DMInterpolationSetDim(_interpolator, spaceDim);PYLITH_CHECK_ERROR(err);
@@ -195,8 +195,9 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
     PylithReal lengthScale = 1.0;
     err = DMPlexGetScale(dmSoln, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
 
+    const spatialdata::geocoords::CoordSys* cs = solution.getMesh().getCoordSys();
     delete _pointMesh;_pointMesh = pylith::topology::MeshOps::createFromPoints(
-        pointsLocal, numPointsLocal, solution.mesh().getCoordSys(), lengthScale, solution.mesh().comm());
+        pointsLocal, numPointsLocal, cs, lengthScale, comm);
 
     // Upate point names to only local points.
     pylith::string_vector pointNamesLocal(numPointsLocal);
@@ -222,16 +223,16 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
 
     // Determine size of interpolated field that we will have.
     PetscInt numDof = 0;
-    const pylith::string_vector& subfieldNames = solution.subfieldNames();
+    const pylith::string_vector& subfieldNames = solution.getSubfieldNames();
     const size_t numSubfields = subfieldNames.size();
     for (size_t i = 0; i < numSubfields; ++i) {
-        numDof += solution.subfieldInfo(subfieldNames[i].c_str()).description.numComponents;
+        numDof += solution.getSubfieldInfo(subfieldNames[i].c_str()).description.numComponents;
     } // for
     err = DMInterpolationSetDof(_interpolator, numDof);PYLITH_CHECK_ERROR(err);
 
     delete _pointSoln;_pointSoln = new pylith::topology::Field(*_pointMesh);
     for (size_t i = 0; i < subfieldNames.size(); ++i) {
-        const pylith::topology::Field::SubfieldInfo& sinfo = solution.subfieldInfo(subfieldNames[i].c_str());
+        const pylith::topology::Field::SubfieldInfo& sinfo = solution.getSubfieldInfo(subfieldNames[i].c_str());
         pylith::topology::Field::Discretization discretization = sinfo.fe;
         discretization.dimension = spaceDim;
         _pointSoln->subfieldAdd(sinfo.description, discretization);
@@ -253,7 +254,8 @@ pylith::meshio::OutputSolnPoints::_interpolateField(const pylith::topology::Fiel
     assert(_pointSoln);
 
     PetscErrorCode err;
-    err = DMInterpolationEvaluate(_interpolator, solution.dmMesh(), solution.localVector(), _pointSoln->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMInterpolationEvaluate(_interpolator, solution.getDM(), solution.getLocalVector(),
+                                  _pointSoln->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // appendVertexField

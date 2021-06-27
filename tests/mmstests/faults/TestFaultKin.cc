@@ -82,8 +82,10 @@ pylith::mmstests::TestFaultKin::_initialize(void) {
     iohandler.filename(_data->meshFilename);
     iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
 
-    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.", _mesh->numCells() > 0);
-    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.", _mesh->numVertices() > 0);
+    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.",
+                           pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.",
+                           pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     // Set up coordinates.
     _mesh->setCoordSys(_data->cs);

@@ -29,6 +29,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
 
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()
@@ -72,7 +73,7 @@ pylith::meshio::MeshIOLagrit::_read(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_read()");
 
-    const int commRank = _mesh->commRank();
+    const int commRank = _mesh->getCommRank();
     int meshDim = 0;
     int spaceDim = 0;
     int numVertices = 0;

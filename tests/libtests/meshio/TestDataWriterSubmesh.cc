@@ -76,7 +76,7 @@ pylith::meshio::TestDataWriterSubmesh::_initialize(void) {
     iohandler.read(_mesh);
 
     spatialdata::geocoords::CSCart cs;
-    cs.setSpaceDim(_mesh->dimension());
+    cs.setSpaceDim(_mesh->getDimension());
     _mesh->setCoordSys(&cs);
 
     spatialdata::units::Nondimensional normalizer;

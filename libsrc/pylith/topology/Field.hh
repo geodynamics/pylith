@@ -30,6 +30,7 @@
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/utils/petscfwd.h" // HASA PetscVec
+#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
 
 #include <map> // USES std::map
 #include <string> // USES std::string
@@ -81,7 +82,7 @@ public:
 
     /** Default constructor.
      *
-     * @param mesh Finite-element mesh.
+     * @param mesh Finite-element mesh for field (will be cloned).
      */
     Field(const pylith::topology::Mesh& mesh);
 
@@ -101,21 +102,15 @@ public:
 
     /** Get mesh associated with field.
      *
-     * @returns Finite-element mesh.
+     * @returns Finite-element mesh associated with field.
      */
-    const pylith::topology::Mesh& mesh(void) const;
+    const pylith::topology::Mesh& getMesh(void) const;
 
     /** Get PETSc DM associated with field.
      *
      * @returns PETSc DM
      */
-    PetscDM dmMesh(void) const;
-
-    /** Set label for field.
-     *
-     * @param value Label for field.
-     */
-    void setLabel(const char* value);
+    PetscDM getDM(void) const;
 
     /** Get label for field.
      *
@@ -123,17 +118,53 @@ public:
      */
     const char* getLabel(void) const;
 
-    /** Get spatial dimension of domain.
+    /** Set label for field.
      *
-     * @returns Spatial dimension of domain.
+     * @param value Label for field.
      */
-    int getSpaceDim(void) const;
+    void setLabel(const char* value);
+
+    /** Get local PetscSection.
+     *
+     * @returns PETSc section.
+     */
+    PetscSection getLocalSection(void) const;
+
+    /** Get global PetscSection.
+     *
+     * @returns PETSc section.
+     */
+    PetscSection getGlobalSection(void) const;
+
+    /** Get the local PETSc Vec.
+     *
+     * @returns PETSc Vec object.
+     */
+    PetscVec getLocalVector(void) const;
+
+    /** Get the global PETSc Vec.
+     *
+     * @returns PETSc Vec object.
+     */
+    PetscVec getGlobalVector(void) const;
+
+    /** Get the global PETSc Vec without constrained degrees of freedom for output.
+     *
+     * @returns PETSc Vec object.
+     */
+    PetscVec getOutputVector(void) const;
+
+    /** Get spatial dimension of coordinate system for field.
+     *
+     * @returns Spatial dimension.
+     */
+    size_t getSpaceDim(void) const;
 
     /** Get the number of points in the chart.
      *
      * @returns the chart size.
      */
-    PylithInt chartSize(void) const;
+    PylithInt getChartSize(void) const;
 
     /** Get the number of degrees of freedom.
      *
@@ -141,35 +172,19 @@ public:
      */
     PylithInt getStorageSize(void) const;
 
-    /** Get local PetscSection.
+    /** Create discretization for field.
      *
-     * @returns PETSc section.
+     * @important Should be called for all fields after
+     * Field::subfieldsSetup() and before PetscDSAddBoundary() and
+     * Field::allocate().
      */
-    PetscSection localSection(void) const;
+    void createDiscretization(void);
 
-    /** Get global PetscSection.
-     *
-     * @returns PETSc section.
-     */
-    PetscSection globalSection(void) const;
+    /// Allocate field and zero the local vector.
+    void allocate(void);
 
-    /** Get the local PETSc Vec.
-     *
-     * @returns PETSc Vec object.
-     */
-    PetscVec localVector(void) const;
-
-    /** Get the global PETSc Vec.
-     *
-     * @returns PETSc Vec object.
-     */
-    PetscVec globalVector(void) const;
-
-    /** Get the global PETSc Vec without constrained degrees of freedom for output.
-     *
-     * @returns PETSc Vec object.
-     */
-    PetscVec outputVector(void) const;
+    /// Zero local values (including constrained values).
+    void zeroLocal(void);
 
     /** Add subfield to current field (for use from SWIG).
      *
@@ -231,30 +246,16 @@ public:
      *
      * @returns Array of names of subfields.
      */
-    pylith::string_vector subfieldNames(void) const;
+    pylith::string_vector getSubfieldNames(void) const;
 
     /** Get auxiliary information for subfield.
      *
      * @param name Name of field.
      * @returns Auxiliary information (including metadata) for subfield.
      */
-    const SubfieldInfo& subfieldInfo(const char* name) const;
+    const SubfieldInfo& getSubfieldInfo(const char* name) const;
 
-    /** Create discretization for field.
-     *
-     * @important Should be called for all fields after
-     * Field::subfieldsSetup() and before PetscDSAddBoundary() and
-     * Field::allocate().
-     */
-    void createDiscretization(void);
-
-    /// Allocate field and zero the local vector.
-    void allocate(void);
-
-    /// Zero local values (including constrained values).
-    void zeroLocal(void);
-
-    /** Print field to standard out.
+    /** Display field.
      *
      * @param[in] label Label for output.
      * @param[in] options Viewing options.
@@ -304,8 +305,7 @@ private:
     subfields_type _subfields; ///< Map of subfields in field.
     std::string _label; ///< Label for field.
 
-    const Mesh& _mesh; ///< Mesh associated with section.
-    PetscDM _dm; ///< Manages the PetscSection.
+    pylith::topology::Mesh* _mesh; ///< Mesh associated with field.
     PetscVec _localVec; ///< Local PETSc vector.
     PetscVec _globalVec; ///< Global PETSc vector.
     PetscVec _outputVec; ///< Global PETSc vector without constrained DOF for output.
@@ -316,8 +316,6 @@ private:
     const Field& operator=(const Field&); ///< Not implemented
 
 }; // Field
-
-#include "Field.icc" // inline methods
 
 #endif // pylith_topology_field_hh
 

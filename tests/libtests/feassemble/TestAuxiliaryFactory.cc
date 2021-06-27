@@ -245,8 +245,10 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     mesh.setCoordSys(&cs);
     pylith::topology::MeshOps::nondimensionalize(&mesh, normalizer);
 
-    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.", mesh.numCells() > 0);
-    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.", mesh.numVertices() > 0);
+    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.",
+                           pylith::topology::MeshOps::getNumCells(mesh) > 0);
+    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.",
+                           pylith::topology::MeshOps::getNumVertices(mesh) > 0);
 
     CPPUNIT_ASSERT(_factory);
     _factory->setQueryDB(&auxiliaryDB);
@@ -266,12 +268,12 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     // Verify auxiliary field
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
-    const PetscDM dmField = auxiliaryField.dmMesh();CPPUNIT_ASSERT(dmField);
+    const PetscDM dmField = auxiliaryField.getDM();CPPUNIT_ASSERT(dmField);
     pylith::topology::FieldQuery query(auxiliaryField);
     query.initializeWithDefaultQueries();
     query.openDB(&auxiliaryDB, normalizer.getLengthScale());
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dmField, t, query._functions, (void**)query._contextPtrs,
-                                                  auxiliaryField.localVector(), &norm);CPPUNIT_ASSERT(!err);
+                                                  auxiliaryField.getLocalVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(&auxiliaryDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of auxiliary field values failed.", 0.0, norm, tolerance);

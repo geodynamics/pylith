@@ -162,9 +162,9 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
     PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.getLabel()<<")");
 
     delete _boundaryMesh;
-    _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.mesh(), _boundarySurfaceLabel.c_str());
+    _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _boundarySurfaceLabel.c_str());
     assert(_boundaryMesh);
-    pylith::topology::CoordsVisitor::optimizeClosure(_boundaryMesh->dmMesh());
+    pylith::topology::CoordsVisitor::optimizeClosure(_boundaryMesh->getDM());
 
     Integrator::initialize(solution);
 
@@ -211,7 +211,7 @@ pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Fie
 
     _setKernelConstants(solution, dt);
 
-    pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
+    pylith::topology::Field solutionDot(solution.getMesh()); // No dependence on time derivative of solution in RHS.
     solutionDot.setLabel("solution_dot");
     _IntegratorBoundary::computeResidual(residual, this, _kernelsRHSResidual, t, dt, solution, solutionDot);
 
@@ -300,7 +300,7 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.
-    PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
+    PetscDM dmSoln = solution.getDM();assert(dmSoln);
     PetscDS dsSoln = NULL;
     err = DMGetDS(dmSoln, &dsSoln);PYLITH_CHECK_ERROR(err);assert(dsSoln);
     PetscWeakForm weakForm = NULL;
@@ -313,7 +313,7 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
     { // :TODO: Move to initialization phase
       // Must use PetscWeakFormAddBdResidual() when moved to initialization.
         for (size_t i = 0; i < kernels.size(); ++i) {
-            const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
+            const PetscInt i_field = solution.getSubfieldInfo(kernels[i].subfield.c_str()).index;
             const PetscInt i_part = pylith::feassemble::Integrator::RESIDUAL_LHS;
             err = PetscWeakFormSetIndexBdResidual(weakForm, dmLabel, labelValue, i_field, i_part,
                                                   0, kernels[i].r0, 0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
@@ -323,19 +323,19 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
         } // if
 
         const pylith::topology::Field* auxiliaryField = integrator->getAuxiliaryField();assert(auxiliaryField);
-        err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+        err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     } // Move to initialization phase
 
     // Compute the local residual
     // solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
-    assert(solution.localVector());
-    assert(residual->localVector());
+    assert(solution.getLocalVector());
+    assert(residual->getLocalVector());
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt numLabelValues = 1;
-        const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
+        const PetscInt i_field = solution.getSubfieldInfo(kernels[i].subfield.c_str()).index;
         err = DMPlexComputeBdResidualSingle(dmSoln, t, weakForm, dmLabel, numLabelValues, &labelValue, i_field,
-                                            solution.localVector(), solutionDot.localVector(),
-                                            residual->localVector());PYLITH_CHECK_ERROR(err);
+                                            solution.getLocalVector(), solutionDot.getLocalVector(),
+                                            residual->getLocalVector());PYLITH_CHECK_ERROR(err);
     } // for
 
     PYLITH_METHOD_END;

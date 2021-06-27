@@ -27,6 +27,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/testing/FieldTester.hh" // USES FieldTester
+#include "pylith/utils/error.hh" // USES PyLITH_METHOD*
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -310,8 +311,10 @@ pylith::problems::TestSolutionFactory::_initialize(void) {
     _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
     iohandler.read(_mesh);
 
-    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.", _mesh->numCells() > 0);
-    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.", _mesh->numVertices() > 0);
+    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.",
+                           pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.",
+                           pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     // Setup coordinates.
     _mesh->setCoordSys(_data->cs);

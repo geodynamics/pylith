@@ -31,6 +31,7 @@
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/DispVel.hh" // USES DispVel kernels
 
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
@@ -188,7 +189,7 @@ pylith::materials::Elasticity::createAuxiliaryField(const pylith::topology::Fiel
     pylith::materials::AuxiliaryFactoryElasticity* auxiliaryFactory = _rheology->getAuxiliaryFactory();assert(auxiliaryFactory);
 
     assert(_normalizer);
-    auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.dimension());
+    auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.getDimension());
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
@@ -237,7 +238,7 @@ pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field&
     derivedField->setLabel("Elasticity derived field");
 
     assert(_normalizer);
-    _derivedFactory->initialize(derivedField, *_normalizer, domainMesh.dimension());
+    _derivedFactory->initialize(derivedField, *_normalizer, domainMesh.getDimension());
     _derivedFactory->addSubfields();
 
     derivedField->subfieldsSetup();
@@ -284,7 +285,7 @@ pylith::materials::Elasticity::_setKernelsRHSResidual(pylith::feassemble::Integr
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsRHSResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
-    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
+    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
     std::vector<ResidualKernels> kernels;
     switch (_formulation) {
@@ -344,7 +345,7 @@ pylith::materials::Elasticity::_setKernelsLHSResidual(pylith::feassemble::Integr
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsLHSResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
-    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
+    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
     std::vector<ResidualKernels> kernels;
 
@@ -426,7 +427,7 @@ pylith::materials::Elasticity::_setKernelsLHSJacobian(pylith::feassemble::Integr
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsLHSJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
-    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
+    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
     std::vector<JacobianKernels> kernels;
 
@@ -491,7 +492,7 @@ pylith::materials::Elasticity::_setKernelsUpdateStateVars(pylith::feassemble::In
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsUpdateStateVars(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
-    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
+    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     assert(coordsys);
 
     std::vector<ProjectKernels> kernels;
@@ -511,7 +512,7 @@ pylith::materials::Elasticity::_setKernelsDerivedField(pylith::feassemble::Integ
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
-    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
+    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     assert(coordsys);
 
     std::vector<ProjectKernels> kernels(2);

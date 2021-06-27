@@ -26,6 +26,7 @@
 #include "pylith/problems/Physics.hh" // USES Physics
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -202,7 +203,7 @@ pylith::feassemble::Integrator::_setKernelConstants(const pylith::topology::Fiel
     assert(_physics);
     const pylith::real_array& constants = _physics->getKernelConstants(dt);
 
-    PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
+    PetscDM dmSoln = solution.getDM();assert(dmSoln);
     PetscInt numDS = 0;
     PetscErrorCode err = DMGetNumDS(dmSoln, &numDS);PYLITH_CHECK_ERROR(err);
     for (PetscInt i = 0; i < numDS; ++i) {

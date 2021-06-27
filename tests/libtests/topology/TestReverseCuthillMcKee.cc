@@ -23,6 +23,7 @@
 #include "pylith/topology/ReverseCuthillMcKee.hh" // USES ReverseCuthillMcKee
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
@@ -66,14 +67,14 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     CPPUNIT_ASSERT(_mesh);
 
     // Get original DM and create Mesh for it
-    const PetscDM dmOrig = _mesh->dmMesh();
+    const PetscDM dmOrig = _mesh->getDM();
     PetscObjectReference((PetscObject) dmOrig);
     Mesh meshOrig;
-    meshOrig.dmMesh(dmOrig);
+    meshOrig.setDM(dmOrig);
 
     ReverseCuthillMcKee::reorder(_mesh);
 
-    const PetscDM& dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+    const PetscDM& dmMesh = _mesh->getDM();CPPUNIT_ASSERT(dmMesh);
 
     // Check vertices (size only)
     topology::Stratum verticesStratumE(dmOrig, topology::Stratum::DEPTH, 0);
@@ -174,7 +175,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     fieldOrig.allocate();
     PetscMat matrix = NULL;
     PetscInt bandwidthOrig = 0;
-    err = DMCreateMatrix(fieldOrig.dmMesh(), &matrix);CPPUNIT_ASSERT(!err);
+    err = DMCreateMatrix(fieldOrig.getDM(), &matrix);CPPUNIT_ASSERT(!err);
     err = MatComputeBandwidth(matrix, 0.0, &bandwidthOrig);CPPUNIT_ASSERT(!err);
     err = MatDestroy(&matrix);CPPUNIT_ASSERT(!err);
 
@@ -184,7 +185,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     field.createDiscretization();
     field.allocate();
     PetscInt bandwidth = 0;
-    err = DMCreateMatrix(field.dmMesh(), &matrix);CPPUNIT_ASSERT(!err);
+    err = DMCreateMatrix(field.getDM(), &matrix);CPPUNIT_ASSERT(!err);
     err = MatComputeBandwidth(matrix, 0.0, &bandwidth);CPPUNIT_ASSERT(!err);
     err = MatDestroy(&matrix);CPPUNIT_ASSERT(!err);
 
@@ -207,8 +208,8 @@ pylith::topology::TestReverseCuthillMcKee::_initialize() {
     meshio::MeshIOAscii iohandler;
     iohandler.filename(_data->filename);
     iohandler.read(_mesh);
-    CPPUNIT_ASSERT(_mesh->numCells() > 0);
-    CPPUNIT_ASSERT(_mesh->numVertices() > 0);
+    CPPUNIT_ASSERT(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    CPPUNIT_ASSERT(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     // Adjust topology if necessary.
     if (_data->faultLabel) {

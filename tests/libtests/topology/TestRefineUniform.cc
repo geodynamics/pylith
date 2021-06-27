@@ -64,9 +64,9 @@ pylith::topology::TestRefineUniform::testRefine(void) {
     refiner.refine(&newMesh, mesh, _data->refineLevel);
 
     // Check mesh dimension
-    CPPUNIT_ASSERT_EQUAL(_data->cellDim, newMesh.dimension());
+    CPPUNIT_ASSERT_EQUAL(_data->cellDim, newMesh.getDimension());
 
-    const PetscDM& dmMesh = newMesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    const PetscDM& dmMesh = newMesh.getDM();CPPUNIT_ASSERT(dmMesh);
 
     // Check vertices
     pylith::topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);

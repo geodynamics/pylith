@@ -25,6 +25,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::checkTopology()
 
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()
@@ -167,7 +168,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh) {
         pylith::topology::Mesh faultMesh;
 
         // Get group of vertices associated with fault
-        PetscDM dmMesh = mesh->dmMesh();assert(dmMesh);
+        PetscDM dmMesh = mesh->getDM();assert(dmMesh);
 
         PetscDMLabel groupField = NULL;
         PetscBool hasLabel = PETSC_FALSE;
@@ -185,7 +186,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh) {
         } // if
         err = DMGetDimension(dmMesh, &dim);PYLITH_CHECK_ERROR(err);
         err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
-        err = MPI_Allreduce(&depth, &gdepth, 1, MPIU_INT, MPI_MAX, mesh->comm());PYLITH_CHECK_ERROR(err);
+        err = MPI_Allreduce(&depth, &gdepth, 1, MPIU_INT, MPI_MAX, mesh->getComm());PYLITH_CHECK_ERROR(err);
         err = DMGetLabel(dmMesh, _interfaceLabel.c_str(), &groupField);PYLITH_CHECK_ERROR(err);
         TopologyOps::createFault(&faultMesh, *mesh, groupField);
         PetscDMLabel faultBdLabel = NULL;

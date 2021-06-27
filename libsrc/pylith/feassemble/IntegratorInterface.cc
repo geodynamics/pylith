@@ -224,10 +224,10 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
 
     const bool isSubmesh = true;
     delete _interfaceMesh;_interfaceMesh = new pylith::topology::Mesh(isSubmesh);assert(_interfaceMesh);
-    pylith::faults::TopologyOps::createFaultParallel(_interfaceMesh, solution.mesh(), _labelValue, _labelName.c_str(),
+    pylith::faults::TopologyOps::createFaultParallel(_interfaceMesh, solution.getMesh(), _labelValue, _labelName.c_str(),
                                                      _interfaceSurfaceLabel.c_str());
     pylith::topology::MeshOps::checkTopology(*_interfaceMesh);
-    pylith::topology::CoordsVisitor::optimizeClosure(_interfaceMesh->dmMesh());
+    pylith::topology::CoordsVisitor::optimizeClosure(_interfaceMesh->getDM());
 
     Integrator::initialize(solution);
 
@@ -274,7 +274,7 @@ pylith::feassemble::IntegratorInterface::computeRHSResidual(pylith::topology::Fi
 
     _setKernelConstants(solution, dt);
 
-    pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
+    pylith::topology::Field solutionDot(solution.getMesh()); // No dependence on time derivative of solution in RHS.
     solutionDot.setLabel("solution_dot");
 
     _IntegratorInterface::computeResidual(residual, this, _kernelsRHSResidual, t, dt, solution, solutionDot);
@@ -372,7 +372,7 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
 
     PetscErrorCode err;
 
-    PetscDM dmSoln = solution.dmMesh();
+    PetscDM dmSoln = solution.getDM();
     PetscIS cohesiveCellsIS = NULL;
     PetscInt numCohesiveCells = 0;
     const PetscInt* cellIndices = NULL;
@@ -387,32 +387,32 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     // Get auxiliary data
     PetscDMLabel dmLabel = NULL;
     PetscInt labelValue = 0;
-    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     PetscFormKey keys[3];
     keys[0].label = NULL;
     keys[0].value = 0;
     keys[0].field = 0;
-    keys[0].part  = 0;
+    keys[0].part = 0;
     keys[1].label = NULL;
     keys[1].value = 0;
     keys[1].field = 0;
-    keys[1].part  = 0;
+    keys[1].part = 0;
     keys[2].label = NULL;
     keys[2].value = 0;
     keys[2].field = 0;
-    keys[2].part  = 0;
+    keys[2].part = 0;
 
     // Compute the local residual
-    assert(solution.localVector());
-    assert(residual->localVector());
+    assert(solution.getLocalVector());
+    assert(residual->getLocalVector());
     for (size_t i = 0; i < kernels.size(); ++i) {
-        const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
+        const PetscInt i_field = solution.getSubfieldInfo(kernels[i].subfield.c_str()).index;
         err = PetscDSSetBdResidual(prob, i_field, kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
     } // for
-    err = DMPlexComputeResidual_Hybrid_Internal(dmSoln, keys, cohesiveCellsIS, t, solution.localVector(),
-                                                solutionDot.localVector(), t,
-                                                residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeResidual_Hybrid_Internal(dmSoln, keys, cohesiveCellsIS, t, solution.getLocalVector(),
+                                                solutionDot.getLocalVector(), t,
+                                                residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
     err = ISRestoreIndices(cohesiveCellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&cohesiveCellsIS);PYLITH_CHECK_ERROR(err);
 
@@ -447,7 +447,7 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
 
     PetscErrorCode err;
 
-    PetscDM dmSoln = solution.dmMesh();
+    PetscDM dmSoln = solution.getDM();
 
     PetscIS cohesiveCells = NULL;
     PetscInt numCohesiveCells = 0;
@@ -463,32 +463,32 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     // Set auxiliary data
     PetscDMLabel dmLabel = NULL;
     PetscInt labelValue = 0;
-    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     PetscFormKey keys[3];
     keys[0].label = NULL;
     keys[0].value = 0;
     keys[0].field = 0;
-    keys[0].part  = 0;
+    keys[0].part = 0;
     keys[1].label = NULL;
     keys[1].value = 0;
     keys[1].field = 0;
-    keys[1].part  = 0;
+    keys[1].part = 0;
     keys[2].label = NULL;
     keys[2].value = 0;
     keys[2].field = 0;
-    keys[2].part  = 0;
+    keys[2].part = 0;
 
     // Compute the local Jacobian
     for (size_t i = 0; i < kernels.size(); ++i) {
-        const PetscInt i_fieldTrial = solution.subfieldInfo(kernels[i].subfieldTrial.c_str()).index;
-        const PetscInt i_fieldBasis = solution.subfieldInfo(kernels[i].subfieldBasis.c_str()).index;
+        const PetscInt i_fieldTrial = solution.getSubfieldInfo(kernels[i].subfieldTrial.c_str()).index;
+        const PetscInt i_fieldBasis = solution.getSubfieldInfo(kernels[i].subfieldBasis.c_str()).index;
         err = PetscDSSetBdJacobian(prob, i_fieldTrial, i_fieldBasis, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
     } // for
 
-    assert(solution.localVector());
-    err = DMPlexComputeJacobian_Hybrid_Internal(dmSoln, keys, cohesiveCells, t, s_tshift, solution.localVector(),
-                                                solutionDot.localVector(), jacobianMat, precondMat,
+    assert(solution.getLocalVector());
+    err = DMPlexComputeJacobian_Hybrid_Internal(dmSoln, keys, cohesiveCells, t, s_tshift, solution.getLocalVector(),
+                                                solutionDot.getLocalVector(), jacobianMat, precondMat,
                                                 NULL);PYLITH_CHECK_ERROR(err);
     err = ISRestoreIndices(cohesiveCells, &cellIndices);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&cohesiveCells);PYLITH_CHECK_ERROR(err);

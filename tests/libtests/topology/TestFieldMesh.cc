@@ -81,7 +81,7 @@ pylith::topology::TestFieldMesh::testCopyConstructor(void) {
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_field);
 
-    PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = _mesh->getDM();CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PylithInt vStart = depthStratum.begin();
     const PylithInt vEnd = depthStratum.end();
@@ -93,11 +93,11 @@ pylith::topology::TestFieldMesh::testCopyConstructor(void) {
     field.setLabel(label.c_str());
 
     const char *name = NULL;
-    err = PetscObjectGetName((PetscObject)field.dmMesh(), &name);CPPUNIT_ASSERT(!err);
+    err = PetscObjectGetName((PetscObject)field.getDM(), &name);CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_EQUAL(label, std::string(name));
 
-    PetscSection section = field.localSection();CPPUNIT_ASSERT(section);
-    PetscVec vec = field.localVector();CPPUNIT_ASSERT(vec);
+    PetscSection section = field.getLocalSection();CPPUNIT_ASSERT(section);
+    PetscVec vec = field.getLocalVector();CPPUNIT_ASSERT(vec);
 
     err = PetscObjectGetName((PetscObject) vec, &name);CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_EQUAL(label, std::string(name));
@@ -144,7 +144,7 @@ pylith::topology::TestFieldMesh::testMesh(void) {
     _initialize();
     CPPUNIT_ASSERT(_field);
 
-    CPPUNIT_ASSERT_EQUAL(_data->cellDim, _field->mesh().dimension());
+    CPPUNIT_ASSERT_EQUAL(_data->cellDim, _field->getMesh().getDimension());
 
     PYLITH_METHOD_END;
 } // testMesh
@@ -166,18 +166,18 @@ pylith::topology::TestFieldMesh::testGeneralAccessors(void) {
     CPPUNIT_ASSERT_EQUAL(label, std::string(_field->getLabel()));
     const char* name = NULL;
     PetscErrorCode err = 0;
-    err = PetscObjectGetName((PetscObject)_field->_dm, &name);CPPUNIT_ASSERT(!err);
+    err = PetscObjectGetName((PetscObject)_field->getDM(), &name);CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_EQUAL(label, std::string(name));
 
     // Test getSpaceDim()
-    CPPUNIT_ASSERT_EQUAL(_data->cellDim, _field->getSpaceDim());
+    CPPUNIT_ASSERT_EQUAL(size_t(_data->cellDim), _field->getSpaceDim());
 
     PYLITH_METHOD_END;
 } // testGeneralAccessors
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test chartSize(), getStorageSize(), localSection(), globalSection().
+// Test chartSize(), getStorageSize(), getLocalSection(), globalSection().
 void
 pylith::topology::TestFieldMesh::testSectionAccessors(void) {
     PYLITH_METHOD_BEGIN;
@@ -186,7 +186,7 @@ pylith::topology::TestFieldMesh::testSectionAccessors(void) {
     _initialize();
     CPPUNIT_ASSERT(_field);
 
-    CPPUNIT_ASSERT(_field->chartSize() > 0); // vertices + edges + faces + cells
+    CPPUNIT_ASSERT(_field->getChartSize() > 0); // vertices + edges + faces + cells
     const PylithInt ndof = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
     CPPUNIT_ASSERT_EQUAL(_data->numVertices*ndof, _field->getStorageSize());
 
@@ -195,7 +195,7 @@ pylith::topology::TestFieldMesh::testSectionAccessors(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test localVector(), globalVector().
+// Test getLocalVector(), getGlobalVector().
 void
 pylith::topology::TestFieldMesh::testVectorAccessors(void) {
     PYLITH_METHOD_BEGIN;
@@ -211,14 +211,14 @@ pylith::topology::TestFieldMesh::testVectorAccessors(void) {
     const PylithInt ndofConstrained =
         _data->bcANumConstrainedDOF*_data->bcANumVertices + _data->bcBNumConstrainedDOF*_data->bcBNumVertices;
 
-    const PetscVec& localVec = _field->localVector();CPPUNIT_ASSERT(localVec);
+    const PetscVec& localVec = _field->getLocalVector();CPPUNIT_ASSERT(localVec);
     err = PetscObjectGetName((PetscObject)localVec, &name);CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_EQUAL(std::string(_field->getLabel()), std::string(name));
     err = VecGetSize(localVec, &size);CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_EQUAL(ndof, size);
 
     _field->createGlobalVector();
-    const PetscVec& globalVec = _field->globalVector();CPPUNIT_ASSERT(globalVec);
+    const PetscVec& globalVec = _field->getGlobalVector();CPPUNIT_ASSERT(globalVec);
     _field->scatterLocalToVector(globalVec);
     err = PetscObjectGetName((PetscObject)globalVec, &name);CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_EQUAL(std::string(_field->getLabel()), std::string(name));
@@ -227,7 +227,7 @@ pylith::topology::TestFieldMesh::testVectorAccessors(void) {
 
     _field->createOutputVector();
     _field->scatterLocalToOutput();
-    const PetscVec& outputVec = _field->outputVector();CPPUNIT_ASSERT(outputVec);
+    const PetscVec& outputVec = _field->getOutputVector();CPPUNIT_ASSERT(outputVec);
     err = PetscObjectGetName((PetscObject)outputVec, &name);CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_EQUAL(std::string(_field->getLabel()), std::string(name));
     err = VecGetSize(outputVec, &size);CPPUNIT_ASSERT(!err);
@@ -254,14 +254,14 @@ pylith::topology::TestFieldMesh::testSubfieldAccessors(void) {
     CPPUNIT_ASSERT(_field->hasSubfield(_data->descriptionB.label.c_str()));
     CPPUNIT_ASSERT(!_field->hasSubfield("zyxwvut987654321"));
 
-    // Test subfieldNames().
-    const string_vector& names = _field->subfieldNames();
+    // Test getSubfieldNames().
+    const string_vector& names = _field->getSubfieldNames();
     CPPUNIT_ASSERT_EQUAL(size_t(2), names.size());
     CPPUNIT_ASSERT_EQUAL(_data->descriptionA.label, names[0]);
     CPPUNIT_ASSERT_EQUAL(_data->descriptionB.label, names[1]);
 
-    { // Test subfieldInfo() for subfield A.
-        const Field::SubfieldInfo& infoA = _field->subfieldInfo(_data->descriptionA.label.c_str());
+    { // Test getSubfieldInfo() for subfield A.
+        const Field::SubfieldInfo& infoA = _field->getSubfieldInfo(_data->descriptionA.label.c_str());
         CPPUNIT_ASSERT_EQUAL(0, infoA.index);
         CPPUNIT_ASSERT_EQUAL(_data->descriptionA.numComponents, infoA.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(_data->descriptionA.label, infoA.description.label);
@@ -276,10 +276,10 @@ pylith::topology::TestFieldMesh::testSubfieldAccessors(void) {
         CPPUNIT_ASSERT_EQUAL(_data->discretizationA.quadOrder, infoA.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(_data->discretizationA.isBasisContinuous, infoA.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(_data->discretizationA.feSpace, infoA.fe.feSpace);
-    } // Test subfieldInfo() for subfield A.
+    } // Test getSubfieldInfo() for subfield A.
 
-    { // Test subfieldInfo() for subfield B.
-        const Field::SubfieldInfo& infoB = _field->subfieldInfo(_data->descriptionB.label.c_str());
+    { // Test getSubfieldInfo() for subfield B.
+        const Field::SubfieldInfo& infoB = _field->getSubfieldInfo(_data->descriptionB.label.c_str());
         CPPUNIT_ASSERT_EQUAL(1, infoB.index);
         CPPUNIT_ASSERT_EQUAL(_data->descriptionB.numComponents, infoB.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(_data->descriptionB.label, infoB.description.label);
@@ -294,9 +294,9 @@ pylith::topology::TestFieldMesh::testSubfieldAccessors(void) {
         CPPUNIT_ASSERT_EQUAL(_data->discretizationB.quadOrder, infoB.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(_data->discretizationB.isBasisContinuous, infoB.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(_data->discretizationB.feSpace, infoB.fe.feSpace);
-    } // Test subfieldInfo() for subfield B.
+    } // Test getSubfieldInfo() for subfield B.
 
-    CPPUNIT_ASSERT_THROW(_field->subfieldInfo("aabbccdd"), std::runtime_error);
+    CPPUNIT_ASSERT_THROW(_field->getSubfieldInfo("aabbccdd"), std::runtime_error);
 
     PYLITH_METHOD_END;
 } /// testSubfieldAccessors
@@ -384,11 +384,11 @@ pylith::topology::TestFieldMesh::_initialize(void) {
     // Setup labels for constraints.
     PetscErrorCode err;
     for (PylithInt i = 0; i < _data->bcANumVertices; ++i) {
-        err = DMSetLabelValue(_mesh->dmMesh(), _data->bcALabel, numCells+_data->bcAVertices[i], _data->bcALabelId);
+        err = DMSetLabelValue(_mesh->getDM(), _data->bcALabel, numCells+_data->bcAVertices[i], _data->bcALabelId);
         CPPUNIT_ASSERT(!err);
     } // for
     for (PylithInt i = 0; i < _data->bcBNumVertices; ++i) {
-        err = DMSetLabelValue(_mesh->dmMesh(), _data->bcBLabel, numCells+_data->bcBVertices[i], _data->bcBLabelId);
+        err = DMSetLabelValue(_mesh->getDM(), _data->bcBLabel, numCells+_data->bcBVertices[i], _data->bcBLabelId);
         CPPUNIT_ASSERT(!err);
     } // for
 
@@ -401,20 +401,20 @@ pylith::topology::TestFieldMesh::_initialize(void) {
     _field->createDiscretization();
 
     PetscDMLabel labelA = NULL, labelB = NULL;
-    err = DMGetLabel(_field->dmMesh(), _data->bcALabel, &labelA);CPPUNIT_ASSERT(!err);
-    err = DMGetLabel(_field->dmMesh(), _data->bcBLabel, &labelB);CPPUNIT_ASSERT(!err);
+    err = DMGetLabel(_field->getDM(), _data->bcALabel, &labelA);CPPUNIT_ASSERT(!err);
+    err = DMGetLabel(_field->getDM(), _data->bcBLabel, &labelB);CPPUNIT_ASSERT(!err);
     const PetscInt numLabelValues = 1;
     PetscInt i_field = 0;
-    err = DMAddBoundary(_field->dmMesh(), DM_BC_ESSENTIAL, "bcA", labelA, numLabelValues, &_data->bcALabelId, i_field,
+    err = DMAddBoundary(_field->getDM(), DM_BC_ESSENTIAL, "bcA", labelA, numLabelValues, &_data->bcALabelId, i_field,
                         _data->bcANumConstrainedDOF, _data->bcAConstrainedDOF, NULL, NULL, NULL, NULL);CPPUNIT_ASSERT(!err);
     i_field = 1;
-    err = DMAddBoundary(_field->dmMesh(), DM_BC_ESSENTIAL, "bcB", labelB, numLabelValues, &_data->bcBLabelId, i_field,
+    err = DMAddBoundary(_field->getDM(), DM_BC_ESSENTIAL, "bcB", labelB, numLabelValues, &_data->bcBLabelId, i_field,
                         _data->bcBNumConstrainedDOF, _data->bcBConstrainedDOF, NULL, NULL, NULL, NULL);CPPUNIT_ASSERT(!err);
     // Allocate field.
     _field->allocate();
 
     // Populate with values.
-    PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = _mesh->getDM();CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PylithInt vStart = depthStratum.begin();
     const PylithInt vEnd = depthStratum.end();
@@ -461,7 +461,7 @@ pylith::topology::TestFieldMesh::_checkValues(const Field& field,
         } // for
     } // for
 
-    PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = _mesh->getDM();CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PylithInt vStart = depthStratum.begin();
     const PylithInt vEnd = depthStratum.end();

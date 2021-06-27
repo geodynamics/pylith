@@ -25,6 +25,7 @@
 #include "pylith/meshio/OutputSolnPoints.hh" // USES OutputSolnPoints
 #include "pylith/meshio/DataWriterHDF5Ext.hh" // USES DataWriterHDF5Ext
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -99,13 +100,13 @@ pylith::meshio::TestDataWriterHDF5ExtPoints::testWriteVertexField(void) {
     writer.writePointNames(_data->names, *_pointMesh);
     writer.openTimeStep(t, *_pointMesh);
 
-    const pylith::string_vector& subfieldNames = vertexField.subfieldNames();
+    const pylith::string_vector& subfieldNames = vertexField.getSubfieldNames();
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(vertexField, *_pointMesh, subfieldNames[i].c_str());
         CPPUNIT_ASSERT(subfield);
 
-        const pylith::topology::Field::SubfieldInfo& info = vertexField.subfieldInfo(subfieldNames[i].c_str());
+        const pylith::topology::Field::SubfieldInfo& info = vertexField.getSubfieldInfo(subfieldNames[i].c_str());
         subfield->extractSubfield(vertexField, info.index);
 
         writer.writeVertexField(t, *subfield);

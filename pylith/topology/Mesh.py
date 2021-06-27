@@ -50,7 +50,7 @@ class Mesh(ModuleMesh):
         # Use Communicator object to wrap C++ MPI_Comm* returned by
         # module.
         from pylith.mpi.Communicator import Communicator
-        return Communicator(ModuleMesh.comm(self))
+        return Communicator(ModuleMesh.getComm(self))
 
     def checkMaterialIds(self, materialIds):
         """Check material ids for consistency with mesh.

@@ -29,6 +29,7 @@
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 
 #include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <iostream> // USES std::cout

@@ -22,6 +22,7 @@
 
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
