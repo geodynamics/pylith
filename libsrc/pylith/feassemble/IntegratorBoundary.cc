@@ -327,15 +327,17 @@ pylith::feassemble::_IntegratorBoundary::computeResidual(pylith::topology::Field
     } // Move to initialization phase
 
     // Compute the local residual
-    // solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
+    PetscFormKey key;
+    key.label = dmLabel;
+    key.value = labelValue;
+    key.part = pylith::feassemble::Integrator::RESIDUAL_LHS; // Update when initialization moves.
+
     assert(solution.getLocalVector());
     assert(residual->getLocalVector());
     for (size_t i = 0; i < kernels.size(); ++i) {
-        const PetscInt numLabelValues = 1;
-        const PetscInt i_field = solution.getSubfieldInfo(kernels[i].subfield.c_str()).index;
-        err = DMPlexComputeBdResidualSingle(dmSoln, t, weakForm, dmLabel, numLabelValues, &labelValue, i_field,
-                                            solution.getLocalVector(), solutionDot.getLocalVector(),
-                                            residual->getLocalVector());PYLITH_CHECK_ERROR(err);
+        key.field = solution.getSubfieldInfo(kernels[i].subfield.c_str()).index;
+        err = DMPlexComputeBdResidualSingle(dmSoln, t, weakForm, key, solution.getLocalVector(),
+                                            solutionDot.getLocalVector(), residual->getLocalVector());PYLITH_CHECK_ERROR(err);
     } // for
 
     PYLITH_METHOD_END;
