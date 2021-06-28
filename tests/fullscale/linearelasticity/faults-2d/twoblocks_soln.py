@@ -78,10 +78,10 @@ class AnalyticalSoln(object):
         }
         return
 
-    def getField(self, name, pts):
+    def getField(self, name, mesh_entity, pts):
         return self.fields[name](pts)
 
-    def getMask(self, name, pts):
+    def getMask(self, name, mesh_entity, pts):
         mask = None
         if name == "displacement":
             mask = pts[:, 0] == 0.0

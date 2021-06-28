@@ -72,14 +72,13 @@ class AnalyticalSoln(object):
                 "bc_zpos": self.zero_scalar,
             },
         }
-        self.key = None
         return
 
-    def getField(self, name, pts):
-        if self.key is None:
-            field = self.fields[name](pts)
+    def getField(self, name, mesh_entity, pts):
+        if name in "initial_amplitude":
+            field = self.fields[name][mesh_entity](pts)
         else:
-            field = self.fields[name][self.key](pts)
+            field = self.fields[name](pts)
         return field
 
     def displacement(self, locs):

@@ -45,6 +45,7 @@ dist_noinst_DATA = \
 	mesh_tet.exo \
 	mesh_hex.jou \
 	mesh_hex.exo \
+	output_points.txt \
 	pylithapp.cfg \
 	axialdisp.cfg \
 	axialdisp_tet.cfg \

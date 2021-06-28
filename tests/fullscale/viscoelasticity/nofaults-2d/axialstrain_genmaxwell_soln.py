@@ -131,21 +131,12 @@ class AnalyticalSoln(object):
             "cauchy_strain": self.strain,
             "cauchy_stress": self.stress,
             "viscous_strain": self.viscous_strain,
-            "initial_amplitude": {
-                "bc_xneg": self.initial_displacement,
-                "bc_yneg": self.initial_displacement,
-                "bc_xpos": self.initial_displacement,
-                "bc_ypos": self.initial_displacement
-                }
+            "initial_amplitude": self.initial_displacement,
         }
-        self.key = None
         return
 
-    def getField(self, name, pts):
-        if self.key is None:
-            field = self.fields[name](pts)
-        else:
-            field = self.fields[name][self.key](pts)
+    def getField(self, name, mesh_entity, pts):
+        field = self.fields[name](pts)
         return field
 
     def displacement(self, locs):
