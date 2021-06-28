@@ -50,12 +50,12 @@ class TestCase(FullTestCase):
         check_data(filename, self, self.DOMAIN, vertexFields=vertexFields)
 
     def test_material_info(self):
-        vertexFields = ["density", "bulk_modulus",
+        cellFields = ["density", "bulk_modulus",
                         "shear_modulus", "gravitational_acceleration"]
         for material in self.MATERIALS:
             filename = "output/{}-{}_info.h5".format(self.NAME, material)
             check_data(filename, self,
-                       self.MATERIALS[material], vertexFields=vertexFields)
+                       self.MATERIALS[material], cellFields=cellFields)
 
     def test_material_solution(self):
         vertexFields = ["displacement", "cauchy_strain", "cauchy_stress"]
@@ -65,11 +65,11 @@ class TestCase(FullTestCase):
                        self.MATERIALS[material], vertexFields=vertexFields)
 
     def test_bcdirichlet_info(self):
-        vertexFields = ["initial_amplitude"]
+        cellFields = ["initial_amplitude"]
         for bc in self.DIRICHLET_BOUNDARIES:
             filename = "output/{}-{}_info.h5".format(self.NAME, bc)
             check_data(filename, self,
-                       self.BOUNDARIES[bc], vertexFields=vertexFields)
+                       self.BOUNDARIES[bc], cellFields=cellFields)
 
     def test_bcdirichlet_solution(self):
         vertexFields = ["displacement"]

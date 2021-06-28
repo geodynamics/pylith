@@ -32,7 +32,8 @@ from gravity_incompressible_soln import AnalyticalSoln
 class TestCase(FullTestCase):
     """Test suite for testing PyLith with gravitational body forces (no initial stress).
     """
-    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos", "bc_zneg", "groundsurf"]
+    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos", "bc_zneg"]
+    OUTPUT_BOUNDARIES = ["bc_ypos"]
 
     def setUp(self):
         """Setup for test.
@@ -47,6 +48,13 @@ class TestCase(FullTestCase):
         filename = "output/{}-domain.h5".format(self.NAME)
         vertexFields = ["displacement", "pressure"]
         check_data(filename, self, self.DOMAIN, vertexFields=vertexFields)
+
+    def test_boundary_solution(self):
+        vertexFields = ["displacement", "pressure"]
+        for bc in self.OUTPUT_BOUNDARIES:
+            filename = "output/{}-{}.h5".format(self.NAME, bc)
+            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields)
+        return
 
     def test_material_info(self):
         cellFields = ["density", "bulk_modulus", "shear_modulus", "gravitational_acceleration"]
