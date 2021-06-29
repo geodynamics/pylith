@@ -82,7 +82,7 @@ pylith::faults::FaultCohesiveImpulses::_updateSlip(pylith::topology::Field* auxi
 
     // Transfer slip values from local PETSc slip vector to fault auxiliary field.
     PetscInt pStart = 0, pEnd = 0;
-    err = PetscSectionGetChart(auxiliaryField->localSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetChart(auxiliaryField->getLocalSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
 
     pylith::topology::VecVisitorMesh auxiliaryVisitor(*auxiliaryField, "slip");
     PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();

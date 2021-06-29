@@ -185,12 +185,12 @@ pylith::problems::GreensFns::initialize(void) {
     assert(_faultImpulses);
 
     PetscErrorCode err = SNESDestroy(&_snes);PYLITH_CHECK_ERROR(err);assert(!_snes);
-    const pylith::topology::Mesh& mesh = _solution->mesh();
-    err = SNESCreate(mesh.comm(), &_snes);PYLITH_CHECK_ERROR(err);assert(_snes);
+    const pylith::topology::Mesh& mesh = _solution->getMesh();
+    err = SNESCreate(mesh.getComm(), &_snes);PYLITH_CHECK_ERROR(err);assert(_snes);
     err = SNESSetApplicationContext(_snes, (void*)this);PYLITH_CHECK_ERROR(err);
-    err = SNESSetDM(_snes, _solution->dmMesh());PYLITH_CHECK_ERROR(err);
+    err = SNESSetDM(_snes, _solution->getDM());PYLITH_CHECK_ERROR(err);
 
-    PetscVec solutionVector = _solution->globalVector();
+    PetscVec solutionVector = _solution->getGlobalVector();
     _solution->scatterLocalToVector(solutionVector);
     err = SNESSetSolution(_snes, solutionVector);PYLITH_CHECK_ERROR(err);
     delete _solutionDot;_solutionDot = new pylith::topology::Field(*_solution);assert(_solutionDot);
@@ -238,7 +238,7 @@ pylith::problems::GreensFns::initialize(void) {
     pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
     if (debug.state()) {
         PetscDS dsSoln = NULL;
-        err = DMGetDS(_solution->dmMesh(), &dsSoln);PYLITH_CHECK_ERROR(err);
+        err = DMGetDS(_solution->getDM(), &dsSoln);PYLITH_CHECK_ERROR(err);
         debug << pythia::journal::at(__HERE__)
               << "Solution Discretization" << pythia::journal::endl;
         PetscDSView(dsSoln, PETSC_VIEWER_STDOUT_SELF);
@@ -265,7 +265,7 @@ pylith::problems::GreensFns::solve(void) {
     PetscMat jacobian = NULL;
     PetscMat jacobianPrecond = NULL;
     createJacobian(jacobian, jacobianPrecond);
-    err = SNESComputeJacobian(_snes, _solution->globalVector(), jacobian, jacobianPrecond);PYLITH_CHECK_ERROR(err);
+    err = SNESComputeJacobian(_snes, _solution->getGlobalVector(), jacobian, jacobianPrecond);PYLITH_CHECK_ERROR(err);
 
     PetscKSP ksp = NULL;
     err = SNESGetKSP(_snes, &ksp);PYLITH_CHECK_ERROR(err);assert(ksp);
@@ -280,8 +280,8 @@ pylith::problems::GreensFns::solve(void) {
         const PetscReal impulseReal = i + tolerance;
         _integratorImpulses->updateState(impulseReal);
 
-        err = KSPSolve(ksp, _residual->globalVector(), _solution->globalVector());PYLITH_CHECK_ERROR(err);
-        _solution->scatterVectorToLocal(_solution->globalVector());
+        err = KSPSolve(ksp, _residual->getGlobalVector(), _solution->getGlobalVector());PYLITH_CHECK_ERROR(err);
+        _solution->scatterVectorToLocal(_solution->getGlobalVector());
         _solution->scatterLocalToOutput();
         poststep(impulseReal);
     } // for
@@ -401,7 +401,7 @@ pylith::problems::GreensFns::computeJacobian(PetscMat jacobianMat,
     PetscErrorCode err = 0;
     PetscDS solnDS = NULL;
     PetscBool hasJacobian = PETSC_FALSE;
-    err = DMGetDS(_solution->dmMesh(), &solnDS);PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(_solution->getDM(), &solnDS);PYLITH_CHECK_ERROR(err);
     err = PetscDSHasJacobian(solnDS, &hasJacobian);PYLITH_CHECK_ERROR(err);
     if (hasJacobian) { err = MatZeroEntries(jacobianMat);PYLITH_CHECK_ERROR(err); }
     err = MatZeroEntries(precondMat);PYLITH_CHECK_ERROR(err);
@@ -441,7 +441,7 @@ pylith::problems::GreensFns::createJacobian(PetscMat jacobianMat,
     PetscBool hasJacobian, hasPreconditioner;
     PetscDM dmSNES = this->getPetscDM();
     err = DMCreateMatrix(dmSNES, &jacobianMat);PYLITH_CHECK_ERROR(err);
-    err = DMGetDS(_solution->dmMesh(), &dsSoln);PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(_solution->getDM(), &dsSoln);PYLITH_CHECK_ERROR(err);
     err = PetscDSHasJacobian(dsSoln, &hasJacobian);PYLITH_CHECK_ERROR(err);
     if (!hasJacobian) {
         throw std::runtime_error("PETSc DS indicates there is no Jacobian to form. Jacobian expected for Green's function problem.");
