@@ -27,7 +27,8 @@ cd docs-sphinx
 $ ./build.sh
 
 # Generate the documentation as a PDF.
-$ ./build.sh pdf
+$ ./build.sh latex
+$ cd _build/latex && make
 
 # Generate the documentation as an epub.
 $ ./build.sh epub
