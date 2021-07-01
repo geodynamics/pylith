@@ -1,12 +1,12 @@
 # PyLith
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/geodynamics/pylith/blob/master/COPYING)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/geodynamics/pylith/blob/main/LICENSE.md)
 [![DOI](https://www.zenodo.org/badge/DOI/10.5281/zenodo.886600.svg)](https://doi.org/10.5281/zenodo.886600)
 
 
 
 ## Build status
-* Master: [![Build Status](https://travis-ci.org/geodynamics/pylith.svg?branch=master)](https://travis-ci.org/geodynamics/pylith)
+* [![Build Status](https://travis-ci.org/geodynamics/pylith.svg?branch=main)](https://travis-ci.org/geodynamics/pylith)
 
 ## Description
 
@@ -48,7 +48,7 @@ and volcanoes.
 
 ## Release Notes
 
-See [CHANGES](CHANGES) for a complete list of changes for each release.
+See [CHANGES](CHANGES.md) for a complete list of changes for each release.
 
 ## Authors
 

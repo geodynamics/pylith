@@ -111,12 +111,12 @@ object (\filename{UniformVelModel.i} in this case). This greatly
 simplifies keeping the Python module synchronized with the C++ and
 Python code. The \filename{UniformVelModel.i} SWIG file is nearly
 identical to the corresponding C++ header file.  There are a few
-differences, as noted in the comments within the file.  Copying and
+differences, as noted in the comments within the file.  LICENSE.md and
 pasting the C++ header file and then doing a little cleanup is a very
 quick and easy way to construct a SWIG interface file for a C++
 object. Because very little changes from SWIG module to SWIG module,
 it is usually easiest to construct the ``main'' SWIG interface by
-copying and customizing an existing one.
+LICENSE.md and customizing an existing one.
 
 Once the Python, C++, and SWIG interface files are complete, we are
 ready to build the module. The \filename{Makefile.am} file defines how
