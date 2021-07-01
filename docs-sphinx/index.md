@@ -5,20 +5,16 @@
 
 We are in the process of migrating the documentation from LaTeX producing a PDF file to Markedly Structured Text (MyST) and Sphinx producing this online documentation, a PDF file, and epub.
 
-We are starting with the developer documentation and some other random pieces that are not in the LaTeX manual.
+The developer guide has been migrated (but is still a work in progress).
+We are starting to migrate the user guide.
 ```
 
 [MyST Quick Reference](quickref.md)
 
-```{toctree}
----
-maxdepth: 2
-caption: Table of Contents
----
-intro/index.md
-user/index.md
-developer/index.md
-```
+
+## Description
+
+PyLith is an open-source finite-element code for dynamic and quasistatic simulations of crustal deformation, primarily earthquakes and volcanoes.
 
 ## Other sources of documentation
 
@@ -28,7 +24,17 @@ developer/index.md
 * Spatialdata documentation (under construction)
 * Pythia documentation (under construction)
 
-%* :ref:`genindex`
-%* :ref:`modindex`
-%* :ref:`search`
+
+```{include} ../LICENSE.md
+```
+
+```{toctree}
+---
+caption: Table of Contents
+hidden: True
+---
+intro/index.md
+user/index.md
+developer/index.md
+```
 

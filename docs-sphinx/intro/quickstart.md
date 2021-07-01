@@ -1,4 +1,7 @@
 # Quickstart
 
-```{note} Placeholder for quickstart inforamtion.
+```{admonition} Under construction
+:class: warning
+
+Placeholder for quick start information.
 ```

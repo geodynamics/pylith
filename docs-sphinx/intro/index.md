@@ -1,6 +1,8 @@
 # Introduction
 
 :::{admonition} TODO
+:class: error
+
 Add brief overview of PyLith.
 :::
 

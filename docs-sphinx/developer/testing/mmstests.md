@@ -70,5 +70,7 @@ The quadrature order must be the same across all solution subfields and auxiliar
 :::
 
 :::{admonition} TODO
+:class: error
+
 Add a simple test case that introduces known errors into the discretization, residual, and Jacobian to illustrate these steps.
 :::
