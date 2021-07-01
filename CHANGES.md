@@ -1,4 +1,4 @@
-See <https://github.com/geodynamics/pylith/commits/master> for the complete log of changes made to PyLith.
+See <https://github.com/geodynamics/pylith/commits/main> for the complete log of changes made to PyLith.
 
 ## Version 2.2.1
 
