@@ -116,6 +116,8 @@ Diagram showing the relationships among objects associated with boundary conditi
 ### Interior Interfaces (Faults)
 
 :::{admonition} TODO
+:class: error
+
 Add class diagram and discussion for FaultCohesiveKin, KinSrc.
 :::
 

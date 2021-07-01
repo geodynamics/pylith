@@ -3,7 +3,7 @@
 :::{admonition} Under construction.
 :class: warning
 
-We are in the process of adding content.
+This section is still a work in progress.
 :::
 
 ```{toctree}

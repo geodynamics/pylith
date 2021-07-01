@@ -45,6 +45,8 @@ $ valgrind --trace-children=yes \
 ## Example
 
 :::{admonition} TODO
+:class: error
+
 Walk through an example of a full-scale test.
 :::
 

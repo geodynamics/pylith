@@ -140,7 +140,7 @@ caption: Sample C++ declaration (header) file.
 //
 // Copyright (c) 2010-2018 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -402,7 +402,7 @@ caption: Sample C++ definition (implementation) file.
 //
 // Copyright (c) 2010-2015 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -662,7 +662,7 @@ caption: Sample Python source code.
 #
 # Copyright (c) 2010-2015 University of California, Davis
 #
-# See COPYING for license information.
+# See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
 # 

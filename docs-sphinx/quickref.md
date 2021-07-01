@@ -52,6 +52,8 @@ This is a `seealso` admonition.
 :::
 
 :::{admonition} TODO
+:class: error
+
 This is a custom `TODO` admonition.
 :::
 
