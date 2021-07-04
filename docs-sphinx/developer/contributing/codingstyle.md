@@ -11,7 +11,7 @@ We use 4 spaces for indentation. Configure your editor to use spaces instead of 
 * Naming conventions
   * Use self-documenting names.
   * Avoid single letter variables. Choose names that are readily found via searches across single or multiple files (e.g., grep).
-  * Class names are generally nouns and methods are verbs. 
+  * Class names are generally nouns and methods are verbs.
   * Class names use upper camel case, e.g., `TimeDependent`.
   * Public method names use camel case, e.g., `computeRHSResidual()`.
   * Protected and private method names use camel case preceded by an underscore, e.g., `_setFEKernelsRHSResidual()`.
@@ -24,7 +24,7 @@ We use 4 spaces for indentation. Configure your editor to use spaces instead of 
   * Document nontrivial algorithms and any assumptions.
 * Error checking
   * PyLith should never crash without an error message.
-  * All user errors should be trapped as early as possible and reported with an informative error message by throwing an appropriate exception. If possible, suggest ways to correct the error. 
+  * All user errors should be trapped as early as possible and reported with an informative error message by throwing an appropriate exception. If possible, suggest ways to correct the error.
   * Messages for internal errors should indicate the location in the code where the error was trapped.
   * All pointers should be checked for `NULL` values before use. Usually we use `assert()` to do this.
   * Check the return values for all calls to functions in external libraries. For PETSc functions, we use `PYLITH_CHECK_ERROR(returnValue)`.
@@ -185,7 +185,7 @@ caption: Sample C++ declaration (header) file.
 
 /* ANNOTATION: Provide description of class.
  */
- 
+
 /** Reform the Jacobian and residual for the problem.
  *
  * We cast the problem in terms of F(t,s,\dot{s}) = G(t,s), s(t0) = s0.
@@ -249,7 +249,7 @@ public:
      * deallocate any memory allocated using PETSc. In general, the
      * destructor will simply call deallocate().
      */
-    
+
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
@@ -370,15 +370,15 @@ To facilitate debugging and error messages, we use the following
 macros:
 
 `PYLITH_METHOD_BEGIN`
-: This macro allows line numbers of source files to be included in PETSc error messages. Use this macro at the beginning of all methods using any PETSc routines as well as most other methods. We don't use this macro in destructors because many of them are called *after* PetscFinalize. We also do not use this macro in trivial or inline methods that do not call any PETSc routines.
+: This macro allows line numbers of source files to be included in PETSc error messages. Use this macro at the beginning of all methods using any PETSc routines as well as most other methods. We don't use this macro in destructors because many of them are called *after* `PetscFinalize`. We also do not use this macro in trivial or inline methods that do not call any PETSc routines.
 
 `PYLITH_METHOD_END`
 : Use the macro at the end of all methods that begin with `PYLITH_METHOD_BEGIN` and return void.
 
-`PYLITH_RETURN_END` 
+`PYLITH_RETURN_END`
 : Use this macro at the end of all methods that begin with `PYLITH_METHOD_BEGIN` and return non-void values.
 
-`PYLITH_CHECK_ERROR` 
+`PYLITH_CHECK_ERROR`
 : Use this macro after *every* call to a PETSc function to check the return value.
 
 `PYLITH_JOURNAL_DEBUG`
@@ -665,7 +665,7 @@ caption: Sample Python source code.
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-# 
+#
 # ANNOTATION: Next list the filename with the relative path of the file along with a
 # brief description.
 #  
@@ -725,7 +725,7 @@ class Problem(PetscComponent, ModuleProblem):
     )
     materials.meta['tip'] = "Materials in problem."
 
-        
+
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="problem"):
