@@ -3,7 +3,7 @@
 SimpleDB {
   num-values =     30
   value-names =  density  vs  vp power_law_reference_strain_rate power_law_reference_stress power_law_exponent  viscous_strain_xx viscous_strain_yy viscous_strain_zz viscous_strain_xy viscous_strain_yz viscous_strain_xz stress_xx stress_yy stress_zz stress_xy stress_yz stress_xz reference_stress_xx  reference_stress_yy  reference_stress_zz  reference_stress_xy reference_stress_yz reference_stress_xz  reference_strain_xx  reference_strain_yy  reference_strain_zz  reference_strain_xy reference_strain_yz reference_strain_xz
-  value-units =  kg/m**3  m/s  m/s Pa*s Pa*s Pa*s  None None None None None None None None None None None None None None None None None None None None None None None None None None None Pa Pa Pa Pa Pa Pa none none none none none none
+  value-units =  kg/m**3  m/s  m/s 1/s Pa None  None None None None None None None None None None None None None None None None None None None None None None None None None None None Pa Pa Pa Pa Pa Pa none none none none none none
   num-locs =      1
   data-dim =    0
   space-dim =    3

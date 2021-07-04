@@ -1131,6 +1131,13 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress_refstate(const Pyl
     deviatoricStress4_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                                t, x, numConstants, constants, stress);
 
+    // Subtract out reference stress since otherwise it will get added back in again.
+    const PylithScalar* stressR = &a[aOff[i_rstress]];
+    stress[0] -= stressR[0];
+    stress[1] -= stressR[1];
+    stress[2] -= stressR[2];
+    stress[3] -= stressR[3];
+
 } // updateStress_refstate
 
 
@@ -2526,6 +2533,18 @@ pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress_refstate(const PylithIn
     std::cout << "devStressT:"; for(int i=0;i<6;++i) {std::cout << " " << devStressT[i]; } std::cout << std::endl;
     std::cout << "devStressTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << devStressTpdt[i]; } std::cout << std::endl;
 #endif
+#if 1
+    const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
+    const PylithScalar j2Test = sqrt(0.5*devStressProdTpdt);
+    PylithScalar dtTest = 0.0;
+    if (j2Test <= 0.0) {
+        dtTest = 1.0e30;
+    } else {
+        dtTest = pow((powerLawReferenceStress/j2Test), (powerLawExponent - 1.0)) *
+            (powerLawReferenceStress/shearModulus)/(powerLawReferenceStrainRate * 6.0);
+    } //else
+    std::cout << "Relaxation time:" << dtTest << std::endl;
+#endif
 
 } // deviatoricStress_refstate
 
@@ -2695,12 +2714,15 @@ pylith::fekernels::IsotropicPowerLaw3D::updateStress_refstate(const PylithInt di
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, stressTensor);
 
-    stress[0] = stressTensor[0];
-    stress[1] = stressTensor[4];
-    stress[2] = stressTensor[8];
-    stress[3] = stressTensor[1];
-    stress[4] = stressTensor[5];
-    stress[5] = stressTensor[2];
+    // Subtract out reference stress since otherwise it will get added back in again.
+    const PylithScalar* stressR = &a[aOff[i_rstress]];
+
+    stress[0] = stressTensor[0] - stressR[0];
+    stress[1] = stressTensor[4] - stressR[1];
+    stress[2] = stressTensor[8] - stressR[2];
+    stress[3] = stressTensor[1] - stressR[3];
+    stress[4] = stressTensor[5] - stressR[4];
+    stress[5] = stressTensor[2] - stressR[5];
 
 } // updateStress_refstate
 

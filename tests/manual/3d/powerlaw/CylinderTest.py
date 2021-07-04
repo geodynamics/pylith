@@ -24,14 +24,29 @@
 import math
 import numpy
 import h5py
+import netCDF4
 from pylith.meshio.Xdmf import Xdmf
 import pdb
 pdb.set_trace()
 
+from pylith.testing.FullTestApp import TestCase as FullTestCase
+
+from cylinderpres_soln import AnalyticalSoln
+import cylinderpres_gendb
+
 # ----------------------------------------------------------------------
 # Filenames.
-dispFile = 'output/cylinder_pres_powerlaw_tet-domain.h5'
-stressFile = 'output/cylinder_pres_powerlaw_tet-viscomat.h5'
+h5Prefix = 'output/cylinder_pres_powerlaw_'
+meshPrefix = 'meshes/mesh_cylinder_'
+spatialdbPrefix = 'mat_powerlaw_cylinder_pres_refstate_'
+spatialdbSuffix = '.spatialdb'
+cellTypes = ['tet', 'hex']
+meshSuffix = '.exo'
+dispSuffix = '-domain.h5'
+stressSuffix = '-viscomat.h5'
+configFiles = [['cylinder_pres_powerlaw_refstate.cfg', 'cylinder_pres_powerlaw_tet_refstate.cfg'],
+               ['cylinder_pres_powerlaw_refstate.cfg', 'cylinder_pres_powerlaw_hex_refstate.cfg']]
+numTests = len(cellTypes)
 
 # Tolerances.
 velAbsTol = 1.0e-5
@@ -39,117 +54,52 @@ stressAbsTol = 1.0e-5
 velRelTol = 1.0e-5
 stressRelTol = 1.0e-5
 
-# Solution parameters common to both problems.
-# NOTE:  A negative difference (Pb - Pa) will yield imaginary velocity values for fractional exponents.
-a = 2000.0 # Inner cylinder radius.
-b = 20000.0 # Outer cylinder radius.
-Pa = -1.0e8 # Pressure applied at r=a.
-Pb = -1.0e7 # Pressure applied at r=b.
-
-# PyLith solution parameters.
-density = 2500.0
-vS = 3464.1016
-vP = 6000.0
-powerLawExponent = 3.5
-powerLawReferenceStrainRate = 1.0e-6
-powerLawReferenceStress = 1.798919e+10
-
-# Parameters converted to FLAC/analytical form.
-AT = powerLawReferenceStrainRate/(powerLawReferenceStress**powerLawExponent)
-A = 2.0*AT/(math.sqrt(3.0)**(3.0 - powerLawExponent))
-
 # ----------------------------------------------------------------------
-def computeAnalyticalVel(coords):
-    """
-    Compute analytical velocity solution for a given set of coordinates.
-    """
-    r = numpy.linalg.norm(coords[:,0:2], axis=1)
-    k1 = 2.0/powerLawExponent
-    k3 = (3.0/4.0)**((powerLawExponent + 1.0)/2.0)
-    uDot = -A*k3*((Pb - Pa)*(k1/((b/a)**k1 - 1.0)))**powerLawExponent*(b**2.0/r)
+# Loop over cell types.
+for testNum in range(numTests):
+    appName = cellTypes[testNum]
+    meshFile = meshPrefix + cellTypes[testNum] + meshSuffix
+    spatialdbFile = spatialdbPrefix + cellTypes[testNum] + spatialdbSuffix
+    stressFile = h5Prefix + cellTypes[testNum] + stressSuffix
+    dispFile = h5Prefix + cellTypes[testNum] + dispSuffix
 
-    return (uDot)
+    exodus = netCDF4.Dataset(meshFile, 'r')
+    try:
+        x = exodus.variables['coordx'][:]
+        y = exodus.variables['coordy'][:]
+        z = exodus.variables['coordz'][:]
+        vertices = numpy.column_stack((x,y,z))
+    except:
+        vertices = exodus.variables['coord'][:].transpose()
 
+    cylinderpres_gendb.generate_refstate_db(vertices, spatialdbFile)
+    FullTestCase.run_pylith(appName, configFiles[testNum])
 
-def computeAnalyticalStress(coords):
-    """
-    Compute analytical stress solution for a given set of coordinates.
-    """
-    r = numpy.linalg.norm(coords[:,0:2], axis=1)
-    k1 = 2.0/powerLawExponent
-    k2 = 1.0/powerLawExponent
-    k3 = (3.0/4.0)**((powerLawExponent + 1.0)/2.0)
-    srr = -Pb + (Pb - Pa)*((b/r)**k1 - 1.0)/((b/a)**k1 - 1.0)
-    stt = -Pb - (Pb - Pa)*((k1 - 1.0)*(b/r)**k1 + 1.0)/((b/a)**k1 - 1.0)
-    szz = -Pb - (Pb - Pa)*((k2 - 1.0)*(b/r)**k1 + 1.0)/((b/a)**k1 - 1.0)
+    # Read stress info from HDF5 file.
+    h5Stress = h5py.File(stressFile, 'r')
+    coords = h5Stress['geometry/vertices'][:]
+    connect = numpy.array(h5Stress['topology/cells'][:], dtype=numpy.int64)
+    cellCoords = coords[connect, :]
+    cellCenters = numpy.mean(cellCoords, axis=1)
+    stressNum = h5Stress['cell_fields/cauchy_stress'][-1,:,:]
+    h5Stress.close()
 
-    return (srr, stt, szz)
+    # Read displacement info from HDF5 file.
+    h5Disp = h5py.File(dispFile, 'r')
+    time = h5Disp['time'][:,0,0]
+    dt = time[-1] - time[-2]
+    dispTnMinus1 = h5Disp['vertex_fields/displacement'][-2,:,:]
+    dispTn = h5Disp['vertex_fields/displacement'][-1,:,:]
+    dispIncrNum = dispTn - dispTnMinus1
+    h5Disp.close()
 
+    # Compute analytical solution.
+    soln = AnalyticalSoln()
+    dispIncrAnl = soln.displacement_incr(coords, dt)
+    stressAnl = soln.stress(coords)[0,:,:]
 
-def cylToCartStress(srr, stt, coords):
-    """
-    Convert stresses in cylindrical coordinates to Cartesian.
-    Assumption is that shear stresses are zero.
-    """
-    angs = numpy.arctan2(coords[:,1], coords[:,0])
-    ca = numpy.cos(angs)
-    sa = numpy.sin(angs)
-
-    sxx = srr*ca*ca + stt*sa*sa
-    syy = srr*sa*sa + stt*ca*ca
-
-    return (sxx, syy)
-
-
-def cylToCartDisp(ur, coords):
-    """
-    Convert displacements in cylindrical coordinates to Cartesian.
-    Assumption is that tangential displacements are zero.
-    """
-    angs = numpy.arctan2(coords[:,1], coords[:,0])
-    ca = numpy.cos(angs)
-    sa = numpy.sin(angs)
-
-    ux = ur*ca
-    uy = ur*sa
-
-    return (ux, uy)
-
-
-# ----------------------------------------------------------------------
-# Read stress info from HDF5 file.
-h5Stress = h5py.File(stressFile, 'r')
-coords = h5Stress['geometry/vertices'][:]
-connect = numpy.array(h5Stress['topology/cells'][:], dtype=numpy.int64)
-cellCoords = coords[connect, :]
-cellCenters = numpy.mean(cellCoords, axis=1)
-stressNum = h5Stress['cell_fields/cauchy_stress'][-1,:,:]
-h5Stress.close()
-
-# Read displacement info from HDF5 file.
-h5Disp = h5py.File(dispFile, 'r')
-time = h5Disp['time'][:,0,0]
-dt = time[-1] - time[-2]
-dispTnMinus1 = h5Disp['vertex_fields/displacement'][-2,:,:]
-dispTn = h5Disp['vertex_fields/displacement'][-1,:,:]
-velNum = (dispTn - dispTnMinus1)/dt
-h5Disp.close()
-
-# Compute analytical solution.
-(srrAnl, sttAnl, szzAnl) = computeAnalyticalStress(cellCenters)
-urDotAnl = computeAnalyticalVel(coords)
-(sxxAnl, syyAnl) = cylToCartStress(srrAnl, sttAnl, cellCenters)
-(uxDotAnl, uyDotAnl) = cylToCartDisp(urDotAnl, coords)
-
-# Compute difference.
-uxDiff = uxDotAnl - velNum[:,0]
-uyDiff = uyDotAnl - velNum[:,1]
-uzDiff = -velNum[:,2]
-sxxDiff = sxxAnl - stressNum[:,0]
-syyDiff = syyAnl - stressNum[:,1]
-szzDiff = szzAnl - stressNum[:,2]
-sxyDiff = -stressNum[:,3]
-syzDiff = -stressNum[:,4]
-sxzDiff = -stressNum[:,5]
+    # Compute difference.
+    dispDiff = dispIncrAnl - dispIncrNum
+    stressDiff = stressAnl - stressNum
 
 # End of file 
