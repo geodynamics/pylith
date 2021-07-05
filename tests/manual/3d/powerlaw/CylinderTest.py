@@ -29,7 +29,7 @@ from pylith.meshio.Xdmf import Xdmf
 import pdb
 pdb.set_trace()
 
-from pylith.testing.FullTestApp import TestCase as FullTestCase
+from pylith.testing.FullTestApp import FullTestCase
 
 from cylinderpres_soln import AnalyticalSoln
 import cylinderpres_gendb
