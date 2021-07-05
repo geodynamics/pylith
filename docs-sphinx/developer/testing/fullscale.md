@@ -1,6 +1,6 @@
 # Full-scale tests
 
-The full-scale tests are constructed in Python, making use of the standard Python unittest module.
+The full-scale tests are constructed in Python, making use of the standard Python unit test module.
 A full-scale test involves running a PyLith simulation and using Python code to check output against a known solution.
 Whenever possible, we simulate simple boundary value problems with analytical solutions.
 We run some full-scale tests in parallel on a small number of processes.
@@ -49,4 +49,3 @@ $ valgrind --trace-children=yes \
 
 Walk through an example of a full-scale test.
 :::
-

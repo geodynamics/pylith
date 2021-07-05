@@ -18,7 +18,7 @@ In mathematical terms, the residual test is that the residual computed for a kno
   || F(\vec{s}) - G(\vec{s}) || \le \epsilon,
 \end{equation}
 where $F(\vec{s})$ is the LHS residual and $G(\vec{s})$ is the RHS residual.
-In the Talor series Jacobian test, we verify that
+In the Taylor series Jacobian test, we verify that
 \begin{equation}
   || F(\vec{s} + \epsilon \vec{\delta s}) - F(\vec{s}) - \epsilon J \vec{v} || < \epsilon^2,
 \end{equation}
@@ -60,7 +60,7 @@ When one of the Jacobian tests fails, we focus on the finite-difference Jacobian
 
 ## Example
 
-In `tests/mmstests/elasticity` we create a suite of MMS tests that all use a single material (`Elasticity`), a single Dirichlet boundary condition, and a data object to hold test-specific parameters.
+In `tests/mmstests/elasticity`, we create a suite of MMS tests that all use a single material (`Elasticity`), a single Dirichlet boundary condition, and a data object to hold test-specific parameters.
 The `pylith::mmstests::TestElasticity` object holds these parameters with the `pylith::mmstests::TestIsotropicLinearElasticity` object adding a rheology.
 The individual test cases, such as `pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain` provides the problem-specific parameters, such as analytical functions for the solution and auxiliary fields and sets up the problem.
 Child classes specify different cell shapes and orders for the basis functions and numerical quadrature.

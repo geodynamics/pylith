@@ -8,10 +8,10 @@ For a given C++ class in `libsrc/pylith`, we create a separate test class in `te
 For example, we create `pylith::problems::TestPhysics` in `tests/libtsts/problems/TestPhysics.*` to test the `pylith::problems::Physics` class in `libsrc/pylith/problems/Physics.*`.
 For simple classes that can be fully tested with a single test case, we put the class declaration and implementation in a single `.cc` file.
 For classes that require testing with multiple alternative test cases, we usually define both the test class and a data class in a header file (for example `TestSolutionFactory.hh`).
-The classes are implemented in a corresponding `.cc` file (for example, `TestSolutionFactory.cc`) with the test cases defined and implemented in a `_Cases.cc` file (for example, `TestSolutionFactory_Cases.cc`.
+The classes are implemented in a corresponding `.cc` file (for example, `TestSolutionFactory.cc`) with the test cases defined and implemented in a `_Cases.cc` file (for example, `TestSolutionFactory_Cases.cc`).
 
 The test class inherits from `CppUnit::TestFixture` and defines a list of test methods.
-The class methods `setUp()` and `tearDown`() are run before and after each test, respectively.
+The class methods `setUp()` and `tearDown()` are run before and after each test, respectively.
 If a class requires significant initialization, we usually put that in protected methods.
 
 ## CppUnit macros
@@ -29,7 +29,7 @@ If a class requires significant initialization, we usually put that in protected
   * **`CPPUNIT_ASSERT_EQUAL_MESSAGE(msg, valueExpected, valueTest);`**
   * **`CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg, valueExpected, valueTest, tolernace);`**
 
-Within the test implementations we use `CPPUNIT_ASSERT(condition)` where we would normally use `assert(condition)`.
+Within the test implementations, we use `CPPUNIT_ASSERT(condition)` where we would normally use `assert(condition)`.
 This results in the corresponding test failing and the remaining tests are executed.
 If an `assert(condition)` fails, the test driver aborts and the remaining tests are not executed.
 
