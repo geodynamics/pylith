@@ -8,7 +8,7 @@ We use full-scale tests for verifying integration for complete simulations in bo
 When these tests, an example, or user simulation suggests a bug exists, we leverage the test suite.
 In general, the most efficient strategy for debugging is to first try to expose the bug in a serial unit test, followed by an MMS Test, a serial full-scale test, and finally a parallel full-scale test.
 This may require creating new tests if the bug is not exposed by current tests.
-The PyLith developers make extensive use debuggers, such as `gdb` and `lldb`, and memory management analysis tools, such as `valgrind`, to detect and squash bugs. These are discussed in {ref}`developer-debugging-tools`.
+The PyLith developers make extensive use of debuggers, such as `gdb` and `lldb`, and memory management analysis tools, such as `valgrind`, to detect and squash bugs. These are discussed in {ref}`developer-debugging-tools`.
 
 ```{toctree}
 libtests.md
