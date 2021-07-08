@@ -10,8 +10,14 @@ variables:
   IMAGE_REGISTRY: "registry.gitlab.com/cig-pylith/pylith_installer"
 
 stages:
-  - stage: basic_build
+  - stage: start
+    jobs:
+      - job: hello
+        steps:
+          - bash: echo "Empty stage"
+  - stage: build_basic
     displayName: "Basic Build"
+    dependsOn: start
     jobs:
       - job: debian_stable
         variables:
@@ -27,13 +33,14 @@ stages:
               command: "build"
               Dockerfile: "docker/pylith-testenv"
               buildContext: $(Build.SourcesDirectory)
-              arguments: "-t pylith-testenv --build-arg BASE_IMAGE=$(IMAGE_REGISTRY)/$(BASE_IMAGE) --build-arg TEST_COVERAGE=$TEST_COVERAGE --build-arg PYTHON_COVERAGE=$PYTHON_COVERAGE --target build"
+              arguments: "-t pylith-testenv --build-arg BASE_IMAGE=$(IMAGE_REGISTRY)/$(BASE_IMAGE) --build-arg TEST_COVERAGE=$(TEST_COVERAGE) --build-arg PYTHON_COVERAGE=$(PYTHON_COVERAGE) --target build"
               addPipelineData: false
               addBaseImageData: false
           - script: docker run pylith-testenv ci-config/run_tests.sh
             displayName: Test
-  - stage: other_platforms
+  - stage: build_others
     displayName: "Other Builds"
+    dependsOn: build_basic
     jobs:
       - job: main
         strategy:
@@ -68,3 +75,20 @@ stages:
               addBaseImageData: false
           - script: docker run pylith-testenv ci-config/run_tests.sh
             displayName: Test
+  - stage: build_docs
+    displayName: "Build docs"
+    dependsOn: start
+    jobs:
+      - job: docs
+        variables:
+          BASE_IMAGE: "testenv-ubuntu-20.04"
+        steps:
+          - task: Docker@2
+            displayName: Build
+            inputs:
+              command: "build"
+              Dockerfile: "docker/pylith-docenv"
+              buildContext: $(Build.SourcesDirectory)
+              arguments: "-t pylith-docenv --build-arg BASE_IMAGE=$(IMAGE_REGISTRY)/$(BASE_IMAGE)"
+              addPipelineData: false
+              addBaseImageData: false
