@@ -9,12 +9,12 @@ There are four basic tasks for adding new physics in the form of a governing equ
 2. Derive the pointwise functions for the residuals and Jacobians. Determine flags that will be used to indicate which terms to include.
 
 3. Determine which parameters in the pointwise functions could vary in space as well as any state variables. We bundle all state variables and spatially varying parameters into a field called the auxiliary field. Each material has a separate auxiliary field.
-  
+
 4. Parameters that are spatially uniform are treated separately from the parameters in the auxliary field.
 
 `Material` is responsible for the terms in the governing equations associated with the domain (i.e., volume integrals in a 3D domain and surface integrals in a 2D domain).
 A separate object implements the bulk rheology for a specific governing equation.
-{numref}`fig-developer-material-classes` shows the objects used to implement multiple rheologies for the elasticity equation, an isotropic, linear elastic rheology for incompressible elasticity, and an isotropic, linear elastic rheology for poroelasticity.
+{numref}`fig-developer-material-classes` shows the objects used to implement multiple rheologies for the elasticity equation: an isotropic, linear elastic rheology for incompressible elasticity, and an isotropic, linear elastic rheology for poroelasticity.
 The `Elasticity` object describes the physics for the elasticity equation, including the pointwise functions and flags for turning on optional terms (such as inertia) in the governing equation, and `RheologyElasticity` defines the interface for bulk elastic rheologies.
 
 
@@ -40,7 +40,7 @@ Each governing equation implementation inherits from the abstract `Material` cla
     * `SolnDispPres` Solution composed of displacement and mean stress (pressure) fields.
     * `SolnDispLagrange` Solution composed of displacement and Lagrange multiplier fields.
     * `SolnDispPresLagrange` Solution composed of displacement, mean stress (pressure), and Lagrange multiplier subfields.
-    * SolnDispVelLagrange` Solution composed of displacement, velocity, and Lagrange multiplier subfields.
+    * `SolnDispVelLagrange` Solution composed of displacement, velocity, and Lagrange multiplier subfields.
 * Define auxiliary subfields.
 
     The auxiliary subfields for a governing equation are defined as facilities in a Pyre Component. For example, the ones for `Elasticity` are in `AuxFieldsElasticity`. The order of the subfields is defined _not_ by the order they are listed in the Pyre component, but by the order they are added to the auxiliary field in the C++ object. The auxiliary subfields bulk rheologies are defined in the same way.
@@ -63,7 +63,7 @@ Class diagram for the solution field, solution subfields, and pre-defined contai
 
 * Define auxiliary subfields.
 
-  We build the auxiliary field using classes derived from `pylith::feassemble::AuxiliaryFactory`. The method corresponding to each subfield specifies the name of the subfield, its components, and scale for nondimensionalizing. We generally create a single auxiliary factory object for each governing equation but not each bulk constitutive model, because constitutive models for the same governing equation often have many of the same subfields. For example, most of our bulk constitutive models for the elasticity contain density, bulk modulus, and shear modulus auxiliary subfields.
+  We build the auxiliary field using classes derived from `pylith::feassemble::AuxiliaryFactory`. The method corresponding to each subfield specifies the name of the subfield, its components, and scale for nondimensionalizing. We generally create a single auxiliary factory object for each governing equation, but not each bulk constitutive model, because constitutive models for the same governing equation often have many of the same subfields. For example, most of our bulk constitutive models for the elasticity contain density, bulk modulus, and shear modulus auxiliary subfields.
 
   :::{important}
   Within the concrete implementation of the material and bulk rheology objects, we add the subfields to the auxiliary field.

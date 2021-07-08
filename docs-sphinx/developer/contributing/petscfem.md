@@ -5,15 +5,15 @@ Most of the finite-element details are encapsulated in PETSc routines that compu
 In fact, adding materials and boundary conditions requires calling only a few PETSc finite-element functions to register the point-wise functions.
 A new material may need to add to the library of solution subfields and auxiliary subfields, but adding these fields is also done at a high-level.
 
-The remainder of this section discusses three aspects of the finite-element implementation handled by PyLith to give you a peek of what is doing on under the hood.
+The remainder of this section discusses three aspects of the finite-element implementation handled by PyLith to give you a peek of what is going on under the hood.
 
 ## DMPlex
 
 The finite-element mesh is stored as a `DMPlex` object.
 This is a particular implementation of the PETSc Data Management (`DM`, called `PetscDM` within PyLith) object.
-Within a `DMPlex` object vertices, edges, faces, and cells are all called points.
+Within a `DMPlex` object, vertices, edges, faces, and cells are all called points.
 The points are numbered sequentially, beginning with cells, followed by vertices, edges, and then faces.
-Treating all topological pieces of the mesh the same way, as points in an abstract graph, allows us to write algorithms which apply to very different meshes without change. 
+Treating all topological pieces of the mesh the same way, as points in an abstract graph, allows us to write algorithms which apply to very different meshes without change.
 For example, we can write a finite element assembly loop that applies to meshes of any dimension, with any cell shape, with (almost) any finite element.
 
 ### Point Depth and Height
@@ -155,7 +155,7 @@ These three operations are done by different PETSc functions and integrator obje
 `DMPlexComputeResidual_Internal`
 : Compute the contribution to the LHS or RHS residual for a single material.
 This function and the functions it calls handle looping over the cells in the material, integrating the weak form for each of the fields, and adding them to the residual.
-A more appropriate name would be `DMPlexComputeResidualSingle` and that may be used in the future.
+A more appropriate name would be `DMPlexComputeResidualSingle`, and that may be used in the future.
 This function is called from `IntegratorDomain`.
 
 `DMPlexComputeBdResidualSingle`
@@ -283,7 +283,7 @@ caption: Function prototype for pointwise functions for integrating the residual
 
 ```{code-block} c++
 ---
-caption: Function prototype for pointwise for integrating the Jacobian over the domain (materials).
+caption: Function prototype for pointwise functions for integrating the Jacobian over the domain (materials).
 ---
 /** PetscPointJac prototype.
  *

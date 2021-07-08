@@ -79,7 +79,7 @@ Each target can be run using `make TARGET` where `TARGET` is one of the followin
 : Run the entire test suite.
 
 :::{tip}
-On a machine with multiple cores, faster builds of the C++ code (library and C++ unit tests) are available using the `-jNTHREADS` command line argument, where `NTHREADS` is the number of threads to yse.
+On a machine with multiple cores, faster builds of the C++ code (library and C++ unit tests) are available using the `-jNTHREADS` command line argument, where `NTHREADS` is the number of threads to use.
 We usually set the number of threads equal to twice the number of physical cores.
 :::
 
