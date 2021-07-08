@@ -16,19 +16,17 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	include \
-	bc \
-	faults \
-	feassemble \
-	materials \
-	meshio \
-	mpi \
-	problems \
-	sources \
-	topology \
-	utils
+subpackage = sources
+include $(top_srcdir)/subpackage.am
 
-#	friction 
+subpkginclude_HEADERS = \
+	Source.hh \
+	WellboreSource.hh \
+	AuxiliaryFactoryWellboreSource.hh \
+	sourcesfwd.hh
 
-# End of file 
+
+noinst_HEADERS =
+
+
+# End of file

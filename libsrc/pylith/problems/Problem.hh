@@ -36,6 +36,7 @@
 #include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Integrator, Constraint, Observers
 #include "pylith/materials/materialsfwd.hh" // HOLDSA Material
 #include "pylith/bc/bcfwd.hh" // HOLDSA BoundaryCondition
+#include "pylith/sources/sourcesfwd.hh" // HOLDSA Source
 #include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesive
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA GravityField
 
@@ -135,6 +136,14 @@ public:
     void setMaterials(pylith::materials::Material* materials[],
                       const int numMaterials);
 
+    /** Set sources.
+     *
+     * @param[in] sources Array of sources.
+     * @param[in] numSource Number of sources.
+     */
+    void setSources(pylith::sources::Source* sources[],
+                    const int numSources);
+
     /** Set boundary conditions.
      *
      * @param[in] bc Array of boundary conditions.
@@ -175,6 +184,7 @@ protected:
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
     std::vector<pylith::materials::Material*> _materials; ///< Array of materials.
+    std::vector<pylith::sources::Source*> _sources; ///< Array of sources.
     std::vector<pylith::bc::BoundaryCondition*> _bc; ///< Array of boundary conditions.
     std::vector<pylith::faults::FaultCohesive*> _interfaces; ///< Array of interior interfaces.
 

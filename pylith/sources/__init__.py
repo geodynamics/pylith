@@ -1,5 +1,3 @@
-# -*- Makefile -*-
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -16,19 +14,15 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	include \
-	bc \
-	faults \
-	feassemble \
-	materials \
-	meshio \
-	mpi \
-	problems \
-	sources \
-	topology \
-	utils
+# @file pylith/sources/__init__"
 
-#	friction 
+# @brief Python PyLith sources module initialization
 
-# End of file 
+__all__ = [
+    "Source",
+    "AuxSubfieldsWellboreSource",
+    "WellboreSource",
+]
+
+
+# End of file
