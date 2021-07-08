@@ -19,10 +19,10 @@
 # @brief Python PyLith sources module initialization
 
 __all__ = [
+    "Source",
     "AuxSubfieldsWellboreSource",
     "WellboreSource",
     "PointsList",
-    "Material",
 ]
 
 
