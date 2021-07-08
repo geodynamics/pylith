@@ -87,9 +87,9 @@ The user specifies the parameters for the `Physics` objects, which each create t
 Diagram showing the relationships among objects specifying the physics and the finite-element implementations.
 :::
 
-We generalize the finite-element operations into to main classes: `Integrator` and `Constraint`.
+We generalize the finite-element operations into two main classes: `Integrator` and `Constraint`.
 The `Integrator` is further separated into concrete classes for performing the finite-element integrations over pieces of the domain (`IntegratorDomain`), pieces of the domain boundary (`IntegratorBoundary`), and interior interfaces (`IntegratorInterface`).
-We implement several kinds of constraints, corresponding to how the values of the constrained degrees of freedom and their values are specified.
+We implement several kinds of constraints, corresponding to how the values of the constrained degrees of freedom are specified.
 `ConstraintSpatialDB` gets values for the constrained degrees of freedom from a spatial database; `ConstraintUserFn` gets the values for the constrained degrees of freedom from a function (this object is widely used in tests); `ConstraintSimple` is a special case of `ConstraintUserFn` with the constrained degrees of freedom set programmatically using a label (this object is used for constraining the edges of the fault).
 
 `Problem` holds the `Physics` objects as materials, boundary conditions, and interfaces.
@@ -173,7 +173,7 @@ Starting with the complete initialization of the problem, the flow is controlled
 ### Time-Dependent Problem
 
 In a time-dependent problem the PETSc `TS` object (relabeled `PetscTS` within PyLith) controls the time stepping.
-Within each time step, the `PetscTS` object calls the PETSc linear and nonlinear solvers as needed, which call the following methods of the C++ `pylith::problems::TimeDependent` object as needed `computeRHSResidual()`, `computeRHSJacobian()`, `computeLHSResidual()`, and `computeLHSJacobian()`.
+Within each time step, the `PetscTS` object calls the PETSc linear and nonlinear solvers as needed, which call the following methods of the C++ `pylith::problems::TimeDependent` object as needed: `computeRHSResidual()`, `computeRHSJacobian()`, `computeLHSResidual()`, and `computeLHSJacobian()`.
 The `pylith::problems::TimeDependent` object calls the corresponding methods in the boundary conditions, constraints, and materials objects.
 At the end of each time step, it calls `problems::TimeDependent::poststep()`.  
 
@@ -184,15 +184,15 @@ Everything else is done in C++.
 This facilitates debugging (it is easier to track symbols in the C/C++ debugger) and unit testing, and reduces the amount of information that needs to be passed from Python to C++.
 The PyLith application and a few other utility functions, like writing the parameter file, are limited to Python.
 All other objects have a C++ implementation.
-Objects that have user input have collect the user input in Python using Pyre and pass it to a corresponding C++ object.
+Objects that have user input collect the user input in Python using Pyre and pass it to a corresponding C++ object.
 Objects that do not have user input, such as the integrators and constraints, are limited to C++.
 
 The source code that follows shows the essential ingredients for Python and C++ objects, using the concrete example of the `Material` objects.
 
 :::{warning}
 The examples below show skeleton Python and C++ objects to illustrate the essential ingredients.
-We have omitted documentation and comments that we would normally include and simplified the object hierarchy.
-See [Coding Style]{coding-style.md} for details about the coding style we use in PyLith.
+We have omitted documentation and comments that we would normally include, and simplified the object hierarchy.
+See [Coding Style]{codingstyle.md} for details about the coding style we use in PyLith.
 :::
 
 :::{important}

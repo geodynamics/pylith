@@ -49,7 +49,7 @@ We recommend adding your SSH public key to your GitHub account and/or creating a
 See [GitHub Docs: Connecting To GitHub with SSH](https://help.github.com/articles/connecting-to-github-with-ssh/) and [GitHub Docs: Creating a personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) for more information.
 This provides additional security and eliminates the need for you to enter your username and password whenever you push to your repository.
 
-For additional security consider setting up your GitHub account to use two-factor authentication.
+For additional security, consider setting up your GitHub account to use two-factor authentication.
 See [GitHub Docs: Securing your account with two-factor authentication](https://help.github.com/articles/securing-your-account-with-two-factor-authentication-2fa/).
 
 We also recommend signing your commits using GPG or S/MIME. See [GitHub Docs: Managing commit signature verification](https://docs.github.com/en/github/authenticating-to-github/managing-commit-signature-verification) for more information.
@@ -151,7 +151,7 @@ You still need to delete this local branch and then check it out again if it is 
 (sec-developer-feature-branch)=
 ## Creating a New Feature Branch
 
-Before creating a new feature branch, you should merge updates from the upstream repository as described in {ref}`sec-developer-merge-upstream.
+Before creating a new feature branch, you should merge updates from the upstream repository as described in {ref}`sec-developer-merge-upstream`.
 
 ```{code-block} bash
 ---
@@ -254,7 +254,7 @@ This will return the repository to the state immediately before the rebasing pro
 (sec-developer-pull-request)=
 ## Making Pull Requests
 
-Once you have completed implementing, testing, and documenting a new feature on a branch in your fork and wish to contribute it back to the geodynamics/pylith repository, you open a pull request. 
+Once you have completed implementing, testing, and documenting a new feature on a branch in your fork and wish to contribute it back to the geodynamics/pylith repository, you open a pull request.
 See [GitHub Docs: About pull requests](https://help.github.com/articles/about-pull-requests/) for more information.
 
 :::{tip}
