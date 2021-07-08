@@ -46,7 +46,7 @@ class Source(Physics, ModuleSource):
     label = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Descriptive label for source."
 
-    from .PointsList import PointsList
+    from pylith.meshio.PointsList import PointsList
     reader = pythia.pyre.inventory.facility("reader", factory=PointsList, family="points_list")
     reader.meta['tip'] = "Reader for points list."
 
