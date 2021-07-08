@@ -1,12 +1,9 @@
 # PyLith
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/geodynamics/pylith/blob/main/LICENSE.md)
 [![DOI](https://www.zenodo.org/badge/DOI/10.5281/zenodo.886600.svg)](https://doi.org/10.5281/zenodo.886600)
-
-
-
-## Build status
-* [![Build Status](https://travis-ci.org/geodynamics/pylith.svg?branch=main)](https://travis-ci.org/geodynamics/pylith)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/geodynamics/pylith/blob/main/LICENSE.md)
+[![Build Status](https://dev.azure.com/baagaard-usgs/pylith/_apis/build/status/geodynamics.pylith?branchName=main)](https://dev.azure.com/baagaard-usgs/pylith/_build/latest?definitionId=2&branchName=main)
+[![codecov](https://codecov.io/gh/geodynamics/pylith/branch/master/graph/badge.svg?token=JiwLVB64EF)](https://codecov.io/gh/geodynamics/pylith)
 
 ## Description
 
