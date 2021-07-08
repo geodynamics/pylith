@@ -1,0 +1,94 @@
+# Build and test using Docker images for test environment (includes external dependencies)
+
+trigger:
+  - main
+
+pool:
+  vmImage: "ubuntu-20.04"
+
+variables:
+  IMAGE_REGISTRY: "registry.gitlab.com/cig-pylith/pylith_installer"
+
+stages:
+  - stage: start
+    jobs:
+      - job: hello
+        steps:
+          - bash: echo "Empty stage"
+  - stage: build_basic
+    displayName: "Basic Build"
+    dependsOn: start
+    jobs:
+      - job: debian_stable
+        variables:
+          BASE_IMAGE: "testenv-debian-stable"
+          TEST_COVERAGE: "yes"
+          PYTHON_COVERAGE: "python3-coverage"
+        steps:
+          - checkout: self
+            submodules: "true"
+          - task: Docker@2
+            displayName: Build
+            inputs:
+              command: "build"
+              Dockerfile: "docker/pylith-testenv"
+              buildContext: $(Build.SourcesDirectory)
+              arguments: "-t pylith-testenv --build-arg BASE_IMAGE=$(IMAGE_REGISTRY)/$(BASE_IMAGE) --build-arg TEST_COVERAGE=$(TEST_COVERAGE) --build-arg PYTHON_COVERAGE=$(PYTHON_COVERAGE) --target build"
+              addPipelineData: false
+              addBaseImageData: false
+          - script: docker run pylith-testenv ci-config/run_tests.sh
+            displayName: Test
+  - stage: build_others
+    displayName: "Other Builds"
+    dependsOn: build_basic
+    jobs:
+      - job: main
+        strategy:
+          matrix:
+            debian_testing:
+              BASE_IMAGE: "testenv-debian-testing"
+            ubuntu_18.04:
+              BASE_IMAGE: "testenv-ubuntu-18.04"
+            ubuntu_20.04:
+              BASE_IMAGE: "testenv-ubuntu-20.04"
+            ubuntu_21.04:
+              BASE_IMAGE: "testenv-ubuntu-21.04"
+            fedora_33:
+              BASE_IMAGE: "testenv-fedora-33"
+            fedora_34:
+              BASE_IMAGE: "testenv-fedora-34"
+            centos_8:
+              BASE_IMAGE: "testenv-centos-8"
+            centos_7:
+              BASE_IMAGE: "testenv-centos-7"
+        steps:
+          - checkout: self
+            submodules: "true"
+          - task: Docker@2
+            displayName: Build
+            inputs:
+              command: "build"
+              Dockerfile: "docker/pylith-testenv"
+              buildContext: $(Build.SourcesDirectory)
+              arguments: "-t pylith-testenv --build-arg BASE_IMAGE=$(IMAGE_REGISTRY)/$(BASE_IMAGE) --target build"
+              addPipelineData: false
+              addBaseImageData: false
+          - script: docker run pylith-testenv ci-config/run_tests.sh
+            displayName: Test
+  - stage: build_docs
+    displayName: "Build docs"
+    dependsOn: start
+    jobs:
+      - job: docs
+        variables:
+          BASE_IMAGE: "testenv-ubuntu-20.04"
+        steps:
+          - task: Docker@2
+            displayName: Build
+            inputs:
+              command: "build"
+              Dockerfile: "docker/pylith-docenv"
+              buildContext: $(Build.SourcesDirectory)
+              arguments: "-t pylith-docenv --build-arg BASE_IMAGE=$(IMAGE_REGISTRY)/$(BASE_IMAGE)"
+              addPipelineData: false
+              addBaseImageData: false
