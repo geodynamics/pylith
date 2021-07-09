@@ -1,0 +1,9 @@
+:root {
+/* Heading font sizes */
+  --pst-font-size-h1: 28px; /* 36 */
+  --pst-font-size-h2: 24px; /* 32 */
+  --pst-font-size-h3: 20px; /* 26 */
+  --pst-font-size-h4: 18px; /* 21 */
+  --pst-font-size-h5: 16px; /* 18 */
+  --pst-font-size-h6: 16px; /* 16 */
+}

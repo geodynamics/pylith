@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -82,8 +82,8 @@ public:
 
     /** Nondimensionalize the finite-element mesh.
      *
-     * @param mesh Finite-element mesh.
-     * @param normalizer Nondimensionalizer.
+     * @param[in] mesh Finite-element mesh.
+     * @param[in] normalizer Nondimensionalizer.
      */
     static
     void nondimensionalize(Mesh* const mesh,
@@ -91,21 +91,52 @@ public:
 
     /** Check topology of mesh.
      *
-     * @param mesh Finite-element mesh.
+     * @param[in] mesh Finite-element mesh.
      */
     static
     void checkTopology(const Mesh& mesh);
 
     /** Determine is mesh contains simplex cells (i.e., line, tri, tet).
      *
+     * @param[in] mesh Finite-element mesh.
      * @returns True if mesh contains simplex cells.
      */
     static
     bool isSimplexMesh(const Mesh& mesh);
 
+    /** Determine if cell is a cohesive cell.
+     *
+     * @param[in] dm PETSc DM containining cell.
+     * @param[in] cell Point number.
+     * @returns True if cell is a cohesive cell.
+     */
     static
-    bool isCohesiveCell(const PetscDM dmMesh,
+    bool isCohesiveCell(const PetscDM dm,
                         const PetscInt cell);
+
+    /** Get number of vertices in mesh.
+     *
+     * @param[in] mesh Finite-element mesh.
+     * @returns Number of vertices in mesh.
+     */
+    static
+    PylithInt getNumVertices(const pylith::topology::Mesh& mesh);
+
+    /** Get number of cells in mesh.
+     *
+     * @param[in] mesh Finite-element mesh.
+     * @returns Number of cells in mesh.
+     */
+    static
+    PylithInt getNumCells(const pylith::topology::Mesh& mesh);
+
+    /** Get number of vertices in a cell in mesh.
+     *
+     * @param[in] mesh Finite-element mesh.
+     * @returns Number of vertices in a cell.
+     */
+    static
+    PylithInt getNumCorners(const pylith::topology::Mesh& mesh);
 
     /** Check to make sure material id of every cell matches the id of
      *  one of the materials.

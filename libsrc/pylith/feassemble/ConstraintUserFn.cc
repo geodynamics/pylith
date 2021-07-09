@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -26,6 +26,7 @@
 #include "pylith/problems/Physics.hh" // USES Physics
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <cassert> // USES assert()
@@ -84,9 +85,9 @@ pylith::feassemble::ConstraintUserFn::initialize(const pylith::topology::Field& 
     DMLabel label = NULL;
     void* context = NULL;
     const PylithInt labelId = 1;
-    err = DMGetDS(solution.dmMesh(), &prob);PYLITH_CHECK_ERROR(err);
-    const PetscInt i_field = solution.subfieldInfo(_subfieldName.c_str()).index;
-    err = DMGetLabel(solution.dmMesh(), _constraintLabel.c_str(), &label);PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(solution.getDM(), &prob);PYLITH_CHECK_ERROR(err);
+    const PetscInt i_field = solution.getSubfieldInfo(_subfieldName.c_str()).index;
+    err = DMGetLabel(solution.getDM(), _constraintLabel.c_str(), &label);PYLITH_CHECK_ERROR(err);
     err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL, _constraintLabel.c_str(), label, 1, &labelId, i_field,
                              _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void))_fn, (void (*)(void))_fnDot, context, NULL);
     PYLITH_CHECK_ERROR(err);
@@ -106,7 +107,7 @@ pylith::feassemble::ConstraintUserFn::setSolution(pylith::topology::Field* solut
     assert(solution);
 
     PetscErrorCode err = 0;
-    PetscDM dmSoln = solution->dmMesh();
+    PetscDM dmSoln = solution->getDM();
 
     // Get label for constraint.
     PetscDMLabel dmLabel = NULL;
@@ -114,12 +115,12 @@ pylith::feassemble::ConstraintUserFn::setSolution(pylith::topology::Field* solut
 
     void* context = NULL;
     const int labelId = 1;
-    const int fieldIndex = solution->subfieldInfo(_subfieldName.c_str()).index;
+    const int fieldIndex = solution->getSubfieldInfo(_subfieldName.c_str()).index;
     const PylithInt numConstrained = _constrainedDOF.size();
-    assert(solution->localVector());
+    assert(solution->getLocalVector());
     err = DMPlexLabelAddCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
     err = DMPlexInsertBoundaryValuesEssential(dmSoln, t, fieldIndex, numConstrained, &_constrainedDOF[0], dmLabel, 1,
-                                              &labelId, _fn, context, solution->localVector());PYLITH_CHECK_ERROR(err);
+                                              &labelId, _fn, context, solution->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
 
     pythia::journal::debug_t debug(GenericComponent::getName());
@@ -144,7 +145,7 @@ pylith::feassemble::ConstraintUserFn::setSolutionDot(pylith::topology::Field* so
     assert(solutionDot);
 
     PetscErrorCode err = 0;
-    PetscDM dmSolnDot = solutionDot->dmMesh();
+    PetscDM dmSolnDot = solutionDot->getDM();
 
     // Get label for constraint.
     PetscDMLabel dmLabel = NULL;
@@ -152,12 +153,12 @@ pylith::feassemble::ConstraintUserFn::setSolutionDot(pylith::topology::Field* so
 
     void* context = NULL;
     const int labelId = 1;
-    const int fieldIndex = solutionDot->subfieldInfo(_subfieldName.c_str()).index;
+    const int fieldIndex = solutionDot->getSubfieldInfo(_subfieldName.c_str()).index;
     const PylithInt numConstrained = _constrainedDOF.size();
-    assert(solutionDot->localVector());
+    assert(solutionDot->getLocalVector());
     err = DMPlexLabelAddCells(dmSolnDot, dmLabel);PYLITH_CHECK_ERROR(err);
     err = DMPlexInsertBoundaryValuesEssential(dmSolnDot, t, fieldIndex, numConstrained, &_constrainedDOF[0], dmLabel, 1,
-                                              &labelId, _fnDot, context, solutionDot->localVector());PYLITH_CHECK_ERROR(err);
+                                              &labelId, _fnDot, context, solutionDot->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSolnDot, dmLabel);PYLITH_CHECK_ERROR(err);
 
     pythia::journal::debug_t debug(GenericComponent::getName());

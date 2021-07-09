@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -40,20 +40,17 @@ namespace pylith {
 
 // TestMesh -------------------------------------------------------------
 /// C++ unit testing for Mesh.
-class pylith::topology::TestMesh : public CppUnit::TestFixture
-{ // class TestMesh
-
+class pylith::topology::TestMesh : public CppUnit::TestFixture { // class TestMesh
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE( TestMesh );
+    CPPUNIT_TEST_SUITE(TestMesh);
 
-    CPPUNIT_TEST( testConstructor );
-    CPPUNIT_TEST( testDMMesh );
-    CPPUNIT_TEST( testCoordsys );
-    CPPUNIT_TEST( testDebug );
-    CPPUNIT_TEST( testDimension );
-    CPPUNIT_TEST( testAccessors );
-    CPPUNIT_TEST( testComm );
-    CPPUNIT_TEST( testView );
+    CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testDMMesh);
+    CPPUNIT_TEST(testCoordsys);
+    CPPUNIT_TEST(testDimension);
+    CPPUNIT_TEST(testAccessors);
+    CPPUNIT_TEST(testComm);
+    CPPUNIT_TEST(testView);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -68,9 +65,6 @@ public:
 
     /// Test coordsys().
     void testCoordsys(void);
-
-    /// Test debug().
-    void testDebug(void);
 
     /// Test dimension().
     void testDimension(void);
@@ -87,6 +81,5 @@ public:
 }; // class TestMesh
 
 #endif // pylith_topology_testmesh_hh
-
 
 // End of file

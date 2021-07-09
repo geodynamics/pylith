@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -106,7 +106,7 @@ pylith::topology::FieldQuery::setQuery(const char* subfield,
             query.queryValues[i] = queryValues[i];
         } // for
     } else {
-        const Field::SubfieldInfo& info = _field.subfieldInfo(subfield);
+        const Field::SubfieldInfo& info = _field.getSubfieldInfo(subfield);
         query.queryValues = info.description.componentNames;
     } // if/else
 
@@ -172,7 +172,7 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
 
             _contexts[index].converter = query->second.converter;
             _contexts[index].db = dbSubfield;
-            _contexts[index].cs = _field.mesh().getCoordSys();
+            _contexts[index].cs = _field.getMesh().getCoordSys();
 
             if (dbSubfield) {
                 _FieldQuery::findQueryIndices(&_contexts[index], query->second.queryValues);
@@ -207,8 +207,8 @@ pylith::topology::FieldQuery::queryDB(void) {
 
     PetscErrorCode err = 0;
     PetscReal dummyTime = 0.0;
-    err = DMProjectFunctionLocal(_field.dmMesh(), dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES,
-                                 _field.localVector());PYLITH_CHECK_ERROR(err);
+    err = DMProjectFunctionLocal(_field.getDM(), dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES,
+                                 _field.getLocalVector());PYLITH_CHECK_ERROR(err);
 
     _logger->eventEnd(queryEvent);
 
@@ -239,10 +239,10 @@ pylith::topology::FieldQuery::queryDBLabel(const char* labelName,
     } // for
 
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(_field.dmMesh(), labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMProjectFunctionLabelLocal(_field.dmMesh(), dummyTime, dmLabel, 1, &labelValue,
+    err = DMGetLabel(_field.getDM(), labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMProjectFunctionLabelLocal(_field.getDM(), dummyTime, dmLabel, 1, &labelValue,
                                       numSubfields, &subfieldIndices[0], _functions, (void**)_contextPtrs,
-                                      INSERT_ALL_VALUES, _field.localVector());PYLITH_CHECK_ERROR(err);
+                                      INSERT_ALL_VALUES, _field.getLocalVector());PYLITH_CHECK_ERROR(err);
 
     _logger->eventEnd(queryEvent);
 

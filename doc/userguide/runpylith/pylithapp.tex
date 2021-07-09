@@ -2,11 +2,54 @@
 
 The top-level object is the PyLith application with three facilities:
 \begin{inventory}
+  \facilityitem{metadata}{Simulation metadata;}
   \facilityitem{mesher}{Importer for the finite-element mesh;}
   \facilityitem{problem}{Problem to run, such as the materials, boundary conditions, etc.; and}
-  \facilityitem{petsc}{PETSc settings}
+  \facilityitem{petsc}{PETSc settings.}
 \end{inventory}
 
+
+\subsection{Simulation Metadata (\facility{metadata})}
+\newfeature{v3.0.0}
+
+We use metadata to provide a concise summary of a simulation.
+The metadata gives structure to information previously placed in comments within the parameter files while also making this information machine readable.
+The metadata makes it possible for a Python script to launch an entire suite of simulations and search for simulation parameter files based on the metadata constent (see Section~\vref{sec:runpylith:utilities} for more information).
+For example, users can search examples that use a given feature.
+
+At a minumum the metadata must include: (1) a description, (2) the command line arguments necessary to run the simulation, and (3) the PyLith version(s) that are compatible with the input files.
+We strongly encourage users to include all of the metadata in their own PyLith parameter files.
+\begin{inventory}
+  \propertyitem{description}{Description of simulation (required);}
+  \propertyitem{authors}{Comma separated list of creator(s) of the simulation;}
+  \propertyitem{keywords}{Comma separated list of keywords describing simulation;}
+  \propertyitem{features}{Comma separated list of features used in the simulation;}
+  \propertyitem{arguments}{Comma separated list of command line arguments for running simulation (required);}
+  \propertyitem{base}{Comma separated list of parameter files also containing metadata that complement this metadata;}
+  \propertyitem{version}{Version number for simulation; and}
+  \propertyitem{pylith\_version}{Command separated list of constraints on the PyLith versions compatible with the parameter files (required)}
+\end{inventory}
+When using \property{base} to specify other files with metadata, the \property{keywords} and \property{features} will be appended, whereas other metadata will be overwritten (the same behavior as other Pyre properties).
+
+\begin{cfg}[Example of SimulationMetadata in a \filename{.cfg} file.]
+<h>[pylithapp.metadata]</h>
+<p>base</p> = [pylithapp.cfg]
+<p>description</p> = Axial extension using Dirichlet boundary conditions.
+<p>keywords</p> = [example, 2D, box, axial extension]
+<p>features</p> = [
+    Quadrilateral cells,
+    pylith.meshio.MeshIOAscii,
+    pylith.problems.TimeDependent,
+    pylith.materials.Elasticity,
+    pylith.materials.IsotropicLinearElasticity,
+    spatialdata.spatialdb.UniformDB,
+    pylith.meshio.DataWriterHDF5
+    ]
+<p>authors</p> = [Brad Aagaard]
+<p>version</p> = 1.0.0
+<p>arguments</p> = [step01_axialdisp.cfg]
+<p>pylith_version</p> = [>=3.0, <4.0]
+\end{cfg}
 
 \subsection{Mesh Information (\facility{mesher})}
 
@@ -370,15 +413,18 @@ All of the solution observers have the following properties:
   \propertyitem{data\_fields}{List of solution subfields to observer/output (default=all which will output all of the subfields);}
   \facilityitem{writer}{Writer for data (default=\object{DataWriterHDF5});}
   \facilityitem{trigger}{Trigger defining how often output is written (default=\object{OutputTriggerStep}); and}
-  \facilityitem{field\_filter}{Filter for output fields (default=\object{FieldFilterNone}).}
+  \facilityitem{output\_basis\_order}{Basis order for output of
+    fields. Valid values are 0 and 1 (default=1).}
 \end{inventory}
+Fields with a basis order of 0 are kept at a basis order of 0 when output.
+Fields with a basis order of 1 are written as vertex fields, whereas fields with a basis order of 0 are written as cell fields.
+
 \object{OutputSolnBoundary} adds a property:
 \begin{inventory}
   \propertyitem{label}{Label (name of nodeset/pset) identifier of boundary (required);}
 \end{inventory}
 See Section \vref{sec:output} for detailed information about the
-available components for the \facility{writer}, \facility{trigger},
-and \facility{field\_filter} facilities.
+available components for the \facility{writer} and \facility{trigger} facilities.
 
 \begin{cfg}[Setting \object{OutputSolnBoundary} parameters in a \filename{cfg} file]
 <h>[pylithapp.problem.solution_observers.boundary]</h>

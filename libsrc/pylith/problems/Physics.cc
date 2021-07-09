@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, Rice University
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -24,6 +24,7 @@
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
+#include "pylith/utils/error.hh" // USES PYLITH_JMETHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()

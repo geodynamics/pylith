@@ -10,7 +10,7 @@ by the \filename{pylith\_info} script. It displays the hiearchy of components
 and the parameters for each one, including default values.
 
 
-\section{Installation}
+\subsection{Installation}
 
 The PyLith Parameter Viewer is included in the PyLith binary
 distributions and PyLith Docker container for versions 2.1.5 and
@@ -24,7 +24,7 @@ in the top-level PyLith directory.
 $ tar -xvf pylith_parameters-1.1.0.tgz
 \end{shell}
 
-\section{Running the Parameter Viewer}
+\subsection{Running the Parameter Viewer}
 
 The steps to run the parameter viewer are:
 \begin{enumerate}
@@ -33,12 +33,12 @@ The steps to run the parameter viewer are:
 \item Load the parameter JSON file.
 \end{enumerate}
 
-\subsection{Generate the parameter JSON file}
+\subsubsection{Generate the parameter JSON file}
 
 The parameter viewer uses a JSON file with all of the parameters
 collected from \filename{cfg} files, command line arguments, etc as
 input. This file can be generated using \filename{pylith\_info} (see
-Section \ref{sec:pylith\_info}) and, by default, it will be generated
+Section \ref{sec:pylith:info}) and, by default, it will be generated
 whenever a \filename{pylith} simulation is run. When using
 \filename{pylith\_info}, the name of the parameter file can be set via a
 command line argument. When using \filename{pylith}, the
@@ -56,7 +56,7 @@ Currently, the JSON parameter file cannot be used to run a PyLith
 simulation. This feature will be added in an upcoming release.
 
 
-\subsection{Start the web server}
+\subsubsection{Start the web server}
 
 Change to the directory containing the \filename{pylith\_paramviewer}
 script (usually the \filename{parametersgui} directory under the top-level
@@ -73,7 +73,7 @@ You can change the default port using the \filename{-{}-port} command
 line argument to the \filename{pylith\_paramviewer} script.
 
 
-\section{Using the Parameter Viewer}
+\subsection{Using the Parameter Viewer}
 
 When you point your web browser to the correct port, you should see
 the PyLith Parameter Viewer as shown in Figure
@@ -92,7 +92,7 @@ navigate to the desired file.
 \end{figure}
 
 
-\subsection{Version Information}
+\subsubsection{Version Information}
 
 Click on the \textsf{Version} tab to examine the version information.
 This tab displays the same version information shown with the
@@ -110,7 +110,7 @@ PyLith version, and versions of the dependencies, as shown in Figure
 \end{figure}
 
 
-\subsection{Parameter Information}
+\subsubsection{Parameter Information}
 
 Click on the \textsf{Parameters} tab to examine the hiearchy of
 components and the parameters for each. You can expand/collapse the

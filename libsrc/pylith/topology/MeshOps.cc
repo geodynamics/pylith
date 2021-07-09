@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -45,7 +45,7 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
 
     assert(label);
 
-    PetscDM dmDomain = mesh.dmMesh();assert(dmDomain);
+    PetscDM dmDomain = mesh.getDM();assert(dmDomain);
     PetscErrorCode err = 0;
 
     PetscBool hasLabel = PETSC_FALSE;
@@ -93,7 +93,7 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
 
     pylith::topology::Mesh* submesh = new pylith::topology::Mesh(true);assert(submesh);
     submesh->setCoordSys(mesh.getCoordSys());
-    submesh->dmMesh(dmSubdomain);
+    submesh->setDM(dmSubdomain);
 
     PYLITH_METHOD_RETURN(submesh);
 } // createSubdomainMesh
@@ -108,7 +108,7 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
 
     assert(label);
 
-    PetscDM dmDomain = mesh.dmMesh();assert(dmDomain);
+    PetscDM dmDomain = mesh.getDM();assert(dmDomain);
     PetscErrorCode err = 0;
 
     PetscBool hasLabel = PETSC_FALSE;
@@ -119,7 +119,7 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
         throw std::runtime_error(msg.str());
     } // if
 
-    if (mesh.dimension() < 1) {
+    if (mesh.getDimension() < 1) {
         throw std::logic_error("INTERNAL ERROR in MeshOps::createLowerDimMesh()\n"
                                "Cannot create submesh for mesh with dimension < 1.");
     } // if
@@ -161,7 +161,7 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
 
     pylith::topology::Mesh* submesh = new pylith::topology::Mesh(true);assert(submesh);
     submesh->setCoordSys(mesh.getCoordSys());
-    submesh->dmMesh(dmSubmesh);
+    submesh->setDM(dmSubmesh);
 
     // Check topology
     MeshOps::checkTopology(*submesh);
@@ -201,11 +201,11 @@ pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
     err = DMSetCoordinateDim(dmPoints, spaceDim);PYLITH_CHECK_ERROR(err);
     err = DMPlexCreateFromDAG(dmPoints, depth, dmNumPoints, &dmConeSizes[0], &dmCones[0],
                               &dmConeOrientations[0], points);PYLITH_CHECK_ERROR(err);
-    mesh->dmMesh(dmPoints, "points");
+    mesh->setDM(dmPoints, "points");
 
     mesh->setCoordSys(cs);
 
-    err = DMPlexSetScale(mesh->dmMesh(), PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+    err = DMPlexSetScale(mesh->getDM(), PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_RETURN(mesh);
 } // createFromPoints
@@ -224,13 +224,13 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
     const PylithScalar lengthScale = normalizer.getLengthScale();
     PetscErrorCode err = 0;
 
-    PetscDM dmMesh = mesh->dmMesh();assert(dmMesh);
+    PetscDM dmMesh = mesh->getDM();assert(dmMesh);
     err = DMGetCoordinatesLocal(dmMesh, &coordVec);PYLITH_CHECK_ERROR(err);assert(coordVec);
     err = VecScale(coordVec, 1.0/lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMPlexSetScale(dmMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMViewFromOptions(dmMesh, NULL, "-pylith_nondim_dm_view");PYLITH_CHECK_ERROR(err);
 
-    const PetscInt dim = mesh->dimension();
+    const PetscInt dim = mesh->getDimension();
     if (dim < 1) {
         PYLITH_METHOD_END;
     } // if
@@ -242,7 +242,7 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
         volume *= coordMax[i] - coordMin[i];
     } // for
     assert(dim > 0);
-    const PylithReal avgCellDim = pow(volume / mesh->numCells(), 1.0/dim);
+    const PylithReal avgCellDim = pow(volume / MeshOps::getNumCells(*mesh), 1.0/dim);
     const PylithReal avgDimTolerance = 0.02;
     if (avgCellDim < avgDimTolerance) {
         std::ostringstream msg;
@@ -258,26 +258,10 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-bool
-pylith::topology::MeshOps::isCohesiveCell(const PetscDM dmMesh,
-                                          const PetscInt cell) {
-    bool isCohesive = false;
-
-    DMPolytopeType ct;
-    PetscErrorCode err = DMPlexGetCellType(dmMesh, cell, &ct);PYLITH_CHECK_ERROR(err);
-    if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
-        (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
-        (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) { isCohesive = true; }
-
-    return isCohesive;
-} // isCohesiveCell
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Check topology of mesh.
 void
 pylith::topology::MeshOps::checkTopology(const Mesh& mesh) {
-    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+    PetscDM dmMesh = mesh.getDM();assert(dmMesh);
 
     DMLabel subpointMap;
     PetscErrorCode ierr = DMPlexGetSubpointMap(dmMesh, &subpointMap);PYLITH_CHECK_ERROR(ierr);
@@ -298,11 +282,11 @@ pylith::topology::MeshOps::isSimplexMesh(const Mesh& mesh) {
 
     bool isSimplex = false;
 
-    const PetscDM dm = mesh.dmMesh();
+    const PetscDM dm = mesh.getDM();
     PetscInt closureSize, vStart, vEnd;
     PetscInt* closure = NULL;
     PetscErrorCode err;
-    const int dim = mesh.dimension();
+    const int dim = mesh.getDimension();
     err = DMPlexGetDepthStratum(dm, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     PetscInt numVertices = 0;
@@ -318,6 +302,81 @@ pylith::topology::MeshOps::isSimplexMesh(const Mesh& mesh) {
 
     PYLITH_METHOD_RETURN(isSimplex);
 } // isSimplexMesh
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+bool
+pylith::topology::MeshOps::isCohesiveCell(const PetscDM dm,
+                                          const PetscInt cell) {
+    bool isCohesive = false;
+
+    DMPolytopeType ct;
+    PetscErrorCode err = DMPlexGetCellType(dm, cell, &ct);PYLITH_CHECK_ERROR(err);
+    if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
+        (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
+        (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) { isCohesive = true; }
+
+    return isCohesive;
+} // isCohesiveCell
+
+
+// ----------------------------------------------------------------------
+// Get number of vertices in mesh.
+PylithInt
+pylith::topology::MeshOps::getNumVertices(const pylith::topology::Mesh& mesh) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscDM dmMesh = mesh.getDM();assert(dmMesh);
+    PylithInt nvertices = 0;
+    PylithInt begin = 0, end = 0;
+    PetscErrorCode err = DMPlexGetDepthStratum(dmMesh, 0, &begin, &end);PYLITH_CHECK_ERROR(err);
+    nvertices = end-begin;
+
+    PYLITH_METHOD_RETURN(nvertices);
+}
+
+
+// ----------------------------------------------------------------------
+// Get number of cells in mesh.
+PylithInt
+pylith::topology::MeshOps::getNumCells(const pylith::topology::Mesh& mesh) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscDM dmMesh = mesh.getDM();assert(dmMesh);
+    PetscInt ncells = 0;
+    PylithInt begin = 0, end = 0;
+    const int cellHeight = 0;
+    PetscErrorCode err = DMPlexGetHeightStratum(dmMesh, cellHeight, &begin, &end);PYLITH_CHECK_ERROR(err);
+    ncells = end-begin;
+
+    PYLITH_METHOD_RETURN(ncells);
+}
+
+
+// ----------------------------------------------------------------------
+// Get number of vertices in a cell.
+PylithInt
+pylith::topology::MeshOps::getNumCorners(const pylith::topology::Mesh& mesh) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscInt numCorners = 0;
+    PetscDM dmMesh = mesh.getDM();assert(dmMesh);
+
+    PetscInt cStart, cEnd, vStart, vEnd, closureSize, *closure = NULL;
+    PetscErrorCode err;
+    const int cellHeight = 0;
+    err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+    if (cEnd > cStart) {
+        err = DMPlexGetTransitiveClosure(dmMesh, cStart, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        for (PetscInt c = 0; c < closureSize*2; c += 2) {
+            if ((closure[c] >= vStart) && (closure[c] < vEnd)) {++numCorners;}
+        } // for
+        err = DMPlexRestoreTransitiveClosure(dmMesh, cStart, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    } // if
+
+    PYLITH_METHOD_RETURN(numCorners);
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -338,7 +397,7 @@ pylith::topology::MeshOps::checkMaterialIds(const pylith::topology::Mesh& mesh,
     int_array matCellCounts(numIds);
     matCellCounts = 0;
 
-    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+    PetscDM dmMesh = mesh.getDM();assert(dmMesh);
     Stratum cellsStratum(dmMesh, Stratum::HEIGHT, 0);
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();
@@ -377,7 +436,7 @@ pylith::topology::MeshOps::checkMaterialIds(const pylith::topology::Mesh& mesh,
     // Make sure each material has cells.
     int_array matCellCountsAll(matCellCounts.size());
     err = MPI_Allreduce(&matCellCounts[0], &matCellCountsAll[0],
-                        matCellCounts.size(), MPI_INT, MPI_SUM, mesh.comm());PYLITH_CHECK_ERROR(err);
+                        matCellCounts.size(), MPI_INT, MPI_SUM, mesh.getComm());PYLITH_CHECK_ERROR(err);
     for (size_t i = 0; i < numIds; ++i) {
         const int matId = materialIds[i];
         const size_t matIndex = materialIndex[matId];

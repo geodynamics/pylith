@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -22,6 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -60,12 +61,12 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
     assert(newMesh);
 
     PetscErrorCode err;
-    PetscDM dmOrig = mesh.dmMesh();assert(dmOrig);
+    PetscDM dmOrig = mesh.getDM();assert(dmOrig);
 
     PetscInt meshDepth = 0;
     err = DMPlexGetDepth(dmOrig, &meshDepth);
 
-    const int meshDim = mesh.dimension();
+    const int meshDim = mesh.getDimension();
     if (( meshDim > 0) && ( meshDepth != meshDim) ) {
         std::ostringstream msg;
         msg << "Mesh refinement for uninterpolated meshes not supported.\n"
@@ -76,17 +77,17 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
     // Refine, keeping original mesh intact.
     PetscDM dmNew = NULL;
     err = DMPlexSetRefinementUniform(dmOrig, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
-    err = DMRefine(dmOrig, mesh.comm(), &dmNew);PYLITH_CHECK_ERROR(err);
+    err = DMRefine(dmOrig, mesh.getComm(), &dmNew);PYLITH_CHECK_ERROR(err);
 
     for (int i = 1; i < levels; ++i) {
         PetscDM dmCur = dmNew;dmNew = NULL;
         err = DMPlexSetRefinementUniform(dmCur, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
-        err = DMRefine(dmCur, mesh.comm(), &dmNew);PYLITH_CHECK_ERROR(err);
+        err = DMRefine(dmCur, mesh.getComm(), &dmNew);PYLITH_CHECK_ERROR(err);
 
         err = DMDestroy(&dmCur);PYLITH_CHECK_ERROR(err);
     } // for
 
-    newMesh->dmMesh(dmNew);
+    newMesh->setDM(dmNew);
 
     // Remove all non-cells from material id label
     const char* const labelName = pylith::topology::Mesh::getCellsLabelName();

@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -55,7 +55,7 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
     assert(newMesh);
     newMesh->setCoordSys(origMesh.getCoordSys());
 
-    const int commRank = origMesh.commRank();
+    const int commRank = origMesh.getCommRank();
     if (0 == commRank) {
         info << pythia::journal::at(__HERE__)
              << "Partitioning mesh using PETSc '" << partitionerName << "' partitioner." << pythia::journal::endl;
@@ -63,7 +63,7 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
 
     PetscErrorCode err = 0;
     PetscPartitioner partitioner = 0;
-    PetscDM dmOrig = origMesh.dmMesh();assert(dmOrig);
+    PetscDM dmOrig = origMesh.getDM();assert(dmOrig);
     err = DMPlexGetPartitioner(dmOrig, &partitioner);PYLITH_CHECK_ERROR(err);
     err = PetscPartitionerSetType(partitioner, partitionerName);PYLITH_CHECK_ERROR(err);
 
@@ -73,8 +73,8 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
     } // if
 
     PetscDM dmNew = NULL;
-    err = DMPlexDistribute(origMesh.dmMesh(), 0, NULL, &dmNew);PYLITH_CHECK_ERROR(err);
-    newMesh->dmMesh(dmNew);
+    err = DMPlexDistribute(origMesh.getDM(), 0, NULL, &dmNew);PYLITH_CHECK_ERROR(err);
+    newMesh->setDM(dmNew);
 
     PYLITH_METHOD_END;
 } // distribute
@@ -87,7 +87,7 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
                                      const topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
 
-    const int commRank = mesh.commRank();
+    const int commRank = mesh.getCommRank();
     if (0 == commRank) {
         pythia::journal::info_t info("mesh_distributor");
         info << pythia::journal::at(__HERE__)
@@ -97,7 +97,7 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
     // Setup and allocate PETSc vector
     PylithScalar rankReal = PylithReal(commRank);
 
-    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+    PetscDM dmMesh = mesh.getDM();assert(dmMesh);
     topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();
@@ -105,7 +105,7 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
     PetscVec partitionVec = NULL;
     PylithScalar* partitionArray = NULL;
     PetscErrorCode err;
-    err = VecCreate(mesh.comm(), &partitionVec);PYLITH_CHECK_ERROR(err);
+    err = VecCreate(mesh.getComm(), &partitionVec);PYLITH_CHECK_ERROR(err);
     err = VecSetSizes(partitionVec, cEnd-cStart, PETSC_DECIDE);PYLITH_CHECK_ERROR(err);
     err = VecGetArray(partitionVec, &partitionArray);PYLITH_CHECK_ERROR(err);
     for (PetscInt c = cStart; c < cEnd; ++c) {

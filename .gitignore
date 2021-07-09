@@ -41,3 +41,4 @@ doc/userguide/userguide.log
 doc/userguide/userguide.lot
 doc/userguide/userguide.out
 *.log
+docs-sphinx/_build/

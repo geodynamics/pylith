@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -85,7 +85,7 @@ pylith::testing::MMSTest::testDiscretization(void) {
     CPPUNIT_ASSERT(_solution);
     PetscErrorCode err = 0;
     const PylithReal tolerance = -1.0, t = 0.0;
-    const pylith::string_vector subfieldNames = _solution->subfieldNames();
+    const pylith::string_vector subfieldNames = _solution->getSubfieldNames();
     const size_t numSubfields = subfieldNames.size();
     pylith::real_array error(numSubfields);
     err = DMSNESCheckDiscretization(_problem->getPetscSNES(), _problem->getPetscDM(), t, _solutionExactVec,
@@ -243,7 +243,7 @@ pylith::testing::MMSTest::_initialize(void) {
     _setExactSolution();
 
     // Global vectors to use for analytical solution in MMS tests.
-    PetscErrorCode err = VecDuplicate(_solution->globalVector(), &_solutionExactVec);CPPUNIT_ASSERT(!err);
+    PetscErrorCode err = VecDuplicate(_solution->getGlobalVector(), &_solutionExactVec);CPPUNIT_ASSERT(!err);
     err = VecDuplicate(_solutionExactVec, &_solutionDotExactVec);CPPUNIT_ASSERT(!err);
 
     PYLITH_METHOD_END;

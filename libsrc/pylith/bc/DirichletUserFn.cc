@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -137,7 +137,7 @@ pylith::bc::DirichletUserFn::verifyConfiguration(const pylith::topology::Field& 
         throw std::runtime_error(msg.str());
     } // if
 
-    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_subfieldName.c_str());
+    const topology::Field::SubfieldInfo& info = solution.getSubfieldInfo(_subfieldName.c_str());
     const int numComponents = info.description.numComponents;
     const int numConstrained = _constrainedDOF.size();
     for (int iConstrained = 0; iConstrained < numConstrained; ++iConstrained) {

@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -26,6 +26,7 @@
 
 #include "pylith/meshio/MeshBuilder.hh" // Uses MeshBuilder
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
@@ -259,8 +260,8 @@ pylith::topology::TestFieldQuery::testQuery(void) {
     pylith::topology::FieldQuery query(*_field);
     query.initializeWithDefaultQueries();
     query.openDB(_data->auxDB, _data->normalizer->getLengthScale());
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(_field->dmMesh(), t, query._functions, (void**)query._contextPtrs,
-                                                  _field->localVector(), &norm);CPPUNIT_ASSERT(!err);
+    PetscErrorCode err = DMPlexComputeL2DiffLocal(_field->getDM(), t, query._functions, (void**)query._contextPtrs,
+                                                  _field->getLocalVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -291,11 +292,11 @@ pylith::topology::TestFieldQuery::testQueryNull(void) {
     const PylithReal tolerance = 1.0e-6;
 
     PylithReal min = 0;
-    err = VecMin(_field->localVector(), NULL, &min);CPPUNIT_ASSERT(!err);
+    err = VecMin(_field->getLocalVector(), NULL, &min);CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Auxiliary field values don't match FILL_VALUE value.", FILL_VALUE, min, abs(FILL_VALUE*tolerance));
 
     PylithReal max = 0.0;
-    err = VecMax(_field->localVector(), NULL, &max);CPPUNIT_ASSERT(!err);
+    err = VecMax(_field->getLocalVector(), NULL, &max);CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Auxiliary field values don't match FILL_VALUE value.", FILL_VALUE, max, abs(FILL_VALUE*tolerance));
 
     PYLITH_METHOD_END;
@@ -374,7 +375,7 @@ pylith::topology::TestFieldQuery::_initialize(void) {
     _field->createDiscretization();
     _field->allocate();
     PetscErrorCode err;
-    err = VecSet(_field->localVector(), FILL_VALUE);CPPUNIT_ASSERT(!err);
+    err = VecSet(_field->getLocalVector(), FILL_VALUE);CPPUNIT_ASSERT(!err);
 
     delete _query;_query = new pylith::topology::FieldQuery(*_field);
 

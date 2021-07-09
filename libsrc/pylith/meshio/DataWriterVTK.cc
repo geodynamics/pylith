@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -75,11 +75,11 @@ pylith::meshio::DataWriterVTK::deallocate(void) { // deallocate
 pylith::meshio::DataWriterVTK::DataWriterVTK(const DataWriterVTK& w) :
     DataWriter(w),
     _timeConstant(w._timeConstant),
+    _precision(w._precision),
     _filename(w._filename),
     _timeFormat(w._timeFormat),
     _viewer(NULL),
     _dm(NULL),
-    _precision(w._precision),
     _isOpenTimeStep(w._isOpenTimeStep),
     _wroteVertexHeader(w._wroteVertexHeader),
     _wroteCellHeader(w._wroteCellHeader) { // copy constructor
@@ -134,7 +134,7 @@ pylith::meshio::DataWriterVTK::open(const pylith::topology::Mesh& mesh,
     // Save handle for actions required in closeTimeStep() and close();
     PetscErrorCode err = 0;
     err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
-    _dm = mesh.dmMesh();assert(_dm);
+    _dm = mesh.getDM();assert(_dm);
     err = PetscObjectReference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
@@ -165,11 +165,11 @@ pylith::meshio::DataWriterVTK::openTimeStep(const PylithScalar t,
                                             const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
 
-    assert(_dm && _dm == mesh.dmMesh());
+    assert(_dm && _dm == mesh.getDM());
     assert(_isOpen && !_isOpenTimeStep);
 
     const std::string& filename = _vtkFilename(t);
-    PetscErrorCode err = PetscViewerVTKOpen(mesh.comm(), filename.c_str(), FILE_MODE_WRITE,
+    PetscErrorCode err = PetscViewerVTKOpen(mesh.getComm(), filename.c_str(), FILE_MODE_WRITE,
                                             &_viewer);PYLITH_CHECK_ERROR(err);
 
     _isOpenTimeStep = true;

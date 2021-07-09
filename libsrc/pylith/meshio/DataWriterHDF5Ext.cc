@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -105,7 +105,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
     try {
         DataWriter::open(mesh, isInfo);
 
-        PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+        PetscDM dmMesh = mesh.getDM();assert(dmMesh);
         MPI_Comm comm;
         PetscMPIInt commRank;
         PetscErrorCode err = PetscObjectGetComm((PetscObject) dmMesh, &comm);PYLITH_CHECK_ERROR(err);
@@ -254,7 +254,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
             dims[0] = numCells;
             dims[1] = numCorners;
             _h5->createDatasetRawExternal("/topology", "cells", filenameCells.c_str(), dims, ndims, scalartype);
-            const int cellDim = mesh.dimension();
+            const int cellDim = mesh.getDimension();
             _h5->writeAttribute("/topology/cells", "cell_dim", (void*)&cellDim, H5T_NATIVE_INT);
         } // if
 
@@ -573,8 +573,8 @@ pylith::meshio::DataWriterHDF5Ext::writePointNames(const pylith::string_vector& 
         // (numNames*maxStringLegnth) on each process, and then gather
         // onto root process for writing in serial to HDF5.
         int mpierr;
-        MPI_Comm comm = mesh.comm();
-        const int commRank = mesh.commRank();
+        MPI_Comm comm = mesh.getComm();
+        const int commRank = mesh.getCommRank();
         const int commRoot = 0;
         int nprocs = 0;
         mpierr = MPI_Comm_size(comm, &nprocs);assert(MPI_SUCCESS == mpierr);

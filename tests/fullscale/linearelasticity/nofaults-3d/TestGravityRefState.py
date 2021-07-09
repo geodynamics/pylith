@@ -4,14 +4,14 @@
 #
 # Brad T. Aagaard, U.S. Geological Survey
 # Charles A. Williams, GNS Science
-# Matthew G. Knepley, University of Chicago
+# Matthew G. Knepley, University at Buffalo
 #
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2017 University of California, Davis
+# Copyright (c) 2010-2021 University of California, Davis
 #
-# See COPYING for license information.
+# See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
 #
@@ -21,98 +21,82 @@
 
 import unittest
 
-from pylith.testing.FullTestApp import check_data
-from pylith.testing.FullTestApp import TestCase as FullTestCase
+from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
 
 import meshes
-from gravity_refstate_soln import AnalyticalSoln
-from gravity_refstate_gendb import GenerateDB
+import gravity_refstate_soln
+import gravity_refstate_gendb
 
-# ----------------------------------------------------------------------------------------------------------------------
-
-
+# -------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """Test suite for testing PyLith with gravitational body forces with initial stress and no displacement.
-    """
-    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos", "bc_zneg"]
-    OUTPUT_BOUNDARIES = ["groundsurf"]
 
     def setUp(self):
-        """Setup for test.
-        """
-        FullTestCase.setUp(self)
-        self.exactsoln = AnalyticalSoln()
+        defaults = {
+            "filename": "output/{name}-{mesh_entity}.h5",
+            "exact_soln": gravity_refstate_soln.AnalyticalSoln(),
+            "mesh": self.mesh,
+        }
+        self.checks = [
+            Check(
+                mesh_entities=["domain", "groundsurf", "points"],
+                vertex_fields=["displacement"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["upper_crust", "lower_crust"],
+                filename="output/{name}-{mesh_entity}_info.h5",
+                cell_fields = ["density", "bulk_modulus", "shear_modulus",
+                              "gravitational_acceleration", "reference_strain"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["upper_crust", "lower_crust"],
+                vertex_fields = ["displacement"],
+                cell_fields = ["cauchy_strain", "cauchy_stress"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos", "bc_zneg"],
+                filename="output/{name}-{mesh_entity}_info.h5",
+                cell_fields=["initial_amplitude"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos", "bc_zneg"],
+                vertex_fields=["displacement"],
+                defaults=defaults,
+            ),
+        ]
 
     def run_pylith(self, testName, args):
-        FullTestCase.run_pylith(self, testName, args, GenerateDB)
-
-    def test_domain_solution(self):
-        filename = "output/{}-domain.h5".format(self.NAME)
-        vertexFields = ["displacement"]
-        check_data(filename, self, self.DOMAIN, vertexFields=vertexFields)
-
-    def test_material_info(self):
-        cellFields = ["density", "bulk_modulus", "shear_modulus",
-                      "gravitational_acceleration", "reference_strain"]
-        vertexFields = ["reference_stress"]
-        for material in self.MATERIALS:
-            filename = "output/{}-{}_info.h5".format(self.NAME, material)
-            check_data(filename, self,
-                       self.MATERIALS[material], cellFields=cellFields)
-
-    def test_material_solution(self):
-        vertexFields = ["displacement"]
-        cellFields = ["cauchy_strain", "cauchy_stress"]
-        for material in self.MATERIALS:
-            filename = "output/{}-{}.h5".format(self.NAME, material)
-            check_data(
-                filename, self, self.MATERIALS[material], vertexFields=vertexFields, cellFields=cellFields)
-
-    def test_bcdirichlet_info(self):
-        cellFields = ["initial_amplitude"]
-        for bc in self.DIRICHLET_BOUNDARIES:
-            filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self,
-                       self.BOUNDARIES[bc], cellFields=cellFields)
-
-    def test_bcdirichlet_solution(self):
-        vertexFields = ["displacement"]
-        for bc in self.DIRICHLET_BOUNDARIES:
-            filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self,
-                       self.BOUNDARIES[bc], vertexFields=vertexFields)
-
-    def test_boundary_solution(self):
-        vertexFields = ["displacement"]
-        for bc in self.OUTPUT_BOUNDARIES:
-            filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self,
-                       self.BOUNDARIES[bc], vertexFields=vertexFields)
+        FullTestCase.run_pylith(self, testName, args, gravity_refstate_gendb.GenerateDB)
 
 
-# ----------------------------------------------------------------------------------------------------------------------
-class TestHex(TestCase, meshes.Hex):
-    NAME = "gravity_refstate_hex"
+# -------------------------------------------------------------------------------------------------
+class TestHex(TestCase):
 
     def setUp(self):
-        TestCase.setUp(self)
-        TestCase.run_pylith(
-            self, self.NAME, ["gravity_refstate.cfg", "gravity_refstate_hex.cfg"])
+        self.name = "gravity_refstate_hex"
+        self.mesh = meshes.Hex()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["gravity_refstate.cfg", "gravity_refstate_hex.cfg"])
         return
 
 
-# ----------------------------------------------------------------------------------------------------------------------
-class TestTet(TestCase, meshes.Tet):
-    NAME = "gravity_refstate_tet"
+# -------------------------------------------------------------------------------------------------
+class TestTet(TestCase):
 
     def setUp(self):
-        TestCase.setUp(self)
-        TestCase.run_pylith(
-            self, self.NAME, ["gravity_refstate.cfg", "gravity_refstate_tet.cfg"])
+        self.name = "gravity_refstate_tet"
+        self.mesh = meshes.Tet()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["gravity_refstate.cfg", "gravity_refstate_tet.cfg"])
         return
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 def test_cases():
     return [
         TestHex,
@@ -120,7 +104,7 @@ def test_cases():
     ]
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     FullTestCase.parse_args()
 

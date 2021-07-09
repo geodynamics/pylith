@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -64,9 +64,9 @@ pylith::topology::TestRefineUniform::testRefine(void) {
     refiner.refine(&newMesh, mesh, _data->refineLevel);
 
     // Check mesh dimension
-    CPPUNIT_ASSERT_EQUAL(_data->cellDim, newMesh.dimension());
+    CPPUNIT_ASSERT_EQUAL(_data->cellDim, newMesh.getDimension());
 
-    const PetscDM& dmMesh = newMesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    const PetscDM& dmMesh = newMesh.getDM();CPPUNIT_ASSERT(dmMesh);
 
     // Check vertices
     pylith::topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);

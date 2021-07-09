@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 
@@ -64,14 +64,14 @@ pylith::topology::TestSubmesh::testCreateLowerDimMesh(void) {
     _buildMesh();
     delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->groupLabel);CPPUNIT_ASSERT(_testMesh);
 
-    CPPUNIT_ASSERT_EQUAL(_data->cellDim-1, _testMesh->dimension());
+    CPPUNIT_ASSERT_EQUAL(_data->cellDim-1, _testMesh->getDimension());
 
     int result = 0;
-    MPI_Comm_compare(PETSC_COMM_WORLD, _testMesh->comm(), &result);
+    MPI_Comm_compare(PETSC_COMM_WORLD, _testMesh->getComm(), &result);
     CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
 
     // Check vertices
-    const PetscDM dmMesh = _testMesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+    const PetscDM dmMesh = _testMesh->getDM();CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PetscInt vStart = depthStratum.begin();
     const PetscInt vEnd = depthStratum.end();
@@ -111,14 +111,14 @@ pylith::topology::TestSubmesh::testCreateSubdomainMesh(void) {
                                                               _data->subdomainLabelValue, "Test subdomain");
     CPPUNIT_ASSERT(_testMesh);
 
-    CPPUNIT_ASSERT_EQUAL(_data->cellDim, _testMesh->dimension());
+    CPPUNIT_ASSERT_EQUAL(_data->cellDim, _testMesh->getDimension());
 
     int result = 0;
-    MPI_Comm_compare(PETSC_COMM_WORLD, _testMesh->comm(), &result);
+    MPI_Comm_compare(PETSC_COMM_WORLD, _testMesh->getComm(), &result);
     CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
 
     // Check vertices
-    const PetscDM dmMesh = _testMesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+    const PetscDM dmMesh = _testMesh->getDM();CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PetscInt vStart = depthStratum.begin();
     const PetscInt vEnd = depthStratum.end();
@@ -160,12 +160,8 @@ pylith::topology::TestSubmesh::testAccessors(void) {
 
     CPPUNIT_ASSERT_EQUAL(size_t(_data->cellDim), _testMesh->getCoordSys()->getSpaceDim());
 
-    CPPUNIT_ASSERT_EQUAL(false, _testMesh->debug());
-    _testMesh->debug(true);
-    CPPUNIT_ASSERT_EQUAL(true, _testMesh->debug());
-
     int result = 0;
-    MPI_Comm_compare(PETSC_COMM_WORLD, _testMesh->comm(), &result);
+    MPI_Comm_compare(PETSC_COMM_WORLD, _testMesh->getComm(), &result);
     CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
 
     PYLITH_METHOD_END;
@@ -180,16 +176,13 @@ pylith::topology::TestSubmesh::testSizes(void) {
     CPPUNIT_ASSERT(_data);
 
     Mesh submesh;
-    CPPUNIT_ASSERT_EQUAL(0, submesh.dimension());
+    CPPUNIT_ASSERT_EQUAL(0, submesh.getDimension());
 
     _buildMesh();
     delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->groupLabel);CPPUNIT_ASSERT(_testMesh);
     CPPUNIT_ASSERT(_testMesh);
 
-    CPPUNIT_ASSERT_EQUAL(_data->cellDim-1, _testMesh->dimension());
-    CPPUNIT_ASSERT_EQUAL(_data->submeshNumCorners, _testMesh->numCorners());
-    CPPUNIT_ASSERT_EQUAL(_data->submeshNumVertices, _testMesh->numVertices());
-    CPPUNIT_ASSERT_EQUAL(_data->submeshNumCells, _testMesh->numCells());
+    CPPUNIT_ASSERT_EQUAL(_data->cellDim-1, _testMesh->getDimension());
 
     PYLITH_METHOD_END;
 } // testSizes
@@ -233,12 +226,12 @@ pylith::topology::TestSubmesh::_buildMesh(void) {
     const int numPoints = _data->groupSize;
     for (PetscInt i = 0; i < numPoints; ++i) {
         const PylithInt groupLabelValue = 1;
-        err = DMSetLabelValue(_domainMesh->dmMesh(), _data->groupLabel, numCells+_data->groupVertices[i],
+        err = DMSetLabelValue(_domainMesh->getDM(), _data->groupLabel, numCells+_data->groupVertices[i],
                               groupLabelValue);CPPUNIT_ASSERT(!err);
     } // for
 
     for (PetscInt c = 0; c < numCells; ++c) {
-        err = DMSetLabelValue(_domainMesh->dmMesh(), _data->subdomainLabel, c,
+        err = DMSetLabelValue(_domainMesh->getDM(), _data->subdomainLabel, c,
                               _data->subdomainLabelValues[c]);PYLITH_CHECK_ERROR(err);
     } // for
 

@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -66,16 +66,16 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
 
     OutputSubfield* subfield = new OutputSubfield();assert(subfield);
 
-    const pylith::topology::Field::SubfieldInfo& info = field.subfieldInfo(name);
+    const pylith::topology::Field::SubfieldInfo& info = field.getSubfieldInfo(name);
     subfield->_subfieldIndex = info.index;
     subfield->_description = info.description;
     subfield->_discretization = info.fe;
-    subfield->_discretization.dimension = mesh.dimension();
+    subfield->_discretization.dimension = mesh.getDimension();
     // Basis order of output should be less than or equai to the basis order of the computed field.
     subfield->_discretization.basisOrder = std::min(basisOrder, info.fe.basisOrder);
 
     PetscErrorCode err;
-    err = DMClone(mesh.dmMesh(), &subfield->_dm);PYLITH_CHECK_ERROR(err);
+    err = DMClone(mesh.getDM(), &subfield->_dm);PYLITH_CHECK_ERROR(err);
     err = PetscObjectSetName((PetscObject)subfield->_dm, name);PYLITH_CHECK_ERROR(err);
 
     PetscFE fe = pylith::topology::FieldOps::createFE(subfield->_discretization, subfield->_dm,
@@ -103,12 +103,12 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
 
     OutputSubfield* subfield = new OutputSubfield();assert(subfield);
 
-    const pylith::topology::Field::SubfieldInfo& info = field.subfieldInfo(name);
+    const pylith::topology::Field::SubfieldInfo& info = field.getSubfieldInfo(name);
     subfield->_subfieldIndex = info.index;
     subfield->_description = info.description;
 
     PetscErrorCode err;
-    err = DMClone(mesh.dmMesh(), &subfield->_dm);PYLITH_CHECK_ERROR(err);
+    err = DMClone(mesh.getDM(), &subfield->_dm);PYLITH_CHECK_ERROR(err);
     err = PetscObjectSetName((PetscObject)subfield->_dm, name);PYLITH_CHECK_ERROR(err);
 
     pylith::topology::VecVisitorMesh fieldVisitor(field, name);
@@ -191,7 +191,7 @@ pylith::meshio::OutputSubfield::extractSubfield(const pylith::topology::Field& f
     PetscErrorCode err;
     PetscSection subfieldSection = NULL;
     PetscInt storageSize = 0;
-    err = PetscSectionGetField(field.localSection(), subfieldIndex, &subfieldSection);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetField(field.getLocalSection(), subfieldIndex, &subfieldSection);PYLITH_CHECK_ERROR(err);
     err = PetscSectionGetStorageSize(subfieldSection, &storageSize);PYLITH_CHECK_ERROR(err);
 
     PetscVec subfieldVector = this->getVector();

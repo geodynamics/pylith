@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -28,6 +28,7 @@
 #include "pylith/problems/Physics.hh" // USES Physics
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <cassert> // USES assert()
@@ -68,7 +69,7 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
     _observers = NULL;
 
     PetscErrorCode err = 0;
-    PetscDM dm = solution.dmMesh();
+    PetscDM dm = solution.getDM();
     PetscDMLabel label;
     PetscDS ds = NULL;
     void* context = NULL;
@@ -109,8 +110,8 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
         msg << "INTERNAL ERROR in ConstraintSimple::initialize()\nCould not find a DS with a field named ''" << _subfieldName << "' in solution";
         throw std::logic_error(msg.str());
     }
-    err = DMPlexRestoreTransitiveClosure(solution.dmMesh(), point, PETSC_FALSE, &clSize, &closure);PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(solution.dmMesh(), _constraintLabel.c_str(), &label);PYLITH_CHECK_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(solution.getDM(), point, PETSC_FALSE, &clSize, &closure);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(solution.getDM(), _constraintLabel.c_str(), &label);PYLITH_CHECK_ERROR(err);
     err = PetscDSAddBoundary(ds, DM_BC_ESSENTIAL, _constraintLabel.c_str(), label, 1, &labelId, i_field,
                              _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void))_fn, NULL, context, NULL);
     PYLITH_CHECK_ERROR(err);
@@ -139,7 +140,7 @@ pylith::feassemble::ConstraintSimple::setSolution(pylith::topology::Field* solut
     assert(solution);
 
     PetscErrorCode err = 0;
-    PetscDM dmSoln = solution->dmMesh();
+    PetscDM dmSoln = solution->getDM();
 
     // Get label for constraint.
     PetscDMLabel dmLabel = NULL;
@@ -147,12 +148,12 @@ pylith::feassemble::ConstraintSimple::setSolution(pylith::topology::Field* solut
 
     void* context = NULL;
     const int labelId = 1;
-    const int fieldIndex = solution->subfieldInfo(_subfieldName.c_str()).index;
+    const int fieldIndex = solution->getSubfieldInfo(_subfieldName.c_str()).index;
     const PylithInt numConstrained = _constrainedDOF.size();
-    assert(solution->localVector());
+    assert(solution->getLocalVector());
     err = DMPlexLabelAddCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
     err = DMPlexInsertBoundaryValuesEssential(dmSoln, t, fieldIndex, numConstrained, &_constrainedDOF[0], dmLabel, 1,
-                                              &labelId, _fn, context, solution->localVector());PYLITH_CHECK_ERROR(err);
+                                              &labelId, _fn, context, solution->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
 
     pythia::journal::debug_t debug(GenericComponent::getName());

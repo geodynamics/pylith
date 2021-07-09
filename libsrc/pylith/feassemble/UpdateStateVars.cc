@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -75,6 +75,7 @@ pylith::feassemble::UpdateStateVars::stateVarsLocalVector(void) {
     return _stateVarsVecLocal;
 } // stateVarsLocalVector
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Initialize layout for updating state variables.
 void
@@ -82,15 +83,15 @@ pylith::feassemble::UpdateStateVars::initialize(const pylith::topology::Field& a
     PYLITH_METHOD_BEGIN;
 
     PetscErrorCode err = 0;
-    PetscDM auxiliaryDM = auxiliaryField.dmMesh();
+    PetscDM auxiliaryDM = auxiliaryField.getDM();
 
-    const pylith::string_vector& subfieldNames = auxiliaryField.subfieldNames();
+    const pylith::string_vector& subfieldNames = auxiliaryField.getSubfieldNames();
     const size_t numAuxiliarySubfields = subfieldNames.size();
     pylith::int_array stateSubfieldIndices(numAuxiliarySubfields);
 
     size_t numStateSubfields = 0;
     for (size_t iSubfield = 0; iSubfield < numAuxiliarySubfields; ++iSubfield) {
-        const pylith::topology::Field::SubfieldInfo& info = auxiliaryField.subfieldInfo(subfieldNames[iSubfield].c_str());
+        const pylith::topology::Field::SubfieldInfo& info = auxiliaryField.getSubfieldInfo(subfieldNames[iSubfield].c_str());
         if (info.description.hasHistory) {
             stateSubfieldIndices[numStateSubfields++] = info.index;
         } // if
@@ -122,9 +123,9 @@ pylith::feassemble::UpdateStateVars::prepare(pylith::topology::Field* auxiliaryF
 
     // Move auxiliaryDM data to global vector.
     assert(auxiliaryField);
-    PetscDM auxiliaryDM = auxiliaryField->dmMesh();
-    err = DMLocalToGlobalBegin(auxiliaryDM, auxiliaryField->localVector(), INSERT_VALUES, _auxiliaryFieldVecGlobal);PYLITH_CHECK_ERROR(err);
-    err = DMLocalToGlobalEnd(auxiliaryDM, auxiliaryField->localVector(), INSERT_VALUES, _auxiliaryFieldVecGlobal);PYLITH_CHECK_ERROR(err);
+    PetscDM auxiliaryDM = auxiliaryField->getDM();
+    err = DMLocalToGlobalBegin(auxiliaryDM, auxiliaryField->getLocalVector(), INSERT_VALUES, _auxiliaryFieldVecGlobal);PYLITH_CHECK_ERROR(err);
+    err = DMLocalToGlobalEnd(auxiliaryDM, auxiliaryField->getLocalVector(), INSERT_VALUES, _auxiliaryFieldVecGlobal);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // prepare
@@ -138,7 +139,7 @@ pylith::feassemble::UpdateStateVars::restore(pylith::topology::Field* auxiliaryF
 
     PetscErrorCode err = 0;
     assert(auxiliaryField);
-    PetscDM auxiliaryDM = auxiliaryField->dmMesh();
+    PetscDM auxiliaryDM = auxiliaryField->getDM();
 
     // Move statevarDM data to global vector.
     err = DMLocalToGlobalBegin(_stateVarsDM, _stateVarsVecLocal, INSERT_VALUES, _stateVarsVecGlobal);PYLITH_CHECK_ERROR(err);
@@ -148,8 +149,8 @@ pylith::feassemble::UpdateStateVars::restore(pylith::topology::Field* auxiliaryF
     err = VecISCopy(_auxiliaryFieldVecGlobal, _stateVarsIS, SCATTER_FORWARD, _stateVarsVecGlobal);PYLITH_CHECK_ERROR(err);
 
     // Move auxiliaryDM data to local vector
-    err = DMGlobalToLocalBegin(auxiliaryDM, _auxiliaryFieldVecGlobal, INSERT_VALUES, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
-    err = DMGlobalToLocalEnd(auxiliaryDM, _auxiliaryFieldVecGlobal, INSERT_VALUES, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMGlobalToLocalBegin(auxiliaryDM, _auxiliaryFieldVecGlobal, INSERT_VALUES, auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+    err = DMGlobalToLocalEnd(auxiliaryDM, _auxiliaryFieldVecGlobal, INSERT_VALUES, auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // restore

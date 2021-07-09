@@ -4,14 +4,14 @@
 #
 # Brad T. Aagaard, U.S. Geological Survey
 # Charles A. Williams, GNS Science
-# Matthew G. Knepley, University of Chicago
+# Matthew G. Knepley, University at Buffalo
 #
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2017 University of California, Davis
+# Copyright (c) 2010-2021 University of California, Davis
 #
-# See COPYING for license information.
+# See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
 #
@@ -21,99 +21,81 @@
 
 import unittest
 
-from pylith.testing.FullTestApp import check_data
-from pylith.testing.FullTestApp import TestCase as FullTestCase
+from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
 
 import meshes
-from axialdisp_soln import AnalyticalSoln
-from axialdisp_gendb import GenerateDB
+import axialdisp_soln
+import axialdisp_gendb
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """Test suite for testing PyLith with 2-D axial extension.
-    """
-    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_xpos", "bc_yneg"]
-    OUTPUT_BOUNDARIES = ["bc_ypos"]
 
     def setUp(self):
-        """Setup for test.
-        """
-        FullTestCase.setUp(self)
-        self.exactsoln = AnalyticalSoln()
+        defaults = {
+            "filename": "output/{name}-{mesh_entity}.h5",
+            "exact_soln": axialdisp_soln.AnalyticalSoln(),
+            "mesh": self.mesh,
+        }
+        self.checks = [
+            Check(
+                mesh_entities=["domain", "bc_ypos", "points"],
+                vertex_fields=["displacement"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["elastic_xpos", "elastic_xneg"],
+                filename="output/{name}-{mesh_entity}_info.h5",
+                cell_fields = ["density", "bulk_modulus", "shear_modulus"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["elastic_xpos", "elastic_xneg"],
+                vertex_fields = ["displacement", "cauchy_strain", "cauchy_stress"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["bc_xneg", "bc_xpos", "bc_yneg"],
+                filename="output/{name}-{mesh_entity}_info.h5",
+                vertex_fields=["initial_amplitude"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["bc_xneg", "bc_xpos", "bc_yneg"],
+                vertex_fields=["displacement"],
+                defaults=defaults,
+            ),
+        ]
 
     def run_pylith(self, testName, args):
-        FullTestCase.run_pylith(self, testName, args, GenerateDB)
-
-    def test_domain_solution(self):
-        filename = "output/{}-domain.h5".format(self.NAME)
-        vertexFields = ["displacement"]
-        check_data(filename, self, self.DOMAIN, vertexFields=vertexFields)
-
-    def test_boundary_solution(self):
-        vertexFields = ["displacement"]
-        for boundary in self.OUTPUT_BOUNDARIES:
-            filename = "output/{}-{}.h5".format(self.NAME, boundary)
-            check_data(filename, self,
-                       self.BOUNDARIES[boundary], vertexFields=vertexFields)
-
-    def test_point_solution(self):
-        vertexFields = ["displacement"]
-        filename = f"output/{self.NAME}-points.h5"
-        check_data(filename, self, self.POINTS, vertexFields=vertexFields)
-
-    def test_material_info(self):
-        cellFields = ["density", "bulk_modulus", "shear_modulus"]
-        for material in self.MATERIALS:
-            filename = "output/{}-{}_info.h5".format(self.NAME, material)
-            check_data(filename, self,
-                       self.MATERIALS[material], cellFields=cellFields)
-
-    def test_material_solution(self):
-        vertexFields = ["displacement", "cauchy_strain", "cauchy_stress"]
-        for material in self.MATERIALS:
-            filename = "output/{}-{}.h5".format(self.NAME, material)
-            check_data(filename, self,
-                       self.MATERIALS[material], vertexFields=vertexFields)
-
-    def test_bcdirichlet_info(self):
-        vertexFields = ["initial_amplitude"]
-        for bc in self.DIRICHLET_BOUNDARIES:
-            filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self,
-                       self.BOUNDARIES[bc], vertexFields=vertexFields)
-
-    def test_bcdirichlet_solution(self):
-        vertexFields = ["displacement"]
-        for bc in self.DIRICHLET_BOUNDARIES:
-            filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self,
-                       self.BOUNDARIES[bc], vertexFields=vertexFields)
+        FullTestCase.run_pylith(self, testName, args, axialdisp_gendb.GenerateDB)
 
 
-# ----------------------------------------------------------------------------------------------------------------------
-class TestQuad(TestCase, meshes.Quad):
-    NAME = "axialdisp_quad"
+# -------------------------------------------------------------------------------------------------
+class TestQuad(TestCase):
 
     def setUp(self):
-        TestCase.setUp(self)
-        TestCase.run_pylith(
-            self, self.NAME, ["axialdisp.cfg", "axialdisp_quad.cfg"])
+        self.name = "axialdisp_quad"
+        self.mesh = meshes.Quad()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["axialdisp.cfg", "axialdisp_quad.cfg"])
         return
 
 
-# ----------------------------------------------------------------------------------------------------------------------
-class TestTri(TestCase, meshes.Tri):
-    NAME = "axialdisp_tri"
+# -------------------------------------------------------------------------------------------------
+class TestTri(TestCase):
 
     def setUp(self):
-        TestCase.setUp(self)
-        TestCase.run_pylith(
-            self, self.NAME, ["axialdisp.cfg", "axialdisp_tri.cfg"])
+        self.name = "axialdisp_tri"
+        self.mesh = meshes.Tri()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["axialdisp.cfg", "axialdisp_tri.cfg"])
         return
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 def test_cases():
     return [
         TestQuad,
@@ -121,7 +103,7 @@ def test_cases():
     ]
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     FullTestCase.parse_args()
 

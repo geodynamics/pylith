@@ -1,0 +1,100 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\usepackage{calc}
+\renewcommand{\familydefault}{phv}
+
+\usepackage{tikz}
+
+\begin{document}
+\usetikzlibrary{positioning,arrows,shapes,calc}
+\input{../../../palettes/figcolors}
+\input{umlstyle}
+
+\begin{tikzpicture}[node distance=10em, line width=1.5pt]
+
+  \node (pythia-component) [abstract-class] {\umlemptyclass{pythia.pyre.components.Component}};
+  \node (petsc-component) [abstract-class] at ($(pythia-component.south)-(0,4em)$) {\umlemptyclass{PetscComponent}};
+
+  \node (pyre-component) [abstract-class, anchor=west] at ($(pythia-component.east)+(2em,0)$) {\umlemptyclass{PyreComponent}};
+  
+  \node (python-problem) [abstract-class] at ($(petsc-component.south)-(0,4em)$) {\umlclass{Python Problem}{%
+      normalizer\\
+      materials\\
+      bc\\
+      interfaces\\
+      gravity\_field\\
+      solution\\
+      observers
+}};
+  \node (cxx-problem) [abstract-class, anchor=north] at ($(python-problem.north)+(12em,0)$) {\umlclass{C++ Problem}{%
+      normalizer\\
+      materials\\
+      bc\\
+      interfaces\\
+      gravity\_field\\
+      solution\\
+      observers\\
+      integrators\\
+      constraints
+}};
+
+
+  \node (python-time-dependent) [concrete-class] at ($(python-problem.south)-(0,6em)$) {\umlclass{Python TimeDependent}{%
+      monitor\\
+      ic}};
+  \node (cxx-time-dependent) [concrete-class, anchor=north] at ($(python-time-dependent.north)+(12em,0)$) {\umlclass{C++ TimeDependent}{%
+      monitor\\
+      ic\\
+      solutionDot\\
+      residual\\
+      jacobianLHSLumpedInv\\
+      ts
+}};
+
+
+  \node (normalizer) [abstract-class, anchor=west] at ($(cxx-problem.east)+(12em,12em)$) {\umlemptyclass{spatialdata::units::Nondimensional}};
+  \node (material) [abstract-class] at ($(normalizer.south)-(0,1em)$) {\umlemptyclass{Material}};
+  \node (bc) [abstract-class] at ($(material.south)-(0,1em)$) {\umlemptyclass{BoundaryCondition}};
+  \node (interface) [abstract-class] at ($(bc.south)-(0,1em)$) {\umlemptyclass{FaultCohesive}};
+  \node (gravity-field) [concrete-class] at ($(interface.south)-(0,1em)$) {\umlemptyclass{spatialdata::spatialdb::GravityField}};
+  \node (solution-observers) [concrete-class] at ($(gravity-field.south)-(0,1em)$) {\umlemptyclass{ObserversSoln}};
+  \node (integrator) [abstract-class] at ($(solution-observers.south)-(0,1em)$) {\umlemptyclass{Integrator}};
+  \node (constraint) [abstract-class] at ($(integrator.south)-(0,1em)$) {\umlemptyclass{Constraint}};
+  \node (progress-monitor) [abstract-class] at ($(constraint.south)-(0,1em)$) {\umlemptyclass{ProgressMonitor}};
+  \node (ic) [abstract-class] at ($(progress-monitor.south)-(0,1em)$) {\umlemptyclass{InitialCondition}};
+  \node (field) [concrete-class] at ($(ic.south)-(0,1em)$) {\umlemptyclass{Field}};
+  \node (petsc-ts) [concrete-class] at ($(field.south)-(0,1em)$) {\umlemptyclass{PetscTS}};
+
+ 
+  
+  % Relationships
+  \draw[inherit] (petsc-component) -- (pythia-component);
+  \draw[inherit] (python-problem) -- (petsc-component);
+  \draw[inherit] (python-time-dependent) -- (python-problem);
+
+  \draw[inherit] (cxx-problem) -- (pyre-component);
+  \draw[inherit] (cxx-time-dependent) -- (cxx-problem);
+
+  \draw[aggregate] ($(cxx-problem.east)+(0,8ex)$) -- (normalizer.west);
+  \draw[aggregate] ($(cxx-problem.east)+(0,5.5ex)$) -- (material.west);
+  \draw[aggregate] ($(cxx-problem.east)+(0,3.0ex)$) -- (bc.west);
+  \draw[aggregate] ($(cxx-problem.east)+(0,0.5ex)$) -- (interface.west);
+  \draw[aggregate] ($(cxx-problem.east)+(0,-2.0ex)$) -- (gravity-field.west);
+  \draw[aggregate] ($(cxx-problem.east)+(0,-4.5ex)$) -- (field.west);
+  \draw[aggregate] ($(cxx-problem.east)+(0,-7.0ex)$) -- (solution-observers.west);
+  \draw[aggregate] ($(cxx-problem.east)+(0,-9.5ex)$) -- (integrator.west);
+  \draw[aggregate] ($(cxx-problem.east)+(0,-12.0ex)$) -- (constraint.west);
+
+  \draw[aggregate] ($(cxx-time-dependent.east)+(0,4ex)$) -- (progress-monitor.west);
+  \draw[aggregate] ($(cxx-time-dependent.east)+(0,1.5ex)$) -- (ic.west);
+  \draw[aggregate] ($(cxx-time-dependent.east)+(0,-1.0ex)$) -- (field.west);
+  \draw[aggregate] ($(cxx-time-dependent.east)+(0,-3.5ex)$) -- (field.west);
+  \draw[aggregate] ($(cxx-time-dependent.east)+(0,-6.0ex)$) -- (field.west);
+  \draw[aggregate] ($(cxx-time-dependent.east)+(0,-8.5ex)$) -- (petsc-ts.west);
+  
+
+
+\end{tikzpicture}
+
+\end{document}

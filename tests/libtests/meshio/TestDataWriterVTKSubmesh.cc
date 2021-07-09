@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -24,6 +24,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 
 // ------------------------------------------------------------------------------------------------
 // Setup testing data.
@@ -107,12 +108,12 @@ pylith::meshio::TestDataWriterVTKSubmesh::testWriteVertexField(void) {
     writer.open(*_submesh, isInfo);
     writer.openTimeStep(t, *_submesh);
 
-    const pylith::string_vector& subfieldNames = vertexField.subfieldNames();
+    const pylith::string_vector& subfieldNames = vertexField.getSubfieldNames();
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(vertexField, *_submesh, subfieldNames[i].c_str(), 1);
         CPPUNIT_ASSERT(subfield);
-        subfield->project(vertexField.outputVector());
+        subfield->project(vertexField.getOutputVector());
         writer.writeVertexField(t, *subfield);
         CPPUNIT_ASSERT(writer._wroteVertexHeader);
         CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
@@ -152,12 +153,12 @@ pylith::meshio::TestDataWriterVTKSubmesh::testWriteCellField(void) {
     writer.open(*_submesh, isInfo);
     writer.openTimeStep(t, *_submesh);
 
-    const pylith::string_vector& subfieldNames = cellField.subfieldNames();
+    const pylith::string_vector& subfieldNames = cellField.getSubfieldNames();
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(cellField, *_submesh, subfieldNames[i].c_str(), 0);
         CPPUNIT_ASSERT(subfield);
-        subfield->project(cellField.outputVector());
+        subfield->project(cellField.getOutputVector());
         writer.writeCellField(t, *subfield);
         CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
         CPPUNIT_ASSERT(writer._wroteCellHeader);

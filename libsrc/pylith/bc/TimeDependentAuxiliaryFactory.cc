@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -321,15 +321,15 @@ pylith::bc::TimeDependentAuxiliaryFactory::updateAuxiliaryField(pylith::topology
 
     PetscErrorCode err = 0;
 
-    PetscSection auxiliaryFieldSection = auxiliaryField->localSection();assert(auxiliaryFieldSection);
+    PetscSection auxiliaryFieldSection = auxiliaryField->getLocalSection();assert(auxiliaryFieldSection);
     PetscInt pStart = 0, pEnd = 0;
     err = PetscSectionGetChart(auxiliaryFieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
     pylith::topology::VecVisitorMesh auxiliaryFieldVisitor(*auxiliaryField);
     PetscScalar* auxiliaryFieldArray = auxiliaryFieldVisitor.localArray();assert(auxiliaryFieldArray);
 
     // Compute offset of time history subfields in auxiliary field.
-    const PetscInt i_startTime = auxiliaryField->subfieldInfo("time_history_start_time").index;
-    const PetscInt i_value = auxiliaryField->subfieldInfo("time_history_value").index;
+    const PetscInt i_startTime = auxiliaryField->getSubfieldInfo("time_history_start_time").index;
+    const PetscInt i_value = auxiliaryField->getSubfieldInfo("time_history_value").index;
 
     // Loop over all points in section.
     for (PetscInt p = pStart; p < pEnd; ++p) {

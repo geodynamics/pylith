@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -76,14 +76,14 @@ pylith::meshio::DataWriter::isOpen(void) const {
 // ----------------------------------------------------------------------
 // Prepare for writing files.
 void
-pylith::meshio::DataWriter::open(const topology::Mesh& mesh,
+pylith::meshio::DataWriter::open(const pylith::topology::Mesh& mesh,
                                  const bool isInfo) {
     PYLITH_METHOD_BEGIN;
 
     _isInfo = isInfo;
     _isOpen = true;
 
-    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+    PetscDM dmMesh = mesh.getDM();assert(dmMesh);
     const char* meshName = NULL;
     PetscObjectGetName((PetscObject) dmMesh, &meshName);
 
@@ -149,7 +149,7 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
 
     assert(coordsGlobalVec);
 
-    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+    PetscDM dmMesh = mesh.getDM();assert(dmMesh);
     PetscDM dmCoord = NULL;
 
     PetscSection section = NULL;
@@ -168,7 +168,7 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
     err = DMPlexGetDepthStratum(dmCoord, 0, NULL, &vEnd);PYLITH_CHECK_ERROR(err);
     cMax = cStart;
     for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
-      if (pylith::topology::MeshOps::isCohesiveCell(dmMesh, cell)) { break; }
+        if (pylith::topology::MeshOps::isCohesiveCell(dmMesh, cell)) { break; }
     }
     PylithInt excludeRanges[4] = {cMax, cEnd, vMax, vEnd};
     PylithInt numExcludes = (cMax < cEnd ? 1 : 0) + (vMax >= 0 ? 1 : 0);
@@ -191,7 +191,7 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
             err = ISGetLocalSize(subpointIS, &n);PYLITH_CHECK_ERROR(err);
             err = ISGetIndices(subpointIS, &indices);PYLITH_CHECK_ERROR(err);
         } // if
-        err = PetscSectionCreate(mesh.comm(), &subSection);PYLITH_CHECK_ERROR(err);
+        err = PetscSectionCreate(mesh.getComm(), &subSection);PYLITH_CHECK_ERROR(err);
         err = PetscSectionSetChart(subSection, pStart, pEnd);PYLITH_CHECK_ERROR(err);
         for (PylithInt q = qStart; q < qEnd; ++q) {
             PylithInt dof, off, p;

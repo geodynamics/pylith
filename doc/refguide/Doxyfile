@@ -994,7 +994,7 @@ QHG_LOCATION           =
 # menu in Eclipse, the contents of the directory containing the HTML and XML
 # files needs to be copied into the plugins directory of eclipse. The name of
 # the directory within the plugins directory should be the same as
-# the ECLIPSE_DOC_ID value. After copying Eclipse needs to be restarted before
+# the ECLIPSE_DOC_ID value. After LICENSE.md Eclipse needs to be restarted before
 # the help appears.
 
 GENERATE_ECLIPSEHELP   = NO

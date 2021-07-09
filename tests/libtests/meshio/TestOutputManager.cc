@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -45,8 +45,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(pylith::meshio::TestOutputManager);
 // ----------------------------------------------------------------------
 // Test constructor
 void
-pylith::meshio::TestOutputManager::testConstructor(void)
-{ // testConstructor
+pylith::meshio::TestOutputManager::testConstructor(void) { // testConstructor
     PYLITH_METHOD_BEGIN;
 
     OutputManager manager;
@@ -54,11 +53,11 @@ pylith::meshio::TestOutputManager::testConstructor(void)
     PYLITH_METHOD_END;
 } // testConstructor
 
+
 // ----------------------------------------------------------------------
 // Test getCoordSys()
 void
-pylith::meshio::TestOutputManager::testCoordsys(void)
-{ // testCoordsys
+pylith::meshio::TestOutputManager::testCoordsys(void) { // testCoordsys
     PYLITH_METHOD_BEGIN;
 
     OutputManager manager;
@@ -72,11 +71,11 @@ pylith::meshio::TestOutputManager::testCoordsys(void)
     PYLITH_METHOD_END;
 } // testCoordsys
 
+
 // ----------------------------------------------------------------------
 // Test writer()
 void
-pylith::meshio::TestOutputManager::testWriter(void)
-{ // testWriter
+pylith::meshio::TestOutputManager::testWriter(void) { // testWriter
     PYLITH_METHOD_BEGIN;
 
     OutputManager manager;
@@ -90,11 +89,11 @@ pylith::meshio::TestOutputManager::testWriter(void)
     PYLITH_METHOD_END;
 } // testWriter
 
+
 // ----------------------------------------------------------------------
 // Test vertexFilter()
 void
-pylith::meshio::TestOutputManager::testVertexFilter(void)
-{ // testVertexFilter
+pylith::meshio::TestOutputManager::testVertexFilter(void) { // testVertexFilter
     PYLITH_METHOD_BEGIN;
 
     OutputManager manager;
@@ -110,11 +109,11 @@ pylith::meshio::TestOutputManager::testVertexFilter(void)
     PYLITH_METHOD_END;
 } // testVertexFilter
 
+
 // ----------------------------------------------------------------------
 // Test cellFilter().
 void
-pylith::meshio::TestOutputManager::testCellFilter(void)
-{ // testCellFilter
+pylith::meshio::TestOutputManager::testCellFilter(void) { // testCellFilter
     PYLITH_METHOD_BEGIN;
 
     OutputManager manager;
@@ -130,11 +129,11 @@ pylith::meshio::TestOutputManager::testCellFilter(void)
     PYLITH_METHOD_END;
 } // testCellFilter
 
+
 // ----------------------------------------------------------------------
 // Test open() and close().
 void
-pylith::meshio::TestOutputManager::testOpenClose(void)
-{ // testOpenClose
+pylith::meshio::TestOutputManager::testOpenClose(void) { // testOpenClose
     PYLITH_METHOD_BEGIN;
 
     OutputManager manager;
@@ -158,11 +157,11 @@ pylith::meshio::TestOutputManager::testOpenClose(void)
     PYLITH_METHOD_END;
 } // testOpenClose
 
+
 // ----------------------------------------------------------------------
 // Test openTimeStep() and closeTimeStep().
 void
-pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
-{ // testOpenCloseTimeStep
+pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void) { // testOpenCloseTimeStep
     PYLITH_METHOD_BEGIN;
 
     OutputManager manager;
@@ -193,11 +192,11 @@ pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
     PYLITH_METHOD_END;
 } // testOpenCloseTimeStep
 
+
 // ----------------------------------------------------------------------
 // Test appendVertexField().
 void
-pylith::meshio::TestOutputManager::testAppendVertexField(void)
-{ // testAppendVertexField
+pylith::meshio::TestOutputManager::testAppendVertexField(void) { // testAppendVertexField
     PYLITH_METHOD_BEGIN;
 
     const char* meshFilename = "data/tri3.mesh";
@@ -220,7 +219,7 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
     iohandler.read(&mesh);
 
     // Set vertex field
-    PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = mesh.getDM();CPPUNIT_ASSERT(dmMesh);
     topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
     const PetscInt vStart = verticesStratum.begin();
     const PetscInt vEnd = verticesStratum.end();
@@ -281,11 +280,11 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
     PYLITH_METHOD_END;
 } // testAppendVertexField
 
+
 // ----------------------------------------------------------------------
 // Test appendCellField().
 void
-pylith::meshio::TestOutputManager::testAppendCellField(void)
-{ // testAppendCellField
+pylith::meshio::TestOutputManager::testAppendCellField(void) { // testAppendCellField
     PYLITH_METHOD_BEGIN;
 
     const char* meshFilename = "data/tri3.mesh";
@@ -306,7 +305,7 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
     iohandler.read(&mesh);
 
     // Set cell field
-    PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = mesh.getDM();CPPUNIT_ASSERT(dmMesh);
     topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();

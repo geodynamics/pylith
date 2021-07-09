@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -46,7 +46,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
 
     assert(mesh);
     assert(coordinates);
-    MPI_Comm comm = mesh->comm();
+    MPI_Comm comm = mesh->getComm();
     PetscInt dim = meshDim;
     PetscErrorCode err;
 
@@ -90,7 +90,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
         err = DMPlexInvertCell(ct, (int *) &cells[coff]);PYLITH_CHECK_ERROR(err);
     }
     err = DMPlexCreateFromCellListPetsc(comm, dim, numCells, numVertices, numCorners, interpolate, &cells[0], spaceDim, &(*coordinates)[0], &dmMesh);PYLITH_CHECK_ERROR(err);
-    mesh->dmMesh(dmMesh);
+    mesh->setDM(dmMesh);
 
     PYLITH_METHOD_END;
 } // buildMesh

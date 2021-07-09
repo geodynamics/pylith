@@ -1,0 +1,64 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\usepackage{calc}
+\renewcommand{\familydefault}{phv}
+
+\usepackage{tikz}
+
+\begin{document}
+\usetikzlibrary{positioning,arrows,shapes,calc}
+\input{../../../palettes/figcolors}
+\input{umlstyle}
+
+\begin{tikzpicture}[node distance=10em, line width=1.5pt]
+
+  % Solution
+  \node (solution) [concrete-class] {\umlclass{Solution}{subfields}};
+
+  % Solution containers
+  \node (solution-containers) [abstract-class, right=of solution] {\umltype{FacilityArray}};
+
+  \node (soln-disp) [concrete-class] at ($(solution-containers.south)-(0,4em)$) {\umlclass{SolnDisp}{displacement}};
+  \node (soln-dispvel) [concrete-class] at ($(soln-disp.south)-(0,1ex)$) {\umlclass{SolnDispVel}{displacement\\ velocity}};
+  \node (soln-displagrange) [concrete-class] at ($(soln-dispvel.south)-(0,1ex)$) {\umlclass{SolnDispLagrange}{displacement\\ lagrange\_fault}};
+  \node (soln-dispvellagrange) [concrete-class] at ($(soln-displagrange.south)-(0,1ex)$) {\umlclass{SolnDispVelLagrange}{displacement\\ velocity\\ lagrange\_fault}};
+  \node (soln-disppres) [concrete-class] at ($(soln-dispvellagrange.south)-(0,1ex)$) {\umlclass{SolnDispPres}{displacement\\ pressure}};
+  \node (soln-disppreslagrange) [concrete-class] at ($(soln-disppres.south)-(0,1ex)$) {\umlclass{SolnDispPresLagrange}{displacement\\ pressure\\ lagrange\_fault}};
+
+  % Solution subfields
+  \node (subfield) [abstract-class, right=of solution-containers, yshift=-8em] {\umlemptyclass{SolutionSubfield}};
+
+  \node (subfield-disp) [concrete-class] at ($(subfield.south)-(0,4em)$) {\umlemptyclass{SubfieldDisplacement}};
+  \node (subfield-vel) [concrete-class] at ($(subfield-disp.south)-(0,1ex)$) {\umlemptyclass{SubfieldVelocity}};
+  \node (subfield-lagrange) [concrete-class] at ($(subfield-vel.south)-(0,1ex)$) {\umlemptyclass{SubfieldLagrangeFault}};
+  \node (subfield-pressure) [concrete-class] at ($(subfield-lagrange.south)-(0,1ex)$) {\umlemptyclass{SubfieldPressure}};
+  \node (subfield-temperature) [concrete-class] at ($(subfield-pressure.south)-(0,1ex)$) {\umlemptyclass{SubfieldTemperature}};
+
+  % Relationships
+  \draw[aggregate] (solution.east) -- (solution-containers.west);
+  \draw[inherit] (soln-disp.north) -- (solution-containers.south);
+  \draw[inherit] (subfield-disp.north) -- (subfield.south);
+
+  \draw[aggregate] (soln-disp.east) -- (subfield-disp.west);
+  
+  \draw[aggregate] (soln-dispvel.east) -- (subfield-disp.west);
+  \draw[aggregate] (soln-dispvel.east) -- (subfield-vel.west);
+  
+  \draw[aggregate] (soln-displagrange.east) -- (subfield-disp.west);
+  \draw[aggregate] (soln-displagrange.east) -- (subfield-lagrange.west);
+  
+  \draw[aggregate] (soln-dispvellagrange.east) -- (subfield-disp.west);
+  \draw[aggregate] (soln-dispvellagrange.east) -- (subfield-vel.west);
+  \draw[aggregate] (soln-dispvellagrange.east) -- (subfield-lagrange.west);
+  
+  \draw[aggregate] (soln-disppres.east) -- (subfield-disp.west);
+  \draw[aggregate] (soln-disppres.east) -- (subfield-pressure.west);
+  
+  \draw[aggregate] (soln-disppreslagrange.east) -- (subfield-disp.west);
+  \draw[aggregate] (soln-disppreslagrange.east) -- (subfield-pressure.west);
+  \draw[aggregate] (soln-disppreslagrange.east) -- (subfield-lagrange.west);
+  
+\end{tikzpicture}
+
+\end{document}

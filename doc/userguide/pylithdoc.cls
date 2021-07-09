@@ -11,7 +11,7 @@
 %
 % Copyright (c) 2010-2017 University of California, Davis
 %
-% See COPYING for license information.
+% See LICENSE.md for license information.
 %
 % ----------------------------------------------------------------------
 %

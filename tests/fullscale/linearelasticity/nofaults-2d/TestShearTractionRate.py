@@ -4,14 +4,14 @@
 #
 # Brad T. Aagaard, U.S. Geological Survey
 # Charles A. Williams, GNS Science
-# Matthew G. Knepley, University of Chicago
+# Matthew G. Knepley, University at Buffalo
 #
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2017 University of California, Davis
+# Copyright (c) 2010-2021 University of California, Davis
 #
-# See COPYING for license information.
+# See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
 #
@@ -21,114 +21,81 @@
 
 import unittest
 
-from pylith.testing.FullTestApp import check_data
-from pylith.testing.FullTestApp import TestCase as FullTestCase
+from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
 
 import meshes
-from sheartraction_rate_soln import AnalyticalSoln
-from sheartraction_rate_gendb import GenerateDB
+import sheartraction_rate_soln
+import sheartraction_rate_gendb
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """Test suite for testing PyLith with 2-D time-dependent simple shear.
-    """
-    DIRICHLET_BOUNDARIES = ["bc_xneg", "bc_yneg"]
-    NEUMANN_BOUNDARIES = ["bc_xpos", "bc_ypos"]
 
     def setUp(self):
-        """Setup for test.
-        """
-        FullTestCase.setUp(self)
-        self.exactsoln = AnalyticalSoln()
-        return
+        defaults = {
+            "filename": "output/{name}-{mesh_entity}.h5",
+            "exact_soln": sheartraction_rate_soln.AnalyticalSoln(),
+            "mesh": self.mesh,
+        }
+        self.checks = [
+            Check(
+                mesh_entities=["domain"],
+                vertex_fields=["displacement"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["elastic_xpos", "elastic_xneg"],
+                filename="output/{name}-{mesh_entity}_info.h5",
+                cell_fields = ["density", "bulk_modulus", "shear_modulus"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["elastic_xpos", "elastic_xneg"],
+                vertex_fields = ["displacement", "cauchy_strain", "cauchy_stress"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos"],
+                filename="output/{name}-{mesh_entity}_info.h5",
+                vertex_fields=["initial_amplitude", "rate_start_time", "rate_amplitude"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos"],
+                vertex_fields=["displacement"],
+                defaults=defaults,
+            ),
+        ]
 
     def run_pylith(self, testName, args):
-        FullTestCase.run_pylith(self, testName, args, GenerateDB)
-        return
-
-    def test_domain_solution(self):
-        filename = "output/{}-domain.h5".format(self.NAME)
-        vertexFields = ["displacement"]
-        check_data(filename, self, self.DOMAIN, vertexFields=vertexFields)
-        return
-
-    def test_material_info(self):
-        cellFields = ["density", "bulk_modulus", "shear_modulus"]
-        for material in self.MATERIALS:
-            filename = "output/{}-{}_info.h5".format(self.NAME, material)
-            check_data(filename, self,
-                       self.MATERIALS[material], cellFields=cellFields)
-        return
-
-    def test_material_solution(self):
-        vertexFields = ["displacement", "cauchy_strain", "cauchy_stress"]
-        for material in self.MATERIALS:
-            filename = "output/{}-{}.h5".format(self.NAME, material)
-            check_data(filename, self,
-                       self.MATERIALS[material], vertexFields=vertexFields)
-        return
-
-    def test_bcdirichlet_info(self):
-        vertexFields = ["initial_amplitude",
-                        "rate_start_time", "rate_amplitude"]
-        for bc in self.DIRICHLET_BOUNDARIES:
-            self.exactsoln.key = bc
-            filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self,
-                       self.BOUNDARIES[bc], vertexFields=vertexFields)
-        return
-
-    def test_bcdirichlet_solution(self):
-        vertexFields = ["displacement"]
-        for bc in self.DIRICHLET_BOUNDARIES:
-            filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self,
-                       self.BOUNDARIES[bc], vertexFields=vertexFields)
-        return
-
-    def test_bcneumann_info(self):
-        vertexFields = ["initial_amplitude",
-                        "rate_start_time", "rate_amplitude"]
-        for bc in self.NEUMANN_BOUNDARIES:
-            self.exactsoln.key = bc
-            filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self,
-                       self.BOUNDARIES[bc], vertexFields=vertexFields)
-        return
-
-    def test_bcneumann_solution(self):
-        vertexFields = ["displacement"]
-        for bc in self.NEUMANN_BOUNDARIES:
-            filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self,
-                       self.BOUNDARIES[bc], vertexFields=vertexFields)
-        return
+        FullTestCase.run_pylith(self, testName, args, sheartraction_rate_gendb.GenerateDB)
 
 
-# ----------------------------------------------------------------------------------------------------------------------
-class TestQuad(TestCase, meshes.Quad):
-    NAME = "sheartraction_rate_quad"
+# -------------------------------------------------------------------------------------------------
+class TestQuad(TestCase):
 
     def setUp(self):
-        TestCase.setUp(self)
-        TestCase.run_pylith(
-            self, self.NAME, ["sheartraction_rate.cfg", "sheartraction_rate_quad.cfg"])
+        self.name = "sheartraction_rate_quad"
+        self.mesh = meshes.Quad()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["sheartraction_rate.cfg", "sheartraction_rate_quad.cfg"])
         return
 
 
-# ----------------------------------------------------------------------------------------------------------------------
-class TestTri(TestCase, meshes.Tri):
-    NAME = "sheartraction_rate_tri"
+# -------------------------------------------------------------------------------------------------
+class TestTri(TestCase):
 
     def setUp(self):
-        TestCase.setUp(self)
-        TestCase.run_pylith(
-            self, self.NAME, ["sheartraction_rate.cfg", "sheartraction_rate_tri.cfg"])
+        self.name = "sheartraction_rate_tri"
+        self.mesh = meshes.Tri()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["sheartraction_rate.cfg", "sheartraction_rate_tri.cfg"])
         return
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 def test_cases():
     return [
         TestQuad,
@@ -136,7 +103,7 @@ def test_cases():
     ]
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     FullTestCase.parse_args()
 

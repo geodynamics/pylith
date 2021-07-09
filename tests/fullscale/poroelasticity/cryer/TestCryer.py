@@ -4,14 +4,14 @@
 #
 # Brad T. Aagaard, U.S. Geological Survey
 # Charles A. Williams, GNS Science
-# Matthew G. Knepley, University of Chicago
+# Matthew G. Knepley, University at Buffalo
 #
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2017 University of California, Davis
+# Copyright (c) 2010-2021 University of California, Davis
 #
-# See COPYING for license information.
+# See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
 #
@@ -21,112 +21,104 @@
 
 import unittest
 
-from pylith.testing.FullTestApp import check_data
-from pylith.testing.FullTestApp import TestCase as FullTestCase
+from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
 
 import meshes
-from cryer_soln import AnalyticalSoln
+import cryer_soln
 
-# We do not include trace_strain in the solution fields, because of the
+# We do not include trace_strain in the test of the solution fields, because of the
 # poor convergence of the series solution.
 SOLUTION_FIELDS = ["displacement", "pressure"]
+SOLUTION_TOLERANCE = 0.5
 
-ratio_tolerance = {'displacement': 1.0, 'pressure': 1.0}
-diff_tolerance = {'displacement': 0.5, 'pressure': 0.5}
-# ----------------------------------------------------------------------------------------------------------------------
-
-
+# -------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
-    """
-    Test suite for testing PyLith with three dimensional poroelasticity
-    by means of Cryer's problem.
-    """
-    DIRICHLET_BOUNDARIES = ["x_neg", "y_neg", "z_neg", "surface_pressure"]
-    NEUMANN_BOUNDARIES = ["surface_traction"]
+
     def setUp(self):
-        """
-        Setup for test.
-        """
-        FullTestCase.setUp(self)
-        self.exactsoln = AnalyticalSoln()
-        return
+        defaults = {
+            "filename": "output/{name}-{mesh_entity}.h5",
+            "exact_soln": cryer_soln.AnalyticalSoln(),
+            "mesh": self.mesh,
+        }
+        self.checks = [
+            Check(
+                mesh_entities=["domain"],
+                vertex_fields=SOLUTION_FIELDS,
+                defaults=defaults,
+                tolerance=SOLUTION_TOLERANCE,
+            ),
+            Check(
+                mesh_entities=["poroelastic"],
+                filename="output/{name}-{mesh_entity}_info.h5",
+                cell_fields = [
+                    "biot_coefficient",
+                    "biot_modulus",
+                    "drained_bulk_modulus",
+                    "fluid_density",
+                    "fluid_viscosity",
+                    "isotropic_permeability",
+                    "porosity",
+                    "shear_modulus",
+                    "solid_density",
+                ],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["poroelastic"],
+                vertex_fields = SOLUTION_FIELDS,
+                defaults=defaults,
+                tolerance=SOLUTION_TOLERANCE,
+            ),
+            Check(
+                mesh_entities=["x_neg", "y_neg", "z_neg", "surface_pressure"],
+                filename="output/{name}-{mesh_entity}_info.h5",
+                vertex_fields=["initial_amplitude"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["x_neg", "y_neg", "z_neg", "surface_pressure"],
+                vertex_fields=SOLUTION_FIELDS,
+                defaults=defaults,
+                tolerance=SOLUTION_TOLERANCE,
+            ),
+        ]
 
     def run_pylith(self, testName, args):
         FullTestCase.run_pylith(self, testName, args)
-        return
-
-    def test_domain_solution(self):
-        filename = "output/{}-domain.h5".format(self.NAME)
-        vertexFields = ["displacement", "pressure"]
-        check_data(filename, self, self.DOMAIN, vertexFields=vertexFields,
-                   ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
-        return
-
-    def test_material_info(self):
-        cellFields = ['biot_coefficient', 'biot_modulus', 'drained_bulk_modulus',
-                        'fluid_density', 'fluid_viscosity', 'isotropic_permeability',
-                        'porosity', 'shear_modulus', 'solid_density']
-        for material in self.MATERIALS:
-            filename = "output/{}-{}_info.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], cellFields=cellFields,
-                       ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
-        return
-
-    def test_material_solution(self):
-        vertexFields = ["displacement", "pressure"]
-        for material in self.MATERIALS:
-            filename = "output/{}-{}.h5".format(self.NAME, material)
-            check_data(filename, self, self.MATERIALS[material], vertexFields=vertexFields,
-                       ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
-        return
-
-    def test_bcdirichlet_info(self):
-        vertexFields = ["initial_amplitude"]
-        for bc in self.DIRICHLET_BOUNDARIES:
-            self.exactsoln.key = bc
-            filename = "output/{}-{}_info.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields,
-                       ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
-        return
-
-    def test_bcdirichlet_solution(self):
-        vertexFields = ["displacement", "pressure"]
-        for bc in self.DIRICHLET_BOUNDARIES:
-            filename = "output/{}-{}.h5".format(self.NAME, bc)
-            check_data(filename, self, self.BOUNDARIES[bc], vertexFields=vertexFields,
-                       ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
-        return
-
-# ----------------------------------------------------------------------------------------------------------------------
 
 
-class TestHex(TestCase, meshes.Hex):
-    NAME = "cryer_hex"
+# -------------------------------------------------------------------------------------------------
+class TestHex(TestCase):
 
     def setUp(self):
-        TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["cryer.cfg", "cryer_hex.cfg"])
+        self.name = "cryer_hex"
+        self.mesh = meshes.Hex()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["cryer.cfg", "cryer_hex.cfg"])
         return
 
 
-# ----------------------------------------------------------------------------------------------------------------------
-class TestTet(TestCase, meshes.Tet):
-    NAME = "cryer_tet"
+# -------------------------------------------------------------------------------------------------
+class TestTet(TestCase):
 
     def setUp(self):
-        TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, ["cryer.cfg", "cryer_tet.cfg"])
+        self.name = "cryer_tet"
+        self.mesh = meshes.Tet()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["cryer.cfg", "cryer_tet.cfg"])
         return
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 def test_cases():
     return [
         TestHex,
         TestTet,
     ]
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     FullTestCase.parse_args()
 

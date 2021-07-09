@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -26,6 +26,7 @@
 #include "pylith/problems/Physics.hh" // USES Physics
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <cassert> // USES assert()
@@ -78,13 +79,13 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
     // the correct one.
     PetscDS prob = NULL;
     PetscDMLabel label = NULL;
-    PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
+    PetscDM dmSoln = solution.getDM();assert(dmSoln);
     PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
 
     void* context = NULL;
     const int labelId = 1;
     const PylithInt numConstrained = _constrainedDOF.size();
-    const PetscInt i_field = solution.subfieldInfo(_subfieldName.c_str()).index;
+    const PetscInt i_field = solution.getSubfieldInfo(_subfieldName.c_str()).index;
     err = DMGetLabel(dmSoln, _constraintLabel.c_str(), &label);PYLITH_CHECK_ERROR(err);
     err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_BD_FIELD, _constraintLabel.c_str(), label, 1, &labelId, i_field,
                              numConstrained, &_constrainedDOF[0], (void (*)())_kernelConstraint, NULL, context, NULL);PYLITH_CHECK_ERROR(err);
@@ -129,25 +130,25 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::topology::Field* so
     assert(_physics);
 
     PetscErrorCode err = 0;
-    PetscDM dmSoln = solution->dmMesh();
+    PetscDM dmSoln = solution->getDM();
 
     // Set auxiliary data
     PetscDMLabel dmLabel = NULL;
     PetscInt labelValue = 0;
-    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     // Get label for constraint.
     err = DMGetLabel(dmSoln, _constraintLabel.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
 
     void* context = NULL;
     const int labelId = 1;
-    const int fieldIndex = solution->subfieldInfo(_subfieldName.c_str()).index;
+    const int fieldIndex = solution->getSubfieldInfo(_subfieldName.c_str()).index;
     const PylithInt numConstrained = _constrainedDOF.size();
-    assert(solution->localVector());
+    assert(solution->getLocalVector());
     err = DMPlexLabelAddFaceCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMPlexInsertBoundaryValuesEssentialBdField(dmSoln, t, solution->localVector(), fieldIndex,
+    err = DMPlexInsertBoundaryValuesEssentialBdField(dmSoln, t, solution->getLocalVector(), fieldIndex,
                                                      numConstrained, &_constrainedDOF[0], dmLabel, 1, &labelId,
-                                                     _kernelConstraint, context, solution->localVector());PYLITH_CHECK_ERROR(err);
+                                                     _kernelConstraint, context, solution->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
 
     pythia::journal::debug_t debug(GenericComponent::getName());
@@ -175,7 +176,7 @@ pylith::feassemble::ConstraintSpatialDB::_setKernelConstants(const pylith::topol
     const pylith::real_array& constants = _physics->getKernelConstants(dt);
 
     PetscDS prob = NULL;
-    PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
+    PetscDM dmSoln = solution.getDM();assert(dmSoln);
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.

@@ -2,14 +2,14 @@
 #
 # Brad T. Aagaard, U.S. Geological Survey
 # Charles A. Williams, GNS Science
-# Matthew G. Knepley, University of Chicago
+# Matthew G. Knepley, University at Buffalo
 #
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2017 University of California, Davis
+# Copyright (c) 2010-2021 University of California, Davis
 #
-# See COPYING for license information.
+# See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
 #
@@ -17,92 +17,42 @@
 #
 # @brief Mesh information for test cases.
 
+from pylith.testing.FullTestApp import MeshEntity
+
 
 class Tri(object):
     """Mesh information for tri mesh.
     """
-    DOMAIN = {
-        "ncells": 902,
-        "ncorners": 3,
-        "nvertices": 492,
-    }
-    MATERIALS = {
-        "poroelastic": {
-            "ncells": 902,
-            "ncorners": 3,
-            "nvertices": 492,
-        }
-    }
-    BOUNDARIES = {
-        "x_neg": {
-            "ncells": 20,
-            "ncorners": 2,
-            "nvertices": 21,
-        },
-        "x_pos": {
-            "ncells": 20,
-            "ncorners": 2,
-            "nvertices": 21,
-        },
-        "y_pos_neu": {
-            "ncells": 20,
-            "ncorners": 2,
-            "nvertices": 21,
-        },
-        "y_pos_dir": {
-            "ncells": 20,
-            "ncorners": 2,
-            "nvertices": 21,
-        },
-        "y_neg": {
-            "ncells": 20,
-            "ncorners": 2,
-            "nvertices": 21,
-        },
+    ENTITIES = {
+        "domain": MeshEntity(ncells=902, ncorners=3, nvertices=492),
+
+        # Materials
+        "poroelastic": MeshEntity(ncells=902, ncorners=3, nvertices=492),
+
+        # Boundaries
+        "x_neg": MeshEntity(ncells=20, ncorners=2, nvertices=21),
+        "x_pos": MeshEntity(ncells=20, ncorners=2, nvertices=21),
+        "y_neg": MeshEntity(ncells=20, ncorners=2, nvertices=21),
+        "y_pos_dir": MeshEntity(ncells=20, ncorners=2, nvertices=21),
+        "y_pos_neu": MeshEntity(ncells=20, ncorners=2, nvertices=21),
     }
 
 
 class Quad(object):
     """Mesh information for quad mesh.
     """
-    DOMAIN = {
-        "ncells": 400,
-        "ncorners": 4,
-        "nvertices": 441,
-    }
-    MATERIALS = {
-        "poroelastic": {
-            "ncells": 400,
-            "ncorners": 4,
-            "nvertices": 441,
-        }
-    }
-    BOUNDARIES = {
-        "x_neg": {
-            "ncells": 20,
-            "ncorners": 2,
-            "nvertices": 21,
-        },
-        "x_pos": {
-            "ncells": 20,
-            "ncorners": 2,
-            "nvertices": 21,
-        },
-        "y_pos_neu": {
-            "ncells": 20,
-            "ncorners": 2,
-            "nvertices": 21,
-        },
-        "y_pos_dir": {
-            "ncells": 20,
-            "ncorners": 2,
-            "nvertices": 21,
-        },
-        "y_neg": {
-            "ncells": 20,
-            "ncorners": 2,
-            "nvertices": 21,
-        },
+    ENTITIES = {
+        "domain": MeshEntity(ncells=400, ncorners=4, nvertices=441),
+
+        # Materials
+        "poroelastic": MeshEntity(ncells=400, ncorners=4, nvertices=441),
+
+        # Boundaries
+        "x_neg": MeshEntity(ncells=20, ncorners=2, nvertices=21),
+        "x_pos": MeshEntity(ncells=20, ncorners=2, nvertices=21),
+        "y_neg": MeshEntity(ncells=20, ncorners=2, nvertices=21),
+        "y_pos_dir": MeshEntity(ncells=20, ncorners=2, nvertices=21),
+        "y_pos_neu": MeshEntity(ncells=20, ncorners=2, nvertices=21),
     }
 
 

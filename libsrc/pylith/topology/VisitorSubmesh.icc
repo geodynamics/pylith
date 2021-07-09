@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -50,12 +50,12 @@ void
 pylith::topology::VecVisitorSubmesh::initialize(const SubmeshIS& submeshIS) {
     clear();
 
-    _dm = submeshIS.submesh().dmMesh();assert(_dm);
+    _dm = submeshIS.submesh().getDM();assert(_dm);
 
-    _localVec = _field.localVector();assert(_localVec);
+    _localVec = _field.getLocalVector();assert(_localVec);
 
     PetscErrorCode err;
-    PetscSection section = _field.localSection();assert(section);
+    PetscSection section = _field.getLocalSection();assert(section);
     const PetscIS subpointIS = submeshIS.indexSet();
     err = PetscSectionCreateSubmeshSection(section, subpointIS, &_section);PYLITH_CHECK_ERROR(err);assert(_section);
 } // initialize
@@ -215,10 +215,10 @@ pylith::topology::MatVisitorSubmesh::MatVisitorSubmesh(const PetscMat mat,
     _subsection(NULL),
     _globalSection(NULL),
     _globalSubsection(NULL) { // constructor
-    _dm = submeshIS.submesh().dmMesh();assert(_dm);
+    _dm = submeshIS.submesh().getDM();assert(_dm);
 
     PetscIS subpointIS = submeshIS.indexSet();
-    PetscSection section = field.localSection();assert(section);
+    PetscSection section = field.getLocalSection();assert(section);
     PetscSF sf = NULL;
     PetscErrorCode err;
     err = PetscSectionCreateSubmeshSection(section, subpointIS, &_subsection);PYLITH_CHECK_ERROR(err);assert(_subsection);
@@ -320,7 +320,7 @@ pylith::topology::SubmeshIS::SubmeshIS(const Mesh& submesh) :
     _indexSet(NULL),
     _size(0),
     _indices(0) {
-    PetscDM dmMesh = submesh.dmMesh();assert(dmMesh);
+    PetscDM dmMesh = submesh.getDM();assert(dmMesh);
     PetscErrorCode err;
     err = DMPlexGetSubpointIS(dmMesh, &_indexSet);PYLITH_CHECK_ERROR(err);
     if (_indexSet) {

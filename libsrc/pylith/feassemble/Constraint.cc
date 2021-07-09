@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -159,8 +159,8 @@ pylith::feassemble::Constraint::initialize(const pylith::topology::Field& soluti
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("initialize(solution="<<solution.getLabel()<<")");
 
-    delete _boundaryMesh;_boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.mesh(), _constraintLabel.c_str());assert(_boundaryMesh);
-    PetscDM dmBoundary = _boundaryMesh->dmMesh();assert(dmBoundary);
+    delete _boundaryMesh;_boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _constraintLabel.c_str());assert(_boundaryMesh);
+    PetscDM dmBoundary = _boundaryMesh->getDM();assert(dmBoundary);
     pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 
     assert(_physics);

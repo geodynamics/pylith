@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -21,6 +21,7 @@
 #include "OutputSolnBoundary.hh" // implementation of class methods
 
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES createLowerDimMesh()
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
@@ -79,9 +80,9 @@ pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::
 
     OutputSoln::verifyConfiguration(solution);
 
-    PetscDM dmMesh = solution.dmMesh();assert(dmMesh);
+    PetscDM dmSoln = solution.getDM();assert(dmSoln);
     PetscBool hasLabel = PETSC_FALSE;
-    PetscErrorCode err = DMHasLabel(dmMesh, _label.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMHasLabel(dmSoln, _label.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel) {
         std::ostringstream msg;
         msg << "Mesh missing group of vertices '" << _label << " for output using solution boundary observer '"
@@ -103,12 +104,12 @@ pylith::meshio::OutputSolnBoundary::_writeSolnStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     if (!_boundaryMesh) {
-        _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.mesh(), _label.c_str());
+        _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _label.c_str());
         assert(_boundaryMesh);
     } // if
 
-    const pylith::string_vector& subfieldNames = _expandSubfieldNames(solution);
-    PetscVec solutionVector = solution.outputVector();assert(solutionVector);
+    const pylith::string_vector& subfieldNames = pylith::topology::FieldOps::getSubfieldNamesDomain(solution);
+    PetscVec solutionVector = solution.getOutputVector();assert(solutionVector);
 
     _openSolnStep(t, *_boundaryMesh);
     const size_t numSubfieldNames = subfieldNames.size();
@@ -119,7 +120,7 @@ pylith::meshio::OutputSolnBoundary::_writeSolnStep(const PylithReal t,
         subfield = OutputObserver::_getSubfield(solution, *_boundaryMesh, subfieldNames[iField].c_str());assert(subfield);
         subfield->project(solutionVector);
 
-        OutputObserver::_appendField(0.0, *subfield);
+        OutputObserver::_appendField(t, *subfield);
     } // for
     _closeSolnStep();
 

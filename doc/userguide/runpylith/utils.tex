@@ -1,0 +1,256 @@
+\section{Utilities}
+\label{sec:runpylith:utilities}
+
+The PyLith distribution contains several utilities for working with PyLith simulations and processing output.
+These Python scripts are all installed into the same \filename{bin} directory as the \filename{pylith} application with the exception of the \filename{pyre\_doc.py} script which is installed as part of Pythia/Pyre.
+
+\begin{description}
+  \item[\filename{pyre\_doc}] Display the Pyre properties and facilities available for a given component.
+  \item[\filename{pylith\_cfgsearch}] Search and display metadata in \filename{.cfg} files.
+  \item[\filename{pylith\_runner}] Run all PyLith simulations in a given path.
+  \item[\filename{pylith\_eqinfo}] Compute earthquake rupture metrics from PyLith output.
+  \item[\filename{pylith\_genxdmf}] Generate Xdmf files from HDF5 files written by PyLith.
+\end{description}
+  
+\subsection{\filename{pyre\_doc.py}}
+\newfeature{v3.0.0}
+
+This utility is part of the Pythia/Pyre framework.
+It will be installed to the \filename{bin} directory where Pythia/Pyre is installed.
+This utility extracts the Python docstrings and help information for Pyre components.
+
+\warning{This utility does not work on the PyLithApp application object because it is a mpi.Application object.}
+
+\begin{shell}
+pyre_doc.py [--help] [--short] OBJECT
+\end{shell}
+
+\begin{description}
+\item[\commandline{-{}-help}] Display help information for script.
+\item[\commandline{-{}-short}] Display only the docstrings for the specified module or object. The default is to display the information for the specified object and all child objects, such as classes within a module.
+\item[OBJECT] Full path to Python module or object, such as \filename{pylith.problems.Problem} (module) or \filename{pylith.problems.Problem.Problem} (object).
+\end{description}
+
+\begin{shell}[Example of running \filename{pyre\_doc.py} on \filename{pylith.problems.Problem}]
+$ pyre_doc.py pylith.problems.Problem
+No help available for module pylith.problems.Problem.
+
+class Problem
+Python abstract base class for crustal dynamics problems.
+
+    FACTORY: problem
+
+facilities of 'problem':
+    bc=<component name>: Boundary conditions.
+        current value: 'emptybin', from {default}
+        configurable as: emptybin, bc
+    defaults=<component name>: Default options for problem.
+        current value: 'problem_defaults', from {default}
+        configurable as: problem_defaults, defaults
+    gravity_field=<component name>: Database used for gravity field.
+        current value: 'nullcomponent', from {default}
+        configurable as: nullcomponent, gravity_field
+    interfaces=<component name>: Interior surfaces with constraints or constitutive models.
+        current value: 'emptybin', from {default}
+        configurable as: emptybin, interfaces
+    materials=<component name>: Materials in problem.
+        current value: 'homogeneous', from {default}
+        configurable as: homogeneous, materials
+    normalizer=<component name>: Nondimensionalizer for problem.
+        current value: 'nondimelasticquasistatic', from {default}
+        configurable as: nondimelasticquasistatic, normalizer
+    solution=<component name>: Solution field for problem.
+        current value: 'solution', from {default}
+        configurable as: solution
+    solution_observers=<component name>: Observers (e.g., output) for solution.
+        current value: 'singlesolnobserver', from {default}
+        configurable as: singlesolnobserver, solution_observers
+properties of 'problem':
+    formulation=<str>: Formulation for equations.
+        default value: 'quasistatic'
+        current value: 'quasistatic', from {default}
+        validator: (in ['quasistatic', 'dynamic', 'dynamic_imex'])
+    help=<bool>: prints a screen that describes my traits
+        default value: False
+        current value: False, from {default}
+    help-components=<bool>: prints a screen that describes my subcomponents
+        default value: False
+        current value: False, from {default}
+    help-persistence=<bool>: prints a screen that describes my persistent store
+        default value: False
+        current value: False, from {default}
+    help-properties=<bool>: prints a screen that describes my properties
+        default value: False
+        current value: False, from {default}
+    solver=<str>: Type of solver to use ['linear', 'nonlinear'].
+        default value: 'linear'
+        current value: 'linear', from {default}
+        validator: (in ['linear', 'nonlinear'])
+\end{shell}
+      
+\subsection{\filename{pylith\_cfgsearch}}
+\newfeature{v3.0.0}
+
+This utility searches and displays the metadata in \filename{.cfg} files based on criteria provided via the command line.
+
+\begin{shell}
+pylith_cfgsearch [--help] [--path SEARCHPATH] [--display DISPLAY] [--verbose] [--keywords KEYWORDS]
+    [--features FEATURES] [--authors AUTHORS] [--version VERSION] [--incompatible]
+\end{shell}
+
+\begin{description}
+\item[-{}-help] DIsplay help information for script.
+\item[-{}-path SEARCHPATH] Search path for .cfg files (default: .).
+\item[-{}-display DISPLAY] List of metadata to display in search results (default: all).
+\item[-{}-keywords KEYWORDS] Comma delimited list of keywords for filtering search results (default: None).
+\item[-{}-features FEATURES] Comma delimited list of features for filtering search results (default: None).
+\item[-{}-authors AUTHORS] Comma delimited list of authors for filtering search results (default: None).
+\item[-{}-version VERSION] PyLith version for filtering search results (default: None).
+\item[-{}-verbose] Report missing metadata (default: False).
+\item[-{}-incompatible] Filter search results to show incompatible parameter files (default: False).
+\end{description}
+
+\begin{shell}[Example of running \filename{pylith\_cfgsearch} in \filename{examples/2d/strikeslip}.]
+$ pylith_cfgsearch
+step01_slip.cfg v1.0.0; requires PyLith >=3.0 and <4.0
+    Coseismic prescribed slip with zero displacement Dirichlet boundary conditions.
+    Authors: Brad Aagaard
+    Keywords: example, 2D, strike slip, prescribed slip
+    Features:
+        Triangular cells, pylith.meshio.MeshIOCubit, pylith.problems.TimeDependent, pylith.materials.Elasticity,
+        pylith.materials.IsotropicLinearElasticity, pylith.faults.FaultCohesiveKin, pylith.faults.KinSrcStep, field split
+        preconditioner, Schur complement preconditioner, pylith.bc.DirichletTimeDependent, spatialdata.spatialdb.UniformDB,
+        pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Static simulation
+    pylith step01_slip.cfg
+step02_slip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
+    Coseismic prescribed slip with velocity Dirichlet boundary conditions.
+    Authors: Brad Aagaard
+    Keywords: example, 2D, strike slip, prescribed slip, velocity boundary conditions
+    Features:
+        Triangular cells, pylith.meshio.MeshIOCubit, pylith.problems.TimeDependent, pylith.materials.Elasticity,
+        pylith.materials.IsotropicLinearElasticity, pylith.faults.FaultCohesiveKin, pylith.faults.KinSrcStep, field split
+        preconditioner, Schur complement preconditioner, pylith.bc.DirichletTimeDependent, spatialdata.spatialdb.UniformDB,
+        pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Quasistatic simulation, spatialdata.spatialdb.SimpleDB
+    pylith step02_slip_velbc.cfg
+step03_multislip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
+    Coseismic prescribed slip with multiple ruptures and velocity Dirichlet boundary conditions.
+    Authors: Brad Aagaard
+    Keywords: example, 2D, strike slip, prescribed slip, multiple fault ruptures, velocity boundary conditions
+    Features:
+        Triangular cells, pylith.meshio.MeshIOCubit, pylith.problems.TimeDependent, pylith.materials.Elasticity,
+        pylith.materials.IsotropicLinearElasticity, pylith.faults.FaultCohesiveKin, pylith.faults.KinSrcStep, field split
+        preconditioner, Schur complement preconditioner, pylith.bc.DirichletTimeDependent, spatialdata.spatialdb.UniformDB,
+        pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Quasistatic simulation, spatialdata.spatialdb.SimpleDB
+    pylith step03_multislip_velbc.cfg
+\end{shell}
+
+\begin{shell}[Example of running \filename{pylith\_cfgsearch} in \filename{examples/2d/strikeslip}, limiting output to the description and keywords.]
+$ pylith_cfgsearch --display=description,keywords
+step01_slip.cfg
+    Coseismic prescribed slip with zero displacement Dirichlet boundary conditions.
+    Keywords: example, 2D, strike slip, prescribed slip
+step02_slip_velbc.cfg
+    Coseismic prescribed slip with velocity Dirichlet boundary conditions.
+    Keywords: example, 2D, strike slip, prescribed slip, velocity boundary conditions
+step03_multislip_velbc.cfg
+    Coseismic prescribed slip with multiple ruptures and velocity Dirichlet boundary conditions.
+    Keywords: example, 2D, strike slip, prescribed slip, multiple fault ruptures, velocity boundary conditions
+\end{shell}
+
+\begin{shell}[Example of running \filename{pylith\_cfgsearch} in \filename{examples/2d/strikeslip}, filtering search results to quasistatic simulations.]
+$ pylith_cfgsearch --features="Quasistatic simulation"
+step02_slip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
+    Coseismic prescribed slip with velocity Dirichlet boundary conditions.
+    Authors: Brad Aagaard
+    Keywords: example, 2D, strike slip, prescribed slip, velocity boundary conditions
+    Features:
+        Triangular cells, pylith.meshio.MeshIOCubit, pylith.problems.TimeDependent, pylith.materials.Elasticity,
+        pylith.materials.IsotropicLinearElasticity, pylith.faults.FaultCohesiveKin, pylith.faults.KinSrcStep, field split
+        preconditioner, Schur complement preconditioner, pylith.bc.DirichletTimeDependent, spatialdata.spatialdb.UniformDB,
+        pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Quasistatic simulation, spatialdata.spatialdb.SimpleDB
+    pylith step02_slip_velbc.cfg
+step03_multislip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
+    Coseismic prescribed slip with multiple ruptures and velocity Dirichlet boundary conditions.
+    Authors: Brad Aagaard
+    Keywords: example, 2D, strike slip, prescribed slip, multiple fault ruptures, velocity boundary conditions
+    Features:
+        Triangular cells, pylith.meshio.MeshIOCubit, pylith.problems.TimeDependent, pylith.materials.Elasticity,
+        pylith.materials.IsotropicLinearElasticity, pylith.faults.FaultCohesiveKin, pylith.faults.KinSrcStep, field split
+        preconditioner, Schur complement preconditioner, pylith.bc.DirichletTimeDependent, spatialdata.spatialdb.UniformDB,
+        pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Quasistatic simulation, spatialdata.spatialdb.SimpleDB
+    pylith step03_multislip_velbc.cfg
+\end{shell}
+
+
+\subsection{\filename{pylith\_runner}}
+\newfeature{v3.0.0}
+
+The runner utility searches a directory path for \filename{.cfg} files with \property{arguments} in the simulation metadata (see Section~\vref{sec:simulation:metadata} for details).
+It uses those arguments to run PyLith simulations.
+
+\important{The runner utility only knows how to run PyLith simulations, it does not know how to do pre- or post-processing.}
+
+\begin{shell}
+pylith_runner [--help] [--path SEARCHPATH] [--verbose]
+\end{shell}
+
+\begin{description}
+\item[\commandline{-{}-help}] Display help information for script.
+\item[\commandline{-{}-path} SEARCHPATH] Search path for .cfg files (default: .).
+\item[\commandline{-{}-verbose}] Report missing metadata (default: False).
+\end{description}
+
+\begin{shell}[Example of running \filename{pylith\_runner} all simulations in \filename{examples/2d} (output omitted)]
+$ pylith_runner --path=examples/2d
+\end{shell}
+
+
+\subsection{\filename{pylith\_eqinfo}}
+
+This utility computes the moment magnitude, seismic moment, seismic
+potency, and average slip at user-specified time snapshots from PyLith
+fault HDF5 output. The utility works with output from simulations
+with either prescribed slip and/or spontaneous rupture. Currently,
+we compute the shear modulus from a user-specified spatial database
+at the centroid of the fault cells. In the future we plan to account
+for lateral variations in shear modulus across the fault when calculating
+the seismic moment. The Python script is a Pyre application, so its
+parameters can be specified using \filename{cfg} and command line arguments
+just like PyLith. The Pyre properties and facilities include:
+\begin{inventory}
+\propertyitem{output\_filename}{Filename for output of slip information.}
+\propertyitem{faults}{Array of fault names.}
+\propertyitem{filename\_pattern}{Filename pattern in C/Python format for creating
+filename for each fault. Default is \filename{output/fault\_\%s.h5}.}
+\propertyitem{snapshots}{Array of timestamps for slip snapshosts ([-1] means
+use last time step in file, which is the default).}
+\propertyitem{snapshot\_units}{Units for timestamps in array of snapshots.}
+\facilityitem{db\_properties}{Spatial database for elastic properties.}
+\facilityitem{coordsys}{Coordinate system associated with mesh in simulation.}
+\end{inventory}
+
+\subsection{\filename{pylith\_genxdmf}}
+\label{sec:pylith:genxdmf}
+
+This utility generates Xdmf files from HDF5 files that conform to the
+layout used by PyLith. It is a simple Python script with a single
+command line argument with the file pattern of HDF5 files for which
+Xdmf files should be generated. Typically, it is used to regenerate
+Xdmf files that get corrupted or lost due to renaming and moving. It
+is also useful in updating Xdmf files when users add fields to HDF5
+files during post-processing.
+\begin{shell}
+$ pylith_genxdmf --files=FILE_OR_FILE_PATTERN
+\end{shell}
+The default value for \filename{FILE\_OR\_FILE\_PATTERN} is \filename{*.h5}.
+
+\userwarning{If the HDF5 files contain external datasets, then this
+  utility should be run from the same relative path to the HDF5 files
+  as when they were created. For example, if a PyLith simulation was
+  run from directory \filename{work} and HDF5 files were generated in
+  \filename{output/work}, then the utility should be run from the
+  directory \filename{work}. Furthermore, a visualization tool, such
+  as ParaView, should also be started from the working directory
+  \filename{work}.}
+
+% End of file

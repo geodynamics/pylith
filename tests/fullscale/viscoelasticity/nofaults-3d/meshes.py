@@ -2,14 +2,14 @@
 #
 # Brad T. Aagaard, U.S. Geological Survey
 # Charles A. Williams, GNS Science
-# Matthew G. Knepley, University of Chicago
+# Matthew G. Knepley, University at Buffalo
 #
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2017 University of California, Davis
+# Copyright (c) 2010-2021 University of California, Davis
 #
-# See COPYING for license information.
+# See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
 #
@@ -17,102 +17,44 @@
 #
 # @brief Mesh information for test cases.
 
+from pylith.testing.FullTestApp import MeshEntity
+
 
 class Tet(object):
     """Mesh information for tri mesh.
     """
-    DOMAIN = {
-        "ncells": 530,
-        "ncorners": 4,
-        "nvertices": 149,
-    }
-    MATERIALS = {
-        "viscomat": {
-            "ncells": 530,
-            "ncorners": 4,
-            "nvertices": 149,
-        },
-    }
-    BOUNDARIES = {
-        "bc_xneg": {
-            "ncells": 32,
-            "ncorners": 3,
-            "nvertices": 25,
-        },
-        "bc_xpos": {
-            "ncells": 32,
-            "ncorners": 3,
-            "nvertices": 25,
-        },
-        "bc_yneg": {
-            "ncells": 32,
-            "ncorners": 3,
-            "nvertices": 25,
-        },
-        "bc_ypos": {
-            "ncells": 32,
-            "ncorners": 3,
-            "nvertices": 25,
-        },
-        "bc_zneg": {
-            "ncells": 32,
-            "ncorners": 3,
-            "nvertices": 25,
-        },
-        "bc_zpos": {
-            "ncells": 32,
-            "ncorners": 3,
-            "nvertices": 25,
-        },
+    ENTITIES = {
+        "domain": MeshEntity(ncells=530, ncorners=4, nvertices=149),
+
+        # Materials
+        "viscomat": MeshEntity(ncells=530, ncorners=4, nvertices=149),
+
+        # Boundaries
+        "bc_xneg": MeshEntity(ncells=32, ncorners=3, nvertices=25),
+        "bc_xpos": MeshEntity(ncells=32, ncorners=3, nvertices=25),
+        "bc_yneg": MeshEntity(ncells=32, ncorners=3, nvertices=25),
+        "bc_ypos": MeshEntity(ncells=32, ncorners=3, nvertices=25),
+        "bc_zneg": MeshEntity(ncells=32, ncorners=3, nvertices=25),
+        "bc_zpos": MeshEntity(ncells=32, ncorners=3, nvertices=25),
     }
 
 
 class Hex(object):
     """Mesh information for hex mesh.
     """
-    DOMAIN = {
-        "ncells": 64,
-        "ncorners": 8,
-        "nvertices": 125,
-    }
-    MATERIALS = {
-        "viscomat": {
-            "ncells": 64,
-            "ncorners": 8,
-            "nvertices": 125,
-        },
-    }
-    BOUNDARIES = {
-        "bc_xneg": {
-            "ncells": 16,
-            "ncorners": 4,
-            "nvertices": 25,
-        },
-        "bc_xpos": {
-            "ncells": 16,
-            "ncorners": 4,
-            "nvertices": 25,
-        },
-        "bc_yneg": {
-            "ncells": 16,
-            "ncorners": 4,
-            "nvertices": 25,
-        },
-        "bc_ypos": {
-            "ncells": 16,
-            "ncorners": 4,
-            "nvertices": 25,
-        },
-        "bc_zneg": {
-            "ncells": 16,
-            "ncorners": 4,
-            "nvertices": 25,
-        },
-        "bc_zpos": {
-            "ncells": 16,
-            "ncorners": 4,
-            "nvertices": 25,
-        },
+    ENTITIES = {
+        "domain": MeshEntity(ncells=64, ncorners=8, nvertices=125),
+
+        # Materials
+        "viscomat": MeshEntity(ncells=64, ncorners=8, nvertices=125),
+
+        # Boundaries
+        "bc_xneg": MeshEntity(ncells=16, ncorners=4, nvertices=25),
+        "bc_xpos": MeshEntity(ncells=16, ncorners=4, nvertices=25),
+        "bc_yneg": MeshEntity(ncells=16, ncorners=4, nvertices=25),
+        "bc_ypos": MeshEntity(ncells=16, ncorners=4, nvertices=25),
+        "bc_zneg": MeshEntity(ncells=16, ncorners=4, nvertices=25),
+        "bc_zpos": MeshEntity(ncells=16, ncorners=4, nvertices=25),
     }
 
 

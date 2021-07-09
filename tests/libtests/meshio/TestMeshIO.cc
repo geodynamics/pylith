@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -36,27 +36,30 @@
 #include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::logic_error
 
-static PetscErrorCode DMPlexInvertCell_Private(PetscInt dim, PetscInt numCorners, PetscInt cone[])
-{
+static PetscErrorCode
+DMPlexInvertCell_Private(PetscInt dim,
+                         PetscInt numCorners,
+                         PetscInt cone[]) {
 #define SWAPCONE(cone,i,j)  \
-  do {                      \
-    int _cone_tmp;          \
-    _cone_tmp = (cone)[i];  \
-    (cone)[i] = (cone)[j];  \
-    (cone)[j] = _cone_tmp;  \
-  } while (0)
+    do {                      \
+        int _cone_tmp;          \
+        _cone_tmp = (cone)[i];  \
+        (cone)[i] = (cone)[j];  \
+        (cone)[j] = _cone_tmp;  \
+    } while (0)
 
-  PetscFunctionBegin;
-  if (dim != 3) PetscFunctionReturn(0);
-  switch (numCorners) {
-  case 4: SWAPCONE(cone,0,1); break;
-  case 6: SWAPCONE(cone,0,1); break;
-  case 8: SWAPCONE(cone,1,3); break;
-  default: break;
-  }
-  PetscFunctionReturn(0);
+    PetscFunctionBegin;
+    if (dim != 3) { PetscFunctionReturn(0);}
+    switch (numCorners) {
+    case 4: SWAPCONE(cone,0,1);break;
+    case 6: SWAPCONE(cone,0,1);break;
+    case 8: SWAPCONE(cone,1,3);break;
+    default: break;
+    }
+    PetscFunctionReturn(0);
 #undef SWAPCONE
 }
+
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -119,9 +122,9 @@ pylith::meshio::TestMeshIO::_createMesh(void) { // _createMesh
     for (PylithInt coff = 0; coff < bound; coff += data->numCorners) {
         err = DMPlexInvertCell_Private(data->cellDim, data->numCorners, &cells[coff]);PYLITH_CHECK_ERROR(err);
     } // for
-    err = DMPlexCreateFromCellListPetsc(_mesh->comm(), data->cellDim, data->numCells, data->numVertices, data->numCorners, interpolateMesh, cells, data->spaceDim, data->vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateFromCellListPetsc(_mesh->getComm(), data->cellDim, data->numCells, data->numVertices, data->numCorners, interpolateMesh, cells, data->spaceDim, data->vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
     delete [] cells;
-    _mesh->dmMesh(dmMesh);
+    _mesh->setDM(dmMesh);
 
     // Material ids
     PylithInt cStart, cEnd;
@@ -173,10 +176,10 @@ pylith::meshio::TestMeshIO::_checkVals(void) { // _checkVals
     const TestMeshIO_Data* data = _getData();CPPUNIT_ASSERT(data);
 
     // Check mesh dimension
-    CPPUNIT_ASSERT_EQUAL(data->cellDim, _mesh->dimension());
+    CPPUNIT_ASSERT_EQUAL(data->cellDim, _mesh->getDimension());
     const int spaceDim = data->spaceDim;
 
-    PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = _mesh->getDM();CPPUNIT_ASSERT(dmMesh);
 
     // Check vertices
     topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);

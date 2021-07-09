@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -26,6 +26,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <iostream> // USES std::cout
@@ -209,20 +210,6 @@ pylith::meshio::OutputSoln::_writeSolnStep(const PylithReal t,
 
     PYLITH_METHOD_END;
 } // _writeSolnStep
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get names of subfields for output.
-pylith::string_vector
-pylith::meshio::OutputSoln::_expandSubfieldNames(const pylith::topology::Field& solution) const {
-    PYLITH_METHOD_BEGIN;
-
-    if ((1 == _subfieldNames.size()) && (std::string("all") == _subfieldNames[0])) {
-        PYLITH_METHOD_RETURN(solution.subfieldNames());
-    } // if
-
-    PYLITH_METHOD_RETURN(_subfieldNames);
-} // _expandSubfieldNames
 
 
 // End of file

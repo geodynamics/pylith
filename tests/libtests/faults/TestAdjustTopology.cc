@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -91,12 +91,12 @@ pylith::faults::TestAdjustTopology::testAdjustTopology(void) {
 
 #if 0 // DEBUGGING
     PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_INFO_DETAIL);
-    DMView(_mesh->dmMesh(), PETSC_VIEWER_STDOUT_WORLD);
+    DMView(_mesh->getDM(), PETSC_VIEWER_STDOUT_WORLD);
     PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
 #endif
 
-    CPPUNIT_ASSERT_EQUAL(_data->cellDim, size_t(_mesh->dimension()));
-    PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+    CPPUNIT_ASSERT_EQUAL(_data->cellDim, size_t(_mesh->getDimension()));
+    PetscDM dmMesh = _mesh->getDM();CPPUNIT_ASSERT(dmMesh);
 
     // Check vertices
     topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
@@ -204,8 +204,8 @@ pylith::faults::TestAdjustTopology::_initialize(void) {
     pylith::meshio::MeshIOAscii iohandler;
     iohandler.filename(_data->filename);
     iohandler.read(_mesh);
-    CPPUNIT_ASSERT(_mesh->numCells() > 0);
-    CPPUNIT_ASSERT(_mesh->numVertices() > 0);
+    CPPUNIT_ASSERT(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    CPPUNIT_ASSERT(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     PYLITH_METHOD_END;
 } // _initialize

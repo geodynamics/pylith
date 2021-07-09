@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -241,11 +241,11 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void) {
     CPPUNIT_ASSERT(_mesh);
     const pylith::topology::Field* auxField = _bc->auxField();CPPUNIT_ASSERT(auxField);
     CPPUNIT_ASSERT_EQUAL(std::string("auxiliary subfields"), std::string(auxField->getLabel()));
-    CPPUNIT_ASSERT_EQUAL(_mesh->dimension(), auxField->getSpaceDim());
+    CPPUNIT_ASSERT_EQUAL(_mesh->getDimension(), auxField->getSpaceDim());
 
     PylithReal norm = 0.0;
     PylithReal t = _data->t;
-    const PetscDM dm = auxField->dmMesh();CPPUNIT_ASSERT(dm);
+    const PetscDM dm = auxField->getDM();CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery query(*auxField);
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->normalizer);
@@ -308,7 +308,7 @@ pylith::bc::TestAbsorbingDampers::testComputeRHSResidual(void) {
     // Verify values in solution field.
     PylithReal norm = 0.0;
     PylithReal t = _data->t;
-    const PetscDM dmSoln = _solution->dmMesh();CPPUNIT_ASSERT(dmSoln);
+    const PetscDM dmSoln = _solution->getDM();CPPUNIT_ASSERT(dmSoln);
     pylith::topology::FieldQuery* query = _db->_auxiliaryFieldsQuery;
     query->openDB(queryDB, _data->lengthScale);
 

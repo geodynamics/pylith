@@ -4,14 +4,14 @@
 #
 # Brad T. Aagaard, U.S. Geological Survey
 # Charles A. Williams, GNS Science
-# Matthew G. Knepley, University of Chicago
+# Matthew G. Knepley, University at Buffalo
 #
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2017 University of California, Davis
+# Copyright (c) 2010-2021 University of California, Davis
 #
-# See COPYING for license information.
+# See LICENSE.md for license information.
 #
 # ======================================================================
 #
@@ -27,18 +27,87 @@ from pylith.testing import has_h5py
 from pylith.apps.PyLithApp import PyLithApp
 
 
-# ----------------------------------------------------------------------------------------------------------------------
-class TestCase(unittest.TestCase):
+# -------------------------------------------------------------------------------------------------
+class MeshEntity(object):
+
+    def __init__(self, ncells, ncorners, nvertices):
+        """Mesh entity (domain, boundary, material, fault, etc).
+
+        Args:
+            ncells (int)
+                Number of cells in entity.
+            ncorners (int)
+                Number of vertices in cell.
+            nvertices (int)
+                Number of vertices in entity.
+        """
+        self.ncells = ncells
+        self.ncorners = ncorners
+        self.nvertices = nvertices
+
+# -------------------------------------------------------------------------------------------------
+class Check(object):
+
+    def __init__(self, mesh_entities, filename=None, mesh=None, vertex_fields=[], cell_fields=[], exact_soln=None, tolerance=None, defaults={}):
+        """Set parameters for checking PyLith output.
+
+        Args
+            mesh_entities (list of str):
+                List of mesh entities corresponding to names of domain, materials, boundaries, etc.
+            filename (str):
+                File name template with name and mesh_entity keys.
+            mesh (object):
+                Object with number of points for mesh entities.
+            vertex_fields (list of str):
+                List of vertex fields to check.
+            cell_fields (list of str):
+                List of cell fields to check.
+            exact_soln (object):
+                Object with functions returning expected values for fields.
+            defaults (dict):
+                Dictionary with default values.
+        """
+        self.tolerance = 1.0e-5
+        self.zero_tolerance = 1.0e-10
+        self.vertex_fields = []
+        self.cell_fields = []
+
+        for key, value in defaults.items():
+            setattr(self, key, value)
+
+        self.mesh_entities = mesh_entities
+
+        if filename:
+            self.filename = filename
+        if mesh:
+            self.mesh = mesh
+        if vertex_fields:
+            self.vertex_fields = vertex_fields
+        if cell_fields:
+            self.cell_fields = cell_fields
+        if exact_soln:
+            self.exact_soln = exact_soln
+        if tolerance:
+            self.tolerance = tolerance
+
+# -------------------------------------------------------------------------------------------------
+class FullTestCase(unittest.TestCase):
     """Generic test case for full-scale test.
     """
-    NAME = None  # Set in child class.
     VERBOSITY = 0
     RUN_PYLITH = True
 
     def setUp(self):
-        """Setup for test.
-        """
-        return
+        super().setUp()
+        self.name = None
+        self.mesh = None
+
+    def test_output(self):
+        for check in self.checks:
+            for mesh_entity in check.mesh_entities:
+                filename = check.filename.format(name=self.name, mesh_entity=mesh_entity)
+                with self.subTest(filename=filename):
+                    check_data(self, filename, check, mesh_entity, check.mesh.ENTITIES[mesh_entity])
 
     def run_pylith(self, testName, args, generatedb=None):
         if self.RUN_PYLITH:
@@ -54,25 +123,8 @@ class TestCase(unittest.TestCase):
         parser.add_argument("--verbose", action="store_true", dest="verbosity", default=0)
         parser.add_argument("--skip-pylith-run", action="store_false", dest="run_pylith", default=True)
         args = parser.parse_args()
-        TestCase.VERBOSITY = args.verbosity
-        TestCase.RUN_PYLITH = args.run_pylith
-        return
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-class Example(TestCase):
-    """Base class for running an example.
-
-    Need one test_* method to instantiate object and run PyLith via setUp().
-    """
-    NAME = None
-    PYLITH_ARGS = None
-
-    def setUp(self):
-        TestCase.setUp(self)
-        TestCase.run_pylith(self, self.NAME, self.PYLITH_ARGS)
-
-    def test_example(self):
+        FullTestCase.VERBOSITY = args.verbosity
+        FullTestCase.RUN_PYLITH = args.run_pylith
         return
 
 
@@ -102,16 +154,15 @@ class TestDriver(object):
 # ----------------------------------------------------------------------------------------------------------------------
 class HDF5Checker(object):
 
-    def __init__(self, filename, testcase, mesh, ratio_tolerance=1.e-5, diff_tolerance=1e-5):
+    def __init__(self, filename, testcase, mesh):
         """Constructor.
         """
         import h5py
+        self.debug = False
+
         self.h5 = h5py.File(filename, "r")
         self.testcase = testcase
-        self.exactsoln = testcase.exactsoln
         self.mesh = mesh
-        self.ratio_tolerance = ratio_tolerance
-        self.diff_tolerance = diff_tolerance
         self.vertices = None
         self.cellCentroids = None
         return
@@ -124,8 +175,7 @@ class HDF5Checker(object):
             self.testcase.assertTrue("vertices" in self.h5["geometry"].keys())
             vertices = self.h5["geometry/vertices"][:]
             (nvertices, spaceDim) = vertices.shape
-            self.testcase.assertEqual(self.mesh['nvertices'], nvertices)
-            self.testcase.assertEqual(self.exactsoln.SPACE_DIM, spaceDim)
+            self.testcase.assertEqual(self.mesh.nvertices, nvertices)
             self.vertices = vertices
         return self.vertices
 
@@ -138,134 +188,93 @@ class HDF5Checker(object):
             self.testcase.assertTrue("cells" in self.h5["topology"].keys())
             cells = self.h5["topology/cells"][:].astype(numpy.int)
             ncells, ncorners = cells.shape
-            centroids = numpy.zeros((ncells, self.exactsoln.SPACE_DIM), dtype=numpy.float64)
+            (nvertices, spaceDim) = vertices.shape
+            centroids = numpy.zeros((ncells, spaceDim), dtype=numpy.float64)
             for icorner in range(ncorners):
                 centroids[:,:] += vertices[cells[:, icorner],:]
             centroids /= float(ncorners)
             self.cellCentroids = centroids
         return self.cellCentroids
 
-    def checkVertexField(self, fieldName):
+    def checkVertexField(self, fieldName, mesh_entity, exact_soln, tolerance, zero_tolerance):
         self.testcase.assertTrue("vertex_fields" in self.h5.keys())
         fieldsH5 = self.h5["vertex_fields"].keys()
         self.testcase.assertTrue(fieldName in fieldsH5,
-                                 "Could not find field '{}' in vertex fields {}".format(fieldName, fieldsH5))
+                                 f"Could not find field in vertex fields {fieldsH5}")
         field = self.h5["vertex_fields/" + fieldName][:]
 
         vertices = self._getVertices()
         (nvertices, spaceDim) = vertices.shape
-        fieldE = self.exactsoln.getField(fieldName, vertices)
+        self.testcase.assertEqual(exact_soln.SPACE_DIM, spaceDim)
+        fieldE = exact_soln.getField(fieldName, mesh_entity, vertices)
         mask = None
-        if "getMask" in dir(self.exactsoln):
-            mask = self.exactsoln.getMask(fieldName, vertices)
-        self._checkField(fieldName, fieldE, field, vertices, mask)
+        if "getMask" in dir(exact_soln):
+            mask = exact_soln.getMask(fieldName, mesh_entity, vertices)
+        self._checkField(fieldE, field, mask, tolerance, zero_tolerance)
         return
 
-    def checkCellField(self, fieldName):
+    def checkCellField(self, fieldName, mesh_entity, exact_soln, tolerance, zero_tolerance):
         self.testcase.assertTrue("cell_fields" in self.h5.keys(),
-                                 "Missing 'cell_fields'. Groups: {}".format(self.h5.keys()))
+                                 f"Missing 'cell_fields'. Groups: {self.h5.keys()}".format)
         fieldsH5 = self.h5["cell_fields"].keys()
         self.testcase.assertTrue(fieldName in fieldsH5,
-                                 "Could not find field '{}' in cell fields {}".format(fieldName, fieldsH5))
+                                 f"Could not find field in cell fields {fieldsH5}")
         field = self.h5["cell_fields/" + fieldName][:]
 
         centroids = self._getCellCentroids()
-        (ncells, spaceDim) = centroids.shape
-        fieldE = self.exactsoln.getField(fieldName, centroids)
+        fieldE = exact_soln.getField(fieldName, mesh_entity, centroids)
         mask = None
-        self._checkField(fieldName, fieldE, field, centroids, mask)
+        self._checkField(fieldE, field, mask, tolerance, zero_tolerance)
         return
 
-    def _checkField(self, fieldName, fieldE, field, pts, maskField):
+    def _checkField(self, fieldE, field, maskField, tolerance, zero_tolerance):
         (nstepsE, nptsE, ncompsE) = fieldE.shape
         (nsteps, npts, ncomps) = field.shape
-        self.testcase.assertEqual(nstepsE, nsteps, msg="Expected {} time steps, got {} for field {}".format(
-            nstepsE, nsteps, fieldName))
-        self.testcase.assertEqual(nptsE, npts, msg="Expected {} points, got {} for field {}".format(
-            nptsE, npts, fieldName))
-        self.testcase.assertEqual(ncompsE, ncomps, msg="Expected {} components, got {} for field: {}".format(
-            ncompsE, ncomps, fieldName))
+        self.testcase.assertEqual(nstepsE, nsteps, msg="Mismatch in number of time steps")
+        self.testcase.assertEqual(nptsE, npts, msg="Mismatch in number of points")
+        self.testcase.assertEqual(ncompsE, ncomps, msg="Mismatch in number of components")
 
-        toleranceAbsMask = 0.1
-        ratio_tolerance = self.ratio_tolerance
-        diff_tolerance = self.diff_tolerance
-        #maskZero = fieldE != 0.0
-        maskZero = numpy.abs(fieldE) > 1e-15
-        scale = numpy.mean(numpy.abs(fieldE[maskZero].ravel())) if numpy.sum(maskZero) > 0 else 1.0
-        for istep in range(nsteps):
-            for icomp in range(ncomps):
-                okay = numpy.zeros((npts,), dtype=numpy.bool)
-                ratio = numpy.zeros((npts,))
+        scale = numpy.mean(numpy.abs(fieldE).ravel())
+        vtolerance = scale*tolerance if scale > zero_tolerance else tolerance
+        okay = numpy.abs(field - fieldE) < vtolerance
 
-                maskR = numpy.abs(fieldE[istep,:, icomp]) > toleranceAbsMask
-                ratio[maskR] = numpy.abs(1.0 - field[istep, maskR, icomp] / fieldE[istep, maskR, icomp])
-                if numpy.sum(maskR) > 0:
-                    okay[maskR] = ratio[maskR] < ratio_tolerance
+        if not maskField is None:
+            okay[:, maskField, :] = True
 
-                maskD = ~maskR
-                diff = numpy.abs(field[istep,:, icomp] - fieldE[istep,:, icomp]) / scale
-                if numpy.sum(maskD) > 0:
-                    okay[maskD] = diff[maskD] < diff_tolerance
+        msg = []
+        if numpy.sum(okay) != nsteps*npts*ncomps:
+            if self.debug:
+                msg += [f"Expected values: {fieldE[:]}"]
+                msg += [f"Computed values: {field[:]}"]
 
-                if not maskField is None:
-                    okay[maskField] = True
-
-                if numpy.sum(okay) != npts:
-                    print("Error in component {} of field '{}' at time step {}.".format(icomp, fieldName, istep))
-                    # Debug Output
-                #    print("Expected values: ", fieldE[istep, :, :])
-                #    print("Output values: ", field[istep, :, :])
-
-                    print("Total # not okay: %d" % numpy.sum(~okay))
-                    n_okay_maskR = numpy.logical_and(~okay, maskR)
-                    if numpy.sum(n_okay_maskR) > 0:
-                        print("Ratio (maskR), # not okay: %d" % numpy.sum(n_okay_maskR))
-                        print("Expected values (not okay): %s" % fieldE[istep, n_okay_maskR, icomp])
-                        print("Computed values (not okay): %s" % field[istep, n_okay_maskR, icomp])
-                        print("Ratio (not okay): %s" % ratio[n_okay_maskR])
-                        print("Ratio Coordinates (not okay): %s" % pts[n_okay_maskR, :])
-                        print("Tolerance Absolute Mask: %s" % toleranceAbsMask)
-                        print("Ratio Tolerance: %s" % ratio_tolerance)
-
-                    n_okay_maskD = numpy.logical_and(~okay, maskD)
-                    if numpy.sum(n_okay_maskD) > 0:
-                        print("Relative Diff (maskD), # not okay: %d" % numpy.sum(n_okay_maskD))
-                        print("Expected values (not okay): %s" % fieldE[istep, n_okay_maskD, icomp])
-                        print("Computed values (not okay): %s" % field[istep, n_okay_maskD, icomp])
-                        print("Relative diff (not okay): %s" % diff[n_okay_maskD])
-                        print("Relative diff Coordinates (not okay): %s" % pts[n_okay_maskD, :])
-                        print("Diff Tolerance: %f" % diff_tolerance)
-                        print("Scale: %10.4e" % scale)
-                    self.testcase.assertEqual(npts, numpy.sum(okay))
-
-        return
+            msg += [""]
+            msg += [f"Expected values (not okay): {fieldE[~okay]}"]
+            msg += [f"Computed values (not okay): {field[~okay]}"]
+            #msg += [f"Coordinates: {pts[~okay, :]}"]
+            msg += [f"Tolerance: {vtolerance}"]
+        self.testcase.assertEqual(nsteps*npts*ncomps, numpy.sum(okay), msg="\n".join(msg))
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def check_data(filename, testcase, mesh, vertexFields=[], cellFields=[], ratio_tolerance=1.e-5, diff_tolerance=1.e-5):
+def check_data(testcase, filename, check, mesh_entity, mesh):
     """Check vertex and cell fields in specified file.
     """
-    separateChecker = False
     if not has_h5py():
         return
 
-    if isinstance(ratio_tolerance, dict):
-        separateChecker = True
-        defaultRatio = 1e-5
+    checker = HDF5Checker(filename, testcase, mesh)
 
-    checker = HDF5Checker(filename, testcase, mesh, ratio_tolerance=ratio_tolerance, diff_tolerance=diff_tolerance)
-    for field in vertexFields:
-        if separateChecker:
-            checker = HDF5Checker(filename, testcase, mesh, ratio_tolerance=ratio_tolerance.get(str(field), defaultRatio), diff_tolerance=diff_tolerance.get(str(field), defaultRatio))
-        if testcase.VERBOSITY > 0:
-            print("Checking vertex field '{}' in file {}.".format(field, filename))
-        checker.checkVertexField(field)
-    for field in cellFields:
-        if separateChecker:
-            checker = HDF5Checker(filename, testcase, mesh, ratio_tolerance=ratio_tolerance.get(str(field), defaultRatio), diff_tolerance=diff_tolerance.get(str(field), defaultRatio))
-        if testcase.VERBOSITY > 0:
-            print("Checking cell field '{}' in file {}.".format(field, filename))
-        checker.checkCellField(field)
+    for field in check.vertex_fields:
+        field_tolerance = check.tolerance[field] if isinstance(check.tolerance, dict) else check.tolerance
+        field_zero_tolerance = check.zero_tolerance[field] if isinstance(check.zero_tolerance, dict) else check.zero_tolerance
+        with testcase.subTest(vertex_field=field):
+            checker.checkVertexField(field, mesh_entity, check.exact_soln, field_tolerance, field_zero_tolerance)
+
+    for field in check.cell_fields:
+        field_tolerance = check.tolerance[field] if isinstance(check.tolerance, dict) else check.tolerance
+        field_zero_tolerance = check.zero_tolerance[field] if isinstance(check.zero_tolerance, dict) else check.zero_tolerance
+        with testcase.subTest(cell_field=field):
+            checker.checkCellField(field, mesh_entity, check.exact_soln, field_tolerance, field_zero_tolerance)
     return
 
 

@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -43,11 +43,8 @@ class pylith::topology::Mesh { // Mesh
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
-    /** Default constructor.
-     *
-     * @param isSubmesh True if mesh is a submesh of another mesh.
-     */
-    Mesh(const bool isSubmesh=false);
+    /// Default constructor.
+    Mesh(void);
 
     /** Constructor with dimension and communicator.
      *
@@ -63,26 +60,25 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
+    /** Create clone.
+     *
+     * @returns Clone of mesh.
+     */
+    Mesh* clone(void) const;
+
     /** Get DMPlex mesh.
      *
      * @returns DMPlex mesh.
      */
-    PetscDM dmMesh(void) const;
+    PetscDM getDM(void) const;
 
     /** Set DMPlex mesh.
      *
      * @param DMPlex mesh.
      * @param label Label for mesh.
      */
-    void dmMesh(PetscDM dm,
-                const char* label="domain");
-
-    /** Get name of label for all mesh cells, including hybrid cells.
-     *
-     * @returns Name of label.
-     */
-    static
-    const char* const getCellsLabelName(void);
+    void setDM(PetscDM dm,
+               const char* label="domain");
 
     /** Set coordinate system.
      *
@@ -96,59 +92,23 @@ public:
      */
     const spatialdata::geocoords::CoordSys* getCoordSys(void) const;
 
-    /** Set debug flag.
-     *
-     * @param value Turn on debugging if true.
-     */
-    void debug(const bool value);
-
-    /** Get debug flag.
-     *
-     * @param Get debugging flag.
-     */
-    bool debug(void) const;
-
     /** Get dimension of mesh.
      *
      * @returns Dimension of mesh.
      */
-    int dimension(void) const;
-
-    /** Get the number of vertices per cell
-     *
-     * @returns Number of vertices per cell.
-     */
-    int numCorners(void) const;
-
-    /** Get number of vertices in mesh.
-     *
-     * @returns Number of vertices in mesh.
-     */
-    int numVertices(void) const;
-
-    /** Get number of cells in mesh.
-     *
-     * @returns Number of cells in mesh.
-     */
-    int numCells(void) const;
-
-    /** Is mesh composed of simplex cells?
-     *
-     * @returns Number of cells in mesh.
-     */
-    bool isSimplex(void) const;
+    int getDimension(void) const;
 
     /** Get MPI communicator associated with mesh.
      *
      * @returns MPI communicator.
      */
-    MPI_Comm comm(void) const;
+    MPI_Comm getComm(void) const;
 
     /** Get MPI rank.
      *
      * @returns MPI rank.
      */
-    int commRank(void) const;
+    int getCommRank(void) const;
 
     /** View mesh.
      *
@@ -161,17 +121,20 @@ public:
      *   latex in a file  :refined.tex:ascii_latex
      *   VTK vtk:refined.vtk:ascii_vtk
      */
-    void view(const char* viewOption="") const;
+    void view(const char* viewOption="::ascii_info_detail") const;
+
+    /** Get name of label for all mesh cells, including hybrid cells.
+     *
+     * @returns Name of label.
+     */
+    static
+    const char* const getCellsLabelName(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-    PetscDM _dmMesh;
-
-    spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
-    bool _debug; ///< Debugging flag for mesh.
-    const bool _isSubmesh; ///< True if mesh is a submesh of another mesh.
-    bool _isSimplex; ///< True if mesh has simplex cells (line, tri, tet).
+    spatialdata::geocoords::CoordSys* _coordSys; ///< Coordinate system.
+    PetscDM _dm; ///< PETSc DM with topology.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
@@ -180,8 +143,6 @@ private:
     const Mesh& operator=(const Mesh&); ///< Not implemented
 
 }; // Mesh
-
-#include "Mesh.icc"
 
 #endif // pylith_topology_mesh_hh
 

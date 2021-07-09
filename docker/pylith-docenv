@@ -1,0 +1,18 @@
+# docker build --build-arg BASE_IMAGE=${VARIABLE_NAME} -f DOCKERFILE . -t IMAGE_NAME .
+
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE} as base
+
+LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
+
+USER ${TEST_USER}
+
+
+ENV src_dir=${TOPSRC_DIR}/pylith PYTHONUSERBASE=${INSTALL_DIR}/dependencies
+
+COPY --chown=pylith-tester:pylith-tester . ${src_dir}
+WORKDIR ${src_dir}/docs-sphinx
+RUN python3 -m pip install --user sphinx==3.5 myst-parser pydata-sphinx-theme
+RUN ./build.sh
+
+CMD /bin/bash

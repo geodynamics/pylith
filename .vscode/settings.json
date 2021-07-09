@@ -4,6 +4,10 @@
     "telemetry.enableCrashReporter": false,
     "uncrustify.configPath.linux": "developer/uncrustify.cfg",
     "uncrustify.configPath.osx": "developer/uncrustify.cfg",
+    "[markdown]": {
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 100,
+    },
     "files.associations": {
         "string": "cpp",
         "*.icc": "cpp",
@@ -13,5 +17,33 @@
     "python.formatting.autopep8Args": [
         "-max-line-length",
         "120"
+    ],
+    "cSpell.words": [
+        "aprepro",
+        "automake",
+        "autotools",
+        "cuda",
+        "deviatoric",
+        "discretization",
+        "dm",
+        "drucker",
+        "elastoplastic",
+        "neumann",
+        "nodeset",
+        "partitioner",
+        "petsc",
+        "plex",
+        "pointwise",
+        "prager",
+        "preconditioner",
+        "prestep",
+        "pset",
+        "raphson",
+        "scec",
+        "snes",
+        "spatialdata",
+        "trelis",
+        "viscoelastic",
+        "xdmf"
     ]
 }

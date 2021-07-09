@@ -1,0 +1,57 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\usepackage{calc}
+\renewcommand{\familydefault}{phv}
+
+\usepackage{tikz}
+
+\begin{document}
+\usetikzlibrary{positioning,arrows,shapes,calc}
+\input{../../../palettes/figcolors}
+\input{umlstyle}
+
+\begin{tikzpicture}[node distance=10em, line width=1.5pt]
+
+  \node (pyre-component) [abstract-class] {\umlemptyclass{PyreComponent}};
+
+  \node (physics) [abstract-class] at ($(pyre-component.south)-(0,4em)$) {\umlemptyclass{Physics}};
+
+  \node (bc) [abstract-class] at ($(physics.south)-(0,4em)$) {\umlemptyclass{BoundaryCondition}};
+
+  \node (dirichlet-td) [concrete-class] at ($(bc.south)-(0,4em)$) {\umlemptyclass{DirichletTimeDependent}};
+  \node (dirichlet-userfn) [concrete-class] at ($(dirichlet-td.south)-(0,1ex)$) {\umlemptyclass{DirichletUserFn}};
+  \node (neumann-td) [concrete-class] at ($(dirichlet-userfn.south)-(0,1ex)$) {\umlemptyclass{NeumannTimeDependent}};
+  \node (absorbing-dampers) [concrete-class] at ($(neumann-td.south)-(0,1ex)$) {\umlemptyclass{AbsorbingDampers}};
+
+
+  \node (generic-component) [abstract-class, anchor=west] at ($(pyre-component.east)+(12em,0)$) {\umlemptyclass{GenericComponent}};
+
+  \node (field-factory) [abstract-class] at ($(generic-component.south)-(0,4em)$) {\umlemptyclass{FieldFactory}};
+
+  \node (auxiliary-factory) [abstract-class] at ($(field-factory.south)-(0,4em)$) {\umlemptyclass{AuxiliaryFactory}};
+
+  \node (td-auxiliary-factory) [concrete-class] at ($(auxiliary-factory.south)-(0,4em)$) {\umlemptyclass{TimeDependentAuxiliaryFactory}};
+  \node (absorbing-auxiliary-factory) [concrete-class] at ($(td-auxiliary-factory.south)-(0,1ex)$) {\umlemptyclass{AbsorbingDampersAuxiliaryFactory}};
+
+ 
+  
+  % Relationships
+  \draw[inherit] (physics) -- (pyre-component);
+  \draw[inherit] (bc) -- (physics);
+  \draw[inherit] (dirichlet-td) -- (bc);
+
+  \draw[inherit] (field-factory) -- (generic-component);
+  \draw[inherit] (auxiliary-factory) -- (field-factory);
+  \draw[inherit] (td-auxiliary-factory) -- (auxiliary-factory);
+
+  
+  \draw[aggregate] (dirichlet-td.east) -- (td-auxiliary-factory.west);
+  \draw[aggregate] (neumann-td.east) -- (td-auxiliary-factory.west);
+  \draw[aggregate] (absorbing-dampers.east) -- (absorbing-auxiliary-factory.west);
+
+
+
+\end{tikzpicture}
+
+\end{document}

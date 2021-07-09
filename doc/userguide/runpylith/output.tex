@@ -31,48 +31,18 @@ The parameters for the \object{OutputPhysics} are:
   \propertyitem{data\_fields}{List of solution subfields to observer/output (default=all which will output all of the subfields);}
   \facilityitem{writer}{Writer for data (default=\object{DataWriterHDF5});}
   \facilityitem{trigger}{Trigger defining how often output is written (default=\object{OutputTriggerStep}); and}
-  \facilityitem{field\_filter}{Filter for output fields (default=\object{FieldFilterNone}).}
+  \facilityitem{output\_basis\_order}{Basis order for output of
+    fields. Valid values are 0 and 1 (default=1).}
 \end{inventory}
+
+Fields with a basis order of 0 are kept at a basis order of 0 when output.
+Fields with a basis order of 1 are written as vertex fields, whereas fields with a basis order of 0 are written as cell fields.
 
 \begin{cfg}[\object{PhysicsOutput} parameters in a \filename{cfg} file]
 <h>[pylithapp.problem.materials.elastic.observers.observer]</h>
 <p>writer.filename</p> = output/step01-elastic.h5
-<f>field_filter</f> = pylith.meshio.FieldFilterNone
+<p>output_basis_order</p> = 1
 \end{cfg}
-
-\subsection{Output Field Filter (\facility{field\_filter})}
-
-Sometimes fields may not be in the form a user wants. For example, the
-displacement solution subfield may have a basis order of 2 with
-degrees of freedom associated with edges, which is incompatible with
-most visualization packages that require information be provided with
-a basis order of 1 (vertex data) or 0 (cell data). The
-\facility{field\_filter} facility of the \object{OutputPhysics} object
-allows passing a field through a ``filter'' to yield the desired form
-of the output. The default filter is \object{FieldFilterNone}, which
-simply passes the input field on to the \facility{writer} for
-output. The \object{FieldFilterProject} object provides the ability to
-project the input field to a lower basis order.
-
-\subsubsection{Projecting to lower basis order (\object{FieldFilterProject})}
-
-This filter projects a field to a lower basis order. It is most often
-used to reduce the basis order of solution subfields, e.g,,
-displacement, to a basis order of 1 from a basis order of 2, so that
-the solutino field can be visualized in common ParaView, etc.
-The \object{fieldFilterProject} property is:
-\begin{inventory}
-  \propertyitem{basis\_order}{Basis order of the projected field (default=1).}
-\end{inventory}
-
-\begin{cfg}[Using \object{FieldFilterProject} with solution output in
-  a \filename{cfg} file]
-<h>[pylithapp.problem.solution_observers.domain]</h>
-<p>writer.filename</p> = output/step01-domain.h5
-<f>field_filter</f> = pylith.meshio.FieldFilterProject
-<p>field_filter.basis_oder</p> = 0
-\end{cfg}
-
 
 \subsection{Data Writers (\facility{writer})}
 
@@ -248,7 +218,7 @@ or Visit.
 
 
 \subsection{Output Triggers (\facility{trigger})}
-\newfeature{3.0}
+\newfeature{3.0.0}
 
 By default PyLith will write the requested output after every time
 step. In many cases we prefer to save the solution, state variables,

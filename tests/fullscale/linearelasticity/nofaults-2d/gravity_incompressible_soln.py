@@ -2,14 +2,14 @@
 #
 # Brad T. Aagaard, U.S. Geological Survey
 # Charles A. Williams, GNS Science
-# Matthew G. Knepley, University of Chicago
+# Matthew G. Knepley, University at Buffalo
 #
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2018 University of California, Davis
+# Copyright (c) 2010-2021 University of California, Davis
 #
-# See COPYING for license information.
+# See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
 #
@@ -70,14 +70,13 @@ class AnalyticalSoln(object):
                 "bc_ypos": self.zero_scalar,
             },
         }
-        self.key = None
         return
 
-    def getField(self, name, pts):
-        if self.key is None:
-            field = self.fields[name](pts)
+    def getField(self, name, mesh_entity, pts):
+        if "initial_amplitude" == name:
+            field = self.fields[name][mesh_entity](pts)
         else:
-            field = self.fields[name][self.key](pts)
+            field = self.fields[name](pts)
         return field
 
     def displacement(self, locs):

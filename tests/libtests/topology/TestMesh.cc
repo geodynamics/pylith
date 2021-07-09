@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -21,6 +21,7 @@
 #include "TestMesh.hh" // Implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
@@ -29,64 +30,62 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestMesh );
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestMesh);
 
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::topology::TestMesh::testConstructor(void)
-{ // testConstructor
+pylith::topology::TestMesh::testConstructor(void) { // testConstructor
     PYLITH_METHOD_BEGIN;
 
     int result = 0;
 
     Mesh mesh;
-    CPPUNIT_ASSERT(!mesh._dmMesh);
-    CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
-    CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
-    MPI_Comm_compare(PETSC_COMM_WORLD, mesh.comm(), &result);
+    CPPUNIT_ASSERT(!mesh._dm);
+    CPPUNIT_ASSERT_EQUAL(0, mesh.getDimension());
+    MPI_Comm_compare(PETSC_COMM_WORLD, mesh.getComm(), &result);
     CPPUNIT_ASSERT_EQUAL(int(MPI_IDENT), result);
 
     int dim = 2;
     Mesh mesh2(dim);
-    CPPUNIT_ASSERT(mesh2._dmMesh);
-    CPPUNIT_ASSERT_EQUAL(dim, mesh2.dimension());
-    MPI_Comm_compare(PETSC_COMM_WORLD, mesh2.comm(), &result);
+    CPPUNIT_ASSERT(mesh2._dm);
+    CPPUNIT_ASSERT_EQUAL(dim, mesh2.getDimension());
+    MPI_Comm_compare(PETSC_COMM_WORLD, mesh2.getComm(), &result);
     CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
 
     dim = 1;
     Mesh mesh3(dim, PETSC_COMM_SELF);
-    CPPUNIT_ASSERT(mesh3._dmMesh);
-    CPPUNIT_ASSERT_EQUAL(dim, mesh3.dimension());
-    MPI_Comm_compare(PETSC_COMM_WORLD, mesh3.comm(), &result);
+    CPPUNIT_ASSERT(mesh3._dm);
+    CPPUNIT_ASSERT_EQUAL(dim, mesh3.getDimension());
+    MPI_Comm_compare(PETSC_COMM_WORLD, mesh3.getComm(), &result);
     CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
 
     PYLITH_METHOD_END;
 } // testConstructor
 
+
 // ----------------------------------------------------------------------
-// Test dmMesh().
+// Test getDM().
 void
-pylith::topology::TestMesh::testDMMesh(void)
-{ // testDMMesh
+pylith::topology::TestMesh::testDMMesh(void) { // testDMMesh
     PYLITH_METHOD_BEGIN;
 
     const int dim = 2;
     PetscInt dmDim;
     Mesh mesh(dim);
 
-    PetscDM dmMesh = mesh.dmMesh(); CPPUNIT_ASSERT(dmMesh);
-    PetscErrorCode err = DMGetDimension(dmMesh, &dmDim); CPPUNIT_ASSERT(!err);
+    PetscDM dmMesh = mesh.getDM();CPPUNIT_ASSERT(dmMesh);
+    PetscErrorCode err = DMGetDimension(dmMesh, &dmDim);CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_EQUAL(dim, dmDim);
 
     PYLITH_METHOD_END;
 } // testDMMesh
 
+
 // ----------------------------------------------------------------------
 // Test getCoordSys().
 void
-pylith::topology::TestMesh::testCoordsys(void)
-{ // testCoordsys
+pylith::topology::TestMesh::testCoordsys(void) { // testCoordsys
     PYLITH_METHOD_BEGIN;
 
     Mesh mesh;
@@ -101,44 +100,28 @@ pylith::topology::TestMesh::testCoordsys(void)
     PYLITH_METHOD_END;
 } // testCoordsys
 
+
 // ----------------------------------------------------------------------
-// Test debug().
+// Test getDimension().
 void
-pylith::topology::TestMesh::testDebug(void)
-{ // testDebug
+pylith::topology::TestMesh::testDimension(void) { // testDimension
     PYLITH_METHOD_BEGIN;
 
     Mesh mesh;
-    CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
-
-    mesh.debug(true);
-    CPPUNIT_ASSERT_EQUAL(true, mesh.debug());
-
-    PYLITH_METHOD_END;
-} // testDebug
-
-// ----------------------------------------------------------------------
-// Test dimension().
-void
-pylith::topology::TestMesh::testDimension(void)
-{ // testDimension
-    PYLITH_METHOD_BEGIN;
-
-    Mesh mesh;
-    CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
+    CPPUNIT_ASSERT_EQUAL(0, mesh.getDimension());
 
     const int dim = 2;
     Mesh mesh2(dim);
-    CPPUNIT_ASSERT_EQUAL(dim, mesh2.dimension());
+    CPPUNIT_ASSERT_EQUAL(dim, mesh2.getDimension());
 
     PYLITH_METHOD_END;
 } // testDimension
 
+
 // ----------------------------------------------------------------------
-// Test numCorners(), numCells(), numVertices(), isSimplex().
+// Test numCells(), numVertices().
 void
-pylith::topology::TestMesh::testAccessors(void)
-{ // testAccessors
+pylith::topology::TestMesh::testAccessors(void) { // testAccessors
     PYLITH_METHOD_BEGIN;
 
     { // Tri
@@ -148,10 +131,8 @@ pylith::topology::TestMesh::testAccessors(void)
         iohandler.filename(filename);
         iohandler.read(&mesh);
 
-        CPPUNIT_ASSERT_EQUAL(3, mesh.numCorners());
-        CPPUNIT_ASSERT_EQUAL(4, mesh.numVertices());
-        CPPUNIT_ASSERT_EQUAL(2, mesh.numCells());
-        CPPUNIT_ASSERT_EQUAL(true, mesh.isSimplex());
+        CPPUNIT_ASSERT_EQUAL(4, pylith::topology::MeshOps::getNumVertices(mesh));
+        CPPUNIT_ASSERT_EQUAL(2, pylith::topology::MeshOps::getNumCells(mesh));
     } // Tri
 
     { // Hex
@@ -161,10 +142,8 @@ pylith::topology::TestMesh::testAccessors(void)
         iohandler.filename(filename);
         iohandler.read(&mesh);
 
-        CPPUNIT_ASSERT_EQUAL(8, mesh.numCorners());
-        CPPUNIT_ASSERT_EQUAL(12, mesh.numVertices());
-        CPPUNIT_ASSERT_EQUAL(2, mesh.numCells());
-        CPPUNIT_ASSERT_EQUAL(false, mesh.isSimplex());
+        CPPUNIT_ASSERT_EQUAL(12, pylith::topology::MeshOps::getNumVertices(mesh));
+        CPPUNIT_ASSERT_EQUAL(2, pylith::topology::MeshOps::getNumCells(mesh));
     } // Hex
 
     PYLITH_METHOD_END;
@@ -174,19 +153,17 @@ pylith::topology::TestMesh::testAccessors(void)
 // ----------------------------------------------------------------------
 // Test comm().
 void
-pylith::topology::TestMesh::testComm(void)
-{ // testComm
+pylith::topology::TestMesh::testComm(void) { // testComm
     PYLITH_METHOD_BEGIN;
 
     Mesh mesh;
     int result = 0;
-    MPI_Comm_compare(PETSC_COMM_WORLD, mesh.comm(), &result);
+    MPI_Comm_compare(PETSC_COMM_WORLD, mesh.getComm(), &result);
     CPPUNIT_ASSERT_EQUAL(int(MPI_IDENT), result);
-
 
     Mesh mesh2(2, PETSC_COMM_SELF);
     result = 0;
-    MPI_Comm_compare(PETSC_COMM_SELF, mesh2.comm(), &result);
+    MPI_Comm_compare(PETSC_COMM_SELF, mesh2.getComm(), &result);
     CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
 
     PYLITH_METHOD_END;
@@ -196,8 +173,7 @@ pylith::topology::TestMesh::testComm(void)
 // ----------------------------------------------------------------------
 // Test view().
 void
-pylith::topology::TestMesh::testView(void)
-{ // testView
+pylith::topology::TestMesh::testView(void) { // testView
     PYLITH_METHOD_BEGIN;
 
     const char* filename = "data/tri3.mesh";

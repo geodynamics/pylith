@@ -2,14 +2,14 @@
 #
 # Brad T. Aagaard, U.S. Geological Survey
 # Charles A. Williams, GNS Science
-# Matthew G. Knepley, University of Chicago
+# Matthew G. Knepley, University at Buffalo
 #
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2019 University of California, Davis
+# Copyright (c) 2010-2021 University of California, Davis
 #
-# See COPYING for license information.
+# See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
 
@@ -45,6 +45,7 @@ dist_noinst_DATA = \
 	mesh_tet.exo \
 	mesh_hex.jou \
 	mesh_hex.exo \
+	output_points.txt \
 	pylithapp.cfg \
 	axialdisp.cfg \
 	axialdisp_tet.cfg \

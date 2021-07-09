@@ -1,0 +1,13 @@
+version: 2
+
+sphinx:
+   configuration: docs-sphinx/conf.py
+
+formats:
+   - pdf
+   - epub
+
+python:
+  version: 3.7
+  install:
+    - requirements: docs-sphinx/requirements.txt

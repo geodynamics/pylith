@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -156,7 +156,7 @@ pylith::bc::BoundaryCondition::verifyConfiguration(const pylith::topology::Field
         throw std::runtime_error(msg.str());
     } // if
 
-    const PetscDM dmSoln = solution.dmMesh();
+    const PetscDM dmSoln = solution.getDM();
     PetscBool hasLabel = PETSC_FALSE;
     PetscErrorCode err = DMHasLabel(dmSoln, _boundaryLabel.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel) {
@@ -167,7 +167,7 @@ pylith::bc::BoundaryCondition::verifyConfiguration(const pylith::topology::Field
     } // if
 
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(solution.dmMesh(), _boundaryLabel.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmSoln, _boundaryLabel.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
     PetscInt numValues = 0;
     err = DMLabelGetNumValues(dmLabel, &numValues);PYLITH_CHECK_ERROR(err);
     if (0 == numValues) {

@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -27,6 +27,7 @@
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 
 #include <cassert>
@@ -42,11 +43,11 @@ pylith::materials::AuxiliaryFactoryPoroelastic::AuxiliaryFactoryPoroelastic(void
 // Destructor.
 pylith::materials::AuxiliaryFactoryPoroelastic::~AuxiliaryFactoryPoroelastic(void) {}
 
+
 // ----------------------------------------------------------------------------
 // Add isotropic permeability subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addIsotropicPermeability(void)
-{ // isotropicPermeablity
+pylith::materials::AuxiliaryFactoryPoroelastic::addIsotropicPermeability(void) { // isotropicPermeablity
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addIsotropicPermeability(void)");
 
@@ -71,11 +72,11 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addIsotropicPermeability(void)
     PYLITH_METHOD_END;
 } // addIsotropicPermeability
 
+
 // ----------------------------------------------------------------------------
 // Add isotropic permeability subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void)
-{ // isotropicPermeablity
+pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void) { // isotropicPermeablity
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addTensorPermeability(void)");
 
@@ -87,7 +88,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void)
         "permeability_xy",
         "permeability_yz",
         "permeability_xz"
-      };
+    };
     const int tensorSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
     const PylithReal lengthScale = _normalizer->getLengthScale();
     const PylithReal permeabilityScale = lengthScale*lengthScale;
@@ -110,11 +111,11 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void)
     PYLITH_METHOD_END;
 } // addTensorPermeability
 
+
 // --------------------------------------------------------------------
 // Add drained bulk modulus subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addDrainedBulkModulus(void)
-{ // DrainedBulkModulus
+pylith::materials::AuxiliaryFactoryPoroelastic::addDrainedBulkModulus(void) { // DrainedBulkModulus
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addDrainedBulkModulus(void)");
 
@@ -137,11 +138,11 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addDrainedBulkModulus(void)
     PYLITH_METHOD_END;
 } // addDrainedBulkModulus
 
+
 // --------------------------------------------------------------------
 // Add undrained bulk modulus subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addUndrainedBulkModulus(void)
-{ // UndrainedBulkModulus
+pylith::materials::AuxiliaryFactoryPoroelastic::addUndrainedBulkModulus(void) { // UndrainedBulkModulus
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addUndrainedBulkModulus(void)");
 
@@ -164,11 +165,11 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addUndrainedBulkModulus(void)
     PYLITH_METHOD_END;
 } // addUndrainedBulkModulus
 
+
 // --------------------------------------------------------------------
 // Add fluid bulk modulus subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addFluidBulkModulus(void)
-{ // fluidBulkModulus
+pylith::materials::AuxiliaryFactoryPoroelastic::addFluidBulkModulus(void) { // fluidBulkModulus
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addFluidBulkModulus(void)");
 
@@ -191,11 +192,11 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addFluidBulkModulus(void)
     PYLITH_METHOD_END;
 } // addFluidBulkModulus
 
+
 // ---------------------------------------------------------------------
 // Add biot coefficient subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addBiotCoefficient(void)
-{ // biotCoefficient
+pylith::materials::AuxiliaryFactoryPoroelastic::addBiotCoefficient(void) { // biotCoefficient
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addBiotCoefficient(void)");
 
@@ -219,11 +220,11 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addBiotCoefficient(void)
     PYLITH_METHOD_END;
 } // addBiotCoefficient
 
+
 // ---------------------------------------------------------------------
 // Add biot modulus subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addBiotModulus(void)
-{ // biotCoefficient
+pylith::materials::AuxiliaryFactoryPoroelastic::addBiotModulus(void) { // biotCoefficient
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addBiotModulus(void)");
 
@@ -250,8 +251,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addBiotModulus(void)
 // ----------------------------------------------------------------------
 // Add reference stress subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStress(void)
-{ // referenceStress
+pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStress(void) { // referenceStress
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addReferenceStress(void)");
 
@@ -263,7 +263,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStress(void)
         "reference_stress_xy",
         "reference_stress_yz",
         "reference_stress_xz"
-      };
+    };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
     const PylithReal pressureScale = _normalizer->getPressureScale();
 
@@ -289,8 +289,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStress(void)
 // ----------------------------------------------------------------------
 // Add reference strain subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStrain(void)
-{ // addReferenceStrain
+pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStrain(void) { // addReferenceStrain
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addRefrenceStrain(void)");
 
@@ -323,6 +322,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStrain(void)
     PYLITH_METHOD_END;
 } // addReferenceStrain
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Add shear modulus subfield to auxiliary fields.
 void
@@ -348,6 +348,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addShearModulus(void) {
 
     PYLITH_METHOD_END;
 } // addShearModulus
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Add solid bulk modulus subfield to auxiliary fields.
@@ -375,6 +376,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addSolidBulkModulus(void) {
     PYLITH_METHOD_END;
 } // addSolidBulkModulus
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Add young's modulus subfield to auxiliary fields.
 void
@@ -401,11 +403,11 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addYoungsModulus(void) {
     PYLITH_METHOD_END;
 } // addYoungsModulus
 
+
 // ----------------------------------------------------------------------
 // Add poisson's ratio subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addPoissonsRatio(void)
-{ // porosity
+pylith::materials::AuxiliaryFactoryPoroelastic::addPoissonsRatio(void) { // porosity
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addPoissonsRatio(void)");
 

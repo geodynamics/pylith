@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -34,7 +34,7 @@ pylith::topology::VecVisitorMesh::VecVisitorMesh(const Field& field,
     _localVec(NULL),
     _section(NULL),
     _localArray(NULL) {
-    _dm = field.mesh().dmMesh();assert(_dm);
+    _dm = field.getDM();assert(_dm);
     initialize(field, subfield);
 } // constructor
 
@@ -57,19 +57,19 @@ pylith::topology::VecVisitorMesh::initialize(const Field& field,
     clear();
 
     PetscErrorCode err;
-    PetscSection fieldSection = field.localSection();assert(fieldSection);
+    PetscSection fieldSection = field.getLocalSection();assert(fieldSection);
     PetscInt numFields = 0;
     err = PetscSectionGetNumFields(fieldSection, &numFields);PYLITH_CHECK_ERROR(err);
 
     if (!subfield) {
         _section = fieldSection;
     } else {
-        const int fieldIndex = field.subfieldInfo(subfield).index;
+        const int fieldIndex = field.getSubfieldInfo(subfield).index;
         assert(fieldIndex >= 0 && fieldIndex < numFields);
         err = PetscSectionGetField(fieldSection, fieldIndex, &_section);PYLITH_CHECK_ERROR(err);
     } // if/else
     err = PetscObjectReference((PetscObject)_section);PYLITH_CHECK_ERROR(err);
-    _localVec = field.localVector();assert(_localVec);
+    _localVec = field.getLocalVector();assert(_localVec);
 
     err = VecGetArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);
 } // initialize
@@ -262,12 +262,12 @@ void
 pylith::topology::VecVisitorMesh::optimizeClosure(const Field& field) {
     PetscErrorCode err;
 
-    PetscSection fieldSection = field.localSection();assert(fieldSection);
-    PetscDM dmMesh = field.mesh().dmMesh();assert(dmMesh);
+    PetscSection fieldSection = field.getLocalSection();assert(fieldSection);
+    PetscDM dmField = field.getDM();assert(dmField);
     PetscSection indexSection = NULL;
-    err = PetscSectionGetClosureIndex(fieldSection, (PetscObject) dmMesh, &indexSection, NULL);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetClosureIndex(fieldSection, (PetscObject) dmField, &indexSection, NULL);PYLITH_CHECK_ERROR(err);
     if (!indexSection) {
-        err = DMPlexCreateClosureIndex(dmMesh, fieldSection);PYLITH_CHECK_ERROR(err);
+        err = DMPlexCreateClosureIndex(dmField, fieldSection);PYLITH_CHECK_ERROR(err);
     } // if
 } // optimizeClosure
 
@@ -284,8 +284,8 @@ pylith::topology::MatVisitorMesh::MatVisitorMesh(const PetscMat mat,
     PetscSF sf = NULL;
     PetscErrorCode err;
 
-    _dm = field.mesh().dmMesh();assert(_dm);
-    _section = field.localSection();assert(_section);
+    _dm = field.getDM();assert(_dm);
+    _section = field.getLocalSection();assert(_section);
     err = DMGetPointSF(_dm, &sf);PYLITH_CHECK_ERROR(err);assert(sf);
     err = PetscSectionCreateGlobalSection(_section, sf, PETSC_FALSE, PETSC_FALSE, &_globalSection);PYLITH_CHECK_ERROR(err);assert(_globalSection);
 

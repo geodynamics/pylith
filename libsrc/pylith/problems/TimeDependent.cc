@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -300,8 +300,8 @@ pylith::problems::TimeDependent::initialize(void) {
     assert(_solution);
 
     PetscErrorCode err = TSDestroy(&_ts);PYLITH_CHECK_ERROR(err);assert(!_ts);
-    const pylith::topology::Mesh& mesh = _solution->mesh();
-    err = TSCreate(mesh.comm(), &_ts);PYLITH_CHECK_ERROR(err);assert(_ts);
+    const pylith::topology::Mesh& mesh = _solution->getMesh();
+    err = TSCreate(mesh.getComm(), &_ts);PYLITH_CHECK_ERROR(err);assert(_ts);
     err = TSSetType(_ts, TSBEULER);PYLITH_CHECK_ERROR(err); // Backward Euler is default time stepping method.
     err = TSSetExactFinalTime(_ts, TS_EXACTFINALTIME_STEPOVER);PYLITH_CHECK_ERROR(err); // Ok to step over final time.
     err = TSSetApplicationContext(_ts, (void*)this);PYLITH_CHECK_ERROR(err);
@@ -332,7 +332,7 @@ pylith::problems::TimeDependent::initialize(void) {
     err = TSSetTimeStep(_ts, _dtInitial / timeScale);PYLITH_CHECK_ERROR(err);
     err = TSSetMaxSteps(_ts, _maxTimeSteps);PYLITH_CHECK_ERROR(err);
     err = TSSetMaxTime(_ts, _endTime / timeScale);PYLITH_CHECK_ERROR(err);
-    err = TSSetDM(_ts, _solution->dmMesh());PYLITH_CHECK_ERROR(err);
+    err = TSSetDM(_ts, _solution->getDM());PYLITH_CHECK_ERROR(err);
 
     // Set initial solution.
     PYLITH_COMPONENT_DEBUG("Setting PetscTS initial conditions using global vector for solution.");
@@ -342,7 +342,7 @@ pylith::problems::TimeDependent::initialize(void) {
         assert(_ic[i]);
         _ic[i]->setValues(_solution, *_normalizer);
     } // for
-    PetscVec solutionVector = _solution->globalVector();
+    PetscVec solutionVector = _solution->getGlobalVector();
     _solution->scatterLocalToVector(solutionVector);
     err = TSSetSolution(_ts, solutionVector);PYLITH_CHECK_ERROR(err);
     assert(_observers);
@@ -386,7 +386,7 @@ pylith::problems::TimeDependent::initialize(void) {
 #if 0
     // Set solve type for solution fields defined over the domain (not Lagrange multipliers).
     PetscDS prob = NULL;
-    err = DMGetDS(_solution->dmMesh(), &prob);PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(_solution->getDM(), &prob);PYLITH_CHECK_ERROR(err);
     PetscInt numFields = 0;
     err = PetscDSGetNumFields(prob, &numFields);PYLITH_CHECK_ERROR(err);
     for (PetscInt iField = 0; iField < numFields; ++iField) {
@@ -396,7 +396,7 @@ pylith::problems::TimeDependent::initialize(void) {
     pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
     if (debug.state()) {
         PetscDS prob = NULL;
-        err = DMGetDS(_solution->dmMesh(), &prob);PYLITH_CHECK_ERROR(err);
+        err = DMGetDS(_solution->getDM(), &prob);PYLITH_CHECK_ERROR(err);
         debug << pythia::journal::at(__HERE__)
               << "Solution Discretization" << pythia::journal::endl;
         PetscDSView(prob, PETSC_VIEWER_STDOUT_SELF);
@@ -617,7 +617,7 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscMat jacobianMat,
     PetscErrorCode err = 0;
     PetscDS solnDS = NULL;
     PetscBool hasJacobian = PETSC_FALSE;
-    err = DMGetDS(_solution->dmMesh(), &solnDS);PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(_solution->getDM(), &solnDS);PYLITH_CHECK_ERROR(err);
     err = PetscDSHasJacobian(solnDS, &hasJacobian);PYLITH_CHECK_ERROR(err);
     if (hasJacobian) { err = MatZeroEntries(jacobianMat);PYLITH_CHECK_ERROR(err); }
     err = MatZeroEntries(precondMat);PYLITH_CHECK_ERROR(err);
@@ -682,7 +682,7 @@ pylith::problems::TimeDependent::computeLHSJacobianLumpedInv(const PylithReal t,
     } // for
 
     // Insert values into global vector.
-    _jacobianLHSLumpedInv->scatterLocalToVector(_jacobianLHSLumpedInv->globalVector());
+    _jacobianLHSLumpedInv->scatterLocalToVector(_jacobianLHSLumpedInv->getGlobalVector());
 
     _dtLHSJacobianLumped = dt;
 
@@ -716,7 +716,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
         problem->computeLHSJacobianLumpedInv(t, dt, s_tshift, solutionVec);
 
         assert(problem->_jacobianLHSLumpedInv);
-        err = VecPointwiseMult(residualVec, problem->_jacobianLHSLumpedInv->globalVector(), residualVec);PYLITH_CHECK_ERROR(err);
+        err = VecPointwiseMult(residualVec, problem->_jacobianLHSLumpedInv->getGlobalVector(), residualVec);PYLITH_CHECK_ERROR(err);
     } // if
 
     PYLITH_METHOD_RETURN(0);

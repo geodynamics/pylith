@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ---------------------------------------------------------------------------------------------------------------------
 //
@@ -20,6 +20,7 @@
 
 #include "Material.hh" // implementation of object methods
 
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()
@@ -30,9 +31,7 @@
 pylith::materials::Material::Material(void) :
     _gravityField(NULL),
     _materialId(0),
-    _descriptiveLabel("") {
-    //
-} // constructor
+    _descriptiveLabel("") {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

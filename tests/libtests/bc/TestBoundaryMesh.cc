@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -73,14 +73,14 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void) { // testSubmesh
     // Set up coordinates
     spatialdata::geocoords::CSCart cs;
     spatialdata::units::Nondimensional normalizer;
-    cs.setSpaceDim(mesh.dimension());
+    cs.setSpaceDim(mesh.getDimension());
     mesh.setCoordSys(&cs);
     pylith::topology::MeshOps::nondimensionalize(&mesh, normalizer);
 
     // Create submesh
     CPPUNIT_ASSERT(_data->bcLabel);
     pylith::topology::Mesh submesh(mesh, _data->bcLabel);
-    PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = submesh.getDM();CPPUNIT_ASSERT(dmMesh);
 
     // Check vertices
     pylith::topology::Stratum verticesStratum(dmMesh, pylith::topology::Stratum::DEPTH, 0);
@@ -127,7 +127,7 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void) { // testSubmeshFault
     // Set up coordinates
     spatialdata::geocoords::CSCart cs;
     spatialdata::units::Nondimensional normalizer;
-    cs.setSpaceDim(mesh.dimension());
+    cs.setSpaceDim(mesh.getDimension());
     mesh.setCoordSys(&cs);
     pylith::topology::MeshOps::nondimensionalize(&mesh, normalizer);
 
@@ -141,10 +141,10 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void) { // testSubmeshFault
     // Create submesh
     CPPUNIT_ASSERT(_data->bcLabel);
     pylith::topology::Mesh submesh(mesh, _data->bcLabel);
-    PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = submesh.getDM();CPPUNIT_ASSERT(dmMesh);
 #if 0 // DEBUGGING
     PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_INFO_DETAIL);
-    DMView(mesh.dmMesh(), PETSC_VIEWER_STDOUT_WORLD);
+    DMView(mesh.getDM(), PETSC_VIEWER_STDOUT_WORLD);
     PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
 #endif
 

@@ -4,14 +4,14 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University of Chicago
+// Matthew G. Knepley, University at Buffalo
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
-// See COPYING for license information.
+// See LICENSE.md for license information.
 //
 // ======================================================================
 //
@@ -24,6 +24,7 @@
 #include "ExodusII.hh" // USES ExodusII
 
 #include "pylith/utils/array.hh" // USES scalar_array, int_array, string_vector
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "petsc.h" // USES MPI_Comm
@@ -70,7 +71,7 @@ pylith::meshio::MeshIOCubit::_read(void) {
 
     assert(_mesh);
 
-    const int commRank = _mesh->commRank();
+    const int commRank = _mesh->getCommRank();
     int meshDim = 0;
     int spaceDim = 0;
     int numVertices = 0;
@@ -88,7 +89,7 @@ pylith::meshio::MeshIOCubit::_read(void) {
             const int meshDim = exofile.getDim("num_dim");
 
             _readVertices(exofile, &coordinates, &numVertices, &spaceDim);
-            err = MPI_Bcast(&spaceDim, 1, MPI_INT, 0, _mesh->comm());PYLITH_CHECK_ERROR(err);
+            err = MPI_Bcast(&spaceDim, 1, MPI_INT, 0, _mesh->getComm());PYLITH_CHECK_ERROR(err);
             _readCells(exofile, &cells, &materialIds, &numCells, &numCorners);
             _orientCells(&cells, numCells, numCorners, meshDim);
             MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, meshDim);
@@ -106,7 +107,7 @@ pylith::meshio::MeshIOCubit::_read(void) {
             throw std::runtime_error(msg.str());
         } // try/catch
     } else {
-        err = MPI_Bcast(&spaceDim, 1, MPI_INT, 0, _mesh->comm());PYLITH_CHECK_ERROR(err);
+        err = MPI_Bcast(&spaceDim, 1, MPI_INT, 0, _mesh->getComm());PYLITH_CHECK_ERROR(err);
         MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, meshDim);
         _setMaterials(materialIds);
     }
