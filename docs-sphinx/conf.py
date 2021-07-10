@@ -32,6 +32,7 @@ release = '3.0.0dev'
 # ones.
 extensions = [
     "myst_parser",
+    "sphinxcontrib.bibtex",
 ]
 myst_enable_extensions = [
     "colon_fence",
@@ -75,7 +76,9 @@ html_theme_options = {
 html_sidebars = {
     "**": ["search-field", "sidebar-nav-bs", "sidebar-ethical-ads", "sidebar-cig"]
 }
-
+bibtex_bibfiles = ["references.bib"]
+bibtex_default_style = "alpha"
+bibtex_reference_style = "author_year"
 numfig = True
 
 # Add any paths that contain custom static files (such as style sheets) here,
