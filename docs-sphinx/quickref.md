@@ -137,3 +137,8 @@ Please see {numref}`fig-quickref`.
 
 This is the figure caption.
 :::
+
+## Citations
+
+Traditional citation {cite}`Aagaard:etal:2007`.
+Citation as noun {cite:t}`Bathe:1995`.

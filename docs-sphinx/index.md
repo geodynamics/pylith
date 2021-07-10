@@ -36,5 +36,6 @@ hidden: True
 intro/index.md
 user/index.md
 developer/index.md
+references.md
 ```
 
