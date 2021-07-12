@@ -17,7 +17,7 @@
 //
 
 /**
- * @file libsrc/meshio/MeshIOPETSc.hh
+ * @file libsrc/meshio/MeshIOPetsc.hh
  *
  * @brief C++ input/output manager for PyLith PETSc gmsh mesh files.
  */
@@ -29,17 +29,17 @@
 
 #include <string> // HASA std::string
 
-class pylith::meshio::MeshIOPETSc : public MeshIO {
-    friend class TestMeshIOPETSc; // unit testing
+class pylith::meshio::MeshIOPetsc : public MeshIO {
+    friend class TestMeshIOPetsc; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    MeshIOPETSc(void);
+    MeshIOPetsc(void);
 
     /// Destructor
-    ~MeshIOPETSc(void);
+    ~MeshIOPetsc(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -62,7 +62,7 @@ private:
 
     bool _useIndexZero; ///< Flag indicating if indicates start at 0 (T) or 1 (F)
 
-}; // MeshIOPETSc
+}; // MeshIOPetsc
 
 
 #endif // pylith_meshio_meshiopetsc_hh

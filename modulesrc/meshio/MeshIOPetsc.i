@@ -17,27 +17,27 @@
 //
 
 /**
- * @file modulesrc/meshio/MeshIOPETSc.i
+ * @file modulesrc/meshio/MeshIOPetsc.i
  *
- * @brief Python interface to C++ MeshIOPETSc object.
+ * @brief Python interface to C++ MeshIOPetsc object.
  */
 
 namespace pylith {
   namespace meshio {
 
-    class MeshIOPETSc : public MeshIO
-    { // MeshIOPETSc
+    class MeshIOPetsc : public MeshIO
+    { // MeshIOPetsc
 
       // PUBLIC METHODS /////////////////////////////////////////////////
     public :
 
       /// Constructor
-      MeshIOPETSc(void);
+      MeshIOPetsc(void);
 
       /// Destructor
-      ~MeshIOPETSc(void);
+      ~MeshIOPetsc(void);
 
-      /// Deallocate PETSc and local data structures.
+      /// Deallocate Petsc and local data structures.
       void deallocate(void);
 
       // PROTECTED METHODS //////////////////////////////////////////////
@@ -49,7 +49,7 @@ namespace pylith {
       /// Read mesh
       void _read(void);
 
-    }; // MeshIOPETSc
+    }; // MeshIOPetsc
 
   } // meshio
 } // pylith

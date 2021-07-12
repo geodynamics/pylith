@@ -8,6 +8,7 @@ features = [
     Implicit-explicit formulation,
     Quadrilateral cells,
     Runge-Kutta time stepping,
+#    pylith.meshio.MeshIOCubit,
     pylith.meshio.MeshIOPETSc,
     pylith.problems.TimeDependent,
     pylith.materials.Elasticity,
@@ -27,6 +28,7 @@ device = color-console
 [pylithapp.journal.info]
 timedependent = 1
 solution = 1
+# meshiocubit = 1
 meshiopetsc = 1
 
 [pylithapp.journal.debug]
@@ -37,8 +39,10 @@ timedependent = 0
 # ----------------------------------------------------------------------
 [pylithapp.mesh_generator]
 # Set the reader to match the type of mesh file.
+
+# reader = pylith.meshio.MeshIOCubit
+# reader.filename = quad_200m.exo
 reader = pylith.meshio.MeshIOPETSc
-#reader.filename = quad_200m.exo
 
 # Set the Cartesian coordinate system.
 reader.coordsys.space_dim = 2
@@ -110,7 +114,9 @@ bulk_rheology.auxiliary_subfields.shear_modulus.basis_order = 0
 # ----------------------------------------------------------------------
 [pylithapp.petsc]
 dm_plex_shape = box
-dm_plex_box_faces = 4, 8
+dm_plex_box_faces = 3,2
+dm_plex_simplex = 0
+dm_plex_box_upper = 2000,2000
 
 ts_type = rk
 ts_rk_type = 3bs

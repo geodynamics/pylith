@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pythia.pyre/meshio/MeshIOPETSc.py
+# @file pythia.pyre/meshio/MeshIOPetsc.py
 #
 # @brief Python object for reading/writing finite-element mesh from
 # simple gmsh file.
@@ -21,12 +21,12 @@
 # Factory: mesh_io
 
 from .MeshIOObj import MeshIOObj
-from .meshio import MeshIOPETSc as ModuleMeshIOPETSc
+from .meshio import MeshIOPetsc as ModuleMeshIOPetsc
 
 
-class MeshIOPETSc(MeshIOObj, ModuleMeshIOPETSc):
+class MeshIOPetsc(MeshIOObj, ModuleMeshIOPetsc):
     """Python object for reading/writing finite-element mesh from simple
-    PETSc file.
+    Petsc file.
 
     Factory: mesh_io
     """
@@ -61,18 +61,18 @@ class MeshIOPETSc(MeshIOObj, ModuleMeshIOPETSc):
         return
 
     def _createModuleObj(self):
-        """Create C++ MeshIOPETSc object.
+        """Create C++ MeshIOPetsc object.
         """
-        ModuleMeshIOPETSc.__init__(self)
+        ModuleMeshIOPetsc.__init__(self)
         return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def mesh_io():
-    """Factory associated with MeshIOPETSc.
+    """Factory associated with MeshIOPetsc.
     """
-    return MeshIOPETSc()
+    return MeshIOPetsc()
 
 
 # End of file

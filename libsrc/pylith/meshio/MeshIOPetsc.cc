@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "MeshIOPETSc.hh" // implementation of class methods
+#include "MeshIOPetsc.hh" // implementation of class methods
 
 #include "MeshBuilder.hh" // USES MeshBuilder
 #include "pylith/topology/Mesh.hh" // USES Mesh
@@ -45,7 +45,7 @@ namespace pylith {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
-pylith::meshio::MeshIOPETSc::MeshIOPETSc(void) :
+pylith::meshio::MeshIOPetsc::MeshIOPetsc(void) :
     _useIndexZero(true) { // constructor
     PyreComponent::setName("meshiopetsc");
 } // constructor
@@ -53,15 +53,15 @@ pylith::meshio::MeshIOPETSc::MeshIOPETSc(void) :
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::MeshIOPETSc::~MeshIOPETSc(void) { // destructor
+pylith::meshio::MeshIOPetsc::~MeshIOPetsc(void) { // destructor
     deallocate();
 } // destructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Deallocate PETSc and local data structures.
+// Deallocate Petsc and local data structures.
 void
-pylith::meshio::MeshIOPETSc::deallocate(void) { // deallocate
+pylith::meshio::MeshIOPetsc::deallocate(void) { // deallocate
     PYLITH_METHOD_BEGIN;
 
     MeshIO::deallocate();
@@ -73,7 +73,7 @@ pylith::meshio::MeshIOPETSc::deallocate(void) { // deallocate
 // ---------------------------------------------------------------------------------------------------------------------
 // Read mesh.
 void
-pylith::meshio::MeshIOPETSc::_read(void) { // _read
+pylith::meshio::MeshIOPetsc::_read(void) { // _read
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_read()");
     
@@ -138,7 +138,7 @@ pylith::meshio::MeshIOPETSc::_read(void) { // _read
 // ---------------------------------------------------------------------------------------------------------------------
 // Write mesh to file.
 void
-pylith::meshio::MeshIOPETSc::_write(void) const {  
+pylith::meshio::MeshIOPetsc::_write(void) const {  
     PYLITH_JOURNAL_LOGICERROR("Writing meshes via MeshIOPetsc not implemented.");
 } // write
 
