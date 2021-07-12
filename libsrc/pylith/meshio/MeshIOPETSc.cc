@@ -22,6 +22,7 @@
 
 #include "MeshBuilder.hh" // USES MeshBuilder
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
 
 #include "pylith/utils/array.hh" // USES scalar_array, int_array, string_vector
 #include "spatialdata/utils/LineParser.hh" // USES LineParser
@@ -70,19 +71,6 @@ pylith::meshio::MeshIOPETSc::deallocate(void) { // deallocate
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// label mesh.
-void
-pylith::meshio::MeshIOPETSc::_label(void) { // _label
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_label()");
-    
-    assert(_mesh);
-    MPI_Comm comm = _mesh->comm();
-    PetscErrorCode err;
-} // label
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Read mesh.
 void
 pylith::meshio::MeshIOPETSc::_read(void) { // _read
@@ -90,60 +78,58 @@ pylith::meshio::MeshIOPETSc::_read(void) { // _read
     PYLITH_COMPONENT_DEBUG("_read()");
     
     assert(_mesh);
-    MPI_Comm comm = _mesh->comm();
-    PetscErrorCode err;
+    MPI_Comm comm = _mesh->getComm();
+    PetscErrorCode err = 0;
+    PetscDM dmMesh = NULL;
 
-    PetscDM dm = NULL;
-    err = DMCreate(comm, &dm);PYLITH_CHECK_ERROR(err);
-    err = DMSetType(dm, DMPLEX);PYLITH_CHECK_ERROR(err);
-    err = DMSetFromOptions(dm);PYLITH_CHECK_ERROR(err);
-    err = DMViewFromOptions(dm, NULL, "-dm_view");PYLITH_CHECK_ERROR(err);
+    err = DMCreate(comm, &dmMesh);PYLITH_CHECK_ERROR(err);
+    err = DMSetType(dmMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
+    err = DMSetFromOptions(dmMesh);PYLITH_CHECK_ERROR(err);
+    err = DMViewFromOptions(dmMesh, NULL, "-dm_view");PYLITH_CHECK_ERROR(err);
 
-    char labelName[] = "material-id";
-    DMLabel label;
-    err = DMCreateLabel(dm, labelName);PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dm, labelName, &label);PYLITH_CHECK_ERROR(err);
+    topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+    const PetscInt cStart = cellsStratum.begin();
+    const PetscInt cEnd = cellsStratum.end();
+
+    const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
+    for (PetscInt c = cStart; c < cEnd; ++c) {
+        err = DMSetLabelValue(dmMesh, labelName, c, 1);PYLITH_CHECK_ERROR(err);
+    } // for
+
     
-    PetscInt p, pStart, pEnd;
-    DMPlexGetHeightStratum(dm, 0, &pStart, &pEnd);
-    for (p=pStart; p < pEnd; p++) {
-        PetscInt val;
-        DMLabelSetValue(label, p, 1);
-    }
-    
-    DMLabel face_sets_label;
-    err = DMGetLabel(dm, "Face Sets", &face_sets_label);PYLITH_CHECK_ERROR(err);
-    DMPlexLabelComplete(dm, face_sets_label);
+    DMLabel faceLabel;
+    err = DMGetLabel(dmMesh, "Face Sets", &faceLabel);PYLITH_CHECK_ERROR(err);PYLITH_CHECK_ERROR(err);
+    err = DMPlexLabelComplete(dmMesh, faceLabel);PYLITH_CHECK_ERROR(err);
 
     IS is;
     DMLabel xnegLabel;
     char xnegName[] = "boundary_xneg";
-    DMCreateLabel(dm, xnegName);
-    DMGetLabel(dm, xnegName, &xnegLabel);
-    DMLabelGetStratumIS(face_sets_label, 1, &is);
-    DMLabelSetStratumIS(xnegLabel, 1, is);
+    err = DMCreateLabel(dmMesh, xnegName);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmMesh, xnegName, &xnegLabel);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumIS(faceLabel, 1, &is);PYLITH_CHECK_ERROR(err);
+    err = DMLabelSetStratumIS(xnegLabel, 1, is);PYLITH_CHECK_ERROR(err);
     
     DMLabel xposLabel;
     char xposName[] = "boundary_xpos";
-    DMCreateLabel(dm, xposName);
-    DMGetLabel(dm, xposName, &xposLabel);
-    DMLabelGetStratumIS(face_sets_label, 3, &is);
-    DMLabelSetStratumIS(xposLabel, 1, is);
+    err = DMCreateLabel(dmMesh, xposName);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmMesh, xposName, &xposLabel);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumIS(faceLabel, 3, &is);PYLITH_CHECK_ERROR(err);
+    err = DMLabelSetStratumIS(xposLabel, 1, is);PYLITH_CHECK_ERROR(err);
     
     DMLabel domainLabel;
     char domainName[] = "domain_all";
-    DMCreateLabel(dm, domainName);
-    DMGetLabel(dm, domainName, &domainLabel);
-    DMLabelGetStratumIS(face_sets_label, 1, &is);
-    DMLabelSetStratumIS(domainLabel, 1, is);
-    DMLabelGetStratumIS(face_sets_label, 2, &is);
-    DMLabelSetStratumIS(domainLabel, 1, is);
-    DMLabelGetStratumIS(face_sets_label, 3, &is);
-    DMLabelSetStratumIS(domainLabel, 1, is);
-    DMLabelGetStratumIS(face_sets_label, 4, &is);
-    DMLabelSetStratumIS(domainLabel, 1, is);
+    err = DMCreateLabel(dmMesh, domainName);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmMesh, domainName, &domainLabel);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumIS(faceLabel, 1, &is);PYLITH_CHECK_ERROR(err);
+    err = DMLabelSetStratumIS(domainLabel, 1, is);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumIS(faceLabel, 2, &is);PYLITH_CHECK_ERROR(err);
+    err = DMLabelSetStratumIS(domainLabel, 1, is);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumIS(faceLabel, 3, &is);PYLITH_CHECK_ERROR(err);
+    err = DMLabelSetStratumIS(domainLabel, 1, is);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumIS(faceLabel, 4, &is);PYLITH_CHECK_ERROR(err);
+    err = DMLabelSetStratumIS(domainLabel, 1, is);PYLITH_CHECK_ERROR(err);
 
-    _mesh->dmMesh(dm);
+    _mesh->setDM(dmMesh);
 
     PYLITH_METHOD_END;
 } // read
