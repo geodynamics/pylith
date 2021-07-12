@@ -108,7 +108,7 @@ pylith::materials::IsotropicPowerLaw::addAuxiliarySubfields(void) {
     _auxiliaryFactory->addPowerLawReferenceStress();
     _auxiliaryFactory->addPowerLawExponent();
     _auxiliaryFactory->addViscousStrain();
-    _auxiliaryFactory->addStress();
+    _auxiliaryFactory->addDeviatoricStress();
 
     PYLITH_METHOD_END;
 } // addAuxiliarySubfields
@@ -161,8 +161,10 @@ pylith::materials::IsotropicPowerLaw::getKernelDerivedCauchyStress(const spatial
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFunc kernel =
-        (3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::cauchyStress :
-        (2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress :
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::cauchyStress :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::cauchyStress_refstate :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress_refstate :
         NULL;
 
     PYLITH_METHOD_RETURN(kernel);
@@ -176,7 +178,6 @@ pylith::materials::IsotropicPowerLaw::updateKernelConstants(pylith::real_array* 
                                                             const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateKernelConstants(kernelConstants"<<kernelConstants<<", dt="<<dt<<")");
-    // ******** Should alpha (time integration parameter) be included here?
 
     assert(kernelConstants);
 
@@ -202,18 +203,18 @@ pylith::materials::IsotropicPowerLaw::addKernelsUpdateStateVars(std::vector<Proj
         (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate :
         (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate :
         NULL;
-    const PetscPointFunc funcStress =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateStress :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateStress_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress_refstate :
+    const PetscPointFunc funcDeviatoricStress =
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateDeviatoricStress :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateDeviatoricStress :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateDeviatoricStress_refstate :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateDeviatoricStress_refstate :
         NULL;
 
     assert(kernels);
     size_t prevNumKernels = kernels->size();
     kernels->resize(prevNumKernels + 2);
     (*kernels)[prevNumKernels+0] = ProjectKernels("viscous_strain", funcViscousStrain);
-    (*kernels)[prevNumKernels+1] = ProjectKernels("stress", funcStress);
+    (*kernels)[prevNumKernels+1] = ProjectKernels("deviatoric_stress", funcDeviatoricStress);
 
     PYLITH_METHOD_END;
 } // addKernelsUpdateStateVars

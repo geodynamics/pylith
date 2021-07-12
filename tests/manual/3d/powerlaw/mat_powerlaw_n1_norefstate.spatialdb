@@ -2,7 +2,7 @@
 #SPATIAL.ascii 1
 SimpleDB {
   num-values =     30
-  value-names =  density  vs  vp power_law_reference_strain_rate power_law_reference_stress power_law_exponent  viscous_strain_xx viscous_strain_yy viscous_strain_zz viscous_strain_xy viscous_strain_yz viscous_strain_xz stress_xx stress_yy stress_zz stress_xy stress_yz stress_xz reference_stress_xx  reference_stress_yy  reference_stress_zz  reference_stress_xy reference_stress_yz reference_stress_xz  reference_strain_xx  reference_strain_yy  reference_strain_zz  reference_strain_xy reference_strain_yz reference_strain_xz
+  value-names =  density  vs  vp power_law_reference_strain_rate power_law_reference_stress power_law_exponent  viscous_strain_xx viscous_strain_yy viscous_strain_zz viscous_strain_xy viscous_strain_yz viscous_strain_xz deviatoric_stress_xx deviatoric_stress_yy deviatoric_stress_zz deviatoric_stress_xy deviatoric_stress_yz deviatoric_stress_xz reference_stress_xx  reference_stress_yy  reference_stress_zz  reference_stress_xy reference_stress_yz reference_stress_xz  reference_strain_xx  reference_strain_yy  reference_strain_zz  reference_strain_xy reference_strain_yz reference_strain_xz
   value-units =  kg/m**3  m/s  m/s 1/s Pa  None None None None None None None Pa Pa Pa Pa Pa Pa Pa Pa Pa Pa Pa Pa None None None None None None
   num-locs =      1
   data-dim =    0
@@ -28,12 +28,12 @@ SimpleDB {
 // (13) viscous_strain_xy (None)
 // (14) viscous_strain_yz (None)
 // (15) viscous_strain_xz (None)
-// (15) stress_xx (Pa)
-// (17) stress_yy (Pa)
-// (18) stress_zz (Pa)
-// (19) stress_xy (Pa)
-// (20) stress_yz (Pa)
-// (21) stress_xz (Pa)
+// (15) deviatoric_stress_xx (Pa)
+// (17) deviatoric_stress_yy (Pa)
+// (18) deviatoric_stress_zz (Pa)
+// (19) deviatoric_stress_xy (Pa)
+// (20) deviatoric_stress_yz (Pa)
+// (21) deviatoric_stress_xz (Pa)
 // (22) reference_stress_xx (Pa)
 // (23) reference_stress_yy (Pa)
 // (24) reference_stress_zz (Pa)

@@ -92,27 +92,27 @@ def generate_refstate_db(vertices, spatialdbFile):
                 'units': "None",
                 'data': zeroes,
             }, {
-                'name': "stress_xx",
+                'name': "deviatoric_stress_xx",
                 'units': "Pa",
                 'data': zeroes,
             }, {
-                'name': "stress_yy",
+                'name': "deviatoric_stress_yy",
                 'units': "Pa",
                 'data': zeroes,
             }, {
-                'name': "stress_zz",
+                'name': "deviatoric_stress_zz",
                 'units': "Pa",
                 'data': zeroes,
             }, {
-                'name': "stress_xy",
+                'name': "deviatoric_stress_xy",
                 'units': "Pa",
                 'data': zeroes,
             }, {
-                'name': "stress_yz",
+                'name': "deviatoric_stress_yz",
                 'units': "Pa",
                 'data': zeroes,
             }, {
-                'name': "stress_xz",
+                'name': "deviatoric_stress_xz",
                 'units': "Pa",
                 'data': zeroes,
             }, {

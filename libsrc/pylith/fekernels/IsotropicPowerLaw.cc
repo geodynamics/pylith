@@ -21,12 +21,12 @@
 #include "IsotropicPowerLaw.hh" // Implementation of object methods.
 
 #include "pylith/fekernels/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity* kernels
-#include "pylith/fekernels/Viscoelasticity.hh" // USES Viscoelasticity kernels
+#include "pylith/fekernels/Viscoelasticity.hh"           // USES Viscoelasticity kernels
 
-#include <cassert> // USES assert()
-#include <cmath> // USES exp()
+#include <cassert>   // USES assert()
+#include <cmath>     // USES exp()
 #include <stdexcept> // USES runtime_error
-#include <iostream> // USES std::cout
+#include <iostream>  // USES std::cout
 
 // =====================================================================================================================
 // Kernels for isotropic power-law viscoelastic material.
@@ -34,38 +34,38 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // f1 function for isotropic power-law plane strain WITHOUT reference stress and strain.
-void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::f1v(const PylithInt dim,
-                                                     const PylithInt numS,
-                                                     const PylithInt numA,
-                                                     const PylithInt sOff[],
-                                                     const PylithInt sOff_x[],
-                                                     const PylithScalar s[],
-                                                     const PylithScalar s_t[],
-                                                     const PylithScalar s_x[],
-                                                     const PylithInt aOff[],
-                                                     const PylithInt aOff_x[],
-                                                     const PylithScalar a[],
-                                                     const PylithScalar a_t[],
-                                                     const PylithScalar a_x[],
-                                                     const PylithReal t,
-                                                     const PylithScalar x[],
-                                                     const PylithInt numConstants,
-                                                     const PylithScalar constants[],
-                                                     PylithScalar f1[]) {
+void pylith::fekernels::IsotropicPowerLawPlaneStrain::f1v(const PylithInt dim,
+                                                          const PylithInt numS,
+                                                          const PylithInt numA,
+                                                          const PylithInt sOff[],
+                                                          const PylithInt sOff_x[],
+                                                          const PylithScalar s[],
+                                                          const PylithScalar s_t[],
+                                                          const PylithScalar s_x[],
+                                                          const PylithInt aOff[],
+                                                          const PylithInt aOff_x[],
+                                                          const PylithScalar a[],
+                                                          const PylithScalar a_t[],
+                                                          const PylithScalar a_x[],
+                                                          const PylithReal t,
+                                                          const PylithScalar x[],
+                                                          const PylithInt numConstants,
+                                                          const PylithScalar constants[],
+                                                          PylithScalar f1[])
+{
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -81,629 +81,36 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::f1v(const PylithInt dim,
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
     assert(f1);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
 
     const PylithInt numAMean = 1; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
+    const PylithInt aOffMean[1] = {aOff[i_bulkModulus]};
 
     const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[6] = {
         aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
-        aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_stress]};
+        aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_deviatoricStress]};
 
-    PylithScalar stressTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
+    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
     IsotropicLinearElasticityPlaneStrain::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
                                                      aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, stressTensor);
-    for (PylithInt i = 0; i < _dim*_dim; ++i) {
+    for (PylithInt i = 0; i < _dim * _dim; ++i)
+    {
         f1[i] -= stressTensor[i];
     } // for
 } // f1v
 
-
 // ---------------------------------------------------------------------------------------------------------------------
 // f1 function for isotropic power-law viscoelastic plane strain with reference
 // stress and strain.
-void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::f1v_refstate(const PylithInt dim,
-                                                              const PylithInt numS,
-                                                              const PylithInt numA,
-                                                              const PylithInt sOff[],
-                                                              const PylithInt sOff_x[],
-                                                              const PylithScalar s[],
-                                                              const PylithScalar s_t[],
-                                                              const PylithScalar s_x[],
-                                                              const PylithInt aOff[],
-                                                              const PylithInt aOff_x[],
-                                                              const PylithScalar a[],
-                                                              const PylithScalar a_t[],
-                                                              const PylithScalar a_x[],
-                                                              const PylithReal t,
-                                                              const PylithScalar x[],
-                                                              const PylithInt numConstants,
-                                                              const PylithScalar constants[],
-                                                              PylithScalar f1[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_rstress = numA-9;
-    const PylithInt i_rstrain = numA-8;
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 9);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
-    assert(aOff[i_powerLawReferenceStress] >= 0);
-    assert(aOff[i_powerLawExponent] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
-    assert(aOff[i_rstress] >= 0);
-    assert(aOff[i_rstrain] >= 0);
-    assert(f1);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 3; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
-                                  aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrain],
-                                  aOff[i_stress]};
-
-    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
-    IsotropicLinearElasticityPlaneStrain::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean,
-                                                              NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
-    deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                              t, x, numConstants, constants, stressTensor);
-    for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        f1[i] -= stressTensor[i];
-    } // for
-} // f1v_refstate
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-/* Jf3_vu entry function for 2-D plane strain isotropic power-law viscoelastic WITHOUT reference stress/strain.
- *
- * stress_ij = C_ijkl strain_kl
- *
- * For reference:
- *
- * Isotropic:
- *  C_ijkl = bulkModulus * delta_ij * delta_kl
- *   + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk - 2/3*delta_ij*delta_kl)
- */
-void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::Jf3vu(const PylithInt dim,
-                                                       const PylithInt numS,
-                                                       const PylithInt numA,
-                                                       const PylithInt sOff[],
-                                                       const PylithInt sOff_x[],
-                                                       const PylithScalar s[],
-                                                       const PylithScalar s_t[],
-                                                       const PylithScalar s_x[],
-                                                       const PylithInt aOff[],
-                                                       const PylithInt aOff_x[],
-                                                       const PylithScalar a[],
-                                                       const PylithScalar a_t[],
-                                                       const PylithScalar a_x[],
-                                                       const PylithReal t,
-                                                       const PylithReal s_tshift,
-                                                       const PylithScalar x[],
-                                                       const PylithInt numConstants,
-                                                       const PylithScalar constants[],
-                                                       PylithScalar Jf3[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 7);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
-    assert(aOff[i_powerLawReferenceStress] >= 0);
-    assert(aOff[i_powerLawExponent] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
-    assert(constants);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
-                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_stress]};
-
-    // Compute deviatoric stress (4 components).
-    PylithScalar devStressTpdt[4] = { 0.0, 0.0, 0.0, 0.0 };
-    deviatoricStress4(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                      t, x, numConstants, constants, devStressTpdt);
-
-    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
-    const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
-    const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
-    const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
-    const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
-    // ****** I think powerLawAlpha should actually be a kernel constant.
-    const PylithScalar powerLawAlpha = 0.5;
-    // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
-    const PylithScalar dt = constants[0];
-
-    // Compute quantities based on stress at t = T.
-    const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy at t = T.
-    const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
-    const PylithScalar devStressT[4] = {stressT[0] - meanStressT,
-                                        stressT[1] - meanStressT,
-                                        stressT[2] - meanStressT,
-                                        stressT[3]};
-    const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressT, devStressT);
-    const PylithScalar j2T = sqrt(0.5*devStressProdT);
-
-    // Compute quantities based on stress at t = T + dt.
-    const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressTpdt, devStressTpdt);
-    const PylithScalar j2Tpdt = sqrt(0.5*devStressProdTpdt);
-
-    // Compute quantities at intermediate time tau.
-    const PylithScalar j2Tau = powerLawAlpha*j2Tpdt + (1.0 - powerLawAlpha)*j2T;
-    const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress),
-                                                                  (powerLawExponent - 1.0))/powerLawReferenceStress;
-
-    // Default Jacobian is elastic (if effective stress is zero).
-    PylithReal C1111 = bulkModulus + 4.0*shearModulus/3.0;
-    PylithReal C1122 = bulkModulus - 2.0*shearModulus/3.0;
-    PylithReal C2211 = C1122;
-    PylithReal C1212 = shearModulus;
-    PylithReal C2222 = C1111;
-
-    // Compute viscoelastic Jacobian if effective stress is nonzero.
-    if (j2Tpdt != 0.0 && j2Tau != 0.0) {
-        const PylithScalar ae = 1.0/(2.0*shearModulus);
-        const PylithScalar denom = 2.0*j2Tau*j2Tpdt;
-        const PylithScalar factor1 = powerLawAlpha*dt*gammaTau;
-        const PylithScalar factor2 = factor1*(powerLawExponent - 1.0)/denom;
-        const PylithScalar factor3 = powerLawAlpha*factor2;
-        const PylithScalar factor4 = factor2*(1.0 - powerLawAlpha);
-
-        /* Unique components of Jacobian. */
-        C1111 = bulkModulus + 2/(3*(factor3*devStressTpdt[0]*devStressTpdt[0] + factor1 +
-                                    factor4*devStressTpdt[0]*devStressT[0] + ae));
-        C1122 = bulkModulus - 1/(3*(factor3*devStressTpdt[0]*devStressTpdt[0] + factor1 +
-                                    factor4*devStressTpdt[0]*devStressT[0] + ae));
-        C1212 = 1/(2*(factor3*devStressTpdt[3]*devStressTpdt[3] + factor1 +
-                      factor4*devStressTpdt[3]*devStressT[3] + ae));
-        C2211 = bulkModulus - 1/(3*(factor3*devStressTpdt[1]*devStressTpdt[1] + factor1 +
-                                    factor4*devStressTpdt[1]*devStressT[1] + ae));
-        C2222 = bulkModulus + 2/(3*(factor3*devStressTpdt[1]*devStressTpdt[1] + factor1 +
-                                    factor4*devStressTpdt[1]*devStressT[1] + ae));
-    } // if
-
-    /* j(f,g,df,dg) = C(f,df,g,dg)
-
-    0:  j0000 = C1111 = bulkModulus + 2/(3*(alpha**2*deltaT*gammaFTau*s11**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                                            alpha*deltaT*gammaFTau*s11*s11T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    1:  j0001 = C1112 = 0
-    2:  j0010 = C1211 = 0
-    3:  j0011 = C1212 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    4:  j0100 = C1121 = 0
-    5:  j0101 = C1122 = bulkModulus - 1/(3*(alpha**2*deltaT*gammaFTau*s11**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                                            alpha*deltaT*gammaFTau*s11*s11T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    6:  j0110 = C1221 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    7:  j0111 = C1222 = 0
-    8:  j1000 = C2111 = 0
-    9:  j1001 = C2112 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    10: j1010 = C2211 = bulkModulus - 1/(3*(alpha**2*deltaT*gammaFTau*s22**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                                            alpha*deltaT*gammaFTau*s22*s22T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    11: j1011 = C2212 = 0
-    12: j1100 = C2121 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    13: j1101 = C2122 = 0
-    14: j1110 = C2221 = 0
-    15: j1111 = C2222 = bulkModulus + 2/(3*(alpha**2*deltaT*gammaFTau*s22**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                                            alpha*deltaT*gammaFTau*s22*s22T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    */
-
-    /* Nonzero Jacobian entries. */
-    Jf3[0] -= C1111; /* j0000 */
-    Jf3[3] -= C1212; /* j0011 */
-    Jf3[5] -= C1122; /* j0101 */
-    Jf3[6] -= C1212; /* j0110 */
-    Jf3[9] -= C1212; /* j1001 */
-    Jf3[10] -= C2211; /* j1010 */
-    Jf3[12] -= C1212; /* j1100 */
-    Jf3[15] -= C2222; /* j1111 */
-
-} // Jf3vu
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-/* Jf3_vu entry function for 2-D plane strain isotropic power-law viscoelastic WITH reference stress/strain.
- *
- * stress_ij = C_ijkl strain_kl
- *
- * For reference:
- *
- * Isotropic:
- *  C_ijkl = bulkModulus * delta_ij * delta_kl
- *   + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk - 2/3*delta_ij*delta_kl)
- */
-void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::Jf3vu_refstate(const PylithInt dim,
-                                                                const PylithInt numS,
-                                                                const PylithInt numA,
-                                                                const PylithInt sOff[],
-                                                                const PylithInt sOff_x[],
-                                                                const PylithScalar s[],
-                                                                const PylithScalar s_t[],
-                                                                const PylithScalar s_x[],
-                                                                const PylithInt aOff[],
-                                                                const PylithInt aOff_x[],
-                                                                const PylithScalar a[],
-                                                                const PylithScalar a_t[],
-                                                                const PylithScalar a_x[],
-                                                                const PylithReal t,
-                                                                const PylithReal s_tshift,
-                                                                const PylithScalar x[],
-                                                                const PylithInt numConstants,
-                                                                const PylithScalar constants[],
-                                                                PylithScalar Jf3[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_rstress = numA-9;
-    const PylithInt i_rstrain = numA-8;
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 9);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
-    assert(aOff[i_powerLawReferenceStress] >= 0);
-    assert(aOff[i_powerLawExponent] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
-    assert(aOff[i_rstress] >= 0);
-    assert(aOff[i_rstrain] >= 0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
-                                  aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrain],
-                                  aOff[i_stress]};
-
-    // Compute deviatoric stress vector (4 components).
-    PylithScalar devStressTpdt[4] = { 0.0, 0.0, 0.0, 0.0 };
-    deviatoricStress4_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                               t, x, numConstants, constants, devStressTpdt);
-
-    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
-    const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
-    const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
-    const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
-    const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
-    // ****** I think powerLawAlpha should actually be a kernel constant.
-    const PylithScalar powerLawAlpha = 0.5;
-    // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
-    const PylithScalar dt = constants[0];
-
-    // Compute quantities based on stress at t = T.
-    const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy at t = T.
-    const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
-    const PylithScalar devStressT[4] = {stressT[0] - meanStressT,
-                                        stressT[1] - meanStressT,
-                                        stressT[2] - meanStressT,
-                                        stressT[3]};
-    const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressT, devStressT);
-    const PylithScalar j2T = sqrt(0.5*devStressProdT);
-
-    // Compute quantities based on stress at t = T + dt.
-    const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressTpdt, devStressTpdt);
-    const PylithScalar j2Tpdt = sqrt(0.5*devStressProdTpdt);
-
-    // Compute quantities at intermediate time tau.
-    const PylithScalar j2Tau = powerLawAlpha*j2Tpdt + (1.0 - powerLawAlpha)*j2T;
-    const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress),
-                                                                  (powerLawExponent - 1.0))/powerLawReferenceStress;
-
-    // Default Jacobian is elastic (if effective stress is zero).
-    PylithReal C1111 = bulkModulus + 4.0*shearModulus/3.0;
-    PylithReal C1122 = bulkModulus - 2.0*shearModulus/3.0;
-    PylithReal C2211 = C1122;
-    PylithReal C1212 = shearModulus;
-    PylithReal C2222 = C1111;
-
-    // Compute viscoelastic Jacobian if effective stress is nonzero.
-    if (j2Tpdt != 0.0 && j2Tau != 0.0) {
-        const PylithScalar ae = 1.0/(2.0*shearModulus);
-        const PylithScalar denom = 2.0*j2Tau*j2Tpdt;
-        const PylithScalar factor1 = powerLawAlpha*dt*gammaTau;
-        const PylithScalar factor2 = factor1*(powerLawExponent - 1.0)/denom;
-        const PylithScalar factor3 = powerLawAlpha*factor2;
-        const PylithScalar factor4 = factor2*(1.0 - powerLawAlpha);
-
-        /* Unique components of Jacobian. */
-        C1111 = bulkModulus + 2/(3*(factor3*devStressTpdt[0]*devStressTpdt[0] + factor1 +
-                                    factor4*devStressTpdt[0]*devStressT[0] + ae));
-        C1122 = bulkModulus - 1/(3*(factor3*devStressTpdt[0]*devStressTpdt[0] + factor1 +
-                                    factor4*devStressTpdt[0]*devStressT[0] + ae));
-        C1212 = 1/(2*(factor3*devStressTpdt[3]*devStressTpdt[3] + factor1 +
-                      factor4*devStressTpdt[3]*devStressT[3] + ae));
-        C2211 = bulkModulus - 1/(3*(factor3*devStressTpdt[1]*devStressTpdt[1] + factor1 +
-                                    factor4*devStressTpdt[1]*devStressT[1] + ae));
-        C2222 = bulkModulus + 2/(3*(factor3*devStressTpdt[1]*devStressTpdt[1] + factor1 +
-                                    factor4*devStressTpdt[1]*devStressT[1] + ae));
-    } // if
-
-    /* j(f,g,df,dg) = C(f,df,g,dg)
-
-    0:  j0000 = C1111 = bulkModulus + 2/(3*(alpha**2*deltaT*gammaFTau*s11**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                                            alpha*deltaT*gammaFTau*s11*s11T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    1:  j0001 = C1112 = 0
-    2:  j0010 = C1211 = 0
-    3:  j0011 = C1212 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    4:  j0100 = C1121 = 0
-    5:  j0101 = C1122 = bulkModulus - 1/(3*(alpha**2*deltaT*gammaFTau*s11**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                                            alpha*deltaT*gammaFTau*s11*s11T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    6:  j0110 = C1221 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    7:  j0111 = C1222 = 0
-    8:  j1000 = C2111 = 0
-    9:  j1001 = C2112 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    10: j1010 = C2211 = bulkModulus - 1/(3*(alpha**2*deltaT*gammaFTau*s22**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                                            alpha*deltaT*gammaFTau*s22*s22T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    11: j1011 = C2212 = 0
-    12: j1100 = C2121 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    13: j1101 = C2122 = 0
-    14: j1110 = C2221 = 0
-    15: j1111 = C2222 = bulkModulus + 2/(3*(alpha**2*deltaT*gammaFTau*s22**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
-                                            alpha*deltaT*gammaFTau*s22*s22T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
-    */
-
-    /* Nonzero Jacobian entries. */
-    Jf3[0] -= C1111; /* j0000 */
-    Jf3[3] -= C1212; /* j0011 */
-    Jf3[5] -= C1122; /* j0101 */
-    Jf3[6] -= C1212; /* j0110 */
-    Jf3[9] -= C1212; /* j1001 */
-    Jf3[10] -= C2211; /* j1010 */
-    Jf3[12] -= C1212; /* j1100 */
-    Jf3[15] -= C2222; /* j1111 */
-
-} // Jf3vu_refstate
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-/* Calculate deviatoric stress for 2-D plane strain isotropic
- * power-law viscoelastic WITHOUT reference stress and strain.
- *
- * devStress_ij = stress_ij - meanStress*delta_ij
- *
- * devStress_ij = 2*shearModulus*visStrain_ij
- */
-void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::deviatoricStress(const PylithInt dim,
-                                                                  const PylithInt numS,
-                                                                  const PylithInt numA,
-                                                                  const PylithInt sOff[],
-                                                                  const PylithInt sOff_x[],
-                                                                  const PylithScalar s[],
-                                                                  const PylithScalar s_t[],
-                                                                  const PylithScalar s_x[],
-                                                                  const PylithInt aOff[],
-                                                                  const PylithInt aOff_x[],
-                                                                  const PylithScalar a[],
-                                                                  const PylithScalar a_t[],
-                                                                  const PylithScalar a_x[],
-                                                                  const PylithReal t,
-                                                                  const PylithScalar x[],
-                                                                  const PylithInt numConstants,
-                                                                  const PylithScalar constants[],
-                                                                  PylithScalar stressTensor[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = 0;
-    const PylithInt i_powerLawReferenceStrainRate = 1;
-    const PylithInt i_powerLawReferenceStress = 2;
-    const PylithInt i_powerLawExponent = 3;
-    const PylithInt i_viscousStrain = 4;
-    const PylithInt i_stress = 5;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 6);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
-    assert(aOff[i_powerLawReferenceStress] >= 0);
-    assert(aOff[i_powerLawExponent] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
-                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_stress]};
-
-    // Compute deviatoric stress vector (4 components).
-    PylithScalar devStressTpdt[4] = { 0.0, 0.0, 0.0, 0.0 };
-    deviatoricStress4(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                      t, x, numConstants, constants, devStressTpdt);
-
-    stressTensor[0] += devStressTpdt[0]; // stress_xx
-    stressTensor[1] += devStressTpdt[3]; // stress_xy
-    stressTensor[2] += devStressTpdt[3]; // stress_yx
-    stressTensor[3] += devStressTpdt[1]; // stress_yy
-} // deviatoricStress
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-/* Calculate deviatoric stress for 2-D plane strain isotropic
- * power-law viscoelastic WITH reference stress and reference strain.
- *
- * devStress_ij = stress_ij - meanStress*delta_ij
- *
- * devStress_ij = devrefstress_ij + 2*shearModulus*(visstrain_ij - devrefstrain_ij)
- */
-void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::deviatoricStress_refstate(const PylithInt dim,
-                                                                           const PylithInt numS,
-                                                                           const PylithInt numA,
-                                                                           const PylithInt sOff[],
-                                                                           const PylithInt sOff_x[],
-                                                                           const PylithScalar s[],
-                                                                           const PylithScalar s_t[],
-                                                                           const PylithScalar s_x[],
-                                                                           const PylithInt aOff[],
-                                                                           const PylithInt aOff_x[],
-                                                                           const PylithScalar a[],
-                                                                           const PylithScalar a_t[],
-                                                                           const PylithScalar a_x[],
-                                                                           const PylithReal t,
-                                                                           const PylithScalar x[],
-                                                                           const PylithInt numConstants,
-                                                                           const PylithScalar constants[],
-                                                                           PylithScalar stressTensor[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_rstress = 0;
-    const PylithInt i_rstrain = 1;
-    const PylithInt i_shearModulus = 2;
-    const PylithInt i_powerLawReferenceStrainRate = 3;
-    const PylithInt i_powerLawReferenceStress = 4;
-    const PylithInt i_powerLawExponent = 5;
-    const PylithInt i_viscousStrain = 6;
-    const PylithInt i_stress = 7;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 8);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
-    assert(aOff[i_powerLawReferenceStress] >= 0);
-    assert(aOff[i_powerLawExponent] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
-    assert(aOff[i_rstress] >= 0);
-    assert(aOff[i_rstrain] >= 0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
-                                  aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrain],
-                                  aOff[i_stress]};
-
-    // Compute deviatoric stress vector (4 components).
-    PylithScalar devStressTpdt[4] = { 0.0, 0.0, 0.0, 0.0 };
-    deviatoricStress4_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                               t, x, numConstants, constants, devStressTpdt);
-
-    stressTensor[0] += devStressTpdt[0]; // stress_xx
-    stressTensor[1] += devStressTpdt[3]; // stress_xy
-    stressTensor[2] += devStressTpdt[3]; // stress_yx
-    stressTensor[3] += devStressTpdt[1]; // stress_yy
-} // deviatoricStress_refstate
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-/* Calculate deviatoric stress including stress_zz for 2-D plane strain isotropic power-law
- * viscoelastic WITHOUT reference stress and strain.
- *
- * devStress_ij = stress_ij - meanStress*delta_ij
- *
- * devStress_ij = 2*shearModulus*visStrain_ij
- */
-void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::deviatoricStress4(const PylithInt dim,
+void pylith::fekernels::IsotropicPowerLawPlaneStrain::f1v_refstate(const PylithInt dim,
                                                                    const PylithInt numS,
                                                                    const PylithInt numA,
                                                                    const PylithInt sOff[],
@@ -720,290 +127,110 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::deviatoricStress4(const PylithI
                                                                    const PylithScalar x[],
                                                                    const PylithInt numConstants,
                                                                    const PylithScalar constants[],
-                                                                   PylithScalar devStressTpdt[]) {
+                                                                   PylithScalar f1[])
+{
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = 0;
-    const PylithInt i_powerLawReferenceStrainRate = 1;
-    const PylithInt i_powerLawReferenceStress = 2;
-    const PylithInt i_powerLawExponent = 3;
-    const PylithInt i_viscousStrain = 4;
-    const PylithInt i_stress = 5;
+    const PylithInt i_rstress = numA - 9;
+    const PylithInt i_rstrain = numA - 8;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
 
     assert(_dim == dim);
     assert(numS >= 1);
-    assert(numA >= 6);
+    assert(numA >= 9);
     assert(sOff);
     assert(sOff[i_disp] >= 0);
     assert(sOff_x);
     assert(sOff_x[i_disp] >= 0);
     assert(aOff);
     assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
     assert(aOff[i_powerLawReferenceStrainRate] >= 0);
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
-    assert(constants);
-
-    // Constants.
-    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
-    const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
-    const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
-    const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
-    // ****** I think powerLawAlpha should actually be a kernel constant.
-    const PylithScalar powerLawAlpha = 0.5;
-    // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
-    const PylithScalar dt = constants[0];
-    const PylithScalar ae = 1.0/(2.0*shearModulus);
-    const PylithScalar timeFac = dt*(1.0 - powerLawAlpha);
-
-    // Compute quantities based on stress at t = T.
-    const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy at t = T.
-    const PylithScalar* visStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz,
-                                                                // visStrain_xy at t = T.
-    const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
-    const PylithScalar devStressT[4] = {
-        stressT[0] - meanStressT,
-        stressT[1] - meanStressT,
-        stressT[2] - meanStressT,
-        stressT[3],
-    };
-    const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressT, devStressT);
-    const PylithScalar j2T = sqrt(0.5*devStressProdT);
-
-    // Compute quantities based on strain at t = T + dt.
-    const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
-    const PylithScalar strainTpdt[4] = {
-        disp_x[0*_dim+0],
-        disp_x[1*_dim+1],
-        0.0,
-        0.5 * (disp_x[0*_dim+1] + disp_x[1*_dim+0]),
-    };
-    const PylithReal meanStrainTpdt = (strainTpdt[0] + strainTpdt[1])/3.0;
-    const PylithScalar devStrainTpdt[4] = {
-        strainTpdt[0] - meanStrainTpdt,
-        strainTpdt[1] - meanStrainTpdt,
-        -meanStrainTpdt,
-        strainTpdt[2],
-    };
-    const PylithScalar strainPPTpdt[4] = {
-        devStrainTpdt[0] - visStrainT[0],
-        devStrainTpdt[1] - visStrainT[1],
-        devStrainTpdt[2] - visStrainT[2],
-        devStrainTpdt[3] - visStrainT[3],
-    };
-    const PylithScalar strainPPInvar2Tpdt = 0.5*pylith::fekernels::Viscoelasticity::scalarProduct2DPS(strainPPTpdt, strainPPTpdt);
-    const PylithScalar strainStressInvar2T = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(strainPPTpdt, devStressT);
-
-    // Finish defining parameters needed for root-finding algorithm.
-    const PylithScalar b = strainPPInvar2Tpdt;
-    const PylithScalar c = strainStressInvar2T*timeFac;
-    const PylithScalar d = timeFac*j2T;
-    PylithScalar j2Tpdt = 0.0;
-    if ((b != 0.0) || (c != 0.0) || (d != 0.0)) {
-        const PylithScalar j2InitialGuess = j2T;
-        const PylithScalar stressScale = shearModulus;
-        j2Tpdt = IsotropicPowerLawEffectiveStress::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha,
-                                                                          dt, j2T, powerLawExponent, powerLawReferenceStrainRate,
-                                                                          powerLawReferenceStress);
-    } // if
-    // Compute deviatoric stresses from effective stress.
-    const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
-    const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress),
-                                                                  (powerLawExponent - 1.0))/powerLawReferenceStress;
-    const PylithScalar factor1 = 1.0/(ae + powerLawAlpha*dt*gammaTau);
-    const PylithScalar factor2 = timeFac*gammaTau;
-    devStressTpdt[0] += factor1*(strainPPTpdt[0] - factor2*devStressT[0]);
-    devStressTpdt[1] += factor1*(strainPPTpdt[1] - factor2*devStressT[1]);
-    devStressTpdt[2] += factor1*(strainPPTpdt[2] - factor2*devStressT[2]);
-    devStressTpdt[3] += factor1*(strainPPTpdt[3] - factor2*devStressT[3]);
-
-} // deviatoricStress4
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-/* Calculate deviatoric stress including stress_zz for 2-D plane strain isotropic power-law
- * viscoelastic WITH reference stress and strain.
- *
- * devStress_ij = stress_ij - meanStress*delta_ij
- *
- * devStress_ij = 2*shearModulus*visStrain_ij
- */
-void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::deviatoricStress4_refstate(const PylithInt dim,
-                                                                            const PylithInt numS,
-                                                                            const PylithInt numA,
-                                                                            const PylithInt sOff[],
-                                                                            const PylithInt sOff_x[],
-                                                                            const PylithScalar s[],
-                                                                            const PylithScalar s_t[],
-                                                                            const PylithScalar s_x[],
-                                                                            const PylithInt aOff[],
-                                                                            const PylithInt aOff_x[],
-                                                                            const PylithScalar a[],
-                                                                            const PylithScalar a_t[],
-                                                                            const PylithScalar a_x[],
-                                                                            const PylithReal t,
-                                                                            const PylithScalar x[],
-                                                                            const PylithInt numConstants,
-                                                                            const PylithScalar constants[],
-                                                                            PylithScalar devStressTpdt[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_rstress = 0;
-    const PylithInt i_rstrain = 1;
-    const PylithInt i_shearModulus = 2;
-    const PylithInt i_powerLawReferenceStrainRate = 3;
-    const PylithInt i_powerLawReferenceStress = 4;
-    const PylithInt i_powerLawExponent = 5;
-    const PylithInt i_viscousStrain = 6;
-    const PylithInt i_stress = 7;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 8);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
-    assert(aOff[i_powerLawReferenceStress] >= 0);
-    assert(aOff[i_powerLawExponent] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
-    assert(constants);
+    assert(f1);
 
-    // Constants.
-    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
-    const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
-    const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
-    const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
-    // ****** I think powerLawAlpha should actually be a kernel constant.
-    const PylithScalar powerLawAlpha = 0.5;
-    // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
-    const PylithScalar dt = constants[0];
-    const PylithScalar ae = 1.0/(2.0*shearModulus);
-    const PylithScalar timeFac = dt*(1.0 - powerLawAlpha);
+    const PylithInt _numS = 1; // Number passed on to stress kernels.
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
 
-    // Compute quantities based on reference stress.
-    const PylithScalar* stressR = &a[aOff[i_rstress]];
-    const PylithScalar meanStressR = (stressR[0] + stressR[1] + stressR[2])/3.0;
-    const PylithScalar devStressR[4] = {stressR[0] - meanStressR,
-                                        stressR[1] - meanStressR,
-                                        stressR[2] - meanStressR,
-                                        stressR[3]};
-    const PylithScalar j2RSquared = 0.5*pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressR, devStressR);
+    const PylithInt numAMean = 3; // Number passed to mean stress kernel.
+    const PylithInt aOffMean[3] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus]};
 
-    // Compute quantities based on reference strain.
-    const PylithScalar* strainR = &a[aOff[i_rstrain]];
-    const PylithScalar meanStrainR = (strainR[0] + strainR[1])/3.0;
+    const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
+    const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
+                                  aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrain],
+                                  aOff[i_deviatoricStress]};
 
-    // Compute quantities based on stress at t = T.
-    const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy at t = T.
-    const PylithScalar* visStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz,
-                                                                // visStrain_xy at t = T.
-    const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
-    const PylithScalar devStressT[4] = {stressT[0] - meanStressT,
-                                        stressT[1] - meanStressT,
-                                        stressT[2] - meanStressT,
-                                        stressT[3]};
-    const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressT, devStressT);
-    const PylithScalar j2T = sqrt(0.5*devStressProdT);
-
-    // Compute quantities based on strain at t = T + dt.
-    const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
-    const PylithScalar strainTpdt[4] = {disp_x[0*_dim+0],
-                                        disp_x[1*_dim+1],
-                                        0.0,
-                                        0.5 * (disp_x[0*_dim+1] + disp_x[1*_dim+0])};
-    const PylithReal meanStrainTpdt = (strainTpdt[0] + strainTpdt[1])/3.0 - meanStrainR;
-    const PylithScalar strainPPTpdt[4] = {strainTpdt[0] - meanStrainTpdt - visStrainT[0] - strainR[0],
-                                          strainTpdt[1] - meanStrainTpdt - visStrainT[1] - strainR[1],
-                                          -meanStrainTpdt - visStrainT[2],
-                                          strainTpdt[3] - visStrainT[3] - strainR[2]};
-    const PylithScalar strainPPInvar2Tpdt = 0.5*pylith::fekernels::Viscoelasticity::scalarProduct2DPS(strainPPTpdt, strainPPTpdt);
-    const PylithScalar strainStressInvar2T = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(strainPPTpdt, devStressT);
-    const PylithScalar strainStressInvar2R = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(strainPPTpdt, devStressR);
-    const PylithScalar stressInvar2RT = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressT, devStressR);
-
-    // Finish defining parameters needed for root-finding algorithm.
-    const PylithScalar b = strainPPInvar2Tpdt + ae*strainStressInvar2R + ae*ae*j2RSquared;
-    const PylithScalar c = strainStressInvar2T*timeFac + ae*stressInvar2RT;
-    const PylithScalar d = timeFac*j2T;
-    PylithScalar j2Tpdt = 0.0;
-    if ((b != 0.0) || (c != 0.0) || (d != 0.0)) {
-        const PylithScalar j2InitialGuess = j2T;
-        const PylithScalar stressScale = shearModulus;
-        j2Tpdt = IsotropicPowerLawEffectiveStress::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha,
-                                                                          dt, j2T, powerLawExponent, powerLawReferenceStrainRate,
-                                                                          powerLawReferenceStress);
-    } // if
-    // Compute deviatoric stresses from effective stress.
-    const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
-    const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress),
-                                                                  (powerLawExponent - 1.0))/powerLawReferenceStress;
-    const PylithScalar factor1 = 1.0/(ae + powerLawAlpha*dt*gammaTau);
-    const PylithScalar factor2 = timeFac*gammaTau;
-    devStressTpdt[0] += factor1*(strainPPTpdt[0] - factor2*devStressT[0] + ae*devStressR[0]);
-    devStressTpdt[1] += factor1*(strainPPTpdt[1] - factor2*devStressT[1] + ae*devStressR[1]);
-    devStressTpdt[2] += factor1*(strainPPTpdt[2] - factor2*devStressT[2] + ae*devStressR[2]);
-    devStressTpdt[3] += factor1*(strainPPTpdt[3] - factor2*devStressT[3] + ae*devStressR[3]);
-
-} // deviatoricStress4_refstate
-
+    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
+    IsotropicLinearElasticityPlaneStrain::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean,
+                                                              NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
+    deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+                              t, x, numConstants, constants, stressTensor);
+    for (PylithInt i = 0; i < _dim * _dim; ++i)
+    {
+        f1[i] -= stressTensor[i];
+    } // for
+} // f1v_refstate
 
 // ---------------------------------------------------------------------------------------------------------------------
-/* Update stress for a plane strain power-law viscoelastic material.
- *
- * IMPORTANT: The order of the auxiliary field and solution field are reversed compared to the residual and Jacobian
- * kernels.
- *
- */
-void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress(const PylithInt dim,
-                                                              const PylithInt numS,
-                                                              const PylithInt numA,
-                                                              const PylithInt sOff[],
-                                                              const PylithInt sOff_x[],
-                                                              const PylithScalar s[],
-                                                              const PylithScalar s_t[],
-                                                              const PylithScalar s_x[],
-                                                              const PylithInt aOff[],
-                                                              const PylithInt aOff_x[],
-                                                              const PylithScalar a[],
-                                                              const PylithScalar a_t[],
-                                                              const PylithScalar a_x[],
-                                                              const PylithReal t,
-                                                              const PylithScalar x[],
-                                                              const PylithInt numConstants,
-                                                              const PylithScalar constants[],
-                                                              PylithScalar stress[]) {
+/* Jf3_vu entry function for 2-D plane strain isotropic power-law viscoelastic WITHOUT reference stress/strain.
+    *
+    * stress_ij = C_ijkl strain_kl
+    *
+    * For reference:
+    *
+    * Isotropic:
+    *  C_ijkl = bulkModulus * delta_ij * delta_kl
+    *   + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk - 2/3*delta_ij*delta_kl)
+    */
+void pylith::fekernels::IsotropicPowerLawPlaneStrain::Jf3vu(const PylithInt dim,
+                                                            const PylithInt numS,
+                                                            const PylithInt numA,
+                                                            const PylithInt sOff[],
+                                                            const PylithInt sOff_x[],
+                                                            const PylithScalar s[],
+                                                            const PylithScalar s_t[],
+                                                            const PylithScalar s_x[],
+                                                            const PylithInt aOff[],
+                                                            const PylithInt aOff_x[],
+                                                            const PylithScalar a[],
+                                                            const PylithScalar a_t[],
+                                                            const PylithScalar a_x[],
+                                                            const PylithReal t,
+                                                            const PylithReal s_tshift,
+                                                            const PylithScalar x[],
+                                                            const PylithInt numConstants,
+                                                            const PylithScalar constants[],
+                                                            PylithScalar Jf3[])
+{
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -1019,43 +246,292 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress(const PylithInt di
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
+    assert(constants);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
 
     const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
-                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_stress]};
-
-    PylithScalar stressTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
-    IsotropicLinearElasticityPlaneStrain::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL,
-                                                     a, a_t, NULL, t, x, numConstants, constants, stressTensor);
-    stress[0] = stressTensor[0];
-    stress[1] = stressTensor[0];
-    stress[2] = stressTensor[0];
-    stress[3] = 0.0;
+                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_deviatoricStress]};
 
     // Compute deviatoric stress (4 components).
+    PylithScalar devStressTpdt[4] = {0.0, 0.0, 0.0, 0.0};
     deviatoricStress4(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                      t, x, numConstants, constants, stress);
+                      t, x, numConstants, constants, devStressTpdt);
 
-} // updateStress
+    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
+    const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
+    const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
+    const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
+    const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
+    const PylithScalar powerLawAlpha = 0.5;
+    const PylithScalar dt = constants[0];
 
+    // Compute quantities based on stress at t = T.
+    const PylithScalar *devStressT = &a[aOff[i_deviatoricStress]]; // devstress_xx, devstress_yy, devstress_zz, devstress_xy at t = T.
+    const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressT, devStressT);
+    const PylithScalar j2T = sqrt(0.5 * devStressProdT);
+
+    // Compute quantities based on stress at t = T + dt.
+    const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressTpdt, devStressTpdt);
+    const PylithScalar j2Tpdt = sqrt(0.5 * devStressProdTpdt);
+
+    // Compute quantities at intermediate time tau.
+    const PylithScalar j2Tau = powerLawAlpha * j2Tpdt + (1.0 - powerLawAlpha) * j2T;
+    const PylithScalar gammaTau = powerLawReferenceStrainRate * pow((j2Tau / powerLawReferenceStress), (powerLawExponent - 1.0)) / powerLawReferenceStress;
+
+    // Default Jacobian is elastic (if effective stress is zero).
+    PylithReal C1111 = bulkModulus + 4.0 * shearModulus / 3.0;
+    PylithReal C1122 = bulkModulus - 2.0 * shearModulus / 3.0;
+    PylithReal C2211 = C1122;
+    PylithReal C1212 = shearModulus;
+    PylithReal C2222 = C1111;
+
+    // Compute viscoelastic Jacobian if effective stress is nonzero.
+    if (j2Tpdt != 0.0 && j2Tau != 0.0)
+    {
+        const PylithScalar ae = 1.0 / (2.0 * shearModulus);
+        const PylithScalar denom = 2.0 * j2Tau * j2Tpdt;
+        const PylithScalar factor1 = powerLawAlpha * dt * gammaTau;
+        const PylithScalar factor2 = factor1 * (powerLawExponent - 1.0) / denom;
+        const PylithScalar factor3 = powerLawAlpha * factor2;
+        const PylithScalar factor4 = factor2 * (1.0 - powerLawAlpha);
+
+        /* Unique components of Jacobian. */
+        C1111 = bulkModulus + 2 / (3 * (factor3 * devStressTpdt[0] * devStressTpdt[0] + factor1 +
+                                        factor4 * devStressTpdt[0] * devStressT[0] + ae));
+        C1122 = bulkModulus - 1 / (3 * (factor3 * devStressTpdt[0] * devStressTpdt[0] + factor1 +
+                                        factor4 * devStressTpdt[0] * devStressT[0] + ae));
+        C1212 = 1 / (2 * (factor3 * devStressTpdt[3] * devStressTpdt[3] + factor1 +
+                          factor4 * devStressTpdt[3] * devStressT[3] + ae));
+        C2211 = bulkModulus - 1 / (3 * (factor3 * devStressTpdt[1] * devStressTpdt[1] + factor1 +
+                                        factor4 * devStressTpdt[1] * devStressT[1] + ae));
+        C2222 = bulkModulus + 2 / (3 * (factor3 * devStressTpdt[1] * devStressTpdt[1] + factor1 +
+                                        factor4 * devStressTpdt[1] * devStressT[1] + ae));
+    } // if
+
+    /* j(f,g,df,dg) = C(f,df,g,dg)
+
+    0:  j0000 = C1111 = bulkModulus + 2/(3*(alpha**2*deltaT*gammaFTau*s11**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s11*s11T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    1:  j0001 = C1112 = 0
+    2:  j0010 = C1211 = 0
+    3:  j0011 = C1212 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    4:  j0100 = C1121 = 0
+    5:  j0101 = C1122 = bulkModulus - 1/(3*(alpha**2*deltaT*gammaFTau*s11**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s11*s11T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    6:  j0110 = C1221 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    7:  j0111 = C1222 = 0
+    8:  j1000 = C2111 = 0
+    9:  j1001 = C2112 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    10: j1010 = C2211 = bulkModulus - 1/(3*(alpha**2*deltaT*gammaFTau*s22**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s22*s22T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    11: j1011 = C2212 = 0
+    12: j1100 = C2121 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    13: j1101 = C2122 = 0
+    14: j1110 = C2221 = 0
+    15: j1111 = C2222 = bulkModulus + 2/(3*(alpha**2*deltaT*gammaFTau*s22**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s22*s22T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    */
+
+    /* Nonzero Jacobian entries. */
+    Jf3[0] -= C1111;  /* j0000 */
+    Jf3[3] -= C1212;  /* j0011 */
+    Jf3[5] -= C1122;  /* j0101 */
+    Jf3[6] -= C1212;  /* j0110 */
+    Jf3[9] -= C1212;  /* j1001 */
+    Jf3[10] -= C2211; /* j1010 */
+    Jf3[12] -= C1212; /* j1100 */
+    Jf3[15] -= C2222; /* j1111 */
+
+} // Jf3vu
 
 // ---------------------------------------------------------------------------------------------------------------------
-/* Update stress for a plane strain power-law viscoelastic material WITH reference stress and strain.
+/* Jf3_vu entry function for 2-D plane strain isotropic power-law viscoelastic WITH reference stress/strain.
  *
- * IMPORTANT: The order of the auxiliary field and solution field are reversed compared to the residual and Jacobian
- * kernels.
+ * stress_ij = C_ijkl strain_kl
  *
+ * For reference:
+ *
+ * Isotropic:
+ *  C_ijkl = bulkModulus * delta_ij * delta_kl
+ *   + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk - 2/3*delta_ij*delta_kl)
  */
-void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress_refstate(const PylithInt dim,
+void pylith::fekernels::IsotropicPowerLawPlaneStrain::Jf3vu_refstate(const PylithInt dim,
+                                                                     const PylithInt numS,
+                                                                     const PylithInt numA,
+                                                                     const PylithInt sOff[],
+                                                                     const PylithInt sOff_x[],
+                                                                     const PylithScalar s[],
+                                                                     const PylithScalar s_t[],
+                                                                     const PylithScalar s_x[],
+                                                                     const PylithInt aOff[],
+                                                                     const PylithInt aOff_x[],
+                                                                     const PylithScalar a[],
+                                                                     const PylithScalar a_t[],
+                                                                     const PylithScalar a_x[],
+                                                                     const PylithReal t,
+                                                                     const PylithReal s_tshift,
+                                                                     const PylithScalar x[],
+                                                                     const PylithInt numConstants,
+                                                                     const PylithScalar constants[],
+                                                                     PylithScalar Jf3[])
+{
+    const PylithInt _dim = 2;
+
+    // Incoming solution fields.
+    const PylithInt i_disp = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_rstress = numA - 9;
+    const PylithInt i_rstrain = numA - 8;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(numA >= 9);
+    assert(sOff);
+    assert(sOff[i_disp] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
+    assert(aOff);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
+    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
+    assert(aOff[i_powerLawReferenceStress] >= 0);
+    assert(aOff[i_powerLawExponent] >= 0);
+    assert(aOff[i_viscousStrain] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
+
+    const PylithInt _numS = 1; // Number passed on to stress kernels.
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
+
+    const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
+    const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
+                                  aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrain],
+                                  aOff[i_deviatoricStress]};
+
+    // Compute deviatoric stress vector (4 components).
+    PylithScalar devStressTpdt[4] = {0.0, 0.0, 0.0, 0.0};
+    deviatoricStress4_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+                               t, x, numConstants, constants, devStressTpdt);
+
+    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
+    const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
+    const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
+    const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
+    const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
+    const PylithScalar powerLawAlpha = 0.5;
+    const PylithScalar dt = constants[0];
+
+    // Compute quantities based on stress at t = T.
+    const PylithScalar *devStressT = &a[aOff[i_deviatoricStress]]; // devstress_xx, devstress_yy, devstress_zz, devstress_xy at t = T.
+    const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressT, devStressT);
+    const PylithScalar j2T = sqrt(0.5 * devStressProdT);
+
+    // Compute quantities based on stress at t = T + dt.
+    const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressTpdt, devStressTpdt);
+    const PylithScalar j2Tpdt = sqrt(0.5 * devStressProdTpdt);
+
+    // Compute quantities at intermediate time tau.
+    const PylithScalar j2Tau = powerLawAlpha * j2Tpdt + (1.0 - powerLawAlpha) * j2T;
+    const PylithScalar gammaTau = powerLawReferenceStrainRate * pow((j2Tau / powerLawReferenceStress), (powerLawExponent - 1.0)) / powerLawReferenceStress;
+
+    // Default Jacobian is elastic (if effective stress is zero).
+    PylithReal C1111 = bulkModulus + 4.0 * shearModulus / 3.0;
+    PylithReal C1122 = bulkModulus - 2.0 * shearModulus / 3.0;
+    PylithReal C2211 = C1122;
+    PylithReal C1212 = shearModulus;
+    PylithReal C2222 = C1111;
+
+    // Compute viscoelastic Jacobian if effective stress is nonzero.
+    if (j2Tpdt != 0.0 && j2Tau != 0.0)
+    {
+        const PylithScalar ae = 1.0 / (2.0 * shearModulus);
+        const PylithScalar denom = 2.0 * j2Tau * j2Tpdt;
+        const PylithScalar factor1 = powerLawAlpha * dt * gammaTau;
+        const PylithScalar factor2 = factor1 * (powerLawExponent - 1.0) / denom;
+        const PylithScalar factor3 = powerLawAlpha * factor2;
+        const PylithScalar factor4 = factor2 * (1.0 - powerLawAlpha);
+
+        /* Unique components of Jacobian. */
+        C1111 = bulkModulus + 2 / (3 * (factor3 * devStressTpdt[0] * devStressTpdt[0] + factor1 +
+                                        factor4 * devStressTpdt[0] * devStressT[0] + ae));
+        C1122 = bulkModulus - 1 / (3 * (factor3 * devStressTpdt[0] * devStressTpdt[0] + factor1 +
+                                        factor4 * devStressTpdt[0] * devStressT[0] + ae));
+        C1212 = 1 / (2 * (factor3 * devStressTpdt[3] * devStressTpdt[3] + factor1 +
+                          factor4 * devStressTpdt[3] * devStressT[3] + ae));
+        C2211 = bulkModulus - 1 / (3 * (factor3 * devStressTpdt[1] * devStressTpdt[1] + factor1 +
+                                        factor4 * devStressTpdt[1] * devStressT[1] + ae));
+        C2222 = bulkModulus + 2 / (3 * (factor3 * devStressTpdt[1] * devStressTpdt[1] + factor1 +
+                                        factor4 * devStressTpdt[1] * devStressT[1] + ae));
+    } // if
+
+    /* j(f,g,df,dg) = C(f,df,g,dg)
+
+    0:  j0000 = C1111 = bulkModulus + 2/(3*(alpha**2*deltaT*gammaFTau*s11**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s11*s11T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    1:  j0001 = C1112 = 0
+    2:  j0010 = C1211 = 0
+    3:  j0011 = C1212 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    4:  j0100 = C1121 = 0
+    5:  j0101 = C1122 = bulkModulus - 1/(3*(alpha**2*deltaT*gammaFTau*s11**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s11*s11T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    6:  j0110 = C1221 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    7:  j0111 = C1222 = 0
+    8:  j1000 = C2111 = 0
+    9:  j1001 = C2112 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    10: j1010 = C2211 = bulkModulus - 1/(3*(alpha**2*deltaT*gammaFTau*s22**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s22*s22T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    11: j1011 = C2212 = 0
+    12: j1100 = C2121 = 1/(2*(alpha**2*deltaT*gammaFTau*s12**2*(n - 1)/(j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                              alpha*deltaT*gammaFTau*s12*s12T*(1 - alpha)*(n - 1)/(j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    13: j1101 = C2122 = 0
+    14: j1110 = C2221 = 0
+    15: j1111 = C2222 = bulkModulus + 2/(3*(alpha**2*deltaT*gammaFTau*s22**2*(n - 1)/(2*j2FTau*j2FTplusDt) + alpha*deltaT*gammaFTau +
+                                            alpha*deltaT*gammaFTau*s22*s22T*(1 - alpha)*(n - 1)/(2*j2FTau*j2FTplusDt) + 1/(2*shearModulus)))
+    */
+
+    /* Nonzero Jacobian entries. */
+    Jf3[0] -= C1111;  /* j0000 */
+    Jf3[3] -= C1212;  /* j0011 */
+    Jf3[5] -= C1122;  /* j0101 */
+    Jf3[6] -= C1212;  /* j0110 */
+    Jf3[9] -= C1212;  /* j1001 */
+    Jf3[10] -= C2211; /* j1010 */
+    Jf3[12] -= C1212; /* j1100 */
+    Jf3[15] -= C2222; /* j1111 */
+
+} // Jf3vu_refstate
+
+// ---------------------------------------------------------------------------------------------------------------------
+/* Calculate deviatoric stress for 2-D plane strain isotropic
+ * power-law viscoelastic WITHOUT reference stress and strain.
+ *
+ * devStress_ij = stress_ij - meanStress*delta_ij
+ *
+ * devStress_ij = 2*shearModulus*visStrain_ij
+ */
+void pylith::fekernels::IsotropicPowerLawPlaneStrain::deviatoricStress(const PylithInt dim,
                                                                        const PylithInt numS,
                                                                        const PylithInt numA,
                                                                        const PylithInt sOff[],
@@ -1072,22 +548,503 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress_refstate(const Pyl
                                                                        const PylithScalar x[],
                                                                        const PylithInt numConstants,
                                                                        const PylithScalar constants[],
-                                                                       PylithScalar stress[]) {
+                                                                       PylithScalar stressTensor[])
+{
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_rstress = numA-9;
-    const PylithInt i_rstrain = numA-8;
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
+    const PylithInt i_shearModulus = 0;
+    const PylithInt i_powerLawReferenceStrainRate = 1;
+    const PylithInt i_powerLawReferenceStress = 2;
+    const PylithInt i_powerLawExponent = 3;
+    const PylithInt i_viscousStrain = 4;
+    const PylithInt i_deviatoricStress = 5;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(numA >= 6);
+    assert(sOff);
+    assert(sOff[i_disp] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
+    assert(aOff);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
+    assert(aOff[i_powerLawReferenceStress] >= 0);
+    assert(aOff[i_powerLawExponent] >= 0);
+    assert(aOff[i_viscousStrain] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
+
+    const PylithInt _numS = 1; // Number passed on to stress kernels.
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
+
+    const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
+    const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
+                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_deviatoricStress]};
+
+    // Compute deviatoric stress vector (4 components).
+    PylithScalar devStressTpdt[4] = {0.0, 0.0, 0.0, 0.0};
+    deviatoricStress4(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+                      t, x, numConstants, constants, devStressTpdt);
+
+    stressTensor[0] += devStressTpdt[0]; // stress_xx
+    stressTensor[1] += devStressTpdt[3]; // stress_xy
+    stressTensor[2] += devStressTpdt[3]; // stress_yx
+    stressTensor[3] += devStressTpdt[1]; // stress_yy
+} // deviatoricStress
+
+// ---------------------------------------------------------------------------------------------------------------------
+/* Calculate deviatoric stress for 2-D plane strain isotropic
+ * power-law viscoelastic WITH reference stress and reference strain.
+ *
+ * devStress_ij = stress_ij - meanStress*delta_ij
+ *
+ * devStress_ij = devrefstress_ij + 2*shearModulus*(visstrain_ij - devrefstrain_ij)
+ */
+void pylith::fekernels::IsotropicPowerLawPlaneStrain::deviatoricStress_refstate(const PylithInt dim,
+                                                                                const PylithInt numS,
+                                                                                const PylithInt numA,
+                                                                                const PylithInt sOff[],
+                                                                                const PylithInt sOff_x[],
+                                                                                const PylithScalar s[],
+                                                                                const PylithScalar s_t[],
+                                                                                const PylithScalar s_x[],
+                                                                                const PylithInt aOff[],
+                                                                                const PylithInt aOff_x[],
+                                                                                const PylithScalar a[],
+                                                                                const PylithScalar a_t[],
+                                                                                const PylithScalar a_x[],
+                                                                                const PylithReal t,
+                                                                                const PylithScalar x[],
+                                                                                const PylithInt numConstants,
+                                                                                const PylithScalar constants[],
+                                                                                PylithScalar stressTensor[])
+{
+    const PylithInt _dim = 2;
+
+    // Incoming solution fields.
+    const PylithInt i_disp = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_rstress = 0;
+    const PylithInt i_rstrain = 1;
+    const PylithInt i_shearModulus = 2;
+    const PylithInt i_powerLawReferenceStrainRate = 3;
+    const PylithInt i_powerLawReferenceStress = 4;
+    const PylithInt i_powerLawExponent = 5;
+    const PylithInt i_viscousStrain = 6;
+    const PylithInt i_deviatoricStress = 7;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(numA >= 8);
+    assert(sOff);
+    assert(sOff[i_disp] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
+    assert(aOff);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
+    assert(aOff[i_powerLawReferenceStress] >= 0);
+    assert(aOff[i_powerLawExponent] >= 0);
+    assert(aOff[i_viscousStrain] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
+
+    const PylithInt _numS = 1; // Number passed on to stress kernels.
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
+
+    const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
+    const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
+                                  aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrain],
+                                  aOff[i_deviatoricStress]};
+
+    // Compute deviatoric stress vector (4 components).
+    PylithScalar devStressTpdt[4] = {0.0, 0.0, 0.0, 0.0};
+    deviatoricStress4_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+                               t, x, numConstants, constants, devStressTpdt);
+
+    stressTensor[0] += devStressTpdt[0]; // stress_xx
+    stressTensor[1] += devStressTpdt[3]; // stress_xy
+    stressTensor[2] += devStressTpdt[3]; // stress_yx
+    stressTensor[3] += devStressTpdt[1]; // stress_yy
+} // deviatoricStress_refstate
+
+// ---------------------------------------------------------------------------------------------------------------------
+/* Calculate deviatoric stress including stress_zz for 2-D plane strain isotropic power-law
+ * viscoelastic WITHOUT reference stress and strain.
+ *
+ * devStress_ij = stress_ij - meanStress*delta_ij
+ *
+ * devStress_ij = 2*shearModulus*visStrain_ij
+ */
+void pylith::fekernels::IsotropicPowerLawPlaneStrain::deviatoricStress4(const PylithInt dim,
+                                                                        const PylithInt numS,
+                                                                        const PylithInt numA,
+                                                                        const PylithInt sOff[],
+                                                                        const PylithInt sOff_x[],
+                                                                        const PylithScalar s[],
+                                                                        const PylithScalar s_t[],
+                                                                        const PylithScalar s_x[],
+                                                                        const PylithInt aOff[],
+                                                                        const PylithInt aOff_x[],
+                                                                        const PylithScalar a[],
+                                                                        const PylithScalar a_t[],
+                                                                        const PylithScalar a_x[],
+                                                                        const PylithReal t,
+                                                                        const PylithScalar x[],
+                                                                        const PylithInt numConstants,
+                                                                        const PylithScalar constants[],
+                                                                        PylithScalar devStressTpdt[])
+{
+    const PylithInt _dim = 2;
+
+    // Incoming solution fields.
+    const PylithInt i_disp = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_shearModulus = 0;
+    const PylithInt i_powerLawReferenceStrainRate = 1;
+    const PylithInt i_powerLawReferenceStress = 2;
+    const PylithInt i_powerLawExponent = 3;
+    const PylithInt i_viscousStrain = 4;
+    const PylithInt i_deviatoricStress = 5;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(numA >= 6);
+    assert(sOff);
+    assert(sOff[i_disp] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
+    assert(aOff);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
+    assert(aOff[i_powerLawReferenceStress] >= 0);
+    assert(aOff[i_powerLawExponent] >= 0);
+    assert(aOff[i_viscousStrain] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
+    assert(constants);
+
+    // Constants.
+    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
+    const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
+    const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
+    const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
+    const PylithScalar powerLawAlpha = 0.5;
+    const PylithScalar dt = constants[0];
+    const PylithScalar ae = 1.0 / (2.0 * shearModulus);
+    const PylithScalar timeFac = dt * (1.0 - powerLawAlpha);
+
+    // Compute quantities based on stress at t = T.
+    const PylithScalar *devStressT = &a[aOff[i_deviatoricStress]]; // devstress_xx, devstress_yy, devstress_zz, devstress_xy at t = T.
+    const PylithScalar *visStrainT = &a[aOff[i_viscousStrain]];    // visStrain_xx, visStrain_yy, visStrain_zz,
+                                                                   // visStrain_xy at t = T.
+    const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressT, devStressT);
+    const PylithScalar j2T = sqrt(0.5 * devStressProdT);
+
+    // Compute quantities based on strain at t = T + dt.
+    const PylithScalar *disp_x = &s_x[sOff_x[i_disp]];
+    const PylithScalar strainTpdt[4] = {
+        disp_x[0 * _dim + 0],
+        disp_x[1 * _dim + 1],
+        0.0,
+        0.5 * (disp_x[0 * _dim + 1] + disp_x[1 * _dim + 0]),
+    };
+    const PylithReal meanStrainTpdt = (strainTpdt[0] + strainTpdt[1]) / 3.0;
+    const PylithScalar devStrainTpdt[4] = {
+        strainTpdt[0] - meanStrainTpdt,
+        strainTpdt[1] - meanStrainTpdt,
+        -meanStrainTpdt,
+        strainTpdt[2],
+    };
+    const PylithScalar strainPPTpdt[4] = {
+        devStrainTpdt[0] - visStrainT[0],
+        devStrainTpdt[1] - visStrainT[1],
+        devStrainTpdt[2] - visStrainT[2],
+        devStrainTpdt[3] - visStrainT[3],
+    };
+    const PylithScalar strainPPInvar2Tpdt = 0.5 * pylith::fekernels::Viscoelasticity::scalarProduct2DPS(strainPPTpdt, strainPPTpdt);
+    const PylithScalar strainStressInvar2T = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(strainPPTpdt, devStressT);
+
+    // Finish defining parameters needed for root-finding algorithm.
+    const PylithScalar b = strainPPInvar2Tpdt;
+    const PylithScalar c = strainStressInvar2T * timeFac;
+    const PylithScalar d = timeFac * j2T;
+    PylithScalar j2Tpdt = 0.0;
+    if ((b != 0.0) || (c != 0.0) || (d != 0.0))
+    {
+        const PylithScalar j2InitialGuess = j2T;
+        const PylithScalar stressScale = shearModulus;
+        j2Tpdt = IsotropicPowerLawEffectiveStress::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha,
+                                                                          dt, j2T, powerLawExponent, powerLawReferenceStrainRate,
+                                                                          powerLawReferenceStress);
+    } // if
+    // Compute deviatoric stresses from effective stress.
+    const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
+    const PylithScalar gammaTau = powerLawReferenceStrainRate * pow((j2Tau / powerLawReferenceStress), (powerLawExponent - 1.0)) / powerLawReferenceStress;
+    const PylithScalar factor1 = 1.0 / (ae + powerLawAlpha * dt * gammaTau);
+    const PylithScalar factor2 = timeFac * gammaTau;
+    devStressTpdt[0] += factor1 * (strainPPTpdt[0] - factor2 * devStressT[0]);
+    devStressTpdt[1] += factor1 * (strainPPTpdt[1] - factor2 * devStressT[1]);
+    devStressTpdt[2] += factor1 * (strainPPTpdt[2] - factor2 * devStressT[2]);
+    devStressTpdt[3] += factor1 * (strainPPTpdt[3] - factor2 * devStressT[3]);
+
+} // deviatoricStress4
+
+// ---------------------------------------------------------------------------------------------------------------------
+/* Calculate deviatoric stress including stress_zz for 2-D plane strain isotropic power-law
+ * viscoelastic WITH reference stress and strain.
+ *
+ * devStress_ij = stress_ij - meanStress*delta_ij
+ *
+ * devStress_ij = 2*shearModulus*visStrain_ij
+ */
+void pylith::fekernels::IsotropicPowerLawPlaneStrain::deviatoricStress4_refstate(const PylithInt dim,
+                                                                                 const PylithInt numS,
+                                                                                 const PylithInt numA,
+                                                                                 const PylithInt sOff[],
+                                                                                 const PylithInt sOff_x[],
+                                                                                 const PylithScalar s[],
+                                                                                 const PylithScalar s_t[],
+                                                                                 const PylithScalar s_x[],
+                                                                                 const PylithInt aOff[],
+                                                                                 const PylithInt aOff_x[],
+                                                                                 const PylithScalar a[],
+                                                                                 const PylithScalar a_t[],
+                                                                                 const PylithScalar a_x[],
+                                                                                 const PylithReal t,
+                                                                                 const PylithScalar x[],
+                                                                                 const PylithInt numConstants,
+                                                                                 const PylithScalar constants[],
+                                                                                 PylithScalar devStressTpdt[])
+{
+    const PylithInt _dim = 2;
+
+    // Incoming solution fields.
+    const PylithInt i_disp = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_rstress = 0;
+    const PylithInt i_rstrain = 1;
+    const PylithInt i_shearModulus = 2;
+    const PylithInt i_powerLawReferenceStrainRate = 3;
+    const PylithInt i_powerLawReferenceStress = 4;
+    const PylithInt i_powerLawExponent = 5;
+    const PylithInt i_viscousStrain = 6;
+    const PylithInt i_deviatoricStress = 7;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(numA >= 8);
+    assert(sOff);
+    assert(sOff[i_disp] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
+    assert(aOff);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
+    assert(aOff[i_powerLawReferenceStress] >= 0);
+    assert(aOff[i_powerLawExponent] >= 0);
+    assert(aOff[i_viscousStrain] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
+    assert(constants);
+
+    // Constants.
+    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
+    const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
+    const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
+    const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
+    const PylithScalar powerLawAlpha = 0.5;
+    const PylithScalar dt = constants[0];
+    const PylithScalar ae = 1.0 / (2.0 * shearModulus);
+    const PylithScalar timeFac = dt * (1.0 - powerLawAlpha);
+
+    // Compute quantities based on reference stress.
+    const PylithScalar *stressR = &a[aOff[i_rstress]];
+    const PylithScalar meanStressR = (stressR[0] + stressR[1] + stressR[2]) / 3.0;
+    const PylithScalar devStressR[4] = {stressR[0] - meanStressR,
+                                        stressR[1] - meanStressR,
+                                        stressR[2] - meanStressR,
+                                        stressR[3]};
+    const PylithScalar j2RSquared = 0.5 * pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressR, devStressR);
+
+    // Compute quantities based on reference strain.
+    const PylithScalar *strainR = &a[aOff[i_rstrain]];
+    const PylithScalar meanStrainR = (strainR[0] + strainR[1]) / 3.0;
+
+    // Compute quantities based on stress at t = T.
+    const PylithScalar *devStressT = &a[aOff[i_deviatoricStress]]; // devstress_xx, devstress_yy, devstress_zz, devstress_xy at t = T.
+    const PylithScalar *visStrainT = &a[aOff[i_viscousStrain]];    // visStrain_xx, visStrain_yy, visStrain_zz,
+                                                                   // visStrain_xy at t = T.
+    const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressT, devStressT);
+    const PylithScalar j2T = sqrt(0.5 * devStressProdT);
+
+    // Compute quantities based on strain at t = T + dt.
+    const PylithScalar *disp_x = &s_x[sOff_x[i_disp]];
+    const PylithScalar strainTpdt[4] = {disp_x[0 * _dim + 0],
+                                        disp_x[1 * _dim + 1],
+                                        0.0,
+                                        0.5 * (disp_x[0 * _dim + 1] + disp_x[1 * _dim + 0])};
+    const PylithReal meanStrainTpdt = (strainTpdt[0] + strainTpdt[1]) / 3.0 - meanStrainR;
+    const PylithScalar strainPPTpdt[4] = {strainTpdt[0] - meanStrainTpdt - visStrainT[0] - strainR[0],
+                                          strainTpdt[1] - meanStrainTpdt - visStrainT[1] - strainR[1],
+                                          -meanStrainTpdt - visStrainT[2],
+                                          strainTpdt[3] - visStrainT[3] - strainR[2]};
+    const PylithScalar strainPPInvar2Tpdt = 0.5 * pylith::fekernels::Viscoelasticity::scalarProduct2DPS(strainPPTpdt, strainPPTpdt);
+    const PylithScalar strainStressInvar2T = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(strainPPTpdt, devStressT);
+    const PylithScalar strainStressInvar2R = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(strainPPTpdt, devStressR);
+    const PylithScalar stressInvar2RT = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressT, devStressR);
+
+    // Finish defining parameters needed for root-finding algorithm.
+    const PylithScalar b = strainPPInvar2Tpdt + ae * strainStressInvar2R + ae * ae * j2RSquared;
+    const PylithScalar c = strainStressInvar2T * timeFac + ae * stressInvar2RT;
+    const PylithScalar d = timeFac * j2T;
+    PylithScalar j2Tpdt = 0.0;
+    if ((b != 0.0) || (c != 0.0) || (d != 0.0))
+    {
+        const PylithScalar j2InitialGuess = j2T;
+        const PylithScalar stressScale = shearModulus;
+        j2Tpdt = IsotropicPowerLawEffectiveStress::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha,
+                                                                          dt, j2T, powerLawExponent, powerLawReferenceStrainRate,
+                                                                          powerLawReferenceStress);
+    } // if
+    // Compute deviatoric stresses from effective stress.
+    const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
+    const PylithScalar gammaTau = powerLawReferenceStrainRate * pow((j2Tau / powerLawReferenceStress), (powerLawExponent - 1.0)) / powerLawReferenceStress;
+    const PylithScalar factor1 = 1.0 / (ae + powerLawAlpha * dt * gammaTau);
+    const PylithScalar factor2 = timeFac * gammaTau;
+    devStressTpdt[0] += factor1 * (strainPPTpdt[0] - factor2 * devStressT[0] + ae * devStressR[0]);
+    devStressTpdt[1] += factor1 * (strainPPTpdt[1] - factor2 * devStressT[1] + ae * devStressR[1]);
+    devStressTpdt[2] += factor1 * (strainPPTpdt[2] - factor2 * devStressT[2] + ae * devStressR[2]);
+    devStressTpdt[3] += factor1 * (strainPPTpdt[3] - factor2 * devStressT[3] + ae * devStressR[3]);
+
+} // deviatoricStress4_refstate
+
+// ---------------------------------------------------------------------------------------------------------------------
+/* Update deviatoric stress for a plane strain power-law viscoelastic material.
+ *
+ * IMPORTANT: The order of the auxiliary field and solution field are reversed compared to the residual and Jacobian
+ * kernels.
+ *
+ */
+void pylith::fekernels::IsotropicPowerLawPlaneStrain::updateDeviatoricStress(const PylithInt dim,
+                                                                             const PylithInt numS,
+                                                                             const PylithInt numA,
+                                                                             const PylithInt sOff[],
+                                                                             const PylithInt sOff_x[],
+                                                                             const PylithScalar s[],
+                                                                             const PylithScalar s_t[],
+                                                                             const PylithScalar s_x[],
+                                                                             const PylithInt aOff[],
+                                                                             const PylithInt aOff_x[],
+                                                                             const PylithScalar a[],
+                                                                             const PylithScalar a_t[],
+                                                                             const PylithScalar a_x[],
+                                                                             const PylithReal t,
+                                                                             const PylithScalar x[],
+                                                                             const PylithInt numConstants,
+                                                                             const PylithScalar constants[],
+                                                                             PylithScalar devStress[])
+{
+    const PylithInt _dim = 2;
+
+    // Incoming solution fields.
+    const PylithInt i_disp = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(numA >= 7);
+    assert(sOff);
+    assert(sOff[i_disp] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
+    assert(aOff);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
+    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
+    assert(aOff[i_powerLawReferenceStress] >= 0);
+    assert(aOff[i_powerLawExponent] >= 0);
+    assert(aOff[i_viscousStrain] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
+
+    const PylithInt _numS = 1; // Number passed on to stress kernels.
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
+
+    const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
+    const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
+                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_deviatoricStress]};
+
+    // Compute deviatoric stress (4 components).
+    PylithScalar stressVec[4] = {0.0, 0.0, 0.0, 0.0};
+    deviatoricStress4(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+                      t, x, numConstants, constants, stressVec);
+    for (PylithInt i = 0; i < 4; ++i)
+    {
+        devStress[i] = stressVec[i];
+    } // for
+
+} // updateDeviatoricStress
+
+// ---------------------------------------------------------------------------------------------------------------------
+/* Update stress for a plane strain power-law viscoelastic material WITH reference stress and strain.
+ *
+ * IMPORTANT: The order of the auxiliary field and solution field are reversed compared to the residual and Jacobian
+ * kernels.
+ *
+ */
+void pylith::fekernels::IsotropicPowerLawPlaneStrain::updateDeviatoricStress_refstate(const PylithInt dim,
+                                                                                      const PylithInt numS,
+                                                                                      const PylithInt numA,
+                                                                                      const PylithInt sOff[],
+                                                                                      const PylithInt sOff_x[],
+                                                                                      const PylithScalar s[],
+                                                                                      const PylithScalar s_t[],
+                                                                                      const PylithScalar s_x[],
+                                                                                      const PylithInt aOff[],
+                                                                                      const PylithInt aOff_x[],
+                                                                                      const PylithScalar a[],
+                                                                                      const PylithScalar a_t[],
+                                                                                      const PylithScalar a_x[],
+                                                                                      const PylithReal t,
+                                                                                      const PylithScalar x[],
+                                                                                      const PylithInt numConstants,
+                                                                                      const PylithScalar constants[],
+                                                                                      PylithScalar devStress[])
+{
+    const PylithInt _dim = 2;
+
+    // Incoming solution fields.
+    const PylithInt i_disp = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_rstress = numA - 9;
+    const PylithInt i_rstrain = numA - 8;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -1103,43 +1060,37 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress_refstate(const Pyl
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 3; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
 
     const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
                                   aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrain],
-                                  aOff[i_stress]};
-
-    PylithScalar stressTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
-    IsotropicLinearElasticityPlaneStrain::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean,
-                                                              NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
-    stress[0] = stressTensor[0];
-    stress[1] = stressTensor[0];
-    stress[2] = stressTensor[0];
-    stress[3] = 0.0;
+                                  aOff[i_deviatoricStress]};
 
     // Compute deviatoric stress vector (4 components).
+    PylithScalar stressVec[4] = {0.0, 0.0, 0.0, 0.0};
     deviatoricStress4_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                               t, x, numConstants, constants, stress);
+                               t, x, numConstants, constants, stressVec);
 
-    // Subtract out reference stress since otherwise it will get added back in again.
-    const PylithScalar* stressR = &a[aOff[i_rstress]];
-    stress[0] -= stressR[0];
-    stress[1] -= stressR[1];
-    stress[2] -= stressR[2];
-    stress[3] -= stressR[3];
+    // Subtract out reference deviatoric stress since otherwise it will get added back in again.
+    const PylithScalar *stressR = &a[aOff[i_rstress]];
+    const PylithScalar meanStressR = (stressR[0] + stressR[1] + stressR[2]) / 3.0;
+    const PylithScalar devStressR[4] = {stressR[0] - meanStressR,
+                                        stressR[1] - meanStressR,
+                                        stressR[2] - meanStressR,
+                                        stressR[3]};
+    devStress[0] = stressVec[0] - devStressR[0];
+    devStress[1] = stressVec[1] - devStressR[1];
+    devStress[2] = stressVec[2] - devStressR[2];
+    devStress[3] = stressVec[3] - devStressR[3];
 
-} // updateStress_refstate
-
+} // updateDeviatoricStress_refstate
 
 // ---------------------------------------------------------------------------------------------------------------------
 /* Update viscous strain for a power-law viscoelastic material.
@@ -1147,38 +1098,38 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress_refstate(const Pyl
  * :ATTENTION: The order of the auxiliary field and solution field are reversed compared to the residual and Jacobian
  * kernels.
  */
-void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain(const PylithInt dim,
-                                                                     const PylithInt numS,
-                                                                     const PylithInt numA,
-                                                                     const PylithInt sOff[],
-                                                                     const PylithInt sOff_x[],
-                                                                     const PylithScalar s[],
-                                                                     const PylithScalar s_t[],
-                                                                     const PylithScalar s_x[],
-                                                                     const PylithInt aOff[],
-                                                                     const PylithInt aOff_x[],
-                                                                     const PylithScalar a[],
-                                                                     const PylithScalar a_t[],
-                                                                     const PylithScalar a_x[],
-                                                                     const PylithReal t,
-                                                                     const PylithScalar x[],
-                                                                     const PylithInt numConstants,
-                                                                     const PylithScalar constants[],
-                                                                     PylithScalar visStrain[]) {
+void pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain(const PylithInt dim,
+                                                                          const PylithInt numS,
+                                                                          const PylithInt numA,
+                                                                          const PylithInt sOff[],
+                                                                          const PylithInt sOff_x[],
+                                                                          const PylithScalar s[],
+                                                                          const PylithScalar s_t[],
+                                                                          const PylithScalar s_x[],
+                                                                          const PylithInt aOff[],
+                                                                          const PylithInt aOff_x[],
+                                                                          const PylithScalar a[],
+                                                                          const PylithScalar a_t[],
+                                                                          const PylithScalar a_x[],
+                                                                          const PylithReal t,
+                                                                          const PylithScalar x[],
+                                                                          const PylithInt numConstants,
+                                                                          const PylithScalar constants[],
+                                                                          PylithScalar visStrain[])
+{
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrainT = numA-2;
-    const PylithInt i_stressT = numA-1;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrainT = numA - 2;
+    const PylithInt i_deviatoricStressT = numA - 1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -1194,62 +1145,53 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain(const Pylit
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrainT] >= 0);
-    assert(aOff[i_stressT] >= 0);
+    assert(aOff[i_deviatoricStressT] >= 0);
     assert(constants);
 
     // Constants.
     const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
     const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
     const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
-    // ****** I think powerLawAlpha should actually be a kernel constant.
     const PylithScalar powerLawAlpha = 0.5;
-    // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
     const PylithScalar dt = constants[0];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
 
     const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
-                                  aOff[i_powerLawExponent], aOff[i_viscousStrainT], aOff[i_stressT]};
+                                  aOff[i_powerLawExponent], aOff[i_viscousStrainT], aOff[i_deviatoricStressT]};
 
     // Compute current deviatoric stress.
-    PylithScalar devStressTpdt[4] = { 0.0, 0.0, 0.0, 0.0 };
+    PylithScalar devStressTpdt[4] = {0.0, 0.0, 0.0, 0.0};
     deviatoricStress4(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                       t, x, numConstants, constants, devStressTpdt);
     const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressTpdt, devStressTpdt);
-    const PylithScalar j2Tpdt = sqrt(0.5*devStressProdTpdt);
+    const PylithScalar j2Tpdt = sqrt(0.5 * devStressProdTpdt);
 
     // Compute stress quantities at time T.
-    const PylithScalar* stressT = &a[aOff[i_stressT]]; // stress_xx, stress_yy, stress_zz, stress_xy at t = T.
-    const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
-    const PylithScalar devStressT[4] = {stressT[0] - meanStressT,
-                                        stressT[1] - meanStressT,
-                                        stressT[2] - meanStressT,
-                                        stressT[3]};
+    const PylithScalar *devStressT = &a[aOff[i_deviatoricStressT]]; // devstress_xx, devstress_yy, devstress_zz, devstress_xy at t = T.
     const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressT, devStressT);
-    const PylithScalar j2T = sqrt(0.5*devStressProdT);
+    const PylithScalar j2T = sqrt(0.5 * devStressProdT);
 
     // Compute quantities at intermediate time.
-    const PylithScalar devStressTau[4] = {(1.0 - powerLawAlpha)*devStressT[0] + powerLawAlpha*devStressTpdt[0],
-                                          (1.0 - powerLawAlpha)*devStressT[1] + powerLawAlpha*devStressTpdt[1],
-                                          (1.0 - powerLawAlpha)*devStressT[2] + powerLawAlpha*devStressTpdt[2],
-                                          (1.0 - powerLawAlpha)*devStressT[3] + powerLawAlpha*devStressTpdt[3]};
-    const PylithScalar j2Tau = (1.0 - powerLawAlpha)*j2T + powerLawAlpha*j2Tpdt;
-    const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress),
-                                                                  (powerLawExponent - 1.0))/powerLawReferenceStress;
+    const PylithScalar devStressTau[4] = {(1.0 - powerLawAlpha) * devStressT[0] + powerLawAlpha * devStressTpdt[0],
+                                          (1.0 - powerLawAlpha) * devStressT[1] + powerLawAlpha * devStressTpdt[1],
+                                          (1.0 - powerLawAlpha) * devStressT[2] + powerLawAlpha * devStressTpdt[2],
+                                          (1.0 - powerLawAlpha) * devStressT[3] + powerLawAlpha * devStressTpdt[3]};
+    const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
+    const PylithScalar gammaTau = powerLawReferenceStrainRate * pow((j2Tau / powerLawReferenceStress), (powerLawExponent - 1.0)) / powerLawReferenceStress;
 
     // Update viscous strain.
-    const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrainT]]; // viscous_strain_xx, viscous_strain_yy, viscous_strain_zz,
+    const PylithScalar *viscousStrainT = &a[aOff[i_viscousStrainT]]; // viscous_strain_xx, viscous_strain_yy, viscous_strain_zz,
                                                                      // viscous_strain_xy
-    visStrain[0] = viscousStrainT[0] + dt*gammaTau*devStressTau[0];
-    visStrain[1] = viscousStrainT[1] + dt*gammaTau*devStressTau[1];
-    visStrain[2] = viscousStrainT[2] + dt*gammaTau*devStressTau[2];
-    visStrain[3] = viscousStrainT[3] + dt*gammaTau*devStressTau[3];
+    visStrain[0] = viscousStrainT[0] + dt * gammaTau * devStressTau[0];
+    visStrain[1] = viscousStrainT[1] + dt * gammaTau * devStressTau[1];
+    visStrain[2] = viscousStrainT[2] + dt * gammaTau * devStressTau[2];
+    visStrain[3] = viscousStrainT[3] + dt * gammaTau * devStressTau[3];
 
 } // updateViscousStrain
-
 
 // ---------------------------------------------------------------------------------------------------------------------
 /* Update viscous strain for a power-law viscoelastic material WITH reference stress and strain.
@@ -1257,40 +1199,40 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain(const Pylit
  * :ATTENTION: The order of the auxiliary field and solution field are reversed compared to the residual and Jacobian
  * kernels.
  */
-void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate(const PylithInt dim,
-                                                                              const PylithInt numS,
-                                                                              const PylithInt numA,
-                                                                              const PylithInt sOff[],
-                                                                              const PylithInt sOff_x[],
-                                                                              const PylithScalar s[],
-                                                                              const PylithScalar s_t[],
-                                                                              const PylithScalar s_x[],
-                                                                              const PylithInt aOff[],
-                                                                              const PylithInt aOff_x[],
-                                                                              const PylithScalar a[],
-                                                                              const PylithScalar a_t[],
-                                                                              const PylithScalar a_x[],
-                                                                              const PylithReal t,
-                                                                              const PylithScalar x[],
-                                                                              const PylithInt numConstants,
-                                                                              const PylithScalar constants[],
-                                                                              PylithScalar visStrain[]) {
+void pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate(const PylithInt dim,
+                                                                                   const PylithInt numS,
+                                                                                   const PylithInt numA,
+                                                                                   const PylithInt sOff[],
+                                                                                   const PylithInt sOff_x[],
+                                                                                   const PylithScalar s[],
+                                                                                   const PylithScalar s_t[],
+                                                                                   const PylithScalar s_x[],
+                                                                                   const PylithInt aOff[],
+                                                                                   const PylithInt aOff_x[],
+                                                                                   const PylithScalar a[],
+                                                                                   const PylithScalar a_t[],
+                                                                                   const PylithScalar a_x[],
+                                                                                   const PylithReal t,
+                                                                                   const PylithScalar x[],
+                                                                                   const PylithInt numConstants,
+                                                                                   const PylithScalar constants[],
+                                                                                   PylithScalar visStrain[])
+{
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_rstress = numA-9;
-    const PylithInt i_rstrain = numA-8;
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrainT = numA-2;
-    const PylithInt i_stressT = numA-1;
+    const PylithInt i_rstress = numA - 9;
+    const PylithInt i_rstrain = numA - 8;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrainT = numA - 2;
+    const PylithInt i_deviatoricStressT = numA - 1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -1306,7 +1248,7 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate(co
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrainT] >= 0);
-    assert(aOff[i_stressT] >= 0);
+    assert(aOff[i_deviatoricStressT] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
     assert(constants);
@@ -1315,93 +1257,85 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate(co
     const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
     const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
     const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
-    // ****** I think powerLawAlpha should actually be a kernel constant.
     const PylithScalar powerLawAlpha = 0.5;
-    // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
     const PylithScalar dt = constants[0];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
 
     const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
                                   aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrainT],
-                                  aOff[i_stressT]};
+                                  aOff[i_deviatoricStressT]};
 
     // Compute current deviatoric stress.
-    PylithScalar devStressTpdt[4] = { 0.0, 0.0, 0.0, 0.0 };
+    PylithScalar devStressTpdt[4] = {0.0, 0.0, 0.0, 0.0};
     deviatoricStress4_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                                t, x, numConstants, constants, devStressTpdt);
     const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressTpdt, devStressTpdt);
-    const PylithScalar j2Tpdt = sqrt(0.5*devStressProdTpdt);
+    const PylithScalar j2Tpdt = sqrt(0.5 * devStressProdTpdt);
 
     // Compute stress quantities at time T.
-    const PylithScalar* stressT = &a[aOff[i_stressT]]; // stress_xx, stress_yy, stress_zz, stress_xy at t = T.
-    const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
-    const PylithScalar devStressT[4] = {stressT[0] - meanStressT,
-                                        stressT[1] - meanStressT,
-                                        stressT[2] - meanStressT,
-                                        stressT[3]};
+    const PylithScalar *devStressT = &a[aOff[i_deviatoricStressT]]; // devstress_xx, devstress_yy, devstress_zz, devstress_xy at t = T.
     const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct2DPS(devStressT, devStressT);
-    const PylithScalar j2T = sqrt(0.5*devStressProdT);
+    const PylithScalar j2T = sqrt(0.5 * devStressProdT);
 
     // Compute quantities at intermediate time.
-    const PylithScalar devStressTau[4] = {(1.0 - powerLawAlpha)*devStressT[0] + powerLawAlpha*devStressTpdt[0],
-                                          (1.0 - powerLawAlpha)*devStressT[1] + powerLawAlpha*devStressTpdt[1],
-                                          (1.0 - powerLawAlpha)*devStressT[2] + powerLawAlpha*devStressTpdt[2],
-                                          (1.0 - powerLawAlpha)*devStressT[3] + powerLawAlpha*devStressTpdt[3]};
-    const PylithScalar j2Tau = (1.0 - powerLawAlpha)*j2T + powerLawAlpha*j2Tpdt;
-    const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress),
-                                                                  (powerLawExponent - 1.0))/powerLawReferenceStress;
+    const PylithScalar devStressTau[4] = {(1.0 - powerLawAlpha) * devStressT[0] + powerLawAlpha * devStressTpdt[0],
+                                          (1.0 - powerLawAlpha) * devStressT[1] + powerLawAlpha * devStressTpdt[1],
+                                          (1.0 - powerLawAlpha) * devStressT[2] + powerLawAlpha * devStressTpdt[2],
+                                          (1.0 - powerLawAlpha) * devStressT[3] + powerLawAlpha * devStressTpdt[3]};
+    const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
+    const PylithScalar gammaTau = powerLawReferenceStrainRate * pow((j2Tau / powerLawReferenceStress), (powerLawExponent - 1.0)) / powerLawReferenceStress;
 
     // Update viscous strain.
-    const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrainT]]; // viscous_strain_xx, viscous_strain_yy, viscous_strain_zz,
+    const PylithScalar *viscousStrainT = &a[aOff[i_viscousStrainT]]; // viscous_strain_xx, viscous_strain_yy, viscous_strain_zz,
                                                                      // viscous_strain_xy
-    visStrain[0] = viscousStrainT[0] + dt*gammaTau*devStressTau[0];
-    visStrain[1] = viscousStrainT[1] + dt*gammaTau*devStressTau[1];
-    visStrain[2] = viscousStrainT[2] + dt*gammaTau*devStressTau[2];
-    visStrain[3] = viscousStrainT[3] + dt*gammaTau*devStressTau[3];
+    visStrain[0] = viscousStrainT[0] + dt * gammaTau * devStressTau[0];
+    visStrain[1] = viscousStrainT[1] + dt * gammaTau * devStressTau[1];
+    visStrain[2] = viscousStrainT[2] + dt * gammaTau * devStressTau[2];
+    visStrain[3] = viscousStrainT[3] + dt * gammaTau * devStressTau[3];
 
 } // updateViscousStrain_refstate
-
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Calculate stress for 2-D plane strain isotropic power-law viscoelastic material.
 // Assumption is that stress state variable has already been updated, which means
-// that the Cauchy stress is just the value of the state variable.
-void
-pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress(const PylithInt dim,
-                                                              const PylithInt numS,
-                                                              const PylithInt numA,
-                                                              const PylithInt sOff[],
-                                                              const PylithInt sOff_x[],
-                                                              const PylithScalar s[],
-                                                              const PylithScalar s_t[],
-                                                              const PylithScalar s_x[],
-                                                              const PylithInt aOff[],
-                                                              const PylithInt aOff_x[],
-                                                              const PylithScalar a[],
-                                                              const PylithScalar a_t[],
-                                                              const PylithScalar a_x[],
-                                                              const PylithReal t,
-                                                              const PylithScalar x[],
-                                                              const PylithInt numConstants,
-                                                              const PylithScalar constants[],
-                                                              PylithScalar stressVector[]) {
+// that the deviatoric Cauchy stress is just the value of the state variable.
+// This function is for the case of NO reference state.
+void pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress(const PylithInt dim,
+                                                                   const PylithInt numS,
+                                                                   const PylithInt numA,
+                                                                   const PylithInt sOff[],
+                                                                   const PylithInt sOff_x[],
+                                                                   const PylithScalar s[],
+                                                                   const PylithScalar s_t[],
+                                                                   const PylithScalar s_x[],
+                                                                   const PylithInt aOff[],
+                                                                   const PylithInt aOff_x[],
+                                                                   const PylithScalar a[],
+                                                                   const PylithScalar a_t[],
+                                                                   const PylithScalar a_x[],
+                                                                   const PylithReal t,
+                                                                   const PylithScalar x[],
+                                                                   const PylithInt numConstants,
+                                                                   const PylithScalar constants[],
+                                                                   PylithScalar stressVector[])
+{
     const PylithInt _dim = 2;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -1417,15 +1351,113 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress(const PylithInt di
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
 
-    const PylithScalar* stressTpdt = &a[aOff[i_stress]];
-    for (PylithInt i = 0; i < 4; ++i) {
-        stressVector[i] = stressTpdt[i];
-    } // for
+    const PylithInt _numS = 1; // Number passed on to stress kernels.
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
+
+    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
+    const PylithInt aOffMean[1] = {aOff[i_bulkModulus]};
+
+    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0}; // Full stress tensor in vector form.
+    IsotropicLinearElasticityPlaneStrain::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
+                                                     aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
+    const PylithScalar meanStress = stressTensor[0];
+
+    const PylithScalar *devStressTpdt = &a[aOff[i_deviatoricStress]];
+    stressVector[0] = devStressTpdt[0] + meanStress;
+    stressVector[1] = devStressTpdt[1] + meanStress;
+    stressVector[2] = devStressTpdt[2] + meanStress;
+    stressVector[3] = devStressTpdt[3];
 
 } // cauchyStress
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Calculate stress for 2-D plane strain isotropic power-law viscoelastic material.
+// Assumption is that stress state variable has already been updated, which means
+// that the deviatoric Cauchy stress is just the value of the state variable.
+// This function is for the case of a reference state.
+void pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress_refstate(const PylithInt dim,
+                                                                            const PylithInt numS,
+                                                                            const PylithInt numA,
+                                                                            const PylithInt sOff[],
+                                                                            const PylithInt sOff_x[],
+                                                                            const PylithScalar s[],
+                                                                            const PylithScalar s_t[],
+                                                                            const PylithScalar s_x[],
+                                                                            const PylithInt aOff[],
+                                                                            const PylithInt aOff_x[],
+                                                                            const PylithScalar a[],
+                                                                            const PylithScalar a_t[],
+                                                                            const PylithScalar a_x[],
+                                                                            const PylithReal t,
+                                                                            const PylithScalar x[],
+                                                                            const PylithInt numConstants,
+                                                                            const PylithScalar constants[],
+                                                                            PylithScalar stressVector[])
+{
+    const PylithInt _dim = 2;
+
+    // Incoming solution fields.
+    const PylithInt i_disp = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_rstress = numA - 9;
+    const PylithInt i_rstrain = numA - 8;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(numA >= 7);
+    assert(sOff);
+    assert(sOff[i_disp] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
+    assert(aOff);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
+    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
+    assert(aOff[i_powerLawReferenceStress] >= 0);
+    assert(aOff[i_powerLawExponent] >= 0);
+    assert(aOff[i_viscousStrain] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
+
+    const PylithInt _numS = 1; // Number passed on to stress kernels.
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
+
+    const PylithInt numAMean = 3; // Number passed to mean stress kernel.
+    const PylithInt aOffMean[3] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus]};
+
+    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0}; // Full stress tensor in vector form.
+    IsotropicLinearElasticityPlaneStrain::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
+                                                              aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
+    const PylithScalar meanStress = stressTensor[0];
+
+    const PylithScalar *devStressTpdt = &a[aOff[i_deviatoricStress]];
+
+    // Need to add reference deviatoric stress back in.
+    const PylithScalar *refstress = &a[aOff[i_rstress]]; // stress_xx, stress_yy, stress_zz, stress_xy
+    const PylithReal meanRefStress = (refstress[0] + refstress[1] + refstress[2]) / 3.0;
+    const PylithScalar devRefStress[4] = {refstress[0] - meanRefStress,
+                                          refstress[1] - meanRefStress,
+                                          refstress[2] - meanRefStress,
+                                          refstress[3]};
+    stressVector[0] = devRefStress[0] + devStressTpdt[0] + meanStress;
+    stressVector[1] = devRefStress[1] + devStressTpdt[1] + meanStress;
+    stressVector[2] = devRefStress[2] + devStressTpdt[2] + meanStress;
+    stressVector[3] = devRefStress[3] + devStressTpdt[3];
+
+} // cauchyStress_refstate
 
 // =====================================================================================================================
 // Kernels for isotropic, power-law viscoelastic 3D material.
@@ -1433,38 +1465,38 @@ pylith::fekernels::IsotropicPowerLawPlaneStrain::cauchyStress(const PylithInt di
 
 // ---------------------------------------------------------------------------------------------------------------------
 // f1 function for isotropic power-law 3D viscoelastic material WITHOUT reference stress and strain.
-void
-pylith::fekernels::IsotropicPowerLaw3D::f1v(const PylithInt dim,
-                                            const PylithInt numS,
-                                            const PylithInt numA,
-                                            const PylithInt sOff[],
-                                            const PylithInt sOff_x[],
-                                            const PylithScalar s[],
-                                            const PylithScalar s_t[],
-                                            const PylithScalar s_x[],
-                                            const PylithInt aOff[],
-                                            const PylithInt aOff_x[],
-                                            const PylithScalar a[],
-                                            const PylithScalar a_t[],
-                                            const PylithScalar a_x[],
-                                            const PylithReal t,
-                                            const PylithScalar x[],
-                                            const PylithInt numConstants,
-                                            const PylithScalar constants[],
-                                            PylithScalar f1[]) {
+void pylith::fekernels::IsotropicPowerLaw3D::f1v(const PylithInt dim,
+                                                 const PylithInt numS,
+                                                 const PylithInt numA,
+                                                 const PylithInt sOff[],
+                                                 const PylithInt sOff_x[],
+                                                 const PylithScalar s[],
+                                                 const PylithScalar s_t[],
+                                                 const PylithScalar s_x[],
+                                                 const PylithInt aOff[],
+                                                 const PylithInt aOff_x[],
+                                                 const PylithScalar a[],
+                                                 const PylithScalar a_t[],
+                                                 const PylithScalar a_x[],
+                                                 const PylithReal t,
+                                                 const PylithScalar x[],
+                                                 const PylithInt numConstants,
+                                                 const PylithScalar constants[],
+                                                 PylithScalar f1[])
+{
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -1480,67 +1512,67 @@ pylith::fekernels::IsotropicPowerLaw3D::f1v(const PylithInt dim,
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
 
     const PylithInt numAMean = 1; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
+    const PylithInt aOffMean[1] = {aOff[i_bulkModulus]};
 
     const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
-                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_stress]};
+                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_deviatoricStress]};
 
-    PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-    deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                     t, x, numConstants, constants, stressTensor);
+    PylithScalar stressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     IsotropicLinearElasticity3D::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
                                             aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
-    for (PylithInt i = 0; i < _dim*_dim; ++i) {
+    deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+                     t, x, numConstants, constants, stressTensor);
+    for (PylithInt i = 0; i < _dim * _dim; ++i)
+    {
         f1[i] -= stressTensor[i];
     } // for
 } // f1v
 
-
 // ---------------------------------------------------------------------------------------------------------------------
 // f1 function for isotropic power-law viscoelastic 3D material with reference
 // stress and strain.
-void
-pylith::fekernels::IsotropicPowerLaw3D::f1v_refstate(const PylithInt dim,
-                                                     const PylithInt numS,
-                                                     const PylithInt numA,
-                                                     const PylithInt sOff[],
-                                                     const PylithInt sOff_x[],
-                                                     const PylithScalar s[],
-                                                     const PylithScalar s_t[],
-                                                     const PylithScalar s_x[],
-                                                     const PylithInt aOff[],
-                                                     const PylithInt aOff_x[],
-                                                     const PylithScalar a[],
-                                                     const PylithScalar a_t[],
-                                                     const PylithScalar a_x[],
-                                                     const PylithReal t,
-                                                     const PylithScalar x[],
-                                                     const PylithInt numConstants,
-                                                     const PylithScalar constants[],
-                                                     PylithScalar f1[]) {
+void pylith::fekernels::IsotropicPowerLaw3D::f1v_refstate(const PylithInt dim,
+                                                          const PylithInt numS,
+                                                          const PylithInt numA,
+                                                          const PylithInt sOff[],
+                                                          const PylithInt sOff_x[],
+                                                          const PylithScalar s[],
+                                                          const PylithScalar s_t[],
+                                                          const PylithScalar s_x[],
+                                                          const PylithInt aOff[],
+                                                          const PylithInt aOff_x[],
+                                                          const PylithScalar a[],
+                                                          const PylithScalar a_t[],
+                                                          const PylithScalar a_x[],
+                                                          const PylithReal t,
+                                                          const PylithScalar x[],
+                                                          const PylithInt numConstants,
+                                                          const PylithScalar constants[],
+                                                          PylithScalar f1[])
+{
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_rstress = numA-9;
-    const PylithInt i_rstrain = numA-8;
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
+    const PylithInt i_rstress = numA - 9;
+    const PylithInt i_rstrain = numA - 8;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -1556,32 +1588,32 @@ pylith::fekernels::IsotropicPowerLaw3D::f1v_refstate(const PylithInt dim,
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
 
     const PylithInt numAMean = 3; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
+    const PylithInt aOffMean[3] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus]};
 
     const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
                                   aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrain],
-                                  aOff[i_stress]};
+                                  aOff[i_deviatoricStress]};
 
-    PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-    deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                              t, x, numConstants, constants, stressTensor);
+    PylithScalar stressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     IsotropicLinearElasticity3D::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
                                                      aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
-    for (PylithInt i = 0; i < _dim*_dim; ++i) {
+    deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+                              t, x, numConstants, constants, stressTensor);
+    for (PylithInt i = 0; i < _dim * _dim; ++i)
+    {
         f1[i] -= stressTensor[i];
     } // for
 } // f1v_refstate
-
 
 // ---------------------------------------------------------------------------------------------------------------------
 /* Jf3_vu entry function for 3-D isotropic power-law viscoelastic material WITHOUT reference stress/strain.
@@ -1594,39 +1626,39 @@ pylith::fekernels::IsotropicPowerLaw3D::f1v_refstate(const PylithInt dim,
  *  C_ijkl = bulkModulus * delta_ij * delta_kl
  *   + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk - 2/3*delta_ij*delta_kl)
  */
-void
-pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
-                                              const PylithInt numS,
-                                              const PylithInt numA,
-                                              const PylithInt sOff[],
-                                              const PylithInt sOff_x[],
-                                              const PylithScalar s[],
-                                              const PylithScalar s_t[],
-                                              const PylithScalar s_x[],
-                                              const PylithInt aOff[],
-                                              const PylithInt aOff_x[],
-                                              const PylithScalar a[],
-                                              const PylithScalar a_t[],
-                                              const PylithScalar a_x[],
-                                              const PylithReal t,
-                                              const PylithReal s_tshift,
-                                              const PylithScalar x[],
-                                              const PylithInt numConstants,
-                                              const PylithScalar constants[],
-                                              PylithScalar Jf3[]) {
+void pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
+                                                   const PylithInt numS,
+                                                   const PylithInt numA,
+                                                   const PylithInt sOff[],
+                                                   const PylithInt sOff_x[],
+                                                   const PylithScalar s[],
+                                                   const PylithScalar s_t[],
+                                                   const PylithScalar s_x[],
+                                                   const PylithInt aOff[],
+                                                   const PylithInt aOff_x[],
+                                                   const PylithScalar a[],
+                                                   const PylithScalar a_t[],
+                                                   const PylithScalar a_x[],
+                                                   const PylithReal t,
+                                                   const PylithReal s_tshift,
+                                                   const PylithScalar x[],
+                                                   const PylithInt numConstants,
+                                                   const PylithScalar constants[],
+                                                   PylithScalar Jf3[])
+{
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -1642,19 +1674,19 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
     assert(constants);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
 
     const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
-                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_stress]};
+                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_deviatoricStress]};
 
     // Compute deviatoric stress tensor (9 components).
-    PylithScalar devStressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+    PylithScalar devStressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, devStressTensor);
     const PylithScalar devStressTpdt[6] = {
@@ -1671,38 +1703,26 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
     const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
     const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
     const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
-    // ****** I think powerLawAlpha should actually be a kernel constant.
     const PylithScalar powerLawAlpha = 0.5;
-    // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
     const PylithScalar dt = constants[0];
 
     // Compute quantities based on stress at t = T.
-    const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy, stress_yz,
-                                                      // stress_xz at t = T.
-    const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
-    const PylithScalar devStressT[6] = {
-        stressT[0] - meanStressT,
-        stressT[1] - meanStressT,
-        stressT[2] - meanStressT,
-        stressT[3],
-        stressT[4],
-        stressT[5],
-    };
+    const PylithScalar *devStressT = &a[aOff[i_deviatoricStress]]; // devstress_xx, devstress_yy, devstress_zz, devstress_xy, devstress_yz,
+                                                                   // devstress_xz at t = T.
     const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressT, devStressT);
-    const PylithScalar j2T = sqrt(0.5*devStressProdT);
+    const PylithScalar j2T = sqrt(0.5 * devStressProdT);
 
     // Compute quantities based on stress at t = T + dt.
     const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
-    const PylithScalar j2Tpdt = sqrt(0.5*devStressProdTpdt);
+    const PylithScalar j2Tpdt = sqrt(0.5 * devStressProdTpdt);
 
     // Compute quantities at intermediate time tau.
-    const PylithScalar j2Tau = powerLawAlpha*j2Tpdt + (1.0 - powerLawAlpha)*j2T;
-    const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress),
-                                                                  (powerLawExponent - 1.0))/powerLawReferenceStress;
+    const PylithScalar j2Tau = powerLawAlpha * j2Tpdt + (1.0 - powerLawAlpha) * j2T;
+    const PylithScalar gammaTau = powerLawReferenceStrainRate * pow((j2Tau / powerLawReferenceStress), (powerLawExponent - 1.0)) / powerLawReferenceStress;
 
     // Default Jacobian is elastic (if effective stress is zero).
-    PylithReal C1111 = bulkModulus + 4.0*shearModulus/3.0;
-    PylithReal C1122 = bulkModulus - 2.0*shearModulus/3.0;
+    PylithReal C1111 = bulkModulus + 4.0 * shearModulus / 3.0;
+    PylithReal C1122 = bulkModulus - 2.0 * shearModulus / 3.0;
     PylithReal C1212 = shearModulus;
     PylithReal C1313 = shearModulus;
     PylithReal C2211 = C1122;
@@ -1724,33 +1744,34 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
 #endif
 
     // Compute viscoelastic Jacobian if effective stress is nonzero.
-    if (j2Tpdt != 0.0 && j2Tau != 0.0) {
-        const PylithScalar ae = 1.0/(2.0*shearModulus);
-        const PylithScalar denom = 2.0*j2Tau*j2Tpdt;
-        const PylithScalar factor1 = powerLawAlpha*dt*gammaTau;
-        const PylithScalar factor2 = factor1*(powerLawExponent - 1.0)/denom;
-        const PylithScalar factor3 = powerLawAlpha*factor2;
-        const PylithScalar factor4 = factor2*(1.0 - powerLawAlpha);
+    if (j2Tpdt != 0.0 && j2Tau != 0.0)
+    {
+        const PylithScalar ae = 1.0 / (2.0 * shearModulus);
+        const PylithScalar denom = 2.0 * j2Tau * j2Tpdt;
+        const PylithScalar factor1 = powerLawAlpha * dt * gammaTau;
+        const PylithScalar factor2 = factor1 * (powerLawExponent - 1.0) / denom;
+        const PylithScalar factor3 = powerLawAlpha * factor2;
+        const PylithScalar factor4 = factor2 * (1.0 - powerLawAlpha);
 
         /* Unique components of Jacobian. */
-        C1111 = bulkModulus + 2/(3*(factor3*devStressTpdt[0]*devStressTpdt[0] + factor1 +
-                                    factor4*devStressTpdt[0]*devStressT[0] + ae));
-        C1122 = bulkModulus - 1/(3*(factor3*devStressTpdt[0]*devStressTpdt[0] + factor1 +
-                                    factor4*devStressTpdt[0]*devStressT[0] + ae));
-        C1212 = 1/(2*(factor3*devStressTpdt[3]*devStressTpdt[3] + factor1 +
-                      factor4*devStressTpdt[3]*devStressT[3] + ae));
-        C1313 = 1/(2*(factor3*devStressTpdt[5]*devStressTpdt[5] + factor1 +
-                      factor4*devStressTpdt[5]*devStressT[5] + ae));
-        C2211 = bulkModulus - 1/(3*(factor3*devStressTpdt[1]*devStressTpdt[1] + factor1 +
-                                    factor4*devStressTpdt[1]*devStressT[1] + ae));
-        C2222 = bulkModulus + 2/(3*(factor3*devStressTpdt[1]*devStressTpdt[1] + factor1 +
-                                    factor4*devStressTpdt[1]*devStressT[1] + ae));
-        C2323 = 1/(2*(factor3*devStressTpdt[4]*devStressTpdt[4] + factor1 +
-                      factor4*devStressTpdt[4]*devStressT[4] + ae));
-        C3311 = bulkModulus - 1/(3*(factor3*devStressTpdt[2]*devStressTpdt[2] + factor1 +
-                                    factor4*devStressTpdt[2]*devStressT[2] + ae));
-        C3333 = bulkModulus + 2/(3*(factor3*devStressTpdt[2]*devStressTpdt[2] + factor1 +
-                                    factor4*devStressTpdt[2]*devStressT[2] + ae));
+        C1111 = bulkModulus + 2 / (3 * (factor3 * devStressTpdt[0] * devStressTpdt[0] + factor1 +
+                                        factor4 * devStressTpdt[0] * devStressT[0] + ae));
+        C1122 = bulkModulus - 1 / (3 * (factor3 * devStressTpdt[0] * devStressTpdt[0] + factor1 +
+                                        factor4 * devStressTpdt[0] * devStressT[0] + ae));
+        C1212 = 1 / (2 * (factor3 * devStressTpdt[3] * devStressTpdt[3] + factor1 +
+                          factor4 * devStressTpdt[3] * devStressT[3] + ae));
+        C1313 = 1 / (2 * (factor3 * devStressTpdt[5] * devStressTpdt[5] + factor1 +
+                          factor4 * devStressTpdt[5] * devStressT[5] + ae));
+        C2211 = bulkModulus - 1 / (3 * (factor3 * devStressTpdt[1] * devStressTpdt[1] + factor1 +
+                                        factor4 * devStressTpdt[1] * devStressT[1] + ae));
+        C2222 = bulkModulus + 2 / (3 * (factor3 * devStressTpdt[1] * devStressTpdt[1] + factor1 +
+                                        factor4 * devStressTpdt[1] * devStressT[1] + ae));
+        C2323 = 1 / (2 * (factor3 * devStressTpdt[4] * devStressTpdt[4] + factor1 +
+                          factor4 * devStressTpdt[4] * devStressT[4] + ae));
+        C3311 = bulkModulus - 1 / (3 * (factor3 * devStressTpdt[2] * devStressTpdt[2] + factor1 +
+                                        factor4 * devStressTpdt[2] * devStressT[2] + ae));
+        C3333 = bulkModulus + 2 / (3 * (factor3 * devStressTpdt[2] * devStressTpdt[2] + factor1 +
+                                        factor4 * devStressTpdt[2] * devStressT[2] + ae));
 #if 0
     std::cout << "Viscoelastic Jacobian:" << std::endl;
     std::cout << "    C1111:" << C1111 << std::endl;
@@ -1872,9 +1893,9 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
     */
 
     /* Nonzero Jacobian entries. */
-    Jf3[0] -= C1111; /* j0000 */
-    Jf3[4] -= C1212; /* j0011 */
-    Jf3[8] -= C1313; /* j0022 */
+    Jf3[0] -= C1111;  /* j0000 */
+    Jf3[4] -= C1212;  /* j0011 */
+    Jf3[8] -= C1313;  /* j0022 */
     Jf3[10] -= C1122; /* j0101 */
     Jf3[12] -= C1212; /* j0110 */
     Jf3[20] -= C1122; /* j0202 */
@@ -1907,41 +1928,41 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu(const PylithInt dim,
  *  C_ijkl = bulkModulus * delta_ij * delta_kl
  *   + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk - 2/3*delta_ij*delta_kl)
  */
-void
-pylith::fekernels::IsotropicPowerLaw3D::Jf3vu_refstate(const PylithInt dim,
-                                                       const PylithInt numS,
-                                                       const PylithInt numA,
-                                                       const PylithInt sOff[],
-                                                       const PylithInt sOff_x[],
-                                                       const PylithScalar s[],
-                                                       const PylithScalar s_t[],
-                                                       const PylithScalar s_x[],
-                                                       const PylithInt aOff[],
-                                                       const PylithInt aOff_x[],
-                                                       const PylithScalar a[],
-                                                       const PylithScalar a_t[],
-                                                       const PylithScalar a_x[],
-                                                       const PylithReal t,
-                                                       const PylithReal s_tshift,
-                                                       const PylithScalar x[],
-                                                       const PylithInt numConstants,
-                                                       const PylithScalar constants[],
-                                                       PylithScalar Jf3[]) {
+void pylith::fekernels::IsotropicPowerLaw3D::Jf3vu_refstate(const PylithInt dim,
+                                                            const PylithInt numS,
+                                                            const PylithInt numA,
+                                                            const PylithInt sOff[],
+                                                            const PylithInt sOff_x[],
+                                                            const PylithScalar s[],
+                                                            const PylithScalar s_t[],
+                                                            const PylithScalar s_x[],
+                                                            const PylithInt aOff[],
+                                                            const PylithInt aOff_x[],
+                                                            const PylithScalar a[],
+                                                            const PylithScalar a_t[],
+                                                            const PylithScalar a_x[],
+                                                            const PylithReal t,
+                                                            const PylithReal s_tshift,
+                                                            const PylithScalar x[],
+                                                            const PylithInt numConstants,
+                                                            const PylithScalar constants[],
+                                                            PylithScalar Jf3[])
+{
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_rstress = numA-9;
-    const PylithInt i_rstrain = numA-8;
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
+    const PylithInt i_rstress = numA - 9;
+    const PylithInt i_rstrain = numA - 8;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -1957,22 +1978,22 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu_refstate(const PylithInt dim,
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
     assert(constants);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
 
     const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
                                   aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrain],
-                                  aOff[i_stress]};
+                                  aOff[i_deviatoricStress]};
 
     // Compute deviatoric stress tensor (9 components).
-    PylithScalar devStressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+    PylithScalar devStressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, devStressTensor);
     const PylithScalar devStressTpdt[6] = {devStressTensor[0],
@@ -1987,36 +2008,26 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu_refstate(const PylithInt dim,
     const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
     const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
     const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
-    // ****** I think powerLawAlpha should actually be a kernel constant.
     const PylithScalar powerLawAlpha = 0.5;
-    // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
     const PylithScalar dt = constants[0];
 
     // Compute quantities based on stress at t = T.
-    const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy, stress_yz,
-                                                      // stress_xz at t = T.
-    const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
-    const PylithScalar devStressT[6] = {stressT[0] - meanStressT,
-                                        stressT[1] - meanStressT,
-                                        stressT[2] - meanStressT,
-                                        stressT[3],
-                                        stressT[4],
-                                        stressT[5]};
+    const PylithScalar *devStressT = &a[aOff[i_deviatoricStress]]; // devstress_xx, devstress_yy, devstress_zz, devstress_xy, devstress_yz,
+                                                                   // devstress_xz at t = T.
     const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressT, devStressT);
-    const PylithScalar j2T = sqrt(0.5*devStressProdT);
+    const PylithScalar j2T = sqrt(0.5 * devStressProdT);
 
     // Compute quantities based on stress at t = T + dt.
     const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
-    const PylithScalar j2Tpdt = sqrt(0.5*devStressProdTpdt);
+    const PylithScalar j2Tpdt = sqrt(0.5 * devStressProdTpdt);
 
     // Compute quantities at intermediate time tau.
-    const PylithScalar j2Tau = powerLawAlpha*j2Tpdt + (1.0 - powerLawAlpha)*j2T;
-    const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress),
-                                                                  (powerLawExponent - 1.0))/powerLawReferenceStress;
+    const PylithScalar j2Tau = powerLawAlpha * j2Tpdt + (1.0 - powerLawAlpha) * j2T;
+    const PylithScalar gammaTau = powerLawReferenceStrainRate * pow((j2Tau / powerLawReferenceStress), (powerLawExponent - 1.0)) / powerLawReferenceStress;
 
     // Default Jacobian is elastic (if effective stress is zero).
-    PylithReal C1111 = bulkModulus + 4.0*shearModulus/3.0;
-    PylithReal C1122 = bulkModulus - 2.0*shearModulus/3.0;
+    PylithReal C1111 = bulkModulus + 4.0 * shearModulus / 3.0;
+    PylithReal C1122 = bulkModulus - 2.0 * shearModulus / 3.0;
     PylithReal C1212 = shearModulus;
     PylithReal C1313 = shearModulus;
     PylithReal C2211 = C1122;
@@ -2026,33 +2037,34 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu_refstate(const PylithInt dim,
     PylithReal C3333 = C1111;
 
     // Compute viscoelastic Jacobian if effective stress is nonzero.
-    if (j2Tpdt != 0.0 && j2Tau != 0.0) {
-        const PylithScalar ae = 1.0/(2.0*shearModulus);
-        const PylithScalar denom = 2.0*j2Tau*j2Tpdt;
-        const PylithScalar factor1 = powerLawAlpha*dt*gammaTau;
-        const PylithScalar factor2 = factor1*(powerLawExponent - 1.0)/denom;
-        const PylithScalar factor3 = powerLawAlpha*factor2;
-        const PylithScalar factor4 = factor2*(1.0 - powerLawAlpha);
+    if (j2Tpdt != 0.0 && j2Tau != 0.0)
+    {
+        const PylithScalar ae = 1.0 / (2.0 * shearModulus);
+        const PylithScalar denom = 2.0 * j2Tau * j2Tpdt;
+        const PylithScalar factor1 = powerLawAlpha * dt * gammaTau;
+        const PylithScalar factor2 = factor1 * (powerLawExponent - 1.0) / denom;
+        const PylithScalar factor3 = powerLawAlpha * factor2;
+        const PylithScalar factor4 = factor2 * (1.0 - powerLawAlpha);
 
         /* Unique components of Jacobian. */
-        C1111 = bulkModulus + 2/(3*(factor3*devStressTpdt[0]*devStressTpdt[0] + factor1 +
-                                    factor4*devStressTpdt[0]*devStressT[0] + ae));
-        C1122 = bulkModulus - 1/(3*(factor3*devStressTpdt[0]*devStressTpdt[0] + factor1 +
-                                    factor4*devStressTpdt[0]*devStressT[0] + ae));
-        C1212 = 1/(2*(factor3*devStressTpdt[3]*devStressTpdt[3] + factor1 +
-                      factor4*devStressTpdt[3]*devStressT[3] + ae));
-        C1313 = 1/(2*(factor3*devStressTpdt[5]*devStressTpdt[5] + factor1 +
-                      factor4*devStressTpdt[5]*devStressT[5] + ae));
-        C2211 = bulkModulus - 1/(3*(factor3*devStressTpdt[1]*devStressTpdt[1] + factor1 +
-                                    factor4*devStressTpdt[1]*devStressT[1] + ae));
-        C2222 = bulkModulus + 2/(3*(factor3*devStressTpdt[1]*devStressTpdt[1] + factor1 +
-                                    factor4*devStressTpdt[1]*devStressT[1] + ae));
-        C2323 = 1/(2*(factor3*devStressTpdt[4]*devStressTpdt[4] + factor1 +
-                      factor4*devStressTpdt[4]*devStressT[4] + ae));
-        C3311 = bulkModulus - 1/(3*(factor3*devStressTpdt[2]*devStressTpdt[2] + factor1 +
-                                    factor4*devStressTpdt[2]*devStressT[2] + ae));
-        C3333 = bulkModulus + 2/(3*(factor3*devStressTpdt[2]*devStressTpdt[2] + factor1 +
-                                    factor4*devStressTpdt[2]*devStressT[2] + ae));
+        C1111 = bulkModulus + 2 / (3 * (factor3 * devStressTpdt[0] * devStressTpdt[0] + factor1 +
+                                        factor4 * devStressTpdt[0] * devStressT[0] + ae));
+        C1122 = bulkModulus - 1 / (3 * (factor3 * devStressTpdt[0] * devStressTpdt[0] + factor1 +
+                                        factor4 * devStressTpdt[0] * devStressT[0] + ae));
+        C1212 = 1 / (2 * (factor3 * devStressTpdt[3] * devStressTpdt[3] + factor1 +
+                          factor4 * devStressTpdt[3] * devStressT[3] + ae));
+        C1313 = 1 / (2 * (factor3 * devStressTpdt[5] * devStressTpdt[5] + factor1 +
+                          factor4 * devStressTpdt[5] * devStressT[5] + ae));
+        C2211 = bulkModulus - 1 / (3 * (factor3 * devStressTpdt[1] * devStressTpdt[1] + factor1 +
+                                        factor4 * devStressTpdt[1] * devStressT[1] + ae));
+        C2222 = bulkModulus + 2 / (3 * (factor3 * devStressTpdt[1] * devStressTpdt[1] + factor1 +
+                                        factor4 * devStressTpdt[1] * devStressT[1] + ae));
+        C2323 = 1 / (2 * (factor3 * devStressTpdt[4] * devStressTpdt[4] + factor1 +
+                          factor4 * devStressTpdt[4] * devStressT[4] + ae));
+        C3311 = bulkModulus - 1 / (3 * (factor3 * devStressTpdt[2] * devStressTpdt[2] + factor1 +
+                                        factor4 * devStressTpdt[2] * devStressT[2] + ae));
+        C3333 = bulkModulus + 2 / (3 * (factor3 * devStressTpdt[2] * devStressTpdt[2] + factor1 +
+                                        factor4 * devStressTpdt[2] * devStressT[2] + ae));
     } // if
 
     /* j(f,g,df,dg) = C(f,df,g,dg)
@@ -2162,9 +2174,9 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu_refstate(const PylithInt dim,
     */
 
     /* Nonzero Jacobian entries. */
-    Jf3[0] -= C1111; /* j0000 */
-    Jf3[4] -= C1212; /* j0011 */
-    Jf3[8] -= C1313; /* j0022 */
+    Jf3[0] -= C1111;  /* j0000 */
+    Jf3[4] -= C1212;  /* j0011 */
+    Jf3[8] -= C1313;  /* j0022 */
     Jf3[10] -= C1122; /* j0101 */
     Jf3[12] -= C1212; /* j0110 */
     Jf3[20] -= C1122; /* j0202 */
@@ -2186,7 +2198,6 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu_refstate(const PylithInt dim,
 
 } // Jf3vu_refstate
 
-
 // ---------------------------------------------------------------------------------------------------------------------
 /* Calculate deviatoric stress tensor for 3-D isotropic power-law
  * viscoelastic material WITHOUT reference stress and strain.
@@ -2195,454 +2206,7 @@ pylith::fekernels::IsotropicPowerLaw3D::Jf3vu_refstate(const PylithInt dim,
  *
  * devStress_ij = 2*shearModulus*visStrain_ij
  */
-void
-pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress(const PylithInt dim,
-                                                         const PylithInt numS,
-                                                         const PylithInt numA,
-                                                         const PylithInt sOff[],
-                                                         const PylithInt sOff_x[],
-                                                         const PylithScalar s[],
-                                                         const PylithScalar s_t[],
-                                                         const PylithScalar s_x[],
-                                                         const PylithInt aOff[],
-                                                         const PylithInt aOff_x[],
-                                                         const PylithScalar a[],
-                                                         const PylithScalar a_t[],
-                                                         const PylithScalar a_x[],
-                                                         const PylithReal t,
-                                                         const PylithScalar x[],
-                                                         const PylithInt numConstants,
-                                                         const PylithScalar constants[],
-                                                         PylithScalar stressTensor[]) {
-    const PylithInt _dim = 3;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = 0;
-    const PylithInt i_powerLawReferenceStrainRate = 1;
-    const PylithInt i_powerLawReferenceStress = 2;
-    const PylithInt i_powerLawExponent = 3;
-    const PylithInt i_viscousStrain = 4;
-    const PylithInt i_stress = 5;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 6);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
-    assert(aOff[i_powerLawReferenceStress] >= 0);
-    assert(aOff[i_powerLawExponent] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
-    assert(constants);
-
-    // Constants.
-    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
-    const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
-    const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
-    const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
-    // ****** I think powerLawAlpha should actually be a kernel constant.
-    const PylithScalar powerLawAlpha = 0.5;
-    // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
-    const PylithScalar dt = constants[0];
-    const PylithScalar ae = 1.0/(2.0*shearModulus);
-    const PylithScalar timeFac = dt*(1.0 - powerLawAlpha);
-
-    // Compute quantities based on stress at t = T.
-    const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy, stress_yz,
-                                                      // stress_xz at t = T.
-    const PylithScalar* visStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz,
-                                                                // visStrain_xy, visStrain_yz, visStrain_xz at t = T.
-    const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
-    const PylithScalar devStressT[6] = {stressT[0] - meanStressT,
-                                        stressT[1] - meanStressT,
-                                        stressT[2] - meanStressT,
-                                        stressT[3],
-                                        stressT[4],
-                                        stressT[5]};
-    const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressT, devStressT);
-    const PylithScalar j2T = sqrt(0.5*devStressProdT);
-
-    // Compute quantities based on strain at t = T + dt.
-    const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
-    const PylithScalar strainTpdt[6] = {disp_x[0*_dim+0],
-                                        disp_x[1*_dim+1],
-                                        disp_x[2*_dim+2],
-                                        0.5 * (disp_x[0*_dim+1] + disp_x[1*_dim+0]),
-                                        0.5 * (disp_x[1*_dim+2] + disp_x[2*_dim+1]),
-                                        0.5 * (disp_x[0*_dim+2] + disp_x[2*_dim+0])};
-    const PylithReal meanStrainTpdt = (strainTpdt[0] + strainTpdt[1] + strainTpdt[2])/3.0;
-    const PylithScalar devStrainTpdt[6] = {strainTpdt[0] - meanStrainTpdt,
-                                           strainTpdt[1] - meanStrainTpdt,
-                                           strainTpdt[2] - meanStrainTpdt,
-                                           strainTpdt[3],
-                                           strainTpdt[4],
-                                           strainTpdt[5]};
-    const PylithScalar strainPPTpdt[6] = {devStrainTpdt[0] - visStrainT[0],
-                                          devStrainTpdt[1] - visStrainT[1],
-                                          devStrainTpdt[2] - visStrainT[2],
-                                          devStrainTpdt[3] - visStrainT[3],
-                                          devStrainTpdt[4] - visStrainT[4],
-                                          devStrainTpdt[5] - visStrainT[5]};
-    const PylithScalar strainPPInvar2Tpdt = 0.5*pylith::fekernels::Viscoelasticity::scalarProduct3D(strainPPTpdt, strainPPTpdt);
-    const PylithScalar strainStressInvar2T = pylith::fekernels::Viscoelasticity::scalarProduct3D(strainPPTpdt, devStressT);
-
-    // Finish defining parameters needed for root-finding algorithm.
-    const PylithScalar b = strainPPInvar2Tpdt;
-    const PylithScalar c = strainStressInvar2T*timeFac;
-    const PylithScalar d = timeFac*j2T;
-    PylithScalar j2Tpdt = 0.0;
-    if ((b != 0.0) || (c != 0.0) || (d != 0.0)) {
-        const PylithScalar j2InitialGuess = j2T;
-        const PylithScalar stressScale = shearModulus;
-        j2Tpdt = IsotropicPowerLawEffectiveStress::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha,
-                                                                          dt, j2T, powerLawExponent, powerLawReferenceStrainRate,
-                                                                          powerLawReferenceStress);
-    } // if
-    // Compute deviatoric stresses from effective stress.
-    const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
-    const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress),
-                                                                  (powerLawExponent - 1.0))/powerLawReferenceStress;
-    const PylithScalar factor1 = 1.0/(ae + powerLawAlpha*dt*gammaTau);
-    const PylithScalar factor2 = timeFac*gammaTau;
-    const PylithScalar devStressTpdt[6] = {
-        factor1*(strainPPTpdt[0] - factor2*devStressT[0]),
-        factor1*(strainPPTpdt[1] - factor2*devStressT[1]),
-        factor1*(strainPPTpdt[2] - factor2*devStressT[2]),
-        factor1*(strainPPTpdt[3] - factor2*devStressT[3]),
-        factor1*(strainPPTpdt[4] - factor2*devStressT[4]),
-        factor1*(strainPPTpdt[5] - factor2*devStressT[5])
-    };
-    stressTensor[0] += devStressTpdt[0];
-    stressTensor[4] += devStressTpdt[1];
-    stressTensor[8] += devStressTpdt[2];
-    stressTensor[1] += devStressTpdt[3];
-    stressTensor[5] += devStressTpdt[4];
-    stressTensor[2] += devStressTpdt[5];
-    stressTensor[3] += devStressTpdt[3];
-    stressTensor[6] += devStressTpdt[5];
-    stressTensor[7] += devStressTpdt[4];
-#if 0
-    const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
-    const PylithScalar j2Test = sqrt(0.5*devStressProdTpdt);
-    PylithScalar dtTest = 0.0;
-    if (j2Test <= 0.0) {
-        dtTest = 1.0e30;
-    } else {
-        dtTest = pow((powerLawReferenceStress/j2Test), (powerLawExponent - 1.0)) *
-            (powerLawReferenceStress/shearModulus)/(powerLawReferenceStrainRate * 6.0);
-    } //else
-    std::cout << "Relaxation time:" << dtTest << std::endl;
-    std::cout << "strainTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << strainTpdt[i]; } std::cout << std::endl;
-    std::cout << "devStressT:"; for(int i=0;i<6;++i) {std::cout << " " << devStressT[i]; } std::cout << std::endl;
-    std::cout << "devStressTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << devStressTpdt[i]; } std::cout << std::endl;
-#endif
-#if 1
-    const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
-    const PylithScalar j2Test = sqrt(0.5*devStressProdTpdt);
-    PylithScalar dtTest = 0.0;
-    if (j2Test <= 0.0) {
-        dtTest = 1.0e30;
-    } else {
-        dtTest = pow((powerLawReferenceStress/j2Test), (powerLawExponent - 1.0)) *
-            (powerLawReferenceStress/shearModulus)/(powerLawReferenceStrainRate * 6.0);
-    } //else
-    std::cout << "Relaxation time:" << dtTest << std::endl;
-#endif
-
-
-} // deviatoricStress
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-/* Calculate deviatoric stress tensor for 3-D isotropic power-law
- * viscoelastic material WITH reference stress and strain.
- *
- * devStress_ij = stress_ij - meanStress*delta_ij
- *
- * devStress_ij = 2*shearModulus*visStrain_ij
- */
-void
-pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress_refstate(const PylithInt dim,
-                                                                  const PylithInt numS,
-                                                                  const PylithInt numA,
-                                                                  const PylithInt sOff[],
-                                                                  const PylithInt sOff_x[],
-                                                                  const PylithScalar s[],
-                                                                  const PylithScalar s_t[],
-                                                                  const PylithScalar s_x[],
-                                                                  const PylithInt aOff[],
-                                                                  const PylithInt aOff_x[],
-                                                                  const PylithScalar a[],
-                                                                  const PylithScalar a_t[],
-                                                                  const PylithScalar a_x[],
-                                                                  const PylithReal t,
-                                                                  const PylithScalar x[],
-                                                                  const PylithInt numConstants,
-                                                                  const PylithScalar constants[],
-                                                                  PylithScalar stressTensor[]) {
-    const PylithInt _dim = 3;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_rstress = 0;
-    const PylithInt i_rstrain = 1;
-    const PylithInt i_shearModulus = 2;
-    const PylithInt i_powerLawReferenceStrainRate = 3;
-    const PylithInt i_powerLawReferenceStress = 4;
-    const PylithInt i_powerLawExponent = 5;
-    const PylithInt i_viscousStrain = 6;
-    const PylithInt i_stress = 7;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 8);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
-    assert(aOff[i_powerLawReferenceStress] >= 0);
-    assert(aOff[i_powerLawExponent] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
-    assert(aOff[i_rstress] >= 0);
-    assert(aOff[i_rstrain] >= 0);
-    assert(constants);
-
-    // Constants.
-    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
-    const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
-    const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
-    const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
-    // ****** I think powerLawAlpha should actually be a kernel constant.
-    const PylithScalar powerLawAlpha = 0.5;
-    // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
-    const PylithScalar dt = constants[0];
-    const PylithScalar ae = 1.0/(2.0*shearModulus);
-    const PylithScalar timeFac = dt*(1.0 - powerLawAlpha);
-
-    // Compute quantities based on reference stress.
-    const PylithScalar* stressR = &a[aOff[i_rstress]];
-    const PylithScalar meanStressR = (stressR[0] + stressR[1] + stressR[2])/3.0;
-    const PylithScalar devStressR[6] = {stressR[0] - meanStressR,
-                                        stressR[1] - meanStressR,
-                                        stressR[2] - meanStressR,
-                                        stressR[3],
-                                        stressR[4],
-                                        stressR[5]};
-    const PylithScalar j2RSquared = 0.5*pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressR, devStressR);
-
-    // Compute quantities based on reference strain.
-    const PylithScalar* strainR = &a[aOff[i_rstrain]];
-    const PylithScalar meanStrainR = (strainR[0] + strainR[1] + strainR[2])/3.0;
-
-    // Compute quantities based on stress at t = T.
-    const PylithScalar* stressT = &a[aOff[i_stress]]; // stress_xx, stress_yy, stress_zz, stress_xy, stress_yz,
-                                                      // stress_xz at t = T.
-    const PylithScalar* visStrainT = &a[aOff[i_viscousStrain]]; // visStrain_xx, visStrain_yy, visStrain_zz,
-                                                                // visStrain_xy at t = T.
-    const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
-    const PylithScalar devStressT[6] = {stressT[0] - meanStressT,
-                                        stressT[1] - meanStressT,
-                                        stressT[2] - meanStressT,
-                                        stressT[3],
-                                        stressT[4],
-                                        stressT[5]};
-    const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressT, devStressT);
-    const PylithScalar j2T = sqrt(0.5*devStressProdT);
-
-    // Compute quantities based on strain at t = T + dt.
-    const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
-    const PylithScalar strainTpdt[6] = {disp_x[0*_dim+0],
-                                        disp_x[1*_dim+1],
-                                        disp_x[2*_dim+2],
-                                        0.5 * (disp_x[0*_dim+1] + disp_x[1*_dim+0]),
-                                        0.5 * (disp_x[1*_dim+2] + disp_x[2*_dim+1]),
-                                        0.5 * (disp_x[0*_dim+2] + disp_x[2*_dim+0])};
-    const PylithReal meanStrainTpdt = (strainTpdt[0] + strainTpdt[1] + strainTpdt[2])/3.0 - meanStrainR;
-    const PylithScalar strainPPTpdt[6] = {strainTpdt[0] - meanStrainTpdt - visStrainT[0] - strainR[0],
-                                          strainTpdt[1] - meanStrainTpdt - visStrainT[1] - strainR[1],
-                                          strainTpdt[2] - meanStrainTpdt - visStrainT[2] - strainR[2],
-                                          strainTpdt[3] - visStrainT[3] - strainR[3],
-                                          strainTpdt[4] - visStrainT[4] - strainR[4],
-                                          strainTpdt[5] - visStrainT[5] - strainR[5]};
-    const PylithScalar strainPPInvar2Tpdt = 0.5*pylith::fekernels::Viscoelasticity::scalarProduct3D(strainPPTpdt, strainPPTpdt);
-    const PylithScalar strainStressInvar2T = pylith::fekernels::Viscoelasticity::scalarProduct3D(strainPPTpdt, devStressT);
-    const PylithScalar strainStressInvar2R = pylith::fekernels::Viscoelasticity::scalarProduct3D(strainPPTpdt, devStressR);
-    const PylithScalar stressInvar2RT = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressT, devStressR);
-
-    // Finish defining parameters needed for root-finding algorithm.
-    const PylithScalar b = strainPPInvar2Tpdt + ae*strainStressInvar2R + ae*ae*j2RSquared;
-    const PylithScalar c = strainStressInvar2T*timeFac + ae*stressInvar2RT;
-    const PylithScalar d = timeFac*j2T;
-    PylithScalar j2Tpdt = 0.0;
-    if ((b != 0.0) || (c != 0.0) || (d != 0.0)) {
-        const PylithScalar j2InitialGuess = j2T;
-        const PylithScalar stressScale = shearModulus;
-        j2Tpdt = IsotropicPowerLawEffectiveStress::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha,
-                                                                          dt, j2T, powerLawExponent, powerLawReferenceStrainRate,
-                                                                          powerLawReferenceStress);
-    } // if
-    // Compute deviatoric stresses from effective stress.
-    const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
-    const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress),
-                                                                  (powerLawExponent - 1.0))/powerLawReferenceStress;
-    const PylithScalar factor1 = 1.0/(ae + powerLawAlpha*dt*gammaTau);
-    const PylithScalar factor2 = timeFac*gammaTau;
-    const PylithScalar devStressTpdt[6] = {
-        factor1*(strainPPTpdt[0] - factor2*devStressT[0] + ae*devStressR[0]),
-        factor1*(strainPPTpdt[1] - factor2*devStressT[1] + ae*devStressR[1]),
-        factor1*(strainPPTpdt[2] - factor2*devStressT[2] + ae*devStressR[2]),
-        factor1*(strainPPTpdt[3] - factor2*devStressT[3] + ae*devStressR[3]),
-        factor1*(strainPPTpdt[4] - factor2*devStressT[4] + ae*devStressR[4]),
-        factor1*(strainPPTpdt[5] - factor2*devStressT[5] + ae*devStressR[5])
-    };
-    stressTensor[0] += devStressTpdt[0];
-    stressTensor[4] += devStressTpdt[1];
-    stressTensor[8] += devStressTpdt[2];
-    stressTensor[1] += devStressTpdt[3];
-    stressTensor[5] += devStressTpdt[4];
-    stressTensor[2] += devStressTpdt[5];
-    stressTensor[3] += devStressTpdt[3];
-    stressTensor[6] += devStressTpdt[5];
-    stressTensor[7] += devStressTpdt[4];
-#if 0
-    const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
-    const PylithScalar j2Test = sqrt(0.5*devStressProdTpdt);
-    PylithScalar dtTest = 0.0;
-    if (j2Test <= 0.0) {
-        dtTest = 1.0e30;
-    } else {
-        dtTest = pow((powerLawReferenceStress/j2Test), (powerLawExponent - 1.0)) *
-            (powerLawReferenceStress/shearModulus)/(powerLawReferenceStrainRate * 6.0);
-    } //else
-    std::cout << "Relaxation time:" << dtTest << std::endl;
-    std::cout << "strainTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << strainTpdt[i]; } std::cout << std::endl;
-    std::cout << "devStressT:"; for(int i=0;i<6;++i) {std::cout << " " << devStressT[i]; } std::cout << std::endl;
-    std::cout << "devStressTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << devStressTpdt[i]; } std::cout << std::endl;
-#endif
-#if 1
-    const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
-    const PylithScalar j2Test = sqrt(0.5*devStressProdTpdt);
-    PylithScalar dtTest = 0.0;
-    if (j2Test <= 0.0) {
-        dtTest = 1.0e30;
-    } else {
-        dtTest = pow((powerLawReferenceStress/j2Test), (powerLawExponent - 1.0)) *
-            (powerLawReferenceStress/shearModulus)/(powerLawReferenceStrainRate * 6.0);
-    } //else
-    std::cout << "Relaxation time:" << dtTest << std::endl;
-#endif
-
-} // deviatoricStress_refstate
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-/* Update stress for a 3D power-law viscoelastic material.
- *
- * IMPORTANT: The order of the auxiliary field and solution field are reversed compared to the residual and Jacobian
- * kernels.
- *
- */
-void
-pylith::fekernels::IsotropicPowerLaw3D::updateStress(const PylithInt dim,
-                                                     const PylithInt numS,
-                                                     const PylithInt numA,
-                                                     const PylithInt sOff[],
-                                                     const PylithInt sOff_x[],
-                                                     const PylithScalar s[],
-                                                     const PylithScalar s_t[],
-                                                     const PylithScalar s_x[],
-                                                     const PylithInt aOff[],
-                                                     const PylithInt aOff_x[],
-                                                     const PylithScalar a[],
-                                                     const PylithScalar a_t[],
-                                                     const PylithScalar a_x[],
-                                                     const PylithReal t,
-                                                     const PylithScalar x[],
-                                                     const PylithInt numConstants,
-                                                     const PylithScalar constants[],
-                                                     PylithScalar stress[]) {
-    const PylithInt _dim = 3;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 7);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
-    assert(aOff[i_powerLawReferenceStress] >= 0);
-    assert(aOff[i_powerLawExponent] >= 0);
-    assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
-                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_stress]};
-
-    PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-    IsotropicLinearElasticity3D::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t,
-                                            NULL, t, x, numConstants, constants, stressTensor);
-
-    // Compute deviatoric stress tensor.
-    deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                     t, x, numConstants, constants, stressTensor);
-
-    stress[0] = stressTensor[0];
-    stress[1] = stressTensor[4];
-    stress[2] = stressTensor[8];
-    stress[3] = stressTensor[1];
-    stress[4] = stressTensor[5];
-    stress[5] = stressTensor[2];
-
-} // updateStress
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-/* Update stress for a 3D power-law viscoelastic material WITH reference stress and strain.
- *
- * IMPORTANT: The order of the auxiliary field and solution field are reversed compared to the residual and Jacobian
- * kernels.
- *
- */
-void
-pylith::fekernels::IsotropicPowerLaw3D::updateStress_refstate(const PylithInt dim,
+void pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress(const PylithInt dim,
                                                               const PylithInt numS,
                                                               const PylithInt numA,
                                                               const PylithInt sOff[],
@@ -2659,22 +2223,444 @@ pylith::fekernels::IsotropicPowerLaw3D::updateStress_refstate(const PylithInt di
                                                               const PylithScalar x[],
                                                               const PylithInt numConstants,
                                                               const PylithScalar constants[],
-                                                              PylithScalar stress[]) {
+                                                              PylithScalar stressTensor[])
+{
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_rstress = numA-9;
-    const PylithInt i_rstrain = numA-8;
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
+    const PylithInt i_shearModulus = 0;
+    const PylithInt i_powerLawReferenceStrainRate = 1;
+    const PylithInt i_powerLawReferenceStress = 2;
+    const PylithInt i_powerLawExponent = 3;
+    const PylithInt i_viscousStrain = 4;
+    const PylithInt i_deviatoricStress = 5;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(numA >= 6);
+    assert(sOff);
+    assert(sOff[i_disp] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
+    assert(aOff);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
+    assert(aOff[i_powerLawReferenceStress] >= 0);
+    assert(aOff[i_powerLawExponent] >= 0);
+    assert(aOff[i_viscousStrain] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
+    assert(constants);
+
+    // Constants.
+    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
+    const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
+    const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
+    const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
+    const PylithScalar powerLawAlpha = 0.5;
+    const PylithScalar dt = constants[0];
+    const PylithScalar ae = 1.0 / (2.0 * shearModulus);
+    const PylithScalar timeFac = dt * (1.0 - powerLawAlpha);
+
+    // Compute quantities based on stress at t = T.
+    const PylithScalar *devStressT = &a[aOff[i_deviatoricStress]]; // devstress_xx, devstress_yy, devstress_zz, devstress_xy, devstress_yz,
+                                                                   // devstress_xz at t = T.
+    const PylithScalar *visStrainT = &a[aOff[i_viscousStrain]];    // visStrain_xx, visStrain_yy, visStrain_zz,
+                                                                   // visStrain_xy, visStrain_yz, visStrain_xz at t = T.
+    const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressT, devStressT);
+    const PylithScalar j2T = sqrt(0.5 * devStressProdT);
+
+    // Compute quantities based on strain at t = T + dt.
+    const PylithScalar *disp_x = &s_x[sOff_x[i_disp]];
+    const PylithScalar strainTpdt[6] = {disp_x[0 * _dim + 0],
+                                        disp_x[1 * _dim + 1],
+                                        disp_x[2 * _dim + 2],
+                                        0.5 * (disp_x[0 * _dim + 1] + disp_x[1 * _dim + 0]),
+                                        0.5 * (disp_x[1 * _dim + 2] + disp_x[2 * _dim + 1]),
+                                        0.5 * (disp_x[0 * _dim + 2] + disp_x[2 * _dim + 0])};
+    const PylithReal meanStrainTpdt = (strainTpdt[0] + strainTpdt[1] + strainTpdt[2]) / 3.0;
+    const PylithScalar devStrainTpdt[6] = {strainTpdt[0] - meanStrainTpdt,
+                                           strainTpdt[1] - meanStrainTpdt,
+                                           strainTpdt[2] - meanStrainTpdt,
+                                           strainTpdt[3],
+                                           strainTpdt[4],
+                                           strainTpdt[5]};
+    const PylithScalar strainPPTpdt[6] = {devStrainTpdt[0] - visStrainT[0],
+                                          devStrainTpdt[1] - visStrainT[1],
+                                          devStrainTpdt[2] - visStrainT[2],
+                                          devStrainTpdt[3] - visStrainT[3],
+                                          devStrainTpdt[4] - visStrainT[4],
+                                          devStrainTpdt[5] - visStrainT[5]};
+    const PylithScalar strainPPInvar2Tpdt = 0.5 * pylith::fekernels::Viscoelasticity::scalarProduct3D(strainPPTpdt, strainPPTpdt);
+    const PylithScalar strainStressInvar2T = pylith::fekernels::Viscoelasticity::scalarProduct3D(strainPPTpdt, devStressT);
+
+    // Finish defining parameters needed for root-finding algorithm.
+    const PylithScalar b = strainPPInvar2Tpdt;
+    const PylithScalar c = strainStressInvar2T * timeFac;
+    const PylithScalar d = timeFac * j2T;
+    PylithScalar j2Tpdt = 0.0;
+    if ((b != 0.0) || (c != 0.0) || (d != 0.0))
+    {
+        const PylithScalar j2InitialGuess = j2T;
+        const PylithScalar stressScale = shearModulus;
+        j2Tpdt = IsotropicPowerLawEffectiveStress::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha,
+                                                                          dt, j2T, powerLawExponent, powerLawReferenceStrainRate,
+                                                                          powerLawReferenceStress);
+    } // if
+    // Compute deviatoric stresses from effective stress.
+    const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
+    const PylithScalar gammaTau = powerLawReferenceStrainRate * pow((j2Tau / powerLawReferenceStress), (powerLawExponent - 1.0)) / powerLawReferenceStress;
+    const PylithScalar factor1 = 1.0 / (ae + powerLawAlpha * dt * gammaTau);
+    const PylithScalar factor2 = timeFac * gammaTau;
+    const PylithScalar devStressTpdt[6] = {
+        factor1 * (strainPPTpdt[0] - factor2 * devStressT[0]),
+        factor1 * (strainPPTpdt[1] - factor2 * devStressT[1]),
+        factor1 * (strainPPTpdt[2] - factor2 * devStressT[2]),
+        factor1 * (strainPPTpdt[3] - factor2 * devStressT[3]),
+        factor1 * (strainPPTpdt[4] - factor2 * devStressT[4]),
+        factor1 * (strainPPTpdt[5] - factor2 * devStressT[5])};
+    stressTensor[0] += devStressTpdt[0];
+    stressTensor[4] += devStressTpdt[1];
+    stressTensor[8] += devStressTpdt[2];
+    stressTensor[1] += devStressTpdt[3];
+    stressTensor[5] += devStressTpdt[4];
+    stressTensor[2] += devStressTpdt[5];
+    stressTensor[3] += devStressTpdt[3];
+    stressTensor[6] += devStressTpdt[5];
+    stressTensor[7] += devStressTpdt[4];
+#if 0
+    const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
+    const PylithScalar j2Test = sqrt(0.5*devStressProdTpdt);
+    PylithScalar dtTest = 0.0;
+    if (j2Test <= 0.0) {
+        dtTest = 1.0e30;
+    } else {
+        dtTest = pow((powerLawReferenceStress/j2Test), (powerLawExponent - 1.0)) *
+            (powerLawReferenceStress/shearModulus)/(powerLawReferenceStrainRate * 6.0);
+    } //else
+    std::cout << "Relaxation time:" << dtTest << std::endl;
+    std::cout << "strainTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << strainTpdt[i]; } std::cout << std::endl;
+    std::cout << "devStressT:"; for(int i=0;i<6;++i) {std::cout << " " << devStressT[i]; } std::cout << std::endl;
+    std::cout << "devStressTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << devStressTpdt[i]; } std::cout << std::endl;
+#endif
+#if 1
+    const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
+    const PylithScalar j2Test = sqrt(0.5 * devStressProdTpdt);
+    PylithScalar dtTest = 0.0;
+    if (j2Test <= 0.0)
+    {
+        dtTest = 1.0e30;
+    }
+    else
+    {
+        dtTest = pow((powerLawReferenceStress / j2Test), (powerLawExponent - 1.0)) *
+                 (powerLawReferenceStress / shearModulus) / (powerLawReferenceStrainRate * 6.0);
+    } //else
+    std::cout << "Relaxation time:" << dtTest << std::endl;
+#endif
+
+} // deviatoricStress
+
+// ---------------------------------------------------------------------------------------------------------------------
+/* Calculate deviatoric stress tensor for 3-D isotropic power-law
+ * viscoelastic material WITH reference stress and strain.
+ *
+ * devStress_ij = stress_ij - meanStress*delta_ij
+ *
+ * devStress_ij = 2*shearModulus*visStrain_ij
+ */
+void pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress_refstate(const PylithInt dim,
+                                                                       const PylithInt numS,
+                                                                       const PylithInt numA,
+                                                                       const PylithInt sOff[],
+                                                                       const PylithInt sOff_x[],
+                                                                       const PylithScalar s[],
+                                                                       const PylithScalar s_t[],
+                                                                       const PylithScalar s_x[],
+                                                                       const PylithInt aOff[],
+                                                                       const PylithInt aOff_x[],
+                                                                       const PylithScalar a[],
+                                                                       const PylithScalar a_t[],
+                                                                       const PylithScalar a_x[],
+                                                                       const PylithReal t,
+                                                                       const PylithScalar x[],
+                                                                       const PylithInt numConstants,
+                                                                       const PylithScalar constants[],
+                                                                       PylithScalar stressTensor[])
+{
+    const PylithInt _dim = 3;
+
+    // Incoming solution fields.
+    const PylithInt i_disp = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_rstress = 0;
+    const PylithInt i_rstrain = 1;
+    const PylithInt i_shearModulus = 2;
+    const PylithInt i_powerLawReferenceStrainRate = 3;
+    const PylithInt i_powerLawReferenceStress = 4;
+    const PylithInt i_powerLawExponent = 5;
+    const PylithInt i_viscousStrain = 6;
+    const PylithInt i_deviatoricStress = 7;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(numA >= 8);
+    assert(sOff);
+    assert(sOff[i_disp] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
+    assert(aOff);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
+    assert(aOff[i_powerLawReferenceStress] >= 0);
+    assert(aOff[i_powerLawExponent] >= 0);
+    assert(aOff[i_viscousStrain] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
+    assert(constants);
+
+    // Constants.
+    const PylithScalar shearModulus = a[aOff[i_shearModulus]];
+    const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
+    const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
+    const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
+    const PylithScalar powerLawAlpha = 0.5;
+    const PylithScalar dt = constants[0];
+    const PylithScalar ae = 1.0 / (2.0 * shearModulus);
+    const PylithScalar timeFac = dt * (1.0 - powerLawAlpha);
+
+    // Compute quantities based on reference stress.
+    const PylithScalar *stressR = &a[aOff[i_rstress]];
+    const PylithScalar meanStressR = (stressR[0] + stressR[1] + stressR[2]) / 3.0;
+    const PylithScalar devStressR[6] = {stressR[0] - meanStressR,
+                                        stressR[1] - meanStressR,
+                                        stressR[2] - meanStressR,
+                                        stressR[3],
+                                        stressR[4],
+                                        stressR[5]};
+    const PylithScalar j2RSquared = 0.5 * pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressR, devStressR);
+
+    // Compute quantities based on reference strain.
+    const PylithScalar *strainR = &a[aOff[i_rstrain]];
+    const PylithScalar meanStrainR = (strainR[0] + strainR[1] + strainR[2]) / 3.0;
+
+    // Compute quantities based on stress at t = T.
+    const PylithScalar *devStressT = &a[aOff[i_deviatoricStress]]; // devstress_xx, devstress_yy, devstress_zz, devstress_xy, devstress_yz,
+                                                                   // devstress_xz at t = T.
+    const PylithScalar *visStrainT = &a[aOff[i_viscousStrain]];    // visStrain_xx, visStrain_yy, visStrain_zz,
+                                                                   // visStrain_xy at t = T.
+    const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressT, devStressT);
+    const PylithScalar j2T = sqrt(0.5 * devStressProdT);
+
+    // Compute quantities based on strain at t = T + dt.
+    const PylithScalar *disp_x = &s_x[sOff_x[i_disp]];
+    const PylithScalar strainTpdt[6] = {disp_x[0 * _dim + 0],
+                                        disp_x[1 * _dim + 1],
+                                        disp_x[2 * _dim + 2],
+                                        0.5 * (disp_x[0 * _dim + 1] + disp_x[1 * _dim + 0]),
+                                        0.5 * (disp_x[1 * _dim + 2] + disp_x[2 * _dim + 1]),
+                                        0.5 * (disp_x[0 * _dim + 2] + disp_x[2 * _dim + 0])};
+    const PylithReal meanStrainTpdt = (strainTpdt[0] + strainTpdt[1] + strainTpdt[2]) / 3.0 - meanStrainR;
+    const PylithScalar strainPPTpdt[6] = {strainTpdt[0] - meanStrainTpdt - visStrainT[0] - strainR[0],
+                                          strainTpdt[1] - meanStrainTpdt - visStrainT[1] - strainR[1],
+                                          strainTpdt[2] - meanStrainTpdt - visStrainT[2] - strainR[2],
+                                          strainTpdt[3] - visStrainT[3] - strainR[3],
+                                          strainTpdt[4] - visStrainT[4] - strainR[4],
+                                          strainTpdt[5] - visStrainT[5] - strainR[5]};
+    const PylithScalar strainPPInvar2Tpdt = 0.5 * pylith::fekernels::Viscoelasticity::scalarProduct3D(strainPPTpdt, strainPPTpdt);
+    const PylithScalar strainStressInvar2T = pylith::fekernels::Viscoelasticity::scalarProduct3D(strainPPTpdt, devStressT);
+    const PylithScalar strainStressInvar2R = pylith::fekernels::Viscoelasticity::scalarProduct3D(strainPPTpdt, devStressR);
+    const PylithScalar stressInvar2RT = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressT, devStressR);
+
+    // Finish defining parameters needed for root-finding algorithm.
+    const PylithScalar b = strainPPInvar2Tpdt + ae * strainStressInvar2R + ae * ae * j2RSquared;
+    const PylithScalar c = strainStressInvar2T * timeFac + ae * stressInvar2RT;
+    const PylithScalar d = timeFac * j2T;
+    PylithScalar j2Tpdt = 0.0;
+    if ((b != 0.0) || (c != 0.0) || (d != 0.0))
+    {
+        const PylithScalar j2InitialGuess = j2T;
+        const PylithScalar stressScale = shearModulus;
+        j2Tpdt = IsotropicPowerLawEffectiveStress::computeEffectiveStress(j2InitialGuess, stressScale, ae, b, c, d, powerLawAlpha,
+                                                                          dt, j2T, powerLawExponent, powerLawReferenceStrainRate,
+                                                                          powerLawReferenceStress);
+    } // if
+    // Compute deviatoric stresses from effective stress.
+    const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
+    const PylithScalar gammaTau = powerLawReferenceStrainRate * pow((j2Tau / powerLawReferenceStress), (powerLawExponent - 1.0)) / powerLawReferenceStress;
+    const PylithScalar factor1 = 1.0 / (ae + powerLawAlpha * dt * gammaTau);
+    const PylithScalar factor2 = timeFac * gammaTau;
+    const PylithScalar devStressTpdt[6] = {
+        factor1 * (strainPPTpdt[0] - factor2 * devStressT[0] + ae * devStressR[0]),
+        factor1 * (strainPPTpdt[1] - factor2 * devStressT[1] + ae * devStressR[1]),
+        factor1 * (strainPPTpdt[2] - factor2 * devStressT[2] + ae * devStressR[2]),
+        factor1 * (strainPPTpdt[3] - factor2 * devStressT[3] + ae * devStressR[3]),
+        factor1 * (strainPPTpdt[4] - factor2 * devStressT[4] + ae * devStressR[4]),
+        factor1 * (strainPPTpdt[5] - factor2 * devStressT[5] + ae * devStressR[5])};
+    stressTensor[0] += devStressTpdt[0];
+    stressTensor[4] += devStressTpdt[1];
+    stressTensor[8] += devStressTpdt[2];
+    stressTensor[1] += devStressTpdt[3];
+    stressTensor[5] += devStressTpdt[4];
+    stressTensor[2] += devStressTpdt[5];
+    stressTensor[3] += devStressTpdt[3];
+    stressTensor[6] += devStressTpdt[5];
+    stressTensor[7] += devStressTpdt[4];
+#if 0
+    const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
+    const PylithScalar j2Test = sqrt(0.5*devStressProdTpdt);
+    PylithScalar dtTest = 0.0;
+    if (j2Test <= 0.0) {
+        dtTest = 1.0e30;
+    } else {
+        dtTest = pow((powerLawReferenceStress/j2Test), (powerLawExponent - 1.0)) *
+            (powerLawReferenceStress/shearModulus)/(powerLawReferenceStrainRate * 6.0);
+    } //else
+    std::cout << "Relaxation time:" << dtTest << std::endl;
+    std::cout << "strainTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << strainTpdt[i]; } std::cout << std::endl;
+    std::cout << "devStressT:"; for(int i=0;i<6;++i) {std::cout << " " << devStressT[i]; } std::cout << std::endl;
+    std::cout << "devStressTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << devStressTpdt[i]; } std::cout << std::endl;
+#endif
+#if 1
+    const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
+    const PylithScalar j2Test = sqrt(0.5 * devStressProdTpdt);
+    PylithScalar dtTest = 0.0;
+    if (j2Test <= 0.0)
+    {
+        dtTest = 1.0e30;
+    }
+    else
+    {
+        dtTest = pow((powerLawReferenceStress / j2Test), (powerLawExponent - 1.0)) *
+                 (powerLawReferenceStress / shearModulus) / (powerLawReferenceStrainRate * 6.0);
+    } //else
+    std::cout << "Relaxation time:" << dtTest << std::endl;
+#endif
+
+} // deviatoricStress_refstate
+
+// ---------------------------------------------------------------------------------------------------------------------
+/* Update stress for a 3D power-law viscoelastic material.
+ *
+ * IMPORTANT: The order of the auxiliary field and solution field are reversed compared to the residual and Jacobian
+ * kernels.
+ *
+ */
+void pylith::fekernels::IsotropicPowerLaw3D::updateDeviatoricStress(const PylithInt dim,
+                                                                    const PylithInt numS,
+                                                                    const PylithInt numA,
+                                                                    const PylithInt sOff[],
+                                                                    const PylithInt sOff_x[],
+                                                                    const PylithScalar s[],
+                                                                    const PylithScalar s_t[],
+                                                                    const PylithScalar s_x[],
+                                                                    const PylithInt aOff[],
+                                                                    const PylithInt aOff_x[],
+                                                                    const PylithScalar a[],
+                                                                    const PylithScalar a_t[],
+                                                                    const PylithScalar a_x[],
+                                                                    const PylithReal t,
+                                                                    const PylithScalar x[],
+                                                                    const PylithInt numConstants,
+                                                                    const PylithScalar constants[],
+                                                                    PylithScalar devStress[])
+{
+    const PylithInt _dim = 3;
+
+    // Incoming solution fields.
+    const PylithInt i_disp = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(numA >= 7);
+    assert(sOff);
+    assert(sOff[i_disp] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
+    assert(aOff);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
+    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
+    assert(aOff[i_powerLawReferenceStress] >= 0);
+    assert(aOff[i_powerLawExponent] >= 0);
+    assert(aOff[i_viscousStrain] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
+
+    const PylithInt _numS = 1; // Number passed on to stress kernels.
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
+
+    const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
+    const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
+                                  aOff[i_powerLawExponent], aOff[i_viscousStrain], aOff[i_deviatoricStress]};
+
+    // Compute deviatoric stress tensor.
+    PylithScalar stressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
+                     t, x, numConstants, constants, stressTensor);
+    devStress[0] = stressTensor[0];
+    devStress[1] = stressTensor[4];
+    devStress[2] = stressTensor[8];
+    devStress[3] = stressTensor[1];
+    devStress[4] = stressTensor[5];
+    devStress[5] = stressTensor[2];
+
+} // updateDeviatoricStress
+
+// ---------------------------------------------------------------------------------------------------------------------
+/* Update stress for a 3D power-law viscoelastic material WITH reference stress and strain.
+ *
+ * IMPORTANT: The order of the auxiliary field and solution field are reversed compared to the residual and Jacobian
+ * kernels.
+ *
+ */
+void pylith::fekernels::IsotropicPowerLaw3D::updateDeviatoricStress_refstate(const PylithInt dim,
+                                                                             const PylithInt numS,
+                                                                             const PylithInt numA,
+                                                                             const PylithInt sOff[],
+                                                                             const PylithInt sOff_x[],
+                                                                             const PylithScalar s[],
+                                                                             const PylithScalar s_t[],
+                                                                             const PylithScalar s_x[],
+                                                                             const PylithInt aOff[],
+                                                                             const PylithInt aOff_x[],
+                                                                             const PylithScalar a[],
+                                                                             const PylithScalar a_t[],
+                                                                             const PylithScalar a_x[],
+                                                                             const PylithReal t,
+                                                                             const PylithScalar x[],
+                                                                             const PylithInt numConstants,
+                                                                             const PylithScalar constants[],
+                                                                             PylithScalar devStress[])
+{
+    const PylithInt _dim = 3;
+
+    // Incoming solution fields.
+    const PylithInt i_disp = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_rstress = numA - 9;
+    const PylithInt i_rstrain = numA - 8;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -2690,42 +2676,42 @@ pylith::fekernels::IsotropicPowerLaw3D::updateStress_refstate(const PylithInt di
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 3; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
 
     const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
                                   aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrain],
-                                  aOff[i_stress]};
-
-    PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-    IsotropicLinearElasticity3D::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL,
-                                                     a, a_t, NULL, t, x, numConstants, constants, stressTensor);
+                                  aOff[i_deviatoricStress]};
 
     // Compute deviatoric stress tensor.
+    PylithScalar stressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, stressTensor);
 
     // Subtract out reference stress since otherwise it will get added back in again.
-    const PylithScalar* stressR = &a[aOff[i_rstress]];
+    const PylithScalar *stressR = &a[aOff[i_rstress]];
+    const PylithScalar meanStressR = (stressR[0] + stressR[1] + stressR[2]) / 3.0;
+    const PylithScalar devStressR[6] = {stressR[0] - meanStressR,
+                                        stressR[1] - meanStressR,
+                                        stressR[2] - meanStressR,
+                                        stressR[3],
+                                        stressR[4],
+                                        stressR[5]};
 
-    stress[0] = stressTensor[0] - stressR[0];
-    stress[1] = stressTensor[4] - stressR[1];
-    stress[2] = stressTensor[8] - stressR[2];
-    stress[3] = stressTensor[1] - stressR[3];
-    stress[4] = stressTensor[5] - stressR[4];
-    stress[5] = stressTensor[2] - stressR[5];
+    devStress[0] = stressTensor[0] - devStressR[0];
+    devStress[1] = stressTensor[4] - devStressR[1];
+    devStress[2] = stressTensor[8] - devStressR[2];
+    devStress[3] = stressTensor[1] - devStressR[3];
+    devStress[4] = stressTensor[5] - devStressR[4];
+    devStress[5] = stressTensor[2] - devStressR[5];
 
-} // updateStress_refstate
-
+} // updateDeviatoricStress_refstate
 
 // ---------------------------------------------------------------------------------------------------------------------
 /* Update viscous strain for a 3D power-law viscoelastic material.
@@ -2733,38 +2719,38 @@ pylith::fekernels::IsotropicPowerLaw3D::updateStress_refstate(const PylithInt di
  * :ATTENTION: The order of the auxiliary field and solution field are reversed compared to the residual and Jacobian
  * kernels.
  */
-void
-pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain(const PylithInt dim,
-                                                            const PylithInt numS,
-                                                            const PylithInt numA,
-                                                            const PylithInt sOff[],
-                                                            const PylithInt sOff_x[],
-                                                            const PylithScalar s[],
-                                                            const PylithScalar s_t[],
-                                                            const PylithScalar s_x[],
-                                                            const PylithInt aOff[],
-                                                            const PylithInt aOff_x[],
-                                                            const PylithScalar a[],
-                                                            const PylithScalar a_t[],
-                                                            const PylithScalar a_x[],
-                                                            const PylithReal t,
-                                                            const PylithScalar x[],
-                                                            const PylithInt numConstants,
-                                                            const PylithScalar constants[],
-                                                            PylithScalar visStrain[]) {
+void pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain(const PylithInt dim,
+                                                                 const PylithInt numS,
+                                                                 const PylithInt numA,
+                                                                 const PylithInt sOff[],
+                                                                 const PylithInt sOff_x[],
+                                                                 const PylithScalar s[],
+                                                                 const PylithScalar s_t[],
+                                                                 const PylithScalar s_x[],
+                                                                 const PylithInt aOff[],
+                                                                 const PylithInt aOff_x[],
+                                                                 const PylithScalar a[],
+                                                                 const PylithScalar a_t[],
+                                                                 const PylithScalar a_x[],
+                                                                 const PylithReal t,
+                                                                 const PylithScalar x[],
+                                                                 const PylithInt numConstants,
+                                                                 const PylithScalar constants[],
+                                                                 PylithScalar visStrain[])
+{
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrainT = numA-2;
-    const PylithInt i_stressT = numA-1;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrainT = numA - 2;
+    const PylithInt i_deviatoricStressT = numA - 1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -2780,28 +2766,26 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain(const PylithInt dim,
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrainT] >= 0);
-    assert(aOff[i_stressT] >= 0);
+    assert(aOff[i_deviatoricStressT] >= 0);
     assert(constants);
 
     // Constants.
     const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
     const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
     const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
-    // ****** I think powerLawAlpha should actually be a kernel constant.
     const PylithScalar powerLawAlpha = 0.5;
-    // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
     const PylithScalar dt = constants[0];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
 
     const PylithInt numADev = 6; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[6] = {aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate], aOff[i_powerLawReferenceStress],
-                                  aOff[i_powerLawExponent], aOff[i_viscousStrainT], aOff[i_stressT]};
+                                  aOff[i_powerLawExponent], aOff[i_viscousStrainT], aOff[i_deviatoricStressT]};
 
     // Compute current deviatoric stress.
-    PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+    PylithScalar stressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, stressTensor);
     const PylithScalar devStressTpdt[6] = {
@@ -2812,44 +2796,35 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain(const PylithInt dim,
         stressTensor[5],
         stressTensor[2]};
     const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
-    const PylithScalar j2Tpdt = sqrt(0.5*devStressProdTpdt);
+    const PylithScalar j2Tpdt = sqrt(0.5 * devStressProdTpdt);
 
     // Compute stress quantities at time T.
-    const PylithScalar* stressT = &a[aOff[i_stressT]]; // stress_xx, stress_yy, stress_zz, stress_xy, stress_yz,
-                                                          // stress_xz at t = T.
-    const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
-    const PylithScalar devStressT[6] = {stressT[0] - meanStressT,
-                                        stressT[1] - meanStressT,
-                                        stressT[2] - meanStressT,
-                                        stressT[3],
-                                        stressT[4],
-                                        stressT[5]};
+    const PylithScalar *devStressT = &a[aOff[i_deviatoricStressT]]; // devstress_xx, devstress_yy, devstress_zz, devstress_xy, devstress_yz,
+                                                                    // devstress_xz at t = T.
     const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressT, devStressT);
-    const PylithScalar j2T = sqrt(0.5*devStressProdT);
+    const PylithScalar j2T = sqrt(0.5 * devStressProdT);
 
     // Compute quantities at intermediate time.
-    const PylithScalar devStressTau[6] = {(1.0 - powerLawAlpha)*devStressT[0] + powerLawAlpha*devStressTpdt[0],
-                                          (1.0 - powerLawAlpha)*devStressT[1] + powerLawAlpha*devStressTpdt[1],
-                                          (1.0 - powerLawAlpha)*devStressT[2] + powerLawAlpha*devStressTpdt[2],
-                                          (1.0 - powerLawAlpha)*devStressT[3] + powerLawAlpha*devStressTpdt[3],
-                                          (1.0 - powerLawAlpha)*devStressT[4] + powerLawAlpha*devStressTpdt[4],
-                                          (1.0 - powerLawAlpha)*devStressT[5] + powerLawAlpha*devStressTpdt[5]};
-    const PylithScalar j2Tau = (1.0 - powerLawAlpha)*j2T + powerLawAlpha*j2Tpdt;
-    const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress),
-                                                                  (powerLawExponent - 1.0))/powerLawReferenceStress;
+    const PylithScalar devStressTau[6] = {(1.0 - powerLawAlpha) * devStressT[0] + powerLawAlpha * devStressTpdt[0],
+                                          (1.0 - powerLawAlpha) * devStressT[1] + powerLawAlpha * devStressTpdt[1],
+                                          (1.0 - powerLawAlpha) * devStressT[2] + powerLawAlpha * devStressTpdt[2],
+                                          (1.0 - powerLawAlpha) * devStressT[3] + powerLawAlpha * devStressTpdt[3],
+                                          (1.0 - powerLawAlpha) * devStressT[4] + powerLawAlpha * devStressTpdt[4],
+                                          (1.0 - powerLawAlpha) * devStressT[5] + powerLawAlpha * devStressTpdt[5]};
+    const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
+    const PylithScalar gammaTau = powerLawReferenceStrainRate * pow((j2Tau / powerLawReferenceStress), (powerLawExponent - 1.0)) / powerLawReferenceStress;
 
     // Update viscous strain.
-    const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrainT]]; // viscous_strain_xx, viscous_strain_yy, viscous_strain_zz,
+    const PylithScalar *viscousStrainT = &a[aOff[i_viscousStrainT]]; // viscous_strain_xx, viscous_strain_yy, viscous_strain_zz,
                                                                      // viscous_strain_xy, viscous_strain_yz, viscous_strain_xz at t = T.
-    visStrain[0] = viscousStrainT[0] + dt*gammaTau*devStressTau[0];
-    visStrain[1] = viscousStrainT[1] + dt*gammaTau*devStressTau[1];
-    visStrain[2] = viscousStrainT[2] + dt*gammaTau*devStressTau[2];
-    visStrain[3] = viscousStrainT[3] + dt*gammaTau*devStressTau[3];
-    visStrain[4] = viscousStrainT[4] + dt*gammaTau*devStressTau[4];
-    visStrain[5] = viscousStrainT[5] + dt*gammaTau*devStressTau[5];
+    visStrain[0] = viscousStrainT[0] + dt * gammaTau * devStressTau[0];
+    visStrain[1] = viscousStrainT[1] + dt * gammaTau * devStressTau[1];
+    visStrain[2] = viscousStrainT[2] + dt * gammaTau * devStressTau[2];
+    visStrain[3] = viscousStrainT[3] + dt * gammaTau * devStressTau[3];
+    visStrain[4] = viscousStrainT[4] + dt * gammaTau * devStressTau[4];
+    visStrain[5] = viscousStrainT[5] + dt * gammaTau * devStressTau[5];
 
 } // updateViscousStrain
-
 
 // ---------------------------------------------------------------------------------------------------------------------
 /* Update viscous strain for a 3D power-law viscoelastic material WITH reference stress and strain.
@@ -2857,40 +2832,40 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain(const PylithInt dim,
  * :ATTENTION: The order of the auxiliary field and solution field are reversed compared to the residual and Jacobian
  * kernels.
  */
-void
-pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate(const PylithInt dim,
-                                                                     const PylithInt numS,
-                                                                     const PylithInt numA,
-                                                                     const PylithInt sOff[],
-                                                                     const PylithInt sOff_x[],
-                                                                     const PylithScalar s[],
-                                                                     const PylithScalar s_t[],
-                                                                     const PylithScalar s_x[],
-                                                                     const PylithInt aOff[],
-                                                                     const PylithInt aOff_x[],
-                                                                     const PylithScalar a[],
-                                                                     const PylithScalar a_t[],
-                                                                     const PylithScalar a_x[],
-                                                                     const PylithReal t,
-                                                                     const PylithScalar x[],
-                                                                     const PylithInt numConstants,
-                                                                     const PylithScalar constants[],
-                                                                     PylithScalar visStrain[]) {
+void pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate(const PylithInt dim,
+                                                                          const PylithInt numS,
+                                                                          const PylithInt numA,
+                                                                          const PylithInt sOff[],
+                                                                          const PylithInt sOff_x[],
+                                                                          const PylithScalar s[],
+                                                                          const PylithScalar s_t[],
+                                                                          const PylithScalar s_x[],
+                                                                          const PylithInt aOff[],
+                                                                          const PylithInt aOff_x[],
+                                                                          const PylithScalar a[],
+                                                                          const PylithScalar a_t[],
+                                                                          const PylithScalar a_x[],
+                                                                          const PylithReal t,
+                                                                          const PylithScalar x[],
+                                                                          const PylithInt numConstants,
+                                                                          const PylithScalar constants[],
+                                                                          PylithScalar visStrain[])
+{
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_rstress = numA-9;
-    const PylithInt i_rstrain = numA-8;
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrainT = numA-2;
-    const PylithInt i_stressT = numA-1;
+    const PylithInt i_rstress = numA - 9;
+    const PylithInt i_rstrain = numA - 8;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrainT = numA - 2;
+    const PylithInt i_deviatoricStressT = numA - 1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -2906,7 +2881,7 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate(const Pylit
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrainT] >= 0);
-    assert(aOff[i_stressT] >= 0);
+    assert(aOff[i_deviatoricStressT] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
     assert(constants);
@@ -2915,22 +2890,20 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate(const Pylit
     const PylithScalar powerLawReferenceStrainRate = a[aOff[i_powerLawReferenceStrainRate]];
     const PylithScalar powerLawReferenceStress = a[aOff[i_powerLawReferenceStress]];
     const PylithScalar powerLawExponent = a[aOff[i_powerLawExponent]];
-    // ****** I think powerLawAlpha should actually be a kernel constant.
     const PylithScalar powerLawAlpha = 0.5;
-    // const PylithScalar powerLawAlpha = a[aOff[i_powerLawAlpha]];
     const PylithScalar dt = constants[0];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
 
     const PylithInt numADev = 8; // Number passed to deviatoric stress kernel.
     const PylithInt aOffDev[8] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus], aOff[i_powerLawReferenceStrainRate],
                                   aOff[i_powerLawReferenceStress], aOff[i_powerLawExponent], aOff[i_viscousStrainT],
-                                  aOff[i_stressT]};
+                                  aOff[i_deviatoricStressT]};
 
     // Compute current deviatoric stress.
-    PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+    PylithScalar stressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, stressTensor);
     const PylithScalar devStressTpdt[6] = {
@@ -2941,79 +2914,70 @@ pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate(const Pylit
         stressTensor[5],
         stressTensor[2]};
     const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
-    const PylithScalar j2Tpdt = sqrt(0.5*devStressProdTpdt);
+    const PylithScalar j2Tpdt = sqrt(0.5 * devStressProdTpdt);
 
     // Compute stress quantities at time T.
-    const PylithScalar* stressT = &a[aOff[i_stressT]]; // stress_xx, stress_yy, stress_zz, stress_xy, stress_yz,
-                                                       // stress_xz at t = T.
-    const PylithScalar meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
-    const PylithScalar devStressT[6] = {stressT[0] - meanStressT,
-                                        stressT[1] - meanStressT,
-                                        stressT[2] - meanStressT,
-                                        stressT[3],
-                                        stressT[4],
-                                        stressT[5]};
+    const PylithScalar *devStressT = &a[aOff[i_deviatoricStressT]]; // devstress_xx, devstress_yy, devstress_zz, devstress_xy, devstress_yz,
+                                                                    // devstress_xz at t = T.
     const PylithScalar devStressProdT = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressT, devStressT);
-    const PylithScalar j2T = sqrt(0.5*devStressProdT);
+    const PylithScalar j2T = sqrt(0.5 * devStressProdT);
 
     // Compute quantities at intermediate time.
-    const PylithScalar devStressTau[6] = {(1.0 - powerLawAlpha)*devStressT[0] + powerLawAlpha*devStressTpdt[0],
-                                          (1.0 - powerLawAlpha)*devStressT[1] + powerLawAlpha*devStressTpdt[1],
-                                          (1.0 - powerLawAlpha)*devStressT[2] + powerLawAlpha*devStressTpdt[2],
-                                          (1.0 - powerLawAlpha)*devStressT[3] + powerLawAlpha*devStressTpdt[3],
-                                          (1.0 - powerLawAlpha)*devStressT[4] + powerLawAlpha*devStressTpdt[4],
-                                          (1.0 - powerLawAlpha)*devStressT[5] + powerLawAlpha*devStressTpdt[5]};
-    const PylithScalar j2Tau = (1.0 - powerLawAlpha)*j2T + powerLawAlpha*j2Tpdt;
-    const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress),
-                                                                  (powerLawExponent - 1.0))/powerLawReferenceStress;
+    const PylithScalar devStressTau[6] = {(1.0 - powerLawAlpha) * devStressT[0] + powerLawAlpha * devStressTpdt[0],
+                                          (1.0 - powerLawAlpha) * devStressT[1] + powerLawAlpha * devStressTpdt[1],
+                                          (1.0 - powerLawAlpha) * devStressT[2] + powerLawAlpha * devStressTpdt[2],
+                                          (1.0 - powerLawAlpha) * devStressT[3] + powerLawAlpha * devStressTpdt[3],
+                                          (1.0 - powerLawAlpha) * devStressT[4] + powerLawAlpha * devStressTpdt[4],
+                                          (1.0 - powerLawAlpha) * devStressT[5] + powerLawAlpha * devStressTpdt[5]};
+    const PylithScalar j2Tau = (1.0 - powerLawAlpha) * j2T + powerLawAlpha * j2Tpdt;
+    const PylithScalar gammaTau = powerLawReferenceStrainRate * pow((j2Tau / powerLawReferenceStress), (powerLawExponent - 1.0)) / powerLawReferenceStress;
 
     // Update viscous strain.
-    const PylithScalar* viscousStrainT = &a[aOff[i_viscousStrainT]]; // viscous_strain_xx, viscous_strain_yy, viscous_strain_zz,
+    const PylithScalar *viscousStrainT = &a[aOff[i_viscousStrainT]]; // viscous_strain_xx, viscous_strain_yy, viscous_strain_zz,
                                                                      // viscous_strain_xy, viscous_strain_yz, viscous_strain_xz at t = T.
-    visStrain[0] = viscousStrainT[0] + dt*gammaTau*devStressTau[0];
-    visStrain[1] = viscousStrainT[1] + dt*gammaTau*devStressTau[1];
-    visStrain[2] = viscousStrainT[2] + dt*gammaTau*devStressTau[2];
-    visStrain[3] = viscousStrainT[3] + dt*gammaTau*devStressTau[3];
-    visStrain[4] = viscousStrainT[4] + dt*gammaTau*devStressTau[4];
-    visStrain[5] = viscousStrainT[5] + dt*gammaTau*devStressTau[5];
+    visStrain[0] = viscousStrainT[0] + dt * gammaTau * devStressTau[0];
+    visStrain[1] = viscousStrainT[1] + dt * gammaTau * devStressTau[1];
+    visStrain[2] = viscousStrainT[2] + dt * gammaTau * devStressTau[2];
+    visStrain[3] = viscousStrainT[3] + dt * gammaTau * devStressTau[3];
+    visStrain[4] = viscousStrainT[4] + dt * gammaTau * devStressTau[4];
+    visStrain[5] = viscousStrainT[5] + dt * gammaTau * devStressTau[5];
 
 } // updateViscousStrain_refstate
 
-
 // ---------------------------------------------------------------------------------------------------------------------
 // Calculate stress for 3-D isotropic power-law viscoelastic material WITHOUT a reference stress and strain.
-void
-pylith::fekernels::IsotropicPowerLaw3D::cauchyStress(const PylithInt dim,
-                                                     const PylithInt numS,
-                                                     const PylithInt numA,
-                                                     const PylithInt sOff[],
-                                                     const PylithInt sOff_x[],
-                                                     const PylithScalar s[],
-                                                     const PylithScalar s_t[],
-                                                     const PylithScalar s_x[],
-                                                     const PylithInt aOff[],
-                                                     const PylithInt aOff_x[],
-                                                     const PylithScalar a[],
-                                                     const PylithScalar a_t[],
-                                                     const PylithScalar a_x[],
-                                                     const PylithReal t,
-                                                     const PylithScalar x[],
-                                                     const PylithInt numConstants,
-                                                     const PylithScalar constants[],
-                                                     PylithScalar stressVector[]) {
+void pylith::fekernels::IsotropicPowerLaw3D::cauchyStress(const PylithInt dim,
+                                                          const PylithInt numS,
+                                                          const PylithInt numA,
+                                                          const PylithInt sOff[],
+                                                          const PylithInt sOff_x[],
+                                                          const PylithScalar s[],
+                                                          const PylithScalar s_t[],
+                                                          const PylithScalar s_x[],
+                                                          const PylithInt aOff[],
+                                                          const PylithInt aOff_x[],
+                                                          const PylithScalar a[],
+                                                          const PylithScalar a_t[],
+                                                          const PylithScalar a_x[],
+                                                          const PylithReal t,
+                                                          const PylithScalar x[],
+                                                          const PylithInt numConstants,
+                                                          const PylithScalar constants[],
+                                                          PylithScalar stressVector[])
+{
     const PylithInt _dim = 3;
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_shearModulus = numA-7;
-    const PylithInt i_bulkModulus = numA-6;
-    const PylithInt i_powerLawReferenceStrainRate = numA-5;
-    const PylithInt i_powerLawReferenceStress = numA-4;
-    const PylithInt i_powerLawExponent = numA-3;
-    const PylithInt i_viscousStrain = numA-2;
-    const PylithInt i_stress = numA-1;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
 
     assert(_dim == dim);
     assert(numS >= 1);
@@ -3029,15 +2993,114 @@ pylith::fekernels::IsotropicPowerLaw3D::cauchyStress(const PylithInt dim,
     assert(aOff[i_powerLawReferenceStress] >= 0);
     assert(aOff[i_powerLawExponent] >= 0);
     assert(aOff[i_viscousStrain] >= 0);
-    assert(aOff[i_stress] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
 
-    const PylithScalar* stressTpdt = &a[aOff[i_stress]];
-    for (PylithInt i = 0; i < 6; ++i) {
-        stressVector[i] = stressTpdt[i];
-    } // for
+    const PylithInt _numS = 1; // Number passed on to stress kernels.
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
+
+    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
+    const PylithInt aOffMean[1] = {aOff[i_bulkModulus]};
+
+    PylithScalar stressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // Full stress tensor in vector form.
+    IsotropicLinearElasticity3D::meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
+                                            aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
+    const PylithScalar meanStress = stressTensor[0];
+    const PylithScalar *devStressTpdt = &a[aOff[i_deviatoricStress]];
+    stressVector[0] = devStressTpdt[0] + meanStress;
+    stressVector[1] = devStressTpdt[1] + meanStress;
+    stressVector[2] = devStressTpdt[2] + meanStress;
+    stressVector[3] = devStressTpdt[3];
+    stressVector[4] = devStressTpdt[4];
+    stressVector[5] = devStressTpdt[5];
 
 } // cauchyStress
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Calculate stress for 3-D isotropic power-law viscoelastic material WITH a reference stress and strain.
+void pylith::fekernels::IsotropicPowerLaw3D::cauchyStress_refstate(const PylithInt dim,
+                                                                   const PylithInt numS,
+                                                                   const PylithInt numA,
+                                                                   const PylithInt sOff[],
+                                                                   const PylithInt sOff_x[],
+                                                                   const PylithScalar s[],
+                                                                   const PylithScalar s_t[],
+                                                                   const PylithScalar s_x[],
+                                                                   const PylithInt aOff[],
+                                                                   const PylithInt aOff_x[],
+                                                                   const PylithScalar a[],
+                                                                   const PylithScalar a_t[],
+                                                                   const PylithScalar a_x[],
+                                                                   const PylithReal t,
+                                                                   const PylithScalar x[],
+                                                                   const PylithInt numConstants,
+                                                                   const PylithScalar constants[],
+                                                                   PylithScalar stressVector[])
+{
+    const PylithInt _dim = 3;
+
+    // Incoming solution fields.
+    const PylithInt i_disp = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_rstress = numA - 9;
+    const PylithInt i_rstrain = numA - 8;
+    const PylithInt i_shearModulus = numA - 7;
+    const PylithInt i_bulkModulus = numA - 6;
+    const PylithInt i_powerLawReferenceStrainRate = numA - 5;
+    const PylithInt i_powerLawReferenceStress = numA - 4;
+    const PylithInt i_powerLawExponent = numA - 3;
+    const PylithInt i_viscousStrain = numA - 2;
+    const PylithInt i_deviatoricStress = numA - 1;
+
+    assert(_dim == dim);
+    assert(numS >= 1);
+    assert(numA >= 7);
+    assert(sOff);
+    assert(sOff[i_disp] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_disp] >= 0);
+    assert(aOff);
+    assert(aOff[i_shearModulus] >= 0);
+    assert(aOff[i_bulkModulus] >= 0);
+    assert(aOff[i_powerLawReferenceStrainRate] >= 0);
+    assert(aOff[i_powerLawReferenceStress] >= 0);
+    assert(aOff[i_powerLawExponent] >= 0);
+    assert(aOff[i_viscousStrain] >= 0);
+    assert(aOff[i_deviatoricStress] >= 0);
+    assert(aOff[i_rstress] >= 0);
+    assert(aOff[i_rstrain] >= 0);
+
+    const PylithInt _numS = 1; // Number passed on to stress kernels.
+    const PylithInt sOffDisp[1] = {sOff[i_disp]};
+    const PylithInt sOffDisp_x[1] = {sOff_x[i_disp]};
+
+    const PylithInt numAMean = 3; // Number passed to mean stress kernel.
+    const PylithInt aOffMean[3] = {aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus]};
+
+    PylithScalar stressTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // Full stress tensor in vector form.
+    IsotropicLinearElasticity3D::meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x,
+                                                     aOffMean, NULL, a, a_t, NULL, t, x, numConstants, constants, stressTensor);
+    const PylithScalar meanStress = stressTensor[0];
+    const PylithScalar *devStressTpdt = &a[aOff[i_deviatoricStress]];
+
+    // Need to add reference deviatoric stress back in.
+    const PylithScalar *refstress = &a[aOff[i_rstress]]; // stress_xx, stress_yy, stress_zz, stress_xy
+    const PylithReal meanRefStress = (refstress[0] + refstress[1] + refstress[2]) / 3.0;
+    const PylithScalar devRefStress[6] = {refstress[0] - meanRefStress,
+                                          refstress[1] - meanRefStress,
+                                          refstress[2] - meanRefStress,
+                                          refstress[3],
+                                          refstress[4],
+                                          refstress[5]};
+    stressVector[0] = devRefStress[0] + devStressTpdt[0] + meanStress;
+    stressVector[1] = devRefStress[1] + devStressTpdt[1] + meanStress;
+    stressVector[2] = devRefStress[2] + devStressTpdt[2] + meanStress;
+    stressVector[3] = devRefStress[3] + devStressTpdt[3];
+    stressVector[4] = devRefStress[4] + devStressTpdt[4];
+    stressVector[5] = devRefStress[5] + devStressTpdt[5];
+
+} // cauchyStress_refstate
 
 // =====================================================================================================================
 // Functions for isotropic, power-law viscoelastic material.
@@ -3056,11 +3119,12 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::computeEffectiveStress(cons
                                                                             const PylithScalar j2T,
                                                                             const PylithScalar powerLawExponent,
                                                                             const PylithScalar powerLawReferenceStrainRate,
-                                                                            const PylithScalar powerLawReferenceStress) { //
-                                                                                                                          //
-                                                                                                                          //
-                                                                                                                          //
-                                                                                                                          // computeEffectiveStress
+                                                                            const PylithScalar powerLawReferenceStress)
+{ //
+    //
+    //
+    //
+    // computeEffectiveStress
     // Check parameters
     assert(j2InitialGuess >= 0.0);
     // If initial guess is too low, use stress scale instead.
@@ -3069,10 +3133,13 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::computeEffectiveStress(cons
     // Bracket the root.
     PylithScalar x1 = 0.0;
     PylithScalar x2 = 0.0;
-    if (j2InitialGuess > xMin) {
+    if (j2InitialGuess > xMin)
+    {
         x1 = j2InitialGuess - 0.5 * j2InitialGuess;
         x2 = j2InitialGuess + 0.5 * j2InitialGuess;
-    } else {
+    }
+    else
+    {
         x1 = stressScale - 0.5 * stressScale;
         x2 = stressScale + 0.5 * stressScale;
     } // else
@@ -3089,7 +3156,6 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::computeEffectiveStress(cons
     return effStress;
 } // computeEffectiveStress
 
-
 // ----------------------------------------------------------------------
 // Calculate effective stress function for power-law material.
 PylithScalar
@@ -3103,72 +3169,71 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::_effStressFunc(const Pylith
                                                                     const PylithScalar j2T,
                                                                     const PylithScalar powerLawExponent,
                                                                     const PylithScalar powerLawReferenceStrainRate,
-                                                                    const PylithScalar powerLawReferenceStress) { // _effStressFunc
+                                                                    const PylithScalar powerLawReferenceStress)
+{ // _effStressFunc
     const PylithScalar factor1 = 1.0 - powerLawAlpha;
-    const PylithScalar j2Tau = factor1*j2T + powerLawAlpha*j2Tpdt;
-    const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress), (powerLawExponent - 1.0))/
+    const PylithScalar j2Tau = factor1 * j2T + powerLawAlpha * j2Tpdt;
+    const PylithScalar gammaTau = powerLawReferenceStrainRate * pow((j2Tau / powerLawReferenceStress), (powerLawExponent - 1.0)) /
                                   powerLawReferenceStress;
-    const PylithScalar a = ae + powerLawAlpha*dt*gammaTau;
-    const PylithScalar y = a*a*j2Tpdt*j2Tpdt - b + c*gammaTau - d*d*gammaTau*gammaTau;
+    const PylithScalar a = ae + powerLawAlpha * dt * gammaTau;
+    const PylithScalar y = a * a * j2Tpdt * j2Tpdt - b + c * gammaTau - d * d * gammaTau * gammaTau;
 
     return y;
 } // _effStressFunc
 
-
 // ---------------------------------------------------------------------------------------------------------------------
 // Calculate effective stress function and its derivative for power-law material.
-void
-pylith::fekernels::IsotropicPowerLawEffectiveStress::_effStressFuncDerivFunc(PylithScalar* func,
-                                                                             PylithScalar* dfunc,
-                                                                             const PylithScalar j2Tpdt,
-                                                                             const PylithScalar ae,
-                                                                             const PylithScalar b,
-                                                                             const PylithScalar c,
-                                                                             const PylithScalar d,
-                                                                             const PylithScalar powerLawAlpha,
-                                                                             const PylithScalar dt,
-                                                                             const PylithScalar j2T,
-                                                                             const PylithScalar powerLawExponent,
-                                                                             const PylithScalar powerLawReferenceStrainRate,
-                                                                             const PylithScalar powerLawReferenceStress) { //
-                                                                                                                           //
-                                                                                                                           //
-                                                                                                                           //
-                                                                                                                           // _effStressFuncDerivFunc
+void pylith::fekernels::IsotropicPowerLawEffectiveStress::_effStressFuncDerivFunc(PylithScalar *func,
+                                                                                  PylithScalar *dfunc,
+                                                                                  const PylithScalar j2Tpdt,
+                                                                                  const PylithScalar ae,
+                                                                                  const PylithScalar b,
+                                                                                  const PylithScalar c,
+                                                                                  const PylithScalar d,
+                                                                                  const PylithScalar powerLawAlpha,
+                                                                                  const PylithScalar dt,
+                                                                                  const PylithScalar j2T,
+                                                                                  const PylithScalar powerLawExponent,
+                                                                                  const PylithScalar powerLawReferenceStrainRate,
+                                                                                  const PylithScalar powerLawReferenceStress)
+{ //
+    //
+    //
+    //
+    // _effStressFuncDerivFunc
     PylithScalar y = *func;
     PylithScalar dy = *dfunc;
 
     const PylithScalar factor1 = 1.0 - powerLawAlpha;
-    const PylithScalar j2Tau = factor1*j2T + powerLawAlpha*j2Tpdt;
-    const PylithScalar gammaTau = powerLawReferenceStrainRate*pow((j2Tau/powerLawReferenceStress), (powerLawExponent - 1.0))/
+    const PylithScalar j2Tau = factor1 * j2T + powerLawAlpha * j2Tpdt;
+    const PylithScalar gammaTau = powerLawReferenceStrainRate * pow((j2Tau / powerLawReferenceStress), (powerLawExponent - 1.0)) /
                                   powerLawReferenceStress;
-    const PylithScalar dGammaTau = powerLawReferenceStrainRate*powerLawAlpha*(powerLawExponent - 1.0)*
-                                   pow((j2Tau/powerLawReferenceStress), (powerLawExponent - 2.0))/(powerLawReferenceStress*powerLawReferenceStress);
-    const PylithScalar a = ae + powerLawAlpha*dt*gammaTau;
-    y = a*a*j2Tpdt*j2Tpdt - b + c*gammaTau - d*d*gammaTau*gammaTau;
-    dy = 2.0*a*a*j2Tpdt + dGammaTau*(2.0*a*powerLawAlpha*dt*j2Tpdt*j2Tpdt + c - 2.0*d*d*gammaTau);
+    const PylithScalar dGammaTau = powerLawReferenceStrainRate * powerLawAlpha * (powerLawExponent - 1.0) *
+                                   pow((j2Tau / powerLawReferenceStress), (powerLawExponent - 2.0)) / (powerLawReferenceStress * powerLawReferenceStress);
+    const PylithScalar a = ae + powerLawAlpha * dt * gammaTau;
+    y = a * a * j2Tpdt * j2Tpdt - b + c * gammaTau - d * d * gammaTau * gammaTau;
+    dy = 2.0 * a * a * j2Tpdt + dGammaTau * (2.0 * a * powerLawAlpha * dt * j2Tpdt * j2Tpdt + c - 2.0 * d * d * gammaTau);
 
     *func = y;
     *dfunc = dy;
 
 } // _effStressFuncDerivFunc
 
-
 // ----------------------------------------------------------------------
 // Bracket effective stress.
-void
-pylith::fekernels::IsotropicPowerLawEffectiveStress::_bracket(PylithScalar* px1,
-                                                              PylithScalar* px2,
-                                                              const PylithScalar ae,
-                                                              const PylithScalar b,
-                                                              const PylithScalar c,
-                                                              const PylithScalar d,
-                                                              const PylithScalar powerLawAlpha,
-                                                              const PylithScalar dt,
-                                                              const PylithScalar j2T,
-                                                              const PylithScalar powerLawExponent,
-                                                              const PylithScalar powerLawReferenceStrainRate,
-                                                              const PylithScalar powerLawReferenceStress) { // _bracket
+void pylith::fekernels::IsotropicPowerLawEffectiveStress::_bracket(PylithScalar *px1,
+                                                                   PylithScalar *px2,
+                                                                   const PylithScalar ae,
+                                                                   const PylithScalar b,
+                                                                   const PylithScalar c,
+                                                                   const PylithScalar d,
+                                                                   const PylithScalar powerLawAlpha,
+                                                                   const PylithScalar dt,
+                                                                   const PylithScalar j2T,
+                                                                   const PylithScalar powerLawExponent,
+                                                                   const PylithScalar powerLawReferenceStrainRate,
+                                                                   const PylithScalar powerLawReferenceStress)
+{ // _bracket
     // Arbitrary number of iterations to bracket the root
     const int maxIterations = 50;
 
@@ -3186,18 +3251,23 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::_bracket(PylithScalar* px1,
 
     int iteration = 0;
     bool bracketed = false;
-    while (iteration < maxIterations) {
-        if ((funcValue1 * funcValue2) < 0.0) {
+    while (iteration < maxIterations)
+    {
+        if ((funcValue1 * funcValue2) < 0.0)
+        {
             bracketed = true;
             break;
         } // if
 
-        if (fabs(funcValue1) < fabs(funcValue2)) {
+        if (fabs(funcValue1) < fabs(funcValue2))
+        {
             x1 += bracketFactor * (x1 - x2);
             x1 = std::max(x1, xMin);
             funcValue1 = _effStressFunc(x1, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
                                         powerLawReferenceStrainRate, powerLawReferenceStress);
-        } else {
+        }
+        else
+        {
             x2 += bracketFactor * (x1 - x2);
             x2 = std::max(x2, xMin);
             funcValue2 = _effStressFunc(x2, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
@@ -3210,11 +3280,11 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::_bracket(PylithScalar* px1,
     *px2 = x2;
 
     PetscLogFlops(5 * iteration);
-    if (!bracketed) {
+    if (!bracketed)
+    {
         throw std::runtime_error("Unable to bracket effective stress.");
     }
 } // _bracket
-
 
 // ----------------------------------------------------------------------
 // Find root using Newton's method with bisection.
@@ -3230,7 +3300,8 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::_search(const PylithScalar 
                                                              const PylithScalar j2T,
                                                              const PylithScalar powerLawExponent,
                                                              const PylithScalar powerLawReferenceStrainRate,
-                                                             const PylithScalar powerLawReferenceStress) { // _search
+                                                             const PylithScalar powerLawReferenceStress)
+{ // _search
     // Arbitrary number of iterations to find the root
     const int maxIterations = 100;
 
@@ -3249,10 +3320,13 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::_search(const PylithScalar 
     PylithScalar xHigh = 0.0;
     bool converged = false;
 
-    if (funcValueLow < 0.0) {
+    if (funcValueLow < 0.0)
+    {
         xLow = x1;
         xHigh = x2;
-    } else {
+    }
+    else
+    {
         xLow = x2;
         xHigh = x1;
     } // if/else
@@ -3268,33 +3342,42 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::_search(const PylithScalar 
                             powerLawReferenceStrainRate, powerLawReferenceStress);
     int iteration = 0;
 
-    while (iteration < maxIterations) {
+    while (iteration < maxIterations)
+    {
         funcXHigh = (effStress - xHigh) * funcDeriv - funcValue;
         funcXLow = (effStress - xLow) * funcDeriv - funcValue;
-        if (fabs(funcValue) < accuracy) {
+        if (fabs(funcValue) < accuracy)
+        {
             converged = true;
             break;
         } // if
         // Use bisection if solution goes out of bounds.
-        if (funcXHigh * funcXLow >= 0.0) {
+        if (funcXHigh * funcXLow >= 0.0)
+        {
             dx = 0.5 * (xHigh - xLow);
             effStress = xLow + dx;
-        } else {
+        }
+        else
+        {
             dxPrevious = dx;
             dx = funcValue / funcDeriv;
             effStress = effStress - dx;
         } // else
         _effStressFuncDerivFunc(&funcValue, &funcDeriv, effStress, ae, b, c, d, powerLawAlpha, dt, j2T, powerLawExponent,
                                 powerLawReferenceStrainRate, powerLawReferenceStress);
-        if (funcValue < 0.0) {
+        if (funcValue < 0.0)
+        {
             xLow = effStress;
-        } else {
+        }
+        else
+        {
             xHigh = effStress;
         } // else
         ++iteration;
     } // while
 
-    if (converged == false) {
+    if (converged == false)
+    {
         throw std::runtime_error("Cannot find root of effective stress function.");
     }
 
@@ -3302,6 +3385,5 @@ pylith::fekernels::IsotropicPowerLawEffectiveStress::_search(const PylithScalar 
 
     return effStress;
 } // _search
-
 
 // End of file

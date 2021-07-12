@@ -41,9 +41,9 @@
  * -10: viscous_strain
  *     2D: 4 components (strain_xx, strain_yy, strain_zz, strain_xy)
  *     3D: 6 components (strain_xx, strain_yy, strain_zz, strain_xy, strain_yz, strain_xz)
- * -11: stress
- *     2D: 4 components (stress_xx, stress_yy, stress_zz, stress_xy)
- *     3D: 6 components (stress_xx, stress_yy, stress_zz, stress_xy, stress_yz, stress_xz)
+ * -11: deviatoric_stress
+ *     2D: 4 components (devstress_xx, devstress_yy, devstress_zz, devstress_xy)
+ *     3D: 6 components (devstress_xx, devstress_yy, devstress_zz, devstress_xy, devstress_yz, devstress_xz)
  *
  * The elasticity subfields come first (with required ones before optional ones) followed by the rheology subfields
  * (optional ones before required ones). The rheology fields have required fields last because we index from the back.
@@ -87,45 +87,68 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// Kernels for isotropic power-law plane strain.
-class pylith::fekernels::IsotropicPowerLawPlaneStrain {
+class pylith::fekernels::IsotropicPowerLawPlaneStrain
+{
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
-
     /** f1 function for isotropic power-law plane strain WITHOUT reference stress and reference strain.
      *
      * Solution fields: [disp(dim), ...]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
      * power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), stress(4)]
      */
-    static
-    void f1v(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar f1[]);
+    static void f1v(const PylithInt dim,
+                    const PylithInt numS,
+                    const PylithInt numA,
+                    const PylithInt sOff[],
+                    const PylithInt sOff_x[],
+                    const PylithScalar s[],
+                    const PylithScalar s_t[],
+                    const PylithScalar s_x[],
+                    const PylithInt aOff[],
+                    const PylithInt aOff_x[],
+                    const PylithScalar a[],
+                    const PylithScalar a_t[],
+                    const PylithScalar a_x[],
+                    const PylithReal t,
+                    const PylithScalar x[],
+                    const PylithInt numConstants,
+                    const PylithScalar constants[],
+                    PylithScalar f1[]);
 
     /** f1 function for isotropic power-law plane strain WITH reference stress and reference strain.
      *
      * Solution fields: [disp(dim), ...]
      * Auxiliary fields: [..., reference_stress(4), reference_strain(4), shear_modulus(1), bulk_modulus(1),
      *                    power_law_reference_strain_rate(1), power_law_reference_stress(1), power_law_exponent(1),
-     *                    viscous_strain(4), stress(4)]
+     *                    viscous_strain(4), deviatoric_stress(4)]
      */
-    static
-    void f1v_refstate(const PylithInt dim,
+    static void f1v_refstate(const PylithInt dim,
+                             const PylithInt numS,
+                             const PylithInt numA,
+                             const PylithInt sOff[],
+                             const PylithInt sOff_x[],
+                             const PylithScalar s[],
+                             const PylithScalar s_t[],
+                             const PylithScalar s_x[],
+                             const PylithInt aOff[],
+                             const PylithInt aOff_x[],
+                             const PylithScalar a[],
+                             const PylithScalar a_t[],
+                             const PylithScalar a_x[],
+                             const PylithReal t,
+                             const PylithScalar x[],
+                             const PylithInt numConstants,
+                             const PylithScalar constants[],
+                             PylithScalar f1[]);
+
+    /** Jf3_vu entry function for plane strain isotropic power-law viscoelasticity WITHOUT reference stress/strain.
+     *
+     * Solution fields: [...]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
+     * power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), deviatoric_stress(4)]
+     */
+    static void Jf3vu(const PylithInt dim,
                       const PylithInt numS,
                       const PylithInt numA,
                       const PylithInt sOff[],
@@ -139,92 +162,64 @@ public:
                       const PylithScalar a_t[],
                       const PylithScalar a_x[],
                       const PylithReal t,
+                      const PylithReal s_tshift,
                       const PylithScalar x[],
                       const PylithInt numConstants,
                       const PylithScalar constants[],
-                      PylithScalar f1[]);
-
-    /** Jf3_vu entry function for plane strain isotropic power-law viscoelasticity WITHOUT reference stress/strain.
-     *
-     * Solution fields: [...]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
-     * power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), stress(4)]
-     */
-    static
-    void Jf3vu(const PylithInt dim,
-               const PylithInt numS,
-               const PylithInt numA,
-               const PylithInt sOff[],
-               const PylithInt sOff_x[],
-               const PylithScalar s[],
-               const PylithScalar s_t[],
-               const PylithScalar s_x[],
-               const PylithInt aOff[],
-               const PylithInt aOff_x[],
-               const PylithScalar a[],
-               const PylithScalar a_t[],
-               const PylithScalar a_x[],
-               const PylithReal t,
-               const PylithReal s_tshift,
-               const PylithScalar x[],
-               const PylithInt numConstants,
-               const PylithScalar constants[],
-               PylithScalar Jf3[]);
+                      PylithScalar Jf3[]);
 
     /** Jf3_vu entry function for plane strain isotropic power-law viscoelasticity WITH reference stress/strain.
      *
      * Solution fields: [...]
      * Auxiliary fields: [..., reference_stress(4), reference_strain(4), shear_modulus(1), bulk_modulus(1),
      *                    power_law_reference_strain_rate(1), power_law_reference_stress(1), power_law_exponent(1),
-     *                    viscous_strain(4), stress(4)]
+     *                    viscous_strain(4), deviatoric_stress(4)]
      */
-    static
-    void Jf3vu_refstate(const PylithInt dim,
-                        const PylithInt numS,
-                        const PylithInt numA,
-                        const PylithInt sOff[],
-                        const PylithInt sOff_x[],
-                        const PylithScalar s[],
-                        const PylithScalar s_t[],
-                        const PylithScalar s_x[],
-                        const PylithInt aOff[],
-                        const PylithInt aOff_x[],
-                        const PylithScalar a[],
-                        const PylithScalar a_t[],
-                        const PylithScalar a_x[],
-                        const PylithReal t,
-                        const PylithReal s_tshift,
-                        const PylithScalar x[],
-                        const PylithInt numConstants,
-                        const PylithScalar constants[],
-                        PylithScalar Jf3[]);
+    static void Jf3vu_refstate(const PylithInt dim,
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithReal s_tshift,
+                               const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               PylithScalar Jf3[]);
 
     /** Calculate deviatoric stress for 2-D plane strain isotropic power-law
      * viscoelasticity WITHOUT reference stress and strain.
      *
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
-     * power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), stress(4)]
+     * power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), deviatoric_stress(4)]
      */
-    static
-    void deviatoricStress(const PylithInt dim,
-                          const PylithInt numS,
-                          const PylithInt numA,
-                          const PylithInt sOff[],
-                          const PylithInt sOff_x[],
-                          const PylithScalar s[],
-                          const PylithScalar s_t[],
-                          const PylithScalar s_x[],
-                          const PylithInt aOff[],
-                          const PylithInt aOff_x[],
-                          const PylithScalar a[],
-                          const PylithScalar a_t[],
-                          const PylithScalar a_x[],
-                          const PylithReal t,
-                          const PylithScalar x[],
-                          const PylithInt numConstants,
-                          const PylithScalar constants[],
-                          PylithScalar stress[]);
+    static void deviatoricStress(const PylithInt dim,
+                                 const PylithInt numS,
+                                 const PylithInt numA,
+                                 const PylithInt sOff[],
+                                 const PylithInt sOff_x[],
+                                 const PylithScalar s[],
+                                 const PylithScalar s_t[],
+                                 const PylithScalar s_x[],
+                                 const PylithInt aOff[],
+                                 const PylithInt aOff_x[],
+                                 const PylithScalar a[],
+                                 const PylithScalar a_t[],
+                                 const PylithScalar a_x[],
+                                 const PylithReal t,
+                                 const PylithScalar x[],
+                                 const PylithInt numConstants,
+                                 const PylithScalar constants[],
+                                 PylithScalar stress[]);
 
     /** Calculate deviatoric stress for 2-D plane strain isotropic power-law
      * viscoelasticity WITH reference stress and strain.
@@ -232,54 +227,52 @@ public:
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [..., reference_stress(4), reference_strain(4), shear_modulus(1), bulk_modulus(1),
      *                    power_law_reference_strain_rate(1), power_law_reference_stress(1), power_law_exponent(1),
-     *                    viscous_strain(4), stress(4)]
+     *                    viscous_strain(4), deviatoric_stress(4)]
      */
-    static
-    void deviatoricStress_refstate(const PylithInt dim,
-                                   const PylithInt numS,
-                                   const PylithInt numA,
-                                   const PylithInt sOff[],
-                                   const PylithInt sOff_x[],
-                                   const PylithScalar s[],
-                                   const PylithScalar s_t[],
-                                   const PylithScalar s_x[],
-                                   const PylithInt aOff[],
-                                   const PylithInt aOff_x[],
-                                   const PylithScalar a[],
-                                   const PylithScalar a_t[],
-                                   const PylithScalar a_x[],
-                                   const PylithReal t,
-                                   const PylithScalar x[],
-                                   const PylithInt numConstants,
-                                   const PylithScalar constants[],
-                                   PylithScalar stress[]);
+    static void deviatoricStress_refstate(const PylithInt dim,
+                                          const PylithInt numS,
+                                          const PylithInt numA,
+                                          const PylithInt sOff[],
+                                          const PylithInt sOff_x[],
+                                          const PylithScalar s[],
+                                          const PylithScalar s_t[],
+                                          const PylithScalar s_x[],
+                                          const PylithInt aOff[],
+                                          const PylithInt aOff_x[],
+                                          const PylithScalar a[],
+                                          const PylithScalar a_t[],
+                                          const PylithScalar a_x[],
+                                          const PylithReal t,
+                                          const PylithScalar x[],
+                                          const PylithInt numConstants,
+                                          const PylithScalar constants[],
+                                          PylithScalar stress[]);
 
     /** Calculate deviatoric stress including stress_zz for 2-D plane strain isotropic power-law
      * viscoelasticity WITHOUT reference stress and strain.
      *
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
-     * power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), stress(4)]
+     * power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), deviatoric_stress(4)]
      */
-    static
-    void deviatoricStress4(const PylithInt dim,
-                           const PylithInt numS,
-                           const PylithInt numA,
-                           const PylithInt sOff[],
-                           const PylithInt sOff_x[],
-                           const PylithScalar s[],
-                           const PylithScalar s_t[],
-                           const PylithScalar s_x[],
-                           const PylithInt aOff[],
-                           const PylithInt aOff_x[],
-                           const PylithScalar a[],
-                           const PylithScalar a_t[],
-                           const PylithScalar a_x[],
-                           const PylithReal t,
-                           const PylithScalar x[],
-                           const PylithInt numConstants,
-                           const PylithScalar constants[],
-                           PylithScalar devStressTpdt[]);
+    static void deviatoricStress4(const PylithInt dim,
+                                  const PylithInt numS,
+                                  const PylithInt numA,
+                                  const PylithInt sOff[],
+                                  const PylithInt sOff_x[],
+                                  const PylithScalar s[],
+                                  const PylithScalar s_t[],
+                                  const PylithScalar s_x[],
+                                  const PylithInt aOff[],
+                                  const PylithInt aOff_x[],
+                                  const PylithScalar a[],
+                                  const PylithScalar a_t[],
+                                  const PylithScalar a_x[],
+                                  const PylithReal t,
+                                  const PylithScalar x[],
+                                  const PylithInt numConstants,
+                                  const PylithScalar constants[],
+                                  PylithScalar devStressTpdt[]);
 
     /** Calculate deviatoric stress including stress_zz for 2-D plane strain isotropic power-law
      * viscoelasticity WITH reference stress and strain.
@@ -287,10 +280,84 @@ public:
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [..., reference_stress(4), reference_strain(4), shear_modulus(1), bulk_modulus(1),
      *                    power_law_reference_strain_rate(1), power_law_reference_stress(1), power_law_exponent(1),
-     *                    viscous_strain(4), stress(4)]
+     *                    viscous_strain(4), deviatoric_stress(4)]
      */
-    static
-    void deviatoricStress4_refstate(const PylithInt dim,
+    static void deviatoricStress4_refstate(const PylithInt dim,
+                                           const PylithInt numS,
+                                           const PylithInt numA,
+                                           const PylithInt sOff[],
+                                           const PylithInt sOff_x[],
+                                           const PylithScalar s[],
+                                           const PylithScalar s_t[],
+                                           const PylithScalar s_x[],
+                                           const PylithInt aOff[],
+                                           const PylithInt aOff_x[],
+                                           const PylithScalar a[],
+                                           const PylithScalar a_t[],
+                                           const PylithScalar a_x[],
+                                           const PylithReal t,
+                                           const PylithScalar x[],
+                                           const PylithInt numConstants,
+                                           const PylithScalar constants[],
+                                           PylithScalar stress[]);
+
+    /** Update deviatoric stress for 2-D plane strain isotropic power-law
+     * viscoelasticity WITHOUT reference stress/strain.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [...]
+     */
+    static void updateDeviatoricStress(const PylithInt dim,
+                                       const PylithInt numS,
+                                       const PylithInt numA,
+                                       const PylithInt sOff[],
+                                       const PylithInt sOff_x[],
+                                       const PylithScalar s[],
+                                       const PylithScalar s_t[],
+                                       const PylithScalar s_x[],
+                                       const PylithInt aOff[],
+                                       const PylithInt aOff_x[],
+                                       const PylithScalar a[],
+                                       const PylithScalar a_t[],
+                                       const PylithScalar a_x[],
+                                       const PylithReal t,
+                                       const PylithScalar x[],
+                                       const PylithInt numConstants,
+                                       const PylithScalar constants[],
+                                       PylithScalar deviatoricStress[]);
+
+    /** Update deviatoric stress for 2-D plane strain isotropic power-law
+     * viscoelasticity WITH reference stress/strain.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [...]
+     */
+    static void updateDeviatoricStress_refstate(const PylithInt dim,
+                                                const PylithInt numS,
+                                                const PylithInt numA,
+                                                const PylithInt sOff[],
+                                                const PylithInt sOff_x[],
+                                                const PylithScalar s[],
+                                                const PylithScalar s_t[],
+                                                const PylithScalar s_x[],
+                                                const PylithInt aOff[],
+                                                const PylithInt aOff_x[],
+                                                const PylithScalar a[],
+                                                const PylithScalar a_t[],
+                                                const PylithScalar a_x[],
+                                                const PylithReal t,
+                                                const PylithScalar x[],
+                                                const PylithInt numConstants,
+                                                const PylithScalar constants[],
+                                                PylithScalar deviatoricStress[]);
+
+    /** Update viscous strain for plane strain isotropic power-law viscoelasticity WITHOUT reference stress/strain.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
+     * power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), deviatoric_stress(4)]
+     */
+    static void updateViscousStrain(const PylithInt dim,
                                     const PylithInt numS,
                                     const PylithInt numA,
                                     const PylithInt sOff[],
@@ -307,68 +374,43 @@ public:
                                     const PylithScalar x[],
                                     const PylithInt numConstants,
                                     const PylithScalar constants[],
-                                    PylithScalar stress[]);
+                                    PylithScalar visStrain[]);
 
-    /** Update stress for 2-D plane strain isotropic power-law
-     * viscoelasticity WITHOUT reference stress/strain.
+    /** Update viscous strain for plane strain isotropic power-law viscoelasticity WITH reference stress/strain.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [...]
+     * Auxiliary fields: [..., reference_stress(4), reference_strain(4), shear_modulus(1), bulk_modulus(1),
+     *                    power_law_reference_strain_rate(1), power_law_reference_stress(1), power_law_exponent(1),
+     *                    viscous_strain(4), deviatoric_stress(4)]
      */
-    static
-    void updateStress(const PylithInt dim,
-                      const PylithInt numS,
-                      const PylithInt numA,
-                      const PylithInt sOff[],
-                      const PylithInt sOff_x[],
-                      const PylithScalar s[],
-                      const PylithScalar s_t[],
-                      const PylithScalar s_x[],
-                      const PylithInt aOff[],
-                      const PylithInt aOff_x[],
-                      const PylithScalar a[],
-                      const PylithScalar a_t[],
-                      const PylithScalar a_x[],
-                      const PylithReal t,
-                      const PylithScalar x[],
-                      const PylithInt numConstants,
-                      const PylithScalar constants[],
-                      PylithScalar stress[]);
+    static void updateViscousStrain_refstate(const PylithInt dim,
+                                             const PylithInt numS,
+                                             const PylithInt numA,
+                                             const PylithInt sOff[],
+                                             const PylithInt sOff_x[],
+                                             const PylithScalar s[],
+                                             const PylithScalar s_t[],
+                                             const PylithScalar s_x[],
+                                             const PylithInt aOff[],
+                                             const PylithInt aOff_x[],
+                                             const PylithScalar a[],
+                                             const PylithScalar a_t[],
+                                             const PylithScalar a_x[],
+                                             const PylithReal t,
+                                             const PylithScalar x[],
+                                             const PylithInt numConstants,
+                                             const PylithScalar constants[],
+                                             PylithScalar visStrain[]);
 
-    /** Update stress for 2-D plane strain isotropic power-law
-     * viscoelasticity WITH reference stress/strain.
+    /** Calculate stress for 2-D plane strain isotropic power-law WITHOUT reference stress/strain.
      *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [...]
-     */
-    static
-    void updateStress_refstate(const PylithInt dim,
-                               const PylithInt numS,
-                               const PylithInt numA,
-                               const PylithInt sOff[],
-                               const PylithInt sOff_x[],
-                               const PylithScalar s[],
-                               const PylithScalar s_t[],
-                               const PylithScalar s_x[],
-                               const PylithInt aOff[],
-                               const PylithInt aOff_x[],
-                               const PylithScalar a[],
-                               const PylithScalar a_t[],
-                               const PylithScalar a_x[],
-                               const PylithReal t,
-                               const PylithScalar x[],
-                               const PylithInt numConstants,
-                               const PylithScalar constants[],
-                               PylithScalar stress[]);
-
-    /** Update viscous strain for plane strain isotropic power-law viscoelasticity WITHOUT reference stress/strain.
+     * Used in outputing the stress field.
      *
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
-     * power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), stress(4)]
+     *                    power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), deviatoric_stress(4)]
      */
-    static
-    void updateViscousStrain(const PylithInt dim,
+    static void cauchyStress(const PylithInt dim,
                              const PylithInt numS,
                              const PylithInt numA,
                              const PylithInt sOff[],
@@ -385,17 +427,17 @@ public:
                              const PylithScalar x[],
                              const PylithInt numConstants,
                              const PylithScalar constants[],
-                             PylithScalar visStrain[]);
+                             PylithScalar stressVector[]);
 
-    /** Update viscous strain for plane strain isotropic power-law viscoelasticity WITH reference stress/strain.
+    /** Calculate stress for 2-D plane strain isotropic power-law WITH reference stress/strain.
+     *
+     * Used in outputing the stress field.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., reference_stress(4), reference_strain(4), shear_modulus(1), bulk_modulus(1),
-     *                    power_law_reference_strain_rate(1), power_law_reference_stress(1), power_law_exponent(1),
-     *                    viscous_strain(4), stress(4)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
+     *                    power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), deviatoric_stress(4)]
      */
-    static
-    void updateViscousStrain_refstate(const PylithInt dim,
+    static void cauchyStress_refstate(const PylithInt dim,
                                       const PylithInt numS,
                                       const PylithInt numA,
                                       const PylithInt sOff[],
@@ -412,79 +454,75 @@ public:
                                       const PylithScalar x[],
                                       const PylithInt numConstants,
                                       const PylithScalar constants[],
-                                      PylithScalar visStrain[]);
-
-    /** Calculate stress for 2-D plane strain isotropic power-law
-     *
-     * Used in outputing the stress field.
-     *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
-     *                    power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), stress(4)]
-     */
-    static
-    void cauchyStress(const PylithInt dim,
-                      const PylithInt numS,
-                      const PylithInt numA,
-                      const PylithInt sOff[],
-                      const PylithInt sOff_x[],
-                      const PylithScalar s[],
-                      const PylithScalar s_t[],
-                      const PylithScalar s_x[],
-                      const PylithInt aOff[],
-                      const PylithInt aOff_x[],
-                      const PylithScalar a[],
-                      const PylithScalar a_t[],
-                      const PylithScalar a_x[],
-                      const PylithReal t,
-                      const PylithScalar x[],
-                      const PylithInt numConstants,
-                      const PylithScalar constants[],
-                      PylithScalar stressVector[]);
+                                      PylithScalar stressVector[]);
 
 }; // IsotropicPowerLawPlaneStrain
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// Kernels for isotropic power-law viscoelastic material in 3D.
-class pylith::fekernels::IsotropicPowerLaw3D {
+class pylith::fekernels::IsotropicPowerLaw3D
+{
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
-
     /** f1 function for isotropic power-law viscoelastic material in 3D WITHOUT reference stress and reference strain.
      *
      * Solution fields: [disp(dim), ...]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
-     *                    power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), stress(4)]
+     *                    power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), deviatoric_stress(4)]
      */
-    static
-    void f1v(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar f1[]);
+    static void f1v(const PylithInt dim,
+                    const PylithInt numS,
+                    const PylithInt numA,
+                    const PylithInt sOff[],
+                    const PylithInt sOff_x[],
+                    const PylithScalar s[],
+                    const PylithScalar s_t[],
+                    const PylithScalar s_x[],
+                    const PylithInt aOff[],
+                    const PylithInt aOff_x[],
+                    const PylithScalar a[],
+                    const PylithScalar a_t[],
+                    const PylithScalar a_x[],
+                    const PylithReal t,
+                    const PylithScalar x[],
+                    const PylithInt numConstants,
+                    const PylithScalar constants[],
+                    PylithScalar f1[]);
 
     /** f1 function for isotropic power-law viscoelastic material in 3D WITH reference stress and reference strain.
      *
      * Solution fields: [disp(dim), ...]
      * Auxiliary fields: [..., reference_stress(4), reference_strain(4), shear_modulus(1), bulk_modulus(1),
      *                    power_law_reference_strain_rate(1), power_law_reference_stress(1), power_law_exponent(1),
-     *                    viscous_strain(4), stress(4)]
+     *                    viscous_strain(4), deviatoric_stress(4)]
      */
-    static
-    void f1v_refstate(const PylithInt dim,
+    static void f1v_refstate(const PylithInt dim,
+                             const PylithInt numS,
+                             const PylithInt numA,
+                             const PylithInt sOff[],
+                             const PylithInt sOff_x[],
+                             const PylithScalar s[],
+                             const PylithScalar s_t[],
+                             const PylithScalar s_x[],
+                             const PylithInt aOff[],
+                             const PylithInt aOff_x[],
+                             const PylithScalar a[],
+                             const PylithScalar a_t[],
+                             const PylithScalar a_x[],
+                             const PylithReal t,
+                             const PylithScalar x[],
+                             const PylithInt numConstants,
+                             const PylithScalar constants[],
+                             PylithScalar f1[]);
+
+    /** Jf3_vu entry function for 3-D isotropic power-law viscoelasticity WITHOUT reference stress and
+     * reference strain.
+     *
+     * Solution fields: [...]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
+     *                    power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), deviatoric_stress(4)]
+     */
+    static void Jf3vu(const PylithInt dim,
                       const PylithInt numS,
                       const PylithInt numA,
                       const PylithInt sOff[],
@@ -498,38 +536,11 @@ public:
                       const PylithScalar a_t[],
                       const PylithScalar a_x[],
                       const PylithReal t,
+                      const PylithReal s_tshift,
                       const PylithScalar x[],
                       const PylithInt numConstants,
                       const PylithScalar constants[],
-                      PylithScalar f1[]);
-
-    /** Jf3_vu entry function for 3-D isotropic power-law viscoelasticity WITHOUT reference stress and
-     * reference strain.
-     *
-     * Solution fields: [...]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
-     *                    power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), stress(4)]
-     */
-    static
-    void Jf3vu(const PylithInt dim,
-               const PylithInt numS,
-               const PylithInt numA,
-               const PylithInt sOff[],
-               const PylithInt sOff_x[],
-               const PylithScalar s[],
-               const PylithScalar s_t[],
-               const PylithScalar s_x[],
-               const PylithInt aOff[],
-               const PylithInt aOff_x[],
-               const PylithScalar a[],
-               const PylithScalar a_t[],
-               const PylithScalar a_x[],
-               const PylithReal t,
-               const PylithReal s_tshift,
-               const PylithScalar x[],
-               const PylithInt numConstants,
-               const PylithScalar constants[],
-               PylithScalar Jf3[]);
+                      PylithScalar Jf3[]);
 
     /** Jf3_vu entry function for 3-D isotropic power-law viscoelasticity WITH reference stress and
      * reference strain.
@@ -537,116 +548,9 @@ public:
      * Solution fields: [...]
      * Auxiliary fields: [..., reference_stress(4), reference_strain(4), shear_modulus(1), bulk_modulus(1),
      *                    power_law_reference_strain_rate(1), power_law_reference_stress(1), power_law_exponent(1),
-     *                    viscous_strain(4), stress(4)]
+     *                    viscous_strain(4), deviatoric_stress(4)]
      */
-    static
-    void Jf3vu_refstate(const PylithInt dim,
-                        const PylithInt numS,
-                        const PylithInt numA,
-                        const PylithInt sOff[],
-                        const PylithInt sOff_x[],
-                        const PylithScalar s[],
-                        const PylithScalar s_t[],
-                        const PylithScalar s_x[],
-                        const PylithInt aOff[],
-                        const PylithInt aOff_x[],
-                        const PylithScalar a[],
-                        const PylithScalar a_t[],
-                        const PylithScalar a_x[],
-                        const PylithReal t,
-                        const PylithReal s_tshift,
-                        const PylithScalar x[],
-                        const PylithInt numConstants,
-                        const PylithScalar constants[],
-                        PylithScalar Jf3[]);
-
-    /** Calculate deviatoric stress for 3-D isotropic power-law
-     * viscoelasticity WITHOUT reference stress and strain.
-     *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
-     *                    power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), stress(4)]
-     */
-    static
-    void deviatoricStress(const PylithInt dim,
-                          const PylithInt numS,
-                          const PylithInt numA,
-                          const PylithInt sOff[],
-                          const PylithInt sOff_x[],
-                          const PylithScalar s[],
-                          const PylithScalar s_t[],
-                          const PylithScalar s_x[],
-                          const PylithInt aOff[],
-                          const PylithInt aOff_x[],
-                          const PylithScalar a[],
-                          const PylithScalar a_t[],
-                          const PylithScalar a_x[],
-                          const PylithReal t,
-                          const PylithScalar x[],
-                          const PylithInt numConstants,
-                          const PylithScalar constants[],
-                          PylithScalar stress[]);
-
-    /** Calculate deviatoric stress for 3-D isotropic power-law
-     * viscoelasticity WITH reference stress and strain.
-     *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., reference_stress(4), reference_strain(4), shear_modulus(1), bulk_modulus(1),
-     *                    power_law_reference_strain_rate(1), power_law_reference_stress(1), power_law_exponent(1),
-     *                    viscous_strain(4), stress(4)]
-     */
-    static
-    void deviatoricStress_refstate(const PylithInt dim,
-                                   const PylithInt numS,
-                                   const PylithInt numA,
-                                   const PylithInt sOff[],
-                                   const PylithInt sOff_x[],
-                                   const PylithScalar s[],
-                                   const PylithScalar s_t[],
-                                   const PylithScalar s_x[],
-                                   const PylithInt aOff[],
-                                   const PylithInt aOff_x[],
-                                   const PylithScalar a[],
-                                   const PylithScalar a_t[],
-                                   const PylithScalar a_x[],
-                                   const PylithReal t,
-                                   const PylithScalar x[],
-                                   const PylithInt numConstants,
-                                   const PylithScalar constants[],
-                                   PylithScalar stress[]);
-
-    /** Update stress for 3-D isotropic power-law viscoelasticity WITHOUT reference stress and strain.
-     *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [...]
-     */
-    static
-    void updateStress(const PylithInt dim,
-                      const PylithInt numS,
-                      const PylithInt numA,
-                      const PylithInt sOff[],
-                      const PylithInt sOff_x[],
-                      const PylithScalar s[],
-                      const PylithScalar s_t[],
-                      const PylithScalar s_x[],
-                      const PylithInt aOff[],
-                      const PylithInt aOff_x[],
-                      const PylithScalar a[],
-                      const PylithScalar a_t[],
-                      const PylithScalar a_x[],
-                      const PylithReal t,
-                      const PylithScalar x[],
-                      const PylithInt numConstants,
-                      const PylithScalar constants[],
-                      PylithScalar stress[]);
-
-    /** Update stress for 3-D isotropic power-law viscoelasticity WITH reference stress and strain.
-     *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [...]
-     */
-    static
-    void updateStress_refstate(const PylithInt dim,
+    static void Jf3vu_refstate(const PylithInt dim,
                                const PylithInt numS,
                                const PylithInt numA,
                                const PylithInt sOff[],
@@ -660,18 +564,170 @@ public:
                                const PylithScalar a_t[],
                                const PylithScalar a_x[],
                                const PylithReal t,
+                               const PylithReal s_tshift,
                                const PylithScalar x[],
                                const PylithInt numConstants,
                                const PylithScalar constants[],
-                               PylithScalar stress[]);
+                               PylithScalar Jf3[]);
+
+    /** Calculate deviatoric stress for 3-D isotropic power-law
+     * viscoelasticity WITHOUT reference stress and strain.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
+     *                    power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), deviatoric_stress(4)]
+     */
+    static void deviatoricStress(const PylithInt dim,
+                                 const PylithInt numS,
+                                 const PylithInt numA,
+                                 const PylithInt sOff[],
+                                 const PylithInt sOff_x[],
+                                 const PylithScalar s[],
+                                 const PylithScalar s_t[],
+                                 const PylithScalar s_x[],
+                                 const PylithInt aOff[],
+                                 const PylithInt aOff_x[],
+                                 const PylithScalar a[],
+                                 const PylithScalar a_t[],
+                                 const PylithScalar a_x[],
+                                 const PylithReal t,
+                                 const PylithScalar x[],
+                                 const PylithInt numConstants,
+                                 const PylithScalar constants[],
+                                 PylithScalar stress[]);
+
+    /** Calculate deviatoric stress for 3-D isotropic power-law
+     * viscoelasticity WITH reference stress and strain.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [..., reference_stress(4), reference_strain(4), shear_modulus(1), bulk_modulus(1),
+     *                    power_law_reference_strain_rate(1), power_law_reference_stress(1), power_law_exponent(1),
+     *                    viscous_strain(4), deviatoric_stress(4)]
+     */
+    static void deviatoricStress_refstate(const PylithInt dim,
+                                          const PylithInt numS,
+                                          const PylithInt numA,
+                                          const PylithInt sOff[],
+                                          const PylithInt sOff_x[],
+                                          const PylithScalar s[],
+                                          const PylithScalar s_t[],
+                                          const PylithScalar s_x[],
+                                          const PylithInt aOff[],
+                                          const PylithInt aOff_x[],
+                                          const PylithScalar a[],
+                                          const PylithScalar a_t[],
+                                          const PylithScalar a_x[],
+                                          const PylithReal t,
+                                          const PylithScalar x[],
+                                          const PylithInt numConstants,
+                                          const PylithScalar constants[],
+                                          PylithScalar stress[]);
+
+    /** Update deviatoric stress for 3-D isotropic power-law viscoelasticity WITHOUT reference stress and strain.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [...]
+     */
+    static void updateDeviatoricStress(const PylithInt dim,
+                                       const PylithInt numS,
+                                       const PylithInt numA,
+                                       const PylithInt sOff[],
+                                       const PylithInt sOff_x[],
+                                       const PylithScalar s[],
+                                       const PylithScalar s_t[],
+                                       const PylithScalar s_x[],
+                                       const PylithInt aOff[],
+                                       const PylithInt aOff_x[],
+                                       const PylithScalar a[],
+                                       const PylithScalar a_t[],
+                                       const PylithScalar a_x[],
+                                       const PylithReal t,
+                                       const PylithScalar x[],
+                                       const PylithInt numConstants,
+                                       const PylithScalar constants[],
+                                       PylithScalar deviatoricStress[]);
+
+    /** Update deviatoric stress for 3-D isotropic power-law viscoelasticity WITH reference stress and strain.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [...]
+     */
+    static void updateDeviatoricStress_refstate(const PylithInt dim,
+                                                const PylithInt numS,
+                                                const PylithInt numA,
+                                                const PylithInt sOff[],
+                                                const PylithInt sOff_x[],
+                                                const PylithScalar s[],
+                                                const PylithScalar s_t[],
+                                                const PylithScalar s_x[],
+                                                const PylithInt aOff[],
+                                                const PylithInt aOff_x[],
+                                                const PylithScalar a[],
+                                                const PylithScalar a_t[],
+                                                const PylithScalar a_x[],
+                                                const PylithReal t,
+                                                const PylithScalar x[],
+                                                const PylithInt numConstants,
+                                                const PylithScalar constants[],
+                                                PylithScalar deviatoricStress[]);
 
     /** Update viscous strain for 3-D isotropic power-law viscoelasticity WITHOUT reference stress and strain.
      *
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [...]
      */
-    static
-    void updateViscousStrain(const PylithInt dim,
+    static void updateViscousStrain(const PylithInt dim,
+                                    const PylithInt numS,
+                                    const PylithInt numA,
+                                    const PylithInt sOff[],
+                                    const PylithInt sOff_x[],
+                                    const PylithScalar s[],
+                                    const PylithScalar s_t[],
+                                    const PylithScalar s_x[],
+                                    const PylithInt aOff[],
+                                    const PylithInt aOff_x[],
+                                    const PylithScalar a[],
+                                    const PylithScalar a_t[],
+                                    const PylithScalar a_x[],
+                                    const PylithReal t,
+                                    const PylithScalar x[],
+                                    const PylithInt numConstants,
+                                    const PylithScalar constants[],
+                                    PylithScalar visStrain[]);
+
+    /** Update viscous strain for 3-D isotropic power-law viscoelasticity WITH reference stress and strain.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [...]
+     */
+    static void updateViscousStrain_refstate(const PylithInt dim,
+                                             const PylithInt numS,
+                                             const PylithInt numA,
+                                             const PylithInt sOff[],
+                                             const PylithInt sOff_x[],
+                                             const PylithScalar s[],
+                                             const PylithScalar s_t[],
+                                             const PylithScalar s_x[],
+                                             const PylithInt aOff[],
+                                             const PylithInt aOff_x[],
+                                             const PylithScalar a[],
+                                             const PylithScalar a_t[],
+                                             const PylithScalar a_x[],
+                                             const PylithReal t,
+                                             const PylithScalar x[],
+                                             const PylithInt numConstants,
+                                             const PylithScalar constants[],
+                                             PylithScalar visStrain[]);
+
+    /** Calculate stress for 3-D isotropic power-law viscoelasticity
+     *
+     * Used in outputing the stress field.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
+     *                    power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), deviatoric_stress(4)]
+     */
+    static void cauchyStress(const PylithInt dim,
                              const PylithInt numS,
                              const PylithInt numA,
                              const PylithInt sOff[],
@@ -688,15 +744,17 @@ public:
                              const PylithScalar x[],
                              const PylithInt numConstants,
                              const PylithScalar constants[],
-                             PylithScalar visStrain[]);
+                             PylithScalar stressVector[]);
 
-    /** Update viscous strain for 3-D isotropic power-law viscoelasticity WITH reference stress and strain.
+    /** Calculate stress for 3-D isotropic power-law viscoelasticity WITH reference stress/strain.
+     *
+     * Used in outputing the stress field.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [...]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
+     *                    power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), deviatoric_stress(4)]
      */
-    static
-    void updateViscousStrain_refstate(const PylithInt dim,
+    static void cauchyStress_refstate(const PylithInt dim,
                                       const PylithInt numS,
                                       const PylithInt numA,
                                       const PylithInt sOff[],
@@ -713,52 +771,62 @@ public:
                                       const PylithScalar x[],
                                       const PylithInt numConstants,
                                       const PylithScalar constants[],
-                                      PylithScalar visStrain[]);
-
-    /** Calculate stress for 3-D isotropic power-law viscoelasticity
-     *
-     * Used in outputing the stress field.
-     *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1), power_law_reference_strain_rate(1),
-     *                    power_law_reference_stress(1), power_law_exponent(1), viscous_strain(4), stress(4)]
-     */
-    static
-    void cauchyStress(const PylithInt dim,
-                      const PylithInt numS,
-                      const PylithInt numA,
-                      const PylithInt sOff[],
-                      const PylithInt sOff_x[],
-                      const PylithScalar s[],
-                      const PylithScalar s_t[],
-                      const PylithScalar s_x[],
-                      const PylithInt aOff[],
-                      const PylithInt aOff_x[],
-                      const PylithScalar a[],
-                      const PylithScalar a_t[],
-                      const PylithScalar a_x[],
-                      const PylithReal t,
-                      const PylithScalar x[],
-                      const PylithInt numConstants,
-                      const PylithScalar constants[],
-                      PylithScalar stressVector[]);
+                                      PylithScalar stressVector[]);
 
 }; // IsotropicPowerLaw3D
 // ---------------------------------------------------------------------------------------------------------------------
 /// Kernels for isotropic power-law viscoelastic material.
-class pylith::fekernels::IsotropicPowerLawEffectiveStress {
+class pylith::fekernels::IsotropicPowerLawEffectiveStress
+{
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
-
     /** Compute effective stress for power-law material, given an initial guess and the current parameters.
      *
      * Used to compute stress and viscous strain.
      *
      */
 
-    static
-    PylithScalar computeEffectiveStress(const PylithScalar j2InitialGuess,
-                                        const PylithScalar stressScale,
+    static PylithScalar computeEffectiveStress(const PylithScalar j2InitialGuess,
+                                               const PylithScalar stressScale,
+                                               const PylithScalar ae,
+                                               const PylithScalar b,
+                                               const PylithScalar c,
+                                               const PylithScalar d,
+                                               const PylithScalar powerLawAlpha,
+                                               const PylithScalar dt,
+                                               const PylithScalar j2T,
+                                               const PylithScalar powerLawExponent,
+                                               const PylithScalar powerLawReferenceStrainRate,
+                                               const PylithScalar powerLawReferenceStress);
+
+private:
+    /** Calculate effective stress function for a power-law viscoelastic material.
+     *
+     * Used for bracketing.
+     *
+     */
+
+    static PylithScalar _effStressFunc(const PylithScalar j2Tpdt,
+                                       const PylithScalar ae,
+                                       const PylithScalar b,
+                                       const PylithScalar c,
+                                       const PylithScalar d,
+                                       const PylithScalar powerLawAlpha,
+                                       const PylithScalar dt,
+                                       const PylithScalar j2T,
+                                       const PylithScalar powerLawExponent,
+                                       const PylithScalar powerLawReferenceStrainRate,
+                                       const PylithScalar powerLawReferenceStress);
+
+    /** Calculate effective stress function and its derivative for a power-law viscoelastic material.
+     *
+     * Used for root-finding.
+     *
+     */
+
+    static void _effStressFuncDerivFunc(PylithScalar *func,
+                                        PylithScalar *dfunc,
+                                        const PylithScalar j2Tpdt,
                                         const PylithScalar ae,
                                         const PylithScalar b,
                                         const PylithScalar c,
@@ -770,77 +838,14 @@ public:
                                         const PylithScalar powerLawReferenceStrainRate,
                                         const PylithScalar powerLawReferenceStress);
 
-private:
-
-    /** Calculate effective stress function for a power-law viscoelastic material.
-     *
-     * Used for bracketing.
-     *
-     */
-
-    static
-    PylithScalar _effStressFunc(const PylithScalar j2Tpdt,
-                                const PylithScalar ae,
-                                const PylithScalar b,
-                                const PylithScalar c,
-                                const PylithScalar d,
-                                const PylithScalar powerLawAlpha,
-                                const PylithScalar dt,
-                                const PylithScalar j2T,
-                                const PylithScalar powerLawExponent,
-                                const PylithScalar powerLawReferenceStrainRate,
-                                const PylithScalar powerLawReferenceStress);
-
-    /** Calculate effective stress function and its derivative for a power-law viscoelastic material.
-     *
-     * Used for root-finding.
-     *
-     */
-
-    static
-    void _effStressFuncDerivFunc(PylithScalar* func,
-                                 PylithScalar* dfunc,
-                                 const PylithScalar j2Tpdt,
-                                 const PylithScalar ae,
-                                 const PylithScalar b,
-                                 const PylithScalar c,
-                                 const PylithScalar d,
-                                 const PylithScalar powerLawAlpha,
-                                 const PylithScalar dt,
-                                 const PylithScalar j2T,
-                                 const PylithScalar powerLawExponent,
-                                 const PylithScalar powerLawReferenceStrainRate,
-                                 const PylithScalar powerLawReferenceStress);
-
     /** Bracket effective stress root.
      *
      * Used to place bounds on effective stress.
      *
      */
 
-    static
-    void _bracket(PylithScalar* px1,
-                  PylithScalar* px2,
-                  const PylithScalar ae,
-                  const PylithScalar b,
-                  const PylithScalar c,
-                  const PylithScalar d,
-                  const PylithScalar powerLawAlpha,
-                  const PylithScalar dt,
-                  const PylithScalar j2T,
-                  const PylithScalar powerLawExponent,
-                  const PylithScalar powerLawReferenceStrainRate,
-                  const PylithScalar powerLawReferenceStress);
-
-    /** Find zero of effective stress function using Newton's method with bisection.
-     *
-     * Used to find the effective stress.
-     *
-     */
-
-    static
-    PylithScalar _search(PylithScalar x1,
-                         PylithScalar x2,
+    static void _bracket(PylithScalar *px1,
+                         PylithScalar *px2,
                          const PylithScalar ae,
                          const PylithScalar b,
                          const PylithScalar c,
@@ -851,6 +856,25 @@ private:
                          const PylithScalar powerLawExponent,
                          const PylithScalar powerLawReferenceStrainRate,
                          const PylithScalar powerLawReferenceStress);
+
+    /** Find zero of effective stress function using Newton's method with bisection.
+     *
+     * Used to find the effective stress.
+     *
+     */
+
+    static PylithScalar _search(PylithScalar x1,
+                                PylithScalar x2,
+                                const PylithScalar ae,
+                                const PylithScalar b,
+                                const PylithScalar c,
+                                const PylithScalar d,
+                                const PylithScalar powerLawAlpha,
+                                const PylithScalar dt,
+                                const PylithScalar j2T,
+                                const PylithScalar powerLawExponent,
+                                const PylithScalar powerLawReferenceStrainRate,
+                                const PylithScalar powerLawReferenceStress);
 
 }; // IsotropicPowerLaw
 

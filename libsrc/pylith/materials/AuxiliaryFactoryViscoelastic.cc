@@ -257,20 +257,20 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addTotalStrain(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Add stress subfield to auxiliary fields.
+// Add deviatoric stress subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryViscoelastic::addStress(void) {
+pylith::materials::AuxiliaryFactoryViscoelastic::addDeviatoricStress(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addStress(void)");
+    PYLITH_JOURNAL_DEBUG("addDeviatoricStress(void)");
 
-    const char* subfieldName = "stress";
+    const char* subfieldName = "deviatoric_stress";
     const char* componentNames[6] = {
-        "stress_xx",
-        "stress_yy",
-        "stress_zz",
-        "stress_xy",
-        "stress_yz",
-        "stress_xz"
+        "deviatoric_stress_xx",
+        "deviatoric_stress_yy",
+        "deviatoric_stress_zz",
+        "deviatoric_stress_xy",
+        "deviatoric_stress_yz",
+        "deviatoric_stress_xz"
     };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
     const PylithReal pressureScale = _normalizer->getPressureScale();
@@ -293,7 +293,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addStress(void) {
     this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
-} // addStress
+} // addDeviatoricStress
 
 
 // ---------------------------------------------------------------------------------------------------------------------
