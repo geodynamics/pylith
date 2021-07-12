@@ -8,8 +8,8 @@ features = [
     Implicit-explicit formulation,
     Quadrilateral cells,
     Runge-Kutta time stepping,
-    pylith.meshio.MeshIOPetsc,
-    pylith.meshio.MeshIOCubit,
+#    pylith.meshio.MeshIOCubit,
+    pylith.meshio.MeshIOPETSc,
     pylith.problems.TimeDependent,
     pylith.materials.Elasticity,
     pylith.materials.IsotropicLinearElasticity,
@@ -42,7 +42,7 @@ timedependent = 0
 
 # reader = pylith.meshio.MeshIOCubit
 # reader.filename = quad_200m.exo
-reader = pylith.meshio.MeshIOPetsc
+reader = pylith.meshio.MeshIOPETSc
 
 # Set the Cartesian coordinate system.
 reader.coordsys.space_dim = 2
