@@ -68,7 +68,7 @@ pylith::materials::TestAuxiliaryFactoryElastic::setUp(void) {
         pylith::topology::FieldQuery::validatorPositive
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 2, _auxDim, 1, pylith::topology::Field::DEFAULT_BASIS, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 2, _auxDim, 1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
         );
     info.index = 0;
     _data->subfields["density"] = info;
@@ -86,7 +86,7 @@ pylith::materials::TestAuxiliaryFactoryElastic::setUp(void) {
         pylith::topology::FieldQuery::validatorNonnegative
         );
     info.fe = pylith::topology::Field::Discretization(
-        1, 2, _auxDim, 1, pylith::topology::Field::DEFAULT_BASIS, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        1, 2, _auxDim, 1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
         );
     info.index = 1;
     _data->subfields["shear_modulus"] = info;
@@ -104,7 +104,7 @@ pylith::materials::TestAuxiliaryFactoryElastic::setUp(void) {
         pylith::topology::FieldQuery::validatorPositive
         );
     info.fe = pylith::topology::Field::Discretization(
-        1, 2, _auxDim, 1, pylith::topology::Field::DEFAULT_BASIS, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        1, 2, _auxDim, 1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
         );
     info.index = 2;
     _data->subfields["bulk_modulus"] = info;
@@ -126,7 +126,7 @@ pylith::materials::TestAuxiliaryFactoryElastic::setUp(void) {
         _data->normalizer->getPressureScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 2, _auxDim, _auxDim, pylith::topology::Field::DEFAULT_BASIS, false, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 2, _auxDim, _auxDim, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, false
         );
     info.index = 3;
     _data->subfields["reference_stress"] = info;
@@ -148,7 +148,7 @@ pylith::materials::TestAuxiliaryFactoryElastic::setUp(void) {
         1.0
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 2, _auxDim, _auxDim, pylith::topology::Field::DEFAULT_BASIS, false, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 2, _auxDim, _auxDim, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, false
         );
     info.index = 4;
     _data->subfields["reference_strain"] = info;
@@ -265,7 +265,8 @@ pylith::materials::TestAuxiliaryFactoryElastic::_initialize(void) {
     for (subfield_iter iter = _data->subfields.begin(); iter != _data->subfields.end(); ++iter) {
         const char* subfieldName = iter->first.c_str();
         const pylith::topology::Field::Discretization& fe = iter->second.fe;
-        _factory->setSubfieldDiscretization(subfieldName, fe.basisOrder, fe.quadOrder, fe.dimension, fe.cellBasis, fe.isBasisContinuous, fe.feSpace);
+        _factory->setSubfieldDiscretization(subfieldName, fe.basisOrder, fe.quadOrder, fe.dimension, fe.isFaultOnly,
+                                            fe.cellBasis, fe.feSpace, fe.isBasisContinuous);
     } // for
     CPPUNIT_ASSERT(_data->normalizer);
     _factory->initialize(_auxiliaryField, *_data->normalizer, _data->dimension);

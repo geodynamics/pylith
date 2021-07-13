@@ -167,8 +167,6 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     Field::Discretization discretization;
     discretization.basisOrder = 1;
     discretization.quadOrder = 1;
-    discretization.isBasisContinuous = true;
-    discretization.feSpace = FieldBase::POLYNOMIAL_SPACE;
     fieldOrig.subfieldAdd(description, discretization);
     fieldOrig.subfieldsSetup();
     fieldOrig.createDiscretization();

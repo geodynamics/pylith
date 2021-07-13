@@ -327,7 +327,7 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP1 :
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(1, 1), // disp
-            pylith::topology::Field::Discretization(1, 1, 1), // lagrange_multiplier_fault
+            pylith::topology::Field::Discretization(1, 1, 1, -1, true), // lagrange_multiplier_fault
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -364,7 +364,7 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP2 :
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(2, 2), // disp
-            pylith::topology::Field::Discretization(2, 2, 1), // lagrange_multiplier_fault
+            pylith::topology::Field::Discretization(2, 2, 1, -1, true), // lagrange_multiplier_fault
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -401,7 +401,7 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP3 :
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(3, 3), // disp
-            pylith::topology::Field::Discretization(3, 3, 1), // lagrange_multiplier_fault
+            pylith::topology::Field::Discretization(3, 3, 1, -1, true), // lagrange_multiplier_fault
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -438,7 +438,7 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP4 :
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(4, 4), // disp
-            pylith::topology::Field::Discretization(4, 4, 1), // lagrange_multiplier_fault
+            pylith::topology::Field::Discretization(4, 4, 1, -1, true), // lagrange_multiplier_fault
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -463,7 +463,7 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ1 :
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(1, 1), // disp
-            pylith::topology::Field::Discretization(1, 1, 1), // lagrange_multiplier_fault
+            pylith::topology::Field::Discretization(1, 1, 1, -1, true), // lagrange_multiplier_fault
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -500,7 +500,7 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ2 :
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(2, 2), // disp
-            pylith::topology::Field::Discretization(2, 2, 1), // lagrange_multiplier_fault
+            pylith::topology::Field::Discretization(2, 2, 1, -1, true), // lagrange_multiplier_fault
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -537,7 +537,7 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ3 :
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(3, 3), // disp
-            pylith::topology::Field::Discretization(3, 3, 1), // lagrange_multiplier_fault
+            pylith::topology::Field::Discretization(3, 3, 1, -1, true), // lagrange_multiplier_fault
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -574,7 +574,7 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ4 :
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(4, 4), // disp
-            pylith::topology::Field::Discretization(4, 4, 1), // lagrange_multiplier_fault
+            pylith::topology::Field::Discretization(4, 4, 1, -1, true), // lagrange_multiplier_fault
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 

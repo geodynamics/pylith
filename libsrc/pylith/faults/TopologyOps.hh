@@ -96,6 +96,21 @@ public:
                          PointSet& noReplaceCells,
                          const int debug);
 
+    /** Get name of PETSc DM label for interfaces.
+     *
+     * @returns PETSc Label name.
+     */
+    static
+    const char* getInterfacesLabelName(void);
+
+    /** Get PETSc DM label for interfaces, creating if necessary.
+     *
+     * @param[inout] dm PETSc DM holding interfaces label.
+     * @returns PETSc DM label for interfaces.
+     */
+    static
+    PetscDMLabel getInterfacesLabel(PetscDM dm);
+
 }; // class TopologyOps
 
 #endif // pylith_faults_topologyops_hh

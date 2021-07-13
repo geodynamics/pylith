@@ -91,16 +91,16 @@ public:
      * @param[in] quadOrder Order of quadrature rule.
      * @param[in] dimension Dimension of points for discretization.
      * @param[in] cellBasis Type of basis functions to use (e.g., simplex, tensor, or default).
-     * @param[in] isBasisContinuous True if basis is continuous.
      * @param[in] feSpace Finite-element space.
+     * @param[in] isBasisContinuous True if basis is continuous.
      */
     void setAuxiliarySubfieldDiscretization(const char* subfieldName,
                                             const int basisOrder,
                                             const int quadOrder,
                                             const int dimension,
                                             const pylith::topology::FieldBase::CellBasis cellBasis,
-                                            const bool isBasisContinuous,
-                                            const pylith::topology::FieldBase::SpaceEnum feSpace);
+                                            const pylith::topology::FieldBase::SpaceEnum feSpace,
+                                            const bool isBasisContinuous);
 
     /** Set discretization information for derived subfield.
      *
@@ -109,16 +109,16 @@ public:
      * @param[in] quadOrder Order of quadrature rule.
      * @param[in] dimension Dimension of points for discretization.
      * @param[in] cellBasis Type of basis functions to use (e.g., simplex, tensor, or default).
-     * @param[in] isBasisContinuous True if basis is continuous.
      * @param[in] feSpace Finite-element space.
+     * @param[in] isBasisContinuous True if basis is continuous.
      */
     void setDerivedSubfieldDiscretization(const char* subfieldName,
                                           const int basisOrder,
                                           const int quadOrder,
                                           const int dimension,
                                           const pylith::topology::FieldBase::CellBasis cellBasis,
-                                          const bool isBasisContinuous,
-                                          const pylith::topology::FieldBase::SpaceEnum feSpace);
+                                          const pylith::topology::FieldBase::SpaceEnum feSpace,
+                                          const bool isBasisContinuous);
 
     /** Register observer to receive notifications.
      *

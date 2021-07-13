@@ -102,6 +102,7 @@ public:
                     const VectorFieldEnum vectorFieldTypeValue=SCALAR,
                     const PylithReal scaleValue=1.0,
                     const validatorfn_type validatorValue=NULL,
+                    bool isFaultOnlyValue=false,
                     bool hasHistoryValue=false,
                     const size_t historySizeValue=0) :
             label(labelValue),
@@ -122,24 +123,27 @@ public:
         int quadOrder; ///< Order of quadrature scheme.
         int dimension; ///< Dimension of point(s) for discretization.
         int components; ///< Number of components for field.
+        bool isFaultOnly; ///< Subfield is limited to fault degrees of freedom.
         CellBasis cellBasis; ///< Cell basis (simplex, tensor, default).
-        bool isBasisContinuous; ///< Is basis continuous?
         SpaceEnum feSpace; ///< Finite-element space.
+        bool isBasisContinuous; ///< Is basis continuous?
 
         Discretization(const int basisOrderValue=1,
                        const int quadOrderValue=1,
                        const int dimensionValue=-1,
                        const int componentsValue=-1,
+                       bool isFaultOnlyValue=false,
                        const CellBasis cellBasisValue=DEFAULT_BASIS,
-                       const bool isBasisContinuousValue=true,
-                       const SpaceEnum feSpaceValue=POLYNOMIAL_SPACE) :
+                       const SpaceEnum feSpaceValue=POLYNOMIAL_SPACE,
+                       const bool isBasisContinuousValue=true) :
             basisOrder(basisOrderValue),
             quadOrder(quadOrderValue),
             dimension(dimensionValue),
             components(componentsValue),
+            isFaultOnly(isFaultOnlyValue),
             cellBasis(cellBasisValue),
-            isBasisContinuous(isBasisContinuousValue),
-            feSpace(feSpaceValue)
+            feSpace(feSpaceValue),
+            isBasisContinuous(isBasisContinuousValue)
         {}
 
 
@@ -148,28 +152,32 @@ public:
             if (quadOrder          != rhs.quadOrder) {return false;}
             if (dimension          != rhs.dimension) {return false;}
             if (components         != rhs.components) {return false;}
+            if (isFaultOnly  != rhs.isFaultOnly) {return false;}
             if (cellBasis          != rhs.cellBasis) {return false;}
-            if (isBasisContinuous  != rhs.isBasisContinuous) {return false;}
             if (feSpace            != rhs.feSpace) {return false;}
+            if (isBasisContinuous  != rhs.isBasisContinuous) {return false;}
             // return true;
             return false;
-        }
+        } // operator=
 
         bool operator<(const Discretization rhs) const {
             return true;
-            if (basisOrder         < rhs.basisOrder) {return true;}
-            if (basisOrder        == rhs.basisOrder) {
-                if (quadOrder        < rhs.quadOrder) {return true;}
-                if (quadOrder       == rhs.quadOrder) {
-                    if (dimension      < rhs.dimension) {return true;}
-                    if (dimension     == rhs.dimension) {
-                        if (components   < rhs.components) {return true;}
-                        if (components  == rhs.components) {
-                            if (cellBasis        < rhs.cellBasis) {return true;}
-                            if (cellBasis       == rhs.cellBasis) {
-                                if (isBasisContinuous  < rhs.isBasisContinuous) {return true;}
-                                if (isBasisContinuous == rhs.isBasisContinuous) {
-                                    if (feSpace          < rhs.feSpace) {return true;}
+            if (basisOrder < rhs.basisOrder) {return true;}
+            if (basisOrder == rhs.basisOrder) {
+                if (quadOrder < rhs.quadOrder) {return true;}
+                if (quadOrder == rhs.quadOrder) {
+                    if (dimension < rhs.dimension) {return true;}
+                    if (dimension == rhs.dimension) {
+                        if (components < rhs.components) {return true;}
+                        if (components == rhs.components) {
+                            if (isFaultOnly < rhs.isFaultOnly) {return true;}
+                            if (isFaultOnly == rhs.isFaultOnly) {
+                                if (cellBasis < rhs.cellBasis) {return true;}
+                                if (cellBasis == rhs.cellBasis) {
+                                    if (feSpace < rhs.feSpace) {return true;}
+                                    if (feSpace == rhs.feSpace) {
+                                        if (isBasisContinuous  < rhs.isBasisContinuous) {return true;}
+                                    }
                                 }
                             }
                         }
@@ -177,7 +185,7 @@ public:
                 }
             }
             return false;
-        }
+        } // operator<
 
     }; // Discretization
 

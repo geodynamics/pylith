@@ -488,75 +488,31 @@ pylith::problems::Problem::_setupSolution(void) {
     PYLITH_COMPONENT_DEBUG("Problem::_setupSolution()");
 
     assert(_solution);
-
     _solution->subfieldsSetup();
-    if (_solution->hasSubfield("lagrange_multiplier_fault")) {
-        _setupLagrangeMultiplier();
-    } // if
-
     _solution->createDiscretization();
 
-    if (_solution->hasSubfield("lagrange_multiplier_fault")) {
-        // Mark lagrange_multiplier_fault field for implicit solve.
-        PetscErrorCode err = 0;
-        PetscDS prob = NULL;
-        PetscInt cStart = 0, cEnd = 0;
-        PetscDM dmSoln = _solution->getDM();assert(dmSoln);
-        err = DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-        PetscInt cell = cStart;
-        for (; cell < cEnd; ++cell) {
-            if (pylith::topology::MeshOps::isCohesiveCell(dmSoln, cell)) { break; }
-        } // for
-        err = DMGetCellDS(dmSoln, cell, &prob);PYLITH_CHECK_ERROR(err);
-        assert(prob);
-
-        const pylith::topology::Field::SubfieldInfo& lagrangeMultiplierInfo = _solution->getSubfieldInfo("lagrange_multiplier_fault");
-        err = PetscDSSetImplicit(prob, lagrangeMultiplierInfo.index, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
-    } // if
+    // Mark fault fields as implicit.
+    const pylith::string_vector& subfieldNames = _solution->getSubfieldNames();
+    for (size_t i = 0; i < subfieldNames.size(); ++i) {
+        const pylith::topology::Field::SubfieldInfo& subfieldInfo = _solution->getSubfieldInfo(subfieldNames[i].c_str());
+        if (subfieldInfo.fe.isFaultOnly) {
+            PetscErrorCode err;
+            PetscDS ds = NULL;
+            PetscInt cStart = 0, cEnd = 0;
+            PetscDM dmSoln = _solution->getDM();assert(dmSoln);
+            err = DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+            PetscInt cell = cStart;
+            for (; cell < cEnd; ++cell) {
+                if (pylith::topology::MeshOps::isCohesiveCell(dmSoln, cell)) { break; }
+            } // for
+            err = DMGetCellDS(dmSoln, cell, &ds);PYLITH_CHECK_ERROR(err);
+            assert(ds);
+            err = PetscDSSetImplicit(ds, subfieldInfo.index, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+        } // if
+    } // for
 
     PYLITH_METHOD_END;
 } // _setupSolution
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Setup field so Lagrange multiplier subfield is limited to degrees of freedom associated with the cohesive cells.
-void
-pylith::problems::Problem::_setupLagrangeMultiplier(void) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::_setupLagrangeMultiplier()");
-
-    assert(_solution->hasSubfield("lagrange_multiplier_fault"));
-
-    PetscDMLabel cohesiveLabel = NULL;
-    PylithInt dim = 0;
-    PylithInt pStart = 0;
-    PylithInt pEnd = 0;
-    PylithInt pMax = 0;
-    PetscErrorCode err;
-
-    PetscDM dmSoln = _solution->getDM();assert(dmSoln);
-    err = DMGetDimension(dmSoln, &dim);PYLITH_CHECK_ERROR(err);
-    err = DMCreateLabel(dmSoln, "cohesive interface");PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dmSoln, "cohesive interface", &cohesiveLabel);PYLITH_CHECK_ERROR(err);
-    for (PylithInt iDim = 0; iDim <= dim; ++iDim) {
-        err = DMPlexGetHeightStratum(dmSoln, iDim, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetSimplexOrBoxCells(dmSoln, iDim, NULL, &pMax);PYLITH_CHECK_ERROR(err);
-        for (PylithInt p = pMax; p < pEnd; ++p) {
-            err = DMLabelSetValue(cohesiveLabel, p, 1);PYLITH_CHECK_ERROR(err);
-        } // for
-    } // for
-
-    // Reset discretization (FE), now using label.
-    const pylith::topology::Field::SubfieldInfo& lagrangeMultiplierInfo = _solution->getSubfieldInfo("lagrange_multiplier_fault");
-    PetscFE fe = NULL;
-    err = DMGetField(dmSoln, lagrangeMultiplierInfo.index, NULL, (PetscObject*)&fe);PYLITH_CHECK_ERROR(err);assert(fe);
-    err = PetscObjectReference((PetscObject)fe);PYLITH_CHECK_ERROR(err);
-    err = DMSetField(dmSoln, lagrangeMultiplierInfo.index, cohesiveLabel, (PetscObject)fe);PYLITH_CHECK_ERROR(err);
-
-    err = PetscFEDestroy(&fe);PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_END;
-} // _setupLagrangeMultiplier
 
 
 // End of file

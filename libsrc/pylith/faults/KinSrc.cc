@@ -114,8 +114,9 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
     const char* slipFieldName = faultAuxField.hasSubfield("slip") ? "slip" : "slip_rate";
     const pylith::topology::FieldBase::Discretization& discretization = faultAuxField.getSubfieldInfo(slipFieldName).fe;
     _auxiliaryFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder,
-                                                 discretization.dimension, discretization.cellBasis, discretization.isBasisContinuous,
-                                                 discretization.feSpace);
+                                                 discretization.dimension, discretization.isFaultOnly,
+                                                 discretization.cellBasis, discretization.feSpace,
+                                                 discretization.isBasisContinuous);
 
     delete _auxiliaryField;_auxiliaryField = new pylith::topology::Field(faultAuxField.getMesh());assert(_auxiliaryField);
     _auxiliaryField->setLabel("kinsrc auxiliary");

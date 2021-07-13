@@ -60,8 +60,8 @@ namespace pylith {
 
                 _data->discretizationA.basisOrder = 1;
                 _data->discretizationA.quadOrder = 1;
-                _data->discretizationA.isBasisContinuous = true;
                 _data->discretizationA.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
+                _data->discretizationA.isBasisContinuous = true;
 
                 static const PylithScalar _subfieldAValues[4*2] = {
                     1.1, 1.2,
@@ -91,8 +91,8 @@ namespace pylith {
 
                 _data->discretizationB.basisOrder = 1;
                 _data->discretizationB.quadOrder = 1;
-                _data->discretizationB.isBasisContinuous = true;
                 _data->discretizationB.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
+                _data->discretizationB.isBasisContinuous = true;
 
                 static const PylithScalar _subfieldBValues[4*1] = {
                     1.3,

@@ -305,8 +305,11 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
     // Set default discretization of auxiliary subfields to match lagrange_multiplier_fault subfield in solution.
     assert(_auxiliaryFactory);
     const pylith::topology::FieldBase::Discretization& discretization = solution.getSubfieldInfo("lagrange_multiplier_fault").fe;
-    _auxiliaryFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder, -1,
-                                                 discretization.cellBasis, discretization.isBasisContinuous, discretization.feSpace);
+    const PylithInt dimension = -1;
+    const bool isFaultOnly = false;
+    _auxiliaryFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder, dimension,
+                                                 isFaultOnly, discretization.cellBasis, discretization.feSpace,
+                                                 discretization.isBasisContinuous);
 
     assert(_auxiliaryFactory);
     assert(_normalizer);
