@@ -86,9 +86,10 @@ pylith::testing::FieldTester::checkSubfieldInfo(const pylith::topology::Field& f
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.basisOrder, fe.basisOrder);
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.quadOrder, fe.quadOrder);
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.dimension, fe.dimension);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.isFaultOnly, fe.isFaultOnly);
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.cellBasis, fe.cellBasis);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.isBasisContinuous, fe.isBasisContinuous);
     CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.feSpace, fe.feSpace);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.isBasisContinuous, fe.isBasisContinuous);
 
     PYLITH_METHOD_END;
 } // checkSubfieldInfo

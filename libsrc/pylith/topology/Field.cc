@@ -25,6 +25,7 @@
 #include "VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
+#include "pylith/faults/TopologyOps.hh" // USES getInterfacesLabel()
 
 #include "pylith/utils/array.hh" // USES scalar_array
 
@@ -448,9 +449,10 @@ pylith::topology::Field::subfieldAdd(const char *name,
                                      const int basisOrder,
                                      const int quadOrder,
                                      const int dimension,
+                                     const bool isFaultOnly,
                                      const CellBasis cellBasis,
-                                     const bool isBasisContinuous,
-                                     const SpaceEnum feSpace) {
+                                     const SpaceEnum feSpace,
+                                     const bool isBasisContinuous) {
     assert(numComponents > 0);
     assert(dimension != 0);
 
@@ -471,8 +473,9 @@ pylith::topology::Field::subfieldAdd(const char *name,
     discretization.quadOrder = quadOrder;
     discretization.dimension = dimension;
     discretization.cellBasis = cellBasis;
-    discretization.isBasisContinuous = isBasisContinuous;
     discretization.feSpace = feSpace;
+    discretization.isBasisContinuous = isBasisContinuous;
+    discretization.isFaultOnly = isFaultOnly;
 
     this->subfieldAdd(description, discretization);
 } // subfieldAdd
@@ -532,8 +535,20 @@ pylith::topology::Field::subfieldsSetup(void) {
         sinfo.fe.cellBasis = cellBasis;
         PetscFE fe = FieldOps::createFE(sinfo.fe, dm, sinfo.description.numComponents);assert(fe);
         err = PetscFESetName(fe, sname);PYLITH_CHECK_ERROR(err);
-        err = DMSetField(dm, sinfo.index, NULL, (PetscObject)fe);PYLITH_CHECK_ERROR(err);
-        err = DMSetFieldAvoidTensor(dm, sinfo.index, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+
+        // :KLUDGE: We need PETSc DMPlex to support specifying subfields over labels and label values.
+        // Once that is implemented, then we should switch to specifying subfields over labels and values.
+        // For now we assume subfields are on:
+        //   + all degrees of freedom,
+        //   + everywhere but fault degrees of freedom, or
+        //   + only fault degrees of freedom.
+        if (!sinfo.fe.isFaultOnly) {
+            err = DMSetField(dm, sinfo.index, NULL, (PetscObject)fe);PYLITH_CHECK_ERROR(err);
+            err = DMSetFieldAvoidTensor(dm, sinfo.index, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+        } else {
+            PetscDMLabel interfacesLabel = pylith::faults::TopologyOps::getInterfacesLabel(dm);
+            err = DMSetField(dm, sinfo.index, interfacesLabel, (PetscObject)fe);PYLITH_CHECK_ERROR(err);
+        } // if/else
         err = PetscFEDestroy(&fe);PYLITH_CHECK_ERROR(err);
     } // for
 

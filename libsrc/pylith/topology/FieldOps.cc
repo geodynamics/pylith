@@ -54,7 +54,8 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
     err = DMGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
     dim = (feinfo.dimension < 0) ? dim : feinfo.dimension;assert(dim > 0);
     FieldBase::Discretization feKey = FieldBase::Discretization(feinfo.basisOrder, feinfo.quadOrder, dim, numComponents,
-                                                                feinfo.cellBasis, feinfo.isBasisContinuous, feinfo.feSpace);
+                                                                feinfo.isFaultOnly, feinfo.cellBasis, feinfo.feSpace,
+                                                                feinfo.isBasisContinuous);
     std::map<FieldBase::Discretization, pylith::topology::FE>::const_iterator hasFE = pylith::topology::FieldOps::feStore.find(feKey);
 
     if (hasFE == pylith::topology::FieldOps::feStore.end()) {

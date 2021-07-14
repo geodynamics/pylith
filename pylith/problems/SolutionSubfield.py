@@ -57,6 +57,7 @@ class SolutionSubfield(Subfield):
         self.fieldComponents = None
         self.vectorFieldType = None
         self.scale = None
+        self.isFaultOnly = False
         return
 
     def initialize(self, normalizer, spaceDim):

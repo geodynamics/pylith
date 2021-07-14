@@ -52,6 +52,7 @@ class SubfieldLagrangeFault(SolutionSubfield):
         self.vectorFieldType = Field.VECTOR
         self.scale = normalizer.getPressureScale()
         self._setComponents(spaceDim)
+        self.isFaultOnly = True
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

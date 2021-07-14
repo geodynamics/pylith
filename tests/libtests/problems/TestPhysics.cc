@@ -25,6 +25,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/utils/types.hh" // USES PylithReal
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 
 #include "pylith/testing/ObserverPhysicsStub.hh" // USES ObserversPhysicsStub
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
@@ -104,8 +105,8 @@ pylith::problems::TestPhysics::testSetAuxiliarySubfieldDiscretization(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_physics);
-    _physics->setAuxiliarySubfieldDiscretization("fieldA", 1, 2, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE);
-    _physics->setAuxiliarySubfieldDiscretization("fieldB", 2, 3, 4, false, pylith::topology::Field::POINT_SPACE);
+    _physics->setAuxiliarySubfieldDiscretization("fieldA", 1, 2, 3, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true);
+    _physics->setAuxiliarySubfieldDiscretization("fieldB", 2, 3, 4, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POINT_SPACE, true);
 
     const pylith::feassemble::AuxiliaryFactory* factory = _physics->_getAuxiliaryFactory();CPPUNIT_ASSERT(factory);
 

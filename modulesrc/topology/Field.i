@@ -144,22 +144,23 @@ public:
             /// Zero local values (including constrained values).
             void zeroLocal(void);
 
-            /** Add subfield to current field.
+            /** Add subfield to current field (for use from SWIG).
              *
              * Should be followed by calls to subfieldsSetup() and allocate().
              *
-             * @param[in] name Programatic name for subfield.
-             * @param[in] alias User-specified name for subfield.
+             * @param[in] name Programatic name of subfield.
+             * @param[in] alias User-specified alias for subfield.
              * @param[in] fieldType Type of vector field.
-             * @param[in] components Names of components in subfield.
-             * @param[in] numComponents Number of components in subfield.
-             * @param[in] basisOrder Polynomial order for basis.
-             * @param[in] quadOrder Order of quadrature rule.
+             * @param[in] components Array of names of field components.
+             * @param[in] numComponents Size of array.
+             * @param[in] scale Dimensional scale associated with field.
+             * @param[in] basisOrder Order of basis functions for discretization.
+             * @param[in] quadOrder Order of numerical quadrature for discretization.
              * @param[in] dimension Dimension of points for discretization.
+             * @param[in] isFaultOnly True if subfield is limited to fault degrees of freedom.
              * @param[in] cellBasis Type of basis functions to use (e.g., simplex, tensor, or default).
+             * @param[in] feSpace Finite-element space (POLYNOMIAL_SPACE or POINT_SPACE).
              * @param[in] isBasisContinuous True if basis is continuous.
-             * @param[in] feSpace Finite-element space (polynomial or point).
-             * @param[in] scale Scale for dimensionalizing field.
              */
             %apply(const char* const* string_list, const int list_len) {
                 (const char* components[], const int numComponents)
@@ -173,9 +174,10 @@ public:
                              const int basisOrder,
                              const int quadOrder,
                              const int dimension,
+                             const bool isFaultOnly,
                              const CellBasis cellBasis,
-                             const bool isBasisContinuous,
-                             const SpaceEnum feSpace);
+                             const SpaceEnum feSpace,
+                             const bool isBasisContinuous);
 
             %clear(const char* components[], const int numComponents);
 

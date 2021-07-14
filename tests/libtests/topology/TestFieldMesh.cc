@@ -274,8 +274,8 @@ pylith::topology::TestFieldMesh::testSubfieldAccessors(void) {
         } // for
         CPPUNIT_ASSERT_EQUAL(_data->discretizationA.basisOrder, infoA.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(_data->discretizationA.quadOrder, infoA.fe.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(_data->discretizationA.isBasisContinuous, infoA.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(_data->discretizationA.feSpace, infoA.fe.feSpace);
+        CPPUNIT_ASSERT_EQUAL(_data->discretizationA.isBasisContinuous, infoA.fe.isBasisContinuous);
     } // Test getSubfieldInfo() for subfield A.
 
     { // Test getSubfieldInfo() for subfield B.
@@ -292,8 +292,8 @@ pylith::topology::TestFieldMesh::testSubfieldAccessors(void) {
         } // for
         CPPUNIT_ASSERT_EQUAL(_data->discretizationB.basisOrder, infoB.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(_data->discretizationB.quadOrder, infoB.fe.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(_data->discretizationB.isBasisContinuous, infoB.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(_data->discretizationB.feSpace, infoB.fe.feSpace);
+        CPPUNIT_ASSERT_EQUAL(_data->discretizationB.isBasisContinuous, infoB.fe.isBasisContinuous);
     } // Test getSubfieldInfo() for subfield B.
 
     CPPUNIT_ASSERT_THROW(_field->getSubfieldInfo("aabbccdd"), std::runtime_error);

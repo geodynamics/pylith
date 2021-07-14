@@ -199,9 +199,10 @@ public:
      * @param[in] basisOrder Order of basis functions for discretization.
      * @param[in] quadOrder Order of numerical quadrature for discretization.
      * @param[in] dimension Dimension of points for discretization.
+     * @param[in] isFaultOnly True if subfield is limited to fault degrees of freedom.
      * @param[in] cellBasis Type of basis functions to use (e.g., simplex, tensor, or default).
-     * @param[in] isBasisContinuous True if basis is continuous.
      * @param[in] feSpace Finite-element space (POLYNOMIAL_SPACE or POINT_SPACE).
+     * @param[in] isBasisContinuous True if basis is continuous.
      */
     void subfieldAdd(const char *name,
                      const char* alias,
@@ -212,9 +213,10 @@ public:
                      const int basisOrder,
                      const int quadOrder,
                      const int dimension,
+                     const bool isFaultOnly,
                      const CellBasis cellBasis,
-                     const bool isBasisContinuous,
-                     const SpaceEnum feSpace);
+                     const SpaceEnum feSpace,
+                     const bool isBasisContinuous);
 
     /** Add subfield to current field.
      *

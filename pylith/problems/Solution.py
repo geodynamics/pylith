@@ -67,9 +67,10 @@ class Solution(PetscComponent):
                 quadOrder = problem.defaults.quadOrder
             else:
                 quadOrder = subfield.quadOrder
-            self.field.subfieldAdd(subfield.fieldName, subfield.userAlias, subfield.vectorFieldType, subfield.componentNames,
-                                   subfield.scale.value, subfield.basisOrder, quadOrder, subfield.dimension,
-                                   subfield.cellBasis, subfield.isBasisContinuous, subfield.feSpace)
+            self.field.subfieldAdd(subfield.fieldName, subfield.userAlias, subfield.vectorFieldType, 
+                                   subfield.componentNames, subfield.scale.value, subfield.basisOrder, 
+                                   quadOrder, subfield.dimension, subfield.isFaultOnly,
+                                   subfield.cellBasis, subfield.feSpace, subfield.isBasisContinuous)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

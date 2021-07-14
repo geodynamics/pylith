@@ -55,6 +55,7 @@ public:
      * @param[in] basisOrder Polynomial order for basis.
      * @param[in] quadOrder Order of quadrature rule.
      * @param[in] dimension Dimension of points for discretization.
+     * @param[in] isFaultOnly True if subfield is limited to fault degrees of freedom.
      * @param[in] cellBasis Type of basis functions to use (e.g., simplex, tensor, or default).
      * @param[in] isBasisContinuous True if basis is continuous.
      * @param[in] feSpace Finite-element space.
@@ -63,9 +64,10 @@ public:
                                    const int basisOrder,
                                    const int quadOrder,
                                    const int dimension,
+                                   const bool isFaultOnly,
                                    const pylith::topology::FieldBase::CellBasis cellBasis,
-                                   const bool isBasisContinuous,
-                                   const pylith::topology::FieldBase::SpaceEnum feSpace);
+                                   const pylith::topology::FieldBase::SpaceEnum feSpace,
+                                   const bool isBasisContinuous);
 
     /** Get discretization information for subfield.
      *

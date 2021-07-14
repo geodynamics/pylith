@@ -65,7 +65,7 @@ class RheologyElasticity(PetscComponent, ModuleRheology):
             else:
                 quadOrder = subfield.quadOrder
             material.setAuxiliarySubfieldDiscretization(fieldName, subfield.basisOrder, quadOrder, subfield.dimension,
-                                                        subfield.cellBasis, subfield.isBasisContinuous, subfield.feSpace)
+                                                        subfield.cellBasis, subfield.feSpace, subfield.isBasisContinuous)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

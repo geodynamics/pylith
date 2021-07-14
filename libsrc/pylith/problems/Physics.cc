@@ -115,13 +115,15 @@ pylith::problems::Physics::setAuxiliarySubfieldDiscretization(const char* subfie
                                                               const int quadOrder,
                                                               const int dimension,
                                                               const pylith::topology::FieldBase::CellBasis cellBasis,
-                                                              const bool isBasisContinuous,
-                                                              const pylith::topology::FieldBase::SpaceEnum feSpace) {
+                                                              const pylith::topology::FieldBase::SpaceEnum feSpace,
+                                                              const bool isBasisContinuous) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("setAuxiliarySubfieldDiscretization(subfieldName="<<subfieldName<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", dimension="<<dimension<<", cellBasis="<<cellBasis<<", isBasisContinuous="<<isBasisContinuous<<")");
 
     pylith::feassemble::AuxiliaryFactory* factory = _getAuxiliaryFactory();assert(factory);
-    factory->setSubfieldDiscretization(subfieldName, basisOrder, quadOrder, dimension, cellBasis, isBasisContinuous, feSpace);
+    const bool isFaultOnly = false;
+    factory->setSubfieldDiscretization(subfieldName, basisOrder, quadOrder, dimension, isFaultOnly, cellBasis, feSpace,
+                                       isBasisContinuous);
 
     PYLITH_METHOD_END;
 } // setAuxSubfieldDiscretization
@@ -135,13 +137,15 @@ pylith::problems::Physics::setDerivedSubfieldDiscretization(const char* subfield
                                                             const int quadOrder,
                                                             const int dimension,
                                                             const pylith::topology::FieldBase::CellBasis cellBasis,
-                                                            const bool isBasisContinuous,
-                                                            const pylith::topology::FieldBase::SpaceEnum feSpace) {
+                                                            const pylith::topology::FieldBase::SpaceEnum feSpace,
+                                                            const bool isBasisContinuous) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("setDerivedSubfieldDiscretization(subfieldName="<<subfieldName<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", dimension="<<dimension<<", cellBasis="<<cellBasis<<", isBasisContinuous="<<isBasisContinuous<<")");
 
     pylith::topology::FieldFactory* factory = _getDerivedFactory();assert(factory);
-    factory->setSubfieldDiscretization(subfieldName, basisOrder, quadOrder, dimension, cellBasis, isBasisContinuous, feSpace);
+    const bool isFaultOnly = false;
+    factory->setSubfieldDiscretization(subfieldName, basisOrder, quadOrder, dimension, isFaultOnly, cellBasis, feSpace,
+                                       isBasisContinuous);
 
     PYLITH_METHOD_END;
 } // setDerivedSubfieldDiscretization

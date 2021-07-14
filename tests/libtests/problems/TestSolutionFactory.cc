@@ -63,7 +63,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->getLengthScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        1, 2, -1, -1, pylith::topology::Field::DEFAULT_BASIS, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        1, 2, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
         );
     info.index = 0;
     _data->subfields["displacement"] = info;
@@ -82,7 +82,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->getLengthScale() / _data->normalizer->getTimeScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 3, -1, -1, pylith::topology::Field::DEFAULT_BASIS, false, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 3, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, false
         );
     info.index = 1;
     _data->subfields["velocity"] = info;
@@ -99,7 +99,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->getPressureScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 2, -1, -1, pylith::topology::Field::DEFAULT_BASIS, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 2, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
         );
     info.index = 0;
     _data->subfields["pressure"] = info;
@@ -116,7 +116,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->getLengthScale() / _data->normalizer->getLengthScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 2, -1, -1, pylith::topology::Field::DEFAULT_BASIS, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 2, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
         );
     info.index = 1;
     _data->subfields["trace_strain"] = info;
@@ -135,7 +135,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->getPressureScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 2, -1, -1, pylith::topology::Field::DEFAULT_BASIS, true, pylith::topology::Field::POLYNOMIAL_SPACE
+        2, 2, -1, -1, true, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
         );
     info.index = 1;
     _data->subfields["lagrange_multiplier_fault"] = info;
@@ -152,7 +152,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         _data->normalizer->getTemperatureScale()
         );
     info.fe = pylith::topology::Field::Discretization(
-        2, 3, -1, -1, pylith::topology::Field::DEFAULT_BASIS, true, pylith::topology::Field::POINT_SPACE
+        2, 3, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POINT_SPACE, true
         );
     info.index = 1;
     _data->subfields["temperature"] = info;

@@ -26,7 +26,7 @@
 #include <iostream> // USES std::cout
 #include <cassert> // USES assert()
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
                                          const pylith::topology::Mesh& mesh,
@@ -89,7 +89,7 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
 } // createFault
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
                                     const pylith::topology::Mesh& faultMesh,
@@ -212,7 +212,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
 } // create
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Form a parallel fault mesh using the cohesive cell information
 void
 pylith::faults::TopologyOps::createFaultParallel(pylith::topology::Mesh* faultMesh,
@@ -246,7 +246,7 @@ pylith::faults::TopologyOps::createFaultParallel(pylith::topology::Mesh* faultMe
 } // createFaultParallel
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 pylith::faults::TopologyOps::classifyCellsDM(PetscDM dmMesh,
                                              PetscInt vertex,
@@ -360,6 +360,49 @@ pylith::faults::TopologyOps::classifyCellsDM(PetscDM dmMesh,
     // More checking
     noReplaceCells.insert(vNoReplaceCells.begin(), vNoReplaceCells.end());
 } // classifyCellsDM
+
+
+// ------------------------------------------------------------------------------------------------
+// Get name of PETSc DM label for interfaces.
+const char*
+pylith::faults::TopologyOps::getInterfacesLabelName(void) {
+    return "cohesive interface";
+} // getInterfacesLabelName
+
+
+// ------------------------------------------------------------------------------------------------
+// Get PETSc DM label for interfaces, creating if necessary.
+PetscDMLabel
+pylith::faults::TopologyOps::getInterfacesLabel(PetscDM dm) {
+    PYLITH_METHOD_BEGIN;
+    PetscErrorCode err;
+    PetscDMLabel interfacesLabel = NULL;
+
+    const char* interfacesLabelName = TopologyOps::getInterfacesLabelName();
+    PetscBool hasInterfacesLabel = PETSC_FALSE;
+    if (DMHasLabel(dm, interfacesLabelName, &hasInterfacesLabel)) {
+        err = DMGetLabel(dm, interfacesLabelName, &interfacesLabel);PYLITH_CHECK_ERROR(err);
+    } else {
+        PetscInt dim = 0;
+        PetscInt pStart = 0;
+        PetscInt pEnd = 0;
+        PetscInt pMax = 0;
+
+        err = DMGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
+        err = DMCreateLabel(dm, interfacesLabelName);PYLITH_CHECK_ERROR(err);
+        err = DMGetLabel(dm, interfacesLabelName, &interfacesLabel);PYLITH_CHECK_ERROR(err);
+        for (PylithInt iDim = 0; iDim <= dim; ++iDim) {
+            err = DMPlexGetHeightStratum(dm, iDim, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+            err = DMPlexGetSimplexOrBoxCells(dm, iDim, NULL, &pMax);PYLITH_CHECK_ERROR(err);
+            for (PylithInt p = pMax; p < pEnd; ++p) {
+                err = DMLabelSetValue(interfacesLabel, p, 1);PYLITH_CHECK_ERROR(err);
+            } // for
+        } // for
+    } // else
+    assert(interfacesLabel);
+
+    PYLITH_METHOD_RETURN(interfacesLabel);
+} // getInterfacesLabel
 
 
 // End of file
