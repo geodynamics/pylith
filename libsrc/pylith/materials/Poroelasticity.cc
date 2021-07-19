@@ -436,7 +436,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
     case QUASISTATIC:
     {
         // Displacement
-        PetscPointFunc f0u = NULL;
+        PetscPointFunc f0u = pylith::fekernels::Poroelasticity::f0u;
         const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
         const int bitGravity = _gravityField ? 0x2 : 0x0;
         const int bitSourceDensity = _useSourceDensity ? 0x4 : 0x0;
@@ -466,7 +466,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
             f0u = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
             break;
         default:
-            PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
+            PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for Poroelasticity LHS residual kernels.");
         } // switch
         const PetscPointFunc f1u = _rheology->getKernelf1u_implicit(coordsys);
 
@@ -475,7 +475,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
         PetscPointFunc f1p = _rheology->getKernelf1p_implicit(coordsys, _useBodyForce, _gravityField, _useConstantPressureSource); //
 
         //
-        // darcy
+        // Darcy
         //
 
         // Volumetric Strain

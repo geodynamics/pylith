@@ -247,15 +247,10 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_tl_u(const P
 
     const PylithScalar lambda = drainedBulkModulus - 2.0 / 3.0 * shearModulus;
 
-    // f0[0] += PetscSqr(2.0 * PETSC_PI) * PetscSinReal(2.0 * PETSC_PI * x[0]) * (2.0 * shearModulus + lambda) + 2.0 *
-    //          (shearModulus + lambda) - 2.0 * PETSC_PI * biotCoefficient * PetscSinReal(2.0 * PETSC_PI * x[0]) * t;
-    // f0[1] += PetscSqr(2.0 * PETSC_PI) * PetscSinReal(2.0 * PETSC_PI * x[1]) * (2.0 * shearModulus + lambda) - 2.0 *
-    //          PETSC_PI * biotCoefficient * PetscSinReal(2.0 * PETSC_PI * x[1]) * t;
-
-    for (PylithInt d = 0; d < _dim - 1; ++d) {
-        f0[d] += PetscSqr(2. * PETSC_PI) * PetscSinReal(2. * PETSC_PI * x[d]) * (2. * shearModulus + lambda) + 2.0 * (shearModulus + lambda) - 2. * PETSC_PI * biotCoefficient * PetscSinReal(2. * PETSC_PI * x[d]) * t;
-    }
-    f0[_dim - 1] += PetscSqr(2. * PETSC_PI) * PetscSinReal(2. * PETSC_PI * x[_dim - 1]) * (2. * shearModulus + lambda) - 2. * PETSC_PI * biotCoefficient * PetscSinReal(2. * PETSC_PI * x[_dim - 1]) * t;
+    f0[0] += PetscSqr(2.0 * PETSC_PI) * PetscSinReal(2.0 * PETSC_PI * x[0]) * (2.0 * shearModulus + lambda) + 2.0 *
+             (shearModulus + lambda) - 2.0 * PETSC_PI * biotCoefficient * PetscSinReal(2.0 * PETSC_PI * x[0]) * t;
+    f0[1] += PetscSqr(2.0 * PETSC_PI) * PetscSinReal(2.0 * PETSC_PI * x[1]) * (2.0 * shearModulus + lambda) - 2.0 *
+             PETSC_PI * biotCoefficient * PetscSinReal(2.0 * PETSC_PI * x[1]) * t;
 } // f0_trig_linear_u
 
 
@@ -296,13 +291,10 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_tl_p(const P
 
     PylithScalar sum = 0.0;
 
-    // sum += PetscCosReal(2.0 * PETSC_PI * x[0]) + PetscCosReal(2.0 * PETSC_PI * x[1]);
-    for (PylithInt d = 0; d < _dim; ++d) {
-        sum += PetscCosReal(2. * PETSC_PI * x[d]);
-    }
+    sum += PetscCosReal(2.0 * PETSC_PI * x[0]) + PetscCosReal(2.0 * PETSC_PI * x[1]);
 
     f0[0] -= sum / biotModulus - 4.0 * PetscSqr(PETSC_PI) * kappa * sum * t;
-} // f0_quadratic_trig_p
+} // f0_trig_linear_p
 
 
 // ================================= STD =======================================

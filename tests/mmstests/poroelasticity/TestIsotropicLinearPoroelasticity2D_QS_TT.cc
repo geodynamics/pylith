@@ -427,34 +427,21 @@ protected:
     // Set exact solution in domain.
     void _setExactSolution(void) {
         CPPUNIT_ASSERT(_solution);
-
         PetscErrorCode err = 0;
         PetscDS prob = NULL;
         PetscWeakForm wf = NULL;
         DMLabel label = NULL;
-        err = DMGetDS(_solution->dmMesh(), &prob);
-        CPPUNIT_ASSERT(!err);
-        err = DMGetLabel(_solution->dmMesh(), "material-id", &label);
-        CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(prob, 0, solnkernel_displacement, NULL);
-        CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolutionTimeDerivative(prob, 0, solnkernel_displacement_t, NULL);
-        CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(prob, 1, solnkernel_pressure, NULL);
-        CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolutionTimeDerivative(prob, 1, solnkernel_pressure_t, NULL);
-        CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(prob, 2, solnkernel_trace_strain, NULL);
-        CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolutionTimeDerivative(prob, 2, solnkernel_trace_strain_t, NULL);
-        CPPUNIT_ASSERT(!err);
-
-        err = PetscDSGetWeakForm(prob, &wf);
-        CPPUNIT_ASSERT(!err);
-        err = PetscWeakFormSetIndexResidual(wf, label, 24, 0, 1, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_qt_u, 1, NULL);
-        CPPUNIT_ASSERT(!err);
-        err = PetscWeakFormSetIndexResidual(wf, label, 24, 1, 1, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_qt_p, 1, NULL);
-        CPPUNIT_ASSERT(!err);
+        err = DMGetDS(_solution->getDM(), &prob);CPPUNIT_ASSERT(!err);
+        err = DMGetLabel(_solution->getDM(), "material-id", &label);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolution(prob, 0, solnkernel_displacement, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolutionTimeDerivative(prob, 0, solnkernel_displacement_t, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolution(prob, 1, solnkernel_pressure, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolutionTimeDerivative(prob, 1, solnkernel_pressure_t, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolution(prob, 2, solnkernel_trace_strain, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolutionTimeDerivative(prob, 2, solnkernel_trace_strain_t, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSGetWeakForm(prob, &wf);CPPUNIT_ASSERT(!err);
+        err = PetscWeakFormSetIndexResidual(wf, label, 24, 0, 0, 1, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_qt_u, 1, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscWeakFormSetIndexResidual(wf, label, 24, 1, 0, 1, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_qt_p, 1, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
 
 }; // TestIsotropicLinearPoroelasticity2D_QS_TT
