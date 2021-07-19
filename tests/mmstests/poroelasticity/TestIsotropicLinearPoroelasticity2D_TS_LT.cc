@@ -188,7 +188,7 @@ class pylith::mmstests::TestIsotropicLinearPoroelasticity2D_TS_LT : public pylit
     static double pressure(const double x,
                            const double y,
                            const double t) {
-        return ( PetscCosReal(2.0 * PETSC_PI * x) + PetscCosReal(2.0 * PETSC_PI *y) ) * t;
+        return ( PetscCosReal(2.0 * PETSC_PI * x) + PetscCosReal(2.0 * PETSC_PI * y) ) * t;
     } // pressure
 
     static double trace_strain(const double x,
@@ -325,11 +325,10 @@ protected:
         // Overwrite component names for control of debugging info at test level.
         GenericComponent::setName("TestIsotropicLinearPoroelasticity2D_TS_LT");
         pythia::journal::debug_t debug(GenericComponent::getName());
-        debug.activate(); // DEBUGGING
+        // debug.activate(); // DEBUGGING
 
         CPPUNIT_ASSERT(!_data);
-        _data = new TestPoroelasticity_Data();
-        CPPUNIT_ASSERT(_data);
+        _data = new TestPoroelasticity_Data();CPPUNIT_ASSERT(_data);
         _isJacobianLinear = true;
 
         _data->spaceDim = 2;
@@ -337,8 +336,7 @@ protected:
         _data->boundaryLabel = "boundary";
 
         CPPUNIT_ASSERT(!_data->cs);
-        _data->cs = new spatialdata::geocoords::CSCart;
-        CPPUNIT_ASSERT(_data->cs);
+        _data->cs = new spatialdata::geocoords::CSCart;CPPUNIT_ASSERT(_data->cs);
         _data->cs->setSpaceDim(_data->spaceDim);
 
         CPPUNIT_ASSERT(_data->normalizer);
@@ -397,8 +395,8 @@ protected:
         _material->setFormulation(pylith::problems::Physics::QUASISTATIC);
         _material->useBodyForce(false);
         _material->useSourceDensity(false);
-
         _rheology->useReferenceState(false);
+
         _rheology->useTensorPermeability(false);
 
         _material->setDescriptiveLabel("Isotropic Linear Poroelasticity Plane Strain");
@@ -427,34 +425,21 @@ protected:
     // Set exact solution in domain.
     void _setExactSolution(void) {
         CPPUNIT_ASSERT(_solution);
-
         PetscErrorCode err = 0;
         PetscDS prob = NULL;
         PetscWeakForm wf = NULL;
         DMLabel label = NULL;
-        err = DMGetDS(_solution->dmMesh(), &prob);
-        CPPUNIT_ASSERT(!err);
-        err = DMGetLabel(_solution->dmMesh(), "material-id", &label);
-        CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(prob, 0, solnkernel_displacement, NULL);
-        CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolutionTimeDerivative(prob, 0, solnkernel_displacement_t, NULL);
-        CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(prob, 1, solnkernel_pressure, NULL);
-        CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolutionTimeDerivative(prob, 1, solnkernel_pressure_t, NULL);
-        CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(prob, 2, solnkernel_trace_strain, NULL);
-        CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolutionTimeDerivative(prob, 2, solnkernel_trace_strain_t, NULL);
-        CPPUNIT_ASSERT(!err);
-
-        err = PetscDSGetWeakForm(prob, &wf);
-        CPPUNIT_ASSERT(!err);
-        err = PetscWeakFormSetIndexResidual(wf, label, 24, 0, 1, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_tl_u, 1, NULL);
-        CPPUNIT_ASSERT(!err);
-        err = PetscWeakFormSetIndexResidual(wf, label, 24, 1, 1, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_tl_p, 1, NULL);
-        CPPUNIT_ASSERT(!err);
+        err = DMGetDS(_solution->getDM(), &prob);CPPUNIT_ASSERT(!err);
+        err = DMGetLabel(_solution->getDM(), "material-id", &label);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolution(prob, 0, solnkernel_displacement, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolutionTimeDerivative(prob, 0, solnkernel_displacement_t, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolution(prob, 1, solnkernel_pressure, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolutionTimeDerivative(prob, 1, solnkernel_pressure_t, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolution(prob, 2, solnkernel_trace_strain, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolutionTimeDerivative(prob, 2, solnkernel_trace_strain_t, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSGetWeakForm(prob, &wf);CPPUNIT_ASSERT(!err);
+        err = PetscWeakFormSetIndexResidual(wf, label, 24, 0, 0, 1, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_tl_u, 1, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscWeakFormSetIndexResidual(wf, label, 24, 1, 0, 1, pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0_mms_tl_p, 1, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
 
 }; // TestIsotropicLinearPoroelasticity2D_TS_LT
