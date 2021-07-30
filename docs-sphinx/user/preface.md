@@ -51,10 +51,10 @@ $ ls -l
 
 Example of an excerpt from a `.cfg` file:
 
-```{code-block} python
+```{code-block} cfg
 # This is a comment.
 [pylithapp.problem]
-timestep = 2.0*s; Time step comment.
+timestep = 2.0*s
 bc = [x_pos, x_neg]
 ```
 
@@ -64,7 +64,7 @@ The Computational Infrastructure for Geodynamics (CIG) ([geodynamics.org](https:
 A number of individuals have contributed a significant portion of their careers toward the development of this software.
 It is essential that you recognize these individuals in the normal scientific practice by citing the appropriate peer-reviewed papers and making appropriate acknowledgments in talks and publications.
 The preferred way to generate the list of publications (in BibTeX format) to cite is to run your simulations with the `--include-citations` command line argument, or equivalently, the `--petsc.citations` command line argument.
-The `--help-Citations` command line argument will generate the BibTeX entries for the references mentioned below.
+The `--help-citations` command line argument will generate the BibTeX entries for the references mentioned below.
 
 The following peer-reviewed paper discussed the development of PyLith:
 
