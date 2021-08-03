@@ -5,7 +5,7 @@
 PyLith is portable, scalable software for simulation of crustal deformation across spatial scales ranging from meters to hundreds of kilometers and temporal scales ranging from milliseconds to thousands of years.
 Its primary applications are quasistatic and dynamic modeling of earthquake faulting.
 
-## New in PyLith Version
+## New in PyLith Version 3.0.0dev
 
 -   Major rewrite of the finite-element implementation to support higher order discretizations and flexible specification of the governing equations.
 
