@@ -79,6 +79,18 @@ public:
      */
     bool useConstantPressureSource(void) const;
 
+    /** Update fields?
+     *
+     * @param[in] value Flag indicating to update the auxiliary field values over time.
+     */
+    void updateFields(const bool value);
+
+    /** Update fields?
+     *
+     * @param[in] value Flag indicating to update the auxiliary field values over time.
+     */
+    bool updateFields(void) const;
+
     /** Use reference stress and strain in computation of stress and
      * strain?
      *
@@ -199,6 +211,7 @@ private:
     bool _useReferenceState;                                      ///< Flag to use reference stress and strain.
     bool _useSourceDensity;                                       ///< Flag to use source density.
     bool _useConstantPressureSource;                              ///< Flag to use constant pressure source.
+    bool _updateFields;                                           ///< Flag to update auxiliary fields.
     pylith::materials::RheologyPoroelasticity *_rheology;         ///< Bulk rheology for poroelasticity.
     pylith::materials::DerivedFactoryElasticity *_derivedFactory; ///< Factory for creating derived fields.
 
