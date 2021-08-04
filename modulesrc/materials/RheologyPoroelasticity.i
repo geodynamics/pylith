@@ -125,6 +125,14 @@ public:
     // Get biot coefficient kernel for LHS Jacobian F(t,s, \dot{s}).
     virtual
     PetscPointJac getKernelJf0pe(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+    
+    // ---------------------------------------------------------------------------------------------------------------------
+    virtual
+    PetscPointJac getKernelJf0ppdot(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    virtual
+    PetscPointJac getKernelJf0pedot(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
       // ============================ DERIVED FIELDS ========================== //
 
@@ -144,7 +152,8 @@ public:
        */
       virtual
       void addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
-                                     const spatialdata::geocoords::CoordSys* coordsys) const;
+                                     const spatialdata::geocoords::CoordSys* coordsys,
+                                     const bool _updateFields) const;
 
       /** Update kernel constants.
        *
