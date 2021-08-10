@@ -685,14 +685,14 @@ pylith::materials::IsotropicLinearPoroelasticity::addKernelsUpdateStateVars(std:
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<")");
     PetscPrintf(PETSC_COMM_WORLD, "update porosity");
-    const int spaceDim = coordsys->getSpaceDim();
     if (_updateFields) {
+        const int spaceDim = coordsys->getSpaceDim();
         const PetscPointFunc funcPorosity =
             (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::updatePorosity :
             (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosity :
             NULL;
-        assert(kernels);
 
+        assert(kernels);
         size_t prevNumKernels = kernels->size();
         kernels->resize(prevNumKernels + 1);
         (*kernels)[prevNumKernels+0] = ProjectKernels("porosity", funcPorosity);

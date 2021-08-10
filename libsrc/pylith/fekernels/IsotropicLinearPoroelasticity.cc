@@ -3256,7 +3256,6 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosity(cons
                                                                             const PylithScalar constants[],
                                                                             PylithScalar porosity[]) {
     const PylithInt _dim = 2;
-    PetscPrintf(PETSC_COMM_WORLD, "porosity[0]: %f\n", (double)porosity[0]);
     // Incoming solution fields.
     const PylithInt i_pressure_t = 4;
     const PylithInt i_trace_strain_t = 5;
@@ -3265,6 +3264,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosity(cons
 
     // Poroelasticity
     const PylithInt i_porosity = 3;
+    PetscPrintf(PETSC_COMM_WORLD, "porosity_n[0]: %f\n", (double)a[aOff[i_porosity]]);
 
     // IsotropicLinearPoroelasticity
     const PylithInt i_drainedBulkModulus = numA - 4;
@@ -3273,18 +3273,37 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosity(cons
     // Constants
     const PylithScalar dt = constants[0];
 
+#if 0 // :DEBUG:
+    std::cout << "dim:  " << dim << std::endl;
+    std::cout << "numS:  " << numS << std::endl;
+    std::cout << "numA:  " << numA << std::endl;
+    std::cout << "sOff[0]:  " << sOff[0] << std::endl;
+    std::cout << "sOff_x[0]:  " << sOff_x[0] << std::endl;
+    std::cout << "s[0]:  " << s[0] << std::endl;
+    std::cout << "aOff[0]:  " << aOff[0] << std::endl;
+    std::cout << "a[0]:  " << a[0] << std::endl;
+    std::cout << "t:  " << t << std::endl;
+    std::cout << "x[0]:  " << x[0] << std::endl;
+    std::cout << "numConstants:  " << numConstants << std::endl;
+    std::cout << "porosity[0]:  " << totalStrain[0] << std::endl;
+#endif
+
     // Do stuff
     const PylithScalar pressure_t = s ? s[sOff[i_pressure_t]] : 0.0;
     const PylithScalar trace_strain_t = s ? s[sOff[i_trace_strain_t]] : 0.0;
+
     const PylithScalar drainedBulkModulus = a[aOff[i_drainedBulkModulus]];
     const PylithScalar biotCoefficient = a[aOff[i_biotCoefficient]];
 
-    porosity[0] = a[aOff[i_porosity]];
-
+    PylithScalar dPorosity = dt * ( (biotCoefficient - a[aOff[i_porosity]]) * trace_strain_t +
+                                    ( (1.0 - biotCoefficient) * (biotCoefficient - a[aOff[i_porosity]])) /
+                                    drainedBulkModulus * pressure_t);
     // Update porosity
-    porosity[0] += dt * (biotCoefficient - porosity[0]) * trace_strain_t +
-                   ( (1.0 - biotCoefficient) * (biotCoefficient - porosity[0])) /
-                   drainedBulkModulus * pressure_t;
+    porosity[0] = a[aOff[i_porosity]] +  dt * ( (biotCoefficient - a[aOff[i_porosity]]) * trace_strain_t +
+                                                ( (1.0 - biotCoefficient) * (biotCoefficient - a[aOff[i_porosity]])) /
+                                                drainedBulkModulus * pressure_t);
+    PetscPrintf(PETSC_COMM_WORLD, "dPorosity: %f\n", (double)dPorosity);
+
 } // updatePorosity
 
 
