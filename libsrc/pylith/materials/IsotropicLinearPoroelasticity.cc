@@ -684,7 +684,6 @@ pylith::materials::IsotropicLinearPoroelasticity::addKernelsUpdateStateVars(std:
                                                                             const bool _updateFields) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<")");
-    PetscPrintf(PETSC_COMM_WORLD, "update porosity");
     if (_updateFields) {
         const int spaceDim = coordsys->getSpaceDim();
         const PetscPointFunc funcPorosity =
