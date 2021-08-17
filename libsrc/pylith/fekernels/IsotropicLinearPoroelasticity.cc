@@ -3294,9 +3294,6 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosity(cons
     const PylithScalar drainedBulkModulus = a[aOff[i_drainedBulkModulus]];
     const PylithScalar biotCoefficient = a[aOff[i_biotCoefficient]];
 
-    PylithScalar dPorosity = dt * ( (biotCoefficient - a[aOff[i_porosity]]) * trace_strain_t +
-                                    ( (1.0 - biotCoefficient) * (biotCoefficient - a[aOff[i_porosity]])) /
-                                    drainedBulkModulus * pressure_t);
     // Update porosity
     porosity[0] = a[aOff[i_porosity]] +  dt * ( (biotCoefficient - a[aOff[i_porosity]]) * trace_strain_t +
                                                 ( (1.0 - biotCoefficient) * (biotCoefficient - a[aOff[i_porosity]])) /
@@ -5655,7 +5652,7 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf0pp(const PylithInt dim,
 
     const PylithScalar biotModulus = a[aOff[i_biotModulus]];
 
-    Jf0[0] = utshift / biotModulus;
+    Jf0[0] += utshift / biotModulus;
 } // Jf0pp
 
 
@@ -6645,9 +6642,6 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::updatePorosity(const PylithI
     const PylithScalar drainedBulkModulus = a[aOff[i_drainedBulkModulus]];
     const PylithScalar biotCoefficient = a[aOff[i_biotCoefficient]];
 
-    PylithScalar dPorosity = dt * ( (biotCoefficient - a[aOff[i_porosity]]) * trace_strain_t +
-                                    ( (1.0 - biotCoefficient) * (biotCoefficient - a[aOff[i_porosity]])) /
-                                    drainedBulkModulus * pressure_t);
     // Update porosity
     porosity[0] = a[aOff[i_porosity]] +  dt * ( (biotCoefficient - a[aOff[i_porosity]]) * trace_strain_t +
                                                 ( (1.0 - biotCoefficient) * (biotCoefficient - a[aOff[i_porosity]])) /
