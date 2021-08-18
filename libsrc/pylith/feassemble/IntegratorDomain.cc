@@ -170,7 +170,7 @@ pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<Jacob
             _hasLHSJacobianLumped = true;
             break;
         default:
-            PYLITH_JOURNAL_LOGICERROR("Unknown residual part " << kernels[i].part <<".");
+            PYLITH_JOURNAL_LOGICERROR("Unknown Jacobian part " << kernels[i].part <<".");
         } // switch
     } // for
 

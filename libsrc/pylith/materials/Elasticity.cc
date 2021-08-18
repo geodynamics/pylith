@@ -265,7 +265,7 @@ pylith::materials::Elasticity::_getDerivedFactory(void) {
 // Set kernels for residual.
 void
 pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                                   const topology::Field& solution) const {
+                                                   const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
@@ -339,7 +339,7 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
 // Set kernels for Jacobian.
 void
 pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                                                   const topology::Field& solution) const {
+                                                   const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
     assert(integrator);
