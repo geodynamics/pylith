@@ -46,6 +46,7 @@ public:
 
         ResidualKernels(void) :
             subfield(""),
+            part(pylith::feassemble::Integrator::RESIDUAL_LHS),
             r0(NULL),
             r1(NULL) {}
 
