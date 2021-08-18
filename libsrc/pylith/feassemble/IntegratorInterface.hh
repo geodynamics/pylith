@@ -43,28 +43,32 @@ public:
         FAULT_FACE=2,
     }; // FaceEnum
 
-    // PUBLIC STRUCTS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC STRUCTS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Kernels (pointwise functions) for residual.
     struct ResidualKernels {
         std::string subfield; ///< Name of subfield
+        ResidualPart part; ///< Residual part (LHS or RHS).
         FaceEnum face; ///< Face domain.
         PetscBdPointFunc r0; ///< f0 (RHS) or g0 (LHS) function.
         PetscBdPointFunc r1; ///< f1 (RHS) or g1 (LHS) function.
 
         ResidualKernels(void) :
             subfield(""),
+            part(pylith::feassemble::Integrator::RESIDUAL_LHS),
             face(FAULT_FACE),
             r0(NULL),
             r1(NULL) {}
 
 
         ResidualKernels(const char* subfieldValue,
+                        const ResidualPart partValue,
                         FaceEnum faceValue,
                         PetscBdPointFunc r0Value,
                         PetscBdPointFunc r1Value) :
             subfield(subfieldValue),
+            part(partValue),
             face(faceValue),
             r0(r0Value),
             r1(r1Value) {}
@@ -76,6 +80,7 @@ public:
     struct JacobianKernels {
         std::string subfieldTrial; ///< Name of subfield associated with trial function (row in Jacobian).
         std::string subfieldBasis; ///< Name of subfield associated with basis function (column in Jacobian).
+        JacobianPart part; ///< Jacobian part (LHS or LHS lumped inverse).
         FaceEnum face; ///< Integration domain.
         PetscBdPointJac j0; ///< J0 function.
         PetscBdPointJac j1; ///< J1 function.
@@ -85,6 +90,7 @@ public:
         JacobianKernels(void) :
             subfieldTrial(""),
             subfieldBasis(""),
+            part(JACOBIAN_LHS),
             face(FAULT_FACE),
             j0(NULL),
             j1(NULL),
@@ -94,6 +100,7 @@ public:
 
         JacobianKernels(const char* subfieldTrialValue,
                         const char* subfieldBasisValue,
+                        JacobianPart partValue,
                         FaceEnum faceValue,
                         PetscBdPointJac j0Value,
                         PetscBdPointJac j1Value,
@@ -101,6 +108,7 @@ public:
                         PetscBdPointJac j3Value) :
             subfieldTrial(subfieldTrialValue),
             subfieldBasis(subfieldBasisValue),
+            part(partValue),
             face(faceValue),
             j0(j0Value),
             j1(j1Value),
@@ -110,7 +118,7 @@ public:
 
     }; // JacobianKernels
 
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -147,23 +155,21 @@ public:
      */
     void setIntegrationPatches(pylith::feassemble::InterfacePatches* patches);
 
-    /** Set kernels for RHS residual.
+    /** Set kernels for residual.
      *
-     * @param kernels Array of kernels for computing the RHS residual.
+     * @param kernels Array of kernels for computing the residual.
+     * @param[in] solution Field with current trial solution.
      */
-    void setKernelsRHSResidual(const std::vector<ResidualKernels>& kernels);
+    void setKernelsResidual(const std::vector<ResidualKernels>& kernels,
+                            const pylith::topology::Field& solution);
 
-    /** Set kernels for LHS residual.
+    /** Set kernels for Jacobian.
      *
-     * @param kernels Array of kernels for computing the LHS residual.
+     * @param kernels Array of kernels for computing the Jacobian.
+     * @param[in] solution Field with current trial solution.
      */
-    void setKernelsLHSResidual(const std::vector<ResidualKernels>& kernels);
-
-    /** Set kernels for LHS Jacobian.
-     *
-     * @param kernels Array of kernels for computing the LHS Jacobian.
-     */
-    void setKernelsLHSJacobian(const std::vector<JacobianKernels>& kernels);
+    void setKernelsJacobian(const std::vector<JacobianKernels>& kernels,
+                            const pylith::topology::Field& solution);
 
     /** Initialize integration domain, auxiliary field, and derived field. Update observers.
      *
@@ -235,19 +241,15 @@ public:
                                      const PylithReal s_tshift,
                                      const pylith::topology::Field& solution);
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
-
-    std::vector<ResidualKernels> _kernelsRHSResidual; ///< kernels for RHS residual.
-    std::vector<ResidualKernels> _kernelsLHSResidual; ///< kernels for LHS residual.
-    std::vector<JacobianKernels> _kernelsLHSJacobian; /// > kernels for LHS Jacobian.
 
     pylith::topology::Mesh* _interfaceMesh; ///< Boundary mesh.
     std::string _interfaceSurfaceLabel; ///< Name of label identifying interface surface.
 
     pylith::feassemble::InterfacePatches* _integrationPatches; ///< Face patches.
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     IntegratorInterface(void); ///< Not implemented.

@@ -144,6 +144,25 @@ protected:
     void _updateSlipAcceleration(pylith::topology::Field* auxiliaryField,
                                  const double t);
 
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+private:
+
+    /** Set kernels for residual.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
+                             const pylith::topology::Field& solution) const;
+
+    /** Set kernels for Jacobian.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
+                             const pylith::topology::Field& solution) const;
+
     // PRIVATE TYPEDEFS ////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
