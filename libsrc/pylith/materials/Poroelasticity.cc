@@ -429,7 +429,6 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
                                                           const topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsLHSResidual(integrator=" << integrator << ",solution=" << solution.getLabel() << ")");
-
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
     std::vector<ResidualKernels> kernels;
@@ -437,7 +436,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
     case QUASISTATIC:
     {
         // Displacement
-        PetscPointFunc f0u = NULL;
+        PetscPointFunc f0u = pylith::fekernels::Poroelasticity::f0u;
         const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
         const int bitGravity = _gravityField ? 0x2 : 0x0;
         const int bitSourceDensity = _useSourceDensity ? 0x4 : 0x0;
@@ -467,17 +466,17 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
             f0u = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
             break;
         default:
-            PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
+            PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for Poroelasticity LHS residual kernels.");
         } // switch
         const PetscPointFunc f1u = _rheology->getKernelf1u_implicit(coordsys);
 
         // Pressure
         PetscPointFunc f0p = _rheology->getKernelf0p_implicit(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
         PetscPointFunc f1p = _rheology->getKernelf1p_implicit(coordsys, _useBodyForce, _gravityField, _useConstantPressureSource); //
-                                                                                                                                   //
-                                                                                                                                   // darcy
-                                                                                                                                   //
-                                                                                                                                   // velocity
+
+        //
+        // Darcy
+        //
 
         // Volumetric Strain
         const PetscPointFunc f0e = pylith::fekernels::Poroelasticity::f0e;
@@ -551,6 +550,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::In
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsLHSJacobian(integrator="<<integrator<<",solution="<<solution.getLabel()<<")");
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
+
     std::vector<JacobianKernels> kernels(9);
 
     switch (_formulation) {
