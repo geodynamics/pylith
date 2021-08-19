@@ -7,30 +7,30 @@ includes both the governing equations and the associated bulk rheology.
 \subsection{Specifying Material Properties}
 
 Associating material properties with a given cell involves several
-steps. 
+steps.
 \begin{enumerate}
-\item In the mesh generation process assign a material identifier to each
-cell.
-\item Define material property groups corresponding to each material
-  identifier. In CUBIT/Trelis this is done by creating the blocks as
-  part of the boundary conditions.
-\item Provide the settings for each material group in the parameters,
-  i.e., \filename{cfg} file.
-\item Specify the parameters for the material properties, e.g., linear
-  variation in density with depth, using a spatial database file. This
-  allows variation of the material properties across cells with the
-  same material identifier.
+  \item In the mesh generation process assign a material identifier to each
+        cell.
+  \item Define material property groups corresponding to each material
+        identifier. In CUBIT/Trelis this is done by creating the blocks as
+        part of the boundary conditions.
+  \item Provide the settings for each material group in the parameters,
+        i.e., \filename{cfg} file.
+  \item Specify the parameters for the material properties, e.g., linear
+        variation in density with depth, using a spatial database file. This
+        allows variation of the material properties across cells with the
+        same material identifier.
 \end{enumerate}
 
 Facilities and properties common to all materials:
 \begin{inventory}
-\propertyitem{id}{This is the material identifier that matches the integer value
-assigned to each cell in the mesh generation process (default=0);}
-\propertyitem{label}{Name or label for the material (default=""), this is used in error and
-diagnostic reports);}
-\facilityitem{db\_auxiliary\_field}{Spatial database for physical property parameters;}
-\facilityitem{observers}{Observers of physics, i.e., output (default=[\object{PhysicsObserver}]); and}
-\facilityitem{auxiliary\_subfields}{Discretization information for auxiliary subfields.}
+  \propertyitem{id}{This is the material identifier that matches the integer value
+    assigned to each cell in the mesh generation process (default=0);}
+  \propertyitem{label}{Name or label for the material (default=""), this is used in error and
+    diagnostic reports);}
+  \facilityitem{db\_auxiliary\_field}{Spatial database for physical property parameters;}
+  \facilityitem{observers}{Observers of physics, i.e., output (default=[\object{PhysicsObserver}]); and}
+  \facilityitem{auxiliary\_subfields}{Discretization information for auxiliary subfields.}
 \end{inventory}
 
 
@@ -42,8 +42,8 @@ determined by the \object{Elasticity} property settings. Gravitational
 body forces are included if the \facility{gravity\_field} is set in
 the \object{Problem}. The properties and facilities are;
 \begin{inventory}
- \facilityitem{derived\_subfields}{Discretization information for derived subfields.}
- \propertyitem{use\_inertia}{Include inertial term in elasticity
+  \facilityitem{derived\_subfields}{Discretization information for derived subfields.}
+  \propertyitem{use\_inertia}{Include inertial term in elasticity
     equation (default=False);}
   \propertyitem{use\_body\_force}{Include body force term in
     elasticity equation (default=False); and}
@@ -58,13 +58,13 @@ implemented for the elaticity equation.
   \label{tab:elasticity:rheologies}
   \begin{tabular}{ll}
     \toprule
-    \thead{Bulk Rheology} & \thead{Description} \\
+    \thead{Bulk Rheology}              & \thead{Description}                            \\
     \midrule
-      \object{IsotropicLinearElasticity} & Isotropic, linear elasticity \\
-      \object{IsotropicLinearMaxwell} & Isotropic, linear Maxwell viscoelasticity \\
-      \object{IsotropicLinearGenMaxwell} & Isotropic, generalized Maxwell viscoelasticity \\
-      \object{IsotropicPowerLaw} & Isotropic, power-law viscoelasticity \\
-      \object{IsotropicDruckerPrager} & Isotropic, Drucker-Prager elastoplasticity \\
+    \object{IsotropicLinearElasticity} & Isotropic, linear elasticity                   \\
+    \object{IsotropicLinearMaxwell}    & Isotropic, linear Maxwell viscoelasticity      \\
+    \object{IsotropicLinearGenMaxwell} & Isotropic, generalized Maxwell viscoelasticity \\
+    \object{IsotropicPowerLaw}         & Isotropic, power-law viscoelasticity           \\
+    \object{IsotropicDruckerPrager}    & Isotropic, Drucker-Prager elastoplasticity     \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -77,41 +77,41 @@ implemented for the elaticity equation.
   \label{tab:elasticity:auxiliary:subfields}
   \begin{tabular}{lcccccl}
     \toprule
-    \multirow{2}{*}{\thead{Subfield}} & \multicolumn{5}{c}{\thead{Bulk Rheologies}} & \multirow{2}{*}{\thead{Components}} \\
-                              & \thead{L} & \thead{LM} & \thead{GM} & \thead{PL} & \thead{DP} & \\
+    \multirow{2}{*}{\thead{Subfield}} & \multicolumn{5}{c}{\thead{Bulk Rheologies}} & \multirow{2}{*}{\thead{Components}}                                                                 \\
+                                      & \thead{L}                                   & \thead{LM}                          & \thead{GM} & \thead{PL} & \thead{DP} &                        \\
     \midrule
-    density & X & X & X & X & X & \textemdash \\
-    vp (P-wave speed) & X & X & X & X & X & \textemdash\\
-    vs (S-wave speed) & X & X & X & X & X & \textemdash\\
-    body\_force & O & O & O & O & O & x, y, z \\
-    gravitational\_acceleration & O & O & O & O & O & x, y, z \\
-    shear\_modulus & I & I & I & I & I & \textemdash \\
-    bulk\_modulus & I & I & I & I & I & \textemdash \\
-    reference\_stress & O & O & O & O & O & xx, yy, zz, xy, yz, xz \\
-    reference\_strain & O & O & O & O & O & xx, yy, zz, xy, yz, xz \\
-    maxwell\_time & & I & & & & \textemdash \\
-    viscosity & & X & & & & \textemdash \\
-    viscosity\_1 &&& X &&& \textemdash \\
-    viscosity\_2 &&& X &&& \textemdash \\
-    viscosity\_3 &&& X &&& \textemdash \\
-    shear\_ratio\_1 &&& X &&& \textemdash \\
-    shear\_ratio\_2 &&& X &&& \textemdash \\
-    shear\_ratio\_3 &&& X &&& \textemdash \\
-    total\_strain & & X & & X & & xx, yy, zz, xy, yz, xz \\
-    viscous\_strain & & X & & X & & xx, yy, zz, xy, yz, xz \\
-    viscous\_strain\_1 &&& X &&& xx, yy, zz, xy, yz, xz \\
-    viscous\_strain\_2 &&& X &&& xx, yy, zz, xy, yz, xz \\
-    viscous\_strain\_3 &&& X &&& xx, yy, zz, xy, yz, xz \\
-    power\_law\_exponent &&&& X && \textemdash \\
-    reference\_strain\_rate &&&& X && \textemdash \\
-    reference\_stress &&&& X && \textemdash \\
-    cohesion &&&&& X & \textemdash \\
-    friction\_angle &&&&& X & \textemdash \\
-    dilatation\_angle &&&&& X & \textemdash \\
-    alpha\_yield &&&&& I & \textemdash \\
-    alpha\_flow &&&&& I & \textemdash \\
-    beta &&&&& I & \textemdash \\
-    plastic\_strain &&&&& X & xx, yy, zz, xy, yz, xz \\
+    density                           & X                                           & X                                   & X          & X          & X          & \textemdash            \\
+    vp (P-wave speed)                 & X                                           & X                                   & X          & X          & X          & \textemdash            \\
+    vs (S-wave speed)                 & X                                           & X                                   & X          & X          & X          & \textemdash            \\
+    body\_force                       & O                                           & O                                   & O          & O          & O          & x, y, z                \\
+    gravitational\_acceleration       & O                                           & O                                   & O          & O          & O          & x, y, z                \\
+    shear\_modulus                    & I                                           & I                                   & I          & I          & I          & \textemdash            \\
+    bulk\_modulus                     & I                                           & I                                   & I          & I          & I          & \textemdash            \\
+    reference\_stress                 & O                                           & O                                   & O          & O          & O          & xx, yy, zz, xy, yz, xz \\
+    reference\_strain                 & O                                           & O                                   & O          & O          & O          & xx, yy, zz, xy, yz, xz \\
+    maxwell\_time                     &                                             & I                                   &            &            &            & \textemdash            \\
+    viscosity                         &                                             & X                                   &            &            &            & \textemdash            \\
+    viscosity\_1                      &                                             &                                     & X          &            &            & \textemdash            \\
+    viscosity\_2                      &                                             &                                     & X          &            &            & \textemdash            \\
+    viscosity\_3                      &                                             &                                     & X          &            &            & \textemdash            \\
+    shear\_ratio\_1                   &                                             &                                     & X          &            &            & \textemdash            \\
+    shear\_ratio\_2                   &                                             &                                     & X          &            &            & \textemdash            \\
+    shear\_ratio\_3                   &                                             &                                     & X          &            &            & \textemdash            \\
+    total\_strain                     &                                             & X                                   &            & X          &            & xx, yy, zz, xy, yz, xz \\
+    viscous\_strain                   &                                             & X                                   &            & X          &            & xx, yy, zz, xy, yz, xz \\
+    viscous\_strain\_1                &                                             &                                     & X          &            &            & xx, yy, zz, xy, yz, xz \\
+    viscous\_strain\_2                &                                             &                                     & X          &            &            & xx, yy, zz, xy, yz, xz \\
+    viscous\_strain\_3                &                                             &                                     & X          &            &            & xx, yy, zz, xy, yz, xz \\
+    power\_law\_exponent              &                                             &                                     &            & X          &            & \textemdash            \\
+    reference\_strain\_rate           &                                             &                                     &            & X          &            & \textemdash            \\
+    reference\_stress                 &                                             &                                     &            & X          &            & \textemdash            \\
+    cohesion                          &                                             &                                     &            &            & X          & \textemdash            \\
+    friction\_angle                   &                                             &                                     &            &            & X          & \textemdash            \\
+    dilatation\_angle                 &                                             &                                     &            &            & X          & \textemdash            \\
+    alpha\_yield                      &                                             &                                     &            &            & I          & \textemdash            \\
+    alpha\_flow                       &                                             &                                     &            &            & I          & \textemdash            \\
+    beta                              &                                             &                                     &            &            & I          & \textemdash            \\
+    plastic\_strain                   &                                             &                                     &            &            & X          & xx, yy, zz, xy, yz, xz \\
     \bottomrule
   \end{tabular} \\
   X: required value in \facility(db\_auxiliary\_fields) spatial database\\
@@ -129,11 +129,11 @@ implemented for the elaticity equation.
   \label{tab:elasticity:derived:subfields}
   \begin{tabular}{lcccccl}
     \toprule
-    \multirow{2}{*}{\thead{Subfield}} & \multicolumn{5}{c}{\thead{Bulk Rheologies}} & \multirow{2}{*}{\thead{Components}} \\
-                              & \thead{L} & \thead{LM} & \thead{GM} & \thead{PL} & \thead{DP} & \\
+    \multirow{2}{*}{\thead{Subfield}} & \multicolumn{5}{c}{\thead{Bulk Rheologies}} & \multirow{2}{*}{\thead{Components}}                                                                 \\
+                                      & \thead{L}                                   & \thead{LM}                          & \thead{GM} & \thead{PL} & \thead{DP} &                        \\
     \midrule
-    cauchy\_stress & \yes & \yes & \yes & \yes & \yes & xx, yy, zz, xy, yz, xz \\
-    cauchy\_strain & \yes & \yes & \yes & \yes & \yes & xx, yy, zz, yz, yz, xz \\
+    cauchy\_stress                    & \yes                                        & \yes                                & \yes       & \yes       & \yes       & xx, yy, zz, xy, yz, xz \\
+    cauchy\_strain                    & \yes                                        & \yes                                & \yes       & \yes       & \yes       & xx, yy, zz, yz, yz, xz \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -147,57 +147,57 @@ Property common to all bulk rheologies for elasticity:
 \end{inventory}
 
 \begin{cfg}[Parameters for two materials in a \filename{cfg} file]
-<h>[pylithapp.problem]</h>
-<p>materials</p> = [elastic, viscoelastic]
-<f>materials.viscoelastic.bulk_rheology</f> = pylith.materials.IsotropicLinearMaxwell
+  <h>[pylithapp.problem]</h>
+  <p>materials</p> = [elastic, viscoelastic]
+  <f>materials.viscoelastic.bulk_rheology</f> = pylith.materials.IsotropicLinearMaxwell
 
-<h>[pylithapp.problem.materials.elastic]</h>
-<p>label</p> = Elastic material
-<p>id</p> = 1
-<f>db_auxiliary_field</f> = spatialdata.spatialdb.UniformDB
-<p>db_auxiliary_field.label</p> = Elastic properties
-<p>db_auxiliary_field.values</p> = [density, vs, vp]
-<p>db_auxiliary_field.data</p> = [2500*kg/m**3, 3.0*km/s, 5.2915026*km/s]
+    <h>[pylithapp.problem.materials.elastic]</h>
+  <p>label</p> = Elastic material
+  <p>id</p> = 1
+  <f>db_auxiliary_field</f> = spatialdata.spatialdb.UniformDB
+  <p>db_auxiliary_field.label</p> = Elastic properties
+  <p>db_auxiliary_field.values</p> = [density, vs, vp]
+  <p>db_auxiliary_field.data</p> = [2500*kg/m**3, 3.0*km/s, 5.2915026*km/s]
 
-<p>observers.observer.writer.filename</p> = output/step01-elastic.h5
+  <p>observers.observer.writer.filename</p> = output/step01-elastic.h5
 
-# Set the discretization of the material auxiliary fields (properties).
-# With uniform material properties, we can use a basis order of 0.
-<p>auxiliary_subfields.density.basis_order</p> = 0
-<p>auxiliary_subfields.density.quadrature_order</p> = 1
+  # Set the discretization of the material auxiliary fields (properties).
+  # With uniform material properties, we can use a basis order of 0.
+  <p>auxiliary_subfields.density.basis_order</p> = 0
+  <p>auxiliary_subfields.density.quadrature_order</p> = 1
 
-<h>[pylithapp.problem.materials.elastic.bulk_rheology]</h>
-<p>auxiliary_subfields.bulk_modulus.basis_order</p> = 0
-<p>auxiliary_subfields.bulk_modulus.quadrature_order</p> = 1
+    <h>[pylithapp.problem.materials.elastic.bulk_rheology]</h>
+  <p>auxiliary_subfields.bulk_modulus.basis_order</p> = 0
+  <p>auxiliary_subfields.bulk_modulus.quadrature_order</p> = 1
 
-<p>auxiliary_subfields.shear_modulus.basis_order</p> = 0
-<p>auxiliary_subfields.shear_modulus.quadrature_order</p> = 1
+  <p>auxiliary_subfields.shear_modulus.basis_order</p> = 0
+  <p>auxiliary_subfields.shear_modulus.quadrature_order</p> = 1
 
 
-<h>[pylithapp.problem.materials.viscoelastic]</h>
-<p>label</p> = Viscoelastic material
-<p>id</p> = 2
-<f>db_auxiliary_field</f> = spatialdata.spatialdb.SimpleGridDB
-<p>db_auxiliary_field.label</p> = Viscoelastic properties
-<p>db_auxiliary_field.filename</p> = mat_viscoelastic.spatialdb
+    <h>[pylithapp.problem.materials.viscoelastic]</h>
+  <p>label</p> = Viscoelastic material
+  <p>id</p> = 2
+  <f>db_auxiliary_field</f> = spatialdata.spatialdb.SimpleGridDB
+  <p>db_auxiliary_field.label</p> = Viscoelastic properties
+  <p>db_auxiliary_field.filename</p> = mat_viscoelastic.spatialdb
 
-<p>observers.observer.writer.filename</p> = output/step01-viscoelastic.h5
+  <p>observers.observer.writer.filename</p> = output/step01-viscoelastic.h5
 
-# Set the discretization of the material auxiliary fields (properties).
-# We will assume we have a linear variation in material properties in
-# mat_viscoelastic.spatialdb, so we use a basis order of 1.
-<p>auxiliary_subfields.density.basis_order</p> = 1
-<p>auxiliary_subfields.density.quadrature_order</p> = 1
+  # Set the discretization of the material auxiliary fields (properties).
+  # We will assume we have a linear variation in material properties in
+  # mat_viscoelastic.spatialdb, so we use a basis order of 1.
+  <p>auxiliary_subfields.density.basis_order</p> = 1
+  <p>auxiliary_subfields.density.quadrature_order</p> = 1
 
-<h>[pylithapp.problem.materials.elastic.bulk_rheology]</h>
-<p>auxiliary_subfields.bulk_modulus.basis_order</p> = 1
-<p>auxiliary_subfields.bulk_modulus.quadrature_order</p> = 1
+    <h>[pylithapp.problem.materials.elastic.bulk_rheology]</h>
+  <p>auxiliary_subfields.bulk_modulus.basis_order</p> = 1
+  <p>auxiliary_subfields.bulk_modulus.quadrature_order</p> = 1
 
-<p>auxiliary_subfields.shear_modulus.basis_order</p> = 1
-<p>auxiliary_subfields.shear_modulus.quadrature_order</p> = 1
+  <p>auxiliary_subfields.shear_modulus.basis_order</p> = 1
+  <p>auxiliary_subfields.shear_modulus.quadrature_order</p> = 1
 
-<p>auxiliary_subfields.viscosity.basis_order</p> = 1
-<p>auxiliary_subfields.viscosity.quadrature_order</p> = 1
+  <p>auxiliary_subfields.viscosity.basis_order</p> = 1
+  <p>auxiliary_subfields.viscosity.quadrature_order</p> = 1
 \end{cfg}
 
 
@@ -214,7 +214,7 @@ object does not include an inertial term. Gravitational
 body forces are included if the \facility{gravity\_field} is set in
 the \object{Problem}. The properties and facilities are;
 \begin{inventory}
- \facilityitem{derived\_subfields}{Discretization information for derived subfields.}
+  \facilityitem{derived\_subfields}{Discretization information for derived subfields.}
   \propertyitem{use\_body\_force}{Include body force term in
     elasticity equation (default=False); and}
   \facilityitem{bulk\_rheology}{Bulk rheology for an elastic
@@ -228,7 +228,7 @@ implemented for the elaticity equation.
   \label{tab:incompressible:elasticity:rheologies}
   \begin{tabular}{ll}
     \toprule
-    \thead{Bulk Rheology} & \thead{Description} \\
+    \thead{Bulk Rheology}                    & \thead{Description}                         \\
     \midrule
     \object{IsotropicLinearIncompElasticity} & Isotropic, linear incompressible elasticity \\
     \bottomrule
@@ -240,18 +240,18 @@ implemented for the elaticity equation.
   \label{tab:incompressible:elasticity:auxiliary:subfields}
   \begin{tabular}{lccccl}
     \toprule
-    \multirow{2}{*}{\thead{Subfield}} & \multicolumn{4}{c}{\thead{Bulk Rheologies}} & \multirow{2}{*}{\thead{Components}} \\
-                              & \thead{L} & \thead{LM} & \thead{GM} & \thead{PL} & \\
+    \multirow{2}{*}{\thead{Subfield}} & \multicolumn{4}{c}{\thead{Bulk Rheologies}} & \multirow{2}{*}{\thead{Components}}                                                    \\
+                                      & \thead{L}                                   & \thead{LM}                          & \thead{GM} & \thead{PL} &                        \\
     \midrule
-    density & X & X & X & X & \textemdash \\
-    vp (P-wave speed) & X & X & X & X & \textemdash\\
-    vs (S-wave speed) & X & X & X & X & \textemdash\\
-    body\_force & O & O & O & O & x, y, z \\
-    gravitational\_acceleration & O & O & O & O & x, y, z \\
-    shear\_modulus & I & I & I & I & \textemdash \\
-    bulk\_modulus & I & I & I & I & \textemdash \\
-    reference\_stress & O & O & O & O & xx, yy, zz, xy, yz, xz \\
-    reference\_strain & O & O & O & O & xx, yy, zz, xy, yz, xz \\
+    density                           & X                                           & X                                   & X          & X          & \textemdash            \\
+    vp (P-wave speed)                 & X                                           & X                                   & X          & X          & \textemdash            \\
+    vs (S-wave speed)                 & X                                           & X                                   & X          & X          & \textemdash            \\
+    body\_force                       & O                                           & O                                   & O          & O          & x, y, z                \\
+    gravitational\_acceleration       & O                                           & O                                   & O          & O          & x, y, z                \\
+    shear\_modulus                    & I                                           & I                                   & I          & I          & \textemdash            \\
+    bulk\_modulus                     & I                                           & I                                   & I          & I          & \textemdash            \\
+    reference\_stress                 & O                                           & O                                   & O          & O          & xx, yy, zz, xy, yz, xz \\
+    reference\_strain                 & O                                           & O                                   & O          & O          & xx, yy, zz, xy, yz, xz \\
     \bottomrule
   \end{tabular} \\
   X: required value in \facility(db\_auxiliary\_fields) spatial database\\
@@ -268,17 +268,17 @@ implemented for the elaticity equation.
   \label{tab:incompressible:elasticity:derived:subfields}
   \begin{tabular}{lccccl}
     \toprule
-    \multirow{2}{*}{\thead{Subfield}} & \multicolumn{4}{c}{\thead{Bulk Rheologies}} & \multirow{2}{*}{\thead{Components}} \\
-                              & \thead{L} & \thead{LM} & \thead{GM} & \thead{PL} & \\
+    \multirow{2}{*}{\thead{Subfield}} & \multicolumn{4}{c}{\thead{Bulk Rheologies}} & \multirow{2}{*}{\thead{Components}}                                                    \\
+                                      & \thead{L}                                   & \thead{LM}                          & \thead{GM} & \thead{PL} &                        \\
     \midrule
-    cauchy\_stress & \yes & \yes & \yes & \yes & xx, yy, zz, xy, yz, xz \\
-    cauchy\_strain & \yes & \yes & \yes & \yes & xx, yy, zz, yz, yz, xz \\
+    cauchy\_stress                    & \yes                                        & \yes                                & \yes       & \yes       & xx, yy, zz, xy, yz, xz \\
+    cauchy\_strain                    & \yes                                        & \yes                                & \yes       & \yes       & xx, yy, zz, yz, yz, xz \\
     \bottomrule
   \end{tabular}
 \end{table}
 
 
-Property common to all bulk rheologies for elasticity:
+Property common to all bulk rheologies for incompressible elasticity:
 \begin{inventory}
   \propertyitem{use\_reference\_state}{Flag indicating to compute
     deformation relative to the supplied reference state
@@ -286,38 +286,188 @@ Property common to all bulk rheologies for elasticity:
 \end{inventory}
 
 \begin{cfg}[Parameters for an incompressible material in a \filename{cfg} file]
-<h>[pylithapp.problem]</h>
-<p>materials</p> = [elastic]
-<f>materials.elastic</f> = pylith.materials.IncompressibleElasticity
-# Use the default bulk_rheology: IsotropicLinearIncompElasticity
+  <h>[pylithapp.problem]</h>
+  <p>materials</p> = [elastic]
+  <f>materials.elastic</f> = pylith.materials.IncompressibleElasticity
+  # Use the default bulk_rheology: IsotropicLinearIncompElasticity
 
-<f>gravity_field</f> = spatialdata.spatialdb.GravityField
-<p>gravity_field.gravity_dir</p> = [0.0, -1.0, 0.0]
+  <f>gravity_field</f> = spatialdata.spatialdb.GravityField
+  <p>gravity_field.gravity_dir</p> = [0.0, -1.0, 0.0]
 
-# With incompressible elasticity, the solution subfields are displacement and pressure.
-<f>solution</f> = pylith.problems.SolnDispPres
+  # With incompressible elasticity, the solution subfields are displacement and pressure.
+  <f>solution</f> = pylith.problems.SolnDispPres
 
-<h>[pylithapp.problem.materials.elastic]</h>
-<p>label</p> = Elastic material
-<p>id</p> = 1
-<f>db_auxiliary_field</f> = spatialdata.spatialdb.UniformDB
-<p>db_auxiliary_field.label</p> = Elastic properties
-<p>db_auxiliary_field.values</p> = [density, vs, vp]
-<p>db_auxiliary_field.data</p> = [2500*kg/m**3, 3.0*km/s, 1.0e+12*km/s]
+    <h>[pylithapp.problem.materials.elastic]</h>
+  <p>label</p> = Elastic material
+  <p>id</p> = 1
+  <f>db_auxiliary_field</f> = spatialdata.spatialdb.UniformDB
+  <p>db_auxiliary_field.label</p> = Elastic properties
+  <p>db_auxiliary_field.values</p> = [density, vs, vp]
+  <p>db_auxiliary_field.data</p> = [2500*kg/m**3, 3.0*km/s, 1.0e+12*km/s]
 
-<p>observers.observer.writer.filename</p> = output/step01-elastic.h5
+  <p>observers.observer.writer.filename</p> = output/step01-elastic.h5
 
-# Set the discretization of the material auxiliary fields (properties).
-# With uniform material properties, we can use a basis order of 0.
-<p>auxiliary_subfields.density.basis_order</p> = 0
-<p>auxiliary_subfields.density.quadrature_order</p> = 1
+  # Set the discretization of the material auxiliary fields (properties).
+  # With uniform material properties, we can use a basis order of 0.
+  <p>auxiliary_subfields.density.basis_order</p> = 0
+  <p>auxiliary_subfields.density.quadrature_order</p> = 1
 
-<h>[pylithapp.problem.materials.elastic.bulk_rheology]</h>
-<p>auxiliary_subfields.bulk_modulus.basis_order</p> = 0
-<p>auxiliary_subfields.bulk_modulus.quadrature_order</p> = 1
+    <h>[pylithapp.problem.materials.elastic.bulk_rheology]</h>
+  <p>auxiliary_subfields.bulk_modulus.basis_order</p> = 0
+  <p>auxiliary_subfields.bulk_modulus.quadrature_order</p> = 1
 
-<p>auxiliary_subfields.shear_modulus.basis_order</p> = 0
-<p>auxiliary_subfields.shear_modulus.quadrature_order</p> = 1
+  <p>auxiliary_subfields.shear_modulus.basis_order</p> = 0
+  <p>auxiliary_subfields.shear_modulus.quadrature_order</p> = 1
+\end{cfg}
+
+\subsection{Poroelasticity (\protect\object{Poroelasticity})}
+
+The \object{Poroelasticity} is used to solve the poroelastic equations with
+or without inertia. Whether inertia or body forces are included is
+determined by the \object{Poroelasticity} property settings. Gravitational
+body forces are included if the \facility{gravity\_field} is set in
+the \object{Problem}. Additional body forces may be specified by setting \facility{body\_force}
+in the \object{Problem}. This may represent a uniform, or a field of n dimensional
+force vectors. The properties and facilities are;
+\begin{inventory}
+  \facilityitem{derived\_subfields}{Discretization information for derived subfields.}
+  \propertyitem{use\_body\_force}{Include body force term in
+    poroelasticity equation (default=False);}
+  \propertyitem{use\_source\_density}{Include source density term in
+    poroelasticity equation (default=False);}
+  \propertyitem{use\_constant\_pressure\_source}{Include constant pressure source term in
+    poroelasticity equation (default=False);}
+  \propertyitem{update\_fields}{Determine change in auxiliary variables at the end of
+    each iteration. Currently only implemented for porosity, and shifts the quasi-static
+    problem formulation from three solution fields to six solution fields. (default=False);}
+  \facilityitem{bulk\_rheology}{Bulk rheology for a poroelastic
+    material.}
+\end{inventory}
+Table \vref{tab:poroelasticity:rheologies} lists the bulk rheologies
+implemented for the poroelasticity equation.
+
+\begin{table}[htbp]
+  \caption{Poroelasticity bulk rheologies.}
+  \label{tab:poroelasticity:rheologies}
+  \begin{tabular}{ll}
+    \toprule
+    \thead{Bulk Rheology}                  & \thead{Description}              \\
+    \midrule
+    \object{IsotropicLinearPoroelasticity} & Isotropic, linear poroelasticity \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \caption{Auxiliary subfields for poroelasticity bulk rheologies.}
+  \label{tab:poroelasticity:auxiliary:subfields}
+  \begin{tabular}{lcccccl}
+    \toprule
+    \multirow{2}{*}{\thead{Subfield}} & \multicolumn{1}{c}{\thead{Bulk Rheologies}} & \multicolumn{1}{c}{\thead{Setting Flag}} & \multirow{1}{*}{\thead{Components}} \\
+                                      & \thead{L}                                   &                                          &                                     \\
+    \midrule
+    solid density                     & X                                           &                                          & \textemdash                         \\
+    fluid density                     & X                                           &                                          & \textemdash                         \\
+    fluid viscosity                   & X                                           &                                          & \textemdash                         \\
+    porosity                          & X                                           &                                          & \textemdash                         \\
+    source\_density                   & O                                           & use\_source\_density                     & \textemdash                         \\
+    constant\_pressure\_source        & O                                           & use\_constant\_pressure\_source          & \textemdash                         \\
+    body\_force                       & O                                           & use\_body\_force                         & x, y, z                             \\
+    gravitational\_acceleration       & O                                           & gravity\_field                           & x, y, z                             \\
+    shear\_modulus                    & L                                           &                                          & \textemdash                         \\
+    drained\_bulk\_modulus            & L                                           &                                          & \textemdash                         \\
+    biot\_coefficient                 & L                                           &                                          & \textemdash                         \\
+    biot\_modulus                     & L                                           &                                          & \textemdash                         \\
+    isotropic\_permeability           & L                                           &                                          & \textemdash                         \\
+    tensor\_permeability              & LO                                          & use\_tensor\_permeability                & xx, yy, zz, xy, yz, xz              \\
+    reference\_stress                 & LO                                          & use\_reference\_state                    & xx, yy, zz, xy, yz, xz              \\
+    reference\_strain                 & LO                                          & use\_reference\_state                    & xx, yy, zz, xy, yz, xz              \\
+    \bottomrule
+  \end{tabular} \\
+  X: required value in \facility(db\_auxiliary\_fields) spatial database\\
+  O: optional value in \facility(db\_auxiliary\_fields) spatial database (see corresponding flag)\\
+  I: internal; computed from inputs\\
+  L: isotropic, linear poroelasticity\\
+\end{table}
+
+\begin{table}[htbp]
+  \caption{Derived subfields for poroelasticity bulk rheologies.}
+  \label{tab:poroelasticity:derived:subfields}
+  \begin{tabular}{lcccccl}
+    \toprule
+    \multirow{2}{*}{\thead{Subfield}} & \multicolumn{1}{c}{\thead{Bulk Rheologies}} & \multirow{1}{*}{\thead{Components}} \\
+                                      & \thead{L}                                   &                                     \\
+    \midrule
+    cauchy\_stress                    & \yes                                        & xx, yy, zz, xy, yz, xz              \\
+    cauchy\_strain                    & \yes                                        & xx, yy, zz, yz, yz, xz              \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+Property common to linear poroelastic bulk rheology for poroelasticity:
+\begin{inventory}
+  \propertyitem{use\_reference\_state}{Flag indicating to compute
+    deformation relative to the supplied reference state
+    (default=False).}
+  \propertyitem{use\_tensor\_permeability}{Flag indicating to use the full tensor permeability input value rather
+    than the scalar isotropic permeability value
+    (default=False).}
+\end{inventory}
+
+\begin{cfg}[Parameters for poroelastic material in a \filename{cfg} file]
+  <h>[pylithapp.problem]</h>
+  <p>materials</p> = [poroelastic]
+  <f>materials.poroelastic.bulk_rheology</f> = pylith.materials.IsotropicLinearPoroelasticity
+
+  # With poroelasticity, without field updates, the solution subfields are displacement, pressure,
+  # and trace strain.
+  <f>solution</f> = pylith.problems.SolnDispPresTracStrain
+
+    <h>[pylithapp.problem.materials.poroelastic]</h>
+  <p>label</p> = Poroelastic material
+  <p>id</p> = 1
+  <f>db_auxiliary_field</f> = spatialdata.spatialdb.UniformDB
+  <p>db_auxiliary_field.label</p> = Poroelastic properties
+  <p>db_auxiliary_field.values</p> = [solid_density, fluid_density, fluid_viscosity, porosity, shear_modulus,
+  drained_bulk_modulus, biot_coefficient, fluid_bulk_modulus, solid_bulk_modulus, isotropic_permeability]
+  <p>db_auxiliary_field.data</p> = [2500*kg/m**3, 1000*kg/m**3, 1.0*Pa*s, 0.1, 3.0*Pa, 4.0*Pa, 0.6,
+  8.0*Pa, 10.0*Pa, 1.5*m**2]
+
+  <p>observers.observer.writer.filename</p> = output/step01-poroelastic.h5
+
+  # Set the discretization of the material auxiliary fields (properties).
+  # With uniform material properties, we can use a basis order of 0.
+  <p>auxiliary_subfields.solid_density.basis_order</p> = 0
+  <p>auxiliary_subfields.solid_density.quadrature_order</p> = 1
+
+  <p>auxiliary_subfields.fluid_density.basis_order</p> = 0
+  <p>auxiliary_subfields.fluid_density.quadrature_order</p> = 1
+
+  <p>auxiliary_subfields.fluid_viscosity.basis_order</p> = 0
+  <p>auxiliary_subfields.fluid_viscosity.quadrature_order</p> = 1
+
+  <p>auxiliary_subfields.porosity.basis_order</p> = 0
+  <p>auxiliary_subfields.porosity.quadrature_order</p> = 1
+
+    <h>[pylithapp.problem.materials.elastic.bulk_rheology]</h>
+  <p>auxiliary_subfields.shear_modulus.basis_order</p> = 0
+  <p>auxiliary_subfields.shear_modulus.quadrature_order</p> = 1
+
+  <p>auxiliary_subfields.drained_bulk_modulus.basis_order</p> = 0
+  <p>auxiliary_subfields.drained_bulk_modulus.quadrature_order</p> = 1
+
+  <p>auxiliary_subfields.biot_coefficient.basis_order</p> = 0
+  <p>auxiliary_subfields.biot_coefficient.quadrature_order</p> = 1
+
+  <p>auxiliary_subfields.fluid_bulk_modulus.basis_order</p> = 0
+  <p>auxiliary_subfields.fluid_bulk_modulus.quadrature_order</p> = 1
+
+  <p>auxiliary_subfields.solid_bulk_modulus.basis_order</p> = 0
+  <p>auxiliary_subfields.solid_bulk_modulus.quadrature_order</p> = 1
+
+  <p>auxiliary_subfields.isotropic_permeability.basis_order</p> = 0
+  <p>auxiliary_subfields.isotropic_permeability.quadrature_order</p> = 1
 \end{cfg}
 
 
