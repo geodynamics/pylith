@@ -9,15 +9,15 @@ strain.
 We begin with the conservation of linear momentum, including inertia,
 borrowed from linear elasticity:
 \begin{equation}
-    \rho_s\frac{\partial^2 \vec{u}}{\partial t^2} = \vec{f}(t) + \nabla \cdot \tensor{\sigma}(\vec{u},p).
+  \rho_s\frac{\partial^2 \vec{u}}{\partial t^2} = \vec{f}(t) + \nabla \cdot \tensor{\sigma}(\vec{u},p).
 \end{equation}
 Enforcing mass balance of the fluid gives
 \begin{gather}
   \frac{\partial \zeta(\vec{u},p)}{\partial t} + \nabla \cdot \vec{q}(p) =
   \gamma(\vec{x},t) \text{ in } \Omega, \\
-%
+  %
   \vec{q} \cdot \vec{n} = q_0(\vec{x},t) \text{ on }\Gamma_q, \\
-%
+  %
   p = p_0(\vec{x},t) \text{ on }\Gamma_p,
 \end{gather}
 where $\zeta$ is the variation in fluid content, $\vec{q}$ is the rate
@@ -51,8 +51,8 @@ tensor, and $\tensor{I}$ is the identity tensor.  For this case, we
 will assume that the material properties are isotropic, resulting in
 the following formulation for the stress tensor:
 \begin{equation}
-    \tensor{\sigma}(\vec{u},p) = \tensor{C}:\tensor{\epsilon} - \alpha p \tensor{I}
-                                           = \lambda \tensor{I} \epsilon_{v} + 2 \mu - \alpha \tensor{I} p
+  \tensor{\sigma}(\vec{u},p) = \tensor{C}:\tensor{\epsilon} - \alpha p \tensor{I}
+  = \lambda \tensor{I} \epsilon_{v} + 2 \mu - \alpha \tensor{I} p
 \end{equation}
 where $\lambda$ and $\mu$ are Lam\'e's parameters,
 $\lambda = K_{d} - \frac{2 \mu}{3}$, $\mu$ is the shear modulus, and
@@ -63,7 +63,7 @@ For the constitutive behavior of the fluid, we use the volumetric
 strain to couple the fluid-solid behavior,
 \begin{gather}
   \zeta(\vec{u},p) = \alpha \Tr({\tensor{\epsilon}}) + \frac{p}{M}, \\
-%
+  %
   \frac{1}{M} = \frac{\alpha-\phi}{K_s} + \frac{\phi}{K_f},
 \end{gather}
 where $1/M$ is the specific storage coefficient at constant strain,
@@ -80,33 +80,35 @@ product of the gradient and displacement field, so we have
   \label{tab:notation:poroelasticity}
   \begin{tabular}{lcp{3.5in}}
     \toprule
-    {\bf Category} & {\bf Symbol} & {\bf Description} \\
+    {\bf Category}                 & {\bf Symbol}        & {\bf Description}                                                                                             \\
     \midrule
-    Unknowns           & $\vec{u}$ & Displacement field \\
-                       & $\vec{v}$ & Velocity field \\
-                       & $p$       & Pressure field (corresponds to pore fluid pressure) \\
-                       & $\epsilon_{v}$ & Volumetric (trace) strain \\
+    Unknowns                       & $\vec{u}$           & Displacement field                                                                                            \\
+                                   & $\vec{v}$           & Velocity field                                                                                                \\
+                                   & $p$                 & Pressure field (corresponds to pore fluid pressure)                                                           \\
+                                   & $\epsilon_{v}$      & Volumetric (trace) strain                                                                                     \\
+                                   & $P$                 & Time derivative of pressure field                                                                             \\
+                                   & $E_{v}$             & Time derivative of volumetric (trace) strain                                                                  \\
     \hline
-    Derived quantities & $\tensor{\sigma}$ & Cauchy stress tensor \\
-                       & $\tensor{\epsilon}$ & Cauchy strain tensor \\
-                       & $\zeta$ & Variation of fluid content (variation of fluid vol. per unit vol. of PM), $\alpha \epsilon_{v} + \frac{p}{M}$ \\
-                       & $\rho_{b}$ & Bulk density, $\left(1 - \phi\right) \rho_{s} + \phi \rho_{f}$ \\
-                       & $\vec{q}$ & Darcy flux, $-\frac{\tensor{k}}{\mu_{f}} \cdot \left(\nabla p - \vec{f}_{f}\right)$ \\
-                       & $M$ & Biot Modulus, $\frac{K_{f}}{\phi} + \frac{K_{s}}{\alpha - \phi}$ \\
+    Derived quantities             & $\tensor{\sigma}$   & Cauchy stress tensor                                                                                          \\
+                                   & $\tensor{\epsilon}$ & Cauchy strain tensor                                                                                          \\
+                                   & $\zeta$             & Variation of fluid content (variation of fluid vol. per unit vol. of PM), $\alpha \epsilon_{v} + \frac{p}{M}$ \\
+                                   & $\rho_{b}$          & Bulk density, $\left(1 - \phi\right) \rho_{s} + \phi \rho_{f}$                                                \\
+                                   & $\vec{q}$           & Darcy flux, $-\frac{\tensor{k}}{\mu_{f}} \cdot \left(\nabla p - \vec{f}_{f}\right)$                           \\
+                                   & $M$                 & Biot Modulus, $\frac{K_{f}}{\phi} + \frac{K_{s}}{\alpha - \phi}$                                              \\
     \hline
-    Common constitutive parameters & $\rho_{f}$ & Fluid density \\
-                       & $\rho_{s}$ & Solid (matrix) density \\
-                       & $\phi$ & Porosity \\
-                       & $\tensor{k}$ & Permeability \\
-                       & $\mu_{f}$ & Fluid viscosity \\
-                       & $K_{s}$ & Solid grain bulk modulus \\
-                       & $K_{f}$ & Fluid bulk modulus \\
-                       & $K_{d}$ & Drained bulk modulus \\
-                       & $\alpha$ & Biot coefficient, $1 - \frac{K_{d}}{K_{s}}$ \\
+    Common constitutive parameters & $\rho_{f}$          & Fluid density                                                                                                 \\
+                                   & $\rho_{s}$          & Solid (matrix) density                                                                                        \\
+                                   & $\phi$              & Porosity                                                                                                      \\
+                                   & $\tensor{k}$        & Permeability                                                                                                  \\
+                                   & $\mu_{f}$           & Fluid viscosity                                                                                               \\
+                                   & $K_{s}$             & Solid grain bulk modulus                                                                                      \\
+                                   & $K_{f}$             & Fluid bulk modulus                                                                                            \\
+                                   & $K_{d}$             & Drained bulk modulus                                                                                          \\
+                                   & $\alpha$            & Biot coefficient, $1 - \frac{K_{d}}{K_{s}}$                                                                   \\
     \hline
-    Source terms       & $\vec{f}$ & Body force per unit volume, for example: $\rho_{b} \vec{g}$ \\
-                       & $\vec{f}_{f}$ & Fluid body force, for example: $\rho_{f} \vec{g}$ \\
-                       & $\gamma$ & Source density; rate of injected fluid per unit volume of the porous solid \\
+    Source terms                   & $\vec{f}$           & Body force per unit volume, for example: $\rho_{b} \vec{g}$                                                   \\
+                                   & $\vec{f}_{f}$       & Fluid body force, for example: $\rho_{f} \vec{g}$                                                             \\
+                                   & $\gamma$            & Source density; rate of injected fluid per unit volume of the porous solid                                    \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -118,22 +120,22 @@ For ease of solution in the quasistatic case, we introduce a third
 variable in the form of volumetric strain ($\epsilon_v$).  The
 strong form of the problem may be expressed as
 \begin{gather}
-% Solution
-\vec{s}^{T} = \left(\vec{u} \quad p \quad \epsilon_v\right), \\
-% Elasticity
-\vec{f}(t) + \nabla \cdot \tensor{\sigma}(\vec{u},p) = \vec{0} \text{ in } \Omega, \\
-% Pressure
-\frac{\partial \zeta(\vec{u},p)}{\partial t} - \gamma(\vec{x},t) + \nabla \cdot \vec{q}(p) = 0 \text{ in } \Omega, \\
-% Vol. Strain
-\nabla \cdot \vec{u} - \epsilon_{v} = 0 \text{ in } \Omega, \\
-% Neumann traction
-\tensor{\sigma} \cdot \vec{n} = \vec{\tau}(\vec{x},t) \text{ on } \Gamma_{\tau}, \\
-% Dirichlet displacement
-\vec{u} = \vec{u}_0(\vec{x}, t) \text{ on } \Gamma_{u}, \\
-% Neumann flow
-\vec{q} \cdot \vec{n} = q_0(\vec{x}, t) \text{ on } \Gamma_{q}, \text{ and } \\
-% Dirichlet pressure
-p = p_0(\vec{x},t) \text{ on } \Gamma_{p}.
+  % Solution
+  \vec{s}^{T} = \left(\vec{u} \quad p \quad \epsilon_v\right), \\
+  % Elasticity
+  \vec{f}(t) + \nabla \cdot \tensor{\sigma}(\vec{u},p) = \vec{0} \text{ in } \Omega, \\
+  % Pressure
+  \frac{\partial \zeta(\vec{u},p)}{\partial t} - \gamma(\vec{x},t) + \nabla \cdot \vec{q}(p) = 0 \text{ in } \Omega, \\
+  % Vol. Strain
+  \nabla \cdot \vec{u} - \epsilon_{v} = 0 \text{ in } \Omega, \\
+  % Neumann traction
+  \tensor{\sigma} \cdot \vec{n} = \vec{\tau}(\vec{x},t) \text{ on } \Gamma_{\tau}, \\
+  % Dirichlet displacement
+  \vec{u} = \vec{u}_0(\vec{x}, t) \text{ on } \Gamma_{u}, \\
+  % Neumann flow
+  \vec{q} \cdot \vec{n} = q_0(\vec{x}, t) \text{ on } \Gamma_{q}, \text{ and } \\
+  % Dirichlet pressure
+  p = p_0(\vec{x},t) \text{ on } \Gamma_{p}.
 \end{gather}
 We place all terms for the elasticity, pressure, an volumetric strain
 equations on the left-hand-side, consistent with PETSc TS implicit
@@ -145,44 +147,44 @@ functions $\trialvec[u]$, $\trialscalar[p]$, and
 $\trialscalar[\epsilon_{v}]$ and
 integrating over the domain:
 \begin{gather}
-% Weak conservation of momentum
-\int_\Omega \trialvec[u] \cdot \left( \vec{f}(\vec{x},t) + \tensor{\nabla} \cdot \tensor{\sigma} (\vec{u},p) \right) \, d\Omega = 0, \\
-% Weak conservation of mass
-\int_\Omega  \trialscalar[p] \left( \frac{\partial \zeta(\vec{u},p)}{\partial t} - \gamma(\vec{x},t) + \nabla \cdot \vec{q}(p)\right) \, d\Omega = 0,\\
-% Weak vol. strain
-\int_{\Omega} \trialscalar[\epsilon_{v}]\cdot \left( \nabla \cdot \vec{u} - \epsilon_v \right) \, d\Omega.
+  % Weak conservation of momentum
+  \int_\Omega \trialvec[u] \cdot \left( \vec{f}(\vec{x},t) + \tensor{\nabla} \cdot \tensor{\sigma} (\vec{u},p) \right) \, d\Omega = 0, \\
+  % Weak conservation of mass
+  \int_\Omega  \trialscalar[p] \left( \frac{\partial \zeta(\vec{u},p)}{\partial t} - \gamma(\vec{x},t) + \nabla \cdot \vec{q}(p)\right) \, d\Omega = 0,\\
+  % Weak vol. strain
+  \int_{\Omega} \trialscalar[\epsilon_{v}]\cdot \left( \nabla \cdot \vec{u} - \epsilon_v \right) \, d\Omega.
 \end{gather}
 %
 Applying the divergence theorem to the first two equations and
 incorporating the Neumann boundary conditions yields
 \begin{gather}
-% Weak conservation of momentum
-\int_\Omega \trialvec[u] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[u] : -\tensor{\sigma}(\vec{u},p_f) \,
-d\Omega + \int_{\Gamma_\tau} \trialvec[u] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma = 0, \\
-% Weak conservation of mass
-\int_\Omega  \trialscalar[p] \left( \frac{\partial \zeta(\vec{u},p_f)}{\partial t} - \gamma(\vec{x},t)\right)
-+ \nabla \trialscalar[p] \cdot \left(-\vec{q}(p_f)\right) \, d\Omega + \int_{\Gamma_q} \trialscalar[p] q_0(\vec{x},t))\, d\Gamma = 0, \text{ and } \\
-% Weak vol. strain
-\int_{\Omega} \trialscalar[\epsilon_{v}] \cdot \left(\nabla \cdot \vec{u} - \epsilon_{v} \right) d\Omega = 0
+  % Weak conservation of momentum
+  \int_\Omega \trialvec[u] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[u] : -\tensor{\sigma}(\vec{u},p_f) \,
+  d\Omega + \int_{\Gamma_\tau} \trialvec[u] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma = 0, \\
+  % Weak conservation of mass
+  \int_\Omega  \trialscalar[p] \left( \frac{\partial \zeta(\vec{u},p_f)}{\partial t} - \gamma(\vec{x},t)\right)
+  + \nabla \trialscalar[p] \cdot \left(-\vec{q}(p_f)\right) \, d\Omega + \int_{\Gamma_q} \trialscalar[p] q_0(\vec{x},t))\, d\Gamma = 0, \text{ and } \\
+  % Weak vol. strain
+  \int_{\Omega} \trialscalar[\epsilon_{v}] \cdot \left(\nabla \cdot \vec{u} - \epsilon_{v} \right) d\Omega = 0
 \end{gather}
 
 \subsubsection{Residual Pointwise Functions}
 
 Identifying $F(t,s,\dot{s})$ and $G(t,s)$we have
 \begin{align}
-    % Displacement
-  F^u(t,s,\dot{s}) &= \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{\vec{f}^u_0}
-                     + \nabla \trialvec[u] : \eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{\tensor{f}^u_1} \, d\Omega
-                     + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{\vec{f}^u_0} \, d\Gamma, \\
-% Pressure
-  F^p(t,s,\dot{s}) &= \int_\Omega  \trialscalar[p] \left[\eqnannotate{\frac{\partial \zeta(\vec{u},p_f)}{\partial t} - \gamma(\vec{x},t)} {f^p_0}\right]
-                     + \nabla \trialscalar[p] \cdot \eqnannotate{-\vec{q}(p_f)}{\vec{f}^p_1} \, d\Omega
-                     + \int_{\Gamma_q} \trialscalar[p] (\eqnannotate{q_0(\vec{x},t)}{f^p_0}) \, d\Gamma, \\
- % Volumetric Strain
-  F^{\epsilon_{v}}(t,s,\dot{s}) &= \int_{\Omega} \trialscalar[\epsilon_{v}] \cdot \eqnannotate{\left(\nabla \cdot \vec{u} - \epsilon_{v} \right)}{f^{\epsilon_{v}}_{0}} \, d\Omega. \\
-  G^u(t,s) &= 0, \\
-             G^p(t,s) &= 0, \\
- G^{\epsilon_v} &= 0.
+  % Displacement
+  F^u(t,s,\dot{s})              & = \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{\vec{f}^u_0}
+  + \nabla \trialvec[u] : \eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{\tensor{f}^u_1} \, d\Omega
+  + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{\vec{f}^u_0} \, d\Gamma,                                                                               \\
+  % Pressure
+  F^p(t,s,\dot{s})              & = \int_\Omega  \trialscalar[p] \left[\eqnannotate{\frac{\partial \zeta(\vec{u},p_f)}{\partial t} - \gamma(\vec{x},t)} {f^p_0}\right]
+  + \nabla \trialscalar[p] \cdot \eqnannotate{-\vec{q}(p_f)}{\vec{f}^p_1} \, d\Omega
+  + \int_{\Gamma_q} \trialscalar[p] (\eqnannotate{q_0(\vec{x},t)}{f^p_0}) \, d\Gamma,                                                                                                \\
+  % Volumetric Strain
+  F^{\epsilon_{v}}(t,s,\dot{s}) & = \int_{\Omega} \trialscalar[\epsilon_{v}] \cdot \eqnannotate{\left(\nabla \cdot \vec{u} - \epsilon_{v} \right)}{f^{\epsilon_{v}}_{0}} \, d\Omega. \\
+  G^u(t,s)                      & = 0,                                                                                                                                               \\
+  G^p(t,s)                      & = 0,                                                                                                                                               \\
+  G^{\epsilon_v}                & = 0.
 \end{align}
 
 \subsubsection{Jacobian Pointwise Functions}
@@ -190,63 +192,63 @@ Identifying $F(t,s,\dot{s})$ and $G(t,s)$we have
 Three field results in a potential nine Jacobian pointwise functions for the LHS:
 
 \begin{align}
-%
-% JF_UU
-% Jf3uu
-J_F^{uu} &= \frac{\partial F^u}{\partial u} + t_{shift} \frac{\partial F^u}{\partial \dot{u}} = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial u} (- \sigma(\vec{u},p,\epsilon_{v})) \
-d\Omega = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial u} (-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega \\
-&= \int_{\Omega} \nabla \trialvec[u] : -\tensor{C}: \frac{1}{2} (\nabla + \nabla^T) \basisvec[u] \ d\Omega = \int_{\Omega} \trialscalar[u]_{i,k}
-\eqnannotate{\left(-C_{ikjl}\right)}{J_{f3}^{uu}} \basisscalar[u]_{j,l} \ d\Omega \\
-%
-% JF_UP
-% Jf2up
-J_F^{up} &= \frac{\partial F^u}{\partial p} + t_{shift} \frac{\partial F^u}{\partial \dot{p}} = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial p}(-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega =
-\int_{\Omega} \trialscalar[u]_{i,j} \eqnannotate{\left(\alpha \delta_{ij}\right)}{J_{f2}^{up}} \basisscalar[p] \ d\Omega \\
-%
-% JF_UE
-% Jf2ue
-J_F^{u \epsilon_{v}} &= \frac{\partial F^u}{\partial \epsilon_{v}} + t_{shift} \frac{\partial F^u}{\partial \dot{\epsilon_{v}}} = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial \epsilon_{v}}
-(-\sigma(\vec{u},p,\epsilon_{v})) \ d\Omega = \int_{\Omega} \nabla \trialvec[u] :
-\frac{\partial}{\partial \epsilon_{v}} (-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega \\
-&= \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial \epsilon_{v}} \
-\left[-\left(2 \mu \tensor{\epsilon} + \lambda \tensor{I} \epsilon_{v} - \alpha \tensor{I} p \right) \right] d\Omega =
-\int_{\Omega} \trialscalar[u]_{i,j} \eqnannotate{\left(-\lambda \delta_{ij} \right)}{J_{f2}^{u \epsilon_{v}}} \basisscalar[\epsilon_{v}] d\Omega  \\
-%
-% JF_PU
-%
-J_F^{pu} &= \frac{\partial F^p}{\partial u} + t_{shift} \frac{\partial F^p}{\partial \dot{u}} = 0 \\
-%
-% JF_PP
-% Jf0pp
-J_F^{pp} &= \frac{\partial F^p}{\partial p} + t_{shift} \frac{\partial F^p}{\partial \dot{p}} =
-\int_{\Omega} \nabla \trialscalar[p] \cdot \frac{\partial}{\partial p} -\left[-\frac{\tensor{k}}{\mu_{f}} \left(\nabla p - \vec{f} \right) \right] \ d\Omega  +
-t_{shift}\int_{\Omega} \trialscalar[p] \frac{\partial}{\partial \dot{p}} \left[\alpha\dot{\epsilon}_{v} + \frac{\dot{p}}{M} - \gamma\left(\vec{x},t\right)\right] \ d\Omega \\
-&= \int_{\Omega} \nabla \psi_{trial}^ p \left(\frac{\tensor{k}}{\mu_{f}} \nabla \cdot \psi_{basis}^p \right) \ d\Omega +
- \int_{\Omega} \trialscalar[p] \left(t_{shift} \frac{1}{M}\right) \basisscalar[p] \ d\Omega \\
-&= \int_{\Omega} \psi_{trial,k}^p \eqnannotate{\left(\frac{\tensor{k}}{\mu_{f}} \delta_{kl}\right)}{J_{f3}^{pp}} \psi_{basis,l}^p \ d\Omega +
-\int_{\Omega} \trialscalar[p] \eqnannotate{\left(t_{shift} \frac{1}{M}\right)}{J_{f0}^{pp}} \basisscalar[p] \ d\Omega \\
-%
-% JF_PE
-% Jf0pe
-J_F^{p\epsilon_{v}} &= \frac{\partial F^p}{\partial \epsilon_{v}} + t_{shift} \frac{\partial
-F^p}{\partial \dot{\epsilon_{v}}} = \int_{\Omega} \trialscalar[p] \eqnannotate{\left(t_{shift} \alpha \right)}{J_{f0}^{p\epsilon_{v}}}
-\basisscalar[\epsilon_{v}] \ d\Omega \\
-%
-% JF_EU
-% Jf1eu
-J_F^{\epsilon_{v}u} &= \frac{\partial F^{\epsilon_{v}}}{\partial u} + t_{shift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{u}} =
-\int_{\Omega} \psi_{trial}^{\epsilon_{v}} \nabla \cdot \vec{\psi}_{basis}^u \ d\Omega = \int_{\Omega}
-\basisscalar[\epsilon_{v}] \eqnannotate{\left(\delta_{ij}\right)}{J_{f1}^{\epsilon_{v}u}}
-\basisscalar[u]_{i,j} \ d\Omega\\
-%
-% JF_EP
-%
-J_F^{\epsilon_{v}p} &= \frac{\partial F^{\epsilon_{v}}}{\partial p} + t_{shift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{p}} = 0 \\
-%
-% JF_EE
-%
-J_F^{\epsilon_{v}\epsilon_{v}} &= \frac{\partial F^\epsilon_{v}}{\epsilon_{v}} + t_{shift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{\epsilon_{v}}} =
-\int_{\Omega} \basisscalar[\epsilon_{v}] \eqnannotate{\left(-1\right)}{J_{f0}^{\epsilon_{v}\epsilon_{v}}} \basisscalar[\epsilon_{v}] \ d\Omega
+  %
+  % JF_UU
+  % Jf3uu
+  J_F^{uu}                       & = \frac{\partial F^u}{\partial u} + t_{shift} \frac{\partial F^u}{\partial \dot{u}} = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial u} (- \sigma(\vec{u},p,\epsilon_{v})) \
+  d\Omega = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial u} (-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega                                                                                                               \\
+                                 & = \int_{\Omega} \nabla \trialvec[u] : -\tensor{C}: \frac{1}{2} (\nabla + \nabla^T) \basisvec[u] \ d\Omega = \int_{\Omega} \trialscalar[u]_{i,k}
+  \eqnannotate{\left(-C_{ikjl}\right)}{J_{f3}^{uu}} \basisscalar[u]_{j,l} \ d\Omega                                                                                                                                                                           \\
+  %
+  % JF_UP
+  % Jf2up
+  J_F^{up}                       & = \frac{\partial F^u}{\partial p} + t_{shift} \frac{\partial F^u}{\partial \dot{p}} = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial p}(-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega =
+  \int_{\Omega} \trialscalar[u]_{i,j} \eqnannotate{\left(\alpha \delta_{ij}\right)}{J_{f2}^{up}} \basisscalar[p] \ d\Omega                                                                                                                                    \\
+  %
+  % JF_UE
+  % Jf2ue
+  J_F^{u \epsilon_{v}}           & = \frac{\partial F^u}{\partial \epsilon_{v}} + t_{shift} \frac{\partial F^u}{\partial \dot{\epsilon_{v}}} = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial \epsilon_{v}}
+  (-\sigma(\vec{u},p,\epsilon_{v})) \ d\Omega = \int_{\Omega} \nabla \trialvec[u] :
+  \frac{\partial}{\partial \epsilon_{v}} (-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega                                                                                                                                                  \\
+                                 & = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial \epsilon_{v}} \
+  \left[-\left(2 \mu \tensor{\epsilon} + \lambda \tensor{I} \epsilon_{v} - \alpha \tensor{I} p \right) \right] d\Omega =
+  \int_{\Omega} \trialscalar[u]_{i,j} \eqnannotate{\left(-\lambda \delta_{ij} \right)}{J_{f2}^{u \epsilon_{v}}} \basisscalar[\epsilon_{v}] d\Omega                                                                                                            \\
+  %
+  % JF_PU
+  %
+  J_F^{pu}                       & = \frac{\partial F^p}{\partial u} + t_{shift} \frac{\partial F^p}{\partial \dot{u}} = 0                                                                                                                                    \\
+  %
+  % JF_PP
+  % Jf0pp
+  J_F^{pp}                       & = \frac{\partial F^p}{\partial p} + t_{shift} \frac{\partial F^p}{\partial \dot{p}} =
+  \int_{\Omega} \nabla \trialscalar[p] \cdot \frac{\partial}{\partial p} -\left[-\frac{\tensor{k}}{\mu_{f}} \left(\nabla p - \vec{f} \right) \right] \ d\Omega  +
+  t_{shift}\int_{\Omega} \trialscalar[p] \frac{\partial}{\partial \dot{p}} \left[\alpha\dot{\epsilon}_{v} + \frac{\dot{p}}{M} - \gamma\left(\vec{x},t\right)\right] \ d\Omega                                                                                 \\
+                                 & = \int_{\Omega} \nabla \psi_{trial}^ p \left(\frac{\tensor{k}}{\mu_{f}} \nabla \cdot \psi_{basis}^p \right) \ d\Omega +
+  \int_{\Omega} \trialscalar[p] \left(t_{shift} \frac{1}{M}\right) \basisscalar[p] \ d\Omega                                                                                                                                                                  \\
+                                 & = \int_{\Omega} \psi_{trial,k}^p \eqnannotate{\left(\frac{\tensor{k}}{\mu_{f}} \delta_{kl}\right)}{J_{f3}^{pp}} \psi_{basis,l}^p \ d\Omega +
+  \int_{\Omega} \trialscalar[p] \eqnannotate{\left(t_{shift} \frac{1}{M}\right)}{J_{f0}^{pp}} \basisscalar[p] \ d\Omega                                                                                                                                       \\
+  %
+  % JF_PE
+  % Jf0pe
+  J_F^{p\epsilon_{v}}            & = \frac{\partial F^p}{\partial \epsilon_{v}} + t_{shift} \frac{\partial
+    F^p}{\partial \dot{\epsilon_{v}}} = \int_{\Omega} \trialscalar[p] \eqnannotate{\left(t_{shift} \alpha \right)}{J_{f0}^{p\epsilon_{v}}}
+  \basisscalar[\epsilon_{v}] \ d\Omega                                                                                                                                                                                                                        \\
+  %
+  % JF_EU
+  % Jf1eu
+  J_F^{\epsilon_{v}u}            & = \frac{\partial F^{\epsilon_{v}}}{\partial u} + t_{shift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{u}} =
+  \int_{\Omega} \psi_{trial}^{\epsilon_{v}} \nabla \cdot \vec{\psi}_{basis}^u \ d\Omega = \int_{\Omega}
+  \basisscalar[\epsilon_{v}] \eqnannotate{\left(\delta_{ij}\right)}{J_{f1}^{\epsilon_{v}u}}
+  \basisscalar[u]_{i,j} \ d\Omega                                                                                                                                                                                                                             \\
+  %
+  % JF_EP
+  %
+  J_F^{\epsilon_{v}p}            & = \frac{\partial F^{\epsilon_{v}}}{\partial p} + t_{shift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{p}} = 0                                                                                                          \\
+  %
+  % JF_EE
+  %
+  J_F^{\epsilon_{v}\epsilon_{v}} & = \frac{\partial F^\epsilon_{v}}{\epsilon_{v}} + t_{shift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{\epsilon_{v}}} =
+  \int_{\Omega} \basisscalar[\epsilon_{v}] \eqnannotate{\left(-1\right)}{J_{f0}^{\epsilon_{v}\epsilon_{v}}} \basisscalar[\epsilon_{v}] \ d\Omega
 \end{align}
 
 \subsection{Dynamic}
@@ -256,22 +258,22 @@ order elasticity equation into two first order equations. We introduce
 velocity as a unknown, $\vec{v}=\frac{\partial u}{\partial t}$, which
 leads to a slightly different three field problem,
 \begin{gather}
-% Solution
-\vec{s}^{T} = \left(\vec{u} \quad p \quad \vec{v}\right) \\
-% Displacement
-\frac{\partial \vec{u}}{\partial t} = \vec{v} \text{ in } \Omega \\
-% Pressure
-\frac{\partial \zeta(\vec{u},p)}{\partial t } - \gamma(\vec{x},t) + \nabla \cdot \vec{q}(p) = 0 \text{ in } \Omega \\
-% Velocity
-\rho_{b} \frac{\partial \vec{v}}{\partial t} = \vec{f}(\vec{x},t) + \nabla \cdot \tensor{\sigma}(\vec{u},p) \text{ in } \Omega \\
-% Neumann traction
-\tensor{\sigma} \cdot \vec{n} = \vec{\tau}(\vec{x},t) \text{ on } \Gamma_{\tau} \\
-% Dirichlet displacement
-\vec{u} = \vec{u}_{0}(\vec{x}, t) \text{ on } \Gamma_{u} \\
-% Neumann flow
-\vec{q} \cdot \vec{n} = q_{0}(\vec{x}, t) \text{ on } \Gamma_{q} \\
-% Dirichlet pressure
-p = p_{0}(\vec{x},t) \text{ on } \Gamma_{p}
+  % Solution
+  \vec{s}^{T} = \left(\vec{u} \quad p \quad \vec{v}\right) \\
+  % Displacement
+  \frac{\partial \vec{u}}{\partial t} = \vec{v} \text{ in } \Omega \\
+  % Pressure
+  \frac{\partial \zeta(\vec{u},p)}{\partial t } - \gamma(\vec{x},t) + \nabla \cdot \vec{q}(p) = 0 \text{ in } \Omega \\
+  % Velocity
+  \rho_{b} \frac{\partial \vec{v}}{\partial t} = \vec{f}(\vec{x},t) + \nabla \cdot \tensor{\sigma}(\vec{u},p) \text{ in } \Omega \\
+  % Neumann traction
+  \tensor{\sigma} \cdot \vec{n} = \vec{\tau}(\vec{x},t) \text{ on } \Gamma_{\tau} \\
+  % Dirichlet displacement
+  \vec{u} = \vec{u}_{0}(\vec{x}, t) \text{ on } \Gamma_{u} \\
+  % Neumann flow
+  \vec{q} \cdot \vec{n} = q_{0}(\vec{x}, t) \text{ on } \Gamma_{q} \\
+  % Dirichlet pressure
+  p = p_{0}(\vec{x},t) \text{ on } \Gamma_{p}
 \end{gather}
 
 For compatibility with PETSc TS explicit time stepping algorithms, we
@@ -280,10 +282,10 @@ replace the variation of fluid content variable, $\zeta$, with its
 definition in the conservation of fluid mass equation and solve for
 the rate of change of pressure,
 \begin{gather}
-    \frac{\partial}{\partial t}\left[\alpha \epsilon_{v} + \frac{p}{M}\right] - \gamma\left(\vec{x},t\right) + \nabla \cdot \vec{q} = 0 \\
-    \alpha \dot{\epsilon}_{v} + \frac{\dot{p}}{M} - \gamma \left(\vec{x},t\right) + \nabla \cdot \vec{q} = 0 \\
-    \frac{\dot{p}}{M} = \gamma \left(\vec{x},t \right) - \alpha \dot{\epsilon}_{v} -\nabla \cdot \vec{q} \\
-    \frac{\dot{p}}{M} = \gamma \left(\vec{x},t \right) - \alpha \left( \nabla \cdot \dot{\vec{u}} \right) -\nabla \cdot \vec{q}.
+  \frac{\partial}{\partial t}\left[\alpha \epsilon_{v} + \frac{p}{M}\right] - \gamma\left(\vec{x},t\right) + \nabla \cdot \vec{q} = 0 \\
+  \alpha \dot{\epsilon}_{v} + \frac{\dot{p}}{M} - \gamma \left(\vec{x},t\right) + \nabla \cdot \vec{q} = 0 \\
+  \frac{\dot{p}}{M} = \gamma \left(\vec{x},t \right) - \alpha \dot{\epsilon}_{v} -\nabla \cdot \vec{q} \\
+  \frac{\dot{p}}{M} = \gamma \left(\vec{x},t \right) - \alpha \left( \nabla \cdot \dot{\vec{u}} \right) -\nabla \cdot \vec{q}.
 \end{gather}
 We write the volumetric strain in terms of displacement, because this
 dynamic formulation does not include the volumetric strain as an
@@ -292,18 +294,18 @@ unknown.
 Using trial functions $\trialvec[u]$, $\trialscalar[p]$, and $\trialvec[v]$, and incorporating the
 Neumann boundary conditions, the weak form may be written as:
 \begin{align}
-    % Displacement
-    \int_{\Omega} \trialvec[u] \cdot \left( \frac{\partial \vec{u}}{\partial t} \right)d \Omega &= \int_{\Omega} \trialvec[u] \cdot \left( \vec{v} \right) d \Omega \\
-    % Pressure
-    \int_{\Omega} \trialscalar[p] \left( \frac{1}{M}\frac{\partial p}{\partial t} \right) d\Omega &=
-    \int_{\Omega} \trialscalar[p] \left[\gamma(\vec{x},t) - \alpha \left(\nabla \cdot \dot{\vec{u}}\right) \right]  + \nabla \trialscalar[p] \cdot \vec{q}(p) \ d\Omega +
-    \int_{\Gamma_q} \trialscalar[p] (-q_0(\vec{x},t)) \ d\Gamma, \\
-   % Velocity
-   \int_\Omega \trialvec[v] \cdot \left( \rho_{b} \frac{\partial
-   \vec{v}}{\partial t} \right) \,
-   d\Omega &= \int_\Omega \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] :
-   -\tensor{\sigma} (\vec{u},p_f) \, d\Omega + \int_{\Gamma_\tau} \trialvec[u]
-   \cdot \vec{\tau}(\vec{x},t) \, d\Gamma.
+  % Displacement
+  \int_{\Omega} \trialvec[u] \cdot \left( \frac{\partial \vec{u}}{\partial t} \right)d \Omega   & = \int_{\Omega} \trialvec[u] \cdot \left( \vec{v} \right) d \Omega          \\
+  % Pressure
+  \int_{\Omega} \trialscalar[p] \left( \frac{1}{M}\frac{\partial p}{\partial t} \right) d\Omega & =
+  \int_{\Omega} \trialscalar[p] \left[\gamma(\vec{x},t) - \alpha \left(\nabla \cdot \dot{\vec{u}}\right) \right]  + \nabla \trialscalar[p] \cdot \vec{q}(p) \ d\Omega +
+  \int_{\Gamma_q} \trialscalar[p] (-q_0(\vec{x},t)) \ d\Gamma,                                                                                                                \\
+  % Velocity
+  \int_\Omega \trialvec[v] \cdot \left( \rho_{b} \frac{\partial
+    \vec{v}}{\partial t} \right) \,
+  d\Omega                                                                                       & = \int_\Omega \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] :
+  -\tensor{\sigma} (\vec{u},p_f) \, d\Omega + \int_{\Gamma_\tau} \trialvec[u]
+  \cdot \vec{\tau}(\vec{x},t) \, d\Gamma.
 \end{align}
 
 
@@ -313,13 +315,13 @@ Neumann boundary conditions, the weak form may be written as:
 With explicit time stepping the PETSc TS assumes the LHS is $\dot{s}$ , so we only need the RHS residual functions:
 
 \begin{align}
-% Displacement
-  G^u(t,s) &= \int_{\Omega} \trialvec[u] \cdot \eqnannotate{\vec{v}}{\vec{g}_0^u} d \Omega, \\
-% Pressure
-  G^p(t,s) &= \int_\Omega \trialscalar[p] \eqnannotate{\left(\gamma(\vec{x},t) - \alpha (\nabla \cdot \dot{\vec{u}})\right)}{g^p_0} + \nabla \trialscalar[p] \cdot \eqnannotate{\vec{q}(p_f)}{\vec{g}^p_1} \, d\Omega
- + \int_{\Gamma_q} \trialscalar[p] (\eqnannotate{-q_0(\vec{x},t)}{g^p_0}) \, d\Gamma, \\
- % Velocity
- G^v(t,s) &= \int_\Omega \trialvec[v] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{\vec{g}^v_0} + \nabla \trialvec[v] :\eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{\tensor{g}^v_1} \, d\Omega + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{\vec{g}^v_0} \, d\Gamma.
+  % Displacement
+  G^u(t,s) & = \int_{\Omega} \trialvec[u] \cdot \eqnannotate{\vec{v}}{\vec{g}_0^u} d \Omega,                                                                                                                                                                                                   \\
+  % Pressure
+  G^p(t,s) & = \int_\Omega \trialscalar[p] \eqnannotate{\left(\gamma(\vec{x},t) - \alpha (\nabla \cdot \dot{\vec{u}})\right)}{g^p_0} + \nabla \trialscalar[p] \cdot \eqnannotate{\vec{q}(p_f)}{\vec{g}^p_1} \, d\Omega
+  + \int_{\Gamma_q} \trialscalar[p] (\eqnannotate{-q_0(\vec{x},t)}{g^p_0}) \, d\Gamma,                                                                                                                                                                                                         \\
+  % Velocity
+  G^v(t,s) & = \int_\Omega \trialvec[v] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{\vec{g}^v_0} + \nabla \trialvec[v] :\eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{\tensor{g}^v_1} \, d\Omega + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{\vec{g}^v_0} \, d\Gamma.
 \end{align}
 
 \subsubsection{Jacobians Pointwise Functions}
@@ -331,13 +333,13 @@ $s_\mathit{tshift}$ remains on the LHS with $\dot{s}$. As a result,
 we use LHS Jacobian pointwise functions, but set $s_\mathit{tshift} = 1$. The
 LHS Jacobians are:
 \begin{align}
-% Displacement
-M_{u} &= J_F^{uu} = \frac{\partial F^u}{\partial u} + s_{tshift} \frac{\partial F^u}{\partial \dot{u}} =
-\int_{\Omega} \trialscalar[u]_{i} \eqnannotate{s_{tshift} \delta_{ij}}{J^{uu}_{f0}} \basisscalar[u]_{j} \, d \Omega \\
-% Pressure
-M_{p} &= J_F^{pp} = \frac{\partial F^p}{\partial p} + s_{tshift} \frac{\partial F^p}{\partial \dot{p}} =
-\int_{\Omega} \trialscalar[p] \eqnannotate{\left(s_{tshift} \frac{1}{M}\right)}{J_{f0}^{pp}} \basisscalar[p] \ d\Omega \\
-% Velocity
-M_{v} &= J_F^{vv} = \frac{\partial F^v}{\partial v} + s_{tshift} \frac{\partial F^v}{\partial \dot{v}} =
-\int_{\Omega} \trialscalar[v]_{i}\eqnannotate{\rho_{b}(\vec{x}) s_{tshift} \delta_{ij}}{J^{vv}_{f0}} \basisscalar[v]_{j} \  d \Omega
+  % Displacement
+  M_{u} & = J_F^{uu} = \frac{\partial F^u}{\partial u} + s_{tshift} \frac{\partial F^u}{\partial \dot{u}} =
+  \int_{\Omega} \trialscalar[u]_{i} \eqnannotate{s_{tshift} \delta_{ij}}{J^{uu}_{f0}} \basisscalar[u]_{j} \, d \Omega    \\
+  % Pressure
+  M_{p} & = J_F^{pp} = \frac{\partial F^p}{\partial p} + s_{tshift} \frac{\partial F^p}{\partial \dot{p}} =
+  \int_{\Omega} \trialscalar[p] \eqnannotate{\left(s_{tshift} \frac{1}{M}\right)}{J_{f0}^{pp}} \basisscalar[p] \ d\Omega \\
+  % Velocity
+  M_{v} & = J_F^{vv} = \frac{\partial F^v}{\partial v} + s_{tshift} \frac{\partial F^v}{\partial \dot{v}} =
+  \int_{\Omega} \trialscalar[v]_{i}\eqnannotate{\rho_{b}(\vec{x}) s_{tshift} \delta_{ij}}{J^{vv}_{f0}} \basisscalar[v]_{j} \  d \Omega
 \end{align}
