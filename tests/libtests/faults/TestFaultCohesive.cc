@@ -21,6 +21,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/testing/FaultCohesiveStub.hh" // USES FaultCohesiveStub
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 
 namespace pylith {
     namespace faults {

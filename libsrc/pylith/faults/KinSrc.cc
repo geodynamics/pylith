@@ -238,11 +238,11 @@ pylith::faults::KinSrc::updateSlipAcc(PetscVec slipAccLocalVec,
 
     // Create local vector for slip for this source.
     PetscErrorCode err = 0;
-    PetscDM faultAuxiliaryDM = faultAuxiliaryField->dmMesh();
+    PetscDM faultAuxiliaryDM = faultAuxiliaryField->getDM();
     err = PetscObjectCompose((PetscObject) faultAuxiliaryDM, "dmAux",
-                             (PetscObject) _auxiliaryField->dmMesh());PYLITH_CHECK_ERROR(err);
+                             (PetscObject) _auxiliaryField->getDM());PYLITH_CHECK_ERROR(err);
     err = PetscObjectCompose((PetscObject) faultAuxiliaryDM, "A",
-                             (PetscObject) _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+                             (PetscObject) _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMProjectFieldLocal(faultAuxiliaryDM, t, slipAccLocalVec, subfieldKernels, INSERT_VALUES,
                               slipAccLocalVec);PYLITH_CHECK_ERROR(err);
 

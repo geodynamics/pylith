@@ -366,7 +366,7 @@ pylith::bc::_NeumannTimeDependent::setKernelsResidual(pylith::feassemble::Integr
           << solution.getLabel()<<")"
           << pythia::journal::endl;
 
-    const pylith::topology::Field::VectorFieldEnum fieldType = solution.subfieldInfo(bc.getSubfieldName()).description.vectorFieldType;
+    const pylith::topology::Field::VectorFieldEnum fieldType = solution.getSubfieldInfo(bc.getSubfieldName()).description.vectorFieldType;
     const bool isScalarField = fieldType == pylith::topology::Field::SCALAR;
 
     const int bitInitial = bc.useInitial() ? 0x1 : 0x0;

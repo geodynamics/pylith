@@ -73,14 +73,14 @@ PetscFormKey
 pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solution,
                                              pylith::feassemble::Integrator::ResidualPart residualPart,
                                              const char* field) const {
-    PetscDM dmSoln = solution.dmMesh();
+    PetscDM dmSoln = solution.getDM();
     PetscDMLabel label = NULL;
     PetscErrorCode err = DMGetLabel(dmSoln, _name.c_str(), &label);PYLITH_CHECK_ERROR(err);
     PetscInt i_field = -1;
     if (field) {
-        i_field = solution.subfieldInfo(field).index;
+        i_field = solution.getSubfieldInfo(field).index;
     } else {
-        i_field = (!_field.empty()) ? solution.subfieldInfo(_field.c_str()).index : -1;
+        i_field = (!_field.empty()) ? solution.getSubfieldInfo(_field.c_str()).index : -1;
     } // if/else
     assert(i_field >= 0);
 
@@ -102,14 +102,14 @@ pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solu
                                              pylith::feassemble::Integrator::JacobianPart jacobianPart,
                                              const char* fieldTrial,
                                              const char* fieldBasis) const {
-    PetscDM dmSoln = solution.dmMesh();
+    PetscDM dmSoln = solution.getDM();
     PetscDMLabel label = NULL;
     PetscErrorCode err = DMGetLabel(dmSoln, _name.c_str(), &label);PYLITH_CHECK_ERROR(err);
     PetscInt i_field = -1, j_field = -1, Nf;
     err = DMGetNumFields(dmSoln, &Nf);PYLITH_CHECK_ERROR(err);
-    i_field = solution.subfieldInfo(fieldTrial).index;
+    i_field = solution.getSubfieldInfo(fieldTrial).index;
     assert(i_field >= 0);
-    j_field = solution.subfieldInfo(fieldBasis).index;
+    j_field = solution.getSubfieldInfo(fieldBasis).index;
     assert(j_field >= 0);
 
     PetscFormKey weakFormKey;

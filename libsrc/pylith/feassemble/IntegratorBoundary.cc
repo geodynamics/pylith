@@ -145,9 +145,9 @@ pylith::feassemble::IntegratorBoundary::setKernelsResidual(const std::vector<Res
     PYLITH_JOURNAL_DEBUG("setKernelsResidual(# kernels="<<kernels.size()<<")");
 
     PetscErrorCode err;
-    DSLabelAccess dsLabel(solution.dmMesh(), _labelName.c_str(), _labelValue);
+    DSLabelAccess dsLabel(solution.getDM(), _labelName.c_str(), _labelValue);
     for (size_t i = 0; i < kernels.size(); ++i) {
-        const PetscInt i_field = solution.subfieldInfo(kernels[i].subfield.c_str()).index;
+        const PetscInt i_field = solution.getSubfieldInfo(kernels[i].subfield.c_str()).index;
         const PetscInt i_part = kernels[i].part;
         err = PetscWeakFormAddBdResidual(dsLabel.weakForm(), dsLabel.label(), dsLabel.value(), i_field, i_part,
                                          kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
@@ -189,10 +189,10 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
 
     assert(_auxiliaryField);
     PetscErrorCode err;
-    PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
+    PetscDM dmSoln = solution.getDM();assert(dmSoln);
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, _auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
@@ -241,21 +241,21 @@ pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Fie
     if (!_hasRHSResidual) { PYLITH_METHOD_END;}
     assert(residual);
 
-    DSLabelAccess dsLabel(solution.dmMesh(), _labelName.c_str(), _labelValue);
+    DSLabelAccess dsLabel(solution.getDM(), _labelName.c_str(), _labelValue);
     _setKernelConstants(solution, dt);
 
     PetscFormKey key;
     key.label = dsLabel.label();
     key.value = dsLabel.value();
-    key.field = solution.subfieldInfo(_subfieldName.c_str()).index;
+    key.field = solution.getSubfieldInfo(_subfieldName.c_str()).index;
     key.part = pylith::feassemble::Integrator::RESIDUAL_RHS;
 
     PetscErrorCode err;
-    assert(solution.localVector());
-    assert(residual->localVector());
+    assert(solution.getLocalVector());
+    assert(residual->getLocalVector());
     PetscVec solutionDotVec = NULL;
-    err = DMPlexComputeBdResidualSingle(dsLabel.dm(), t, dsLabel.weakForm(), key, solution.localVector(), solutionDotVec,
-                                        residual->localVector());PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeBdResidualSingle(dsLabel.dm(), t, dsLabel.weakForm(), key, solution.getLocalVector(), solutionDotVec,
+                                        residual->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeRHSResidual
@@ -274,20 +274,20 @@ pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Fie
     if (!_hasLHSResidual) { PYLITH_METHOD_END;}
     assert(residual);
 
-    DSLabelAccess dsLabel(solution.dmMesh(), _labelName.c_str(), _labelValue);
+    DSLabelAccess dsLabel(solution.getDM(), _labelName.c_str(), _labelValue);
     _setKernelConstants(solution, dt);
 
     PetscFormKey key;
     key.label = dsLabel.label();
     key.value = dsLabel.value();
-    key.field = solution.subfieldInfo(_subfieldName.c_str()).index;
+    key.field = solution.getSubfieldInfo(_subfieldName.c_str()).index;
     key.part = pylith::feassemble::Integrator::RESIDUAL_LHS;
 
     PetscErrorCode err;
-    assert(solution.localVector());
-    assert(residual->localVector());
-    err = DMPlexComputeBdResidualSingle(dsLabel.dm(), t, dsLabel.weakForm(), key, solution.localVector(), solutionDot.localVector(),
-                                        residual->localVector());PYLITH_CHECK_ERROR(err);
+    assert(solution.getLocalVector());
+    assert(residual->getLocalVector());
+    err = DMPlexComputeBdResidualSingle(dsLabel.dm(), t, dsLabel.weakForm(), key, solution.getLocalVector(), solutionDot.getLocalVector(),
+                                        residual->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeLHSResidual

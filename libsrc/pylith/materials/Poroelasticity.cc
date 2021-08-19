@@ -405,7 +405,7 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
                                                        const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsJacobian(integrator="<<integrator<<",solution="<<solution.getLabel()<<")");
-    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
+    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     std::vector<JacobianKernels> kernels(9);
 
     switch (_formulation) {

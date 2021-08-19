@@ -181,7 +181,7 @@ pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field
     integrator->setSurfaceMarkerLabel(getSurfaceMarkerLabel());
 
     pylith::feassemble::InterfacePatches* patches =
-        pylith::feassemble::InterfacePatches::createMaterialPairs(this, solution.dmMesh());
+        pylith::feassemble::InterfacePatches::createMaterialPairs(this, solution.getDM());
     integrator->setIntegrationPatches(patches);
 
     _setKernelsResidual(integrator, solution);
@@ -524,7 +524,7 @@ pylith::faults::FaultCohesiveKin::_updateSlipAcceleration(pylith::topology::Fiel
 
     // Transfer slip values from local PETSc slip vector to fault auxiliary field.
     PetscInt pStart = 0, pEnd = 0;
-    err = PetscSectionGetChart(auxiliaryField->localSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetChart(auxiliaryField->getLocalSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
 
     pylith::topology::VecVisitorMesh auxiliaryVisitor(*auxiliaryField, "slip_acceleration");
     PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();

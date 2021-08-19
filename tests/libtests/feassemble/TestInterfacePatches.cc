@@ -25,6 +25,7 @@
 #include "pylith/testing/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 // ------------------------------------------------------------------------------------------------
@@ -83,7 +84,7 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
 
     _initialize();
     CPPUNIT_ASSERT(_fault);
-    InterfacePatches* patches = InterfacePatches::createMaterialPairs(_fault, _mesh->dmMesh());
+    InterfacePatches* patches = InterfacePatches::createMaterialPairs(_fault, _mesh->getDM());
     CPPUNIT_ASSERT(patches);
 
     const std::string& labelName = std::string(_data->faultLabel) + std::string("-integration-patches");
@@ -131,7 +132,7 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
         PetscIS pointsIS = NULL;
         PetscInt numPoints = 0;
         const PetscInt* points = NULL;
-        err = DMGetLabel(_mesh->dmMesh(), labelName.c_str(), &label);CPPUNIT_ASSERT(!err);
+        err = DMGetLabel(_mesh->getDM(), labelName.c_str(), &label);CPPUNIT_ASSERT(!err);
         err = DMLabelGetStratumIS(label, labelValue, &pointsIS);CPPUNIT_ASSERT(!err);
         err = ISGetSize(pointsIS, &numPoints);CPPUNIT_ASSERT(!err);
         std::ostringstream msg;
@@ -165,8 +166,8 @@ pylith::feassemble::TestInterfacePatches::_initialize() {
     pylith::meshio::MeshIOAscii iohandler;
     iohandler.filename(_data->filename);
     iohandler.read(_mesh);
-    CPPUNIT_ASSERT(_mesh->numCells() > 0);
-    CPPUNIT_ASSERT(_mesh->numVertices() > 0);
+    CPPUNIT_ASSERT(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    CPPUNIT_ASSERT(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     CPPUNIT_ASSERT(_data->faultLabel);
     _fault = new pylith::faults::FaultCohesiveStub();CPPUNIT_ASSERT(_fault);

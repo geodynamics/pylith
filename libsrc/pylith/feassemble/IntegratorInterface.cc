@@ -241,7 +241,7 @@ pylith::feassemble::IntegratorInterface::setKernelsResidual(const std::vector<Re
 
     pythia::journal::debug_t debug(_IntegratorInterface::genericComponent);
     if (debug.state()) {
-        DSLabelAccess dsLabel(solution.dmMesh(), _labelName.c_str(), _labelValue);
+        DSLabelAccess dsLabel(solution.getDM(), _labelName.c_str(), _labelValue);
         err = PetscDSView(dsLabel.ds(), PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
     } // if
 
@@ -304,7 +304,7 @@ pylith::feassemble::IntegratorInterface::setKernelsJacobian(const std::vector<Ja
 
     pythia::journal::debug_t debug(_IntegratorInterface::genericComponent);
     if (debug.state()) {
-        DSLabelAccess dsLabel(solution.dmMesh(), _labelName.c_str(), _labelValue);
+        DSLabelAccess dsLabel(solution.getDM(), _labelName.c_str(), _labelValue);
         err = PetscDSView(dsLabel.ds(), PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
     } // if
 
@@ -329,13 +329,13 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
     Integrator::initialize(solution);
 
     PetscErrorCode err = 0;
-    PetscDM dmSoln = solution.dmMesh();
+    PetscDM dmSoln = solution.getDM();
     typedef InterfacePatches::keysmap_t keysmap_t;
     const keysmap_t& keysmap = _integrationPatches->getKeys();
     const pylith::topology::Field* auxiliaryField = getAuxiliaryField();assert(auxiliaryField);
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
         PetscFormKey key = iter->second.cohesive.getPetscKey(solution, pylith::feassemble::Integrator::RESIDUAL_LHS);
-        err = DMSetAuxiliaryVec(dmSoln, key.label, key.value, auxiliaryField->localVector());PYLITH_CHECK_ERROR(err);
+        err = DMSetAuxiliaryVec(dmSoln, key.label, key.value, auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     } // for
 
     PYLITH_METHOD_END;
@@ -479,7 +479,7 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
 
     // Loop over integration patches.
     PetscErrorCode err = 0;
-    PetscDM dmSoln = solution.dmMesh();
+    PetscDM dmSoln = solution.getDM();
     const InterfacePatches* patches = integrator->_integrationPatches;assert(patches);
     const keysmap_t& keysmap = patches->getKeys();
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
@@ -496,11 +496,11 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
         err = ISGetIndices(patchCellsIS, &patchCells);PYLITH_CHECK_ERROR(err);assert(patchCells);
         assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, patchCells[0]));
 
-        assert(solution.localVector());
-        assert(residual->localVector());
-        err = DMPlexComputeResidual_Hybrid_Internal(dmSoln, weakFormKeys, patchCellsIS, t, solution.localVector(),
-                                                    solutionDot.localVector(), t,
-                                                    residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
+        assert(solution.getLocalVector());
+        assert(residual->getLocalVector());
+        err = DMPlexComputeResidual_Hybrid_Internal(dmSoln, weakFormKeys, patchCellsIS, t, solution.getLocalVector(),
+                                                    solutionDot.getLocalVector(), t,
+                                                    residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
         err = ISRestoreIndices(patchCellsIS, &patchCells);PYLITH_CHECK_ERROR(err);
         err = ISDestroy(&patchCellsIS);PYLITH_CHECK_ERROR(err);
     } // for
@@ -535,7 +535,7 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     assert(precondMat);
 
     PetscErrorCode err;
-    PetscDM dmSoln = solution.dmMesh();
+    PetscDM dmSoln = solution.getDM();
     const InterfacePatches* patches = integrator->_integrationPatches;assert(patches);
     const keysmap_t& keysmap = patches->getKeys();
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
@@ -552,9 +552,9 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
         err = ISGetIndices(patchCellsIS, &patchCells);PYLITH_CHECK_ERROR(err);assert(patchCells);
         assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, patchCells[0]));
 
-        assert(solution.localVector());
-        err = DMPlexComputeJacobian_Hybrid_Internal(dmSoln, weakFormKeys, patchCellsIS, t, s_tshift, solution.localVector(),
-                                                    solutionDot.localVector(), jacobianMat, precondMat,
+        assert(solution.getLocalVector());
+        err = DMPlexComputeJacobian_Hybrid_Internal(dmSoln, weakFormKeys, patchCellsIS, t, s_tshift, solution.getLocalVector(),
+                                                    solutionDot.getLocalVector(), jacobianMat, precondMat,
                                                     NULL);PYLITH_CHECK_ERROR(err);
         err = ISRestoreIndices(patchCellsIS, &patchCells);PYLITH_CHECK_ERROR(err);
         err = ISDestroy(&patchCellsIS);PYLITH_CHECK_ERROR(err);
