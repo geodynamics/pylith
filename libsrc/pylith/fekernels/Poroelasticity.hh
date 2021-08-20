@@ -56,6 +56,31 @@ public:
      * @param[out] Storage coefficient at constant strain.
      */
     // =============================================================================
+    // Displacement
+    // =============================================================================
+    // ----------------------------------------------------------------------
+    // f0u
+    static
+    void f0u(const PylithInt dim,
+             const PylithInt numS,
+             const PylithInt numA,
+             const PylithInt sOff[],
+             const PylithInt sOff_x[],
+             const PylithScalar s[],
+             const PylithScalar s_t[],
+             const PylithScalar s_x[],
+             const PylithInt aOff[],
+             const PylithInt aOff_x[],
+             const PylithScalar a[],
+             const PylithScalar a_t[],
+             const PylithScalar a_x[],
+             const PylithReal t,
+             const PylithScalar x[],
+             const PylithInt numConstants,
+             const PylithScalar constants[],
+             PylithScalar f0[]);
+
+    // =============================================================================
     // Velocity
     // =============================================================================
     static

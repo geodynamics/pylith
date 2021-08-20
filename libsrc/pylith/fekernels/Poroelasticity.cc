@@ -32,6 +32,38 @@
 /* -------------------------------------------------------------------------- */
 
 // ---------------------------------------------------------------------------------------------------------------------
+// f0u placeholder function for poroelasticity equation
+void
+pylith::fekernels::Poroelasticity::f0u(const PylithInt dim,
+                                       const PylithInt numS,
+                                       const PylithInt numA,
+                                       const PylithInt sOff[],
+                                       const PylithInt sOff_x[],
+                                       const PylithScalar s[],
+                                       const PylithScalar s_t[],
+                                       const PylithScalar s_x[],
+                                       const PylithInt aOff[],
+                                       const PylithInt aOff_x[],
+                                       const PylithScalar a[],
+                                       const PylithScalar a_t[],
+                                       const PylithScalar a_x[],
+                                       const PylithReal t,
+                                       const PylithScalar x[],
+                                       const PylithInt numConstants,
+                                       const PylithScalar constants[],
+                                       PylithScalar f0[]) {
+    // Incoming solution fields.
+
+    // Incoming auxiliary fields.
+
+    for (PylithInt i = 0; i < dim; ++i) {
+        f0[i] += 0.0;
+        // PetscPrintf(PETSC_COMM_WORLD, "f0u[%i]: %f\n",i, f0[i]);
+    } // for
+} // f0u
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // f0v function for poroelasticity equation, implicit time stepping, quasistatic.
 void
 pylith::fekernels::Poroelasticity::f0v_implicit(const PylithInt dim,
