@@ -17,7 +17,7 @@
 
 SUBDIRS = \
 	elasticity \
-	faults
-
+	faults \
+	poroelasticity
 
 # End of file 

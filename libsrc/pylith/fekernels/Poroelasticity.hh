@@ -55,6 +55,7 @@ public:
      * @param[in] constants Array of registered constants.
      * @param[out] Storage coefficient at constant strain.
      */
+
     // =============================================================================
     // Displacement
     // =============================================================================

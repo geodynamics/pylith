@@ -443,7 +443,6 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
                                                           const topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsLHSResidual(integrator=" << integrator << ",solution=" << solution.getLabel() << ")");
-
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
     std::vector<ResidualKernels> kernels;
@@ -563,7 +562,6 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
             kernels[4] = ResidualKernels("pressure_t",     f0pdot, f1pdot);
             kernels[5] = ResidualKernels("trace_strain_t", f0edot, f1edot);
         }
-
         break;
     } // QUASISTATIC
 
@@ -628,6 +626,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::In
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsLHSJacobian(integrator="<<integrator<<",solution="<<solution.getLabel()<<")");
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
+
     std::vector<JacobianKernels> kernels(9);
 
     switch (_formulation) {
