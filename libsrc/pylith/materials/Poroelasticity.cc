@@ -452,7 +452,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
     {
         if (!_updateFields) {
             // Displacement
-            PetscPointFunc f0u = NULL;
+            PetscPointFunc f0u = pylith::fekernels::Poroelasticity::f0u;
             const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
             const int bitGravity = _gravityField ? 0x2 : 0x0;
             const int bitSourceDensity = _useSourceDensity ? 0x4 : 0x0;
