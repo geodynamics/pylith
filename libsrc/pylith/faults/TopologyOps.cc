@@ -440,6 +440,7 @@ pylith::faults::TopologyOps::getAdjacentCells(PylithInt* adjacentCellNegative,
 
     if (adjacentCellNegative) { *adjacentCellNegative = adjacentCells[0]; }
     if (adjacentCellPositive) { *adjacentCellPositive = adjacentCells[1]; }
+    PYLITH_METHOD_END;
 } // getAdjacentCells
 
 
