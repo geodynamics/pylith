@@ -2341,7 +2341,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf0pe(const PylithI
 
     // Run Checks
     assert(_dim == dim);
-    assert(numS >= 2);
+    assert(numS >= 3);
     assert(numA >= 3);
     assert(aOff);
     assert(aOff[i_biotCoefficient] >= 0);
@@ -2380,6 +2380,15 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf0ppdot(const Pyli
 
     // IsotropicLinearPoroelasticity
     const PylithInt i_biotModulus = numA - 2;
+
+    // Run Checks
+    assert(_dim == dim);
+    assert(numS >= 3);
+    assert(numA >= 3);
+    assert(aOff);
+    assert(aOff[i_biotModulus] >= 0);
+    assert(Jf0);
+
     const PylithScalar biotModulus = a[aOff[i_biotModulus]];
 
     Jf0[0] += 1.0 / biotModulus;
@@ -2413,6 +2422,15 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf0pedot(const Pyli
     // Incoming re-packed auxiliary field.
     // IsotropicLinearPoroelasticity
     const PylithInt i_biotCoefficient = numA - 3;
+
+    // Run Checks
+    assert(_dim == dim);
+    assert(numS >= 3);
+    assert(numA >= 3);
+    assert(aOff);
+    assert(aOff[i_biotCoefficient] >= 0);
+    assert(Jf0);
+
     const PylithScalar biotCoefficient = a[aOff[i_biotCoefficient]];
 
     Jf0[0] += biotCoefficient;
@@ -3256,6 +3274,14 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosity(cons
 
     // Poroelasticity
     const PylithInt i_porosity = 3;
+
+    // Run Checks
+    assert(_dim == dim);
+    assert(numS >= 3);
+    assert(numA >= 3);
+    assert(aOff);
+    assert(aOff[i_porosity] >= 0);
+    assert(porosity);
 
     // IsotropicLinearPoroelasticity
     const PylithInt i_drainedBulkModulus = numA - 4;
@@ -5678,7 +5704,7 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf0pe(const PylithInt dim,
 
     // Run Checks
     assert(_dim == dim);
-    assert(numS >= 2);
+    assert(numS >= 3);
     assert(numA >= 3);
     assert(aOff);
     assert(aOff[i_biotCoefficient] >= 0);
@@ -5717,6 +5743,15 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf0ppdot(const PylithInt dim
 
     // IsotropicLinearPoroelasticity
     const PylithInt i_biotModulus = numA - 2;
+
+    // Run Checks
+    assert(_dim == dim);
+    assert(numS >= 3);
+    assert(numA >= 3);
+    assert(aOff);
+    assert(aOff[i_biotModulus] >= 0);
+    assert(Jf0);
+
     const PylithScalar biotModulus = a[aOff[i_biotModulus]];
 
     Jf0[0] += 1.0 / biotModulus;
@@ -5750,6 +5785,15 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf0pedot(const PylithInt dim
     // Incoming re-packed auxiliary field.
     // IsotropicLinearPoroelasticity
     const PylithInt i_biotCoefficient = numA - 3;
+
+    // Run Checks
+    assert(_dim == dim);
+    assert(numS >= 3);
+    assert(numA >= 3);
+    assert(aOff);
+    assert(aOff[i_biotCoefficient] >= 0);
+    assert(Jf0);
+
     const PylithScalar biotCoefficient = a[aOff[i_biotCoefficient]];
 
     Jf0[0] += biotCoefficient;
@@ -6604,6 +6648,14 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::updatePorosity(const PylithI
 
     // Poroelasticity
     const PylithInt i_porosity = 3;
+
+    // Run Checks
+    assert(_dim == dim);
+    assert(numS >= 3);
+    assert(numA >= 3);
+    assert(aOff);
+    assert(aOff[i_porosity] >= 0);
+    assert(porosity);
 
     // IsotropicLinearPoroelasticity
     const PylithInt i_drainedBulkModulus = numA - 4;

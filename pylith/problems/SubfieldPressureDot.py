@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/problems/SubfieldPressure_t.py
+# @file pylith/problems/SubfieldPressureDot.py
 #
 # @brief Python object for pressure_t subfield.
 #
@@ -22,7 +22,7 @@
 from .SolutionSubfield import SolutionSubfield
 
 
-class SubfieldPressure_t(SolutionSubfield):
+class SubfieldPressureDot(SolutionSubfield):
     """
     Python object for pressure_t subfield.
 
@@ -79,9 +79,9 @@ class SubfieldPressure_t(SolutionSubfield):
 
 def soln_subfield():
     """
-    Factory associated with SubfieldPressure_t.
+    Factory associated with SubfieldPressureDot.
     """
-    return SubfieldPressure_t()
+    return SubfieldPressureDot()
 
 
 # End of file

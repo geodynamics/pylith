@@ -39,11 +39,11 @@ __all__ = [
     "SubfieldDisplacement",
     "SubfieldLagrangeFault",
     "SubfieldPressure",
-    "SubfieldPressure_t",
+    "SubfieldPressureDot",
     "SubfieldTemperature",
     "SubfieldVelocity",
     "SubfieldTraceStrain",
-    "SubfieldTraceStrain_t",
+    "SubfieldTraceStrainDot",
     "SingleObserver",
 ]
 

@@ -14,7 +14,7 @@
 # ----------------------------------------------------------------------
 #
 
-# @file pylith/problems/SubfieldTraceStrain_t.py
+# @file pylith/problems/SubfieldTraceStrainDot.py
 ##
 # @brief Python object for trace_strain_t subfield.
 ##
@@ -23,7 +23,7 @@
 from .SolutionSubfield import SolutionSubfield
 
 
-class SubfieldTraceStrain_t(SolutionSubfield):
+class SubfieldTraceStrainDot(SolutionSubfield):
     """
     Python object for trace_strain_t subfield.
 
@@ -81,9 +81,9 @@ class SubfieldTraceStrain_t(SolutionSubfield):
 
 def soln_subfield():
     """
-    Factory associated with SubfieldTraceStrain_t.
+    Factory associated with SubfieldTraceStrainDot.
     """
-    return SubfieldTraceStrain_t()
+    return SubfieldTraceStrainDot()
 
 
 # End of file

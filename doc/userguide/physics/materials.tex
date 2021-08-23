@@ -133,7 +133,7 @@ implemented for the elaticity equation.
                                       & \thead{L}                                   & \thead{LM}                          & \thead{GM} & \thead{PL} & \thead{DP} &                        \\
     \midrule
     cauchy\_stress                    & \yes                                        & \yes                                & \yes       & \yes       & \yes       & xx, yy, zz, xy, yz, xz \\
-    cauchy\_strain                    & \yes                                        & \yes                                & \yes       & \yes       & \yes       & xx, yy, zz, yz, yz, xz \\
+    cauchy\_strain                    & \yes                                        & \yes                                & \yes       & \yes       & \yes       & xx, yy, zz, xy, yz, xz \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -272,7 +272,7 @@ implemented for the elaticity equation.
                                       & \thead{L}                                   & \thead{LM}                          & \thead{GM} & \thead{PL} &                        \\
     \midrule
     cauchy\_stress                    & \yes                                        & \yes                                & \yes       & \yes       & xx, yy, zz, xy, yz, xz \\
-    cauchy\_strain                    & \yes                                        & \yes                                & \yes       & \yes       & xx, yy, zz, yz, yz, xz \\
+    cauchy\_strain                    & \yes                                        & \yes                                & \yes       & \yes       & xx, yy, zz, xy, yz, xz \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -323,7 +323,25 @@ Property common to all bulk rheologies for incompressible elasticity:
 \subsection{Poroelasticity (\protect\object{Poroelasticity})}
 
 The \object{Poroelasticity} is used to solve the poroelastic equations with
-or without inertia. Whether inertia or body forces are included is
+or without inertia. Poroelasticity is a representation of a medium that has
+a solid frame with a pore space containing a fluid. The result is a coupling
+between the solid frame displacement and the pressure of the fluid contained
+within the pore space. This medium may take the form of a granular material,
+such as the case of water logged sand, or that of a porous solid, with a
+well defined and connected pore network such as the case of a traditional
+oil bearing reservoir.\\
+
+The range of deformation for a porous medium is defined by two limiting regimes,
+referred to as the drained and undrained conditions respectively. Drained 
+deformation acts with the assumption that fluid pore pressure is held constant,
+and for the case of the undrained condition, it is assumed that there is no 
+fluid flux across the boundaries of a given control volume, and thus there is no 
+relative movement between the fluid and the solid frame in which it is encased.
+With the exception of assigned boundary conditions, and instantenous loading
+behavior approximating the undrained condtion, modeled behavior will fall
+between the two limiting cases.\\
+
+Whether inertia or body forces are included is
 determined by the \object{Poroelasticity} property settings. Gravitational
 body forces are included if the \facility{gravity\_field} is set in
 the \object{Problem}. Additional body forces may be specified by setting \facility{body\_force}
@@ -338,7 +356,7 @@ force vectors. The properties and facilities are;
   \propertyitem{use\_constant\_pressure\_source}{Include constant pressure source term in
     poroelasticity equation (default=False);}
   \propertyitem{update\_fields}{Determine change in auxiliary variables at the end of
-    each iteration. Currently only implemented for porosity, and shifts the quasi-static
+    each iteration. Currently only implemented for porosity, and shifts the quasistatic
     problem formulation from three solution fields to six solution fields. (default=False);}
   \facilityitem{bulk\_rheology}{Bulk rheology for a poroelastic
     material.}
@@ -399,7 +417,7 @@ implemented for the poroelasticity equation.
                                       & \thead{L}                                   &                                     \\
     \midrule
     cauchy\_stress                    & \yes                                        & xx, yy, zz, xy, yz, xz              \\
-    cauchy\_strain                    & \yes                                        & xx, yy, zz, yz, yz, xz              \\
+    cauchy\_strain                    & \yes                                        & xx, yy, zz, xy, yz, xz              \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -439,35 +457,18 @@ Property common to linear poroelastic bulk rheology for poroelasticity:
   # Set the discretization of the material auxiliary fields (properties).
   # With uniform material properties, we can use a basis order of 0.
   <p>auxiliary_subfields.solid_density.basis_order</p> = 0
-  <p>auxiliary_subfields.solid_density.quadrature_order</p> = 1
-
   <p>auxiliary_subfields.fluid_density.basis_order</p> = 0
-  <p>auxiliary_subfields.fluid_density.quadrature_order</p> = 1
-
   <p>auxiliary_subfields.fluid_viscosity.basis_order</p> = 0
-  <p>auxiliary_subfields.fluid_viscosity.quadrature_order</p> = 1
-
   <p>auxiliary_subfields.porosity.basis_order</p> = 0
-  <p>auxiliary_subfields.porosity.quadrature_order</p> = 1
 
     <h>[pylithapp.problem.materials.elastic.bulk_rheology]</h>
+
   <p>auxiliary_subfields.shear_modulus.basis_order</p> = 0
-  <p>auxiliary_subfields.shear_modulus.quadrature_order</p> = 1
-
   <p>auxiliary_subfields.drained_bulk_modulus.basis_order</p> = 0
-  <p>auxiliary_subfields.drained_bulk_modulus.quadrature_order</p> = 1
-
   <p>auxiliary_subfields.biot_coefficient.basis_order</p> = 0
-  <p>auxiliary_subfields.biot_coefficient.quadrature_order</p> = 1
-
   <p>auxiliary_subfields.fluid_bulk_modulus.basis_order</p> = 0
-  <p>auxiliary_subfields.fluid_bulk_modulus.quadrature_order</p> = 1
-
   <p>auxiliary_subfields.solid_bulk_modulus.basis_order</p> = 0
-  <p>auxiliary_subfields.solid_bulk_modulus.quadrature_order</p> = 1
-
   <p>auxiliary_subfields.isotropic_permeability.basis_order</p> = 0
-  <p>auxiliary_subfields.isotropic_permeability.quadrature_order</p> = 1
 \end{cfg}
 
 

@@ -177,9 +177,9 @@ Identifying $F(t,s,\dot{s})$ and $G(t,s)$we have
   + \nabla \trialvec[u] : \eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{\tensor{f}^u_1} \, d\Omega
   + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{\vec{f}^u_0} \, d\Gamma,                                                                               \\
   % Pressure
-  F^p(t,s,\dot{s})              & = \int_\Omega  \trialscalar[p] \left[\eqnannotate{\frac{\partial \zeta(\vec{u},p_f)}{\partial t} - \gamma(\vec{x},t)} {f^p_0}\right]
+  F^p(t,s,\dot{s})              & = \int_\Omega  \trialscalar[p] \eqnannotate{\left(\frac{\partial \zeta(\vec{u},p_f)}{\partial t} - \gamma(\vec{x},t)\right)} {f^p_0}
   + \nabla \trialscalar[p] \cdot \eqnannotate{-\vec{q}(p_f)}{\vec{f}^p_1} \, d\Omega
-  + \int_{\Gamma_q} \trialscalar[p] (\eqnannotate{q_0(\vec{x},t)}{f^p_0}) \, d\Gamma,                                                                                                \\
+  + \int_{\Gamma_q} \trialscalar[p] \eqnannotate{\left(q_0(\vec{x},t)\right)}{f^p_0} \, d\Gamma,                                                                                                \\
   % Volumetric Strain
   F^{\epsilon_{v}}(t,s,\dot{s}) & = \int_{\Omega} \trialscalar[\epsilon_{v}] \cdot \eqnannotate{\left(\nabla \cdot \vec{u} - \epsilon_{v} \right)}{f^{\epsilon_{v}}_{0}} \, d\Omega. \\
   G^u(t,s)                      & = 0,                                                                                                                                               \\

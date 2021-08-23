@@ -64,7 +64,7 @@ pylith::materials::RheologyPoroelasticity::updateKernelConstants(pylith::real_ar
 void
 pylith::materials::RheologyPoroelasticity::addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
                                                                      const spatialdata::geocoords::CoordSys* coordsys,
-                                                                     const bool _updateFields) const {
+                                                                     const bool _useStateVars) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<") empty method");
 
