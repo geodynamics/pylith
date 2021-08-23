@@ -54,6 +54,9 @@ public:
     /// Add slip rate subfield to auxiliary field.
     void addSlipRate(void);
 
+    /// Add slip acceleration subfield to auxiliary field.
+    void addSlipAcceleration(void);
+
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 

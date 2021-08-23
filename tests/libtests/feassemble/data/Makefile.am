@@ -17,7 +17,9 @@
 #
 
 dist_noinst_DATA = \
-	tri.mesh
+	tri.mesh \
+	quad_patches_a.mesh
+
 
 # 'export' the input files by performing a mock install
 export_datadir = $(abs_top_builddir)/tests/libtests/feassemble/data

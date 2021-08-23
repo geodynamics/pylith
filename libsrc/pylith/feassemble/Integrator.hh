@@ -250,6 +250,12 @@ protected:
     int _lhsJacobianTriggers; // Triggers for needing new LHS Jacobian.
     int _lhsJacobianLumpedTriggers; // Triggers for needing new LHS lumped Jacobian.
 
+    /// True if we have kernels for operation, false otherwise.
+    bool _hasRHSResidual;
+    bool _hasLHSResidual;
+    bool _hasLHSJacobian;
+    bool _hasLHSJacobianLumped;
+
     /// True if we need to recompute Jacobian for operator, false otherwise.
     /// Default is false;
     bool _needNewLHSJacobian;

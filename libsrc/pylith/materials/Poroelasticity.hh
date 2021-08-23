@@ -65,22 +65,21 @@ public:
      *
      * @returns True if including source density term, false otherwise.
      */
-     bool useSourceDensity(void) const;
+    bool useSourceDensity(void) const;
 
-     /** Use reference stress and strain in computation of stress and
-      * strain?
-      *
-      * @param[in] value Flag indicating to include reference stress and strain.
-      */
-     void useReferenceState(const bool value);
+    /** Use reference stress and strain in computation of stress and
+     * strain?
+     *
+     * @param[in] value Flag indicating to include reference stress and strain.
+     */
+    void useReferenceState(const bool value);
 
-     /** Use reference stress and strain in computation of stress and
-      * strain?
-      *
-      * @returns True if using reference stress and strain, false otherwise.
-      */
-     bool useReferenceState(void) const;
-
+    /** Use reference stress and strain in computation of stress and
+     * strain?
+     *
+     * @returns True if using reference stress and strain, false otherwise.
+     */
+    bool useReferenceState(void) const;
 
     /** Set bulk rheology.
      *
@@ -152,29 +151,21 @@ protected:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    /** Set kernels for RHS residual.
+    /** Set kernels for residual.
      *
      * @param[out] integrator Integrator for material.
      * @param[in] solution Solution field.
      */
-    void _setKernelsRHSResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                const pylith::topology::Field& solution) const;
+    void _setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
+                             const pylith::topology::Field& solution) const;
 
-    /** Set kernels for LHS residual.
+    /** Set kernels for Jacobian.
      *
      * @param[out] integrator Integrator for material.
      * @param[in] solution Solution field.
      */
-    void _setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                const pylith::topology::Field& solution) const;
-
-    /** Set kernels for LHS Jacobian.
-     *
-     * @param[out] integrator Integrator for material.
-     * @param[in] solution Solution field.
-     */
-    void _setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                                const pylith::topology::Field& solution) const;
+    void _setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
+                             const pylith::topology::Field& solution) const;
 
     /** Set kernels for computing updated state variables in auxiliary field.
      *
@@ -182,7 +173,7 @@ private:
      * @param[in] solution Solution field.
      */
     void _setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
-                                 const pylith::topology::Field& solution) const;
+                                    const pylith::topology::Field& solution) const;
 
     /** Set kernels for computing derived field.
      *
@@ -195,10 +186,9 @@ private:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    bool _useInertia; ///< Flag to include inertial term.
     bool _useBodyForce; ///< Flag to include body force term.
-    bool _useReferenceState;   ///< Flag to use reference stress and strain.
-    bool _useSourceDensity;   ///< Flag to use source density.
+    bool _useReferenceState; ///< Flag to use reference stress and strain.
+    bool _useSourceDensity; ///< Flag to use source density.
     pylith::materials::RheologyPoroelasticity* _rheology; ///< Bulk rheology for elasticity.
     pylith::materials::DerivedFactoryElasticity* _derivedFactory; ///< Factory for creating derived fields.
 
@@ -208,9 +198,7 @@ private:
     Poroelasticity(const Poroelasticity&); ///< Not implemented.
     const Poroelasticity& operator=(const Poroelasticity&); /// Not implemented.
 
-};
-
-// class Poroelasticity
+}; // class Poroelasticity
 
 #endif // pylith_materials_poroelasticity_hh
 

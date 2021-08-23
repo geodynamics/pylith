@@ -43,13 +43,13 @@ class TestCase(FullTestCase):
                 defaults=defaults,
             ),
             Check(
-                mesh_entities=["elastic_xpos", "elastic_xneg"],
+                mesh_entities=["mat_xneg", "mat_xmid", "mat_xposypos", "mat_xposyneg"],
                 filename="output/{name}-{mesh_entity}_info.h5",
                 cell_fields = ["density", "bulk_modulus", "shear_modulus"],
                 defaults=defaults,
             ),
             Check(
-                mesh_entities=["elastic_xpos", "elastic_xneg"],
+                mesh_entities=["mat_xneg", "mat_xmid", "mat_xposypos", "mat_xposyneg"],
                 vertex_fields = ["displacement", "cauchy_strain", "cauchy_stress"],
                 defaults=defaults,
             ),

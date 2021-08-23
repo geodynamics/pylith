@@ -134,6 +134,39 @@ pylith::faults::KinSrcConstRate::slipRateFn(const PylithInt dim,
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Slip acceleration time function kernel.
+void
+pylith::faults::KinSrcConstRate::slipAccFn(const PylithInt dim,
+                                           const PylithInt numS,
+                                           const PylithInt numA,
+                                           const PylithInt sOff[],
+                                           const PylithInt sOff_x[],
+                                           const PylithScalar s[],
+                                           const PylithScalar s_t[],
+                                           const PylithScalar s_x[],
+                                           const PylithInt aOff[],
+                                           const PylithInt aOff_x[],
+                                           const PylithScalar a[],
+                                           const PylithScalar a_t[],
+                                           const PylithScalar a_x[],
+                                           const PylithReal t,
+                                           const PylithScalar x[],
+                                           const PylithInt numConstants,
+                                           const PylithScalar constants[],
+                                           PylithScalar slipAcc[]) {
+    const PylithInt _numA = 2;
+
+    assert(_numA == numA);
+    assert(slipAcc);
+
+    for (PylithInt i = 0; i < dim; ++i) {
+        slipAcc[i] = 0.0;
+    } // for
+
+} // slipRateFn
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Preinitialize earthquake source. Set names/sizes of auxiliary subfields.
 void
 pylith::faults::KinSrcConstRate::_auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
@@ -153,6 +186,7 @@ pylith::faults::KinSrcConstRate::_auxiliaryFieldSetup(const spatialdata::units::
 
     _slipFnKernel = pylith::faults::KinSrcConstRate::slipFn;
     _slipRateFnKernel = pylith::faults::KinSrcConstRate::slipRateFn;
+    _slipAccFnKernel = pylith::faults::KinSrcConstRate::slipAccFn;
 
     PYLITH_METHOD_END;
 } // _auxiliaryFieldSetup

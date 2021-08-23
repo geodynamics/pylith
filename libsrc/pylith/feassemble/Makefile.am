@@ -21,10 +21,15 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	PhysicsImplementation.hh \
+	DSLabelAccess.hh \
+	DSLabelAccess.icc \
+	FEKernelKey.hh \
+	FEKernelKey.icc \
 	Integrator.hh \
 	IntegratorDomain.hh \
 	IntegratorBoundary.hh \
 	IntegratorInterface.hh \
+	InterfacePatches.hh \
 	UpdateStateVars.hh \
 	Constraint.hh \
 	ConstraintSpatialDB.hh \

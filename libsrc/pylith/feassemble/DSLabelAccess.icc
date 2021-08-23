@@ -1,0 +1,140 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2021 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ======================================================================
+//
+
+#if !defined(pylith_feassemble_dslabelaccess_hh)
+#error "DSLabelAccess.icc must be included only from DSLabelAccess.hh"
+#else
+
+#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+
+// ------------------------------------------------------------------------------------------------
+// Constructor with PetscDM, label name, and label value.
+inline
+pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
+                                                 const char* labelName,
+                                                 const int labelValue) :
+    _dm(dm),
+    _label(NULL),
+    _ds(NULL),
+    _weakForm(NULL),
+    _cellsIS(NULL),
+    _numCells(0),
+    _value(labelValue),
+    _name(labelName) {
+    PYLITH_METHOD_BEGIN;
+
+    assert(dm);
+    PetscErrorCode err;
+    PetscBool hasLabel = PETSC_FALSE;
+    err = DMHasLabel(_dm, labelName, &hasLabel);PYLITH_CHECK_ERROR(err);
+    if (!hasLabel) {
+        std::ostringstream msg;
+        const char* dmName = NULL;
+        err = PetscObjectGetName((PetscObject)_dm, &dmName);PYLITH_CHECK_ERROR(err);
+        msg << "PETSc DM '" << dmName << "' missing label '" << labelName << "'.";
+        throw std::runtime_error(msg.str());
+    } // if
+    err = DMGetLabel(_dm, labelName, &_label);PYLITH_CHECK_ERROR(err);assert(_label);
+
+    const PetscInt* cellIndices = NULL;
+    err = DMGetStratumIS(dm, labelName, labelValue, &_cellsIS);PYLITH_CHECK_ERROR(err);assert(_cellsIS);
+    err = ISGetSize(_cellsIS, &_numCells);PYLITH_CHECK_ERROR(err);assert(_numCells > 0);
+    err = ISGetIndices(_cellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);assert(cellIndices);
+
+    err = DMGetCellDS(dm, cellIndices[0], &_ds);PYLITH_CHECK_ERROR(err);assert(_ds);
+    err = PetscDSGetWeakForm(_ds, &_weakForm);PYLITH_CHECK_ERROR(err);assert(_weakForm);
+
+    err = ISRestoreIndices(_cellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);
+    PYLITH_METHOD_END;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Default destructor
+inline
+pylith::feassemble::DSLabelAccess::~DSLabelAccess(void) {
+    ISDestroy(&_cellsIS);
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get PETSc DM.
+inline
+PetscDM
+pylith::feassemble::DSLabelAccess::dm(void) const {
+    return _dm;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get PETSc DMLabel.
+inline
+PetscDMLabel
+pylith::feassemble::DSLabelAccess::label(void) const {
+    return _label;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get PETSc DMLabel value.
+inline
+PetscInt
+pylith::feassemble::DSLabelAccess::value(void) const {
+    return _value;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get PetscDS.
+inline
+PetscDS
+pylith::feassemble::DSLabelAccess::ds(void) const {
+    return _ds;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get weak form associated with PetscDS.
+inline
+PetscWeakForm
+pylith::feassemble::DSLabelAccess::weakForm(void) const {
+    return _weakForm;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get PETSc IS associated with label and value.
+inline
+PetscIS
+pylith::feassemble::DSLabelAccess::cellsIS(void) const {
+    return _cellsIS;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get number of cells in PETSc IS associated with label and value.
+inline
+PetscInt
+pylith::feassemble::DSLabelAccess::numCells(void) const {
+    return _numCells;
+}
+
+
+#endif
+
+// End of file

@@ -21,13 +21,16 @@
 #include "FaultCohesive.hh" // implementation of object methods
 
 #include "pylith/faults/TopologyOps.hh" // USES TopologyOps
-
+#include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
+#include "pylith/feassemble/FEKernelKey.hh" // USES FEKernelKey
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::checkTopology()
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
+#include <utility> // USES std::pair
+#include <map> // USES std::map
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error

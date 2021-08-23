@@ -22,12 +22,17 @@ create vertex 0.0 -4000.0 0.0
 create vertex 0.0 +4000.0 0.0
 split surface 1 across location vertex 5 location vertex 6
 
+create vertex 0.0 0.0 0.0
+create vertex +4000.0 0.0 0.0
+split surface 3 across location vertex 9 location vertex 10
+
+
 # Fault at x=-2000.0
 create vertex -2000.0 +4000.0 0.0
 create vertex -2000.0 -4000.0 0.0
-split surface 2 across location vertex 9 location vertex 10
-split surface 3 across location vertex 9 location vertex 10
+split surface 2 across location vertex 13 location vertex 14
 
 delete vertex all
+
 
 

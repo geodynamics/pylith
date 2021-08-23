@@ -124,6 +124,19 @@ public:
                         const PylithScalar t,
                         const PylithScalar timeScale);
 
+    /** Set slip acceleration values at time t.
+     *
+     * @param[inout] slipAccLocalVec Local PETSc vector for slip values.
+     * @param[in] faultAuxiliaryField Auxiliary field for fault.
+     * @param[in] t Time t.
+     * @param[in] timeScale Time scale for nondimensionalization.
+     */
+    virtual
+    void updateSlipAcc(PetscVec slipAccLocalVec,
+                       pylith::topology::Field* faultAuxiliaryField,
+                       const PylithScalar t,
+                       const PylithScalar timeScale);
+
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
@@ -156,6 +169,7 @@ protected:
     pylith::faults::KinSrcAuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
     PetscPointFunc _slipFnKernel; ///< Kernel for slip time function.
     PetscPointFunc _slipRateFnKernel; ///< Kernel for slip rate time function.
+    PetscPointFunc _slipAccFnKernel; ///< Kernel for slip acceleration time function.
     pylith::topology::Field* _auxiliaryField; ///< Auxiliary field for this integrator.
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////

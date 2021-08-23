@@ -111,6 +111,19 @@ public:
     static
     PetscDMLabel getInterfacesLabel(PetscDM dm);
 
+    /** Get cells adjacent to cohesive cell on negative and positive sides of the fault.
+     *
+     * @param[out] adjacentCellNegative Adjacent cell on negative side of the fault.
+     * @param[out] adjacentCellPositive Adjacent cell on positive side of the fault.
+     * @param[in] dmMesh DM for finite-element mesh.
+     * @param[in] cohesiveCell Cohesive cell.
+     */
+    static
+    void getAdjacentCells(PylithInt* adjacentCellNegative,
+                          PylithInt* adjacentCellPositive,
+                          PetscDM dmMesh,
+                          const PylithInt cohesiveCell);
+
 }; // class TopologyOps
 
 #endif // pylith_faults_topologyops_hh
