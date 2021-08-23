@@ -181,7 +181,7 @@ public:
      */
     void addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
                                    const spatialdata::geocoords::CoordSys* coordsys,
-                                   const bool _updateFields) const;
+                                   const bool _useStateVars) const;
 
     };      // class IsotropicLinearPoroelasticity
 

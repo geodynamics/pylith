@@ -54,7 +54,7 @@ pylith::materials::Poroelasticity::Poroelasticity(void) :
     _useReferenceState(false),
     _useSourceDensity(false),
     _useConstantPressureSource(false),
-    _updateFields(false),
+    _useStateVars(false),
     _rheology(NULL),
     _derivedFactory(new pylith::materials::DerivedFactoryElasticity) {
     pylith::utils::PyreComponent::setName("poroelasticity");
@@ -133,18 +133,18 @@ pylith::materials::Poroelasticity::useConstantPressureSource(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Update Fields?
 void
-pylith::materials::Poroelasticity::updateFields(const bool value) {
-    PYLITH_COMPONENT_DEBUG("updateFields(value="<<value<<")");
-    _updateFields = value;
-} // updateFields
+pylith::materials::Poroelasticity::getUseStateVars(const bool value) {
+    PYLITH_COMPONENT_DEBUG("getUseStateVars(value="<<value<<")");
+    _useStateVars = value;
+} // getUseStateVars
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Update fields?
 bool
-pylith::materials::Poroelasticity::updateFields(void) const {
-    return _updateFields;
-} // updateFields
+pylith::materials::Poroelasticity::getUseStateVars(void) const {
+    return _useStateVars;
+} // getUseStateVars
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -449,7 +449,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
     switch (_formulation) {
     case QUASISTATIC:
     {
-        if (!_updateFields) {
+        if (!_useStateVars) {
             // Displacement
             PetscPointFunc f0u = pylith::fekernels::Poroelasticity::f0u;
             const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
@@ -498,7 +498,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
             kernels[1] = ResidualKernels("pressure", f0p, f1p);
             kernels[2] = ResidualKernels("trace_strain", f0e, f1e);
 
-        } else if (_updateFields) {
+        } else if (_useStateVars) {
             // Displacement
             PetscPointFunc f0u = NULL;
             const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
@@ -632,7 +632,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::In
     switch (_formulation) {
     case QUASISTATIC:
     {
-        if (!_updateFields) {
+        if (!_useStateVars) {
             const PetscPointJac Jf0uu = NULL;
             const PetscPointJac Jf1uu = NULL;
             const PetscPointJac Jf2uu = NULL;
@@ -688,7 +688,7 @@ pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::In
             kernels[7] = JacobianKernels("trace_strain", "pressure", Jf0ep, Jf1ep, Jf2ep, Jf3ep);
             kernels[8] = JacobianKernels("trace_strain", "trace_strain", Jf0ee, Jf1ee, Jf2ee, Jf3ee);
 
-        } else if (_updateFields) {
+        } else if (_useStateVars) {
             kernels.resize(36);
 
             const PetscPointJac Jf0uu = NULL;
@@ -994,7 +994,7 @@ pylith::materials::Poroelasticity::_setKernelsUpdateStateVars(pylith::feassemble
     assert(coordsys);
 
     std::vector<ProjectKernels> kernels;
-    _rheology->addKernelsUpdateStateVars(&kernels, coordsys, _updateFields);
+    _rheology->addKernelsUpdateStateVars(&kernels, coordsys, _useStateVars);
 
     integrator->setKernelsUpdateStateVars(kernels);
 

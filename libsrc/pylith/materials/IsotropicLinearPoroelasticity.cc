@@ -665,7 +665,6 @@ pylith::materials::IsotropicLinearPoroelasticity::updateKernelConstants(pylith::
                                                                         const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateKernelConstants(kernelConstants"<<kernelConstants<<", dt="<<dt<<")");
-    // ******** Should alpha (time integration parameter) be included here?
 
     assert(kernelConstants);
 
