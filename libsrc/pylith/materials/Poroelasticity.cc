@@ -124,18 +124,18 @@ bool pylith::materials::Poroelasticity::useConstantPressureSource(void) const
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Update Fields?
-void pylith::materials::Poroelasticity::getUseStateVars(const bool value)
+void pylith::materials::Poroelasticity::useStateVars(const bool value)
 {
-    PYLITH_COMPONENT_DEBUG("getUseStateVars(value=" << value << ")");
+    PYLITH_COMPONENT_DEBUG("useStateVars(value=" << value << ")");
     _useStateVars = value;
-} // getUseStateVars
+} // useStateVars
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Update fields?
-bool pylith::materials::Poroelasticity::getUseStateVars(void) const
+bool pylith::materials::Poroelasticity::useStateVars(void) const
 {
     return _useStateVars;
-} // getUseStateVars
+} // useStateVars
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set bulk rheology.

@@ -83,13 +83,13 @@ public:
      *
      * @param[in] value Flag indicating to update the auxiliary field values over time.
      */
-    void getUseStateVars(const bool value);
+    void useStateVars(const bool value);
 
     /** Update fields?
      *
      * @param[in] value Flag indicating to update the auxiliary field values over time.
      */
-    bool getUseStateVars(void) const;
+    bool useStateVars(void) const;
 
     /** Use reference stress and strain in computation of stress and
      * strain?
