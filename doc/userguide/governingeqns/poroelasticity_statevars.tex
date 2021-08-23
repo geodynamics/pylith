@@ -85,7 +85,7 @@ Identifying $F(t,s,\dot{s})$ and $G(t,s)$, we have
     + \nabla \trialvec[u] : \eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{\tensor{f}^u_1} \, d\Omega
     + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{\vec{f}^u_0} \, d\Gamma,                                                                             \\
     % Pressure
-    F^p(t,s,\dot{s})              & = \int_\Omega  \trialscalar[p] \left[\eqnannotate{\frac{\partial \zeta(\vec{u},p_f)}{\partial t} - \gamma(\vec{x},t)} {f^p_0}\right]
+    F^p(t,s,\dot{s})              & = \int_\Omega  \trialscalar[p] \eqnannotate{\left(\frac{\partial \zeta(\vec{u},p_f)}{\partial t} - \gamma(\vec{x},t)\right)} {f^p_0}
     + \nabla \trialscalar[p] \cdot \eqnannotate{-\vec{q}(p_f)}{\vec{f}^p_1} \, d\Omega
     + \int_{\Gamma_q} \trialscalar[p] (\eqnannotate{q_0(\vec{x},t)}{f^p_0}) \, d\Gamma,                                                                                              \\
     % Volumetric Strain
@@ -341,5 +341,5 @@ The value for porosity is then updated by assuming that $\dot{\phi} = \frac{\Del
 length for the current iteration. Thus, the update is completed with the explicit formulation
 
 \begin{equation}
-    \phi_{new} = \phi_{old} + \left(\Delta t\right) \left(\dot{\phi}\right).
+    \phi_{new} = \phi_{old} + \Delta t \dot{\phi}.
 \end{equation}
