@@ -156,6 +156,12 @@ public:
     // Get biot coefficient kernel for LHS Jacobian F(t,s, \dot{s}).
     PetscPointJac getKernelJf0pe(const spatialdata::geocoords::CoordSys* coordsys) const;
 
+    // ---------------------------------------------------------------------------------------------------------------------
+    PetscPointJac getKernelJf0ppdot(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    PetscPointJac getKernelJf0pedot(const spatialdata::geocoords::CoordSys* coordsys) const;
+
     // ============================ DERIVED FIELDS ========================== //
 
     /** Get stress kernel for derived field.
@@ -165,6 +171,24 @@ public:
      * @return Project kernel for computing stress subfield in derived field.
      */
     PetscPointFunc getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+    /** Update kernel constants.
+     *
+     * @param[inout] kernelConstants Array of constants used in integration kernels.
+     * @param[in] dt Current time step.
+     */
+    void updateKernelConstants(pylith::real_array* kernelConstants,
+                               const PylithReal dt) const;
+
+    /** Add kernels for updating state variables.
+     *
+     * @param[inout] kernels Array of kernels for updating state variables.
+     * @param[in] coordsys Coordinate system.
+     * @param[in] _updateFields Update kernels?
+     */
+    void addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
+                                   const spatialdata::geocoords::CoordSys* coordsys,
+                                   const bool _updateFields) const;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

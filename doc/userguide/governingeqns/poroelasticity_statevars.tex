@@ -1,0 +1,345 @@
+% ----------------------------------------------------------------------
+\section{Poroelasticity with Infinitesimal Strain and No Faults, Auxiliary Field Update}
+
+For the quasi-static case where the flag for iterative update of auxiliary fields is
+selected, the three field solution formulation is expanded to six fields. The solution
+vector now consists of solid frame displacement, $\vec{u}$, fluid pressure, $p$, volumetric
+strain, $\epsilon_{v}$, solid frame velocity, $\vec{v}$, derivative of fluid pressure with
+respect to time, $P$, and derivative of the volumetric strain with respect to time,
+$E_{v}$.\\
+
+The strong form of the problem may be expressed as
+\begin{gather}
+    % Solution
+    \vec{s}^{T} = \left(\vec{u}, \quad p, \quad \epsilon_v, \quad \vec{v}, \quad P, \quad E_{v} \right), \\
+    % Elasticity
+    \vec{f}(t) + \nabla \cdot \tensor{\sigma}(\vec{u},p) = \vec{0} \text{ in } \Omega, \\
+    % Pressure
+    \frac{\partial \zeta(\vec{u},p)}{\partial t} - \gamma(\vec{x},t) + \nabla \cdot \vec{q}(p) = 0 \text{ in } \Omega, \\
+    % Vol. Strain
+    \nabla \cdot \vec{u} - \epsilon_{v} = 0 \text{ in } \Omega, \\
+    % Velocity
+    \dot{\vec{u}} -\vec{v} = 0 \text{ in } \Omega \\
+    % Press. Vel
+    \dot{p} - P = 0 \text{ in } \Omega \\
+    % Vol. Strain Vel
+    \dot{\epsilon}_{v} - E_{v} = 0 \text{ in } \Omega \\
+    % Neumann traction
+    \tensor{\sigma} \cdot \vec{n} = \vec{\tau}(\vec{x},t) \text{ on } \Gamma_{\tau}, \\
+    % Dirichlet displacement
+    \vec{u} = \vec{u}_0(\vec{x}, t) \text{ on } \Gamma_{u}, \\
+    % Neumann flow
+    \vec{q} \cdot \vec{n} = q_0(\vec{x}, t) \text{ on } \Gamma_{q}, \text{ and } \\
+    % Dirichlet pressure
+    p = p_0(\vec{x},t) \text{ on } \Gamma_{p}.
+\end{gather}
+We place all terms for the elasticity, pressure, an volumetric strain
+equations on the left-hand-side, consistent with PETSc TS implicit
+time stepping.
+
+%
+We create the weak form by taking the dot product with the trial
+functions $\trialvec[u]$, $\trialscalar[p]$, $\trialscalar[\epsilon_{v}]$, $\trialvec[v]$, $\trialscalar[P]$, and $\trialscalar[E_{v}]$,
+integrating over the domain:
+\begin{gather}
+    % Weak conservation of momentum
+    \int_\Omega \trialvec[u] \cdot \left( \vec{f}(\vec{x},t) + \tensor{\nabla} \cdot \tensor{\sigma} (\vec{u},p) \right) \, d\Omega = 0, \\
+    % Weak conservation of mass
+    \int_\Omega  \trialscalar[p] \left( \frac{\partial \zeta(\vec{u},p)}{\partial t} - \gamma(\vec{x},t) + \nabla \cdot \vec{q}(p)\right) \, d\Omega = 0,\\
+    % Weak vol. strain
+    \int_{\Omega} \trialscalar[\epsilon_{v}] \left( \nabla \cdot \vec{u} - \epsilon_v \right) \, d\Omega = 0, \\
+    % Weak Velocity
+    \int_{\Omega} \trialvec[v] \cdot \left(\dot{\vec{u}} - \vec{v} \right) \, d\Omega = 0, \\
+    % Weak Pressure Velocity
+    \int_{\Omega} \trialscalar[P] \left( \dot{p} - P \right) \, d\Omega = 0, \\
+    % Weak Volumetric Strain Velocity
+    \int_{\Omega} \trialscalar[E_{v}] \left( \dot{\epsilon}_{v} - E_{v} \right) \, d\Omega = 0.
+\end{gather}
+%
+Applying the divergence theorem to the first two equations and
+incorporating the Neumann boundary conditions yields
+\begin{gather}
+    % Weak conservation of momentum
+    \int_\Omega \trialvec[u] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[u] : -\tensor{\sigma}(\vec{u},p_f) \,
+    d\Omega + \int_{\Gamma_\tau} \trialvec[u] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma = 0, \\
+    % Weak conservation of mass
+    \int_\Omega  \trialscalar[p] \left( \frac{\partial \zeta(\vec{u},p_f)}{\partial t} - \gamma(\vec{x},t)\right)
+    + \nabla \trialscalar[p] \cdot \left(-\vec{q}(p_f)\right) \, d\Omega + \int_{\Gamma_q} \trialscalar[p] q_0(\vec{x},t))\, d\Gamma = 0, \text{ and } \\
+    % Weak vol. strain
+    \int_{\Omega} \trialscalar[\epsilon_{v}] \cdot \left(\nabla \cdot \vec{u} - \epsilon_{v} \right) d\Omega = 0 \\
+    % Weak Velocity
+    \int_{\Omega} \trialvec[v] \cdot \left(\dot{\vec{u}} - \vec{v} \right) \, d\Omega = 0 \\
+    % Weak Pressure Velocity
+    \int_{\Omega} \trialscalar[P] \left(  \dot{p} - P \right) \, d\Omega = 0 \\
+    % Weak Volumetric Strain Velocity
+    \int_{\Omega} \trialscalar[E_{v}] \left( \dot{\epsilon_{v}} - E_{v} \right) \, d\Omega = 0
+\end{gather}
+
+\subsection{Residual Pointwise Functions}
+
+Identifying $F(t,s,\dot{s})$ and $G(t,s)$, we have
+
+\begin{align}
+    % Displacement
+    F^u(t,s,\dot{s})              & = \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{\vec{f}^u_0}
+    + \nabla \trialvec[u] : \eqnannotate{-\tensor{\sigma}(\vec{u},p_f)}{\tensor{f}^u_1} \, d\Omega
+    + \int_{\Gamma_\tau} \trialvec[u] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{\vec{f}^u_0} \, d\Gamma,                                                                             \\
+    % Pressure
+    F^p(t,s,\dot{s})              & = \int_\Omega  \trialscalar[p] \eqnannotate{\left(\frac{\partial \zeta(\vec{u},p_f)}{\partial t} - \gamma(\vec{x},t)\right)} {f^p_0}
+    + \nabla \trialscalar[p] \cdot \eqnannotate{-\vec{q}(p_f)}{\vec{f}^p_1} \, d\Omega
+    + \int_{\Gamma_q} \trialscalar[p] (\eqnannotate{q_0(\vec{x},t)}{f^p_0}) \, d\Gamma,                                                                                              \\
+    % Volumetric Strain
+    F^{\epsilon_{v}}(t,s,\dot{s}) & = \int_{\Omega} \trialscalar[\epsilon_{v}] \eqnannotate{ \left[\nabla \cdot \vec{u} - \epsilon_{v} \right] }{ f^{\epsilon_{v}}_{0} } \, d\Omega, \\
+    % Velocity
+    F^v(t,s,\dot{s})              & = \int_{\Omega} \trialvec[v] \cdot \eqnannotate{ \left[ \dot{\vec{u}} - \vec{v} \right] }{ \vec{f}^{v}_{0} } \, d\Omega,                         \\
+    % Pressure Velocity
+    F^{P}(t,s,\dot{s})            & = \int_{\Omega} \trialscalar[P] \eqnannotate{\left[ \dot{p} - P \right]}{ f^{ P }_{0} } \, d\Omega,                                              \\
+    % Volumetric Strain Velocity
+    F^{E_{v}}(t,s,\dot{s})        & = \int_{\Omega} \trialscalar[E_{v}] \eqnannotate{\left[ \dot{\epsilon}_{v} - E_{v} \right]}{f^{E_{v}}_{0}} \, d\Omega.                           \\
+\end{align}
+
+\begin{align}
+    % Displacement
+    G^u(t,s)            & = 0, \\
+    % Pressure
+    G^p(t,s)            & = 0, \\
+    % Volumetric Strain
+    G^{\epsilon_v}(t,s) & = 0, \\
+    % Velocity
+    G^{v}(t,s)          & = 0, \\
+    % Pressure Velocity
+    G^{P}(t,s)          & =0,  \\
+    % Volumetric Strain Velocity
+    G^{E_{v}}(t,s)      & =0.
+\end{align}
+
+\subsection{Jacobian Pointwise Functions}
+
+Six fields result in thirty six potential Jacobian pointwise functions for the LHS.
+
+\begin{align}
+    %
+    % JF_uu
+    % Jf3uu
+    J_F^{uu} = \frac{\partial F^u}{\partial u} + s_{tshift} \frac{\partial F^u}{\partial \dot{u}}                                   & = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial u} (- \sigma(\vec{u},p,\epsilon_{v})) \
+    d\Omega = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial u} (-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega                                                                                                                                     \\
+                                                                                                                                    & = \int_{\Omega} \nabla \trialvec[u] : -\tensor{C}: \frac{1}{2} (\nabla + \nabla^T) \basisvec[u] \ d\Omega = \int_{\Omega} \trialscalar[u]_{i,k}
+    \eqnannotate{\left(-C_{ikjl}\right)}{J_{f3}^{uu}} \basisscalar[u]_{j,l} \ d\Omega                                                                                                                                                                                                 \\
+    %
+    % JF_up
+    % Jf2up
+    J_F^{up} = \frac{\partial F^u}{\partial p} + s_{tshift} \frac{\partial F^u}{\partial \dot{p}}                                   & = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial p}(-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega =
+    \int_{\Omega} \trialscalar[u]_{i,j} \eqnannotate{\left(\alpha \delta_{ij}\right)}{J_{f2}^{up}} \basisscalar[p] \ d\Omega                                                                                                                                                          \\
+    %
+    % JF_ue
+    % Jf2ue
+    J_F^{u \epsilon_{v}} = \frac{\partial F^u}{\partial \epsilon_{v}} + s_{tshift} \frac{\partial F^u}{\partial \dot{\epsilon}_{v}} & = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial \epsilon_{v}}
+    (-\sigma(\vec{u},p,\epsilon_{v})) \ d\Omega = \int_{\Omega} \nabla \trialvec[u] :
+    \frac{\partial}{\partial \epsilon_{v}} (-(\tensor{C}:\tensor{\varepsilon} -\alpha p \tensor{I})) \ d\Omega                                                                                                                                                                        \\
+                                                                                                                                    & = \int_{\Omega} \nabla \trialvec[u] : \frac{\partial}{\partial \epsilon_{v}} \
+    \left[-\left(2 \mu \tensor{\epsilon} + \lambda \tensor{I} \epsilon_{v} - \alpha \tensor{I} p \right) \right] d\Omega =
+    \int_{\Omega} \trialscalar[u]_{i,j} \eqnannotate{\left(-\lambda \delta_{ij} \right)}{J_{f2}^{u \epsilon_{v}}} \basisscalar[\epsilon_{v}] d\Omega                                                                                                                                  \\
+    %
+    % JF_uV
+    J_F^{uv}                                                                                                                        & = \frac{\partial F^u}{\partial v} + s_{tshift} \frac{\partial F^u}{\partial \dot{v}} = 0                                                        \\
+    %
+    % JF_uP
+    J_F^{u P}                                                                                                                       & = \frac{\partial F^u}{\partial P} + s_{tshift} \frac{\partial F^u}{\partial \dot{P}} = 0                                                        \\
+    %
+    % JF_uE
+    J_F^{u E_{v}}                                                                                                                   & = \frac{\partial F^u}{\partial E_{v}} + s_{tshift} \frac{\partial F^u}{\partial \dot{E}_{v}} = 0
+    %
+\end{align}
+
+\begin{align}
+    %
+    % JF_pu
+    %
+    J_F^{pu} = \frac{\partial F^p}{\partial u} + s_{tshift} \frac{\partial F^p}{\partial \dot{u}}                                  & = 0                                                                                                                                          \\
+    %
+    % J_F^{pu} = \frac{\partial F^p}{\partial u} + s_{tshift} \frac{\partial F^p}{\partial \dot{u}} &= s_{tshift} \int_{\Omega} \trialscalar[p] \frac{\partial}{\partial \dot{u}} \left[ \alpha \dot{\epsilon}_{v} + \frac{\dot{p}}{M}- \gamma \right] \ d\Omega \\
+    % &= s_{tshift} \int_{\Omega} \trialscalar[p] \frac{\partial}{\partial \dot{u}} \left[ \alpha \left( \nabla \cdot \dot{u} \right)  + \frac{\dot{p}}{M} - \gamma \right] \ d\Omega \\
+    % &= s_{tshift} \int_{\Omega} \trialscalar[p] \left[ \alpha \left( \nabla \cdot \basisvec[u] \right) \right] \ d\Omega \\
+    % &= \int_{\Omega} \trialscalar[p] \eqnannotate{\left[ s_{tshift} \alpha \delta_{ij} \right]}{J_{f1}^{pu}} \basisscalar[u]_{j,i}  \ d\Omega \\
+    %
+    % JF_pp
+    % Jf0pp
+    J_F^{pp} = \frac{\partial F^p}{\partial p} + s_{tshift} \frac{\partial F^p}{\partial \dot{p}}                                  & =
+    \int_{\Omega} \nabla \trialscalar[p] \cdot \frac{\partial}{\partial p} -\left[-\frac{\tensor{k}}{\mu_{f}} \left(\nabla p - \vec{f} \right) \right] \ d\Omega  +
+    s_{tshift}\int_{\Omega} \trialscalar[p] \frac{\partial}{\partial \dot{p}} \left[\alpha\dot{\epsilon}_{v} + \frac{\dot{p}}{M} - \gamma\left(\vec{x},t\right)\right] \ d\Omega                                                                                                  \\
+                                                                                                                                   & = \int_{\Omega} \nabla \psi_{trial}^ p \left(\frac{\tensor{k}}{\mu_{f}} \nabla \cdot \psi_{basis}^p \right) \ d\Omega +
+    \int_{\Omega} \trialscalar[p] \left(s_{tshift} \frac{1}{M}\right) \basisscalar[p] \ d\Omega                                                                                                                                                                                   \\
+                                                                                                                                   & = \int_{\Omega} \psi_{trial,k}^p \eqnannotate{\left(\frac{\tensor{k}}{\mu_{f}} \delta_{kl}\right)}{J_{f3}^{pp}} \psi_{basis,l}^p \ d\Omega +
+    \int_{\Omega} \trialscalar[p] \eqnannotate{\left(s_{tshift} \frac{1}{M}\right)}{J_{f0}^{pp}} \basisscalar[p] \ d\Omega                                                                                                                                                        \\
+    %
+    % JF_pe
+    % Jf0pe
+    J_F^{p\epsilon_{v}} = \frac{\partial F^p}{\partial \epsilon_{v}} + s_{tshift} \frac{\partial F^p}{\partial \dot{\epsilon}_{v}} & =
+    s_{tshift}\int_{\Omega} \trialscalar[p] \frac{\partial}{\partial \dot{\epsilon}_{v}} \left[\alpha\dot{\epsilon}_{v} + \frac{\dot{p}}{M} - \gamma\left(\vec{x},t\right)\right] \ d\Omega                                                                                       \\
+                                                                                                                                   & = \int_{\Omega} \trialscalar[p] \eqnannotate{\left(s_{tshift} \alpha \right)}{J_{f0}^{p\epsilon_{v}}} \basisscalar[\epsilon_{v}] \ d\Omega   \\
+    %
+    % JF_pV
+    J_F^{pv} = \frac{\partial F^p}{\partial v} + s_{tshift} \frac{\partial F^p}{\partial \dot{v}}                                  & = 0                                                                                                                                          \\
+    % 
+    % JF_pP
+    J_F^{p P} = \frac{\partial F^p}{\partial P} + s_{tshift} \frac{\partial F^p}{\partial \dot{P}}                                 & =
+    \int_{\Omega} \trialscalar[p] \frac{\partial}{\partial \dot{p}} \left[\alpha\dot{\epsilon}_{v} + \frac{\dot{p}}{M} - \gamma\left(\vec{x},t\right)\right] \ d\Omega                                                                                                            \\
+                                                                                                                                   & = \int_{\Omega} \trialscalar[p] \eqnannotate{\left[ \frac{1}{M} \right]}{J_{f0}^{pP}} \basisscalar[P] \ d\Omega                              \\
+    %
+    % JF_pE
+    J_F^{p E_{v}} = \frac{\partial F^p}{\partial E_{v}} + s_{tshift} \frac{\partial F^p}{\partial \dot{E}_{v}}                     & =
+    \int_{\Omega} \trialscalar[p] \frac{\partial}{\partial \dot{\epsilon}_{v}} \left[\alpha\dot{\epsilon}_{v} + \frac{\dot{p}}{M} - \gamma\left(\vec{x},t\right)\right] \ d\Omega                                                                                                 \\
+                                                                                                                                   & = \int_{\Omega} \trialscalar[p] \eqnannotate{\left[ \alpha \right]}{J_{f0}^{pE_{v}}} \basisscalar[E_{v}] \ d\Omega                           \\
+    %
+\end{align}
+
+\begin{align}
+    %
+    % JF_eu
+    % Jf1eu
+    J_F^{\epsilon_{v} u} = \frac{\partial F^{\epsilon_{v}}} {\partial u} + s_{tshift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{u}}                       & =
+    \int_{\Omega} \trialscalar[\epsilon_{v}] \frac{\partial}{\partial u} \left[ \nabla \cdot \vec{u} - \epsilon_{v} \right] \ d\Omega                                                                                                                                                                             \\
+                                                                                                                                                               & = \int_{\Omega} \psi_{trial}^{\epsilon_{v}} \nabla \cdot \vec{\psi}_{basis}^u \ d\Omega                                                          \\
+                                                                                                                                                               & = \int_{\Omega}
+    \basisscalar[\epsilon_{v}] \eqnannotate{\left(\delta_{ij}\right)}{J_{f1}^{\epsilon_{v}u}}
+    \basisscalar[u]_{i,j} \ d\Omega                                                                                                                                                                                                                                                                               \\
+    %
+    % JF_ep
+    %
+    J_F^{\epsilon_{v} p} = \frac{\partial F^{\epsilon_{v}}}{\partial p} + s_{tshift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{p}}                        & = 0                                                                                                                                              \\
+    %
+    % JF_ee
+    %
+    J_F^{\epsilon_{v}\epsilon_{v}} = \frac{\partial F^{\epsilon_{v}}}{\epsilon_{v}} + s_{tshift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{\epsilon_{v}}} & =
+    \int_{\Omega} \trialscalar[\epsilon_{v}] \frac{\partial}{\partial \epsilon_{v}} \left[ \nabla \cdot \vec{u} - \epsilon_{v} \right] \ d\Omega                                                                                                                                                                  \\
+                                                                                                                                                               & = \int_{\Omega} \basisscalar[\epsilon_{v}] \eqnannotate{\left(-1\right)}{J_{f0}^{\epsilon_{v}\epsilon_{v}}} \basisscalar[\epsilon_{v}] \ d\Omega \\
+    %
+    % JF_eV
+    %
+    J_F^{\epsilon_{v} v} = \frac{\partial F^\epsilon_{v}}{\partial v} + s_{tshift} \frac{\partial F^\epsilon_{v}}{\partial \dot{v}}                            & = 0                                                                                                                                              \\
+    %
+    % JF_eP
+    % 
+    J_F^{\epsilon_{v} P} = \frac{\partial F^{\epsilon_{v}}}{\partial P} + s_{tshift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{P}}                        & = 0                                                                                                                                              \\
+    % JF_eE
+    %
+    J_F^{\epsilon_{v} E_{v}} = \frac{\partial F^{\epsilon_{v}}}{\partial E_{v}} + s_{tshift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{E}_{v}}            & = 0
+    %
+\end{align}
+
+\begin{align}
+    %
+    % JF_Vu
+    %
+    J_F^{vu} = \frac{\partial F^{v}}{\partial u} + s_{tshift} \frac{\partial F^{v}}{\partial \dot{u}}                                  & =
+    s_{tshift} \int_{\Omega} \trialvec[v] \cdot \frac{\partial}{\partial \dot{u}} \left[\dot{\vec{u}} - \vec{v} \right] \ d\Omega                                                                                                                             \\
+                                                                                                                                       & = \int_{\Omega} \trialvec[v] \cdot \eqnannotate{\left[ s_{tshift} \right]}{J_{f0}^{vu}} \cdot \basisvec[u] \ d\Omega \\
+    %
+    % JF_Vp
+    % 
+    J_F^{vp} = \frac{\partial F^{v}}{\partial p} + s_{tshift} \frac{\partial F^{v}}{\partial \dot{p}}                                  & = 0                                                                                                                  \\
+    %
+    % JF_Ve
+    %
+    J_F^{v\epsilon_{v}} = \frac{\partial F^{v}}{\partial \epsilon_{v}} + s_{tshift} \frac{\partial F^{v}}{\partial \dot{\epsilon_{v}}} & = 0                                                                                                                  \\
+    %
+    % JF_VV
+    %
+    J_F^{vv} = \frac{\partial F^{v}}{\partial v} + s_{tshift} \frac{\partial F^{v}}{\partial \dot{v}}                                  & =
+    \int_{\Omega} \trialvec[v] \cdot \frac{\partial}{\partial v} \left[ \dot{\vec{u}} - \vec{v} \right] \ d\Omega                                                                                                                                             \\
+                                                                                                                                       & = \int_{\Omega} \trialvec[v] \cdot \eqnannotate{\left[ -1 \right]}{J_{f0}^{vv}} \cdot \basisvec[v] \ d\Omega         \\
+    %
+    % JF_VP
+    %
+    J_F^{v P} = \frac{\partial F^{v}}{\partial P} + s_{tshift} \frac{\partial F^{v}}{\partial \dot{P}}                                 & = 0                                                                                                                  \\
+    %
+    % JF_VE
+    %
+    J_F^{v E_{v}} = \frac{\partial F^{v}}{\partial E_{v}} + s_{tshift} \frac{\partial F^{v}}{\partial \dot{E}_{v}}                     & = 0
+    %
+\end{align}
+
+\begin{align}
+    %
+    % JF_PU
+    J_F^{P u} = \frac{\partial F^{P}}{\partial u} + s_{tshift} \frac{\partial F^{P}}{\partial \dot{u}}                                  & = 0                                                                                                            \\
+    %
+    % JF_Pp
+    %
+    J_F^{P p} = \frac{\partial F^{P}}{\partial p} + s_{tshift} \frac{\partial F^{P}}{\partial \dot{p}}                                  & =
+    s_{tshift} \int_{\Omega} \trialscalar[P] \frac{\partial}{\partial \dot{p}} \left[ \dot{p} - P \right] \ d\Omega                                                                                                                                      \\
+                                                                                                                                        & = \int_{\Omega} \trialscalar[P] \eqnannotate{\left[s_{tshift} \right]}{J_{f0}^{P p}} \basisscalar[p] \ d\Omega \\
+    % JF_Pe
+    %
+    J_F^{P \epsilon_{v}} = \frac{\partial F^{P}}{\partial \epsilon_{v}} + s_{tshift} \frac{\partial F^{P}}{\partial \dot{\epsilon}_{v}} & = 0                                                                                                            \\
+    %
+    % JF_PV
+    %
+    J_F^{P v} = \frac{\partial F^{P}}{\partial v} + s_{tshift} \frac{\partial F^{P}}{\partial \dot{v}}                                  & = 0                                                                                                            \\
+    %
+    % JF_PP
+    %
+    J_F^{P P} = \frac{\partial F^{P}}{\partial P} + s_{tshift} \frac{\partial F^{P}}{\partial \dot{P}_{dot}}                            & =
+    \int_{\Omega} \trialscalar[P] \frac{\partial}{\partial P} \left[ \dot{p} - P \right] \ d\Omega                                                                                                                                                       \\
+                                                                                                                                        & = \int_{\Omega} \trialscalar[P] \eqnannotate{\left[ -1 \right]}{J_{f0}^{P P}} \basisscalar[p] \ d\Omega        \\
+    %
+    % JF_PE
+    %
+    J_F^{P E_{v}} = \frac{\partial F^{P}}{\partial E_{v}} + s_{tshift} \frac{\partial F^{P}}{\partial \dot{E}_{dot}}                    & = 0
+    %
+\end{align}
+
+\begin{align}
+    %
+    % JF_EU
+    % 
+    J_F^{E_{v} u} = \frac{\partial F^{E_{v}}}{\partial u} + s_{tshift} \frac{\partial F^{ E_{v}}}{\partial \dot{u}}                      & = 0                                                                                                                                          \\
+    %
+    % JF_Ep
+    %
+    J_F^{E_{v} p} = \frac{\partial F^{E_{v}}}{\partial p} + s_{tshift} \frac{\partial F^{ E_{v}}}{\partial \dot{p}}                      & = 0                                                                                                                                          \\
+    %
+    % JF_Ee
+    %
+    J_F^{E_{v} \epsilon_{v}} = \frac{\partial F^{E_{v}}}{\partial E_{v}} + s_{tshift} \frac{\partial F^{ E_{v}}}{\partial \dot{E}_{dot}} & =
+    s_{tshift} \int_{\Omega} \trialscalar[E_{v}] \frac{\partial}{\partial \dot{\epsilon}_{v}} \left[ \dot{\epsilon}_{v} - E_{v} \right] \ d\Omega                                                                                                                                       \\
+                                                                                                                                         & = \int_{\Omega} \trialscalar[E_{v}] \eqnannotate{\left[s_{tshift} \right]}{J_{f0}^{E_{v} \epsilon_{v}}} \basisscalar[\epsilon_{v}] \ d\Omega \\
+    % 
+    % JF_EV
+    %
+    J_F^{E_{v} v} = \frac{\partial F^{E_{v}}}{\partial v} + s_{tshift} \frac{\partial F^{ E_{v} }}{\partial \dot{v}}                     & = 0                                                                                                                                          \\
+    % 
+    % JF_EP
+    %
+    J_F^{E_{v} P} = \frac{\partial F^{E_{v}}}{\partial P} + s_{tshift} \frac{\partial F^{ E_{v} }}{\partial \dot{P}}                     & = 0                                                                                                                                          \\
+    % 
+    % JF_EE
+    %
+    J_F^{E_{v} E_{v}} = \frac{\partial F^{E_{v}}}{\partial E_{v}} + s_{tshift} \frac{\partial F^{ E_{v} }}{\partial \dot{E}_{dot}}       & =
+    \int_{\Omega} \trialscalar[E_{v}] \frac{\partial}{\partial E_{v}} \left[ \dot{\epsilon}_{v} - E_{v} \right] \ d\Omega                                                                                                                                                               \\
+                                                                                                                                         & = \int_{\Omega} \trialscalar[E_{v}] \eqnannotate{\left[ -1 \right]}{J_{f0}^{E_{v} E_{v}}} \basisscalar[p] \ d\Omega                          \\
+    % 
+\end{align}
+
+
+\subsection{Iterative Update Functions}
+
+If the update\_fields flag is selected, certain auxiliary field variables will be updated at the terminus
+of each time step, following the calculation of the solution variables. At the moment, time dependent
+evolution is only implemented for porosity. Future work will expand this to other variables, along with
+differing evolution formulations, and the ability to select which ones to implement.\\
+
+The evolution of porosity is modeled using a formulation drawn from Detournay and Cheng, 1993. The
+condition is assumed to be isothermal, with a linear poroelastic system containing slightly compressible
+pore fluid. The change in porosity over time is expressed as
+
+\begin{equation}
+    \dot{\phi} = \left(\alpha - \phi\right)\dot{\epsilon}_{v} + \frac{\left(1 - \alpha\right)\left(\alpha - \phi\right)}{K_{dr}} \dot{p}.
+\end{equation}
+
+The value for porosity is then updated by assuming that $\dot{\phi} = \frac{\Delta \phi}{\Delta t}$, where $\Delta t$ is the time step
+length for the current iteration. Thus, the update is completed with the explicit formulation
+
+\begin{equation}
+    \phi_{new} = \phi_{old} + \Delta t \dot{\phi}.
+\end{equation}

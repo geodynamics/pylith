@@ -38,6 +38,7 @@ pylith::materials::RheologyPoroelasticity::~RheologyPoroelasticity(void) {
     deallocate();
 } // destructor
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
@@ -48,7 +49,7 @@ pylith::materials::RheologyPoroelasticity::deallocate(void) {}
 // Update kernel constants.
 void
 pylith::materials::RheologyPoroelasticity::updateKernelConstants(pylith::real_array* kernelConstants,
-                                                             const PylithReal dt) const {
+                                                                 const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateKernelConstants(kernelConstants"<<kernelConstants<<", dt="<<dt<<") empty method");
 
@@ -62,7 +63,8 @@ pylith::materials::RheologyPoroelasticity::updateKernelConstants(pylith::real_ar
 // Add kernels for updating state variables.
 void
 pylith::materials::RheologyPoroelasticity::addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
-                                                                 const spatialdata::geocoords::CoordSys* coordsys) const {
+                                                                     const spatialdata::geocoords::CoordSys* coordsys,
+                                                                     const bool _useStateVars) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<") empty method");
 
@@ -70,5 +72,6 @@ pylith::materials::RheologyPoroelasticity::addKernelsUpdateStateVars(std::vector
 
     PYLITH_METHOD_END;
 } // addKernelsUpdateStateVars
+
 
 // End of file

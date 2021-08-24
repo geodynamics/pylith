@@ -36,11 +36,17 @@ class Poroelasticity(Material, ModulePoroelasticity):
     useBodyForce = pythia.pyre.inventory.bool("use_body_force", default=False)
     useBodyForce.meta['tip'] = "Include body force term in Poroelasticity equation."
 
-    useSourceDensity = pythia.pyre.inventory.bool("use_source_density", default=False)
+    useSourceDensity = pythia.pyre.inventory.bool(
+        "use_source_density", default=False)
     useSourceDensity.meta['tip'] = "Include source_density term in Poroelasticity equation."
 
-    useConstantPressureSource = pythia.pyre.inventory.bool("use_constant_pressure_source", default=False)
+    useConstantPressureSource = pythia.pyre.inventory.bool(
+        "use_constant_pressure_source", default=False)
     useConstantPressureSource.meta['tip'] = "Include constant_pressure_source term in Poroelasticity equation."
+
+    useStateVars = pythia.pyre.inventory.bool(
+        "use_state_variables", default=False)
+    useStateVars.meta['tip'] = "Update auxiliary field terms with run."
 
     rheology = pythia.pyre.inventory.facility(
         "bulk_rheology", family="poroelasticity_rheology", factory=IsotropicLinearPoroelasticity)
@@ -56,7 +62,8 @@ class Poroelasticity(Material, ModulePoroelasticity):
 
     def _defaults(self):
         from .AuxSubfieldsPoroelasticity import AuxSubfieldsPoroelasticity
-        self.auxiliarySubfields = AuxSubfieldsPoroelasticity("auxiliary_subfields")
+        self.auxiliarySubfields = AuxSubfieldsPoroelasticity(
+            "auxiliary_subfields")
 
         from .DerivedSubfieldsElasticity import DerivedSubfieldsElasticity
         self.derivedSubfields = DerivedSubfieldsElasticity("derived_subfields")
@@ -71,14 +78,18 @@ class Poroelasticity(Material, ModulePoroelasticity):
 
         ModulePoroelasticity.useBodyForce(self, self.useBodyForce)
         ModulePoroelasticity.useSourceDensity(self, self.useSourceDensity)
-        ModulePoroelasticity.useConstantPressureSource(self, self.useConstantPressureSource)
+        ModulePoroelasticity.useConstantPressureSource(
+            self, self.useConstantPressureSource)
+        ModulePoroelasticity.useStateVars(self, self.useStateVars)
+
         return
 
     def _createModuleObj(self):
         """Create handle to C++ Poroelasticity.
         """
         ModulePoroelasticity.__init__(self)
-        ModulePoroelasticity.setBulkRheology(self, self.rheology)  # Material sets auxiliary db in rheology.
+        # Material sets auxiliary db in rheology.
+        ModulePoroelasticity.setBulkRheology(self, self.rheology)
         return
 
 

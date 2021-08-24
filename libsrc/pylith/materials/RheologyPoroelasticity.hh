@@ -150,6 +150,14 @@ public:
     virtual
     PetscPointJac getKernelJf0pe(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
+    // ---------------------------------------------------------------------------------------------------------------------
+    virtual
+    PetscPointJac getKernelJf0ppdot(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    virtual
+    PetscPointJac getKernelJf0pedot(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+
     // ============================ DERIVED FIELDS ========================== //
 
     /** Get stress kernel for derived field.
@@ -161,15 +169,6 @@ public:
     virtual
     PetscPointFunc getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
-    /** Add kernels for updating state variables.
-     *
-     * @param[inout] kernels Array of kernels for updating state variables.
-     * @param[in] coordsys Coordinate system.
-     */
-    virtual
-    void addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
-                                   const spatialdata::geocoords::CoordSys* coordsys) const;
-
     /** Update kernel constants.
      *
      * @param[inout] kernelConstants Array of constants used in integration kernels.
@@ -178,6 +177,16 @@ public:
     virtual
     void updateKernelConstants(pylith::real_array* kernelConstants,
                                const PylithReal dt) const;
+
+    /** Add kernels for updating state variables.
+     *
+     * @param[inout] kernels Array of kernels for updating state variables.
+     * @param[in] coordsys Coordinate system.
+     */
+    virtual
+    void addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
+                                   const spatialdata::geocoords::CoordSys* coordsys,
+                                   const bool _useStateVars) const;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

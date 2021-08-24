@@ -72,6 +72,18 @@ public:
              */
             bool useConstantPressureSource(void) const;
 
+            /** Update fields?
+             *
+             * @param[in] value Flag indicating to update the auxiliary field values over time.
+             */
+            void useStateVars(const bool value);
+
+            /** Update fields?
+             *
+             * @param[in] value Flag indicating to update the auxiliary field values over time.
+             */
+             bool useStateVars(void) const;
+
             /** Set bulk rheology.
              *
              * @param[in] rheology Bulk rheology for poroelasticity.

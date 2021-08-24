@@ -64,26 +64,68 @@ pylith::fekernels::Poroelasticity::f0u(const PylithInt dim,
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// f0v function for poroelasticity equation, implicit time stepping, quasistatic.
+void
+pylith::fekernels::Poroelasticity::f0v_implicit(const PylithInt dim,
+                                                const PylithInt numS,
+                                                const PylithInt numA,
+                                                const PylithInt sOff[],
+                                                const PylithInt sOff_x[],
+                                                const PylithScalar s[],
+                                                const PylithScalar s_t[],
+                                                const PylithScalar s_x[],
+                                                const PylithInt aOff[],
+                                                const PylithInt aOff_x[],
+                                                const PylithScalar a[],
+                                                const PylithScalar a_t[],
+                                                const PylithScalar a_x[],
+                                                const PylithReal t,
+                                                const PylithScalar x[],
+                                                const PylithInt numConstants,
+                                                const PylithScalar constants[],
+                                                PylithScalar f0[]) {
+    // Incoming solution fields.
+    const PylithInt i_displacement = 0;
+    const PylithInt i_velocity = 3;
+
+    assert(sOff);
+    assert(sOff[i_displacement] >= 0);
+    assert(sOff[i_velocity] >= 0);
+    assert(s_t);
+    assert(aOff);
+    assert(s);
+
+    const PylithScalar* displacement_t = &s_t[sOff[i_displacement]]; // disp_t
+    const PylithScalar* velocity = &s[sOff[i_velocity]]; // vel
+
+    for (PylithInt i = 0; i < dim; ++i) {
+        f0[i] += displacement_t[i];
+        f0[i] -= velocity[i];
+    } // for
+} // f0v_implicit
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // f0v function for poroelasticity equation, explicit time stepping, dynamic.
 void
-pylith::fekernels::Poroelasticity::f0v(const PylithInt dim,
-                                       const PylithInt numS,
-                                       const PylithInt numA,
-                                       const PylithInt sOff[],
-                                       const PylithInt sOff_x[],
-                                       const PylithScalar s[],
-                                       const PylithScalar s_t[],
-                                       const PylithScalar s_x[],
-                                       const PylithInt aOff[],
-                                       const PylithInt aOff_x[],
-                                       const PylithScalar a[],
-                                       const PylithScalar a_t[],
-                                       const PylithScalar a_x[],
-                                       const PylithReal t,
-                                       const PylithScalar x[],
-                                       const PylithInt numConstants,
-                                       const PylithScalar constants[],
-                                       PylithScalar f0[]) {
+pylith::fekernels::Poroelasticity::f0v_explicit(const PylithInt dim,
+                                                const PylithInt numS,
+                                                const PylithInt numA,
+                                                const PylithInt sOff[],
+                                                const PylithInt sOff_x[],
+                                                const PylithScalar s[],
+                                                const PylithScalar s_t[],
+                                                const PylithScalar s_x[],
+                                                const PylithInt aOff[],
+                                                const PylithInt aOff_x[],
+                                                const PylithScalar a[],
+                                                const PylithScalar a_t[],
+                                                const PylithScalar a_x[],
+                                                const PylithReal t,
+                                                const PylithScalar x[],
+                                                const PylithInt numConstants,
+                                                const PylithScalar constants[],
+                                                PylithScalar f0[]) {
     // Incoming solution fields.
     const PylithInt i_velocity = 2;
 
@@ -92,13 +134,22 @@ pylith::fekernels::Poroelasticity::f0v(const PylithInt dim,
     const PylithInt i_fluid_density = 1;
     const PylithInt i_porosity = 3;
 
+    assert(sOff);
+    assert(sOff[i_velocity] >= 0);
+    assert(s_t);
+    assert(aOff);
+    assert(aOff[i_solid_density] >= 0);
+    assert(aOff[i_fluid_density] >= 0);
+    assert(aOff[i_porosity] >= 0);
+    assert(a);
+
     const PylithScalar bulkDensity = (1 - a[aOff[i_porosity]]) * a[aOff[i_solid_density]] + a[aOff[i_porosity]] * a[aOff[i_fluid_density]];
     const PylithScalar* velocity_t = &s_t[sOff[i_velocity]]; // acceleration
 
     for (PylithInt i = 0; i < dim; ++i) {
         f0[i] += velocity_t[i] * bulkDensity;
     } // for
-} // f0v
+} // f0v_explicit
 
 
 // =============================================================================
@@ -129,7 +180,12 @@ pylith::fekernels::Poroelasticity::f0e(const PylithInt dim,
     const PylithInt i_displacement = 0;
     const PylithInt i_trace_strain = 2;
 
-    // Incoming auxiliary fields.
+    assert(sOff);
+    assert(sOff[i_displacement] >= 0);
+    assert(sOff[i_trace_strain] >= 0);
+    assert(sOff_x);
+    assert(sOff_x[i_displacement] >= 0);
+    assert(s);
 
     const PylithScalar* displacement = &s[sOff[i_displacement]];
     const PylithScalar* displacement_x = &s_x[sOff_x[i_displacement]];
@@ -140,6 +196,81 @@ pylith::fekernels::Poroelasticity::f0e(const PylithInt dim,
     }
     f0[0] -= trace_strain;
 } // f0e
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// f0pdot function for poroelasticity equation, implicit time stepping, quasistatic.
+void
+pylith::fekernels::Poroelasticity::f0pdot(const PylithInt dim,
+                                          const PylithInt numS,
+                                          const PylithInt numA,
+                                          const PylithInt sOff[],
+                                          const PylithInt sOff_x[],
+                                          const PylithScalar s[],
+                                          const PylithScalar s_t[],
+                                          const PylithScalar s_x[],
+                                          const PylithInt aOff[],
+                                          const PylithInt aOff_x[],
+                                          const PylithScalar a[],
+                                          const PylithScalar a_t[],
+                                          const PylithScalar a_x[],
+                                          const PylithReal t,
+                                          const PylithScalar x[],
+                                          const PylithInt numConstants,
+                                          const PylithScalar constants[],
+                                          PylithScalar f0[]) {
+    // Incoming solution fields.
+    const PylithInt i_pressure = 1;
+    const PylithInt i_pdot = 4;
+
+    assert(sOff);
+    assert(sOff[i_pressure] >= 0);
+    assert(sOff[i_pdot] >= 0);
+    assert(s);
+    assert(s_t);
+
+    const PylithScalar pressure_t = s_t[sOff[i_pressure]]; // disp_t
+    const PylithScalar pdot = s[sOff[i_pdot]]; // vel
+
+    f0[0] += pressure_t;
+    f0[0] -= pdot;
+} // f0pdot
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// f0edot function for poroelasticity equation, implicit time stepping, quasistatic.
+void
+pylith::fekernels::Poroelasticity::f0edot(const PylithInt dim,
+                                          const PylithInt numS,
+                                          const PylithInt numA,
+                                          const PylithInt sOff[],
+                                          const PylithInt sOff_x[],
+                                          const PylithScalar s[],
+                                          const PylithScalar s_t[],
+                                          const PylithScalar s_x[],
+                                          const PylithInt aOff[],
+                                          const PylithInt aOff_x[],
+                                          const PylithScalar a[],
+                                          const PylithScalar a_t[],
+                                          const PylithScalar a_x[],
+                                          const PylithReal t,
+                                          const PylithScalar x[],
+                                          const PylithInt numConstants,
+                                          const PylithScalar constants[],
+                                          PylithScalar f0[]) {
+    // Incoming solution fields.
+    const PylithInt i_trace_strain = 2;
+    const PylithInt i_edot = 5;
+
+    assert(sOff);
+    assert(sOff[i_trace_strain] >= 0);
+    assert(sOff[i_edot] >= 0);
+
+    const PylithScalar trace_strain_t = s_t[sOff[i_trace_strain]]; // disp_t
+    const PylithScalar edot = s[sOff[i_edot]]; // vel
+
+    f0[0] += trace_strain_t - edot;
+} // f0pdot
 
 
 /* -------------------------------------------------------------------------- */
@@ -173,6 +304,10 @@ pylith::fekernels::Poroelasticity::g0u(const PylithInt dim,
                                        const PylithScalar constants[],
                                        PylithScalar g0[]) {
     const PylithInt i_velocity = 2;
+
+    assert(sOff);
+    assert(sOff[i_velocity] >= 0);
+
     const PylithScalar* velocity = &s[sOff[i_velocity]];
 
     for (PylithInt i = 0; i < dim; ++i) {
@@ -210,13 +345,20 @@ pylith::fekernels::Poroelasticity::g0v_grav(const PylithInt dim,
     const PylithInt i_porosity = 3;
 
     // 3 + n
-    const PylithInt i_gravityField = 4;
+    const PylithInt i_gravity_field = 4;
+
+    assert(aOff);
+    assert(aOff[i_solid_density] >= 0);
+    assert(aOff[i_fluid_density] >= 0);
+    assert(aOff[i_porosity] >= 0);
+    assert(aOff[i_gravity_field] >= 0);
+    assert(a);
 
     const PylithScalar bulkDensity = (1 - a[aOff[i_porosity]]) * a[aOff[i_solid_density]] + a[aOff[i_porosity]] * a[aOff[i_fluid_density]];
-    const PylithScalar* gravityField = &a[aOff[i_gravityField]];
+    const PylithScalar* gravity_field = &a[aOff[i_gravity_field]];
 
     for (PylithInt i = 0; i < dim; ++i) {
-        g0[i] += bulkDensity * gravityField[i];
+        g0[i] += bulkDensity * gravity_field[i];
     } // for
 
 } // g0v_grav
@@ -248,12 +390,16 @@ pylith::fekernels::Poroelasticity::g0v_bodyforce(const PylithInt dim,
     // Poroelasticity
 
     // 3 + n
-    const PylithInt i_bodyForce = 4;
+    const PylithInt i_body_force = 4;
 
-    const PylithScalar* bodyForce = &a[aOff[i_bodyForce]];
+    assert(aOff);
+    assert(aOff[i_body_force] >= 0);
+    assert(a);
+
+    const PylithScalar* body_force = &a[aOff[i_body_force]];
 
     for (PylithInt i = 0; i < dim; ++i) {
-        g0[i] += bodyForce[i];
+        g0[i] += body_force[i];
     } // for
 } // g0v_bodyforce
 
@@ -287,21 +433,29 @@ pylith::fekernels::Poroelasticity::g0v_grav_bodyforce(const PylithInt dim,
     const PylithInt i_porosity = 3;
 
     // 3 + n
-    const PylithInt i_bodyForce = 4;
-    const PylithInt i_gravityField = 5;
+    const PylithInt i_body_force = 4;
+    const PylithInt i_gravity_field = 5;
+
+    assert(aOff);
+    assert(aOff[i_solid_density] >= 0);
+    assert(aOff[i_fluid_density] >= 0);
+    assert(aOff[i_porosity] >= 0);
+    assert(aOff[i_gravity_field] >= 0);
+    assert(aOff[i_body_force] >= 0);
+    assert(a);
 
     const PylithScalar bulkDensity = (1 - a[aOff[i_porosity]]) * a[aOff[i_solid_density]] + a[aOff[i_porosity]] * a[aOff[i_fluid_density]];
-    const PylithScalar* gravityField = &a[aOff[i_gravityField]];
-    const PylithScalar* bodyForce = &a[aOff[i_bodyForce]];
+    const PylithScalar* gravity_field = &a[aOff[i_gravity_field]];
+    const PylithScalar* body_force = &a[aOff[i_body_force]];
 
     // gravity field
     for (PylithInt i = 0; i < dim; ++i) {
-        g0[i] += bulkDensity * gravityField[i];
+        g0[i] += bulkDensity * gravity_field[i];
     } // for
 
     // body force
     for (PylithInt i = 0; i < dim; ++i) {
-        g0[i] += bodyForce[i];
+        g0[i] += body_force[i];
     } // for
 } // g0v_gravbodyforce
 
@@ -311,7 +465,7 @@ pylith::fekernels::Poroelasticity::g0v_grav_bodyforce(const PylithInt dim,
 // =============================================================================
 
 // ----------------------------------------------------------------------
-// g0p_sourceDensity - g0p function for generic poroelasticity terms (source density).
+// g0p_source - g0p function for generic poroelasticity terms (source density).
 void
 pylith::fekernels::Poroelasticity::g0p_source(const PylithInt dim,
                                               const PylithInt numS,
@@ -335,11 +489,16 @@ pylith::fekernels::Poroelasticity::g0p_source(const PylithInt dim,
 
     // Poroelasticity
 
-    const PylithInt i_sourceDensity = 0;
-    const PylithScalar* sourceDensity = &a[aOff[i_sourceDensity]];
+    const PylithInt i_source_density = 0;
+
+    assert(aOff);
+    assert(aOff[i_source_density] >= 0);
+    assert(a);
+
+    const PylithScalar* source_density = &a[aOff[i_source_density]];
 
     for (PylithInt i = 0; i < dim; ++i) {
-        g0[i] += sourceDensity[i];
+        g0[i] += source_density[i];
     } // for
 } // g0p_source
 
@@ -370,13 +529,17 @@ pylith::fekernels::Poroelasticity::g0p_sourceDensity(const PylithInt dim,
     // Poroelasticity
 
     // 3 + n
-    const PylithInt i_sourceDensity = 3;
+    const PylithInt i_source_density = 3;
+
+    assert(aOff);
+    assert(aOff[i_source_density] >= 0);
+    assert(a);
 
     const PylithInt _numS = 1; // Number passed on to g0p_source.
 
     const PylithInt numASource = 1; // Number passed on to g0p_source.
-    const PylithInt aOffSource[1] = { aOff[i_sourceDensity] };
-    const PylithInt aOffSource_x[1] = { aOff_x[i_sourceDensity] };
+    const PylithInt aOffSource[1] = { aOff[i_source_density] };
+    const PylithInt aOffSource_x[1] = { aOff_x[i_source_density] };
 
     pylith::fekernels::Poroelasticity::g0p_source(dim, _numS, numASource,
                                                   NULL, NULL, NULL, NULL, NULL,
@@ -411,13 +574,17 @@ pylith::fekernels::Poroelasticity::g0p_sourceDensity_grav(const PylithInt dim,
     // Poroelasticity
 
     // 2 + n
-    const PylithInt i_sourceDensity = 4;
+    const PylithInt i_source_density = 4;
+
+    assert(aOff);
+    assert(aOff[i_source_density] >= 0);
+    assert(a);
 
     const PylithInt _numS = 1; // Number passed on to g0p_source.
 
     const PylithInt numASource = 1; // Number passed on to g0p_source.
-    const PylithInt aOffSource[1] = { aOff[i_sourceDensity] };
-    const PylithInt aOffSource_x[1] = { aOff_x[i_sourceDensity] };
+    const PylithInt aOffSource[1] = { aOff[i_source_density] };
+    const PylithInt aOffSource_x[1] = { aOff_x[i_source_density] };
 
     pylith::fekernels::Poroelasticity::g0p_source(dim, _numS, numASource,
                                                   NULL, NULL, NULL, NULL, NULL,
@@ -452,13 +619,17 @@ pylith::fekernels::Poroelasticity::g0p_sourceDensity_body(const PylithInt dim,
     // Poroelasticity
 
     // 3 + n
-    const PylithInt i_sourceDensity = 4;
+    const PylithInt i_source_density = 4;
+
+    assert(aOff);
+    assert(aOff[i_source_density] >= 0);
+    assert(a);
 
     const PylithInt _numS = 1; // Number passed on to g0p_source.
 
     const PylithInt numASource = 1; // Number passed on to g0p_source.
-    const PylithInt aOffSource[1] = { aOff[i_sourceDensity] };
-    const PylithInt aOffSource_x[1] = { aOff_x[i_sourceDensity] };
+    const PylithInt aOffSource[1] = { aOff[i_source_density] };
+    const PylithInt aOffSource_x[1] = { aOff_x[i_source_density] };
 
     pylith::fekernels::Poroelasticity::g0p_source(dim, _numS, numASource,
                                                   NULL, NULL, NULL, NULL, NULL,
@@ -493,13 +664,17 @@ pylith::fekernels::Poroelasticity::g0p_sourceDensity_grav_body(const PylithInt d
     // Poroelasticity
 
     // 3 + n
-    const PylithInt i_sourceDensity = 5;
+    const PylithInt i_source_density = 5;
+
+    assert(aOff);
+    assert(aOff[i_source_density] >= 0);
+    assert(a);
 
     const PylithInt _numS = 1; // Number passed on to g0p_source.
 
     const PylithInt numASource = 1; // Number passed on to g0p_source.
-    const PylithInt aOffSource[1] = { aOff[i_sourceDensity] };
-    const PylithInt aOffSource_x[1] = { aOff_x[i_sourceDensity] };
+    const PylithInt aOffSource[1] = { aOff[i_source_density] };
+    const PylithInt aOffSource_x[1] = { aOff_x[i_source_density] };
 
     pylith::fekernels::Poroelasticity::g0p_source(dim, _numS, numASource,
                                                   NULL, NULL, NULL, NULL, NULL,
@@ -563,6 +738,9 @@ pylith::fekernels::Poroelasticity::Jf1eu(const PylithInt dim,
                                          const PylithInt numConstants,
                                          const PylithScalar constants[],
                                          PylithScalar Jf1[]) {
+    assert(aOff);
+    assert(a);
+
     for (PylithInt d = 0; d < dim; ++d) {
         Jf1[d*dim+d] = 1.0;
     } // for
@@ -570,40 +748,226 @@ pylith::fekernels::Poroelasticity::Jf1eu(const PylithInt dim,
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Jf0 function for poroelasticity equation.
+// Jf0vu function for poroelasticity equation, quasistatic.
 void
-pylith::fekernels::Poroelasticity::Jf0vv(const PylithInt dim,
-                                         const PylithInt numS,
-                                         const PylithInt numA,
-                                         const PylithInt sOff[],
-                                         const PylithInt sOff_x[],
-                                         const PylithScalar s[],
-                                         const PylithScalar s_t[],
-                                         const PylithScalar s_x[],
-                                         const PylithInt aOff[],
-                                         const PylithInt aOff_x[],
-                                         const PylithScalar a[],
-                                         const PylithScalar a_t[],
-                                         const PylithScalar a_x[],
-                                         const PylithReal t,
-                                         const PylithReal s_tshift,
-                                         const PylithScalar x[],
-                                         const PylithInt numConstants,
-                                         const PylithScalar constants[],
-                                         PylithScalar Jf0[]) {
-    const PylithInt _numA = 1;
+pylith::fekernels::Poroelasticity::Jf0vu_implicit(const PylithInt dim,
+                                                  const PylithInt numS,
+                                                  const PylithInt numA,
+                                                  const PylithInt sOff[],
+                                                  const PylithInt sOff_x[],
+                                                  const PylithScalar s[],
+                                                  const PylithScalar s_t[],
+                                                  const PylithScalar s_x[],
+                                                  const PylithInt aOff[],
+                                                  const PylithInt aOff_x[],
+                                                  const PylithScalar a[],
+                                                  const PylithScalar a_t[],
+                                                  const PylithScalar a_x[],
+                                                  const PylithReal t,
+                                                  const PylithReal s_tshift,
+                                                  const PylithScalar x[],
+                                                  const PylithInt numConstants,
+                                                  const PylithScalar constants[],
+                                                  PylithScalar Jf0[]) {
+    assert(aOff);
+    assert(a);
 
+    // Incoming auxiliary fields.
+
+    for (PylithInt d = 0; d < dim; ++d) {
+        Jf0[d*dim+d] += s_tshift;
+    } // for
+} // Jf0vu_implicit
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Jf0 function for poroelasticity equation, dynamic.
+void
+pylith::fekernels::Poroelasticity::Jf0vv_explicit(const PylithInt dim,
+                                                  const PylithInt numS,
+                                                  const PylithInt numA,
+                                                  const PylithInt sOff[],
+                                                  const PylithInt sOff_x[],
+                                                  const PylithScalar s[],
+                                                  const PylithScalar s_t[],
+                                                  const PylithScalar s_x[],
+                                                  const PylithInt aOff[],
+                                                  const PylithInt aOff_x[],
+                                                  const PylithScalar a[],
+                                                  const PylithScalar a_t[],
+                                                  const PylithScalar a_x[],
+                                                  const PylithReal t,
+                                                  const PylithReal s_tshift,
+                                                  const PylithScalar x[],
+                                                  const PylithInt numConstants,
+                                                  const PylithScalar constants[],
+                                                  PylithScalar Jf0[]) {
     // Incoming auxiliary fields.
     const PylithInt i_solid_density = 0;
     const PylithInt i_fluid_density = 1;
     const PylithInt i_porosity = 3;
+
+    assert(aOff);
+    assert(aOff[i_solid_density] >= 0);
+    assert(aOff[i_fluid_density] >= 0);
+    assert(aOff[i_porosity] >= 0);
+    assert(a);
 
     const PylithScalar bulkDensity = (1 - a[aOff[i_porosity]]) * a[aOff[i_solid_density]] + a[aOff[i_porosity]] * a[aOff[i_fluid_density]];
 
     for (PetscInt i = 0; i < dim; ++i) {
         Jf0[i*dim+i] += s_tshift * bulkDensity;
     } // for
-} // Jf0vv
+} // Jf0vv_explicit
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Jf0vv function for poroelasticity equation, quasistatic.
+void
+pylith::fekernels::Poroelasticity::Jf0vv_implicit(const PylithInt dim,
+                                                  const PylithInt numS,
+                                                  const PylithInt numA,
+                                                  const PylithInt sOff[],
+                                                  const PylithInt sOff_x[],
+                                                  const PylithScalar s[],
+                                                  const PylithScalar s_t[],
+                                                  const PylithScalar s_x[],
+                                                  const PylithInt aOff[],
+                                                  const PylithInt aOff_x[],
+                                                  const PylithScalar a[],
+                                                  const PylithScalar a_t[],
+                                                  const PylithScalar a_x[],
+                                                  const PylithReal t,
+                                                  const PylithReal s_tshift,
+                                                  const PylithScalar x[],
+                                                  const PylithInt numConstants,
+                                                  const PylithScalar constants[],
+                                                  PylithScalar Jf0[]) {
+    assert(aOff);
+    assert(a);
+
+    // Incoming auxiliary fields.
+
+    for (PylithInt d = 0; d < dim; ++d) {
+        Jf0[d*dim+d] -= 1.0;
+    } // for
+} // Jf0vv_implicit
+
+
+// -----------------------------------------------------------------------------
+// Jf0pdotp - Jf0 function for isotropic linear poroelasticity plane strain.
+void
+pylith::fekernels::Poroelasticity::Jf0pdotp(const PylithInt dim,
+                                            const PylithInt numS,
+                                            const PylithInt numA,
+                                            const PylithInt sOff[],
+                                            const PylithInt sOff_x[],
+                                            const PylithScalar s[],
+                                            const PylithScalar s_t[],
+                                            const PylithScalar s_x[],
+                                            const PylithInt aOff[],
+                                            const PylithInt aOff_x[],
+                                            const PylithScalar a[],
+                                            const PylithScalar a_t[],
+                                            const PylithScalar a_x[],
+                                            const PylithReal t,
+                                            const PylithReal s_tshift,
+                                            const PylithScalar x[],
+                                            const PylithInt numConstants,
+                                            const PylithScalar constants[],
+                                            PylithScalar Jf0[]) {
+    assert(aOff);
+    assert(a);
+
+    Jf0[0] += s_tshift;
+} // Jg0pdotp
+
+
+// -----------------------------------------------------------------------------
+// Jf0pdotpdot - Jf0 function for isotropic linear poroelasticity plane strain.
+void
+pylith::fekernels::Poroelasticity::Jf0pdotpdot(const PylithInt dim,
+                                               const PylithInt numS,
+                                               const PylithInt numA,
+                                               const PylithInt sOff[],
+                                               const PylithInt sOff_x[],
+                                               const PylithScalar s[],
+                                               const PylithScalar s_t[],
+                                               const PylithScalar s_x[],
+                                               const PylithInt aOff[],
+                                               const PylithInt aOff_x[],
+                                               const PylithScalar a[],
+                                               const PylithScalar a_t[],
+                                               const PylithScalar a_x[],
+                                               const PylithReal t,
+                                               const PylithReal s_tshift,
+                                               const PylithScalar x[],
+                                               const PylithInt numConstants,
+                                               const PylithScalar constants[],
+                                               PylithScalar Jf0[]) {
+    assert(aOff);
+    assert(a);
+
+    Jf0[0] -= 1.0;
+} // Jg0pdotpdot
+
+
+// -----------------------------------------------------------------------------
+// Jf0edote - Jf0 function for isotropic linear poroelasticity plane strain.
+void
+pylith::fekernels::Poroelasticity::Jf0edote(const PylithInt dim,
+                                            const PylithInt numS,
+                                            const PylithInt numA,
+                                            const PylithInt sOff[],
+                                            const PylithInt sOff_x[],
+                                            const PylithScalar s[],
+                                            const PylithScalar s_t[],
+                                            const PylithScalar s_x[],
+                                            const PylithInt aOff[],
+                                            const PylithInt aOff_x[],
+                                            const PylithScalar a[],
+                                            const PylithScalar a_t[],
+                                            const PylithScalar a_x[],
+                                            const PylithReal t,
+                                            const PylithReal s_tshift,
+                                            const PylithScalar x[],
+                                            const PylithInt numConstants,
+                                            const PylithScalar constants[],
+                                            PylithScalar Jf0[]) {
+    assert(aOff);
+    assert(a);
+
+    Jf0[0] += s_tshift;
+} // Jg0edote
+
+
+// -----------------------------------------------------------------------------
+// Jf0edotedot - Jf0 function for isotropic linear poroelasticity plane strain.
+void
+pylith::fekernels::Poroelasticity::Jf0edotedot(const PylithInt dim,
+                                               const PylithInt numS,
+                                               const PylithInt numA,
+                                               const PylithInt sOff[],
+                                               const PylithInt sOff_x[],
+                                               const PylithScalar s[],
+                                               const PylithScalar s_t[],
+                                               const PylithScalar s_x[],
+                                               const PylithInt aOff[],
+                                               const PylithInt aOff_x[],
+                                               const PylithScalar a[],
+                                               const PylithScalar a_t[],
+                                               const PylithScalar a_x[],
+                                               const PylithReal t,
+                                               const PylithReal s_tshift,
+                                               const PylithScalar x[],
+                                               const PylithInt numConstants,
+                                               const PylithScalar constants[],
+                                               PylithScalar Jf0[]) {
+    assert(aOff);
+    assert(a);
+
+    Jf0[0] -= 1.0;
+} // Jg0edotedot
 
 
 // =====================================================================================================================
