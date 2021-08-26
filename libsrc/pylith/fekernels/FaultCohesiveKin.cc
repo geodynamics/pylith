@@ -225,78 +225,6 @@ pylith::fekernels::FaultCohesiveKin::f0l_u(const PylithInt dim,
 
 
 // ----------------------------------------------------------------------
-// f0 function for slip rate constraint equation: f0\lambda = (v^+ - v^-) - \dot{d}
-void
-pylith::fekernels::FaultCohesiveKin::f0l_v(const PylithInt dim,
-                                           const PylithInt numS,
-                                           const PylithInt numA,
-                                           const PylithInt sOff[],
-                                           const PylithInt sOff_x[],
-                                           const PylithScalar s[],
-                                           const PylithScalar s_t[],
-                                           const PylithScalar s_x[],
-                                           const PylithInt aOff[],
-                                           const PylithInt aOff_x[],
-                                           const PylithScalar a[],
-                                           const PylithScalar a_t[],
-                                           const PylithScalar a_x[],
-                                           const PylithReal t,
-                                           const PylithScalar x[],
-                                           const PylithReal n[],
-                                           const PylithInt numConstants,
-                                           const PylithScalar constants[],
-                                           PylithScalar f0[]) {
-    assert(sOff);
-    assert(aOff);
-    assert(s);
-    assert(a);
-    assert(f0);
-
-    assert(numS >= 3);
-    assert(numA >= 1);
-
-    const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
-    const PylithInt i_slipRate = numA-1;
-
-    const PylithScalar* slipRate = &a[aOff[i_slipRate]];
-
-    const PylithInt sOffVelN = _FaultCohesiveKin::velocity_sOff(sOff, numS);
-    const PylithInt sOffVelP = sOffVelN+spaceDim;
-    const PylithInt fOffLagrange = 0;
-
-    const PylithScalar* velN = &s[sOffVelN];
-    const PylithScalar* velP = &s[sOffVelP];
-
-    switch (spaceDim) {
-    case 2: {
-        const PylithInt _spaceDim = 2;
-        const PylithScalar tanDir[2] = {-n[1], n[0] };
-        for (PylithInt i = 0; i < _spaceDim; ++i) {
-            const PylithScalar slipRateXY = n[i]*slipRate[0] + tanDir[i]*slipRate[1];
-            f0[fOffLagrange+i] += velP[i] - velN[i] - slipRateXY;
-        } // for
-        break;
-    } // case 2
-    case 3: {
-        const PylithInt _spaceDim = 3;
-        const PylithScalar* refDir1 = &constants[0];
-        const PylithScalar* refDir2 = &constants[3];
-        PylithScalar tanDir1[3], tanDir2[3];
-        BoundaryDirections::tangential_directions(tanDir1, tanDir2, refDir1, refDir2, n);
-
-        for (PylithInt i = 0; i < _spaceDim; ++i) {
-            const PylithScalar slipRateXYZ = n[i]*slipRate[0] + tanDir1[i]*slipRate[1] + tanDir2[i]*slipRate[2];
-            f0[fOffLagrange+i] += velP[i] - velN[i] - slipRateXYZ;
-        } // for
-        break;
-    } // case 3
-    default:
-        assert(0);
-    } // switch
-} // f0l_v
-
-
-// ----------------------------------------------------------------------
 // f0 function for slip acceleration constraint equation: f0\lambda = (\dot{v}^+ - \dot{v}^-) - \ddot{d}
 void
 pylith::fekernels::FaultCohesiveKin::f0l_a(const PylithInt dim,
@@ -332,12 +260,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_a(const PylithInt dim,
 
     const PylithScalar* slipAcc = &a[aOff[i_slipAcc]];
 
-    const PylithInt sOffVelN = _FaultCohesiveKin::velocity_sOff(sOff, numS);
-    const PylithInt sOffVelP = sOffVelN+spaceDim;
     const PylithInt fOffLagrange = 0;
-
-    const PylithScalar* accN = &s_t[sOffVelN];
-    const PylithScalar* accP = &s_t[sOffVelP];
 
     switch (spaceDim) {
     case 2: {
@@ -345,7 +268,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_a(const PylithInt dim,
         const PylithScalar tanDir[2] = {-n[1], n[0] };
         for (PylithInt i = 0; i < _spaceDim; ++i) {
             const PylithScalar slipAccXY = n[i]*slipAcc[0] + tanDir[i]*slipAcc[1];
-            f0[fOffLagrange+i] += accP[i] - accN[i] - slipAccXY;
+            f0[fOffLagrange+i] += slipAccXY;
         } // for
         break;
     } // case 2
@@ -358,7 +281,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_a(const PylithInt dim,
 
         for (PylithInt i = 0; i < _spaceDim; ++i) {
             const PylithScalar slipAccXYZ = n[i]*slipAcc[0] + tanDir1[i]*slipAcc[1] + tanDir2[i]*slipAcc[2];
-            f0[fOffLagrange+i] += accP[i] - accN[i] - slipAccXYZ;
+            f0[fOffLagrange+i] += slipAccXYZ;
         } // for
         break;
     } // case 3
