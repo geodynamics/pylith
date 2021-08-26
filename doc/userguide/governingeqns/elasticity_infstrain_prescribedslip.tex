@@ -251,7 +251,9 @@ with $\vec{F} = \trialvec[v] \cdot \frac{1}{\rho(x)} \left(\nabla \cdot \tensor{
   + \int_\Omega \nabla\trialvec[v] : \left(-\frac{1}{\rho(\vec{x})} \tensor{\sigma}(\vec{u}) \right)
   + \trialvec[v] \cdot \left(-\frac{\nabla \rho(\vec{x})}{\rho^2} \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega.
 \end{equation}
-Restricting the trial function to $v^+$ and $v^-$ while recognizing that there is no overlap between the external Neumann boundary conditions $\Gamma_\tau$ and the fault interfaces $\Gamma_f$, yields
+This equations applies throughout the entire domain, but we are only interested in the fault interface.
+The fault interface is interior to the domain, so there is no overlap with external Neumann boundary conditions.
+Restricting this equation to the cohesive cells (fault interface) and taking the limit as the cell collapses to zero volume yields
 \begin{gather}
   \int_\Omega \trialvec[v^+] \cdot \frac{1}{\rho(x)} \left(\nabla \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega
   = \int_{\Gamma_f} \trialvec[v^+] \cdot \left(-\frac{1}{\rho(x)} \vec{\lambda} \right) \, d\Gamma
@@ -260,7 +262,8 @@ Restricting the trial function to $v^+$ and $v^-$ while recognizing that there i
   \int_\Omega \trialvec[v^-] \cdot \frac{1}{\rho(x)} \left(\nabla \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega
   = \int_{\Gamma_f} \trialvec[v^-] \cdot \left(+\frac{1}{\rho(x)} \vec{\lambda} \right) \, d\Gamma
   + \int_\Omega \nabla\trialvec[v^-] : \left(-\frac{1}{\rho(\vec{x})} \tensor{\sigma}(\vec{u}) \right)
-  + \trialvec[v^-] \cdot \, \left(-\frac{\nabla \rho(\vec{x})}{\rho^2} \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega. \end{gather}
+  + \trialvec[v^-] \cdot \, \left(-\frac{\nabla \rho(\vec{x})}{\rho^2} \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega.
+\end{gather}
 Picking $\trialvec[v]=\trialvec[\lambda]$ and substituting into equation~\vref{eqn:prescribed:slip:DAE:weak:form} gives
 \begin{multline}
   \int_{\Gamma_f} \trialvec[\lambda] \cdot \left(
@@ -277,7 +280,7 @@ Picking $\trialvec[v]=\trialvec[\lambda]$ and substituting into equation~\vref{e
   - \int_{\Gamma_f} \trialvec[\lambda] \cdot \frac{\partial^2 \vec{d}(\vec{x}, t)}{\partial t^2} \, d\Gamma.
 \end{multline}
 We rewrite the integrals over the domain involving the degrees of
-freedom adjacent to the fault as integrals over the positive and
+freedom adjacent to the fault, which correspond to the faces of the cohesive cells, as integrals over the positive and
 negative sides of the fault. These are implemented as integrals over
 the faces of cells adjacent to the fault; they involve quantities,
 such as density, that are defined only within the domain cells. After
@@ -295,7 +298,7 @@ collecting and rearranging terms, we have
 \end{multline}
 
 
-\subsection{Residual Pointwise Functions}
+\subsubsection{Residual Pointwise Functions}
 
 Combining the explicit parts of the weak form in equations~\ref{eqn:displacement:velocity:prescribed:slip:weak:form} and \ref{eqn:elasticity:prescribed:slip:dynamic:weak:form} with the implicit part of the weak form in equation~\ref{eqn:elasticity:prescribed:slip:dynamic:DAE:weak:form} and identifying $F(t,s,\dot{s})$ and $G(t,s)$, we have
 \begin{gather}
@@ -321,11 +324,11 @@ Combining the explicit parts of the weak form in equations~\ref{eqn:displacement
   + \int_{\Gamma_{f}} \trialvec[v^+] \cdot \eqnannotate{\left(-\vec{\lambda}(\vec{x},t)\right)}{\vec{g}^v_0}
              + \trialvec[v^-] \cdot \eqnannotate{\left(+\vec{\lambda}(\vec{x},t)\right)}{\vec{g}^v_0} \, d\Gamma, \\
   % Gl
-  G^l(t,s) = 0
+  G^\lambda(t,s) = 0
 \end{gather}
 
 
-\subsection{Jacobian Pointwise Functions}
+\subsubsection{Jacobian Pointwise Functions}
 
 For the explicit part we have pointwise functions for computing the
 lumped LHS Jacobian. These are exactly the same pointwise functions as
@@ -343,9 +346,9 @@ For the implicit part, we have pointwise functions for the LHS Jacobians associa
   \begin{multlined}
   % J_F lu
   J_F^{\lambda u} = \frac{\partial F^\lambda}{\partial u} + s_\mathit{tshift} \frac{\partial F^\lambda}{\partial \dot{u}} = \\
-                    \int_{\Gamma_{f^+}} \trialscalar[\lambda]_i \eqnannotate{\frac{\rho_{,j}(\vec{x})}{\rho^2(\vec{x})} C_{ikjl} \basisscalar[u]_{j,l}}{J^{\lambda u}_{fX}}
+                    \int_{\Gamma_{f^+}} \trialscalar[\lambda]_i \eqnannotate{\frac{\rho_{,j}(\vec{x})}{\rho^2(\vec{x})} C_{ikjl} \basisscalar[u]_{j,l}}{J^{\lambda u}_{f1}}
                     + \trialscalar[\lambda]_{i,k} \eqnannotate{+\frac{1}{\rho(\vec{x})} C_{ikjl} \basisscalar[u]_{k,l}}{J^{\lambda u}_{f3}} \, d\Gamma \\
-                    +\int_{\Gamma_{f^-}} \trialscalar[\lambda]_i \eqnannotate{-\frac{\rho_{,j}(\vec{x})}{\rho^2(\vec{x})} C_{ikjl} \basisscalar[u]_{j,l}}{J^{\lambda u}_{fX}}
+                    +\int_{\Gamma_{f^-}} \trialscalar[\lambda]_i \eqnannotate{-\frac{\rho_{,j}(\vec{x})}{\rho^2(\vec{x})} C_{ikjl} \basisscalar[u]_{j,l}}{J^{\lambda u}_{f1}}
                     + \trialscalar[\lambda]_{i,k} \eqnannotate{-\frac{1}{\rho(\vec{x})} C_{ikjl} \basisscalar[u]_{k,l}}{J^{\lambda u}_{f3}} \, d\Gamma
                   \end{multlined} \\
   % J_F ll
