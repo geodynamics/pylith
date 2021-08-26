@@ -118,6 +118,12 @@ We encourage anyone extending PyLith to fork the PyLith repository and build fro
 
 ## Installation from Source
 
+:::{admonition} TODO
+:class: error
+
+Update `fig:pylith-dependencies`
+:::
+
 PyLith depends on a number of other packages (see {numref}`fig:pylith-dependencies`).
 This complicates building the software from the source code.
 In many cases some of the packages required by PyLith are available as binary packages.
@@ -132,6 +138,12 @@ For each package this utility downloads the source code, configures it, builds i
  The minimum requirements for using the PyLith installer are a C compiler, `tar`, and `wget` or `curl`. Detailed instructions for how to install PyLith using the installer are included in the installer distribution, which is available from the PyLith web page <https://geodynamics.org/cig/software/pylith/>.
 
 ## Verifying PyLith is Installed Correctly
+
+:::{admonition} TODO
+:class: error
+
+Point `sec:example:3dhex8-static` reference to correct example
+:::
 
 The easiest way to verify that PyLith has been installed correctly is to run one or more of the examples supplied with the binary and source code.
 In the binary distribution, the examples are located in `src/pylith-3.0.0dev/examples` while in the source distribution, they are located in `pylith-3.0.0dev/examples`.
