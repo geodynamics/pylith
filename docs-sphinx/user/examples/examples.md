@@ -105,6 +105,9 @@ In each of the ParaView Python scripts, the names of the variables and their def
 ## Examples
 
 :::{toctree}
+2d_box.md
+3d_box.md
+2d_strikeslip.md
 2d_reverse.md
 2d_subduction.md
 3d_subduction.md
