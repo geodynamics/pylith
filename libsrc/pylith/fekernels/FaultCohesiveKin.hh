@@ -76,30 +76,55 @@ public:
      * @param[out] f0 [dim].
      */
 
-    /** f0 function for elasticity equation: f0u = -\lambda (pos side), +\lambda (neg side).
+    /** f0 function for elasticity equation: f0u = +\lambda (neg side).
      *
      * Solution fields: [disp(dim), ..., lagrange(dim)]
      */
     static
-    void f0u(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithReal n[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar f0[]);
+    void f0u_neg(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithReal n[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0[]);
+
+    /** f0 function for elasticity equation: f0u = -\lambda (pos side).
+     *
+     * Solution fields: [disp(dim), ..., lagrange(dim)]
+     */
+    static
+    void f0u_pos(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithReal n[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0[]);
 
     /** f0 function for slip constraint equation: f0\lambda = (u^+ - u^-) - d
      *
@@ -151,10 +176,12 @@ public:
                const PylithScalar constants[],
                PylithScalar f0[]);
 
-    /** Jf0 function for displacement equation: +\lambda (pos side), -\lambda (neg side).
+    /** f0 function for slip acceleration constraint equation: f0\lambda = (\dot{v}^+ - \dot{v}^-) - \ddot{d}
+     *
+     * Solution fields: [disp(dim), vel(dim), ..., lagrange(dim)]
      */
     static
-    void Jf0ul(const PylithInt dim,
+    void f0l_a(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
                const PylithInt sOff[],
@@ -168,12 +195,59 @@ public:
                const PylithScalar a_t[],
                const PylithScalar a_x[],
                const PylithReal t,
-               const PylithReal s_tshift,
                const PylithScalar x[],
                const PylithReal n[],
                const PylithInt numConstants,
                const PylithScalar constants[],
-               PylithScalar Jf0[]);
+               PylithScalar f0[]);
+
+    /** Jf0 function for displacement equation: -\lambda (neg side).
+     */
+    static
+    void Jf0ul_neg(const PylithInt dim,
+                   const PylithInt numS,
+                   const PylithInt numA,
+                   const PylithInt sOff[],
+                   const PylithInt sOff_x[],
+                   const PylithScalar s[],
+                   const PylithScalar s_t[],
+                   const PylithScalar s_x[],
+                   const PylithInt aOff[],
+                   const PylithInt aOff_x[],
+                   const PylithScalar a[],
+                   const PylithScalar a_t[],
+                   const PylithScalar a_x[],
+                   const PylithReal t,
+                   const PylithReal s_tshift,
+                   const PylithScalar x[],
+                   const PylithReal n[],
+                   const PylithInt numConstants,
+                   const PylithScalar constants[],
+                   PylithScalar Jf0[]);
+
+    /** Jf0 function for displacement equation: +\lambda (pos side).
+     */
+    static
+    void Jf0ul_pos(const PylithInt dim,
+                   const PylithInt numS,
+                   const PylithInt numA,
+                   const PylithInt sOff[],
+                   const PylithInt sOff_x[],
+                   const PylithScalar s[],
+                   const PylithScalar s_t[],
+                   const PylithScalar s_x[],
+                   const PylithInt aOff[],
+                   const PylithInt aOff_x[],
+                   const PylithScalar a[],
+                   const PylithScalar a_t[],
+                   const PylithScalar a_x[],
+                   const PylithReal t,
+                   const PylithReal s_tshift,
+                   const PylithScalar x[],
+                   const PylithReal n[],
+                   const PylithInt numConstants,
+                   const PylithScalar constants[],
+                   PylithScalar Jf0[]);
 
     /** Jf0 function for slip constraint equation: +\lambda (pos side), -\lambda (neg side).
      *

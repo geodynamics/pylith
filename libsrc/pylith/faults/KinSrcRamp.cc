@@ -140,6 +140,38 @@ pylith::faults::KinSrcRamp::slipRateFn(const PylithInt dim,
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Slip acceleration time function kernel.
+void
+pylith::faults::KinSrcRamp::slipAccFn(const PylithInt dim,
+                                      const PylithInt numS,
+                                      const PylithInt numA,
+                                      const PylithInt sOff[],
+                                      const PylithInt sOff_x[],
+                                      const PylithScalar s[],
+                                      const PylithScalar s_t[],
+                                      const PylithScalar s_x[],
+                                      const PylithInt aOff[],
+                                      const PylithInt aOff_x[],
+                                      const PylithScalar a[],
+                                      const PylithScalar a_t[],
+                                      const PylithScalar a_x[],
+                                      const PylithReal t,
+                                      const PylithScalar x[],
+                                      const PylithInt numConstants,
+                                      const PylithScalar constants[],
+                                      PylithScalar slipAcc[]) {
+    const PylithInt _numA = 3;
+
+    assert(_numA == numA);
+    assert(slipAcc);
+
+    for (PylithInt i = 0; i < dim; ++i) {
+        slipAcc[i] = 0.0;
+    } // for
+} // slipAccFn
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Preinitialize earthquake source. Set names/sizes of auxiliary subfields.
 void
 pylith::faults::KinSrcRamp::_auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
@@ -160,6 +192,7 @@ pylith::faults::KinSrcRamp::_auxiliaryFieldSetup(const spatialdata::units::Nondi
 
     _slipFnKernel = pylith::faults::KinSrcRamp::slipFn;
     _slipRateFnKernel = pylith::faults::KinSrcRamp::slipRateFn;
+    _slipAccFnKernel = pylith::faults::KinSrcRamp::slipAccFn;
 
     PYLITH_METHOD_END;
 } // _auxiliaryFieldSetup

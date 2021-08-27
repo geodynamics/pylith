@@ -115,6 +115,19 @@ for i in "a b c"; do
 done
 ```
 
+```{code-block} cfg
+---
+caption: Config code block.
+---
+# Comment
+[pylithapp]
+journal.info.problem = 1
+
+[pylithapp.petsc]
+ksp_rtol = 1.0e-3
+```
+
+
 ## Tables
 
 Please see {numref}`tab-quickref`.

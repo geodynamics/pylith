@@ -34,7 +34,7 @@
 class pylith::faults::FaultCohesive : public pylith::problems::Physics {
     friend class TestFaultCohesive; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -101,20 +101,38 @@ public:
      */
     void adjustTopology(pylith::topology::Mesh* const mesh);
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
+protected:
+
+    /** Create single integratin patch for entire fault.
+     *
+     * @param[inout] integrator Integrator for fault interface.
+     */
+    void _createIntegrationPatch(pylith::feassemble::IntegratorInterface* integrator);
+
+    /** Create integration patches associated with cohesive cells that have the same pairs of materials on the
+     * two sides of the fault.
+     *
+     * @param[inout] integrator Integrator for fault interface.
+     * @param[in] dmSoln PETSc DM associated with solution.
+     */
+    void _createIntegrationPatches(pylith::feassemble::IntegratorInterface* integrator,
+                                   const PetscDM dmSoln);
+
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     PylithReal _refDir1[3]; ///< First choice reference direction used to compute boundary tangential directions.
     PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     int _interfaceId; ///< Identifier for cohesive cells.
     std::string _interfaceLabel; ///< Label identifying vertices associated with fault.
     std::string _buriedEdgesLabel; ///< Label identifying vertices along buried edges of fault.
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     FaultCohesive(const FaultCohesive&); ///< Not implemented

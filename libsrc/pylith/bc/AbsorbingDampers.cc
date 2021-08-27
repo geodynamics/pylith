@@ -56,9 +56,9 @@ public:
              * @param[in] solution Solution field.
              */
             static
-            void setKernelsRHSResidual(pylith::feassemble::IntegratorBoundary* integrator,
-                                       const pylith::bc::AbsorbingDampers& bc,
-                                       const pylith::topology::Field& solution);
+            void setKernelsResidual(pylith::feassemble::IntegratorBoundary* integrator,
+                                    const pylith::bc::AbsorbingDampers& bc,
+                                    const pylith::topology::Field& solution);
 
             static const char* pyreComponent;
         };
@@ -128,8 +128,10 @@ pylith::bc::AbsorbingDampers::createIntegrator(const pylith::topology::Field& so
 
     pylith::feassemble::IntegratorBoundary* integrator = new pylith::feassemble::IntegratorBoundary(this);assert(integrator);
     integrator->setMarkerLabel(getMarkerLabel());
+    integrator->setSubfieldName(getSubfieldName());
+    integrator->setLabelName(getMarkerLabel());
 
-    _AbsorbingDampers::setKernelsRHSResidual(integrator, *this, solution);
+    _AbsorbingDampers::setKernelsResidual(integrator, *this, solution);
 
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
@@ -223,11 +225,11 @@ pylith::bc::AbsorbingDampers::_updateKernelConstants(const PylithReal dt) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for RHS residual G(t,s).
+// Set kernels for residual.
 void
-pylith::bc::_AbsorbingDampers::setKernelsRHSResidual(pylith::feassemble::IntegratorBoundary* integrator,
-                                                     const pylith::bc::AbsorbingDampers& bc,
-                                                     const topology::Field& solution) {
+pylith::bc::_AbsorbingDampers::setKernelsResidual(pylith::feassemble::IntegratorBoundary* integrator,
+                                                  const pylith::bc::AbsorbingDampers& bc,
+                                                  const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     pythia::journal::debug_t debug(_AbsorbingDampers::pyreComponent);
     debug << pythia::journal::at(__HERE__)
@@ -238,10 +240,10 @@ pylith::bc::_AbsorbingDampers::setKernelsRHSResidual(pylith::feassemble::Integra
     PetscBdPointFunc g1 = NULL;
 
     std::vector<ResidualKernels> kernels(1);
-    kernels[0] = ResidualKernels(bc.getSubfieldName(), g0, g1);
+    kernels[0] = ResidualKernels(bc.getSubfieldName(), pylith::feassemble::Integrator::RESIDUAL_RHS, g0, g1);
 
     assert(integrator);
-    integrator->setKernelsRHSResidual(kernels);
+    integrator->setKernelsResidual(kernels, solution);
 
     PYLITH_METHOD_END;
 } // _setKernelsRHSResidual

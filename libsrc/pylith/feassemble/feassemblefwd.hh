@@ -33,16 +33,19 @@ namespace pylith {
 
         class PhysicsImplementation; ///< Abstract base class for constraints and integrators.
 
+        class DSLabelAccess; ///< Utility class for accessing PetscDMLabel, PetscDS, and PetscWeakForm.
+        class FEKernelKey; ///< Utility class for managing keys for pointwise functions in finite-element integrations.
         class Integrator; ///< Abstract base class for finite-element integration.
         class IntegratorDomain; ///< Abstract base class for finite-element integration over portions on the domain.
         class IntegratorBoundary; ///< Abstract base class for finite-element integration over a boundary.
         class IntegratorInterface; ///< Abstract base class for finite-element integration over an interior interface.
+        class InterfacePatches; ///< Interface integration patches.
         class UpdateStateVars; ///< Manager for updating state variables.
 
         class Constraint; ///< Abstract base class for finite-element constraints.
         class ConstraintSpatialDB; ///< Finite-element constraints via auxiliary field from spatial database.
         class ConstraintUserFn; ///< Finite-element constraints via user-specified function (testing).
-        class ConstraintSimple;///< Finite-element simple constraints via user-specified function (testing).
+        class ConstraintSimple; ///< Finite-element simple constraints via user-specified function (testing).
 
     } // feassemble
 } // pylith

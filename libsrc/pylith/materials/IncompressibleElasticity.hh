@@ -125,21 +125,21 @@ protected:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    /** Set kernels for LHS residual.
+    /** Set kernels for residual.
      *
      * @param[out] integrator Integrator for material.
      * @param[in] solution Solution field.
      */
-    void _setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                const pylith::topology::Field& solution) const;
+    void _setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
+                             const pylith::topology::Field& solution) const;
 
-    /** Set kernels for LHS Jacobian.
+    /** Set kernels for Jacobian.
      *
      * @param[out] integrator Integrator for material.
      * @param[in] solution Solution field.
      */
-    void _setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                                const pylith::topology::Field& solution) const;
+    void _setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
+                             const pylith::topology::Field& solution) const;
 
     /** Set kernels for computing updated state variables in auxiliary field.
      *

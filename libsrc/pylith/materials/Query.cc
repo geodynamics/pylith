@@ -238,7 +238,7 @@ pylith::materials::_Query::vmToShearModulus(PylithScalar valueSubfield[],
         msg << "Found negative shear wave speed (" << vs << ").";
     } // if
 
-    return msg.str();
+    PYLITH_METHOD_RETURN(msg.str());
 } // vmToShearModulus
 
 
@@ -280,7 +280,7 @@ pylith::materials::_Query::vmToBulkModulus(PylithScalar valueSubfield[],
         msg << "Found nonpositive dilatational wave speed (" << vp << ").";
     } // if
 
-    return msg.str();
+    PYLITH_METHOD_RETURN(msg.str());
 } // vmToBulkModulus
 
 
@@ -323,7 +323,7 @@ pylith::materials::_Query::vmToMaxwellTime(PylithScalar valueSubfield[],
         msg << "Found nonpositive viscosity (" << viscosity << ").";
     } // if
 
-    return msg.str();
+    PYLITH_METHOD_RETURN(msg.str());
 } // vmToMaxwellTime
 
 
@@ -410,7 +410,7 @@ pylith::materials::_Query::vmToGeneralizedMaxwellTimes(PylithScalar valueSubfiel
             << ".";
     } // if
 
-    return msg.str();
+    PYLITH_METHOD_RETURN(msg.str());
 } // vmToGeneralizedMaxwellTimes
 
 
@@ -457,7 +457,7 @@ pylith::materials::_Query::vmToGeneralizedMaxwellShearModulusRatios(PylithScalar
             << ".";
     } // if
 
-    return msg.str();
+    PYLITH_METHOD_RETURN(msg.str());
 } // vmToGeneralizedMaxwellShearModulusRatios
 
 
@@ -494,7 +494,7 @@ pylith::materials::_Query::dbToGravityField(PylithScalar valueSubfield[],
         msg << ".";
     } // if
 
-    return msg.str();
+    PYLITH_METHOD_RETURN(msg.str());
 } // dbToGravityField
 
 // ----------------------------------------------------------------------
@@ -543,7 +543,7 @@ pylith::materials::_Query::inputToBiotModulus(PylithScalar valueSubfield[],
         msg << "biot modulus (" << biot_modulus << ") wrong. Kfl: " << fluid_bulk_modulus << " Ksg: " << solid_bulk_modulus << " phi: " << porosity << " alpha: " << biot_coefficient;
     } // if
 
-    return msg.str();
+    PYLITH_METHOD_RETURN(msg.str());
 } // inputToBiotModulus
 
 // End of file

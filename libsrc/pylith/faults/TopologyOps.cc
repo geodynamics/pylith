@@ -22,6 +22,7 @@
 
 #include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <iostream> // USES std::cout
 #include <cassert> // USES assert()
@@ -234,7 +235,7 @@ pylith::faults::TopologyOps::createFaultParallel(pylith::topology::Mesh* faultMe
     err = DMPlexCreateCohesiveSubmesh(dmMesh, hasLagrangeConstraints, labelName, labelValue, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
     err = DMViewFromOptions(dmFaultMesh, NULL, "-pylith_fault_dm_view");PYLITH_CHECK_ERROR(err);
     err = DMPlexOrient(dmFaultMesh);PYLITH_CHECK_ERROR(err);
-    std::string meshLabel = "fault_" + std::string(surfaceLabel);
+    std::string meshLabel = std::string("fault_") + std::string(surfaceLabel);
 
     PetscReal lengthScale = 1.0;
     err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
@@ -403,6 +404,44 @@ pylith::faults::TopologyOps::getInterfacesLabel(PetscDM dm) {
 
     PYLITH_METHOD_RETURN(interfacesLabel);
 } // getInterfacesLabel
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+void
+pylith::faults::TopologyOps::getAdjacentCells(PylithInt* adjacentCellNegative,
+                                              PylithInt* adjacentCellPositive,
+                                              PetscDM dmMesh,
+                                              const PylithInt cohesiveCell) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscErrorCode err = 0;
+
+    const PylithInt* cone = NULL;
+    err = DMPlexGetCone(dmMesh, cohesiveCell, &cone);PYLITH_CHECK_ERROR(err);
+    PylithInt adjacentCells[2];
+    for (PylithInt iCone = 0; iCone < 2; ++iCone) {
+        const PylithInt* support = NULL;
+        PylithInt supportSize = 0;
+
+        err = DMPlexGetSupport(dmMesh, cone[iCone], &support);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetSupportSize(dmMesh, cone[iCone], &supportSize);PYLITH_CHECK_ERROR(err);
+        if (2 != supportSize) {
+            PYLITH_JOURNAL_LOGICERROR("Inconsistent topology. Expected support of size 2 for cohesive cell "
+                                      <<cohesiveCell<<". Support has size "<<supportSize<<".");
+        } // if
+        assert(2 == supportSize);
+        if ((cohesiveCell != support[0]) && (cohesiveCell != support[1]) ) {
+            PYLITH_JOURNAL_LOGICERROR("Inconsistent topology. Cohesive cell "
+                                      <<cohesiveCell<<" not in support of its own cone. "
+                                      <<"Support: "<<support[0]<< ", "<<support[1]<<".");
+        } // if
+        adjacentCells[iCone] = (support[0] == cohesiveCell) ? support[1] : support[0];
+    } // for
+
+    if (adjacentCellNegative) { *adjacentCellNegative = adjacentCells[0]; }
+    if (adjacentCellPositive) { *adjacentCellPositive = adjacentCells[1]; }
+    PYLITH_METHOD_END;
+} // getAdjacentCells
 
 
 // End of file

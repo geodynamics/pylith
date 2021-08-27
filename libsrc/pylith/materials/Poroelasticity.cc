@@ -45,11 +45,11 @@
 typedef pylith::feassemble::IntegratorDomain::ResidualKernels ResidualKernels;
 typedef pylith::feassemble::IntegratorDomain::JacobianKernels JacobianKernels;
 typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
+typedef pylith::feassemble::Integrator::JacobianPart JacobianPart;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::Poroelasticity::Poroelasticity(void) :
-    _useInertia(false),
     _useBodyForce(false),
     _useReferenceState(false),
     _useSourceDensity(false),
@@ -147,13 +147,13 @@ pylith::materials::Poroelasticity::verifyConfiguration(const pylith::topology::F
     } // if
     switch (_formulation) {
     case QUASISTATIC:
-        if (!_useInertia && !solution.hasSubfield("trace_strain")) {
+        if (!solution.hasSubfield("trace_strain")) {
             throw std::runtime_error("Cannot find 'trace_strain' field in solution; required for material 'Poroelasticity'.");
         } // if
         break;
     case DYNAMIC:
     case DYNAMIC_IMEX:
-        if (_useInertia && !solution.hasSubfield("velocity")) {
+        if (!solution.hasSubfield("velocity")) {
             throw std::runtime_error("Cannot find 'velocity' field in solution; required for material 'Poroelasticity' with inertia.");
         } // if
     } // switch
@@ -172,24 +172,8 @@ pylith::materials::Poroelasticity::createIntegrator(const pylith::topology::Fiel
     integrator->setLabelName("material-id");
     integrator->setLabelValue(getMaterialId());
 
-    switch (_formulation) {
-    case QUASISTATIC:
-        _useInertia = false;
-        break;
-    case DYNAMIC:
-        _useInertia = true;
-        break;
-    case DYNAMIC_IMEX:
-        _useInertia = true;
-        integrator->setLHSJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE);
-        break;
-    default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
-    } // switch
-
-    _setKernelsLHSResidual(integrator, solution);
-    _setKernelsRHSResidual(integrator, solution);
-    _setKernelsLHSJacobian(integrator, solution);
+    _setKernelsResidual(integrator, solution);
+    _setKernelsJacobian(integrator, solution);
     _setKernelsUpdateStateVars(integrator, solution);
     _setKernelsDerivedField(integrator, solution);
 
@@ -312,131 +296,53 @@ pylith::materials::Poroelasticity::_getDerivedFactory(void) {
 
 
 // ----------------------------------------------------------------------
-// Set kernels for RHS residual G(t,s).
-// RHS residual is for explicit time stepping (dynamic).
+// Set kernels for residual.
 void
-pylith::materials::Poroelasticity::_setKernelsRHSResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                                          const topology::Field& solution) const {
+pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
+                                                       const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsRHSResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
-    std::vector<ResidualKernels> kernels;
+    const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
+    const int bitGravity = _gravityField ? 0x2 : 0x0;
+    const int bitSourceDensity = _useSourceDensity ? 0x4 : 0x0;
+    const int bitUse = bitBodyForce | bitGravity | bitSourceDensity;
 
-    switch (_formulation) {
-    case QUASISTATIC: {
+    PetscPointFunc r0 = NULL;
+    switch (bitUse) {
+    case 0x0:
         break;
-    } // QUASISTATIC
-
-    case DYNAMIC_IMEX:
-    case DYNAMIC: {
-        // Displacement
-        const PetscPointFunc g0u = pylith::fekernels::Poroelasticity::g0u;
-        const PetscPointFunc g1u = NULL;
-
-        // Pressure
-        const PetscPointFunc g0p = _rheology->getKernelg0p(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
-        const PetscPointFunc g1p = _rheology->getKernelg1p_explicit(coordsys, _gravityField); // darcy velocity
-
-        // Velocity
-        PetscPointFunc g0v = NULL;
-        const PetscPointFunc g1v = _rheology->getKernelg1v_explicit(coordsys);
-
-        const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
-        const int bitGravity = _gravityField ? 0x2 : 0x0;
-        const int bitSourceDensity = _useSourceDensity ? 0x4 : 0x0;
-        const int bitUse = bitBodyForce | bitGravity | bitSourceDensity;
-
-        switch (bitUse) {
-        case 0x0:
-            break;
-        case 0x1:
-            g0v = pylith::fekernels::Poroelasticity::g0v_bodyforce;
-            break;
-        case 0x2:
-            g0v = pylith::fekernels::Poroelasticity::g0v_grav;
-            break;
-        case 0x4:
-            break;
-        case 0x3:
-            g0v = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
-            break;
-        case 0x5:
-            g0v = pylith::fekernels::Poroelasticity::g0v_bodyforce;
-            break;
-        case 0x6:
-            g0v = pylith::fekernels::Poroelasticity::g0v_grav;
-            break;
-        case 0x7:
-            g0v = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
-            break;
-        default:
-            PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
-        } // switch
-
-        kernels.resize(3);
-        kernels[0] = ResidualKernels("displacement", g0u, g1u);
-        kernels[1] = ResidualKernels("pressure", g0p, g1p);
-        kernels[2] = ResidualKernels("velocity", g0v, g1v);
-    } // DYNAMIC
+    case 0x1:
+        r0 = pylith::fekernels::Poroelasticity::g0v_bodyforce;
+        break;
+    case 0x2:
+        r0 = pylith::fekernels::Poroelasticity::g0v_grav;
+        break;
+    case 0x4:
+        break;
+    case 0x3:
+        r0 = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
+        break;
+    case 0x5:
+        r0 = pylith::fekernels::Poroelasticity::g0v_bodyforce;
+        break;
+    case 0x6:
+        r0 = pylith::fekernels::Poroelasticity::g0v_grav;
+        break;
+    case 0x7:
+        r0 = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
+        break;
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for residual kernels.");
     } // switch
 
-    assert(integrator);
-    integrator->setKernelsRHSResidual(kernels);
-
-    PYLITH_METHOD_END;
-} // _setKernelsRHSResidual
-
-
-// ----------------------------------------------------------------------
-// Set kernels for LHS residual F(t,s,\dot{s}).
-void
-pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                                          const topology::Field& solution) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsLHSResidual(integrator="<<integrator<<",solution="<<solution.getLabel()<<")");
-
-    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
-
     std::vector<ResidualKernels> kernels;
     switch (_formulation) {
     case QUASISTATIC: {
         // Displacement
-        PetscPointFunc f0u = NULL;
-        const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
-        const int bitGravity = _gravityField ? 0x2 : 0x0;
-        const int bitSourceDensity = _useSourceDensity ? 0x4 : 0x0;
-        const int bitUse = bitBodyForce | bitGravity | bitSourceDensity;
-
-        switch (bitUse) {
-        case 0x0:
-            break;
-        case 0x1:
-            f0u = pylith::fekernels::Poroelasticity::g0v_bodyforce;
-            break;
-        case 0x2:
-            f0u = pylith::fekernels::Poroelasticity::g0v_grav;
-            break;
-        case 0x4:
-            break;
-        case 0x3:
-            f0u = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
-            break;
-        case 0x5:
-            f0u = pylith::fekernels::Poroelasticity::g0v_bodyforce;
-            break;
-        case 0x6:
-            f0u = pylith::fekernels::Poroelasticity::g0v_grav;
-            break;
-        case 0x7:
-            f0u = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
-            break;
-        default:
-            PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
-        } // switch
+        const PetscPointFunc f0u = r0;
         const PetscPointFunc f1u = _rheology->getKernelf1u_implicit(coordsys);
 
         // Pressure
@@ -448,70 +354,57 @@ pylith::materials::Poroelasticity::_setKernelsLHSResidual(pylith::feassemble::In
         const PetscPointFunc f1e = NULL;
 
         kernels.resize(3);
-        kernels[0] = ResidualKernels("displacement", f0u, f1u);
-        kernels[1] = ResidualKernels("pressure",     f0p, f1p);
-        kernels[2] = ResidualKernels("trace_strain", f0e, f1e);
+        kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::RESIDUAL_LHS, f0u, f1u);
+        kernels[1] = ResidualKernels("pressure", pylith::feassemble::Integrator::RESIDUAL_LHS, f0p, f1p);
+        kernels[2] = ResidualKernels("trace_strain", pylith::feassemble::Integrator::RESIDUAL_LHS, f0e, f1e);
         break;
     } // QUASISTATIC
-
-    case DYNAMIC_IMEX: {
-        // Displacement
-        const PetscPointFunc f0u = pylith::fekernels::DispVel::f0u;
-        const PetscPointFunc f1u = NULL;
-
-        // Pressure
-        const PetscPointFunc f0p = _rheology->getKernelf0p_explicit(coordsys);
-        const PetscPointFunc f1p = NULL;
-
-        // Velocity
-        assert(_useInertia);
-        const PetscPointFunc f0v = pylith::fekernels::Poroelasticity::f0v;
-        const PetscPointFunc f1v = NULL;
-
-        kernels.resize(3);
-        kernels[0] = ResidualKernels("displacement", f0u, f1u);
-        kernels[1] = ResidualKernels("pressure",     f0p, f1p);
-        kernels[2] = ResidualKernels("velocity",     f0v, f1v);
-        break;
-    } // DYNAMIC_IMEX
+    case DYNAMIC_IMEX:
     case DYNAMIC: {
         // Displacement
         const PetscPointFunc f0u = pylith::fekernels::DispVel::f0u;
         const PetscPointFunc f1u = NULL;
+        const PetscPointFunc g0u = pylith::fekernels::Poroelasticity::g0u;
+        const PetscPointFunc g1u = NULL;
 
         // Pressure
         const PetscPointFunc f0p = _rheology->getKernelf0p_explicit(coordsys);
         const PetscPointFunc f1p = NULL;
+        const PetscPointFunc g0p = _rheology->getKernelg0p(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
+        const PetscPointFunc g1p = _rheology->getKernelg1p_explicit(coordsys, _gravityField); // Darcy velocity
 
         // Velocity
-        assert(_useInertia);
         const PetscPointFunc f0v = pylith::fekernels::Poroelasticity::f0v;
         const PetscPointFunc f1v = NULL;
+        const PetscPointFunc g0v = r0;
+        const PetscPointFunc g1v = _rheology->getKernelg1v_explicit(coordsys);
 
-        kernels.resize(3);
-        kernels[0] = ResidualKernels("displacement", f0u, f1u);
-        kernels[1] = ResidualKernels("pressure",     f0p, f1p);
-        kernels[2] = ResidualKernels("velocity",     f0v, f1v);
-        break;
+        kernels.resize(6);
+        kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::RESIDUAL_LHS, f0u, f1u);
+        kernels[1] = ResidualKernels("displacement", pylith::feassemble::Integrator::RESIDUAL_RHS, g0u, g1u);
+        kernels[2] = ResidualKernels("pressure", pylith::feassemble::Integrator::RESIDUAL_LHS, f0p, f1p);
+        kernels[3] = ResidualKernels("pressure", pylith::feassemble::Integrator::RESIDUAL_RHS, g0p, g1p);
+        kernels[4] = ResidualKernels("velocity", pylith::feassemble::Integrator::RESIDUAL_LHS, f0v, f1v);
+        kernels[5] = ResidualKernels("velocity", pylith::feassemble::Integrator::RESIDUAL_RHS, g0v, g1v);
     } // DYNAMIC
     default:
         PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     assert(integrator);
-    integrator->setKernelsLHSResidual(kernels);
+    integrator->setKernelsResidual(kernels, solution);
 
     PYLITH_METHOD_END;
-} // _setKernelsLHSResidual
+} // _setKernelsResidual
 
 
 // ----------------------------------------------------------------------
-// Set kernels for LHS Jacobian F(t,s,\dot{s}).
+// Set kernels for Jacobian.
 void
-pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                                                          const topology::Field& solution) const {
+pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
+                                                       const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsLHSJacobian(integrator="<<integrator<<",solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsJacobian(integrator="<<integrator<<",solution="<<solution.getLabel()<<")");
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     std::vector<JacobianKernels> kernels(9);
 
@@ -562,15 +455,16 @@ pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::In
         const PetscPointJac Jf2ee = NULL;
         const PetscPointJac Jf3ee = NULL;
 
-        kernels[0] = JacobianKernels("displacement",  "displacement",  Jf0uu, Jf1uu, Jf2uu, Jf3uu);
-        kernels[1] = JacobianKernels("displacement",  "pressure",      Jf0up, Jf1up, Jf2up, Jf3up);
-        kernels[2] = JacobianKernels("displacement",  "trace_strain",  Jf0ue, Jf1ue, Jf2ue, Jf3ue);
-        kernels[3] = JacobianKernels("pressure",      "displacement",  Jf0pu, Jf1pu, Jf2pu, Jf3pu);
-        kernels[4] = JacobianKernels("pressure",      "pressure",      Jf0pp, Jf1pp, Jf2pp, Jf3pp);
-        kernels[5] = JacobianKernels("pressure",      "trace_strain",  Jf0pe, Jf1pe, Jf2pe, Jf3pe);
-        kernels[6] = JacobianKernels("trace_strain",  "displacement",  Jf0eu, Jf1eu, Jf2eu, Jf3eu);
-        kernels[7] = JacobianKernels("trace_strain",  "pressure",      Jf0ep, Jf1ep, Jf2ep, Jf3ep);
-        kernels[8] = JacobianKernels("trace_strain",  "trace_strain",  Jf0ee, Jf1ee, Jf2ee, Jf3ee);
+        const JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS;
+        kernels[0] = JacobianKernels("displacement", "displacement", jacobianPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
+        kernels[1] = JacobianKernels("displacement", "pressure",     jacobianPart, Jf0up, Jf1up, Jf2up, Jf3up);
+        kernels[2] = JacobianKernels("displacement", "trace_strain", jacobianPart, Jf0ue, Jf1ue, Jf2ue, Jf3ue);
+        kernels[3] = JacobianKernels("pressure",     "displacement", jacobianPart, Jf0pu, Jf1pu, Jf2pu, Jf3pu);
+        kernels[4] = JacobianKernels("pressure",     "pressure",     jacobianPart, Jf0pp, Jf1pp, Jf2pp, Jf3pp);
+        kernels[5] = JacobianKernels("pressure",     "trace_strain", jacobianPart, Jf0pe, Jf1pe, Jf2pe, Jf3pe);
+        kernels[6] = JacobianKernels("trace_strain", "displacement", jacobianPart, Jf0eu, Jf1eu, Jf2eu, Jf3eu);
+        kernels[7] = JacobianKernels("trace_strain", "pressure",     jacobianPart, Jf0ep, Jf1ep, Jf2ep, Jf3ep);
+        kernels[8] = JacobianKernels("trace_strain", "trace_strain", jacobianPart, Jf0ee, Jf1ee, Jf2ee, Jf3ee);
         break;
     } // QUASISTATIC
     case DYNAMIC_IMEX:
@@ -620,15 +514,18 @@ pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::In
         const PetscPointJac Jf2vv = NULL;
         const PetscPointJac Jf3vv = NULL;
 
-        kernels[0] = JacobianKernels("displacement",  "displacement",  Jf0uu, Jf1uu, Jf2uu, Jf3uu);
-        kernels[1] = JacobianKernels("displacement",  "pressure",      Jf0up, Jf1up, Jf2up, Jf3up);
-        kernels[2] = JacobianKernels("displacement",  "velocity",      Jf0uv, Jf1uv, Jf2uv, Jf3uv);
-        kernels[3] = JacobianKernels("pressure",      "displacement",  Jf0pu, Jf1pu, Jf2pu, Jf3pu);
-        kernels[4] = JacobianKernels("pressure",      "pressure",      Jf0pp, Jf1pp, Jf2pp, Jf3pp);
-        kernels[5] = JacobianKernels("pressure",      "velocity",      Jf0pv, Jf1pv, Jf2pv, Jf3pv);
-        kernels[6] = JacobianKernels("velocity",      "displacement",  Jf0vu, Jf1vu, Jf2vu, Jf3vu);
-        kernels[7] = JacobianKernels("velocity",      "pressure",      Jf0vp, Jf1vp, Jf2vp, Jf3vp);
-        kernels[8] = JacobianKernels("velocity",      "velocity",      Jf0vv, Jf1vv, Jf2vv, Jf3vv);
+        integrator->setLHSJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE);
+
+        const JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS_LUMPED_INV;
+        kernels[0] = JacobianKernels("displacement",  "displacement", jacobianPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
+        kernels[1] = JacobianKernels("displacement",  "pressure",     jacobianPart, Jf0up, Jf1up, Jf2up, Jf3up);
+        kernels[2] = JacobianKernels("displacement",  "velocity",     jacobianPart, Jf0uv, Jf1uv, Jf2uv, Jf3uv);
+        kernels[3] = JacobianKernels("pressure",      "displacement", jacobianPart, Jf0pu, Jf1pu, Jf2pu, Jf3pu);
+        kernels[4] = JacobianKernels("pressure",      "pressure",     jacobianPart, Jf0pp, Jf1pp, Jf2pp, Jf3pp);
+        kernels[5] = JacobianKernels("pressure",      "velocity",     jacobianPart, Jf0pv, Jf1pv, Jf2pv, Jf3pv);
+        kernels[6] = JacobianKernels("velocity",      "displacement", jacobianPart, Jf0vu, Jf1vu, Jf2vu, Jf3vu);
+        kernels[7] = JacobianKernels("velocity",      "pressure",     jacobianPart, Jf0vp, Jf1vp, Jf2vp, Jf3vp);
+        kernels[8] = JacobianKernels("velocity",      "velocity",     jacobianPart, Jf0vv, Jf1vv, Jf2vv, Jf3vv);
         break;
     } // DYNAMIC
     default:
@@ -636,10 +533,10 @@ pylith::materials::Poroelasticity::_setKernelsLHSJacobian(pylith::feassemble::In
     } // switch
 
     assert(integrator);
-    integrator->setKernelsLHSJacobian(kernels);
+    integrator->setKernelsJacobian(kernels, solution);
 
     PYLITH_METHOD_END;
-} // _setKernelsLHSJacobian
+} // _setKernelsJacobian
 
 
 // ---------------------------------------------------------------------------------------------------------------------

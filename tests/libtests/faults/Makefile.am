@@ -33,6 +33,7 @@ test_faults_SOURCES = \
 	TestAdjustTopology_quad.cc \
 	TestAdjustTopology_tet.cc \
 	TestAdjustTopology_hex.cc \
+	TestFaultCohesive.cc \
 	test_driver.cc
 
 

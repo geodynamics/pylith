@@ -1,0 +1,127 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2017 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ======================================================================
+//
+
+#if !defined(pylith_feassemble_fekernelkey_hh)
+#error "Stratum.icc must be included only from FEKernelKey.hh"
+#else
+
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+
+// ------------------------------------------------------------------------------------------------
+// Default constructor.
+inline
+pylith::feassemble::FEKernelKey::FEKernelKey(void) :
+    _name(""),
+    _field(""),
+    _value(-1) {}
+
+
+// ------------------------------------------------------------------------------------------------
+// Default destructor.
+inline
+pylith::feassemble::FEKernelKey::~FEKernelKey(void) {}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get PETSc weak form.
+inline
+const PetscWeakForm
+pylith::feassemble::FEKernelKey::getWeakForm(void) const {
+    return _weakForm;
+} // getWeakForm
+
+
+// ------------------------------------------------------------------------------------------------
+// Factory for creating FEKernelKeyGet starting point.
+inline
+pylith::feassemble::FEKernelKey*
+pylith::feassemble::FEKernelKey::create(PetscWeakForm weakForm,
+                                        const char* name,
+                                        const int value,
+                                        const char* field) {
+    FEKernelKey* key = new FEKernelKey();assert(key);
+    if (key) {
+        key->_weakForm = weakForm;
+        key->_name = name ? name : "";
+        key->_value = value;
+        key->_field = field ? field : "";
+    } // if
+    return key;
+} // create
+
+
+// ------------------------------------------------------------------------------------------------
+// Get PETSc weak form key for residual.
+inline
+PetscFormKey
+pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solution,
+                                             pylith::feassemble::Integrator::ResidualPart residualPart,
+                                             const char* field) const {
+    PetscDM dmSoln = solution.getDM();
+    PetscDMLabel label = NULL;
+    PetscErrorCode err = DMGetLabel(dmSoln, _name.c_str(), &label);PYLITH_CHECK_ERROR(err);
+    PetscInt i_field = -1;
+    if (field) {
+        i_field = solution.getSubfieldInfo(field).index;
+    } else {
+        i_field = (!_field.empty()) ? solution.getSubfieldInfo(_field.c_str()).index : -1;
+    } // if/else
+    assert(i_field >= 0);
+
+    PetscFormKey weakFormKey;
+    weakFormKey.label = label;
+    weakFormKey.value = _value;
+    weakFormKey.part = residualPart;
+    weakFormKey.field = i_field;
+
+    return weakFormKey;
+} // petscKey
+
+
+// ------------------------------------------------------------------------------------------------
+// Get PETSc weak form key for Jacobian.
+inline
+PetscFormKey
+pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solution,
+                                             pylith::feassemble::Integrator::JacobianPart jacobianPart,
+                                             const char* fieldTrial,
+                                             const char* fieldBasis) const {
+    PetscDM dmSoln = solution.getDM();
+    PetscDMLabel label = NULL;
+    PetscErrorCode err = DMGetLabel(dmSoln, _name.c_str(), &label);PYLITH_CHECK_ERROR(err);
+    PetscInt i_field = -1, j_field = -1, Nf;
+    err = DMGetNumFields(dmSoln, &Nf);PYLITH_CHECK_ERROR(err);
+    i_field = solution.getSubfieldInfo(fieldTrial).index;
+    assert(i_field >= 0);
+    j_field = solution.getSubfieldInfo(fieldBasis).index;
+    assert(j_field >= 0);
+
+    PetscFormKey weakFormKey;
+    weakFormKey.label = label;
+    weakFormKey.value = _value;
+    weakFormKey.part = jacobianPart;
+    weakFormKey.field = i_field*Nf + j_field;
+
+    return weakFormKey;
+} // petscKey
+
+
+#endif
+
+// End of file

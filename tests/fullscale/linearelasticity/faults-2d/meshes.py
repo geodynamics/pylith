@@ -28,8 +28,10 @@ class Tri(object):
         "domain": MeshEntity(ncells=124, ncorners=3, nvertices=88),
 
         # Materials
-        "elastic_xpos": MeshEntity(ncells=64, ncorners=3, nvertices=45),
-        "elastic_xneg": MeshEntity(ncells=60, ncorners=3, nvertices=43),
+        "mat_xneg": MeshEntity(ncells=30, ncorners=3, nvertices=26),
+        "mat_xmid": MeshEntity(ncells=30, ncorners=3, nvertices=26),
+        "mat_xposypos": MeshEntity(ncells=32, ncorners=3, nvertices=25),
+        "mat_xposyneg": MeshEntity(ncells=32, ncorners=3, nvertices=25),
 
         # Faults
         "fault": MeshEntity(ncells=8, ncorners=2, nvertices=9),
@@ -49,8 +51,10 @@ class Quad(object):
         "domain": MeshEntity(ncells=64, ncorners=4, nvertices=90),
 
         # Materials
-        "elastic_xpos": MeshEntity(ncells=32, ncorners=4, nvertices=45),
-        "elastic_xneg": MeshEntity(ncells=32, ncorners=4, nvertices=45),
+        "mat_xneg": MeshEntity(ncells=16, ncorners=3, nvertices=27),
+        "mat_xmid": MeshEntity(ncells=16, ncorners=3, nvertices=27),
+        "mat_xposypos": MeshEntity(ncells=16, ncorners=3, nvertices=25),
+        "mat_xposyneg": MeshEntity(ncells=16, ncorners=3, nvertices=25),
 
         # Faults
         "fault": MeshEntity(ncells=8, ncorners=2, nvertices=9),
