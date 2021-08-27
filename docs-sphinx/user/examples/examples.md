@@ -122,7 +122,7 @@ See the `README` files in the subdirectories for more detailed descriptions of t
 ### Troubleshooting Examples
 
 The directory `examples/troubleshooting` contains a few examples to practice troubleshooting a variety of user errors in parameters files and problem setup.
-The files with the errors corrected are in .
+The files with the errors corrected are in `examples/troubleshooting/correct`.
 Step-by-step corrections are discussed in the troubleshooting PyLith simulations sessions of the 2014, 2015, 2017, and 2019 PyLith tutorials (<https://wiki.geodynamics.org/software:pylith:start>).
 
 ### Code Verification Benchmarks
