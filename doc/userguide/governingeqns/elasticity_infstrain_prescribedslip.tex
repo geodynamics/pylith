@@ -346,10 +346,10 @@ For the implicit part, we have pointwise functions for the LHS Jacobians associa
   \begin{multlined}
   % J_F lu
   J_F^{\lambda u} = \frac{\partial F^\lambda}{\partial u} + s_\mathit{tshift} \frac{\partial F^\lambda}{\partial \dot{u}} = \\
-                    \int_{\Gamma_{f^+}} \trialscalar[\lambda]_i \eqnannotate{\frac{\rho_{,j}(\vec{x})}{\rho^2(\vec{x})} C_{ikjl} \basisscalar[u]_{j,l}}{J^{\lambda u}_{f1}}
-                    + \trialscalar[\lambda]_{i,k} \eqnannotate{+\frac{1}{\rho(\vec{x})} C_{ikjl} \basisscalar[u]_{k,l}}{J^{\lambda u}_{f3}} \, d\Gamma \\
-                    +\int_{\Gamma_{f^-}} \trialscalar[\lambda]_i \eqnannotate{-\frac{\rho_{,j}(\vec{x})}{\rho^2(\vec{x})} C_{ikjl} \basisscalar[u]_{j,l}}{J^{\lambda u}_{f1}}
-                    + \trialscalar[\lambda]_{i,k} \eqnannotate{-\frac{1}{\rho(\vec{x})} C_{ikjl} \basisscalar[u]_{k,l}}{J^{\lambda u}_{f3}} \, d\Gamma
+                    \int_{\Gamma_{f^+}} \trialscalar[\lambda]_i \eqnannotate{\frac{\rho_{,k}(\vec{x})}{\rho^2(\vec{x})} C_{ikjl}}{J^{\lambda u}_{f1}} \basisscalar[u]_{j,l}
+                    + \trialscalar[\lambda]_{i,k} \eqnannotate{+\frac{1}{\rho(\vec{x})} C_{ikjl}}{J^{\lambda u}_{f3}} \basisscalar[u]_{j,l} \, d\Gamma \\
+                    +\int_{\Gamma_{f^-}} \trialscalar[\lambda]_i \eqnannotate{-\frac{\rho_{,k}(\vec{x})}{\rho^2(\vec{x})} C_{ikjl}}{J^{\lambda u}_{f1}} \basisscalar[u]_{j,l}
+                    + \trialscalar[\lambda]_{i,k} \eqnannotate{-\frac{1}{\rho(\vec{x})} C_{ikjl}}{J^{\lambda u}_{f3}} \basisscalar[u]_{j,l} \, d\Gamma
                   \end{multlined} \\
   % J_F ll
   J_F^{\lambda \lambda} = \frac{\partial F^\lambda}{\partial \lambda} + s_\mathit{tshift} \frac{\partial F^\lambda}{\partial \dot{\lambda}} =
