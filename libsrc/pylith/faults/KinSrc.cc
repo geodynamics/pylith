@@ -112,7 +112,7 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
 
     // Set default discretization of auxiliary subfields to match slip/slip_rate subfield in integrator auxiliary field.
     assert(_auxiliaryFactory);
-    const char* slipFieldName = faultAuxField.hasSubfield("slip") ? "slip" : "slip_rate";
+    const char* slipFieldName = faultAuxField.hasSubfield("slip") ? "slip" : "slip_acceleration";
     const pylith::topology::FieldBase::Discretization& discretization = faultAuxField.getSubfieldInfo(slipFieldName).fe;
     _auxiliaryFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder,
                                                  discretization.dimension, discretization.isFaultOnly,
@@ -239,10 +239,10 @@ pylith::faults::KinSrc::updateSlipAcc(PetscVec slipAccLocalVec,
     // Create local vector for slip for this source.
     PetscErrorCode err = 0;
     PetscDM faultAuxiliaryDM = faultAuxiliaryField->getDM();
-    err = PetscObjectCompose((PetscObject) faultAuxiliaryDM, "dmAux",
-                             (PetscObject) _auxiliaryField->getDM());PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) faultAuxiliaryDM, "A",
-                             (PetscObject) _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+    PetscDMLabel dmLabel = NULL;
+    PetscInt labelValue = 0;
+    err = DMSetAuxiliaryVec(faultAuxiliaryDM, dmLabel, labelValue,
+                            _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMProjectFieldLocal(faultAuxiliaryDM, t, slipAccLocalVec, subfieldKernels, INSERT_VALUES,
                               slipAccLocalVec);PYLITH_CHECK_ERROR(err);
 

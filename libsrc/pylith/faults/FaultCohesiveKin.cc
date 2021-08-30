@@ -668,7 +668,7 @@ pylith::faults::FaultCohesiveKin::_setKernelsJacobian(pylith::feassemble::Integr
         const PetscBdPointJac Jf2ll = NULL;
         const PetscBdPointJac Jf3ll = NULL;
 
-        kernels.resize(3);
+        kernels.resize(1);
         const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
         kernels[0] = JacobianKernels(nameLagrangeMultiplier, nameLagrangeMultiplier, integrator_t::JACOBIAN_LHS,
                                      integrator_t::FAULT_FACE, Jf0ll, Jf1ll, Jf2ll, Jf3ll);
