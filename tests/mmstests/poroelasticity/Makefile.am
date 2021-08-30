@@ -96,12 +96,7 @@ dist_noinst_DATA = \
 	data/tri.mesh \
 	data/quad.mesh \
 	data/tet.mesh \
-	data/hex.mesh \
-	data/tri_twocells.mesh \
-	data/tri_fourcells.mesh \
-	data/quad_fourcells.mesh \
-	data/tri_onecell.mesh \
-  data/quad_onecell.mesh
+	data/hex.mesh 
 
 noinst_TMP =
 
