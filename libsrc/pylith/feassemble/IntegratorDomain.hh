@@ -28,6 +28,7 @@
 #include "feassemblefwd.hh" // forward declarations
 
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
+#include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface::ResidualKernels
 #include "pylith/utils/arrayfwd.hh" // HASA std::vector
 
 class pylith::feassemble::IntegratorDomain : public pylith::feassemble::Integrator {
@@ -118,6 +119,9 @@ public:
 
     }; // ProjectKernels
 
+    typedef pylith::feassemble::IntegratorInterface::ResidualKernels InterfaceResidualKernels;
+    typedef pylith::feassemble::IntegratorInterface::JacobianKernels InterfaceJacobianKernels;
+
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -151,6 +155,22 @@ public:
      * @param[in] solution Solution field.
      */
     void setKernelsJacobian(const std::vector<JacobianKernels>& kernels,
+                            const pylith::topology::Field& solution);
+
+    /** Set kernels for residual for integration on interface.
+     *
+     * @param[in] kernels Array of kernerls for computing the residual.
+     * @param[in] solution Solution field.
+     */
+    void setKernelsResidual(const std::vector<InterfaceResidualKernels>& kernels,
+                            const pylith::topology::Field& solution);
+
+    /** Set kernels for Jacobian for integration on interface.
+     *
+     * @param[in] kernels Array of kernerls for computing the Jacobian.
+     * @param[in] solution Solution field.
+     */
+    void setKernelsJacobian(const std::vector<InterfaceJacobianKernels>& kernels,
                             const pylith::topology::Field& solution);
 
     /** Set kernels for updating state variables.

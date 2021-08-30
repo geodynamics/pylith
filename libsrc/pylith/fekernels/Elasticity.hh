@@ -57,7 +57,7 @@ class pylith::fekernels::Elasticity {
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /** f0 function for elasticity equation.
+    /** f0v function for elasticity equation (vel_t * density).
      *
      * Solution fields: [disp(dim), vel(dim)]
      * Auxiliary fields: [density(1), ...]
@@ -112,7 +112,6 @@ public:
      *
      * \vec{g0} = \vec{f}(t)
      *
-     * Solution fields: []
      * Auxiliary fields: [density, gravity_field(dim)]
      */
     static
@@ -185,6 +184,208 @@ public:
                            const PylithInt numConstants,
                            const PylithScalar constants[],
                            PylithScalar g0[]);
+
+    /** f0 function for negative fault face (+lambda).
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ...]
+     */
+    static
+    void f0l_neg(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithReal n[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0[]);
+
+    /** f0 function for positive fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ...]
+     */
+    static
+    void f0l_pos(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithReal n[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0[]);
+
+    /** f0 for negative fault face with gravitational body force.
+     *
+     * Auxiliary fields: [density, gravity_field(dim)]
+     */
+    static
+    void f0l_neg_grav(const PylithInt dim,
+                      const PylithInt numS,
+                      const PylithInt numA,
+                      const PylithInt sOff[],
+                      const PylithInt sOff_x[],
+                      const PylithScalar s[],
+                      const PylithScalar s_t[],
+                      const PylithScalar s_x[],
+                      const PylithInt aOff[],
+                      const PylithInt aOff_x[],
+                      const PylithScalar a[],
+                      const PylithScalar a_t[],
+                      const PylithScalar a_x[],
+                      const PylithReal t,
+                      const PylithScalar x[],
+                      const PylithReal n[],
+                      const PylithInt numConstants,
+                      const PylithScalar constants[],
+                      PylithScalar f0[]);
+
+    /** f0 for positive fault face with gravitational body force.
+     *
+     * Auxiliary fields: [density, gravity_field(dim)]
+     */
+    static
+    void f0l_pos_grav(const PylithInt dim,
+                      const PylithInt numS,
+                      const PylithInt numA,
+                      const PylithInt sOff[],
+                      const PylithInt sOff_x[],
+                      const PylithScalar s[],
+                      const PylithScalar s_t[],
+                      const PylithScalar s_x[],
+                      const PylithInt aOff[],
+                      const PylithInt aOff_x[],
+                      const PylithScalar a[],
+                      const PylithScalar a_t[],
+                      const PylithScalar a_x[],
+                      const PylithReal t,
+                      const PylithScalar x[],
+                      const PylithReal n[],
+                      const PylithInt numConstants,
+                      const PylithScalar constants[],
+                      PylithScalar f0[]);
+
+    /** f0 function for negative fault face with body force.
+     *
+     * Auxiliary fields: [density, body_force(dim)]
+     */
+    static
+    void f0l_neg_bodyforce(const PylithInt dim,
+                           const PylithInt numS,
+                           const PylithInt numA,
+                           const PylithInt sOff[],
+                           const PylithInt sOff_x[],
+                           const PylithScalar s[],
+                           const PylithScalar s_t[],
+                           const PylithScalar s_x[],
+                           const PylithInt aOff[],
+                           const PylithInt aOff_x[],
+                           const PylithScalar a[],
+                           const PylithScalar a_t[],
+                           const PylithScalar a_x[],
+                           const PylithReal t,
+                           const PylithScalar x[],
+                           const PylithReal n[],
+                           const PylithInt numConstants,
+                           const PylithScalar constants[],
+                           PylithScalar f0[]);
+
+    /** f0 function for positive fault face with body force.
+     *
+     * Auxiliary fields: [density, body_force(dim)]
+     */
+    static
+    void f0l_pos_bodyforce(const PylithInt dim,
+                           const PylithInt numS,
+                           const PylithInt numA,
+                           const PylithInt sOff[],
+                           const PylithInt sOff_x[],
+                           const PylithScalar s[],
+                           const PylithScalar s_t[],
+                           const PylithScalar s_x[],
+                           const PylithInt aOff[],
+                           const PylithInt aOff_x[],
+                           const PylithScalar a[],
+                           const PylithScalar a_t[],
+                           const PylithScalar a_x[],
+                           const PylithReal t,
+                           const PylithScalar x[],
+                           const PylithReal n[],
+                           const PylithInt numConstants,
+                           const PylithScalar constants[],
+                           PylithScalar f0[]);
+
+    /** f0 function for negative fault face with both gravitational and body forces.
+     *
+     * Auxiliary fields: [density(1), body_force(dim), gravity_field(dim), ...]
+     */
+    static
+    void f0l_neg_gravbodyforce(const PylithInt dim,
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithScalar x[],
+                               const PylithReal n[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               PylithScalar f0[]);
+
+    /** f0 function for positive fault face with both gravitational and body forces.
+     *
+     * Auxiliary fields: [density(1), body_force(dim), gravity_field(dim), ...]
+     */
+    static
+    void f0l_pos_gravbodyforce(const PylithInt dim,
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithScalar x[],
+                               const PylithReal n[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               PylithScalar f0[]);
 
 };
 

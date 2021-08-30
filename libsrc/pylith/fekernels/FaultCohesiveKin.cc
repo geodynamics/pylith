@@ -377,11 +377,7 @@ pylith::fekernels::FaultCohesiveKin::Jf0ul_pos(const PylithInt dim,
 
 
 // ----------------------------------------------------------------------
-/* Jg0 function for integration of the slip constraint equation.
- *
- * Solution fields = [disp(dim), ..., lagrange(dim)]
- * Auxiliary fields = None
- */
+// Jg0 function for integration of the slip constraint equation.
 void
 pylith::fekernels::FaultCohesiveKin::Jf0lu(const PylithInt dim,
                                            const PylithInt numS,
@@ -419,6 +415,57 @@ pylith::fekernels::FaultCohesiveKin::Jf0lu(const PylithInt dim,
         Jf0[gOffP+i*ncols+i] += +1.0;
     } // for
 } // Jg0lu
+
+
+// ----------------------------------------------------------------------
+// Jf0 function for dynamic slip constraint equation.
+void
+pylith::fekernels::FaultCohesiveKin::Jf0ll(const PylithInt dim,
+                                           const PylithInt numS,
+                                           const PylithInt numA,
+                                           const PylithInt sOff[],
+                                           const PylithInt sOff_x[],
+                                           const PylithScalar s[],
+                                           const PylithScalar s_t[],
+                                           const PylithScalar s_x[],
+                                           const PylithInt aOff[],
+                                           const PylithInt aOff_x[],
+                                           const PylithScalar a[],
+                                           const PylithScalar a_t[],
+                                           const PylithScalar a_x[],
+                                           const PylithReal t,
+                                           const PylithReal s_tshift,
+                                           const PylithScalar x[],
+                                           const PylithReal n[],
+                                           const PylithInt numConstants,
+                                           const PylithScalar constants[],
+                                           PylithScalar Jf0[]) {
+    const PylithInt i_density = 0;
+
+    assert(numS >= 1);
+    assert(a);
+    assert(aOff);
+    assert(aOff[i_density] >= 0);
+
+    assert(numS >= 2);
+    assert(Jf0);
+    assert(sOff);
+    assert(n);
+
+    const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
+
+    const PylithScalar density = a[aOff[i_density]];
+
+    const PylithInt gOffN = 0;
+    const PylithInt gOffP = gOffN+spaceDim;
+    const PylithInt ncols = 2*spaceDim;
+
+    for (PylithInt i = 0; i < spaceDim; ++i) {
+        Jf0[i*ncols+gOffN+i] += +1.0 / density;
+        Jf0[i*ncols+gOffP+i] += +1.0 / density;
+    } // for
+
+}
 
 
 // End of file

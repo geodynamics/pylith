@@ -29,10 +29,10 @@
 
 #include <typeinfo> // USES typeid()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::IsotropicPowerLaw::IsotropicPowerLaw(void) :
     _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryViscoelastic),
@@ -41,14 +41,14 @@ pylith::materials::IsotropicPowerLaw::IsotropicPowerLaw(void) :
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::materials::IsotropicPowerLaw::~IsotropicPowerLaw(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::materials::IsotropicPowerLaw::deallocate(void) {
@@ -58,7 +58,7 @@ pylith::materials::IsotropicPowerLaw::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Use reference stress and strain in computation of stress and
 // strain?
 void
@@ -69,7 +69,7 @@ pylith::materials::IsotropicPowerLaw::useReferenceState(const bool value) {
 } // useReferenceState
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Use reference stress and strain in computation of stress and
 // strain?
 bool
@@ -78,7 +78,7 @@ pylith::materials::IsotropicPowerLaw::useReferenceState(void) const {
 } // useReferenceState
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::materials::AuxiliaryFactoryElasticity*
 pylith::materials::IsotropicPowerLaw::getAuxiliaryFactory(void) {
@@ -86,7 +86,7 @@ pylith::materials::IsotropicPowerLaw::getAuxiliaryFactory(void) {
 } // getAuxiliaryFactory
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add rheology subfields to auxiliary field.
 void
 pylith::materials::IsotropicPowerLaw::addAuxiliarySubfields(void) {
@@ -112,7 +112,7 @@ pylith::materials::IsotropicPowerLaw::addAuxiliarySubfields(void) {
 } // addAuxiliarySubfields
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get stress kernel for LHS residual, F(t,s,\dot{s}).
 PetscPointFunc
 pylith::materials::IsotropicPowerLaw::getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -131,7 +131,7 @@ pylith::materials::IsotropicPowerLaw::getKernelResidualStress(const spatialdata:
 } // getKernelResidualStress
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get elastic constants kernel for LHS Jacobian F(t,s,\dot{s}).
 PetscPointJac
 pylith::materials::IsotropicPowerLaw::getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -150,7 +150,7 @@ pylith::materials::IsotropicPowerLaw::getKernelJacobianElasticConstants(const sp
 } // getKernelJacobianElasticConstants
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get stress kernel for derived field.
 PetscPointFunc
 pylith::materials::IsotropicPowerLaw::getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -169,7 +169,7 @@ pylith::materials::IsotropicPowerLaw::getKernelDerivedCauchyStress(const spatial
 } // getKernelDerivedCauchyStress
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Update kernel constants.
 void
 pylith::materials::IsotropicPowerLaw::updateKernelConstants(pylith::real_array* kernelConstants,
@@ -187,7 +187,7 @@ pylith::materials::IsotropicPowerLaw::updateKernelConstants(pylith::real_array* 
 } // updateKernelConstants
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add kernels for updating state variables.
 void
 pylith::materials::IsotropicPowerLaw::addKernelsUpdateStateVars(std::vector<ProjectKernels>* kernels,
@@ -217,6 +217,78 @@ pylith::materials::IsotropicPowerLaw::addKernelsUpdateStateVars(std::vector<Proj
 
     PYLITH_METHOD_END;
 } // addKernelsUpdateStateVars
+
+
+// ------------------------------------------------------------------------------------------------
+// Get f0 kernel for LHS interface residual, F(t,s), for negative fault face.
+PetscBdPointFunc
+pylith::materials::IsotropicPowerLaw::getInterfaceKernelResidualF0Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelResidualF0Neg().");
+    return NULL;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get f0 kernel for LHS interface residual, F(t,s), for positive fault face.
+PetscBdPointFunc
+pylith::materials::IsotropicPowerLaw::getInterfaceKernelResidualF0Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelResidualF0Pos().");
+    return NULL;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get f1 kernel for LHS interface residual, F(t,s), for negative fault face.
+PetscBdPointFunc
+pylith::materials::IsotropicPowerLaw::getInterfaceKernelResidualF1Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernel10Neg().");
+    return NULL;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get f1 kernel for LHS interface residual, F(t,s), for positive fault face.
+PetscBdPointFunc
+pylith::materials::IsotropicPowerLaw::getInterfaceKernelResidualF1Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelResidualF1Pos().");
+    return NULL;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get Jf1lu kernel for LHS Jacobian F(t,s,dot{s}) for negative fault face.
+PetscBdPointJac
+pylith::materials::IsotropicPowerLaw::getInterfaceKernelJacobianF1Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelJacobianF1Neg().");
+    return NULL;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get Jf1lu kernel for LHS Jacobian F(t,s,dot{s}) for positive fault face.
+PetscBdPointJac
+pylith::materials::IsotropicPowerLaw::getInterfaceKernelJacobianF1Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelJacobianF1Pos().");
+    return NULL;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get Jf3lu kernel for LHS Jacobian F(t,s,dot{s}) for negative fault face.
+PetscBdPointJac
+pylith::materials::IsotropicPowerLaw::getInterfaceKernelJacobianF3Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelJacobianF3Neg().");
+    return NULL;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get Jf3lu kernel for LHS Jacobian F(t,s,dot{s}) for positive fault face.
+PetscBdPointJac
+pylith::materials::IsotropicPowerLaw::getInterfaceKernelJacobianF3Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelJacobianF3Pos().");
+    return NULL;
+}
 
 
 // End of file

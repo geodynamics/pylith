@@ -155,6 +155,318 @@ public:
                const PylithScalar constants[],
                PylithScalar Jf3[]);
 
+    /** f0 function for negative fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f0l_neg(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithReal n[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0[]);
+
+    /** f0 function for positive fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f0l_pos(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithReal n[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0[]);
+
+    /** f0 function with reference state for negative fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f0l_refstate_neg(const PylithInt dim,
+                          const PylithInt numS,
+                          const PylithInt numA,
+                          const PylithInt sOff[],
+                          const PylithInt sOff_x[],
+                          const PylithScalar s[],
+                          const PylithScalar s_t[],
+                          const PylithScalar s_x[],
+                          const PylithInt aOff[],
+                          const PylithInt aOff_x[],
+                          const PylithScalar a[],
+                          const PylithScalar a_t[],
+                          const PylithScalar a_x[],
+                          const PylithReal t,
+                          const PylithScalar x[],
+                          const PylithReal n[],
+                          const PylithInt numConstants,
+                          const PylithScalar constants[],
+                          PylithScalar f0[]);
+
+    /** f0 function with reference state for positive fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f0l_refstate_pos(const PylithInt dim,
+                          const PylithInt numS,
+                          const PylithInt numA,
+                          const PylithInt sOff[],
+                          const PylithInt sOff_x[],
+                          const PylithScalar s[],
+                          const PylithScalar s_t[],
+                          const PylithScalar s_x[],
+                          const PylithInt aOff[],
+                          const PylithInt aOff_x[],
+                          const PylithScalar a[],
+                          const PylithScalar a_t[],
+                          const PylithScalar a_x[],
+                          const PylithReal t,
+                          const PylithScalar x[],
+                          const PylithReal n[],
+                          const PylithInt numConstants,
+                          const PylithScalar constants[],
+                          PylithScalar f0[]);
+
+    /** f1 function for negative fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f1l_neg(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithReal n[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0[]);
+
+    /** f1 function for positive fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f1l_pos(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithReal n[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0[]);
+
+    /** f1 function with reference state for negative fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f1l_refstate_neg(const PylithInt dim,
+                          const PylithInt numS,
+                          const PylithInt numA,
+                          const PylithInt sOff[],
+                          const PylithInt sOff_x[],
+                          const PylithScalar s[],
+                          const PylithScalar s_t[],
+                          const PylithScalar s_x[],
+                          const PylithInt aOff[],
+                          const PylithInt aOff_x[],
+                          const PylithScalar a[],
+                          const PylithScalar a_t[],
+                          const PylithScalar a_x[],
+                          const PylithReal t,
+                          const PylithScalar x[],
+                          const PylithReal n[],
+                          const PylithInt numConstants,
+                          const PylithScalar constants[],
+                          PylithScalar f0[]);
+
+    /** f1 function with reference state for positive fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f1l_refstate_pos(const PylithInt dim,
+                          const PylithInt numS,
+                          const PylithInt numA,
+                          const PylithInt sOff[],
+                          const PylithInt sOff_x[],
+                          const PylithScalar s[],
+                          const PylithScalar s_t[],
+                          const PylithScalar s_x[],
+                          const PylithInt aOff[],
+                          const PylithInt aOff_x[],
+                          const PylithScalar a[],
+                          const PylithScalar a_t[],
+                          const PylithScalar a_x[],
+                          const PylithReal t,
+                          const PylithScalar x[],
+                          const PylithReal n[],
+                          const PylithInt numConstants,
+                          const PylithScalar constants[],
+                          PylithScalar f0[]);
+
+    /** Jf1lu Jacobian kernel for dynamic slip constraint equation for negative fault face.
+     *
+     * Solution fields: [displacement(dim), velocity(dim), ..., lagrange(dim)]
+     */
+    static
+    void Jf1lu_neg(const PylithInt dim,
+                   const PylithInt numS,
+                   const PylithInt numA,
+                   const PylithInt sOff[],
+                   const PylithInt sOff_x[],
+                   const PylithScalar s[],
+                   const PylithScalar s_t[],
+                   const PylithScalar s_x[],
+                   const PylithInt aOff[],
+                   const PylithInt aOff_x[],
+                   const PylithScalar a[],
+                   const PylithScalar a_t[],
+                   const PylithScalar a_x[],
+                   const PylithReal t,
+                   const PylithReal s_tshift,
+                   const PylithScalar x[],
+                   const PylithReal n[],
+                   const PylithInt numConstants,
+                   const PylithScalar constants[],
+                   PylithScalar Jf1[]);
+
+    /** Jf1lu Jacobian kernel for dynamic slip constraint equation for positive fault face.
+     *
+     * Solution fields: [displacement(dim), velocity(dim), ..., lagrange(dim)]
+     */
+    static
+    void Jf1lu_pos(const PylithInt dim,
+                   const PylithInt numS,
+                   const PylithInt numA,
+                   const PylithInt sOff[],
+                   const PylithInt sOff_x[],
+                   const PylithScalar s[],
+                   const PylithScalar s_t[],
+                   const PylithScalar s_x[],
+                   const PylithInt aOff[],
+                   const PylithInt aOff_x[],
+                   const PylithScalar a[],
+                   const PylithScalar a_t[],
+                   const PylithScalar a_x[],
+                   const PylithReal t,
+                   const PylithReal s_tshift,
+                   const PylithScalar x[],
+                   const PylithReal n[],
+                   const PylithInt numConstants,
+                   const PylithScalar constants[],
+                   PylithScalar Jf1[]);
+
+    /** Jf3lu Jacobian kernel for dynamic slip constraint equation for negative fault face.
+     *
+     * Solution fields: [displacement(dim), velocity(dim), ..., lagrange(dim)]
+     */
+    static
+    void Jf3lu_neg(const PylithInt dim,
+                   const PylithInt numS,
+                   const PylithInt numA,
+                   const PylithInt sOff[],
+                   const PylithInt sOff_x[],
+                   const PylithScalar s[],
+                   const PylithScalar s_t[],
+                   const PylithScalar s_x[],
+                   const PylithInt aOff[],
+                   const PylithInt aOff_x[],
+                   const PylithScalar a[],
+                   const PylithScalar a_t[],
+                   const PylithScalar a_x[],
+                   const PylithReal t,
+                   const PylithReal s_tshift,
+                   const PylithScalar x[],
+                   const PylithReal n[],
+                   const PylithInt numConstants,
+                   const PylithScalar constants[],
+                   PylithScalar Jf3[]);
+
+    /** Jf3lu Jacobian kernel for dynamic slip constraint equation for positive fault face.
+     *
+     * Solution fields: [displacement(dim), velocity(dim), ..., lagrange(dim)]
+     */
+    static
+    void Jf3lu_pos(const PylithInt dim,
+                   const PylithInt numS,
+                   const PylithInt numA,
+                   const PylithInt sOff[],
+                   const PylithInt sOff_x[],
+                   const PylithScalar s[],
+                   const PylithScalar s_t[],
+                   const PylithScalar s_x[],
+                   const PylithInt aOff[],
+                   const PylithInt aOff_x[],
+                   const PylithScalar a[],
+                   const PylithScalar a_t[],
+                   const PylithScalar a_x[],
+                   const PylithReal t,
+                   const PylithReal s_tshift,
+                   const PylithScalar x[],
+                   const PylithReal n[],
+                   const PylithInt numConstants,
+                   const PylithScalar constants[],
+                   PylithScalar Jf3[]);
+
     /** Calculate stress for 2-D plane strain isotropic linear
      * elasticity WITHOUT a reference stress and strain.
      *
@@ -398,6 +710,318 @@ public:
                const PylithInt numConstants,
                const PylithScalar constants[],
                PylithScalar Jf3[]);
+
+    /** f0 function for negative fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f0l_neg(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithReal n[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0[]);
+
+    /** f0 function for positive fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f0l_pos(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithReal n[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0[]);
+
+    /** f0 function with reference state for negative fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f0l_refstate_neg(const PylithInt dim,
+                          const PylithInt numS,
+                          const PylithInt numA,
+                          const PylithInt sOff[],
+                          const PylithInt sOff_x[],
+                          const PylithScalar s[],
+                          const PylithScalar s_t[],
+                          const PylithScalar s_x[],
+                          const PylithInt aOff[],
+                          const PylithInt aOff_x[],
+                          const PylithScalar a[],
+                          const PylithScalar a_t[],
+                          const PylithScalar a_x[],
+                          const PylithReal t,
+                          const PylithScalar x[],
+                          const PylithReal n[],
+                          const PylithInt numConstants,
+                          const PylithScalar constants[],
+                          PylithScalar f0[]);
+
+    /** f0 function with reference state for positive fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f0l_refstate_pos(const PylithInt dim,
+                          const PylithInt numS,
+                          const PylithInt numA,
+                          const PylithInt sOff[],
+                          const PylithInt sOff_x[],
+                          const PylithScalar s[],
+                          const PylithScalar s_t[],
+                          const PylithScalar s_x[],
+                          const PylithInt aOff[],
+                          const PylithInt aOff_x[],
+                          const PylithScalar a[],
+                          const PylithScalar a_t[],
+                          const PylithScalar a_x[],
+                          const PylithReal t,
+                          const PylithScalar x[],
+                          const PylithReal n[],
+                          const PylithInt numConstants,
+                          const PylithScalar constants[],
+                          PylithScalar f0[]);
+
+    /** f1 function for negative fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f1l_neg(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithReal n[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0[]);
+
+    /** f1 function for positive fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f1l_pos(const PylithInt dim,
+                 const PylithInt numS,
+                 const PylithInt numA,
+                 const PylithInt sOff[],
+                 const PylithInt sOff_x[],
+                 const PylithScalar s[],
+                 const PylithScalar s_t[],
+                 const PylithScalar s_x[],
+                 const PylithInt aOff[],
+                 const PylithInt aOff_x[],
+                 const PylithScalar a[],
+                 const PylithScalar a_t[],
+                 const PylithScalar a_x[],
+                 const PylithReal t,
+                 const PylithScalar x[],
+                 const PylithReal n[],
+                 const PylithInt numConstants,
+                 const PylithScalar constants[],
+                 PylithScalar f0[]);
+
+    /** f1 function with reference state for negative fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f1l_refstate_neg(const PylithInt dim,
+                          const PylithInt numS,
+                          const PylithInt numA,
+                          const PylithInt sOff[],
+                          const PylithInt sOff_x[],
+                          const PylithScalar s[],
+                          const PylithScalar s_t[],
+                          const PylithScalar s_x[],
+                          const PylithInt aOff[],
+                          const PylithInt aOff_x[],
+                          const PylithScalar a[],
+                          const PylithScalar a_t[],
+                          const PylithScalar a_x[],
+                          const PylithReal t,
+                          const PylithScalar x[],
+                          const PylithReal n[],
+                          const PylithInt numConstants,
+                          const PylithScalar constants[],
+                          PylithScalar f0[]);
+
+    /** f1 function with reference state for positive fault face.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
+     * Auxiliary fields: [density(1), ..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static
+    void f1l_refstate_pos(const PylithInt dim,
+                          const PylithInt numS,
+                          const PylithInt numA,
+                          const PylithInt sOff[],
+                          const PylithInt sOff_x[],
+                          const PylithScalar s[],
+                          const PylithScalar s_t[],
+                          const PylithScalar s_x[],
+                          const PylithInt aOff[],
+                          const PylithInt aOff_x[],
+                          const PylithScalar a[],
+                          const PylithScalar a_t[],
+                          const PylithScalar a_x[],
+                          const PylithReal t,
+                          const PylithScalar x[],
+                          const PylithReal n[],
+                          const PylithInt numConstants,
+                          const PylithScalar constants[],
+                          PylithScalar f0[]);
+
+    /** Jf1lu Jacobian kernel for dynamic slip constraint equation for negative fault face.
+     *
+     * Solution fields: [displacement(dim), velocity(dim), ..., lagrange(dim)]
+     */
+    static
+    void Jf1lu_neg(const PylithInt dim,
+                   const PylithInt numS,
+                   const PylithInt numA,
+                   const PylithInt sOff[],
+                   const PylithInt sOff_x[],
+                   const PylithScalar s[],
+                   const PylithScalar s_t[],
+                   const PylithScalar s_x[],
+                   const PylithInt aOff[],
+                   const PylithInt aOff_x[],
+                   const PylithScalar a[],
+                   const PylithScalar a_t[],
+                   const PylithScalar a_x[],
+                   const PylithReal t,
+                   const PylithReal s_tshift,
+                   const PylithScalar x[],
+                   const PylithReal n[],
+                   const PylithInt numConstants,
+                   const PylithScalar constants[],
+                   PylithScalar Jf1[]);
+
+    /** Jf1lu Jacobian kernel for dynamic slip constraint equation for positive fault face.
+     *
+     * Solution fields: [displacement(dim), velocity(dim), ..., lagrange(dim)]
+     */
+    static
+    void Jf1lu_pos(const PylithInt dim,
+                   const PylithInt numS,
+                   const PylithInt numA,
+                   const PylithInt sOff[],
+                   const PylithInt sOff_x[],
+                   const PylithScalar s[],
+                   const PylithScalar s_t[],
+                   const PylithScalar s_x[],
+                   const PylithInt aOff[],
+                   const PylithInt aOff_x[],
+                   const PylithScalar a[],
+                   const PylithScalar a_t[],
+                   const PylithScalar a_x[],
+                   const PylithReal t,
+                   const PylithReal s_tshift,
+                   const PylithScalar x[],
+                   const PylithReal n[],
+                   const PylithInt numConstants,
+                   const PylithScalar constants[],
+                   PylithScalar Jf1[]);
+
+    /** Jf3lu Jacobian kernel for dynamic slip constraint equation for negative fault face.
+     *
+     * Solution fields: [displacement(dim), velocity(dim), ..., lagrange(dim)]
+     */
+    static
+    void Jf3lu_neg(const PylithInt dim,
+                   const PylithInt numS,
+                   const PylithInt numA,
+                   const PylithInt sOff[],
+                   const PylithInt sOff_x[],
+                   const PylithScalar s[],
+                   const PylithScalar s_t[],
+                   const PylithScalar s_x[],
+                   const PylithInt aOff[],
+                   const PylithInt aOff_x[],
+                   const PylithScalar a[],
+                   const PylithScalar a_t[],
+                   const PylithScalar a_x[],
+                   const PylithReal t,
+                   const PylithReal s_tshift,
+                   const PylithScalar x[],
+                   const PylithReal n[],
+                   const PylithInt numConstants,
+                   const PylithScalar constants[],
+                   PylithScalar Jf3[]);
+
+    /** Jf3lu Jacobian kernel for dynamic slip constraint equation for positive fault face.
+     *
+     * Solution fields: [displacement(dim), velocity(dim), ..., lagrange(dim)]
+     */
+    static
+    void Jf3lu_pos(const PylithInt dim,
+                   const PylithInt numS,
+                   const PylithInt numA,
+                   const PylithInt sOff[],
+                   const PylithInt sOff_x[],
+                   const PylithScalar s[],
+                   const PylithScalar s_t[],
+                   const PylithScalar s_x[],
+                   const PylithInt aOff[],
+                   const PylithInt aOff_x[],
+                   const PylithScalar a[],
+                   const PylithScalar a_t[],
+                   const PylithScalar a_x[],
+                   const PylithReal t,
+                   const PylithReal s_tshift,
+                   const PylithScalar x[],
+                   const PylithReal n[],
+                   const PylithInt numConstants,
+                   const PylithScalar constants[],
+                   PylithScalar Jf3[]);
 
     /** Calculate stress for 3-D isotropic linear elasticity WITHOUT a reference stress and strain.
      *

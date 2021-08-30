@@ -24,6 +24,7 @@
 #include "pylith/materials/AuxiliaryFactoryElasticity.hh" // USES AuxiliaryFactoryElasticity
 #include "pylith/materials/DerivedFactoryElasticity.hh" // USES DerivedFactoryElasticity
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
+#include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
@@ -45,6 +46,10 @@ typedef pylith::feassemble::IntegratorDomain::ResidualKernels ResidualKernels;
 typedef pylith::feassemble::IntegratorDomain::JacobianKernels JacobianKernels;
 typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 typedef pylith::feassemble::Integrator::JacobianPart JacobianPart;
+typedef pylith::feassemble::Integrator::ResidualPart ResidualPart;
+typedef pylith::feassemble::IntegratorInterface::ResidualKernels InterfaceResidualKernels;
+typedef pylith::feassemble::IntegratorInterface::JacobianKernels InterfaceJacobianKernels;
+typedef pylith::feassemble::IntegratorInterface::FaceEnum InterfaceFace;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -276,15 +281,23 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
     const int bitUse = bitBodyForce | bitGravity;
 
     PetscPointFunc r0 = NULL;
+    PetscBdPointFunc l0_neg_bodyforce = NULL;
+    PetscBdPointFunc l0_pos_bodyforce = NULL;
     switch (bitUse) {
     case 0x1:
         r0 = pylith::fekernels::Elasticity::g0v_bodyforce;
+        l0_neg_bodyforce = pylith::fekernels::Elasticity::f0l_neg_bodyforce;
+        l0_pos_bodyforce = pylith::fekernels::Elasticity::f0l_pos_bodyforce;
         break;
     case 0x2:
         r0 = pylith::fekernels::Elasticity::g0v_grav;
+        l0_neg_bodyforce = pylith::fekernels::Elasticity::f0l_neg_grav;
+        l0_pos_bodyforce = pylith::fekernels::Elasticity::f0l_pos_grav;
         break;
     case 0x3:
         r0 = pylith::fekernels::Elasticity::g0v_gravbodyforce;
+        l0_neg_bodyforce = pylith::fekernels::Elasticity::f0l_neg_gravbodyforce;
+        l0_pos_bodyforce = pylith::fekernels::Elasticity::f0l_pos_gravbodyforce;
         break;
     case 0x0:
         break;
@@ -294,6 +307,7 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
     const PetscPointFunc r1 = _rheology->getKernelResidualStress(coordsys);
 
     std::vector<ResidualKernels> kernels;
+    std::vector<InterfaceResidualKernels> kernelsInterface;
     switch (_formulation) {
     case QUASISTATIC: {
         const PetscPointFunc f0u = r0;
@@ -303,7 +317,46 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
         kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::RESIDUAL_LHS, f0u, f1u);
         break;
     } // QUASISTATIC
-    case DYNAMIC_IMEX:
+    case DYNAMIC_IMEX: {
+        // Displacement
+        const PetscPointFunc f0u = pylith::fekernels::DispVel::f0u;
+        const PetscPointFunc f1u = NULL;
+        const PetscPointFunc g0u = pylith::fekernels::DispVel::g0u;
+        const PetscPointFunc g1u = NULL;
+
+        // Velocity
+        const PetscPointFunc f0v = pylith::fekernels::DispVel::f0v;
+        const PetscPointFunc f1v = NULL;
+        const PetscPointFunc g0v = r0;
+        const PetscPointFunc g1v = r1;
+
+        kernels.resize(4);
+        kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::RESIDUAL_LHS, f0u, f1u);
+        kernels[1] = ResidualKernels("displacement", pylith::feassemble::Integrator::RESIDUAL_RHS, g0u, g1u);
+        kernels[2] = ResidualKernels("velocity", pylith::feassemble::Integrator::RESIDUAL_LHS, f0v, f1v);
+        kernels[3] = ResidualKernels("velocity", pylith::feassemble::Integrator::RESIDUAL_RHS, g0v, g1v);
+
+        // Interface kernels
+        PetscBdPointFunc f0l_neg = pylith::fekernels::Elasticity::f0l_neg;
+        PetscBdPointFunc f1l_neg = NULL;
+        PetscBdPointFunc f0l_pos = pylith::fekernels::Elasticity::f0l_pos;
+        PetscBdPointFunc f1l_pos = NULL;
+
+        const PetscBdPointFunc f0l_stress_neg = _rheology->getInterfaceKernelResidualF0Neg(coordsys);
+        const PetscBdPointFunc f1l_stress_neg = _rheology->getInterfaceKernelResidualF1Neg(coordsys);
+        const PetscBdPointFunc f0l_stress_pos = _rheology->getInterfaceKernelResidualF0Pos(coordsys);
+        const PetscBdPointFunc f1l_stress_pos = _rheology->getInterfaceKernelResidualF1Pos(coordsys);
+
+        kernelsInterface.resize(4);
+        const ResidualPart residualTerm = pylith::feassemble::Integrator::RESIDUAL_LHS;
+        const InterfaceFace faceNeg = pylith::feassemble::IntegratorInterface::NEGATIVE_FACE;
+        const InterfaceFace facePos = pylith::feassemble::IntegratorInterface::POSITIVE_FACE;
+        kernelsInterface[0] = InterfaceResidualKernels("lagrange_multiplier_fault", residualTerm, faceNeg, f0l_neg, f1l_neg);
+        kernelsInterface[1] = InterfaceResidualKernels("lagrange_multiplier_fault", residualTerm, facePos, f0l_pos, f1l_pos);
+        kernelsInterface[2] = InterfaceResidualKernels("lagrange_multiplier_fault", residualTerm, faceNeg, f0l_stress_neg, f1l_stress_neg);
+        kernelsInterface[3] = InterfaceResidualKernels("lagrange_multiplier_fault", residualTerm, facePos, f0l_stress_pos, f1l_stress_pos);
+        break;
+    } // DYNAMIC_IMEX
     case DYNAMIC: {
         // Displacement
         const PetscPointFunc f0u = pylith::fekernels::DispVel::f0u;
@@ -330,6 +383,7 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
 
     assert(integrator);
     integrator->setKernelsResidual(kernels, solution);
+    integrator->setKernelsResidual(kernelsInterface, solution);
 
     PYLITH_METHOD_END;
 } // _setKernelsResidual
@@ -347,6 +401,7 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
     std::vector<JacobianKernels> kernels;
+    std::vector<InterfaceJacobianKernels> kernelsInterface;
 
     switch (_formulation) {
     case QUASISTATIC: {
@@ -362,8 +417,29 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
         kernels[0] = JacobianKernels("displacement", "displacement", jacobianPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
         break;
     } // QUASISTATIC
-    case DYNAMIC:
     case DYNAMIC_IMEX: {
+        kernelsInterface.resize(2);
+
+        const PetscBdPointJac Jf0lu_neg = NULL;
+        const PetscBdPointJac Jf1lu_neg = _rheology->getInterfaceKernelJacobianF1Neg(coordsys);
+        const PetscBdPointJac Jf2lu_neg = NULL;
+        const PetscBdPointJac Jf3lu_neg = _rheology->getInterfaceKernelJacobianF3Neg(coordsys);
+
+        const PetscBdPointJac Jf0lu_pos = NULL;
+        const PetscBdPointJac Jf1lu_pos = _rheology->getInterfaceKernelJacobianF1Pos(coordsys);
+        const PetscBdPointJac Jf2lu_pos = NULL;
+        const PetscBdPointJac Jf3lu_pos = _rheology->getInterfaceKernelJacobianF3Pos(coordsys);
+
+        kernelsInterface.resize(2);
+        const JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS;
+        const InterfaceFace faceNeg = pylith::feassemble::IntegratorInterface::NEGATIVE_FACE;
+        const InterfaceFace facePos = pylith::feassemble::IntegratorInterface::POSITIVE_FACE;
+        kernelsInterface[0] = InterfaceJacobianKernels("lagrange_multiplier_fault", "displacement", jacobianPart, faceNeg,
+                                                       Jf0lu_neg, Jf1lu_neg, Jf2lu_neg, Jf3lu_neg);
+        kernelsInterface[1] = InterfaceJacobianKernels("lagrange_multiplier_fault", "displacement", jacobianPart, facePos,
+                                                       Jf0lu_pos, Jf1lu_pos, Jf2lu_pos, Jf3lu_pos);
+    } // DYNAMIC_IMEX (continue with DYNAMIC)
+    case DYNAMIC: {
         const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_stshift;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
@@ -393,12 +469,13 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
         kernels[2] = JacobianKernels("velocity", "displacement", jacobianPart, Jf0vu, Jf1vu, Jf2vu, Jf3vu);
         kernels[3] = JacobianKernels("velocity", "velocity", jacobianPart, Jf0vv, Jf1vv, Jf2vv, Jf3vv);
         break;
-    } // DYNAMIC_IMEX
+    } // DYNAMIC
     default:
         PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     integrator->setKernelsJacobian(kernels, solution);
+    integrator->setKernelsJacobian(kernelsInterface, solution);
 
     PYLITH_METHOD_END;
 } // _setKernelsJacobian

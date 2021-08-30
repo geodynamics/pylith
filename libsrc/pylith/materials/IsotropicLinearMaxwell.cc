@@ -29,10 +29,10 @@
 
 #include <typeinfo> // USES typeid()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::IsotropicLinearMaxwell::IsotropicLinearMaxwell(void) :
     _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryViscoelastic),
@@ -41,14 +41,14 @@ pylith::materials::IsotropicLinearMaxwell::IsotropicLinearMaxwell(void) :
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::materials::IsotropicLinearMaxwell::~IsotropicLinearMaxwell(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::materials::IsotropicLinearMaxwell::deallocate(void) {
@@ -58,7 +58,7 @@ pylith::materials::IsotropicLinearMaxwell::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Use reference stress and strain in computation of stress and
 // strain?
 void
@@ -69,7 +69,7 @@ pylith::materials::IsotropicLinearMaxwell::useReferenceState(const bool value) {
 } // useReferenceState
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Use reference stress and strain in computation of stress and
 // strain?
 bool
@@ -78,7 +78,7 @@ pylith::materials::IsotropicLinearMaxwell::useReferenceState(void) const {
 } // useReferenceState
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::materials::AuxiliaryFactoryElasticity*
 pylith::materials::IsotropicLinearMaxwell::getAuxiliaryFactory(void) {
@@ -86,7 +86,7 @@ pylith::materials::IsotropicLinearMaxwell::getAuxiliaryFactory(void) {
 } // getAuxiliaryFactory
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add rheology subfields to auxiliary field.
 void
 pylith::materials::IsotropicLinearMaxwell::addAuxiliarySubfields(void) {
@@ -110,7 +110,7 @@ pylith::materials::IsotropicLinearMaxwell::addAuxiliarySubfields(void) {
 } // addAuxiliarySubfields
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get stress kernel for LHS residual, F(t,s,\dot{s}).
 PetscPointFunc
 pylith::materials::IsotropicLinearMaxwell::getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -129,7 +129,7 @@ pylith::materials::IsotropicLinearMaxwell::getKernelResidualStress(const spatial
 } // getKernelResidualStress
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get elastic constants kernel for LHS Jacobian F(t,s,\dot{s}).
 PetscPointJac
 pylith::materials::IsotropicLinearMaxwell::getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -146,7 +146,7 @@ pylith::materials::IsotropicLinearMaxwell::getKernelJacobianElasticConstants(con
 } // getKernelJacobianElasticConstants
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get stress kernel for derived field.
 PetscPointFunc
 pylith::materials::IsotropicLinearMaxwell::getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -165,7 +165,7 @@ pylith::materials::IsotropicLinearMaxwell::getKernelDerivedCauchyStress(const sp
 } // getKernelDerivedCauchyStress
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Update kernel constants.
 void
 pylith::materials::IsotropicLinearMaxwell::updateKernelConstants(pylith::real_array* kernelConstants,
@@ -182,7 +182,7 @@ pylith::materials::IsotropicLinearMaxwell::updateKernelConstants(pylith::real_ar
 } // updateKernelConstants
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add kernels for updating state variables.
 void
 pylith::materials::IsotropicLinearMaxwell::addKernelsUpdateStateVars(std::vector<ProjectKernels>* kernels,
@@ -208,6 +208,78 @@ pylith::materials::IsotropicLinearMaxwell::addKernelsUpdateStateVars(std::vector
 
     PYLITH_METHOD_END;
 } // addKernelsUpdateStateVars
+
+
+// ------------------------------------------------------------------------------------------------
+// Get f0 kernel for LHS interface residual, F(t,s), for negative fault face.
+PetscBdPointFunc
+pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelResidualF0Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelResidualF0Neg().");
+    return NULL;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get f0 kernel for LHS interface residual, F(t,s), for positive fault face.
+PetscBdPointFunc
+pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelResidualF0Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelResidualF0Pos().");
+    return NULL;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get f1 kernel for LHS interface residual, F(t,s), for negative fault face.
+PetscBdPointFunc
+pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelResidualF1Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelResidualF1Neg().");
+    return NULL;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get f1 kernel for LHS interface residual, F(t,s), for positive fault face.
+PetscBdPointFunc
+pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelResidualF1Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelResidualF1Pos().");
+    return NULL;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get Jf1lu kernel for LHS Jacobian F(t,s,dot{s}) for negative fault face.
+PetscBdPointJac
+pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelJacobianF1Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelJacobianF1Neg().");
+    return NULL;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get Jf1lu kernel for LHS Jacobian F(t,s,dot{s}) for positive fault face.
+PetscBdPointJac
+pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelJacobianF1Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelJacobianF1Pos().");
+    return NULL;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get Jf3lu kernel for LHS Jacobian F(t,s,dot{s}) for negative fault face.
+PetscBdPointJac
+pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelJacobianF3Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelJacobianF3Neg().");
+    return NULL;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get Jf3lu kernel for LHS Jacobian F(t,s,dot{s}) for positive fault face.
+PetscBdPointJac
+pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelJacobianF3Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelJacobianF3Pos().");
+    return NULL;
+}
 
 
 // End of file

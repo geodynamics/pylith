@@ -589,6 +589,26 @@ pylith::faults::FaultCohesiveKin::_setKernelsResidual(pylith::feassemble::Integr
         break;
     } // QUASISTATIC
     case pylith::problems::Physics::DYNAMIC_IMEX: {
+        // Elasticity equation (displacement) for negative side of the fault.
+        const PetscBdPointFunc g0v_neg = pylith::fekernels::FaultCohesiveKin::f0u_neg;
+        const PetscBdPointFunc g1v_neg = NULL;
+
+        // Elasticity equation (displacement) for positive side of the fault.
+        const PetscBdPointFunc g0v_pos = pylith::fekernels::FaultCohesiveKin::f0u_pos;
+        const PetscBdPointFunc g1v_pos = NULL;
+
+        // Fault slip constraint equation.
+        const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_a;
+        const PetscBdPointFunc f1l = NULL;
+
+        kernels.resize(3);
+        kernels[0] = ResidualKernels("velocity", integrator_t::RESIDUAL_LHS, integrator_t::NEGATIVE_FACE,
+                                     g0v_neg, g1v_neg);
+        kernels[1] = ResidualKernels("velocity", integrator_t::RESIDUAL_LHS, integrator_t::POSITIVE_FACE,
+                                     g0v_pos, g1v_pos);
+        kernels[2] = ResidualKernels("lagrange_multiplier_fault", integrator_t::RESIDUAL_LHS, integrator_t::FAULT_FACE,
+                                     f0l, f1l);
+
         break;
     } // DYNAMIC_IMEX
     case pylith::problems::Physics::DYNAMIC:
@@ -643,6 +663,15 @@ pylith::faults::FaultCohesiveKin::_setKernelsJacobian(pylith::feassemble::Integr
         break;
     } // QUASISTATIC
     case pylith::problems::Physics::DYNAMIC_IMEX: {
+        const PetscBdPointJac Jf0ll = pylith::fekernels::FaultCohesiveKin::Jf0ll;
+        const PetscBdPointJac Jf1ll = NULL;
+        const PetscBdPointJac Jf2ll = NULL;
+        const PetscBdPointJac Jf3ll = NULL;
+
+        kernels.resize(3);
+        const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
+        kernels[0] = JacobianKernels(nameLagrangeMultiplier, nameLagrangeMultiplier, integrator_t::JACOBIAN_LHS,
+                                     integrator_t::FAULT_FACE, Jf0ll, Jf1ll, Jf2ll, Jf3ll);
         break;
     } // DYNAMIC_IMEX
     case pylith::problems::Physics::DYNAMIC:

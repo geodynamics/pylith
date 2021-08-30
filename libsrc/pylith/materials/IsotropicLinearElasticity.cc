@@ -29,7 +29,7 @@
 
 #include <typeinfo> // USES typeid()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::IsotropicLinearElasticity::IsotropicLinearElasticity(void) :
     _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryElastic),
@@ -38,14 +38,14 @@ pylith::materials::IsotropicLinearElasticity::IsotropicLinearElasticity(void) :
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::materials::IsotropicLinearElasticity::~IsotropicLinearElasticity(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::materials::IsotropicLinearElasticity::deallocate(void) {
@@ -55,7 +55,7 @@ pylith::materials::IsotropicLinearElasticity::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Use reference stress and strain in computation of stress and
 // strain?
 void
@@ -66,7 +66,7 @@ pylith::materials::IsotropicLinearElasticity::useReferenceState(const bool value
 } // useReferenceState
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Use reference stress and strain in computation of stress and
 // strain?
 bool
@@ -75,7 +75,7 @@ pylith::materials::IsotropicLinearElasticity::useReferenceState(void) const {
 } // useReferenceState
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::materials::AuxiliaryFactoryElasticity*
 pylith::materials::IsotropicLinearElasticity::getAuxiliaryFactory(void) {
@@ -83,7 +83,7 @@ pylith::materials::IsotropicLinearElasticity::getAuxiliaryFactory(void) {
 } // getAuxiliaryFactory
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add rheology subfields to auxiliary field.
 void
 pylith::materials::IsotropicLinearElasticity::addAuxiliarySubfields(void) {
@@ -104,7 +104,7 @@ pylith::materials::IsotropicLinearElasticity::addAuxiliarySubfields(void) {
 } // addAuxiliarySubfields
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get stress kernel for LHS residual, F(t,s,\dot{s}).
 PetscPointFunc
 pylith::materials::IsotropicLinearElasticity::getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -123,7 +123,7 @@ pylith::materials::IsotropicLinearElasticity::getKernelResidualStress(const spat
 } // getKernelResidualStress
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get elastic constants kernel for LHS Jacobian F(t,s,\dot{s}).
 PetscPointJac
 pylith::materials::IsotropicLinearElasticity::getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -140,7 +140,7 @@ pylith::materials::IsotropicLinearElasticity::getKernelJacobianElasticConstants(
 } // getKernelJacobianElasticConstants
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get stress kernel for derived field.
 PetscPointFunc
 pylith::materials::IsotropicLinearElasticity::getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -157,6 +157,150 @@ pylith::materials::IsotropicLinearElasticity::getKernelDerivedCauchyStress(const
 
     PYLITH_METHOD_RETURN(kernel);
 } // getKernelDerivedCauchyStress
+
+
+// ------------------------------------------------------------------------------------------------
+// Get f0 kernel for LHS interface residual, F(t,s), for negative fault face.
+PetscBdPointFunc
+pylith::materials::IsotropicLinearElasticity::getInterfaceKernelResidualF0Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getInterfaceKernelResidualF0Neg(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscBdPointFunc kernel =
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f0l_neg :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_neg :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f0l_refstate_neg :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_refstate_neg :
+        NULL;
+
+    PYLITH_METHOD_RETURN(kernel);
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get f0 kernel for LHS interface residual, F(t,s), for positive fault face.
+PetscBdPointFunc
+pylith::materials::IsotropicLinearElasticity::getInterfaceKernelResidualF0Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getInterfaceKernelResidualF0Pos(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscBdPointFunc kernel =
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f0l_pos :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_pos :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f0l_refstate_pos :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_refstate_pos :
+        NULL;
+
+    PYLITH_METHOD_RETURN(kernel);
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get f1 kernel for LHS interface residual, F(t,s), for negative fault face.
+PetscBdPointFunc
+pylith::materials::IsotropicLinearElasticity::getInterfaceKernelResidualF1Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getInterfaceKernelResidualF1Neg(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscBdPointFunc kernel =
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f1l_neg :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_neg :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f1l_refstate_neg :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_refstate_neg :
+        NULL;
+
+    PYLITH_METHOD_RETURN(kernel);
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get f1 kernel for LHS interface residual, F(t,s), for positive fault face.
+PetscBdPointFunc
+pylith::materials::IsotropicLinearElasticity::getInterfaceKernelResidualF1Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getInterfaceKernelResidualF1Pos(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscBdPointFunc kernel =
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f1l_pos :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_pos :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f1l_refstate_pos :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_refstate_pos :
+        NULL;
+
+    PYLITH_METHOD_RETURN(kernel);
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get Jf1lu kernel for LHS Jacobian F(t,s,dot{s}) for negative fault face.
+PetscBdPointJac
+pylith::materials::IsotropicLinearElasticity::getInterfaceKernelJacobianF1Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getInterfaceKernelResidualF1Pos(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscBdPointJac kernel =
+        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::Jf1lu_neg :
+        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_neg :
+        NULL;
+
+    PYLITH_METHOD_RETURN(kernel);
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get Jf1lu kernel for LHS Jacobian F(t,s,dot{s}) for positive fault face.
+PetscBdPointJac
+pylith::materials::IsotropicLinearElasticity::getInterfaceKernelJacobianF1Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getInterfaceKernelResidualF1Pos(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscBdPointJac kernel =
+        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::Jf1lu_pos :
+        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_pos :
+        NULL;
+
+    PYLITH_METHOD_RETURN(kernel);
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get Jf3lu kernel for LHS Jacobian F(t,s,dot{s}) for negative fault face.
+PetscBdPointJac
+pylith::materials::IsotropicLinearElasticity::getInterfaceKernelJacobianF3Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getInterfaceKernelResidualF1Pos(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscBdPointJac kernel =
+        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::Jf3lu_neg :
+        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf3lu_neg :
+        NULL;
+
+    PYLITH_METHOD_RETURN(kernel);
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get Jf3lu kernel for LHS Jacobian F(t,s,dot{s}) for positive fault face.
+PetscBdPointJac
+pylith::materials::IsotropicLinearElasticity::getInterfaceKernelJacobianF3Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getInterfaceKernelResidualF1Pos(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscBdPointJac kernel =
+        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::Jf3lu_pos :
+        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf3lu_pos :
+        NULL;
+
+    PYLITH_METHOD_RETURN(kernel);
+}
 
 
 // End of file
