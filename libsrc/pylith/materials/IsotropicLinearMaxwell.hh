@@ -85,14 +85,6 @@ public:
      */
     PetscPointJac getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    /** Get stress kernel for derived field.
-     *
-     * @param[in] coordsys Coordinate system.
-     *
-     * @return Project kernel for computing stress subfield in derived field.
-     */
-    PetscPointFunc getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const;
-
     /** Get f0 kernel for LHS interface residual, F(t,s), for negative fault face.
      *
      * @param[in] coordsys Coordinate system.
@@ -156,6 +148,14 @@ public:
      * @return LHS Jacobian kernel Jf3lu.
      */
     PetscBdPointJac getInterfaceKernelJacobianF3Pos(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+    /** Get stress kernel for derived field.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return Project kernel for computing stress subfield in derived field.
+     */
+    PetscPointFunc getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     /** Add kernels for updating state variables.
      *
