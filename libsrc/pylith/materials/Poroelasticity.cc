@@ -456,7 +456,7 @@ void pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::
         const PetscPointFunc g1p = _rheology->getKernelg1p_explicit(coordsys, _gravityField); // Darcy velocity
 
         // Velocity
-        const PetscPointFunc f0v = pylith::fekernels::Poroelasticity::f0v;
+        const PetscPointFunc f0v = pylith::fekernels::Poroelasticity::f0v_explicit;
         const PetscPointFunc f1v = NULL;
         const PetscPointFunc g0v = r0;
         const PetscPointFunc g1v = _rheology->getKernelg1v_explicit(coordsys);
@@ -816,7 +816,7 @@ void pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::
         const PetscPointJac Jf2vp = NULL;
         const PetscPointJac Jf3vp = NULL;
 
-        const PetscPointJac Jf0vv = pylith::fekernels::Poroelasticity::Jf0vv;
+        const PetscPointJac Jf0vv = pylith::fekernels::Poroelasticity::Jf0vv_explicit;
         const PetscPointJac Jf1vv = NULL;
         const PetscPointJac Jf2vv = NULL;
         const PetscPointJac Jf3vv = NULL;

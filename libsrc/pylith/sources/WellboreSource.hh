@@ -28,12 +28,12 @@
 
 #include "pylith/sources/Source.hh" // ISA Source
 
-class pylith::sources::WellboreSource : public pylith::sources::Source {
+class pylith::sources::WellboreSource : public pylith::sources::Source
+{
     friend class TestWellboreSource; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
-
     /// Default constructor.
     WellboreSource(void);
 
@@ -47,7 +47,7 @@ public:
      *
      * @param[in] solution Solution field.
      */
-    void verifyConfiguration(const pylith::topology::Field& solution) const;
+    void verifyConfiguration(const pylith::topology::Field &solution) const;
 
     /** Create integrator and set kernels.
      *
@@ -55,7 +55,7 @@ public:
      *
      *  @returns Integrator if applicable, otherwise NULL.
      */
-    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution);
+    pylith::feassemble::Integrator *createIntegrator(const pylith::topology::Field &solution);
 
     /** Create auxiliary field.
      *
@@ -64,8 +64,8 @@ public:
      *
      * @returns Auxiliary field if applicable, otherwise NULL.
      */
-    pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
-                                                  const pylith::topology::Mesh& domainMesh);
+    pylith::topology::Field *createAuxiliaryField(const pylith::topology::Field &solution,
+                                                  const pylith::topology::Mesh &domainMesh);
 
     /** Create derived field.
      *
@@ -74,49 +74,43 @@ public:
      *
      * @returns Derived field if applicable, otherwise NULL.
      */
-    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
-                                                const pylith::topology::Mesh& domainMesh);
+    pylith::topology::Field *createDerivedField(const pylith::topology::Field &solution,
+                                                const pylith::topology::Mesh &domainMesh);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
-
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
      */
-    pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
+    pylith::feassemble::AuxiliaryFactory *_getAuxiliaryFactory(void);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
-
-    /** Set kernels for LHS residual.
+    /** Set kernels for residual.
      *
      * @param[out] integrator Integrator for source.
      * @param[in] solution Solution field.
      */
-    void _setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                const pylith::topology::Field& solution) const;
+    void _setKernelsResidual(pylith::feassemble::IntegratorDomain *integrator,
+                             const pylith::topology::Field &solution) const;
 
-    /** Set kernels for LHS Jacobian.
+    /** Set kernels for Jacobian.
      *
      * @param[out] integrator Integrator for source.
      * @param[in] solution Solution field.
      */
-    void _setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                                const pylith::topology::Field& solution) const;
+    void _setKernelsJacobian(pylith::feassemble::IntegratorDomain *integrator,
+                             const pylith::topology::Field &solution) const;
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
-
-    bool _useInertia; ///< Flag to include inertial term.
-    pylith::sources::AuxiliaryFactoryWellboreSource* _auxiliaryFactory; ///< Factory for auxiliary subfields.
+    pylith::sources::AuxiliaryFactoryWellboreSource *_auxiliaryFactory; ///< Factory for auxiliary subfields.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
-
-    WellboreSource(const WellboreSource&); ///< Not implemented.
-    const WellboreSource& operator=(const WellboreSource&); /// Not implemented.
-
+    WellboreSource(const WellboreSource &);                  ///< Not implemented.
+    const WellboreSource &operator=(const WellboreSource &); /// Not implemented.
 };
 
 // class WellboreSource
