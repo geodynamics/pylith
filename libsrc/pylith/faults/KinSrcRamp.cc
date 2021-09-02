@@ -163,11 +163,46 @@ pylith::faults::KinSrcRamp::slipAccFn(const PylithInt dim,
     const PylithInt _numA = 3;
 
     assert(_numA == numA);
+    assert(2 == numConstants);
+    assert(aOff);
+    assert(a);
     assert(slipAcc);
 
-    for (PylithInt i = 0; i < dim; ++i) {
-        slipAcc[i] = 0.0;
-    } // for
+    const PylithInt i_initiationTime = 0;
+    const PylithInt i_finalSlip = 1;
+    const PylithInt i_riseTime = 2;
+    const PylithScalar initiationTime = a[aOff[i_initiationTime]];
+    const PylithScalar* finalSlip = &a[aOff[i_finalSlip]];
+    const PylithScalar riseTime = a[aOff[i_riseTime]];
+
+    const PylithInt i_originTime = 0;
+    const PylithInt i_dt = 1;
+    const PylithScalar originTime = constants[i_originTime];
+    const PylithScalar dt = constants[i_dt];
+    const PylithScalar t0 = originTime + initiationTime;
+    const PylithScalar t1 = t0 + riseTime;
+
+    if (t <= t0) {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipAcc[i] = 0.0;
+        } // for
+    } else if (t - t0 <= dt) {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipAcc[i] = finalSlip[i] / (riseTime * dt);
+        } // for
+    } else if (t <= t1) {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipAcc[i] = 0.0;
+        } // for
+    } else if (t - t1 <= dt) {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipAcc[i] = -finalSlip[i] / (riseTime * dt);
+        } // for
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipAcc[i] = 0.0;
+        } // for
+    } // else
 } // slipAccFn
 
 
@@ -183,7 +218,8 @@ pylith::faults::KinSrcRamp::_auxiliaryFieldSetup(const spatialdata::units::Nondi
     assert(cs);
     _auxiliaryFactory->initialize(_auxiliaryField, normalizer, cs->getSpaceDim());
 
-    // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the slip time function
+    // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the slip time
+    // function
     // kernel.
 
     _auxiliaryFactory->addInitiationTime(); // 0
