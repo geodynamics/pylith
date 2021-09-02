@@ -60,11 +60,13 @@ public:
      */
     void initialize(const pylith::topology::Field& solution);
 
-    /** Update auxiliary field values to current time.
+    /** Set auxiliary field values for current time.
      *
      * @param[in] t Current time.
+     * @param[in] dt Current time step.
      */
-    void updateState(const PylithReal t);
+    void setState(const PylithReal t,
+                  const PylithReal dt);
 
     /** Set constrained values in solution field.
      *

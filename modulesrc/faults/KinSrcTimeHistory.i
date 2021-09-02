@@ -47,17 +47,19 @@ namespace pylith {
 	   */
 	  const spatialdata::spatialdb::TimeHistory* getTimeHistoryDB(void);
 	  
-	  /** Set slip values at time t.
-	   *
-	   * @param[inout] slipLocalVec Local PETSc vector for slip values.
-	   * @param[in] faultAuxiliaryField Auxiliary field for fault.
-	   * @param[in] t Time t.
-	   * @param[in] timeScale Time scale for nondimensionalization.
-	   */
-	  void updateSlip(PetscVec slipLocalVec,
-			  pylith::topology::Field* faultAuxiliaryField,
-			  const PylithScalar t,
-			  const PylithScalar timeScale);
+            /** Set slip values at time t.
+             *
+             * @param[inout] slipLocalVec Local PETSc vector for slip values.
+             * @param[in] faultAuxiliaryField Auxiliary field for fault.
+             * @param[in] t Current time.
+             * @param[in] dt Current time step.
+             * @param[in] timeScale Time scale for nondimensionalization.
+             */
+            void updateSlip(PetscVec slipLocalVec,
+                            pylith::topology::Field* faultAuxiliaryField,
+                            const PylithReal t,
+                            const PylithReal dt,
+                            const PylithReal timeScale);
 
 	    // PROTECTED METHODS //////////////////////////////////////////////////
 	protected:

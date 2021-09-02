@@ -206,16 +206,17 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Update auxiliary field values to current time.
+// Set auxiliary field values for current time.
 void
-pylith::feassemble::IntegratorBoundary::updateState(const double t) {
+pylith::feassemble::IntegratorBoundary::setState(const PylithReal t,
+                                                 const PylithReal dt) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("updateState(t="<<t<<")");
+    PYLITH_JOURNAL_DEBUG("setState(t="<<t<<", dt="<<dt<<")");
 
-    Integrator::updateState(t);
+    Integrator::setState(t, dt);
 
     assert(_physics);
-    _physics->updateAuxiliaryField(_auxiliaryField, t);
+    _physics->updateAuxiliaryField(_auxiliaryField, t, dt);
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
@@ -227,7 +228,7 @@ pylith::feassemble::IntegratorBoundary::updateState(const double t) {
     } // if
 
     PYLITH_METHOD_END;
-} // updateState
+} // setState
 
 
 // ---------------------------------------------------------------------------------------------------------------------

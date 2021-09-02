@@ -74,12 +74,14 @@ public:
      *
      * @param[inout] auxiliaryField Auxiliary field to update.
      * @param[in] t Current time.
+     * @param[in] dt Current time step.
      * @param[in] timeScale Time scale for nondimensionalization.
      * @param[in] dbTimeHistory Time history database.
      */
     static
     void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                               const PylithReal t,
+                              const PylithReal dt,
                               const PylithReal timeScale,
                               spatialdata::spatialdb::TimeHistory* const dbTimeHistory);
 

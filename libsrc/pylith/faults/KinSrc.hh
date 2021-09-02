@@ -102,40 +102,46 @@ public:
      *
      * @param[inout] slipLocalVec Local PETSc vector for slip values.
      * @param[in] faultAuxiliaryField Auxiliary field for fault.
-     * @param[in] t Time t.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
      * @param[in] timeScale Time scale for nondimensionalization.
      */
     virtual
     void updateSlip(PetscVec slipLocalVec,
                     pylith::topology::Field* faultAuxiliaryField,
-                    const PylithScalar t,
-                    const PylithScalar timeScale);
+                    const PylithReal t,
+                    const PylithReal dt,
+                    const PylithReal timeScale);
 
     /** Set slip rate values at time t.
      *
      * @param[inout] slipRateLocalVec Local PETSc vector for slip values.
      * @param[in] faultAuxiliaryField Auxiliary field for fault.
-     * @param[in] t Time t.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
      * @param[in] timeScale Time scale for nondimensionalization.
      */
     virtual
     void updateSlipRate(PetscVec slipRateLocalVec,
                         pylith::topology::Field* faultAuxiliaryField,
-                        const PylithScalar t,
-                        const PylithScalar timeScale);
+                        const PylithReal t,
+                        const PylithReal dt,
+                        const PylithReal timeScale);
 
     /** Set slip acceleration values at time t.
      *
      * @param[inout] slipAccLocalVec Local PETSc vector for slip values.
      * @param[in] faultAuxiliaryField Auxiliary field for fault.
-     * @param[in] t Time t.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
      * @param[in] timeScale Time scale for nondimensionalization.
      */
     virtual
     void updateSlipAcc(PetscVec slipAccLocalVec,
                        pylith::topology::Field* faultAuxiliaryField,
-                       const PylithScalar t,
-                       const PylithScalar timeScale);
+                       const PylithReal t,
+                       const PylithReal dt,
+                       const PylithReal timeScale);
 
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
@@ -160,8 +166,10 @@ protected:
     /** Set constants used in finite-element integrations.
      *
      * @param[in] auxField Auxiliary field associated with fault finite-element integration.
+     * @param[in] dt Current time step.
      */
-    void _setFEConstants(const pylith::topology::Field& auxField) const;
+    void _setFEConstants(const pylith::topology::Field& auxField,
+                         const PylithReal dt) const;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:

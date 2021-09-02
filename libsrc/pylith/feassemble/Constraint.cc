@@ -191,16 +191,17 @@ pylith::feassemble::Constraint::poststep(const PylithReal t,
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Update auxiliary field values to current time.
+// Set auxiliary field values for current time.
 void
-pylith::feassemble::Constraint::updateState(const PylithReal t) {
+pylith::feassemble::Constraint::setState(const PylithReal t,
+                                         const PylithReal dt) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("updateState(t="<<t<<") empty method");
+    PYLITH_JOURNAL_DEBUG("setState(t="<<t<<", dt="<<dt<<") empty method");
 
     // Default is to do nothing.
 
     PYLITH_METHOD_END;
-} // updateState
+} // setState
 
 
 // End of file

@@ -313,14 +313,15 @@ pylith::bc::NeumannTimeDependent::createDerivedField(const pylith::topology::Fie
 // Update auxiliary subfields at beginning of time step.
 void
 pylith::bc::NeumannTimeDependent::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
-                                                       const double t) {
+                                                       const PylithReal t,
+                                                       const PylithReal dt) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
+    PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<", dt="<<dt<<")");
 
     if (_useTimeHistory) {
         assert(_normalizer);
         const PylithScalar timeScale = _normalizer->getTimeScale();
-        TimeDependentAuxiliaryFactory::updateAuxiliaryField(auxiliaryField, t, timeScale, _dbTimeHistory);
+        TimeDependentAuxiliaryFactory::updateAuxiliaryField(auxiliaryField, t, dt, timeScale, _dbTimeHistory);
     } // if
 
     PYLITH_METHOD_END;

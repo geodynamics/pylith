@@ -66,14 +66,15 @@ pylith::faults::KinSrcTimeHistory::getTimeHistoryDB(void) {
 void
 pylith::faults::KinSrcTimeHistory::updateSlip(PetscVec slipLocalVec,
                                               pylith::topology::Field* faultAuxiliaryField,
-                                              const double t,
-                                              const double timeScale) {
+                                              const PylithReal t,
+                                              const PylithReal dt,
+                                              const PylithReal timeScale) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateSlip(slipLocalVec="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
-                                                     <<", t="<<t<<", timeScale="<<timeScale<<")");
+                                                     <<", t="<<t<<", dt="<<dt<<", timeScale="<<timeScale<<")");
 
     KinSrcAuxiliaryFactory::updateTimeHistoryValue(_auxiliaryField, t, timeScale, _dbTimeHistory);
-    KinSrc::updateSlip(slipLocalVec, faultAuxiliaryField, t, timeScale);
+    KinSrc::updateSlip(slipLocalVec, faultAuxiliaryField, t, dt, timeScale);
 
     PYLITH_METHOD_END;
 } // updateSlip

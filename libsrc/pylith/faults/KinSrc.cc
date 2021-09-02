@@ -144,11 +144,12 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
 void
 pylith::faults::KinSrc::updateSlip(PetscVec slipLocalVec,
                                    pylith::topology::Field* faultAuxiliaryField,
-                                   const PylithScalar t,
-                                   const PylithScalar timeScale) {
+                                   const PylithReal t,
+                                   const PylithReal dt,
+                                   const PylithReal timeScale) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateSlip(slipLocalVec="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
-                                                     <<", t="<<t<<", timeScale="<<timeScale<<")");
+                                                     <<", t="<<t<<", dt="<<dt<<", timeScale="<<timeScale<<")");
 
     if (!_slipFnKernel || (t < _originTime)) {
         PYLITH_METHOD_END;
@@ -157,7 +158,7 @@ pylith::faults::KinSrc::updateSlip(PetscVec slipLocalVec,
     assert(slipLocalVec);
     assert(_auxiliaryField);
 
-    _setFEConstants(*faultAuxiliaryField); // Constants are attached to the auxiliary field for the slip vector.
+    _setFEConstants(*faultAuxiliaryField, dt); // Constants are attached to the auxiliary field for the slip vector.
 
     PetscPointFunc subfieldKernels[1];
     subfieldKernels[0] = _slipFnKernel;
@@ -181,11 +182,12 @@ pylith::faults::KinSrc::updateSlip(PetscVec slipLocalVec,
 void
 pylith::faults::KinSrc::updateSlipRate(PetscVec slipRateLocalVec,
                                        pylith::topology::Field* faultAuxiliaryField,
-                                       const PylithScalar t,
-                                       const PylithScalar timeScale) {
+                                       const PylithReal t,
+                                       const PylithReal dt,
+                                       const PylithReal timeScale) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateSlipRate(slipRateLocalVec="<<slipRateLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
-                                                             <<", t="<<t<<", timeScale="<<timeScale<<")");
+    PYLITH_COMPONENT_DEBUG("updateSlipRate(slipRate="<<slipRateLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
+                                                     <<", t="<<t<<", dt="<<dt<<", timeScale="<<timeScale<<")");
 
     if (!_slipRateFnKernel || (t < _originTime)) {
         PYLITH_METHOD_END;
@@ -194,7 +196,8 @@ pylith::faults::KinSrc::updateSlipRate(PetscVec slipRateLocalVec,
     assert(slipRateLocalVec);
     assert(_auxiliaryField);
 
-    _setFEConstants(*faultAuxiliaryField); // Constants are attached to the auxiliary field for the slip rate vector.
+    _setFEConstants(*faultAuxiliaryField, dt); // Constants are attached to the auxiliary field for the slip rate
+                                               // vector.
 
     PetscPointFunc subfieldKernels[1];
     subfieldKernels[0] = _slipRateFnKernel;
@@ -218,11 +221,12 @@ pylith::faults::KinSrc::updateSlipRate(PetscVec slipRateLocalVec,
 void
 pylith::faults::KinSrc::updateSlipAcc(PetscVec slipAccLocalVec,
                                       pylith::topology::Field* faultAuxiliaryField,
-                                      const PylithScalar t,
-                                      const PylithScalar timeScale) {
+                                      const PylithReal t,
+                                      const PylithReal dt,
+                                      const PylithReal timeScale) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateSlipAcc(slipAccLocalVec="<<slipAccLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
-                                                           <<", t="<<t<<", timeScale="<<timeScale<<")");
+                                                           <<", t="<<t<<", dt="<<dt<<", timeScale="<<timeScale<<")");
 
     if (!_slipAccFnKernel || (t < _originTime)) {
         PYLITH_METHOD_END;
@@ -231,7 +235,8 @@ pylith::faults::KinSrc::updateSlipAcc(PetscVec slipAccLocalVec,
     assert(slipAccLocalVec);
     assert(_auxiliaryField);
 
-    _setFEConstants(*faultAuxiliaryField); // Constants are attached to the auxiliary field for the slip rate vector.
+    _setFEConstants(*faultAuxiliaryField, dt); // Constants are attached to the auxiliary field for the slip rate
+                                               // vector.
 
     PetscPointFunc subfieldKernels[1];
     subfieldKernels[0] = _slipAccFnKernel;
@@ -253,21 +258,23 @@ pylith::faults::KinSrc::updateSlipAcc(PetscVec slipAccLocalVec,
 // ----------------------------------------------------------------------
 // Set constants used in finite-element integrations.
 void
-pylith::faults::KinSrc::_setFEConstants(const pylith::topology::Field& faultAuxField) const {
+pylith::faults::KinSrc::_setFEConstants(const pylith::topology::Field& faultAuxField,
+                                        const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEConstants(faultAuxField="<<faultAuxField.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("_setFEConstants(faultAuxField="<<faultAuxField.getLabel()<<", dt="<<dt<<")");
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.
-    PetscDS prob = NULL;
+    PetscDS ds = NULL;
     PetscDM dmAux = faultAuxField.getDM();assert(dmAux);
-    PetscErrorCode err = DMGetDS(dmAux, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
+    PetscErrorCode err = DMGetDS(dmAux, &ds);PYLITH_CHECK_ERROR(err);assert(ds);
 
     // Pointwise functions have been set in DS
-    const int numConstants = 1;
+    const int numConstants = 2;
     PylithScalar constants[numConstants];
     constants[0] = _originTime;
-    err = PetscDSSetConstants(prob, numConstants, constants);PYLITH_CHECK_ERROR(err);
+    constants[1] = dt;
+    err = PetscDSSetConstants(ds, numConstants, constants);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setFEConstants

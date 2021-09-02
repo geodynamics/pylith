@@ -307,13 +307,14 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryValue(void) {
 void
 pylith::bc::TimeDependentAuxiliaryFactory::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                                                                 const PylithReal t,
+                                                                const PylithReal dt,
                                                                 const PylithReal timeScale,
                                                                 spatialdata::spatialdb::TimeHistory* const dbTimeHistory) {
     PYLITH_METHOD_BEGIN;
     pythia::journal::debug_t debug(_TimeDependentAuxiliaryFactory::genericComponent);
     debug << pythia::journal::at(__HERE__)
-          << "TimeDependentAuxiliaryFactory::updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t
-          <<", timeScale="<<timeScale<<", dbTimeHistory="<<dbTimeHistory<<")"
+          << "TimeDependentAuxiliaryFactory::updateAuxiliaryField(auxiliaryField="<<auxiliaryField
+          <<", t="<<t<<", dt="<<dt<<", timeScale="<<timeScale<<", dbTimeHistory="<<dbTimeHistory<<")"
           << pythia::journal::endl;
 
     assert(auxiliaryField);

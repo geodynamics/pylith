@@ -167,9 +167,11 @@ public:
      *
      * @param[out] auxiliaryField Auxiliary field.
      * @param[in] t Current time.
+     * @param[in] dt Current time step.
      */
     void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
-                              const double t);
+                              const PylithReal t,
+                              const PylithReal dt);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

@@ -101,9 +101,11 @@ public:
      *
      * @param[out] auxiliaryField Auxiliary field.
      * @param[in] t Current time.
+     * @param[in] dt Current time step.
      */
     void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
-                              const double t);
+                              const PylithReal t,
+                              const PylithReal dt);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
@@ -124,25 +126,31 @@ protected:
      *
      * @param[out] auxiliaryField Auxiliary field.
      * @param[in] t Current time.
+     * @param[in] dt Current time step.
      */
     void _updateSlip(pylith::topology::Field* auxiliaryField,
-                     const double t);
+                     const PylithReal t,
+                     const PylithReal dt);
 
     /** Update slip rate subfield in auxiliary field at beginning of time step.
      *
      * @param[out] auxiliaryField Auxiliary field.
      * @param[in] t Current time.
+     * @param[in] dt Current time step.
      */
     void _updateSlipRate(pylith::topology::Field* auxiliaryField,
-                         const double t);
+                         const PylithReal t,
+                         const PylithReal dt);
 
     /** Update slip acceleration subfield in auxiliary field at beginning of time step.
      *
      * @param[out] auxiliaryField Auxiliary field.
      * @param[in] t Current time.
+     * @param[in] dt Current time step.
      */
     void _updateSlipAcceleration(pylith::topology::Field* auxiliaryField,
-                                 const double t);
+                                 const PylithReal t,
+                                 const PylithReal dt);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

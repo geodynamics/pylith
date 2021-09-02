@@ -191,6 +191,14 @@ public:
      */
     void initialize(const pylith::topology::Field& solution);
 
+    /** Set auxiliary field values for current time.
+     *
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     */
+    void setState(const PylithReal t,
+                  const PylithReal dt);
+
     /** Compute RHS residual for G(t,s).
      *
      * @param[out] residual Field for residual.
