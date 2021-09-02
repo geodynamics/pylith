@@ -771,7 +771,40 @@ void pylith::fekernels::Poroelasticity::Jf0vu_implicit(const PylithInt dim,
 } // Jf0vu_implicit
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Jf0 function for poroelasticity equation, dynamic.
+// Jf0vv function for poroelasticity equation, quasistatic.
+void pylith::fekernels::Poroelasticity::Jf0vv_implicit(const PylithInt dim,
+                                                       const PylithInt numS,
+                                                       const PylithInt numA,
+                                                       const PylithInt sOff[],
+                                                       const PylithInt sOff_x[],
+                                                       const PylithScalar s[],
+                                                       const PylithScalar s_t[],
+                                                       const PylithScalar s_x[],
+                                                       const PylithInt aOff[],
+                                                       const PylithInt aOff_x[],
+                                                       const PylithScalar a[],
+                                                       const PylithScalar a_t[],
+                                                       const PylithScalar a_x[],
+                                                       const PylithReal t,
+                                                       const PylithReal s_tshift,
+                                                       const PylithScalar x[],
+                                                       const PylithInt numConstants,
+                                                       const PylithScalar constants[],
+                                                       PylithScalar Jf0[])
+{
+    assert(aOff);
+    assert(a);
+
+    // Incoming auxiliary fields.
+
+    for (PylithInt d = 0; d < dim; ++d)
+    {
+        Jf0[d * dim + d] -= 1.0;
+    } // for
+} // Jf0vv_implicit
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Jf0vv function for poroelasticity equation, dynamic.
 void pylith::fekernels::Poroelasticity::Jf0vv_explicit(const PylithInt dim,
                                                        const PylithInt numS,
                                                        const PylithInt numA,

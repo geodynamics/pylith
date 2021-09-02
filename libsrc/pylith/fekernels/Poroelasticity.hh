@@ -463,8 +463,8 @@ public:
                                PylithScalar Jf0[]);
 
     // ---------------------------------------------------------------------------------------------------------------------
-    // Jf0vv function for poroelasticity equation, dynamic
-    static void Jf0vv_explicit(const PylithInt dim,
+    // Jf0vv function for poroelasticity equation, quasistatic.
+    static void Jf0vv_implicit(const PylithInt dim,
                                const PylithInt numS,
                                const PylithInt numA,
                                const PylithInt sOff[],
@@ -485,8 +485,8 @@ public:
                                PylithScalar Jf0[]);
 
     // ---------------------------------------------------------------------------------------------------------------------
-    // Jf0vv function for poroelasticity equation, quasistatic.
-    static void Jf0vv_implicit(const PylithInt dim,
+    // Jf0vv function for poroelasticity equation, dynamic
+    static void Jf0vv_explicit(const PylithInt dim,
                                const PylithInt numS,
                                const PylithInt numA,
                                const PylithInt sOff[],
