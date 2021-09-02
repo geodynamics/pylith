@@ -350,7 +350,7 @@ void pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::
     const int bitSourceDensity = _useSourceDensity ? 0x4 : 0x0;
     const int bitUse = bitBodyForce | bitGravity | bitSourceDensity;
 
-    PetscPointFunc r0 = NULL;
+    PetscPointFunc r0 = pylith::fekernels::Poroelasticity::f0u;
     switch (bitUse)
     {
     case 0x0:
@@ -362,7 +362,6 @@ void pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::
         r0 = pylith::fekernels::Poroelasticity::g0v_grav;
         break;
     case 0x4:
-        r0 = pylith::fekernels::Poroelasticity::f0u;
         break;
     case 0x3:
         r0 = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
