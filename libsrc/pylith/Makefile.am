@@ -60,6 +60,7 @@ libpylith_la_SOURCES = \
 	feassemble/IntegratorInterface.cc \
 	feassemble/InterfacePatches.cc \
 	feassemble/UpdateStateVars.cc \
+	feassemble/JacobianValues.cc \
 	feassemble/Constraint.cc \
 	feassemble/ConstraintSpatialDB.cc \
 	feassemble/ConstraintUserFn.cc \

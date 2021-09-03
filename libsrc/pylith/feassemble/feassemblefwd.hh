@@ -41,6 +41,7 @@ namespace pylith {
         class IntegratorInterface; ///< Abstract base class for finite-element integration over an interior interface.
         class InterfacePatches; ///< Interface integration patches.
         class UpdateStateVars; ///< Manager for updating state variables.
+        class JacobianValues; ///< Manager for setting Jacobian values without finite-element integration.
 
         class Constraint; ///< Abstract base class for finite-element constraints.
         class ConstraintSpatialDB; ///< Finite-element constraints via auxiliary field from spatial database.

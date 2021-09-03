@@ -25,6 +25,7 @@
 #include "pylith/materials/DerivedFactoryElasticity.hh" // USES DerivedFactoryElasticity
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 #include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
+#include "pylith/feassemble/JacobianValues.hh" // USES JacobianValues
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
@@ -418,8 +419,6 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
         break;
     } // QUASISTATIC
     case DYNAMIC_IMEX: {
-        kernelsInterface.resize(2);
-
         const PetscBdPointJac Jf0lu_neg = NULL;
         const PetscBdPointJac Jf1lu_neg = _rheology->getInterfaceKernelJacobianF1Neg(coordsys);
         const PetscBdPointJac Jf2lu_neg = NULL;
@@ -431,29 +430,26 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
         const PetscBdPointJac Jf3lu_pos = _rheology->getInterfaceKernelJacobianF3Pos(coordsys);
 
         kernelsInterface.resize(2);
-        const JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS;
+        JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS;
         const InterfaceFace faceNeg = pylith::feassemble::IntegratorInterface::NEGATIVE_FACE;
         const InterfaceFace facePos = pylith::feassemble::IntegratorInterface::POSITIVE_FACE;
         kernelsInterface[0] = InterfaceJacobianKernels("lagrange_multiplier_fault", "displacement", jacobianPart, faceNeg,
                                                        Jf0lu_neg, Jf1lu_neg, Jf2lu_neg, Jf3lu_neg);
         kernelsInterface[1] = InterfaceJacobianKernels("lagrange_multiplier_fault", "displacement", jacobianPart, facePos,
                                                        Jf0lu_pos, Jf1lu_pos, Jf2lu_pos, Jf3lu_pos);
+
+        typedef pylith::feassemble::JacobianValues::JacobianKernel ValueKernel;
+        std::vector<ValueKernel> valueKernelsJacobian(2);
+        std::vector<ValueKernel> valueKernelsPrecond;
+        valueKernelsJacobian[0] = ValueKernel("displacement", "displacement", pylith::feassemble::JacobianValues::blockDiag_tshift);
+        valueKernelsJacobian[1] = ValueKernel("velocity", "velocity", pylith::feassemble::JacobianValues::blockDiag_tshift);
+        integrator->setKernelsJacobian(valueKernelsJacobian, valueKernelsPrecond);
     } // DYNAMIC_IMEX (continue with DYNAMIC)
     case DYNAMIC: {
         const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_stshift;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
         const PetscPointJac Jf3uu = NULL;
-
-        const PetscPointJac Jf0uv = NULL;
-        const PetscPointJac Jf1uv = NULL;
-        const PetscPointJac Jf2uv = NULL;
-        const PetscPointJac Jf3uv = NULL;
-
-        const PetscPointJac Jf0vu = NULL;
-        const PetscPointJac Jf1vu = NULL;
-        const PetscPointJac Jf2vu = NULL;
-        const PetscPointJac Jf3vu = NULL;
 
         const PetscPointJac Jf0vv = pylith::fekernels::Elasticity::Jf0vv;
         const PetscPointJac Jf1vv = NULL;
@@ -462,12 +458,10 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
 
         integrator->setLHSJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE);
 
-        kernels.resize(4);
+        kernels.resize(2);
         const JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS_LUMPED_INV;
         kernels[0] = JacobianKernels("displacement", "displacement", jacobianPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
-        kernels[1] = JacobianKernels("displacement", "velocity", jacobianPart, Jf0uv, Jf1uv, Jf2uv, Jf3uv);
-        kernels[2] = JacobianKernels("velocity", "displacement", jacobianPart, Jf0vu, Jf1vu, Jf2vu, Jf3vu);
-        kernels[3] = JacobianKernels("velocity", "velocity", jacobianPart, Jf0vv, Jf1vv, Jf2vv, Jf3vv);
+        kernels[1] = JacobianKernels("velocity", "velocity", jacobianPart, Jf0vv, Jf1vv, Jf2vv, Jf3vv);
         break;
     } // DYNAMIC
     default:
