@@ -1,3 +1,4 @@
+(cha:examples)=
 # Examples
 
 ## Overview
