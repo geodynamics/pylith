@@ -66,27 +66,27 @@ public:
      *
      * @param[in] solution Solution field.
      * @param[in] residualPart Residual part for weak form key.
-     * @param[in] field Name of solution subfield associated with integration kernel.
+     * @param[in] subfield Name of solution subfield associated with integration kernel.
      *
      * @returns PETSc weak form key.
      */
     PetscFormKey getPetscKey(const pylith::topology::Field& solution,
                              pylith::feassemble::Integrator::ResidualPart residualPart,
-                             const char* field=NULL) const;
+                             const char* subfield=NULL) const;
 
     /** Get PETSc weak form key for Jacobian.
      *
      * @param[in] solution Solution field.
      * @param[in] jacobianPart Jacobian part for weak form key.
-     * @param[in] fieldTrial Name of solution subfield associated with trial function.
-     * @param[in] fieldTrial Name of solution subfield associated with basis function.
+     * @param[in] subfieldTrial Name of solution subfield associated with trial function.
+     * @param[in] subfieldBasis Name of solution subfield associated with basis function.
      *
      * @returns PETSc weak form key.
      */
     PetscFormKey getPetscKey(const pylith::topology::Field& solution,
                              pylith::feassemble::Integrator::JacobianPart jacobianPart,
-                             const char* fieldTrial=NULL,
-                             const char* fieldBasis=NULL) const;
+                             const char* subfieldTrial=NULL,
+                             const char* subfieldBasis=NULL) const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:

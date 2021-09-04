@@ -69,20 +69,20 @@ inline
 PetscFormKey
 pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solution,
                                              pylith::feassemble::Integrator::ResidualPart residualPart,
-                                             const char* field) const {
+                                             const char* subfield) const {
     PetscDM dmSoln = solution.getDM();
     PetscDMLabel label = NULL;
     PetscErrorCode err = DMGetLabel(dmSoln, _name.c_str(), &label);PYLITH_CHECK_ERROR(err);
-    PetscInt fieldIndex = -1;
-    if (field) {
-        fieldIndex = solution.getSubfieldInfo(field).index;assert(fieldIndex >= 0);
+    PetscInt subfieldIndex = -1;
+    if (subfield) {
+        subfieldIndex = solution.getSubfieldInfo(subfield).index;assert(subfieldIndex >= 0);
     } // if
 
     PetscFormKey weakFormKey;
     weakFormKey.label = label;
     weakFormKey.value = _value;
     weakFormKey.part = residualPart;
-    weakFormKey.field = fieldIndex;
+    weakFormKey.field = subfieldIndex;
 
     return weakFormKey;
 } // petscKey
@@ -94,19 +94,19 @@ inline
 PetscFormKey
 pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solution,
                                              pylith::feassemble::Integrator::JacobianPart jacobianPart,
-                                             const char* fieldTrial,
-                                             const char* fieldBasis) const {
+                                             const char* subfieldTrial,
+                                             const char* subfieldBasis) const {
     PetscDM dmSoln = solution.getDM();
     PetscDMLabel label = NULL;
     PetscErrorCode err = DMGetLabel(dmSoln, _name.c_str(), &label);PYLITH_CHECK_ERROR(err);
     PetscInt fieldIndex = -1;
-    if (fieldTrial && fieldBasis) {
+    if (subfieldTrial && subfieldBasis) {
         PetscInt i_field = -1;
         PetscInt j_field = -1;
         PetscInt numFields = 0;
         err = DMGetNumFields(dmSoln, &numFields);PYLITH_CHECK_ERROR(err);
-        i_field = solution.getSubfieldInfo(fieldTrial).index;assert(i_field >= 0);
-        j_field = solution.getSubfieldInfo(fieldBasis).index;assert(j_field >= 0);
+        i_field = solution.getSubfieldInfo(subfieldTrial).index;assert(i_field >= 0);
+        j_field = solution.getSubfieldInfo(subfieldBasis).index;assert(j_field >= 0);
         fieldIndex = i_field * numFields + j_field;
     } // if
 
