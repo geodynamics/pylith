@@ -21,10 +21,11 @@
 ## @brief Analytical steady-state solution for pressurized power-law viscoelastic cylinder.
 
 # Neumann boundary conditions.
+# Note that in the analytical solution, positive boundary tractions are considered to be compressive.
 # boundary_inner
-#   Tr(r=a) = -100 MPa
+#   Tr(r=a) = 0 MPa
 # boundary_outer
-#   Tr(r=b) = -10 MPa
+#   Tr(r=b) = -100 MPa
 #
 # Dirichlet boundary conditions.
 #   Ux(0,y,z) = 0
@@ -41,8 +42,8 @@ import numpy
 # NOTE:  A negative difference (Pb - Pa) will yield imaginary velocity values for fractional exponents.
 a = 2000.0 # Inner cylinder radius.
 b = 20000.0 # Outer cylinder radius.
-Pa = -1.0e8 # Pressure applied at r=a.
-Pb = -1.0e7 # Pressure applied at r=b.
+Pa = 0.0 # Pressure applied at r=a.
+Pb = 1.0e8 # Pressure applied at r=b.
 
 # PyLith solution parameters.
 p_density = 2500.0
@@ -68,7 +69,7 @@ class AnalyticalSoln(object):
 
     def __init__(self):
         self.fields = {
-            "displacement_incr": self.displacement_incr,
+            "velocity": self.velocity,
             "density": self.density,
             "shear_modulus": self.shear_modulus,
             "bulk_modulus": self.bulk_modulus,
@@ -76,22 +77,21 @@ class AnalyticalSoln(object):
         }
         return
     
-    def displacement_incr(self, locs, dt):
+    def velocity(self, locs):
         """
-        Compute analytical displacement increment solution for a given set of coordinates.
+        Compute analytical velocity solution for a given set of coordinates.
         """
         (npts, dim) = locs.shape
         r = numpy.linalg.norm(locs[:,0:2], axis=1)
         k1 = 2.0/p_powerLawExponent
         k3 = (3.0/4.0)**((p_powerLawExponent + 1.0)/2.0)
-        uDot = -A*k3*((Pb - Pa)*(k1/((b/a)**k1 - 1.0)))**p_powerLawExponent*(b**2.0/r)
-        ur = dt*uDot
+        urDot = -A*k3*((Pb - Pa)*(k1/((b/a)**k1 - 1.0)))**p_powerLawExponent*(b**2.0/r)
 
-        disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
+        vel = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
         
-        (disp[0, :, 0], disp[0, :, 1]) = self.cylToCartDisp(ur, coords)
+        (vel[0, :, 0], vel[0, :, 1]) = self.cylToCartDisp(urDot, locs)
 
-        return disp
+        return vel
 
     def density(self, locs):
         """Compute density field at locations.
@@ -114,12 +114,12 @@ class AnalyticalSoln(object):
         bulk_modulus = (p_lambda + 2.0 / 3.0 * p_mu) * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return bulk_modulus
 
-    def stress(self, coords):
+    def stress(self, locs):
         """
         Compute analytical stress solution for a given set of coordinates.
         """
-        npts = coords.shape[0]
-        r = numpy.linalg.norm(coords[:,0:2], axis=1)
+        npts = locs.shape[0]
+        r = numpy.linalg.norm(locs[:,0:2], axis=1)
         k1 = 2.0/p_powerLawExponent
         k2 = 1.0/p_powerLawExponent
         k3 = (3.0/4.0)**((p_powerLawExponent + 1.0)/2.0)
@@ -127,33 +127,35 @@ class AnalyticalSoln(object):
         stt = -Pb - (Pb - Pa)*((k1 - 1.0)*(b/r)**k1 + 1.0)/((b/a)**k1 - 1.0)
         szz = -Pb - (Pb - Pa)*((k2 - 1.0)*(b/r)**k1 + 1.0)/((b/a)**k1 - 1.0)
 
-        (sxx, syy) = self.cylToCartStress(srr, stt, coords)
+        (sxx, syy, sxy) = self.cylToCartStress(srr, stt, locs)
         s0 = numpy.zeros_like(sxx)
-        stressVec = numpy.column_stack((sxx, syy, szz, s0, s0, s0)).reshape(1,npts,6)
+        stressVecCart = numpy.column_stack((sxx, syy, szz, sxy, s0, s0)).reshape(1,npts,6)
+        stressVecCyl = numpy.column_stack((srr, stt, szz, s0, s0, s0)).reshape(1,npts,6)
 
-        return stressVec
+        return (stressVecCart, stressVecCyl)
 
-    def cylToCartStress(self, srr, stt, coords):
+    def cylToCartStress(self, srr, stt, locs):
         """
         Convert stresses in cylindrical coordinates to Cartesian.
         Assumption is that shear stresses are zero.
         """
-        angs = numpy.arctan2(coords[:,1], coords[:,0])
+        angs = numpy.arctan2(locs[:,1], locs[:,0])
         ca = numpy.cos(angs)
         sa = numpy.sin(angs)
 
         sxx = srr*ca*ca + stt*sa*sa
         syy = srr*sa*sa + stt*ca*ca
+        sxy = srr*ca*sa - stt*ca*sa
 
-        return (sxx, syy)
+        return (sxx, syy, sxy)
 
 
-    def cylToCartDisp(self, ur, coords):
+    def cylToCartDisp(self, ur, locs):
         """
         Convert displacement increments in cylindrical coordinates to Cartesian.
         Assumption is that tangential displacements are zero.
         """
-        angs = numpy.arctan2(coords[:,1], coords[:,0])
+        angs = numpy.arctan2(locs[:,1], locs[:,0])
         ca = numpy.cos(angs)
         sa = numpy.sin(angs)
 

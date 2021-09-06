@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/manual/3d/powerlaw/CylinderTestPowerLaw.py
+## @file tests/manual/3d/powerlaw/CylinderTestPowerLawN1.py
 
 ## @brief Python script to test power-law implementation for steady-state solution
 ##        of a pressurized cylinder.
@@ -27,14 +27,13 @@ import h5py
 import netCDF4
 from pylith.meshio.Xdmf import Xdmf
 
-from cylinderpres_powerlaw_soln import AnalyticalSoln
+from cylinderpres_powerlaw_n1_soln import AnalyticalSoln
 
 # ----------------------------------------------------------------------
 # Filenames.
-h5Prefix = 'output/cylinder_pres_powerlaw_norefstate_'
+h5Prefix = 'output/cylinder_pres_powerlaw_n1_norefstate_'
 bqSuffixes = ['b1_q1_', 'b2_q2_']
-meshPrefix = 'meshes/mesh_cylinder_'
-outputPrefix = 'cylinder_pres_powerlaw_compare_'
+outputPrefix = 'cylinder_pres_powerlaw_n1_compare_'
 cellTypes = ['hex', 'tet']
 dispSuffix = '-domain.h5'
 stressSuffix = '-viscomat.h5'
