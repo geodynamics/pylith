@@ -78,6 +78,9 @@ DynamicPrescribedSlip::_computeLHSResidual(const PetscReal t,
                                   + 1.0/_mb * (_kb*u[2] - _kb*u[3])
                                   + d2;
 
+    const PetscScalar d = PrescribedSlip::slip(t);
+    residualArray[_numDOFAll-1] += u[1] - u[2] + d;
+
     err = VecRestoreArrayRead(solution, &solutionArray);CHECK_ERROR(err);
     err = VecRestoreArrayRead(solutionDot, &solutionDotArray);CHECK_ERROR(err);
     err = VecRestoreArray(residual, &residualArray);CHECK_ERROR(err);
@@ -140,13 +143,17 @@ DynamicPrescribedSlip::_computeLHSJacobian(const PetscReal t,
 
     for (size_t i = 0; i < 2*_numDOFDisp; ++i) {
         jacobianArray[i][i] = shift;
-    }
+    } // for
 
-    jacobianArray[8][0] = _ka/_ma;
+    jacobianArray[8][0] = +_ka/_ma;
     jacobianArray[8][1] = -_ka/_ma;
-    jacobianArray[8][2] = _kb/_mb;
+    jacobianArray[8][2] = +_kb/_mb;
     jacobianArray[8][3] = -_kb/_mb;
     jacobianArray[8][8] = 1.0/_ma + 1.0/_mb;
+
+    jacobianArray[8][1] += +1.0;
+    jacobianArray[8][2] += -1.0;
+
     PetscErrorCode err = 0;
     err = MatSetValues(jacobian, _numDOFAll, indices, _numDOFAll, indices, &jacobianArray[0][0],
                        INSERT_VALUES);CHECK_ERROR(err);
