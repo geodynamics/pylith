@@ -130,7 +130,7 @@ Formulation::_poststep(void) {
     PetscInt tindex = 0;
     err = TSGetTime(_ts, &t);CHECK_ERROR(err);
     err = TSGetStepNumber(_ts, &tindex);CHECK_ERROR(err);
-
+ 
     // Set time stamp
     err = VecSetValue(_tstamp, 0, t, INSERT_VALUES);CHECK_ERROR(err);
     err = VecAssemblyBegin(_tstamp);CHECK_ERROR(err);
@@ -138,10 +138,14 @@ Formulation::_poststep(void) {
 
     // Write time stamp and solution
     err = PetscViewerHDF5PushGroup(_viewer, "/");CHECK_ERROR(err);
+    err = PetscViewerHDF5PushTimestepping(_viewer);CHECK_ERROR(err);
     err = PetscViewerHDF5SetTimestep(_viewer, tindex);CHECK_ERROR(err);
     err = VecView(_tstamp, _viewer);CHECK_ERROR(err);
     err = VecView(_solution, _viewer);CHECK_ERROR(err);
+    err = PetscViewerHDF5PopTimestepping(_viewer);CHECK_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer);CHECK_ERROR(err);
+
+    PetscFunctionReturnVoid();
 }
 
 
