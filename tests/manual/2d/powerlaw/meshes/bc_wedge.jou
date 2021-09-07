@@ -1,0 +1,34 @@
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 surface all
+block 1 name "viscoelastic"
+
+# ----------------------------------------------------------------------
+# Create nodeset for outer surface
+# ----------------------------------------------------------------------
+group "boundary_outer" add node in curve 57
+nodeset 21 group boundary_outer
+nodeset 21 name "boundary_outer
+
+# ----------------------------------------------------------------------
+# Create nodeset for outer surface
+# ----------------------------------------------------------------------
+group "boundary_outer_restricted" add node in curve 57
+group "boundary_outer_restricted" remove node in curve 55 56
+nodeset 24 group boundary_outer_restricted
+nodeset 24 name "boundary_outer_restricted"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x boundary
+# ----------------------------------------------------------------------
+group "boundary_xneg" add node in curve 55
+nodeset 22 group boundary_xneg
+nodeset 22 name "boundary_xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y boundary
+# ----------------------------------------------------------------------
+group "boundary_yneg" add node in curve 56
+nodeset 23 group boundary_yneg
+nodeset 23 name "boundary_yneg"

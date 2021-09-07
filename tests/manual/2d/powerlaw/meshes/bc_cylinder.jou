@@ -1,0 +1,49 @@
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 surface all
+block 1 name "viscoelastic"
+
+# ----------------------------------------------------------------------
+# Create nodeset for inner_surface
+# ----------------------------------------------------------------------
+group "boundary_inner" add node in curve 74
+nodeset 20 group boundary_inner
+nodeset 20 name "boundary_inner"
+
+# ----------------------------------------------------------------------
+# Create nodeset for inner_surface, removing edge vertices
+# ----------------------------------------------------------------------
+group "boundary_inner_restricted" add node in curve 74
+group "boundary_inner_restricted" remove node in curve 73 75
+nodeset 25 group boundary_inner_restricted
+nodeset 25 name "boundary_inner_restricted"
+
+# ----------------------------------------------------------------------
+# Create nodeset for outer surface
+# ----------------------------------------------------------------------
+group "boundary_outer" add node in curve 76
+nodeset 21 group boundary_outer
+nodeset 21 name "boundary_outer"
+
+# ----------------------------------------------------------------------
+# Create nodeset for outer surface, removing edge vertices
+# ----------------------------------------------------------------------
+group "boundary_outer_restricted" add node in curve 76
+group "boundary_outer_restricted" remove node in curve 73 75
+nodeset 24 group boundary_outer_restricted
+nodeset 24 name "boundary_outer_restricted"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x boundary
+# ----------------------------------------------------------------------
+group "boundary_xneg" add node in curve 73
+nodeset 22 group boundary_xneg
+nodeset 22 name "boundary_xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y boundary
+# ----------------------------------------------------------------------
+group "boundary_yneg" add node in curve 75
+nodeset 23 group boundary_yneg
+nodeset 23 name "boundary_yneg"
