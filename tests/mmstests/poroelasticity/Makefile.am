@@ -32,7 +32,6 @@ test_isotropiclinearporoelasticity2d_SOURCES = \
 		TestIsotropicLinearPoroelasticity.cc \
 		TestIsotropicLinearPoroelasticity2D_QS_LT.cc \
 		TestIsotropicLinearPoroelasticity2D_QS_TT.cc \
-		TestIsotropicLinearPoroelasticity2D_TS_LT.cc \
 		test_driver.cc
 
 test_isotropiclinearporoelasticity2d_QS_LT_SOURCES = \
