@@ -8,7 +8,7 @@
 #include <cassert> // USES assert()
 
 const double Formulation::_duration = 50.0;
-const double Formulation::_dtInitial = 0.1;
+const double Formulation::_dtInitial = 0.01;
 
 const double Formulation::_ka = 1.0;
 const double Formulation::_ma = 1.0;
