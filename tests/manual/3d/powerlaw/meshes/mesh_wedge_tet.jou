@@ -1,28 +1,26 @@
 # ----------------------------------------------------------------------
 # Generate geometry
 # ----------------------------------------------------------------------
-playback 'geometry_cylinder.jou'
+playback 'geometry_wedge.jou'
 
 # ----------------------------------------------------------------------
 # Set discretization size
 # ----------------------------------------------------------------------
 volume all scheme tetmesh
-${dxMin=0.3142*km}
-${dxMax=3.142*km}
-surface 27 size {dxMin}
-surface 29 size {dxMax}
-surface 15 sizing function type bias start curve 21 finish curve 23
-surface 26 sizing function type bias start curve 41 finish curve 43
+
+${dxMax=2.0*km}
+surface 16 size {dxMax}
 
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
 mesh volume all
 
-playback 'bc_cylinder.jou'
+playback 'bc_wedge.jou'
 
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-export mesh "mesh_cylinder_tet.exo" dimension 3 overwrite
+export mesh "mesh_wedge_tet.exo" dimension 3 overwrite
+
 

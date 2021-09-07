@@ -6,6 +6,7 @@ playback 'geometry_cylinder.jou'
 # ----------------------------------------------------------------------
 # Set discretization size
 # ----------------------------------------------------------------------
+volume all scheme map
 ${dxMin=0.5*km}
 ${dxMax=2.0*km}
 surface 27 size {dxMin}
@@ -16,7 +17,6 @@ surface 26 sizing function type bias start curve 41 finish curve 43
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
-volume all scheme map
 mesh volume all
 
 playback 'bc_cylinder.jou'
@@ -25,6 +25,7 @@ playback 'bc_cylinder.jou'
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "mesh_cylinder_hex.exo" dimension 3 overwrite
+
 
 
 
