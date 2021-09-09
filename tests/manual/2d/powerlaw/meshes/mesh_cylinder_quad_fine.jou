@@ -1,0 +1,27 @@
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry_cylinder.jou'
+
+# ----------------------------------------------------------------------
+# Set discretization size
+# ----------------------------------------------------------------------
+surface all scheme map
+${dxMin=0.07855*km}
+${dxMax=0.7855*km}
+curve 74 size {dxMin}
+curve 76 size {dxMax}
+surface 46 sizing function type bias start curve 74 finish curve 76
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh surface all
+
+playback 'bc_cylinder.jou'
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_cylinder_quad_fine.exo" dimension 2 overwrite
+

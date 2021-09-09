@@ -126,6 +126,8 @@ pylith::fekernels::NeumannTimeDependent::g0_initial_vector(const PylithInt dim,
     default:
         assert(0);
     } // switch
+    
+    
 
 } // g0_initial_vector
 
