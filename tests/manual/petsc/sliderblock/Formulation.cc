@@ -7,8 +7,10 @@
 
 #include <cassert> // USES assert()
 
-const double Formulation::_duration = 50.0;
-const double Formulation::_dtInitial = 0.01;
+//const double Formulation::_duration = 50.0;
+//const double Formulation::_dtInitial = 0.01;
+const double Formulation::_duration = 20.0;
+const double Formulation::_dtInitial = 0.1;
 
 const double Formulation::_ka = 1.0;
 const double Formulation::_ma = 1.0;
@@ -125,6 +127,8 @@ void
 Formulation::_poststep(void) {
     PetscFunctionBeginUser;
 
+    this->_updateState();
+    
     PetscErrorCode err = 0;
     PetscReal t = 0.0;
     PetscInt tindex = 0;
@@ -291,6 +295,10 @@ Formulation::_computeRHSJacobian(const PetscReal,
     throw std::logic_error("_computeRHSJacobian() not implemented.");
 }
 
+
+// --------------------------------------------------------------------------------------------------
+void
+Formulation::_updateState(void) {}
 
 // --------------------------------------------------------------------------------------------------
 void

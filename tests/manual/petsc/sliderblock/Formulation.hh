@@ -87,6 +87,9 @@ protected:
                              PetscMat);
 
     virtual
+    void _updateState(void);
+  
+    virtual
     void _setSolutionBounds(PetscTS ts);
 
     bool _hasLHSResidual;
