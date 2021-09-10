@@ -68,8 +68,9 @@ StaticFriction::updateState(const double slip,
 
 
 // --------------------------------------------------------------------------------------------------
-SlipWeakening::SlipWeakening(void) :
-    _lockedSlip(0.0) {}
+SlipWeakening::SlipWeakening(const bool forceHealing) :
+    _lockedSlip(0.0),
+    _forceHealing(forceHealing) {}
 
 
 SlipWeakening::~SlipWeakening(void) {}
@@ -82,11 +83,13 @@ SlipWeakening::traction(const double slip,
     const double fs = _SlipWeakeningFriction::frictionStatic;
     const double fd = _SlipWeakeningFriction::frictionDynamic;
 
+    const double d = slip - _lockedSlip;
+    
     double f = fs;
-    if (slip > d0) {
+    if (d > d0) {
         f = fd;
-    } else if (slip > 0.0) {
-        f = fs - (fs-fd) * fabs(slip) / d0;
+    } else if (d > 0.0) {
+        f = fs - (fs-fd) * d / d0;
     }
     return f;
 }
@@ -121,7 +124,7 @@ SlipWeakening::jacobianSlipRate(const double slipRate) {
 void
 SlipWeakening::updateState(const double slip,
                            const double slipRate) {
-    if (slipRate <= _Friction::zeroTolerance) {
+    if (slipRate <= _Friction::zeroTolerance || _forceHealing) {
         _lockedSlip = slip;
     } // if
 }

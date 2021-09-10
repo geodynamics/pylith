@@ -25,7 +25,7 @@
 
 // --------------------------------------------------------------------------------------------------
 QuasistaticSpontaneousRupture::QuasistaticSpontaneousRupture(void) :
-    _friction(new SlipWeakening) {
+    _friction(new SlipWeakening(true)) {
     _hasLHSResidual = true;
     _hasLHSJacobian = true;
 }
@@ -55,12 +55,12 @@ QuasistaticSpontaneousRupture::_setSolutionBounds(PetscTS ts) {
 
     PetscSNES snes = NULL;
     err = TSGetSNES(ts, &snes);CHECK_ERROR(err);
-    // err = SNESSetType(snes, SNESVINEWTONRSLS);CHECK_ERROR(err);
+    err = SNESSetType(snes, SNESVINEWTONRSLS);CHECK_ERROR(err);
     SNESLineSearch snesLineSearch = NULL;
     err = SNESGetLineSearch(snes, &snesLineSearch);CHECK_ERROR(err);
     err = SNESLineSearchSetType(snesLineSearch, SNESLINESEARCHBASIC);CHECK_ERROR(err);
     err = SNESSetFromOptions(snes);CHECK_ERROR(err);
-    // err = SNESVISetVariableBounds(snes, lowerBound, upperBound);CHECK_ERROR(err);
+    err = SNESVISetVariableBounds(snes, lowerBound, upperBound);CHECK_ERROR(err);
 
     err = VecSetValue(_solution, _numDOFAll-1, 1.0, INSERT_VALUES);
 }
@@ -73,6 +73,8 @@ QuasistaticSpontaneousRupture::_computeLHSResidual(const PetscReal t,
                                                    const PetscVec solution,
                                                    const PetscVec solutionDot,
                                                    PetscVec residual) {
+  const PetscScalar zeroTolerance = 1.0e-12;
+  
     PetscErrorCode err = 0;
     const PetscScalar* solutionArray = NULL;
     const PetscScalar* solutionDotArray = NULL;
@@ -94,7 +96,7 @@ QuasistaticSpontaneousRupture::_computeLHSResidual(const PetscReal t,
     const PetscScalar d = _friction->lockedSlip();
 
     PetscScalar fc = friction - lambda;
-    if (slipRate < -1.0e-12) { fc *= -1; }
+    if (slipRate < -zeroTolerance) { fc *= -1; }
 
     std::cout << "t:" << t
               << ", u1:" << u[1]
@@ -167,8 +169,8 @@ QuasistaticSpontaneousRupture::_computeLHSJacobian(const PetscReal t,
     jacobianArray[3][3] = -2.0*_kb;
     jacobianArray[4][1] = -lambda;
     jacobianArray[4][2] = +lambda;
-    jacobianArray[4][4] = lambda > 0 || fabs(slip) > 0.0 ? u[2] - u[1] - d : 1.0;
-
+    jacobianArray[4][4] = lambda > 0 ? u[2] - u[1] - d : 1.0;
+    
     err = VecRestoreArrayRead(solution, &solutionArray);CHECK_ERROR(err);
     err = VecRestoreArrayRead(solutionDot, &solutionDotArray);CHECK_ERROR(err);
 
@@ -176,5 +178,27 @@ QuasistaticSpontaneousRupture::_computeLHSJacobian(const PetscReal t,
                        INSERT_VALUES);CHECK_ERROR(err);
 }
 
+
+// --------------------------------------------------------------------------------------------------
+void
+QuasistaticSpontaneousRupture::_updateState(void) {
+    PetscErrorCode err = 0;
+    const PetscScalar* solutionArray = NULL;
+
+    err = VecGetArrayRead(_solution, &solutionArray);CHECK_ERROR(err);
+
+    const PetscScalar* u = &solutionArray[0];
+
+    const PetscScalar slip = u[2] - u[1];
+    const PetscScalar slipRate = 0.0;
+
+    assert(_friction);
+    _friction->updateState(fabs(slip), fabs(slipRate));
+
+    // Set lambda to 1.0 as initial guess for next time step.
+    err = VecSetValue(_solution, _numDOFAll-1, 1.0, INSERT_VALUES);
+    
+    err = VecRestoreArrayRead(_solution, &solutionArray);CHECK_ERROR(err);
+}
 
 // End of file

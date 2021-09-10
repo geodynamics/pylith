@@ -67,7 +67,7 @@ private:
 class SlipWeakening : public Friction {
 public:
 
-    SlipWeakening(void);
+    SlipWeakening(const bool forceHealing);
     ~SlipWeakening(void);
 
     double traction(const double slip,
@@ -85,10 +85,12 @@ public:
 private:
 
     double _lockedSlip;
+    bool _forceHealing;
 
 private:
 
     // Not implemented
+    SlipWeakening(void);
     SlipWeakening(const SlipWeakening&);
     const SlipWeakening& operator=(const SlipWeakening&);
 

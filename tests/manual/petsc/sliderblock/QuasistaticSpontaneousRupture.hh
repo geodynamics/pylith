@@ -27,6 +27,8 @@ protected:
                              PetscMat jacobian,
                              PetscMat preconditioner);
 
+    void _updateState(void);
+
     void _setSolutionBounds(PetscTS ts);
 
 private:
