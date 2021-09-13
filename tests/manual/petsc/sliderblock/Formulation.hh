@@ -87,7 +87,7 @@ protected:
                              PetscMat);
 
     virtual
-    void _updateState(void);
+    void _updateState(const double dt);
   
     virtual
     void _setSolutionBounds(PetscTS ts);

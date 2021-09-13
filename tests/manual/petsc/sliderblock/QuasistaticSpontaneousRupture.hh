@@ -27,7 +27,7 @@ protected:
                              PetscMat jacobian,
                              PetscMat preconditioner);
 
-    void _updateState(void);
+    void _updateState(const double dt);
 
     void _setSolutionBounds(PetscTS ts);
 

@@ -24,7 +24,8 @@ public:
 
     virtual
     void updateState(const double slip,
-                     const double slipRate) = 0;
+                     const double slipRate,
+		     const double dt) = 0;
 
 private:
 
@@ -50,7 +51,8 @@ public:
     double jacobianSlipRate(const double slipRate);
 
     void updateState(const double slip,
-                     const double slipRate);
+                     const double slipRate,
+		     const double dt);
 
 private:
 
@@ -80,7 +82,8 @@ public:
     double jacobianSlipRate(const double slipRate);
 
     void updateState(const double slip,
-                     const double slipRate);
+                     const double slipRate,
+		     const double dt);
 
 private:
 
@@ -112,7 +115,8 @@ public:
     double jacobianSlipRate(const double slipRate);
 
     void updateState(const double slip,
-                     const double slipRate);
+                     const double slipRate,
+		     const double dt);
 
 private:
 
@@ -129,7 +133,7 @@ private:
 class RateStateFriction : public Friction {
 public:
 
-    RateStateFriction(void);
+    RateStateFriction(const char* paramset);
     ~RateStateFriction(void);
 
     double traction(const double slip,
@@ -142,15 +146,19 @@ public:
     double jacobianSlipRate(const double slipRate);
 
     void updateState(const double slip,
-                     const double slipRate);
+                     const double slipRate,
+		     const double dt);
 
 private:
 
     double _lockedSlip;
+    double _theta;
+    double _a;
 
 private:
 
     // Not implemented
+    RateStateFriction(void);
     RateStateFriction(const RateStateFriction&);
     const RateStateFriction& operator=(const RateStateFriction&);
 

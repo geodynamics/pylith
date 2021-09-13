@@ -128,14 +128,16 @@ void
 Formulation::_poststep(void) {
     PetscFunctionBeginUser;
 
-    this->_updateState();
-    
     PetscErrorCode err = 0;
     PetscReal t = 0.0;
+    PetscReal dt = 0.0;
     PetscInt tindex = 0;
     err = TSGetTime(_ts, &t);CHECK_ERROR(err);
+    err = TSGetTimeStep(_ts, &dt);CHECK_ERROR(err);
     err = TSGetStepNumber(_ts, &tindex);CHECK_ERROR(err);
  
+    this->_updateState(dt);
+    
     // Set time stamp
     err = VecSetValue(_tstamp, 0, t, INSERT_VALUES);CHECK_ERROR(err);
     err = VecAssemblyBegin(_tstamp);CHECK_ERROR(err);
@@ -299,7 +301,7 @@ Formulation::_computeRHSJacobian(const PetscReal,
 
 // --------------------------------------------------------------------------------------------------
 void
-Formulation::_updateState(void) {}
+Formulation::_updateState(const double dt) {}
 
 // --------------------------------------------------------------------------------------------------
 void

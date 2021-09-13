@@ -91,7 +91,7 @@ SliderBlockApp::_printHelp(void) {
         << "[-show-help] "
         << "[-equations quasistatic|dynamic] "
         << "[-rupture prescribed_slip|spontaneous_rupture] "
-        << "[-friction static|slip_weakening|viscous|rate_state] (spontaneous rupture)"
+        << "[-friction static|slip_weakening|viscous|rate_state_stable|rate_state_unstable] (spontaneous rupture)"
         << "[-output-filename FILENAME] "
         << "[PETSc options]\n\n"
         << "Defaults:\n"

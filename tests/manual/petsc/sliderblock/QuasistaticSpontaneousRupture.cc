@@ -41,8 +41,10 @@ QuasistaticSpontaneousRupture::QuasistaticSpontaneousRupture(const char* frictio
       _friction = new SlipWeakeningFriction(true);
     } else if (0 == strcasecmp(friction, "viscous")) {
       _friction = new ViscousFriction();
-    } else if (0 == strcasecmp(friction, "rate_state")) {
-      //_friction = new RateStateFriction(true);
+    } else if (0 == strcasecmp(friction, "rate_state_stable")) {
+      _friction = new RateStateFriction("stable");
+    } else if (0 == strcasecmp(friction, "rate_state_unstable")) {
+      _friction = new RateStateFriction("unstable");
     } else {
       std::cerr << "Unknown friction model '" << friction << "'. Using default (slip_weakening)." << std::endl;
       _friction = new SlipWeakeningFriction(true);      
@@ -85,7 +87,6 @@ QuasistaticSpontaneousRupture::_setSolutionBounds(PetscTS ts) {
 }
 
 
-#include <iostream>
 // --------------------------------------------------------------------------------------------------
 void
 QuasistaticSpontaneousRupture::_computeLHSResidual(const PetscReal t,
@@ -226,7 +227,7 @@ QuasistaticSpontaneousRupture::_computeLHSJacobian(const PetscReal t,
 
 // --------------------------------------------------------------------------------------------------
 void
-QuasistaticSpontaneousRupture::_updateState(void) {
+QuasistaticSpontaneousRupture::_updateState(const double dt) {
     PetscErrorCode err = 0;
     const PetscScalar* solutionArray = NULL;
 
@@ -239,7 +240,7 @@ QuasistaticSpontaneousRupture::_updateState(void) {
     const PetscScalar slipRate = v[2] - v[1];
 
     assert(_friction);
-    _friction->updateState(fabs(slip), fabs(slipRate));
+    _friction->updateState(fabs(slip), fabs(slipRate), dt);
 
     // Set lambda to 1.0 as initial guess for next time step.
     err = VecSetValue(_solution, _numDOFAll-1, 1.0, INSERT_VALUES);
