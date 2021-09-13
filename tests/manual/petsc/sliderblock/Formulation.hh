@@ -97,6 +97,7 @@ protected:
     bool _hasLHSJacobian;
     bool _hasRHSJacobian;
     bool _isDynamic;
+    bool _isSpontaneous;
     TSType _tsAlgorithm;
 
 private:

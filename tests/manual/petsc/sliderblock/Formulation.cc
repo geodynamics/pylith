@@ -27,6 +27,7 @@ Formulation::Formulation(void) :
     _hasLHSJacobian(false),
     _hasRHSJacobian(false),
     _isDynamic(false),
+    _isSpontaneous(false),
     _tsAlgorithm(TSBEULER),
     _ts(NULL),
     _tstamp(NULL),
@@ -56,7 +57,7 @@ Formulation::_createMatsAndVecs(void) {
     err = MatDestroy(&_jacobianRHS);CHECK_ERROR(err);
     err = VecDestroy(&_solution);CHECK_ERROR(err);
 
-    _numDOFAll = (_isDynamic) ? 2*_numDOFDisp + 1 : _numDOFDisp + 1;
+    _numDOFAll = (_isDynamic || _isSpontaneous) ? 2*_numDOFDisp + 1 : _numDOFDisp + 1;
 
     if (_hasLHSJacobian) {
         err = MatCreate(PETSC_COMM_WORLD, &_jacobianLHS);CHECK_ERROR(err);

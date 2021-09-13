@@ -18,6 +18,7 @@
 SliderBlockApp::SliderBlockApp() :
     _optEquations("quasistatic"),
     _optRupture("prescribed_slip"),
+    _optFriction("slip_weakening"),
     _outputFilename("sliderblock.h5"),
     _formulation(NULL)
 {}
@@ -70,6 +71,11 @@ SliderBlockApp::_getOptions(void) {
     err = PetscOptionsGetString(NULL, NULL, "-rupture", rupture, sizeof(rupture), &setRupture);
     if (setRupture) { _optRupture = rupture; }
 
+    char friction[32];
+    PetscBool setFriction = PETSC_FALSE;
+    err = PetscOptionsGetString(NULL, NULL, "-friction", friction, sizeof(friction), &setFriction);
+    if (setFriction) { _optFriction = friction; }
+
     char filename[32];
     PetscBool setFilename = PETSC_FALSE;
     err = PetscOptionsGetString(NULL, NULL, "-output-filename", filename, sizeof(filename), &setFilename);
@@ -85,11 +91,13 @@ SliderBlockApp::_printHelp(void) {
         << "[-show-help] "
         << "[-equations quasistatic|dynamic] "
         << "[-rupture prescribed_slip|spontaneous_rupture] "
+        << "[-friction static|slip_weakening|viscous|rate_state] (spontaneous rupture)"
         << "[-output-filename FILENAME] "
         << "[PETSc options]\n\n"
         << "Defaults:\n"
         << "    -equations quasistatic\n"
         << "    -rupture prescribed_slip\n"
+        << "    -friction slip_weakening\n"
         << "    -output-filename sliderblock.h5\n"
         << std::endl;
 }
@@ -104,10 +112,10 @@ SliderBlockApp::_initialize(void) {
     } else if (( _optEquations == "dynamic") && ( _optRupture == "prescribed_slip") ) {
         _formulation = new DynamicPrescribedSlip();
     } else if (( _optEquations == "quasistatic") && ( _optRupture == "spontaneous_rupture") ) {
-        _formulation = new QuasistaticSpontaneousRupture();
+        _formulation = new QuasistaticSpontaneousRupture(_optFriction.c_str());
 #if 0
     } else if (( _optEquations == "dynamic") && ( _optRupture == "spontaneous_rupture") ) {
-        _formulation = new DynamicSpontaneousRupture();
+        _formulation = new DynamicSpontaneousRupture(_optFriction.c_str());
 #endif
     } else {
         std::ostringstream msg;

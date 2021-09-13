@@ -10,7 +10,7 @@ class Friction;
 class QuasistaticSpontaneousRupture : public Formulation {
 public:
 
-    QuasistaticSpontaneousRupture(void);
+    QuasistaticSpontaneousRupture(const char* friction);
     ~QuasistaticSpontaneousRupture(void);
 
 protected:
@@ -38,6 +38,7 @@ private:
 private:
 
     // Not implemented
+    QuasistaticSpontaneousRupture(void);
     QuasistaticSpontaneousRupture(const QuasistaticSpontaneousRupture&);
     const QuasistaticSpontaneousRupture& operator=(const QuasistaticSpontaneousRupture&);
 

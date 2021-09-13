@@ -28,6 +28,7 @@ private:
 
     std::string _optEquations;
     std::string _optRupture;
+    std::string _optFriction;
     std::string _outputFilename;
     Formulation* _formulation;
     bool _showHelp;

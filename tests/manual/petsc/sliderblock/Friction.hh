@@ -64,11 +64,11 @@ private:
 
 };
 
-class SlipWeakening : public Friction {
+class SlipWeakeningFriction : public Friction {
 public:
 
-    SlipWeakening(const bool forceHealing);
-    ~SlipWeakening(void);
+    SlipWeakeningFriction(const bool forceHealing);
+    ~SlipWeakeningFriction(void);
 
     double traction(const double slip,
                     const double slipRate);
@@ -90,9 +90,69 @@ private:
 private:
 
     // Not implemented
-    SlipWeakening(void);
-    SlipWeakening(const SlipWeakening&);
-    const SlipWeakening& operator=(const SlipWeakening&);
+    SlipWeakeningFriction(void);
+    SlipWeakeningFriction(const SlipWeakeningFriction&);
+    const SlipWeakeningFriction& operator=(const SlipWeakeningFriction&);
+
+};
+
+class ViscousFriction : public Friction {
+public:
+
+    ViscousFriction(void);
+    ~ViscousFriction(void);
+
+    double traction(const double slip,
+                    const double slipRate);
+
+    double lockedSlip(void) const;
+
+    double jacobianSlip(const double slip);
+
+    double jacobianSlipRate(const double slipRate);
+
+    void updateState(const double slip,
+                     const double slipRate);
+
+private:
+
+    double _lockedSlip;
+
+private:
+
+    // Not implemented
+    ViscousFriction(const ViscousFriction&);
+    const ViscousFriction& operator=(const ViscousFriction&);
+
+};
+
+class RateStateFriction : public Friction {
+public:
+
+    RateStateFriction(void);
+    ~RateStateFriction(void);
+
+    double traction(const double slip,
+                    const double slipRate);
+
+    double lockedSlip(void) const;
+
+    double jacobianSlip(const double slip);
+
+    double jacobianSlipRate(const double slipRate);
+
+    void updateState(const double slip,
+                     const double slipRate);
+
+private:
+
+    double _lockedSlip;
+
+private:
+
+    // Not implemented
+    RateStateFriction(const RateStateFriction&);
+    const RateStateFriction& operator=(const RateStateFriction&);
 
 };
 

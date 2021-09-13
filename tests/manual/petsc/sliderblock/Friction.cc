@@ -18,6 +18,12 @@ namespace _SlipWeakeningFriction {
     static const double weakeningSlip = 1.0e-6;
 }
 
+namespace _ViscousFriction {
+    static const double frictionStatic = 0.2;
+    static const double viscosity = 0.1;
+    static const double rateParameter = 1.0;
+}
+
 // --------------------------------------------------------------------------------------------------
 Friction::Friction(void) {}
 
@@ -68,16 +74,16 @@ StaticFriction::updateState(const double slip,
 
 
 // --------------------------------------------------------------------------------------------------
-SlipWeakening::SlipWeakening(const bool forceHealing) :
+SlipWeakeningFriction::SlipWeakeningFriction(const bool forceHealing) :
     _lockedSlip(0.0),
     _forceHealing(forceHealing) {}
 
 
-SlipWeakening::~SlipWeakening(void) {}
+SlipWeakeningFriction::~SlipWeakeningFriction(void) {}
 
 
 double
-SlipWeakening::traction(const double slip,
+SlipWeakeningFriction::traction(const double slip,
                         const double slipRate) {
     const double d0 = _SlipWeakeningFriction::weakeningSlip;
     const double fs = _SlipWeakeningFriction::frictionStatic;
@@ -96,13 +102,13 @@ SlipWeakening::traction(const double slip,
 
 
 double
-SlipWeakening::lockedSlip(void) const {
+SlipWeakeningFriction::lockedSlip(void) const {
     return _lockedSlip;
 }
 
 
 double
-SlipWeakening::jacobianSlip(const double slip) {
+SlipWeakeningFriction::jacobianSlip(const double slip) {
     const double d0 = _SlipWeakeningFriction::weakeningSlip;
     const double fs = _SlipWeakeningFriction::frictionStatic;
     const double fd = _SlipWeakeningFriction::frictionDynamic;
@@ -116,15 +122,65 @@ SlipWeakening::jacobianSlip(const double slip) {
 
 
 double
-SlipWeakening::jacobianSlipRate(const double slipRate) {
+SlipWeakeningFriction::jacobianSlipRate(const double slipRate) {
     return 0.0;
 }
 
 
 void
-SlipWeakening::updateState(const double slip,
+SlipWeakeningFriction::updateState(const double slip,
                            const double slipRate) {
     if (slipRate <= _Friction::zeroTolerance || _forceHealing) {
+        _lockedSlip = slip;
+    } // if
+}
+
+
+// --------------------------------------------------------------------------------------------------
+ViscousFriction::ViscousFriction(void) :
+  _lockedSlip(0.0) {}
+
+
+ViscousFriction::~ViscousFriction(void) {}
+
+
+double
+ViscousFriction::traction(const double slip,
+                        const double slipRate) {
+    const double f0 = _ViscousFriction::frictionStatic;
+    const double v0 = _ViscousFriction::rateParameter;
+    const double viscosity = _ViscousFriction::viscosity;
+
+    const double f = f0 + viscosity * slipRate / v0;
+    return f;
+}
+
+
+double
+ViscousFriction::lockedSlip(void) const {
+  return _lockedSlip;
+}
+
+
+double
+ViscousFriction::jacobianSlip(const double slip) {
+  return 0.0;
+}
+
+
+double
+ViscousFriction::jacobianSlipRate(const double slipRate) {
+    const double v0 = _ViscousFriction::rateParameter;
+    const double viscosity = _ViscousFriction::viscosity;
+
+    return viscosity / v0;
+}
+
+
+void
+ViscousFriction::updateState(const double slip,
+			     const double slipRate) {
+    if (slipRate <= _Friction::zeroTolerance) {
         _lockedSlip = slip;
     } // if
 }
