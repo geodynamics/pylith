@@ -30,6 +30,7 @@ endif
 DIST_SUBDIRS = $(SUBDIRS) \
 	examples \
 	doc \
+	docs-sphinx \
 	templates \
 	share
 

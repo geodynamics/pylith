@@ -329,4 +329,4 @@ CIG uses *GitHub* for source control and bug tracking.
 If you find a bug in PyLith, please submit a bug report to the GitHub issue tracking system for PyLith <https://github.com/geodynamics/pylith/issues>.
 Of course, it is helpful to first check to see if someone else already submitted a report related to the issue; one of the CIG developers may have posted a work around to the problem.
 You can reply to a current issue by clicking on the issue title.
-To submit a new issue, click on the *New Issue* button.
+To submit a new issue, click on the *New Issue* button. 
