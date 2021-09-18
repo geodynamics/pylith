@@ -25,6 +25,7 @@ subpkginclude_HEADERS = \
 	DirichletTimeDependent.hh \
 	DirichletUserFn.hh \
 	NeumannTimeDependent.hh \
+	NeumannUserFn.hh \
 	AbsorbingDampers.hh \
 	AbsorbingDampersAuxiliaryFactory.hh \
 	bcfwd.hh

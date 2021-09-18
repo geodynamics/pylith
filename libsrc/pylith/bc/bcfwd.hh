@@ -38,6 +38,7 @@ namespace pylith {
         class DirichletUserFn;
 
         class NeumannTimeDependent;
+        class NeumannUserFn;
         class AbsorbingDampers;
 
         class AbsorbingDampersAuxiliaryFactory;
