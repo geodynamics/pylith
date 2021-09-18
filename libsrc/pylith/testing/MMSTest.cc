@@ -246,6 +246,12 @@ pylith::testing::MMSTest::_initialize(void) {
     PetscErrorCode err = VecDuplicate(_solution->getGlobalVector(), &_solutionExactVec);CPPUNIT_ASSERT(!err);
     err = VecDuplicate(_solutionExactVec, &_solutionDotExactVec);CPPUNIT_ASSERT(!err);
 
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        const pylith::topology::Mesh& mesh = _solution->getMesh();
+        mesh.view();
+    } // if
+
     PYLITH_METHOD_END;
 } // _initialize
 

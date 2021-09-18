@@ -42,10 +42,34 @@ mesh = {
   }
   group = {
     type = vertices
-    name = boundary
-    count = 6
+    name = boundary_xpos
+    count = 3
     indices = {
-      0  1  2  6  7  8
+      6  7  8
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary_xneg
+    count = 3
+    indices = {
+      0  1  2
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary_ypos
+    count = 3
+    indices = {
+      2  5  8
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary_yneg
+    count = 3
+    indices = {
+      0  3  6
     }
   }
   group = {
