@@ -267,12 +267,26 @@ protected:
         };
         _data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-        CPPUNIT_ASSERT(_material);
-        _material->setFormulation(pylith::problems::Physics::QUASISTATIC);
-        _material->useBodyForce(false);
-        _material->setDescriptiveLabel("Isotropic Linear Elascitity Plane Strain");
-        _material->setMaterialId(24);
-        _material->setBulkRheology(_data->rheology);
+        // Materials
+        _materials.resize(2);
+        { // xneg
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
+            material->setFormulation(pylith::problems::Physics::QUASISTATIC);
+            material->useBodyForce(false);
+            material->setDescriptiveLabel("Isotropic Linear Elascitity Plane Strain");
+            material->setMaterialId(10);
+            material->setBulkRheology(_data->rheology);
+            _materials[0] = material;
+        } // xneg
+        { // xpos
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
+            material->setFormulation(pylith::problems::Physics::QUASISTATIC);
+            material->useBodyForce(false);
+            material->setDescriptiveLabel("Isotropic Linear Elascitity Plane Strain");
+            material->setMaterialId(20);
+            material->setBulkRheology(_data->rheology);
+            _materials[1] = material;
+        } // xpos
 
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;

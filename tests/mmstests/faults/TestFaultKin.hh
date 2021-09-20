@@ -66,7 +66,7 @@ protected:
 protected:
 
     pylith::faults::FaultCohesiveKin* _fault; ///< Fault test subject.
-    pylith::materials::Elasticity* _material; ///< Elastic material.
+    std::vector<pylith::materials::Material*> _materials; ///< Elastic materials.
     std::vector<pylith::bc::BoundaryCondition*> _bcs; ///< Boundary conditions.
     TestFaultKin_Data* _data; ///< Test parameters.
 
