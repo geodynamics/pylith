@@ -21,6 +21,7 @@
 #include "FaultCohesiveStub.hh" // implementation of object methods
 
 #include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -58,10 +59,11 @@ pylith::faults::FaultCohesiveStub::createIntegrator(const pylith::topology::Fiel
 std::vector<pylith::feassemble::Constraint*>
 pylith::faults::FaultCohesiveStub::createConstraints(const pylith::topology::Field& solution) {
     pylith::testing::StubMethodTracker tracker("pylith::faults::FaultCohesiveStub::createConstraints");
-
-    return NULL;
+    std::vector<pylith::feassemble::Constraint*> constraintArray;
+    constraintArray.resize(0);
+    
+    PYLITH_METHOD_RETURN(constraintArray);
 } // createConstraints
-
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create auxiliary field.

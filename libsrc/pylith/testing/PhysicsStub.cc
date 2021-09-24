@@ -73,10 +73,11 @@ pylith::problems::PhysicsStub::createIntegrator(const pylith::topology::Field& s
 std::vector<pylith::feassemble::Constraint*>
 pylith::problems::PhysicsStub::createConstraints(const pylith::topology::Field& solution) {
     pylith::testing::StubMethodTracker tracker("pylith::problems::PhysicsStub::createConstraints");
-
-    return NULL;
+    std::vector<pylith::feassemble::Constraint*> constraintArray;
+    constraintArray.resize(0);
+    
+    PYLITH_METHOD_RETURN(constraintArray);
 } // createConstraints
-
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create auxiliary field.
