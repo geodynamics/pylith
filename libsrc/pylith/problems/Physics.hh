@@ -167,15 +167,15 @@ public:
     /** Create constraint and set kernels.
      *
      * @param[in] solution Solution field.
-     * @returns Constraint if applicable, otherwise NULL.
+     * @returns Constraints if applicable, otherwise NULL.
      */
     virtual
-    pylith::feassemble::Constraint* createConstraint(const pylith::topology::Field& solution) = 0;
+    std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution) = 0;
 
     /** Create auxiliary field.
      *
      * @param[in] solution Solution field.
-     * @param[in\ physicsMesh Finite-element mesh associated with physics.
+     * @param[in] physicsMesh Finite-element mesh associated with physics.
      *
      * @returns Auxiliary field if applicable, otherwise NULL.
      */
@@ -186,7 +186,7 @@ public:
     /** Create derived field.
      *
      * @param[in] solution Solution field.
-     * @param[in\ physicsMesh Finite-element mesh associated with physics.
+     * @param[in] physicsMesh Finite-element mesh associated with physics.
      *
      * @returns Derived field if applicable, otherwise NULL.
      */

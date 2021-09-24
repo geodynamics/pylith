@@ -55,12 +55,12 @@ pylith::faults::FaultCohesiveStub::createIntegrator(const pylith::topology::Fiel
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
-pylith::feassemble::Constraint*
-pylith::faults::FaultCohesiveStub::createConstraint(const pylith::topology::Field& solution) {
-    pylith::testing::StubMethodTracker tracker("pylith::faults::FaultCohesiveStub::createConstraint");
+std::vector<pylith::feassemble::Constraint*>
+pylith::faults::FaultCohesiveStub::createConstraints(const pylith::topology::Field& solution) {
+    pylith::testing::StubMethodTracker tracker("pylith::faults::FaultCohesiveStub::createConstraints");
 
     return NULL;
-} // createConstraint
+} // createConstraints
 
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -166,11 +166,12 @@ pylith::bc::DirichletUserFn::createIntegrator(const pylith::topology::Field& sol
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
-pylith::feassemble::Constraint*
-pylith::bc::DirichletUserFn::createConstraint(const pylith::topology::Field& solution) {
+std::vector<pylith::feassemble::Constraint*>
+pylith::bc::DirichletUserFn::createConstraints(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("createConstraints(solution="<<solution.getLabel()<<")");
 
+    std::vector<pylith::feassemble::Constraint*> constraintArray;
     pylith::feassemble::ConstraintUserFn* constraint = new pylith::feassemble::ConstraintUserFn(this);assert(constraint);
     constraint->setMarkerLabel(getMarkerLabel());
     constraint->setConstrainedDOF(&_constrainedDOF[0], _constrainedDOF.size());
@@ -178,8 +179,10 @@ pylith::bc::DirichletUserFn::createConstraint(const pylith::topology::Field& sol
     constraint->setUserFn(_fn);
     constraint->setUserFnDot(_fnDot);
 
-    PYLITH_METHOD_RETURN(constraint);
-} // createConstraint
+    constraintArray.resize(1);
+    constraintArray[0] = constraint;
+    PYLITH_METHOD_RETURN(constraintArray);
+} // createConstraints
 
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -141,7 +141,7 @@ public:
      * @param[in] solution Solution field.
      * @returns Constraint if applicable, otherwise NULL.
      */
-    pylith::feassemble::Constraint* createConstraint(const pylith::topology::Field& solution);
+    std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
 
     /** Create auxiliary field.
      *

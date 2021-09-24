@@ -193,13 +193,15 @@ pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field
 
 // ------------------------------------------------------------------------------------------------
 // Create constraint for buried fault edges and faces.
-pylith::feassemble::Constraint*
-pylith::faults::FaultCohesiveKin::createConstraint(const pylith::topology::Field& solution) {
+std::vector<pylith::feassemble::Constraint*>
+pylith::faults::FaultCohesiveKin::createConstraints(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("createConstraints(solution="<<solution.getLabel()<<")");
 
     if (0 == strlen(getBuriedEdgesMarkerLabel())) {
-        PYLITH_METHOD_RETURN(NULL);
+        std::vector<pylith::feassemble::Constraint*> constraintArray;
+        constraintArray.resize(0);
+        PYLITH_METHOD_RETURN(constraintArray);
     } // if
 
     const char* lagrangeName = "lagrange_multiplier_fault";
@@ -254,6 +256,7 @@ pylith::faults::FaultCohesiveKin::createConstraint(const pylith::topology::Field
         } // for
     } // for
 
+    std::vector<pylith::feassemble::Constraint*> constraintArray;
     pylith::feassemble::ConstraintSimple *constraint = new pylith::feassemble::ConstraintSimple(this);assert(constraint);
     constraint->setMarkerLabel(labelname.c_str());
     err = PetscObjectViewFromOptions((PetscObject) buriedLabel, NULL, "-buried_edge_label_view");
@@ -262,8 +265,10 @@ pylith::faults::FaultCohesiveKin::createConstraint(const pylith::topology::Field
     constraint->setSubfieldName(lagrangeName);
     constraint->setUserFn(_zero);
 
-    PYLITH_METHOD_RETURN(constraint);
-} // createConstraint
+    constraintArray.resize(1);
+    constraintArray[0] = constraint;
+    PYLITH_METHOD_RETURN(constraintArray);
+} // createConstraints
 
 
 // ------------------------------------------------------------------------------------------------

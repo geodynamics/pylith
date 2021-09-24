@@ -454,24 +454,44 @@ pylith::problems::Problem::_createConstraints(void) {
 
     for (size_t i = 0; i < numMaterials; ++i) {
         assert(_materials[i]);
-        pylith::feassemble::Constraint* constraint = _materials[i]->createConstraint(*_solution);
-        assert(count < maxSize);
-        if (constraint) { _constraints[count++] = constraint;}
+        std::vector<pylith::feassemble::Constraint*> constraints = _materials[i]->createConstraints(*_solution);
+        // assert(count < maxSize);
+        if (constraints) {
+            if (_constraints.size() < count + constraints.size()) {
+                _constraints.resize(count + constraints.size() + 1);
+            }
+            for (size_t j=0; j < constraints.size(); ++j) {
+                _constraints[count++] = constraints[j];
+            }
+        }
     } // for
 
     for (size_t i = 0; i < numInterfaces; ++i) {
         assert(_interfaces[i]);
-        pylith::feassemble::Constraint* constraint = _interfaces[i]->createConstraint(*_solution);
-        assert(count < maxSize);
-        if (constraint) { _constraints[count++] = constraint;}
+        std::vector<pylith::feassemble::Constraint*> constraint = _interfaces[i]->createConstraints(*_solution);
+        // assert(count < maxSize);
+        if (constraints) {
+            if (_constraints.size() < count + constraints.size()) {
+                _constraints.resize(count + constraints.size() + 1);
+            }
+            for (size_t j=0; j < constraints.size(); ++j) {
+                _constraints[count++] = constraints[j];
+            }
+        }
     } // for
 
     for (size_t i = 0; i < numBC; ++i) {
         assert(_bc[i]);
-        pylith::feassemble::Constraint* constraint = _bc[i]->createConstraint(*_solution);
-        assert(count < maxSize);
-        if (constraint) { _constraints[count++] = constraint;}
-    } // for
+        std::vector<pylith::feassemble::Constraint*> constraint = _bc[i]->createConstraints(*_solution);
+        // assert(count < maxSize);
+        if (constraints) {
+            if (_constraints.size() < count + constraints.size()) {
+                _constraints.resize(count + constraints.size() + 1);
+            }
+            for (size_t j=0; j < constraints.size(); ++j) {
+                _constraints[count++] = constraints[j];
+            }
+        }    } // for
 
     _constraints.resize(count);
 

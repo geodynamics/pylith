@@ -238,20 +238,25 @@ pylith::bc::DirichletTimeDependent::createIntegrator(const pylith::topology::Fie
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
-pylith::feassemble::Constraint*
-pylith::bc::DirichletTimeDependent::createConstraint(const pylith::topology::Field& solution) {
+std::vector<pylith::feassemble::Constraint*>
+pylith::bc::DirichletTimeDependent::createConstraints(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("createConstraints(solution="<<solution.getLabel()<<")");
 
+    std::vector<pylith::feassemble::Constraint*> constraintArray;
     pylith::feassemble::ConstraintSpatialDB* constraint = new pylith::feassemble::ConstraintSpatialDB(this);assert(constraint);
+
     constraint->setMarkerLabel(getMarkerLabel());
     constraint->setConstrainedDOF(&_constrainedDOF[0], _constrainedDOF.size());
     constraint->setSubfieldName(_subfieldName.c_str());
 
     _DirichletTimeDependent::setKernelConstraint(constraint, *this, solution);
 
-    PYLITH_METHOD_RETURN(constraint);
-} // createConstraint
+    constraintArray.resize(1);
+    constraintArray[0] = constraint;
+
+    PYLITH_METHOD_RETURN(constraintArray);
+} // createConstraints
 
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -70,12 +70,12 @@ pylith::problems::PhysicsStub::createIntegrator(const pylith::topology::Field& s
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
-pylith::feassemble::Constraint*
-pylith::problems::PhysicsStub::createConstraint(const pylith::topology::Field& solution) {
-    pylith::testing::StubMethodTracker tracker("pylith::problems::PhysicsStub::createConstraint");
+std::vector<pylith::feassemble::Constraint*>
+pylith::problems::PhysicsStub::createConstraints(const pylith::topology::Field& solution) {
+    pylith::testing::StubMethodTracker tracker("pylith::problems::PhysicsStub::createConstraints");
 
     return NULL;
-} // createConstraint
+} // createConstraints
 
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -59,7 +59,7 @@ pylith::materials::Material::deallocate(void) {
 // Set value of label material-id used to identify material cells.
 void
 pylith::materials::Material::setMaterialId(const int value) {
-    PYLITH_COMPONENT_DEBUG("setMmaterialId(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("setMaterialId(value="<<value<<")");
 
     _materialId = value;
 } // setMaterialId
@@ -101,10 +101,10 @@ pylith::materials::Material::setGravityField(spatialdata::spatialdb::GravityFiel
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
-pylith::feassemble::Constraint*
-pylith::materials::Material::createConstraint(const pylith::topology::Field& solution) {
+std::vector<pylith::feassemble::Constraint*>
+pylith::materials::Material::createConstraints(const pylith::topology::Field& solution) {
     return NULL;
-} // createConstraint
+} // createConstraints
 
 
 // End of file

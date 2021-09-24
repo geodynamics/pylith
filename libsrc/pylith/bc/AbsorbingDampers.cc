@@ -139,10 +139,14 @@ pylith::bc::AbsorbingDampers::createIntegrator(const pylith::topology::Field& so
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
-pylith::feassemble::Constraint*
-pylith::bc::AbsorbingDampers::createConstraint(const pylith::topology::Field& solution) {
-    return NULL;
-} // createConstraint
+std::vector<pylith::feassemble::Constraint*>
+pylith::bc::AbsorbingDampers::createConstraints(const pylith::topology::Field& solution) {
+    PYLITH_COMPONENT_DEBUG("createConstraints(solution="<<solution.getLabel()<<") empty method");
+    std::vector<pylith::feassemble::Constraint*> constraintArray;
+    constraintArray.resize(0);
+    
+    PYLITH_METHOD_RETURN(constraintArray);
+} // createConstraints
 
 
 // ---------------------------------------------------------------------------------------------------------------------
