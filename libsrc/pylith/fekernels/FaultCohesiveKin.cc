@@ -218,8 +218,7 @@ pylith::fekernels::FaultCohesiveKin::f0u_pos(const PylithInt dim,
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt fOffN = 0;
-    const PylithInt fOffP = fOffN + spaceDim;
+    const PylithInt fOffP = 0;
     const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKin::lagrange_sOff(sOff, numS);
     const PylithScalar* lagrange = &s[sOffLagrange];
 
