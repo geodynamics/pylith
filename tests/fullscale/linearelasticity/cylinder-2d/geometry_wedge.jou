@@ -1,0 +1,33 @@
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+${Units('si')}
+
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+
+# ----------------------------------------------------------------------
+# Create outer cylinder
+# ----------------------------------------------------------------------
+# Outer cylinder is 20km (radius)
+${outerRadius=20.0*km}
+${height=2.0*km}
+create Cylinder height {height} radius {outerRadius}
+
+# ----------------------------------------------------------------------
+# Create xz and yz planes, cut cylinder with them and remove 3/4.
+# ----------------------------------------------------------------------
+create planar surface with plane yplane
+create planar surface with plane xplane
+webcut volume 1 with sheet surface 4
+webcut volume 1 4 with sheet surface 5
+delete volume 4 5 6
+delete body 2 3
+
+# ----------------------------------------------------------------------
+# Create midsurface and delete other volumes.
+# ----------------------------------------------------------------------
+create midsurface volume 1 surface 16 18
+delete volume 1

@@ -17,7 +17,8 @@
 
 SUBDIRS = \
 	nofaults-2d \
-	faults-2d
+	faults-2d \
+	cylinder-2d
 
 
 # End of file 
