@@ -20,6 +20,8 @@
 
 #include "pylith/fekernels/NeumannTimeDependent.hh"
 
+#include "pylith/fekernels/BoundaryDirections.hh" // USES tangential_directions()
+
 #include <cassert> // USES assert()
 
 /* ======================================================================
@@ -114,7 +116,7 @@ pylith::fekernels::NeumannTimeDependent::g0_initial_vector(const PylithInt dim,
         const PylithScalar* refDir1 = &constants[0];
         const PylithScalar* refDir2 = &constants[3];
         PylithScalar tanDir1[3], tanDir2[3];
-        _tangential_directions(_dim, refDir1, refDir2, n, tanDir1, tanDir2);
+        BoundaryDirections::tangential_directions(tanDir1, tanDir2, refDir1, refDir2, n);
 
         for (PylithInt i = 0; i < _dim; ++i) {
             g0[i] += a[i_initial+0]*tanDir1[i] + a[i_initial+1]*tanDir2[i] + a[i_initial+2]*n[i];
@@ -223,7 +225,7 @@ pylith::fekernels::NeumannTimeDependent::g0_rate_vector(const PylithInt dim,
             const PylithScalar* refDir1 = &constants[0];
             const PylithScalar* refDir2 = &constants[3];
             PylithScalar tanDir1[3], tanDir2[3];
-            _tangential_directions(_dim, refDir1, refDir2, n, tanDir1, tanDir2);
+            BoundaryDirections::tangential_directions(tanDir1, tanDir2, refDir1, refDir2, n);
 
             for (PylithInt i = 0; i < _dim; ++i) {
                 g0[i] += tRel * (a[i_rate+0]*tanDir1[i] + a[i_rate+1]*tanDir2[i] + a[i_rate+2]*n[i]);
@@ -324,7 +326,7 @@ pylith::fekernels::NeumannTimeDependent::g0_timeHistory_vector(const PylithInt d
         const PylithScalar* refDir1 = &constants[0];
         const PylithScalar* refDir2 = &constants[3];
         PylithScalar tanDir1[3], tanDir2[3];
-        _tangential_directions(_dim, refDir1, refDir2, n, tanDir1, tanDir2);
+        BoundaryDirections::tangential_directions(tanDir1, tanDir2, refDir1, refDir2, n);
 
         for (PylithInt i = 0; i < _dim; ++i) {
             g0[i] += a[i_value] * (a[i_amplitude+0]*tanDir1[i] + a[i_amplitude+1]*tanDir2[i] + a[i_amplitude+2]*n[i]);
@@ -733,42 +735,6 @@ pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_vector(const 
     g0_timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x,
                           aOffTimeHistory, aOffTimeHistory_x, a, a_t, a_x, t, x, n, numConstants, constants, g0);
 } // g0_initialRateTimeHistory_vector
-
-
-// ----------------------------------------------------------------------
-// Compute tangential directions from reference direction (first and second choice) and normal direction in 3-D.
-void
-pylith::fekernels::NeumannTimeDependent::_tangential_directions(const PylithInt dim,
-                                                                const PylithScalar refDir1[],
-                                                                const PylithScalar refDir2[],
-                                                                const PylithScalar normDir[],
-                                                                PylithScalar tanDir1[],
-                                                                PylithScalar tanDir2[]) {
-    assert(3 == dim);
-    assert(refDir1);
-    assert(refDir2);
-    assert(normDir);
-    assert(tanDir1);
-    assert(tanDir2);
-
-    const PylithInt _dim = 3;
-    PylithScalar refDir[3] = { refDir1[0], refDir1[1], refDir1[2] };
-    if (fabs(refDir[0]*normDir[0] + refDir[1]*normDir[1] + refDir[2]*normDir[2]) > 0.98) {
-        for (PylithInt i = 0; i < _dim; ++i) {
-            refDir[i] = refDir2[i];
-        } // for
-    } // if
-
-    // refDir x normDir
-    tanDir1[0] = +refDir[1]*normDir[2] - refDir[2]*normDir[1];
-    tanDir1[1] = +refDir[2]*normDir[0] - refDir[0]*normDir[2];
-    tanDir1[2] = +refDir[0]*normDir[1] - refDir[1]*normDir[0];
-
-    // normDir x tanDir1
-    tanDir2[0] = +normDir[1]*tanDir1[2] - normDir[2]*tanDir1[1];
-    tanDir2[1] = +normDir[2]*tanDir1[0] - normDir[0]*tanDir1[2];
-    tanDir2[2] = +normDir[0]*tanDir1[1] - normDir[1]*tanDir1[0];
-} // _tangential_directions
 
 
 // End of file

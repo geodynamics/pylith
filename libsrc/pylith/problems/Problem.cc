@@ -479,7 +479,6 @@ pylith::problems::Problem::_createConstraints(void) {
 } // _createConstraints
 
 
-#include <iostream>
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup solution subfields and discretization.
 void

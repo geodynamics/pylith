@@ -66,8 +66,8 @@ protected:
 protected:
 
     pylith::faults::FaultCohesiveKin* _fault; ///< Fault test subject.
-    pylith::materials::Elasticity* _material; ///< Elastic material.
-    pylith::bc::DirichletUserFn* _bc; ///< Dirichlet boundary condition.
+    std::vector<pylith::materials::Material*> _materials; ///< Elastic materials.
+    std::vector<pylith::bc::BoundaryCondition*> _bcs; ///< Boundary conditions.
     TestFaultKin_Data* _data; ///< Test parameters.
 
 }; // class TestFaultKin
@@ -88,7 +88,6 @@ public:
 
     int spaceDim; ///< Spatial dimension of domain.
     const char* meshFilename; ///< Name of file with ASCII mesh.
-    const char* boundaryLabel; ///< Group defining domain boundary.
 
     spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
     spatialdata::spatialdb::GravityField* gravityField; ///< Gravity field.

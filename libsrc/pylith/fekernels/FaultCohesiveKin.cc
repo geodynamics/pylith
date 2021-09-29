@@ -20,6 +20,8 @@
 
 #include "pylith/fekernels/FaultCohesiveKin.hh"
 
+#include "pylith/fekernels/BoundaryDirections.hh" // USES tangential_directions()
+
 #include <cassert> // USES assert()
 
 /* ======================================================================
@@ -64,22 +66,6 @@ public:
             static PylithInt lagrange_sOff(const PylithInt sOff[],
                                            const PylithInt numS);
 
-            /* Compute tangential directions for 3-D fault.
-             *
-             * @param[in] dim Spatial dimension.
-             * @param[in] refDir1 First choice for reference direction.
-             * @param[in] refDir2 Second choice for reference direction if first fails.
-             * @param[in] normDir Normal direction.
-             * @param[out] tanDir1 First tangential direction.
-             * @param[out] tanDIr2 Second tangential direction.
-             */
-            static void tangential_directions(const PylithInt dim,
-                                              const PylithScalar refDir1[],
-                                              const PylithScalar refDir2[],
-                                              const PylithScalar normDir[],
-                                              PylithScalar tanDir1[],
-                                              PylithScalar tanDir2[]);
-
         }; // _FaultCohesiveKin
     } // fekernels
 } // pylith
@@ -110,42 +96,6 @@ pylith::fekernels::_FaultCohesiveKin::lagrange_sOff(const PylithInt sOff[],
     } // for
     return off;
 } // lagrange_sOff
-
-
-// ----------------------------------------------------------------------
-// Compute tangential directions from reference direction (first and second choice) and normal direction in 3-D.
-void
-pylith::fekernels::_FaultCohesiveKin::tangential_directions(const PylithInt dim,
-                                                            const PylithScalar refDir1[],
-                                                            const PylithScalar refDir2[],
-                                                            const PylithScalar normDir[],
-                                                            PylithScalar tanDir1[],
-                                                            PylithScalar tanDir2[]) {
-    assert(3 == dim);
-    assert(refDir1);
-    assert(refDir2);
-    assert(normDir);
-    assert(tanDir1);
-    assert(tanDir2);
-
-    const PylithInt _dim = 3;
-    PylithScalar refDir[3] = { refDir1[0], refDir1[1], refDir1[2] };
-    if (fabs(refDir[0]*normDir[0] + refDir[1]*normDir[1] + refDir[2]*normDir[2]) > 0.98) {
-        for (PylithInt i = 0; i < _dim; ++i) {
-            refDir[i] = refDir2[i];
-        } // for
-    } // if
-
-    // refDir x normDir
-    tanDir1[0] = +refDir[1]*normDir[2] - refDir[2]*normDir[1];
-    tanDir1[1] = +refDir[2]*normDir[0] - refDir[0]*normDir[2];
-    tanDir1[2] = +refDir[0]*normDir[1] - refDir[1]*normDir[0];
-
-    // normDir x tanDir1
-    tanDir2[0] = +normDir[1]*tanDir1[2] - normDir[2]*tanDir1[1];
-    tanDir2[1] = +normDir[2]*tanDir1[0] - normDir[0]*tanDir1[2];
-    tanDir2[2] = +normDir[0]*tanDir1[1] - normDir[1]*tanDir1[0];
-} // _tangential_directions
 
 
 // ----------------------------------------------------------------------
@@ -218,8 +168,7 @@ pylith::fekernels::FaultCohesiveKin::f0u_pos(const PylithInt dim,
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt fOffN = 0;
-    const PylithInt fOffP = fOffN + spaceDim;
+    const PylithInt fOffP = 0;
     const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKin::lagrange_sOff(sOff, numS);
     const PylithScalar* lagrange = &s[sOffLagrange];
 
@@ -289,7 +238,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_u(const PylithInt dim,
         const PylithScalar* refDir1 = &constants[0];
         const PylithScalar* refDir2 = &constants[3];
         PylithScalar tanDir1[3], tanDir2[3];
-        pylith::fekernels::_FaultCohesiveKin::tangential_directions(_spaceDim, refDir1, refDir2, n, tanDir1, tanDir2);
+        BoundaryDirections::tangential_directions(tanDir1, tanDir2, refDir1, refDir2, n);
 
         for (PylithInt i = 0; i < _spaceDim; ++i) {
             const PylithScalar slipXYZ = n[i]*slip[0] + tanDir1[i]*slip[1] + tanDir2[i]*slip[2];
@@ -361,7 +310,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_v(const PylithInt dim,
         const PylithScalar* refDir1 = &constants[0];
         const PylithScalar* refDir2 = &constants[3];
         PylithScalar tanDir1[3], tanDir2[3];
-        pylith::fekernels::_FaultCohesiveKin::tangential_directions(_spaceDim, refDir1, refDir2, n, tanDir1, tanDir2);
+        BoundaryDirections::tangential_directions(tanDir1, tanDir2, refDir1, refDir2, n);
 
         for (PylithInt i = 0; i < _spaceDim; ++i) {
             const PylithScalar slipRateXYZ = n[i]*slipRate[0] + tanDir1[i]*slipRate[1] + tanDir2[i]*slipRate[2];
@@ -433,7 +382,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_a(const PylithInt dim,
         const PylithScalar* refDir1 = &constants[0];
         const PylithScalar* refDir2 = &constants[3];
         PylithScalar tanDir1[3], tanDir2[3];
-        pylith::fekernels::_FaultCohesiveKin::tangential_directions(_spaceDim, refDir1, refDir2, n, tanDir1, tanDir2);
+        BoundaryDirections::tangential_directions(tanDir1, tanDir2, refDir1, refDir2, n);
 
         for (PylithInt i = 0; i < _spaceDim; ++i) {
             const PylithScalar slipAccXYZ = n[i]*slipAcc[0] + tanDir1[i]*slipAcc[1] + tanDir2[i]*slipAcc[2];

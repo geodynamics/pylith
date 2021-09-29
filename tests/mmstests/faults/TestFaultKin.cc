@@ -20,6 +20,7 @@
 
 #include "TestFaultKin.hh" // Implementation of class methods
 
+#include "pylith/bc/BoundaryCondition.cc" // HASA BoundaryCondition
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 #include "pylith/faults/KinSrc.hh" // USES KinSrc
@@ -30,12 +31,10 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // pythia::journal
 
@@ -50,9 +49,7 @@ void
 pylith::mmstests::TestFaultKin::setUp(void) {
     MMSTest::setUp();
 
-    _material = new pylith::materials::Elasticity;CPPUNIT_ASSERT(_material);
     _fault = new pylith::faults::FaultCohesiveKin;CPPUNIT_ASSERT(_fault);
-    _bc = new pylith::bc::DirichletUserFn;CPPUNIT_ASSERT(_bc);
     _data = NULL;
 } // setUp
 
@@ -61,9 +58,13 @@ pylith::mmstests::TestFaultKin::setUp(void) {
 // Deallocate testing data.
 void
 pylith::mmstests::TestFaultKin::tearDown(void) {
-    delete _material;_material = NULL;
+    for (size_t i = 0; i < _materials.size(); ++i) {
+        delete _materials[i];_materials[i] = NULL;
+    } // for
     delete _fault;_fault = NULL;
-    delete _bc;_bc = NULL;
+    for (size_t i = 0; i < _bcs.size(); ++i) {
+        delete _bcs[i];_bcs[i] = NULL;
+    } // for
     delete _data;_data = NULL;
 
     MMSTest::tearDown();
@@ -92,14 +93,16 @@ pylith::mmstests::TestFaultKin::_initialize(void) {
     CPPUNIT_ASSERT(_data->normalizer);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
-    // Set up material
-    CPPUNIT_ASSERT(_material);
-    _material->setAuxiliaryFieldDB(_data->matAuxDB);
+    // Set up materials
+    for (size_t iMat = 0; iMat < _materials.size(); ++iMat) {
+        CPPUNIT_ASSERT(_materials[iMat]);
+        _materials[iMat]->setAuxiliaryFieldDB(_data->matAuxDB);
 
-    for (int i = 0; i < _data->matNumAuxSubfields; ++i) {
-        const pylith::topology::FieldBase::Discretization& info = _data->matAuxDiscretizations[i];
-        _material->setAuxiliarySubfieldDiscretization(_data->matAuxSubfields[i], info.basisOrder, info.quadOrder,
-                                                      _data->spaceDim, info.cellBasis, info.feSpace, info.isBasisContinuous);
+        for (int iSubfield = 0; iSubfield < _data->matNumAuxSubfields; ++iSubfield) {
+            const pylith::topology::FieldBase::Discretization& info = _data->matAuxDiscretizations[iSubfield];
+            _materials[iMat]->setAuxiliarySubfieldDiscretization(_data->matAuxSubfields[iSubfield], info.basisOrder, info.quadOrder,
+                                                                 _data->spaceDim, info.cellBasis, info.feSpace, info.isBasisContinuous);
+        } // for
     } // for
 
     // Set up fault
@@ -122,12 +125,10 @@ pylith::mmstests::TestFaultKin::_initialize(void) {
     CPPUNIT_ASSERT(_data->normalizer);
     _problem->setNormalizer(*_data->normalizer);
     _problem->setGravityField(_data->gravityField);
-    pylith::materials::Material* materials[1] = { _material };
-    _problem->setMaterials(materials, 1);
+    _problem->setMaterials(&_materials[0], _materials.size());
     pylith::faults::FaultCohesive* ics[1] = { _fault };
     _problem->setInterfaces(ics, 1);
-    pylith::bc::BoundaryCondition* bcs[1] = { _bc };
-    _problem->setBoundaryConditions(bcs, 1);
+    _problem->setBoundaryConditions(&_bcs[0], _bcs.size());
     _problem->setStartTime(_data->startTime);
     _problem->setEndTime(_data->endTime);
     _problem->setInitialTimeStep(_data->timeStep);
@@ -160,7 +161,6 @@ pylith::mmstests::TestFaultKin::_initialize(void) {
 pylith::mmstests::TestFaultKin_Data::TestFaultKin_Data(void) :
     spaceDim(0),
     meshFilename(NULL),
-    boundaryLabel(NULL),
     cs(NULL),
     gravityField(NULL),
     normalizer(new spatialdata::units::Nondimensional),

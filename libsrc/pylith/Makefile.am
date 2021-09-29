@@ -38,6 +38,7 @@ libpylith_la_SOURCES = \
 	bc/DirichletTimeDependent.cc \
 	bc/DirichletUserFn.cc \
 	bc/NeumannTimeDependent.cc \
+	bc/NeumannUserFn.cc \
 	bc/AbsorbingDampers.cc \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
 	faults/FaultCohesive.cc \
@@ -64,6 +65,7 @@ libpylith_la_SOURCES = \
 	feassemble/ConstraintUserFn.cc \
 	feassemble/ConstraintSimple.cc \
 	feassemble/AuxiliaryFactory.cc \
+	fekernels/BoundaryDirections.cc \
 	fekernels/Elasticity.cc \
 	fekernels/IsotropicLinearElasticity.cc \
 	fekernels/Viscoelasticity.cc \
