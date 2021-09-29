@@ -21,6 +21,7 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	fekernelsfwd.hh \
+	BoundaryDirections.hh \
 	Elasticity.hh \
 	IsotropicLinearElasticity.hh \
 	Viscoelasticity.hh \

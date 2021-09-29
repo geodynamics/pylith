@@ -28,6 +28,7 @@ check_PROGRAMS = $(TESTS)
 test_faultkin_SOURCES = \
 	TestFaultKin.cc \
 	TestFaultKin2D_RigidBlocksStatic.cc \
+	TestFaultKin2D_ShearNoSlipStatic.cc \
 	test_driver.cc
 
 

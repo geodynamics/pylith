@@ -73,6 +73,7 @@ namespace pylith {
 
         class FaultCohesiveKin;
 
+        class BoundaryDirections;
     } // fekernels
 } // pylith
 
