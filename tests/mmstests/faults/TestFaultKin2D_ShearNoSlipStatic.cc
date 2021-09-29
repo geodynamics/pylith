@@ -295,7 +295,7 @@ protected:
             pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
-            material->setDescriptiveLabel("Isotropic Linear Elascitity Plane Strain");
+            material->setDescriptiveLabel("Isotropic Linear Elasticity Plane Strain");
             material->setMaterialId(10);
             material->setBulkRheology(_data->rheology);
             _materials[0] = material;
@@ -304,7 +304,7 @@ protected:
             pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
-            material->setDescriptiveLabel("Isotropic Linear Elascitity Plane Strain");
+            material->setDescriptiveLabel("Isotropic Linear Elasticity Plane Strain");
             material->setMaterialId(20);
             material->setBulkRheology(_data->rheology);
             _materials[1] = material;
