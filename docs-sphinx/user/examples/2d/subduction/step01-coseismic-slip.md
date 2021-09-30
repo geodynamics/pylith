@@ -1,13 +1,7 @@
 ## Step 1: Coseismic Slip Simulation
 
-:::{admonition} TODO
-:class: error
-
-USGS link not found (earthquake.usgs.gov/earthquakes/eqinthenews/2011/usc0001xgp/finite_fault.php).
-:::
-
 The first example problem is earthquake rupture involving coseismic slip along the interface between the subducting slab and the continental crust and uppermost portion of the mantle below the continental crust.
-The spatial variation of slip comes from a cross-section of Gavin Hayes's finite-source model <earthquake.usgs.gov/earthquakes/eqinthenews/2011/usc0001xgp/finite_fault.php>.
+The spatial variation of slip comes from a cross-section of Gavin Hayes's finite-source model <https://earthquake.usgs.gov/earthquakes/eventpage/usc0001xgp/finite-fault>.
 On the lateral and bottom boundaries of the domain, we fix the degrees of freedom perpendicular to the boundary as shown in {numref}`fig:example:subduction:2d:steps`.
 Parameter settings that augment those in `pylithapp.cfg` are contained in the file `step01.cfg`.
 These settings are:
