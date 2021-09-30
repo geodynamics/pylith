@@ -444,12 +444,7 @@ pylith::problems::Problem::_createConstraints(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("Problem::_createConstraints()");
 
-    const size_t numMaterials = _materials.size();
-    const size_t numInterfaces = _interfaces.size();
-    const size_t numBC = _bc.size();
-
-    const size_t maxSize = numMaterials + numInterfaces + numBC;
-    _constraints.resize(maxSize);
+    _constraints.resize(0); // insure we start with an empty array.
 
     for (size_t i = 0; i < numMaterials; ++i) {
         assert(_materials[i]);
