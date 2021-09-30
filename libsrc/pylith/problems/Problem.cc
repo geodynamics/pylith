@@ -450,7 +450,6 @@ pylith::problems::Problem::_createConstraints(void) {
 
     const size_t maxSize = numMaterials + numInterfaces + numBC;
     _constraints.resize(maxSize);
-    size_t count = 0;
 
     for (size_t i = 0; i < numMaterials; ++i) {
         assert(_materials[i]);
@@ -472,8 +471,6 @@ pylith::problems::Problem::_createConstraints(void) {
         _constraints.insert(_constraints.end(), constraints.begin(), constraints.end());
 
     } // for
-
-    _constraints.resize(count);
 
     PYLITH_METHOD_END;
 } // _createConstraints
