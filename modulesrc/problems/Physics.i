@@ -157,7 +157,7 @@ public:
              * @returns Constraint if applicable, otherwise NULL.
              */
             virtual
-            pylith::feassemble::Constraint* createConstraint(const pylith::topology::Field& solution) = 0;
+            std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution) = 0;
 
             /** Create auxiliary field.
              *

@@ -218,12 +218,13 @@ pylith::bc::NeumannTimeDependent::createIntegrator(const pylith::topology::Field
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
-pylith::feassemble::Constraint*
-pylith::bc::NeumannTimeDependent::createConstraint(const pylith::topology::Field& solution) {
-    PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.getLabel()<<") empty method");
+std::vector<pylith::feassemble::Constraint*>
+pylith::bc::NeumannTimeDependent::createConstraints(const pylith::topology::Field& solution) {
+    PYLITH_COMPONENT_DEBUG("createConstraints(solution="<<solution.getLabel()<<") empty method");
+    std::vector<pylith::feassemble::Constraint*> constraintArray;
 
-    return NULL;
-} // createConstraint
+    PYLITH_METHOD_RETURN(constraintArray);
+} // createConstraints
 
 
 // ---------------------------------------------------------------------------------------------------------------------

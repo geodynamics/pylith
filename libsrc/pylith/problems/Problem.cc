@@ -448,32 +448,29 @@ pylith::problems::Problem::_createConstraints(void) {
     const size_t numInterfaces = _interfaces.size();
     const size_t numBC = _bc.size();
 
-    const size_t maxSize = numMaterials + numInterfaces + numBC;
-    _constraints.resize(maxSize);
-    size_t count = 0;
+    _constraints.resize(0); // insure we start with an empty array.
+
 
     for (size_t i = 0; i < numMaterials; ++i) {
         assert(_materials[i]);
-        pylith::feassemble::Constraint* constraint = _materials[i]->createConstraint(*_solution);
-        assert(count < maxSize);
-        if (constraint) { _constraints[count++] = constraint;}
+        std::vector<pylith::feassemble::Constraint*> constraints = _materials[i]->createConstraints(*_solution);
+        _constraints.insert(_constraints.end(), constraints.begin(), constraints.end());
+
     } // for
 
     for (size_t i = 0; i < numInterfaces; ++i) {
         assert(_interfaces[i]);
-        pylith::feassemble::Constraint* constraint = _interfaces[i]->createConstraint(*_solution);
-        assert(count < maxSize);
-        if (constraint) { _constraints[count++] = constraint;}
+        std::vector<pylith::feassemble::Constraint*> constraints = _interfaces[i]->createConstraints(*_solution);
+        _constraints.insert(_constraints.end(), constraints.begin(), constraints.end());
+
     } // for
 
     for (size_t i = 0; i < numBC; ++i) {
         assert(_bc[i]);
-        pylith::feassemble::Constraint* constraint = _bc[i]->createConstraint(*_solution);
-        assert(count < maxSize);
-        if (constraint) { _constraints[count++] = constraint;}
-    } // for
+        std::vector<pylith::feassemble::Constraint*> constraints = _bc[i]->createConstraints(*_solution);
+        _constraints.insert(_constraints.end(), constraints.begin(), constraints.end());
 
-    _constraints.resize(count);
+    } // for
 
     PYLITH_METHOD_END;
 } // _createConstraints

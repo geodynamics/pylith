@@ -133,13 +133,13 @@ pylith::bc::NeumannUserFn::createIntegrator(const pylith::topology::Field& solut
 
 // ------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
-pylith::feassemble::Constraint*
-pylith::bc::NeumannUserFn::createConstraint(const pylith::topology::Field& solution) {
-    PYLITH_COMPONENT_DEBUG("createConstraint(solution="<<solution.getLabel()<<") empty method");
-
-    return NULL;
-} // createConstraint
-
+std::vector<pylith::feassemble::Constraint*>
+pylith::bc::NeumannUserFn::createConstraints(const pylith::topology::Field& solution) {
+PYLITH_COMPONENT_DEBUG("createConstraints(solution="<<solution.getLabel()<<") empty method");
+    std::vector<pylith::feassemble::Constraint*> constraintArray;
+    
+    PYLITH_METHOD_RETURN(constraintArray);
+} // createConstraints
 
 // ------------------------------------------------------------------------------------------------
 // Create auxiliary field.
