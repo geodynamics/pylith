@@ -60,7 +60,6 @@ std::vector<pylith::feassemble::Constraint*>
 pylith::faults::FaultCohesiveStub::createConstraints(const pylith::topology::Field& solution) {
     pylith::testing::StubMethodTracker tracker("pylith::faults::FaultCohesiveStub::createConstraints");
     std::vector<pylith::feassemble::Constraint*> constraintArray;
-    constraintArray.resize(0);
     
     PYLITH_METHOD_RETURN(constraintArray);
 } // createConstraints
