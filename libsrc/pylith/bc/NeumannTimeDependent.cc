@@ -222,7 +222,6 @@ std::vector<pylith::feassemble::Constraint*>
 pylith::bc::NeumannTimeDependent::createConstraints(const pylith::topology::Field& solution) {
     PYLITH_COMPONENT_DEBUG("createConstraints(solution="<<solution.getLabel()<<") empty method");
     std::vector<pylith::feassemble::Constraint*> constraintArray;
-    constraintArray.resize(0);
 
     PYLITH_METHOD_RETURN(constraintArray);
 } // createConstraints

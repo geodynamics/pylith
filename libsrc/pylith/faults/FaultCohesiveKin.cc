@@ -200,7 +200,6 @@ pylith::faults::FaultCohesiveKin::createConstraints(const pylith::topology::Fiel
 
     if (0 == strlen(getBuriedEdgesMarkerLabel())) {
         std::vector<pylith::feassemble::Constraint*> constraintArray;
-        constraintArray.resize(0);
         PYLITH_METHOD_RETURN(constraintArray);
     } // if
 

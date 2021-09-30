@@ -74,7 +74,6 @@ std::vector<pylith::feassemble::Constraint*>
 pylith::problems::PhysicsStub::createConstraints(const pylith::topology::Field& solution) {
     pylith::testing::StubMethodTracker tracker("pylith::problems::PhysicsStub::createConstraints");
     std::vector<pylith::feassemble::Constraint*> constraintArray;
-    constraintArray.resize(0);
     
     PYLITH_METHOD_RETURN(constraintArray);
 } // createConstraints
