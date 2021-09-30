@@ -245,6 +245,7 @@ AC_CONFIG_FILES([Makefile
 		tests/fullscale/linearelasticity/Makefile
 		tests/fullscale/linearelasticity/nofaults-2d/Makefile
 		tests/fullscale/linearelasticity/cylinder-2d/Makefile
+		tests/fullscale/linearelasticity/cylinder-3d/Makefile
 		tests/fullscale/linearelasticity/nofaults-3d/Makefile
 		tests/fullscale/linearelasticity/faults-2d/Makefile
 		tests/fullscale/viscoelasticity/Makefile
