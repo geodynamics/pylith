@@ -21,7 +21,6 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	fekernelsfwd.hh \
-	BoundaryDirections.hh \
 	Elasticity.hh \
 	IsotropicLinearElasticity.hh \
 	Viscoelasticity.hh \
@@ -36,6 +35,7 @@ subpkginclude_HEADERS = \
 	NeumannTimeDependent.hh \
 	AbsorbingDampers.hh \
 	FaultCohesiveKin.hh \
+	FaultCohesiveKinPoro.hh \
 	IsotropicLinearPoroelasticity.hh \
 	Poroelasticity.hh
 

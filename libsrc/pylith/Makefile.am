@@ -38,11 +38,11 @@ libpylith_la_SOURCES = \
 	bc/DirichletTimeDependent.cc \
 	bc/DirichletUserFn.cc \
 	bc/NeumannTimeDependent.cc \
-	bc/NeumannUserFn.cc \
 	bc/AbsorbingDampers.cc \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveKin.cc \
+	faults/FaultCohesiveKinPoro.cc \
 	faults/AuxiliaryFactoryKinematic.cc \
 	faults/KinSrc.cc \
 	faults/KinSrcStep.cc \
@@ -65,7 +65,6 @@ libpylith_la_SOURCES = \
 	feassemble/ConstraintUserFn.cc \
 	feassemble/ConstraintSimple.cc \
 	feassemble/AuxiliaryFactory.cc \
-	fekernels/BoundaryDirections.cc \
 	fekernels/Elasticity.cc \
 	fekernels/IsotropicLinearElasticity.cc \
 	fekernels/Viscoelasticity.cc \
@@ -82,6 +81,7 @@ libpylith_la_SOURCES = \
 	fekernels/NeumannTimeDependent.cc \
 	fekernels/AbsorbingDampers.cc \
 	fekernels/FaultCohesiveKin.cc \
+	fekernels/FaultCohesiveKinPoro.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \
 	materials/RheologyElasticity.cc \

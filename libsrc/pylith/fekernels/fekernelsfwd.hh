@@ -72,8 +72,10 @@ namespace pylith {
         class AbsorbingDampers;
 
         class FaultCohesiveKin;
+        class FaultCohesiveKinPoro;
 
         class BoundaryDirections;
+
     } // fekernels
 } // pylith
 
