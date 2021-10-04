@@ -218,7 +218,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_TriP1 :
         TestIsotropicLinearElasticity2D_UniformStrain::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/tri.mesh";
+        _data->meshFilename = "data/tri.msh";
 
         _data->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {

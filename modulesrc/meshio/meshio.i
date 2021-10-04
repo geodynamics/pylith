@@ -23,6 +23,7 @@
 %{
 #include "pylith/meshio/MeshIO.hh"
 #include "pylith/meshio/MeshIOAscii.hh"
+#include "pylith/meshio/MeshIOPETSc.hh"
 #include "pylith/meshio/MeshIOLagrit.hh"
 #if defined(ENABLE_CUBIT)
 #include "pylith/meshio/MeshIOCubit.hh"
@@ -76,6 +77,7 @@ import_array();
 %include "../problems/ObserverPhysics.i"
 %include "MeshIOObj.i"
 %include "MeshIOAscii.i"
+%include "MeshIOPETSc.i"
 %include "MeshIOLagrit.i"
 #if defined(ENABLE_CUBIT)
 %include "MeshIOCubit.i"
