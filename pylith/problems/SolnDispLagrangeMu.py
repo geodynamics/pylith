@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/problems/SolnDispLagrange.py
+# @file pylith/problems/SolnDispLagrangeMu.py
 #
 # @brief Python subfields container with displacement and fault
 # Lagrange multiplier subfields.

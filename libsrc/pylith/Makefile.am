@@ -80,6 +80,7 @@ libpylith_la_SOURCES = \
 	fekernels/TimeDependentFn.cc \
 	fekernels/NeumannTimeDependent.cc \
 	fekernels/AbsorbingDampers.cc \
+	fekernels/BoundaryDirections.cc \
 	fekernels/FaultCohesiveKin.cc \
 	fekernels/FaultCohesiveKinPoro.cc \
 	materials/Material.cc \

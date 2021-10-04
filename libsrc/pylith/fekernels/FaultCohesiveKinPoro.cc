@@ -69,7 +69,7 @@ namespace pylith
                                            const PylithInt numS);
 
         }; // _FaultCohesiveKinPoro
-    }      // fekernels
+    } // fekernels
 } // pylith
 
 // ----------------------------------------------------------------------
