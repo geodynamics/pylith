@@ -20,24 +20,25 @@ subpackage = fekernels
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	fekernelsfwd.hh \
-	Elasticity.hh \
-	IsotropicLinearElasticity.hh \
-	Viscoelasticity.hh \
-	IsotropicLinearMaxwell.hh \
-	IsotropicLinearGenMaxwell.hh \
-	IsotropicPowerLaw.hh \
-	IncompressibleElasticity.hh \
-	IsotropicLinearIncompElasticity.hh \
-	Solution.hh \
-	DispVel.hh \
-	TimeDependentFn.hh \
-	NeumannTimeDependent.hh \
 	AbsorbingDampers.hh \
+	BoundaryDirections.hh \
+	DispVel.hh \
+	Elasticity.hh \
 	FaultCohesiveKin.hh \
 	FaultCohesiveKinPoro.hh \
+	fekernelsfwd.hh \
+	IncompressibleElasticity.hh \
+	IsotropicLinearElasticity.hh \
+	IsotropicLinearGenMaxwell.hh \
+	IsotropicLinearIncompElasticity.hh \
+	IsotropicLinearMaxwell.hh \
 	IsotropicLinearPoroelasticity.hh \
-	Poroelasticity.hh
+	IsotropicPowerLaw.hh \
+	NeumannTimeDependent.hh \
+	Poroelasticity.hh \
+	Solution.hh \
+	TimeDependentFn.hh \
+	Viscoelasticity.hh	
 
 noinst_HEADERS =
 
