@@ -1,4 +1,4 @@
-## Step 1: Coseismic Slip Simulation
+# Step 1: Coseismic Slip Simulation
 
 The first example problem is earthquake rupture involving coseismic slip along the interface between the subducting slab and the continental crust and uppermost portion of the mantle below the continental crust.
 The spatial variation of slip comes from a cross-section of Gavin Hayes's finite-source model <https://earthquake.usgs.gov/earthquakes/eventpage/usc0001xgp/finite-fault>.
