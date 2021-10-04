@@ -34,6 +34,7 @@ namespace pylith {
         class MeshIO;
         class MeshBuilder;
         class MeshIOAscii;
+        class MeshIOPETSc;
         class MeshIOCubit;
         class MeshIOLagrit;
 

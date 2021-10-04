@@ -1,0 +1,53 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2017 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ======================================================================
+//
+
+#if !defined(pylith_meshio_meshiopetsc_hh)
+#error "MeshIOPETSc.icc must be included only from MeshIOPETSc.icc"
+#else
+
+// Set filename for PETSc.
+inline
+void
+pylith::meshio::MeshIOPETSc::filename(const char* name) {
+  _filename = name;
+}
+
+// Get filename for PETSc.
+inline
+const char*
+pylith::meshio::MeshIOPETSc::filename(void) const {
+  return _filename.c_str();
+}
+
+// Set options prefix for mesh.
+inline
+void
+pylith::meshio::MeshIOPETSc::prefix(const char* name) {
+  _prefix = name;
+}
+
+// Get options prefix for mesh.
+inline
+const char*
+pylith::meshio::MeshIOPETSc::prefix(void) const {
+  return _prefix.c_str();
+}
+
+#endif
+
+// End of file
