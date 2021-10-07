@@ -103,9 +103,10 @@ pylith::materials::Material::setGravityField(spatialdata::spatialdb::GravityFiel
 // Create constraint and set kernels.
 std::vector<pylith::feassemble::Constraint*>
 pylith::materials::Material::createConstraints(const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createConstraints(solution="<<solution.getLabel()<<") empty method");
     std::vector<pylith::feassemble::Constraint*> constraintArray;
-    
+
     PYLITH_METHOD_RETURN(constraintArray);
 } // createConstraints
 
