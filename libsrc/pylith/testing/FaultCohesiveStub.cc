@@ -25,8 +25,7 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesiveStub::FaultCohesiveStub(void)
-{}
+pylith::faults::FaultCohesiveStub::FaultCohesiveStub(void) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -58,11 +57,13 @@ pylith::faults::FaultCohesiveStub::createIntegrator(const pylith::topology::Fiel
 // Create constraint and set kernels.
 std::vector<pylith::feassemble::Constraint*>
 pylith::faults::FaultCohesiveStub::createConstraints(const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
     pylith::testing::StubMethodTracker tracker("pylith::faults::FaultCohesiveStub::createConstraints");
     std::vector<pylith::feassemble::Constraint*> constraintArray;
-    
+
     PYLITH_METHOD_RETURN(constraintArray);
 } // createConstraints
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create auxiliary field.

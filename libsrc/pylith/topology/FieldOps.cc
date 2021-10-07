@@ -200,6 +200,7 @@ pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& t
 // Get names of subfields extending over entire domain.
 pylith::string_vector
 pylith::topology::FieldOps::getSubfieldNamesDomain(const pylith::topology::Field& field) {
+    PYLITH_METHOD_BEGIN;
     const pylith::string_vector& subfieldNames = field.getSubfieldNames();
 
     // Restrict fields to those defined over the entire domain

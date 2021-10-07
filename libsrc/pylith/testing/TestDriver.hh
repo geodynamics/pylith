@@ -91,6 +91,7 @@ private:
     bool _showHelp;
     bool _listTests;
     bool _mallocDump;
+    bool _checkStack;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
