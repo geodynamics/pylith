@@ -92,6 +92,7 @@ pylith::meshio::FieldFactory::addVector(const pylith::topology::FieldBase::Discr
 // Add tensor field.
 void
 pylith::meshio::FieldFactory::addTensor(const pylith::topology::FieldBase::Discretization& discretization) {
+    PYLITH_METHOD_BEGIN;
     const char* fieldName = "tensor";
 
     const int spaceDim = _field.getSpaceDim();
@@ -132,6 +133,7 @@ pylith::meshio::FieldFactory::addTensor(const pylith::topology::FieldBase::Discr
 // Add other field.
 void
 pylith::meshio::FieldFactory::addOther(const pylith::topology::FieldBase::Discretization& discretization) {
+    PYLITH_METHOD_BEGIN;
     const char* fieldName = "other";
     const int otherSize = 2;
     const char* componentNames[otherSize] = { "other_1", "other_2" };
