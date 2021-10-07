@@ -33,6 +33,10 @@ def generate_refstate_db(vertices, spatialdbFile):
     soln = AnalyticalSoln()
     stress = soln.stress(vertices)
     zeroes = numpy.zeros(npts, dtype=numpy.float64)
+    meanStress = (stress[0,:,0] + stress[0,:,1] + stress[0,:,2])/3.0
+    devStress1 = stress - meanStress.reshape(1,npts,1)
+    devStress = numpy.column_stack((devStress1[0,:,0], devStress1[0,:,1], devStress1[0,:,2],
+                                    stress[0,:,3], stress[0,:,4], stress[0,:,5])).reshape(1,npts,6)
 
     from spatialdata.geocoords.CSCart import CSCart
     cs = CSCart()
@@ -94,27 +98,27 @@ def generate_refstate_db(vertices, spatialdbFile):
             }, {
                 'name': "deviatoric_stress_xx",
                 'units': "Pa",
-                'data': zeroes,
+                'data': numpy.ravel(devStress[0, :, 0]),
             }, {
                 'name': "deviatoric_stress_yy",
                 'units': "Pa",
-                'data': zeroes,
+                'data': numpy.ravel(devStress[0, :, 1]),
             }, {
                 'name': "deviatoric_stress_zz",
                 'units': "Pa",
-                'data': zeroes,
+                'data': numpy.ravel(devStress[0, :, 2]),
             }, {
                 'name': "deviatoric_stress_xy",
                 'units': "Pa",
-                'data': zeroes,
+                'data': numpy.ravel(devStress[0, :, 3]),
             }, {
                 'name': "deviatoric_stress_yz",
                 'units': "Pa",
-                'data': zeroes,
+                'data': numpy.ravel(devStress[0, :, 4]),
             }, {
                 'name': "deviatoric_stress_xz",
                 'units': "Pa",
-                'data': zeroes,
+                'data': numpy.ravel(devStress[0, :, 5]),
             }, {
                 'name': "reference_stress_xx",
                 'units': "Pa",
@@ -128,6 +132,10 @@ def generate_refstate_db(vertices, spatialdbFile):
                 'units': "Pa",
                 'data': numpy.ravel(stress[0, :, 2]),
             }, {
+                'name': "reference_stress_xy",
+                'units': "Pa",
+                'data': numpy.ravel(stress[0, :, 3]),
+            }, {
                 'name': "reference_stress_yz",
                 'units': "Pa",
                 'data': numpy.ravel(stress[0, :, 4]),
@@ -135,10 +143,6 @@ def generate_refstate_db(vertices, spatialdbFile):
                 'name': "reference_stress_xz",
                 'units': "Pa",
                 'data': numpy.ravel(stress[0, :, 5]),
-            }, {
-                'name': "reference_stress_xy",
-                'units': "Pa",
-                'data': numpy.ravel(stress[0, :, 3]),
             }, {
                 'name': "reference_strain_xx",
                 'units': "none",
