@@ -59,7 +59,6 @@ pylith::testing::MMSTest::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
     pythia::journal::debug_t debug(GenericComponent::getName());
-    debug.deactivate(); // DEBUGGING
 
     delete _problem;_problem = NULL;
     delete _mesh;_mesh = NULL;
