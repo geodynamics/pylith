@@ -271,6 +271,7 @@ pylith::testing::_TestDriver::printHelp(void) {
               << "    --quiet           Turn off dump of leaked memory.\n"
               << "    --tests           Comma separated list of tests to run (default is all tests).\n"
               << "    --petsc ARG=VALUE Arguments to pass to PETSc. May be repeated for multiple arguments.\n"
+              << "    --journal.TYPE=COMPONENT Activate journal (TYPE=[info,debug,warning,error]) for COMPONENT. May be repeated with different components.\n"
               << std::endl;
 } // printHelp
 
@@ -287,7 +288,7 @@ pylith::testing::_TestDriver::initializePetsc(int argc,
     char** argvP = new char*[argcP];
     argvP[0] = argv[0];
     if (checkStack) {
-      argv[1] = (char*)"-checkstack";
+      argvP[1] = (char*)"-checkstack";
     } // if
     PetscErrorCode err = PetscInitialize(&argcP, &argvP, NULL, NULL);CHKERRQ(err);
     delete[] argvP;argvP = NULL;
@@ -348,8 +349,7 @@ pylith::testing::_TestDriver::activateJournals(const TestDriver::journals_t& jou
             break;
         } // INFO
         default:
-            ;
-            // PYLITH_JOURNAL_LOGICERROR("Unknown journal category '"<<category<<"'.");
+            PYLITH_JOURNAL_LOGICERROR("Unknown journal category '"<<category<<"'.");
         } // switch
     } // for
 } // activateJournal
