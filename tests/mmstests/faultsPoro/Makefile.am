@@ -25,7 +25,7 @@ TESTS = test_faultkinporo
 check_PROGRAMS = $(TESTS)
 
 
-test_faultkin_SOURCES = \
+test_faultkinporo_SOURCES = \
 	TestFaultKinPoro.cc \
 	TestFaultKinPoro2D_RigidBlocksStatic.cc \
 	TestFaultKinPoro2D_ShearNoSlipStatic.cc \
@@ -61,7 +61,7 @@ dist_noinst_DATA = \
 noinst_TMP =
 
 # 'export' the input files by performing a mock install
-export_datadir = $(abs_top_builddir)/tests/mmstests/faults/data
+export_datadir = $(abs_top_builddir)/tests/mmstests/faultsPoro/data
 export-data: $(dist_noinst_DATA)
 	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then $(MKDIR_P) $(export_datadir);  for f in $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done; fi
 
