@@ -144,7 +144,6 @@ if test "$enable_hdf5" = "yes" ; then
   CIT_HDF5_LIB
   CIT_HDF5_LIB_PARALLEL
 
-  CIT_PYTHON_MODULE([six],[1.0.0])
   CIT_PYTHON_MODULE([h5py],[2.0.0])
 fi
 
