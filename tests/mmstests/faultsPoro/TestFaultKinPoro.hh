@@ -27,7 +27,7 @@
 
 #include "pylith/testing/MMSTest.hh" // ISA MMSTEST
 
-#include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesiveKin
+#include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesiveKinPoro
 #include "pylith/materials/materialsfwd.hh" // HOLDSA Material
 #include "pylith/bc/bcfwd.hh" // USES DirichletUserFn
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
@@ -115,6 +115,6 @@ public:
 
 }; // TestFaultKin_Data
 
-#endif // pylith_mmstests_testfaultkin_hh
+#endif // pylith_mmstests_testfaultkinporo_hh
 
 // End of file

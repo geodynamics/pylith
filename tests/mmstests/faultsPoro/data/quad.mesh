@@ -1,0 +1,110 @@
+// Mesh with DMPlex numbering
+//
+//v12 --e23--v13  e34  v17 --e29--v14
+//  |          |    |    |          |
+//  |          |    |    |          |
+//e24   c1   e22   c5  e31    c3  e28
+//  |          |    |    |          |
+//  |          |    |    |          |
+// v9 --e20--v10  e33  v16 --e27--v11
+//  |          |    |    |          |
+//  |          |    |    |          |
+//e21   c0   e19   c4  e30    c2  e26
+//  |          |    |    |          |
+//  |          |    |    |          |
+// v6 --e18---v7  e32  v15 --e25---v8
+//
+// Mesh with local DOF number (multiply by 2)
+//
+//  6 -------- 7   14   11 -------- 8
+//  |          |    |    |          |
+//  |          |    |    |          |
+//  |          |    |    |          |
+//  3 -------- 4   13   10 -------- 5
+//  |          |    |    |          |
+//  |          |    |    |          |
+//  |          |    |    |          |
+//  0 -------- 1   12    9 -------- 2
+//
+// Cell 0:  0  1  4  3
+// Cell 1:  3  4  7  6
+// Cell 2:  9  2  5 10
+// Cell 3: 10  5  8 11
+// Cell 4:  1  4  9 10 12 13
+// Cell 5:  4  7 10 11 13 14
+//
+mesh = {
+  dimension = 2
+  use-index-zero = true
+  vertices = {
+    dimension = 2
+    count = 9
+    coordinates = {
+             0     -4.0e+3  -4.0e+3
+             1      0.0e+3  -4.0e+3
+             2     +4.0e+3  -4.0e+3
+             3     -4.0e+3   0.0e+3
+             4      0.0e+3   0.0e+3
+             5     +4.0e+3   0.0e+3
+             6     -4.0e+3  +4.0e+3
+             7      0.0e+3  +4.0e+3
+             8     +4.0e+3  +4.0e+3
+    }
+  }
+  cells = {
+    count = 4
+    num-corners = 4
+    simplices = {
+             0       0  1  4  3
+             1       3  4  7  6
+             2       1  2  5  4
+             3       4  5  8  7
+    }
+    material-ids = {
+             0   10
+             1   10
+             2   20
+             3   20
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary_xpos
+    count = 3
+    indices = {
+      2  5  8
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary_xneg
+    count = 3
+    indices = {
+      0  3  6
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary_ypos
+    count = 3
+    indices = {
+      6  7  8
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary_yneg
+    count = 3
+    indices = {
+      0  1  2
+    }
+  }
+  group = {
+    type = vertices
+    name = fault
+    count = 3
+    indices = {
+      1  4  7
+    }
+  }  
+}
