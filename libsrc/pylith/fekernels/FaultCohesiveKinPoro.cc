@@ -68,6 +68,20 @@ namespace pylith
             static PylithInt lagrange_sOff(const PylithInt sOff[],
                                            const PylithInt numS);
 
+            /** Get offset in s where Mu multiplier subfield starts.
+             *
+             * Normally this would be sOff, but sOff doesn't account for having DOF for the two sides of the fault
+             * passed to the hybrid kernels. This functions computes the correct offset into s for the Lagrange
+             * multiplier subfield.
+             *
+             * @param[in] sOff Offset of registered subfields in solution field [numS].
+             * @param[in] numS Number of registered subfields in solution field.
+             *
+             * @returns Offset of Mu multiplier subfield in s.
+             */
+            static PylithInt mu_sOff(const PylithInt sOff[],
+                                     const PylithInt numS);
+
         }; // _FaultCohesiveKinPoro
     } // fekernels
 } // pylith
@@ -94,13 +108,28 @@ pylith::fekernels::_FaultCohesiveKinPoro::lagrange_sOff(const PylithInt sOff[],
                                                         const PylithInt numS)
 {
     PylithInt off = 0;
-    const PylithInt numCount = numS - 1; // Don't include last field (Lagrange multiplier)
+    const PylithInt numCount = numS - 2; // Don't include last fields (Lagrange multiplier, Mu multiplier)
     for (PylithInt i = 0; i < numCount; ++i)
     {
         off += 2 * (sOff[i + 1] - sOff[i]);
     } // for
     return off;
 } // lagrange_sOff
+
+// ----------------------------------------------------------------------
+// Get offset in s where Mu multiplier field starts.
+PylithInt
+pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(const PylithInt sOff[],
+                                                  const PylithInt numS)
+{
+    PylithInt off = 0;
+    const PylithInt numCount = numS - 1; // Don't include last field (Mu multiplier)
+    for (PylithInt i = 0; i < numCount; ++i)
+    {
+        off += 2 * (sOff[i + 1] - sOff[i]);
+    } // for
+    return off;
+} // mu_sOff
 
 // ----------------------------------------------------------------------
 // f0 function for elasticity equation: f0u = +\lambda (neg side).
@@ -174,15 +203,11 @@ void pylith::fekernels::FaultCohesiveKinPoro::f0u_pos(const PylithInt dim,
 
     const PylithInt fOffN = 0;
     const PylithInt fOffP = fOffN + spaceDim;
-    const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKinPoro::lagrange_sOff(sOff, numS);
-    const PylithInt sOffMu = sOffLagrange + spaceDim;
-
-    const PylithScalar *lagrange = &s[sOffLagrange];
+    const PylithInt sOffMu = pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(sOff, numS);
     const PylithScalar *mu = &s[sOffMu];
 
     for (PylithInt i = 0; i < spaceDim; ++i)
     {
-        // f0[fOffN+i] += -lagrange[i];
         f0[fOffP + i] += mu[i] * 2.0;
     } // for
 } // f0u_pos
@@ -303,7 +328,7 @@ void pylith::fekernels::FaultCohesiveKinPoro::f0mu_u(const PylithInt dim,
 
     const PylithInt sOffDispN = sOff[i_disp];
     const PylithInt sOffDispP = sOffDispN + spaceDim;
-    const PylithInt fOffLagrange = 0;
+    const PylithInt fOffMu = 0;
 
     const PylithScalar *dispN = &s[sOffDispN];
     const PylithScalar *dispP = &s[sOffDispP];
@@ -317,7 +342,7 @@ void pylith::fekernels::FaultCohesiveKinPoro::f0mu_u(const PylithInt dim,
         for (PylithInt i = 0; i < _spaceDim; ++i)
         {
             const PylithScalar slipXY = n[i] * slip[0] + tanDir[i] * slip[1];
-            f0[fOffLagrange + i] += dispP[i] / 2.0 - dispN[i] / 2.0 - slipXY / 2.0;
+            f0[fOffMu + i] += dispP[i] / 2.0 - dispN[i] / 2.0 - slipXY / 2.0;
         } // for
         break;
     } // case 2
@@ -332,7 +357,7 @@ void pylith::fekernels::FaultCohesiveKinPoro::f0mu_u(const PylithInt dim,
         for (PylithInt i = 0; i < _spaceDim; ++i)
         {
             const PylithScalar slipXYZ = n[i] * slip[0] + tanDir1[i] * slip[1] + tanDir2[i] * slip[2];
-            f0[fOffLagrange + i] += dispP[i] / 2.0 - dispN[i] / 2.0 - slipXYZ / 2.0;
+            f0[fOffMu + i] += dispP[i] / 2.0 - dispN[i] / 2.0 - slipXYZ / 2.0;
         } // for
         break;
     } // case 3

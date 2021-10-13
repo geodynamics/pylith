@@ -29,8 +29,9 @@
  * RHS Residual
  *
  *  - g0u^+ = -\lambda
- *  - g0u^- = +\lambda
+ *  - g0u^- = +\mu * 2
  *  - g0\lambda = d - u^+ + u^-
+ *  - g0\mu = d/2 - (u^+ + u^-)/2
  *
  * LHS Jacobian: no contribution
  *
