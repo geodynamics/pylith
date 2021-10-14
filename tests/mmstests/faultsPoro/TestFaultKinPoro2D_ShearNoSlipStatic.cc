@@ -519,8 +519,8 @@ class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_TriP4 :
         };
         _data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        _data->numSolnSubfields = 3;
+        static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
             pylith::topology::Field::Discretization(4, 4), // disp
             pylith::topology::Field::Discretization(4, 4, 1, -1, true), // lagrange_multiplier_fault
             pylith::topology::Field::Discretization(4, 4, 1, -1, true), // mu_multiplier_fault            
