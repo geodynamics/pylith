@@ -83,6 +83,12 @@ public:
      */
     void addLagrangeMultiplierFault(const pylith::topology::FieldBase::Discretization& discretization);
 
+    /** Add fault Mu multiplier subfield to solution field.
+     *
+     * @param[in] discretization Discretization for fault Mu multiplier subfield.
+     */
+    void addMuMultiplierFault(const pylith::topology::FieldBase::Discretization& discretization);    
+
     /** Add temperature subfield to solution field.
      *
      * @param[in] discretization Discretization for temperature subfield.

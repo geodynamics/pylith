@@ -189,8 +189,38 @@ pylith::problems::SolutionFactory::addLagrangeMultiplierFault(const pylith::topo
     _solution.subfieldAdd(description, discretization);
 
     PYLITH_METHOD_END;
-} // addFluidPressure
+} // addLagrangeMuliplierFault
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Add fault Mu multiplier subfield to solution field.
+void
+pylith::problems::SolutionFactory::addMuMultiplierFault(const pylith::topology::Field::Discretization& discretization) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("addMuMultiplierFault(discretization=typeid(discretization).name())");
+
+    const char* fieldName = "mu_multiplier_fault";
+    const char* componentNames[3] = {
+        "mu_multiplier_fault_x",
+        "mu_multiplier_fault_y",
+        "mu_multiplier_fault_z",
+    };
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.alias = fieldName;
+    description.vectorFieldType = pylith::topology::Field::VECTOR;
+    description.numComponents = _spaceDim;
+    description.componentNames.resize(_spaceDim);
+    for (int i = 0; i < _spaceDim; ++i) {
+        description.componentNames[i] = componentNames[i];
+    } // for
+    description.scale = _normalizer.getPressureScale();
+    description.validator = NULL;
+
+    _solution.subfieldAdd(description, discretization);
+
+    PYLITH_METHOD_END;
+} // addMuMuliplierFault
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Add temperature subfield to solution field.
