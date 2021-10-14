@@ -208,7 +208,7 @@ void pylith::fekernels::FaultCohesiveKinPoro::f0u_pos(const PylithInt dim,
 
     for (PylithInt i = 0; i < spaceDim; ++i)
     {
-        f0[fOffP + i] += mu[i] * 2.0;
+        f0[fOffP + i] += mu[i];
     } // for
 } // f0u_pos
 
@@ -342,7 +342,7 @@ void pylith::fekernels::FaultCohesiveKinPoro::f0mu_u(const PylithInt dim,
         for (PylithInt i = 0; i < _spaceDim; ++i)
         {
             const PylithScalar slipXY = n[i] * slip[0] + tanDir[i] * slip[1];
-            f0[fOffMu + i] += dispP[i] / 2.0 - dispN[i] / 2.0 - slipXY / 2.0;
+            f0[fOffMu + i] += dispP[i]  - dispN[i] - slipXY;
         } // for
         break;
     } // case 2
@@ -357,7 +357,7 @@ void pylith::fekernels::FaultCohesiveKinPoro::f0mu_u(const PylithInt dim,
         for (PylithInt i = 0; i < _spaceDim; ++i)
         {
             const PylithScalar slipXYZ = n[i] * slip[0] + tanDir1[i] * slip[1] + tanDir2[i] * slip[2];
-            f0[fOffMu + i] += dispP[i] / 2.0 - dispN[i] / 2.0 - slipXYZ / 2.0;
+            f0[fOffMu + i] += dispP[i]  - dispN[i] - slipXYZ;
         } // for
         break;
     } // case 3
@@ -600,7 +600,7 @@ void pylith::fekernels::FaultCohesiveKinPoro::Jf0umu_neg(const PylithInt dim,
 
     for (PylithInt i = 0; i < spaceDim; ++i)
     {
-        Jf0[(gOffN + i) * ncols + i] += -0.0;
+        Jf0[(gOffN + i) * ncols + i] += -1.0;
     } // for
 } // Jg0umu_neg
 
@@ -688,7 +688,7 @@ void pylith::fekernels::FaultCohesiveKinPoro::Jf0umu_pos(const PylithInt dim,
 
     for (PylithInt i = 0; i < spaceDim; ++i)
     {
-        Jf0[(gOffP + i) * ncols + i] += +2.0;
+        Jf0[(gOffP + i) * ncols + i] += +0.0;
     } // for
 } // Jg0umu_pos
 
@@ -777,8 +777,8 @@ void pylith::fekernels::FaultCohesiveKinPoro::Jf0muu(const PylithInt dim,
 
     for (PylithInt i = 0; i < spaceDim; ++i)
     {
-        Jf0[i * ncols + gOffN + i] += -1.0 / 2.0;
-        Jf0[i * ncols + gOffP + i] += +1.0 / 2.0;
+        Jf0[i * ncols + gOffN + i] += -1.0;
+        Jf0[i * ncols + gOffP + i] += +1.0;
     } // for
 } // Jg0muu
 
