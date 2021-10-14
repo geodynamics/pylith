@@ -48,7 +48,7 @@ We recommend carefully examining the `geometry.jou` journal file to understand h
 
 The Exodus-II file `mesh_tet.exo` can be viewed with ParaView.
 We provide the Python script `viz/pot_mesh.py` to visualize the nodesets and the mesh quality using the condition number metric.
-As in our other Python scripts for ParaView (see {numref}`sec:ParaView:Python:scripts` for a discussion of how to use Python ParaView scripts), you can override the default parameters by setting appropriate values in the Python shell (if running within the ParaView GUI) or from the command line (if running the script directly outside the GUI).
+As in our other Python scripts for ParaView (see {ref}`sec:ParaView:Python:scripts` for a discussion of how to use Python ParaView scripts), you can override the default parameters by setting appropriate values in the Python shell (if running within the ParaView GUI) or from the command line (if running the script directly outside the GUI).
 When viewing the nodesets, the animation controls allow stepping through the nodesets.
 When viewing the mesh quality, only the cells with the given quality metric above some threshold (poorer quality) are shown.
 The default quality metric is condition number and the default threshold is 2.0.

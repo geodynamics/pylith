@@ -1,3 +1,4 @@
+(sec:example:subduction:2d)=
 # Vertical Cross-Section of Subduction Zone (2D)
 
 ## Overview
