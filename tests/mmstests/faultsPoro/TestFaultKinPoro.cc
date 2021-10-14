@@ -22,7 +22,7 @@
 
 #include "pylith/bc/BoundaryCondition.cc" // HASA BoundaryCondition
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
-#include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
+#include "pylith/faults/FaultCohesiveKinPoro.hh" // USES FaultCohesiveKinPoro
 #include "pylith/faults/KinSrc.hh" // USES KinSrc
 #include "pylith/materials/Elasticity.hh" // USES Elasticity
 #include "pylith/materials/RheologyElasticity.hh" // USES RheologyElasticity
