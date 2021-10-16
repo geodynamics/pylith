@@ -8,11 +8,11 @@ LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 USER ${TEST_USER}
 
 
-ENV src_dir=${TOPSRC_DIR}/pylith PYTHONUSERBASE=${INSTALL_DIR}/dependencies
+ENV src_dir=${TOPSRC_DIR}/pylith
 
 COPY --chown=pylith-tester:pylith-tester . ${src_dir}
 WORKDIR ${src_dir}/docs-sphinx
-RUN python3 -m pip install --user sphinx==3.5 myst-parser pydata-sphinx-theme sphinxcontrib.bibtex
+RUN python3 -m pip install sphinx==4.2.0 myst-parser pydata-sphinx-theme sphinxcontrib.bibtex
 RUN ./build.sh
 
 CMD /bin/bash
