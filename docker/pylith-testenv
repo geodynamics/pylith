@@ -12,11 +12,6 @@ LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
 USER ${TEST_USER}
 
-ENV PATH=${PATH}:${INSTALL_DIR}/cig/bin \
-    LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${INSTALL_DIR}/cig/lib:${INSTALL_DIR}/cig/lib64 \
-    PYTHONPATH=${PYTHONPATH}:${INSTALL_DIR}/cig/lib/python${PYTHON_VERSION}/site-packages:${INSTALL_DIR}/cig/lib64/python${PYTHON_VERSION}/site-packages
-RUN mkdir -p ${INSTALL_DIR}/cig/lib/python${PYTHON_VERSION}/site-packages
-
 # ------------------------------------------------------------------------------
 # Pythia
 # ------------------------------------------------------------------------------
@@ -24,11 +19,11 @@ ENV  src_dir=${TOPSRC_DIR}/pythia  build_dir=${TOPBUILD_DIR}/pythia
 
 RUN git clone --depth 1 --recursive https://github.com/geodynamics/pythia.git ${src_dir}
 WORKDIR ${src_dir}
-RUN autoreconf --install --verbose
+RUN autoreconf --install --verbose && \
+    mkdir -p ${build_dir}
 
-RUN mkdir -p ${build_dir}
 WORKDIR ${build_dir}
-RUN ${src_dir}/configure --enable-testing --prefix=${INSTALL_DIR}/cig CPPFLAGS=-I${INSTALL_DIR}/dependencies/include LDFLAGS="-L${INSTALL_DIR}/dependencies/lib -L${INSTALL_DIR}/dependencies/lib64" && make && make install && make check VERBOSE=1
+RUN ${src_dir}/configure --enable-testing --prefix=${INSTALL_DIR} CPPFLAGS=-I${INSTALL_DIR}/dependencies/include LDFLAGS="-L${INSTALL_DIR}/dependencies/lib -L${INSTALL_DIR}/dependencies/lib64" && make && make install && make check VERBOSE=1
 
 
 # ------------------------------------------------------------------------------
@@ -38,11 +33,11 @@ ENV  src_dir=${TOPSRC_DIR}/spatialdata  build_dir=${TOPBUILD_DIR}/spatialdata
 
 RUN git clone --depth 50 --recursive https://github.com/geodynamics/spatialdata.git ${src_dir}
 WORKDIR ${src_dir}
-RUN autoreconf --install --verbose
-
-RUN mkdir -p ${build_dir}
+RUN autoreconf --install --verbose && \
+    mkdir -p ${build_dir}
+    
 WORKDIR ${build_dir}
-RUN ${src_dir}/configure --enable-testing --enable-swig --prefix=${INSTALL_DIR}/cig CPPFLAGS="-I${INSTALL_DIR}/dependencies/include -I${INSTALL_DIR}/cig/include" LDFLAGS="-L${INSTALL_DIR}/dependencies/lib -L${INSTALL_DIR}/dependencies/lib64 -L${INSTALL_DIR}/cig/lib -L${INSTALL_DIR}/cig/lib64" CXXFLAGS="-std=c++11 -g -O" && make -j$(nproc) && make install && make check VERBOSE=1
+RUN ${src_dir}/configure --enable-testing --enable-swig --prefix=${INSTALL_DIR} CPPFLAGS="-I${INSTALL_DIR}/dependencies/include -I${INSTALL_DIR}/include" LDFLAGS="-L${INSTALL_DIR}/dependencies/lib -L${INSTALL_DIR}/dependencies/lib64 -L${INSTALL_DIR}/lib -L${INSTALL_DIR}/lib64" CXXFLAGS="-std=c++11 -g -O" && make -j$(nproc) && make install && make check VERBOSE=1
 
 
 # ------------------------------------------------------------------------------
@@ -65,11 +60,11 @@ ENV  src_dir=${TOPSRC_DIR}/pylith  build_dir=${TOPBUILD_DIR}/pylith
 
 COPY --chown=pylith-tester:pylith-tester ${REPO_DIR} ${src_dir}
 WORKDIR ${src_dir}
-RUN autoreconf --install --verbose --force
-
-RUN mkdir -p ${build_dir}
+RUN autoreconf --install --verbose --force && \
+    mkdir -p ${build_dir}
+    
 WORKDIR ${build_dir}
-RUN ${src_dir}/configure --prefix=${INSTALL_DIR}/cig --enable-hdf5 --enable-cubit --enable-testing --enable-swig --enable-test-coverage=${TEST_COVERAGE} --with-python-coverage=${PYTHON_COVERAGE} CPPFLAGS="-I${INSTALL_DIR}/dependencies/include -I${INSTALL_DIR}/cig/include -I${HDF5_INCDIR}" LDFLAGS="-L${INSTALL_DIR}/dependencies/lib -L${INSTALL_DIR}/dependencies/lib64 -L${INSTALL_DIR}/cig/lib -L${INSTALL_DIR}/cig/lib64 -L${HDF5_LIBDIR} --coverage" CXXFLAGS="-std=c++11 -g -O --coverage" CC=mpicc CXX=mpicxx
+RUN ${src_dir}/configure --prefix=${INSTALL_DIR} --enable-hdf5 --enable-cubit --enable-testing --enable-swig --enable-test-coverage=${TEST_COVERAGE} --with-python-coverage=${PYTHON_COVERAGE} CPPFLAGS="-I${INSTALL_DIR}/dependencies/include -I${INSTALL_DIR}/include -I${HDF5_INCDIR}" LDFLAGS="-L${INSTALL_DIR}/dependencies/lib -L${INSTALL_DIR}/dependencies/lib64 -L${INSTALL_DIR}/lib -L${INSTALL_DIR}/lib64 -L${HDF5_LIBDIR} --coverage" CXXFLAGS="-std=c++11 -g -O --coverage" CC=mpicc CXX=mpicxx
 
 # ----------------------------------------
 from src as build
@@ -84,7 +79,7 @@ from build as test
 WORKDIR ${build_dir}
 RUN make clean-coverage && make -j$(nproc) check VERBOSE=1 -C tests/libtests && make coverage-libtests
 RUN make clean-coverage && make -j$(nproc) check VERBOSE=1 -C tests/mmstests && make coverage-mmstests
-#RUN make check VERBOSE=1 -C tests/pytests && make coverage-pytests
+RUN make check VERBOSE=1 -C tests/pytests && make coverage-pytests
 RUN make clean-coverage && make check VERBOSE=1 -C tests/fullscale && make coverage-fullscale
 
 CMD /bin/bash
