@@ -284,12 +284,13 @@ pylith::testing::_TestDriver::initializePetsc(int argc,
                                               const std::vector<std::string>& petscOptions,
                                               const bool mallocDump,
 					      const bool checkStack) {
-  int argcP = (checkStack) ? 2 : 1;
-    char** argvP = new char*[argcP];
+    int argcP = (checkStack) ? 2 : 1;
+    char** argvP = new char*[argcP+1];
     argvP[0] = argv[0];
     if (checkStack) {
       argvP[1] = (char*)"-checkstack";
     } // if
+    argvP[argcP] = NULL; // C standard is argv[argc] == NULL.
     PetscErrorCode err = PetscInitialize(&argcP, &argvP, NULL, NULL);CHKERRQ(err);
     delete[] argvP;argvP = NULL;
 
