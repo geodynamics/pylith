@@ -23,7 +23,7 @@ stages:
         variables:
           BASE_IMAGE: "testenv-debian-stable"
           TEST_COVERAGE: "yes"
-          PYTHON_COVERAGE: "python3-coverage"
+          PYTHON_COVERAGE: "coverage3"
         steps:
           - checkout: self
             submodules: "true"
@@ -36,8 +36,10 @@ stages:
               arguments: "-t pylith-testenv --build-arg BASE_IMAGE=$(IMAGE_REGISTRY)/$(BASE_IMAGE) --build-arg TEST_COVERAGE=$(TEST_COVERAGE) --build-arg PYTHON_COVERAGE=$(PYTHON_COVERAGE) --target build"
               addPipelineData: false
               addBaseImageData: false
-          - script: docker run pylith-testenv ci-config/run_tests.sh
+          - script: ci_env=`bash <(curl -s https://codecov.io/env)`; docker run $ci_env -e CI=true pylith-testenv ci-config/run_tests.sh
             displayName: Test
+            env:
+                CODECOV_TOKEN: $(codecovToken)
   - stage: build_others
     displayName: "Other Builds"
     dependsOn: build_basic
