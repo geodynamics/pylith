@@ -73,19 +73,6 @@ public:
      */
     void addAuxiliarySubfields(void);
 
-    // ============================ Either Side ====================================
-    // ---------------------------------------------------------------------------------------------------------------------
-    // Get stress kernel for RHS residual, G(t,s).
-    PetscPointFunc getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys, const bool _useInertia) const;
-
-    /** Get pressure kernel for RHS residual, G(t,s).
-     *
-     * @param[in] coordsys Coordinate system.
-     *
-     * @return RHS residual kernel for Darcy velocity.
-     */
-    PetscPointFunc getKernelDarcy(const spatialdata::geocoords::CoordSys* coordsys, const bool _gravityField, const bool _useInertia) const;
-
     // ============================= RHS ==================================== //
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -135,7 +122,8 @@ public:
   * @return RHS residual kernel for Darcy velocity.
   */
   PetscPointFunc getKernelf1p_implicit(const spatialdata::geocoords::CoordSys* coordsys,
-                                         const bool _gravityField) const;
+                                                                const bool _useBodyForce,
+                                                                const bool _gravityField) const;
 
   // ---------------------------------------------------------------------------------------------------------------------
   // Get poroelastic constants kernel for LHS Jacobian
@@ -161,6 +149,12 @@ public:
   // Get biot coefficient kernel for LHS Jacobian F(t,s, \dot{s}).
   PetscPointJac getKernelJf0pe(const spatialdata::geocoords::CoordSys* coordsys) const;
 
+  // ---------------------------------------------------------------------------------------------------------------------
+  PetscPointJac getKernelJf0ppdot(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+  // ---------------------------------------------------------------------------------------------------------------------
+  PetscPointJac getKernelJf0pedot(const spatialdata::geocoords::CoordSys* coordsys) const;
+
     // ============================ DERIVED FIELDS ========================== //
 
     /** Get stress kernel for derived field.
@@ -170,6 +164,23 @@ public:
      * @return Project kernel for computing stress subfield in derived field.
      */
     PetscPointFunc getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+    /** Update kernel constants.
+     *
+     * @param[inout] kernelConstants Array of constants used in integration kernels.
+     * @param[in] dt Current time step.
+     */
+    void updateKernelConstants(pylith::real_array* kernelConstants,
+                               const PylithReal dt) const;
+
+    /** Add kernels for updating state variables.
+     *
+     * @param[inout] kernels Array of kernels for updating state variables.
+     * @param[in] coordsys Coordinate system.
+     */
+    void addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
+                                   const spatialdata::geocoords::CoordSys* coordsys,
+                                   const bool _useStateVars) const;
 
     };      // class IsotropicLinearPoroelasticity
 
