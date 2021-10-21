@@ -201,8 +201,7 @@ void pylith::fekernels::FaultCohesiveKinPoro::f0u_pos(const PylithInt dim,
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt fOffN = 0;
-    const PylithInt fOffP = fOffN + spaceDim;
+    const PylithInt fOffP = 0;
     const PylithInt sOffMu = pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(sOff, numS);
     const PylithScalar *mu = &s[sOffMu];
 
