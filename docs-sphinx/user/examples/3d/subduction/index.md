@@ -59,8 +59,8 @@ step01-axial-compression.md
 step02-coseismic-slip.md
 step03-aseismic-creep.md
 step04-earthquake-cycle.md
-step05-spontaneous-slip-weakening.md
-step06-spontaneous-rate-state.md
-step07-twofaults-maxwell.md
-step08-twofaults-powerlaw.md
+step05-spontaneous-rupture.md
+step06-prescribed-slow-slip.md
+step07-inversion-greens-fns.md
+step08-gravitational-stress-field.md
 :::
