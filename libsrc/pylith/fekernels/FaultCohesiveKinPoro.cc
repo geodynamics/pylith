@@ -80,7 +80,8 @@ namespace pylith
              * @returns Offset of Mu multiplier subfield in s.
              */
             static PylithInt mu_sOff(const PylithInt sOff[],
-                                     const PylithInt numS);
+                                     const PylithInt numS,
+                                     const PylithInt dim);
 
         }; // _FaultCohesiveKinPoro
     } // fekernels
