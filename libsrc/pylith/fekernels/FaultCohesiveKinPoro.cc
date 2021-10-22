@@ -76,6 +76,7 @@ namespace pylith
              *
              * @param[in] sOff Offset of registered subfields in solution field [numS].
              * @param[in] numS Number of registered subfields in solution field.
+             * @param[in] dim Number of dimensions in solution field. 
              *
              * @returns Offset of Mu multiplier subfield in s.
              */
