@@ -63,6 +63,16 @@ class PyLithApp(PetscApplication):
         "problems", itemFactory=problemFactory, factory=SingleProblem)
     problems.meta['tip'] = "Computational problem(s) to solve."
     
+    maxNumIterations = pythia.pyre.inventory.int("max_num_iterations", default=1)
+    maxNumIterations.meta['tip'] = "Specifies number of times to cycle over all problems."
+
+    from pythia.pyre.units.time import year
+    startTime = pythia.pyre.inventory.dimensional("start_time", default=0.0 * year)
+    startTime.meta['tip'] = "Overarching start time for problem(s)."
+
+    endTime = pythia.pyre.inventory.dimensional("end_time", default=0.5 * year,
+                                         validator=pythia.pyre.inventory.greaterEqual(0.0 * year))
+    endTime.meta['tip'] = "Overarching end time for problem(s)."
 
     def __init__(self, name="pylithapp"):
         """Constructor.
@@ -115,16 +125,32 @@ class PyLithApp(PetscApplication):
         if self.initializeOnly:
             return
 
-        # Cycle over all problems
-        # TODO: load numIterations from input file
-        # TODO: add control over integration time (start and end times)
-        numIterations = 1 # number of earthquake cycles !!! later import this from an input file
+        # Cycle over all problems, stopping if either maxNumIterations or endTime is reached
+        prevEndTime = self.startTime.value
         count = 0
-        while count < numIterations:
+        while count < self.maxNumIterations and prevEndTime < self.endTime.value:
             for problem in self.problems.components():
-                problem.run()
+
+                # Update current problem's start/end times to reflect global start/end times
+                currStartTime = prevEndTime
+                problemTimeRange = problem.getEndTime() - problem.getStartTime()
+                currEndTime = min(currStartTime + problemTimeRange,self.endTime.value)
+                problem.setStartTime(currStartTime)
+                problem.setEndTime(currEndTime)
+                problem.updateTimes()
+
+                currEndTime = problem.run()
                 self._debug.log(resourceUsageString())
+                print("%i: %.3e %.3e." %(count, currStartTime, currEndTime) )
+
+                prevEndTime = currEndTime
+
+                # If globalEndTime reached, exit rather than looping over full problem list
+                if currEndTime >= self.endTime.value:
+                    break
+
             count += 1
+
 
         # Cleanup
         self._eventLogger.stagePush("Finalize")

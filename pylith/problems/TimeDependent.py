@@ -131,7 +131,10 @@ class TimeDependent(Problem, ModuleTimeDependent):
         if 0 == comm.rank:
             self._info.log("Solving problem.")
 
-        ModuleTimeDependent.solve(self)
+        finalTime = ModuleTimeDependent.solve(self)
+        return finalTime
+
+    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.
