@@ -390,7 +390,7 @@ pylith::faults::FaultCohesiveKinPoro::createAuxiliaryField(const pylith::topolog
     switch (_formulation)
     {
     case QUASISTATIC:
-        _auxiliaryFactory->addSlip(); // 0
+        _auxiliaryFactory->addSlip(); // 0`
         break;
     case DYNAMIC_IMEX:
         _auxiliaryFactory->addSlipAcceleration(); // 0
