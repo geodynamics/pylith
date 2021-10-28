@@ -220,4 +220,11 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh) {
 } // adjustTopology
 
 
+// ---------------------------------------------------------------------------------------------------------------------
+pylith::feassemble::Integrator*
+pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& solution) {
+    return NULL;
+}
+
+
 // End of file

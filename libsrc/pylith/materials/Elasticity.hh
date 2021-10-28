@@ -101,6 +101,24 @@ public:
     pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
                                                 const pylith::topology::Mesh& domainMesh);
 
+    /** Get residual kernels for an interior interface bounding material.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] face Side of interior interface for kernels.
+     * @returns Array of residual kernels for interior interface.
+     */
+    std::vector<InterfaceResidualKernels> getInterfaceKernelsResidual(const pylith::topology::Field& solution,
+                                                                      pylith::feassemble::IntegratorInterface::FaceEnum face) const;
+
+    /** Get Jacobian kernels for an interior interface bounding material.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] face Side of interior interface for kernels.
+     * @returns Array of Jacobian kernels for interior interface.
+     */
+    std::vector<InterfaceJacobianKernels> getInterfaceKernelsJacobian(const pylith::topology::Field& solution,
+                                                                      pylith::feassemble::IntegratorInterface::FaceEnum face) const;
+
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 

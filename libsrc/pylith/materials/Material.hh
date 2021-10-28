@@ -27,6 +27,7 @@
 #include "materialsfwd.hh" // forward declarations
 
 #include "pylith/problems/Physics.hh" // ISA Physics
+#include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
 
 #include <string> // HASA std::string
 
@@ -51,6 +52,12 @@
 
 class pylith::materials::Material : public pylith::problems::Physics {
     friend class TestMaterial; // unit testing
+
+    // PUBLIC TYPEDEFS ////////////////////////////////////////////////////////////////////////////
+public:
+
+    typedef pylith::feassemble::IntegratorInterface::ResidualKernels InterfaceResidualKernels;
+    typedef pylith::feassemble::IntegratorInterface::JacobianKernels InterfaceJacobianKernels;
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -91,7 +98,7 @@ public:
 
     /** Set gravity field.
      *
-     * @param g Gravity field.
+     * @param[in] g Gravity field.
      */
     void setGravityField(spatialdata::spatialdb::GravityField* const g);
 
@@ -102,6 +109,26 @@ public:
      */
     virtual
     std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
+
+    /** Get residual kernels for an interior interface bounding material.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] face Side of interior interface for kernels.
+     * @returns Array of residual kernels for interior interface.
+     */
+    virtual
+    std::vector<InterfaceResidualKernels> getInterfaceKernelsResidual(const pylith::topology::Field& solution,
+                                                                      pylith::feassemble::IntegratorInterface::FaceEnum face) const;
+
+    /** Get Jacobian kernels for an interior interface bounding material.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] face Side of interior interface for kernels.
+     * @returns Array of Jacobian kernels for interior interface.
+     */
+    virtual
+    std::vector<InterfaceJacobianKernels> getInterfaceKernelsJacobian(const pylith::topology::Field& solution,
+                                                                      pylith::feassemble::IntegratorInterface::FaceEnum face) const;
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

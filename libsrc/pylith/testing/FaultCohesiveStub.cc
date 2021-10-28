@@ -46,7 +46,8 @@ pylith::faults::FaultCohesiveStub::verifyConfiguration(const pylith::topology::F
 // ---------------------------------------------------------------------------------------------------------------------
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
-pylith::faults::FaultCohesiveStub::createIntegrator(const pylith::topology::Field& solution) {
+pylith::faults::FaultCohesiveStub::createIntegrator(const pylith::topology::Field& solution,
+                                                    const std::vector<pylith::materials::Material*>& materials) {
     pylith::testing::StubMethodTracker tracker("pylith::faults::FaultCohesiveStub::createIntegrator");
 
     return NULL;

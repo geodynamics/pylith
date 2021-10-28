@@ -56,6 +56,18 @@ public:
                         const char* name,
                         const int value);
 
+    /** Get name of label.
+     *
+     * @returns Name of label.
+     */
+    const char* getName(void) const;
+
+    /** Get value of label.
+     *
+     * @returns Label value.
+     */
+    int getValue(void) const;
+
     /** Get PETSc weak form.
      *
      * @returns PETSc weak form object.

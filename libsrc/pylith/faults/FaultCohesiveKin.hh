@@ -66,9 +66,12 @@ public:
     /** Create integrator and set kernels.
      *
      * @param[in] solution Solution field.
+     * @param[in] materials Materials in problem.
      * @returns Integrator if applicable, otherwise NULL.
      */
-    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution);
+    virtual
+    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution,
+                                                     const std::vector<pylith::materials::Material*>& materials);
 
     /** Create constraint and set kernels.
      *
@@ -161,7 +164,8 @@ private:
      * @param[in] solution Solution field.
      */
     void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
-                             const pylith::topology::Field& solution) const;
+                             const pylith::topology::Field& solution,
+                             const std::vector<pylith::materials::Material*>& materials) const;
 
     /** Set kernels for Jacobian.
      *
@@ -169,7 +173,8 @@ private:
      * @param[in] solution Solution field.
      */
     void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
-                             const pylith::topology::Field& solution) const;
+                             const pylith::topology::Field& solution,
+                             const std::vector<pylith::materials::Material*>& materials) const;
 
     // PRIVATE TYPEDEFS ////////////////////////////////////////////////////////////////////////////////////////////////
 private:

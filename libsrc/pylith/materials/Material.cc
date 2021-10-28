@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
@@ -13,7 +13,7 @@
 //
 // See LICENSE.md for license information.
 //
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 //
 
 #include <portinfo>
@@ -26,7 +26,7 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::Material::Material(void) :
     _gravityField(NULL),
@@ -34,14 +34,14 @@ pylith::materials::Material::Material(void) :
     _descriptiveLabel("") {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::materials::Material::~Material(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::materials::Material::deallocate(void) {
@@ -55,7 +55,7 @@ pylith::materials::Material::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set value of label material-id used to identify material cells.
 void
 pylith::materials::Material::setMaterialId(const int value) {
@@ -65,7 +65,7 @@ pylith::materials::Material::setMaterialId(const int value) {
 } // setMaterialId
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get value of label material-id used to identify material cells.
 int
 pylith::materials::Material::getMaterialId(void) const {
@@ -73,7 +73,7 @@ pylith::materials::Material::getMaterialId(void) const {
 } // getMaterialId
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set descriptive label of material.
 void
 pylith::materials::Material::setDescriptiveLabel(const char* value) {
@@ -83,7 +83,7 @@ pylith::materials::Material::setDescriptiveLabel(const char* value) {
 } // setDescriptiveLabel
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get label of material.
 const char*
 pylith::materials::Material::getDescriptiveLabel(void) const {
@@ -91,7 +91,7 @@ pylith::materials::Material::getDescriptiveLabel(void) const {
 } // getDescriptiveLabel
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set gravity field.
 void
 pylith::materials::Material::setGravityField(spatialdata::spatialdb::GravityField* const g) {
@@ -99,7 +99,7 @@ pylith::materials::Material::setGravityField(spatialdata::spatialdb::GravityFiel
 } // setGravityField
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
 std::vector<pylith::feassemble::Constraint*>
 pylith::materials::Material::createConstraints(const pylith::topology::Field& solution) {
@@ -109,5 +109,32 @@ pylith::materials::Material::createConstraints(const pylith::topology::Field& so
 
     PYLITH_METHOD_RETURN(constraintArray);
 } // createConstraints
+
+
+// ------------------------------------------------------------------------------------------------
+// Get residual kernels for an interior interface bounding material.
+std::vector<pylith::materials::Material::InterfaceResidualKernels>
+pylith::materials::Material::getInterfaceKernelsResidual(const pylith::topology::Field& solution,
+                                                         pylith::feassemble::IntegratorInterface::FaceEnum face) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getInterfaceResidualKernels(solution="<<solution.getLabel()<<", face="<<face<<") empty method");
+    std::vector<InterfaceResidualKernels> kernels;
+
+    PYLITH_METHOD_RETURN(kernels);
+} // getInterfaceKernelsResidual
+
+
+// ------------------------------------------------------------------------------------------------
+// Get Jacobian kernels for an interior interface bounding material.
+std::vector<pylith::materials::Material::InterfaceJacobianKernels>
+pylith::materials::Material::getInterfaceKernelsJacobian(const pylith::topology::Field& solution,
+                                                         pylith::feassemble::IntegratorInterface::FaceEnum face) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getInterfaceJacobianKernels(solution="<<solution.getLabel()<<", face="<<face<<") empty method");
+    std::vector<InterfaceJacobianKernels> kernels;
+
+    PYLITH_METHOD_RETURN(kernels);
+} // getInterfaceKernelsJacobian
+
 
 // End of file

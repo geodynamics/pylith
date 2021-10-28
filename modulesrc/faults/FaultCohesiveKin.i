@@ -65,7 +65,8 @@ public:
              * @param[in] solution Solution field.
              * @returns Integrator if applicable, otherwise NULL.
              */
-            pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution);
+            pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution,
+                                                     const std::vector<pylith::materials::Material*>& materials);
 
             /** Create constraint and set kernels.
              *
