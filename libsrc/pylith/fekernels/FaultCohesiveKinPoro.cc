@@ -207,10 +207,13 @@ void pylith::fekernels::FaultCohesiveKinPoro::f0u_pos(const PylithInt dim,
     const PylithInt fOffP = 0;
     const PylithInt sOffMu = pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(sOff, numS, dim);
     const PylithScalar *mu = &s[sOffMu];
+    //const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKinPoro::lagrange_sOff(sOff, numS);
+    //const PylithScalar *lagrange = &s[sOffLagrange];
 
     for (PylithInt i = 0; i < spaceDim; ++i)
     {
-        f0[fOffP + i] += mu[i];
+        f0[fOffP + i] += -mu[i];
+//        f0[fOffP + i] += -lagrange[i];
     } // for
 } // f0u_pos
 
