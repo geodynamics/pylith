@@ -128,7 +128,7 @@ class PyLithApp(PetscApplication):
         # Cycle over all problems, stopping if either maxNumIterations or endTime is reached
         prevEndTime = self.startTime.value
         count = 0
-        while count < self.maxNumIterations and prevEndTime < self.endTime.value:
+        while count < self.maxNumIterations: #and prevEndTime < self.endTime.value:
             for problem in self.problems.components():
 
                 # Update current problem's start/end times to reflect global start/end times
@@ -137,7 +137,7 @@ class PyLithApp(PetscApplication):
                 currEndTime = min(currStartTime + problemTimeRange,self.endTime.value)
                 problem.setStartTime(currStartTime)
                 problem.setEndTime(currEndTime)
-                problem.updateTimes()
+                #problem.updateTimes()
 
                 currEndTime = problem.run()
                 self._debug.log(resourceUsageString())
@@ -146,8 +146,8 @@ class PyLithApp(PetscApplication):
                 prevEndTime = currEndTime
 
                 # If globalEndTime reached, exit rather than looping over full problem list
-                if currEndTime >= self.endTime.value:
-                    break
+                #if currEndTime >= self.endTime.value:
+                #    break
 
             count += 1
 

@@ -61,11 +61,11 @@ exy = 1.0 / (2 * p_mu) * (sxy)
 # Time steps
 ts = 0.5  # year
 nts = 3
-tsteps = numpy.arange(0, ts * nts, ts) # yaer
+tsteps = numpy.arange(0, ts * nts, ts) # year
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
-    """Analytical solution to axial/shear displacement problem.
+    """Analytical solution to rigid sliding problem.
     """
     SPACE_DIM = 2
     TENSOR_SIZE = 4
@@ -82,12 +82,12 @@ class AnalyticalSoln(object):
         }
         return
 
-    def getField(self, name, pts):
+    def getField(self, name, mesh_entity, pts):
         return self.fields[name](pts)
 
-    def getMask(self, name, pts):
+    def getMask(self, fieldName, mesh_entity, pts):
         mask = None
-        if name == "displacement":
+        if fieldName == "displacement":
             mask = pts[:, 0] == 0.0
         return mask
     
