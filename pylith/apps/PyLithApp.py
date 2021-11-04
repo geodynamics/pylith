@@ -125,31 +125,44 @@ class PyLithApp(PetscApplication):
         if self.initializeOnly:
             return
 
+        # print stuff for clarity
+        print("overall start and end times: %.3e %.3e." %(self.startTime.value, self.endTime.value) )
+        problemNum = 0
+        for problem in self.problems.components():
+             print("    problem %i: %.3e %.3e." %(problemNum, problem.startTime.value, problem.endTime.value) )
+             problemNum += 1
+
+
         # Cycle over all problems, stopping if either maxNumIterations or endTime is reached
-        prevEndTime = self.startTime.value
-        count = 0
-        while count < self.maxNumIterations: #and prevEndTime < self.endTime.value:
+        prevEndTime = self.startTime
+        numIts = 0
+        while numIts < self.maxNumIterations and prevEndTime < self.endTime:
+            problemNum = 0
             for problem in self.problems.components():
+
+                problemTimeRange = problem.endTime - problem.startTime
 
                 # Update current problem's start/end times to reflect global start/end times
                 currStartTime = prevEndTime
-                problemTimeRange = problem.getEndTime() - problem.getStartTime()
-                currEndTime = min(currStartTime + problemTimeRange,self.endTime.value)
-                problem.setStartTime(currStartTime)
-                problem.setEndTime(currEndTime)
-                #problem.updateTimes()
+                currEndTime = min(currStartTime + problemTimeRange,self.endTime)
+                problem.setStartTime(currStartTime.value)
+                problem.setEndTime(currEndTime.value)
+                problem.updateTimes()
 
-                currEndTime = problem.run()
+                #currEndTime = problem.run()
+                tempEndTime = problem.run()
                 self._debug.log(resourceUsageString())
-                print("%i: %.3e %.3e." %(count, currStartTime, currEndTime) )
+                print("round %i problem %i: %.3e %.3e." %(numIts, problemNum, currStartTime.value, currEndTime.value) )
 
                 prevEndTime = currEndTime
 
                 # If globalEndTime reached, exit rather than looping over full problem list
-                #if currEndTime >= self.endTime.value:
-                #    break
+                if currEndTime >= self.endTime:
+                    break
+                
+                problemNum += 1
 
-            count += 1
+            numIts += 1
 
 
         # Cleanup

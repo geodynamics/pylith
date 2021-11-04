@@ -37,7 +37,7 @@ class TestCase(FullTestCase):
             "mesh": self.mesh,
         }
         self.checks = [
-            #check simpleshear
+            # #check simpleshear
             Check(
                 mesh_entities=["domain", "bc_ypos"],
                 vertex_fields=["displacement"],
@@ -130,9 +130,14 @@ class TestTri(TestCase):
 # ----------------------------------------------------------------------------------------------------------------------
 def test_cases():
     return [
-        TestQuad,
-        TestTri,
+        TestQuad
     ]
+
+# def test_cases():
+#     return [
+#         TestQuad,
+#         TestTri,
+#     ]
 
 
 # ----------------------------------------------------------------------------------------------------------------------

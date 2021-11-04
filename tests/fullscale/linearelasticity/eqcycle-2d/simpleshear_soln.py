@@ -63,9 +63,8 @@ ezz = 1.0 / (2 * p_mu) * (szz - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + sy
 exy = 1.0 / (2 * p_mu) * (sxy)
 
 # Time steps
-ts = 0.5  # year
-nts = 3
-tsteps = numpy.arange(0, ts * nts, ts) # yaer
+dt = 0.25  # (years) time step size
+tsteps = numpy.arange(dt, 1.0+dt, dt) # (year) list of time steps
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
@@ -115,7 +114,8 @@ class AnalyticalSoln(object):
             if t < 0.0:
                 disp[t_track, :, 1] = 0.0
             else:
-                disp[t_track, :, 1] = (+1.0 * maskN - 1.0 * maskP) * locs_ratio * t_track/(ntpts-1)
+                #disp[t_track, :, 1] = (+1.0 * maskN - 1.0 * maskP) * locs_ratio * t_track/(ntpts-1)
+                disp[t_track, :, 1] = (+1.0 * maskN - 1.0 * maskP) * locs_ratio * t
 
             t_track += 1
 
