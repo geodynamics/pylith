@@ -16,6 +16,7 @@
 # ----------------------------------------------------------------------
 
 SUBDIRS = \
+	terzaghi_compaction \
 	terzaghi \
 	mandel \
 	cryer

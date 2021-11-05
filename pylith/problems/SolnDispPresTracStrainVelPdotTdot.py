@@ -22,7 +22,7 @@ from pylith.utils.PetscComponent import PetscComponent
 from .Solution import Solution as SolutionBase
 
 
-class SolnDispPresTracStrainVelTdotPdot(PetscComponent):
+class SolnDispPresTracStrainVelPdotTdot(PetscComponent):
     """Python subfields container with displacement, pore pressure, and trace strain subfields.
 
     IMPORTANT: Use the Solution class (below) to set this object as the default facilities array for the solution
@@ -89,7 +89,7 @@ class Solution(SolutionBase):
 
     from .SolutionSubfield import subfieldFactory
     subfields = pythia.pyre.inventory.facilityArray(
-        "subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispPresTracStrainVelTdotPdot)
+        "subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispPresTracStrainVelPdotTdot)
     subfields.meta['tip'] = "Subfields in solution."
 
 

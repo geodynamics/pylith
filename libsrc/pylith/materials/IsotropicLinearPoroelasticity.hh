@@ -183,11 +183,11 @@ public:
      *
      * @param[inout] kernels Array of kernels for updating state variables.
      * @param[in] coordsys Coordinate system.
-     * @param[in] _updateFields Update kernels?
+     * @param[in] _useStateVars Update kernels?
      */
     void addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
                                    const spatialdata::geocoords::CoordSys* coordsys,
-                                   const bool _updateFields) const;
+                                   const bool _useStateVars) const;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

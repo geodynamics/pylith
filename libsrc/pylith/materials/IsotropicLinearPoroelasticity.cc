@@ -641,10 +641,10 @@ pylith::materials::IsotropicLinearPoroelasticity::updateKernelConstants(pylith::
 void
 pylith::materials::IsotropicLinearPoroelasticity::addKernelsUpdateStateVars(std::vector<ProjectKernels>* kernels,
                                                                             const spatialdata::geocoords::CoordSys* coordsys,
-                                                                            const bool _updateFields) const {
+                                                                            const bool _useStateVars) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<")");
-    if (_updateFields) {
+    if (_useStateVars) {
         const int spaceDim = coordsys->getSpaceDim();
         const PetscPointFunc funcPorosity =
             (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::updatePorosity :
