@@ -131,7 +131,8 @@ class TimeDependent(Problem, ModuleTimeDependent):
         if 0 == comm.rank:
             self._info.log("Solving problem.")
 
-        finalTime = ModuleTimeDependent.solve(self)
+        from pythia.pyre.units.time import second
+        finalTime = ModuleTimeDependent.solve(self)*second
         return finalTime
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

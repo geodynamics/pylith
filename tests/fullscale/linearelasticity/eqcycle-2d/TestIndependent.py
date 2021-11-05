@@ -105,7 +105,6 @@ class TestCase(FullTestCase):
 class TestQuad(TestCase):
 
     def setUp(self):
-        #self.name = "{problem}_quad"
         self.name = "quad"
         self.mesh = meshes.Quad
         super().setUp()
@@ -118,7 +117,6 @@ class TestQuad(TestCase):
 class TestTri(TestCase):
 
     def setUp(self):
-        #self.name = "{problem}_tri"
         self.name = "tri"
         self.mesh = meshes.Tri
         super().setUp()
@@ -130,14 +128,9 @@ class TestTri(TestCase):
 # ----------------------------------------------------------------------------------------------------------------------
 def test_cases():
     return [
-        TestQuad
+        TestQuad,
+        TestTri,
     ]
-
-# def test_cases():
-#     return [
-#         TestQuad,
-#         TestTri,
-#     ]
 
 
 # ----------------------------------------------------------------------------------------------------------------------

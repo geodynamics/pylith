@@ -149,8 +149,7 @@ class PyLithApp(PetscApplication):
                 problem.setEndTime(currEndTime.value)
                 problem.updateTimes()
 
-                #currEndTime = problem.run()
-                tempEndTime = problem.run()
+                currEndTime = problem.run()
                 self._debug.log(resourceUsageString())
                 print("round %i problem %i: %.3e %.3e." %(numIts, problemNum, currStartTime.value, currEndTime.value) )
 
