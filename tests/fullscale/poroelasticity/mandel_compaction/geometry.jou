@@ -1,0 +1,14 @@
+# ----------------------------------------------------------------------
+# Create surface using vertices
+# ----------------------------------------------------------------------
+
+# Block is 10.0m x 1.0m
+# 0 m <= x <= 10.0 m
+# 0 m <= y <= 1.0 m
+reset
+create vertex 0.0 0.0 0.0
+create vertex 0.0 +1.0 0.0
+create vertex +10.0 +1.0 0.0
+create vertex +10.0 0.0 0.0
+create surface vertex 1 2 3 4
+delete vertex all

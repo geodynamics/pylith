@@ -1189,7 +1189,7 @@ public:
     /* Update porosity for a linear poroelastic material.
      */
     static
-    void updatePorosity(const PylithInt dim,
+    void updatePorosityImplicit(const PylithInt dim,
                         const PylithInt numS,
                         const PylithInt numA,
                         const PylithInt sOff[],
@@ -2338,7 +2338,7 @@ public:
     /* Update porosity for a linear poroelastic material.
      */
     static
-    void updatePorosity(const PylithInt dim,
+    void updatePorosityImplicit(const PylithInt dim,
                         const PylithInt numS,
                         const PylithInt numA,
                         const PylithInt sOff[],

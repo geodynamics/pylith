@@ -251,6 +251,7 @@ AC_CONFIG_FILES([Makefile
 		tests/fullscale/poroelasticity/Makefile
 		tests/fullscale/poroelasticity/terzaghi_compaction/Makefile
 		tests/fullscale/poroelasticity/terzaghi/Makefile
+		tests/fullscale/poroelasticity/mandel_compaction/Makefile
 		tests/fullscale/poroelasticity/mandel/Makefile
 		tests/fullscale/poroelasticity/cryer/Makefile
 		tests/fullscale/petsc/Makefile

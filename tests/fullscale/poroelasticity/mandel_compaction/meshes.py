@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests/fullscale/poroelasticty/mandel/meshes.py
+# @file tests/fullscale/poroelasticty/mandel_compaction/meshes.py
 #
 # @brief Mesh information for test cases.
 

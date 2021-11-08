@@ -823,8 +823,22 @@ pylith::materials::Poroelasticity::_setKernelsUpdateStateVars(pylith::feassemble
     assert(coordsys);
 
     std::vector<ProjectKernels> kernels;
-    _rheology->addKernelsUpdateStateVars(&kernels, coordsys, _useStateVars);
 
+    switch (_formulation) {
+    case QUASISTATIC: {
+
+        _rheology->addKernelsUpdateStateVarsImplicit(&kernels, coordsys, _useStateVars);
+
+        break;
+    } // QUASISTATIC
+    case DYNAMIC_IMEX:
+    case DYNAMIC: {
+        break;
+    } // DYNAMIC
+    default:
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
+    } // switch
+    
     integrator->setKernelsUpdateStateVars(kernels);
 
     PYLITH_METHOD_END;

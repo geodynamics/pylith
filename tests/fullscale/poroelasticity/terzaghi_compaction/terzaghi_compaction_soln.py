@@ -238,6 +238,24 @@ class AnalyticalSoln(object):
 
         return trace_strain
 
+    def zero_array_dim(self, locs):
+        """ Return zero valued array, dimension = ndim
+        """
+        (npts, dim) = locs.shape
+        ntpts = tsteps.shape[0]
+        zero_array_dim = numpy.zeros((ntpts, npts, dim), dtype=numpy.float64)
+        
+        return zero_array_dim
+
+    def zero_array(self, locs):
+        """ Return zero valued array
+        """
+        (npts, dim) = locs.shape
+        ntpts = tsteps.shape[0]
+        zero_array = numpy.zeros((ntpts, npts, 1), dtype=numpy.float64)
+
+        return zero_array
+
     # Series functions
 
     def F1(self, z_star, t_star):
