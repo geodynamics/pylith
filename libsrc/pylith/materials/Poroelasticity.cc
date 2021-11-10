@@ -833,6 +833,9 @@ pylith::materials::Poroelasticity::_setKernelsUpdateStateVars(pylith::feassemble
     } // QUASISTATIC
     case DYNAMIC_IMEX:
     case DYNAMIC: {
+
+        _rheology->addKernelsUpdateStateVarsExplicit(&kernels, coordsys, _useStateVars);
+
         break;
     } // DYNAMIC
     default:

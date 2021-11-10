@@ -177,7 +177,7 @@ public:
     void updateKernelConstants(pylith::real_array* kernelConstants,
                                const PylithReal dt) const;
 
-    /** Add kernels for updating state variables.
+    /** Add kernels for updating state variables, implicit.
      *
      * @param[inout] kernels Array of kernels for updating state variables.
      * @param[in] coordsys Coordinate system.
@@ -186,6 +186,16 @@ public:
     void addKernelsUpdateStateVarsImplicit(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
                                    const spatialdata::geocoords::CoordSys* coordsys,
                                    const bool _useStateVars) const;
+
+    /** Add kernels for updating state variables, explicit.
+     *
+     * @param[inout] kernels Array of kernels for updating state variables.
+     * @param[in] coordsys Coordinate system.
+     */
+    virtual
+    void addKernelsUpdateStateVarsExplicit(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
+                                   const spatialdata::geocoords::CoordSys* coordsys,
+                                   const bool _useStateVars) const;                                   
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

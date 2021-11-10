@@ -59,7 +59,7 @@ pylith::materials::RheologyPoroelasticity::updateKernelConstants(pylith::real_ar
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Add kernels for updating state variables.
+// Add kernels for updating state variables, implicit.
 void
 pylith::materials::RheologyPoroelasticity::addKernelsUpdateStateVarsImplicit(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
                                                                  const spatialdata::geocoords::CoordSys* coordsys,
@@ -71,5 +71,19 @@ pylith::materials::RheologyPoroelasticity::addKernelsUpdateStateVarsImplicit(std
 
     PYLITH_METHOD_END;
 } // addKernelsUpdateStateVarsImplicit
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Add kernels for updating state variables, explicit.
+void
+pylith::materials::RheologyPoroelasticity::addKernelsUpdateStateVarsExplicit(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
+                                                                 const spatialdata::geocoords::CoordSys* coordsys,
+                                                                 const bool _useStateVars) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVarsExplicit(kernels="<<kernels<<", coordsys="<<coordsys<<") empty method");
+
+    // Default is to do nothing.
+
+    PYLITH_METHOD_END;
+} // addKernelsUpdateStateVarsExplicit
 
 // End of file

@@ -2631,7 +2631,7 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::cauchyStress_refsta
 // ========================== Update Kernels ===================================
 
 // ---------------------------------------------------------------------------------------------------------------------
-/* Update porosity for a linear poroelastic material.
+/* Update porosity for a linear poroelastic material, implicit.
  */
 void pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosityImplicit(const PylithInt dim,
                                                                                  const PylithInt numS,
@@ -2691,6 +2691,88 @@ void pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosity
                                                   drainedBulkModulus * pressure_t);
 
 } // updatePorosityImplicit
+
+// ---------------------------------------------------------------------------------------------------------------------
+/* Update porosity for a linear poroelastic material, explicit.
+ */
+void pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosityExplicit(const PylithInt dim,
+                                                                        const PylithInt numS,
+                                                                        const PylithInt numA,
+                                                                        const PylithInt sOff[],
+                                                                        const PylithInt sOff_x[],
+                                                                        const PylithScalar s[],
+                                                                        const PylithScalar s_t[],
+                                                                        const PylithScalar s_x[],
+                                                                        const PylithInt aOff[],
+                                                                        const PylithInt aOff_x[],
+                                                                        const PylithScalar a[],
+                                                                        const PylithScalar a_t[],
+                                                                        const PylithScalar a_x[],
+                                                                        const PylithReal t,
+                                                                        const PylithScalar x[],
+                                                                        const PylithInt numConstants,
+                                                                        const PylithScalar constants[],
+                                                                        PylithScalar porosity[])
+{
+    const PylithInt _dim = 2;
+
+    // Incoming solution fields.
+    const PylithInt i_pressure = 1;
+    const PylithInt i_velocity = 2;
+
+    // Incoming re-packed auxiliary field.
+
+    // Poroelasticity
+    const PylithInt i_porosity = 3;
+
+    // Run Checks
+    assert(_dim == dim);
+    assert(numS >= 3);
+    assert(numA >= 3);
+    assert(aOff);
+    assert(aOff[i_porosity] >= 0);
+    assert(porosity);
+
+    // IsotropicLinearPoroelasticity
+    const PylithInt i_drainedBulkModulus = numA - 4;
+    const PylithInt i_biotCoefficient = numA - 3;
+
+    // Constants
+    const PylithScalar dt = constants[0];
+
+#if 0 // :DEBUG:
+    std::cout << "dim:  " << dim << std::endl;
+    std::cout << "numS:  " << numS << std::endl;
+    std::cout << "numA:  " << numA << std::endl;
+    std::cout << "sOff[0]:  " << sOff[0] << std::endl;
+    std::cout << "sOff_x[0]:  " << sOff_x[0] << std::endl;
+    std::cout << "s[0]:  " << s[0] << std::endl;
+    std::cout << "aOff[0]:  " << aOff[0] << std::endl;
+    std::cout << "a[0]:  " << a[0] << std::endl;
+    std::cout << "t:  " << t << std::endl;
+    std::cout << "x[0]:  " << x[0] << std::endl;
+    std::cout << "numConstants:  " << numConstants << std::endl;
+    std::cout << "porosity[0]:  " << totalStrain[0] << std::endl;
+#endif
+
+    // Do stuff
+    const PylithScalar pressure_t = s_t[sOff[i_pressure]];
+    const PylithScalar* velocity_x = &s_x[sOff[i_velocity]];
+
+    const PylithScalar drainedBulkModulus = a[aOff[i_drainedBulkModulus]];
+    const PylithScalar biotCoefficient = a[aOff[i_biotCoefficient]];
+
+    PylithScalar trace_strain_t = 0.0;
+
+    for (PylithInt d = 0; d < _dim; ++d) {
+        trace_strain_t += velocity_x[d*_dim+d];
+    }
+
+    // Update porosity
+    porosity[0] = a[aOff[i_porosity]] + dt * ((biotCoefficient - a[aOff[i_porosity]]) * trace_strain_t +
+                                              ((1.0 - biotCoefficient) * (biotCoefficient - a[aOff[i_porosity]])) /
+                                                  drainedBulkModulus * pressure_t);
+} // updatePorosityExplicit
 
 // =====================================================================================================================
 // Kernels for isotropic, linear poroelasticity in 3D.
@@ -5355,7 +5437,7 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::cauchyStress_refstate(const 
 // ========================== Update Kernels ===================================
 
 // ---------------------------------------------------------------------------------------------------------------------
-/* Update porosity for a linear poroelastic material.
+/* Update porosity for a linear poroelastic material, implicit.
  */
 void pylith::fekernels::IsotropicLinearPoroelasticity3D::updatePorosityImplicit(const PylithInt dim,
                                                                         const PylithInt numS,
@@ -5430,5 +5512,86 @@ void pylith::fekernels::IsotropicLinearPoroelasticity3D::updatePorosityImplicit(
                                                   drainedBulkModulus * pressure_t);
 } // updatePorosityImplicit
 
+// ---------------------------------------------------------------------------------------------------------------------
+/* Update porosity for a linear poroelastic material, explicit.
+ */
+void pylith::fekernels::IsotropicLinearPoroelasticity3D::updatePorosityExplicit(const PylithInt dim,
+                                                                        const PylithInt numS,
+                                                                        const PylithInt numA,
+                                                                        const PylithInt sOff[],
+                                                                        const PylithInt sOff_x[],
+                                                                        const PylithScalar s[],
+                                                                        const PylithScalar s_t[],
+                                                                        const PylithScalar s_x[],
+                                                                        const PylithInt aOff[],
+                                                                        const PylithInt aOff_x[],
+                                                                        const PylithScalar a[],
+                                                                        const PylithScalar a_t[],
+                                                                        const PylithScalar a_x[],
+                                                                        const PylithReal t,
+                                                                        const PylithScalar x[],
+                                                                        const PylithInt numConstants,
+                                                                        const PylithScalar constants[],
+                                                                        PylithScalar porosity[])
+{
+    const PylithInt _dim = 3;
+
+    // Incoming solution fields.
+    const PylithInt i_pressure = 1;
+    const PylithInt i_velocity = 2;
+
+    // Incoming re-packed auxiliary field.
+
+    // Poroelasticity
+    const PylithInt i_porosity = 3;
+
+    // Run Checks
+    assert(_dim == dim);
+    assert(numS >= 3);
+    assert(numA >= 3);
+    assert(aOff);
+    assert(aOff[i_porosity] >= 0);
+    assert(porosity);
+
+    // IsotropicLinearPoroelasticity
+    const PylithInt i_drainedBulkModulus = numA - 4;
+    const PylithInt i_biotCoefficient = numA - 3;
+
+    // Constants
+    const PylithScalar dt = constants[0];
+
+#if 0 // :DEBUG:
+    std::cout << "dim:  " << dim << std::endl;
+    std::cout << "numS:  " << numS << std::endl;
+    std::cout << "numA:  " << numA << std::endl;
+    std::cout << "sOff[0]:  " << sOff[0] << std::endl;
+    std::cout << "sOff_x[0]:  " << sOff_x[0] << std::endl;
+    std::cout << "s[0]:  " << s[0] << std::endl;
+    std::cout << "aOff[0]:  " << aOff[0] << std::endl;
+    std::cout << "a[0]:  " << a[0] << std::endl;
+    std::cout << "t:  " << t << std::endl;
+    std::cout << "x[0]:  " << x[0] << std::endl;
+    std::cout << "numConstants:  " << numConstants << std::endl;
+    std::cout << "porosity[0]:  " << totalStrain[0] << std::endl;
+#endif
+
+    // Do stuff
+    const PylithScalar pressure_t = s_t[sOff[i_pressure]];
+    const PylithScalar* velocity_x = &s_x[sOff[i_velocity]];
+
+    const PylithScalar drainedBulkModulus = a[aOff[i_drainedBulkModulus]];
+    const PylithScalar biotCoefficient = a[aOff[i_biotCoefficient]];
+
+    PylithScalar trace_strain_t = 0.0;
+
+    for (PylithInt d = 0; d < _dim; ++d) {
+        trace_strain_t += velocity_x[d*_dim+d];
+    }
+
+    // Update porosity
+    porosity[0] = a[aOff[i_porosity]] + dt * ((biotCoefficient - a[aOff[i_porosity]]) * trace_strain_t +
+                                              ((1.0 - biotCoefficient) * (biotCoefficient - a[aOff[i_porosity]])) /
+                                                  drainedBulkModulus * pressure_t);
+} // updatePorosityExplicit
 
 // End of file

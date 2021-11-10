@@ -637,7 +637,7 @@ pylith::materials::IsotropicLinearPoroelasticity::updateKernelConstants(pylith::
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Add kernels for updating state variables.
+// Add kernels for updating state variables, implicit.
 void
 pylith::materials::IsotropicLinearPoroelasticity::addKernelsUpdateStateVarsImplicit(std::vector<ProjectKernels>* kernels,
                                                                             const spatialdata::geocoords::CoordSys* coordsys,
@@ -661,5 +661,29 @@ pylith::materials::IsotropicLinearPoroelasticity::addKernelsUpdateStateVarsImpli
     PYLITH_METHOD_END;
 } // addKernelsUpdateStateVarsImplicit
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Add kernels for updating state variables, explicit.
+void
+pylith::materials::IsotropicLinearPoroelasticity::addKernelsUpdateStateVarsExplicit(std::vector<ProjectKernels>* kernels,
+                                                                            const spatialdata::geocoords::CoordSys* coordsys,
+                                                                            const bool _useStateVars) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVarsExplicit(kernels="<<kernels<<", coordsys="<<coordsys<<")");
+    if (_useStateVars) {
+        const int spaceDim = coordsys->getSpaceDim();
+
+            const PetscPointFunc funcPorosity =
+                (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::updatePorosityExplicit :
+                (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosityExplicit :
+                NULL;
+
+        assert(kernels);
+        size_t prevNumKernels = kernels->size();
+        kernels->resize(prevNumKernels + 1);
+        (*kernels)[prevNumKernels+0] = ProjectKernels("porosity", funcPorosity);
+    }
+
+    PYLITH_METHOD_END;
+} // addKernelsUpdateStateVarsExplicit
 
 // End of file
