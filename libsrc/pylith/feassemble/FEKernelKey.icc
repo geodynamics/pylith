@@ -114,11 +114,6 @@ pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solu
     weakFormKey.label = label;
     weakFormKey.value = _value;
     weakFormKey.part = jacobianPart;
-    weakFormKey.field = fieldIndex;
-
-    return weakFormKey;
-} // petscKey
-
 
 #endif
 

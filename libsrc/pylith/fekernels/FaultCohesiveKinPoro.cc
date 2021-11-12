@@ -569,7 +569,7 @@ void pylith::fekernels::FaultCohesiveKinPoro::Jf0ul_neg(const PylithInt dim,
 // ----------------------------------------------------------------------
 /* Jf0 function for integration of the displacement equation (neg side).
  *
- * Solution fields = [disp(dim), ..., lagrange(dim)]
+ * Solution fields = [disp(dim), ..., mu(dim)]
  * Auxiliary fields = None
  */
 void pylith::fekernels::FaultCohesiveKinPoro::Jf0umu_neg(const PylithInt dim,
@@ -649,14 +649,14 @@ void pylith::fekernels::FaultCohesiveKinPoro::Jf0ul_pos(const PylithInt dim,
 
     for (PylithInt i = 0; i < spaceDim; ++i)
     {
-        Jf0[(gOffP + i) * ncols + i] += +0.0;
+        Jf0[(gOffP + i) * ncols + i] += +1.0;
     } // for
 } // Jg0ul_pos
 
 // ----------------------------------------------------------------------
 /* Jf0 function for integration of the displacement equation (pos side).
  *
- * Solution fields = [disp(dim), ..., lagrange(dim)]
+ * Solution fields = [disp(dim), ..., mu(dim)]
  * Auxiliary fields = None
  */
 void pylith::fekernels::FaultCohesiveKinPoro::Jf0umu_pos(const PylithInt dim,
@@ -693,7 +693,7 @@ void pylith::fekernels::FaultCohesiveKinPoro::Jf0umu_pos(const PylithInt dim,
 
     for (PylithInt i = 0; i < spaceDim; ++i)
     {
-        Jf0[(gOffP + i) * ncols + i] += +0.0;
+        Jf0[(gOffP + i) * ncols + i] += +1.0;
     } // for
 } // Jg0umu_pos
 
@@ -745,7 +745,7 @@ void pylith::fekernels::FaultCohesiveKinPoro::Jf0lu(const PylithInt dim,
 // ----------------------------------------------------------------------
 /* Jg0 function for integration of the slip constraint equation.
  *
- * Solution fields = [disp(dim), ..., lagrange(dim)]
+ * Solution fields = [disp(dim), ..., mu(dim)]
  * Auxiliary fields = None
  */
 void pylith::fekernels::FaultCohesiveKinPoro::Jf0muu(const PylithInt dim,
