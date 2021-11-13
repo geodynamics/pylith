@@ -43,13 +43,15 @@ class Quad(object):
     """
     ENTITIES = {
         "domain": MeshEntity(ncells=64, ncorners=4, nvertices=81),
+        "points": MeshEntity(ncells=3, ncorners=1, nvertices=3),
+
         "elastic_xpos": MeshEntity(ncells=32, ncorners=4, nvertices=45),
         "elastic_xneg": MeshEntity(ncells=32, ncorners=4, nvertices=45),
+
         "bc_xneg": MeshEntity(ncells=8, ncorners=2, nvertices=9),
         "bc_xpos": MeshEntity(ncells=8, ncorners=2, nvertices=9),
         "bc_yneg": MeshEntity(ncells=8, ncorners=2, nvertices=9),
         "bc_ypos": MeshEntity(ncells=8, ncorners=2, nvertices=9),
-        "points": MeshEntity(ncells=3, ncorners=1, nvertices=3),
     }
 
 

@@ -94,7 +94,6 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of integration patches",
                                  numPatches, patches->_keys.size());
 
-    const std::string& fieldName = "lagrange_multiplier_fault";
     const std::string& cellsLabelName = pylith::topology::Mesh::getCellsLabelName();
     CPPUNIT_ASSERT(_data->patchKeys);
     CPPUNIT_ASSERT(_data->patchNumCells);
@@ -116,15 +115,12 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
         CPPUNIT_ASSERT_MESSAGE("Could not find patch.", patchIndex >= 0);
 
         CPPUNIT_ASSERT_EQUAL(labelName, weakFormKeys.cohesive._name);
-        CPPUNIT_ASSERT_EQUAL(fieldName, weakFormKeys.cohesive._field);
 
         CPPUNIT_ASSERT_EQUAL(cellsLabelName, weakFormKeys.negative._name);
         CPPUNIT_ASSERT_EQUAL(_data->patchKeys[patchIndex].negative_value, matIdNegative);
-        CPPUNIT_ASSERT_EQUAL(fieldName, weakFormKeys.negative._field);
 
         CPPUNIT_ASSERT_EQUAL(cellsLabelName, weakFormKeys.positive._name);
         CPPUNIT_ASSERT_EQUAL(_data->patchKeys[patchIndex].positive_value, matIdPositive);
-        CPPUNIT_ASSERT_EQUAL(fieldName, weakFormKeys.positive._field);
 
         // Check labels
         PetscErrorCode err = 0;
