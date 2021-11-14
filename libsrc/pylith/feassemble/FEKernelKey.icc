@@ -58,6 +58,10 @@ pylith::feassemble::FEKernelKey::create(PetscWeakForm weakForm,
         key->_weakForm = weakForm;
         key->_name = name ? name : "";
         key->_value = value;
+<<<<<<< HEAD
+=======
+
+>>>>>>> Additional change to current spec
     } // if
     return key;
 } // create
