@@ -52,7 +52,7 @@ inline
 pylith::feassemble::FEKernelKey*
 pylith::feassemble::FEKernelKey::create(PetscWeakForm weakForm,
                                         const char* name,
-                                        const int value) {
+                                        const char* field) {
     FEKernelKey* key = new FEKernelKey();assert(key);
     if (key) {
         key->_weakForm = weakForm;
@@ -114,6 +114,11 @@ pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solu
     weakFormKey.label = label;
     weakFormKey.value = _value;
     weakFormKey.part = jacobianPart;
+    weakFormKey.field = fieldIndex;
+
+    return weakFormKey;
+} // petscKey
+
 
 #endif
 
