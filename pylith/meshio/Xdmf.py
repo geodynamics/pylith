@@ -169,12 +169,23 @@ class Xdmf(object):
     def _getXdmfVectorFieldType(self, vectorFieldString):
         """Get Xdmf vector field type.
         """
+        import numpy
+        
+        if type(vectorFieldString) == str:
+            vectorFieldTypeName = vectorFieldString.lower()
+        elif type(vectorFieldString) == bytes:
+            vectorFieldTypeName = vectorFieldString.decode().lower()
+        elif type(vectorFieldString) == numpy.bytes_:
+            vectorFieldTypeName = vectorFieldString.tobytes().decode().lower()
+        else:
+            raise TypeError(f"Unknown type for vector field string ({type(vectorFieldString)}).")
+
         vtype = "Matrix"
-        if vectorFieldString.decode().lower() == "scalar":
+        if vectorFieldTypeName == "scalar":
             vtype = "Scalar"
-        elif vectorFieldString.decode().lower() == "vector":
+        elif vectorFieldTypeName == "vector":
             vtype = "Vector"
-        elif vectorFieldString.decode().lower() == "tensor":
+        elif vectorFieldTypeName == "tensor":
             vtype = "Tensor6"
         return vtype
 
