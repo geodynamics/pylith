@@ -48,15 +48,13 @@ public:
      * @param[in] weakForm PETSc weak form object.
      * @param[in] name Name of label designating integration domain.
      * @param[in] value Value of label designating integration domain.
-     * @param[in] field Name of solution subfield associated with integration kernels.
      *
      * @return Key for finite-element integration.
      */
     static
     FEKernelKey* create(PetscWeakForm weakForm,
                         const char* name,
-                        const int value,
-                        const char* field=NULL);
+                        const int value);
 
     /** Get PETSc weak form.
      *
@@ -80,21 +78,21 @@ public:
      *
      * @param[in] solution Solution field.
      * @param[in] jacobianPart Jacobian part for weak form key.
-     * @param[in] field Name of solution subfield associated with integration kernel.
+     * @param[in] fieldTrial Name of solution subfield associated with trial function.
+     * @param[in] fieldTrial Name of solution subfield associated with basis function.
      *
      * @returns PETSc weak form key.
      */
     PetscFormKey getPetscKey(const pylith::topology::Field& solution,
                              pylith::feassemble::Integrator::JacobianPart jacobianPart,
-                             const char* fieldTrial,
-                             const char* fieldBasis) const;
+                             const char* fieldTrial=NULL,
+                             const char* fieldBasis=NULL) const;
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
     PetscWeakForm _weakForm; ///< PETSc weak form object associated with integration key.
     std::string _name; ///< Name of label designating integration domain.
-    std::string _field; ///< Name of solution subfield associated with integration kernels.
     int _value; ///< Value of label designating integration domain.
 
 }; // FEKernelKey

@@ -28,7 +28,6 @@
 inline
 pylith::feassemble::FEKernelKey::FEKernelKey(void) :
     _name(""),
-    _field(""),
     _value(-1) {}
 
 
@@ -53,14 +52,12 @@ inline
 pylith::feassemble::FEKernelKey*
 pylith::feassemble::FEKernelKey::create(PetscWeakForm weakForm,
                                         const char* name,
-                                        const int value,
-                                        const char* field) {
+                                        const int value) {
     FEKernelKey* key = new FEKernelKey();assert(key);
     if (key) {
         key->_weakForm = weakForm;
         key->_name = name ? name : "";
         key->_value = value;
-        key->_field = field ? field : "";
     } // if
     return key;
 } // create
@@ -76,19 +73,16 @@ pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solu
     PetscDM dmSoln = solution.getDM();
     PetscDMLabel label = NULL;
     PetscErrorCode err = DMGetLabel(dmSoln, _name.c_str(), &label);PYLITH_CHECK_ERROR(err);
-    PetscInt i_field = -1;
+    PetscInt fieldIndex = -1;
     if (field) {
-        i_field = solution.getSubfieldInfo(field).index;
-    } else {
-        i_field = (!_field.empty()) ? solution.getSubfieldInfo(_field.c_str()).index : -1;
-    } // if/else
-    assert(i_field >= 0);
+        fieldIndex = solution.getSubfieldInfo(field).index;assert(fieldIndex >= 0);
+    } // if
 
     PetscFormKey weakFormKey;
     weakFormKey.label = label;
     weakFormKey.value = _value;
     weakFormKey.part = residualPart;
-    weakFormKey.field = i_field;
+    weakFormKey.field = fieldIndex;
 
     return weakFormKey;
 } // petscKey
@@ -105,18 +99,22 @@ pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solu
     PetscDM dmSoln = solution.getDM();
     PetscDMLabel label = NULL;
     PetscErrorCode err = DMGetLabel(dmSoln, _name.c_str(), &label);PYLITH_CHECK_ERROR(err);
-    PetscInt i_field = -1, j_field = -1, Nf;
-    err = DMGetNumFields(dmSoln, &Nf);PYLITH_CHECK_ERROR(err);
-    i_field = solution.getSubfieldInfo(fieldTrial).index;
-    assert(i_field >= 0);
-    j_field = solution.getSubfieldInfo(fieldBasis).index;
-    assert(j_field >= 0);
+    PetscInt fieldIndex = -1;
+    if (fieldTrial && fieldBasis) {
+        PetscInt i_field = -1;
+        PetscInt j_field = -1;
+        PetscInt numFields = 0;
+        err = DMGetNumFields(dmSoln, &numFields);PYLITH_CHECK_ERROR(err);
+        i_field = solution.getSubfieldInfo(fieldTrial).index;assert(i_field >= 0);
+        j_field = solution.getSubfieldInfo(fieldBasis).index;assert(j_field >= 0);
+        fieldIndex = i_field * numFields + j_field;
+    } // if
 
     PetscFormKey weakFormKey;
     weakFormKey.label = label;
     weakFormKey.value = _value;
     weakFormKey.part = jacobianPart;
-    weakFormKey.field = i_field*Nf + j_field;
+    weakFormKey.field = fieldIndex;
 
     return weakFormKey;
 } // petscKey

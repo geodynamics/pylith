@@ -137,11 +137,11 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
             WeakFormKeys weakFormKeys;
             const char* lagrangeMultiplierName = "lagrange_multiplier_fault";
             pylith::feassemble::FEKernelKey* key = NULL;
-            key = pylith::feassemble::FEKernelKey::create(weakFormCohesive, patchLabelName.c_str(), patchLabelValue, lagrangeMultiplierName);
+            key = pylith::feassemble::FEKernelKey::create(weakFormCohesive, patchLabelName.c_str(), patchLabelValue);
             weakFormKeys.cohesive = *key;delete key;key = NULL;
-            key = pylith::feassemble::FEKernelKey::create(weakFormNegative, cellsLabelName, matPair.first, lagrangeMultiplierName);
+            key = pylith::feassemble::FEKernelKey::create(weakFormNegative, cellsLabelName, matPair.first);
             weakFormKeys.negative = *key;delete key;key = NULL;
-            key = pylith::feassemble::FEKernelKey::create(weakFormPositive, cellsLabelName, matPair.second, lagrangeMultiplierName);
+            key = pylith::feassemble::FEKernelKey::create(weakFormPositive, cellsLabelName, matPair.second);
             weakFormKeys.positive = *key;delete key;key = NULL;
             patches->_keys[patchLabelValue] = weakFormKeys;
         } // if

@@ -484,9 +484,9 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     const keysmap_t& keysmap = patches->getKeys();
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
         PetscFormKey weakFormKeys[3];
-        weakFormKeys[0] = iter->second.negative.getPetscKey(solution, residualPart, "displacement");
-        weakFormKeys[1] = iter->second.positive.getPetscKey(solution, residualPart, "displacement");
-        weakFormKeys[2] = iter->second.cohesive.getPetscKey(solution, residualPart, "lagrange_multiplier_fault");
+        weakFormKeys[0] = iter->second.negative.getPetscKey(solution, residualPart);
+        weakFormKeys[1] = iter->second.positive.getPetscKey(solution, residualPart);
+        weakFormKeys[2] = iter->second.cohesive.getPetscKey(solution, residualPart);
 
         PetscIS patchCellsIS = NULL;
         PetscInt numPatchCells = 0;
@@ -540,9 +540,9 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     const keysmap_t& keysmap = patches->getKeys();
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
         PetscFormKey weakFormKeys[3];
-        weakFormKeys[0] = iter->second.negative.getPetscKey(solution, jacobianPart, "displacement", "lagrange_multiplier_fault");
-        weakFormKeys[1] = iter->second.positive.getPetscKey(solution, jacobianPart, "displacement", "lagrange_multiplier_fault");
-        weakFormKeys[2] = iter->second.cohesive.getPetscKey(solution, jacobianPart, "lagrange_multiplier_fault", "displacement");
+        weakFormKeys[0] = iter->second.negative.getPetscKey(solution, jacobianPart);
+        weakFormKeys[1] = iter->second.positive.getPetscKey(solution, jacobianPart);
+        weakFormKeys[2] = iter->second.cohesive.getPetscKey(solution, jacobianPart);
 
         PetscIS patchCellsIS = NULL;
         PetscInt numPatchCells = 0;
