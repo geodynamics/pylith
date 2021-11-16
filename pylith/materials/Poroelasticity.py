@@ -41,7 +41,7 @@ class Poroelasticity(Material, ModulePoroelasticity):
 
     useStateVars = pythia.pyre.inventory.bool(
         "use_state_variables", default=False)
-    useStateVars.meta['tip'] = "Update auxiliary field terms with run."
+    useStateVars.meta['tip'] = "Update porosity state variable using compaction formulation."
 
     rheology = pythia.pyre.inventory.facility(
         "bulk_rheology", family="poroelasticity_rheology", factory=IsotropicLinearPoroelasticity)

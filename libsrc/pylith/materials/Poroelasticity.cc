@@ -53,7 +53,7 @@ pylith::materials::Poroelasticity::Poroelasticity(void) :
     _useBodyForce(false),
     _useReferenceState(false),
     _useSourceDensity(false),
-    _useStateVars(false),    
+    _useStateVars(false),
     _rheology(NULL),
     _derivedFactory(new pylith::materials::DerivedFactoryElasticity) {
     pylith::utils::PyreComponent::setName("poroelasticity");
@@ -113,10 +113,11 @@ pylith::materials::Poroelasticity::useSourceDensity(void) const {
     return _useSourceDensity;
 } // useSourceDensity
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Update Fields?
-void pylith::materials::Poroelasticity::useStateVars(const bool value)
-{
+void
+pylith::materials::Poroelasticity::useStateVars(const bool value) {
     PYLITH_COMPONENT_DEBUG("useStateVars(value=" << value << ")");
     _useStateVars = value;
 } // useStateVars
@@ -124,8 +125,8 @@ void pylith::materials::Poroelasticity::useStateVars(const bool value)
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Update fields?
-bool pylith::materials::Poroelasticity::useStateVars(void) const
-{
+bool
+pylith::materials::Poroelasticity::useStateVars(void) const {
     return _useStateVars;
 } // useStateVars
 
@@ -358,15 +359,15 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
     std::vector<ResidualKernels> kernels;
     switch (_formulation) {
     case QUASISTATIC: {
-        if (!_useStateVars)
-        {        
+        if (!_useStateVars) {
             // Displacement
             const PetscPointFunc f0u = r0;
             const PetscPointFunc f1u = _rheology->getKernelf1u_implicit(coordsys);
 
             // Pressure
             PetscPointFunc f0p = _rheology->getKernelf0p_implicit(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
-            PetscPointFunc f1p = _rheology->getKernelf1p_implicit(coordsys, _useBodyForce, _gravityField); // darcy velocity
+            PetscPointFunc f1p = _rheology->getKernelf1p_implicit(coordsys, _useBodyForce, _gravityField); // darcy
+                                                                                                           // velocity
 
             // Volumetric Strain
             const PetscPointFunc f0e = pylith::fekernels::Poroelasticity::f0e;
@@ -376,7 +377,7 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
             kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::RESIDUAL_LHS, f0u, f1u);
             kernels[1] = ResidualKernels("pressure", pylith::feassemble::Integrator::RESIDUAL_LHS, f0p, f1p);
             kernels[2] = ResidualKernels("trace_strain", pylith::feassemble::Integrator::RESIDUAL_LHS, f0e, f1e);
-        } else if (_useStateVars) {
+        } else {
             // Displacement
             PetscPointFunc f0u = r0;
             const PetscPointFunc f1u = _rheology->getKernelf1u_implicit(coordsys);
@@ -407,7 +408,7 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
             kernels[2] = ResidualKernels("trace_strain", pylith::feassemble::Integrator::RESIDUAL_LHS, f0e, f1e);
             kernels[3] = ResidualKernels("velocity", pylith::feassemble::Integrator::RESIDUAL_LHS, f0v, f1v);
             kernels[4] = ResidualKernels("pressure_t", pylith::feassemble::Integrator::RESIDUAL_LHS, f0pdot, f1pdot);
-            kernels[5] = ResidualKernels("trace_strain_t", pylith::feassemble::Integrator::RESIDUAL_LHS, f0edot, f1edot);            
+            kernels[5] = ResidualKernels("trace_strain_t", pylith::feassemble::Integrator::RESIDUAL_LHS, f0edot, f1edot);
         }
         break;
     } // QUASISTATIC
@@ -464,62 +465,62 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
     case QUASISTATIC: {
         const JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS;
         if (!_useStateVars) {
-        const PetscPointJac Jf0uu = NULL;
-        const PetscPointJac Jf1uu = NULL;
-        const PetscPointJac Jf2uu = NULL;
-        const PetscPointJac Jf3uu = _rheology->getKernelJf3uu(coordsys);
+            const PetscPointJac Jf0uu = NULL;
+            const PetscPointJac Jf1uu = NULL;
+            const PetscPointJac Jf2uu = NULL;
+            const PetscPointJac Jf3uu = _rheology->getKernelJf3uu(coordsys);
 
-        const PetscPointJac Jf0up = NULL;
-        const PetscPointJac Jf1up = NULL;
-        const PetscPointJac Jf2up = _rheology->getKernelJf2up(coordsys);
-        const PetscPointJac Jf3up = NULL;
+            const PetscPointJac Jf0up = NULL;
+            const PetscPointJac Jf1up = NULL;
+            const PetscPointJac Jf2up = _rheology->getKernelJf2up(coordsys);
+            const PetscPointJac Jf3up = NULL;
 
-        const PetscPointJac Jf0ue = NULL;
-        const PetscPointJac Jf1ue = NULL;
-        const PetscPointJac Jf2ue = _rheology->getKernelJf2ue(coordsys);
-        const PetscPointJac Jf3ue = NULL;
+            const PetscPointJac Jf0ue = NULL;
+            const PetscPointJac Jf1ue = NULL;
+            const PetscPointJac Jf2ue = _rheology->getKernelJf2ue(coordsys);
+            const PetscPointJac Jf3ue = NULL;
 
-        const PetscPointJac Jf0pu = NULL;
-        const PetscPointJac Jf1pu = NULL;
-        const PetscPointJac Jf2pu = NULL;
-        const PetscPointJac Jf3pu = NULL;
+            const PetscPointJac Jf0pu = NULL;
+            const PetscPointJac Jf1pu = NULL;
+            const PetscPointJac Jf2pu = NULL;
+            const PetscPointJac Jf3pu = NULL;
 
-        const PetscPointJac Jf0pp = _rheology->getKernelJf0pp(coordsys);
-        const PetscPointJac Jf1pp = NULL;
-        const PetscPointJac Jf2pp = NULL;
-        const PetscPointJac Jf3pp = _rheology->getKernelJf3pp(coordsys);
+            const PetscPointJac Jf0pp = _rheology->getKernelJf0pp(coordsys);
+            const PetscPointJac Jf1pp = NULL;
+            const PetscPointJac Jf2pp = NULL;
+            const PetscPointJac Jf3pp = _rheology->getKernelJf3pp(coordsys);
 
-        const PetscPointJac Jf0pe = _rheology->getKernelJf0pe(coordsys);
-        const PetscPointJac Jf1pe = NULL;
-        const PetscPointJac Jf2pe = NULL;
-        const PetscPointJac Jf3pe = NULL;
+            const PetscPointJac Jf0pe = _rheology->getKernelJf0pe(coordsys);
+            const PetscPointJac Jf1pe = NULL;
+            const PetscPointJac Jf2pe = NULL;
+            const PetscPointJac Jf3pe = NULL;
 
-        const PetscPointJac Jf0eu = NULL;
-        const PetscPointJac Jf1eu = pylith::fekernels::Poroelasticity::Jf1eu;
-        const PetscPointJac Jf2eu = NULL;
-        const PetscPointJac Jf3eu = NULL;
+            const PetscPointJac Jf0eu = NULL;
+            const PetscPointJac Jf1eu = pylith::fekernels::Poroelasticity::Jf1eu;
+            const PetscPointJac Jf2eu = NULL;
+            const PetscPointJac Jf3eu = NULL;
 
-        const PetscPointJac Jf0ep = NULL;
-        const PetscPointJac Jf1ep = NULL;
-        const PetscPointJac Jf2ep = NULL;
-        const PetscPointJac Jf3ep = NULL;
+            const PetscPointJac Jf0ep = NULL;
+            const PetscPointJac Jf1ep = NULL;
+            const PetscPointJac Jf2ep = NULL;
+            const PetscPointJac Jf3ep = NULL;
 
-        const PetscPointJac Jf0ee = pylith::fekernels::Poroelasticity::Jf0ee;
-        const PetscPointJac Jf1ee = NULL;
-        const PetscPointJac Jf2ee = NULL;
-        const PetscPointJac Jf3ee = NULL;
+            const PetscPointJac Jf0ee = pylith::fekernels::Poroelasticity::Jf0ee;
+            const PetscPointJac Jf1ee = NULL;
+            const PetscPointJac Jf2ee = NULL;
+            const PetscPointJac Jf3ee = NULL;
 
-        kernels[0] = JacobianKernels("displacement", "displacement", jacobianPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
-        kernels[1] = JacobianKernels("displacement", "pressure",     jacobianPart, Jf0up, Jf1up, Jf2up, Jf3up);
-        kernels[2] = JacobianKernels("displacement", "trace_strain", jacobianPart, Jf0ue, Jf1ue, Jf2ue, Jf3ue);
-        kernels[3] = JacobianKernels("pressure",     "displacement", jacobianPart, Jf0pu, Jf1pu, Jf2pu, Jf3pu);
-        kernels[4] = JacobianKernels("pressure",     "pressure",     jacobianPart, Jf0pp, Jf1pp, Jf2pp, Jf3pp);
-        kernels[5] = JacobianKernels("pressure",     "trace_strain", jacobianPart, Jf0pe, Jf1pe, Jf2pe, Jf3pe);
-        kernels[6] = JacobianKernels("trace_strain", "displacement", jacobianPart, Jf0eu, Jf1eu, Jf2eu, Jf3eu);
-        kernels[7] = JacobianKernels("trace_strain", "pressure",     jacobianPart, Jf0ep, Jf1ep, Jf2ep, Jf3ep);
-        kernels[8] = JacobianKernels("trace_strain", "trace_strain", jacobianPart, Jf0ee, Jf1ee, Jf2ee, Jf3ee);
-        } else if (_useStateVars) {
-           const PetscPointJac Jf0uu = NULL;
+            kernels[0] = JacobianKernels("displacement", "displacement", jacobianPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
+            kernels[1] = JacobianKernels("displacement", "pressure",     jacobianPart, Jf0up, Jf1up, Jf2up, Jf3up);
+            kernels[2] = JacobianKernels("displacement", "trace_strain", jacobianPart, Jf0ue, Jf1ue, Jf2ue, Jf3ue);
+            kernels[3] = JacobianKernels("pressure",     "displacement", jacobianPart, Jf0pu, Jf1pu, Jf2pu, Jf3pu);
+            kernels[4] = JacobianKernels("pressure",     "pressure",     jacobianPart, Jf0pp, Jf1pp, Jf2pp, Jf3pp);
+            kernels[5] = JacobianKernels("pressure",     "trace_strain", jacobianPart, Jf0pe, Jf1pe, Jf2pe, Jf3pe);
+            kernels[6] = JacobianKernels("trace_strain", "displacement", jacobianPart, Jf0eu, Jf1eu, Jf2eu, Jf3eu);
+            kernels[7] = JacobianKernels("trace_strain", "pressure",     jacobianPart, Jf0ep, Jf1ep, Jf2ep, Jf3ep);
+            kernels[8] = JacobianKernels("trace_strain", "trace_strain", jacobianPart, Jf0ee, Jf1ee, Jf2ee, Jf3ee);
+        } else {
+            const PetscPointJac Jf0uu = NULL;
             const PetscPointJac Jf1uu = NULL;
             const PetscPointJac Jf2uu = NULL;
             const PetscPointJac Jf3uu = _rheology->getKernelJf3uu(coordsys);
@@ -735,7 +736,7 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
             kernels[32] = JacobianKernels("trace_strain_t", "trace_strain", jacobianPart, Jf0edote, Jf1edote, Jf2edote, Jf3edote);
             kernels[33] = JacobianKernels("trace_strain_t", "velocity", jacobianPart, Jf0edotv, Jf1edotv, Jf2edotv, Jf3edotv);
             kernels[34] = JacobianKernels("trace_strain_t", "pressure_t", jacobianPart, Jf0edotpdot, Jf1edotpdot, Jf2edotpdot, Jf3edotpdot);
-            kernels[35] = JacobianKernels("trace_strain_t", "trace_strain_t", jacobianPart, Jf0edotedot, Jf1edotedot, Jf2edotedot, Jf3edotedot);            
+            kernels[35] = JacobianKernels("trace_strain_t", "trace_strain_t", jacobianPart, Jf0edotedot, Jf1edotedot, Jf2edotedot, Jf3edotedot);
         }
         break;
     } // QUASISTATIC
@@ -826,14 +827,12 @@ pylith::materials::Poroelasticity::_setKernelsUpdateStateVars(pylith::feassemble
 
     switch (_formulation) {
     case QUASISTATIC: {
-
         _rheology->addKernelsUpdateStateVarsImplicit(&kernels, coordsys, _useStateVars);
 
         break;
     } // QUASISTATIC
     case DYNAMIC_IMEX:
     case DYNAMIC: {
-
         _rheology->addKernelsUpdateStateVarsExplicit(&kernels, coordsys, _useStateVars);
 
         break;
@@ -841,7 +840,7 @@ pylith::materials::Poroelasticity::_setKernelsUpdateStateVars(pylith::feassemble
     default:
         PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
-    
+
     integrator->setKernelsUpdateStateVars(kernels);
 
     PYLITH_METHOD_END;

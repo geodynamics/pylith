@@ -39,6 +39,10 @@ class TestApp(TestDriver):
         for test in TestTerzaghi.test_cases():
             suite.addTest(unittest.makeSuite(test))
 
+        import TestTerzaghiCompaction
+        for test in TestTerzaghiCompaction.test_cases():
+            suite.addTest(unittest.makeSuite(test))
+
         return suite
 
 

@@ -184,8 +184,8 @@ public:
      */
     virtual
     void addKernelsUpdateStateVarsImplicit(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
-                                   const spatialdata::geocoords::CoordSys* coordsys,
-                                   const bool _useStateVars) const;
+                                           const spatialdata::geocoords::CoordSys* coordsys,
+                                           const bool _useStateVars) const;
 
     /** Add kernels for updating state variables, explicit.
      *
@@ -194,8 +194,8 @@ public:
      */
     virtual
     void addKernelsUpdateStateVarsExplicit(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
-                                   const spatialdata::geocoords::CoordSys* coordsys,
-                                   const bool _useStateVars) const;                                   
+                                           const spatialdata::geocoords::CoordSys* coordsys,
+                                           const bool _useStateVars) const;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

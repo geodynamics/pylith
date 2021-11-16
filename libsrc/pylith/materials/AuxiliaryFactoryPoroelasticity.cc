@@ -132,7 +132,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addPorosity(void) { // porosi
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.hasHistory = true;
-    description.historySize = 1;    
+    description.historySize = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = subfieldName;
     description.scale = noScale;
