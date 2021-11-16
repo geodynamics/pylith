@@ -23,7 +23,10 @@ dist_noinst_PYTHON = \
 	meshes.py \
 	TestMandel.py \
 	mandel_soln.py \
-	mandel_gendb.py
+	mandel_gendb.py \
+	TestMandelCompaction.py \
+	mandel_compaction_soln.py \
+	mandel_compaction_gendb.py	
 
 dist_noinst_DATA = \
 	geometry.jou \
@@ -34,11 +37,16 @@ dist_noinst_DATA = \
 	mesh_quad.exo \
 	mandel.cfg \
 	mandel_tri.cfg \
-	mandel_quad.cfg 
+	mandel_quad.cfg \
+	mandel_compaction.cfg \
+	mandel_compaction_tri.cfg \
+	mandel_compaction_quad.cfg 	
 
 noinst_TMP = \
 	mandel_bc.spatialdb \
-	mandel_ic.spatialdb
+	mandel_ic.spatialdb \
+	mandel_compaction_bc.spatialdb \
+	mandel_compaction_ic.spatialdb	
 
 
 
