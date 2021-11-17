@@ -285,7 +285,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_neg(const PylithInt
     const PylithInt i_shearModulus = numA-2;
     const PylithInt i_bulkModulus = numA-1;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 3);
     assert(sOff);
@@ -300,7 +300,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_neg(const PylithInt
     assert(aOff_x[i_density] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
     const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
@@ -358,7 +358,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_pos(const PylithInt
     const PylithInt i_shearModulus = numA-2;
     const PylithInt i_bulkModulus = numA-1;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 3);
     assert(sOff);
@@ -373,7 +373,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_pos(const PylithInt
     assert(aOff_x[i_density] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
     const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
@@ -433,7 +433,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_refstate_neg(const 
     const PylithInt i_shearModulus = numA-2;
     const PylithInt i_bulkModulus = numA-1;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 4);
     assert(sOff);
@@ -448,7 +448,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_refstate_neg(const 
     assert(aOff[i_rstrain] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
     const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
@@ -508,7 +508,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_refstate_pos(const 
     const PylithInt i_shearModulus = numA-2;
     const PylithInt i_bulkModulus = numA-1;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 4);
     assert(sOff);
@@ -523,7 +523,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_refstate_pos(const 
     assert(aOff[i_rstrain] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
     const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
@@ -581,7 +581,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_neg(const PylithInt
     const PylithInt i_shearModulus = numA-2;
     const PylithInt i_bulkModulus = numA-1;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 3);
     assert(sOff);
@@ -594,7 +594,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_neg(const PylithInt
     assert(aOff[i_bulkModulus] >= 0);
     assert(f1);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -649,7 +649,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_pos(const PylithInt
     const PylithInt i_shearModulus = numA-2;
     const PylithInt i_bulkModulus = numA-1;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 3);
     assert(sOff);
@@ -662,7 +662,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_pos(const PylithInt
     assert(aOff[i_bulkModulus] >= 0);
     assert(f1);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -719,7 +719,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_refstate_neg(const 
     const PylithInt i_shearModulus = numA-2;
     const PylithInt i_bulkModulus = numA-1;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 3);
     assert(sOff);
@@ -734,7 +734,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_refstate_neg(const 
     assert(aOff[i_rstrain] >= 0);
     assert(f1);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -791,7 +791,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_refstate_pos(const 
     const PylithInt i_shearModulus = numA-2;
     const PylithInt i_bulkModulus = numA-1;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 3);
     assert(sOff);
@@ -806,7 +806,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_refstate_pos(const 
     assert(aOff[i_rstrain] >= 0);
     assert(f1);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -857,7 +857,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_neg(const PylithI
     // Incoming auxiliary fields.
     const PylithInt i_density = 0;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 2);
     assert(aOff);
@@ -867,7 +867,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_neg(const PylithI
     assert(a);
     assert(Jf1);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
     const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const size_t size = 16;
@@ -875,7 +875,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_neg(const PylithI
     for (size_t i = 0; i < size; ++i) {
         elasticConstants[i] = 0.0;
     } // for
-    Jf3vu(dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
+    Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
           numConstants, constants, elasticConstants);
 
     // j(f,g,dg) = rho,df * C(f,df,g,dg)
@@ -922,7 +922,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_pos(const PylithI
     // Incoming auxiliary fields.
     const PylithInt i_density = 0;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 2);
     assert(aOff);
@@ -932,7 +932,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_pos(const PylithI
     assert(a);
     assert(Jf1);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
     const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const size_t size = 16;
@@ -940,7 +940,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_pos(const PylithI
     for (size_t i = 0; i < size; ++i) {
         elasticConstants[i] = 0.0;
     } // for
-    Jf3vu(dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
+    Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
           numConstants, constants, elasticConstants);
 
     // j(f,g,dg) = rho,df * C(f,df,g,dg)
@@ -987,7 +987,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf3lu_neg(const PylithI
     // Incoming auxiliary fields.
     const PylithInt i_density = 0;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 2);
     assert(aOff);
@@ -995,14 +995,14 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf3lu_neg(const PylithI
     assert(a);
     assert(Jf3);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
 
     const size_t size = 16;
     PylithScalar elasticConstants[size];
     for (size_t i = 0; i < size; ++i) {
         elasticConstants[i] = 0.0;
     } // for
-    Jf3vu(dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
+    Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
           numConstants, constants, elasticConstants);
     for (size_t i = 0; i < size; ++i) {
         Jf3[i] += elasticConstants[i] / density;
@@ -1038,7 +1038,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf3lu_pos(const PylithI
     // Incoming auxiliary fields.
     const PylithInt i_density = 0;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 2);
     assert(aOff);
@@ -1046,14 +1046,14 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf3lu_pos(const PylithI
     assert(a);
     assert(Jf3);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
 
     const size_t size = 16;
     PylithScalar elasticConstants[size];
     for (size_t i = 0; i < size; ++i) {
         elasticConstants[i] = 0.0;
     } // for
-    Jf3vu(dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
+    Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
           numConstants, constants, elasticConstants);
     for (size_t i = 0; i < size; ++i) {
         Jf3[i] -= elasticConstants[i] / density;
@@ -1829,7 +1829,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_neg(const PylithInt dim,
     assert(aOff_x[i_density] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
     const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
@@ -1902,7 +1902,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_pos(const PylithInt dim,
     assert(aOff_x[i_density] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
     const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
@@ -1977,7 +1977,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_refstate_neg(const PylithInt
     assert(aOff[i_rstrain] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
     const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
@@ -2052,7 +2052,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_refstate_pos(const PylithInt
     assert(aOff[i_rstrain] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
     const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
@@ -2123,7 +2123,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::f1l_neg(const PylithInt dim,
     assert(aOff[i_bulkModulus] >= 0);
     assert(f1);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -2191,7 +2191,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::f1l_pos(const PylithInt dim,
     assert(aOff[i_bulkModulus] >= 0);
     assert(f1);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -2263,7 +2263,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::f1l_refstate_neg(const PylithInt
     assert(aOff[i_rstrain] >= 0);
     assert(f1);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -2335,7 +2335,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::f1l_refstate_pos(const PylithInt
     assert(aOff[i_rstrain] >= 0);
     assert(f1);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -2386,7 +2386,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jf1lu_neg(const PylithInt dim,
     // Incoming auxiliary fields.
     const PylithInt i_density = 0;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 2);
     assert(aOff);
@@ -2396,7 +2396,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jf1lu_neg(const PylithInt dim,
     assert(a);
     assert(Jf1);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
     const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const size_t size = 32;
@@ -2404,7 +2404,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jf1lu_neg(const PylithInt dim,
     for (size_t i = 0; i < size; ++i) {
         elasticConstants[i] = 0.0;
     } // for
-    Jf3vu(dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
+    Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
           numConstants, constants, elasticConstants);
 
     // j(f,g,dg) = rho,df * C(f,df,g,dg)
@@ -2451,7 +2451,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jf1lu_pos(const PylithInt dim,
     // Incoming auxiliary fields.
     const PylithInt i_density = 0;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 2);
     assert(aOff);
@@ -2461,7 +2461,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jf1lu_pos(const PylithInt dim,
     assert(a);
     assert(Jf1);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
     const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const size_t size = 32;
@@ -2469,7 +2469,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jf1lu_pos(const PylithInt dim,
     for (size_t i = 0; i < size; ++i) {
         elasticConstants[i] = 0.0;
     } // for
-    Jf3vu(dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
+    Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
           numConstants, constants, elasticConstants);
 
     // j(f,g,dg) = rho,df * C(f,df,g,dg)
@@ -2516,7 +2516,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jf3lu_neg(const PylithInt dim,
     // Incoming auxiliary fields.
     const PylithInt i_density = 0;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 2);
     assert(aOff);
@@ -2524,14 +2524,14 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jf3lu_neg(const PylithInt dim,
     assert(a);
     assert(Jf3);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
 
     const size_t size = 32;
     PylithScalar elasticConstants[size];
     for (size_t i = 0; i < size; ++i) {
         elasticConstants[i] = 0.0;
     } // for
-    Jf3vu(dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
+    Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
           numConstants, constants, elasticConstants);
     for (size_t i = 0; i < size; ++i) {
         Jf3[i] += elasticConstants[i] / density;
@@ -2567,7 +2567,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jf3lu_pos(const PylithInt dim,
     // Incoming auxiliary fields.
     const PylithInt i_density = 0;
 
-    assert(_dim == dim);
+    assert(_dim == dim + 1);
     assert(numS >= 1);
     assert(numA >= 2);
     assert(aOff);
@@ -2575,14 +2575,14 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jf3lu_pos(const PylithInt dim,
     assert(a);
     assert(Jf3);
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
 
     const size_t size = 32;
     PylithScalar elasticConstants[size];
     for (size_t i = 0; i < size; ++i) {
         elasticConstants[i] = 0.0;
     } // for
-    Jf3vu(dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
+    Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
           numConstants, constants, elasticConstants);
     for (size_t i = 0; i < size; ++i) {
         Jf3[i] -= elasticConstants[i] / density;

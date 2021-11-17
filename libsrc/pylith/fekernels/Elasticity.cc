@@ -297,7 +297,7 @@ pylith::fekernels::Elasticity::f0l_neg(const PylithInt dim,
     const PylithInt sOffLagrange = pylith::fekernels::_Elasticity::lagrange_sOff(sOff, numS);
     assert(sOffLagrange >= 0);
 
-    const PylithScalar density = a[i_density];
+    const PylithScalar density = a[i_density];assert(density > 0.0);
     const PylithScalar* lagrange = &s[sOffLagrange];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
@@ -352,7 +352,7 @@ pylith::fekernels::Elasticity::f0l_pos(const PylithInt dim,
     const PylithInt sOffLagrange = pylith::fekernels::_Elasticity::lagrange_sOff(sOff, numS);
     assert(sOffLagrange >= 0);
 
-    const PylithScalar density = a[i_density];
+    const PylithScalar density = a[i_density];assert(density > 0.0);
     const PylithScalar* lagrange = &s[sOffLagrange];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
@@ -512,7 +512,7 @@ pylith::fekernels::Elasticity::f0l_neg_bodyforce(const PylithInt dim,
 
     const PylithInt fOffN = 0;
 
-    const PylithScalar density = a[i_density];
+    const PylithScalar density = a[i_density];assert(density > 0.0);
     const PylithScalar* bodyForce = &a[i_bodyForce];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
@@ -566,7 +566,7 @@ pylith::fekernels::Elasticity::f0l_pos_bodyforce(const PylithInt dim,
 
     const PylithInt fOffP = 0;
 
-    const PylithScalar density = a[i_density];
+    const PylithScalar density = a[i_density];assert(density > 0.0);
     const PylithScalar* bodyForce = &a[i_bodyForce];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
@@ -710,7 +710,7 @@ pylith::fekernels::Elasticity::Jf0ll_neg(const PylithInt dim,
 
     const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
 
     const PylithInt gOffN = 0;
     const PylithInt ncols = 2*spaceDim;
@@ -759,7 +759,7 @@ pylith::fekernels::Elasticity::Jf0ll_pos(const PylithInt dim,
 
     const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
 
     const PylithInt gOffP = 0;
     const PylithInt ncols = 2*spaceDim;
