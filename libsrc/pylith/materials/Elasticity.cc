@@ -309,23 +309,32 @@ pylith::materials::Elasticity::getInterfaceKernelsJacobian(const pylith::topolog
         PetscBdPointJac Jf2lu = NULL;
         PetscBdPointJac Jf3lu = NULL;
 
+        PetscBdPointJac Jf0ll = NULL;
+        PetscBdPointJac Jf1ll = NULL;
+        PetscBdPointJac Jf2ll = NULL;
+        PetscBdPointJac Jf3ll = NULL;
+
         switch (face) {
         case pylith::feassemble::IntegratorInterface::NEGATIVE_FACE:
             Jf1lu = _rheology->getInterfaceKernelJacobianF1Neg(coordsys);
             Jf3lu = _rheology->getInterfaceKernelJacobianF3Neg(coordsys);
+            Jf0ll = pylith::fekernels::Elasticity::Jf0ll_neg;
             break;
         case pylith::feassemble::IntegratorInterface::POSITIVE_FACE:
             Jf1lu = _rheology->getInterfaceKernelJacobianF1Pos(coordsys);
             Jf3lu = _rheology->getInterfaceKernelJacobianF3Pos(coordsys);
+            Jf0ll = pylith::fekernels::Elasticity::Jf0ll_pos;
             break;
         default:
             PYLITH_COMPONENT_LOGICERROR("Unknown interface face ("<<face<<").");
         } // switch
 
-        kernels.resize(1);
+        kernels.resize(2);
         JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS;
         kernels[0] = InterfaceJacobianKernels("lagrange_multiplier_fault", "displacement", jacobianPart, face,
                                               Jf0lu, Jf1lu, Jf2lu, Jf3lu);
+        kernels[1] = InterfaceJacobianKernels("lagrange_multiplier_fault", "lagrange_multiplier_fault", jacobianPart, face,
+                                              Jf0ll, Jf1ll, Jf2ll, Jf3ll);
         break;
     } // DYNAMIC_IMEX
     default:

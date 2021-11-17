@@ -387,9 +387,61 @@ public:
                                const PylithScalar constants[],
                                PylithScalar f0[]);
 
-};
+    /** Jf0 function for dynamic slip constraint equation for the negative side of the fault.
+     *
+     * Solution fields: [displacement(dim), velocity(dim), ..., lagrange(dim)]
+     * Auxiliary fields: [density, ...]
+     */
+    static
+    void Jf0ll_neg(const PylithInt dim,
+                   const PylithInt numS,
+                   const PylithInt numA,
+                   const PylithInt sOff[],
+                   const PylithInt sOff_x[],
+                   const PylithScalar s[],
+                   const PylithScalar s_t[],
+                   const PylithScalar s_x[],
+                   const PylithInt aOff[],
+                   const PylithInt aOff_x[],
+                   const PylithScalar a[],
+                   const PylithScalar a_t[],
+                   const PylithScalar a_x[],
+                   const PylithReal t,
+                   const PylithReal s_tshift,
+                   const PylithScalar x[],
+                   const PylithReal n[],
+                   const PylithInt numConstants,
+                   const PylithScalar constants[],
+                   PylithScalar Jf0[]);
 
-// Elasticity
+    /** Jf0 function for dynamic slip constraint equation for the positive side of the fault.
+     *
+     * Solution fields: [displacement(dim), velocity(dim), ..., lagrange(dim)]
+     * Auxiliary fields: [density, ...]
+     */
+    static
+    void Jf0ll_pos(const PylithInt dim,
+                   const PylithInt numS,
+                   const PylithInt numA,
+                   const PylithInt sOff[],
+                   const PylithInt sOff_x[],
+                   const PylithScalar s[],
+                   const PylithScalar s_t[],
+                   const PylithScalar s_x[],
+                   const PylithInt aOff[],
+                   const PylithInt aOff_x[],
+                   const PylithScalar a[],
+                   const PylithScalar a_t[],
+                   const PylithScalar a_x[],
+                   const PylithReal t,
+                   const PylithReal s_tshift,
+                   const PylithScalar x[],
+                   const PylithReal n[],
+                   const PylithInt numConstants,
+                   const PylithScalar constants[],
+                   PylithScalar Jf0[]);
+
+}; // Elasticity
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// Kernels specific to elasticity plane strain.

@@ -673,6 +673,104 @@ pylith::fekernels::Elasticity::f0l_pos_gravbodyforce(const PylithInt dim,
 }
 
 
+// ------------------------------------------------------------------------------------------------
+// Jf0 function for dynamic slip constraint equation for negative side of the fault.
+void
+pylith::fekernels::Elasticity::Jf0ll_neg(const PylithInt dim,
+                                         const PylithInt numS,
+                                         const PylithInt numA,
+                                         const PylithInt sOff[],
+                                         const PylithInt sOff_x[],
+                                         const PylithScalar s[],
+                                         const PylithScalar s_t[],
+                                         const PylithScalar s_x[],
+                                         const PylithInt aOff[],
+                                         const PylithInt aOff_x[],
+                                         const PylithScalar a[],
+                                         const PylithScalar a_t[],
+                                         const PylithScalar a_x[],
+                                         const PylithReal t,
+                                         const PylithReal s_tshift,
+                                         const PylithScalar x[],
+                                         const PylithReal n[],
+                                         const PylithInt numConstants,
+                                         const PylithScalar constants[],
+                                         PylithScalar Jf0[]) {
+    const PylithInt i_density = 0;
+
+    assert(numS >= 1);
+    assert(a);
+    assert(aOff);
+    assert(aOff[i_density] >= 0);
+
+    assert(numS >= 2);
+    assert(Jf0);
+    assert(sOff);
+    assert(n);
+
+    const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
+
+    const PylithScalar density = a[aOff[i_density]];
+
+    const PylithInt gOffN = 0;
+    const PylithInt ncols = 2*spaceDim;
+
+    for (PylithInt i = 0; i < spaceDim; ++i) {
+        Jf0[i*ncols+gOffN+i] += +1.0 / density;
+    } // for
+
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Jf0 function for dynamic slip constraint equation for positive side of the fault.
+void
+pylith::fekernels::Elasticity::Jf0ll_pos(const PylithInt dim,
+                                         const PylithInt numS,
+                                         const PylithInt numA,
+                                         const PylithInt sOff[],
+                                         const PylithInt sOff_x[],
+                                         const PylithScalar s[],
+                                         const PylithScalar s_t[],
+                                         const PylithScalar s_x[],
+                                         const PylithInt aOff[],
+                                         const PylithInt aOff_x[],
+                                         const PylithScalar a[],
+                                         const PylithScalar a_t[],
+                                         const PylithScalar a_x[],
+                                         const PylithReal t,
+                                         const PylithReal s_tshift,
+                                         const PylithScalar x[],
+                                         const PylithReal n[],
+                                         const PylithInt numConstants,
+                                         const PylithScalar constants[],
+                                         PylithScalar Jf0[]) {
+    const PylithInt i_density = 0;
+
+    assert(numS >= 1);
+    assert(a);
+    assert(aOff);
+    assert(aOff[i_density] >= 0);
+
+    assert(numS >= 2);
+    assert(Jf0);
+    assert(sOff);
+    assert(n);
+
+    const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
+
+    const PylithScalar density = a[aOff[i_density]];
+
+    const PylithInt gOffP = 0;
+    const PylithInt ncols = 2*spaceDim;
+
+    for (PylithInt i = 0; i < spaceDim; ++i) {
+        Jf0[i*ncols+gOffP+i] += +1.0 / density;
+    } // for
+
+}
+
+
 // ================================================================================================
 // Kernels for elasticity plane strain.
 // ================================================================================================
