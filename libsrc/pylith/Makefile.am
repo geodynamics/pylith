@@ -27,6 +27,7 @@ SUBDIRS = \
 	faults \
 	friction \
 	fekernels \
+	sources \
 	testing
 
 
@@ -41,6 +42,9 @@ libpylith_la_SOURCES = \
 	bc/NeumannUserFn.cc \
 	bc/AbsorbingDampers.cc \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
+	sources/AuxiliaryFactoryWellboreSource.cc \
+	sources/Source.cc \
+	sources/WellboreSource.cc \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveKin.cc \
 	faults/FaultCohesiveImpulses.cc \

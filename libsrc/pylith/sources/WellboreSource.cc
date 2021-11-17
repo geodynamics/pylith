@@ -28,6 +28,7 @@
 
 #include "pylith/fekernels/WellboreSource.hh" // USES WellboreSource kernels
 
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -39,6 +40,7 @@
 typedef pylith::feassemble::IntegratorDomain::ResidualKernels ResidualKernels;
 typedef pylith::feassemble::IntegratorDomain::JacobianKernels JacobianKernels;
 typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
+typedef pylith::feassemble::Integrator::JacobianPart JacobianPart;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -90,9 +92,9 @@ pylith::sources::WellboreSource::createIntegrator(const pylith::topology::Field&
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
     printf("In WellboreSource begin\n");
-    DMView(solution.dmMesh(), NULL);
+    DMView(solution.getDM(), NULL);
     PetscErrorCode err;
-    PetscDM dmSoln = solution.dmMesh();assert(dmSoln);
+    PetscDM dmSoln = solution.getDM();assert(dmSoln);
     // transform points of source to mesh coordinates in python
     // DM from solution
     Vec vecPoints;
@@ -161,7 +163,7 @@ pylith::sources::WellboreSource::createAuxiliaryField(const pylith::topology::Fi
     auxiliaryField->setLabel("WellboreSource auxiliary field");
 
     assert(_normalizer);
-    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.dimension());
+    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.getDimension());
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
@@ -225,7 +227,7 @@ pylith::sources::WellboreSource::_setKernelsLHSResidual(pylith::feassemble::Inte
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsLHSResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
-    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
+    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
     std::vector<ResidualKernels> kernels;
 
@@ -236,7 +238,7 @@ pylith::sources::WellboreSource::_setKernelsLHSResidual(pylith::feassemble::Inte
         const PetscPointFunc f1p = NULL;
 
         kernels.resize(1);
-        kernels[0] = ResidualKernels("pressure", f0p, f1p);
+        kernels[0] = ResidualKernels("pressure",  pylith::feassemble::Integrator::RESIDUAL_LHS, f0p, f1p);
         break;
     } // QUASISTATIC
     case DYNAMIC_IMEX: {
@@ -250,7 +252,7 @@ pylith::sources::WellboreSource::_setKernelsLHSResidual(pylith::feassemble::Inte
     } // switch
 
     assert(integrator);
-    integrator->setKernelsLHSResidual(kernels);
+    integrator->setKernelsResidual(kernels, solution);
 
     PYLITH_METHOD_END;
 } // _setKernelsLHSResidual
@@ -264,7 +266,7 @@ pylith::sources::WellboreSource::_setKernelsLHSJacobian(pylith::feassemble::Inte
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsLHSJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
-    const spatialdata::geocoords::CoordSys* coordsys = solution.mesh().getCoordSys();
+    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
     std::vector<JacobianKernels> kernels;
 
@@ -276,7 +278,8 @@ pylith::sources::WellboreSource::_setKernelsLHSJacobian(pylith::feassemble::Inte
         const PetscPointJac Jf3pp = NULL;
 
         kernels.resize(1);
-        kernels[0] = JacobianKernels("pressure", "pressure", Jf0pp, Jf1pp, Jf2pp, Jf3pp);
+        const JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS;
+        kernels[0] = JacobianKernels("pressure", "pressure", jacobianPart, Jf0pp, Jf1pp, Jf2pp, Jf3pp);
         break;
     } // QUASISTATIC
     case DYNAMIC:
@@ -288,7 +291,7 @@ pylith::sources::WellboreSource::_setKernelsLHSJacobian(pylith::feassemble::Inte
     } // switch
 
     assert(integrator);
-    integrator->setKernelsLHSJacobian(kernels);
+    integrator->setKernelsJacobian(kernels, solution);
 
     PYLITH_METHOD_END;
 } // _setKernelsLHSJacobian
