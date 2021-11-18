@@ -25,6 +25,8 @@
 namespace pylith {
     namespace fekernels {
         namespace _Elasticity {
+            const PylithScalar tolerance = 1.0e-30;
+
             PylithInt lagrange_sOff(const PylithInt sOff[],
                                     const PylithInt numS);
 
@@ -297,7 +299,7 @@ pylith::fekernels::Elasticity::f0l_neg(const PylithInt dim,
     const PylithInt sOffLagrange = pylith::fekernels::_Elasticity::lagrange_sOff(sOff, numS);
     assert(sOffLagrange >= 0);
 
-    const PylithScalar density = a[i_density];assert(density > 0.0);
+    const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
     const PylithScalar* lagrange = &s[sOffLagrange];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
@@ -352,7 +354,7 @@ pylith::fekernels::Elasticity::f0l_pos(const PylithInt dim,
     const PylithInt sOffLagrange = pylith::fekernels::_Elasticity::lagrange_sOff(sOff, numS);
     assert(sOffLagrange >= 0);
 
-    const PylithScalar density = a[i_density];assert(density > 0.0);
+    const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
     const PylithScalar* lagrange = &s[sOffLagrange];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
@@ -512,8 +514,8 @@ pylith::fekernels::Elasticity::f0l_neg_bodyforce(const PylithInt dim,
 
     const PylithInt fOffN = 0;
 
-    const PylithScalar density = a[i_density];assert(density > 0.0);
-    const PylithScalar* bodyForce = &a[i_bodyForce];
+    const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
+    const PylithScalar* bodyForce = &a[aOff[i_bodyForce]];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
         f0[fOffN+i] += -bodyForce[i] / density;
@@ -566,8 +568,8 @@ pylith::fekernels::Elasticity::f0l_pos_bodyforce(const PylithInt dim,
 
     const PylithInt fOffP = 0;
 
-    const PylithScalar density = a[i_density];assert(density > 0.0);
-    const PylithScalar* bodyForce = &a[i_bodyForce];
+    const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
+    const PylithScalar* bodyForce = &a[aOff[i_bodyForce]];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
         f0[fOffP+i] += +bodyForce[i] / density;
@@ -710,7 +712,7 @@ pylith::fekernels::Elasticity::Jf0ll_neg(const PylithInt dim,
 
     const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
+    const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
 
     const PylithInt gOffN = 0;
     const PylithInt ncols = 2*spaceDim;
@@ -759,7 +761,7 @@ pylith::fekernels::Elasticity::Jf0ll_pos(const PylithInt dim,
 
     const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
+    const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
 
     const PylithInt gOffP = 0;
     const PylithInt ncols = 2*spaceDim;
