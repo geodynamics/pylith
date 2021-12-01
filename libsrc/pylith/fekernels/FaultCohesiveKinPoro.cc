@@ -125,7 +125,7 @@ pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(const PylithInt sOff[],
     for (PylithInt i = 0; i < numCount; ++i) {
         off += 2 * (sOff[i + 1] - sOff[i]);
     } // for
-    return off + dim*2;
+    return off + dim;
 } // mu_sOff
 
 
