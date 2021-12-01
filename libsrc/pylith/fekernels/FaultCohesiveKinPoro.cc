@@ -163,7 +163,7 @@ pylith::fekernels::FaultCohesiveKinPoro::f0u_neg(const PylithInt dim,
     const PylithScalar *mu = &s[sOffMu];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[fOffN + i] += -lagrange[i] - mu[i];
+        f0[fOffN + i] += 0.5*(-lagrange[i] - mu[i]);
     } // for
 } // f0u_neg
 
@@ -205,7 +205,7 @@ pylith::fekernels::FaultCohesiveKinPoro::f0u_pos(const PylithInt dim,
     const PylithScalar *mu = &s[sOffMu];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[fOffP + i] += +lagrange[i] + mu[i];
+        f0[fOffP + i] += 0.5*(+lagrange[i] + mu[i]);
     } // for
 } // f0u_pos
 
@@ -546,7 +546,7 @@ pylith::fekernels::FaultCohesiveKinPoro::Jf0ul_neg(const PylithInt dim,
     const PylithInt ncols = spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jf0[(gOffN + i) * ncols + i] += -1.0;
+        Jf0[(gOffN + i) * ncols + i] += -0.5;
     } // for
 } // Jg0ul_neg
 
@@ -589,7 +589,7 @@ pylith::fekernels::FaultCohesiveKinPoro::Jf0umu_neg(const PylithInt dim,
     const PylithInt ncols = spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jf0[(gOffN + i) * ncols + i] += -1.0;
+        Jf0[(gOffN + i) * ncols + i] += -0.5;
     } // for
 } // Jg0umu_neg
 
@@ -632,7 +632,7 @@ pylith::fekernels::FaultCohesiveKinPoro::Jf0ul_pos(const PylithInt dim,
     const PylithInt ncols = spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jf0[(gOffP + i) * ncols + i] += +1.0;
+        Jf0[(gOffP + i) * ncols + i] += +0.5;
     } // for
 } // Jg0ul_pos
 
@@ -675,7 +675,7 @@ pylith::fekernels::FaultCohesiveKinPoro::Jf0umu_pos(const PylithInt dim,
     const PylithInt ncols = spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jf0[(gOffP + i) * ncols + i] += +1.0;
+        Jf0[(gOffP + i) * ncols + i] += +0.5;
     } // for
 } // Jg0umu_pos
 
