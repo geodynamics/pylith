@@ -125,7 +125,7 @@ pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(const PylithInt sOff[],
     for (PylithInt i = 0; i < numCount; ++i) {
         off += 2 * (sOff[i + 1] - sOff[i]);
     } // for
-    return off + dim;
+    return off + dim*2;
 } // mu_sOff
 
 
@@ -154,17 +154,18 @@ pylith::fekernels::FaultCohesiveKinPoro::f0u_neg(const PylithInt dim,
     assert(sOff);
     assert(s);
     assert(f0);
-
     assert(numS >= 2);
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
     const PylithInt fOffN = 0;
     const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKinPoro::lagrange_sOff(sOff, numS);
+    const PylithInt sOffMu = pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(sOff, numS, dim);
     const PylithScalar *lagrange = &s[sOffLagrange];
+    const PylithScalar *mu = &s[sOffMu];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[fOffN + i] += -lagrange[i];
+        f0[fOffN + i] += -lagrange[i] - mu[i];
     } // for
 } // f0u_neg
 
@@ -200,14 +201,13 @@ pylith::fekernels::FaultCohesiveKinPoro::f0u_pos(const PylithInt dim,
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
     const PylithInt fOffP = 0;
+    const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKinPoro::lagrange_sOff(sOff, numS);
     const PylithInt sOffMu = pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(sOff, numS, dim);
+    const PylithScalar *lagrange = &s[sOffLagrange];
     const PylithScalar *mu = &s[sOffMu];
-    // const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKinPoro::lagrange_sOff(sOff, numS);
-    // const PylithScalar *lagrange = &s[sOffLagrange];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[fOffP + i] += -mu[i];
-        //        f0[fOffP + i] += -lagrange[i];
+        f0[fOffP + i] += +lagrange[i] + mu[i];
     } // for
 } // f0u_pos
 
