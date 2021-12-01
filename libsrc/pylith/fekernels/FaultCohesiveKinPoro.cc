@@ -74,13 +74,11 @@ public:
              *
              * @param[in] sOff Offset of registered subfields in solution field [numS].
              * @param[in] numS Number of registered subfields in solution field.
-             * @param[in] dim Number of dimensions in solution field.
              *
              * @returns Offset of Mu multiplier subfield in s.
              */
             static PylithInt mu_sOff(const PylithInt sOff[],
-                                     const PylithInt numS,
-                                     const PylithInt dim);
+                                     const PylithInt numS);
 
         }; // _FaultCohesiveKinPoro
     } // fekernels
@@ -118,14 +116,14 @@ pylith::fekernels::_FaultCohesiveKinPoro::lagrange_sOff(const PylithInt sOff[],
 // Get offset in s where Mu multiplier field starts.
 PylithInt
 pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(const PylithInt sOff[],
-                                                  const PylithInt numS,
-                                                  const PylithInt dim) {
+                                                  const PylithInt numS) {
     PylithInt off = 0;
     const PylithInt numCount = numS - 2; // Don't include last fields (Lagrange multiplier, Mu multiplier)
     for (PylithInt i = 0; i < numCount; ++i) {
         off += 2 * (sOff[i + 1] - sOff[i]);
     } // for
-    return off + dim;
+    off += sOff[numCount + 1] - sOff[numCount];
+    return off;
 } // mu_sOff
 
 
@@ -160,7 +158,7 @@ pylith::fekernels::FaultCohesiveKinPoro::f0u_neg(const PylithInt dim,
 
     const PylithInt fOffN = 0;
     const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKinPoro::lagrange_sOff(sOff, numS);
-    const PylithInt sOffMu = pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(sOff, numS, dim);
+    const PylithInt sOffMu = pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(sOff, numS);
     const PylithScalar *lagrange = &s[sOffLagrange];
     const PylithScalar *mu = &s[sOffMu];
 
@@ -202,7 +200,7 @@ pylith::fekernels::FaultCohesiveKinPoro::f0u_pos(const PylithInt dim,
 
     const PylithInt fOffP = 0;
     const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKinPoro::lagrange_sOff(sOff, numS);
-    const PylithInt sOffMu = pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(sOff, numS, dim);
+    const PylithInt sOffMu = pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(sOff, numS);
     const PylithScalar *lagrange = &s[sOffLagrange];
     const PylithScalar *mu = &s[sOffMu];
 
