@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "pylith/fekernels/FaultCohesiveKinPoro.hh"
+#include "pylith/fekernels/FaultCohesiveKinTrivial.hh"
 
 #include "pylith/fekernels/BoundaryDirections.hh" // USES tangential_directions()
 
@@ -35,7 +35,7 @@
 
 namespace pylith {
     namespace fekernels {
-        class _FaultCohesiveKinPoro {
+        class _FaultCohesiveKinTrivial {
 public:
 
             /** Get offset in s where velocity subfield starts.
@@ -80,14 +80,14 @@ public:
             static PylithInt mu_sOff(const PylithInt sOff[],
                                      const PylithInt numS);
 
-        }; // _FaultCohesiveKinPoro
+        }; // _FaultCohesiveKinTrivial
     } // fekernels
 } // pylith
 
 // ----------------------------------------------------------------------
 // Get offset in s where velocity subfield starts.
 PylithInt
-pylith::fekernels::_FaultCohesiveKinPoro::velocity_sOff(const PylithInt sOff[],
+pylith::fekernels::_FaultCohesiveKinTrivial::velocity_sOff(const PylithInt sOff[],
                                                         const PylithInt numS) {
     PylithInt off = 0;
     const PylithInt numCount = 1; // [displacement, velocity, ...]
@@ -101,7 +101,7 @@ pylith::fekernels::_FaultCohesiveKinPoro::velocity_sOff(const PylithInt sOff[],
 // ----------------------------------------------------------------------
 // Get offset in s where Lagrange multiplier field starts.
 PylithInt
-pylith::fekernels::_FaultCohesiveKinPoro::lagrange_sOff(const PylithInt sOff[],
+pylith::fekernels::_FaultCohesiveKinTrivial::lagrange_sOff(const PylithInt sOff[],
                                                         const PylithInt numS) {
     PylithInt off = 0;
     const PylithInt numCount = numS - 2; // Don't include last fields (Lagrange multiplier, Mu multiplier)
@@ -115,7 +115,7 @@ pylith::fekernels::_FaultCohesiveKinPoro::lagrange_sOff(const PylithInt sOff[],
 // ----------------------------------------------------------------------
 // Get offset in s where Mu multiplier field starts.
 PylithInt
-pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(const PylithInt sOff[],
+pylith::fekernels::_FaultCohesiveKinTrivial::mu_sOff(const PylithInt sOff[],
                                                   const PylithInt numS) {
     PylithInt off = 0;
     const PylithInt numCount = numS - 2; // Don't include last fields (Lagrange multiplier, Mu multiplier)
@@ -130,7 +130,7 @@ pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(const PylithInt sOff[],
 // ----------------------------------------------------------------------
 // f0 function for elasticity equation: f0u = +\lambda (neg side).
 void
-pylith::fekernels::FaultCohesiveKinPoro::f0u_neg(const PylithInt dim,
+pylith::fekernels::FaultCohesiveKinTrivial::f0u_neg(const PylithInt dim,
                                                  const PylithInt numS,
                                                  const PylithInt numA,
                                                  const PylithInt sOff[],
@@ -157,8 +157,8 @@ pylith::fekernels::FaultCohesiveKinPoro::f0u_neg(const PylithInt dim,
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
     const PylithInt fOffN = 0;
-    const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKinPoro::lagrange_sOff(sOff, numS);
-    const PylithInt sOffMu = pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(sOff, numS);
+    const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKinTrivial::lagrange_sOff(sOff, numS);
+    const PylithInt sOffMu = pylith::fekernels::_FaultCohesiveKinTrivial::mu_sOff(sOff, numS);
     const PylithScalar *lagrange = &s[sOffLagrange];
     const PylithScalar *mu = &s[sOffMu];
 
@@ -171,7 +171,7 @@ pylith::fekernels::FaultCohesiveKinPoro::f0u_neg(const PylithInt dim,
 // ----------------------------------------------------------------------
 // f0 function for elasticity equation: f0u = -\lambda (pos side).
 void
-pylith::fekernels::FaultCohesiveKinPoro::f0u_pos(const PylithInt dim,
+pylith::fekernels::FaultCohesiveKinTrivial::f0u_pos(const PylithInt dim,
                                                  const PylithInt numS,
                                                  const PylithInt numA,
                                                  const PylithInt sOff[],
@@ -199,8 +199,8 @@ pylith::fekernels::FaultCohesiveKinPoro::f0u_pos(const PylithInt dim,
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
     const PylithInt fOffP = 0;
-    const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKinPoro::lagrange_sOff(sOff, numS);
-    const PylithInt sOffMu = pylith::fekernels::_FaultCohesiveKinPoro::mu_sOff(sOff, numS);
+    const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKinTrivial::lagrange_sOff(sOff, numS);
+    const PylithInt sOffMu = pylith::fekernels::_FaultCohesiveKinTrivial::mu_sOff(sOff, numS);
     const PylithScalar *lagrange = &s[sOffLagrange];
     const PylithScalar *mu = &s[sOffMu];
 
@@ -213,7 +213,7 @@ pylith::fekernels::FaultCohesiveKinPoro::f0u_pos(const PylithInt dim,
 // ----------------------------------------------------------------------
 // f0 function for slip constraint equation: f0\lambda = (u^+ - u^-) - d
 void
-pylith::fekernels::FaultCohesiveKinPoro::f0l_u(const PylithInt dim,
+pylith::fekernels::FaultCohesiveKinTrivial::f0l_u(const PylithInt dim,
                                                const PylithInt numS,
                                                const PylithInt numA,
                                                const PylithInt sOff[],
@@ -288,7 +288,7 @@ pylith::fekernels::FaultCohesiveKinPoro::f0l_u(const PylithInt dim,
 // ----------------------------------------------------------------------
 // f0 function for slip constraint equation: f0\mu = (u^+ - u^-/)/2 - d/2
 void
-pylith::fekernels::FaultCohesiveKinPoro::f0mu_u(const PylithInt dim,
+pylith::fekernels::FaultCohesiveKinTrivial::f0mu_u(const PylithInt dim,
                                                 const PylithInt numS,
                                                 const PylithInt numA,
                                                 const PylithInt sOff[],
@@ -363,7 +363,7 @@ pylith::fekernels::FaultCohesiveKinPoro::f0mu_u(const PylithInt dim,
 // ----------------------------------------------------------------------
 // f0 function for slip rate constraint equation: f0\lambda = (v^+ - v^-) - \dot{d}
 void
-pylith::fekernels::FaultCohesiveKinPoro::f0l_v(const PylithInt dim,
+pylith::fekernels::FaultCohesiveKinTrivial::f0l_v(const PylithInt dim,
                                                const PylithInt numS,
                                                const PylithInt numA,
                                                const PylithInt sOff[],
@@ -396,7 +396,7 @@ pylith::fekernels::FaultCohesiveKinPoro::f0l_v(const PylithInt dim,
 
     const PylithScalar *slipRate = &a[aOff[i_slipRate]];
 
-    const PylithInt sOffVelN = _FaultCohesiveKinPoro::velocity_sOff(sOff, numS);
+    const PylithInt sOffVelN = _FaultCohesiveKinTrivial::velocity_sOff(sOff, numS);
     const PylithInt sOffVelP = sOffVelN + spaceDim;
     const PylithInt fOffLagrange = 0;
 
@@ -437,7 +437,7 @@ pylith::fekernels::FaultCohesiveKinPoro::f0l_v(const PylithInt dim,
 // ----------------------------------------------------------------------
 // f0 function for slip acceleration constraint equation: f0\lambda = (\dot{v}^+ - \dot{v}^-) - \ddot{d}
 void
-pylith::fekernels::FaultCohesiveKinPoro::f0l_a(const PylithInt dim,
+pylith::fekernels::FaultCohesiveKinTrivial::f0l_a(const PylithInt dim,
                                                const PylithInt numS,
                                                const PylithInt numA,
                                                const PylithInt sOff[],
@@ -470,7 +470,7 @@ pylith::fekernels::FaultCohesiveKinPoro::f0l_a(const PylithInt dim,
 
     const PylithScalar *slipAcc = &a[aOff[i_slipAcc]];
 
-    const PylithInt sOffVelN = _FaultCohesiveKinPoro::velocity_sOff(sOff, numS);
+    const PylithInt sOffVelN = _FaultCohesiveKinTrivial::velocity_sOff(sOff, numS);
     const PylithInt sOffVelP = sOffVelN + spaceDim;
     const PylithInt fOffLagrange = 0;
 
@@ -515,7 +515,7 @@ pylith::fekernels::FaultCohesiveKinPoro::f0l_a(const PylithInt dim,
  * Auxiliary fields = None
  */
 void
-pylith::fekernels::FaultCohesiveKinPoro::Jf0ul_neg(const PylithInt dim,
+pylith::fekernels::FaultCohesiveKinTrivial::Jf0ul_neg(const PylithInt dim,
                                                    const PylithInt numS,
                                                    const PylithInt numA,
                                                    const PylithInt sOff[],
@@ -558,7 +558,7 @@ pylith::fekernels::FaultCohesiveKinPoro::Jf0ul_neg(const PylithInt dim,
  * Auxiliary fields = None
  */
 void
-pylith::fekernels::FaultCohesiveKinPoro::Jf0umu_neg(const PylithInt dim,
+pylith::fekernels::FaultCohesiveKinTrivial::Jf0umu_neg(const PylithInt dim,
                                                     const PylithInt numS,
                                                     const PylithInt numA,
                                                     const PylithInt sOff[],
@@ -601,7 +601,7 @@ pylith::fekernels::FaultCohesiveKinPoro::Jf0umu_neg(const PylithInt dim,
  * Auxiliary fields = None
  */
 void
-pylith::fekernels::FaultCohesiveKinPoro::Jf0ul_pos(const PylithInt dim,
+pylith::fekernels::FaultCohesiveKinTrivial::Jf0ul_pos(const PylithInt dim,
                                                    const PylithInt numS,
                                                    const PylithInt numA,
                                                    const PylithInt sOff[],
@@ -644,7 +644,7 @@ pylith::fekernels::FaultCohesiveKinPoro::Jf0ul_pos(const PylithInt dim,
  * Auxiliary fields = None
  */
 void
-pylith::fekernels::FaultCohesiveKinPoro::Jf0umu_pos(const PylithInt dim,
+pylith::fekernels::FaultCohesiveKinTrivial::Jf0umu_pos(const PylithInt dim,
                                                     const PylithInt numS,
                                                     const PylithInt numA,
                                                     const PylithInt sOff[],
@@ -687,7 +687,7 @@ pylith::fekernels::FaultCohesiveKinPoro::Jf0umu_pos(const PylithInt dim,
  * Auxiliary fields = None
  */
 void
-pylith::fekernels::FaultCohesiveKinPoro::Jf0lu(const PylithInt dim,
+pylith::fekernels::FaultCohesiveKinTrivial::Jf0lu(const PylithInt dim,
                                                const PylithInt numS,
                                                const PylithInt numA,
                                                const PylithInt sOff[],
@@ -732,7 +732,7 @@ pylith::fekernels::FaultCohesiveKinPoro::Jf0lu(const PylithInt dim,
  * Auxiliary fields = None
  */
 void
-pylith::fekernels::FaultCohesiveKinPoro::Jf0muu(const PylithInt dim,
+pylith::fekernels::FaultCohesiveKinTrivial::Jf0muu(const PylithInt dim,
                                                 const PylithInt numS,
                                                 const PylithInt numA,
                                                 const PylithInt sOff[],

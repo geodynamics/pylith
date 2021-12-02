@@ -16,7 +16,7 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file tests/mmstests/faults/TestFaultKinPoro2D_ShearNoSlipStatic.cc
+/** @file tests/mmstests/faults/TestFaultKinTrivial2D_ShearNoSlipStatic.cc
  *
  * Square domain of sides 8.0 km with a through-going fault running
  * through the center in the y-direction. Simple shear with no slip.
@@ -24,9 +24,9 @@
 
 #include <portinfo>
 
-#include "TestFaultKinPoro.hh" // ISA TestFaultKinPoro
+#include "TestFaultKinTrivial.hh" // ISA TestFaultKinTrivial
 
-#include "pylith/faults/FaultCohesiveKinPoro.hh" // USES FaultCohesiveKinPoro
+#include "pylith/faults/FaultCohesiveKinTrivial.hh" // USES FaultCohesiveKinTrivial
 #include "pylith/faults/KinSrcStep.hh" // USES KinSrcStep
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/materials/Elasticity.hh" // USES Elasticity
@@ -43,23 +43,23 @@
 
 namespace pylith {
     namespace mmstests {
-        class TestFaultKinPoro2D_ShearNoSlipStatic;
+        class TestFaultKinTrivial2D_ShearNoSlipStatic;
 
-        class TestFaultKinPoro2D_ShearNoSlipStatic_TriP1;
-        class TestFaultKinPoro2D_ShearNoSlipStatic_TriP2;
-        class TestFaultKinPoro2D_ShearNoSlipStatic_TriP3;
-        class TestFaultKinPoro2D_ShearNoSlipStatic_TriP4;
+        class TestFaultKinTrivial2D_ShearNoSlipStatic_TriP1;
+        class TestFaultKinTrivial2D_ShearNoSlipStatic_TriP2;
+        class TestFaultKinTrivial2D_ShearNoSlipStatic_TriP3;
+        class TestFaultKinTrivial2D_ShearNoSlipStatic_TriP4;
 
-        class TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ1;
-        class TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ2;
-        class TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ3;
-        class TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ4;
+        class TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ1;
+        class TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ2;
+        class TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ3;
+        class TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ4;
     } // tests/mmstests
 } // pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic :
-    public pylith::mmstests::TestFaultKinPoro {
+class pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic :
+    public pylith::mmstests::TestFaultKinTrivial {
     // Spatial database user functions for auxiiliary subfields (includes derived fields).
 
     // Density
@@ -243,13 +243,13 @@ class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic :
 protected:
 
     void setUp(void) {
-        TestFaultKinPoro::setUp();
+        TestFaultKinTrivial::setUp();
 
         // Overwrite component name for control of journals at test level.
-        GenericComponent::setName("TestFaultKinPoro2D_ShearNoSlipStatic");
+        GenericComponent::setName("TestFaultKinTrivial2D_ShearNoSlipStatic");
 
         CPPUNIT_ASSERT(!_data);
-        _data = new TestFaultKinPoro_Data();CPPUNIT_ASSERT(_data);
+        _data = new TestFaultKinTrivial_Data();CPPUNIT_ASSERT(_data);
         _isJacobianLinear = true;
 
         _data->spaceDim = 2;
@@ -389,17 +389,17 @@ protected:
         err = PetscDSSetExactSolution(prob, 2, solnkernel_mumultiplier, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
 
-}; // TestFaultKinPoro2D_ShearNoSlipStatic
+}; // TestFaultKinTrivial2D_ShearNoSlipStatic
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_TriP1 :
-    public pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKinPoro2D_ShearNoSlipStatic_TriP1,
-                           TestFaultKinPoro);
+class pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_TriP1 :
+    public pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKinTrivial2D_ShearNoSlipStatic_TriP1,
+                           TestFaultKinTrivial);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKinPoro2D_ShearNoSlipStatic::setUp();
+        TestFaultKinTrivial2D_ShearNoSlipStatic::setUp();
         CPPUNIT_ASSERT(_data);
         _allowZeroResidual = true;
 
@@ -415,18 +415,18 @@ class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_TriP1 :
 
     } // setUp
 
-}; // TestFaultKinPoro2D_ShearNoSlipStatic_TriP1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_TriP1);
+}; // TestFaultKinTrivial2D_ShearNoSlipStatic_TriP1
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_TriP1);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_TriP2 :
-    public pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKinPoro2D_ShearNoSlipStatic_TriP2,
-                           TestFaultKinPoro);
+class pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_TriP2 :
+    public pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKinTrivial2D_ShearNoSlipStatic_TriP2,
+                           TestFaultKinTrivial);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKinPoro2D_ShearNoSlipStatic::setUp();
+        TestFaultKinTrivial2D_ShearNoSlipStatic::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
@@ -453,18 +453,18 @@ class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_TriP2 :
 
     } // setUp
 
-}; // TestFaultKinPoro2D_ShearNoSlipStatic_TriP2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_TriP2);
+}; // TestFaultKinTrivial2D_ShearNoSlipStatic_TriP2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_TriP2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_TriP3 :
-    public pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKinPoro2D_ShearNoSlipStatic_TriP3,
-                           TestFaultKinPoro);
+class pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_TriP3 :
+    public pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKinTrivial2D_ShearNoSlipStatic_TriP3,
+                           TestFaultKinTrivial);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKinPoro2D_ShearNoSlipStatic::setUp();
+        TestFaultKinTrivial2D_ShearNoSlipStatic::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
@@ -491,18 +491,18 @@ class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_TriP3 :
 
     } // setUp
 
-}; // TestFaultKinPoro2D_ShearNoSlipStatic_TriP3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_TriP3);
+}; // TestFaultKinTrivial2D_ShearNoSlipStatic_TriP3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_TriP3);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_TriP4 :
-    public pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKinPoro2D_ShearNoSlipStatic_TriP4,
-                           TestFaultKinPoro);
+class pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_TriP4 :
+    public pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKinTrivial2D_ShearNoSlipStatic_TriP4,
+                           TestFaultKinTrivial);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKinPoro2D_ShearNoSlipStatic::setUp();
+        TestFaultKinTrivial2D_ShearNoSlipStatic::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
@@ -529,18 +529,18 @@ class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_TriP4 :
 
     } // setUp
 
-}; // TestFaultKinPoro2D_ShearNoSlipStatic_TriP4
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_TriP4);
+}; // TestFaultKinTrivial2D_ShearNoSlipStatic_TriP4
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_TriP4);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ1 :
-    public pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ1,
-                           TestFaultKinPoro);
+class pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ1 :
+    public pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ1,
+                           TestFaultKinTrivial);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKinPoro2D_ShearNoSlipStatic::setUp();
+        TestFaultKinTrivial2D_ShearNoSlipStatic::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad.mesh";
@@ -555,18 +555,18 @@ class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ1 :
 
     } // setUp
 
-}; // TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ1);
+}; // TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ1
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ1);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ2 :
-    public pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ2,
-                           TestFaultKinPoro);
+class pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ2 :
+    public pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ2,
+                           TestFaultKinTrivial);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKinPoro2D_ShearNoSlipStatic::setUp();
+        TestFaultKinTrivial2D_ShearNoSlipStatic::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad.mesh";
@@ -593,18 +593,18 @@ class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ2 :
 
     } // setUp
 
-}; // TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ2);
+}; // TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ3 :
-    public pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ3,
-                           TestFaultKinPoro);
+class pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ3 :
+    public pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ3,
+                           TestFaultKinTrivial);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKinPoro2D_ShearNoSlipStatic::setUp();
+        TestFaultKinTrivial2D_ShearNoSlipStatic::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad.mesh";
@@ -631,18 +631,18 @@ class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ3 :
 
     } // setUp
 
-}; // TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ3);
+}; // TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ3);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ4 :
-    public pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ4,
-                           TestFaultKinPoro);
+class pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ4 :
+    public pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ4,
+                           TestFaultKinTrivial);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKinPoro2D_ShearNoSlipStatic::setUp();
+        TestFaultKinTrivial2D_ShearNoSlipStatic::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad.mesh";
@@ -669,7 +669,7 @@ class pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ4 :
 
     } // setUp
 
-}; // TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ4
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinPoro2D_ShearNoSlipStatic_QuadQ4);
+}; // TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ4
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKinTrivial2D_ShearNoSlipStatic_QuadQ4);
 
 // End of file

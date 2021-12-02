@@ -30,7 +30,7 @@ swig_sources = \
 	../problems/Physics.i \
 	FaultCohesive.i \
 	FaultCohesiveKin.i \
-	FaultCohesiveKinPoro.i \
+	FaultCohesiveKinTrivial.i \
 	KinSrc.i \
 	KinSrcStep.i \
 	KinSrcRamp.i \

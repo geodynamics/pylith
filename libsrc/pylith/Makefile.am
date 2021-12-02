@@ -43,7 +43,7 @@ libpylith_la_SOURCES = \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveKin.cc \
-	faults/FaultCohesiveKinPoro.cc \
+	faults/FaultCohesiveKinTrivial.cc \
 	faults/AuxiliaryFactoryKinematic.cc \
 	faults/KinSrc.cc \
 	faults/KinSrcStep.cc \
@@ -83,7 +83,7 @@ libpylith_la_SOURCES = \
 	fekernels/AbsorbingDampers.cc \
 	fekernels/BoundaryDirections.cc \
 	fekernels/FaultCohesiveKin.cc \
-	fekernels/FaultCohesiveKinPoro.cc \
+	fekernels/FaultCohesiveKinTrivial.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \
 	materials/RheologyElasticity.cc \

@@ -18,11 +18,11 @@
 
 #include <portinfo>
 
-#include "TestFaultKinPoro.hh" // Implementation of class methods
+#include "TestFaultKinTrivial.hh" // Implementation of class methods
 
 #include "pylith/bc/BoundaryCondition.cc" // HASA BoundaryCondition
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
-#include "pylith/faults/FaultCohesiveKinPoro.hh" // USES FaultCohesiveKinPoro
+#include "pylith/faults/FaultCohesiveKinTrivial.hh" // USES FaultCohesiveKinTrivial
 #include "pylith/faults/KinSrc.hh" // USES KinSrc
 #include "pylith/materials/Elasticity.hh" // USES Elasticity
 #include "pylith/materials/RheologyElasticity.hh" // USES RheologyElasticity
@@ -46,10 +46,10 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::mmstests::TestFaultKinPoro::setUp(void) {
+pylith::mmstests::TestFaultKinTrivial::setUp(void) {
     MMSTest::setUp();
 
-    _fault = new pylith::faults::FaultCohesiveKinPoro;CPPUNIT_ASSERT(_fault);
+    _fault = new pylith::faults::FaultCohesiveKinTrivial;CPPUNIT_ASSERT(_fault);
     _data = NULL;
 } // setUp
 
@@ -57,7 +57,7 @@ pylith::mmstests::TestFaultKinPoro::setUp(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Deallocate testing data.
 void
-pylith::mmstests::TestFaultKinPoro::tearDown(void) {
+pylith::mmstests::TestFaultKinTrivial::tearDown(void) {
     for (size_t i = 0; i < _materials.size(); ++i) {
         delete _materials[i];_materials[i] = NULL;
     } // for
@@ -74,7 +74,7 @@ pylith::mmstests::TestFaultKinPoro::tearDown(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Initialize objects for test.
 void
-pylith::mmstests::TestFaultKinPoro::_initialize(void) {
+pylith::mmstests::TestFaultKinTrivial::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mesh);
@@ -159,7 +159,7 @@ pylith::mmstests::TestFaultKinPoro::_initialize(void) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
-pylith::mmstests::TestFaultKinPoro_Data::TestFaultKinPoro_Data(void) :
+pylith::mmstests::TestFaultKinTrivial_Data::TestFaultKinTrivial_Data(void) :
     spaceDim(0),
     meshFilename(NULL),
     cs(NULL),
@@ -197,7 +197,7 @@ pylith::mmstests::TestFaultKinPoro_Data::TestFaultKinPoro_Data(void) :
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::mmstests::TestFaultKinPoro_Data::~TestFaultKinPoro_Data(void) {
+pylith::mmstests::TestFaultKinTrivial_Data::~TestFaultKinTrivial_Data(void) {
     delete cs;cs = NULL;
     delete gravityField;gravityField = NULL;
     delete normalizer;normalizer = NULL;

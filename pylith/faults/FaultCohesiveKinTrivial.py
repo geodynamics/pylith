@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/faults/FaultCohesiveKinPoro.py
+# @file pylith/faults/FaultCohesiveKinTrivial.py
 #
 # @brief Python object for a fault surface with kinematic
 # (prescribed) slip implemented with cohesive elements.
@@ -21,7 +21,7 @@
 # Factory: fault
 
 from .FaultCohesive import FaultCohesive
-from .faults import FaultCohesiveKinPoro as ModuleFaultCohesiveKinPoro
+from .faults import FaultCohesiveKinTrivial as ModuleFaultCohesiveKinTrivial
 
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
@@ -34,7 +34,7 @@ def eqsrcFactory(name):
     return facility(name, family="eq_kinematic_src", factory=KinSrcStep)
 
 
-class FaultCohesiveKinPoro(FaultCohesive, ModuleFaultCohesiveKinPoro):
+class FaultCohesiveKinTrivial(FaultCohesive, ModuleFaultCohesiveKinTrivial):
     """Python object for a fault surface with kinematic (prescribed) slip
     implemented with cohesive elements.
 
@@ -50,11 +50,11 @@ class FaultCohesiveKinPoro(FaultCohesive, ModuleFaultCohesiveKinPoro):
     from pylith.utils.NullComponent import NullComponent
     auxiliaryFieldDB = pythia.pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=NullComponent)
 
-    #from pylith.meshio.OutputFaultKinPoro import OutputFaultKinPoro
-    #outputManager = pythia.pyre.inventory.facility("output", family="output_manager", factory=OutputFaultKinPoro)
+    #from pylith.meshio.OutputFaultKinTrivial import OutputFaultKinTrivial
+    #outputManager = pythia.pyre.inventory.facility("output", family="output_manager", factory=OutputFaultKinTrivial)
     #output.meta['tip'] = "Output manager associated with fault information."
 
-    def __init__(self, name="faultcohesivekinporo"):
+    def __init__(self, name="faultcohesivekinTrivial"):
         """Initialize configuration.
         """
         FaultCohesive.__init__(self, name)
@@ -72,7 +72,7 @@ class FaultCohesiveKinPoro(FaultCohesive, ModuleFaultCohesiveKinPoro):
 
         for eqsrc in self.eqRuptures.components():
             eqsrc.preinitialize()
-        ModuleFaultCohesiveKinPoro.setEqRuptures(
+        ModuleFaultCohesiveKinTrivial.setEqRuptures(
             self, self.eqRuptures.inventory.facilityNames(), self.eqRuptures.components())
 
         return
@@ -81,7 +81,7 @@ class FaultCohesiveKinPoro(FaultCohesive, ModuleFaultCohesiveKinPoro):
         """Verify compatibility of configuration.
         """
         FaultCohesive.verifyConfiguration(self)
-        ModuleFaultCohesiveKinPoro.verifyConfiguration(self, self.mesh())
+        ModuleFaultCohesiveKinTrivial.verifyConfiguration(self, self.mesh())
 
         for eqsrc in self.eqRuptures.components():
             eqsrc.verifyConfiguration()
@@ -105,18 +105,18 @@ class FaultCohesiveKinPoro(FaultCohesive, ModuleFaultCohesiveKinPoro):
         return
 
     def _createModuleObj(self):
-        """Create handle to C++ FaultCohesiveKinPoro.
+        """Create handle to C++ FaultCohesiveKinTrivial.
         """
-        ModuleFaultCohesiveKinPoro.__init__(self)
+        ModuleFaultCohesiveKinTrivial.__init__(self)
         return
 
 
 # Factories
 
 def fault():
-    """Factory associated with FaultCohesiveKinPoro.
+    """Factory associated with FaultCohesiveKinTrivial.
     """
-    return FaultCohesiveKinPoro()
+    return FaultCohesiveKinTrivial()
 
 
 # End of file

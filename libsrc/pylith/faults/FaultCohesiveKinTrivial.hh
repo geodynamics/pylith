@@ -16,30 +16,30 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/faults/FaultCohesiveKinPoro.hh
+/** @file libsrc/faults/FaultCohesiveKinTrivial.hh
  *
  * @brief C++ implementation for a fault surface with kinematic
  * (prescribed) slip implemented with cohesive elements.
  */
 
-#if !defined(pylith_faults_faultcohesivekinporo_hh)
-#define pylith_faults_faultcohesivekinporo_hh
+#if !defined(pylith_faults_faultcohesivekintrivial_hh)
+#define pylith_faults_faultcohesivekintrivial_hh
 
 #include "FaultCohesive.hh" // ISA FaultCohesive
 
 #include <string> // HASA std::string
 #include <map>    // HASA std::map
 
-class pylith::faults::FaultCohesiveKinPoro : public pylith::faults::FaultCohesive {
-    friend class TestFaultCohesiveKinPoro; // unit testing
+class pylith::faults::FaultCohesiveKinTrivial : public pylith::faults::FaultCohesive {
+    friend class TestFaultCohesiveKinTrivial; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
     /// Default constructor.
-    FaultCohesiveKinPoro(void);
+    FaultCohesiveKinTrivial(void);
 
     /// Destructor.
-    ~FaultCohesiveKinPoro(void);
+    ~FaultCohesiveKinTrivial(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -173,8 +173,8 @@ private:
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
-    FaultCohesiveKinPoro(const FaultCohesiveKinPoro &);                  ///< Not implemented
-    const FaultCohesiveKinPoro &operator=(const FaultCohesiveKinPoro &); ///< Not implemented.
+    FaultCohesiveKinTrivial(const FaultCohesiveKinTrivial &);                  ///< Not implemented
+    const FaultCohesiveKinTrivial &operator=(const FaultCohesiveKinTrivial &); ///< Not implemented.
 
     static PetscErrorCode _zero(PetscInt dim,
                                 PetscReal t,
@@ -190,8 +190,8 @@ private:
         return 0;
     }
 
-}; // class FaultCohesiveKinPoro
+}; // class FaultCohesiveKinTrivial
 
-#endif // pylith_faults_faultcohesivekinporo_hh
+#endif // pylith_faults_faultcohesivekintrivial_hh
 
 // End of file

@@ -20,15 +20,15 @@ subpackage = faults
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/check.am
 
-TESTS = test_faultkinporo
+TESTS = test_faultkintrivial
 
 check_PROGRAMS = $(TESTS)
 
 
-test_faultkinporo_SOURCES = \
-	TestFaultKinPoro.cc \
-	TestFaultKinPoro2D_RigidBlocksStatic.cc \
-	TestFaultKinPoro2D_ShearNoSlipStatic.cc \
+test_faultkintrivial_SOURCES = \
+	TestFaultKinTrivial.cc \
+	TestFaultKinTrivial2D_RigidBlocksStatic.cc \
+	TestFaultKinTrivial2D_ShearNoSlipStatic.cc \
 	test_driver.cc
 
 
@@ -61,7 +61,7 @@ dist_noinst_DATA = \
 noinst_TMP =
 
 # 'export' the input files by performing a mock install
-export_datadir = $(abs_top_builddir)/tests/mmstests/faultsPoro/data
+export_datadir = $(abs_top_builddir)/tests/mmstests/faultsTrivial/data
 export-data: $(dist_noinst_DATA)
 	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then $(MKDIR_P) $(export_datadir);  for f in $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done; fi
 

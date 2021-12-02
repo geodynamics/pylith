@@ -16,22 +16,24 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file modulesrc/faults/FaultCohesiveKinPoro.i
+/** @file modulesrc/faults/FaultCohesiveKinTrivial.i
  *
- * @brief Python interface to C++ FaultCohesiveKinPoro object.
+ * @brief Python interface to C++ FaultCohesiveKinTrivial object.
  */
 
-namespace pylith {
-    namespace faults {
-        class FaultCohesiveKinPoro : public pylith::faults::FaultCohesive {
+namespace pylith
+{
+    namespace faults
+    {
+        class FaultCohesiveKinTrivial : public pylith::faults::FaultCohesive
+        {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
-public:
-
+        public:
             /// Default constructor.
-            FaultCohesiveKinPoro(void);
+            FaultCohesiveKinTrivial(void);
 
             /// Destructor.
-            virtual ~FaultCohesiveKinPoro(void);
+            virtual ~FaultCohesiveKinTrivial(void);
 
             /// Deallocate PETSc and local data structures.
             void deallocate(void);
@@ -43,36 +45,35 @@ public:
              * @param sources Array of kinematic earthquake sources.
              * @param numSources Number of earthquake sources.
              */
-            %apply(const char* const* string_list, const int list_len) {
-                (const char* const* names,
-                 const int numNames)
-            };
-            void setEqRuptures(const char* const* names,
+            %apply(const char *const *string_list, const int list_len){
+                  (const char *const *names,
+                   const int numNames)};
+            void setEqRuptures(const char *const *names,
                                const int numNames,
-                               pylith::faults::KinSrc** ruptures,
+                               pylith::faults::KinSrc **ruptures,
                                const int numRuptures);
 
-            %clear(const char* const* names, const int numNames);
+            %clear(const char *const *names, const int numNames);
 
             /** Verify configuration is acceptable.
              *
              * @param[in] solution Solution field.
              */
-            void verifyConfiguration(const pylith::topology::Field& solution) const;
+            void verifyConfiguration(const pylith::topology::Field &solution) const;
 
             /** Create integrator and set kernels.
              *
              * @param[in] solution Solution field.
              * @returns Integrator if applicable, otherwise NULL.
              */
-            pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution);
+            pylith::feassemble::Integrator *createIntegrator(const pylith::topology::Field &solution);
 
             /** Create constraint and set kernels.
              *
              * @param[in] solution Solution field.
              * @returns Constraint if applicable, otherwise NULL.
              */
-            std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
+            std::vector<pylith::feassemble::Constraint *> createConstraints(const pylith::topology::Field &solution);
 
             /** Create auxiliary field.
              *
@@ -81,8 +82,8 @@ public:
              *
              * @returns Auxiliary field if applicable, otherwise NULL.
              */
-            pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
-                                                          const pylith::topology::Mesh& domainMesh);
+            pylith::topology::Field *createAuxiliaryField(const pylith::topology::Field &solution,
+                                                          const pylith::topology::Mesh &domainMesh);
 
             /** Create derived field.
              *
@@ -91,26 +92,25 @@ public:
              *
              * @returns Derived field if applicable, otherwise NULL.
              */
-            pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
-                                                        const pylith::topology::Mesh& domainMesh);
+            pylith::topology::Field *createDerivedField(const pylith::topology::Field &solution,
+                                                        const pylith::topology::Mesh &domainMesh);
 
             /** Update auxiliary subfields at beginning of time step.
              *
              * @param[out] auxiliaryField Auxiliary field.
              * @param[in] t Current time.
              */
-            void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+            void updateAuxiliaryField(pylith::topology::Field *auxiliaryField,
                                       const double t);
 
             // PROTECTED METHODS
             // ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
+        protected:
             /** Get auxiliary factory associated with physics.
              *
              * @return Auxiliary factory for physics object.
              */
-            pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
+            pylith::feassemble::AuxiliaryFactory *_getAuxiliaryFactory(void);
 
             /** Update kernel constants.
              *
@@ -118,7 +118,7 @@ protected:
              */
             void _updateKernelConstants(const PylithReal dt);
 
-        }; // class FaultCohesiveKinPoro
+        }; // class FaultCohesiveKinTrivial
 
     } // faults
 } // pylith

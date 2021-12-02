@@ -237,7 +237,7 @@ AC_CONFIG_FILES([Makefile
 		tests/mmstests/elasticity/Makefile
 		tests/mmstests/incompressibleelasticity/Makefile
 		tests/mmstests/faults/Makefile
-		tests/mmstests/faultsPoro/Makefile
+		tests/mmstests/faultsTrivial/Makefile
 		tests/fullscale/Makefile
 		tests/fullscale/cornercases/Makefile
 		tests/fullscale/cornercases/2d/Makefile
@@ -255,7 +255,7 @@ AC_CONFIG_FILES([Makefile
 		tests/fullscale/poroelasticity/cryer/Makefile
 		tests/fullscale/petsc/Makefile
 		tests/fullscale/eqinfo/Makefile
-    developer/Makefile
+    	developer/Makefile
 		doc/Makefile
 		doc/install/Makefile
 		doc/releasenotes/Makefile

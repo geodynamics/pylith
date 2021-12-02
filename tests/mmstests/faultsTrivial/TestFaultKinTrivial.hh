@@ -17,17 +17,17 @@
 //
 
 /**
- * @file mmstets/elasticity/TestFaultKinPoro.hh
+ * @file mmstets/elasticity/TestFaultKinTrivial.hh
  *
  * @brief C++ abstract base class for testing faults with prescribed slip.
  */
 
-#if !defined(pylith_mmstests_testfaultkinporo_hh)
-#define pylith_mmstests_testfaultkinporo_hh
+#if !defined(pylith_mmstests_testfaultkintrivial_hh)
+#define pylith_mmstests_testfaultkintrivial_hh
 
 #include "pylith/testing/MMSTest.hh" // ISA MMSTEST
 
-#include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesiveKinPoro
+#include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesiveKinTrivial
 #include "pylith/materials/materialsfwd.hh" // HOLDSA Material
 #include "pylith/bc/bcfwd.hh" // USES DirichletUserFn
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
@@ -38,13 +38,13 @@
 
 namespace pylith {
     namespace mmstests {
-        class TestFaultKinPoro;
+        class TestFaultKinTrivial;
 
-        class TestFaultKinPoro_Data; // test data
+        class TestFaultKinTrivial_Data; // test data
     } // mmstets
 } // pylith
 
-class pylith::mmstests::TestFaultKinPoro : public pylith::testing::MMSTest {
+class pylith::mmstests::TestFaultKinTrivial : public pylith::testing::MMSTest {
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -65,23 +65,23 @@ protected:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::faults::FaultCohesiveKinPoro* _fault; ///< Fault test subject.
+    pylith::faults::FaultCohesiveKinTrivial* _fault; ///< Fault test subject.
     std::vector<pylith::materials::Material*> _materials; ///< Elastic materials.
     std::vector<pylith::bc::BoundaryCondition*> _bcs; ///< Boundary conditions.
-    TestFaultKinPoro_Data* _data; ///< Test parameters.
+    TestFaultKinTrivial_Data* _data; ///< Test parameters.
 
-}; // class TestFaultKinPoro
+}; // class TestFaultKinTrivial
 
 // =====================================================================================================================
-class pylith::mmstests::TestFaultKinPoro_Data {
+class pylith::mmstests::TestFaultKinTrivial_Data {
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    TestFaultKinPoro_Data(void);
+    TestFaultKinTrivial_Data(void);
 
     /// Destructor
-    ~TestFaultKinPoro_Data(void);
+    ~TestFaultKinTrivial_Data(void);
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -115,6 +115,6 @@ public:
 
 }; // TestFaultKin_Data
 
-#endif // pylith_mmstests_testfaultkinporo_hh
+#endif // pylith_mmstests_testfaultkintrivial_hh
 
 // End of file
