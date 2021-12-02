@@ -1,5 +1,5 @@
 (sec-developer-workflow)=
-# Developer Workflow
+# Git Workflow
 
 We use the Git version control system <https://git-scm.com> with a central GitHub repository <https://github.com/geodynamics/pylith> for development.
 We will refer to this central repository as the `geodynamics/pylith` repository.
@@ -62,7 +62,7 @@ See [git-branch](fig-developer-git-branch) for the diagram of the workflow assoc
 
 ### Set the upstream repository
 
-For each clone of your fork (computer with a local copy of your fork), you need to create a link to the "upstream" `geodynamics/pylith` repository.
+For each clone of your fork (each computer with a local copy of your fork), you need to create a link to the "upstream" `geodynamics/pylith` repository.
 This allows you to keep your repository in sync with the community repository.
 
 ```{code-block} bash
@@ -91,7 +91,7 @@ upstream https://github.com/geodynamics/pylith.git (push)
 ### Updating Your Local Branch To Match The Upstream Repository
 
 Make sure all of your local changes have been committed or [stashed](https://git-scm.com/docs/git-stash).
-If you are updating the `main` branch or another branch that you know has not been rebased, then you can merge the updates from the upstream (`geodynamics/pylith`) repository using the following procedure.
+If you are updating the `main` branch or another branch that you know has *not* been rebased, then you can merge the updates from the upstream (`geodynamics/pylith`) repository using the following procedure.
 
 :::{danger}
 If you do not know whether or not the branch you are updating has been rebased, then do not follow this procedure.
@@ -100,7 +100,7 @@ Instead, follow the procedure for updating a rebased branch.
 
 ```{code-block} bash
 ---
-caption: Updating your `main` branch or another branch that has not been rebased (forced push).
+caption: Updating your `main` branch or another branch that has *not* been rebased (forced push).
 ---
 # Update your local version of the upstream repository
 get fetch upstream
